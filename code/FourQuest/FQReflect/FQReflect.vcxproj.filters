@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>header</Filter>
-    </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>3rd</Filter>
     </ClInclude>
@@ -33,12 +27,18 @@
     <ClInclude Include="entt.hpp">
       <Filter>3rd</Filter>
     </ClInclude>
+    <ClInclude Include="FQReflect.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Converter.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Tag.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FQReflect.cpp">
-      <Filter>cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="Converter.cpp">
       <Filter>cpp</Filter>
     </ClCompile>
   </ItemGroup>
