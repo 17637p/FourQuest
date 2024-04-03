@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include "Tag.h"
 
@@ -123,11 +124,30 @@ void fq::reflect::Converter::parseMemberToJson(const entt::meta_data& metaData, 
 	else if (metaType.is_sequence_container())
 	{
 		auto view = anyValue.as_sequence_container();
+
+		json arrayJson;
+
+		for (const entt::meta_any& element : view)
+		{
+			entt::meta_type elementType = element.type();
+			parseSequenceContainerToJson(element, arrayJson);
+		}
+
+		outJson[name] = arrayJson;
 	}
 	// 연관 컨테이너 ex) std::map, std::set, std::unordered_map
 	else if (metaType.is_associative_container())
 	{
 		auto view = anyValue.as_associative_container();
+
+		json arrayJson;
+
+		for (const auto& [key, value] : view)
+		{
+			parseAssociativeContainer(key, value, arrayJson);
+		}
+
+		outJson[name] = arrayJson;
 	}
 	// class
 	else if (metaType.is_class())
@@ -154,7 +174,6 @@ void fq::reflect::Converter::SerializeClass(const std::filesystem::path& path, c
 		output << std::setw(4) << j;
 		output.close();
 	}
-	std::cout << std::setw(4) << j;
 }
 
 entt::meta_any fq::reflect::Converter::DeserializeClass(const std::filesystem::path& path)
@@ -199,22 +218,20 @@ entt::meta_any fq::reflect::Converter::parseClassFromJson(const std::string& cla
 
 		if (memberMetaData)
 		{
-			entt::meta_any val = parseMemberFromJson(element.value(), memberMetaData);
+			entt::meta_any val = parseMemberFromJson(element.value(), memberMetaData.type());
 			memberMetaData.set(instance, val);
 		}
 		else
 		{
 			// 리플렉션한 데이터가 변경된 경우
-
 		}
 	}
 
 	return instance;
 }
 
-entt::meta_any fq::reflect::Converter::parseMemberFromJson(const nlohmann::json& inJson, const entt::meta_data& metaData)
+entt::meta_any fq::reflect::Converter::parseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType)
 {
-	entt::meta_type metaType = metaData.type();
 	entt::meta_any output;
 
 	// bool
@@ -291,6 +308,16 @@ entt::meta_any fq::reflect::Converter::parseMemberFromJson(const nlohmann::json&
 	// 연속 컨테이너 ex) std::vector, std::array, std::deque, std::list 
 	else if (metaType.is_sequence_container())
 	{
+		output = metaType.construct();
+
+		auto view = output.as_sequence_container();
+		entt::meta_type itemMetaType = view.value_type();
+
+		for (auto& item : inJson)
+		{
+			entt::meta_any itemInstance = parseMemberFromJson(item, itemMetaType);
+			view.insert(view.end(), itemInstance);
+		}
 	}
 	// 연관 컨테이너 ex) std::map, std::set, std::unordered_map
 	else if (metaType.is_associative_container())
@@ -312,4 +339,174 @@ entt::meta_any fq::reflect::Converter::parseMemberFromJson(const nlohmann::json&
 	return output;
 }
 
+
+void fq::reflect::Converter::parseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson)
+{
+	entt::meta_type metaType = element.type();
+
+	// bool
+	if (metaType == entt::resolve<bool>())
+	{
+		bool val = element.cast<bool>();
+		arrayJson.push_back(val);
+	}
+	// int
+	else if (metaType == entt::resolve<int>())
+	{
+		int val = element.cast<int>();
+		arrayJson.push_back(val);
+	}
+
+	// unsigned int
+	else if (metaType == entt::resolve<unsigned int>())
+	{
+		unsigned int val = element.cast<unsigned int>();
+		arrayJson.push_back(val);
+	}
+	// long long
+	else if (metaType == entt::resolve<long long>())
+	{
+		long long val = element.cast<long long>();
+		arrayJson.push_back(val);
+	}
+	// unsigned long long
+	else if (metaType == entt::resolve<unsigned long long>())
+	{
+		unsigned long long val = element.cast<unsigned long long>();
+		arrayJson.push_back(val);
+	}
+	// float 
+	else if (metaType == entt::resolve<float>())
+	{
+		float val = element.cast<float>();
+		arrayJson.push_back(val);
+	}
+	// double
+	else if (metaType == entt::resolve<double>())
+	{
+		double val = element.cast<double>();
+		arrayJson.push_back(val);
+	}
+	// std::string
+	else if (metaType == entt::resolve<std::string>())
+	{
+		std::string val = element.cast<std::string>();
+		arrayJson.push_back(val);
+	}
+	// std::wstring
+	else if (metaType == entt::resolve<std::wstring>())
+	{
+		std::wstring val = element.cast<std::wstring>();
+		arrayJson.push_back(val);
+	}
+	// const char*
+	else if (metaType == entt::resolve<const char*>())
+	{
+		const char* val = element.cast<const char*>();
+		arrayJson.push_back(val);
+	}
+	// const wchar_t*
+	else if (metaType == entt::resolve<const wchar_t*>())
+	{
+		const wchar_t* val = element.cast<const wchar_t*>();
+		arrayJson.push_back(val);
+	}
+	// enum 
+	else if (metaType.is_enum())
+	{
+		assert(element.allow_cast<int>());
+		int val = element.cast<int>();
+		arrayJson.push_back(val);
+	}
+	// class
+	else if (metaType.is_class())
+	{
+		json clazz;
+		parseClassToJson(element, clazz);
+
+		for (auto& item : clazz.items())
+		{
+			arrayJson.push_back(item.value());
+		}
+	}
+	else
+	{
+		assert(!"member parsing error");
+	}
+}
+
+void fq::reflect::Converter::parseAssociativeContainer(const entt::meta_any& key
+	, const entt::meta_any& value
+	, nlohmann::json& outJson)
+{
+	outJson[convertString(key)] = convertString(value);
+}
+
+std::string fq::reflect::Converter::convertString(const entt::meta_any& any)
+{
+	std::string output;
+
+	entt::meta_type metaType = any.type();
+	if (metaType == entt::resolve<bool>())
+	{
+		bool val = any.cast<bool>();
+		output = val;
+	}
+	// int
+	else if (metaType == entt::resolve<int>())
+	{
+		int val = any.cast<int>();
+		output = val;
+	}
+	// unsigned int
+	else if (metaType == entt::resolve<unsigned int>())
+	{
+		unsigned int val = any.cast<unsigned int>();
+		output = val;
+	}
+	// long long
+	else if (metaType == entt::resolve<long long>())
+	{
+		long long val = any.cast<long long>();
+		output = val;
+	}
+	// unsigned long long
+	else if (metaType == entt::resolve<unsigned long long>())
+	{
+		unsigned long long val = any.cast<unsigned long long> ();
+		output = val;
+	}
+	// float 
+	else if (metaType == entt::resolve<float>())
+	{
+		float val = any.cast<float>();
+		output = val;
+	}
+	// double
+	else if (metaType == entt::resolve<double>())
+	{
+		double val = any.cast<double>();
+		output = val;
+	}
+	// std::string
+	else if (metaType == entt::resolve<std::string>())
+	{
+		std::string val = any.cast<std::string>();
+		output = val;
+	}
+	// const char*
+	else if (metaType == entt::resolve<const char*>())
+	{
+		const char* val = any.cast<const char*>();
+		output = val;
+	}
+	// enum 
+	else if (metaType.is_enum())
+	{
+		int val = any.cast<int>();
+		output = val;
+	}
+
+	return output;
+}
 

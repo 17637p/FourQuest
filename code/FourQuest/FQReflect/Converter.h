@@ -29,7 +29,7 @@ namespace fq::reflect
 		entt::meta_any DeserializeClass(const std::filesystem::path& path);
 
 	private:
-		// Instance -> Json 
+		/// Instance -> Json 
 
 		/// <summary>
 		/// class instance를 json으로 파싱
@@ -38,11 +38,19 @@ namespace fq::reflect
 		/// <param name="outJson">저장 json객체</param>
 		/// <param name="memberClass">class의 멤버변수인경우 변수명</param>
 		void parseClassToJson(const entt::meta_any& object, nlohmann::json& outJson, const std::string& memberClass = "");
-
+		 
 		void parseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson);
+		
+		void parseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson);
 
-		// Json -> Instance
+		void parseAssociativeContainer(const entt::meta_any& key, const entt::meta_any& value, nlohmann::json& outJson);
+
+		/// Json -> Instance
+		
 		entt::meta_any parseClassFromJson(const std::string& className,const nlohmann::json& inJson);
-		entt::meta_any parseMemberFromJson(const nlohmann::json& inJson, const entt::meta_data& metaData);
+		
+		entt::meta_any parseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType);
+
+		std::string convertString(const entt::meta_any& any);
 	};
 }
