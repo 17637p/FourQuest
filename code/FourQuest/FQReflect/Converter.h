@@ -30,11 +30,19 @@ namespace fq::reflect
 
 	private:
 		// Instance -> Json 
-		void parseClassToJson(const entt::meta_any& object, nlohmann::json& outJson);
+
+		/// <summary>
+		/// class instance를 json으로 파싱
+		/// </summary>
+		/// <param name="object">파싱하는 any객체</param>
+		/// <param name="outJson">저장 json객체</param>
+		/// <param name="memberClass">class의 멤버변수인경우 변수명</param>
+		void parseClassToJson(const entt::meta_any& object, nlohmann::json& outJson, const std::string& memberClass = "");
+
 		void parseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson);
 
 		// Json -> Instance
 		entt::meta_any parseClassFromJson(const std::string& className,const nlohmann::json& inJson);
-		void parseMemberFromJson(const nlohmann::json& inJson);
+		entt::meta_any parseMemberFromJson(const nlohmann::json& inJson, const entt::meta_data& metaData);
 	};
 }

@@ -1,17 +1,5 @@
 {
     "MyStruct": {
-        "Component": {
-            "id": 500,
-            "power": 101.01000213623047
-        },
-        "hp": 40.0,
-        "id": 1000,
-        "koreanName": [
-            51060,
-            44592,
-            53468
-        ],
-        "path": "\\reseource\\ent.txt",
-        "tag": 0
+        "comp": null
     }
 }
