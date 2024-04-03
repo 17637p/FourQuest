@@ -7,5 +7,7 @@
 
 #include "Macro.h"
 #include "Tag.h"
+#include "Path.h"
 
 #include "Converter.h"
+

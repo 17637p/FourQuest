@@ -29,9 +29,12 @@ namespace fq::reflect
 		entt::meta_any DeserializeClass(const std::filesystem::path& path);
 
 	private:
-		nlohmann::json parseClass(const entt::meta_any& object);
-		nlohmann::json parseMember(const entt::meta_data& metaData);
+		// Instance -> Json 
+		void parseClassToJson(const entt::meta_any& object, nlohmann::json& outJson);
+		void parseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson);
 
-
+		// Json -> Instance
+		entt::meta_any parseClassFromJson(const std::string& className,const nlohmann::json& inJson);
+		void parseMemberFromJson(const nlohmann::json& inJson);
 	};
 }

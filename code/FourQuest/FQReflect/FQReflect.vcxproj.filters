@@ -36,9 +36,15 @@
     <ClInclude Include="Tag.h">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="Path.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp">
+      <Filter>cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Path.cpp">
       <Filter>cpp</Filter>
     </ClCompile>
   </ItemGroup>
