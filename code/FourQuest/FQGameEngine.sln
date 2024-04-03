@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FQGameEngineDemo", "FQGameE
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FQReflect", "FQReflect\FQReflect.vcxproj", "{6FA5F6A1-93BF-4C23-A2E7-E20C7E82377E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FQGameModule", "FQGameModule\FQGameModule.vcxproj", "{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{6FA5F6A1-93BF-4C23-A2E7-E20C7E82377E}.Release|x64.Build.0 = Release|x64
 		{6FA5F6A1-93BF-4C23-A2E7-E20C7E82377E}.Release|x86.ActiveCfg = Release|Win32
 		{6FA5F6A1-93BF-4C23-A2E7-E20C7E82377E}.Release|x86.Build.0 = Release|Win32
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Debug|x64.ActiveCfg = Debug|x64
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Debug|x64.Build.0 = Debug|x64
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Debug|x86.ActiveCfg = Debug|Win32
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Debug|x86.Build.0 = Debug|Win32
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Release|x64.ActiveCfg = Release|x64
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Release|x64.Build.0 = Release|x64
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Release|x86.ActiveCfg = Release|Win32
+		{9F999A18-37FC-4A3E-9303-7BE8A0ED2F1E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

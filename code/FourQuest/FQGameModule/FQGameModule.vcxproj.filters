@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="cpp">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="header\pch">
+      <UniqueIdentifier>{dc45267a-a8e1-44a6-bf9a-64366f3595ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpp\pch">
+      <UniqueIdentifier>{5883e456-025c-4735-9dd6-cb90d3aa07d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpp\GameObject">
+      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpp\Component">
+      <UniqueIdentifier>{01b09c51-5561-4668-bca2-f475c1faa1f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header\GameObject">
+      <UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header\Component">
+      <UniqueIdentifier>{f18e9454-5536-43e9-b565-6c1e6868b634}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameModule.h">
+      <Filter>header\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModulePCH.h">
+      <Filter>header\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleType.h">
+      <Filter>header\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleEnum.h">
+      <Filter>header\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>header\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>header\Component</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameModulePCH.cpp">
+      <Filter>cpp\pch</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModuleEnum.cpp">
+      <Filter>cpp\pch</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>cpp\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>cpp\Component</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

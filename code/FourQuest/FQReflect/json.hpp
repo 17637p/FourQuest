@@ -15,6 +15,7 @@
  * file docs/README.md.                                                     *
 \****************************************************************************/
 
+
 #ifndef INCLUDE_NLOHMANN_JSON_HPP_
 #define INCLUDE_NLOHMANN_JSON_HPP_
 
@@ -8236,7 +8237,6 @@ class lexer : public lexer_base<BasicJsonType>
                     }
                 }
             }
-
             // multi-line comments skip input until */ is read
             case '*':
             {

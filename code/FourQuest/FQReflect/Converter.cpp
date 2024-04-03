@@ -450,43 +450,43 @@ std::string fq::reflect::Converter::convertString(const entt::meta_any& any)
 	if (metaType == entt::resolve<bool>())
 	{
 		bool val = any.cast<bool>();
-		output = val;
+		output = std::to_string(val);
 	}
 	// int
 	else if (metaType == entt::resolve<int>())
 	{
 		int val = any.cast<int>();
-		output = val;
+		output = std::to_string(val);
 	}
 	// unsigned int
 	else if (metaType == entt::resolve<unsigned int>())
 	{
 		unsigned int val = any.cast<unsigned int>();
-		output = val;
+		output = std::to_string(val);
 	}
 	// long long
 	else if (metaType == entt::resolve<long long>())
 	{
 		long long val = any.cast<long long>();
-		output = val;
+		output = std::to_string(val);
 	}
 	// unsigned long long
 	else if (metaType == entt::resolve<unsigned long long>())
 	{
 		unsigned long long val = any.cast<unsigned long long> ();
-		output = val;
+		output = std::to_string(val);
 	}
 	// float 
 	else if (metaType == entt::resolve<float>())
 	{
 		float val = any.cast<float>();
-		output = val;
+		output = std::to_string(val);
 	}
 	// double
 	else if (metaType == entt::resolve<double>())
 	{
 		double val = any.cast<double>();
-		output = val;
+		output = std::to_string(val);
 	}
 	// std::string
 	else if (metaType == entt::resolve<std::string>())
@@ -504,7 +504,7 @@ std::string fq::reflect::Converter::convertString(const entt::meta_any& any)
 	else if (metaType.is_enum())
 	{
 		int val = any.cast<int>();
-		output = val;
+		output = std::to_string(val);
 	}
 
 	return output;
