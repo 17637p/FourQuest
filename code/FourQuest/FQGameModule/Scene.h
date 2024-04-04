@@ -2,6 +2,9 @@
 
 #include "GameObjectIterator.h"
 #include "GameObjectView.h"
+#include "ComponentIterator.h"
+#include "ComponentView.h"
+#include "GameObject.h"
 
 namespace fq::game_module
 {
@@ -89,9 +92,36 @@ namespace fq::game_module
 		void ViewObjects(const std::function<void(const std::shared_ptr<GameObject>&)>& viewFunc
 			, bool bIsIncludeToBeDestroyed = false);
 
+		template <typename... Types>
+		internal::ComponentView<Types...> GetComponentView(bool bIsIncludeToBeDestroyed = false);
+
+		template <typename... Types>
+		void ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunc,
+			bool bIsIncludeToBeDestroyed = false);
+
 	private:
 		unsigned int mLastObjectID;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
 	};
+
+
+	template<typename ...Types>
+	inline internal::ComponentView<Types...> Scene::GetComponentView(bool bIsIncludeToBeDestroyed)
+	{
+		internal::ComponentIterator<Types...> beginIter(this, 0, false, bIsIncludeToBeDestroyed);
+		internal::ComponentIterator<Types...> endIter(this, GetObjectSize(), true, bIsIncludeToBeDestroyed);
+
+		return internal::ComponentView<Types...>(beginIter, endIter);
+	}
+
+	template<typename ...Types>
+	inline void Scene::ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunc
+		, bool bIsIncludeToBeDestroyed)
+	{
+		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeToBeDestroyed))
+		{
+			viewFunc(*object, object->template GetComponent<Types>() ...);
+		}
+	}
 
 }

@@ -22,10 +22,22 @@ namespace fq::game_module::internal
 
 		bool IsEnd() const
 		{
-			return mIndex >= mScene->GetObjectSize() || mIsEnd;
+			return mIndex >= mScene->GetObjectSize() || mbIsEnd;
+		}
+
+		std::shared_ptr<GameObject> Get() const
+		{
+			if (IsEnd())
+			{
+				return nullptr;
+			}
+
+			return mScene->GetObjectByIndex(mIndex);
 		}
 
 		bool IsIncludeToBeDestroyed()const { return mIsIncludeToBeDestroyed; }
+
+		std::shared_ptr<GameObject> operator*() const { return Get(); }
 
 		bool operator==(const ComponentIterator<Types...>& other)const
 		{
@@ -59,20 +71,41 @@ namespace fq::game_module::internal
 
 		ComponentIterator<Types...>& operator++()
 		{
-			++mIndex;
+			bool isEnd = false;
 
+			do
+			{
+				++mIndex;
+
+				std::shared_ptr<GameObject> object = Get();
+
+				isEnd = (mIndex < mScene->GetObjectSize()) &&
+					(object == nullptr || !object->template HasComponent<Types...>()
+					|| (object->IsToBeDestroyed() && IsIncludeToBeDestroyed() ) );
+
+			} while (isEnd);
+
+			if (mIndex >= mScene->GetObjectSize())
+			{
+				mbIsEnd = true;
+			}
+
+			return *this;
 		}
-
 
 	private:
 		size_t mIndex;
 		class fq::game_module::Scene* mScene;
-		bool mIsEnd;
+		bool mbIsEnd;
 		bool mIsIncludeToBeDestroyed;
 	};
 
 	template<typename ...Types>
 	inline internal::ComponentIterator<Types...>::ComponentIterator(Scene* scene, size_t index, bool bIsEnd, bool bIsIncludeToBeDestroyed)
+		:mScene(scene)
+		,mIndex(index)
+		,mbIsEnd(bIsEnd)
+		,mIsIncludeToBeDestroyed(bIsIncludeToBeDestroyed)
 	{
 	}
 }

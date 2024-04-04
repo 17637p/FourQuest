@@ -7,13 +7,17 @@ using namespace fq::game_module;
 
 int main()
 {
-	fq::game_module::GameObject g;
 
-	std::cout << g.HasComponent<Transform>();
+	fq::game_module::Scene s;
 
-	g.AddComponent<Transform>();
+	Scene sc;
 
-	std::cout << g.HasComponent<Transform>();
+	sc.GetComponentView<Transform>();
+
+	sc.ViewComponents<Transform>([](GameObject& object, Transform& transform)
+		{
+		});
+
 
 	return 0;
 }
