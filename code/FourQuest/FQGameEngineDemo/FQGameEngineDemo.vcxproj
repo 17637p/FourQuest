@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="winMaincpp.cpp" />
   </ItemGroup>
@@ -142,6 +143,9 @@
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">
       <Project>{6fa5f6a1-93bf-4c23-a2e7-e20c7e82377e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -14,13 +14,13 @@ namespace fq::game_module::internal
 		GameObjectIterator(fq::game_module::Scene* scne, size_t index, bool bIsEnd,
 			bool bIsIncludeToBeDestroyed);
 
-		std::shared_ptr<GameObject> Get()const;
+		GameObject& Get()const;
 
 		bool IsEnd()const;
 
 		bool IsIncludeToBeDestroyed()const { return mbIsIncludeToBeDestroyed; }
 
-		std::shared_ptr<GameObject> operator*() const { return Get(); }
+		GameObject& operator*() const { return Get(); }
 
 		GameObjectIterator& operator++();
 

@@ -81,7 +81,7 @@ namespace fq::game_module::internal
 
 				isEnd = (mIndex < mScene->GetObjectSize()) &&
 					(object == nullptr || !object->template HasComponent<Types...>()
-					|| (object->IsToBeDestroyed() && IsIncludeToBeDestroyed() ) );
+						|| (object->IsToBeDestroyed() && IsIncludeToBeDestroyed()));
 
 			} while (isEnd);
 
@@ -103,9 +103,14 @@ namespace fq::game_module::internal
 	template<typename ...Types>
 	inline internal::ComponentIterator<Types...>::ComponentIterator(Scene* scene, size_t index, bool bIsEnd, bool bIsIncludeToBeDestroyed)
 		:mScene(scene)
-		,mIndex(index)
-		,mbIsEnd(bIsEnd)
-		,mIsIncludeToBeDestroyed(bIsIncludeToBeDestroyed)
+		, mIndex(index)
+		, mbIsEnd(bIsEnd)
+		, mIsIncludeToBeDestroyed(bIsIncludeToBeDestroyed)
 	{
+		if (mIndex >= mScene->GetObjectSize())
+		{
+			mbIsEnd = true;
+		}
 	}
+
 }

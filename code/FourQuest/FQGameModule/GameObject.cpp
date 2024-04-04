@@ -41,22 +41,49 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 
 void fq::game_module::GameObject::Initialize()
 {
-
+	for (const auto& [key, component] : mComponents)
+	{
+		component->Initialize();
+	}
 }
 
 void fq::game_module::GameObject::Start()
 {
-
+	for (const auto& [key, component] : mComponents)
+	{
+		component->Start();
+	}
 }
 
 void fq::game_module::GameObject::Update(float dt)
 {
-
+	for (const auto& [key, component] : mComponents)
+	{
+		component->Update(dt);
+	}
 }
 
 void fq::game_module::GameObject::Finalize()
 {
-
+	for (const auto& [key, component] : mComponents)
+	{
+		component->Finalize();
+	}
 }
 
+void fq::game_module::GameObject::LateUpdate(float dt)
+{
+	for (const auto& [key, component] : mComponents)
+	{
+		component->LateUpdate(dt);
+	}
+}
+
+void fq::game_module::GameObject::FixedUpdate(float dt)
+{
+	for (const auto& [key, component] : mComponents)
+	{
+		component->FixedUpdate(dt);
+	}
+}
 

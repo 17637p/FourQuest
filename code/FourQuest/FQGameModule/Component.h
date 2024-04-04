@@ -17,12 +17,12 @@ namespace fq::game_module
 		virtual ~Component();
 
 		virtual void Initialize() {};
-
 		virtual void Start() {};
-
+		virtual void FixedUpdate(float dt) {};
 		virtual void Update(float dt) {};
-
+		virtual void LateUpdate(float dt) {};
 		virtual void Finalize() {};
+
 	private:
 		GameObject* mGameObject;
 

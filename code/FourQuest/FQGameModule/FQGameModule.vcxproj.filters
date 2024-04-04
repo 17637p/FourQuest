@@ -83,6 +83,12 @@
     <ClInclude Include="ComponentView.h">
       <Filter>header\02.Component</Filter>
     </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>header\04.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>header\04.Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameModulePCH.cpp">
@@ -117,6 +123,12 @@
     </ClCompile>
     <ClCompile Include="ComponentView.cpp">
       <Filter>cpp\02.Component</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>cpp\04.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>cpp\04.Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

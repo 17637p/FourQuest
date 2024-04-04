@@ -158,8 +158,10 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectIterator.h" />
     <ClInclude Include="GameObjectView.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
@@ -176,8 +178,10 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectIterator.cpp" />
     <ClCompile Include="GameObjectView.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>

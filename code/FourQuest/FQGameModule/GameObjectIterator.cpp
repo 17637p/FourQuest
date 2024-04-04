@@ -19,13 +19,11 @@ fq::game_module::internal::GameObjectIterator::GameObjectIterator(
 	}
 }
 
-std::shared_ptr<fq::game_module::GameObject> fq::game_module::internal::GameObjectIterator::Get() const
+fq::game_module::GameObject& fq::game_module::internal::GameObjectIterator::Get() const
 {
-	if (IsEnd())
-	{
-		return nullptr;
-	}
-	return mScene->GetObjectByIndex(mIndex);
+	assert(!IsEnd() && "EndIterator cant't access");
+
+	return *(mScene->GetObjectByIndex(mIndex));
 }
 
 bool fq::game_module::internal::GameObjectIterator::operator==(const GameObjectIterator& other) const
@@ -65,10 +63,12 @@ bool fq::game_module::internal::GameObjectIterator::IsEnd() const
 
 fq::game_module::internal::GameObjectIterator& fq::game_module::internal::GameObjectIterator::operator++()
 {
+	assert(!IsEnd());
+
 	++mIndex;
 
-	while (mIndex < mScene->GetObjectSize() && (Get() == nullptr ||
-		(Get()->IsToBeDestroyed() && !mbIsIncludeToBeDestroyed)))
+	while (mIndex < mScene->GetObjectSize() &&
+		(Get().IsToBeDestroyed() && !mbIsIncludeToBeDestroyed))
 	{
 		++mIndex;
 	}

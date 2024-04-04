@@ -18,7 +18,15 @@ namespace fq::game_module::internal
 			, const ComponentIterator<Types...>& endIter)
 			:mBeginIterator(beginIter) 
 			,mEndIterator(endIter)
-		{}
+		{
+			if (mBeginIterator.Get() == nullptr ||
+				(mBeginIterator.Get()->IsToBeDestroyed()
+					&& !mBeginIterator.IsIncludeToBeDestroyed())
+				|| !mBeginIterator.Get()->template HasComponent<Types...>())
+			{
+				++mBeginIterator;
+			}
+		}
 
 		const ComponentIterator<Types...> begin()const
 		{

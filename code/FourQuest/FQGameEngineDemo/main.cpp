@@ -12,6 +12,11 @@ int main()
 
 	Scene sc;
 
+	sc.ViewObjects([](GameObject& object)
+		{
+			std::cout << "hi\n";
+		});
+
 	sc.GetComponentView<Transform>();
 
 	sc.ViewComponents<Transform>([](GameObject& object, Transform& transform)

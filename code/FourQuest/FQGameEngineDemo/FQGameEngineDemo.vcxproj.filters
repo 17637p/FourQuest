@@ -9,13 +9,24 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="entry">
+      <UniqueIdentifier>{9431ab1c-eb78-4ff5-864b-b4cd47181c17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Application.cpp">
       <Filter>cpp</Filter>
     </ClCompile>
     <ClCompile Include="winMaincpp.cpp">
-      <Filter>cpp</Filter>
+      <Filter>entry</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>entry</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

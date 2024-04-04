@@ -12,33 +12,52 @@ fq::game_module::Scene::~Scene()
 
 void fq::game_module::Scene::Initialize()
 {
-
+	for (const auto& object : mObjects)
+	{
+		object->Initialize();
+	}
 }
 
 void fq::game_module::Scene::Start()
 {
-
+	for (const auto& object : mObjects)
+	{
+		object->Start();
+	}
 }
 
 void fq::game_module::Scene::FixedUpdate(float dt)
 {
-
+	for (const auto& object : mObjects)
+	{
+		object->FixedUpdate(dt);
+	}
 }
 
 void fq::game_module::Scene::Update(float dt)
 {
-
-}
-
-void fq::game_module::Scene::Finalize()
-{
-
+	for (const auto& object : mObjects)
+	{
+		object->Update(dt);
+	}
 }
 
 void fq::game_module::Scene::LateUpdate(float dt)
 {
-
+	for (const auto& object : mObjects)
+	{
+		object->LateUpdate(dt);
+	}
 }
+
+void fq::game_module::Scene::Finalize()
+{
+	for (const auto& object : mObjects)
+	{
+		object->Finalize();
+	}
+}
+
 
 std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectByIndex(size_t index)
 {
@@ -59,12 +78,12 @@ fq::game_module::internal::GameObjectView fq::game_module::Scene::GetObjectView(
 	return internal::GameObjectView(begin, end);
 }
 
-void fq::game_module::Scene::ViewObjects(const std::function<void(const std::shared_ptr<GameObject>&)>& viewFunc
+void fq::game_module::Scene::ViewObjects(std::function<void(GameObject&)> viewFunction
 	, bool bIsIncludeToBeDestroyed /*= false*/)
 {
-	for (const auto& object : GetObjectView(bIsIncludeToBeDestroyed))
+	for (GameObject& object : GetObjectView(bIsIncludeToBeDestroyed))
 	{
-		viewFunc(object);
+		viewFunction(object);
 	}
 }
 
@@ -79,5 +98,14 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 	}
 
 	return nullptr;
+}
+
+void fq::game_module::Scene::CleanUp()
+{
+	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
+		, [](const std::shared_ptr<GameObject>& object)
+		{
+			return object->IsToBeDestroyed();
+		}), mObjects.end());
 }
 

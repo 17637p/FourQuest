@@ -10,19 +10,15 @@ namespace fq::game_module
 	{
 	public:
 		GameObject();
-
 		GameObject(const GameObject& other);
-
 		GameObject& operator=(const GameObject& other);
-
 		~GameObject();
 
 		void Initialize();
-
 		void Start();
-
+		void FixedUpdate(float dt);
 		void Update(float dt);
-
+		void LateUpdate(float dt);
 		void Finalize();
 
 		/// <summary>
@@ -53,6 +49,13 @@ namespace fq::game_module
 		template <typename T>
 		bool HasComponent()const;
 
+		/// <summary>
+		/// T... 에 해당하는 컴포넌트들을 모두 소유하는지
+		/// </summary>
+		/// <typeparam name="T1">컴포넌트 타입</typeparam>
+		/// <typeparam name="T2">컴포넌트 타입</typeparam>
+		/// <typeparam name="...Types">컴포넌트 타입...</typeparam>
+		/// <returns>모두 가지면 true 아니면 false</returns>
 		template <typename T1, typename T2, typename... Types>
 		bool HasComponent()const;
 

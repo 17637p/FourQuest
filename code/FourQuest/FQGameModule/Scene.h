@@ -29,7 +29,7 @@ namespace fq::game_module
 		void Initialize();
 
 		/// <summary>
-		/// Game 시작시 호출
+		/// 
 		/// </summary>
 		void Start();
 
@@ -55,6 +55,11 @@ namespace fq::game_module
 		/// Scene 종료시 호출
 		/// </summary>
 		void Finalize();
+
+		/// <summary>
+		/// 삭제 예정인 오브젝트 제거
+		/// </summary>
+		void CleanUp();
 
 		/// <summary>
 		/// Scene이 가지는 오브젝트 숫자 반환
@@ -89,14 +94,28 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="viewFunc">호출할 함수</param>
 		/// <param name="bIsIncludeToBeDestroyed">삭제 예정인 오브젝트 포함 여부</param>
-		void ViewObjects(const std::function<void(const std::shared_ptr<GameObject>&)>& viewFunc
+		void ViewObjects(std::function<void(GameObject&)> viewFunction
 			, bool bIsIncludeToBeDestroyed = false);
 
+		/// <summary>
+		/// 가변인자에 해당하는 컴포넌트 타입들을 가진 
+		/// 오브젝트들을 쿼리하여 순회하는 View객체 반환
+		/// </summary>
+		/// <typeparam name="...Types">쿼리할 컴포넌트 타입들</typeparam>
+		/// <param name="bIsIncludeToBeDestroyed">삭제 예정 오브젝트 포함 여부</param>
+		/// <returns>순회가능한 View객체 반환</returns>
 		template <typename... Types>
 		internal::ComponentView<Types...> GetComponentView(bool bIsIncludeToBeDestroyed = false);
 
+		/// <summary>
+		/// 가변인자에 해당하는 컴포넌트 타입들을 가진 
+		/// 오브젝트들을 쿼리하여 viewFunction을 호출
+		/// </summary>
+		/// <typeparam name="...Types">쿼리할 컴포넌트 타입</typeparam>
+		/// <param name="viewFunction">쿼리할 객체에서 실행할 함수</param>
+		/// <param name="bIsIncludeToBeDestroyed">삭제 예정 오브젝트 포함 여부</param>
 		template <typename... Types>
-		void ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunc,
+		void ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction,
 			bool bIsIncludeToBeDestroyed = false);
 
 	private:
@@ -115,12 +134,12 @@ namespace fq::game_module
 	}
 
 	template<typename ...Types>
-	inline void Scene::ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunc
+	inline void Scene::ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction
 		, bool bIsIncludeToBeDestroyed)
 	{
 		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeToBeDestroyed))
 		{
-			viewFunc(*object, object->template GetComponent<Types>() ...);
+			viewFunction(*object, object->template GetComponent<Types>() ...);
 		}
 	}
 
