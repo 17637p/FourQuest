@@ -1,0 +1,82 @@
+#include "GameModulePCH.h"
+#include "GameObjectIterator.h"
+#include "Scene.h"
+#include "GameObject.h"
+
+fq::game_module::internal::GameObjectIterator::GameObjectIterator(
+	fq::game_module::Scene* scne
+	, size_t index
+	, bool isEnd
+	, bool isIncludeToBeDestroyed)
+	:mIndex(index)
+	, mScene(scne)
+	, mbIsEnd(isEnd)
+	, mbIsIncludeToBeDestroyed(isIncludeToBeDestroyed)
+{
+	if (mIndex >= scne->GetObjectSize())
+	{
+		mbIsEnd = true;
+	}
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::game_module::internal::GameObjectIterator::Get() const
+{
+	if (IsEnd())
+	{
+		return nullptr;
+	}
+	return mScene->GetObjectByIndex(mIndex);
+}
+
+bool fq::game_module::internal::GameObjectIterator::operator==(const GameObjectIterator& other) const
+{
+	if (mScene != other.mScene)
+	{
+		return false;
+	}
+
+	if (IsEnd())
+	{
+		return other.IsEnd();
+	}
+
+	return mIndex == other.mIndex;
+}
+
+bool fq::game_module::internal::GameObjectIterator::operator!=(const GameObjectIterator& other) const
+{
+	if (mScene != other.mScene)
+	{
+		return true;
+	}
+
+	if (IsEnd())
+	{
+		return !other.IsEnd();
+	}
+
+	return mIndex == other.mIndex;
+}
+
+bool fq::game_module::internal::GameObjectIterator::IsEnd() const
+{
+	return mbIsEnd || mIndex >= mScene->GetObjectSize();
+}
+
+fq::game_module::internal::GameObjectIterator& fq::game_module::internal::GameObjectIterator::operator++()
+{
+	++mIndex;
+
+	while (mIndex < mScene->GetObjectSize() && (Get() == nullptr ||
+		(Get()->IsToBeDestroyed() && !mbIsIncludeToBeDestroyed)))
+	{
+		++mIndex;
+	}
+
+	if (mIndex >= mScene->GetObjectSize())
+	{
+		mbIsEnd = true;
+	}
+
+	return *this;
+}

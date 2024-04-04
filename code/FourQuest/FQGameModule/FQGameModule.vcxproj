@@ -148,14 +148,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentHandle.h" />
+    <ClInclude Include="ComponentIterator.h" />
+    <ClInclude Include="ComponentView.h" />
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameModuleEnum.h" />
     <ClInclude Include="GameModulePCH.h" />
     <ClInclude Include="GameModuleType.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectIterator.h" />
+    <ClInclude Include="GameObjectView.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentIterator.cpp" />
+    <ClCompile Include="ComponentView.cpp" />
     <ClCompile Include="GameModuleEnum.cpp" />
     <ClCompile Include="GameModulePCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -164,6 +174,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectIterator.cpp" />
+    <ClCompile Include="GameObjectView.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">

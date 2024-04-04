@@ -8,6 +8,12 @@ namespace fq::game_module
 	{
 	public:
 		Component();
+
+		Component(const Component& other) = default;
+
+		Component(Component&& other) = default;
+
+
 		virtual ~Component();
 
 		virtual void Initialize() {};
@@ -19,6 +25,7 @@ namespace fq::game_module
 		virtual void Finalize() {};
 	private:
 		GameObject* mGameObject;
+
 	};
 
 

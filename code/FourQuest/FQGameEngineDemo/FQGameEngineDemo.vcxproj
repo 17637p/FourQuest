@@ -109,7 +109,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>FQReflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FQReflect.lib;FQGameModule.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -133,8 +133,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="winMaincpp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FQGameModule\FQGameModule.vcxproj">
+      <Project>{9f999a18-37fc-4a3e-9303-7be8a0ed2f1e}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">
       <Project>{6fa5f6a1-93bf-4c23-a2e7-e20c7e82377e}</Project>
     </ProjectReference>
