@@ -28,6 +28,7 @@ fq::game_module::GameObject::GameObject(const GameObject& other)
 	this->mID = other.mID;
 	this->mName = other.mName;
 	this->mTag = other.mTag;
+	this->mScene = other.mScene;
 }
 
 fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameObject& other)
@@ -35,6 +36,7 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 	this->mID = other.mID;
 	this->mName = other.mName;
 	this->mTag = other.mTag;
+	this->mScene = other.mScene;
 
 	return *this;
 }

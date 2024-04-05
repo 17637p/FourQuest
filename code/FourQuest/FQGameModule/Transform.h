@@ -9,5 +9,12 @@ namespace fq::game_module
 
 
 		
+	private:
+		DirectX::SimpleMath::Vector3 mPosition;
+		DirectX::SimpleMath::Quaternion mRotation;
+		DirectX::SimpleMath::Vector3 mScale;
+
+		DirectX::SimpleMath::Matrix mLocalMatrix;
+		DirectX::SimpleMath::Matrix mWorldMatrix;
 	};
 }

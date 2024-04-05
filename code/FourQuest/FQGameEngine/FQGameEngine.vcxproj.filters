@@ -1,13 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="cpp">
+    <Filter Include="pch">
+      <UniqueIdentifier>{ce44f0e7-475c-459a-b741-3dd586b5521f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{39c71f8c-6d9d-4998-8e81-6b08f8a337eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{c66acbe3-d483-406a-a14c-4ea50debfa8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\cpp">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="header">
+    <Filter Include="Game\cpp\Engine">
+      <UniqueIdentifier>{18366aa9-7ef4-49aa-8f04-5ec98fb9c475}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Game\header\Engine">
+      <UniqueIdentifier>{e2bbad53-d9bb-4fb2-bbb1-a69beef2c0c1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FQGameEnginePCH.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngine.h">
+      <Filter>Game\header\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>Game\header\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEditor.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FQGaemEnginePCH.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="dllExport.h">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="IEngine.cpp">
+      <Filter>Game\cpp\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Game\cpp\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEditor.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

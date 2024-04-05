@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameModulePCH.h"
+
 #include "GameModuleEnum.h"
 #include "GameModuleType.h"
 

@@ -1,1 +1,37 @@
 #include "Application.h"
+
+
+Application::Application()
+	:mEngine(nullptr)
+{}
+
+Application::~Application()
+{
+
+}
+
+void Application::Initialize(HINSTANCE hInstance , Mode mode)
+{
+	if (mode == Mode::Game)
+	{
+		mEngine = fq::game_engine::Exporter::GetGameEngine();
+	}
+	else
+	{
+		mEngine = fq::game_engine::Exporter::GetToolEngine();
+	}
+
+	mEngine->Initialize(hInstance);
+}
+
+void Application::Process()
+{
+	mEngine->Process();
+}
+
+void Application::Finalize()
+{
+	mEngine->Finalize();
+
+	fq::game_engine::Exporter::DeleteEngine();
+}
