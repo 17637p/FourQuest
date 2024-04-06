@@ -2,6 +2,7 @@
 #include "GameEngine.h"
 
 fq::game_engine::GameEngine::GameEngine()
+	:mHWND()
 {
 
 }

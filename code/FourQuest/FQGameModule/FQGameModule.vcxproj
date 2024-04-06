@@ -151,6 +151,10 @@
     <ClInclude Include="ComponentHandle.h" />
     <ClInclude Include="ComponentIterator.h" />
     <ClInclude Include="ComponentView.h" />
+    <ClInclude Include="Event.h" />
+    <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="EventManager.h" />
+    <ClInclude Include="FunctionTraits.h" />
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameModuleEnum.h" />
     <ClInclude Include="GameModulePCH.h" />
@@ -168,6 +172,8 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentIterator.cpp" />
     <ClCompile Include="ComponentView.cpp" />
+    <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameModuleEnum.cpp" />
     <ClCompile Include="GameModulePCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

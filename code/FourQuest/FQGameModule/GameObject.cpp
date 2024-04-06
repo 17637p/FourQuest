@@ -29,6 +29,7 @@ fq::game_module::GameObject::GameObject(const GameObject& other)
 	this->mName = other.mName;
 	this->mTag = other.mTag;
 	this->mScene = other.mScene;
+	this->mbIsToBeDestroyed = other.mbIsToBeDestroyed;
 }
 
 fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameObject& other)

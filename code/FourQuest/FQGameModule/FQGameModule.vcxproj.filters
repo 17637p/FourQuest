@@ -33,11 +33,17 @@
     <Filter Include="header\03.Scene">
       <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cpp\04.Manager">
+    <Filter Include="cpp\04.Event">
       <UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="header\04.Manager">
+    <Filter Include="header\04.Event">
       <UniqueIdentifier>{888e2fa8-48cf-4600-afba-d2abbbd0b5b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header\05.Input">
+      <UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpp\05.Input">
+      <UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -68,9 +74,6 @@
     <ClInclude Include="Transform.h">
       <Filter>header\02.Component</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>header\04.Manager</Filter>
-    </ClInclude>
     <ClInclude Include="GameObjectView.h">
       <Filter>header\01.GameObject</Filter>
     </ClInclude>
@@ -83,11 +86,26 @@
     <ClInclude Include="ComponentView.h">
       <Filter>header\02.Component</Filter>
     </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>header\04.Event</Filter>
+    </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>header\04.Manager</Filter>
+      <Filter>header\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>header\05.Input</Filter>
     </ClInclude>
     <ClInclude Include="TimeManager.h">
-      <Filter>header\04.Manager</Filter>
+      <Filter>header\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>header\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionTraits.h">
+      <Filter>header\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>header\04.Event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -109,9 +127,6 @@
     <ClCompile Include="Transform.cpp">
       <Filter>cpp\02.Component</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>cpp\04.Manager</Filter>
-    </ClCompile>
     <ClCompile Include="GameObjectView.cpp">
       <Filter>cpp\01.GameObject</Filter>
     </ClCompile>
@@ -124,11 +139,20 @@
     <ClCompile Include="ComponentView.cpp">
       <Filter>cpp\02.Component</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>cpp\04.Manager</Filter>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>cpp\04.Event</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>cpp\04.Event</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
-      <Filter>cpp\04.Manager</Filter>
+      <Filter>cpp\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>cpp\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>cpp\05.Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

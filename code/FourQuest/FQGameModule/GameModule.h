@@ -9,4 +9,6 @@
 #include "Component.h"
 #include "GameObject.h"
 
+#include "EventManager.h"
+
 #include "Transform.h"

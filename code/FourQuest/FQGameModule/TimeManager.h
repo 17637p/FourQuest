@@ -17,7 +17,7 @@ namespace fq::game_module
 
 		double mDeltaTime;
 		double mElapsedTime;
-		int mUpdateCount;
-		int mFPS;
+		unsigned int mUpdateCount;
+		unsigned int mFPS;
 	};
 }

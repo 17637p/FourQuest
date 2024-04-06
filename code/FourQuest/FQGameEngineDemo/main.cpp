@@ -5,24 +5,36 @@
 
 using namespace fq::game_module;
 
+struct Event
+{
+	int value = 0;
+};
+
+struct MyStruct
+{
+	MyStruct(EventManager* eventMgr)
+		:handle(eventMgr->RegisterHandle<Event>(this, &MyStruct::Call))
+	{}
+
+	void Call(const Event& event) { std::cout << event.value << " 멤버함수 호출\n"; }
+	EventHandler handle;
+};
+
 int main()
 {
+	EventManager ev;
 
-	fq::game_module::Scene s;
+	auto handle =  ev.RegisterHandle<Event>([](const Event& event) 
+		{std::cout << event.value  << " 람다 호출\n" ; });
 
-	Scene sc;
 
-	sc.ViewObjects([](GameObject& object)
-		{
-			std::cout << "hi\n";
-		});
+	MyStruct s{ &ev };
 
-	sc.GetComponentView<Transform>();
+	ev.FireEvent(Event{ 10 });
 
-	sc.ViewComponents<Transform>([](GameObject& object, Transform& transform)
-		{
-		});
+	handle.Unregister();
 
+	ev.FireEvent(Event{ 10 });
 
 	return 0;
 }

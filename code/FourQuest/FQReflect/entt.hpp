@@ -1,7 +1,6 @@
 
 #pragma warning ( disable : 26827 ) 
 #pragma warning ( disable : 4819 ) 
-#pragma warning ( disable : 26819 ) 
 
 // IWYU pragma: begin_exports
 // #include "config/config.h"

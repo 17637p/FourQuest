@@ -15,6 +15,13 @@
 #include <cassert>
 #include <string>
 #include <functional>
+#include <any>
+#include <atomic>
+#include <mutex>
+#include <shared_mutex>
+#include <thread>
+#include <typeindex>
+#include <utility>
 
 #include <directxtk/SimpleMath.h>
 
