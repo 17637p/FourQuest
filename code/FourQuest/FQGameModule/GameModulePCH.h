@@ -1,5 +1,5 @@
-﻿#ifndef PCH_H
-#define PCH_H
+﻿#ifndef GAME_MODULE_PCH_H
+#define GAME_MODULE_PCH_H
 
 #define NOMINMAX
 #include <windows.h>
@@ -30,4 +30,4 @@
 #include "GameModuleEnum.h"
 #include "GameModuleType.h"
 
-#endif //PCH_H
+#endif //GAME_MODULE_PCH_H

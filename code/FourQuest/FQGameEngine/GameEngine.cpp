@@ -2,6 +2,8 @@
 #include "GameEngine.h"
 #include "GameProcess.h"
 
+#include "WindowSystem.h"
+
 fq::game_engine::GameEngine::GameEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
 {
@@ -33,7 +35,10 @@ void fq::game_engine::GameEngine::Process()
 		}
 		else
 		{
-
+			if (mGameProcess->mWindowSystem->IsResizedWindow())
+			{
+				mGameProcess->mWindowSystem->OnResize();
+			}
 		}
 	}
 }

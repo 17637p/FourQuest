@@ -2,6 +2,7 @@
 #include "IEngine.h"
 #include "GameEngine.h"
 #include "ToolEngine.h"
+#include "WindowSystem.h"
 
 fq::game_engine::IEngine* fq::game_engine::Exporter::mEngine = nullptr;
 
@@ -34,11 +35,11 @@ LRESULT CALLBACK fq::game_engine::WndProc::GameWndProc(HWND hWnd, UINT message, 
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
-		case WM_SIZE:
-			if (wParam == SIZE_MINIMIZED) return 0;
-			{
-			}
-			break;
+		//case WM_SIZE:
+		//	if (wParam == SIZE_MINIMIZED) return 0;
+		//	{
+		//	}
+		//	break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -59,9 +60,10 @@ LRESULT CALLBACK fq::game_engine::WndProc::ToolWndProc(HWND hWnd, UINT message, 
 			PostQuitMessage(0);
 			break;
 		case WM_SIZE:
-			if (wParam == SIZE_MINIMIZED) return 0;
-			{
-			}
+		{
+			WindowSystem::Width = LOWORD(lParam);
+			WindowSystem::Height = HIWORD(lParam);
+		}
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);

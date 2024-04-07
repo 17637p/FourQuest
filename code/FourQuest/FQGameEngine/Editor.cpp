@@ -20,7 +20,6 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 
 	//tmp
 	createDeviceD3D();
-
 	initializeImGui();
 }
 

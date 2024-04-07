@@ -22,8 +22,9 @@ namespace fq::game_engine
 		void createDeviceD3D();
 		void createRenderTarget();
 		void cleanupRenderTarget();
-		void Render();
 
+
+		void Render();
 
 	private:
 		void initializeImGui();

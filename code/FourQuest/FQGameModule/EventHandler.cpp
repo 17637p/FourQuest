@@ -11,6 +11,11 @@ fq::game_module::EventHandler::EventHandler(EventHandler&& other) noexcept
 	,mEventManager(std::exchange(other.mEventManager,nullptr))
 {}
 
+fq::game_module::EventHandler::EventHandler()
+	:mHandle(nullptr)
+	,mEventManager(nullptr)
+{}
+
 fq::game_module::EventHandler& fq::game_module::EventHandler::operator=(EventHandler&& other) noexcept
 {
 	mHandle = std::exchange(other.mHandle, nullptr);

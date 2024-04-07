@@ -12,7 +12,6 @@ namespace fq
 		{
 		public:
 			GameEngine();
-
 			~GameEngine();
 
 			void Initialize() override;

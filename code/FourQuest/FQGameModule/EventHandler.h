@@ -6,12 +6,12 @@ namespace fq::game_module
 
 	/// <summary>
 	/// Event Handle의 소유권을 관리하는 객체이다.
-	/// 생성, 복사가 불가능하고 객체의 소유권은 이동을 통해서 관리한다.
+	/// 복사가 불가능하고 객체의 소유권은 이동을 통해서 관리한다.
 	/// </summary>
 	class EventHandler
 	{
 	public:
-		EventHandler() = delete;
+		EventHandler();
 		EventHandler(const EventHandler& other) = delete;
 		EventHandler& operator=(const EventHandler& other) = delete;
 		

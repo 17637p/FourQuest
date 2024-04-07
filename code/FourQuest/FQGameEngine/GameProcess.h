@@ -1,5 +1,14 @@
 #pragma once
 
+
+namespace fq::game_module
+{
+	class SceneManager;
+	class EventManager;
+	class InputManager;
+	class TimeManager;
+}
+
 namespace fq::game_engine
 {
 	class WindowSystem;
@@ -13,14 +22,18 @@ namespace fq::game_engine
 		GameProcess();
 		~GameProcess();
 
-		/// Window 
+		// Window 
 		std::unique_ptr<WindowSystem> mWindowSystem;
 
-		/// GameModule
+		// GameModule
+		std::unique_ptr<fq::game_module::InputManager> mInputManager;
+		std::unique_ptr<fq::game_module::TimeManager>  mTimeManager;
+		std::unique_ptr<fq::game_module::SceneManager> mSceneManager;
+		std::unique_ptr<fq::game_module::EventManager> mEventManager;
 
-		/// Graphics
+		// Graphics
 
-		/// Physics
+		// Physics
 
 	};
 }

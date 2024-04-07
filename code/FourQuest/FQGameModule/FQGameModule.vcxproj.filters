@@ -110,6 +110,9 @@
     <ClInclude Include="SceneManager.h">
       <Filter>include\03.Scene</Filter>
     </ClInclude>
+    <ClInclude Include="InputEnum.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameModulePCH.cpp">

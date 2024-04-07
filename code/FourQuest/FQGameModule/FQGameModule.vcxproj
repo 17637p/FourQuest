@@ -113,6 +113,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>GameModulePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -162,6 +163,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectIterator.h" />
     <ClInclude Include="GameObjectView.h" />
+    <ClInclude Include="InputEnum.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
