@@ -1,7 +1,7 @@
 #include "FQGameEnginePCH.h"
 #include "IEngine.h"
 #include "GameEngine.h"
-#include "GameEditor.h"
+#include "ToolEngine.h"
 
 fq::game_engine::IEngine* fq::game_engine::Exporter::mEngine = nullptr;
 
@@ -14,7 +14,7 @@ FQ_ENGNIE_API fq::game_engine::IEngine* fq::game_engine::Exporter::GetGameEngine
 
 FQ_ENGNIE_API fq::game_engine::IEngine* fq::game_engine::Exporter::GetToolEngine()
 {
-	mEngine = new GameEditor();
+	mEngine = new ToolEngine();
 
 	return mEngine;
 }

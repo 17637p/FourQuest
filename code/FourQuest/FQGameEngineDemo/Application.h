@@ -1,6 +1,5 @@
 #pragma once
 
-#include <windows.h>
 #include "../FQGameEngine/IEngine.h"
 
 class Application
@@ -19,7 +18,7 @@ public:
 	/// <summary>
 	/// 초기화
 	/// </summary>
-	void Initialize(HINSTANCE hInstance, Mode mode);
+	void Initialize(Mode mode);
 
 	/// <summary>
 	/// 게임 루프

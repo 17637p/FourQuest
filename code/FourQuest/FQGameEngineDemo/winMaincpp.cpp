@@ -16,7 +16,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Application* app = new Application();
 
-	app->Initialize(hInstance, Application::Mode::Tool);
+	app->Initialize(Application::Mode::Tool);
 	
 	app->Process();
 

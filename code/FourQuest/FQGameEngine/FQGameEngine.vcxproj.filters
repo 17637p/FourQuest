@@ -1,62 +1,95 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="pch">
-      <UniqueIdentifier>{ce44f0e7-475c-459a-b741-3dd586b5521f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{39c71f8c-6d9d-4998-8e81-6b08f8a337eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Editor">
-      <UniqueIdentifier>{c66acbe3-d483-406a-a14c-4ea50debfa8b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\cpp">
+    <Filter Include="src">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Game\cpp\Engine">
-      <UniqueIdentifier>{18366aa9-7ef4-49aa-8f04-5ec98fb9c475}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\header">
+    <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Game\header\Engine">
-      <UniqueIdentifier>{e2bbad53-d9bb-4fb2-bbb1-a69beef2c0c1}</UniqueIdentifier>
+    <Filter Include="src\01.Engine">
+      <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Engine">
+      <UniqueIdentifier>{0a8ac1d8-343d-4da7-b2c0-497bb8a5733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.GameProcess">
+      <UniqueIdentifier>{e1e09096-e8be-487c-8bd4-af27fc6a6de5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.GameProcess">
+      <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.System">
+      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\03.System">
+      <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\04.Editor">
+      <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\04.Editor">
+      <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\00.DLL">
+      <UniqueIdentifier>{cbf6fe28-fece-4c60-a53e-d7bd96c4b5ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\00.DLL">
+      <UniqueIdentifier>{3764341c-45c0-4783-b734-1c8fb4e4e247}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FQGameEnginePCH.h">
-      <Filter>pch</Filter>
-    </ClInclude>
-    <ClInclude Include="IEngine.h">
-      <Filter>Game\header\Engine</Filter>
+    <ClInclude Include="ToolEngine.h">
+      <Filter>include\01.Engine</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine.h">
-      <Filter>Game\header\Engine</Filter>
+      <Filter>include\01.Engine</Filter>
     </ClInclude>
-    <ClInclude Include="GameEditor.h">
-      <Filter>Editor</Filter>
+    <ClInclude Include="IEngine.h">
+      <Filter>include\01.Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcess.h">
+      <Filter>include\02.GameProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor.h">
+      <Filter>include\04.Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowSystem.h">
+      <Filter>include\03.System</Filter>
+    </ClInclude>
+    <ClInclude Include="FQGameEnginePCH.h">
+      <Filter>include\00.DLL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FQGaemEnginePCH.cpp">
-      <Filter>pch</Filter>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>src\01.Engine</Filter>
     </ClCompile>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>pch</Filter>
-    </ClCompile>
-    <ClCompile Include="dllExport.h">
-      <Filter>pch</Filter>
+    <ClCompile Include="ToolEngine.cpp">
+      <Filter>src\01.Engine</Filter>
     </ClCompile>
     <ClCompile Include="IEngine.cpp">
-      <Filter>Game\cpp\Engine</Filter>
+      <Filter>src\01.Engine</Filter>
     </ClCompile>
-    <ClCompile Include="GameEngine.cpp">
-      <Filter>Game\cpp\Engine</Filter>
+    <ClCompile Include="GameProcess.cpp">
+      <Filter>src\02.GameProcess</Filter>
     </ClCompile>
-    <ClCompile Include="GameEditor.cpp">
-      <Filter>Editor</Filter>
+    <ClCompile Include="Editor.cpp">
+      <Filter>src\04.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowSystem.cpp">
+      <Filter>src\03.System</Filter>
+    </ClCompile>
+    <ClCompile Include="dllExport.h">
+      <Filter>include\00.DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>src\00.DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="FQGaemEnginePCH.cpp">
+      <Filter>src\00.DLL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

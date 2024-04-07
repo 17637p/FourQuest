@@ -141,14 +141,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Editor.h" />
     <ClInclude Include="FQGameEnginePCH.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="GameProcess.h" />
     <ClInclude Include="IEngine.h" />
-    <ClInclude Include="GameEditor.h" />
+    <ClInclude Include="ToolEngine.h" />
+    <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Editor.cpp" />
     <ClCompile Include="FQGaemEnginePCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -156,8 +160,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="GameProcess.cpp" />
     <ClCompile Include="IEngine.cpp" />
-    <ClCompile Include="GameEditor.cpp" />
+    <ClCompile Include="ToolEngine.cpp" />
+    <ClCompile Include="WindowSystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FQGameModule\FQGameModule.vcxproj">
+      <Project>{9f999a18-37fc-4a3e-9303-7be8a0ed2f1e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">
+      <Project>{6fa5f6a1-93bf-4c23-a2e7-e20c7e82377e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

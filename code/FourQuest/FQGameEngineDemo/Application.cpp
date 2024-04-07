@@ -10,7 +10,7 @@ Application::~Application()
 
 }
 
-void Application::Initialize(HINSTANCE hInstance , Mode mode)
+void Application::Initialize(Mode mode)
 {
 	if (mode == Mode::Game)
 	{
@@ -21,7 +21,7 @@ void Application::Initialize(HINSTANCE hInstance , Mode mode)
 		mEngine = fq::game_engine::Exporter::GetToolEngine();
 	}
 
-	mEngine->Initialize(hInstance);
+	mEngine->Initialize();
 }
 
 void Application::Process()

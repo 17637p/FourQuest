@@ -7,13 +7,13 @@ namespace fq
 	namespace game_engine
 	{
 		class GameProcess;
+		class Editor;
 
-		class GameEngine :public IEngine
+		class ToolEngine : public IEngine
 		{
 		public:
-			GameEngine();
-
-			~GameEngine();
+			ToolEngine();
+			~ToolEngine();
 
 			void Initialize() override;
 			void Process() override;
@@ -21,6 +21,8 @@ namespace fq
 
 		private:
 			std::unique_ptr<GameProcess> mGameProcess;
+			std::unique_ptr<Editor> mEditor;
 		};
 	}
 }
+

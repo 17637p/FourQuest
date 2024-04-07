@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../FQReflect/entt.hpp"
+#include "../FQReflect/Macro.h"
 
 namespace fq::game_module
 {

@@ -6,6 +6,7 @@
 // Windows 헤더 파일
 #include <windows.h>
 
+#include <memory>
 
 #include <imgui.h>
 #include <imgui_impl_dx11.h>

@@ -13,14 +13,7 @@ namespace fq::game_module
 	class Scene
 	{
 	public:
-		/// <summary>
-		/// 持失切
-		/// </summary>
 		Scene();
-
-		/// <summary>
-		/// 社瑚切
-		/// </summary>
 		~Scene();
 
 		/// <summary>
@@ -119,8 +112,8 @@ namespace fq::game_module
 			bool bIsIncludeToBeDestroyed = false);
 
 	private:
-		unsigned int mLastObjectID;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
+		unsigned int mLastObjectID;
 	};
 
 

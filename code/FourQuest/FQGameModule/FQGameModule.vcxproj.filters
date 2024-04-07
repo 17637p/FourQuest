@@ -1,158 +1,164 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="cpp">
+    <Filter Include="src">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="header">
+    <Filter Include="src\pch">
+      <UniqueIdentifier>{5883e456-025c-4735-9dd6-cb90d3aa07d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.GameObject">
+      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Component">
+      <UniqueIdentifier>{01b09c51-5561-4668-bca2-f475c1faa1f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.Scene">
+      <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\04.Event">
+      <UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\05.Input">
+      <UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="header\pch">
+    <Filter Include="include\pch">
       <UniqueIdentifier>{dc45267a-a8e1-44a6-bf9a-64366f3595ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cpp\pch">
-      <UniqueIdentifier>{5883e456-025c-4735-9dd6-cb90d3aa07d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cpp\01.GameObject">
-      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cpp\02.Component">
-      <UniqueIdentifier>{01b09c51-5561-4668-bca2-f475c1faa1f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cpp\03.Scene">
-      <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="header\02.Component">
+    <Filter Include="include\02.Component">
       <UniqueIdentifier>{f18e9454-5536-43e9-b565-6c1e6868b634}</UniqueIdentifier>
     </Filter>
-    <Filter Include="header\01.GameObject">
+    <Filter Include="include\01.GameObject">
       <UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="header\03.Scene">
+    <Filter Include="include\03.Scene">
       <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cpp\04.Event">
-      <UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="header\04.Event">
+    <Filter Include="include\04.Event">
       <UniqueIdentifier>{888e2fa8-48cf-4600-afba-d2abbbd0b5b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="header\05.Input">
+    <Filter Include="include\05.Input">
       <UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cpp\05.Input">
-      <UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameModule.h">
-      <Filter>header\pch</Filter>
+      <Filter>include\pch</Filter>
     </ClInclude>
     <ClInclude Include="GameModulePCH.h">
-      <Filter>header\pch</Filter>
+      <Filter>include\pch</Filter>
     </ClInclude>
     <ClInclude Include="GameModuleType.h">
-      <Filter>header\pch</Filter>
+      <Filter>include\pch</Filter>
     </ClInclude>
     <ClInclude Include="GameModuleEnum.h">
-      <Filter>header\pch</Filter>
+      <Filter>include\pch</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>header\01.GameObject</Filter>
+      <Filter>include\01.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="Component.h">
-      <Filter>header\02.Component</Filter>
+      <Filter>include\02.Component</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>header\03.Scene</Filter>
+      <Filter>include\03.Scene</Filter>
     </ClInclude>
     <ClInclude Include="ComponentHandle.h">
-      <Filter>header\02.Component</Filter>
+      <Filter>include\02.Component</Filter>
     </ClInclude>
     <ClInclude Include="Transform.h">
-      <Filter>header\02.Component</Filter>
+      <Filter>include\02.Component</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectView.h">
-      <Filter>header\01.GameObject</Filter>
+      <Filter>include\01.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="GameObjectIterator.h">
-      <Filter>header\01.GameObject</Filter>
+      <Filter>include\01.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="ComponentIterator.h">
-      <Filter>header\02.Component</Filter>
+      <Filter>include\02.Component</Filter>
     </ClInclude>
     <ClInclude Include="ComponentView.h">
-      <Filter>header\02.Component</Filter>
+      <Filter>include\02.Component</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">
-      <Filter>header\04.Event</Filter>
+      <Filter>include\04.Event</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>header\05.Input</Filter>
+      <Filter>include\05.Input</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>header\05.Input</Filter>
+      <Filter>include\05.Input</Filter>
     </ClInclude>
     <ClInclude Include="TimeManager.h">
-      <Filter>header\05.Input</Filter>
+      <Filter>include\05.Input</Filter>
     </ClInclude>
     <ClInclude Include="EventHandler.h">
-      <Filter>header\04.Event</Filter>
+      <Filter>include\04.Event</Filter>
     </ClInclude>
     <ClInclude Include="FunctionTraits.h">
-      <Filter>header\04.Event</Filter>
+      <Filter>include\04.Event</Filter>
     </ClInclude>
     <ClInclude Include="Event.h">
-      <Filter>header\04.Event</Filter>
+      <Filter>include\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>include\03.Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameModulePCH.cpp">
-      <Filter>cpp\pch</Filter>
+      <Filter>src\pch</Filter>
     </ClCompile>
     <ClCompile Include="GameModuleEnum.cpp">
-      <Filter>cpp\pch</Filter>
+      <Filter>src\pch</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>cpp\01.GameObject</Filter>
+      <Filter>src\01.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
-      <Filter>cpp\02.Component</Filter>
+      <Filter>src\02.Component</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>cpp\03.Scene</Filter>
+      <Filter>src\03.Scene</Filter>
     </ClCompile>
     <ClCompile Include="Transform.cpp">
-      <Filter>cpp\02.Component</Filter>
+      <Filter>src\02.Component</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectView.cpp">
-      <Filter>cpp\01.GameObject</Filter>
+      <Filter>src\01.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectIterator.cpp">
-      <Filter>cpp\01.GameObject</Filter>
+      <Filter>src\01.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="ComponentIterator.cpp">
-      <Filter>cpp\02.Component</Filter>
+      <Filter>src\02.Component</Filter>
     </ClCompile>
     <ClCompile Include="ComponentView.cpp">
-      <Filter>cpp\02.Component</Filter>
+      <Filter>src\02.Component</Filter>
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
-      <Filter>cpp\04.Event</Filter>
+      <Filter>src\04.Event</Filter>
     </ClCompile>
     <ClCompile Include="EventHandler.cpp">
-      <Filter>cpp\04.Event</Filter>
+      <Filter>src\04.Event</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
-      <Filter>cpp\05.Input</Filter>
+      <Filter>src\05.Input</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>cpp\05.Input</Filter>
+      <Filter>src\05.Input</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>cpp\05.Input</Filter>
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>src\03.Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
