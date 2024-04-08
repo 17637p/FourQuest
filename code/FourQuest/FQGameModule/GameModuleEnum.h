@@ -9,6 +9,4 @@ namespace fq::game_module
 		Camera,
 		Player,
 	};
-
-
 }

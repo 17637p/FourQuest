@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 
 namespace fq::game_module
 {

@@ -1,5 +1,15 @@
 #pragma once
 
+#include <any>
+#include <atomic>
+#include <functional>
+#include <mutex>
+#include <thread>
+#include <shared_mutex>
+#include <unordered_map>
+#include <typeindex>
+#include <utility>
+
 #include "EventHandler.h"
 #include "FunctionTraits.h"
 

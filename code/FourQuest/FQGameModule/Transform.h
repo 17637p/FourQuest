@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+#include <directxtk/SimpleMath.h>
+
 namespace fq::game_module
 {
 	/// <summary>
@@ -22,6 +24,5 @@ namespace fq::game_module
 		DirectX::SimpleMath::Matrix mLocalMatrix;
 		DirectX::SimpleMath::Matrix mWorldMatrix;
 
-		FQ_REGISTRATION_FRIEND
 	};
 }

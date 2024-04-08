@@ -1,5 +1,6 @@
-#include "GameModulePCH.h"
 #include "GameModuleEnum.h"
+
+#include "../FQReflect/FQReflect.h"
 
 FQ_REGISTRATION
 {

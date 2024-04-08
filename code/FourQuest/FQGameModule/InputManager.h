@@ -1,5 +1,6 @@
 #pragma once
 
+#include <windows.h>
 
 namespace fq::game_module
 {

@@ -1,4 +1,3 @@
-#include "GameModulePCH.h"
 #include "EventManager.h"
 
 bool fq::game_module::EventManager::RemoveHandle(const EventHandler& eventHandler) noexcept

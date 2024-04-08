@@ -4,8 +4,6 @@
 #ifndef FQ_GAME_MODULE_H
 #define FQ_GAME_MODULE_H
 
-#include "GameModulePCH.h"
-
 #include "GameModuleEnum.h"
 #include "GameModuleType.h"
 

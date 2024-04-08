@@ -1,7 +1,10 @@
 #pragma once
 
-#include "../FQReflect/entt.hpp"
-#include "../FQReflect/Macro.h"
+#include <unordered_map>
+
+#include "../FQReflect/FQReflect.h"
+
+#include "GameModuleEnum.h"
 
 namespace fq::game_module
 {

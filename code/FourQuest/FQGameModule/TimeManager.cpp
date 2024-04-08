@@ -1,4 +1,4 @@
-#include "GameModulePCH.h"
+
 #include "TimeManager.h"
 
 
@@ -24,7 +24,7 @@ float fq::game_module::TimeManager::Update()
 
 	// 초반에 로딩창에서 dt가 커지는것을 방지
 	constexpr double minDeltaTime = 1. / 30.;
-	mDeltaTime = std::min(mDeltaTime, minDeltaTime);
+	mDeltaTime = min(mDeltaTime, minDeltaTime);
 
 	mPrevCount = mCurentCount;
 
