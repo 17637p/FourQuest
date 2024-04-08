@@ -12,6 +12,9 @@ fq::game_module::Scene::~Scene()
 
 void fq::game_module::Scene::Initialize()
 {
+
+
+
 	for (const auto& object : mObjects)
 	{
 		object->OnAwake();

@@ -68,7 +68,7 @@ void fq::game_engine::WindowSystem::OnResize()
 	mScreenHeight = WindowSystem::Height;
 
 	// Event »£√‚
-
+	
 
 }
 

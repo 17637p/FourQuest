@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="src\pch">
-      <UniqueIdentifier>{5883e456-025c-4735-9dd6-cb90d3aa07d5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\03.Scene">
       <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
     </Filter>
@@ -20,9 +17,6 @@
     <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="include\pch">
-      <UniqueIdentifier>{dc45267a-a8e1-44a6-bf9a-64366f3595ee}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\03.Scene">
       <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
@@ -45,17 +39,14 @@
     <Filter Include="src\01.EntityComponent\Internal">
       <UniqueIdentifier>{f099fc72-a4ae-42b5-a922-1e37a39a9274}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\00.Define">
+      <UniqueIdentifier>{2aed6e42-fa01-4b0a-9ac6-0d4c1275f424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\00.Define">
+      <UniqueIdentifier>{e48d2721-5a19-4b1f-8b8e-66485dd1be2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameModule.h">
-      <Filter>include\pch</Filter>
-    </ClInclude>
-    <ClInclude Include="GameModuleType.h">
-      <Filter>include\pch</Filter>
-    </ClInclude>
-    <ClInclude Include="GameModuleEnum.h">
-      <Filter>include\pch</Filter>
-    </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
@@ -107,6 +98,15 @@
     <ClInclude Include="GameObjectView.h">
       <Filter>include\01.EntityComponent\Internal</Filter>
     </ClInclude>
+    <ClInclude Include="GameModule.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleEnum.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleType.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -152,7 +152,7 @@
       <Filter>src\01.EntityComponent\Internal</Filter>
     </ClCompile>
     <ClCompile Include="GameModuleEnum.cpp">
-      <Filter>src\pch</Filter>
+      <Filter>src\00.Define</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
