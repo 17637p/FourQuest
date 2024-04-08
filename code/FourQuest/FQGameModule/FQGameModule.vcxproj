@@ -149,7 +149,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentHandle.h" />
     <ClInclude Include="ComponentIterator.h" />
     <ClInclude Include="ComponentView.h" />
     <ClInclude Include="Event.h" />

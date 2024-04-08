@@ -4,6 +4,7 @@
 fq::game_module::Scene::Scene()
 	:mLastObjectID(0)
 	,mObjects{}
+	,mSceneName{}
 {}
 
 fq::game_module::Scene::~Scene()
@@ -13,7 +14,7 @@ void fq::game_module::Scene::Initialize()
 {
 	for (const auto& object : mObjects)
 	{
-		object->Initialize();
+		object->OnAwake();
 	}
 }
 
@@ -53,7 +54,7 @@ void fq::game_module::Scene::Finalize()
 {
 	for (const auto& object : mObjects)
 	{
-		object->Finalize();
+		object->Destroy();
 	}
 }
 
@@ -106,5 +107,11 @@ void fq::game_module::Scene::CleanUp()
 		{
 			return object->IsToBeDestroyed();
 		}), mObjects.end());
+}
+
+void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
+{
+	// https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value
+	mObjects.push_back(std::move(object));
 }
 

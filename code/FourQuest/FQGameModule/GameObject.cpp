@@ -41,11 +41,11 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 	return *this;
 }
 
-void fq::game_module::GameObject::Initialize()
+void fq::game_module::GameObject::OnAwake()
 {
 	for (const auto& [key, component] : mComponents)
 	{
-		component->Initialize();
+		component->OnAwake();
 	}
 }
 
@@ -53,7 +53,7 @@ void fq::game_module::GameObject::Start()
 {
 	for (const auto& [key, component] : mComponents)
 	{
-		component->Start();
+		component->OnStart();
 	}
 }
 
@@ -61,15 +61,15 @@ void fq::game_module::GameObject::Update(float dt)
 {
 	for (const auto& [key, component] : mComponents)
 	{
-		component->Update(dt);
+		component->OnUpdate(dt);
 	}
 }
 
-void fq::game_module::GameObject::Finalize()
+void fq::game_module::GameObject::Destroy()
 {
 	for (const auto& [key, component] : mComponents)
 	{
-		component->Finalize();
+		component->OnDestroy();
 	}
 }
 
@@ -77,7 +77,7 @@ void fq::game_module::GameObject::LateUpdate(float dt)
 {
 	for (const auto& [key, component] : mComponents)
 	{
-		component->LateUpdate(dt);
+		component->OnLateUpdate(dt);
 	}
 }
 
@@ -85,7 +85,7 @@ void fq::game_module::GameObject::FixedUpdate(float dt)
 {
 	for (const auto& [key, component] : mComponents)
 	{
-		component->FixedUpdate(dt);
+		component->OnFixedUpdate(dt);
 	}
 }
 

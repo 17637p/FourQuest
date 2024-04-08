@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 
+#include <vector>
 #include <directxtk/SimpleMath.h>
 
 namespace fq::game_module
@@ -12,10 +13,9 @@ namespace fq::game_module
 	{
 	public:
 		Transform();
-
 		~Transform();
 
-		
+
 	private:
 		DirectX::SimpleMath::Vector3 mPosition;
 		DirectX::SimpleMath::Quaternion mRotation;
@@ -23,6 +23,8 @@ namespace fq::game_module
 
 		DirectX::SimpleMath::Matrix mLocalMatrix;
 		DirectX::SimpleMath::Matrix mWorldMatrix;
-
+	
+		Transform* mParent;
+		std::vector<Transform*> mChidren;
 	};
 }

@@ -11,26 +11,81 @@ namespace fq::game_module
 	class Scene;
 	class Component;
 
+	/// <summary>
+	/// Component들을 저장하고 관리하는 컨테이너
+	/// </summary>
 	class GameObject
 	{
 	public:
+		/// <summary>
+		/// 기본 생성자
+		/// </summary>
 		GameObject();
+		
+		/// <summary>
+		/// 복사 생성자
+		/// </summary>
+		/// <param name="other"></param>
 		GameObject(const GameObject& other);
+
+		/// <summary>
+		/// 복사 대입 연산자
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		GameObject& operator=(const GameObject& other);
+		
+		/// <summary>
+		/// 소멸자 
+		/// </summary>
 		~GameObject();
 
-		void Initialize();
+		GameObject(const GameObject&& other) = delete;
+
+		/// <summary>
+		/// Gameobject가 프리팹에서 인스턴스화 후에 호출
+		/// </summary>
+		void OnAwake();
+
+		/// <summary>
+		/// Scene 시작시 호출
+		/// </summary>
 		void Start();
+		
+		/// <summary>
+		/// 고정된 프레임으로 호출
+		/// </summary>
+		/// <param name="dt">FixedDeltaTime</param>
 		void FixedUpdate(float dt);
+		
+		/// <summary>
+		/// 매 프레임 호출
+		/// </summary>
+		/// <param name="dt">DeltaTime</param>
 		void Update(float dt);
+
+		/// <summary>
+		///  Scene의 GameObject의 Update 이후에 호출
+		/// </summary>
+		/// <param name="dt">DeltaTime</param>
 		void LateUpdate(float dt);
-		void Finalize();
+		
+		/// <summary>
+		/// GameObject 파괴시 호출
+		/// </summary>
+		void Destroy();
 
 		/// <summary>
 		/// 오브젝트가 삭제예정인지 확인
 		/// </summary>
 		/// <returns>삭제예정인지</returns>
 		bool IsToBeDestroyed()const { return mbIsToBeDestroyed; }
+
+		/// <summary>
+		/// 게임오브젝트를 소유하는 현재 씬을 반환
+		/// </summary>
+		/// <returns>씬 반환</returns>
+		Scene* GetScene()const { return mScene; }
 
 		/// <summary>
 		/// 오브젝트의 고유ID 반환

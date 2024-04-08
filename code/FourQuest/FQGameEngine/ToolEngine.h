@@ -18,7 +18,9 @@ namespace fq
 			~ToolEngine();
 
 			void Initialize() override;
+			
 			void Process() override;
+			
 			void Finalize() override;
 
 		private:

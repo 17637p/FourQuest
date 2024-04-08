@@ -17,29 +17,29 @@ namespace fq::game_module
 		~Scene();
 
 		/// <summary>
-		/// 
+		/// Scene에 저장된 데이터를 불러온다.
 		/// </summary>
 		void Initialize();
 
 		/// <summary>
-		/// 
+		/// 씬을 시작
 		/// </summary>
 		void Start();
 
 		/// <summary>
-		/// 
+		/// 고정된 프레임마다 호출
 		/// </summary>
 		/// <param name="dt"></param>
 		void FixedUpdate(float dt);
 
 		/// <summary>
-		/// 
+		/// 매 프레임 호출
 		/// </summary>
 		/// <param name="dt"></param>
 		void Update(float dt);
 
 		/// <summary>
-		/// 
+		/// Update 이후에 호출
 		/// </summary>
 		/// <param name="dt"></param>
 		void LateUpdate(float dt);
@@ -55,10 +55,22 @@ namespace fq::game_module
 		void CleanUp();
 
 		/// <summary>
+		/// Scene 게임오브젝트를 추가
+		/// </summary>
+		/// <param name="object">오브젝트</param>
+		void AddGameObject(std::shared_ptr<GameObject> object);
+
+		/// <summary>
 		/// Scene이 가지는 오브젝트 숫자 반환
 		/// </summary>
 		/// <returns>오브젝트 숫자</returns>
 		size_t GetObjectSize()const { return mObjects.size(); }
+
+		/// <summary>
+		/// 현재 씬의 이름을 반환
+		/// </summary>
+		/// <returns>씬의 이름</returns>
+		std::string GetSceneName()const { return mSceneName; }
 
 		/// <summary>
 		/// 인덱스에 해당하는 오브젝트 반환
@@ -112,6 +124,7 @@ namespace fq::game_module
 			bool bIsIncludeToBeDestroyed = false);
 
 	private:
+		std::string mSceneName;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
 		unsigned int mLastObjectID;
 	};
