@@ -1,13 +1,26 @@
-#include "FQGameEnginePCH.h"
 #include "Editor.h"
+
+#include <imgui.h>
+
+#include <imgui_impl_dx11.h>
+#include <imgui_impl_win32.h>
+#include <imgui_internal.h>
 
 #include "GameProcess.h"
 #include "WindowSystem.h"
 
+#include "DebugViewer.h"
+#include "FileDialog.h"
+#include "Hierarchy.h"
+#include "Inspector.h"
+
 fq::game_engine::Editor::Editor()
 	:mGameProcess(nullptr)
-{
-}
+	,mHierarchy(std::make_unique<Hierarchy>())
+	,mInspector(std::make_unique<Inspector>())
+	,mFileDialog(std::make_unique<FileDialog>())
+	,mDeubgViewer(std::make_unique<DebugViewer>())
+{}
 
 fq::game_engine::Editor::~Editor()
 {
@@ -25,7 +38,9 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 
 void fq::game_engine::Editor::Finalize()
 {
-
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void fq::game_engine::Editor::initializeImGui()
@@ -35,9 +50,18 @@ void fq::game_engine::Editor::initializeImGui()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
 
 	ImGui_ImplWin32_Init(mGameProcess->mWindowSystem->GetHWND());
 	ImGui_ImplDX11_Init(mDevice, mDeviceContext);
@@ -95,12 +119,36 @@ void fq::game_engine::Editor::NewFrame()
 
 void fq::game_engine::Editor::Render()
 {
+	auto imguiID = ImGui::DockSpaceOverViewport(
+		ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
+	ImGui::DockBuilderGetCentralNode(imguiID);
+
+	RenderWindow();
+
 	ImGui::Render();
 	const float clear_color_with_alpha[4] = { 1.f,1.f,0.f,1.f  };
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
 	mDeviceContext->ClearRenderTargetView(mRenderTargetView, clear_color_with_alpha);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+
 	mSwapChain->Present(1, 0); // Present with vsync
+}
+
+void fq::game_engine::Editor::RenderWindow()
+{
+	mHierarchy->Render();
+	mInspector->Render();
+	mDeubgViewer->Render();
+	mFileDialog->Render();
+
 }
 

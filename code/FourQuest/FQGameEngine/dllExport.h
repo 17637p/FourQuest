@@ -1,6 +1,4 @@
 
-#include "FQGameEnginePCH.h"
-
 #ifdef FQ_GAME_ENGINE_DLL_EXPORTS
 #define FQ_ENGNIE_API __declspec(dllexport)
 #else

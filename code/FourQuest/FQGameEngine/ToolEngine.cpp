@@ -1,5 +1,6 @@
-#include "FQGameEnginePCH.h"
 #include "ToolEngine.h"
+
+#include "../FQGameModule/GameModule.h"
 
 #include "GameProcess.h"
 #include "Editor.h"
@@ -19,6 +20,7 @@ void fq::game_engine::ToolEngine::Initialize()
 {
 	// 윈도우 창 초기화 
 	mGameProcess->mWindowSystem->Initialize();
+
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 

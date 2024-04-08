@@ -110,10 +110,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>FQGameEnginePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>FQGameEnginePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -144,27 +145,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="CommandSystem.h" />
+    <ClInclude Include="DebugViewer.h" />
     <ClInclude Include="Editor.h" />
-    <ClInclude Include="FQGameEnginePCH.h" />
+    <ClInclude Include="FileDialog.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameProcess.h" />
+    <ClInclude Include="Hierarchy.h" />
+    <ClInclude Include="IEditorWindow.h" />
     <ClInclude Include="IEngine.h" />
+    <ClInclude Include="Inspector.h" />
     <ClInclude Include="ToolEngine.h" />
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Command.cpp" />
+    <ClCompile Include="CommandSystem.cpp" />
+    <ClCompile Include="DebugViewer.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Editor.cpp" />
-    <ClCompile Include="FQGaemEnginePCH.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameProcess.cpp" />
+    <ClCompile Include="Hierarchy.cpp" />
+    <ClCompile Include="IEditorWindow.cpp" />
     <ClCompile Include="IEngine.cpp" />
+    <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="ToolEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
   </ItemGroup>

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <windows.h>
+
 namespace fq::game_engine
 {
 	/// <summary>
@@ -47,6 +49,30 @@ namespace fq::game_engine
 		/// </summary>
 		/// <returns>HINSTANCE</returns>
 		HINSTANCE GetHINSTANCE()const { return mHInstance; }
+
+		/// <summary>
+		/// 윈도우 가로 길이 반환
+		/// </summary>
+		/// <returns>윈도우 가로</returns>
+		UINT GetScreenWidth()const { return mScreenWidth; }
+		
+		/// <summary>
+		/// 윈도우 창 세로 길이 반환
+		/// </summary>
+		/// <returns>윈도우 세로</returns>
+		UINT GetScreenHeight()const { return mScreenHeight; }
+		
+		/// <summary>
+		/// 윈도우 창 좌측 좌표 반환
+		/// </summary>
+		/// <returns>윈도우 좌픅 좌표</returns>
+		UINT GetScreenLeft()const { return mScreenLeft; }
+
+		/// <summary>
+		/// 윈도우 창 상단 좌표 반환
+		/// </summary>
+		/// <returns>윈도우 상단 좌표</returns>
+		UINT GetScreenTop()const { return mScreenTop; }
 
 	private:
 		UINT mScreenWidth;

@@ -8,12 +8,6 @@
     <Filter Include="src\pch">
       <UniqueIdentifier>{5883e456-025c-4735-9dd6-cb90d3aa07d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\01.GameObject">
-      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\02.Component">
-      <UniqueIdentifier>{01b09c51-5561-4668-bca2-f475c1faa1f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\03.Scene">
       <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
     </Filter>
@@ -30,12 +24,6 @@
     <Filter Include="include\pch">
       <UniqueIdentifier>{dc45267a-a8e1-44a6-bf9a-64366f3595ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.Component">
-      <UniqueIdentifier>{f18e9454-5536-43e9-b565-6c1e6868b634}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\01.GameObject">
-      <UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\03.Scene">
       <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
     </Filter>
@@ -45,12 +33,21 @@
     <Filter Include="include\05.Input">
       <UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.EntityComponent">
+      <UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent">
+      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Internal">
+      <UniqueIdentifier>{f67d1a9f-b51e-4ff3-b023-f77a9cd51ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Internal">
+      <UniqueIdentifier>{f099fc72-a4ae-42b5-a922-1e37a39a9274}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameModule.h">
-      <Filter>include\pch</Filter>
-    </ClInclude>
-    <ClInclude Include="GameModulePCH.h">
       <Filter>include\pch</Filter>
     </ClInclude>
     <ClInclude Include="GameModuleType.h">
@@ -60,31 +57,10 @@
       <Filter>include\pch</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>include\01.GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>include\02.Component</Filter>
+      <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>include\03.Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentHandle.h">
-      <Filter>include\02.Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>include\02.Component</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObjectView.h">
-      <Filter>include\01.GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObjectIterator.h">
-      <Filter>include\01.GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentIterator.h">
-      <Filter>include\02.Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentView.h">
-      <Filter>include\02.Component</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">
       <Filter>include\04.Event</Filter>
@@ -113,37 +89,34 @@
     <ClInclude Include="InputEnum.h">
       <Filter>include\05.Input</Filter>
     </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentHandle.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentIterator.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentView.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectIterator.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectView.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameModulePCH.cpp">
-      <Filter>src\pch</Filter>
-    </ClCompile>
-    <ClCompile Include="GameModuleEnum.cpp">
-      <Filter>src\pch</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>src\01.GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>src\02.Component</Filter>
+      <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>src\03.Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>src\02.Component</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObjectView.cpp">
-      <Filter>src\01.GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObjectIterator.cpp">
-      <Filter>src\01.GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentIterator.cpp">
-      <Filter>src\02.Component</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentView.cpp">
-      <Filter>src\02.Component</Filter>
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
       <Filter>src\04.Event</Filter>
@@ -162,6 +135,27 @@
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>src\03.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectView.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectIterator.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentView.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentIterator.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModuleEnum.cpp">
+      <Filter>src\pch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

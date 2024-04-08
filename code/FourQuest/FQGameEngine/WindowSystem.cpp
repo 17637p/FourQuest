@@ -1,4 +1,3 @@
-#include "FQGameEnginePCH.h"
 #include "WindowSystem.h"
 #include "IEngine.h"
 
@@ -33,7 +32,7 @@ void fq::game_engine::WindowSystem::Initialize()
 
 	RegisterClass(&wndClass);
 
-	RECT rect = { 0,0, 1080, 560 };
+	RECT rect = { 0,0, 1920, 1080 };
 
 	mHWND = CreateWindow(L"4Quset"
 		, L"4Quest"

@@ -1,5 +1,6 @@
-#include "FQGameEnginePCH.h"
 #include "GameProcess.h"
+
+#include "../FQGameModule/GameModule.h"
 
 #include "WindowSystem.h"
 

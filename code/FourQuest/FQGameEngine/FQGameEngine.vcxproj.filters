@@ -1,43 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="src\01.Engine">
-      <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\01.Engine">
       <UniqueIdentifier>{0a8ac1d8-343d-4da7-b2c0-497bb8a5733b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\02.GameProcess">
-      <UniqueIdentifier>{e1e09096-e8be-487c-8bd4-af27fc6a6de5}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\02.GameProcess">
       <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\03.System">
-      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\03.System">
       <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\04.Editor">
-      <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\04.Editor">
-      <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\00.DLL">
       <UniqueIdentifier>{cbf6fe28-fece-4c60-a53e-d7bd96c4b5ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\01.Engine">
+      <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.GameProcess">
+      <UniqueIdentifier>{e1e09096-e8be-487c-8bd4-af27fc6a6de5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.System">
+      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\00.DLL">
       <UniqueIdentifier>{3764341c-45c0-4783-b734-1c8fb4e4e247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\50.Editor">
+      <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\51.EditorWindow">
+      <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\52.Command">
+      <UniqueIdentifier>{d7865560-f8c0-4707-a3a5-681ee934cd13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\51.Window">
+      <UniqueIdentifier>{3ca10ecb-1121-4a91-b4a7-6cac146d0d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\52.Command">
+      <UniqueIdentifier>{2bb07cc4-2c23-4b49-be1d-ff7e7511cd89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\50.Editor">
+      <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,13 +66,31 @@
       <Filter>include\02.GameProcess</Filter>
     </ClInclude>
     <ClInclude Include="Editor.h">
-      <Filter>include\04.Editor</Filter>
+      <Filter>include\50.Editor</Filter>
     </ClInclude>
     <ClInclude Include="WindowSystem.h">
       <Filter>include\03.System</Filter>
     </ClInclude>
-    <ClInclude Include="FQGameEnginePCH.h">
-      <Filter>include\00.DLL</Filter>
+    <ClInclude Include="IEditorWindow.h">
+      <Filter>include\51.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Inspector.h">
+      <Filter>include\51.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Hierarchy.h">
+      <Filter>include\51.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDialog.h">
+      <Filter>include\51.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugViewer.h">
+      <Filter>include\51.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandSystem.h">
+      <Filter>include\52.Command</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>include\52.Command</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,7 +107,7 @@
       <Filter>src\02.GameProcess</Filter>
     </ClCompile>
     <ClCompile Include="Editor.cpp">
-      <Filter>src\04.Editor</Filter>
+      <Filter>src\50.Editor</Filter>
     </ClCompile>
     <ClCompile Include="WindowSystem.cpp">
       <Filter>src\03.System</Filter>
@@ -88,8 +118,26 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>src\00.DLL</Filter>
     </ClCompile>
-    <ClCompile Include="FQGaemEnginePCH.cpp">
-      <Filter>src\00.DLL</Filter>
+    <ClCompile Include="Inspector.cpp">
+      <Filter>src\51.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="IEditorWindow.cpp">
+      <Filter>src\51.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Hierarchy.cpp">
+      <Filter>src\51.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDialog.cpp">
+      <Filter>src\51.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugViewer.cpp">
+      <Filter>src\51.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

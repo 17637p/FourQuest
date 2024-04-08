@@ -3,10 +3,15 @@
 
 namespace fq::game_module
 {
+	/// <summary>
+	/// 위치, 회전, 스케일, 계층 구조 정보를 관리
+	/// </summary>
 	class Transform : public Component
 	{
 	public:
+		Transform();
 
+		~Transform();
 
 		
 	private:
@@ -16,5 +21,7 @@ namespace fq::game_module
 
 		DirectX::SimpleMath::Matrix mLocalMatrix;
 		DirectX::SimpleMath::Matrix mWorldMatrix;
+
+		FQ_REGISTRATION_FRIEND
 	};
 }

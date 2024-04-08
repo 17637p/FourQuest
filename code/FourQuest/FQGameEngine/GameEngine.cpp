@@ -1,7 +1,8 @@
-#include "FQGameEnginePCH.h"
+
+#include <windows.h>
+
 #include "GameEngine.h"
 #include "GameProcess.h"
-
 #include "WindowSystem.h"
 
 fq::game_engine::GameEngine::GameEngine()

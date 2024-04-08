@@ -110,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>GameModulePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -135,7 +135,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>GameModulePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -158,7 +158,6 @@
     <ClInclude Include="FunctionTraits.h" />
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameModuleEnum.h" />
-    <ClInclude Include="GameModulePCH.h" />
     <ClInclude Include="GameModuleType.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectIterator.h" />
@@ -178,12 +177,6 @@
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameModuleEnum.cpp" />
-    <ClCompile Include="GameModulePCH.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectIterator.cpp" />
     <ClCompile Include="GameObjectView.cpp" />

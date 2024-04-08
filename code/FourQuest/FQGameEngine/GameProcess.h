@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 
 namespace fq::game_module
 {
@@ -32,6 +33,7 @@ namespace fq::game_engine
 		std::unique_ptr<fq::game_module::EventManager> mEventManager;
 
 		// Graphics
+		
 
 		// Physics
 
