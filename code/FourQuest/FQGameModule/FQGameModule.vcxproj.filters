@@ -45,6 +45,12 @@
     <Filter Include="src\00.Define">
       <UniqueIdentifier>{e48d2721-5a19-4b1f-8b8e-66485dd1be2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\06.ObjectManager">
+      <UniqueIdentifier>{1c701873-e584-47bc-bca9-5e3cfb552373}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\06.ObjectManager">
+      <UniqueIdentifier>{e974bfdd-6214-4649-80f2-85ffc3273cb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -107,6 +113,9 @@
     <ClInclude Include="GameModuleType.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectManager.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -153,6 +162,9 @@
     </ClCompile>
     <ClCompile Include="GameModuleEnum.cpp">
       <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

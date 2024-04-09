@@ -149,11 +149,13 @@
     <ClInclude Include="json_fwd.hpp" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Path.h" />
+    <ClInclude Include="SimpleMathRelfection.h" />
     <ClInclude Include="Tag.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Path.cpp" />
+    <ClCompile Include="SimpleMathRelfection.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

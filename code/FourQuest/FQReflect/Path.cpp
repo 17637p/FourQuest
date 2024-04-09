@@ -7,7 +7,10 @@ std::filesystem::path fq::path::GetCurrentPath()
 
 std::filesystem::path fq::path::GetResourcePath()
 {
-	return std::filesystem::current_path();
+	std::filesystem::path resPath = std::filesystem::current_path();
+	resPath +=  L"\\resource\\";
+
+	return resPath;
 }
 
 std::filesystem::path fq::path::CreateFilePath(const std::filesystem::path& directoryPath

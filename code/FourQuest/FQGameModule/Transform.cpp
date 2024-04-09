@@ -1,5 +1,20 @@
 #include "Transform.h"
 
+
+FQ_REGISTRATION
+{
+	entt::meta<fq::game_module::Transform>()
+		.type(entt::hashed_string("Transform"))
+		.base<fq::game_module::Component>()
+		.data<&fq::game_module::Transform::mPosition>(entt::hashed_string("mPosition"))
+		.prop(fq::reflect::tag::name,"mPosition")
+		.data<&fq::game_module::Transform::mRotation>(entt::hashed_string("mRotation"))
+		.prop(fq::reflect::tag::name,"mRotation")
+		.data<&fq::game_module::Transform::mScale>(entt::hashed_string("mScale"))
+		.prop(fq::reflect::tag::name,"mScale");
+
+}
+
 using namespace DirectX::SimpleMath;
 
 fq::game_module::Transform::Transform()
@@ -108,7 +123,7 @@ void fq::game_module::Transform::AddChild(Transform* inChild)
 
 	for (Transform* child : mChidren)
 	{
-		if (inChild = child)
+		if (inChild == child)
 		{
 			return;
 		}
@@ -132,6 +147,5 @@ void fq::game_module::Transform::RemoveChild(Transform* removeChild)
 
 	removeChild->SetParent(nullptr);
 }
-
 
 

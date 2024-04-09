@@ -163,6 +163,7 @@
     <ClInclude Include="GameObjectView.h" />
     <ClInclude Include="InputEnum.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="GameObjectIterator.cpp" />
     <ClCompile Include="GameObjectView.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />

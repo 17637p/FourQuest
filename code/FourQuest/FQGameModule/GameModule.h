@@ -8,13 +8,15 @@
 #include "GameModuleType.h"
 
 #include "Scene.h"
-#include "Component.h"
 #include "GameObject.h"
+#include "Component.h"
+
+#include "Transform.h"
 
 #include "EventManager.h"
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
+#include "ObjectManager.h"
 
-
-#endif // !진 맞나??2023.04.15 22:33:15삭제
+#endif // 

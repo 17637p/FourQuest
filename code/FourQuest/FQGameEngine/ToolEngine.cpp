@@ -21,11 +21,14 @@ void fq::game_engine::ToolEngine::Initialize()
 	// 윈도우 창 초기화 
 	mGameProcess->mWindowSystem->Initialize();
 
+	// GameProcess 초기화
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mEditor->Initialize(mGameProcess.get());
+	mGameProcess->mSceneManager->Initialize("example", mGameProcess->mEventManager.get());
 
+	// Editor 초기화
+	mEditor->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::ToolEngine::Process()
@@ -65,5 +68,6 @@ void fq::game_engine::ToolEngine::Process()
 
 void fq::game_engine::ToolEngine::Finalize()
 {
+	mGameProcess->mSceneManager->Finalize();
 }
 

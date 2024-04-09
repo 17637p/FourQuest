@@ -4,6 +4,8 @@
 
 FQ_REGISTRATION
 {
+
+
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
 		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::tag::name, "mID") 
@@ -13,7 +15,7 @@ FQ_REGISTRATION
 
 fq::game_module::GameObject::GameObject()
 	:mID(0)
-	,mName()
+	,mName("GameObject")
 	,mTag(Tag::Untagged)
 	,mComponents{}
 	,mScene(nullptr)
@@ -52,7 +54,7 @@ void fq::game_module::GameObject::OnAwake()
 	}
 }
 
-void fq::game_module::GameObject::Start()
+void fq::game_module::GameObject::OnStart()
 {
 	for (const auto& [key, component] : mComponents)
 	{
@@ -60,7 +62,7 @@ void fq::game_module::GameObject::Start()
 	}
 }
 
-void fq::game_module::GameObject::Update(float dt)
+void fq::game_module::GameObject::OnUpdate(float dt)
 {
 	for (const auto& [key, component] : mComponents)
 	{
@@ -68,7 +70,7 @@ void fq::game_module::GameObject::Update(float dt)
 	}
 }
 
-void fq::game_module::GameObject::Destroy()
+void fq::game_module::GameObject::OnDestroy()
 {
 	for (const auto& [key, component] : mComponents)
 	{
@@ -76,7 +78,7 @@ void fq::game_module::GameObject::Destroy()
 	}
 }
 
-void fq::game_module::GameObject::LateUpdate(float dt)
+void fq::game_module::GameObject::OnLateUpdate(float dt)
 {
 	for (const auto& [key, component] : mComponents)
 	{
@@ -84,11 +86,44 @@ void fq::game_module::GameObject::LateUpdate(float dt)
 	}
 }
 
-void fq::game_module::GameObject::FixedUpdate(float dt)
+void fq::game_module::GameObject::OnFixedUpdate(float dt)
 {
 	for (const auto& [key, component] : mComponents)
 	{
 		component->OnFixedUpdate(dt);
 	}
+}
+
+fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
+{
+	Transform* parentT =  GetComponent<Transform>()->GetParentTransform();
+
+	if (parentT)
+	{
+		parentT->GetGameObject();
+	}
+
+	return  nullptr;
+}
+
+std::vector<fq::game_module::GameObject*> fq::game_module::GameObject::GetChildren()
+{
+	const auto& childrenTransform =  GetComponent<Transform>()->GetChildren();
+
+	std::vector<GameObject*> children;
+
+	children.resize(childrenTransform.size());
+
+	for (UINT i = 0; i < childrenTransform.size(); ++i)
+	{
+		children[i] = childrenTransform[i]->GetGameObject();
+	}
+
+	return children;
+}
+
+void fq::game_module::GameObject::SetName(std::string name)
+{
+	mName = std::move(name);
 }
 

@@ -17,6 +17,8 @@ namespace fq::game_module
 	class GameObject
 	{
 	public:
+		using ComponentContainer = std::unordered_map<entt::id_type, std::unique_ptr<Component>>;
+
 		/// <summary>
 		/// 기본 생성자
 		/// </summary>
@@ -50,30 +52,30 @@ namespace fq::game_module
 		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
-		void Start();
+		void OnStart();
 		
 		/// <summary>
 		/// 고정된 프레임으로 호출
 		/// </summary>
 		/// <param name="dt">FixedDeltaTime</param>
-		void FixedUpdate(float dt);
+		void OnFixedUpdate(float dt);
 		
 		/// <summary>
 		/// 매 프레임 호출
 		/// </summary>
 		/// <param name="dt">DeltaTime</param>
-		void Update(float dt);
+		void OnUpdate(float dt);
 
 		/// <summary>
 		///  Scene의 GameObject의 Update 이후에 호출
 		/// </summary>
 		/// <param name="dt">DeltaTime</param>
-		void LateUpdate(float dt);
+		void OnLateUpdate(float dt);
 		
 		/// <summary>
 		/// GameObject 파괴시 호출
 		/// </summary>
-		void Destroy();
+		void OnDestroy();
 
 		/// <summary>
 		/// 오브젝트가 삭제예정인지 확인
@@ -88,21 +90,58 @@ namespace fq::game_module
 		Scene* GetScene()const { return mScene; }
 
 		/// <summary>
-		/// 오브젝트의 고유ID 반환
+		/// 게임오브젝트와 씬을 연결합니다
+		/// </summary>
+		/// <param name="scene">연결할 씬</param>
+		void SetScene(Scene* scene) { mScene = scene; }
+
+		/// <summary>
+		/// 오브젝트의 이름을 반환합니다
+		/// </summary>
+		/// <returns>오브젝트 이름</returns>
+		std::string GetName()const { return mName; }
+
+		/// <summary>
+		/// 오브젝트의 이름을 설정합니다.
+		/// </summary>
+		/// <param name="name">설정할 이름</param>
+		void SetName(std::string name);
+
+		/// <summary>
+		/// 오브젝트의 고유ID 반환합니다
 		/// </summary>
 		/// <returns>ID 반환</returns>
 		unsigned int GetID()const { return mID; }
 
 		/// <summary>
-		/// T타입 컴포넌트를 반환
+		/// 계층구조의 부모를 반환합니다 
+		/// </summary>
+		/// <returns>없으면 nullptr, 그렇지 않으면 부모 포인터</returns>
+		GameObject* GetParent();
+
+		/// <summary>
+		/// 계층구조의 자식들을 반환합니다
+		/// * std::vector 할당으로 효율은 좋지않습니다
+		/// </summary>
+		/// <returns>자식 오브젝트 배열</returns>
+		std::vector<GameObject*> GetChildren();
+
+		/// <summary>
+		/// T타입 컴포넌트를 반환합니다
 		/// </summary>
 		/// <typeparam name="T">컴포넌트 타입</typeparam>
 		/// <returns>가지고있는 컴포넌트</returns>
 		template <typename T>
-		T& GetComponent();
+		T* GetComponent();
 
 		/// <summary>
-		/// T타입 컴포넌트를 소유하는지
+		/// 컴포넌트들을 담은 컨테이너를 반환합니다
+		/// </summary>
+		/// <returns>컴포넌트 컨테이너</returns>
+		const ComponentContainer& GetComponentContainer()const { return mComponents; }
+
+		/// <summary>
+		/// T타입 컴포넌트를 소유하는지 확인합니다
 		/// </summary>
 		/// <typeparam name="T">컴포넌트 타입</typeparam>
 		/// <returns>가지면 true 반환</returns>
@@ -133,7 +172,7 @@ namespace fq::game_module
 		unsigned int mID;
 		std::string mName;
 		Tag mTag;
-		std::unordered_map<entt::id_type, std::unique_ptr<Component>> mComponents;
+		ComponentContainer mComponents;
 		Scene* mScene;
 		bool mbIsToBeDestroyed;
 
@@ -143,7 +182,7 @@ namespace fq::game_module
 	template <typename T>
 	bool fq::game_module::GameObject::HasComponent() const
 	{
-		entt::id_type id = entt::type_id<T>().index();
+		entt::id_type id = entt::resolve<T>().id();
 
 		auto iter = mComponents.find(id);
 
@@ -159,7 +198,7 @@ namespace fq::game_module
 	template<typename T, typename ...Args>
 	inline T& GameObject::AddComponent(Args && ...args)
 	{
-		entt::id_type id = entt::type_id<T>().index();
+		entt::id_type id = entt::resolve<T>().id();
 
 		assert(mComponents.find(id) == mComponents.end() 
 			&& "가지고있는 컴포넌트입니다.");
@@ -171,15 +210,21 @@ namespace fq::game_module
 	}
 
 	template <typename T>
-	T& fq::game_module::GameObject::GetComponent()
+	T* fq::game_module::GameObject::GetComponent()
 	{
-		entt::id_type id = entt::type_id<T>().index();
+		entt::id_type id = entt::resolve<T>().id();
 
 		auto iter = mComponents.find(id);
-		assert(iter != mComponents.end());
+
+		if (iter == mComponents.end())
+		{
+			return nullptr;
+		}
 
 		T* component = static_cast<T*>(iter->second.get());
-		return *component;
+		return component;
 	}
 
 }
+
+

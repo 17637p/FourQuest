@@ -10,10 +10,9 @@ fq::game_module::Scene::Scene()
 fq::game_module::Scene::~Scene()
 {}
 
-void fq::game_module::Scene::Initialize()
+void fq::game_module::Scene::Initialize(std::string sceneName)
 {
-
-
+	mSceneName = std::move(sceneName);
 
 	for (const auto& object : mObjects)
 	{
@@ -25,7 +24,7 @@ void fq::game_module::Scene::Start()
 {
 	for (const auto& object : mObjects)
 	{
-		object->Start();
+		object->OnStart();
 	}
 }
 
@@ -33,7 +32,7 @@ void fq::game_module::Scene::FixedUpdate(float dt)
 {
 	for (const auto& object : mObjects)
 	{
-		object->FixedUpdate(dt);
+		object->OnFixedUpdate(dt);
 	}
 }
 
@@ -41,7 +40,7 @@ void fq::game_module::Scene::Update(float dt)
 {
 	for (const auto& object : mObjects)
 	{
-		object->Update(dt);
+		object->OnUpdate(dt);
 	}
 }
 
@@ -49,7 +48,7 @@ void fq::game_module::Scene::LateUpdate(float dt)
 {
 	for (const auto& object : mObjects)
 	{
-		object->LateUpdate(dt);
+		object->OnLateUpdate(dt);
 	}
 }
 
@@ -57,7 +56,7 @@ void fq::game_module::Scene::Finalize()
 {
 	for (const auto& object : mObjects)
 	{
-		object->Destroy();
+		object->OnDestroy();
 	}
 }
 
@@ -114,7 +113,8 @@ void fq::game_module::Scene::CleanUp()
 
 void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 {
+	object->SetScene(this);
+
 	// https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value
 	mObjects.push_back(std::move(object));
 }
-

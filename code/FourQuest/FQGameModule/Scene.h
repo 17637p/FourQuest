@@ -17,9 +17,9 @@ namespace fq::game_module
 		~Scene();
 
 		/// <summary>
-		/// Scene에 저장된 데이터를 불러온다.
+		/// Scene의 데이터를 로드한다
 		/// </summary>
-		void Initialize();
+		void Initialize(std::string sceneName);
 
 		/// <summary>
 		/// 씬을 시작

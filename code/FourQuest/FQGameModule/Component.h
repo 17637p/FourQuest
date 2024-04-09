@@ -1,8 +1,10 @@
 #pragma once
 
+#include "GameObject.h"
+
 namespace fq::game_module
 {
-	class GameObject;
+	class Scene;
 
 	/// <summary>
 	/// GameOnject에 귀속되어 실질적인 
@@ -58,9 +60,23 @@ namespace fq::game_module
 		/// <returns>게임 오브젝트</returns>
 		GameObject* GetGameObject()const { return mGameObject; }
 
+		/// <summary>
+		/// 게임오브젝트와 연결된 씬을 반환합니다.
+		/// </summary>
+		/// <returns>Scene Pointer</returns>
+		Scene* GetScene()const;
+
+		template <typename T>
+		T& GetComponent();
+
 	private:
 		GameObject* mGameObject;
 	};
 
+	template <typename T>
+	T& fq::game_module::Component::GetComponent()
+	{
+		return mGameObject-> template GetComponent<T>();
+	}
 
 }

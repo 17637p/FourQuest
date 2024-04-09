@@ -112,6 +112,12 @@ namespace fq::game_module
 		/// <param name="removeChild">제거할 자식</param>
 		void RemoveChild(Transform* removeChild);
 
+		/// <summary>
+		/// 계층구조의 자식들을 반환합니다
+		/// </summary>
+		/// <returns>계층구조의 자식들</returns>
+		const std::vector<Transform*>& GetChildren()const { return mChidren; }
+
 	private:
 		void updateMatrix();
 
@@ -125,5 +131,7 @@ namespace fq::game_module
 	
 		Transform* mParent;
 		std::vector<Transform*> mChidren;
+
+		FQ_REGISTRATION_FRIEND
 	};
 }

@@ -1,40 +1,49 @@
 #include <iostream>
 
-#include "../FQReflect/FQReflect.h"
 #include "../FQGameModule/GameModule.h"
+
+namespace fq::game_module
+{
+	class Tmp : public Component
+	{
+	public:
+		Tmp() {}
+		Tmp(int number, float hp)
+			:num(number), hp(hp)
+		{}
+
+		int num = 50;
+		float hp = 100.f;
+		DirectX::SimpleMath::Vector3 pos = { 100, 200, 300 };
+	};
+}
 
 using namespace fq::game_module;
 
-struct Event
+FQ_REGISTRATION
 {
-	int value = 0;
-};
+	entt::meta<Tmp>()
+		.type(entt::hashed_string("Tmp"))
+		.data<&Tmp::num>(entt::hashed_string("num"))
+		.prop(fq::reflect::tag::name, "num")
+		.data<&Tmp::hp>(entt::hashed_string("hp"))
+		.prop(fq::reflect::tag::name, "hp")
+		.data<&Tmp::pos>(entt::hashed_string("pos"))
+		.prop(fq::reflect::tag::name, "pos");
 
-struct MyStruct
-{
-	MyStruct(EventManager* eventMgr)
-		:handle(eventMgr->RegisterHandle<Event>(this, &MyStruct::Call))
-	{}
-
-	void Call(const Event& event) { std::cout << event.value << " 멤버함수 호출\n"; }
-	EventHandler handle;
-};
+}
 
 int main()
 {
-	EventManager ev;
+	ObjectManager om;
+	SimpleMathRelfection d;
 
-	auto handle =  ev.RegisterHandle<Event>([](const Event& event) 
-		{std::cout << event.value  << " 람다 호출\n" ; });
+	GameObject object;
 
+	object.AddComponent<fq::game_module::Tmp>();
 
-	MyStruct s{ &ev };
+	om.SavePrefab(&object, L"..\\resource");
 
-	ev.FireEvent(Event{ 10 });
-
-	handle.Unregister();
-
-	ev.FireEvent(Event{ 10 });
 
 	return 0;
 }

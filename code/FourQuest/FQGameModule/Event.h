@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace fq::game_module
 {
 	class GameObject;
@@ -13,6 +15,14 @@ namespace fq::event
 	struct OnGameObjectDestroyed
 	{
 		fq::game_module::GameObject* object;
+	};
+
+	/// <summary>
+	/// Scene 변경시 호출
+	/// </summary>
+	struct OnChangeScene
+	{
+		std::string sceneName;
 	};
 
 }

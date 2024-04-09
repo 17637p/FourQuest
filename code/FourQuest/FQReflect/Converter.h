@@ -28,7 +28,6 @@ namespace fq::reflect
 		/// <returns>역직렬화한 any 객체</returns>
 		entt::meta_any DeserializeClass(const std::filesystem::path& path);
 
-	private:
 		/// Instance -> Json 
 
 		/// <summary>
@@ -37,20 +36,20 @@ namespace fq::reflect
 		/// <param name="object">파싱하는 any객체</param>
 		/// <param name="outJson">저장 json객체</param>
 		/// <param name="memberClass">class의 멤버변수인경우 변수명</param>
-		void parseClassToJson(const entt::meta_any& object, nlohmann::json& outJson, const std::string& memberClass = "");
+		void ParseClassToJson(const entt::meta_any& object, nlohmann::json& outJson, const std::string& memberClass = "");
 		 
-		void parseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson);
+		void ParseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson);
 		
-		void parseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson);
+		void ParseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson);
 
-		void parseAssociativeContainer(const entt::meta_any& key, const entt::meta_any& value, nlohmann::json& outJson);
+		void ParseAssociativeContainer(const entt::meta_any& key, const entt::meta_any& value, nlohmann::json& outJson);
 
 		/// Json -> Instance
 		
-		entt::meta_any parseClassFromJson(const std::string& className,const nlohmann::json& inJson);
+		entt::meta_any ParseClassFromJson(const std::string& className,const nlohmann::json& inJson);
 		
-		entt::meta_any parseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType);
+		entt::meta_any ParseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType);
 
-		std::string convertString(const entt::meta_any& any);
+		std::string ConvertString(const entt::meta_any& any);
 	};
 }
