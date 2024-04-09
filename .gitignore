@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,windows,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,windows,c++
 
+# 4QProject ingnore
+resource/
+
 ### C++ ###
 # Prerequisites
 *.d
