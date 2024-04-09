@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "Component.h"
+#include "Transform.h"
 
 FQ_REGISTRATION
 {
@@ -17,7 +18,9 @@ fq::game_module::GameObject::GameObject()
 	,mComponents{}
 	,mScene(nullptr)
 	,mbIsToBeDestroyed(false)
-{}
+{
+	AddComponent<Transform>();
+}
 
 fq::game_module::GameObject::~GameObject()
 {}

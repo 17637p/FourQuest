@@ -101,7 +101,7 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 
 void fq::game_module::Transform::AddChild(Transform* inChild)
 {
-	if (inChild == this)
+	if (inChild == this || inChild ==nullptr)
 	{
 		return;
 	}
