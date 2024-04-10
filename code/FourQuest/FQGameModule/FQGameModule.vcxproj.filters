@@ -65,9 +65,6 @@
     <ClInclude Include="InputManager.h">
       <Filter>include\05.Input</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>include\05.Input</Filter>
-    </ClInclude>
     <ClInclude Include="TimeManager.h">
       <Filter>include\05.Input</Filter>
     </ClInclude>
@@ -119,6 +116,9 @@
     <ClInclude Include="SceneHelper.h">
       <Filter>include\03.Scene</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -134,9 +134,6 @@
       <Filter>src\04.Event</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
-      <Filter>src\05.Input</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
       <Filter>src\05.Input</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
@@ -171,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="SceneHelper.cpp">
       <Filter>src\03.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

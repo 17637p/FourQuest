@@ -8,6 +8,7 @@
 
 fq::game_engine::Hierarchy::Hierarchy()
 	:mGameProcess(nullptr)
+	,mEditorProcess(nullptr)
 	,mScene(nullptr)
 {}
 
@@ -61,8 +62,4 @@ void fq::game_engine::Hierarchy::BeginGameObjectBar()
 	{
 		ImGui::Text(object.GetName().c_str());
 	}
-
-	int a = mScene->GetObjectSize();
-	int b = mScene->GetObjectSize();
-
 }

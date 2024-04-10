@@ -2,6 +2,11 @@
 
 #include <memory>
 
+namespace fq::game_module
+{
+	class InputManager;
+}
+
 namespace fq::game_engine
 {
 	class CommandSystem;
@@ -24,6 +29,8 @@ namespace fq::game_engine
 		std::unique_ptr<Inspector>	mInspector;
 		std::unique_ptr<FileDialog> mFileDialog;
 		std::unique_ptr<DebugViewer> mDeubgViewer;
+
+		std::unique_ptr<fq::game_module::InputManager> mInputManager;
 	};
 
 

@@ -50,15 +50,21 @@ namespace fq::game_module
 		void Finalize();
 
 		/// <summary>
-		/// 삭제 예정인 오브젝트 제거
+		/// 삭제 예정인 오브젝트 제거합니다
 		/// </summary>
 		void CleanUp();
 
 		/// <summary>
-		/// Scene 게임오브젝트를 추가
+		/// Scene 게임오브젝트를 추가합니다
 		/// </summary>
 		/// <param name="object">오브젝트</param>
 		void AddGameObject(std::shared_ptr<GameObject> object);
+
+		/// <summary>
+		/// Scene 내부의 게임오브젝트를 삭제합니다
+		/// </summary>
+		/// <param name="object"></param>
+		void DestroyGameObject(GameObject* object);
 
 		/// <summary>
 		/// Scene이 가지는 오브젝트 숫자 반환

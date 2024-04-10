@@ -11,27 +11,31 @@ namespace fq::game_engine
 	class ICommand
 	{
 	public:
-		virtual ~ICommand(){}
+		virtual ~ICommand() {}
 
 		/// <summary>
 		/// 실행 
 		/// </summary>
-		virtual void Excute() abstract;
-		
+		virtual void Excute() {};
+
 		/// <summary>
 		/// 실행 취소
 		/// </summary>
-		virtual void Undo() abstract;
+		virtual void Undo() {};
 	};
 
 	class CreateObject :ICommand
 	{
 	public:
+		CreateObject(fq::game_module::Scene* scene
+			, std::shared_ptr<fq::game_module::GameObject> object);
+
 		void Excute() override;
-		void Undo() abstract;
+		void Undo() override;
 
 	private:
 		std::shared_ptr<fq::game_module::GameObject> mGameObject;
+		fq::game_module::Scene* mScene;
 	};
 
 }

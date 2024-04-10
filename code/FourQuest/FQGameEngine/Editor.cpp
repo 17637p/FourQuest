@@ -1,14 +1,17 @@
 #include "Editor.h"
 
-#include <imgui.h>
 
+#include <imgui.h>
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
 
+#include "../FQGameModule/GameModule.h"
+
 #include "GameProcess.h"
 #include "WindowSystem.h"
 
+#include "CommandSystem.h"
 #include "DebugViewer.h"
 #include "FileDialog.h"
 #include "Hierarchy.h"
@@ -32,6 +35,8 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 	createDeviceD3D();
 	initializeImGui();
 
+	mEditorProcess->mInputManager->Initialize(process->mWindowSystem->GetHWND());
+	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
 }
 
@@ -140,6 +145,8 @@ void fq::game_engine::Editor::Render()
 	}
 
 	mSwapChain->Present(1, 0); // Present with vsync
+
+	mEditorProcess->mCommandSystem->Update();
 }
 
 void fq::game_engine::Editor::RenderWindow()
@@ -148,5 +155,10 @@ void fq::game_engine::Editor::RenderWindow()
 	mEditorProcess->mInspector->Render();
 	mEditorProcess->mDeubgViewer->Render();
 	mEditorProcess->mFileDialog->Render();
+}
+
+void fq::game_engine::Editor::Update()
+{
+	mEditorProcess->mInputManager->Update();
 }
 

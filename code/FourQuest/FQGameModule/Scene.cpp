@@ -114,10 +114,23 @@ void fq::game_module::Scene::CleanUp()
 
 void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 {
+	for (const auto& inObject : mObjects)
+	{
+		if (inObject.get() == object.get())
+		{
+			assert(nullptr);
+		}
+	}
+
 	object->SetScene(this);
 
 	SceneHeleper::CheckNameDuplication(*this, *object);
 
 	mObjects.push_back(std::move(object));
 }
+
+void fq::game_module::Scene::DestroyGameObject(GameObject* object)
+{
+}
+
 

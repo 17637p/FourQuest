@@ -22,6 +22,8 @@ namespace fq::game_engine
 
 		void NewFrame();
 
+		void Update();
+
 		void createDeviceD3D();
 		void createRenderTarget();
 		void cleanupRenderTarget();

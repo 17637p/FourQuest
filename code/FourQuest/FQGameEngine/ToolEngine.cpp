@@ -57,11 +57,11 @@ void fq::game_engine::ToolEngine::Process()
 
 			mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update();
-	
+			mEditor->Update();
 			mEditor->NewFrame();
-
-
 			mEditor->Render();
+
+			mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
 		}
 	}
 }
