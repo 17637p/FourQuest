@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "GameObject.h"
+#include "SceneHelper.h"
 
 fq::game_module::Scene::Scene()
 	:mLastObjectID(0)
@@ -115,6 +116,8 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 {
 	object->SetScene(this);
 
-	// https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value
+	SceneHeleper::CheckNameDuplication(*this, *object);
+
 	mObjects.push_back(std::move(object));
 }
+

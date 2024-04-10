@@ -100,7 +100,7 @@ fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
 
 	if (parentT)
 	{
-		parentT->GetGameObject();
+		return parentT->GetGameObject();
 	}
 
 	return  nullptr;
@@ -124,6 +124,26 @@ std::vector<fq::game_module::GameObject*> fq::game_module::GameObject::GetChildr
 
 void fq::game_module::GameObject::SetName(std::string name)
 {
+	// 하이픈 (-)을 언더스코어(_)로 치환
+	// 프리팹을 저장할때 "부모이름-자식이름" 규칙으로 저장하기때문입니다.
+	std::replace(name.begin(), name.end(), '-', '_');
+	
 	mName = std::move(name);
+}
+
+void fq::game_module::GameObject::AddComponent(const entt::meta_any& any)
+{
+	assert(any);
+
+	entt::meta_type type = any.type();
+	entt::meta_type componentType = entt::resolve<Component>();
+
+	assert(type.can_cast(componentType));
+
+	const Component* component = any.try_cast<Component>();
+
+	Component* clone = component->Clone(nullptr);
+
+	mComponents.insert({ type.id(), std::unique_ptr<Component>{clone} });
 }
 

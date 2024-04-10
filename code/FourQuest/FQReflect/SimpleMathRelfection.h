@@ -4,6 +4,6 @@
 class SimpleMathRelfection
 {
 public:
-	SimpleMathRelfection(){}
+	SimpleMathRelfection();
 };
 

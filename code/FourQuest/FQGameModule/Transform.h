@@ -15,6 +15,8 @@ namespace fq::game_module
 		Transform();
 		~Transform();
 
+		Component* Clone(Component* clone /* = nullptr */)const override;
+
 		/// <summary>
 		/// Local 공간의 위치 반환합니다
 		/// </summary>

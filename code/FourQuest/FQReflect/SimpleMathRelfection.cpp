@@ -51,3 +51,7 @@ FQ_REGISTRATION
 		.prop(fq::reflect::tag::name, "w");
 }
 
+SimpleMathRelfection::SimpleMathRelfection()
+{
+
+}

@@ -15,7 +15,7 @@ fq::game_engine::WindowSystem::WindowSystem()
 
 void fq::game_engine::WindowSystem::Initialize()
 {
-	mHInstance = GetModuleHandle(NULL);
+	mHInstance = ::GetModuleHandle(NULL);
 
 	WNDCLASS wndClass{};
 
@@ -24,9 +24,9 @@ void fq::game_engine::WindowSystem::Initialize()
 	wndClass.cbClsExtra = 0;
 	wndClass.cbWndExtra = 0;
 	wndClass.hInstance = mHInstance;
-	wndClass.hIcon = LoadIcon(mHInstance, IDI_APPLICATION);
-	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wndClass.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+	wndClass.hIcon = ::LoadIcon(mHInstance, IDI_APPLICATION);
+	wndClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+	wndClass.hbrBackground = static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH));
 	wndClass.lpszMenuName = NULL;
 	wndClass.lpszClassName = L"4Quset";
 
@@ -47,8 +47,8 @@ void fq::game_engine::WindowSystem::Initialize()
 	mScreenLeft = rect.left;
 	mScreenTop = rect.top;
 
-	ShowWindow(mHWND, SW_SHOWNORMAL);
-	UpdateWindow(mHWND);
+	::ShowWindow(mHWND, SW_SHOWNORMAL);
+	::UpdateWindow(mHWND);
 }
 
 fq::game_engine::WindowSystem::~WindowSystem()
@@ -68,7 +68,6 @@ void fq::game_engine::WindowSystem::OnResize()
 	mScreenHeight = WindowSystem::Height;
 
 	// Event »£√‚
-	
 
 }
 

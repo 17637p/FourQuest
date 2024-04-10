@@ -123,6 +123,7 @@ namespace fq::game_module
 		void ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction,
 			bool bIsIncludeToBeDestroyed = false);
 
+
 	private:
 		std::string mSceneName;
 		std::vector<std::shared_ptr<GameObject>> mObjects;

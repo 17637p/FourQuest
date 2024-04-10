@@ -159,7 +159,7 @@ namespace fq::game_module
 		bool HasComponent()const;
 
 		/// <summary>
-		/// 컴포넌트 추가
+		/// 컴포넌트 추가합니다
 		/// </summary>
 		/// <typeparam name="T">컴포넌트 타입</typeparam>
 		/// <typeparam name="...Args">생성자 오버로딩 가변인자</typeparam>
@@ -167,6 +167,12 @@ namespace fq::game_module
 		/// <returns>생성한 컴포넌트 반환</returns>
 		template <typename T, typename... Args>
 		T& AddComponent(Args&&... args);
+
+		/// <summary>
+		/// any 컴포넌트의 복사본은 추가합니다
+		/// </summary>
+		/// <param name="any">Component</param>
+		void AddComponent(const entt::meta_any& any);
 
 	private:
 		unsigned int mID;
@@ -206,6 +212,9 @@ namespace fq::game_module
 		mComponents.insert({ id, std::make_unique<T>(std::forward(args)...) });
 
 		T* component = static_cast<T*>(mComponents[id].get());
+
+		component->SetGameObject(this);
+
 		return *component;
 	}
 

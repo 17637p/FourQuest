@@ -148,4 +148,19 @@ void fq::game_module::Transform::RemoveChild(Transform* removeChild)
 	removeChild->SetParent(nullptr);
 }
 
+fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const
+{
+	Transform* cloneTransform = static_cast<Transform*>(clone);
+
+	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
+	{
+		cloneTransform = new Transform(*this);
+	}
+	else // clone에 데이터를 복사한다.
+	{
+		// 기본 대입 연산자 호출한다.
+		*cloneTransform = *this;
+	}
+	return cloneTransform;
+}
 

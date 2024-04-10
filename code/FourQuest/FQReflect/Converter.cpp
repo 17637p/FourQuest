@@ -10,7 +10,9 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-void fq::reflect::Converter::ParseClassToJson(const entt::meta_any& object, nlohmann::json& outJson, const std::string& memberClass /*= ""*/)
+void fq::reflect::Converter::ParseClassToJson(const entt::meta_any& object
+	, nlohmann::json& outJson
+	, const std::string& memberClass /*= ""*/)
 {
 	json memberJson;
 	const entt::meta_type& metaType = object.type();
@@ -23,11 +25,7 @@ void fq::reflect::Converter::ParseClassToJson(const entt::meta_any& object, nloh
 
 	if (memberClass.empty())
 	{
-		std::string className(metaType.info().name());
-
-		// "class Example" -> "Example"
-		className = className.substr(className.find(' ') + 1);
-
+		std::string className =  std::to_string(metaType.id());
 		outJson[className] = memberJson;
 	}
 	else
@@ -37,7 +35,9 @@ void fq::reflect::Converter::ParseClassToJson(const entt::meta_any& object, nloh
 }
 
 
-void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson)
+void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
+	, const entt::meta_any& object
+	, nlohmann::json& outJson)
 {
 	entt::meta_prop prop = metaData.prop(tag::name);
 	assert(prop && "멤버 변수의 name 설정이 없습니다.");
@@ -199,10 +199,10 @@ entt::meta_any fq::reflect::Converter::DeserializeClass(const std::filesystem::p
 	return output;
 }
 
-entt::meta_any fq::reflect::Converter::ParseClassFromJson(const std::string& className, const nlohmann::json& inJson)
+entt::meta_any fq::reflect::Converter::ParseClassFromJson(const std::string& classID, const nlohmann::json& inJson)
 {
 	// class meta_type 생성
-	entt::id_type id = entt::hashed_string(className.c_str()).value();
+	entt::id_type id = std::stoul(classID);
 	entt::meta_type classMetaType = entt::resolve(id);
 	assert(classMetaType);
 
@@ -326,10 +326,8 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	// class
 	else if (metaType.is_class())
 	{
-		std::string className{ metaType.info().name() };
-		// "class Example" -> "Example"
-		className = className.substr(className.find(' ') + 1);
-		output = ParseClassFromJson(className, inJson);
+		std::string classID = std::to_string(metaType.id());
+		output = ParseClassFromJson(classID, inJson);
 	}
 	else
 	{

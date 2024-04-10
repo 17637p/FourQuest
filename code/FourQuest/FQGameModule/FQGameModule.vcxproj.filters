@@ -116,6 +116,9 @@
     <ClInclude Include="ObjectManager.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="SceneHelper.h">
+      <Filter>include\03.Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -165,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="ObjectManager.cpp">
       <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneHelper.cpp">
+      <Filter>src\03.Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
