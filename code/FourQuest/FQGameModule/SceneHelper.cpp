@@ -47,8 +47,7 @@ bool fq::game_module::SceneHeleper::HasSameName(Scene& scene, GameObject& object
 {
 	for (const GameObject& viewObject : scene.GetObjectView(true))
 	{
-		if (viewObject.GetID() != object.GetID() 
-			&& viewObject.GetName() == name)
+		if ( &viewObject != &object &&viewObject.GetName() == name)
 		{
 			return true;
 		}

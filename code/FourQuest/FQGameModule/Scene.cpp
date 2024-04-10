@@ -76,7 +76,7 @@ fq::game_module::internal::GameObjectView fq::game_module::Scene::GetObjectView(
 {
 	internal::GameObjectIterator begin(this, 0, false, bIsIncludeToBeDestroyed);
 
-	internal::GameObjectIterator end(this, 0, true, bIsIncludeToBeDestroyed);
+	internal::GameObjectIterator end(this, GetObjectSize(), true, bIsIncludeToBeDestroyed);
 
 	return internal::GameObjectView(begin, end);
 }

@@ -20,7 +20,6 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
 
-
 	mCurrentScene->Initialize(startSceneName);
 
 	loadScene();

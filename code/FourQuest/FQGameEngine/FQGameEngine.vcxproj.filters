@@ -51,6 +51,12 @@
     <Filter Include="src\50.Editor">
       <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\50.Editor\imgui">
+      <UniqueIdentifier>{4c8323d4-e48f-497d-ac50-681d120fd094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\50.Editor\imgui">
+      <UniqueIdentifier>{f447241a-c2c1-4cc2-86e2-14889ac66a83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ToolEngine.h">
@@ -89,8 +95,14 @@
     <ClInclude Include="CommandSystem.h">
       <Filter>include\52.Command</Filter>
     </ClInclude>
-    <ClInclude Include="Command.h">
+    <ClInclude Include="ICommand.h">
       <Filter>include\52.Command</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_stdlib.h">
+      <Filter>include\50.Editor\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorProcess.h">
+      <Filter>include\50.Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -133,11 +145,17 @@
     <ClCompile Include="DebugViewer.cpp">
       <Filter>src\51.Window</Filter>
     </ClCompile>
-    <ClCompile Include="CommandSystem.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="imgui_stdlib.cpp">
+      <Filter>src\50.Editor\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="ICommand.cpp">
+      <Filter>src\52.Command</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandSystem.cpp">
+      <Filter>src\52.Command</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorProcess.cpp">
+      <Filter>src\50.Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

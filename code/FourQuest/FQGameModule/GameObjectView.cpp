@@ -5,6 +5,4 @@ fq::game_module::internal::GameObjectView::GameObjectView(
 	, const GameObjectIterator& endIter)
 	:mBeginIterator(beginIter)
 	, mEndIterator(endIter)
-{
-
-}
+{}

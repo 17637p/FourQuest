@@ -52,7 +52,7 @@ bool fq::game_module::internal::GameObjectIterator::operator!=(const GameObjectI
 		return !other.IsEnd();
 	}
 
-	return mIndex == other.mIndex;
+	return mIndex != other.mIndex;
 }
 
 bool fq::game_module::internal::GameObjectIterator::IsEnd() const

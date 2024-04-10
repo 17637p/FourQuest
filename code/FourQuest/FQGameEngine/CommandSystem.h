@@ -5,7 +5,7 @@
 
 namespace fq::game_engine
 {
-	class Command;
+	class ICommand;
 
 	/// <summary>
 	/// Editor Command¸¦ °ü¸® 
@@ -22,6 +22,6 @@ namespace fq::game_engine
 		void Clear();
 
 	private:
-		std::list<std::unique_ptr<Command>> mCommandList;
+		std::list<std::unique_ptr<ICommand>> mCommandList;
 	};
 }

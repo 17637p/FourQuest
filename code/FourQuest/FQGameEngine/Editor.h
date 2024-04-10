@@ -5,14 +5,11 @@
 
 #include <memory>
 
+#include "EditorProcess.h"
+
 namespace fq::game_engine
 {
 	class GameProcess;
-
-	class Hierarchy;
-	class Inspector;
-	class FileDialog;
-	class DebugViewer;
 
 	class Editor
 	{
@@ -38,12 +35,7 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
-		
-		// Window ฐüทร
-		std::unique_ptr<Hierarchy>  mHierarchy;
-		std::unique_ptr<Inspector>	mInspector;
-		std::unique_ptr<FileDialog> mFileDialog;
-		std::unique_ptr<DebugViewer> mDeubgViewer;
+		std::unique_ptr<EditorProcess> mEditorProcess;
 
 		ID3D11Device* mDevice = nullptr; 
 		ID3D11DeviceContext* mDeviceContext = nullptr; 

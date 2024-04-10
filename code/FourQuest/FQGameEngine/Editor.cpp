@@ -16,10 +16,7 @@
 
 fq::game_engine::Editor::Editor()
 	:mGameProcess(nullptr)
-	,mHierarchy(std::make_unique<Hierarchy>())
-	,mInspector(std::make_unique<Inspector>())
-	,mFileDialog(std::make_unique<FileDialog>())
-	,mDeubgViewer(std::make_unique<DebugViewer>())
+	,mEditorProcess(std::make_unique<EditorProcess>())
 {}
 
 fq::game_engine::Editor::~Editor()
@@ -34,6 +31,8 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 	//tmp
 	createDeviceD3D();
 	initializeImGui();
+
+	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
 }
 
 void fq::game_engine::Editor::Finalize()
@@ -145,10 +144,9 @@ void fq::game_engine::Editor::Render()
 
 void fq::game_engine::Editor::RenderWindow()
 {
-	mHierarchy->Render();
-	mInspector->Render();
-	mDeubgViewer->Render();
-	mFileDialog->Render();
-
+	mEditorProcess->mHierarchy->Render();
+	mEditorProcess->mInspector->Render();
+	mEditorProcess->mDeubgViewer->Render();
+	mEditorProcess->mFileDialog->Render();
 }
 
