@@ -57,6 +57,12 @@
     <Filter Include="include\50.Editor\imgui">
       <UniqueIdentifier>{f447241a-c2c1-4cc2-86e2-14889ac66a83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\53. EditorEvent">
+      <UniqueIdentifier>{f3c092a5-5196-4b37-8d96-3d5a91e4b9be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\53.EditorEvent">
+      <UniqueIdentifier>{8eb4470d-2ff5-4839-b0aa-51a30a6fc5b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ToolEngine.h">
@@ -104,8 +110,8 @@
     <ClInclude Include="EditorProcess.h">
       <Filter>include\50.Editor</Filter>
     </ClInclude>
-    <ClInclude Include="CommandFunction.h">
-      <Filter>include\52.Command</Filter>
+    <ClInclude Include="EditorEvent.h">
+      <Filter>include\53. EditorEvent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -160,8 +166,8 @@
     <ClCompile Include="EditorProcess.cpp">
       <Filter>src\50.Editor</Filter>
     </ClCompile>
-    <ClCompile Include="CommandFunction.cpp">
-      <Filter>src\52.Command</Filter>
+    <ClCompile Include="EditorEvent.cpp">
+      <Filter>src\53.EditorEvent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -74,7 +74,6 @@ namespace fq::game_module
 		/// <returns>Scene Pointer</returns>
 		Scene* GetScene()const;
 
-
 		template <typename T>
 		T& GetComponent();
 

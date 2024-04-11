@@ -146,10 +146,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
-    <ClInclude Include="CommandFunction.h" />
     <ClInclude Include="CommandSystem.h" />
     <ClInclude Include="DebugViewer.h" />
     <ClInclude Include="Editor.h" />
+    <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
     <ClInclude Include="FileDialog.h" />
     <ClInclude Include="GameEngine.h" />
@@ -164,12 +164,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
-    <ClCompile Include="CommandFunction.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="DebugViewer.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="EditorEvent.cpp" />
     <ClCompile Include="EditorProcess.cpp" />
     <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="GameEngine.cpp" />

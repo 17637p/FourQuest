@@ -29,13 +29,13 @@ namespace fq::game_engine
 	/// <summary>
 	/// GameObject 생성 명령
 	/// </summary>
-	class CreateObject : public Command
+	class CreateObjectCommand : public Command
 	{
 	public:
-		CreateObject(fq::game_module::Scene* scene
+		CreateObjectCommand(fq::game_module::Scene* scene
 			, std::shared_ptr<fq::game_module::GameObject> object);
 
-		~CreateObject();
+		~CreateObjectCommand();
 
 		void Excute() override;
 
@@ -46,11 +46,49 @@ namespace fq::game_engine
 		fq::game_module::Scene* mScene;
 	};
 
-	template <typename T>
-	class SetValue : public Command
+	/// <summary>
+	/// GameObject 삭제 명령
+	/// </summary>
+	class DestroyObjectCommand : public Command
 	{
 	public:
-		SetValue(std::function<void(T)> setter, T oldVal, T newVal)
+		DestroyObjectCommand(fq::game_module::Scene* scene
+			, std::shared_ptr<fq::game_module::GameObject> object);
+
+		void Excute() override;
+		void Undo() override;
+
+
+	private:
+		std::shared_ptr<fq::game_module::GameObject> mGameObject;
+		fq::game_module::Scene* mScene;
+	};
+
+	/// <summary>
+	/// 오브젝트 선택 명령
+	/// </summary>
+	class SelectObjectCommand : public Command
+	{
+	public:
+		SelectObjectCommand(fq::game_module::EventManager* eventMgr
+			, std::shared_ptr<fq::game_module::GameObject> current
+			, std::shared_ptr<fq::game_module::GameObject> prev);
+
+		void Excute() override;
+
+		void Undo() override;
+
+	private:
+		std::shared_ptr<fq::game_module::GameObject> mPrevSelect;
+		std::shared_ptr<fq::game_module::GameObject> mCurrentSelect;
+		fq::game_module::EventManager* mEventManager;
+	};
+
+	template <typename T>
+	class SetValueCommand : public Command
+	{
+	public:
+		SetValueCommand(std::function<void(T)> setter, T oldVal, T newVal)
 			:mSetter(setter)
 			, mOldValue(oldVal)
 			, mNewValue(newVal)
@@ -72,10 +110,10 @@ namespace fq::game_engine
 		T mNewValue;
 	};
 
-	class BindFunction : public Command
+	class BindFunctionCommand : public Command
 	{
 	public:
-		BindFunction(std::function<void()> excute, std::function<void()> undo)
+		BindFunctionCommand(std::function<void()> excute, std::function<void()> undo)
 			:mExcute(excute)
 			, mUndo(undo)
 		{}

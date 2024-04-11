@@ -3,18 +3,20 @@
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
-#include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "CommandSystem.h"
 #include "Command.h"
+#include "EditorEvent.h"
 
 fq::game_engine::Hierarchy::Hierarchy()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
 	, mScene(nullptr)
 	, mInputManager(nullptr)
+	, mEventManager(nullptr)
 	, mSelectObject(nullptr)
+	, mSelectObjectHandle{}
 {}
 
 fq::game_engine::Hierarchy::~Hierarchy()
@@ -28,37 +30,44 @@ void fq::game_engine::Hierarchy::Initialize(GameProcess* game, EditorProcess* ed
 	mSelectObject = nullptr;
 
 	mScene = mGameProcess->mSceneManager->GetCurrentScene();
+	mEventManager = mGameProcess->mEventManager.get();
 	mInputManager = mEditorProcess->mInputManager.get();
+
+	// 이벤트 핸들 등록
+	mSelectObjectHandle = mEventManager->RegisterHandle<editor_event::SelectObject>
+		([this](editor_event::SelectObject event) {
+		mSelectObject = event.object;
+			});
 }
 
 void fq::game_engine::Hierarchy::Render()
 {
 	if (ImGui::Begin("Hierarchy"))
 	{
-		BeginPopupContextWindow();
-		BeginSearchBar();
+		beginPopupContextWindow();
+		beginSearchBar();
 
 		if (mSearchString.empty())
 		{
-			BeginHierarchy();
+			beginHierarchy();
 		}
 		else
 		{
-			BeginHierarchyOfSearch();
+			beginHierarchyOfSearch();
 		}
 
 		ImGui::End();
 	}
 }
 
-void fq::game_engine::Hierarchy::BeginPopupContextWindow()
+void fq::game_engine::Hierarchy::beginPopupContextWindow()
 {
 	if (ImGui::BeginPopupContextWindow())
 	{
 		// GameObject를 생성합니다
 		if (ImGui::MenuItem("CreateEmpty"))
 		{
-			mEditorProcess->mCommandSystem->Push<CreateObject>(mScene
+			mEditorProcess->mCommandSystem->Push<CreateObjectCommand>(mScene
 				, std::make_shared<fq::game_module::GameObject>());
 		}
 
@@ -66,14 +75,14 @@ void fq::game_engine::Hierarchy::BeginPopupContextWindow()
 	}
 }
 
-void fq::game_engine::Hierarchy::BeginSearchBar()
+void fq::game_engine::Hierarchy::beginSearchBar()
 {
 	ImGui::SetNextItemWidth(150.f);
 	ImGui::InputText("Search", &mSearchString);
 	ImGui::Separator();
 }
 
-void fq::game_engine::Hierarchy::BeginHierarchy()
+void fq::game_engine::Hierarchy::beginHierarchy()
 {
 	// GameObject를 순회하면서 Bar를 생성합니다
 	for (auto& object : mScene->GetObjectView(true))
@@ -84,12 +93,12 @@ void fq::game_engine::Hierarchy::BeginHierarchy()
 			continue;
 		}
 
-		BeginGameObjectBar(object);
+		beginGameObjectBar(object);
 	}
 }
 
 
-void fq::game_engine::Hierarchy::BeginHierarchyOfSearch()
+void fq::game_engine::Hierarchy::beginHierarchyOfSearch()
 {
 	// GameObject를 순회하면서 Bar를 생성합니다
 	for (auto& object : mScene->GetObjectView(true))
@@ -101,12 +110,12 @@ void fq::game_engine::Hierarchy::BeginHierarchyOfSearch()
 			continue;
 		}
 
-		BeginGameObjectNameBar(object);
+		beginGameObjectNameBar(object);
 	}
 }
 
 
-void fq::game_engine::Hierarchy::BeginGameObjectNameBar(fq::game_module::GameObject& object)
+void fq::game_engine::Hierarchy::beginGameObjectNameBar(fq::game_module::GameObject& object)
 {
 	std::string id = "##" + std::to_string(object.GetID());
 	std::string objectName = object.GetName();
@@ -121,8 +130,8 @@ void fq::game_engine::Hierarchy::BeginGameObjectNameBar(fq::game_module::GameObj
 
 		// 이름이 수정된 경우 Set 명령어 전달합니다
 		// 수명관리를 위해서 shared_ptr로 람다에 전달합니다
-		mEditorProcess->mCommandSystem->Push<SetValue<std::string>>(
-			SetValue<std::string>{ [sObject](std::string name)
+		mEditorProcess->mCommandSystem->Push<SetValueCommand<std::string>>(
+			SetValueCommand<std::string>{ [sObject](std::string name)
 			{
 				sObject->SetName(name);
 			}, sObject->GetName(), objectName }
@@ -130,25 +139,32 @@ void fq::game_engine::Hierarchy::BeginGameObjectNameBar(fq::game_module::GameObj
 	}
 }
 
-void fq::game_engine::Hierarchy::BeginGameObjectBar(fq::game_module::GameObject& object)
+void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject& object)
 {
 	auto* objectT = object.GetComponent<fq::game_module::Transform>();
 	float cursorPosX = 0.f;
 	
+	//  위치 설정 
 	if (!objectT->IsLeaf() || objectT->HasParent())
 	{
 		cursorPosX = ImGui::GetCursorPosX();
 		ImGui::SetCursorPosX(ImGui::GetTreeNodeToLabelSpacing() + cursorPosX);
+	}              
+
+	if (!objectT->HasParent() && objectT->IsLeaf())
+	{
+		ImGui::SetCursorPosX(ImGui::GetTreeNodeToLabelSpacing() + ImGui::GetCursorPos().x);
 	}
 
 	// 선택버튼 관련 처리
-	BegineGameObectSelectButton(object);
-	
+	begineGameObectSelectButton(object);
+	beginPopupContextItem(object);
+
 	// 드래그앤드랍 처리 
-	DragDropGameObject(object);
+	dragDropGameObject(object);
 
 	// 오브젝트 이름
-	BeginGameObjectNameBar(object);
+	beginGameObjectNameBar(object);
 	
 	// Hierarchy 토글
 	auto children = object.GetChildren();
@@ -164,7 +180,7 @@ void fq::game_engine::Hierarchy::BeginGameObjectBar(fq::game_module::GameObject&
 		{
 			for (auto& child : children)
 			{
-				BeginGameObjectBar(*child);
+				beginGameObjectBar(*child);
 			}
 
 			ImGui::TreePop();
@@ -172,7 +188,7 @@ void fq::game_engine::Hierarchy::BeginGameObjectBar(fq::game_module::GameObject&
 	}
 }
 
-void fq::game_engine::Hierarchy::DragDropGameObject(fq::game_module::GameObject& object)
+void fq::game_engine::Hierarchy::dragDropGameObject(fq::game_module::GameObject& object)
 {
 	std::string objectName = object.GetName();
 
@@ -215,12 +231,12 @@ void fq::game_engine::Hierarchy::DragDropGameObject(fq::game_module::GameObject&
 
 			if (childT->GetParentTransform() == parentT)
 			{
-				mEditorProcess->mCommandSystem->Push<BindFunction>
+				mEditorProcess->mCommandSystem->Push<BindFunctionCommand>
 					(removeChild, addChild);
 			}
 			else
 			{
-				mEditorProcess->mCommandSystem->Push<BindFunction>
+				mEditorProcess->mCommandSystem->Push<BindFunctionCommand>
 					(addChild, removeChild);
 			}
 		}
@@ -228,7 +244,7 @@ void fq::game_engine::Hierarchy::DragDropGameObject(fq::game_module::GameObject&
 
 }
 
-void fq::game_engine::Hierarchy::BegineGameObectSelectButton(fq::game_module::GameObject& object)
+void fq::game_engine::Hierarchy::begineGameObectSelectButton(fq::game_module::GameObject& object)
 {
 	// 선택버튼
 	std::string buttonName = " ##buttonName" + std::to_string(object.GetID());
@@ -243,7 +259,9 @@ void fq::game_engine::Hierarchy::BegineGameObectSelectButton(fq::game_module::Ga
 
 	if (ImGui::Button(buttonName.c_str()))
 	{
-		mSelectObject = mScene->GetObjectByID(object.GetID());
+		mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+				mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject
+			});
 	}
 
 	if (isSelected)
@@ -252,5 +270,29 @@ void fq::game_engine::Hierarchy::BegineGameObectSelectButton(fq::game_module::Ga
 	}
 
 	ImGui::SameLine();
+}
+
+void fq::game_engine::Hierarchy::beginPopupContextItem(fq::game_module::GameObject& object)
+{
+	std::string ContextItemName = object.GetName() + "ContextItem";
+
+	if (ImGui::BeginPopupContextItem(ContextItemName.c_str()))
+	{
+		// GameObject를 생성합니다
+		if (ImGui::MenuItem("Destroy"))
+		{
+			mEditorProcess->mCommandSystem->Push<DestroyObjectCommand>(mScene
+				, object.shared_from_this());
+		}
+
+		// GameObject를 생성합니다
+		if (ImGui::MenuItem("CreateEmpty"))
+		{
+			mEditorProcess->mCommandSystem->Push<CreateObjectCommand>(mScene
+				, std::make_shared<fq::game_module::GameObject>());
+		}
+
+		ImGui::EndPopup();
+	}
 }
 
