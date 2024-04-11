@@ -104,6 +104,9 @@
     <ClInclude Include="EditorProcess.h">
       <Filter>include\50.Editor</Filter>
     </ClInclude>
+    <ClInclude Include="CommandFunction.h">
+      <Filter>include\52.Command</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -156,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="EditorProcess.cpp">
       <Filter>src\50.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandFunction.cpp">
+      <Filter>src\52.Command</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

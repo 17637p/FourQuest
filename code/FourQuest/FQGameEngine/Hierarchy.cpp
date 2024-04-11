@@ -203,13 +203,25 @@ void fq::game_engine::Hierarchy::DragDropGameObject(fq::game_module::GameObject&
 				return;
 			}
 
+			auto removeChild = [parentT, childT]()
+				{
+					parentT->RemoveChild(childT);
+				};
+
+			auto addChild = [parentT, childT]() 
+				{
+					parentT->AddChild(childT);
+				};
+
 			if (childT->GetParentTransform() == parentT)
 			{
-				parentT->RemoveChild(childT);
+				mEditorProcess->mCommandSystem->Push<BindFunction>
+					(removeChild, addChild);
 			}
 			else
 			{
-				parentT->AddChild(childT);
+				mEditorProcess->mCommandSystem->Push<BindFunction>
+					(addChild, removeChild);
 			}
 		}
 	}

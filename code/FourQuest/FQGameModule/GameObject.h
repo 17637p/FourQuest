@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <memory>
 
 #include "../FQReflect/FQReflect.h"
 
@@ -14,7 +15,7 @@ namespace fq::game_module
 	/// <summary>
 	/// Component들을 저장하고 관리하는 컨테이너
 	/// </summary>
-	class GameObject
+	class GameObject : public std::enable_shared_from_this<fq::game_module::GameObject>
 	{
 		inline static unsigned int LastID = 0;
 

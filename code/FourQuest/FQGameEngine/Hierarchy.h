@@ -74,6 +74,10 @@ namespace fq::game_engine
 		/// <param name="object">오브젝트</param>
 		void BegineGameObectSelectButton(fq::game_module::GameObject& object);
 
+		/// <summary>
+		/// 드래그 드랍 처리 관련
+		/// </summary>
+		/// <param name="object"></param>
 		void DragDropGameObject(fq::game_module::GameObject& object);
 
 	private:

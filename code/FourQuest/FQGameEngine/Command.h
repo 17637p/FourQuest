@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+
 #include "../FQGameModule/GameModule.h"
 
 namespace fq::game_engine
@@ -51,8 +52,8 @@ namespace fq::game_engine
 	public:
 		SetValue(std::function<void(T)> setter, T oldVal, T newVal)
 			:mSetter(setter)
-			,mOldValue(oldVal)
-			,mNewValue(newVal)
+			, mOldValue(oldVal)
+			, mNewValue(newVal)
 		{}
 
 		void Excute() override
@@ -64,13 +65,35 @@ namespace fq::game_engine
 		{
 			mSetter(mOldValue);
 		}
-	
+
 	private:
 		std::function<void(T)> mSetter;
 		T mOldValue;
 		T mNewValue;
 	};
 
+	class BindFunction : public Command
+	{
+	public:
+		BindFunction(std::function<void()> excute, std::function<void()> undo)
+			:mExcute(excute)
+			, mUndo(undo)
+		{}
+
+		void Excute() override
+		{
+			mExcute();
+		}
+
+		void Undo() override
+		{
+			mUndo();
+		}
+
+	private:
+		std::function<void()> mExcute;
+		std::function<void()> mUndo;
+	};
 
 
 }
