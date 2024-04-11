@@ -6,9 +6,12 @@
 #include "ComponentView.h"
 #include "GameObject.h"
 
+
 namespace fq::game_module
 {
 	class GameObject;
+	class EventManager;
+	class InputManager;
 
 	class Scene
 	{
@@ -19,7 +22,7 @@ namespace fq::game_module
 		/// <summary>
 		/// Scene의 데이터를 로드한다
 		/// </summary>
-		void Initialize(std::string sceneName);
+		void Initialize(std::string sceneName, EventManager* eventMgr, InputManager* inputMgr);
 
 		/// <summary>
 		/// 씬을 시작
@@ -129,11 +132,12 @@ namespace fq::game_module
 		void ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction,
 			bool bIsIncludeToBeDestroyed = false);
 
-
 	private:
 		std::string mSceneName;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
-		unsigned int mLastObjectID;
+
+		InputManager* mInputManager;
+		EventManager* mEventManager;
 	};
 
 

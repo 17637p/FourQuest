@@ -1,11 +1,14 @@
 #pragma once
 #include "IEditorWindow.h"
 
+#include <memory>
 #include <string>
 
 namespace fq::game_module
 {
 	class Scene;
+	class InputManager;
+	class GameObject;
 }
 
 namespace fq::game_engine
@@ -47,13 +50,39 @@ namespace fq::game_engine
 		/// <summary>
 		/// 씬의 게임오브젝트들을 표시하는 창
 		/// </summary>
-		void BeginGameObjectBar();
+		void BeginHierarchy();
+
+		/// <summary>
+		/// 검색할때 나오는 게임오브젝트 표시 창
+		/// </summary>
+		void BeginHierarchyOfSearch();
+
+		/// <summary>
+		/// 게임오브젝트의 이름을 나타내는 바
+		/// </summary>
+		void BeginGameObjectNameBar(fq::game_module::GameObject& object);
+
+		/// <summary>
+		/// 게임오브젝트를 나태내는 바
+		/// </summary>
+		/// <param name="object">정보를 표시하는 오브젝트</param>
+		void BeginGameObjectBar(fq::game_module::GameObject& object);
+
+		/// <summary>
+		/// 게임오브젝트 선택버튼
+		/// </summary>
+		/// <param name="object">오브젝트</param>
+		void BegineGameObectSelectButton(fq::game_module::GameObject& object);
+
+		void DragDropGameObject(fq::game_module::GameObject& object);
 
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 
 		fq::game_module::Scene* mScene;
+		fq::game_module::InputManager* mInputManager;
+		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 
 		std::string mSearchString;
 

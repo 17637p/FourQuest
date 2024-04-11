@@ -1,20 +1,30 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "SceneHelper.h"
+#include "InputManager.h"
+#include "EventManager.h"
+#include "Event.h"
 
 fq::game_module::Scene::Scene()
-	:mLastObjectID(0)
-	,mObjects{}
+	:mObjects{}
 	,mSceneName{}
+	,mInputManager(nullptr)
+	,mEventManager(nullptr)
 {}
 
 fq::game_module::Scene::~Scene()
 {}
 
-void fq::game_module::Scene::Initialize(std::string sceneName)
+void fq::game_module::Scene::Initialize(std::string sceneName, EventManager* eventMgr, InputManager* inputMgr)
 {
 	mSceneName = std::move(sceneName);
+	mEventManager = eventMgr;
+	mInputManager = inputMgr;
 
+	// load
+
+
+	// awake
 	for (const auto& object : mObjects)
 	{
 		object->OnAwake();
@@ -123,14 +133,22 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 	}
 
 	object->SetScene(this);
-
 	SceneHeleper::CheckNameDuplication(*this, *object);
-
+	object->mbIsToBeDestroyed = false;
+	
 	mObjects.push_back(std::move(object));
 }
 
 void fq::game_module::Scene::DestroyGameObject(GameObject* object)
 {
+	if (object->IsToBeDestroyed())
+	{
+		return;
+	}
+
+	object->OnDestroy();
+
+	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
 }
 
 

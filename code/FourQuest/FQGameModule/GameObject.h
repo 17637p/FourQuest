@@ -16,6 +16,8 @@ namespace fq::game_module
 	/// </summary>
 	class GameObject
 	{
+		inline static unsigned int LastID = 0;
+
 	public:
 		using ComponentContainer = std::unordered_map<entt::id_type, std::unique_ptr<Component>>;
 
@@ -182,6 +184,7 @@ namespace fq::game_module
 		Scene* mScene;
 		bool mbIsToBeDestroyed;
 
+		friend class Scene;
 		FQ_REGISTRATION_FRIEND
 	};
 
@@ -209,7 +212,7 @@ namespace fq::game_module
 		assert(mComponents.find(id) == mComponents.end() 
 			&& "가지고있는 컴포넌트입니다.");
 
-		mComponents.insert({ id, std::make_unique<T>(std::forward(args)...) });
+		mComponents.insert({ id, std::make_unique<T>(std::forward<Args>(args)...) });
 
 		T* component = static_cast<T*>(mComponents[id].get());
 

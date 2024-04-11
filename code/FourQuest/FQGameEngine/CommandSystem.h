@@ -3,6 +3,8 @@
 #include <list>
 #include <memory>
 
+#include "Command.h"
+
 namespace fq::game_module
 {
 	class InputManager;
@@ -10,7 +12,6 @@ namespace fq::game_module
 
 namespace fq::game_engine
 {
-	class ICommand;
 	class GameProcess;
 	class EditorProcess;
 
@@ -35,15 +36,10 @@ namespace fq::game_engine
 		/// </summary>
 		void Update();
 
-		/// <summary>
-		/// 새로운 명령을 추가합니다
-		/// 새로운 명령은 명령 리스트에 추가된후 실행됩니다
-		/// </summary>
-		/// <param name="command">새로운 명령</param>
-		void Push(std::unique_ptr<ICommand> command);
-
 		void Clear();
 
+		template <typename T, typename... Args>
+		void Push(Args&&... arg);
 	private:
 		void excute();
 		void undo();
@@ -53,7 +49,25 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 		fq::game_module::InputManager* mInputManager;
 
-		std::list<std::unique_ptr<ICommand>> mCommandList;
-		std::list<std::unique_ptr<ICommand>>::iterator mCommandOrder;
+		std::list<std::unique_ptr<Command>> mCommandList;
+		std::list<std::unique_ptr<Command>>::iterator mCommandOrder;
 	};
+
+	template <typename T, typename...Args>
+	void fq::game_engine::CommandSystem::Push(Args&&... args)
+	{
+		// 새로운 명령이 들어왔으므로 기존에 있던 명령을 지웁니다
+		mCommandOrder = mCommandList.erase(mCommandOrder, mCommandList.end());
+
+		// 새로운 명령을 추가합니다.
+		mCommandOrder = mCommandList.insert(mCommandOrder
+			, std::make_unique<T>(std::forward<Args>(args)...));
+
+		// 명령을 실행합니다
+		(*mCommandOrder)->Excute();
+
+		// 순서는 end입니다
+		mCommandOrder = mCommandList.end();
+	}
+
 }

@@ -4,8 +4,6 @@
 
 FQ_REGISTRATION
 {
-
-
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
 		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::tag::name, "mID") 
@@ -14,7 +12,7 @@ FQ_REGISTRATION
 }
 
 fq::game_module::GameObject::GameObject()
-	:mID(0)
+	:mID(LastID++)
 	,mName("GameObject")
 	,mTag(Tag::Untagged)
 	,mComponents{}
@@ -72,6 +70,8 @@ void fq::game_module::GameObject::OnUpdate(float dt)
 
 void fq::game_module::GameObject::OnDestroy()
 {
+	mbIsToBeDestroyed = true;
+
 	for (const auto& [key, component] : mComponents)
 	{
 		component->OnDestroy();

@@ -120,6 +120,19 @@ namespace fq::game_module
 		/// <returns>계층구조의 자식들</returns>
 		const std::vector<Transform*>& GetChildren()const { return mChidren; }
 
+		/// <summary>
+		/// transform이 자식계층에 속하고 있는지 확인합니다
+		/// </summary>
+		/// <param name="transfrom">확인할 transform</param>
+		/// <returns>속하면 true, 그렇지 않으면 false</returns>
+		bool IsDescendant(Transform* transfrom)const;
+
+		/// <summary>
+		/// 자식 계층의 여부를 확인합니다
+		/// </summary>
+		/// <returns>자식이 없으면 true, 그렇지않으면 false</returns>
+		bool IsLeaf()const;
+
 	private:
 		void updateMatrix();
 

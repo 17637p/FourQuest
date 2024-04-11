@@ -10,7 +10,7 @@
 
 fq::game_engine::ToolEngine::ToolEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
-	,mEditor(std::make_unique<Editor>())
+	, mEditor(std::make_unique<Editor>())
 {}
 
 fq::game_engine::ToolEngine::~ToolEngine()
@@ -25,7 +25,9 @@ void fq::game_engine::ToolEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mGameProcess->mSceneManager->Initialize("example", mGameProcess->mEventManager.get());
+	mGameProcess->mSceneManager->Initialize("example"
+		, mGameProcess->mEventManager.get()
+		, mGameProcess->mInputManager.get());
 
 	// Editor 초기화
 	mEditor->Initialize(mGameProcess.get());
@@ -50,13 +52,22 @@ void fq::game_engine::ToolEngine::Process()
 		}
 		else
 		{
+			// 화면 크기 조정
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
 				mGameProcess->mWindowSystem->OnResize();
 			}
-
-			mGameProcess->mTimeManager->Update();
+			
+			// 시간,입력 처리
+			float deltaTime = mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update();
+
+			// 물리처리
+			mGameProcess->mSceneManager->FixedUpdate(0.f);
+			
+			mGameProcess->mSceneManager->Update(deltaTime);
+			mGameProcess->mSceneManager->LateUpdate(deltaTime);
+
 			mEditor->Update();
 			mEditor->NewFrame();
 			mEditor->Render();

@@ -95,7 +95,7 @@
     <ClInclude Include="CommandSystem.h">
       <Filter>include\52.Command</Filter>
     </ClInclude>
-    <ClInclude Include="ICommand.h">
+    <ClInclude Include="Command.h">
       <Filter>include\52.Command</Filter>
     </ClInclude>
     <ClInclude Include="imgui_stdlib.h">
@@ -148,7 +148,7 @@
     <ClCompile Include="imgui_stdlib.cpp">
       <Filter>src\50.Editor\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="ICommand.cpp">
+    <ClCompile Include="Command.cpp">
       <Filter>src\52.Command</Filter>
     </ClCompile>
     <ClCompile Include="CommandSystem.cpp">

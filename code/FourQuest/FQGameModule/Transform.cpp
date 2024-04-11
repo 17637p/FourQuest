@@ -1,5 +1,6 @@
 #include "Transform.h"
 
+#include <queue>
 
 FQ_REGISTRATION
 {
@@ -162,5 +163,37 @@ fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /
 		*cloneTransform = *this;
 	}
 	return cloneTransform;
+}
+
+bool fq::game_module::Transform::IsDescendant(Transform* transfrom) const
+{
+	std::queue<const Transform*> q;
+
+	q.push(this);
+
+	while (!q.empty())
+	{
+		const Transform* tmp = q.front();
+		q.pop();
+
+		if (tmp == transfrom)
+		{
+			return true;
+		}
+		if (!tmp->IsLeaf())
+		{
+			for (Transform* child : tmp->GetChildren())
+			{
+				q.push(child);
+			}
+		}
+	}
+
+	return false;
+}
+
+bool fq::game_module::Transform::IsLeaf() const
+{
+	return mChidren.empty();
 }
 

@@ -145,7 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ICommand.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
     <ClInclude Include="DebugViewer.h" />
     <ClInclude Include="Editor.h" />
@@ -162,7 +162,7 @@
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ICommand.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="DebugViewer.cpp" />
     <ClCompile Include="dllExport.h" />
