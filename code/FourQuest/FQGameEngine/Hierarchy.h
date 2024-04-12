@@ -40,7 +40,8 @@ namespace fq::game_engine
 
 	private:
 		/// <summary>
-		/// 마우스 우클릭하면 나오는 창
+		/// 마우스 우클릭 창
+		/// 오브젝트 생성, 삭제 명령 처리
 		/// </summary>
 		void beginPopupContextWindow();
 

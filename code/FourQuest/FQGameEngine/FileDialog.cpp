@@ -2,21 +2,26 @@
 
 #include <imgui.h>
 #include <string>
-#include <iostream>
+#include <algorithm>
 #include <directxtk/WICTextureLoader.h>
 
+#include "imgui_stdlib.h"
+#include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
+#include "EditorProcess.h"
 
 namespace fs = std::filesystem;
 
 fq::game_engine::FileDialog::FileDialog()
 	:mResourcePath{}
 	, mSelectPath{}
+	, mDragDropPath{}
 	, mbIsOpen{ true }
 	, mTextures{}
 	, mIconTexture{}
 	, mDevice(nullptr)
-	, mIconSize{}
+	, mIconSize{ 100.f,100.f }
+	, mEditorProcess(nullptr)
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -28,11 +33,26 @@ void fq::game_engine::FileDialog::Render()
 	if (ImGui::Begin("FileDialog"), &mbIsOpen)
 	{
 		beginLeftChildWindow();
-
 		beginRightChildWindow();
 
 		ImGui::End();
 	}
+}
+
+void fq::game_engine::FileDialog::Initialize(EditorProcess* editor, ID3D11Device* device)
+{
+	mEditorProcess = editor;
+	mResourcePath = fq::path::GetResourcePath();
+	mSelectPath = mResourcePath;
+	mDevice = device;
+
+	loadIcon();
+}
+
+void fq::game_engine::FileDialog::Finalize()
+{
+	clearTexture();
+	clearIconTexture();
 }
 
 void fq::game_engine::FileDialog::beginLeftChildWindow()
@@ -45,16 +65,6 @@ void fq::game_engine::FileDialog::beginLeftChildWindow()
 	}
 
 	ImGui::SameLine();
-}
-
-void fq::game_engine::FileDialog::Initialize(ID3D11Device* device)
-{
-	mResourcePath = fq::path::GetResourcePath();
-	mSelectPath = mResourcePath;
-	mDevice = device;
-	mIconSize = { 100.f,100.f };
-
-	loadIcon();
 }
 
 void fq::game_engine::FileDialog::beginDirectory(const Path& path)
@@ -82,7 +92,6 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 		ImGui::PopStyleColor();
 	}
 
-
 	const auto directoryList = fq::path::GetDirectoryList(path);
 	// 자식 디텍토리가 있는경우 
 	if (!directoryList.empty())
@@ -95,7 +104,17 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 		{
 			for (const auto& directory : directoryList)
 			{
-				beginDirectory(directory);
+				// ignore
+				if (directory.filename() == ".svn"
+					|| directory.filename() == "internal")
+				{
+					continue;
+				}
+
+				if (fs::is_directory(directory))
+				{
+					beginDirectory(directory);
+				}
 			}
 
 			ImGui::TreePop();
@@ -110,22 +129,55 @@ void fq::game_engine::FileDialog::beginRightChildWindow()
 	if (ImGui::BeginChild("directory view"
 		, ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
 	{
-		// 현재 폴더 경로
+		beginPopupContextWindow();
+
+		// 현재 폴더 경로 
 		ImGui::Text(mSelectPath.string().c_str());
 		ImGui::Separator();
 
+		// ignore 파일 제거
 		auto directoryList = fq::path::GetDirectoryList(mSelectPath.string().c_str());
+		directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+			[](const auto path)
+			{
+				if (path.filename() == ".svn" || path.filename() == "internal")
+				{
+					return true;
+				}
+				return false;
+			}), directoryList.end());
 
-		float windowWidth = ImGui::GetWindowWidth();
+		// 디렉토리가 파일보다 우선순위가 높음
+		std::sort(directoryList.begin(), directoryList.end()
+			, [](const Path& lfm, const Path& rfm)
+			{
+				if (fs::is_directory(lfm) && !fs::is_directory(rfm))
+				{
+					return true;
+				}
 
-	 	float iconInterval =  windowWidth / mIconSize.x;
+				return false;
+			});
 
+
+		float fileSpace = mIconSize.x + 50.f;
+
+		int maxWidth = max(static_cast<int>(ImGui::GetWindowWidth() / fileSpace), 1);
+
+		float startCusorPosY = ImGui::GetCursorPosY();
+
+		// 현재 폴더 경로의 파일들을 그립니다
 		for (int i = 0; i < directoryList.size(); ++i)
 		{
-			ImGui::SetCursorPos({ iconInterval * i ,0 });
-			DrawFile(directoryList[i]);
-		}
+			if (directoryList[i].filename() == ".svn")
+			{
+				continue;
+			}
 
+			ImVec2 cursorPos = { fileSpace * (i % maxWidth) , startCusorPosY + fileSpace * (i / maxWidth) };
+			ImGui::SetCursorPos(cursorPos);
+			drawFile(directoryList[i]);
+		}
 
 		ImGui::EndChild();
 	}
@@ -155,26 +207,70 @@ void fq::game_engine::FileDialog::loadIcon()
 	}
 }
 
-void fq::game_engine::FileDialog::DrawFile(const Path& path)
+void fq::game_engine::FileDialog::drawFile(const Path& path)
 {
 	auto extension = path.extension();
-
 	auto cursorPos = ImGui::GetCursorPos();
-
-
-	std::string fileName = path.filename().string();
-
-	ImGui::Text(fileName.c_str());
-	
-	ImGui::SameLine();
-
-	ImGui::SetCursorPos({ cursorPos.x , cursorPos.y });
 
 	if (fs::is_directory(path))
 	{
+		ImVec2 min = ImGui::GetCursorScreenPos();
+		ImVec2 max = { min.x + mIconSize.x, min.y + mIconSize.y };
 		ImGui::Image(getIcon(L"folder.png"), mIconSize);
+	
+		if (isMouseHoveringRect(min, max)
+			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+		{
+			mSelectPath = path;
+		}
+
 	}
-	ImGui::SetCursorPosX(cursorPos.x);
+	else if (extension == ".fbx")
+	{
+		ImGui::Image(getIcon(L"fbx.png"), mIconSize);
+	}
+	else if (extension == ".json")
+	{
+		ImGui::Image(getIcon(L"json.png"), mIconSize);
+	}
+	else if (extension == ".mp3")
+	{
+		ImGui::Image(getIcon(L"mp3.png"), mIconSize);
+	}
+	else if (extension == ".wav")
+	{
+		ImGui::Image(getIcon(L"wav.png"), mIconSize);
+	}
+	else if (extension == ".png" || extension == ".jpg")
+	{
+		drawTextureImage(path);
+	}
+	else
+	{
+		ImGui::Image(getIcon(L"error.png"), mIconSize);
+	}
+
+
+	beginDragDrop(path);
+
+	ImGui::SetCursorPos({ cursorPos.x, cursorPos.y + mIconSize.y });
+
+	ImGui::PushItemWidth(100);
+
+	// 파일 이름 
+	std::string fileName = path.filename().string();
+	std::string textName = "##" + fileName;
+
+	if (ImGui::InputText(textName.c_str(), &fileName)
+		&& mEditorProcess->mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	{
+		fs::path newFileName = path.parent_path();
+		newFileName += "//" + fileName;
+
+		fs::rename(path, newFileName);
+	}
+
+	ImGui::PopItemWidth();
 }
 
 ID3D11ShaderResourceView* fq::game_engine::FileDialog::getIcon(const std::wstring& name)
@@ -187,5 +283,95 @@ ID3D11ShaderResourceView* fq::game_engine::FileDialog::getIcon(const std::wstrin
 	}
 
 	return iter->second;
+}
+
+void fq::game_engine::FileDialog::beginDragDrop(const Path& path)
+{
+	// Drag 처리
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+	{
+		mDragDropPath = path;
+
+		ImGui::Text(mDragDropPath.string().c_str());
+
+		ImGui::SetDragDropPayload("Path", &mDragDropPath
+			, sizeof(Path));
+		ImGui::EndDragDropSource();
+	}
+
+}
+
+void fq::game_engine::FileDialog::drawTextureImage(const Path& path)
+{
+	auto iter = mTextures.find(path);
+
+	ID3D11ShaderResourceView* texture = nullptr;
+
+	if (iter == mTextures.end())
+	{
+		texture = loadTexture(path);
+		mTextures.insert({ path, texture });
+	}
+	else
+	{
+		texture = iter->second;
+	}
+	ImGui::Image(texture, mIconSize);
+}
+
+void fq::game_engine::FileDialog::clearTexture()
+{
+	for (auto& [path, texture] : mTextures)
+	{
+		if (texture)
+		{
+			texture->Release();
+			texture = nullptr;
+		}
+	}
+
+	mTextures.clear();
+}
+
+
+void fq::game_engine::FileDialog::clearIconTexture()
+{
+	for (auto& [path, texture] : mIconTexture)
+	{
+		if (texture)
+		{
+			texture->Release();
+			texture = nullptr;
+		}
+	}
+
+	mIconTexture.clear();
+}
+
+bool fq::game_engine::FileDialog::isMouseHoveringRect(const ImVec2& min, const ImVec2& max)
+{
+	const ImVec2 mouse_pos = ImGui::GetMousePos();
+	return mouse_pos.x >= min.x && mouse_pos.y >= min.y && mouse_pos.x <= max.x && mouse_pos.y <= max.y;
+}
+
+void fq::game_engine::FileDialog::beginPopupContextWindow()
+{
+	if (ImGui::BeginPopupContextWindow())
+	{
+		// GameObject를 생성합니다
+		if (ImGui::MenuItem("Create Directory"))
+		{
+			auto directory = mSelectPath;
+
+			directory += "\\dir";
+
+			while (!fs::create_directory(directory))
+			{
+				directory += "!";
+			}
+		}
+
+		ImGui::EndPopup();
+	}
 }
 

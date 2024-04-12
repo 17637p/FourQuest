@@ -57,10 +57,6 @@ std::vector<std::filesystem::path> fq::path::GetDirectoryList(const std::filesys
 	{
 		// ignore list 
 		auto fileName =  entry.path().filename();
-		if (fileName == ".svn")
-		{
-			continue;
-		}
 		directoryList.push_back(entry.path());
 	}
 

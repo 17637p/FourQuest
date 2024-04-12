@@ -38,7 +38,7 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 	mEditorProcess->mInputManager->Initialize(process->mWindowSystem->GetHWND());
 	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
-	mEditorProcess->mFileDialog->Initialize(mDevice);
+	mEditorProcess->mFileDialog->Initialize( mEditorProcess.get(),mDevice);
 }
 
 void fq::game_engine::Editor::Finalize()
@@ -72,10 +72,12 @@ void fq::game_engine::Editor::initializeImGui()
 	ImGui_ImplDX11_Init(mDevice, mDeviceContext);
 
 	// 폰트 설정
-	/*io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\MalangmalangR.ttf",
+	std::string fontPath = path::GetResourcePath().string() + "\\internal\\font\\MalangmalangR.ttf";
+
+	io.Fonts->AddFontFromFileTTF(fontPath.c_str(),
 		25.f,
 		NULL,
-		io.Fonts->GetGlyphRangesKorean());*/
+		io.Fonts->GetGlyphRangesKorean());
 
 	{
 		auto& colors = ImGui::GetStyle().Colors;
