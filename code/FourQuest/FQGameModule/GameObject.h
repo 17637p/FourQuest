@@ -15,7 +15,7 @@ namespace fq::game_module
 	/// <summary>
 	/// Component들을 저장하고 관리하는 컨테이너
 	/// </summary>
-	class GameObject : public std::enable_shared_from_this<fq::game_module::GameObject>
+	class GameObject : public std::enable_shared_from_this<GameObject>
 	{
 		inline static unsigned int LastID = 0;
 
