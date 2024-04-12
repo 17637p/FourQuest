@@ -5,12 +5,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="include\01.Engine">
-      <UniqueIdentifier>{0a8ac1d8-343d-4da7-b2c0-497bb8a5733b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\02.GameProcess">
-      <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\03.System">
       <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
     </Filter>
@@ -56,6 +50,12 @@
     </Filter>
     <Filter Include="include\50.Editor\imgui">
       <UniqueIdentifier>{f447241a-c2c1-4cc2-86e2-14889ac66a83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Engine">
+      <UniqueIdentifier>{0a8ac1d8-343d-4da7-b2c0-497bb8a5733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.GameProcess">
+      <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,9 +127,6 @@
     <ClCompile Include="WindowSystem.cpp">
       <Filter>src\03.System</Filter>
     </ClCompile>
-    <ClCompile Include="dllExport.h">
-      <Filter>include\00.DLL</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>src\00.DLL</Filter>
     </ClCompile>
@@ -162,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="CommandFunction.cpp">
       <Filter>src\52.Command</Filter>
+    </ClCompile>
+    <ClCompile Include="dllExport.h">
+      <Filter>include\00.DLL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -16,8 +16,6 @@ void fq::game_engine::DebugViewer::Render()
 {
 	if (ImGui::Begin("DebugViewer"))
 	{
-		
-
 
 
 		ImGui::End();
