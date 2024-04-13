@@ -127,6 +127,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="D3D11ResourceType.h" />
+    <ClInclude Include="D3D11View.h" />
+    <ClInclude Include="Define.h" />
+    <ClInclude Include="D3D11Device.h" />
+    <ClInclude Include="D3D11State.h" />
+    <ClInclude Include="IFQGraphics.h" />
+    <ClInclude Include="ResourceBase.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="D3D11ResourceManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D3D11Device.cpp" />
+    <ClCompile Include="D3D11State.cpp" />
+    <ClCompile Include="D3D11View.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceBase.cpp" />
+    <ClCompile Include="D3D11ResourceManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

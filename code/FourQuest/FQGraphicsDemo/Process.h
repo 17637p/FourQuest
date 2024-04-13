@@ -1,6 +1,9 @@
 #include "BaseWindow.h"
 
 #pragma once
+
+namespace fq_graphics { class Renderer; }
+
 class Process : public BaseWindow<Process>
 {
 public:
@@ -26,13 +29,16 @@ private:
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
-	const int m_windowPosX;
-	const int m_windowPosY;
+	const int mWindowPosX;
+	const int mWindowPosY;
 
 	// 화면 크기
-	const int m_screenWidth;
-	const int m_screenHeight;
+	const int mScreenWidth;
+	const int mScreenHeight;
 
-	bool m_resizing;
+	bool mResizing;
+
+	// Graphics
+	fq_graphics::Renderer* mTestGrphics;
 };
 

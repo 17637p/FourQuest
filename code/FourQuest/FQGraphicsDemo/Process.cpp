@@ -3,21 +3,25 @@
 //#include "GUIManager.h"
 #include "InputManager.h"
 
+//temp
+#include "../FQGraphics/Renderer.h"
+
 Process::Process()
 	:
-	m_windowPosX(0), 
-	m_windowPosY(0),
-	m_screenWidth(1920), 
-	m_screenHeight(1080),
-	m_resizing(false)
+	mWindowPosX(0), 
+	mWindowPosY(0),
+	mScreenWidth(1920), 
+	mScreenHeight(1080),
+	mResizing(false)
 	//m_timer(nullptr),
 	//m_pRenderer(nullptr)
 {
-	CreateHWND(L"FQGraphicsDemo", WS_OVERLAPPEDWINDOW, m_windowPosX, m_windowPosY, m_screenWidth, m_screenHeight);
+	CreateHWND(L"FQGraphicsDemo", WS_OVERLAPPEDWINDOW, mWindowPosX, mWindowPosY, mScreenWidth, mScreenHeight);
 	ShowWindow(mHwnd, SW_SHOWNORMAL);
 
 	//m_pRenderer = EngineExporter::GetEngine();
 	//_guiManager = new ImpGraphics::GUIManager;
+
 }
 
 Process::~Process()
@@ -34,6 +38,9 @@ bool Process::Init(HINSTANCE hInstance)
 
 	InputManager::GetInstance().Init(mHwnd);
 	//m_timer = std::make_unique<GameTimer>();
+
+	mTestGrphics = new fq_graphics::Renderer;
+	mTestGrphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
 	return true;
 }
@@ -115,6 +122,7 @@ void Process::Update()
 
 void Process::Render()
 {
+	mTestGrphics->BeginRender();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
 	//
@@ -133,4 +141,5 @@ void Process::Render()
 	//_guiManager->Render();
 	///// 그리기를 끝낸다.
 	//m_pRenderer->EndRender();
+	mTestGrphics->EndRender();
 }
