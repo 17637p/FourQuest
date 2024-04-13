@@ -102,7 +102,7 @@ void fq::game_module::Transform::SetTransformMatrix(DirectX::SimpleMath::Matrix 
 
 void fq::game_module::Transform::SetParent(Transform* parent)
 {
-	if (parent == mParent || parent == this)
+	if (parent == mParent || parent == this || IsDescendant(parent))
 	{
 		return;
 	}

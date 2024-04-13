@@ -21,9 +21,15 @@ fq::game_module::ObjectManager::~ObjectManager()
 
 std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::ObjectManager::LoadPrefab(const std::filesystem::path& filePath)
 {
+
 	// 1. Prefab데이터 불러오기
 	std::ifstream readData(filePath);
-	json prefabJson;
+
+	// json 객체는 key 값으로 정렬하기때문에 
+	// ordered_json을 사용해서 객체를 정렬하지 않습니다.
+	//https://github.com/nlohmann/json/blob/develop/README.md#order-of-object-keys
+	nlohmann::ordered_json prefabJson;
+
 	if (readData.is_open())
 	{
 		readData >> prefabJson;
@@ -74,7 +80,7 @@ std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::Objec
 
 void fq::game_module::ObjectManager::SavePrefab(GameObject* object, const std::filesystem::path& directory)
 {
-	json prefabData;
+	nlohmann::ordered_json prefabData;
 
 	std::queue<GameObject*> objectQueue;
 	objectQueue.push(object);

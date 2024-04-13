@@ -392,10 +392,7 @@ void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
 
 			mGameProcess->mObjectManager->SavePrefab(dropObject, mSelectPath);
 		}
-
+		ImGui::EndDragDropTarget();
 	}
-	
-
-
 }
 

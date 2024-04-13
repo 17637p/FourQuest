@@ -220,6 +220,7 @@ void fq::game_engine::Hierarchy::dragDropGameObject(fq::game_module::GameObject&
 
 			if (childT->IsDescendant(parentT))
 			{
+				ImGui::EndDragDropTarget();
 				return;
 			}
 
