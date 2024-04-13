@@ -89,7 +89,8 @@ void fq::game_module::ObjectManager::SavePrefab(GameObject* object, const std::f
 
 		std::string name;
 
-		if (parent == nullptr)
+		// 자신은 부모가 있어도 저장할때는 제거합니다
+		if (parent == nullptr || tmp == object)
 		{
 			name = object->GetName();
 		}

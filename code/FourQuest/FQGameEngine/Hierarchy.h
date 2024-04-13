@@ -84,10 +84,15 @@ namespace fq::game_engine
 		void begineGameObectSelectButton(fq::game_module::GameObject& object);
 
 		/// <summary>
-		/// 드래그 드랍 처리 관련
+		/// 드래그 드랍 게임오브젝트 처리
 		/// </summary>
 		/// <param name="object"></param>
 		void dragDropGameObject(fq::game_module::GameObject& object);
+
+		/// <summary>
+		/// 드래그 드랍 프리팹 처리
+		/// </summary>
+		void dragDropPrefab();
 
 	private:
 		GameProcess* mGameProcess;

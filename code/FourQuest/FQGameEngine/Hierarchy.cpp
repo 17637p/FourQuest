@@ -44,20 +44,24 @@ void fq::game_engine::Hierarchy::Render()
 {
 	if (ImGui::Begin("Hierarchy"))
 	{
-		beginPopupContextWindow();
 		beginSearchBar();
 
-		if (mSearchString.empty())
+		if (ImGui::BeginChild("HierarchyChild"))
 		{
-			beginHierarchy();
+			beginPopupContextWindow();
+			if (mSearchString.empty())
+			{
+				beginHierarchy();
+			}
+			else
+			{
+				beginHierarchyOfSearch();
+			}
 		}
-		else
-		{
-			beginHierarchyOfSearch();
-		}
-
-		ImGui::End();
+		ImGui::EndChild();
+		dragDropPrefab();
 	}
+	ImGui::End();
 }
 
 void fq::game_engine::Hierarchy::beginPopupContextWindow()
@@ -143,13 +147,13 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 {
 	auto* objectT = object.GetComponent<fq::game_module::Transform>();
 	float cursorPosX = 0.f;
-	
+
 	//  위치 설정 
 	if (!objectT->IsLeaf() || objectT->HasParent())
 	{
 		cursorPosX = ImGui::GetCursorPosX();
 		ImGui::SetCursorPosX(ImGui::GetTreeNodeToLabelSpacing() + cursorPosX);
-	}              
+	}
 
 	if (!objectT->HasParent() && objectT->IsLeaf())
 	{
@@ -165,7 +169,7 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 
 	// 오브젝트 이름
 	beginGameObjectNameBar(object);
-	
+
 	// Hierarchy 토글
 	auto children = object.GetChildren();
 
@@ -204,12 +208,12 @@ void fq::game_engine::Hierarchy::dragDropGameObject(fq::game_module::GameObject&
 	// Drop 처리
 	if (ImGui::BeginDragDropTarget())
 	{
-		const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("GameObject");
+		const ImGuiPayload* PathPayLoad = ImGui::AcceptDragDropPayload("GameObject");
 
-		if (payLoad)
+		if (PathPayLoad)
 		{
 			fq::game_module::GameObject* dropObject
-				= static_cast<fq::game_module::GameObject*>(payLoad->Data);
+				= static_cast<fq::game_module::GameObject*>(PathPayLoad->Data);
 
 			auto* parentT = object.GetComponent<fq::game_module::Transform>();
 			auto* childT = dropObject->GetComponent<fq::game_module::Transform>();
@@ -224,7 +228,7 @@ void fq::game_engine::Hierarchy::dragDropGameObject(fq::game_module::GameObject&
 					parentT->RemoveChild(childT);
 				};
 
-			auto addChild = [parentT, childT]() 
+			auto addChild = [parentT, childT]()
 				{
 					parentT->AddChild(childT);
 				};
@@ -240,6 +244,7 @@ void fq::game_engine::Hierarchy::dragDropGameObject(fq::game_module::GameObject&
 					(addChild, removeChild);
 			}
 		}
+		ImGui::EndDragDropTarget();
 	}
 
 }
@@ -293,6 +298,35 @@ void fq::game_engine::Hierarchy::beginPopupContextItem(fq::game_module::GameObje
 		}
 
 		ImGui::EndPopup();
+	}
+}
+
+void fq::game_engine::Hierarchy::dragDropPrefab()
+{
+	// Drop 처리
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* path
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			// 일단은 Prefab은 json형식입니다
+			if (path->extension() != ".json")
+			{
+				return;
+			}
+
+			auto prefab = mGameProcess->mObjectManager->LoadPrefab(*path);
+
+			for (const auto& object : prefab)
+			{
+				mScene->AddGameObject(object);
+			}
+		}
+		ImGui::EndDragDropTarget();
 	}
 }
 

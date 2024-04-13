@@ -17,9 +17,9 @@ void fq::game_engine::Inspector::Render()
 {
 	if (ImGui::Begin("Inspector"))
 	{
-		
 
 
-		ImGui::End();
+
 	}
+	ImGui::End();
 }

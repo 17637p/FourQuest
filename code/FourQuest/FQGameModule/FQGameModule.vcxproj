@@ -157,7 +157,6 @@
     <ClInclude Include="FunctionTraits.h" />
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameModuleEnum.h" />
-    <ClInclude Include="GameModuleType.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectIterator.h" />
     <ClInclude Include="GameObjectView.h" />

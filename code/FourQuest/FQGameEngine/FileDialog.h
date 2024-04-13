@@ -9,6 +9,7 @@
 
 namespace fq::game_engine
 {
+	class GameProcess;
 	class EditorProcess;
 
 	/// <summary>
@@ -25,7 +26,7 @@ namespace fq::game_engine
 		/// <summary>
 		/// 현재 리소스 경로를 초기화합니다
 		/// </summary>
-		void Initialize(EditorProcess* editor,ID3D11Device* device);
+		void Initialize(GameProcess* game, EditorProcess* editor,ID3D11Device* device);
 
 		/// <summary>
 		/// 로드한 리소스 해제
@@ -42,44 +43,29 @@ namespace fq::game_engine
 		/// <summary>
 		/// 파일 디랙토리 관련 창
 		/// </summary>
-		void beginLeftChildWindow();
+		void beginWindow_FilePathWindow();
 		void beginDirectory(const Path& path);
-
 
 		/// <summary>
 		/// 파일 디랙토리안에 리소스 창
 		/// </summary>
-		void beginRightChildWindow();
+		void beginWindow_FileList();
+		void beginPopupContextWindow_FileList();
+		void beginDragDropTarget_FileList();
 
-		void beginPopupContextWindow();
-
-		/// <summary>
-		/// 아이콘 로드
-		/// </summary>
 		void loadIcon();
-
-		void beginDragDrop(const Path& path);
-
+		void beginDragDrop_File(const Path& path);
 		void drawFile(const Path& path);
-
 		void drawTextureImage(const Path& path);
-
 		ID3D11ShaderResourceView* getIcon(const std::wstring& name);
-
 		ID3D11ShaderResourceView* loadTexture(const Path& path);
 
 		void clearTexture();
 		void clearIconTexture();
 
-		/// <summary>
-		/// 마우스가 min max 내부에 있는지 확인합니다
-		/// </summary>
-		/// <param name="min">왼쪽 상단</param>
-		/// <param name="max">오른쪽 하단</param>
-		/// <returns>있으면 true, 그렇지 않으면 false</returns>
 		bool isMouseHoveringRect(const ImVec2& min, const ImVec2& max);
-
 	private:
+		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 
 		Path mResourcePath;

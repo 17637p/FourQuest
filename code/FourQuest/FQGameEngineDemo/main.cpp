@@ -53,7 +53,6 @@ FQ_REGISTRATION
 int main()
 {
 	ObjectManager om;
-	SimpleMathRelfection d;
 
 	GameObject object;
 

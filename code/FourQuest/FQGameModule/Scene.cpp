@@ -23,7 +23,6 @@ void fq::game_module::Scene::Initialize(std::string sceneName, EventManager* eve
 
 	// load
 
-
 	// awake
 	for (const auto& object : mObjects)
 	{
@@ -137,6 +136,8 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 	object->mbIsToBeDestroyed = false;
 	
 	mObjects.push_back(std::move(object));
+
+	mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
 }
 
 void fq::game_module::Scene::DestroyGameObject(GameObject* object)

@@ -107,9 +107,6 @@
     <ClInclude Include="GameModuleEnum.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
-    <ClInclude Include="GameModuleType.h">
-      <Filter>include\00.Define</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectManager.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>

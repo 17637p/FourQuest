@@ -147,7 +147,8 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
-    <ClInclude Include="DebugViewer.h" />
+    <ClInclude Include="GamePlayWindow.h" />
+    <ClInclude Include="LogWindow.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
@@ -159,13 +160,16 @@
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="imgui_stdlib.h" />
     <ClInclude Include="Inspector.h" />
+    <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="Resgistration.h" />
     <ClInclude Include="ToolEngine.h" />
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
-    <ClCompile Include="DebugViewer.cpp" />
+    <ClCompile Include="GamePlayWindow.cpp" />
+    <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Editor.cpp" />
@@ -179,6 +183,8 @@
     <ClCompile Include="IEngine.cpp" />
     <ClCompile Include="imgui_stdlib.cpp" />
     <ClCompile Include="Inspector.cpp" />
+    <ClCompile Include="MenuBar.cpp" />
+    <ClCompile Include="Resgistration.cpp" />
     <ClCompile Include="ToolEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
   </ItemGroup>

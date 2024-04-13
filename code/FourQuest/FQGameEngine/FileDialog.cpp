@@ -8,6 +8,7 @@
 #include "imgui_stdlib.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
+#include "GameProcess.h"
 #include "EditorProcess.h"
 
 namespace fs = std::filesystem;
@@ -22,6 +23,7 @@ fq::game_engine::FileDialog::FileDialog()
 	, mDevice(nullptr)
 	, mIconSize{ 100.f,100.f }
 	, mEditorProcess(nullptr)
+	, mGameProcess(nullptr)
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -32,15 +34,16 @@ void fq::game_engine::FileDialog::Render()
 {
 	if (ImGui::Begin("FileDialog"), &mbIsOpen)
 	{
-		beginLeftChildWindow();
-		beginRightChildWindow();
+		beginWindow_FilePathWindow();
 
-		ImGui::End();
+		beginWindow_FileList();
 	}
+	ImGui::End();
 }
 
-void fq::game_engine::FileDialog::Initialize(EditorProcess* editor, ID3D11Device* device)
+void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* editor, ID3D11Device* device)
 {
+	mGameProcess = game;
 	mEditorProcess = editor;
 	mResourcePath = fq::path::GetResourcePath();
 	mSelectPath = mResourcePath;
@@ -55,14 +58,13 @@ void fq::game_engine::FileDialog::Finalize()
 	clearIconTexture();
 }
 
-void fq::game_engine::FileDialog::beginLeftChildWindow()
+void fq::game_engine::FileDialog::beginWindow_FilePathWindow()
 {
-	if (ImGui::BeginChild("FileSystem", ImVec2(200, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX))
+	if (ImGui::BeginChild("FilePathWinodw", ImVec2(200, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX))
 	{
 		beginDirectory(mResourcePath);
-
-		ImGui::EndChild();
 	}
+	ImGui::EndChild();
 
 	ImGui::SameLine();
 }
@@ -124,12 +126,12 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 }
 
-void fq::game_engine::FileDialog::beginRightChildWindow()
+void fq::game_engine::FileDialog::beginWindow_FileList()
 {
-	if (ImGui::BeginChild("directory view"
+	if (ImGui::BeginChild("FileListWindow"
 		, ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
 	{
-		beginPopupContextWindow();
+		beginPopupContextWindow_FileList();
 
 		// 현재 폴더 경로 
 		ImGui::Text(mSelectPath.string().c_str());
@@ -178,9 +180,10 @@ void fq::game_engine::FileDialog::beginRightChildWindow()
 			ImGui::SetCursorPos(cursorPos);
 			drawFile(directoryList[i]);
 		}
-
-		ImGui::EndChild();
 	}
+	ImGui::EndChild();
+
+	beginDragDropTarget_FileList();
 }
 
 ID3D11ShaderResourceView* fq::game_engine::FileDialog::loadTexture(const Path& path)
@@ -217,7 +220,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		ImVec2 min = ImGui::GetCursorScreenPos();
 		ImVec2 max = { min.x + mIconSize.x, min.y + mIconSize.y };
 		ImGui::Image(getIcon(L"folder.png"), mIconSize);
-	
+
 		if (isMouseHoveringRect(min, max)
 			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
@@ -251,7 +254,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	}
 
 
-	beginDragDrop(path);
+	beginDragDrop_File(path);
 
 	ImGui::SetCursorPos({ cursorPos.x, cursorPos.y + mIconSize.y });
 
@@ -285,7 +288,7 @@ ID3D11ShaderResourceView* fq::game_engine::FileDialog::getIcon(const std::wstrin
 	return iter->second;
 }
 
-void fq::game_engine::FileDialog::beginDragDrop(const Path& path)
+void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 {
 	// Drag 처리
 	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
@@ -354,7 +357,7 @@ bool fq::game_engine::FileDialog::isMouseHoveringRect(const ImVec2& min, const I
 	return mouse_pos.x >= min.x && mouse_pos.y >= min.y && mouse_pos.x <= max.x && mouse_pos.y <= max.y;
 }
 
-void fq::game_engine::FileDialog::beginPopupContextWindow()
+void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 {
 	if (ImGui::BeginPopupContextWindow())
 	{
@@ -373,5 +376,26 @@ void fq::game_engine::FileDialog::beginPopupContextWindow()
 
 		ImGui::EndPopup();
 	}
+}
+
+void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
+{
+	if (ImGui::BeginDragDropTarget())
+	{
+		// GameObject 저장
+		const ImGuiPayload* payLoad = ImGui::AcceptDragDropPayload("GameObject");
+
+		if (payLoad)
+		{
+			fq::game_module::GameObject* dropObject
+				= static_cast<fq::game_module::GameObject*>(payLoad->Data);
+
+			mGameProcess->mObjectManager->SavePrefab(dropObject, mSelectPath);
+		}
+
+	}
+	
+
+
 }
 

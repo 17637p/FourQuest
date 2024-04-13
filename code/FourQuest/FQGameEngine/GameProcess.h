@@ -8,6 +8,7 @@ namespace fq::game_module
 	class EventManager;
 	class InputManager;
 	class TimeManager;
+	class ObjectManager;
 }
 
 namespace fq::game_engine
@@ -31,10 +32,11 @@ namespace fq::game_engine
 		std::unique_ptr<fq::game_module::TimeManager>  mTimeManager;
 		std::unique_ptr<fq::game_module::SceneManager> mSceneManager;
 		std::unique_ptr<fq::game_module::EventManager> mEventManager;
+		std::unique_ptr<fq::game_module::ObjectManager> mObjectManager;
 
 		// Graphics
 		
-
+			
 		// Physics
 
 	};

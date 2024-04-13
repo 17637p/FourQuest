@@ -13,7 +13,4 @@
 #include "Path.h"
 
 #include "Converter.h"
-
-#include "SimpleMathRelfection.h"
-
 #endif // !FQ_REFLECT_H

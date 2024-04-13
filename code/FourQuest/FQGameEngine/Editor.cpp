@@ -12,10 +12,11 @@
 #include "WindowSystem.h"
 
 #include "CommandSystem.h"
-#include "DebugViewer.h"
+#include "LogWindow.h"
 #include "FileDialog.h"
 #include "Hierarchy.h"
 #include "Inspector.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::Editor::Editor()
 	:mGameProcess(nullptr)
@@ -38,7 +39,7 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 	mEditorProcess->mInputManager->Initialize(process->mWindowSystem->GetHWND());
 	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
-	mEditorProcess->mFileDialog->Initialize( mEditorProcess.get(),mDevice);
+	mEditorProcess->mFileDialog->Initialize(process,mEditorProcess.get(),mDevice);
 }
 
 void fq::game_engine::Editor::Finalize()
@@ -239,8 +240,9 @@ void fq::game_engine::Editor::RenderWindow()
 {
 	mEditorProcess->mHierarchy->Render();
 	mEditorProcess->mInspector->Render();
-	mEditorProcess->mDeubgViewer->Render();
+	mEditorProcess->mLogWindow->Render();
 	mEditorProcess->mFileDialog->Render();
+	mEditorProcess->mGamePlayWindow->Render();
 }
 
 void fq::game_engine::Editor::Update()

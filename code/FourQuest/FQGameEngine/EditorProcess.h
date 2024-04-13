@@ -13,7 +13,8 @@ namespace fq::game_engine
 	class Hierarchy;
 	class Inspector;
 	class FileDialog;
-	class DebugViewer;
+	class LogWindow;
+	class GamePlayWindow;
 
 	/// <summary>
 	/// 에디터가 관리하는 클래스의 집합
@@ -28,7 +29,9 @@ namespace fq::game_engine
 		std::unique_ptr<Hierarchy>  mHierarchy;
 		std::unique_ptr<Inspector>	mInspector;
 		std::unique_ptr<FileDialog> mFileDialog;
-		std::unique_ptr<DebugViewer> mDeubgViewer;
+		std::unique_ptr<LogWindow> mLogWindow;
+		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
+
 
 		std::unique_ptr<fq::game_module::InputManager> mInputManager;
 	};

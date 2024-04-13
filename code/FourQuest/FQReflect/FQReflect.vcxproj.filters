@@ -39,18 +39,12 @@
     <ClInclude Include="Path.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleMathRelfection.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Path.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleMathRelfection.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
