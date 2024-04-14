@@ -24,11 +24,13 @@ namespace fq_graphics
 	class D3D11RenderTargetView : public ResourceBase
 	{
 	public:
-		D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11RenderTargetViewType eViewType, const unsigned short width, const unsigned short height);
+		D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManager> resourceManager, 
+			const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11RenderTargetViewType eViewType, 
+			const unsigned short width, const unsigned short height);
 
 		static std::string GenerateRID(ED3D11RenderTargetViewType eViewType);
 
-		void Bind(std::shared_ptr<D3D11Device>& d3d11Device);
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	//private:
 		ComPtr<ID3D11RenderTargetView> mRTV;

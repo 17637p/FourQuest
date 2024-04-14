@@ -15,27 +15,37 @@ D3D11RenderTargetView::D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManage
 	:ResourceBase(resourceManager, ResourceType::RenderTargetView),
 	mRTV(nullptr)
 {
-	ID3D11Device* device = d3d11Device->GetDevice().Get();
-	IDXGISwapChain* swapChain = d3d11Device->GetSwapChain().Get();
-
-	assert(device);
-	assert(swapChain);
-
-	// 화면에 그려질 버퍼 렌더 타겟 생성
-	ID3D11Texture2D* backBuffer = nullptr;
-
-	//ID3D11RenderTargetView* tempRenderTargetView = defaultRenderTargetView->mRTV.Get();
-
-	HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
-	if (backBuffer == nullptr)
+	switch (eViewType)
 	{
-		MessageBox(NULL, L"backBuffer가 생성되지 않았습니다.", L"에러", MB_ICONERROR);
-	}
-	else
+	case ED3D11RenderTargetViewType::Default:
 	{
-		HR(device->CreateRenderTargetView(backBuffer, 0, &mRTV));
+		ID3D11Device* device = d3d11Device->GetDevice().Get();
+		IDXGISwapChain* swapChain = d3d11Device->GetSwapChain().Get();
+
+		assert(device);
+		assert(swapChain);
+
+		// 화면에 그려질 버퍼 렌더 타겟 생성
+		ID3D11Texture2D* backBuffer = nullptr;
+
+		//ID3D11RenderTargetView* tempRenderTargetView = defaultRenderTargetView->mRTV.Get();
+
+		HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
+		if (backBuffer == nullptr)
+		{
+			MessageBox(NULL, L"backBuffer가 생성되지 않았습니다.", L"에러", MB_ICONERROR);
+		}
+		else
+		{
+			HR(device->CreateRenderTargetView(backBuffer, 0, &mRTV));
+		}
+		ReleaseCOM(backBuffer);
+
+		return;
 	}
-	ReleaseCOM(backBuffer);
+	default:
+		break;
+	}
 }
 
 std::string D3D11RenderTargetView::GenerateRID(ED3D11RenderTargetViewType eViewType)
@@ -43,11 +53,11 @@ std::string D3D11RenderTargetView::GenerateRID(ED3D11RenderTargetViewType eViewT
 	return typeid(D3D11RenderTargetView).name() + std::to_string(static_cast<int>(eViewType));
 }
 
-void D3D11RenderTargetView::Bind(std::shared_ptr<D3D11Device>& d3d11Device)
+void D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 {
-	std::shared_ptr<D3D11DepthStencilView> dsv; //= mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+	std::shared_ptr<D3D11DepthStencilView> dsv;// = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-	const float blackBackgroundColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const float blackBackgroundColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	d3d11Device->GetDeviceContext()->ClearRenderTargetView(mRTV.Get(), blackBackgroundColor);
 	//d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, &mRTV, dsv->mDSV.Get());
 }

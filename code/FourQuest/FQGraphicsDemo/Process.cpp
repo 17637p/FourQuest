@@ -39,7 +39,7 @@ bool Process::Init(HINSTANCE hInstance)
 	InputManager::GetInstance().Init(mHwnd);
 	//m_timer = std::make_unique<GameTimer>();
 
-	mTestGrphics = new fq_graphics::Renderer;
+	mTestGrphics = std::make_shared<fq_graphics::Renderer>();
 	mTestGrphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
 	return true;

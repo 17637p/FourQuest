@@ -1,5 +1,7 @@
 #include "BaseWindow.h"
 
+#include <memory>
+
 #pragma once
 
 namespace fq_graphics { class Renderer; }
@@ -39,6 +41,6 @@ private:
 	bool mResizing;
 
 	// Graphics
-	fq_graphics::Renderer* mTestGrphics;
+	std::shared_ptr<fq_graphics::Renderer> mTestGrphics;
 };
 

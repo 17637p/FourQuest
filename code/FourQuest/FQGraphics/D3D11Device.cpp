@@ -43,15 +43,6 @@ bool D3D11Device::Initialize(const HWND hWnd, const unsigned short width, const 
 
 	D3D_FEATURE_LEVEL featureLevel;
 
-	// Create
-	ID3D11Device* device = mDevice.Get();
-	ID3D11DeviceContext* deviceContext = mDeviceContext.Get();
-	IDXGISwapChain* swapChain = mSwapChain.Get();
-
-	//HRESULT hr = D3D11CreateDeviceAndSwapChain(
-	//	0, driverType, 0, createDeviceFlags, 0, 0, D3D11_SDK_VERSION, &swapChainDesc,
-	//	&swapChain, &device, &featureLevel, &deviceContext);
-	//
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		0, driverType, 0, createDeviceFlags, 0, 0, D3D11_SDK_VERSION, &swapChainDesc,
 		&mSwapChain, &mDevice, &featureLevel, &mDeviceContext);

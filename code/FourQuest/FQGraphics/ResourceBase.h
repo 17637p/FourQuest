@@ -12,7 +12,12 @@ namespace fq_graphics
 
 		RenderTargetView,
 		ShaderResourceView,
-		DepthStencilView
+		DepthStencilView,
+
+		SamplerState,
+		RasterizerState,
+		DepthStencilState,
+		BlendState
 	};
 
 	class ResourceBase
