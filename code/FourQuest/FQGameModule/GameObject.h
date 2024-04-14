@@ -117,6 +117,12 @@ namespace fq::game_module
 		unsigned int GetID()const { return mID; }
 
 		/// <summary>
+		/// 오브젝트의 Tag를 반환합니다
+		/// </summary>
+		/// <returns>오브젝트 Tag</returns>
+		Tag GetTag()const { return mTag; }
+
+		/// <summary>
 		/// 계층구조의 부모를 반환합니다 
 		/// </summary>
 		/// <returns>없으면 nullptr, 그렇지 않으면 부모 포인터</returns>
@@ -128,6 +134,17 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>자식 오브젝트 배열</returns>
 		std::vector<GameObject*> GetChildren();
+
+		/// <summary>
+		/// 게임오브젝트가 소유하는 모든 컴포넌트를 삭제합니다
+		/// </summary>
+		void DestroyAllComponent();
+
+		/// <summary>
+		/// id_type에 해당하는 컴포넌트를 삭제합니다
+		/// </summary>
+		/// <param name="id">id_type</param>
+		void DestroyComponent(entt::id_type id);
 
 		/// <summary>
 		/// T타입 컴포넌트를 반환합니다
@@ -177,6 +194,13 @@ namespace fq::game_module
 		/// <param name="any">Component</param>
 		void AddComponent(const entt::meta_any& any);
 
+		/// <summary>
+		/// T 타입에 해당하는 컴포넌트를 파괴합니다
+		/// </summary>
+		/// <typeparam name="T">컴포넌트 타입</typeparam>
+		template <typename T>
+		void DestroyComponent();
+
 	private:
 		unsigned int mID;
 		std::string mName;
@@ -188,6 +212,14 @@ namespace fq::game_module
 		friend class Scene;
 		FQ_REGISTRATION_FRIEND
 	};
+
+	template <typename T>
+	void fq::game_module::GameObject::DestroyComponent()
+	{
+		entt::id_type id = entt::resolve<T>().id();
+
+		DestroyComponent(id);
+	}
 
 	template <typename T>
 	bool fq::game_module::GameObject::HasComponent() const

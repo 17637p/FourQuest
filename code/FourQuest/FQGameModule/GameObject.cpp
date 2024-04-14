@@ -6,18 +6,18 @@ FQ_REGISTRATION
 {
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
-		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::tag::name, "mID") 
+		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::tag::name, "mID")
 		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName")).prop(fq::reflect::tag::name, "mName")
 		.data<&fq::game_module::GameObject::mTag>(entt::hashed_string("mTag")).prop(fq::reflect::tag::name, "mTag");
 }
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
-	,mName("GameObject")
-	,mTag(Tag::Untagged)
-	,mComponents{}
-	,mScene(nullptr)
-	,mbIsToBeDestroyed(false)
+	, mName("GameObject")
+	, mTag(Tag::Untagged)
+	, mComponents{}
+	, mScene(nullptr)
+	, mbIsToBeDestroyed(false)
 {
 	AddComponent<Transform>();
 }
@@ -96,7 +96,7 @@ void fq::game_module::GameObject::OnFixedUpdate(float dt)
 
 fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
 {
-	Transform* parentT =  GetComponent<Transform>()->GetParentTransform();
+	Transform* parentT = GetComponent<Transform>()->GetParentTransform();
 
 	if (parentT)
 	{
@@ -110,7 +110,7 @@ std::vector<fq::game_module::GameObject*> fq::game_module::GameObject::GetChildr
 {
 	assert(HasComponent<Transform>());
 
-	const auto& childrenTransform =  GetComponent<Transform>()->GetChildren();
+	const auto& childrenTransform = GetComponent<Transform>()->GetChildren();
 
 	std::vector<GameObject*> children;
 
@@ -129,7 +129,7 @@ void fq::game_module::GameObject::SetName(std::string name)
 	// 하이픈 (-)을 언더스코어(_)로 치환
 	// 프리팹을 저장할때 "부모이름-자식이름" 규칙으로 저장하기때문입니다.
 	std::replace(name.begin(), name.end(), '-', '_');
-	
+
 	mName = std::move(name);
 }
 
@@ -147,5 +147,20 @@ void fq::game_module::GameObject::AddComponent(const entt::meta_any& any)
 	Component* clone = component->Clone(nullptr);
 
 	mComponents.insert({ type.id(), std::unique_ptr<Component>{clone} });
+}
+
+void fq::game_module::GameObject::DestroyAllComponent()
+{
+	mComponents.clear();
+}
+
+void fq::game_module::GameObject::DestroyComponent(entt::id_type id)
+{
+	auto iter = mComponents.find(id);
+
+	if (iter != mComponents.end())
+	{
+		mComponents.erase(iter);
+	}
 }
 

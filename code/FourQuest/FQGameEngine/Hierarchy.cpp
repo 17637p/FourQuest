@@ -130,7 +130,7 @@ void fq::game_engine::Hierarchy::beginGameObjectNameBar(fq::game_module::GameObj
 		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
 	{
 		std::shared_ptr<fq::game_module::GameObject> sObject
-			= mScene->GetObjectByID(object.GetID());
+			= object.shared_from_this();
 
 		// 이름이 수정된 경우 Set 명령어 전달합니다
 		// 수명관리를 위해서 shared_ptr로 람다에 전달합니다
