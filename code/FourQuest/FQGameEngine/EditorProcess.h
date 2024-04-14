@@ -15,6 +15,7 @@ namespace fq::game_engine
 	class FileDialog;
 	class LogWindow;
 	class GamePlayWindow;
+	class MenuBar;
 
 	/// <summary>
 	/// 에디터가 관리하는 클래스의 집합
@@ -31,7 +32,7 @@ namespace fq::game_engine
 		std::unique_ptr<FileDialog> mFileDialog;
 		std::unique_ptr<LogWindow> mLogWindow;
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
-
+		std::unique_ptr<MenuBar> mMenuBar;
 
 		std::unique_ptr<fq::game_module::InputManager> mInputManager;
 	};

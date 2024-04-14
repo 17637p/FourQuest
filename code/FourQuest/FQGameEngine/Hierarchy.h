@@ -43,13 +43,13 @@ namespace fq::game_engine
 		/// 마우스 우클릭 창
 		/// 오브젝트 생성, 삭제 명령 처리
 		/// </summary>
-		void beginPopupContextWindow();
+		void beginPopupContextWindow_HierarchyChild();
 
 		/// <summary>
 		/// 오브젝트에 마우스 우클릭하면 나오는 창
 		/// </summary>
 		/// <param name="object"></param>
-		void beginPopupContextItem(fq::game_module::GameObject& object);
+		void beginPopupContextItem_GameObject(fq::game_module::GameObject& object);
 
 		/// <summary>
 		/// 검색하는 창
@@ -87,12 +87,12 @@ namespace fq::game_engine
 		/// 드래그 드랍 게임오브젝트 처리
 		/// </summary>
 		/// <param name="object"></param>
-		void dragDropGameObject(fq::game_module::GameObject& object);
+		void dragDropGameObjectBar(fq::game_module::GameObject& object);
 
 		/// <summary>
 		/// 드래그 드랍 프리팹 처리
 		/// </summary>
-		void dragDropPrefab();
+		void dragDropWindow();
 
 	private:
 		GameProcess* mGameProcess;

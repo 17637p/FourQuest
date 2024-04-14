@@ -45,6 +45,7 @@ namespace fq::game_engine
 		/// </summary>
 		void beginWindow_FilePathWindow();
 		void beginDirectory(const Path& path);
+		void beginDragDrop_Directory(const Path& directoryPath);
 
 		/// <summary>
 		/// 파일 디랙토리안에 리소스 창
@@ -55,10 +56,14 @@ namespace fq::game_engine
 
 		void loadIcon();
 		void beginDragDrop_File(const Path& path);
+		void beginPopupContextItem_File(const Path& path);
 		void drawFile(const Path& path);
+
 		void drawTextureImage(const Path& path);
 		ID3D11ShaderResourceView* getIcon(const std::wstring& name);
 		ID3D11ShaderResourceView* loadTexture(const Path& path);
+
+		void SelectPath(Path path);
 
 		void clearTexture();
 		void clearIconTexture();

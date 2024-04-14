@@ -86,15 +86,29 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 	if (ImGui::Button(fileName.c_str()))
 	{
-		mSelectPath = path;
+		SelectPath(path);
 	}
+
+	beginDragDrop_Directory(path);
 
 	if (bIsSelect)
 	{
 		ImGui::PopStyleColor();
 	}
 
-	const auto directoryList = fq::path::GetDirectoryList(path);
+	auto directoryList = fq::path::GetDirectoryList(path);
+
+	// 디렉토리가 아닌경우 제거 
+	directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+		[](const auto path)
+		{
+			if (fs::is_directory(path))
+			{
+				return false;
+			}
+			return true;
+		}), directoryList.end());
+
 	// 자식 디텍토리가 있는경우 
 	if (!directoryList.empty())
 	{
@@ -121,9 +135,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 			ImGui::TreePop();
 		}
-
 	}
-
 }
 
 void fq::game_engine::FileDialog::beginWindow_FileList()
@@ -224,7 +236,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		if (isMouseHoveringRect(min, max)
 			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
-			mSelectPath = path;
+			SelectPath(path);
 		}
 
 	}
@@ -253,7 +265,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		ImGui::Image(getIcon(L"error.png"), mIconSize);
 	}
 
-
+	beginPopupContextItem_File(path);
 	beginDragDrop_File(path);
 
 	ImGui::SetCursorPos({ cursorPos.x, cursorPos.y + mIconSize.y });
@@ -300,6 +312,27 @@ void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 		ImGui::SetDragDropPayload("Path", &mDragDropPath
 			, sizeof(Path));
 		ImGui::EndDragDropSource();
+	}
+
+	// Drop 처리
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* dropPath
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			// dropPath 파일을 path 안으로 넣는다.
+			if (fs::is_directory(path))
+			{
+				// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
+				fs::path newPath = path / dropPath->filename();
+				fs::rename(*dropPath, newPath);
+			}
+		}
+		ImGui::EndDragDropTarget();
 	}
 
 }
@@ -361,7 +394,6 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 {
 	if (ImGui::BeginPopupContextWindow())
 	{
-		// GameObject를 생성합니다
 		if (ImGui::MenuItem("Create Directory"))
 		{
 			auto directory = mSelectPath;
@@ -392,7 +424,63 @@ void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
 
 			mGameProcess->mObjectManager->SavePrefab(dropObject, mSelectPath);
 		}
+
 		ImGui::EndDragDropTarget();
+	}
+}
+
+void fq::game_engine::FileDialog::SelectPath(Path path)
+{
+	mSelectPath = path;
+	clearTexture();
+}
+
+void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryPath)
+{
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* dropPath
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			// dropPath 파일을 path 안으로 넣는다.
+			// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
+			fs::path newPath = directoryPath / dropPath->filename();
+			fs::rename(*dropPath, newPath);
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
+{
+
+	std::string contextName = "context##" + path.string();
+
+	if (ImGui::BeginPopupContextItem(contextName.c_str()))
+	{
+		if (ImGui::MenuItem("Delete"))
+		{
+			fs::path garbagePath = fq::path::GetGarbagePath() / path.filename();
+			fs::rename(path, garbagePath);
+		}
+
+		if (ImGui::MenuItem("Create Directory"))
+		{
+			auto directory = mSelectPath;
+
+			directory += "\\dir";
+
+			while (!fs::create_directory(directory))
+			{
+				directory += "!";
+			}
+		}
+
+		ImGui::EndPopup();
 	}
 }
 

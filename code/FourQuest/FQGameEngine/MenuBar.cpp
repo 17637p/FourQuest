@@ -1,22 +1,34 @@
 #include "MenuBar.h"
 
-void fq::game_engine::MenuBar::Initialize(GameProcess* game, EditorProcess* editor)
+#include <imgui.h>
+
+fq::game_engine::MenuBar::MenuBar()
+	:mGameProcess(nullptr)
+	,mEditorProcess(nullptr)
 {
 
 }
-
-void fq::game_engine::MenuBar::Render()
-{
-
-}
-
 
 fq::game_engine::MenuBar::~MenuBar()
 {
 
 }
 
-fq::game_engine::MenuBar::MenuBar()
+void fq::game_engine::MenuBar::Initialize(GameProcess* game, EditorProcess* editor)
 {
+	mGameProcess = game;
+	mEditorProcess = editor;
+}
+
+void fq::game_engine::MenuBar::Render()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+
+
+	}
+	ImGui::EndMainMenuBar();
 
 }
+
+

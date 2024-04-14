@@ -7,9 +7,9 @@
 
 fq::game_module::Scene::Scene()
 	:mObjects{}
-	,mSceneName{}
-	,mInputManager(nullptr)
-	,mEventManager(nullptr)
+	, mSceneName{}
+	, mInputManager(nullptr)
+	, mEventManager(nullptr)
 {}
 
 fq::game_module::Scene::~Scene()
@@ -134,8 +134,13 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 	object->SetScene(this);
 	SceneHeleper::CheckNameDuplication(*this, *object);
 	object->mbIsToBeDestroyed = false;
-	
-	mObjects.push_back(std::move(object));
+
+	mObjects.push_back(object);
+
+	for (auto child : object->GetChildren())
+	{
+		AddGameObject(child->shared_from_this());
+	}
 
 	mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
 }
@@ -148,6 +153,11 @@ void fq::game_module::Scene::DestroyGameObject(GameObject* object)
 	}
 
 	object->OnDestroy();
+
+	for (auto child : object->GetChildren())
+	{
+		DestroyGameObject(child);
+	}
 
 	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
 }

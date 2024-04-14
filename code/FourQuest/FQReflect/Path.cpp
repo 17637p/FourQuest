@@ -43,7 +43,7 @@ std::filesystem::path fq::path::CreateFilePath(const std::filesystem::path& dire
 std::filesystem::path fq::path::GetScenePath()
 {
 	std::filesystem::path scenePath = std::filesystem::current_path();
-	scenePath += L"\\resource\\scene";
+	scenePath += L"\\resource\\internal\\scene";
 
 	return scenePath;
 }
@@ -61,4 +61,12 @@ std::vector<std::filesystem::path> fq::path::GetDirectoryList(const std::filesys
 	}
 
 	return directoryList;
+}
+
+std::filesystem::path fq::path::GetGarbagePath()
+{
+	std::filesystem::path scenePath = std::filesystem::current_path();
+	scenePath += L"\\resource\\internal\\garbage";
+
+	return scenePath;
 }

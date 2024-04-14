@@ -16,6 +16,7 @@
 #include "FileDialog.h"
 #include "Hierarchy.h"
 #include "Inspector.h"
+#include "MenuBar.h"
 #include "GamePlayWindow.h"
 
 fq::game_engine::Editor::Editor()
@@ -40,6 +41,8 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mFileDialog->Initialize(process,mEditorProcess.get(),mDevice);
+	mEditorProcess->mMenuBar->Initialize(process, mEditorProcess.get());
+
 }
 
 void fq::game_engine::Editor::Finalize()
@@ -243,6 +246,7 @@ void fq::game_engine::Editor::RenderWindow()
 	mEditorProcess->mLogWindow->Render();
 	mEditorProcess->mFileDialog->Render();
 	mEditorProcess->mGamePlayWindow->Render();
+	mEditorProcess->mMenuBar->Render();
 }
 
 void fq::game_engine::Editor::Update()

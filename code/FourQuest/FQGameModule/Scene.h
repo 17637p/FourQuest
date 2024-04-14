@@ -59,6 +59,7 @@ namespace fq::game_module
 
 		/// <summary>
 		/// Scene 게임오브젝트를 추가합니다
+		/// 오브젝트의 자식계층까지 모두 추가합니다.
 		/// </summary>
 		/// <param name="object">오브젝트</param>
 		void AddGameObject(std::shared_ptr<GameObject> object);

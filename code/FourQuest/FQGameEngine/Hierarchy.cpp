@@ -48,7 +48,7 @@ void fq::game_engine::Hierarchy::Render()
 
 		if (ImGui::BeginChild("HierarchyChild"))
 		{
-			beginPopupContextWindow();
+			beginPopupContextWindow_HierarchyChild();
 			if (mSearchString.empty())
 			{
 				beginHierarchy();
@@ -59,19 +59,19 @@ void fq::game_engine::Hierarchy::Render()
 			}
 		}
 		ImGui::EndChild();
-		dragDropPrefab();
+		dragDropWindow();
 	}
 	ImGui::End();
 }
 
-void fq::game_engine::Hierarchy::beginPopupContextWindow()
+void fq::game_engine::Hierarchy::beginPopupContextWindow_HierarchyChild()
 {
 	if (ImGui::BeginPopupContextWindow())
 	{
 		// GameObject를 생성합니다
 		if (ImGui::MenuItem("CreateEmpty"))
 		{
-			mEditorProcess->mCommandSystem->Push<CreateObjectCommand>(mScene
+			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
 				, std::make_shared<fq::game_module::GameObject>());
 		}
 
@@ -162,10 +162,10 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 
 	// 선택버튼 관련 처리
 	begineGameObectSelectButton(object);
-	beginPopupContextItem(object);
+	beginPopupContextItem_GameObject(object);
 
 	// 드래그앤드랍 처리 
-	dragDropGameObject(object);
+	dragDropGameObjectBar(object);
 
 	// 오브젝트 이름
 	beginGameObjectNameBar(object);
@@ -192,7 +192,7 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 	}
 }
 
-void fq::game_engine::Hierarchy::dragDropGameObject(fq::game_module::GameObject& object)
+void fq::game_engine::Hierarchy::dragDropGameObjectBar(fq::game_module::GameObject& object)
 {
 	std::string objectName = object.GetName();
 
@@ -278,7 +278,7 @@ void fq::game_engine::Hierarchy::begineGameObectSelectButton(fq::game_module::Ga
 	ImGui::SameLine();
 }
 
-void fq::game_engine::Hierarchy::beginPopupContextItem(fq::game_module::GameObject& object)
+void fq::game_engine::Hierarchy::beginPopupContextItem_GameObject(fq::game_module::GameObject& object)
 {
 	std::string ContextItemName = object.GetName() + "ContextItem";
 
@@ -294,7 +294,7 @@ void fq::game_engine::Hierarchy::beginPopupContextItem(fq::game_module::GameObje
 		// GameObject를 생성합니다
 		if (ImGui::MenuItem("CreateEmpty"))
 		{
-			mEditorProcess->mCommandSystem->Push<CreateObjectCommand>(mScene
+			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
 				, std::make_shared<fq::game_module::GameObject>());
 		}
 
@@ -302,7 +302,7 @@ void fq::game_engine::Hierarchy::beginPopupContextItem(fq::game_module::GameObje
 	}
 }
 
-void fq::game_engine::Hierarchy::dragDropPrefab()
+void fq::game_engine::Hierarchy::dragDropWindow()
 {
 	// Drop 처리
 	if (ImGui::BeginDragDropTarget())
@@ -322,12 +322,31 @@ void fq::game_engine::Hierarchy::dragDropPrefab()
 
 			auto prefab = mGameProcess->mObjectManager->LoadPrefab(*path);
 
-			for (const auto& object : prefab)
+			assert(!prefab.empty());
+
+			// 부모를 등록하면 자식계층도 같이 등록합니다
+			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
+				, prefab[0]);
+		}
+
+		const ImGuiPayload* objectPayLoad = ImGui::AcceptDragDropPayload("GameObject");
+
+		if (objectPayLoad)
+		{
+			fq::game_module::GameObject* dropObject
+				= static_cast<fq::game_module::GameObject*>(objectPayLoad->Data);
+
+			auto parent =  dropObject->GetParent();
+
+			if (parent != nullptr)
 			{
-				mScene->AddGameObject(object);
+				dropObject->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
 			}
 		}
+
 		ImGui::EndDragDropTarget();
 	}
+
+
 }
 

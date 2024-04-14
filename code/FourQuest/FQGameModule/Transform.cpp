@@ -19,13 +19,13 @@ FQ_REGISTRATION
 using namespace DirectX::SimpleMath;
 
 fq::game_module::Transform::Transform()
-	:mPosition{Vector3::Zero}
-	,mRotation{Quaternion::Identity}
-	,mScale{Vector3::One}
-	,mLocalMatrix{Matrix::Identity}
-	,mWorldMatrix{Matrix::Identity}
-	,mParent(nullptr)
-	,mChidren{}
+	:mPosition{ Vector3::Zero }
+	, mRotation{ Quaternion::Identity }
+	, mScale{ Vector3::One }
+	, mLocalMatrix{ Matrix::Identity }
+	, mWorldMatrix{ Matrix::Identity }
+	, mParent(nullptr)
+	, mChidren{}
 {}
 
 fq::game_module::Transform::~Transform()
@@ -72,7 +72,7 @@ void fq::game_module::Transform::updateMatrix()
 
 	if (mParent)
 	{
-	    Matrix parentWorldMatrix = mParent->GetWorldMatrix();
+		Matrix parentWorldMatrix = mParent->GetWorldMatrix();
 		mWorldMatrix = mLocalMatrix * parentWorldMatrix;
 	}
 	else
@@ -107,17 +107,26 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 		return;
 	}
 
+	// 부모와 연결을 해제합니다.
+	Transform* prevParnt = mParent;
+
 	mParent = parent;
 
 	if (mParent != nullptr)
 	{
 		mParent->AddChild(this);
 	}
+
+	// 이전 부모와 연결을  해제합니다.
+	if (prevParnt)
+	{
+		prevParnt->RemoveChild(this);
+	}
 }
 
 void fq::game_module::Transform::AddChild(Transform* inChild)
 {
-	if (inChild == this || inChild ==nullptr)
+	if (inChild == this || inChild == nullptr)
 	{
 		return;
 	}
@@ -146,7 +155,10 @@ void fq::game_module::Transform::RemoveChild(Transform* removeChild)
 	mChidren.erase(std::remove(mChidren.begin(), mChidren.end(), removeChild)
 		, mChidren.end());
 
-	removeChild->SetParent(nullptr);
+	if (removeChild->GetParentTransform() == this)
+	{
+		removeChild->SetParent(nullptr);
+	}
 }
 
 fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const

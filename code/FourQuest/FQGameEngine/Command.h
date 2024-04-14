@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "../FQGameModule/GameModule.h"
 
@@ -29,13 +30,13 @@ namespace fq::game_engine
 	/// <summary>
 	/// GameObject 생성 명령
 	/// </summary>
-	class CreateObjectCommand : public Command
+	class AddObjectCommand : public Command
 	{
 	public:
-		CreateObjectCommand(fq::game_module::Scene* scene
+		AddObjectCommand(fq::game_module::Scene* scene
 			, std::shared_ptr<fq::game_module::GameObject> object);
 
-		~CreateObjectCommand();
+		~AddObjectCommand();
 
 		void Excute() override;
 
@@ -43,6 +44,7 @@ namespace fq::game_engine
 
 	private:
 		std::shared_ptr<fq::game_module::GameObject> mGameObject;
+		std::vector< std::shared_ptr<fq::game_module::GameObject>> mChildren;
 		fq::game_module::Scene* mScene;
 	};
 
@@ -61,6 +63,7 @@ namespace fq::game_engine
 
 	private:
 		std::shared_ptr<fq::game_module::GameObject> mGameObject;
+		std::vector< std::shared_ptr<fq::game_module::GameObject>> mChildren;
 		fq::game_module::Scene* mScene;
 	};
 

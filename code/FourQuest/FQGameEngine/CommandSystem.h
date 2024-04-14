@@ -36,10 +36,14 @@ namespace fq::game_engine
 		/// </summary>
 		void Update();
 
+		/// <summary>
+		/// 명령어를 지웁니다
+		/// </summary>
 		void Clear();
 
 		template <typename T, typename... Args>
 		void Push(Args&&... arg);
+
 	private:
 		void excute();
 		void undo();

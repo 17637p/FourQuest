@@ -24,6 +24,12 @@ namespace fq::path
 	std::filesystem::path GetScenePath();
 
 	/// <summary>
+	/// 프로젝트의 쓰레기통 경로를 반환합니다.
+	/// </summary>
+	/// <returns>쓰레기통 경로</returns>
+	std::filesystem::path GetGarbagePath();
+
+	/// <summary>
 	/// 파일 경로를 생성합니다
 	/// </summary>
 	/// <param name="directoryPath">폴더(디텍토리) 경로</param>
@@ -35,7 +41,7 @@ namespace fq::path
 		, const std::filesystem::path& extension);
 
 	/// <summary>
-	/// path 경로 내부에 있는 디렉토리를 vector에 담아서 반환합니다
+	/// path 경로 내부에 있는 모든 파일을 vector에 담아서 반환합니다
 	/// </summary>
 	/// <param name="path">탐색한 경로</param>
 	/// <returns>path 경로 내부의 디렉토리</returns>

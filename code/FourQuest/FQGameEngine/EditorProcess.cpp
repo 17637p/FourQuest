@@ -6,6 +6,7 @@
 #include "FileDialog.h"
 #include "LogWindow.h"
 #include "GamePlayWindow.h"
+#include "MenuBar.h"
 
 #include "../FQGameModule/InputManager.h"
 
@@ -17,6 +18,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mCommandSystem(std::make_unique<CommandSystem>())
 	, mInputManager(std::make_unique<fq::game_module::InputManager>())
 	, mGamePlayWindow(std::make_unique<GamePlayWindow>())
+	, mMenuBar(std::make_unique<MenuBar>())
 {
 
 }
