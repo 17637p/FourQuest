@@ -11,6 +11,7 @@
 #include "Macro.h"
 #include "Tag.h"
 #include "Path.h"
+#include "Helper.h"
 
 #include "Converter.h"
 #endif // !FQ_REFLECT_H

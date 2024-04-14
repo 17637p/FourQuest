@@ -109,7 +109,7 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, entt::meta_an
 
 void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_type type, entt::meta_any& enumToAny)
 {
-	std::map<std::string, entt::meta_data> enumMembers;
+	std::map<int, entt::meta_data> enumMembers;
 
 	int* eunmValue = nullptr;
 
@@ -120,18 +120,33 @@ void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_type type, entt
 
 	for (auto [id, metaData] : type.data())
 	{
-		std::string name = metaData.prop(fq::reflect::tag::name).value().cast<const char*>();
+		//std::string name = metaData.prop(fq::reflect::tag::name).value().cast<const char*>();
 
-		enumMembers.insert({ name,metaData });
+		entt::meta_any any = metaData.get({});
+		if (any.allow_cast<int>())
+		{
+			int* val = any.try_cast<int>();
+			enumMembers.insert({ *val,metaData });
+		}
 	}
 
-	const char* enumClassName = type.prop(fq::reflect::tag::name).value().cast<const char*>();
+	assert(!enumMembers.empty());
+	std::string enumClassName = fq::reflect::GetName(type);
 
-	if (ImGui::BeginCombo(enumClassName, enumClassName))
+	auto iter = enumMembers.find(*eunmValue);
+	assert(iter != enumMembers.end());
+	std::string currentName = fq::reflect::GetName(iter->second);
+
+	if (ImGui::BeginCombo(enumClassName.c_str(), currentName.c_str()))
 	{
-		for (const auto& [name, metaData] : enumMembers)
+		for (const auto& [val, metaData] : enumMembers)
 		{
+			std::string memberName = fq::reflect::GetName(metaData);
 
+			if (ImGui::Selectable(memberName.c_str()))
+			{
+				
+			}
 
 		}
 		ImGui::EndCombo();

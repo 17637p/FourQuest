@@ -145,6 +145,7 @@
     <ClInclude Include="Converter.h" />
     <ClInclude Include="entt.hpp" />
     <ClInclude Include="FQReflect.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="json_fwd.hpp" />
     <ClInclude Include="Macro.h" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Path.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
