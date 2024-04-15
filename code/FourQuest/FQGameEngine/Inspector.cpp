@@ -17,9 +17,7 @@ fq::game_engine::Inspector::Inspector()
 {}
 
 fq::game_engine::Inspector::~Inspector()
-{
-
-}
+{}
 
 void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* editor)
 {
@@ -52,31 +50,21 @@ void fq::game_engine::Inspector::Finalize()
 
 void fq::game_engine::Inspector::beginGameObject(std::shared_ptr<fq::game_module::GameObject> object)
 {
-	const auto& components = object->GetComponentContainer();
-	// 게임 오브젝트 이름 표시
-	std::string objectName = object->GetName();
-
-	if (ImGui::InputText("##GameObjectName", &objectName)
-		&& mEditorProcess->mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
-	{
-		mEditorProcess->mCommandSystem->Push<SetValueCommand<std::string>>(
-			SetValueCommand<std::string>{ [object](std::string name)
-			{
-				object->SetName(name);
-			}, object->GetName(), objectName }
-		);
-	}
-
-	// Tag , Layer
-	entt::meta_any tag = object->GetTag();
-
-	beginCombo_EnumClass(entt::resolve<fq::game_module::Tag>(), tag);
+	beginClass(object);
 
 	// 컴포넌트 정보 표시
-	for (const auto& [id, component] : components)
+	const auto& components = object->GetComponentContainer();
+
+	entt::meta_any d = object.get();
+
+	for (auto [id, metaData] : entt::resolve<fq::game_module::GameObject>().data())
 	{
-		beginComponent(id, component.get());
+		bool va2 = metaData.set(*object, 10);
+
+		bool a = false;
+		//beginMember(metaData, object);
 	}
+
 }
 
 void fq::game_engine::Inspector::beginComponent(entt::id_type id, fq::game_module::Component* component)
@@ -84,60 +72,61 @@ void fq::game_engine::Inspector::beginComponent(entt::id_type id, fq::game_modul
 	auto metaType = entt::resolve(id);
 
 	entt::meta_any anyComponent = metaType.from_void(component);
-
-	beginClass(metaType, anyComponent);
 }
 
-void fq::game_engine::Inspector::beginClass(entt::meta_type type, entt::meta_any& object)
+void fq::game_engine::Inspector::beginClass(entt::meta_any object)
 {
-	for (auto [id, metaData] : type.data())
+	for (auto [id, metaData] : entt::resolve<fq::game_module::GameObject>().data())
 	{
-		auto memberAny = metaData.get(object);
-		beginMember(metaData, memberAny);
+		bool va2 = metaData.set(*object, 10);
+
+		entt::meta_any a; 
+		
+		//beginMember(metaData, object);
 	}
 }
 
-void fq::game_engine::Inspector::beginMember(entt::meta_data data, entt::meta_any& member)
+void fq::game_engine::Inspector::beginMember(entt::meta_data data, entt::meta_any instance)
 {
 	auto metaType = data.type();
 
 	if (metaType.is_enum())
 	{
-		beginCombo_EnumClass(metaType, member);
+		beginCombo_EnumClass(data, instance);
 	}
 }
 
-void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_type type, entt::meta_any& enumToAny)
+void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_data data, entt::meta_any instance)
 {
 	std::map<int, entt::meta_data> enumMembers;
 
-	int* eunmValue = nullptr;
-
-	if (enumToAny.allow_cast<int>())
+	for (auto [id, metaData] : data.type().data())
 	{
-		eunmValue = enumToAny.try_cast<int>();
-	}
-
-	for (auto [id, metaData] : type.data())
-	{
-		//std::string name = metaData.prop(fq::reflect::tag::name).value().cast<const char*>();
-
 		entt::meta_any any = metaData.get({});
 		if (any.allow_cast<int>())
 		{
-			int* val = any.try_cast<int>();
-			enumMembers.insert({ *val,metaData });
+			int val = any.cast<int>();
+			enumMembers.insert({ val,metaData });
 		}
 	}
-
 	assert(!enumMembers.empty());
-	std::string enumClassName = fq::reflect::GetName(type);
 
-	auto iter = enumMembers.find(*eunmValue);
+	auto currentValue = data.get(instance);
+
+	int iCurrentValue = 0;
+
+	if (currentValue.allow_cast<int>())
+	{
+		iCurrentValue = currentValue.cast<int>();
+	}
+
+	std::string memberName = fq::reflect::GetName(data);
+
+	auto iter = enumMembers.find(iCurrentValue);
 	assert(iter != enumMembers.end());
-	std::string currentName = fq::reflect::GetName(iter->second);
+	std::string currentEnumName = fq::reflect::GetName(iter->second);
 
-	if (ImGui::BeginCombo(enumClassName.c_str(), currentName.c_str()))
+	if (ImGui::BeginCombo(memberName.c_str(), currentEnumName.c_str()))
 	{
 		for (const auto& [val, metaData] : enumMembers)
 		{
@@ -145,11 +134,10 @@ void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_type type, entt
 
 			if (ImGui::Selectable(memberName.c_str()))
 			{
-				
+				auto a = enumMembers[val].get({}).cast<fq::game_module::Tag>();
+				auto s = data.set(instance, val);
 			}
-
 		}
 		ImGui::EndCombo();
 	}
-
 }

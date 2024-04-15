@@ -121,6 +121,12 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>오브젝트 Tag</returns>
 		Tag GetTag()const { return mTag; }
+		
+		/// <summary>
+		/// Tag를 설정합니다
+		/// </summary>
+		/// <param name="tag">태그</param>
+		void SetTag(Tag tag) { mTag = tag; }
 
 		/// <summary>
 		/// 계층구조의 부모를 반환합니다 

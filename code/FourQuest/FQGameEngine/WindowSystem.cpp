@@ -71,7 +71,7 @@ void fq::game_engine::WindowSystem::OnResize()
 
 }
 
-bool fq::game_engine::WindowSystem::IsResizedWindow()
+bool fq::game_engine::WindowSystem::IsResizedWindow()const
 {
 	if (mScreenHeight == WindowSystem::Height
 		&& mScreenWidth == WindowSystem::Width)

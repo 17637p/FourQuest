@@ -150,7 +150,7 @@
     <ClInclude Include="json_fwd.hpp" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Path.h" />
-    <ClInclude Include="Tag.h" />
+    <ClInclude Include="prop.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />

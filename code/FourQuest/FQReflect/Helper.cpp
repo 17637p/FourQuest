@@ -2,11 +2,11 @@
 
 #include <cassert>
 
-#include "Tag.h"
+#include "prop.h"
 
 std::string fq::reflect::GetName(const entt::meta_data& metaData)
 {
-	auto prop = metaData.prop(fq::reflect::tag::name);
+	auto prop = metaData.prop(fq::reflect::prop::name);
 
 	if (!prop)
 	{
@@ -17,7 +17,7 @@ std::string fq::reflect::GetName(const entt::meta_data& metaData)
 
 std::string fq::reflect::GetName(const entt::meta_type& metaType)
 {
-	auto prop = metaType.prop(fq::reflect::tag::name);
+	auto prop = metaType.prop(fq::reflect::prop::name);
 
 	if (!prop)
 	{
@@ -28,7 +28,7 @@ std::string fq::reflect::GetName(const entt::meta_type& metaType)
 
 std::string fq::reflect::GetLabel(const entt::meta_type& metaType)
 {
-	auto prop = metaType.prop(fq::reflect::tag::label);
+	auto prop = metaType.prop(fq::reflect::prop::label);
 
 	if (!prop)
 	{
@@ -39,7 +39,7 @@ std::string fq::reflect::GetLabel(const entt::meta_type& metaType)
 
 std::string fq::reflect::GetComment(const entt::meta_data& metaData)
 {
-	auto prop = metaData.prop(fq::reflect::tag::comment);
+	auto prop = metaData.prop(fq::reflect::prop::comment);
 
 	if (!prop)
 	{

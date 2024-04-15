@@ -30,11 +30,11 @@ namespace fq::game_engine
 
 		void beginComponent(entt::id_type id, fq::game_module::Component* component);
 
-		void beginClass(entt::meta_type type, entt::meta_any& object);
+		void beginClass(entt::meta_any object);
 
-		void beginMember(entt::meta_data type, entt::meta_any& member);
+		void beginMember(entt::meta_data type, entt::meta_any instance);
 
-		void beginCombo_EnumClass(entt::meta_type type, entt::meta_any& enumToAny);
+		void beginCombo_EnumClass(entt::meta_data data, entt::meta_any instance);
 
 	private:
 		GameProcess* mGameProcess;

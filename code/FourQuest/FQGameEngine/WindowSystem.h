@@ -26,7 +26,7 @@ namespace fq::game_engine
 		/// 윈도우 창 크기 변경 확인
 		/// </summary>
 		/// <returns>변경 여부</returns>
-		bool IsResizedWindow();
+		bool IsResizedWindow()const ;
 
 		/// <summary>
 		/// 윈도우 창 크기 변경을 호출한다.

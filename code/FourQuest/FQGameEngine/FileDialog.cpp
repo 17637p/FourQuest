@@ -465,6 +465,13 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 		if (ImGui::MenuItem("Delete"))
 		{
 			fs::path garbagePath = fq::path::GetGarbagePath() / path.filename();
+
+			// 쓰레기통에 같은 파일이 있으면 삭제합니다
+			if (fs::exists(garbagePath))
+			{
+				fs::remove_all(garbagePath);
+			}	
+
 			fs::rename(path, garbagePath);
 		}
 

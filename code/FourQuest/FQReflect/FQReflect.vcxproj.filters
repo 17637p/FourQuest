@@ -33,7 +33,7 @@
     <ClInclude Include="Converter.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="Tag.h">
+    <ClInclude Include="prop.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="Path.h">

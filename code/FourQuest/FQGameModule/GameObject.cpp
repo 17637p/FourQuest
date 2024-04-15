@@ -6,15 +6,15 @@ FQ_REGISTRATION
 {
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
-		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::tag::name, "mID")
-		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName")).prop(fq::reflect::tag::name, "mName")
-		.data<&fq::game_module::GameObject::mTag>(entt::hashed_string("mTag")).prop(fq::reflect::tag::name, "mTag");
+		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::prop::name, "mID")
+		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName")).prop(fq::reflect::prop::name, "mName")
+		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag")).prop(fq::reflect::prop::name, "mTag");
 }
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
 	, mName("GameObject")
-	, mTag(Tag::Untagged)
+	, mTag(Tag::Player)
 	, mComponents{}
 	, mScene(nullptr)
 	, mbIsToBeDestroyed(false)
