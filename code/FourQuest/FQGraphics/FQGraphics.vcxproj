@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -102,8 +102,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;FQ_GRAPHICS_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,20 +128,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11ResourceType.h" />
+    <ClInclude Include="D3D11Texture.h" />
     <ClInclude Include="D3D11View.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="D3D11Device.h" />
     <ClInclude Include="D3D11State.h" />
+    <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11State.cpp" />
+    <ClCompile Include="D3D11Texture.cpp" />
     <ClCompile Include="D3D11View.cpp" />
+    <ClCompile Include="FQGraphics.cpp" />
+    <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />

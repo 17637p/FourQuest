@@ -1,20 +1,20 @@
 #pragma once
 
 #include <windows.h>
+#include <memory>
+
+#pragma comment(lib, "d3d11.lib")
 //#include <directxtk/SimpleMath.h>
 
-#define FQ_GRAPHICS 
-
-#ifdef FQ_GRAPHICS
-//#define FQ_GRAPHICS __declspec(dllexport)
+#ifdef FQ_GRAPHICS_EXPORT
+#define FQ_GRAPHICS __declspec(dllexport)
 #else
-//#define FQ_GRAPHICS __declspec(dllimport)
+#define FQ_GRAPHICS __declspec(dllimport)
 #endif
 
-/*
 #ifdef __cplusplus
 extern "C" {
-#endif*/
+#endif
 
 namespace fq_graphics
 {
@@ -28,8 +28,7 @@ namespace fq_graphics
 
 	/// <summary>
 	/// FPGraphics 인터페이스
-	/// 언리얼 보니까 꼭 인터페이스로 나눠서 dll로 빼야하는 걸까 싶지만
-	/// 이렇게 했을 때 종속성이 줄어들어서 관리가 편했던 건 사실이라 이렇게 하기로 했다.
+	/// dll로 만들면 빌드 시간을 줄이고 종속성이 줄어들어 유지 보수가 편해진다.
 	/// 
 	/// 2024.05.03 
 	/// </summary>
@@ -77,9 +76,15 @@ namespace fq_graphics
 		//virtual FQ_GRAPHICS void* GetDeviceContext() abstract;
 		//virtual FQ_GRAPHICS void* GetSRV() abstract;
 	};
+
+	class EngineExporter
+	{
+	public:
+		FQ_GRAPHICS IFQGraphics* GetEngine();
+		FQ_GRAPHICS void DeleteEngine(IFQGraphics* engine);
+	};
 }
 
-/*
 #ifdef __cplusplus
 }
-#endif */
+#endif 

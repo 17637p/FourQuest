@@ -6,7 +6,10 @@
 
 using namespace fq_graphics;
 
-D3D11SamplerState::D3D11SamplerState(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11SamplerState eViewType)
+/*=============================================================================
+		SamplerState
+=============================================================================*/
+D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11SamplerState eViewType)
 	:ResourceBase(resourceManager, ResourceType::SamplerState),
 	mState(nullptr)
 {
@@ -27,8 +30,37 @@ D3D11SamplerState::D3D11SamplerState(std::shared_ptr<D3D11ResourceManager> resou
 	HR(device->CreateSamplerState(&clampSamplerDesc, &mState));
 }
 
-D3D11RasterizerState::D3D11RasterizerState(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11SamplerState eViewType)
-	:ResourceBase(resourceManager, ResourceType::SamplerState),
+std::string D3D11SamplerState::GenerateRID(const ED3D11SamplerState eStateType)
+{
+	return typeid(D3D11SamplerState).name() + std::to_string(static_cast<int>(eStateType));
+}
+
+void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType)
+{
+	switch (eShaderType)
+	{
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, &mState);
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, &mState);
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, &mState);
+		}
+		default:
+			break;
+	}
+}
+
+/*=============================================================================
+		RasterizerState
+=============================================================================*/
+D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11RasterizerState eViewType)
+	:ResourceBase(resourceManager, ResourceType::RasterizerState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
@@ -44,8 +76,22 @@ D3D11RasterizerState::D3D11RasterizerState(std::shared_ptr<D3D11ResourceManager>
 	HR(device->CreateRasterizerState(&solidDesc, &mState));
 }
 
-D3D11DepthStencilState::D3D11DepthStencilState(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11DepthStencilState eStateType)
-	:ResourceBase(resourceManager, ResourceType::SamplerState),
+std::string D3D11RasterizerState::GenerateRID(const ED3D11RasterizerState eStateType)
+{
+	return typeid(D3D11RasterizerState).name() + std::to_string(static_cast<int>(eStateType));
+}
+
+void D3D11RasterizerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	// Todo: 제대로 작동하는 지 확인할 것 .Get인지 .GetAddressOf인지
+	d3d11Device->GetDeviceContext()->RSSetState(mState.Get());
+}
+
+/*=============================================================================
+		DepthStencilState
+=============================================================================*/
+D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilState eStateType)
+	:ResourceBase(resourceManager, ResourceType::DepthStencilState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
@@ -64,8 +110,22 @@ D3D11DepthStencilState::D3D11DepthStencilState(std::shared_ptr<D3D11ResourceMana
 	HR(device->CreateDepthStencilState(&desc, &tempRasterizerState));
 }
 
-D3D11BlendState::D3D11BlendState(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11BlendState eStateType)
-	:ResourceBase(resourceManager, ResourceType::SamplerState),
+std::string D3D11DepthStencilState::GenerateRID(const ED3D11DepthStencilState eStateType)
+{
+	return typeid(D3D11DepthStencilState).name() + std::to_string(static_cast<int>(eStateType));
+}
+
+void D3D11DepthStencilState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	d3d11Device->GetDeviceContext()->OMSetDepthStencilState(mState.Get(), 0);
+}
+
+/*=============================================================================
+		BlendState
+=============================================================================*/
+
+D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11BlendState eStateType)
+	:ResourceBase(resourceManager, ResourceType::BlendState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
@@ -82,4 +142,15 @@ D3D11BlendState::D3D11BlendState(std::shared_ptr<D3D11ResourceManager> resourceM
 		//desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		//desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		//bd->pd3dDevice->CreateBlendState(&desc, &bd->pBlendState);
+}
+
+std::string D3D11BlendState::GenerateRID(const ED3D11BlendState eStateType)
+{
+	return typeid(D3D11BlendState).name() + std::to_string(static_cast<int>(eStateType));
+}
+
+void D3D11BlendState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	// 특별히 blend factor 값을 사용하지 않는 이상 두 번째 인자 값은 항상 null로 넘겨도 된다.
+	d3d11Device->GetDeviceContext()->OMSetBlendState(mState.Get(), nullptr, 0xFFFFFFFF);
 }

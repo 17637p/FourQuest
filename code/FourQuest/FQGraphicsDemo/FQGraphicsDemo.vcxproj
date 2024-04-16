@@ -139,11 +139,6 @@
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FQGraphics\FQGraphics.vcxproj">
-      <Project>{b977a79f-fe96-446a-b70b-ae1a9a59bd8f}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

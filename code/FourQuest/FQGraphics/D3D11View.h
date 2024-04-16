@@ -24,16 +24,19 @@ namespace fq_graphics
 	class D3D11RenderTargetView : public ResourceBase
 	{
 	public:
-		D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManager> resourceManager, 
-			const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11RenderTargetViewType eViewType, 
+		D3D11RenderTargetView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
+			const std::shared_ptr<D3D11Device>& d3d11Device, 
+			const ED3D11RenderTargetViewType eViewType, 
 			const unsigned short width, const unsigned short height);
 
-		static std::string GenerateRID(ED3D11RenderTargetViewType eViewType);
+		static std::string GenerateRID(const ED3D11RenderTargetViewType eViewType);
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
-	//private:
+	private:
 		ComPtr<ID3D11RenderTargetView> mRTV;
+
+		friend class D3D11ShaderResourceView;
 	};
 
 	/*=============================================================================
@@ -42,11 +45,14 @@ namespace fq_graphics
 	class D3D11ShaderResourceView : public ResourceBase
 	{
 	public:
-		D3D11ShaderResourceView(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
+		D3D11ShaderResourceView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
+			const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
 
-		static std::string GenerateRID(ED3D11ShaderResourceViewType eViewType);
+		static std::string GenerateRID(const ED3D11ShaderResourceViewType eViewType);
 
-	//private:
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
+
+	private:
 		ComPtr<ID3D11ShaderResourceView> mSRV;
 	};
 
@@ -56,11 +62,14 @@ namespace fq_graphics
 	class D3D11DepthStencilView : public ResourceBase
 	{
 	public:
-		D3D11DepthStencilView(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11DepthStencilViewType eViewType, const unsigned short width, const unsigned short height);
+		D3D11DepthStencilView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
+			const std::shared_ptr<D3D11Device>& d3d11Device, 
+			const ED3D11DepthStencilViewType eViewType, 
+			const unsigned short width, const unsigned short height);
 
-		static std::string GenerateRID(ED3D11DepthStencilViewType eViewType);
+		static std::string GenerateRID(const ED3D11DepthStencilViewType eViewType);
 
-	//private:
+	private:
 		ComPtr<ID3D11DepthStencilView> mDSV;
 	};
 }

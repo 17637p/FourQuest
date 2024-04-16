@@ -4,7 +4,6 @@
 
 #ifdef _DEBUG
 #pragma comment(lib, "../x64/Debug/FQGraphics.lib")
-#pragma comment(lib, "d3d11.lib")
 //#pragma comment(lib, "../x64/Debug/ImpGraphicsEngine.lib")
 #else
 //#pragma comment(lib, "../x64/Release/ImpStructure.lib")

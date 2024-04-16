@@ -3,6 +3,7 @@
 #include <wrl.h>
 #include <unordered_map>
 #include <memory>
+#include <string>
 
 #include "D3D11ResourceType.h"
 #include "D3D11Device.h"
@@ -18,9 +19,13 @@ namespace fq_graphics
 	struct D3D11SamplerState : public ResourceBase
 	{
 	public:
-		D3D11SamplerState(std::shared_ptr<D3D11ResourceManager> resourceManager, 
+		D3D11SamplerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
 			const std::shared_ptr<D3D11Device>& d3d11Device,
-			ED3D11SamplerState eStateType);
+			const ED3D11SamplerState eStateType);
+
+		static std::string GenerateRID(const ED3D11SamplerState eStateType);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 
 	private:
 		ComPtr<ID3D11SamplerState> mState;
@@ -32,9 +37,13 @@ namespace fq_graphics
 	class D3D11RasterizerState : public ResourceBase
 	{
 	public:
-		D3D11RasterizerState(std::shared_ptr<D3D11ResourceManager> resourceManager,
+		D3D11RasterizerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			const std::shared_ptr<D3D11Device>& d3d11Device,
-			ED3D11SamplerState eStateType);
+			const ED3D11RasterizerState eStateType);
+
+		static std::string GenerateRID(const ED3D11RasterizerState eStateType);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	private:
 		ComPtr<ID3D11RasterizerState> mState;
@@ -46,9 +55,13 @@ namespace fq_graphics
 	class D3D11DepthStencilState : public ResourceBase
 	{
 	public:
-		D3D11DepthStencilState(std::shared_ptr<D3D11ResourceManager> resourceManager,
+		D3D11DepthStencilState(const std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			const std::shared_ptr<D3D11Device>& d3d11Device,
-			ED3D11DepthStencilState eStateType);
+			const ED3D11DepthStencilState eStateType);
+
+		static std::string GenerateRID(const ED3D11DepthStencilState eStateType);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	private:
 		ComPtr<ID3D11DepthStencilState> mState;
@@ -60,9 +73,13 @@ namespace fq_graphics
 	class D3D11BlendState : public ResourceBase
 	{
 	public:
-		D3D11BlendState(std::shared_ptr<D3D11ResourceManager> resourceManager,
+		D3D11BlendState(const std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			const std::shared_ptr<D3D11Device>& d3d11Device,
-			ED3D11BlendState eStateType);
+			const ED3D11BlendState eStateType);
+
+		static std::string GenerateRID(const ED3D11BlendState eStateType);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	private:
 		ComPtr<ID3D11BlendState> mState;

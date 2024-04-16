@@ -11,7 +11,7 @@ using namespace fq_graphics;
 /*=============================================================================
 		RTV View
 =============================================================================*/
-D3D11RenderTargetView::D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11RenderTargetViewType eViewType, const unsigned short width, const unsigned short height)
+D3D11RenderTargetView::D3D11RenderTargetView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11RenderTargetViewType eViewType, const unsigned short width, const unsigned short height)
 	:ResourceBase(resourceManager, ResourceType::RenderTargetView),
 	mRTV(nullptr)
 {
@@ -28,8 +28,6 @@ D3D11RenderTargetView::D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManage
 		// 화면에 그려질 버퍼 렌더 타겟 생성
 		ID3D11Texture2D* backBuffer = nullptr;
 
-		//ID3D11RenderTargetView* tempRenderTargetView = defaultRenderTargetView->mRTV.Get();
-
 		HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
 		if (backBuffer == nullptr)
 		{
@@ -37,7 +35,7 @@ D3D11RenderTargetView::D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManage
 		}
 		else
 		{
-			HR(device->CreateRenderTargetView(backBuffer, 0, &mRTV));
+			HR(d3d11Device->GetDevice()->CreateRenderTargetView(backBuffer, 0, &mRTV));
 		}
 		ReleaseCOM(backBuffer);
 
@@ -48,7 +46,7 @@ D3D11RenderTargetView::D3D11RenderTargetView(std::shared_ptr<D3D11ResourceManage
 	}
 }
 
-std::string D3D11RenderTargetView::GenerateRID(ED3D11RenderTargetViewType eViewType)
+std::string D3D11RenderTargetView::GenerateRID(const ED3D11RenderTargetViewType eViewType)
 {
 	return typeid(D3D11RenderTargetView).name() + std::to_string(static_cast<int>(eViewType));
 }
@@ -57,7 +55,7 @@ void D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device
 {
 	std::shared_ptr<D3D11DepthStencilView> dsv;// = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-	const float blackBackgroundColor[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	const float blackBackgroundColor[4] = { 0.2f, 0.7f, 0.2f, 1.0f };
 	d3d11Device->GetDeviceContext()->ClearRenderTargetView(mRTV.Get(), blackBackgroundColor);
 	//d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, &mRTV, dsv->mDSV.Get());
 }
@@ -65,21 +63,61 @@ void D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device
 /*=============================================================================
 		SRV View
 =============================================================================*/
-D3D11ShaderResourceView::D3D11ShaderResourceView(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView)
+D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
+	const std::shared_ptr<D3D11Device>& d3d11Device, 
+	const std::shared_ptr<D3D11RenderTargetView>& rendertargetView)
 	:ResourceBase(resourceManager, ResourceType::ShaderResourceView),
 	mSRV(nullptr)
 {
+	ID3D11Texture2D* rendertargetTexture = nullptr;
+	rendertargetView->mRTV->GetResource(reinterpret_cast<ID3D11Resource**>(&rendertargetTexture));
+	
+	D3D11_TEXTURE2D_DESC textureDesc;
+	rendertargetTexture->GetDesc(&textureDesc);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+
+	HR(d3d11Device->GetDevice()->CreateShaderResourceView(rendertargetTexture,
+		&shaderResourceViewDesc,
+		&mSRV));
+
+	ReleaseCOM(rendertargetTexture);
 }
 
-std::string D3D11ShaderResourceView::GenerateRID(ED3D11ShaderResourceViewType eViewType)
+std::string D3D11ShaderResourceView::GenerateRID(const ED3D11ShaderResourceViewType eViewType)
 {
 	return typeid(D3D11RenderTargetView).name() + std::to_string(static_cast<int>(eViewType));
+}
+
+void D3D11ShaderResourceView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType)
+{
+	switch (eShaderType)
+	{
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &mSRV);
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &mSRV);
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, &mSRV);
+		}
+		default:
+			break;
+	}
 }
 
 /*=============================================================================
 		DSV View
 =============================================================================*/
-D3D11DepthStencilView::D3D11DepthStencilView(std::shared_ptr<D3D11ResourceManager> resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, ED3D11DepthStencilViewType eViewType, const unsigned short width, const unsigned short height)
+D3D11DepthStencilView::D3D11DepthStencilView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilViewType eViewType, const unsigned short width, const unsigned short height)
 	:ResourceBase(resourceManager, ResourceType::DepthStencilView),
 	mDSV(nullptr)
 {
@@ -116,7 +154,7 @@ D3D11DepthStencilView::D3D11DepthStencilView(std::shared_ptr<D3D11ResourceManage
 		ReleaseCOM(depthStencilBuffer);
 }
 
-std::string D3D11DepthStencilView::GenerateRID(ED3D11DepthStencilViewType eViewType)
+std::string D3D11DepthStencilView::GenerateRID(const ED3D11DepthStencilViewType eViewType)
 {
 	return typeid(D3D11RenderTargetView).name() + std::to_string(static_cast<int>(eViewType));
 }

@@ -14,16 +14,19 @@ namespace fq_graphics
 		ShaderResourceView,
 		DepthStencilView,
 
+		Texture,
+
 		SamplerState,
 		RasterizerState,
 		DepthStencilState,
-		BlendState
+		BlendState,
+
 	};
 
 	class ResourceBase
 	{
 	public:
-		ResourceBase(std::shared_ptr<D3D11ResourceManager> resourceManager, ResourceType resourceType);
+		ResourceBase(const std::shared_ptr<D3D11ResourceManager> resourceManager, const ResourceType resourceType);
 		virtual ~ResourceBase() {};
 
 		virtual ResourceType GetType() { return mResourceType; };
@@ -35,3 +38,4 @@ namespace fq_graphics
 		ResourceType mResourceType;
 	};
 }
+

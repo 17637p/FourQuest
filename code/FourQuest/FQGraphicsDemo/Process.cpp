@@ -4,7 +4,7 @@
 #include "InputManager.h"
 
 //temp
-#include "../FQGraphics/Renderer.h"
+#include "../FQGraphics/IFQGraphics.h"
 
 Process::Process()
 	:
@@ -21,13 +21,14 @@ Process::Process()
 
 	//m_pRenderer = EngineExporter::GetEngine();
 	//_guiManager = new ImpGraphics::GUIManager;
-
+	mEngineExporter = std::make_shared<fq_graphics::EngineExporter>();
 }
 
 Process::~Process()
 {
 	//delete _guiManager;
 	//EngineExporter::DeleteEngine();
+	mEngineExporter->DeleteEngine(mTestGraphics);
 }
 
 bool Process::Init(HINSTANCE hInstance)
@@ -39,8 +40,8 @@ bool Process::Init(HINSTANCE hInstance)
 	InputManager::GetInstance().Init(mHwnd);
 	//m_timer = std::make_unique<GameTimer>();
 
-	mTestGrphics = std::make_shared<fq_graphics::Renderer>();
-	mTestGrphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
+	mTestGraphics = mEngineExporter->GetEngine();
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
 	return true;
 }
@@ -122,7 +123,7 @@ void Process::Update()
 
 void Process::Render()
 {
-	mTestGrphics->BeginRender();
+	mTestGraphics->BeginRender();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
 	//
@@ -141,5 +142,5 @@ void Process::Render()
 	//_guiManager->Render();
 	///// 그리기를 끝낸다.
 	//m_pRenderer->EndRender();
-	mTestGrphics->EndRender();
+	mTestGraphics->EndRender();
 }

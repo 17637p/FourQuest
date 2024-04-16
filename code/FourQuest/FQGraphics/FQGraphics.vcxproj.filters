@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="D3D11State.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -26,6 +25,18 @@
     <ClInclude Include="D3D11ResourceType.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="IFQGraphics.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="FQGraphics.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Buffer.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Texture.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Renderer">
@@ -36,6 +47,9 @@
     </Filter>
     <Filter Include="Management">
       <UniqueIdentifier>{dfccb5bf-1134-4085-b5b6-e370bf26a727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{11aceed1-c827-41bf-9f7e-b37f6e86e799}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +70,18 @@
     </ClCompile>
     <ClCompile Include="ResourceBase.cpp">
       <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="FQGraphics.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Buffer.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Texture.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="IFQGraphics.cpp">
+      <Filter>Interface</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
