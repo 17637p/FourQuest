@@ -7,5 +7,18 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{3722a93d-bbd6-46f9-a30c-84f327b0b78e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Path">
+      <UniqueIdentifier>{eb24db4c-77c6-4679-868c-1a9874999e3c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="path.cpp">
+      <Filter>Path</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="path.h">
+      <Filter>Path</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

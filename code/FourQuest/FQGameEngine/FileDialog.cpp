@@ -8,6 +8,7 @@
 #include "imgui_stdlib.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
+#include "../FQCommon/path.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 

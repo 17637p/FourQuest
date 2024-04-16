@@ -1,4 +1,4 @@
-#include "Path.h"
+#include "path.h"
 
 #include <cassert>
 
@@ -10,7 +10,15 @@ std::filesystem::path fq::path::GetCurrentPath()
 std::filesystem::path fq::path::GetResourcePath()
 {
 	std::filesystem::path resPath = std::filesystem::current_path();
-	resPath +=  L"\\resource";
+	resPath += L"\\resource";
+
+	return resPath;
+}
+
+std::filesystem::path fq::path::GetInternalPath()
+{
+	std::filesystem::path resPath = std::filesystem::current_path();
+	resPath += L"\\resource\\internal";
 
 	return resPath;
 }
@@ -55,8 +63,7 @@ std::vector<std::filesystem::path> fq::path::GetDirectoryList(const std::filesys
 
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		// ignore list 
-		auto fileName =  entry.path().filename();
+		auto fileName = entry.path().filename();
 		directoryList.push_back(entry.path());
 	}
 

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <queue>
 
+#include "../FQCommon/path.h"
 #include "GameObject.h"
 #include "Component.h"
 #include "Transform.h"

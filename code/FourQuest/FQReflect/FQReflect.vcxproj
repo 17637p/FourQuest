@@ -150,14 +150,12 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="json_fwd.hpp" />
     <ClInclude Include="Macro.h" />
-    <ClInclude Include="Path.h" />
     <ClInclude Include="prop.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="IHandle.cpp" />
     <ClCompile Include="Helper.cpp" />
-    <ClCompile Include="Path.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

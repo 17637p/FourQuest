@@ -7,6 +7,7 @@
 #include <imgui_internal.h>
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQCommon/path.h"
 
 #include "GameProcess.h"
 #include "WindowSystem.h"
