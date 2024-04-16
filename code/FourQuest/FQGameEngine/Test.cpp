@@ -11,13 +11,15 @@ FQ_REGISTRATION
 		
 		.data<&Test::iVal>("iVal"_hs)
 		.prop(fq::reflect::prop::name, "iVal")
+		.prop( fq::reflect::prop::comment , "single¶û" )
 
 		.data<&Test::fVal>("fVal"_hs)
 		.prop(fq::reflect::prop::name, "fVal")
-		.prop(fq::reflect::prop::comment, "¶û")
+		.prop(fq::reflect::prop::comment, u8"single¶û")
 
 		.data<&Test::dVal>("dVal"_hs)
 		.prop(fq::reflect::prop::name, "dVal")
+		.prop( fq::reflect::prop::comment , "single" )
 
 		.data<&Test::uiVal>("uiVal"_hs)
 		.prop(fq::reflect::prop::name, "uiVal")
