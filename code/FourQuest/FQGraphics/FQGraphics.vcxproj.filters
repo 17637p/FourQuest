@@ -1,61 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="IFQGraphics.h" />
-    <ClInclude Include="D3D11State.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceBase.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="Define.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D11Device.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D11View.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D11ResourceManager.h">
-      <Filter>Management</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D11ResourceType.h">
-      <Filter>Management</Filter>
-    </ClInclude>
+    <ClCompile Include="FileUtil.cpp" />
+    <ClCompile Include="ModelConverter.cpp" />
+    <ClCompile Include="ModelResources.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="BindableHelper.cpp" />
+    <ClCompile Include="Surface.cpp" />
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Renderer">
-      <UniqueIdentifier>{4d9c6449-de37-4741-8db1-b59999b9177e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="D3D11">
-      <UniqueIdentifier>{6c3f3643-8390-495e-8c04-edefb2f87b65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Management">
-      <UniqueIdentifier>{dfccb5bf-1134-4085-b5b6-e370bf26a727}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="D3D11State.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11Device.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11View.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11ResourceManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceBase.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
+    <ClInclude Include="FileUtil.h" />
+    <ClInclude Include="ModelConverter.h" />
+    <ClInclude Include="ModelIOData.h" />
+    <ClInclude Include="ModelResources.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="BindableHelper.h" />
+    <ClInclude Include="Surface.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
 </Project>
