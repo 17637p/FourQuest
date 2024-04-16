@@ -38,9 +38,14 @@ namespace fq::game_engine
 		// 데이터 타입 관련
 		void beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginInputText_String(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginInputFloat2_Vector2(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginInputFloat3_Vector3(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginInputFloat4_Vector4(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle);
+	
+		void beginIsItemHovered_Comment(entt::meta_data data);
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;

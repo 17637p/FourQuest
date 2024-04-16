@@ -81,7 +81,7 @@ void fq::game_engine::Editor::initializeImGui()
 
 	io.Fonts->AddFontFromFileTTF(fontPath.c_str(),
 		25.f,
-		NULL,
+		NULL, 
 		io.Fonts->GetGlyphRangesKorean());
 
 	{

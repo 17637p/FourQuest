@@ -14,6 +14,7 @@ FQ_REGISTRATION
 
 		.data<&Test::fVal>("fVal"_hs)
 		.prop(fq::reflect::prop::name, "fVal")
+		.prop(fq::reflect::prop::comment, "¶û")
 
 		.data<&Test::dVal>("dVal"_hs)
 		.prop(fq::reflect::prop::name, "dVal")

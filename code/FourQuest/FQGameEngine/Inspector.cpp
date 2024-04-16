@@ -98,9 +98,17 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 	{
 		beginInputText_String(data, handle);
 	}
+	else if (metaType == entt::resolve<DirectX::SimpleMath::Vector2>())
+	{
+		beginInputFloat2_Vector2(data, handle);
+	}
 	else if (metaType == entt::resolve<DirectX::SimpleMath::Vector3>())
 	{
 		beginInputFloat3_Vector3(data, handle);
+	}
+	else if (metaType == entt::resolve<DirectX::SimpleMath::Vector4>())
+	{
+		beginInputFloat4_Vector4(data, handle);
 	}
 	else if (metaType == entt::resolve<DirectX::SimpleMath::Quaternion>())
 	{
@@ -109,6 +117,44 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 	else if (metaType == entt::resolve<DirectX::SimpleMath::Color>())
 	{
 		beginColorEdit4_Color(data, handle);
+	}
+	else if (metaType == entt::resolve<int>())
+	{
+		int val = data.get(handle->GetHandle()).cast<int>();
+		std::string memberName = fq::reflect::GetName(data);
+
+		if (ImGui::InputInt(memberName.c_str(), &val))
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
+		beginIsItemHovered_Comment(data);
+	}
+	else if (metaType == entt::resolve<float>())
+	{
+		float val = data.get(handle->GetHandle()).cast<float>();
+		std::string memberName = fq::reflect::GetName(data);
+
+		if (ImGui::InputFloat(memberName.c_str(), &val))
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
+		beginIsItemHovered_Comment(data);
+	}
+	else if (metaType == entt::resolve<double>())
+	{
+		double val = data.get(handle->GetHandle()).cast<double>();
+		std::string memberName = fq::reflect::GetName(data);
+
+		float f = static_cast<float>(val);
+		if (ImGui::InputFloat(memberName.c_str(), &f))
+		{
+			val = static_cast<double>(f);
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
+		beginIsItemHovered_Comment(data);
 	}
 }
 
@@ -159,6 +205,7 @@ void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_data data, fq::
 		}
 		ImGui::EndCombo();
 	}
+	beginIsItemHovered_Comment(data);
 }
 
 void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq::reflect::IHandle* handle)
@@ -172,6 +219,7 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, name);
 	}
+	beginIsItemHovered_Comment(data);
 }
 
 void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, fq::reflect::IHandle* handle)
@@ -181,12 +229,12 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 
 	float f[3]{ v.x,v.y,v.z };
 
-	if (ImGui::InputFloat3(memberName.c_str(), f)
-		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	if (ImGui::InputFloat3(memberName.c_str(), f))
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
 	}
+	beginIsItemHovered_Comment(data);
 }
 
 void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle)
@@ -211,6 +259,7 @@ void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data dat
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, quatarnion);
 	}
+	beginIsItemHovered_Comment(data);
 }
 
 void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle)
@@ -231,6 +280,7 @@ void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq:
 
 		data.set(handle->GetHandle(), color);
 	}
+	beginIsItemHovered_Comment(data);
 
 	if (ImGui::IsItemActivated())
 	{
@@ -281,6 +331,8 @@ void fq::game_engine::Inspector::beginAddComponent()
 		ImGui::EndCombo();
 	}
 
+	ImGui::SameLine();
+
 	// 추가 버튼
 	if (ImGui::Button("+##add_component_button"))
 	{
@@ -290,5 +342,55 @@ void fq::game_engine::Inspector::beginAddComponent()
 
 		mSelectObject->AddComponent(component);
 	}
+}
+
+void fq::game_engine::Inspector::beginInputFloat2_Vector2(entt::meta_data data, fq::reflect::IHandle* handle)
+{
+	DirectX::SimpleMath::Vector2 v = data.get(handle->GetHandle()).cast<DirectX::SimpleMath::Vector2>();
+	std::string memberName = fq::reflect::GetName(data);
+
+	float f[2]{ v.x,v.y };
+
+	if (ImGui::InputFloat2(memberName.c_str(), f)
+		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	{
+		mEditorProcess->mCommandSystem->Push<SetMetaData>(
+			data, mSelectObject, handle, DirectX::SimpleMath::Vector2(f[0], f[1]));
+	}
+	beginIsItemHovered_Comment(data);
+}
+
+void fq::game_engine::Inspector::beginInputFloat4_Vector4(entt::meta_data data, fq::reflect::IHandle* handle)
+{
+	DirectX::SimpleMath::Vector4 v = data.get(handle->GetHandle()).cast<DirectX::SimpleMath::Vector4>();
+	std::string memberName = fq::reflect::GetName(data);
+
+	float f[4]{ v.x,v.y,v.z,v.w };
+
+	if (ImGui::InputFloat4(memberName.c_str(), f)
+		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	{
+		mEditorProcess->mCommandSystem->Push<SetMetaData>(
+			data, mSelectObject, handle, DirectX::SimpleMath::Vector4(f[0], f[1], f[2], f[3]));
+	}
+	beginIsItemHovered_Comment(data);
+}
+
+void fq::game_engine::Inspector::beginIsItemHovered_Comment(entt::meta_data data)
+{
+	auto prop = data.prop(fq::reflect::prop::comment);
+
+	if (!prop)
+	{
+		return;
+	}
+
+	const char* comment = prop.value().cast<const char*>();
+
+	if (ImGui::IsItemHovered()) 
+	{
+		ImGui::SetTooltip(comment);
+	}
+
 }
 
