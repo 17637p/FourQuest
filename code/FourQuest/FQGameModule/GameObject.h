@@ -15,7 +15,9 @@ namespace fq::game_module
 	/// <summary>
 	/// Component들을 저장하고 관리하는 컨테이너
 	/// </summary>
-	class GameObject : public std::enable_shared_from_this<GameObject>
+	class GameObject : 
+		public std::enable_shared_from_this<GameObject>,
+		public fq::reflect::IHandle
 	{
 		inline static unsigned int LastID = 0;
 
@@ -26,7 +28,7 @@ namespace fq::game_module
 		/// 기본 생성자
 		/// </summary>
 		GameObject();
-		
+
 		/// <summary>
 		/// 복사 생성자
 		/// </summary>
@@ -39,7 +41,7 @@ namespace fq::game_module
 		/// <param name="other"></param>
 		/// <returns></returns>
 		GameObject& operator=(const GameObject& other);
-		
+
 		/// <summary>
 		/// 소멸자 
 		/// </summary>
@@ -56,13 +58,13 @@ namespace fq::game_module
 		/// Scene 시작시 호출
 		/// </summary>
 		void OnStart();
-		
+
 		/// <summary>
 		/// 고정된 프레임으로 호출
 		/// </summary>
 		/// <param name="dt">FixedDeltaTime</param>
 		void OnFixedUpdate(float dt);
-		
+
 		/// <summary>
 		/// 매 프레임 호출
 		/// </summary>
@@ -74,7 +76,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="dt">DeltaTime</param>
 		void OnLateUpdate(float dt);
-		
+
 		/// <summary>
 		/// GameObject 파괴시 호출
 		/// </summary>
@@ -121,7 +123,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>오브젝트 Tag</returns>
 		Tag GetTag()const { return mTag; }
-		
+
 		/// <summary>
 		/// Tag를 설정합니다
 		/// </summary>
@@ -198,7 +200,7 @@ namespace fq::game_module
 		/// any 컴포넌트의 복사본은 추가합니다
 		/// </summary>
 		/// <param name="any">Component</param>
-		void AddComponent(const entt::meta_any& any);
+		void AddComponent(entt::meta_any any);
 
 		/// <summary>
 		/// T 타입에 해당하는 컴포넌트를 파괴합니다
@@ -206,6 +208,10 @@ namespace fq::game_module
 		/// <typeparam name="T">컴포넌트 타입</typeparam>
 		template <typename T>
 		void DestroyComponent();
+
+	private:
+		entt::meta_handle GetHandle()override;
+
 
 	private:
 		unsigned int mID;
@@ -248,7 +254,7 @@ namespace fq::game_module
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		assert(mComponents.find(id) == mComponents.end() 
+		assert(mComponents.find(id) == mComponents.end()
 			&& "가지고있는 컴포넌트입니다.");
 
 		mComponents.insert({ id, std::make_unique<T>(std::forward<Args>(args)...) });

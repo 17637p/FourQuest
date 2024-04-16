@@ -1,5 +1,6 @@
 #include "Resgistration.h"
 #include <directxtk/SimpleMath.h>
+#include <filesystem>
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
@@ -64,5 +65,20 @@ FQ_REGISTRATION
 		.prop(fq::reflect::prop::name, "z")
 		.data<&DirectX::SimpleMath::Quaternion::w>(entt::hashed_string("w"))
 		.prop(fq::reflect::prop::name, "w");
+
+	// Color
+	entt::meta<DirectX::SimpleMath::Color>()
+		.type("Color"_hs)
+		.data<&DirectX::SimpleMath::Color::x>("x"_hs)
+		.prop(fq::reflect::prop::name, "x")
+		.data<&DirectX::SimpleMath::Color::y>("y"_hs)
+		.prop(fq::reflect::prop::name, "y")
+		.data<&DirectX::SimpleMath::Color::z>("z"_hs)
+		.prop(fq::reflect::prop::name, "z")
+		.data<&DirectX::SimpleMath::Color::w>("w"_hs)
+		.prop(fq::reflect::prop::name, "w");
+
+
+
 }
 

@@ -53,8 +53,8 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 		fq::game_module::InputManager* mInputManager;
 
-		std::list<std::unique_ptr<Command>> mCommandList;
-		std::list<std::unique_ptr<Command>>::iterator mCommandOrder;
+		std::list<std::unique_ptr<ICommand>> mCommandList;
+		std::list<std::unique_ptr<ICommand>>::iterator mCommandOrder;
 	};
 
 	template <typename T, typename...Args>

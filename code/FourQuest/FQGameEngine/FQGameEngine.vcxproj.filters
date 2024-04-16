@@ -8,12 +8,6 @@
     <Filter Include="include\01.Engine">
       <UniqueIdentifier>{0a8ac1d8-343d-4da7-b2c0-497bb8a5733b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.GameProcess">
-      <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\03.System">
-      <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\00.DLL">
       <UniqueIdentifier>{cbf6fe28-fece-4c60-a53e-d7bd96c4b5ae}</UniqueIdentifier>
     </Filter>
@@ -69,6 +63,15 @@
     <Filter Include="src\99.Reflect">
       <UniqueIdentifier>{1d5a15d6-4bfd-46f4-8489-e8851d610b0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{e1d570db-360d-4a25-b89a-56b01276bfa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.GameProcess">
+      <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.GameProcess\03.System">
+      <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ToolEngine.h">
@@ -87,7 +90,7 @@
       <Filter>include\10.Editor</Filter>
     </ClInclude>
     <ClInclude Include="WindowSystem.h">
-      <Filter>include\03.System</Filter>
+      <Filter>include\02.GameProcess\03.System</Filter>
     </ClInclude>
     <ClInclude Include="IEditorWindow.h">
       <Filter>include\11.EditorWindow</Filter>
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="GamePlayWindow.h">
       <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -175,9 +181,6 @@
     <ClCompile Include="Command.cpp">
       <Filter>src\12.Command</Filter>
     </ClCompile>
-    <ClCompile Include="CommandSystem.cpp">
-      <Filter>src\12.Command</Filter>
-    </ClCompile>
     <ClCompile Include="EditorProcess.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
@@ -192,6 +195,12 @@
     </ClCompile>
     <ClCompile Include="GamePlayWindow.cpp">
       <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandSystem.cpp">
+      <Filter>src\12.Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

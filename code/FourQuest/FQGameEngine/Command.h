@@ -1,9 +1,11 @@
 #pragma once
 
+#include <cassert>
 #include <functional>
 #include <memory>
 #include <vector>
 
+#include "../FQReflect/FQReflect.h"
 #include "../FQGameModule/GameModule.h"
 
 namespace fq::game_engine
@@ -11,10 +13,10 @@ namespace fq::game_engine
 	/// <summary>
 	/// 커맨드 인터페이스
 	/// </summary>
-	class Command
+	class ICommand
 	{
 	public:
-		virtual ~Command() {}
+		virtual ~ICommand() {}
 
 		/// <summary>
 		/// 실행 
@@ -30,7 +32,7 @@ namespace fq::game_engine
 	/// <summary>
 	/// GameObject 생성 명령
 	/// </summary>
-	class AddObjectCommand : public Command
+	class AddObjectCommand : public ICommand
 	{
 	public:
 		AddObjectCommand(fq::game_module::Scene* scene
@@ -51,7 +53,7 @@ namespace fq::game_engine
 	/// <summary>
 	/// GameObject 삭제 명령
 	/// </summary>
-	class DestroyObjectCommand : public Command
+	class DestroyObjectCommand : public ICommand
 	{
 	public:
 		DestroyObjectCommand(fq::game_module::Scene* scene
@@ -70,7 +72,7 @@ namespace fq::game_engine
 	/// <summary>
 	/// 오브젝트 선택 명령
 	/// </summary>
-	class SelectObjectCommand : public Command
+	class SelectObjectCommand : public ICommand
 	{
 	public:
 		SelectObjectCommand(fq::game_module::EventManager* eventMgr
@@ -88,7 +90,7 @@ namespace fq::game_engine
 	};
 
 	template <typename T>
-	class SetValueCommand : public Command
+	class SetValueCommand : public ICommand
 	{
 	public:
 		SetValueCommand(std::function<void(T)> setter, T oldVal, T newVal)
@@ -113,7 +115,7 @@ namespace fq::game_engine
 		T mNewValue;
 	};
 
-	class BindFunctionCommand : public Command
+	class BindFunctionCommand : public ICommand
 	{
 	public:
 		BindFunctionCommand(std::function<void()> excute, std::function<void()> undo)
@@ -136,5 +138,36 @@ namespace fq::game_engine
 		std::function<void()> mUndo;
 	};
 
+	class SetMetaData : public ICommand
+	{
+	public:
+		SetMetaData(entt::meta_data data
+			, std::shared_ptr<fq::game_module::GameObject> object
+			, fq::reflect::IHandle* handle
+			, entt::meta_any newVal)
+			: mData(data)
+			, mHandle(handle)
+			, mObject(object)
+			, mNewValue(newVal)
+		{
+			mOldValue = data.get(handle->GetHandle());
+		}
 
+		void Excute() override
+		{
+			assert(mData.set(mHandle->GetHandle(), mNewValue));
+		}
+
+		void Undo() override
+		{
+			assert(mData.set(mHandle->GetHandle(), mOldValue));
+		}
+
+	private:
+		entt::meta_any mNewValue;
+		entt::meta_any mOldValue;
+		entt::meta_data mData;
+		fq::reflect::IHandle* mHandle;
+		std::shared_ptr<fq::game_module::GameObject> mObject;
+	};
 }

@@ -6,9 +6,13 @@ FQ_REGISTRATION
 {
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
-		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::prop::name, "mID")
-		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName")).prop(fq::reflect::prop::name, "mName")
-		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag")).prop(fq::reflect::prop::name, "mTag");
+		.prop(fq::reflect::prop::name, "GameObject")
+		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID"))
+		.prop(fq::reflect::prop::name, "mID")
+		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName"))
+		.prop(fq::reflect::prop::name, "mName")
+		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag"))
+		.prop(fq::reflect::prop::name, "mTag");
 }
 
 fq::game_module::GameObject::GameObject()
@@ -133,10 +137,8 @@ void fq::game_module::GameObject::SetName(std::string name)
 	mName = std::move(name);
 }
 
-void fq::game_module::GameObject::AddComponent(const entt::meta_any& any)
+void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 {
-	assert(any);
-
 	entt::meta_type type = any.type();
 	entt::meta_type componentType = entt::resolve<Component>();
 
@@ -144,9 +146,19 @@ void fq::game_module::GameObject::AddComponent(const entt::meta_any& any)
 
 	const Component* component = any.try_cast<Component>();
 
+	assert(component);
+
 	Component* clone = component->Clone(nullptr);
 
-	mComponents.insert({ type.id(), std::unique_ptr<Component>{clone} });
+	// 기존에 있던 컴포넌트는 제거합니다.
+	auto iter = mComponents.find(type.id());
+	if (iter != mComponents.end())
+	{
+		mComponents.erase(iter);
+	}
+
+	clone->SetGameObject(this);
+	mComponents.insert({ type.id(), std::unique_ptr<Component>(clone)});
 }
 
 void fq::game_module::GameObject::DestroyAllComponent()
@@ -162,5 +174,10 @@ void fq::game_module::GameObject::DestroyComponent(entt::id_type id)
 	{
 		mComponents.erase(iter);
 	}
+}
+
+entt::meta_handle fq::game_module::GameObject::GetHandle()
+{
+	return *this;
 }
 

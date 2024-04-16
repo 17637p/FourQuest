@@ -2,7 +2,9 @@
 #include "IEditorWindow.h"
 
 #include <memory>
+#include <vector>
 
+#include "../FQReflect/FQReflect.h"
 #include "../FQGameModule/GameModule.h"
 
 namespace fq::game_engine
@@ -26,22 +28,30 @@ namespace fq::game_engine
 		void Finalize();
 
 	private:
+		void getComponentTypes();
+
 		void beginGameObject(std::shared_ptr<fq::game_module::GameObject> object);
+		void beginClass(fq::reflect::IHandle* handle);
+		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginAddComponent();
 
-		void beginComponent(entt::id_type id, fq::game_module::Component* component);
-
-		void beginClass(entt::meta_any object);
-
-		void beginMember(entt::meta_data type, entt::meta_any instance);
-
-		void beginCombo_EnumClass(entt::meta_data data, entt::meta_any instance);
-
+		// 데이터 타입 관련
+		void beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginInputText_String(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginInputFloat3_Vector3(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle);
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
-
+		fq::game_module::InputManager* mInputManager;
+		
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		fq::game_module::EventHandler mSelectObjectHandle;
+		std::vector<entt::meta_type> mComponentTypes;
+		UINT mCurrentAddComponentIndex;
+
+		DirectX::SimpleMath::Color mPrevColor;
 	};
 
 

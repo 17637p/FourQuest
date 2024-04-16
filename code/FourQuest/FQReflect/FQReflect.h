@@ -12,6 +12,7 @@
 #include "prop.h"
 #include "Path.h"
 #include "Helper.h"
+#include "IHandle.h"
 
 #include "Converter.h"
 #endif // !FQ_REFLECT_H

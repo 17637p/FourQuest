@@ -160,7 +160,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::ObjectManager::loa
 	for (const auto& element : objectData.items())
 	{
 		const std::string& componentID = element.key();
-		const entt::meta_any anyComponent = mConverter.ParseClassFromJson(componentID, element.value());
+		entt::meta_any anyComponent = mConverter.ParseClassFromJson(componentID, element.value());
 		object->AddComponent(anyComponent);
 	}
 

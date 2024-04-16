@@ -5,15 +5,14 @@
 FQ_REGISTRATION
 {
 	entt::meta<fq::game_module::Transform>()
-		.type(entt::hashed_string("Transform"))
-		.base<fq::game_module::Component>()
+		.type(entt::hashed_string("Transform")).prop(fq::reflect::prop::name, "Transform")
 		.data<&fq::game_module::Transform::mPosition>(entt::hashed_string("mPosition"))
 		.prop(fq::reflect::prop::name,"mPosition")
 		.data<&fq::game_module::Transform::mRotation>(entt::hashed_string("mRotation"))
 		.prop(fq::reflect::prop::name,"mRotation")
 		.data<&fq::game_module::Transform::mScale>(entt::hashed_string("mScale"))
-		.prop(fq::reflect::prop::name,"mScale");
-
+		.prop(fq::reflect::prop::name,"mScale")
+		.base<fq::game_module::Component>();
 }
 
 using namespace DirectX::SimpleMath;
@@ -30,6 +29,28 @@ fq::game_module::Transform::Transform()
 
 fq::game_module::Transform::~Transform()
 {}
+
+fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const
+{
+	Transform* cloneTransform = static_cast<Transform*>(clone);
+
+	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
+	{
+		cloneTransform = new Transform(*this);
+	}
+	else // clone에 데이터를 복사한다.
+	{
+		// 기본 대입 연산자 호출한다.
+		*cloneTransform = *this;
+	}
+	return cloneTransform;
+}
+
+entt::meta_handle fq::game_module::Transform::GetHandle()
+{
+	return *this;
+}
+
 
 DirectX::SimpleMath::Vector3 fq::game_module::Transform::GetWorldPosition() const
 {
@@ -161,21 +182,7 @@ void fq::game_module::Transform::RemoveChild(Transform* removeChild)
 	}
 }
 
-fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const
-{
-	Transform* cloneTransform = static_cast<Transform*>(clone);
 
-	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
-	{
-		cloneTransform = new Transform(*this);
-	}
-	else // clone에 데이터를 복사한다.
-	{
-		// 기본 대입 연산자 호출한다.
-		*cloneTransform = *this;
-	}
-	return cloneTransform;
-}
 
 bool fq::game_module::Transform::IsDescendant(Transform* transfrom) const
 {

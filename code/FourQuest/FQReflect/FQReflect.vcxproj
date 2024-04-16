@@ -145,6 +145,7 @@
     <ClInclude Include="Converter.h" />
     <ClInclude Include="entt.hpp" />
     <ClInclude Include="FQReflect.h" />
+    <ClInclude Include="IHandle.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="json_fwd.hpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="IHandle.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Path.cpp" />
   </ItemGroup>

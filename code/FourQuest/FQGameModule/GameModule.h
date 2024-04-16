@@ -12,10 +12,12 @@
 
 #include "Transform.h"
 
+#include "EventHandler.h"
 #include "EventManager.h"
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "ObjectManager.h"
+
 
 #endif // 
