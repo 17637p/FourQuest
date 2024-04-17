@@ -83,7 +83,7 @@ namespace fq::game_module::internal
 
 				isEnd = (mIndex < mScene->GetObjectSize()) &&
 					(object == nullptr || !object->template HasComponent<Types...>()
-						|| (object->IsToBeDestroyed() && IsIncludeToBeDestroyed()));
+						|| (object->IsDestroyed() && IsIncludeToBeDestroyed()));
 
 			} while (isEnd);
 

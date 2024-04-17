@@ -19,7 +19,7 @@ fq::game_module::GameObject::GameObject()
 	, mTag(Tag::Player)
 	, mComponents{}
 	, mScene(nullptr)
-	, mbIsToBeDestroyed(false)
+	, mbIsDestroyed(false)
 {
 	AddComponent<Transform>();
 }
@@ -33,7 +33,7 @@ fq::game_module::GameObject::GameObject(const GameObject& other)
 	this->mName = other.mName;
 	this->mTag = other.mTag;
 	this->mScene = other.mScene;
-	this->mbIsToBeDestroyed = other.mbIsToBeDestroyed;
+	this->mbIsDestroyed = other.mbIsDestroyed;
 }
 
 fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameObject& other)
@@ -72,7 +72,7 @@ void fq::game_module::GameObject::OnUpdate(float dt)
 
 void fq::game_module::GameObject::OnDestroy()
 {
-	mbIsToBeDestroyed = true;
+	mbIsDestroyed = true;
 
 	for (const auto& [key, component] : mComponents)
 	{
@@ -216,5 +216,10 @@ void fq::game_module::GameObject::CleanUpComponent()
 		}
 	}
 
+}
+
+bool fq::game_module::GameObject::HasParent() 
+{
+	return GetParent() != nullptr;
 }
 

@@ -62,9 +62,9 @@ namespace fq::game_engine
 		void Excute() override;
 		void Undo() override;
 
-
 	private:
 		std::shared_ptr<fq::game_module::GameObject> mGameObject;
+		std::shared_ptr<fq::game_module::GameObject> mParent;
 		std::vector< std::shared_ptr<fq::game_module::GameObject>> mChildren;
 		fq::game_module::Scene* mScene;
 	};

@@ -7,13 +7,13 @@ namespace fq
 {
 	struct Transform
 	{
-		DirectX::SimpleMath::Vector3 localPosition;
-		DirectX::SimpleMath::Quaternion localrotation;
-		DirectX::SimpleMath::Vector3 localscale;
+		DirectX::SimpleMath::Vector3	localPosition;
+		DirectX::SimpleMath::Quaternion localRotation;
+		DirectX::SimpleMath::Vector3	localScale;
 
-		DirectX::SimpleMath::Vector3 worldPosition;
-		DirectX::SimpleMath::Quaternion worldlocalrotation;
-		DirectX::SimpleMath::Vector3 worldlocalscale;
+		DirectX::SimpleMath::Vector3	worldPosition;
+		DirectX::SimpleMath::Quaternion worldRotation;
+		DirectX::SimpleMath::Vector3	worldScale;
 
 		DirectX::SimpleMath::Matrix localMatrix;
 		DirectX::SimpleMath::Matrix worldMatrix;

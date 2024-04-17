@@ -23,9 +23,9 @@ fq::game_engine::AddObjectCommand::AddObjectCommand(fq::game_module::Scene* scen
 
 	q.push(object.get());
 
-	while (q.empty())
+	while (!q.empty())
 	{
-	 	auto tmp = q.front();
+		auto tmp = q.front();
 		q.pop();
 
 		for (auto child : tmp->GetChildren())
@@ -48,28 +48,40 @@ void fq::game_engine::DestroyObjectCommand::Excute()
 void fq::game_engine::DestroyObjectCommand::Undo()
 {
 	mScene->AddGameObject(mGameObject);
+
+	if (mParent != nullptr)
+	{
+		auto parentT = mParent->GetComponent<fq::game_module::Transform>();
+		mGameObject->GetComponent<fq::game_module::Transform>()->SetParent(parentT);
+	}
 }
 
 fq::game_engine::DestroyObjectCommand::DestroyObjectCommand(fq::game_module::Scene* scene
 	, std::shared_ptr<fq::game_module::GameObject> object)
 	:mScene(scene)
 	, mGameObject(object)
-{	
+	, mParent(nullptr)
+{
 	// 메모리 해제를 막기위해서 자식들을 가진다.
 	std::queue<fq::game_module::GameObject*> q;
 
 	q.push(object.get());
 
-	while (q.empty())
+	while (!q.empty())
 	{
 		auto tmp = q.front();
 		q.pop();
 
 		for (auto child : tmp->GetChildren())
-		{
+		{ 
 			mChildren.push_back(child->shared_from_this());
 			q.push(child);
 		}
+	}
+
+	if (object->HasParent())
+	{
+		mParent = object->GetParent()->shared_from_this();
 	}
 }
 

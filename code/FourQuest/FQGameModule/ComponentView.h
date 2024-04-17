@@ -20,7 +20,7 @@ namespace fq::game_module::internal
 			,mEndIterator(endIter)
 		{
 			if (mBeginIterator.Get() == nullptr ||
-				(mBeginIterator.Get()->IsToBeDestroyed()
+				(mBeginIterator.Get()->IsDestroyed()
 					&& !mBeginIterator.IsIncludeToBeDestroyed())
 				|| !mBeginIterator.Get()->template HasComponent<Types...>())
 			{

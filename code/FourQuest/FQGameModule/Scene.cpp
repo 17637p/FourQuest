@@ -1,9 +1,13 @@
 #include "Scene.h"
+
+#include <queue>
+
 #include "GameObject.h"
 #include "SceneHelper.h"
 #include "InputManager.h"
 #include "EventManager.h"
 #include "Event.h"
+#include "Transform.h"
 
 fq::game_module::Scene::Scene()
 	:mObjects{}
@@ -118,7 +122,7 @@ void fq::game_module::Scene::CleanUp()
 	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
 		, [](const std::shared_ptr<GameObject>& object)
 		{
-			return object->IsToBeDestroyed();
+			return object->IsDestroyed();
 		}), mObjects.end());
 
 	// 삭제 예정인 컴포넌트를 제거합니다
@@ -140,7 +144,7 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 
 	object->SetScene(this);
 	SceneHeleper::CheckNameDuplication(*this, *object);
-	object->mbIsToBeDestroyed = false;
+	object->mbIsDestroyed = false;
 
 	mObjects.push_back(object);
 
@@ -154,19 +158,40 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 
 void fq::game_module::Scene::DestroyGameObject(GameObject* object)
 {
-	if (object->IsToBeDestroyed())
+	if (object->IsDestroyed())
 	{
 		return;
 	}
 
-	object->OnDestroy();
+	object->mbIsDestroyed = true;
+
+	// 계층구조 연결을 해제합니다 
+	object->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
 
 	for (auto child : object->GetChildren())
 	{
-		DestroyGameObject(child);
+		destroyChild(child);
 	}
 
+	object->OnDestroy();
 	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
 }
 
+void fq::game_module::Scene::destroyChild(GameObject* object)
+{
+	if (object->IsDestroyed())
+	{
+		return;
+	}
+
+	object->mbIsDestroyed = true;
+
+	for (auto child : object->GetChildren())
+	{
+		destroyChild(child);
+	}
+
+	object->OnDestroy();
+	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
+}
 

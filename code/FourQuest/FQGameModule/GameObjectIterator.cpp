@@ -67,7 +67,7 @@ fq::game_module::internal::GameObjectIterator& fq::game_module::internal::GameOb
 	++mIndex;
 
 	while (mIndex < mScene->GetObjectSize() &&
-		(Get().IsToBeDestroyed() && !mbIsIncludeToBeDestroyed))
+		(Get().IsDestroyed() && !mbIsIncludeToBeDestroyed))
 	{
 		++mIndex;
 	}
