@@ -37,6 +37,9 @@
     <ClInclude Include="D3D11Texture.h">
       <Filter>D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Renderer">
@@ -50,6 +53,12 @@
     </Filter>
     <Filter Include="Interface">
       <UniqueIdentifier>{11aceed1-c827-41bf-9f7e-b37f6e86e799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{532604b1-4d7f-4ea6-af58-f7e15e28a2cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{f2f075a3-92ff-486f-bac4-9af69ba1926c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="IFQGraphics.cpp">
       <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
