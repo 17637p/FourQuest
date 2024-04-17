@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "Tag.h"
+#include "prop.h"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -39,7 +39,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	, const entt::meta_any& object
 	, nlohmann::json& outJson)
 {
-	entt::meta_prop prop = metaData.prop(tag::name);
+	entt::meta_prop prop = metaData.prop(prop::name);
 	assert(prop && "멤버 변수의 name 설정이 없습니다.");
 
 	const entt::meta_any& metaName = prop.value();

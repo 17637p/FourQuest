@@ -33,13 +33,13 @@
     <ClInclude Include="Converter.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="Tag.h">
+    <ClInclude Include="prop.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="Path.h">
+    <ClInclude Include="Helper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleMathRelfection.h">
+    <ClInclude Include="IHandle.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,10 +47,10 @@
     <ClCompile Include="Converter.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Path.cpp">
+    <ClCompile Include="Helper.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleMathRelfection.cpp">
+    <ClCompile Include="IHandle.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

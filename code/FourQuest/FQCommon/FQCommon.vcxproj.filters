@@ -15,5 +15,13 @@
     <ClInclude Include="FQCommon.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="FQPath.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FQPath.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

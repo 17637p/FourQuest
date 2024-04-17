@@ -4,7 +4,9 @@
 #include "Hierarchy.h"
 #include "Inspector.h"
 #include "FileDialog.h"
-#include "DebugViewer.h"
+#include "LogWindow.h"
+#include "GamePlayWindow.h"
+#include "MenuBar.h"
 
 #include "../FQGameModule/InputManager.h"
 
@@ -12,9 +14,11 @@ fq::game_engine::EditorProcess::EditorProcess()
 	: mHierarchy(std::make_unique<Hierarchy>())
 	, mInspector(std::make_unique<Inspector>())
 	, mFileDialog(std::make_unique<FileDialog>())
-	, mDeubgViewer(std::make_unique<DebugViewer>())
+	, mLogWindow(std::make_unique<LogWindow>())
 	, mCommandSystem(std::make_unique<CommandSystem>())
 	, mInputManager(std::make_unique<fq::game_module::InputManager>())
+	, mGamePlayWindow(std::make_unique<GamePlayWindow>())
+	, mMenuBar(std::make_unique<MenuBar>())
 {
 
 }

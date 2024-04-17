@@ -9,6 +9,9 @@
 
 namespace fq::game_engine
 {
+	class GameProcess;
+	class EditorProcess;
+
 	/// <summary>
 	/// 파일 시스템을 관리하는 창
 	/// </summary>
@@ -23,7 +26,12 @@ namespace fq::game_engine
 		/// <summary>
 		/// 현재 리소스 경로를 초기화합니다
 		/// </summary>
-		void Initialize(ID3D11Device* device);
+		void Initialize(GameProcess* game, EditorProcess* editor,ID3D11Device* device);
+
+		/// <summary>
+		/// 로드한 리소스 해제
+		/// </summary>
+		void Finalize();
 
 		/// <summary>
 		/// 파일 관련 시스템을 랜더링합니다
@@ -31,23 +39,44 @@ namespace fq::game_engine
 		void Render() override;
 
 	private:
-		void beginLeftChildWindow();
 
-		void beginRightChildWindow();
-
+		/// <summary>
+		/// 파일 디랙토리 관련 창
+		/// </summary>
+		void beginWindow_FilePathWindow();
 		void beginDirectory(const Path& path);
+		void beginDragDrop_Directory(const Path& directoryPath);
+
+		/// <summary>
+		/// 파일 디랙토리안에 리소스 창
+		/// </summary>
+		void beginWindow_FileList();
+		void beginPopupContextWindow_FileList();
+		void beginDragDropTarget_FileList();
 
 		void loadIcon();
+		void beginDragDrop_File(const Path& path);
+		void beginPopupContextItem_File(const Path& path);
+		void drawFile(const Path& path);
 
-		void DrawFile(const Path& path);
-
+		void drawTextureImage(const Path& path);
 		ID3D11ShaderResourceView* getIcon(const std::wstring& name);
-
 		ID3D11ShaderResourceView* loadTexture(const Path& path);
 
+		void SelectPath(Path path);
+
+		void clearTexture();
+		void clearIconTexture();
+
+		bool isMouseHoveringRect(const ImVec2& min, const ImVec2& max);
 	private:
+		GameProcess* mGameProcess;
+		EditorProcess* mEditorProcess;
+
 		Path mResourcePath;
 		Path mSelectPath;
+		Path mDragDropPath;
+
 		ID3D11Device* mDevice;
 		ImVec2 mIconSize;
 		std::unordered_map <std::wstring, ID3D11ShaderResourceView*> mIconTexture;

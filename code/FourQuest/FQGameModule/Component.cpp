@@ -20,5 +20,6 @@ fq::game_module::Scene* fq::game_module::Component::GetScene() const
 
 fq::game_module::Component::Component()
 	:mGameObject(nullptr)
+	,mbIsToBeRemoved(false)
 {}
 

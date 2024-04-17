@@ -1,7 +1,9 @@
 
+#include "GameEngine.h"
+
 #include <windows.h>
 
-#include "GameEngine.h"
+#include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
 
@@ -15,6 +17,13 @@ fq::game_engine::GameEngine::~GameEngine()
 
 void fq::game_engine::GameEngine::Initialize()
 {
+	mGameProcess->mWindowSystem->Initialize();
+
+	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
+
+	mGameProcess->mSceneManager->Initialize("example"
+		, mGameProcess->mEventManager.get()
+		, mGameProcess->mInputManager.get());
 }
 
 void fq::game_engine::GameEngine::Process()
@@ -40,6 +49,17 @@ void fq::game_engine::GameEngine::Process()
 			{
 				mGameProcess->mWindowSystem->OnResize();
 			}
+
+			float deltaTime = mGameProcess->mTimeManager->Update();
+			mGameProcess->mInputManager->Update();
+
+			// 물리처리
+			mGameProcess->mSceneManager->FixedUpdate(0.f);
+
+			mGameProcess->mSceneManager->Update(deltaTime);
+			mGameProcess->mSceneManager->LateUpdate(deltaTime);
+
+			mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
 		}
 	}
 }

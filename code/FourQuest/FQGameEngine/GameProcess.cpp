@@ -10,6 +10,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mTimeManager(std::make_unique<fq::game_module::TimeManager>())
 	, mSceneManager(std::make_unique<fq::game_module::SceneManager>())
 	, mEventManager(std::make_unique<fq::game_module::EventManager>())
+	, mObjectManager(std::make_unique<fq::game_module::ObjectManager>())
 {}
 
 fq::game_engine::GameProcess::~GameProcess()

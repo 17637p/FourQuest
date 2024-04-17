@@ -145,7 +145,7 @@ inline fq::game_module::EventHandler fq::game_module::EventManager::RegisterHand
 		, "Member function pointer must match instance type");
 
 	const auto typeIndex = std::type_index(typeid(EventType));
-	const void* handle;
+	const void* handle =nullptr;
 
 	if constexpr (traits::arity == 0)
 	{

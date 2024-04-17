@@ -121,7 +121,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,14 +142,17 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
-    <ClInclude Include="CommandFunction.h" />
     <ClInclude Include="CommandSystem.h" />
-    <ClInclude Include="DebugViewer.h" />
+    <ClInclude Include="GamePlayWindow.h" />
+    <ClInclude Include="LogWindow.h" />
     <ClInclude Include="Editor.h" />
+    <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
     <ClInclude Include="FileDialog.h" />
     <ClInclude Include="GameEngine.h" />
@@ -159,17 +162,21 @@
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="imgui_stdlib.h" />
     <ClInclude Include="Inspector.h" />
+    <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="Resgistration.h" />
+    <ClInclude Include="Test.h" />
     <ClInclude Include="ToolEngine.h" />
     <ClInclude Include="WindowSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
-    <ClCompile Include="CommandFunction.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
-    <ClCompile Include="DebugViewer.cpp" />
+    <ClCompile Include="GamePlayWindow.cpp" />
+    <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="EditorEvent.cpp" />
     <ClCompile Include="EditorProcess.cpp" />
     <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="GameEngine.cpp" />
@@ -179,6 +186,9 @@
     <ClCompile Include="IEngine.cpp" />
     <ClCompile Include="imgui_stdlib.cpp" />
     <ClCompile Include="Inspector.cpp" />
+    <ClCompile Include="MenuBar.cpp" />
+    <ClCompile Include="Resgistration.cpp" />
+    <ClCompile Include="Test.cpp" />
     <ClCompile Include="ToolEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
   </ItemGroup>

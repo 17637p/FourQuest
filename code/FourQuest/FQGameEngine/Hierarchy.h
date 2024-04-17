@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include "../FQGameModule/GameModule.h"
+
 namespace fq::game_module
 {
 	class Scene;
@@ -38,47 +40,59 @@ namespace fq::game_engine
 
 	private:
 		/// <summary>
-		/// 마우스 우클릭하면 나오는 창
+		/// 마우스 우클릭 창
+		/// 오브젝트 생성, 삭제 명령 처리
 		/// </summary>
-		void BeginPopupContextWindow();
+		void beginPopupContextWindow_HierarchyChild();
+
+		/// <summary>
+		/// 오브젝트에 마우스 우클릭하면 나오는 창
+		/// </summary>
+		/// <param name="object"></param>
+		void beginPopupContextItem_GameObject(fq::game_module::GameObject& object);
 
 		/// <summary>
 		/// 검색하는 창
 		/// </summary>
-		void BeginSearchBar();
+		void beginSearchBar();
 
 		/// <summary>
 		/// 씬의 게임오브젝트들을 표시하는 창
 		/// </summary>
-		void BeginHierarchy();
+		void beginHierarchy();
 
 		/// <summary>
 		/// 검색할때 나오는 게임오브젝트 표시 창
 		/// </summary>
-		void BeginHierarchyOfSearch();
+		void beginHierarchyOfSearch();
 
 		/// <summary>
 		/// 게임오브젝트의 이름을 나타내는 바
 		/// </summary>
-		void BeginGameObjectNameBar(fq::game_module::GameObject& object);
+		void beginGameObjectNameBar(fq::game_module::GameObject& object);
 
 		/// <summary>
 		/// 게임오브젝트를 나태내는 바
 		/// </summary>
 		/// <param name="object">정보를 표시하는 오브젝트</param>
-		void BeginGameObjectBar(fq::game_module::GameObject& object);
+		void beginGameObjectBar(fq::game_module::GameObject& object);
 
 		/// <summary>
 		/// 게임오브젝트 선택버튼
 		/// </summary>
 		/// <param name="object">오브젝트</param>
-		void BegineGameObectSelectButton(fq::game_module::GameObject& object);
+		void begineGameObectSelectButton(fq::game_module::GameObject& object);
 
 		/// <summary>
-		/// 드래그 드랍 처리 관련
+		/// 드래그 드랍 게임오브젝트 처리
 		/// </summary>
 		/// <param name="object"></param>
-		void DragDropGameObject(fq::game_module::GameObject& object);
+		void dragDropGameObjectBar(fq::game_module::GameObject& object);
+
+		/// <summary>
+		/// 드래그 드랍 프리팹 처리
+		/// </summary>
+		void dragDropWindow();
 
 	private:
 		GameProcess* mGameProcess;
@@ -86,10 +100,13 @@ namespace fq::game_engine
 
 		fq::game_module::Scene* mScene;
 		fq::game_module::InputManager* mInputManager;
+		fq::game_module::EventManager* mEventManager;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 
 		std::string mSearchString;
 
+		// 이벤트관련
+		fq::game_module::EventHandler mSelectObjectHandle;
 	};
 
 

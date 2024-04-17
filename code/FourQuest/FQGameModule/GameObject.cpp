@@ -6,18 +6,20 @@ FQ_REGISTRATION
 {
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
-		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID")).prop(fq::reflect::tag::name, "mID") 
-		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName")).prop(fq::reflect::tag::name, "mName")
-		.data<&fq::game_module::GameObject::mTag>(entt::hashed_string("mTag")).prop(fq::reflect::tag::name, "mTag");
+		.prop(fq::reflect::prop::name, "GameObject")
+		.data<&fq::game_module::GameObject::SetName, &fq::game_module::GameObject::GetName>(entt::hashed_string("mName"))
+		.prop(fq::reflect::prop::name, "mName")
+		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag"))
+		.prop(fq::reflect::prop::name, "mTag");
 }
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
-	,mName("GameObject")
-	,mTag(Tag::Untagged)
-	,mComponents{}
-	,mScene(nullptr)
-	,mbIsToBeDestroyed(false)
+	, mName("GameObject")
+	, mTag(Tag::Player)
+	, mComponents{}
+	, mScene(nullptr)
+	, mbIsToBeDestroyed(false)
 {
 	AddComponent<Transform>();
 }
@@ -96,7 +98,7 @@ void fq::game_module::GameObject::OnFixedUpdate(float dt)
 
 fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
 {
-	Transform* parentT =  GetComponent<Transform>()->GetParentTransform();
+	Transform* parentT = GetComponent<Transform>()->GetParentTransform();
 
 	if (parentT)
 	{
@@ -108,7 +110,9 @@ fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
 
 std::vector<fq::game_module::GameObject*> fq::game_module::GameObject::GetChildren()
 {
-	const auto& childrenTransform =  GetComponent<Transform>()->GetChildren();
+	assert(HasComponent<Transform>());
+
+	const auto& childrenTransform = GetComponent<Transform>()->GetChildren();
 
 	std::vector<GameObject*> children;
 
@@ -127,14 +131,12 @@ void fq::game_module::GameObject::SetName(std::string name)
 	// 하이픈 (-)을 언더스코어(_)로 치환
 	// 프리팹을 저장할때 "부모이름-자식이름" 규칙으로 저장하기때문입니다.
 	std::replace(name.begin(), name.end(), '-', '_');
-	
+
 	mName = std::move(name);
 }
 
-void fq::game_module::GameObject::AddComponent(const entt::meta_any& any)
+void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 {
-	assert(any);
-
 	entt::meta_type type = any.type();
 	entt::meta_type componentType = entt::resolve<Component>();
 
@@ -142,8 +144,77 @@ void fq::game_module::GameObject::AddComponent(const entt::meta_any& any)
 
 	const Component* component = any.try_cast<Component>();
 
+	assert(component);
+
 	Component* clone = component->Clone(nullptr);
 
-	mComponents.insert({ type.id(), std::unique_ptr<Component>{clone} });
+	// 기존에 있던 컴포넌트는 제거합니다.
+	auto iter = mComponents.find(type.id());
+	if (iter != mComponents.end())
+	{
+		mComponents.erase(iter);
+	}
+
+	clone->SetGameObject(this);
+	mComponents.insert({ type.id(), std::shared_ptr<Component>(clone) });
+}
+
+void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr<Component> component)
+{
+	auto iter = mComponents.find(id);
+
+	assert(iter == mComponents.end());
+
+	component->mbIsToBeRemoved = false;
+	mComponents.insert({ id, std::move(component) });
+}
+
+void fq::game_module::GameObject::RemoveAllComponent()
+{
+	mComponents.clear();
+}
+
+void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
+{
+	auto iter = mComponents.find(id);
+
+	if (iter != mComponents.end()
+		&& !iter->second->mbIsToBeRemoved)
+	{
+		iter->second->mbIsToBeRemoved = true;
+	}
+}
+
+entt::meta_handle fq::game_module::GameObject::GetHandle()
+{
+	return *this;
+}
+
+fq::game_module::Component* fq::game_module::GameObject::GetComponent(entt::id_type id)
+{
+	auto iter = mComponents.find(id);
+
+	if (iter == mComponents.end())
+	{
+		return nullptr;
+	}
+
+	return iter->second.get();
+}
+
+void fq::game_module::GameObject::CleanUpComponent()
+{
+	for (auto iter = mComponents.begin(); iter != mComponents.end(); )
+	{
+		if (iter->second->mbIsToBeRemoved)
+		{
+			iter = mComponents.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
 }
 

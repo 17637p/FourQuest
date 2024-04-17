@@ -7,15 +7,18 @@
 #include <imgui_internal.h>
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQCommon/FQPath.h"
 
 #include "GameProcess.h"
 #include "WindowSystem.h"
 
 #include "CommandSystem.h"
-#include "DebugViewer.h"
+#include "LogWindow.h"
 #include "FileDialog.h"
 #include "Hierarchy.h"
 #include "Inspector.h"
+#include "MenuBar.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::Editor::Editor()
 	:mGameProcess(nullptr)
@@ -37,8 +40,11 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 
 	mEditorProcess->mInputManager->Initialize(process->mWindowSystem->GetHWND());
 	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
+	mEditorProcess->mInspector->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
-	mEditorProcess->mFileDialog->Initialize(mDevice);
+	mEditorProcess->mFileDialog->Initialize(process,mEditorProcess.get(),mDevice);
+	mEditorProcess->mMenuBar->Initialize(process, mEditorProcess.get());
+	
 }
 
 void fq::game_engine::Editor::Finalize()
@@ -72,9 +78,11 @@ void fq::game_engine::Editor::initializeImGui()
 	ImGui_ImplDX11_Init(mDevice, mDeviceContext);
 
 	// 폰트 설정
-	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\MalangmalangR.ttf",
+	std::string fontPath = path::GetResourcePath().string() + "\\internal\\font\\MalangmalangR.ttf";
+
+	io.Fonts->AddFontFromFileTTF(fontPath.c_str(),
 		25.f,
-		NULL,
+		NULL, 
 		io.Fonts->GetGlyphRangesKorean());
 
 	{
@@ -237,8 +245,10 @@ void fq::game_engine::Editor::RenderWindow()
 {
 	mEditorProcess->mHierarchy->Render();
 	mEditorProcess->mInspector->Render();
-	mEditorProcess->mDeubgViewer->Render();
+	mEditorProcess->mLogWindow->Render();
 	mEditorProcess->mFileDialog->Render();
+	mEditorProcess->mGamePlayWindow->Render();
+	mEditorProcess->mMenuBar->Render();
 }
 
 void fq::game_engine::Editor::Update()

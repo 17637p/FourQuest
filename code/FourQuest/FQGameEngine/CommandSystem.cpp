@@ -67,9 +67,8 @@ void fq::game_engine::CommandSystem::Update()
 	{
 		undo();
 	}
-
 	// Ctrl + Y
-	if (mInputManager->IsKeyState(Key::Ctrl, KeyState::Hold)
+	else if (mInputManager->IsKeyState(Key::Ctrl, KeyState::Hold)
 		&& mInputManager->IsKeyState(Key::Y, KeyState::Tap))
 	{
 		excute();

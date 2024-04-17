@@ -17,6 +17,7 @@ namespace fq::game_module
 
 		Component* Clone(Component* clone /* = nullptr */)const override;
 
+
 		/// <summary>
 		/// Local 공간의 위치 반환합니다
 		/// </summary>
@@ -135,6 +136,8 @@ namespace fq::game_module
 
 	private:
 		void updateMatrix();
+
+		entt::meta_handle GetHandle() override;
 
 	private:
 		DirectX::SimpleMath::Vector3 mPosition;

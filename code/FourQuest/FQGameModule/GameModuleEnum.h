@@ -3,7 +3,7 @@
 
 namespace fq::game_module
 {
-	enum class Tag
+	enum class Tag : int
 	{
 		Untagged,
 		Camera,

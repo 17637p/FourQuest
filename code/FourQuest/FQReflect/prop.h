@@ -2,7 +2,7 @@
 
 #include "entt.hpp"
 
-namespace fq::reflect::tag
+namespace fq::reflect::prop
 {
 	constexpr static entt::hashed_string name = entt::hashed_string("name"); // 변수,함수 이름
 	constexpr static entt::hashed_string label = entt::hashed_string("label"); 

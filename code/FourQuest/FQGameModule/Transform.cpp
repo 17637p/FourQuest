@@ -5,31 +5,53 @@
 FQ_REGISTRATION
 {
 	entt::meta<fq::game_module::Transform>()
-		.type(entt::hashed_string("Transform"))
-		.base<fq::game_module::Component>()
+		.type(entt::hashed_string("Transform")).prop(fq::reflect::prop::name, "Transform")
 		.data<&fq::game_module::Transform::mPosition>(entt::hashed_string("mPosition"))
-		.prop(fq::reflect::tag::name,"mPosition")
+		.prop(fq::reflect::prop::name,"mPosition")
+		.prop(fq::reflect::prop::comment, u8"로컬 좌표")
 		.data<&fq::game_module::Transform::mRotation>(entt::hashed_string("mRotation"))
-		.prop(fq::reflect::tag::name,"mRotation")
+		.prop(fq::reflect::prop::name,"mRotation")
 		.data<&fq::game_module::Transform::mScale>(entt::hashed_string("mScale"))
-		.prop(fq::reflect::tag::name,"mScale");
-
+		.prop(fq::reflect::prop::name,"mScale")
+		.base<fq::game_module::Component>();
 }
 
 using namespace DirectX::SimpleMath;
 
 fq::game_module::Transform::Transform()
-	:mPosition{Vector3::Zero}
-	,mRotation{Quaternion::Identity}
-	,mScale{Vector3::One}
-	,mLocalMatrix{Matrix::Identity}
-	,mWorldMatrix{Matrix::Identity}
-	,mParent(nullptr)
-	,mChidren{}
+	:mPosition{ Vector3::Zero }
+	, mRotation{ Quaternion::Identity }
+	, mScale{ Vector3::One }
+	, mLocalMatrix{ Matrix::Identity }
+	, mWorldMatrix{ Matrix::Identity }
+	, mParent(nullptr)
+	, mChidren{}
 {}
 
 fq::game_module::Transform::~Transform()
 {}
+
+fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const
+{
+	Transform* cloneTransform = static_cast<Transform*>(clone);
+
+	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
+	{
+		cloneTransform = new Transform(*this);
+	}
+	else // clone에 데이터를 복사한다.
+	{
+		// 기본 대입 연산자 호출한다.
+		*cloneTransform = *this;
+	}
+	return cloneTransform;
+}
+
+entt::meta_handle fq::game_module::Transform::GetHandle()
+{
+	return *this;
+}
+
 
 DirectX::SimpleMath::Vector3 fq::game_module::Transform::GetWorldPosition() const
 {
@@ -72,7 +94,7 @@ void fq::game_module::Transform::updateMatrix()
 
 	if (mParent)
 	{
-	    Matrix parentWorldMatrix = mParent->GetWorldMatrix();
+		Matrix parentWorldMatrix = mParent->GetWorldMatrix();
 		mWorldMatrix = mLocalMatrix * parentWorldMatrix;
 	}
 	else
@@ -102,10 +124,13 @@ void fq::game_module::Transform::SetTransformMatrix(DirectX::SimpleMath::Matrix 
 
 void fq::game_module::Transform::SetParent(Transform* parent)
 {
-	if (parent == mParent || parent == this)
+	if (parent == mParent || parent == this || IsDescendant(parent))
 	{
 		return;
 	}
+
+	// 부모와 연결을 해제합니다.
+	Transform* prevParnt = mParent;
 
 	mParent = parent;
 
@@ -113,11 +138,17 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 	{
 		mParent->AddChild(this);
 	}
+
+	// 이전 부모와 연결을  해제합니다.
+	if (prevParnt)
+	{
+		prevParnt->RemoveChild(this);
+	}
 }
 
 void fq::game_module::Transform::AddChild(Transform* inChild)
 {
-	if (inChild == this || inChild ==nullptr)
+	if (inChild == this || inChild == nullptr)
 	{
 		return;
 	}
@@ -146,24 +177,13 @@ void fq::game_module::Transform::RemoveChild(Transform* removeChild)
 	mChidren.erase(std::remove(mChidren.begin(), mChidren.end(), removeChild)
 		, mChidren.end());
 
-	removeChild->SetParent(nullptr);
+	if (removeChild->GetParentTransform() == this)
+	{
+		removeChild->SetParent(nullptr);
+	}
 }
 
-fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const
-{
-	Transform* cloneTransform = static_cast<Transform*>(clone);
 
-	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
-	{
-		cloneTransform = new Transform(*this);
-	}
-	else // clone에 데이터를 복사한다.
-	{
-		// 기본 대입 연산자 호출한다.
-		*cloneTransform = *this;
-	}
-	return cloneTransform;
-}
 
 bool fq::game_module::Transform::IsDescendant(Transform* transfrom) const
 {

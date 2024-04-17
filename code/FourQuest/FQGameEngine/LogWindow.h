@@ -7,11 +7,11 @@ namespace fq::game_engine
 	/// <summary>
 	/// 디버그 로그에 대한 정보를 표시
 	/// </summary>
-	class DebugViewer : public IEditorWindow
+	class LogWindow : public IEditorWindow
 	{
 	public:
-		DebugViewer();
-		~DebugViewer();
+		LogWindow();
+		~LogWindow();
 
 		void Render() override;
 

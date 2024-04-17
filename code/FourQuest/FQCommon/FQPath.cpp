@@ -1,4 +1,4 @@
-#include "Path.h"
+#include "FQPath.h"
 
 #include <cassert>
 
@@ -10,7 +10,15 @@ std::filesystem::path fq::path::GetCurrentPath()
 std::filesystem::path fq::path::GetResourcePath()
 {
 	std::filesystem::path resPath = std::filesystem::current_path();
-	resPath +=  L"\\resource";
+	resPath += L"\\resource";
+
+	return resPath;
+}
+
+std::filesystem::path fq::path::GetInternalPath()
+{
+	std::filesystem::path resPath = std::filesystem::current_path();
+	resPath += L"\\resource\\internal";
 
 	return resPath;
 }
@@ -43,7 +51,7 @@ std::filesystem::path fq::path::CreateFilePath(const std::filesystem::path& dire
 std::filesystem::path fq::path::GetScenePath()
 {
 	std::filesystem::path scenePath = std::filesystem::current_path();
-	scenePath += L"\\resource\\scene";
+	scenePath += L"\\resource\\internal\\scene";
 
 	return scenePath;
 }
@@ -55,14 +63,17 @@ std::vector<std::filesystem::path> fq::path::GetDirectoryList(const std::filesys
 
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		// ignore list 
-		auto fileName =  entry.path().filename();
-		if (fileName == ".svn")
-		{
-			continue;
-		}
+		auto fileName = entry.path().filename();
 		directoryList.push_back(entry.path());
 	}
 
 	return directoryList;
+}
+
+std::filesystem::path fq::path::GetGarbagePath()
+{
+	std::filesystem::path scenePath = std::filesystem::current_path();
+	scenePath += L"\\resource\\internal\\garbage";
+
+	return scenePath;
 }

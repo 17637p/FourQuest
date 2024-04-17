@@ -25,4 +25,12 @@ namespace fq::event
 		std::string sceneName;
 	};
 
+	/// <summary>
+	/// 씬에 새로운 게임오브젝트를 추가시 호출
+	/// </summary>
+	struct AddGameObject 
+	{
+		fq::game_module::GameObject* object;
+	};
+
 }
