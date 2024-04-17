@@ -7,5 +7,13 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{3722a93d-bbd6-46f9-a30c-84f327b0b78e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{7c2d67e2-b897-4295-87ea-fedd5007379c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FQCommon.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
