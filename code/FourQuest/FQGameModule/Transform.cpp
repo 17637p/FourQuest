@@ -4,26 +4,26 @@
 
 FQ_REGISTRATION
 {
-	entt::meta<fq::game_module::Transform>()
-		.type(entt::hashed_string("Transform")).prop(fq::reflect::prop::name, "Transform")
-		.data<&fq::game_module::Transform::mPosition>(entt::hashed_string("mPosition"))
-		.prop(fq::reflect::prop::name,"mPosition")
+	using namespace entt::literals;
+	using namespace fq::game_module;
+
+	entt::meta<Transform>()
+		.type("Transform"_hs)
+		.prop(fq::reflect::prop::name, "Transform")
+		.data<&Transform::SetLocalPosition,&Transform::GetLocalPosition>("Position"_hs)
+		.prop(fq::reflect::prop::name,"Position")
 		.prop(fq::reflect::prop::comment, u8"로컬 좌표")
-		.data<&fq::game_module::Transform::mRotation>(entt::hashed_string("mRotation"))
-		.prop(fq::reflect::prop::name,"mRotation")
-		.data<&fq::game_module::Transform::mScale>(entt::hashed_string("mScale"))
-		.prop(fq::reflect::prop::name,"mScale")
-		.base<fq::game_module::Component>();
+		.data<&Transform::SetLocalRotation, &Transform::GetLocalRotation>("Rotation"_hs)
+		.prop(fq::reflect::prop::name,"Rotation")
+		.data<&Transform::SetLocalScale, &Transform::GetLocalScale>("Scale"_hs)
+		.prop(fq::reflect::prop::name,"Scale")
+		.base<Component>();
 }
 
 using namespace DirectX::SimpleMath;
 
 fq::game_module::Transform::Transform()
-	:mPosition{ Vector3::Zero }
-	, mRotation{ Quaternion::Identity }
-	, mScale{ Vector3::One }
-	, mLocalMatrix{ Matrix::Identity }
-	, mWorldMatrix{ Matrix::Identity }
+	: mFQTransform{}
 	, mParent(nullptr)
 	, mChidren{}
 {}
@@ -53,73 +53,17 @@ entt::meta_handle fq::game_module::Transform::GetHandle()
 }
 
 
-DirectX::SimpleMath::Vector3 fq::game_module::Transform::GetWorldPosition() const
+void fq::game_module::Transform::SetLocalPosition(DirectX::SimpleMath::Vector3 position)
 {
-	if (!mParent)
-	{
-		return mPosition;
-	}
-
-	return Vector3::Transform(mPosition, mParent->GetWorldMatrix());
+	GenerateLocal(position, mFQTransform.localRotation, mFQTransform.localScale);
 }
 
-void fq::game_module::Transform::SetPosition(DirectX::SimpleMath::Vector3 position)
+
+void fq::game_module::Transform::SetLocalMatrix(DirectX::SimpleMath::Matrix matrix)
 {
-	mPosition = position;
-
-	updateMatrix();
-}
-
-void fq::game_module::Transform::AddPosition(DirectX::SimpleMath::Vector3 deltaPosition)
-{
-	mPosition += deltaPosition;
-
-	updateMatrix();
-}
-
-void fq::game_module::Transform::SetScale(DirectX::SimpleMath::Vector3 scale)
-{
-	mScale = scale;
-
-	updateMatrix();
-}
-
-void fq::game_module::Transform::updateMatrix()
-{
-	Matrix traslationM = Matrix::CreateTranslation(mPosition);
-	Matrix rotationM = Matrix::CreateFromQuaternion(mRotation);
-	Matrix scaleM = Matrix::CreateScale(mScale);
-
-	mLocalMatrix = scaleM * rotationM * traslationM;
-
-	if (mParent)
-	{
-		Matrix parentWorldMatrix = mParent->GetWorldMatrix();
-		mWorldMatrix = mLocalMatrix * parentWorldMatrix;
-	}
-	else
-	{
-		mWorldMatrix = mLocalMatrix;
-	}
-
-	// 자식 트랜스폼을 계산
-	for (Transform* child : mChidren)
-	{
-		child->updateMatrix();
-	}
-}
-
-void fq::game_module::Transform::SetRotation(DirectX::SimpleMath::Quaternion rotation)
-{
-	mRotation = rotation;
-
-	updateMatrix();
-}
-
-void fq::game_module::Transform::SetTransformMatrix(DirectX::SimpleMath::Matrix matrix)
-{
-	matrix.Decompose(mScale, mRotation, mPosition);
-	updateMatrix();
+	mFQTransform.localMatrix = matrix;
+	decomposeLocalMatrix();
+	updateWorldMatrix();
 }
 
 void fq::game_module::Transform::SetParent(Transform* parent)
@@ -134,6 +78,15 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 
 	mParent = parent;
 
+	if (parent == nullptr)
+	{
+		mFQTransform.parent = nullptr;
+	}
+	else
+	{
+		mFQTransform.parent = &parent->mFQTransform;
+	}
+
 	if (mParent != nullptr)
 	{
 		mParent->AddChild(this);
@@ -144,6 +97,8 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 	{
 		prevParnt->RemoveChild(this);
 	}
+
+	updateWorldMatrix();
 }
 
 void fq::game_module::Transform::AddChild(Transform* inChild)
@@ -215,5 +170,78 @@ bool fq::game_module::Transform::IsDescendant(Transform* transfrom) const
 bool fq::game_module::Transform::IsLeaf() const
 {
 	return mChidren.empty();
+}
+
+void fq::game_module::Transform::SetLocalRotation(Quaternion rotation)
+{
+	GenerateLocal(mFQTransform.localPosition, rotation, mFQTransform.localScale);
+}
+
+void fq::game_module::Transform::SetLocalScale(Vector3 scale)
+{
+	GenerateLocal(mFQTransform.localPosition, mFQTransform.localRotation, scale);
+}
+
+void fq::game_module::Transform::updateWorldMatrix()
+{
+	mFQTransform.worldMatrix = HasParent() ?
+		mFQTransform.localMatrix * mParent->mFQTransform.worldMatrix
+		: mFQTransform.localMatrix;
+
+	decomposeWorldMatrix();
+
+	// children
+	for (auto child : mChidren)
+	{
+		child->updateWorldMatrix();
+	}
+}
+
+void fq::game_module::Transform::updateLocalMatrix()
+{
+	mFQTransform.localMatrix = HasParent() ?
+		mFQTransform.worldMatrix * mParent->mFQTransform.worldMatrix.Invert()
+		: mFQTransform.worldMatrix;
+
+	decomposeLocalMatrix();
+
+	// children
+	for (auto child : mChidren)
+	{
+		child->updateWorldMatrix();
+	}
+}
+
+void fq::game_module::Transform::AddPosition(Vector3 deltaPosition)
+{
+	GenerateLocal(mFQTransform.localPosition + deltaPosition
+		, mFQTransform.localRotation, mFQTransform.localScale);
+}
+
+void fq::game_module::Transform::decomposeLocalMatrix()
+{
+	mFQTransform.localMatrix.Decompose(mFQTransform.localPosition
+		, mFQTransform.localRotation
+		, mFQTransform.localScale);
+}
+
+void fq::game_module::Transform::decomposeWorldMatrix()
+{
+	mFQTransform.localMatrix.Decompose(mFQTransform.worldPosition
+		, mFQTransform.worldRotation
+		, mFQTransform.worldScale);
+}
+
+void fq::game_module::Transform::GenerateLocal(Vector3 position, Quaternion rotation, Vector3 scale)
+{
+	mFQTransform.localMatrix = Matrix::CreateScale(scale)
+		* Matrix::CreateFromQuaternion(rotation)
+		* Matrix::CreateTranslation(position);
+
+	mFQTransform.localPosition = position;
+	mFQTransform.localRotation = rotation;
+	mFQTransform.localScale = scale;
+
+	updateWorldMatrix();
 }
 

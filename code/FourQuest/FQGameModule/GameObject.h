@@ -86,7 +86,7 @@ namespace fq::game_module
 		/// 오브젝트가 삭제예정인지 확인
 		/// </summary>
 		/// <returns>삭제예정인지</returns>
-		bool IsToBeDestroyed()const { return mbIsToBeDestroyed; }
+		bool IsDestroyed()const { return mbIsDestroyed; }
 
 		/// <summary>
 		/// 게임오브젝트를 소유하는 현재 씬을 반환
@@ -135,6 +135,12 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>없으면 nullptr, 그렇지 않으면 부모 포인터</returns>
 		GameObject* GetParent();
+
+		/// <summary>
+		/// 부모 계층이 있는지 확인합니다
+		/// </summary>
+		/// <returns>부모가있으면 true, 그렇지않으면 false</returns>
+		bool HasParent();
 
 		/// <summary>
 		/// 계층구조의 자식들을 반환합니다
@@ -237,7 +243,7 @@ namespace fq::game_module
 		Tag mTag;
 		ComponentContainer mComponents;
 		Scene* mScene;
-		bool mbIsToBeDestroyed;
+		bool mbIsDestroyed;
 
 		friend class Scene;
 		FQ_REGISTRATION_FRIEND

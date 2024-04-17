@@ -134,6 +134,9 @@ namespace fq::game_module
 			bool bIsIncludeToBeDestroyed = false);
 
 	private:
+		void destroyChild(GameObject* object);
+
+	private:
 		std::string mSceneName;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
 

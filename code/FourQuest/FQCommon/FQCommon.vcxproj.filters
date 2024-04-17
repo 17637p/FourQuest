@@ -16,12 +16,12 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="FQPath.h">
-      <Filter>Physics</Filter>
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp">
-      <Filter>Physics</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
