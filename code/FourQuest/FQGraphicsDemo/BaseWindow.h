@@ -102,5 +102,5 @@ protected:
 	HWND mHwnd;
 	PCWSTR mClassName; // 이거 포인터면 해제해야 하나?
 
-	//virtual PCWSTR  ClassName() const abstract; 함수로 만드는 이유를 모르겠다. 함수 한 번 더 호출할 거면 그냥 변수가 낫지 않나? 
+	//virtual PCWSTR  ClassName() const override; 함수로 만드는 이유를 모르겠다. 함수 한 번 더 호출할 거면 그냥 변수가 낫지 않나? 
 };

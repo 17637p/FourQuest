@@ -3,7 +3,7 @@
 #include "Process.h"
 
 #ifdef _DEBUG
-//#pragma comment(lib, "../x64/Debug/ImpStructure.lib")
+#pragma comment(lib, "../x64/Debug/FQGraphics.lib")
 //#pragma comment(lib, "../x64/Debug/ImpGraphicsEngine.lib")
 #else
 //#pragma comment(lib, "../x64/Release/ImpStructure.lib")
@@ -17,10 +17,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
-	//_crtBreakAlloc = 898280; //_CrtSetBreakAlloc(18); 
-	//_crtBreakAlloc = 13332; //_CrtSetBreakAlloc(18); 
 
-	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#ifdef _DEBUG
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_crtBreakAlloc = 101010; //_CrtSetBreakAlloc(101010); 
+#endif
 
 	std::unique_ptr<Process> mainWindow = std::make_unique<Process>();
 

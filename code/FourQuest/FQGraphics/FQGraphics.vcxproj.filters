@@ -1,2 +1,99 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="D3D11State.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBase.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Device.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11View.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11ResourceManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11ResourceType.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="IFQGraphics.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="FQGraphics.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Buffer.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Texture.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{4d9c6449-de37-4741-8db1-b59999b9177e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11">
+      <UniqueIdentifier>{6c3f3643-8390-495e-8c04-edefb2f87b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Management">
+      <UniqueIdentifier>{dfccb5bf-1134-4085-b5b6-e370bf26a727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{11aceed1-c827-41bf-9f7e-b37f6e86e799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{532604b1-4d7f-4ea6-af58-f7e15e28a2cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{f2f075a3-92ff-486f-bac4-9af69ba1926c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D3D11State.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Device.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11View.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ResourceManager.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBase.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="FQGraphics.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Buffer.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Texture.cpp">
+      <Filter>D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="IFQGraphics.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
