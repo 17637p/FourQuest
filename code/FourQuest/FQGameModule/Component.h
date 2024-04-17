@@ -10,7 +10,9 @@ namespace fq::game_module
 	/// GameOnject에 귀속되어 실질적인 
 	/// 게임 로직을 수행
 	/// </summary>
-	class Component : public fq::reflect::IHandle
+	class Component : 
+		public std::enable_shared_from_this<Component>,
+		public fq::reflect::IHandle
 	{
 	public:
 		Component();
@@ -88,8 +90,17 @@ namespace fq::game_module
 		template <typename T>
 		T* GetComponent();
 
+		/// <summary>
+		/// 삭제 예정인 컴포넌트인지 확인합니다
+		/// </summary>
+		/// <returns>삭제예정이면 true, 그렇지않으면 false</returns>
+		bool IsTobeRemoved()const { return mbIsToBeRemoved; }
+
 	private:
 		GameObject* mGameObject;
+		bool mbIsToBeRemoved;
+
+		friend class GameObject;
 	};
 
 	template <typename T>

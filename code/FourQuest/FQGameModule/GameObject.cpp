@@ -7,9 +7,7 @@ FQ_REGISTRATION
 	entt::meta<fq::game_module::GameObject>()
 		.type(entt::hashed_string("GameObject"))
 		.prop(fq::reflect::prop::name, "GameObject")
-		.data<&fq::game_module::GameObject::mID>(entt::hashed_string("mID"))
-		.prop(fq::reflect::prop::name, "mID")
-		.data<&fq::game_module::GameObject::mName>(entt::hashed_string("mName"))
+		.data<&fq::game_module::GameObject::SetName, &fq::game_module::GameObject::GetName>(entt::hashed_string("mName"))
 		.prop(fq::reflect::prop::name, "mName")
 		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag"))
 		.prop(fq::reflect::prop::name, "mTag");
@@ -158,26 +156,65 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 	}
 
 	clone->SetGameObject(this);
-	mComponents.insert({ type.id(), std::unique_ptr<Component>(clone)});
+	mComponents.insert({ type.id(), std::shared_ptr<Component>(clone) });
 }
 
-void fq::game_module::GameObject::DestroyAllComponent()
+void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr<Component> component)
+{
+	auto iter = mComponents.find(id);
+
+	assert(iter == mComponents.end());
+
+	component->mbIsToBeRemoved = false;
+	mComponents.insert({ id, std::move(component) });
+}
+
+void fq::game_module::GameObject::RemoveAllComponent()
 {
 	mComponents.clear();
 }
 
-void fq::game_module::GameObject::DestroyComponent(entt::id_type id)
+void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
 {
 	auto iter = mComponents.find(id);
 
-	if (iter != mComponents.end())
+	if (iter != mComponents.end()
+		&& !iter->second->mbIsToBeRemoved)
 	{
-		mComponents.erase(iter);
+		iter->second->mbIsToBeRemoved = true;
 	}
 }
 
 entt::meta_handle fq::game_module::GameObject::GetHandle()
 {
 	return *this;
+}
+
+fq::game_module::Component* fq::game_module::GameObject::GetComponent(entt::id_type id)
+{
+	auto iter = mComponents.find(id);
+
+	if (iter == mComponents.end())
+	{
+		return nullptr;
+	}
+
+	return iter->second.get();
+}
+
+void fq::game_module::GameObject::CleanUpComponent()
+{
+	for (auto iter = mComponents.begin(); iter != mComponents.end(); )
+	{
+		if (iter->second->mbIsToBeRemoved)
+		{
+			iter = mComponents.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
 }
 

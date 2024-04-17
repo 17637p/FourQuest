@@ -114,11 +114,18 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 
 void fq::game_module::Scene::CleanUp()
 {
+	// 삭제 예정인 오브젝트 제거합니다
 	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
 		, [](const std::shared_ptr<GameObject>& object)
 		{
 			return object->IsToBeDestroyed();
 		}), mObjects.end());
+
+	// 삭제 예정인 컴포넌트를 제거합니다
+	for (const auto& object : mObjects)
+	{
+		object->CleanUpComponent();
+	}
 }
 
 void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)

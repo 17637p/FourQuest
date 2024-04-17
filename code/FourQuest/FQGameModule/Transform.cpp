@@ -8,6 +8,7 @@ FQ_REGISTRATION
 		.type(entt::hashed_string("Transform")).prop(fq::reflect::prop::name, "Transform")
 		.data<&fq::game_module::Transform::mPosition>(entt::hashed_string("mPosition"))
 		.prop(fq::reflect::prop::name,"mPosition")
+		.prop(fq::reflect::prop::comment, u8"·ÎÄÃ ÁÂÇ¥")
 		.data<&fq::game_module::Transform::mRotation>(entt::hashed_string("mRotation"))
 		.prop(fq::reflect::prop::name,"mRotation")
 		.data<&fq::game_module::Transform::mScale>(entt::hashed_string("mScale"))

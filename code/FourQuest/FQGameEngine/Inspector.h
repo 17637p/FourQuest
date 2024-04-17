@@ -31,7 +31,7 @@ namespace fq::game_engine
 		void getComponentTypes();
 
 		void beginGameObject(std::shared_ptr<fq::game_module::GameObject> object);
-		void beginClass(fq::reflect::IHandle* handle);
+		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent =false);
 		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginAddComponent();
 
@@ -43,7 +43,9 @@ namespace fq::game_engine
 		void beginInputFloat4_Vector4(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle);
-	
+		void beginSequenceContainer(entt::meta_data data, fq::reflect::IHandle* handle);
+
+		void beginPopupContextItem_Component(fq::reflect::IHandle* handle);
 		void beginIsItemHovered_Comment(entt::meta_data data);
 
 	private:

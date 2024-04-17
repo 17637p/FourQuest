@@ -22,7 +22,7 @@ namespace fq::game_module
 		inline static unsigned int LastID = 0;
 
 	public:
-		using ComponentContainer = std::unordered_map<entt::id_type, std::unique_ptr<Component>>;
+		using ComponentContainer = std::unordered_map<entt::id_type, std::shared_ptr<Component>>;
 
 		/// <summary>
 		/// 기본 생성자
@@ -146,13 +146,13 @@ namespace fq::game_module
 		/// <summary>
 		/// 게임오브젝트가 소유하는 모든 컴포넌트를 삭제합니다
 		/// </summary>
-		void DestroyAllComponent();
+		void RemoveAllComponent();
 
 		/// <summary>
 		/// id_type에 해당하는 컴포넌트를 삭제합니다
 		/// </summary>
 		/// <param name="id">id_type</param>
-		void DestroyComponent(entt::id_type id);
+		void RemoveComponent(entt::id_type id);
 
 		/// <summary>
 		/// T타입 컴포넌트를 반환합니다
@@ -161,6 +161,13 @@ namespace fq::game_module
 		/// <returns>가지고있는 컴포넌트</returns>
 		template <typename T>
 		T* GetComponent();
+
+		/// <summary>
+		/// id_type에 해당하는 컴포넌트를 반환합니다
+		/// </summary>
+		/// <param name="id">아이디 타입</param>
+		/// <returns>없으면 nullptr, 그렇지않으면 유효한 컴포넌트</returns>
+		Component* GetComponent(entt::id_type id);
 
 		/// <summary>
 		/// 컴포넌트들을 담은 컨테이너를 반환합니다
@@ -203,15 +210,26 @@ namespace fq::game_module
 		void AddComponent(entt::meta_any any);
 
 		/// <summary>
+		/// id 타입에 해당하는 컴포넌트를 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="component"></param>
+		void AddComponent(entt::id_type id, std::shared_ptr<Component> component);
+
+		/// <summary>
 		/// T 타입에 해당하는 컴포넌트를 파괴합니다
 		/// </summary>
 		/// <typeparam name="T">컴포넌트 타입</typeparam>
 		template <typename T>
-		void DestroyComponent();
+		void RemoveComponent();
+
+		/// <summary>
+		/// 제거 예정인 컴포넌트를 제거합니다
+		/// </summary>
+		void CleanUpComponent();
 
 	private:
 		entt::meta_handle GetHandle()override;
-
 
 	private:
 		unsigned int mID;
@@ -226,11 +244,11 @@ namespace fq::game_module
 	};
 
 	template <typename T>
-	void fq::game_module::GameObject::DestroyComponent()
+	void fq::game_module::GameObject::RemoveComponent()
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		DestroyComponent(id);
+		RemoveComponent(id);
 	}
 
 	template <typename T>
@@ -257,7 +275,7 @@ namespace fq::game_module
 		assert(mComponents.find(id) == mComponents.end()
 			&& "가지고있는 컴포넌트입니다.");
 
-		mComponents.insert({ id, std::make_unique<T>(std::forward<Args>(args)...) });
+		mComponents.insert({ id, std::make_shared<T>(std::forward<Args>(args)...) });
 
 		T* component = static_cast<T*>(mComponents[id].get());
 

@@ -39,7 +39,14 @@ FQ_REGISTRATION
 		.data<&Test::sVal>("sVal"_hs)
 		.prop(fq::reflect::prop::name, "sVal")
 
+		.data<&Test::veciVal>("veciVal"_hs)
+		.prop(fq::reflect::prop::name, "veciVal")
+
+		.data<&Test::vecv3Val>("vecv3Val"_hs)
+		.prop(fq::reflect::prop::name, "vecv3Val")
+
 		.base<fq::game_module::Component>();
+
 }
 
 fq::game_engine::Test::Test()
@@ -50,13 +57,13 @@ fq::game_module::Component* fq::game_engine::Test::Clone(fq::game_module::Compon
 {
 	Test* cloneTransform = static_cast<Test*>(clone);
 
-	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
+	if (cloneTransform == nullptr) 
 	{
 		cloneTransform = new Test(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
-		// 기본 대입 연산자 호출한다.
+		// 복사 대입 연산자 호출한다.
 		*cloneTransform = *this;
 	}
 	return cloneTransform;

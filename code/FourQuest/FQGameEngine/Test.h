@@ -23,8 +23,9 @@ namespace fq::game_engine
 		DirectX::SimpleMath::Vector4 v4Val = {1,2,3,4};
 		DirectX::SimpleMath::Color cVal = {};
 		std::string sVal = {};
+
+		std::vector<int> veciVal;
+		std::vector<DirectX::SimpleMath::Vector3> vecv3Val;
+		FQ_REGISTRATION_FRIEND
 	};
-
-
-
 }
