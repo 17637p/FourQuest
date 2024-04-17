@@ -22,6 +22,9 @@ namespace fq::game_engine
 		void Render() override;
 
 	private:
+		void beginText_FPS();
+
+	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 	};

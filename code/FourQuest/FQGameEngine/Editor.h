@@ -35,6 +35,8 @@ namespace fq::game_engine
 	private:
 		void initializeImGui();
 
+		void clearGarbage();
+
 	private:
 		GameProcess* mGameProcess;
 		std::unique_ptr<EditorProcess> mEditorProcess;

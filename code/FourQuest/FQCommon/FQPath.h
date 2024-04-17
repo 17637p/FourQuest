@@ -57,6 +57,6 @@ namespace fq
 		/// </summary>
 		/// <param name="path">탐색할 폴더 경로</param>
 		/// <returns>폴더 경로 내부의 모든 파일</returns>
-		std::vector<std::filesystem::path> GetDirectoryList(const std::filesystem::path& path);
+		std::vector<std::filesystem::path> GetFileList(const std::filesystem::path& directory);
 	}
 }
