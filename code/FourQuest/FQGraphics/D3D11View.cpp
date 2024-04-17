@@ -69,6 +69,7 @@ D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11Reso
 	:ResourceBase(resourceManager, ResourceType::ShaderResourceView),
 	mSRV(nullptr)
 {
+	// 렌더 타겟에서 텍스처를 가져와서 SRV를 만든다.
 	ID3D11Texture2D* rendertargetTexture = nullptr;
 	rendertargetView->mRTV->GetResource(reinterpret_cast<ID3D11Resource**>(&rendertargetTexture));
 	
