@@ -29,9 +29,8 @@ void fq::game_engine::MenuBar::Initialize(GameProcess* game, EditorProcess* edit
 	mEditorProcess = editor;
 
 
-
 	// 이벤트 핸들 등록
-	mGameProcess->mEventManager
+	mOnLoadSceneHandler = mGameProcess->mEventManager
 		->RegisterHandle<fq::event::OnLoadScene>([this](const fq::event::OnLoadScene& event)
 			{
 				this->SetCurrentSceneName(event.sceneName);
@@ -43,6 +42,8 @@ void fq::game_engine::MenuBar::Render()
 	if (ImGui::BeginMainMenuBar())
 	{
 		beginMenu_File();
+
+		beginText_SceneName();
 		beginText_FPS();
 	}
 	ImGui::EndMainMenuBar();
@@ -50,15 +51,7 @@ void fq::game_engine::MenuBar::Render()
 	beginOpenPopup_CreateScene();
 }
 
-void fq::game_engine::MenuBar::beginText_FPS()
-{
-	std::string fps = "FPS " + std::to_string(mGameProcess->mTimeManager->GetFPS());
 
-	float cursorPosX = ImGui::GetWindowSize().x - ImGui::CalcTextSize(fps.c_str()).x;
-
-	ImGui::SetCursorPosX(cursorPosX);
-	ImGui::Text(fps.c_str());
-}
 
 void fq::game_engine::MenuBar::beginMenuItem_CreateScene()
 {
@@ -94,7 +87,7 @@ void fq::game_engine::MenuBar::beginMenuItem_SaveScene()
 {
 	if (ImGui::MenuItem("Save Scene"))
 	{
-
+		SaveScene();
 	}
 }
 
@@ -178,4 +171,52 @@ void fq::game_engine::MenuBar::createScene(std::string sceneName)
 void fq::game_engine::MenuBar::SetCurrentSceneName(std::string sceneName)
 {
 	mCreateSceneName = std::move(sceneName);
+}
+
+void fq::game_engine::MenuBar::beginText_SceneName()
+{
+	std::string title = "[ " + mCreateSceneName + " ]";
+
+	float cursorPosX = ImGui::GetWindowSize().x / 2
+		- ImGui::CalcTextSize(title.c_str()).x / 2;
+
+	ImGui::SetCursorPosX(cursorPosX);
+	ImGui::Text(title.c_str());
+}
+
+void fq::game_engine::MenuBar::beginText_FPS()
+{
+	std::string fps = "FPS " + std::to_string(mGameProcess->mTimeManager->GetFPS());
+
+	float cursorPosX = ImGui::GetWindowSize().x - ImGui::CalcTextSize(fps.c_str()).x;
+
+	ImGui::SetCursorPosX(cursorPosX);
+	ImGui::Text(fps.c_str());
+}
+
+void fq::game_engine::MenuBar::SaveScene()
+{
+
+	auto scenePath = fq::path::GetScenePath();
+	scenePath /= mCreateSceneName;
+
+	// 1. 프리팹 저장 
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+	auto& objectManager = mGameProcess->mObjectManager;
+	auto prefabPath = scenePath / "prefab";
+
+	fq::path::ClearDirectory(prefabPath);
+
+	for (auto& object : scene->GetObjectView(true))
+	{
+		// 부모계층을 기준으로 prefab을 생성합니다
+		if (!object.HasParent())
+		{
+			objectManager->SavePrefab(&object, prefabPath);
+		}
+	}
+
+	// 2. ... etc 
+
+
 }

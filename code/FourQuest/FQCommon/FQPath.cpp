@@ -77,3 +77,21 @@ std::filesystem::path fq::path::GetGarbagePath()
 
 	return scenePath;
 }
+
+bool fq::path::ClearDirectory(const std::filesystem::path& directory)
+{
+	namespace fs = std::filesystem;
+
+	if (!fs::is_directory(directory))
+	{
+		return false;
+	}
+
+
+	for (const auto& entry : fs::directory_iterator(directory)) {
+		if (fs::is_regular_file(entry.path())) {
+			fs::remove_all(entry.path());
+		}
+	}
+	return true;
+}

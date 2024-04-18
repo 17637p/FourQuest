@@ -39,7 +39,14 @@ namespace fq
 		/// 리소스 폴더 내부의 쓰레기통 폴더 경로를 반환합니다.
 		/// </summary>
 		/// <returns>쓰레기통 폴더 경로</returns>
-		std::filesystem::path GetGarbagePath();
+		std::filesystem::path GetGarbagePath();	
+
+		/// <summary>
+		/// 폴더 내부의 모든 파일을 지웁니다
+		/// </summary>
+		/// <param name="directory">폴더경로</param>
+		/// <returns>모두 지우면 true, 그렇지 않으면 false</returns>
+		bool ClearDirectory(const std::filesystem::path& directory);
 
 		/// <summary>
 		/// 파일 경로를 생성합니다

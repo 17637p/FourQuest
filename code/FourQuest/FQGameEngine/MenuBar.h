@@ -23,12 +23,25 @@ namespace fq::game_engine
 		~MenuBar();
 
 	public:
+		/// <summary>
+		/// MenuBar를 초기화합니다
+		/// </summary>
+		/// <param name="game">게임프로세스</param>
+		/// <param name="editor">에디터프로세스</param>
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
 		void Render() override;
 
+		/// <summary>
+		/// 현재 씬이름을 변경합니다
+		/// </summary>
+		/// <param name="sceneName"></param>
 		void SetCurrentSceneName(std::string sceneName);
 
+		/// <summary>
+		/// 현재 씬을 저장합니다
+		/// </summary>
+		void SaveScene();
 	private:
 		void beginMenu_File();
 		void beginMenuItem_CreateScene();
@@ -37,6 +50,7 @@ namespace fq::game_engine
 
 		void beginOpenPopup_CreateScene();
 
+		void beginText_SceneName();
 		void beginText_FPS();
 
 		void updateSceneList();
