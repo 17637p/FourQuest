@@ -3,10 +3,14 @@
 #include <memory>
 #include <string>
 
+#include "EventHandler.h"
+#include "Event.h"
+
 namespace fq::game_module
 {
 	class Scene;
 
+	class ObjectManager;
 	class InputManager;
 	class EventManager;
 
@@ -20,11 +24,31 @@ namespace fq::game_module
 		~SceneManager();
 
 		/// <summary>
-		/// 씬에 관련된 초기화를 합니다
+		/// 씬매니져를 초기화를 합니다
 		/// </summary>
 		/// <param name="startSceneName">시작 씬의 이름</param>
 		/// <param name="eventMgr">이벤트 매니져</param>
 		void Initialize(const std::string& startSceneName, EventManager* eventMgr, InputManager* inputMgr);
+
+		/// <summary>
+		/// 씬 매니져를 종료합니다
+		/// </summary>
+		void Finalize();
+
+		/// <summary>
+		/// 씬을 로드합니다
+		/// </summary>
+		void LoadScene();
+
+		/// <summary>
+		/// 씬을 언로드합니다
+		/// </summary>
+		void UnloadScene();
+
+		/// <summary>
+		/// Scene을 시작합니다
+		/// </summary>
+		void StartScene();
 
 		/// <summary>
 		/// 물리 처리를 위한 고정프레임 업데이트
@@ -45,15 +69,15 @@ namespace fq::game_module
 		void LateUpdate(float dt);
 
 		/// <summary>
-		/// 씬에 관련된 종료처리를 합니다
-		/// </summary>
-		void Finalize();
-
-		/// <summary>
 		/// 씬을 변경합니다.
 		/// </summary>
 		/// <param name="sceneName">다음 씬의 이름</param>
 		void ChangeScene(const std::string& nextSceneName);
+
+		/// <summary>
+		/// 후처리 이벤트를 처리합니다
+		/// </summary>
+		void PostUpdate();
 
 		/// <summary>
 		/// 현재 씬을 반환합니다
@@ -61,13 +85,36 @@ namespace fq::game_module
 		/// <returns>현재 씬</returns>
 		Scene* GetCurrentScene()const { return mCurrentScene.get(); };
 
-	private:
-		void loadScene();
+		/// <summary>
+		/// 게임이 종료여부를 반환합니다
+		/// </summary>
+		/// <returns>종료되면 true, 그렇지않으면 false</returns>
+		bool IsEnd() const { return mbIsEnd; }
+
+		/// <summary>
+		/// 씬 병경 요청을 씬매니져에게 보냅니다
+		/// </summary>
+		/// <param name="event">요청에 필요한 정보</param>
+		void RequestChangeScene(fq::event::RequestChangeScene event);
+		
+		/// <summary>
+		/// 게임 종료 요청을 보냅니다
+		/// </summary>
+		/// <param name="event">요청에 필요한 정보</param>
+		void RequestExitGame(fq::event::RequestExitGame event);
 
 	private:
 		std::unique_ptr<Scene> mCurrentScene;
-		EventManager* mEventManager;
 		
+		EventManager* mEventManager;
+		ObjectManager* mObjectManager;
+
+		std::string mNextSceneName;
+
+		EventHandler mRequestChangeSceneHandler;
+		EventHandler mRequestExitGameHadler;
+
+		bool mbIsEnd;
 	};
 
 

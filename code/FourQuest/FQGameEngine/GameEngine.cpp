@@ -24,6 +24,9 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get());
+
+	mGameProcess->mSceneManager->LoadScene();
+	mGameProcess->mSceneManager->StartScene();
 }
 
 void fq::game_engine::GameEngine::Process()
@@ -50,21 +53,32 @@ void fq::game_engine::GameEngine::Process()
 				mGameProcess->mWindowSystem->OnResize();
 			}
 
+			// 시간, 키입력 처리 
 			float deltaTime = mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update();
 
 			// 물리처리
 			mGameProcess->mSceneManager->FixedUpdate(0.f);
 
+
 			mGameProcess->mSceneManager->Update(deltaTime);
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
 
-			mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+
+			mGameProcess->mSceneManager->PostUpdate();
+			if (mGameProcess->mSceneManager->IsEnd())
+			{
+				bIsDone = true;
+			}
 		}
 	}
 }
 
 void fq::game_engine::GameEngine::Finalize()
 {
+
+
+
+	mGameProcess->mWindowSystem->Finalize();
 }
 

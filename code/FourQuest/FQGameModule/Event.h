@@ -18,11 +18,33 @@ namespace fq::event
 	};
 
 	/// <summary>
-	/// Scene 변경시 호출
+	/// Scene Load 할때 호출
 	/// </summary>
-	struct OnChangeScene
+	struct OnLoadScene
 	{
 		std::string sceneName;
+	};
+	
+	/// <summary>
+	/// Scene Unload할 때 호출
+	/// </summary>
+	struct OnUnloadScene
+	{
+	};
+
+	/// <summary>
+ 	/// 씬 변경 요청 이벤트
+	/// </summary>
+	struct RequestChangeScene
+	{
+		std::string sceneName;
+	};
+
+	/// <summary>
+	/// 게임 종료 요청 이벤트 
+	/// </summary>
+	struct RequestExitGame 
+	{
 	};
 
 	/// <summary>
@@ -32,5 +54,6 @@ namespace fq::event
 	{
 		fq::game_module::GameObject* object;
 	};
+
 
 }

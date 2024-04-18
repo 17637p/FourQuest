@@ -1,6 +1,7 @@
 #include "EventManager.h"
+#include "EventHandler.h"
 
-bool fq::game_module::EventManager::RemoveHandle(const EventHandler& eventHandler) noexcept
+bool fq::game_module::EventManager::RemoveHandle(EventHandler& eventHandler) noexcept
 {
 	if (!eventHandler.Handle())
 	{
@@ -21,6 +22,9 @@ bool fq::game_module::EventManager::RemoveHandle(const EventHandler& eventHandle
 			}
 		}
 		);
+
+	eventHandler.mHandle = nullptr;
+	eventHandler.mEventManager = nullptr;
 
 	return result;
 }

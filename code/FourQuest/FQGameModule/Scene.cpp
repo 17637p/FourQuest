@@ -24,55 +24,8 @@ void fq::game_module::Scene::Initialize(std::string sceneName, EventManager* eve
 	mSceneName = std::move(sceneName);
 	mEventManager = eventMgr;
 	mInputManager = inputMgr;
-
-	// load
-
-	// awake
-	for (const auto& object : mObjects)
-	{
-		object->OnAwake();
-	}
 }
 
-void fq::game_module::Scene::Start()
-{
-	for (const auto& object : mObjects)
-	{
-		object->OnStart();
-	}
-}
-
-void fq::game_module::Scene::FixedUpdate(float dt)
-{
-	for (const auto& object : mObjects)
-	{
-		object->OnFixedUpdate(dt);
-	}
-}
-
-void fq::game_module::Scene::Update(float dt)
-{
-	for (const auto& object : mObjects)
-	{
-		object->OnUpdate(dt);
-	}
-}
-
-void fq::game_module::Scene::LateUpdate(float dt)
-{
-	for (const auto& object : mObjects)
-	{
-		object->OnLateUpdate(dt);
-	}
-}
-
-void fq::game_module::Scene::Finalize()
-{
-	for (const auto& object : mObjects)
-	{
-		object->OnDestroy();
-	}
-}
 
 
 std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectByIndex(size_t index)
@@ -193,5 +146,10 @@ void fq::game_module::Scene::destroyChild(GameObject* object)
 
 	object->OnDestroy();
 	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
+}
+
+void fq::game_module::Scene::DestroyAll()
+{
+
 }
 

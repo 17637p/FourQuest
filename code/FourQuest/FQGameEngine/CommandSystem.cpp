@@ -21,6 +21,7 @@ fq::game_engine::CommandSystem::~CommandSystem()
 void fq::game_engine::CommandSystem::Clear()
 {
 	mCommandList.clear();
+	mCommandOrder = mCommandList.end();
 }
 
 void fq::game_engine::CommandSystem::Initialize(GameProcess* game, EditorProcess* editor)
@@ -29,8 +30,15 @@ void fq::game_engine::CommandSystem::Initialize(GameProcess* game, EditorProcess
 	mEditorProcess = editor;
 	mInputManager = mEditorProcess->mInputManager.get();
 
-	// 빈 커맨드를 앞에 삽입
 	mCommandOrder = mCommandList.end();
+
+	// 이벤트 핸들 등록
+	mOnChangeSceneHandler = mGameProcess->mEventManager
+		->RegisterHandle <fq::event::OnUnloadScene>(
+		[this](fq::event::OnUnloadScene event) 
+		{
+			this->Clear();
+		});
 }
 
 void fq::game_engine::CommandSystem::excute()

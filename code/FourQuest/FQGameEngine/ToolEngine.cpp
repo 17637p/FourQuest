@@ -31,6 +31,12 @@ void fq::game_engine::ToolEngine::Initialize()
 
 	// Editor 초기화
 	mEditor->Initialize(mGameProcess.get());
+
+	// Scene 로드 
+	mGameProcess->mSceneManager->LoadScene();
+
+	// Scene 시작
+	mGameProcess->mSceneManager->StartScene();
 }
 
 void fq::game_engine::ToolEngine::Process()
@@ -72,13 +78,22 @@ void fq::game_engine::ToolEngine::Process()
 			mEditor->NewFrame();
 			mEditor->Render();
 
-			mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+			mGameProcess->mSceneManager->PostUpdate();
+			if (mGameProcess->mSceneManager->IsEnd())
+			{
+				bIsDone = true;
+			}
 		}
 	}
 }
 
 void fq::game_engine::ToolEngine::Finalize()
 {
+	mEditor->Finalize();
 	mGameProcess->mSceneManager->Finalize();
+
+
+
+	mGameProcess->mEventManager->RemoveAllHandles();
 }
 

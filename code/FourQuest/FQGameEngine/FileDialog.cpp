@@ -239,7 +239,6 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		{
 			SelectPath(path);
 		}
-
 	}
 	else if (extension == ".fbx")
 	{
@@ -256,6 +255,10 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	else if (extension == ".wav")
 	{
 		ImGui::Image(getIcon(L"wav.png"), mIconSize);
+	}
+	else if (extension == ".prefab")
+	{
+		ImGui::Image(getIcon(L"prefab.png"), mIconSize);
 	}
 	else if (extension == ".png" || extension == ".jpg")
 	{
