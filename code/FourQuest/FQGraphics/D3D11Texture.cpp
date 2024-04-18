@@ -16,14 +16,14 @@ fq_graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11ResourceManag
 		HR(DirectX::CreateDDSTextureFromFile(d3d11Device->GetDevice().Get(),
 			d3d11Device->GetDeviceContext().Get(),
 			texturePath.c_str(),
-			nullptr, &mTextureSRV));
+			nullptr, mTextureSRV.GetAddressOf()));
 	}
 	else if(fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff")
 	{
 		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
 			d3d11Device->GetDeviceContext().Get(),
 			texturePath.c_str(),
-			nullptr, &mTextureSRV));
+			nullptr, mTextureSRV.GetAddressOf()));
 	}
 	else
 	{
@@ -45,15 +45,15 @@ void fq_graphics::D3D11Texture::Bind(const std::shared_ptr<D3D11Device>& d3d11De
 	{
 		case ED3D11ShaderType::VertexShader:
 		{
-			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &mTextureSRV);
+			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, mTextureSRV.GetAddressOf());
 		}
 		case ED3D11ShaderType::Pixelshader:
 		{
-			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &mTextureSRV);
+			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, mTextureSRV.GetAddressOf());
 		}
 		case ED3D11ShaderType::GeometryShader:
 		{
-			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, &mTextureSRV);
+			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, mTextureSRV.GetAddressOf());
 		}
 		default:
 			break;

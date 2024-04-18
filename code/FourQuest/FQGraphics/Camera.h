@@ -11,13 +11,14 @@ namespace fq_graphics
 	class Camera
 	{
 	public:
-		Camera(unsigned short width, unsigned short height);
+		Camera();
 		~Camera();
 
+		void Initialize(const unsigned short width, const unsigned short height, const CameraInfo& cameraInfo);
 		void Update(const fq::Transform& transform);
 
 		void SetCamera(const CameraInfo& cameraInfo);
-		void SetViewportSize(int width, int height);
+		void SetViewportSize(const unsigned short width, const unsigned short height);
 
 		DirectX::SimpleMath::Matrix GetViewMatrix() const;
 		DirectX::SimpleMath::Matrix GetProjectionMatrix() const;
@@ -26,6 +27,8 @@ namespace fq_graphics
 		DirectX::SimpleMath::Quaternion GetRotation() const;
 
 	private:
+		void makeProjectionMatrix();
+
 		unsigned short mWidth;
 		unsigned short mHeight;
 

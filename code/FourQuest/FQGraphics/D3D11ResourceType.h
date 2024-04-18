@@ -25,6 +25,8 @@ enum class ED3D11ShaderResourceViewType
 
 enum class ED3D11DepthStencilViewType
 {
+	None,
+
 	Default,
 };
 

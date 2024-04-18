@@ -31,7 +31,7 @@ namespace fq_graphics
 
 		static std::string GenerateRID(const ED3D11RenderTargetViewType eViewType);
 
-		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilViewType eViewType);
 
 	private:
 		ComPtr<ID3D11RenderTargetView> mRTV;
@@ -68,6 +68,8 @@ namespace fq_graphics
 			const unsigned short width, const unsigned short height);
 
 		static std::string GenerateRID(const ED3D11DepthStencilViewType eViewType);
+
+		friend class D3D11RenderTargetView;
 
 	private:
 		ComPtr<ID3D11DepthStencilView> mDSV;

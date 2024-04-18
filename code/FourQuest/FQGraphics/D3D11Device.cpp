@@ -45,7 +45,7 @@ bool D3D11Device::Initialize(const HWND hWnd, const unsigned short width, const 
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		0, driverType, 0, createDeviceFlags, 0, 0, D3D11_SDK_VERSION, &swapChainDesc,
-		&mSwapChain, &mDevice, &featureLevel, &mDeviceContext);
+		mSwapChain.GetAddressOf(), mDevice.GetAddressOf(), &featureLevel, mDeviceContext.GetAddressOf());
 
 	if (FAILED(hr))
 	{

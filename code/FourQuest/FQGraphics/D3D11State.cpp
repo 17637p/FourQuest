@@ -37,7 +37,7 @@ D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11ResourceManager>
 			break;
 	}
 
-	HR(device->CreateSamplerState(&samplerDesc, &mState));
+	HR(device->CreateSamplerState(&samplerDesc, mState.GetAddressOf()));
 }
 
 std::string D3D11SamplerState::GenerateRID(const ED3D11SamplerState eStateType)
@@ -51,15 +51,15 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 	{
 		case ED3D11ShaderType::VertexShader:
 		{
-			d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, &mState);
+			d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, mState.GetAddressOf());
 		}
 		case ED3D11ShaderType::Pixelshader:
 		{
-			d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, &mState);
+			d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, mState.GetAddressOf());
 		}
 		case ED3D11ShaderType::GeometryShader:
 		{
-			d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, &mState);
+			d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, mState.GetAddressOf());
 		}
 		default:
 			break;
@@ -93,7 +93,7 @@ D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D3D11ResourceMa
 			break;
 	}
 
-	HR(device->CreateRasterizerState(&rasterizerDesc, &mState));
+	HR(device->CreateRasterizerState(&rasterizerDesc, mState.GetAddressOf()));
 }
 
 std::string D3D11RasterizerState::GenerateRID(const ED3D11RasterizerState eStateType)
@@ -137,7 +137,7 @@ D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_ptr<D3D11Resour
 			break;
 	}
 
-	HR(device->CreateDepthStencilState(&depthStencilDesc, &mState));
+	HR(device->CreateDepthStencilState(&depthStencilDesc, mState.GetAddressOf()));
 }
 
 std::string D3D11DepthStencilState::GenerateRID(const ED3D11DepthStencilState eStateType)
@@ -183,7 +183,7 @@ D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11ResourceManager>& re
 			break;
 	}
 
-	HR(device->CreateBlendState(&blendDesc, &mState));
+	HR(device->CreateBlendState(&blendDesc, mState.GetAddressOf()));
 }
 
 std::string D3D11BlendState::GenerateRID(const ED3D11BlendState eStateType)

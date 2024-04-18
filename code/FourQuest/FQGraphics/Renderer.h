@@ -36,7 +36,7 @@ namespace fq_graphics
 		
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
-		std::shared_ptr<D3D11RenderTargetView> mRTV;
+		std::shared_ptr<D3D11RenderTargetView> mRTVRenderer;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 	};
 }

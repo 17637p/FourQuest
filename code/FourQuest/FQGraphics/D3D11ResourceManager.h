@@ -41,7 +41,10 @@ namespace fq_graphics
 		std::string key = T::GenerateRID(eType);
 		std::shared_ptr<T> resource = std::static_pointer_cast<T>(mResources[key].lock());
 
-		MessageBox(NULL, L"리소스 매니저에서 Get을 호출했지만 리소스가 존재하지 않습니다.", L"에러", MB_ICONERROR);
+		if (!resource)
+		{
+			MessageBox(NULL, L"리소스 매니저에서 Get을 호출했지만 리소스가 존재하지 않습니다.", L"에러", MB_ICONERROR);
+		}
 		assert(resource);
 
 		return resource;
