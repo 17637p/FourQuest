@@ -8,20 +8,23 @@
       <UniqueIdentifier>{3722a93d-bbd6-46f9-a30c-84f327b0b78e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
-      <UniqueIdentifier>{7c2d67e2-b897-4295-87ea-fedd5007379c}</UniqueIdentifier>
+      <UniqueIdentifier>{0ca554b7-5e24-4625-9245-da4eafa1df62}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FQCommonGraphics.h">
+      <Filter>Grphiacs</Filter>
+    </ClInclude>
     <ClInclude Include="FQCommon.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="FQPath.h">
-      <Filter>Physics</Filter>
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp">
-      <Filter>Physics</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
