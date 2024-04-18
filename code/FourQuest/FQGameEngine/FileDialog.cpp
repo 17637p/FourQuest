@@ -511,14 +511,10 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 	{
 		fs::path target = mSelectPath;
 		target /= fs::path(filePath).filename();
+		// 중복 파일과 폴더 경로는 무시합니다 
 
-		// 중복 파일을 무시합니다 
-		if (fs::exists(target))
-		{
-			continue;
-		}
-
-		fs::copy_file(filePath,target);
+		fs::copy(filePath, target, fs::copy_options::recursive
+			| fs::copy_options::overwrite_existing);
 	}
 
 	dropFiles.clear();

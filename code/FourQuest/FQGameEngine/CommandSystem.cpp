@@ -17,7 +17,6 @@ fq::game_engine::CommandSystem::~CommandSystem()
 	Clear();
 }
 
-
 void fq::game_engine::CommandSystem::Clear()
 {
 	mCommandList.clear();
