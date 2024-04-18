@@ -74,7 +74,7 @@ namespace fq::game_engine
 		(*mCommandOrder)->Excute();
 
 		// 순서는 end입니다
-		mCommandOrder = mCommandList.end();
+	 	mCommandOrder = mCommandList.end();
 	}
 
 }

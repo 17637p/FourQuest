@@ -3,6 +3,7 @@
 
 # 4QProject ingnore
 resource/
+imgui.ini
 
 ### C++ ###
 # Prerequisites

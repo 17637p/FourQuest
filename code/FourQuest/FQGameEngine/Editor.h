@@ -37,6 +37,8 @@ namespace fq::game_engine
 
 		void clearGarbage();
 
+		void setStyleDarkMode();
+
 	private:
 		GameProcess* mGameProcess;
 		std::unique_ptr<EditorProcess> mEditorProcess;

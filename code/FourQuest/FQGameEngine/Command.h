@@ -155,12 +155,15 @@ namespace fq::game_engine
 
 		void Excute() override
 		{
-			assert(mData.set(mHandle->GetHandle(), mNewValue));
+			bool check = mData.set(mHandle->GetHandle(), mNewValue);
+
+			assert(check);
 		}
 
 		void Undo() override
 		{
-			assert(mData.set(mHandle->GetHandle(), mOldValue));
+			bool check = mData.set(mHandle->GetHandle(), mOldValue);
+			assert(check);
 		}
 
 	private:

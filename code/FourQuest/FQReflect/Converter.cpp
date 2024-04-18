@@ -116,7 +116,8 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	// enum 
 	else if (metaType.is_enum())
 	{
-		assert(anyValue.allow_cast<int>());
+		bool check = anyValue.allow_cast<int>();
+		assert(check);
 		int val = anyValue.cast<int>();
 		outJson[name] = val;
 	}
@@ -412,7 +413,8 @@ void fq::reflect::Converter::ParseSequenceContainerToJson(const entt::meta_any& 
 	// enum 
 	else if (metaType.is_enum())
 	{
-		assert(element.allow_cast<int>());
+		auto check = element.allow_cast<int>();
+		assert(check);
 		int val = element.cast<int>();
 		arrayJson.push_back(val);
 	}
