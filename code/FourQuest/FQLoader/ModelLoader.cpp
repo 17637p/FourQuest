@@ -46,24 +46,30 @@ namespace fq::loader
 			mesh.Vertices.resize(vertexCount);
 			fileUtil.Read(mesh.Vertices.data(), sizeof(Mesh::Vertex) * vertexCount);
 
+			unsigned int boneVertexCount;
+			fileUtil.Read<unsigned int>(&boneVertexCount);
+			mesh.BoneVertices.resize(boneVertexCount);
+			fileUtil.Read(mesh.BoneVertices.data(), sizeof(Mesh::BoneVertex) * boneVertexCount);
+			assert(boneVertexCount == 0 || (boneVertexCount != 0 && boneVertexCount == vertexCount));
+
 			unsigned int indexCount;
 			fileUtil.Read<unsigned int>(&indexCount);
 			mesh.Indices.resize(indexCount);
 			fileUtil.Read(mesh.Indices.data(), sizeof(unsigned int) * indexCount);
 
 			fileUtil.Read<string>(&mesh.NodeName);
-			fileUtil.Read<bool>(&mesh.bHasBone);
-			fileUtil.Read<bool>(&mesh.bHasVertex);
 
-			unsigned int boneNameCount;
-			fileUtil.Read<unsigned int>(&boneNameCount);
-			mesh.BoneNames.reserve(boneNameCount);
+			unsigned int boneCount;
+			fileUtil.Read<unsigned int>(&boneCount);
+			mesh.Bones.reserve(boneCount);
 
-			for (size_t j = 0; j < boneNameCount; ++j)
+			for (size_t j = 0; j < boneCount; ++j)
 			{
-				std::string boneName;
-				fileUtil.Read<string>(&boneName);
-				mesh.BoneNames.push_back(boneName);
+				Mesh::Bone bone;
+				fileUtil.Read<string>(&bone.Name);
+				fileUtil.Read<unsigned int>(&bone.NodeIndex);
+
+				mesh.Bones.push_back(bone);
 			}
 
 			unsigned int subsetCount;
@@ -196,31 +202,38 @@ namespace fq::loader
 
 		fileUtil.Write<unsigned int>(modelData.size());
 
-		for (const pair<Node, Mesh>& model : modelData)
+		for (const pair<Node, Mesh>& nodeMeshPair : modelData)
 		{
-			fileUtil.Write<string>(model.first.Name);
-			fileUtil.Write<unsigned int>(model.first.Index);
-			fileUtil.Write<unsigned int>(model.first.Parentindex);
-			fileUtil.Write<DirectX::SimpleMath::Matrix>(model.first.ToParentMatrix);
+			const Node& node = nodeMeshPair.first;
+			const Mesh& mesh = nodeMeshPair.second;
 
-			fileUtil.Write<string>(model.second.Name);
-			fileUtil.Write<unsigned int>(model.second.Vertices.size());
-			fileUtil.Write(model.second.Vertices.data(), model.second.Vertices.size() * sizeof(Mesh::Vertex));
-			fileUtil.Write<unsigned int>(model.second.Indices.size());
-			fileUtil.Write(model.second.Indices.data(), model.second.Indices.size() * sizeof(unsigned int));
+			fileUtil.Write<string>(node.Name);
+			fileUtil.Write<unsigned int>(node.Index);
+			fileUtil.Write<unsigned int>(node.Parentindex);
+			fileUtil.Write<DirectX::SimpleMath::Matrix>(node.ToParentMatrix);
 
-			fileUtil.Write<string>(model.second.NodeName);
-			fileUtil.Write<bool>(model.second.bHasBone);
-			fileUtil.Write<bool>(model.second.bHasVertex);
+			fileUtil.Write<string>(mesh.Name);
+			fileUtil.Write<unsigned int>(mesh.Vertices.size());
+			fileUtil.Write(mesh.Vertices.data(), mesh.Vertices.size() * sizeof(Mesh::Vertex));
 
-			fileUtil.Write<unsigned int>(model.second.BoneNames.size());
-			for (const auto& boneName : model.second.BoneNames)
+			fileUtil.Write<unsigned int>(mesh.BoneVertices.size());
+			fileUtil.Write(mesh.BoneVertices.data(), mesh.BoneVertices.size() * sizeof(Mesh::BoneVertex));
+			assert(mesh.BoneVertices.empty() || (!mesh.BoneVertices.empty() && mesh.BoneVertices.size() == mesh.Vertices.size()));
+
+			fileUtil.Write<unsigned int>(mesh.Indices.size());
+			fileUtil.Write(mesh.Indices.data(), mesh.Indices.size() * sizeof(unsigned int));
+
+			fileUtil.Write<string>(mesh.NodeName);
+
+			fileUtil.Write<unsigned int>(mesh.Bones.size());
+			for (const Mesh::Bone& bone : mesh.Bones)
 			{
-				fileUtil.Write<string>(boneName);
+				fileUtil.Write<string>(bone.Name);
+				fileUtil.Write<unsigned int>(bone.NodeIndex);
 			}
 
-			fileUtil.Write<unsigned int>(model.second.Subsets.size());
-			for (const auto& subset : model.second.Subsets)
+			fileUtil.Write<unsigned int>(mesh.Subsets.size());
+			for (const auto& subset : mesh.Subsets)
 			{
 				fileUtil.Write<unsigned int>(subset.VertexStart);
 				fileUtil.Write<unsigned int>(subset.VertexCount);

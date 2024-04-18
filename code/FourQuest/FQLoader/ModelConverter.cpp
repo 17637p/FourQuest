@@ -52,8 +52,8 @@ namespace fq::loader
 		assert(mAiScene != nullptr);
 		using namespace std;
 
-		vector<pair<Node, Mesh>> modelData = convertModel();
-		ModelLoader::WriteMeshByData(modelData, saveName);
+		vector<pair<Node, Mesh>> meshData = convertModel();
+		ModelLoader::WriteMeshByData(meshData, saveName);
 	}
 
 	void ModelConverter::WriteMaterial(const std::string& saveName)
@@ -280,8 +280,6 @@ namespace fq::loader
 		resultMesh.NodeName = aiNode->mName.C_Str();
 		resultMesh.Vertices.reserve(vertexSize);
 		resultMesh.Indices.reserve(indexSize);
-		resultMesh.bHasBone = bHasBone;
-		resultMesh.bHasVertex = vertexSize != 0;
 
 		for (aiMesh* aiMeshPtr : aiSubMeshes)
 		{
@@ -366,64 +364,51 @@ namespace fq::loader
 				return (unsigned int)Node::INVALID_INDEX;
 			};
 
+		std::set<Mesh::Bone> bones;
 
 		for (auto& nodeMeshPair : *inoutMeshes)
 		{
-			if (!nodeMeshPair.second.bHasBone)
-			{
-				continue;
-			}
+			Mesh& mesh = nodeMeshPair.second;
 
-			std::map<std::string, unsigned int> boneIndices;
-
-			for (auto& subset : nodeMeshPair.second.Subsets)
+			for (auto& subset : mesh.Subsets)
 			{
-				if (!subset.AiMeshPtr->HasBones())
+				aiMesh* aiMeshPtr = subset.AiMeshPtr;
+
+				if (!aiMeshPtr->HasBones())
 				{
 					continue;
 				}
 
-				for (unsigned int i = 0; i < subset.AiMeshPtr->mNumBones; ++i)
+				std::vector<Mesh::BoneVertex> boneVertices(subset.VertexCount);
+
+				for (unsigned int i = 0; i < aiMeshPtr->mNumBones; ++i)
 				{
-					aiBone* bonePtr = subset.AiMeshPtr->mBones[i];
-					boneIndices.insert({ bonePtr->mName.C_Str(), boneIndices.size() });
-				}
-			}
+					aiBone* bonePtr = aiMeshPtr->mBones[i];
 
-			std::vector<std::string> boneNames;
-			boneNames.resize(boneIndices.size());
+					unsigned int nodeIndex = findNodeIndex((std::string)bonePtr->mName.C_Str());
 
-			for (auto& boenIndexPair : boneIndices)
-			{
-				boneNames[boenIndexPair.second] = boenIndexPair.first;
-			}
+					Mesh::Bone bone;
+					bone.Name = bonePtr->mName.C_Str();
+					bone.NodeIndex = nodeIndex;
 
-			nodeMeshPair.second.BoneNames = std::move(boneNames);
+					bones.insert(bone);
 
-			for (auto& subset : nodeMeshPair.second.Subsets)
-			{
-				for (unsigned int i = 0; i < subset.AiMeshPtr->mNumBones; ++i)
-				{
-					aiBone* bonePtr = subset.AiMeshPtr->mBones[i];
-
-					unsigned int boneIndex = findNodeIndex((std::string)bonePtr->mName.C_Str()); // Node 기준
-					// unsigned int boneIndex = boneIndices.find((std::string)bonePtr->mName.C_Str())->second; // Mesh Bone 기준
 
 					for (unsigned int j = 0; j < bonePtr->mNumWeights; ++j)
 					{
 						aiVertexWeight curVertexWeight = bonePtr->mWeights[j];
 
-						unsigned int vertexID = curVertexWeight.mVertexId + subset.VertexStart;
+						unsigned int vertexID = curVertexWeight.mVertexId; //  +subset.VertexStart;
 						float vertexWeight = curVertexWeight.mWeight;
 
-						int* indexPtr = nodeMeshPair.second.Vertices[vertexID].BoneIndices;
-						float* weightPtr = nodeMeshPair.second.Vertices[vertexID].BoneWeights;
+						int* indexPtr = boneVertices[vertexID].BoneIndices;
+						float* weightPtr = boneVertices[vertexID].BoneWeights;
 
 						for (unsigned int k = 0; k < 4; ++k)
 						{
-							if (*indexPtr == Mesh::Vertex::INVALID_INDEX)
+							if (*indexPtr == Mesh::BoneVertex::INVALID_INDEX)
 							{
-								*indexPtr = boneIndex;
+								*indexPtr = nodeIndex;
 								*weightPtr = vertexWeight;
 
 								break;
@@ -436,6 +421,7 @@ namespace fq::loader
 				}
 
 				subset.AiMeshPtr = nullptr;
+				mesh.BoneVertices.insert(mesh.BoneVertices.end(), boneVertices.begin(), boneVertices.end());
 			}
 		}
 	}
