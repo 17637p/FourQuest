@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-using namespace fq_graphics;
+using namespace fq::graphics;
 
 D3D11Device::D3D11Device()
 	:mDevice(nullptr),

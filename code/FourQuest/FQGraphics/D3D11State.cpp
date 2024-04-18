@@ -4,7 +4,7 @@
 
 #include "Define.h"
 
-using namespace fq_graphics;
+using namespace fq::graphics;
 
 /*=============================================================================
 		SamplerState

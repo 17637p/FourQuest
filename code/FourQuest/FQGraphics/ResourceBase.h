@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	class D3D11ResourceManager;
 

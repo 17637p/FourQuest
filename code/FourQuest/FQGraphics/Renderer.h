@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <memory>
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	class D3D11Device;
 
@@ -33,7 +33,7 @@ namespace fq_graphics
 		unsigned short mViewportHeight;
 
 		std::shared_ptr<D3D11Device> mDevice;
-		
+
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
 		std::shared_ptr<D3D11RenderTargetView> mRTVRenderer;

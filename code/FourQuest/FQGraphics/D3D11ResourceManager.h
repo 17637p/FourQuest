@@ -10,7 +10,7 @@
 
 #include "D3D11ResourceType.h"
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	class D3D11Device;
 

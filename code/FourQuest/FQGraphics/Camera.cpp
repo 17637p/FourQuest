@@ -2,7 +2,7 @@
 
 #include <FQCommon.h>
 
-fq_graphics::Camera::Camera()
+fq::graphics::Camera::Camera()
 	:mWidth{0},
 	mHeight{0},
 	mIsPerspective{true},
@@ -16,18 +16,18 @@ fq_graphics::Camera::Camera()
 {
 }
 
-fq_graphics::Camera::~Camera()
+fq::graphics::Camera::~Camera()
 {
 
 }
 
-void fq_graphics::Camera::Initialize(const unsigned short width, const unsigned short height, const CameraInfo& cameraInfo)
+void fq::graphics::Camera::Initialize(const unsigned short width, const unsigned short height, const CameraInfo& cameraInfo)
 {
 	SetViewportSize(width, height);
 	SetCamera(cameraInfo);
 }
 
-void fq_graphics::Camera::Update(const fq::Transform& transform)
+void fq::graphics::Camera::Update(const fq::common::Transform& transform)
 {
 	mPosition = transform.worldPosition;
 	mRotation = transform.worldRotation;
@@ -35,7 +35,7 @@ void fq_graphics::Camera::Update(const fq::Transform& transform)
 	mViewMatrix = transform.worldMatrix.Invert();
 }
 
-void fq_graphics::Camera::SetCamera(const CameraInfo& cameraInfo)
+void fq::graphics::Camera::SetCamera(const CameraInfo& cameraInfo)
 {
 	mIsPerspective = cameraInfo.isPerspective;
 	mFieldOfView = cameraInfo.filedOfView;
@@ -45,7 +45,7 @@ void fq_graphics::Camera::SetCamera(const CameraInfo& cameraInfo)
 	makeProjectionMatrix();
 }
 
-void fq_graphics::Camera::SetViewportSize(const unsigned short width, const unsigned short height)
+void fq::graphics::Camera::SetViewportSize(const unsigned short width, const unsigned short height)
 {
 	mWidth = width;
 	mHeight = height;
@@ -53,27 +53,27 @@ void fq_graphics::Camera::SetViewportSize(const unsigned short width, const unsi
 	makeProjectionMatrix();
 }
 
-DirectX::SimpleMath::Matrix fq_graphics::Camera::GetViewMatrix() const
+DirectX::SimpleMath::Matrix fq::graphics::Camera::GetViewMatrix() const
 {
 	return mViewMatrix;
 }
 
-DirectX::SimpleMath::Matrix fq_graphics::Camera::GetProjectionMatrix() const
+DirectX::SimpleMath::Matrix fq::graphics::Camera::GetProjectionMatrix() const
 {
 	return mProjectionMatrix;
 }
 
-DirectX::SimpleMath::Vector3 fq_graphics::Camera::GetPosition() const
+DirectX::SimpleMath::Vector3 fq::graphics::Camera::GetPosition() const
 {
 	return mPosition;
 }
 
-DirectX::SimpleMath::Quaternion fq_graphics::Camera::GetRotation() const
+DirectX::SimpleMath::Quaternion fq::graphics::Camera::GetRotation() const
 {
 	return mRotation;
 }
 
-void fq_graphics::Camera::makeProjectionMatrix()
+void fq::graphics::Camera::makeProjectionMatrix()
 {
 	if (mIsPerspective)
 	{

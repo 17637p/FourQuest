@@ -14,7 +14,7 @@ struct ID3D11DepthStencilView;
 
 using namespace Microsoft::WRL;
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	class D3D11Device;
 

@@ -1,11 +1,11 @@
 #include "FQGraphics.h"
 
-fq_graphics::IFQGraphics* fq_graphics::EngineExporter::GetEngine()
+fq::graphics::IFQGraphics* fq::graphics::EngineExporter::GetEngine()
 {
-	return new fq_graphics::FQGraphics;
+	return new fq::graphics::FQGraphics;
 }
 
-void fq_graphics::EngineExporter::DeleteEngine(IFQGraphics* engine)
+void fq::graphics::EngineExporter::DeleteEngine(IFQGraphics* engine)
 {
 	delete engine;
 }

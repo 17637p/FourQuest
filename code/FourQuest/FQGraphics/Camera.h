@@ -2,9 +2,9 @@
 #include <directxtk/SimpleMath.h>
 #include <FQCommonGraphics.h>
 
-namespace fq { struct Transform; }
+namespace fq::common { struct Transform; }
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	struct CameraInfo;
 
@@ -15,7 +15,7 @@ namespace fq_graphics
 		~Camera();
 
 		void Initialize(const unsigned short width, const unsigned short height, const CameraInfo& cameraInfo);
-		void Update(const fq::Transform& transform);
+		void Update(const fq::common::Transform& transform);
 
 		void SetCamera(const CameraInfo& cameraInfo);
 		void SetViewportSize(const unsigned short width, const unsigned short height);

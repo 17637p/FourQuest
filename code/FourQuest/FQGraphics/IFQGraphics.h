@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	struct CameraInfo
 	{
