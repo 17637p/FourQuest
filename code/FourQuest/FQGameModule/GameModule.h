@@ -5,6 +5,7 @@
 #define FQ_GAME_MODULE_H
 
 #include "GameModuleEnum.h"
+#include "GameModuleRegister.h"
 
 #include "Scene.h"
 #include "GameObject.h"

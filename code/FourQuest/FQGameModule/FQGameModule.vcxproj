@@ -157,6 +157,7 @@
     <ClInclude Include="FunctionTraits.h" />
     <ClInclude Include="GameModule.h" />
     <ClInclude Include="GameModuleEnum.h" />
+    <ClInclude Include="GameModuleRegister.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectIterator.h" />
     <ClInclude Include="GameObjectView.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameModuleEnum.cpp" />
+    <ClCompile Include="GameModuleRegister.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectIterator.cpp" />
     <ClCompile Include="GameObjectView.cpp" />

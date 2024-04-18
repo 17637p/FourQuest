@@ -6,7 +6,7 @@
 #include "Editor.h"
 
 #include "WindowSystem.h"
-
+#include "FQGameEngineRegister.h"
 
 fq::game_engine::ToolEngine::ToolEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
@@ -18,6 +18,10 @@ fq::game_engine::ToolEngine::~ToolEngine()
 
 void fq::game_engine::ToolEngine::Initialize()
 {
+	// 메타데이터 정보를 등록합니다
+	fq::game_module::RegisterMetaData();
+	fq::game_engine::RegisterMetaData();
+
 	// 윈도우 창 초기화 
 	mGameProcess->mWindowSystem->InitializeEditorType();
 

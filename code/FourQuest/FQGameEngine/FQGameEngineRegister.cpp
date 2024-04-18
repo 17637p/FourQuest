@@ -1,29 +1,13 @@
-#include "Resgistration.h"
+#include "FQGameEngineRegister.h"
 #include <directxtk/SimpleMath.h>
 #include <filesystem>
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
 
-fq::game_engine::Resgistration::Resgistration()
+void fq::game_engine::RegisterMetaData()
 {
-
-}
-
-FQ_REGISTRATION
-{
-		using namespace entt::literals;
-
-	entt::meta<fq::game_module::Tag>()
-		.prop(fq::reflect::prop::name, "Tag")
-		.conv<std::underlying_type_t<fq::game_module::Tag>>()
-		.data<fq::game_module::Tag::Untagged>("Untagged"_hs)
-		.prop(fq::reflect::prop::name, "Untagged")
-		.data<fq::game_module::Tag::Camera>("Camera"_hs)
-		.prop(fq::reflect::prop::name, "Camera")
-		.data<fq::game_module::Tag::Player>("Player"_hs)
-		.prop(fq::reflect::prop::name, "Player");
-
+	using namespace entt::literals;
 	// Vector2
 	entt::meta<DirectX::SimpleMath::Vector2>()
 		.type(entt::hashed_string("Vector2"))
@@ -77,8 +61,4 @@ FQ_REGISTRATION
 		.prop(fq::reflect::prop::name, "z")
 		.data<&DirectX::SimpleMath::Color::w>("w"_hs)
 		.prop(fq::reflect::prop::name, "w");
-
-
-
 }
-

@@ -54,9 +54,6 @@
     <Filter Include="include\99.Reflect">
       <UniqueIdentifier>{e75b67c1-6964-4cd6-aa52-84a09cf77b2f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\99.Reflect">
-      <UniqueIdentifier>{1d5a15d6-4bfd-46f4-8489-e8851d610b0e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Test">
       <UniqueIdentifier>{e1d570db-360d-4a25-b89a-56b01276bfa8}</UniqueIdentifier>
     </Filter>
@@ -125,9 +122,6 @@
     <ClInclude Include="MenuBar.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
-    <ClInclude Include="Resgistration.h">
-      <Filter>include\99.Reflect</Filter>
-    </ClInclude>
     <ClInclude Include="GamePlayWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
@@ -138,6 +132,9 @@
       <Filter>include\00.Define</Filter>
     </ClInclude>
     <ClInclude Include="WndProc.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="FQGameEngineRegister.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
   </ItemGroup>
@@ -196,9 +193,6 @@
     <ClCompile Include="MenuBar.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
-    <ClCompile Include="Resgistration.cpp">
-      <Filter>src\99.Reflect</Filter>
-    </ClCompile>
     <ClCompile Include="GamePlayWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
@@ -209,6 +203,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="WndProc.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="FQGameEngineRegister.cpp">
       <Filter>src\00.Define</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,6 +17,9 @@ fq::game_engine::GameEngine::~GameEngine()
 
 void fq::game_engine::GameEngine::Initialize()
 {
+	// 메타데이터 정보를 등록합니다
+	fq::game_module::RegisterMetaData();
+
 	mGameProcess->mWindowSystem->Initialize();
 
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
@@ -76,9 +79,6 @@ void fq::game_engine::GameEngine::Process()
 
 void fq::game_engine::GameEngine::Finalize()
 {
-
-
-
 	mGameProcess->mWindowSystem->Finalize();
 }
 

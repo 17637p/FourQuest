@@ -116,6 +116,9 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="GameModuleRegister.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -168,6 +171,9 @@
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModuleRegister.cpp">
+      <Filter>src\00.Define</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

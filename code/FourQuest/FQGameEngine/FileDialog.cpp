@@ -335,7 +335,9 @@ void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 			{
 				// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
 				fs::path newPath = path / dropPath->filename();
-				fs::rename(*dropPath, newPath);
+
+				if (!fs::exists(newPath))
+					fs::rename(*dropPath, newPath);
 			}
 		}
 		ImGui::EndDragDropTarget();
