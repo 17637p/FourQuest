@@ -32,7 +32,7 @@ void Renderer::Initialize(const HWND hWnd, const unsigned short width, const uns
 void Renderer::BeginRender()
 {
 	// ·»´õ Å¸°ÙÀ» ¹ÙÀÎµù ÇÑ´Ù
-	mRTVRenderer->Bind(mDevice, ED3D11DepthStencilViewType::Default);
+	mRTVRenderer->Bind(mDevice, ED3D11DepthStencilViewType::None);
 }
 
 void Renderer::Render()

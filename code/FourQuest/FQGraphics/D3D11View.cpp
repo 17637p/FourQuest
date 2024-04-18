@@ -65,7 +65,7 @@ void D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device
 	}
 	else
 	{
-		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), dsv->mDSV.Get());
+		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), nullptr);
 	}
 }
 
