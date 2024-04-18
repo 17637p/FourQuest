@@ -116,7 +116,7 @@ void fq::game_module::ObjectManager::SavePrefab(GameObject* object, const std::f
 		}
 	}
 
-	auto filePath = fq::path::CreateFilePath(directory, object->GetName(), ".json");
+	auto filePath = fq::path::CreateFilePath(directory, object->GetName(), ".prefab");
 
 	std::ofstream output(filePath);
 

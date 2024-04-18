@@ -22,7 +22,7 @@
 
 fq::game_engine::Editor::Editor()
 	:mGameProcess(nullptr)
-	,mEditorProcess(std::make_unique<EditorProcess>())
+	, mEditorProcess(std::make_unique<EditorProcess>())
 {}
 
 fq::game_engine::Editor::~Editor()
@@ -36,15 +36,17 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 
 	//tmp
 	createDeviceD3D();
+
 	initializeImGui();
+	clearGarbage();
 
 	mEditorProcess->mInputManager->Initialize(process->mWindowSystem->GetHWND());
 	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mInspector->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
-	mEditorProcess->mFileDialog->Initialize(process,mEditorProcess.get(),mDevice);
+	mEditorProcess->mFileDialog->Initialize(process, mEditorProcess.get(), mDevice);
 	mEditorProcess->mMenuBar->Initialize(process, mEditorProcess.get());
-	
+
 }
 
 void fq::game_engine::Editor::Finalize()
@@ -82,7 +84,7 @@ void fq::game_engine::Editor::initializeImGui()
 
 	io.Fonts->AddFontFromFileTTF(fontPath.c_str(),
 		25.f,
-		NULL, 
+		NULL,
 		io.Fonts->GetGlyphRangesKorean());
 
 	{
@@ -223,7 +225,7 @@ void fq::game_engine::Editor::Render()
 	RenderWindow();
 
 	ImGui::Render();
-	const float clear_color_with_alpha[4] = { 1.f,1.f,0.f,1.f  };
+	const float clear_color_with_alpha[4] = { 1.f,1.f,0.f,1.f };
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
 	mDeviceContext->ClearRenderTargetView(mRenderTargetView, clear_color_with_alpha);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -254,5 +256,17 @@ void fq::game_engine::Editor::RenderWindow()
 void fq::game_engine::Editor::Update()
 {
 	mEditorProcess->mInputManager->Update();
+}
+
+void fq::game_engine::Editor::clearGarbage()
+{
+	auto gargabePath = fq::path::GetGarbagePath();
+	auto fileList = fq::path::GetFileList(gargabePath);
+
+	for (const auto& file : fileList)
+	{
+		std::filesystem::remove_all(file);
+	}
+
 }
 

@@ -34,6 +34,11 @@ namespace fq::game_engine
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
 		/// <summary>
+		/// 계층구조초 창을 종료합니다
+		/// </summary>
+		void Finalize();
+
+		/// <summary>
 		/// 계층구조 창을 그립니다
 		/// </summary>
 		void Render() override;

@@ -193,6 +193,9 @@
     <ClCompile Include="WindowSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">
+      <Project>{80b6857c-9c5d-4d1f-9765-01fb3bb4c720}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FQGameModule\FQGameModule.vcxproj">
       <Project>{9f999a18-37fc-4a3e-9303-7be8a0ed2f1e}</Project>
     </ProjectReference>

@@ -97,7 +97,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 		ImGui::PopStyleColor();
 	}
 
-	auto directoryList = fq::path::GetDirectoryList(path);
+	auto directoryList = fq::path::GetFileList(path);
 
 	// 디렉토리가 아닌경우 제거 
 	directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
@@ -151,7 +151,7 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		ImGui::Separator();
 
 		// ignore 파일 제거
-		auto directoryList = fq::path::GetDirectoryList(mSelectPath.string().c_str());
+		auto directoryList = fq::path::GetFileList(mSelectPath.string().c_str());
 		directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
 			[](const auto path)
 			{
@@ -214,7 +214,7 @@ void fq::game_engine::FileDialog::loadIcon()
 	Path iconPath = mResourcePath;
 	iconPath += "\\internal\\icon";
 
-	auto iconList = fq::path::GetDirectoryList(iconPath);
+	auto iconList = fq::path::GetFileList(iconPath);
 
 	for (const Path& path : iconList)
 	{
@@ -239,7 +239,6 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		{
 			SelectPath(path);
 		}
-
 	}
 	else if (extension == ".fbx")
 	{
@@ -256,6 +255,10 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	else if (extension == ".wav")
 	{
 		ImGui::Image(getIcon(L"wav.png"), mIconSize);
+	}
+	else if (extension == ".prefab")
+	{
+		ImGui::Image(getIcon(L"prefab.png"), mIconSize);
 	}
 	else if (extension == ".png" || extension == ".jpg")
 	{

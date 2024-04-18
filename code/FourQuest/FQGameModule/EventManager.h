@@ -23,12 +23,13 @@ namespace fq::game_module
 	public:
 		EventManager() = default;
 	public:
+
 		/// <summary>
 		/// 등록한 이벤트 핸들을 제거
 		/// </summary>
 		/// <param name="eventHandler">등록한 이벤트를 관리하는 eventHandler</param>
 		/// <returns>true : handle 삭제, false : 삭제 실패</returns>
-		bool RemoveHandle(const EventHandler& eventHandler) noexcept;
+		bool RemoveHandle(EventHandler& eventHandler) noexcept;
 
 		/// <summary>
 		/// 현재 등록해둔 이벤트 핸들을 모두 삭제

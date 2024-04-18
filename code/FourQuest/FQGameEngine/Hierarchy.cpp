@@ -315,7 +315,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
 
 			// 일단은 Prefab은 json형식입니다
-			if (path->extension() != ".json")
+			if (path->extension() != ".prefab")
 			{
 				return;
 			}
@@ -348,5 +348,10 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 	}
 
 
+}
+
+void fq::game_engine::Hierarchy::Finalize()
+{
+	mEventManager->RemoveHandle(mSelectObjectHandle);
 }
 

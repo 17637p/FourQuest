@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Command.h"
+#include "../FQGameModule/GameModule.h"
 
 namespace fq::game_module
 {
@@ -55,6 +56,8 @@ namespace fq::game_engine
 
 		std::list<std::unique_ptr<ICommand>> mCommandList;
 		std::list<std::unique_ptr<ICommand>>::iterator mCommandOrder;
+
+		fq::game_module::EventHandler mOnChangeSceneHandler;
 	};
 
 	template <typename T, typename...Args>

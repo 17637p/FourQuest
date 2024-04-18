@@ -56,12 +56,12 @@ std::filesystem::path fq::path::GetScenePath()
 	return scenePath;
 }
 
-std::vector<std::filesystem::path> fq::path::GetDirectoryList(const std::filesystem::path& path)
+std::vector<std::filesystem::path> fq::path::GetFileList(const std::filesystem::path& directory)
 {
-	assert(std::filesystem::is_directory(path));
+	assert(std::filesystem::is_directory(directory));
 	std::vector<std::filesystem::path> directoryList;
 
-	for (const auto& entry : std::filesystem::directory_iterator(path))
+	for (const auto& entry : std::filesystem::directory_iterator(directory))
 	{
 		auto fileName = entry.path().filename();
 		directoryList.push_back(entry.path());
@@ -76,4 +76,22 @@ std::filesystem::path fq::path::GetGarbagePath()
 	scenePath += L"\\resource\\internal\\garbage";
 
 	return scenePath;
+}
+
+bool fq::path::ClearDirectory(const std::filesystem::path& directory)
+{
+	namespace fs = std::filesystem;
+
+	if (!fs::is_directory(directory))
+	{
+		return false;
+	}
+
+
+	for (const auto& entry : fs::directory_iterator(directory)) {
+		if (fs::is_regular_file(entry.path())) {
+			fs::remove_all(entry.path());
+		}
+	}
+	return true;
 }

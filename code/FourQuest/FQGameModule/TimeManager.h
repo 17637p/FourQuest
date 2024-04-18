@@ -12,6 +12,13 @@ namespace fq::game_module
 
 		float Update();
 
+
+		/// <summary>
+		/// FPS를 반환합니다
+		/// </summary>
+		/// <returns>FPS</returns>
+		unsigned int GetFPS()const { return mFPS; }
+
 	private:
 		LARGE_INTEGER mCurentCount;
 		LARGE_INTEGER mPrevCount;

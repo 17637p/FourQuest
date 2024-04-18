@@ -25,34 +25,6 @@ namespace fq::game_module
 		void Initialize(std::string sceneName, EventManager* eventMgr, InputManager* inputMgr);
 
 		/// <summary>
-		/// 씬을 시작
-		/// </summary>
-		void Start();
-
-		/// <summary>
-		/// 고정된 프레임마다 호출
-		/// </summary>
-		/// <param name="dt"></param>
-		void FixedUpdate(float dt);
-
-		/// <summary>
-		/// 매 프레임 호출
-		/// </summary>
-		/// <param name="dt"></param>
-		void Update(float dt);
-
-		/// <summary>
-		/// Update 이후에 호출
-		/// </summary>
-		/// <param name="dt"></param>
-		void LateUpdate(float dt);
-
-		/// <summary>
-		/// Scene 종료시 호출
-		/// </summary>
-		void Finalize();
-
-		/// <summary>
 		/// 삭제 예정인 오브젝트 제거합니다
 		/// </summary>
 		void CleanUp();
@@ -69,6 +41,11 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="object"></param>
 		void DestroyGameObject(GameObject* object);
+
+		/// <summary>
+		/// Scene내부의 모든 게임 오브젝트를 삭제합니다
+		/// </summary>
+		void DestroyAll();
 
 		/// <summary>
 		/// Scene이 가지는 오브젝트 숫자 반환
@@ -142,6 +119,8 @@ namespace fq::game_module
 
 		InputManager* mInputManager;
 		EventManager* mEventManager;
+
+		friend class SceneManager;
 	};
 
 
