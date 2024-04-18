@@ -80,12 +80,12 @@ namespace fq::loader
 
 		std::string Name;
 
-		std::string BaseColorFileName;
-		std::string MetalnessFileName;
-		std::string RoughnessFileName;
-		std::string NormalFileName;
-		std::string EmissiveFileName;
-		std::string OpacityFileName;
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+		std::wstring OpacityFileName;
 	};
 
 	struct Keyframe

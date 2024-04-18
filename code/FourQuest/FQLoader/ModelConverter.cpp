@@ -111,37 +111,37 @@ namespace fq::loader
 			if (aiMaterialPtr->GetTexture(aiTextureType_BASE_COLOR, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.BaseColorFileName = fileFullPath.filename().string();
+				material.BaseColorFileName = fileFullPath.filename().wstring();
 			}
 			else if (aiMaterialPtr->GetTexture(aiTextureType_DIFFUSE, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.BaseColorFileName = fileFullPath.filename().string();
+				material.BaseColorFileName = fileFullPath.filename().wstring();
 			}
 			if (aiMaterialPtr->GetTexture(aiTextureType_METALNESS, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.MetalnessFileName = fileFullPath.filename().string();
+				material.MetalnessFileName = fileFullPath.filename().wstring();
 			}
 			if (aiMaterialPtr->GetTexture(aiTextureType_SHININESS, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.RoughnessFileName = fileFullPath.filename().string();
+				material.RoughnessFileName = fileFullPath.filename().wstring();
 			}
 			if (aiMaterialPtr->GetTexture(aiTextureType_NORMALS, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.NormalFileName = fileFullPath.filename().string();
+				material.NormalFileName = fileFullPath.filename().wstring();
 			}
 			if (aiMaterialPtr->GetTexture(aiTextureType_EMISSIVE, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.EmissiveFileName = fileFullPath.filename().string();
+				material.EmissiveFileName = fileFullPath.filename().wstring();
 			}
 			if (aiMaterialPtr->GetTexture(aiTextureType_OPACITY, 0, &filePath) == AI_SUCCESS)
 			{
 				std::filesystem::path fileFullPath = Util::ToWide(filePath.C_Str());
-				material.OpacityFileName = fileFullPath.filename().string();
+				material.OpacityFileName = fileFullPath.filename().wstring();
 			}
 
 			materials.push_back(material);

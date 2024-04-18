@@ -20,12 +20,16 @@ namespace fq::loader
 		inline void Write(const T& data);
 		template <>
 		inline void Write<std::string>(const std::string& data);
+		template <>
+		inline void Write<std::wstring>(const std::wstring& data);
 		void Write(const void* data, unsigned int size);
 
 		template <typename T>
 		inline void Read(T* outData);
 		template <>
 		inline void Read<std::string>(std::string* outString);
+		template <>
+		inline void Read<std::wstring>(std::wstring* outString);
 		void Read(void* outData, unsigned int size);
 
 	private:
@@ -52,6 +56,18 @@ namespace fq::loader
 
 		Write((void*)data.data(), data.size());
 	}
+	template <>
+	void FileUtil::Write<std::wstring>(const std::wstring& data)
+	{
+		Write(data.size());
+
+		if (data.size() == 0)
+		{
+			return;
+		}
+
+		Write((void*)data.data(), sizeof(WCHAR) * data.size());
+	}
 
 	template <typename T>
 	void FileUtil::Read(T* outData)
@@ -75,6 +91,24 @@ namespace fq::loader
 		char* str = new char[size + 1];
 		str[size] = '\0';
 		mFstream.read(str, size);
+		*outString = str;
+		delete[] str;
+	}
+	template <>
+	void FileUtil::Read<std::wstring>(std::wstring* outString)
+	{
+		assert(mFstream.is_open());
+		size_t size;
+		Read(&size);
+
+		if (size == 0)
+		{
+			return;
+		}
+
+		WCHAR* str = new WCHAR[size + 1];
+		str[size] = '\0';
+		mFstream.read((char*)str, sizeof(WCHAR) * size);
 		*outString = str;
 		delete[] str;
 	}

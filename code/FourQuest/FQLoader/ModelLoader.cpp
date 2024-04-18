@@ -116,12 +116,12 @@ namespace fq::loader
 			fileUtil.Read<float>(&material.MaterialDesc.Roughness);
 
 			fileUtil.Read<string>(&material.Name);
-			fileUtil.Read<string>(&material.BaseColorFileName);
-			fileUtil.Read<string>(&material.MetalnessFileName);
-			fileUtil.Read<string>(&material.RoughnessFileName);
-			fileUtil.Read<string>(&material.NormalFileName);
-			fileUtil.Read<string>(&material.EmissiveFileName);
-			fileUtil.Read<string>(&material.OpacityFileName);
+			fileUtil.Read<wstring>(&material.BaseColorFileName);
+			fileUtil.Read<wstring>(&material.MetalnessFileName);
+			fileUtil.Read<wstring>(&material.RoughnessFileName);
+			fileUtil.Read<wstring>(&material.NormalFileName);
+			fileUtil.Read<wstring>(&material.EmissiveFileName);
+			fileUtil.Read<wstring>(&material.OpacityFileName);
 
 			materials.push_back(material);
 		}
@@ -262,12 +262,12 @@ namespace fq::loader
 			fileUtil.Write<float>(material.MaterialDesc.Roughness);
 
 			fileUtil.Write<string>(material.Name);
-			fileUtil.Write<string>(material.BaseColorFileName);
-			fileUtil.Write<string>(material.MetalnessFileName);
-			fileUtil.Write<string>(material.RoughnessFileName);
-			fileUtil.Write<string>(material.NormalFileName);
-			fileUtil.Write<string>(material.EmissiveFileName);
-			fileUtil.Write<string>(material.OpacityFileName);
+			fileUtil.Write<wstring>(material.BaseColorFileName);
+			fileUtil.Write<wstring>(material.MetalnessFileName);
+			fileUtil.Write<wstring>(material.RoughnessFileName);
+			fileUtil.Write<wstring>(material.NormalFileName);
+			fileUtil.Write<wstring>(material.EmissiveFileName);
+			fileUtil.Write<wstring>(material.OpacityFileName);
 		}
 	}
 	void ModelLoader::WriteAnimationByData(const std::vector<AnimationClip>& animationData, const std::string& savePath)
