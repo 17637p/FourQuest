@@ -12,7 +12,7 @@ namespace fq::game_module
 	/// </summary>
 	class Transform : public Component
 	{
-		using FQTransform = fq::Transform;
+		using FQTransform = fq::common::Transform;
 		using Vector3 = DirectX::SimpleMath::Vector3;
 		using Quaternion = DirectX::SimpleMath::Quaternion;
 		using Matrix = DirectX::SimpleMath::Matrix;

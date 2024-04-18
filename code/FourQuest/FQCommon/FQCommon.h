@@ -3,7 +3,7 @@
 
 #include <directxtk/SimpleMath.h>
 
-namespace fq
+namespace fq::common
 {
 	struct Transform
 	{
