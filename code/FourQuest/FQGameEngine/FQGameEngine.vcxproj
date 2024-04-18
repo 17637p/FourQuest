@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
+    <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="Editor.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Test.h" />
     <ClInclude Include="ToolEngine.h" />
     <ClInclude Include="WindowSystem.h" />
+    <ClInclude Include="WndProc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
@@ -191,6 +193,7 @@
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="ToolEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
+    <ClCompile Include="WndProc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">

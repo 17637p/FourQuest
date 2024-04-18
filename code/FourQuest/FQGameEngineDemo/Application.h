@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FQGameEngine/IEngine.h"
+#include "../FQGameEngine/FQGameEngine.h"
 
 class Application
 {

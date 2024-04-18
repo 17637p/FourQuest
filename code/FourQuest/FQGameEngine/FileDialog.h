@@ -38,6 +38,11 @@ namespace fq::game_engine
 		/// </summary>
 		void Render() override;
 
+		/// <summary>
+		/// 윈도우에서 드랍된 파일들을 처리합니다
+		/// </summary>
+		void ProcessWindowDropFile();
+
 	private:
 
 		/// <summary>

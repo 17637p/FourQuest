@@ -11,6 +11,7 @@
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "WindowSystem.h"
 
 namespace fs = std::filesystem;
 
@@ -38,6 +39,7 @@ void fq::game_engine::FileDialog::Render()
 		beginWindow_FilePathWindow();
 
 		beginWindow_FileList();
+
 	}
 	ImGui::End();
 }
@@ -474,7 +476,7 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 			if (fs::exists(garbagePath))
 			{
 				fs::remove_all(garbagePath);
-			}	
+			}
 
 			fs::rename(path, garbagePath);
 		}
@@ -493,5 +495,32 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 
 		ImGui::EndPopup();
 	}
+}
+
+void fq::game_engine::FileDialog::ProcessWindowDropFile()
+{
+	auto& dropFiles = WindowSystem::DropFiles;
+
+	if (dropFiles.empty())
+	{
+		return;
+	}
+
+	// 드랍된 파일들을 리소스폴더에 복사합니다
+	for (const auto& filePath : dropFiles)
+	{
+		fs::path target = mSelectPath;
+		target /= fs::path(filePath).filename();
+
+		// 중복 파일을 무시합니다 
+		if (fs::exists(target))
+		{
+			continue;
+		}
+
+		fs::copy_file(filePath,target);
+	}
+
+	dropFiles.clear();
 }
 

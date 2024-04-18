@@ -256,6 +256,8 @@ void fq::game_engine::Editor::RenderWindow()
 void fq::game_engine::Editor::Update()
 {
 	mEditorProcess->mInputManager->Update();
+
+	mEditorProcess->mFileDialog->ProcessWindowDropFile();
 }
 
 void fq::game_engine::Editor::clearGarbage()

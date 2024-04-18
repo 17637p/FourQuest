@@ -50,11 +50,5 @@ namespace fq
 		private:
 			static IEngine* mEngine;
 		};
-
-		struct FQ_ENGNIE_API WndProc
-		{
-			static LRESULT CALLBACK GameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-			static LRESULT CALLBACK ToolWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		};
 	}
 }

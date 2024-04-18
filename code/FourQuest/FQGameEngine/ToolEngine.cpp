@@ -19,7 +19,7 @@ fq::game_engine::ToolEngine::~ToolEngine()
 void fq::game_engine::ToolEngine::Initialize()
 {
 	// 윈도우 창 초기화 
-	mGameProcess->mWindowSystem->Initialize();
+	mGameProcess->mWindowSystem->InitializeEditorType();
 
 	// GameProcess 초기화
 	mGameProcess->mInputManager->

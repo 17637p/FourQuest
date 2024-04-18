@@ -1,6 +1,4 @@
 
-#include <imgui.h>
-
 #include "IEngine.h"
 
 #include "GameEngine.h"
@@ -33,46 +31,4 @@ FQ_ENGNIE_API void fq::game_engine::Exporter::DeleteEngine()
 	}
 }
 
-LRESULT CALLBACK fq::game_engine::WndProc::GameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		//case WM_SIZE:
-		//	if (wParam == SIZE_MINIMIZED) return 0;
-		//	{
-		//	}
-		//	break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-	}
 
-	return 0;
-}
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-LRESULT CALLBACK fq::game_engine::WndProc::ToolWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
-		return true;
-
-	switch (message)
-	{
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		case WM_SIZE:
-		{
-			WindowSystem::Width = LOWORD(lParam);
-			WindowSystem::Height = HIWORD(lParam);
-		}
-			break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-
-	return 0;
-}

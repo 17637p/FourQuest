@@ -1,6 +1,8 @@
 #pragma once
 
 #include <windows.h>
+#include <string>
+#include <vector>
 
 namespace fq::game_engine
 {
@@ -12,6 +14,7 @@ namespace fq::game_engine
 	public:
 		static UINT Width;
 		static UINT Height;
+		static std::vector<std::wstring> DropFiles;
 
 	public:
 		WindowSystem();
@@ -21,6 +24,11 @@ namespace fq::game_engine
 		/// 윈도우 창을 생성한다.
 		/// </summary>
 		void Initialize();
+
+		/// <summary>
+		/// 에디터 전용 윈도우 창을 생성합니다
+		/// </summary>
+		void InitializeEditorType();
 
 		/// <summary>
 		/// 윈도우 창 크기 변경 확인
