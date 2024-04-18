@@ -7,7 +7,7 @@
 #include "D3D11ResourceManager.h"
 #include "Define.h"
 
-using namespace fq_graphics;
+using namespace fq::graphics;
 
 Renderer::Renderer()
 	:mWindowWidth(0),
@@ -25,8 +25,8 @@ void Renderer::Initialize(const HWND hWnd, const unsigned short width, const uns
 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 
-	mRTVRenderer = mResourceManager->Create<fq_graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
-	mDSV = mResourceManager->Create<fq_graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+	mRTVRenderer = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
+	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 }
 
 void Renderer::BeginRender()

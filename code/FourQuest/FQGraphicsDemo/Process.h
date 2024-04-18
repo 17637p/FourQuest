@@ -4,9 +4,9 @@
 
 #pragma once
 
-namespace fq_graphics { class Renderer; }
-namespace fq_graphics { class IFQGraphics; }
-namespace fq_graphics { class EngineExporter; }
+namespace fq::graphics { class Renderer; }
+namespace fq::graphics { class IFQGraphics; }
+namespace fq::graphics { class EngineExporter; }
 
 class Process : public BaseWindow<Process>
 {
@@ -43,7 +43,7 @@ private:
 	bool mResizing;
 
 	// Graphics
-	fq_graphics::IFQGraphics* mTestGraphics;
-	std::shared_ptr<fq_graphics::EngineExporter> mEngineExporter;
+	fq::graphics::IFQGraphics* mTestGraphics;
+	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 };
 

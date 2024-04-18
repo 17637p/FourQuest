@@ -1,6 +1,6 @@
 #pragma once
 
-namespace fq_graphics
+namespace fq::graphics
 {
 #if defined(DEBUG) | defined(_DEBUG)
 #ifndef HR

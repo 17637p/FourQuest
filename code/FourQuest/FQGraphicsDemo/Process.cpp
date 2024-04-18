@@ -21,7 +21,7 @@ Process::Process()
 
 	//m_pRenderer = EngineExporter::GetEngine();
 	//_guiManager = new ImpGraphics::GUIManager;
-	mEngineExporter = std::make_shared<fq_graphics::EngineExporter>();
+	mEngineExporter = std::make_shared<fq::graphics::EngineExporter>();
 }
 
 Process::~Process()

@@ -6,7 +6,7 @@
 #include "D3D11Device.h"
 #include "D3D11ResourceManager.h"
 
-using namespace fq_graphics;
+using namespace fq::graphics;
 
 /*=============================================================================
 		RTV View

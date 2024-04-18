@@ -2,7 +2,7 @@
 
 #include "Renderer.h"
 
-using namespace fq_graphics;
+using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
 {
@@ -15,14 +15,14 @@ FQGraphics::FQGraphics()
 	mRenderer = std::make_shared<Renderer>();
 }
 
-bool fq_graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height)
+bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height)
 {
 	mRenderer->Initialize(hWnd, width, height);
 
 	return true;
 }
 
-bool fq_graphics::FQGraphics::Update(float deltaTime)
+bool fq::graphics::FQGraphics::Update(float deltaTime)
 {
 	return true;
 }

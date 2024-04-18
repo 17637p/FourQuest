@@ -11,7 +11,7 @@
 
 using namespace Microsoft::WRL;
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	/*=============================================================================
 		SamplerState

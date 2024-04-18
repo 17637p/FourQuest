@@ -8,7 +8,7 @@
 #include <string>
 #include <d3d11.h>
 
-namespace fq_graphics
+namespace fq::graphics
 {
 	class D3D11Device;
 
