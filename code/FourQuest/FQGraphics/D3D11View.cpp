@@ -11,8 +11,8 @@ using namespace fq::graphics;
 /*=============================================================================
 		RTV View
 =============================================================================*/
-D3D11RenderTargetView::D3D11RenderTargetView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11RenderTargetViewType eViewType, const unsigned short width, const unsigned short height)
-	:ResourceBase(resourceManager, ResourceType::RenderTargetView),
+fq::graphics::D3D11RenderTargetView::D3D11RenderTargetView(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11RenderTargetViewType eViewType, const unsigned short width, const unsigned short height) 
+	:ResourceBase(ResourceType::RenderTargetView),
 	mRTV(nullptr)
 {
 	switch (eViewType)
@@ -51,16 +51,16 @@ std::string D3D11RenderTargetView::GenerateRID(const ED3D11RenderTargetViewType 
 	return typeid(D3D11RenderTargetView).name() + std::to_string(static_cast<int>(eViewType));
 }
 
-void D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilViewType eViewType)
+void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView)
 {
 	std::shared_ptr<D3D11DepthStencilView> dsv = nullptr; 
 
 	const float blackBackgroundColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	d3d11Device->GetDeviceContext()->ClearRenderTargetView(mRTV.Get(), blackBackgroundColor);
 
-	if (eViewType != ED3D11DepthStencilViewType::None)
+	// Todo: 일단은 none 을 넘기면 mDSV가 nullptr이라고 가정하고 한다
+	if (depthStencilView->mDSV != nullptr)
 	{
-		dsv = mResourceManager->Get<D3D11DepthStencilView>(eViewType);
 		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), dsv->mDSV.Get());
 	}
 	else
@@ -72,10 +72,9 @@ void D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device
 /*=============================================================================
 		SRV View
 =============================================================================*/
-D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
-	const std::shared_ptr<D3D11Device>& d3d11Device, 
-	const std::shared_ptr<D3D11RenderTargetView>& rendertargetView)
-	:ResourceBase(resourceManager, ResourceType::ShaderResourceView),
+fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, 
+	const std::shared_ptr<D3D11RenderTargetView>& rendertargetView) 
+	:ResourceBase(ResourceType::ShaderResourceView),
 	mSRV(nullptr)
 {
 	// 렌더 타겟에서 텍스처를 가져와서 SRV를 만든다.
@@ -110,14 +109,17 @@ void D3D11ShaderResourceView::Bind(const std::shared_ptr<D3D11Device>& d3d11Devi
 		case ED3D11ShaderType::VertexShader:
 		{
 			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+			break;
 		}
 		case ED3D11ShaderType::Pixelshader:
 		{
 			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+			break;
 		}
 		case ED3D11ShaderType::GeometryShader:
 		{
 			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+			break;
 		}
 		default:
 			break;
@@ -127,11 +129,16 @@ void D3D11ShaderResourceView::Bind(const std::shared_ptr<D3D11Device>& d3d11Devi
 /*=============================================================================
 		DSV View
 =============================================================================*/
-D3D11DepthStencilView::D3D11DepthStencilView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilViewType eViewType, const unsigned short width, const unsigned short height)
-	:ResourceBase(resourceManager, ResourceType::DepthStencilView),
+fq::graphics::D3D11DepthStencilView::D3D11DepthStencilView(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilViewType eViewType, const unsigned short width, const unsigned short height) 
+	:ResourceBase(ResourceType::DepthStencilView),
 	mDSV(nullptr)
 {
 		ID3D11Device* device = d3d11Device->GetDevice().Get();
+
+		if (eViewType == ED3D11DepthStencilViewType::None)
+		{
+			return;
+		}
 
 		// Depth stencil Buffer 생성
 		D3D11_TEXTURE2D_DESC depthStencilDesc{};

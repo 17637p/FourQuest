@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include <assert.h>
 
 #include <windows.h>
 
@@ -17,7 +18,7 @@ namespace fq::graphics
 	/// <summary>
 	/// D3D11 Device 로 생성되는 리소스를 관리하는 클래스
 	/// </summary>
-	class D3D11ResourceManager : public std::enable_shared_from_this<D3D11ResourceManager>
+	class D3D11ResourceManager
 	{
 	public:
 		D3D11ResourceManager(std::shared_ptr<D3D11Device> d3d11Device);
@@ -59,7 +60,7 @@ namespace fq::graphics
 		std::shared_ptr<T> resourceT;
 		if (!resource)
 		{
-			resourceT = std::make_shared<T>(shared_from_this(), mDevice, eType, params...);
+			resourceT = std::make_shared<T>(mDevice, eType, params...);
 			mResources[key] = resourceT;
 		}
 		else

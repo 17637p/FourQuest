@@ -20,8 +20,7 @@ namespace fq::graphics
 	class D3D11InputLayout : public ResourceBase
 	{
 	public:
-		D3D11InputLayout(const std::shared_ptr<D3D11ResourceManager> resourceManager,
-			const std::shared_ptr<D3D11Device>& device);
+		D3D11InputLayout(const std::shared_ptr<D3D11Device>& device);
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInputLayout;
@@ -33,8 +32,7 @@ namespace fq::graphics
 	class D3D11VertexBuffer : public ResourceBase
 	{
 	public:
-		D3D11VertexBuffer(const std::shared_ptr<D3D11ResourceManager> resourceManager,
-			const std::shared_ptr<D3D11Device>& device);
+		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device);
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVertexBuffer;
@@ -46,8 +44,7 @@ namespace fq::graphics
 	class D3D11IndexBuffer : public ResourceBase
 	{
 	public:
-		D3D11IndexBuffer(const std::shared_ptr<D3D11ResourceManager> resourceManager,
-			const std::shared_ptr<D3D11Device>& device);
+		D3D11IndexBuffer(const std::shared_ptr<D3D11Device>& device);
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndexBuffer;

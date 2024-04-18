@@ -27,12 +27,13 @@ void Renderer::Initialize(const HWND hWnd, const unsigned short width, const uns
 
 	mRTVRenderer = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 }
 
 void Renderer::BeginRender()
 {
 	// ·»´õ Å¸°ÙÀ» ¹ÙÀÎµù ÇÑ´Ù
-	mRTVRenderer->Bind(mDevice, ED3D11DepthStencilViewType::None);
+	mRTVRenderer->Bind(mDevice, mResourceManager->Get<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None));
 }
 
 void Renderer::Render()

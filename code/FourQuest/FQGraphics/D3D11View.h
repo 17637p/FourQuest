@@ -17,6 +17,7 @@ using namespace Microsoft::WRL;
 namespace fq::graphics
 {
 	class D3D11Device;
+	class D3D11DepthStencilView;
 
 	/*=============================================================================
 		RTV View 
@@ -24,14 +25,13 @@ namespace fq::graphics
 	class D3D11RenderTargetView : public ResourceBase
 	{
 	public:
-		D3D11RenderTargetView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
-			const std::shared_ptr<D3D11Device>& d3d11Device, 
+		D3D11RenderTargetView(const std::shared_ptr<D3D11Device>& d3d11Device, 
 			const ED3D11RenderTargetViewType eViewType, 
 			const unsigned short width, const unsigned short height);
 
 		static std::string GenerateRID(const ED3D11RenderTargetViewType eViewType);
 
-		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilViewType eViewType);
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 
 	private:
 		ComPtr<ID3D11RenderTargetView> mRTV;
@@ -45,8 +45,7 @@ namespace fq::graphics
 	class D3D11ShaderResourceView : public ResourceBase
 	{
 	public:
-		D3D11ShaderResourceView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
-			const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
+		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
 
 		static std::string GenerateRID(const ED3D11ShaderResourceViewType eViewType);
 
@@ -62,8 +61,7 @@ namespace fq::graphics
 	class D3D11DepthStencilView : public ResourceBase
 	{
 	public:
-		D3D11DepthStencilView(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
-			const std::shared_ptr<D3D11Device>& d3d11Device, 
+		D3D11DepthStencilView(const std::shared_ptr<D3D11Device>& d3d11Device, 
 			const ED3D11DepthStencilViewType eViewType, 
 			const unsigned short width, const unsigned short height);
 

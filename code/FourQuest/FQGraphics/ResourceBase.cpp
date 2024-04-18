@@ -1,7 +1,6 @@
 #include "ResourceBase.h"
 
-fq::graphics::ResourceBase::ResourceBase(const std::shared_ptr<D3D11ResourceManager> resourceManager, const ResourceType resourceType)
-	:mResourceManager(resourceManager),
+fq::graphics::ResourceBase::ResourceBase(const ResourceType resourceType) :
 	mResourceType(resourceType)
 {
 }

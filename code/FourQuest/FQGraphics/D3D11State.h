@@ -19,8 +19,7 @@ namespace fq::graphics
 	struct D3D11SamplerState : public ResourceBase
 	{
 	public:
-		D3D11SamplerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, 
-			const std::shared_ptr<D3D11Device>& d3d11Device,
+		D3D11SamplerState(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const ED3D11SamplerState eStateType);
 
 		static std::string GenerateRID(const ED3D11SamplerState eStateType);
@@ -37,8 +36,7 @@ namespace fq::graphics
 	class D3D11RasterizerState : public ResourceBase
 	{
 	public:
-		D3D11RasterizerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager,
-			const std::shared_ptr<D3D11Device>& d3d11Device,
+		D3D11RasterizerState(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const ED3D11RasterizerState eStateType);
 
 		static std::string GenerateRID(const ED3D11RasterizerState eStateType);
@@ -55,8 +53,7 @@ namespace fq::graphics
 	class D3D11DepthStencilState : public ResourceBase
 	{
 	public:
-		D3D11DepthStencilState(const std::shared_ptr<D3D11ResourceManager>& resourceManager,
-			const std::shared_ptr<D3D11Device>& d3d11Device,
+		D3D11DepthStencilState(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const ED3D11DepthStencilState eStateType);
 
 		static std::string GenerateRID(const ED3D11DepthStencilState eStateType);
@@ -73,8 +70,7 @@ namespace fq::graphics
 	class D3D11BlendState : public ResourceBase
 	{
 	public:
-		D3D11BlendState(const std::shared_ptr<D3D11ResourceManager>& resourceManager,
-			const std::shared_ptr<D3D11Device>& d3d11Device,
+		D3D11BlendState(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const ED3D11BlendState eStateType);
 
 		static std::string GenerateRID(const ED3D11BlendState eStateType);

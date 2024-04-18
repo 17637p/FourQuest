@@ -6,8 +6,8 @@
 #include "D3D11Device.h"
 #include "Define.h"
 
-fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& texturePath)
-	:ResourceBase(resourceManager, ResourceType::Texture)
+fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& texturePath) 
+	:ResourceBase(ResourceType::Texture)
 {
 	std::wstring fileExtension = texturePath.substr(texturePath.find_last_of(L".") + 1, texturePath.length() - texturePath.find_last_of(L".") + 1);
 

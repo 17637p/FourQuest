@@ -9,8 +9,8 @@ using namespace fq::graphics;
 /*=============================================================================
 		SamplerState
 =============================================================================*/
-D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11SamplerState eStateType)
-	:ResourceBase(resourceManager, ResourceType::SamplerState),
+fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11SamplerState eStateType) 
+	:ResourceBase(ResourceType::SamplerState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
@@ -69,8 +69,8 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 /*=============================================================================
 		RasterizerState
 =============================================================================*/
-D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11RasterizerState eStateType)
-	:ResourceBase(resourceManager, ResourceType::RasterizerState),
+fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11RasterizerState eStateType) 
+	:ResourceBase(ResourceType::RasterizerState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
@@ -110,8 +110,8 @@ void D3D11RasterizerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 /*=============================================================================
 		DepthStencilState
 =============================================================================*/
-D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilState eStateType)
-	:ResourceBase(resourceManager, ResourceType::DepthStencilState),
+fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11DepthStencilState eStateType) 
+	:ResourceBase(ResourceType::DepthStencilState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
@@ -154,8 +154,8 @@ void D3D11DepthStencilState::Bind(const std::shared_ptr<D3D11Device>& d3d11Devic
 		BlendState
 =============================================================================*/
 
-D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11ResourceManager>& resourceManager, const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11BlendState eStateType)
-	:ResourceBase(resourceManager, ResourceType::BlendState),
+fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11BlendState eStateType) 
+	:ResourceBase(ResourceType::BlendState),
 	mState(nullptr)
 {
 	ID3D11Device* device = d3d11Device->GetDevice().Get();

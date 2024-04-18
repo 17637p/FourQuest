@@ -4,8 +4,6 @@
 
 namespace fq::graphics
 {
-	class D3D11ResourceManager;
-
 	enum class ResourceType
 	{
 		none,
@@ -26,13 +24,10 @@ namespace fq::graphics
 	class ResourceBase
 	{
 	public:
-		ResourceBase(const std::shared_ptr<D3D11ResourceManager> resourceManager, const ResourceType resourceType);
+		ResourceBase(const ResourceType resourceType);
 		virtual ~ResourceBase() {};
 
 		virtual ResourceType GetType() { return mResourceType; };
-
-	protected:
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
 	private:
 		ResourceType mResourceType;
