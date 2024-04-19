@@ -3,6 +3,7 @@
 #include "D3D11Device.h"
 #include "D3D11State.h"
 #include "D3D11View.h"
+#include "D3D11Buffer.h"
 
 #include "D3D11ResourceManager.h"
 #include "Define.h"
@@ -28,6 +29,26 @@ void Renderer::Initialize(const HWND hWnd, const unsigned short width, const uns
 	mRTVRenderer = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
+
+	struct Trasform
+	{
+		int a;
+		float b;
+		int c;
+		float d;
+	};
+
+	std::shared_ptr<D3D11ConstantBuffer<Trasform> > testConstantBuffer;
+
+	Trasform tt{};
+	tt.a = 1;
+	tt.b = 2;
+	tt.c = 3;
+	tt.d = 4;
+
+	testConstantBuffer = mResourceManager->Create<fq::graphics::D3D11ConstantBuffer<Trasform> >(ED3D11ConstantBuffer::Transform);
+	testConstantBuffer->Update(mDevice, tt);
+	testConstantBuffer->Bind(mDevice, ED3D11ShaderType::VertexShader, 0);
 }
 
 void Renderer::BeginRender()

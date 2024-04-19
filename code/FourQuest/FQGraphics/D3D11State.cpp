@@ -52,14 +52,17 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 		case ED3D11ShaderType::VertexShader:
 		{
 			d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, mState.GetAddressOf());
+			break;
 		}
 		case ED3D11ShaderType::Pixelshader:
 		{
 			d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, mState.GetAddressOf());
+			break;
 		}
 		case ED3D11ShaderType::GeometryShader:
 		{
 			d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, mState.GetAddressOf());
+			break;
 		}
 		default:
 			break;

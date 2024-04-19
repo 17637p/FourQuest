@@ -25,12 +25,6 @@ private:
 	void Render();
 
 private:
-	//ImpGraphics::IImpGraphicsEngine* m_pRenderer;
-	//ImpGraphics::IImp3DRenderer* m_pRenderer;
-
-	//std::unique_ptr<GameTimer> m_timer;
-
-private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
 	const int mWindowPosX;
