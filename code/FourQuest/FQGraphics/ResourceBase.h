@@ -19,6 +19,7 @@ namespace fq::graphics
 		DepthStencilState,
 		BlendState,
 
+		ConstantBuffer,
 	};
 
 	class ResourceBase

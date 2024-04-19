@@ -12,31 +12,22 @@ Process::Process()
 	mWindowPosY(0),
 	mScreenWidth(1920), 
 	mScreenHeight(1080),
-	mResizing(false)
-	//m_timer(nullptr),
-	//m_pRenderer(nullptr)
+	mResizing(false),
+	mTestGraphics(nullptr)
 {
 	CreateHWND(L"FQGraphicsDemo", WS_OVERLAPPEDWINDOW, mWindowPosX, mWindowPosY, mScreenWidth, mScreenHeight);
 	ShowWindow(mHwnd, SW_SHOWNORMAL);
 
-	//m_pRenderer = EngineExporter::GetEngine();
-	//_guiManager = new ImpGraphics::GUIManager;
 	mEngineExporter = std::make_shared<fq::graphics::EngineExporter>();
 }
 
 Process::~Process()
 {
-	//delete _guiManager;
-	//EngineExporter::DeleteEngine();
 	mEngineExporter->DeleteEngine(mTestGraphics);
 }
 
 bool Process::Init(HINSTANCE hInstance)
 {
-	//m_pRenderer->Initialize((int)hInstance, (int)m_hWnd, m_screenWidth, m_screenHeight);
-
-	//_guiManager->Init(reinterpret_cast<size_t>(m_hWnd), m_pRenderer->GetDevice(), m_pRenderer->GetDeviceContext());
-
 	InputManager::GetInstance().Init(mHwnd);
 	//m_timer = std::make_unique<GameTimer>();
 
