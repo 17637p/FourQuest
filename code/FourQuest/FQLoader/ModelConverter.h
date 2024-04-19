@@ -1,8 +1,12 @@
 #pragma once
 
-#include "ModelIOData.h"
+#include <memory>
+
+#include "../FQCommon/FQCommonLoader.h"
 
 class aiScene;
+class aiNode;
+namespace Assimp { class Importer; }
 
 namespace fq::loader
 {
@@ -20,17 +24,17 @@ namespace fq::loader
 		void WriteAnimation(const std::string& saveName);
 
 	private:
-		std::vector<std::pair<Node, Mesh>> convertModel();
-		std::vector<Material> convertMaterial();
-		std::vector<AnimationClip> convertAnimation();
+		std::vector<std::pair<fq::common::Node, fq::common::Mesh>> convertModel();
+		std::vector<fq::common::Material> convertMaterial();
+		std::vector<fq::common::AnimationClip> convertAnimation();
 
-		void parseNode(aiNode* node, std::vector<std::pair<Node, Mesh>>* outMeshes);
-		void parseNodeRecursive(aiNode* node, std::vector<std::pair< Node, Mesh>>* outMeshes, unsigned int parentIndex);
-		Mesh parseMesh(aiNode* node);
-		void parseBone(std::vector<std::pair< Node, Mesh>>* inoutMeshes);
+		void parseNode(aiNode* node, std::vector<std::pair<fq::common::Node, fq::common::Mesh>>* outMeshes);
+		void parseNodeRecursive(aiNode* node, std::vector<std::pair<fq::common::Node, fq::common::Mesh>>* outMeshes, unsigned int parentIndex);
+		fq::common::Mesh parseMesh(aiNode* node);
+		void parseBone(std::vector<std::pair<fq::common::Node, fq::common::Mesh>>* inoutMeshes);
 
 	private:
-		Assimp::Importer mImpoter;
+		std::unique_ptr<Assimp::Importer> mImpoter;
 		const aiScene* mAiScene;
 	};
 }

@@ -25,6 +25,8 @@ namespace fq::graphics
 
 		void Finalize();
 
+		inline const std::shared_ptr<D3D11Device>& GetDevice() const;
+
 	private:
 		unsigned short mWindowWidth;
 		unsigned short mWindowHeight;
@@ -39,5 +41,10 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mRTVRenderer;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 	};
+
+	inline const std::shared_ptr<D3D11Device>& Renderer::GetDevice() const
+	{
+		return mDevice;
+	}
 }
 

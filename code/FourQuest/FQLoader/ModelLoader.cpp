@@ -4,8 +4,10 @@
 
 namespace fq::loader
 {
-	Model ModelLoader::ReadModel(const std::string& filePath)
+	fq::common::Model ModelLoader::ReadModel(const std::string& filePath)
 	{
+		using namespace fq::common;
+
 		Model model;
 
 		model.Meshes = ReadMesh(filePath + ".mesh");
@@ -15,9 +17,10 @@ namespace fq::loader
 		return model;
 	}
 
-	std::vector<std::pair<Node, Mesh>> ModelLoader::ReadMesh(const std::string& fileName)
+	std::vector<std::pair<fq::common::Node, fq::common::Mesh>> ModelLoader::ReadMesh(const std::string& fileName)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		FileUtil fileUtil;
 		fileUtil.Open(fileName, EFileMode::Read);
@@ -94,9 +97,10 @@ namespace fq::loader
 
 		return modelData;
 	}
-	std::vector<Material> ModelLoader::ReadMaterial(const std::string& fileName)
+	std::vector<fq::common::Material> ModelLoader::ReadMaterial(const std::string& fileName)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		FileUtil fileUtil;
 		fileUtil.Open(fileName, EFileMode::Read);
@@ -128,9 +132,10 @@ namespace fq::loader
 
 		return materials;
 	}
-	std::vector<AnimationClip> ModelLoader::ReadAnimation(const std::string& fileName)
+	std::vector<fq::common::AnimationClip> ModelLoader::ReadAnimation(const std::string& fileName)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		vector<AnimationClip> animationClips;
 
@@ -183,16 +188,17 @@ namespace fq::loader
 		return animationClips;
 	}
 
-	void ModelLoader::WriteModelByData(const Model& modelData, const std::string& savePath)
+	void ModelLoader::WriteModelByData(const fq::common::Model& modelData, const std::string& savePath)
 	{
 		WriteMeshByData(modelData.Meshes, savePath + ".mesh");
 		WriteMaterialByData(modelData.Materials, savePath + ".material");
 		WriteAnimationByData(modelData.Animations, savePath + "animation");
 	}
 
-	void ModelLoader::WriteMeshByData(const std::vector<std::pair<Node, Mesh>>& modelData, const std::string& savePath)
+	void ModelLoader::WriteMeshByData(const std::vector<std::pair<fq::common::Node, fq::common::Mesh>>& modelData, const std::string& savePath)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		filesystem::path path = savePath;//  +".mesh";
 		filesystem::create_directory(path.parent_path());
@@ -243,9 +249,10 @@ namespace fq::loader
 			}
 		}
 	}
-	void ModelLoader::WriteMaterialByData(const std::vector<Material>& materialData, const std::string& savePath)
+	void ModelLoader::WriteMaterialByData(const std::vector<fq::common::Material>& materialData, const std::string& savePath)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		filesystem::path path = savePath;// +".material";
 		filesystem::create_directory(path.parent_path());
@@ -270,9 +277,10 @@ namespace fq::loader
 			fileUtil.Write<wstring>(material.OpacityFileName);
 		}
 	}
-	void ModelLoader::WriteAnimationByData(const std::vector<AnimationClip>& animationData, const std::string& savePath)
+	void ModelLoader::WriteAnimationByData(const std::vector<fq::common::AnimationClip>& animationData, const std::string& savePath)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		filesystem::path path = savePath;//  +".animation";
 		filesystem::create_directory(path.parent_path());

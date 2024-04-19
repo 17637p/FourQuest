@@ -139,7 +139,6 @@
   <ItemGroup>
     <ClInclude Include="FileUtil.h" />
     <ClInclude Include="ModelConverter.h" />
-    <ClInclude Include="ModelIOData.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Util.h" />

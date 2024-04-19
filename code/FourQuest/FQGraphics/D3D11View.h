@@ -67,6 +67,8 @@ namespace fq::graphics
 
 		static std::string GenerateRID(const ED3D11DepthStencilViewType eViewType);
 
+		void ClearDepth(const std::shared_ptr<D3D11Device>& d3d11Device);
+
 		friend class D3D11RenderTargetView;
 
 	private:

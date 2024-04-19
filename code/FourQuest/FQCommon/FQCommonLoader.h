@@ -1,6 +1,12 @@
 #pragma once
 
-namespace fq::loader
+#include <vector>
+#include <string>
+#include <directxtk/SimpleMath.h>
+
+class aiMesh;
+
+namespace fq::common
 {
 	struct Node
 	{
@@ -111,7 +117,8 @@ namespace fq::loader
 		std::vector<NodeClip> NodeClips;
 	};
 
-	struct Model
+	// fbx에 대응되는 친구
+	struct Model 
 	{
 		std::vector<std::pair<Node, Mesh>> Meshes;
 		std::vector<Material> Materials;

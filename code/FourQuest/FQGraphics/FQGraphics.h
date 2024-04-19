@@ -3,10 +3,12 @@
 #include "IFQGraphics.h"
 
 #include <memory>
+#include <string>
 
 namespace fq::graphics
 {
 	class Renderer;
+	class IStaticMeshObject;
 
 	class FQGraphics : public IFQGraphics
 	{
@@ -27,6 +29,13 @@ namespace fq::graphics
 		/// 창 크기 변환
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
+
+		// RenderObject
+		bool CreateStaticMesh(std::string key, const fq::common::Mesh& meshData);
+		bool CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath);
+
+		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info);
+		void DeleteMeshObject(IStaticMeshObject* meshObject);
 
 		/// Gizmo && Background
 
@@ -54,7 +63,12 @@ namespace fq::graphics
 		//virtual FQ_GRAPHICS void* GetSRV() override;
 
 	private:
+		// d3d device, context를 관리하는 클래스 하나
+		// 매니저 집합으로 그래픽스를 구성하자
 		std::shared_ptr<Renderer> mRenderer;
+		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
+		std::shared_ptr<class D3D11JobManager> mJobManager;
+		std::shared_ptr<class D3D11RenderManager> mRenderManager;
 	};
 }
 

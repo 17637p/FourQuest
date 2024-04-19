@@ -134,14 +134,24 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D11Buffer.h" />
+    <ClInclude Include="D3D11JobManager.h" />
+    <ClInclude Include="D3D11RenderManager.h" />
     <ClInclude Include="D3D11ResourceType.h" />
+    <ClInclude Include="D3D11Shader.h" />
     <ClInclude Include="D3D11Texture.h" />
+    <ClInclude Include="D3D11Util.h" />
     <ClInclude Include="D3D11View.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="D3D11Device.h" />
     <ClInclude Include="D3D11State.h" />
     <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
+    <ClInclude Include="D3D11ObjectManager.h" />
+    <ClInclude Include="IRenderObject.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="RenderJob.h" />
+    <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
@@ -150,14 +160,36 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
+    <ClCompile Include="D3D11JobManager.cpp" />
+    <ClCompile Include="D3D11RenderManager.cpp" />
+    <ClCompile Include="D3D11Shader.cpp" />
     <ClCompile Include="D3D11State.cpp" />
     <ClCompile Include="D3D11Texture.cpp" />
+    <ClCompile Include="D3D11Util.cpp" />
     <ClCompile Include="D3D11View.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
+    <ClCompile Include="D3D11ObjectManager.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ModelPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="ModelVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
