@@ -46,7 +46,7 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mFileDialog->Initialize(process, mEditorProcess.get(), mDevice);
 	mEditorProcess->mMenuBar->Initialize(process, mEditorProcess.get());
-
+	mEditorProcess->mLogWindow->Initialize();
 }
 
 void fq::game_engine::Editor::Finalize()
