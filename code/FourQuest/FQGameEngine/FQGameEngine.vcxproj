@@ -151,8 +151,9 @@
     <ClInclude Include="CommandSystem.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
+    <ClInclude Include="ImGuiSystem.h" />
     <ClInclude Include="LogWindow.h" />
-    <ClInclude Include="Editor.h" />
+    <ClInclude Include="TmpD3D.h" />
     <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
     <ClInclude Include="FileDialog.h" />
@@ -167,7 +168,7 @@
     <ClInclude Include="FQGameEngineRegister.h" />
     <ClInclude Include="PrefabSystem.h" />
     <ClInclude Include="Test.h" />
-    <ClInclude Include="ToolEngine.h" />
+    <ClInclude Include="EditorEngine.h" />
     <ClInclude Include="WindowSystem.h" />
     <ClInclude Include="WndProc.h" />
   </ItemGroup>
@@ -175,10 +176,11 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
+    <ClCompile Include="ImGuiSystem.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="TmpD3D.cpp" />
     <ClCompile Include="EditorEvent.cpp" />
     <ClCompile Include="EditorProcess.cpp" />
     <ClCompile Include="FileDialog.cpp" />
@@ -193,7 +195,7 @@
     <ClCompile Include="FQGameEngineRegister.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
     <ClCompile Include="Test.cpp" />
-    <ClCompile Include="ToolEngine.cpp" />
+    <ClCompile Include="EditorEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
     <ClCompile Include="WndProc.cpp" />
   </ItemGroup>

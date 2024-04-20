@@ -3,28 +3,57 @@
 #include "../FQReflect/FQReflect.h"
 #include "GameModuleEnum.h"
 #include "GameObject.h"
+#include "Transform.h"
+#include "Camera.h"
 
 void fq::game_module::RegisterMetaData()
 {
 	using namespace entt::literals;
+	using namespace fq::game_module;
 
 	// Tag
-	entt::meta<fq::game_module::Tag>()
+	entt::meta<Tag>()
 		.prop(fq::reflect::prop::name, "Tag")
-		.conv<std::underlying_type_t<fq::game_module::Tag>>()
-		.data<fq::game_module::Tag::Untagged>("Untagged"_hs)
+		.conv<std::underlying_type_t<Tag>>()
+		.data<Tag::Untagged>("Untagged"_hs)
 		.prop(fq::reflect::prop::name, "Untagged")
-		.data<fq::game_module::Tag::Camera>("Camera"_hs)
+		.data<Tag::Camera>("Camera"_hs)
 		.prop(fq::reflect::prop::name, "Camera")
-		.data<fq::game_module::Tag::Player>("Player"_hs)
+		.data<Tag::Player>("Player"_hs)
 		.prop(fq::reflect::prop::name, "Player");
 
 	// GameObject 
-	entt::meta<fq::game_module::GameObject>()
-		.type(entt::hashed_string("GameObject"))
+	entt::meta<GameObject>()
+		.type("GameObject"_hs)
 		.prop(fq::reflect::prop::name, "GameObject")
-		.data<&fq::game_module::GameObject::SetName, &fq::game_module::GameObject::GetName>(entt::hashed_string("mName"))
+		.data<&GameObject::SetName, &GameObject::GetName>("mName"_hs)
 		.prop(fq::reflect::prop::name, "mName")
-		.data<&fq::game_module::GameObject::SetTag, &fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag"))
+		.data<&GameObject::SetTag, &GameObject::GetTag>("mTag"_hs)
 		.prop(fq::reflect::prop::name, "mTag");
+
+	// Transform
+	entt::meta<Transform>()
+		.type("Transform"_hs)
+		.prop(fq::reflect::prop::name, "Transform")
+		.data<&Transform::SetLocalPosition, &Transform::GetLocalPosition>("Position"_hs)
+		.prop(fq::reflect::prop::name, "Position")
+		.prop(fq::reflect::prop::comment, u8"·ÎÄÃ ÁÂÇ¥")
+		.data<&Transform::SetLocalRotation, &Transform::GetLocalRotation>("Rotation"_hs)
+		.prop(fq::reflect::prop::name, "Rotation")
+		.data<&Transform::SetLocalScale, &Transform::GetLocalScale>("Scale"_hs)
+		.prop(fq::reflect::prop::name, "Scale")
+		.base<Component>();
+
+	// Camera
+	entt::meta<Camera>()
+		.type("Camera"_hs)
+		.prop(fq::reflect::prop::name, "Camera")
+		.data<&Camera::SetFieldOfView, &Camera::GetFieldOfView>("FOV"_hs)
+		.prop(fq::reflect::prop::name, "FOV")
+		.prop(fq::reflect::prop::comment, "0 ~ 180")
+		.data<&Camera::SetFarPlain, &Camera::GetFarPlain>("FarPlain"_hs)
+		.prop(fq::reflect::prop::name, "FarPlain")
+		.data<&Camera::SetNearPlain, &Camera::GetNearPlain>("NearPlain"_hs)
+		.prop(fq::reflect::prop::name, "NearPlain")
+		.base<Component>();
 }

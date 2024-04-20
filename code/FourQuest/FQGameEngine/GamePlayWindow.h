@@ -25,6 +25,11 @@ namespace fq::game_engine
 		/// <param name="editor"></param>
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
+		/// <summary>
+		/// 게임 창을 종료합니다
+		/// </summary>
+		void Finalize();
+
 		void Render() override;
 
 		

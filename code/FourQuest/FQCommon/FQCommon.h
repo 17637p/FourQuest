@@ -1,6 +1,7 @@
 #pragma once
-#include <vector>
 
+
+#include <vector>
 #include <directxtk/SimpleMath.h>
 
 namespace fq::common
@@ -22,13 +23,5 @@ namespace fq::common
 }
 
 
-struct collision
-{
-	// normal 
 
-
-
-
-
-};
 

@@ -2,9 +2,11 @@
 
 #include <string>
 
+
 namespace fq::game_module
 {
 	class GameObject;
+	class Camera;
 }
 
 namespace fq::event
@@ -55,5 +57,12 @@ namespace fq::event
 		fq::game_module::GameObject* object;
 	};
 
+	/// <summary>
+	/// 메인카메라를 설정합니다 
+	/// </summary>
+	struct SetMainCamera
+	{
+		fq::game_module::Camera* mainCamera;
+	};
 
 }

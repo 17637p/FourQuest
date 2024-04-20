@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "IEditorWindow.h"
 
 #include <memory>

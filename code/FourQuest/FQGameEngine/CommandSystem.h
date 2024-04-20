@@ -40,7 +40,7 @@ namespace fq::game_engine
 		/// <summary>
 		/// 명령어를 지웁니다
 		/// </summary>
-		void Clear();
+		void ClearCommandList();
 
 		/// <summary>
 		/// 새로운 명령을 추가합니다

@@ -33,3 +33,8 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	mEditorProcess = editor;
 }
 
+void fq::game_engine::GamePlayWindow::Finalize()
+{
+
+}
+

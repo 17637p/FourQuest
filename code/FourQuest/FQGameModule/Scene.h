@@ -25,6 +25,16 @@ namespace fq::game_module
 		void Initialize(std::string sceneName, EventManager* eventMgr, InputManager* inputMgr);
 
 		/// <summary>
+		/// EventManager를 반환합니다 
+		/// </summary>
+		EventManager* GetEventManager()const { return mEventManager; }
+
+		/// <summary>
+		/// InputManager를 반환합니다
+		/// </summary>
+		InputManager* GetInputManager()const { return mInputManager; }
+
+		/// <summary>
 		/// 삭제 예정인 오브젝트 제거합니다
 		/// </summary>
 		void CleanUp();
@@ -139,7 +149,7 @@ namespace fq::game_module
 	{
 		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeToBeDestroyed))
 		{
-			viewFunction(*object, object->template GetComponent<Types>() ...);
+			viewFunction(*object, *(object->template GetComponent<Types>()) ...);
 		}
 	}
 

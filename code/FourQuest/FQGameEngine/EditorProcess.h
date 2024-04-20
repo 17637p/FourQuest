@@ -2,25 +2,24 @@
 
 #include <memory>
 
-namespace fq::game_module
-{
-	class InputManager;
-}
+//input
+#include "../FQGameModule/InputManager.h"
+
+// window
+#include "Hierarchy.h"
+#include "Inspector.h"
+#include "FileDialog.h"
+#include "LogWindow.h"
+#include "GamePlayWindow.h"
+#include "MenuBar.h"
+
+// system
+#include "ImGuiSystem.h"
+#include "CommandSystem.h"
+#include "PrefabSystem.h"
 
 namespace fq::game_engine
 {
-	// window
-	class MenuBar;
-	class Hierarchy;
-	class Inspector;
-	class FileDialog;
-	class LogWindow;
-	class GamePlayWindow;
-
-	// system
-	class CommandSystem;
-	class PrefabSystem;
-
 	/// <summary>
 	/// 에디터가 관리하는 클래스의 집합
 	/// </summary>
@@ -36,7 +35,8 @@ namespace fq::game_engine
 		std::unique_ptr<LogWindow> mLogWindow;
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
 		std::unique_ptr<MenuBar> mMenuBar;
-
+		
+		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
 		std::unique_ptr<PrefabSystem> mPrefabSystem;
 

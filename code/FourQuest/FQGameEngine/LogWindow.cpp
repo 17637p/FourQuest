@@ -32,3 +32,8 @@ void fq::game_engine::LogWindow::Initialize()
 	auto logger = spdlog::basic_logger_mt("e", "4qlog/editor.txt");
 	spdlog::set_default_logger(logger);
 }
+
+void fq::game_engine::LogWindow::Finalize()
+{
+
+}
