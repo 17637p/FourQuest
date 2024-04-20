@@ -192,7 +192,6 @@
     <ClCompile Include="MenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
-    <ClCompile Include="PS.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="ToolEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
