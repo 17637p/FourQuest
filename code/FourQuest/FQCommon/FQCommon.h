@@ -17,8 +17,18 @@ namespace fq::common
 
 		DirectX::SimpleMath::Matrix localMatrix;
 		DirectX::SimpleMath::Matrix worldMatrix;
-
-		Transform* parent;
+		//Transform* parent;
 	};
 }
+
+
+struct collision
+{
+	// normal 
+
+
+
+
+
+};
 

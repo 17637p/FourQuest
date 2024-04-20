@@ -246,7 +246,6 @@ namespace fq::game_module
 		bool mbIsDestroyed;
 
 		friend class Scene;
-		FQ_REGISTRATION_FRIEND
 	};
 
 	template <typename T>

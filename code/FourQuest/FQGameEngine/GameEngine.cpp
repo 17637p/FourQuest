@@ -63,10 +63,8 @@ void fq::game_engine::GameEngine::Process()
 			// 물리처리
 			mGameProcess->mSceneManager->FixedUpdate(0.f);
 
-
 			mGameProcess->mSceneManager->Update(deltaTime);
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
-
 
 			mGameProcess->mSceneManager->PostUpdate();
 			if (mGameProcess->mSceneManager->IsEnd())

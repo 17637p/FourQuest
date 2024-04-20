@@ -18,9 +18,6 @@
     <Filter Include="src\02.GameProcess">
       <UniqueIdentifier>{e1e09096-e8be-487c-8bd4-af27fc6a6de5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\03.System">
-      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\10.Editor">
       <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
     </Filter>
@@ -29,12 +26,6 @@
     </Filter>
     <Filter Include="include\11.EditorWindow">
       <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\12.Command">
-      <UniqueIdentifier>{d7865560-f8c0-4707-a3a5-681ee934cd13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\13. EditorEvent">
-      <UniqueIdentifier>{f3c092a5-5196-4b37-8d96-3d5a91e4b9be}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\10.Editor">
       <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
@@ -45,29 +36,29 @@
     <Filter Include="src\11.Window">
       <UniqueIdentifier>{3ca10ecb-1121-4a91-b4a7-6cac146d0d26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\12.Command">
-      <UniqueIdentifier>{2bb07cc4-2c23-4b49-be1d-ff7e7511cd89}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\13.EditorEvent">
-      <UniqueIdentifier>{8eb4470d-2ff5-4839-b0aa-51a30a6fc5b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\99.Reflect">
-      <UniqueIdentifier>{e75b67c1-6964-4cd6-aa52-84a09cf77b2f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Test">
       <UniqueIdentifier>{e1d570db-360d-4a25-b89a-56b01276bfa8}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\02.GameProcess">
       <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\03.System">
-      <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\00.Define">
       <UniqueIdentifier>{cbf6fe28-fece-4c60-a53e-d7bd96c4b5ae}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\00.Define">
       <UniqueIdentifier>{3764341c-45c0-4783-b734-1c8fb4e4e247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\12.EditorSystem">
+      <UniqueIdentifier>{d7865560-f8c0-4707-a3a5-681ee934cd13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.EditorSystem">
+      <UniqueIdentifier>{2bb07cc4-2c23-4b49-be1d-ff7e7511cd89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem">
+      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\03.GameSystem">
+      <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +78,7 @@
       <Filter>include\10.Editor</Filter>
     </ClInclude>
     <ClInclude Include="WindowSystem.h">
-      <Filter>include\03.System</Filter>
+      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="IEditorWindow.h">
       <Filter>include\11.EditorWindow</Filter>
@@ -105,19 +96,16 @@
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="CommandSystem.h">
-      <Filter>include\12.Command</Filter>
+      <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
     <ClInclude Include="Command.h">
-      <Filter>include\12.Command</Filter>
+      <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
     <ClInclude Include="imgui_stdlib.h">
       <Filter>include\10.Editor\imgui</Filter>
     </ClInclude>
     <ClInclude Include="EditorProcess.h">
       <Filter>include\10.Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorEvent.h">
-      <Filter>include\13. EditorEvent</Filter>
     </ClInclude>
     <ClInclude Include="MenuBar.h">
       <Filter>include\11.EditorWindow</Filter>
@@ -137,6 +125,12 @@
     <ClInclude Include="FQGameEngineRegister.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="EditorEvent.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -155,7 +149,7 @@
       <Filter>src\10.Editor</Filter>
     </ClCompile>
     <ClCompile Include="WindowSystem.cpp">
-      <Filter>src\03.System</Filter>
+      <Filter>src\03.GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="dllExport.h">
       <Filter>include\00.Define</Filter>
@@ -182,13 +176,10 @@
       <Filter>src\10.Editor\imgui</Filter>
     </ClCompile>
     <ClCompile Include="Command.cpp">
-      <Filter>src\12.Command</Filter>
+      <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
     <ClCompile Include="EditorProcess.cpp">
       <Filter>src\10.Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorEvent.cpp">
-      <Filter>src\13.EditorEvent</Filter>
     </ClCompile>
     <ClCompile Include="MenuBar.cpp">
       <Filter>src\11.Window</Filter>
@@ -197,7 +188,7 @@
       <Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="CommandSystem.cpp">
-      <Filter>src\12.Command</Filter>
+      <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
     <ClCompile Include="Test.cpp">
       <Filter>Test</Filter>
@@ -207,6 +198,15 @@
     </ClCompile>
     <ClCompile Include="FQGameEngineRegister.cpp">
       <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorEvent.cpp">
+      <Filter>src\10.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PS.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

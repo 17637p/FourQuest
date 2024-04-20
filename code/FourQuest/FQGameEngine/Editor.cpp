@@ -13,6 +13,8 @@
 #include "WindowSystem.h"
 
 #include "CommandSystem.h"
+#include "PrefabSystem.h"
+
 #include "LogWindow.h"
 #include "FileDialog.h"
 #include "Hierarchy.h"
@@ -42,6 +44,8 @@ void fq::game_engine::Editor::Initialize(GameProcess* process)
 
 	mEditorProcess->mInputManager->Initialize(process->mWindowSystem->GetHWND());
 	mEditorProcess->mCommandSystem->Initialize(process, mEditorProcess.get());
+	mEditorProcess->mPrefabSystem->Initialize(process, mEditorProcess.get());
+	
 	mEditorProcess->mInspector->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mHierarchy->Initialize(process, mEditorProcess.get());
 	mEditorProcess->mFileDialog->Initialize(process, mEditorProcess.get(), mDevice);
