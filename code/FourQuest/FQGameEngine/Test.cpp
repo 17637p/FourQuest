@@ -74,3 +74,11 @@ entt::meta_handle fq::game_engine::Test::GetHandle()
 	return *this;
 }
 
+void fq::game_engine::Test::aa()
+{
+	auto scene =  GetScene();
+
+
+
+}
+

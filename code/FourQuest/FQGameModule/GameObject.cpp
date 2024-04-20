@@ -2,16 +2,6 @@
 #include "Component.h"
 #include "Transform.h"
 
-FQ_REGISTRATION
-{
-	entt::meta<fq::game_module::GameObject>()
-		.type(entt::hashed_string("GameObject"))
-		.prop(fq::reflect::prop::name, "GameObject")
-		.data<&fq::game_module::GameObject::SetName, &fq::game_module::GameObject::GetName>(entt::hashed_string("mName"))
-		.prop(fq::reflect::prop::name, "mName")
-		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag"))
-		.prop(fq::reflect::prop::name, "mTag");
-}
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
@@ -29,11 +19,14 @@ fq::game_module::GameObject::~GameObject()
 
 fq::game_module::GameObject::GameObject(const GameObject& other)
 {
-	this->mID = other.mID;
+	this->mID = LastID++;
 	this->mName = other.mName;
 	this->mTag = other.mTag;
 	this->mScene = other.mScene;
 	this->mbIsDestroyed = other.mbIsDestroyed;
+
+	
+
 }
 
 fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameObject& other)

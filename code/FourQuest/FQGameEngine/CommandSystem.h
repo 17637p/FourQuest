@@ -42,6 +42,12 @@ namespace fq::game_engine
 		/// </summary>
 		void Clear();
 
+		/// <summary>
+		/// 새로운 명령을 추가합니다
+		/// </summary>
+		/// <typeparam name="T">커맨드 타입</typeparam>
+		/// <typeparam name="...Args">커맨드 생성 가변 인자</typeparam>
+		/// <param name="...arg">가변인자</param>
 		template <typename T, typename... Args>
 		void Push(Args&&... arg);
 
