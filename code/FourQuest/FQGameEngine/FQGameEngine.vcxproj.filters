@@ -205,8 +205,5 @@
     <ClCompile Include="PrefabSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
-    <ClCompile Include="PS.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
