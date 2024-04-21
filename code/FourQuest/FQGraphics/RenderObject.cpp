@@ -10,9 +10,9 @@ namespace fq::graphics
 		, mTransform(transform)
 	{
 	}
-	void StaticMeshObject::UpdateTransform(const fq::common::Transform& transform)
+	void StaticMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
 	{
-		mTransform = transform.worldMatrix;
+		mTransform = transform;
 	}
 
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
@@ -23,9 +23,9 @@ namespace fq::graphics
 		, mTransform(transform)
 	{
 	}
-	void SkinnedMeshObject::UpdateTransform(const fq::common::Transform& transform)
+	void SkinnedMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
 	{
-		mTransform = transform.worldMatrix;
+		mTransform = transform;
 	}
 	void SkinnedMeshObject::UpdateBoneMatrix(const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices)
 	{

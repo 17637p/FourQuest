@@ -40,6 +40,8 @@ namespace fq::graphics
 		template<typename T>
 		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<T>& vertices);
 
+		static void Bind(const std::shared_ptr<D3D11Device>& device, const std::vector<std::shared_ptr<D3D11VertexBuffer>>& buffers, UINT startSlot = 0);
+
 		void Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot = 0);
 
 	private:
@@ -90,8 +92,10 @@ namespace fq::graphics
 	template<typename ConstantType>
 	class D3D11ConstantBuffer : public ResourceBase
 	{
+		static_assert(sizeof(ConstantType) % 16 == 0, "constant buffer must be aligned by 16 bytes");
+
 	public:
-		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device, 
+		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device,
 			const ED3D11ConstantBuffer eConstantBuffer);
 
 		static std::string GenerateRID(const ED3D11ConstantBuffer eConstantBuffer);
@@ -123,23 +127,23 @@ namespace fq::graphics
 
 		switch (eShaderType)
 		{
-			case ED3D11ShaderType::VertexShader:
-			{
-				d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::GeometryShader:
-			{
-				d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::Pixelshader:
-			{
-				d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			default:
-				break;
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		default:
+			break;
 		}
 	}
 

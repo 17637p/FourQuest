@@ -29,8 +29,53 @@ namespace fq::graphics
 			mStaticMeshJobs.push_back(job);
 		}
 	}
+	void D3D11JobManager::CreateStaticMeshJobs(const std::set<IStaticMeshObject*>& staticMeshObjects)
+	{
+		for (IStaticMeshObject* iStaticMeshObject : staticMeshObjects)
+		{
+			CreateStaticMeshJob(iStaticMeshObject);
+		}
+	}
+	void D3D11JobManager::CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject)
+	{
+		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
+		const std::shared_ptr<SkinnedMesh>& skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
+		const std::vector<std::shared_ptr<Material>> materials = skinnedMeshObject->GetMaterials();
+		const fq::common::Mesh& meshData = skinnedMesh->GetMeshData();
+		const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices = skinnedMeshObject->GetBoneMatrices();
+		assert(meshData.Subsets.size() <= materials.size());
+
+		for (size_t i = 0; i < meshData.Subsets.size(); ++i)
+		{
+			SkinnedMeshJob job;
+			job.SubsetIndex = i;
+			job.TransformPtr = &skinnedMeshObject->GetTransform();
+			job.Material = materials[i];
+			job.SkinnedMesh = skinnedMesh;
+			job.BoneMatricesPtr = &boneMatrices;
+
+			mSkinnedMeshJobs.push_back(job);
+		}
+	}
+	void D3D11JobManager::CreateSkinnedMeshJobs(const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
+	{
+		for (ISkinnedMeshObject* iSkinnedMeshRenderJob : skinnedMeshObjects)
+		{
+			CreateSkinnedMeshJob(iSkinnedMeshRenderJob);
+		}
+	}
+
+	void D3D11JobManager::ClearAll()
+	{
+		ClearStaticMeshJobs();
+		ClearSkinnedMeshJobs();
+	}
 	void D3D11JobManager::ClearStaticMeshJobs()
 	{
 		mStaticMeshJobs.clear();
+	}
+	void D3D11JobManager::ClearSkinnedMeshJobs()
+	{
+		mSkinnedMeshJobs.clear();
 	}
 }

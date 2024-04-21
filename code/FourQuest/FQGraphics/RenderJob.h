@@ -25,6 +25,6 @@ namespace fq::graphics
 		std::shared_ptr<SkinnedMesh> SkinnedMesh;
 		std::shared_ptr<Material> Material;
 		const DirectX::SimpleMath::Matrix* TransformPtr;
-		std::vector<DirectX::SimpleMath::Matrix>* BoneMatricesPtr;
+		const std::vector<DirectX::SimpleMath::Matrix>* BoneMatricesPtr;
 	};
 }

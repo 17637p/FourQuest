@@ -14,28 +14,47 @@
 namespace fq::graphics
 {
 	class IStaticMeshObject;
-
+	class ISkinnedMeshObject;
+	class StaticMesh;
+	class SkinnedMesh;
+	class Material;
 
 	class D3D11ObjectManager
 	{
 	public:
 		bool CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
+		bool CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
 		bool CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath);
 
 		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info);
-		void DeleteMeshObject(IStaticMeshObject* meshObject);
+		void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObjectInterface);
+
+		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info);
+		void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObjectInterface);
 
 		inline const std::set<IStaticMeshObject*>& GetStaticMeshObjects() const;
+		inline const std::set<ISkinnedMeshObject*>& GetSkinnedMeshObjects() const;
 
 	private:
-		std::map<std::string, std::shared_ptr<class StaticMesh>> mStaticMeshResources;
-		std::map<std::string, std::shared_ptr<class Material>> mMaterialResources;
+		void findMaterial(const std::vector<std::string>& materialKeys,
+			std::vector<std::shared_ptr<Material>>* outMaterials) const;
+
+	private:
+		std::map<std::string, std::shared_ptr<StaticMesh>> mStaticMeshResources;
+		std::map<std::string, std::shared_ptr<SkinnedMesh>> mSkinnedMeshResources;
+		std::map<std::string, std::shared_ptr<Material>> mMaterialResources;
 
 		std::set<IStaticMeshObject*> mStaticMeshObjects;
+		std::set<ISkinnedMeshObject*> mSkinnedMeshObjects;
 	};
 
 	inline const std::set<IStaticMeshObject*>& D3D11ObjectManager::GetStaticMeshObjects() const
 	{
 		return mStaticMeshObjects;
+	}
+
+	inline const std::set<ISkinnedMeshObject*>& D3D11ObjectManager::GetSkinnedMeshObjects() const
+	{
+		return mSkinnedMeshObjects;
 	}
 }

@@ -70,6 +70,33 @@ namespace fq::graphics
 		device->GetDeviceContext()->IASetInputLayout(mInputLayout.Get());
 	}
 
+	void D3D11VertexBuffer::Bind(const std::shared_ptr<D3D11Device>& device, const std::vector<std::shared_ptr<D3D11VertexBuffer>>& buffers, UINT startSlot)
+	{
+		std::vector<ID3D11Buffer*> VBs;
+		VBs.reserve(buffers.size());
+
+		std::vector<UINT> strides;
+		strides.reserve(buffers.size());
+
+		std::vector<UINT> offsets;
+		offsets.reserve(buffers.size());
+
+		for (const std::shared_ptr<D3D11VertexBuffer>& buffer : buffers)
+		{
+			VBs.push_back(buffer->mVertexBuffer.Get());
+			strides.push_back(buffer->mStride);
+			offsets.push_back(buffer->mOffset);
+		}
+
+		device->GetDeviceContext()->IASetVertexBuffers(
+			startSlot,
+			buffers.size(),
+			VBs.data(),
+			strides.data(),
+			offsets.data()
+		);
+	}
+
 	void D3D11VertexBuffer::Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot)
 	{
 		device->GetDeviceContext()->IASetVertexBuffers(

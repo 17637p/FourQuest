@@ -36,4 +36,19 @@ namespace fq::graphics
 
 		return S_OK;
 	}
+
+	 DirectX::SimpleMath::Matrix D3D11Util::InverseTranspose(const DirectX::SimpleMath::Matrix& matrix)
+	{
+		DirectX::SimpleMath::Matrix result = matrix;
+		result._41 = 0.f;
+		result._42 = 0.f;
+		result._43 = 0.f;
+		result._44 = 1.f;
+
+		DirectX::SimpleMath::Matrix invResult;
+		result.Invert(invResult);
+
+		return invResult.Transpose();
+	}
+
 }

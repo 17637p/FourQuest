@@ -20,6 +20,20 @@ namespace fq::graphics
 
 		return true;
 	}
+	bool D3D11ObjectManager::CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData)
+	{
+		auto find = mSkinnedMeshResources.find(key);
+
+		if (find != mSkinnedMeshResources.end())
+		{
+			return false;
+		}
+
+		std::shared_ptr<SkinnedMesh> skinnedMesh = std::make_shared <SkinnedMesh>(device, meshData);
+		mSkinnedMeshResources.insert({ key, skinnedMesh });
+
+		return true;
+	}
 	bool D3D11ObjectManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath)
 	{
 		auto find = mMaterialResources.find(key);
@@ -45,31 +59,63 @@ namespace fq::graphics
 		}
 
 		std::vector<std::shared_ptr<Material>> materials;
-
-		for (const std::string& materialKey : info.MaterialKeys)
-		{
-			auto findedMaterial = mMaterialResources.find(materialKey);
-
-			if (findedMaterial != mMaterialResources.end())
-			{
-				materials.push_back(findedMaterial->second);
-			}
-			else
-			{
-				materials.push_back(nullptr);
-			}
-		}
+		findMaterial(info.MaterialKeys, &materials);
 
 		StaticMeshObject* staticMeshObject = new StaticMeshObject(findedStaticMesh->second, materials, info.Transform);
 		mStaticMeshObjects.insert(staticMeshObject);
 
 		return staticMeshObject;
 	}
-	void D3D11ObjectManager::DeleteMeshObject(IStaticMeshObject* meshObject)
+	void D3D11ObjectManager::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObjectInterface)
 	{
-		mStaticMeshObjects.erase(meshObject);
+		mStaticMeshObjects.erase(staticMeshObjectInterface);
 
-		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(meshObject);
+		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(staticMeshObjectInterface);
 		delete staticMeshObject;
+	}
+
+	ISkinnedMeshObject* D3D11ObjectManager::CreateSkinnedMeshObject(MeshObjectInfo info)
+	{
+		auto findedStaticMesh = mSkinnedMeshResources.find(info.MeshKey);
+
+		if (findedStaticMesh == mSkinnedMeshResources.end())
+		{
+			return nullptr;
+		}
+
+		std::vector<std::shared_ptr<Material>> materials;
+		findMaterial(info.MaterialKeys, &materials);
+
+		SkinnedMeshObject* skinnedMeshObject = new SkinnedMeshObject(findedStaticMesh->second, materials, info.Transform);
+		mSkinnedMeshObjects.insert(skinnedMeshObject);
+
+		return skinnedMeshObject;
+	}
+	void D3D11ObjectManager::DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObjectInterface)
+	{
+		mSkinnedMeshObjects.erase(skinnedMeshObjectInterface);
+
+		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(skinnedMeshObjectInterface);
+		delete skinnedMeshObject;
+	}
+
+	void D3D11ObjectManager::findMaterial(const std::vector<std::string>& materialKeys,
+		std::vector<std::shared_ptr<Material>>* outMaterials) const
+	{
+		outMaterials->reserve(materialKeys.size());
+
+		for (const std::string& materialKey : materialKeys)
+		{
+			auto findedMaterial = mMaterialResources.find(materialKey);
+
+			if (findedMaterial != mMaterialResources.end())
+			{
+				outMaterials->push_back(findedMaterial->second);
+			}
+			else
+			{
+				outMaterials->push_back(nullptr);
+			}
+		}
 	}
 }

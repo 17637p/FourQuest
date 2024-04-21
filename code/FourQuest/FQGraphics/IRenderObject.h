@@ -17,20 +17,22 @@ extern "C" {
 		class IStaticMeshObject
 		{
 		public:
-			virtual FQ_GRAPHICS void UpdateTransform(const fq::common::Transform& transform) = 0;
+			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 
 		protected:
-			~IStaticMeshObject() = default;
+			virtual ~IStaticMeshObject() = default;
 		};
 
 		class ISkinnedMeshObject
 		{
 		public:
-			virtual FQ_GRAPHICS void UpdateTransform(const fq::common::Transform& transform) = 0;
+			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
 			virtual FQ_GRAPHICS void UpdateBoneMatrix(const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices) = 0;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 
 		protected:
-			~ISkinnedMeshObject() = default;
+			virtual ~ISkinnedMeshObject() = default;
 		};
 	}
 #ifdef __cplusplus

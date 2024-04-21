@@ -26,9 +26,9 @@ Process::Process()
 
 Process::~Process()
 {
-	for (auto* meshObject : mStaticMeshObjects)
+	for (fq::graphics::IStaticMeshObject* iobj :mStaticMeshObjects)
 	{
-		mTestGraphics->DeleteMeshObject(meshObject);
+		mTestGraphics->DeleteStaticMeshObject(iobj);
 	}
 
 	mEngineExporter->DeleteEngine(mTestGraphics);
@@ -42,15 +42,15 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
-	std::string basePath = "C:/SVN/FourQuest/4_Resource/Editor/resource/example/";
-	std::string filePath = basePath + "bear/bear";
+	std::string basePath = "../Temp/Model/";
+	std::string filePath = basePath + "gun/gun";
 	{
 		fq::loader::ModelConverter converter;
-		converter.ReadFBXFile(basePath + "bear.fbx");
+		converter.ReadFBXFile(basePath + "gun.fbx");
 		converter.WriteModel(filePath);
 	}
 
-	auto model = fq::loader::ModelLoader::ReadModel(filePath);
+	fq::common::Model model = fq::loader::ModelLoader::ReadModel(filePath);
 
 	for (const auto& material : model.Materials)
 	{
@@ -62,24 +62,34 @@ bool Process::Init(HINSTANCE hInstance)
 
 	for (const auto& nodeMeshPair : model.Meshes)
 	{
+		const auto& node = nodeMeshPair.first;
 		const auto& mesh = nodeMeshPair.second;
 
 		if (!mesh.Name.empty())
 		{
-			std::string meshKey = filePath + mesh.Name;
-			mTestGraphics->CreateStaticMesh(meshKey, mesh);
+			fq::graphics::MeshObjectInfo info;
 
 			for (const auto& subset : mesh.Subsets)
 			{
 				std::string materialKey = filePath + subset.MaterialName;
 
-				fq::graphics::MeshObjectInfo info;
-				info.MeshKey = meshKey;
 				info.MaterialKeys.push_back(materialKey);
 				info.Transform = nodeMeshPair.first.ToParentMatrix;
+			}
 
+			std::string meshKey = filePath + mesh.Name;
+			info.MeshKey = meshKey;
+
+			if (mesh.BoneVertices.empty())
+			{
+				mTestGraphics->CreateStaticMesh(meshKey, mesh);
 				fq::graphics::IStaticMeshObject* object = mTestGraphics->CreateStaticMeshObject(info);
 				mStaticMeshObjects.push_back(object);
+			}
+			else
+			{
+				mTestGraphics->CreateSkinnedMesh(meshKey, mesh);
+				fq::graphics::ISkinnedMeshObject* object = mTestGraphics->CreateSkinnedMeshObject(info);
 			}
 		}
 	}
@@ -186,5 +196,11 @@ void Process::Render()
 	//_guiManager->Render();
 	///// 그리기를 끝낸다.
 	//m_pRenderer->EndRender();
+
+	for (auto& obj : mStaticMeshObjects)
+	{
+		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(0.001f));
+	}
+
 	mTestGraphics->EndRender();
 }

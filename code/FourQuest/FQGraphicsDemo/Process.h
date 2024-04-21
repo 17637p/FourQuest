@@ -1,14 +1,21 @@
+#pragma once
+
 #include "BaseWindow.h"
 
 #include <memory>
 #include <vector>
+#include <map>
+#include <string>
 
-#pragma once
+#include <directxtk\SimpleMath.h>
+
+#include "../FQLoader/ModelLoader.h"
 
 namespace fq::graphics { class Renderer; }
 namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
+namespace fq::graphics { class ISkinnedMeshObject; }
 
 class Process : public BaseWindow<Process>
 {

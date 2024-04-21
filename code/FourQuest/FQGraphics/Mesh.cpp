@@ -33,8 +33,8 @@ namespace fq::graphics
 	}
 	void SkinnedMesh::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
-		mVertexBuffer->Bind(d3d11Device, 0);
-		mBoneVertexBuffer->Bind(d3d11Device, 1);
+		std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers = { mVertexBuffer, mBoneVertexBuffer };
+		D3D11VertexBuffer::Bind(d3d11Device, buffers);
 		mIndexBuffer->Bind(d3d11Device);
 	}
 }

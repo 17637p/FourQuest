@@ -21,6 +21,13 @@ namespace fq::graphics
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
+		inline bool GetHasBaseColor() const;
+		inline bool GetHasMetalness() const;
+		inline bool GetHasRoughness() const;
+		inline bool GetHasNormal() const;
+		inline bool GetHasEmissive() const;
+		inline bool GetHasOpacity() const;
+
 	private:
 		fq::common::Material mMaterialData;
 
@@ -31,4 +38,11 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> mEmissive;
 		std::shared_ptr<D3D11Texture> mOpacity;
 	};
+
+	inline bool Material::GetHasBaseColor() const { return mBaseColor != nullptr; }
+	inline bool Material::GetHasMetalness() const { return mMetalness != nullptr; }
+	inline bool Material::GetHasRoughness() const { return mRoughness != nullptr; }
+	inline bool Material::GetHasNormal() const { return mNormal != nullptr; }
+	inline bool Material::GetHasEmissive() const { return mEmissive != nullptr; }
+	inline bool Material::GetHasOpacity() const { return mOpacity != nullptr; }
 }

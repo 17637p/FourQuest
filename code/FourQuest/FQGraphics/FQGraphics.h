@@ -7,9 +7,6 @@
 
 namespace fq::graphics
 {
-	class Renderer;
-	class IStaticMeshObject;
-
 	class FQGraphics : public IFQGraphics
 	{
 	public:
@@ -31,11 +28,15 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// RenderObject
-		bool CreateStaticMesh(std::string key, const fq::common::Mesh& meshData);
-		bool CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath);
+		bool CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) override;
+		bool CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) override;
+		bool CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath) override;
 
-		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info);
-		void DeleteMeshObject(IStaticMeshObject* meshObject);
+		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
+		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
+
+		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
+		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
 		/// Gizmo && Background
 
@@ -63,9 +64,8 @@ namespace fq::graphics
 		//virtual FQ_GRAPHICS void* GetSRV() override;
 
 	private:
-		// d3d device, context를 관리하는 클래스 하나
-		// 매니저 집합으로 그래픽스를 구성하자
-		std::shared_ptr<Renderer> mRenderer;
+		std::shared_ptr<class D3D11Device> mDevice;
+		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<class D3D11JobManager> mJobManager;
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;

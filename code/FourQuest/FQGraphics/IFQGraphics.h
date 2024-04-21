@@ -62,11 +62,14 @@ extern "C" {
 
 			// 랜더 오브젝트
 			virtual FQ_GRAPHICS bool CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) abstract;
+			virtual FQ_GRAPHICS bool CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) abstract;
 			virtual FQ_GRAPHICS bool CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath) abstract;
 
 			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) abstract;
-			virtual FQ_GRAPHICS void DeleteMeshObject(IStaticMeshObject* meshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* meshObject) abstract;
 
+			virtual FQ_GRAPHICS ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) abstract;
+			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) abstract;
 			/// Gizmo && Background
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)

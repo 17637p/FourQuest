@@ -50,7 +50,7 @@ namespace fq::loader
 
 	void ModelConverter::WriteMesh(const std::string& saveName)
 	{
-		assert(mAiScene != nullptr);
+		assert(mAiScene != nullptr); 
 		using namespace std;
 		using namespace fq::common;
 

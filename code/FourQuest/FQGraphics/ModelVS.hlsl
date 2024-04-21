@@ -65,9 +65,9 @@ VertexOut main(VertexIn vin)
     
     vout.PositionW = mul(float4(vin.Position, 1.f), worldMat);
 
-    vout.NormalW = normalize(mul(vin.NormalL, (float3x3) worldMat));
+    vout.NormalW = normalize(mul(vin.NormalL, (float3x3) cWorldInvTranspose));
     
-    vout.TangentW = normalize(mul(vin.TangentL, (float3x3) worldMat));
+    vout.TangentW = normalize(mul(vin.TangentL, (float3x3) cWorldInvTranspose));
     
     vout.UV = vin.UV;
     

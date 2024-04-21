@@ -70,6 +70,9 @@
     <ClInclude Include="D3D11RenderManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="ManagementCommon.h">
+      <Filter>Management</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Renderer">
@@ -166,5 +169,10 @@
     <FxCompile Include="ModelPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Common.hlsli">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

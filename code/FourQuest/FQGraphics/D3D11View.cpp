@@ -56,7 +56,7 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	// 사용되지 않는 변수 주석_홍지환
 	// std::shared_ptr<D3D11DepthStencilView> dsv = nullptr; 
 
-	const float blackBackgroundColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const float blackBackgroundColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	d3d11Device->GetDeviceContext()->ClearRenderTargetView(mRTV.Get(), blackBackgroundColor);
 
 	// Todo: 일단은 none 을 넘기면 mDSV가 nullptr이라고 가정하고 한다
