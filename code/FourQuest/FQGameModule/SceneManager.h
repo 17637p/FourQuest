@@ -109,11 +109,11 @@ namespace fq::game_module
 		EventManager* mEventManager;
 		ObjectManager* mObjectManager;
 
-		std::string mNextSceneName;
-
 		EventHandler mRequestChangeSceneHandler;
 		EventHandler mRequestExitGameHadler;
 
+		std::string mNextSceneName;
+		bool mbIsInvokeStartScene;
 		bool mbIsEnd;
 	};
 

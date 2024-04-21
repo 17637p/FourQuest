@@ -39,13 +39,6 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 	return *this;
 }
 
-void fq::game_module::GameObject::OnAwake()
-{
-	for (const auto& [key, component] : mComponents)
-	{
-		component->OnAwake();
-	}
-}
 
 void fq::game_module::GameObject::OnStart()
 {
@@ -159,6 +152,7 @@ void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr
 	assert(iter == mComponents.end());
 
 	component->mbIsToBeRemoved = false;
+	component->SetGameObject(this);
 	mComponents.insert({ id, std::move(component) });
 }
 

@@ -78,6 +78,7 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 물리처리
 			mGame->mSceneManager->FixedUpdate(0.f);
+			
 			mGame->mSceneManager->Update(deltaTime);
 			mGame->mSceneManager->LateUpdate(deltaTime);
 
@@ -89,6 +90,7 @@ void fq::game_engine::EditorEngine::Process()
 			mEditor->mImGuiSystem->RenderImGui();
 			mD3D->Present();
 
+			mEditor->mGamePlayWindow->Update();
 			mEditor->mCommandSystem->Update();
 
 			mGame->mSceneManager->PostUpdate();
@@ -124,7 +126,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mLogWindow->Render();
 	mEditor->mFileDialog->Render();
 	mEditor->mGamePlayWindow->Render();
-	mEditor->mMenuBar->Render();
+	mEditor->mMainMenuBar->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -142,7 +144,9 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mInspector->Initialize(mGame.get(), mEditor.get());
 	mEditor->mHierarchy->Initialize(mGame.get(), mEditor.get());
 	mEditor->mFileDialog->Initialize(mGame.get(), mEditor.get(), mD3D->GetDevice());
-	mEditor->mMenuBar->Initialize(mGame.get(), mEditor.get());
+	mEditor->mMainMenuBar->Initialize(mGame.get(), mEditor.get());
+	mEditor->mGamePlayWindow->Initialize(mGame.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize();
 }
+
 

@@ -11,7 +11,7 @@
 #include "FileDialog.h"
 #include "LogWindow.h"
 #include "GamePlayWindow.h"
-#include "MenuBar.h"
+#include "MainMenuBar.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -34,7 +34,7 @@ namespace fq::game_engine
 		std::unique_ptr<FileDialog> mFileDialog;
 		std::unique_ptr<LogWindow> mLogWindow;
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
-		std::unique_ptr<MenuBar> mMenuBar;
+		std::unique_ptr<MainMenuBar> mMainMenuBar;
 		
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;

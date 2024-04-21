@@ -48,12 +48,7 @@ namespace fq::game_module
 		~GameObject();
 
 		GameObject(const GameObject&& other) = delete;
-
-		/// <summary>
-		/// Gameobject가 프리팹에서 인스턴스화 후에 호출
-		/// </summary>
-		void OnAwake();
-
+		
 		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>

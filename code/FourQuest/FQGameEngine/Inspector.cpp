@@ -186,6 +186,17 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 	{
 		beginSequenceContainer(data, handle);
 	}
+	else if (metaType == entt::resolve<bool>())
+	{
+		bool val = data.get(handle->GetHandle()).cast<bool>();
+		std::string memberName = fq::reflect::GetName(data);
+
+		if (ImGui::Checkbox(memberName.c_str(), &val))
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
+	}
 }
 
 void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle)
@@ -261,11 +272,14 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 
 	float f[3]{ v.x,v.y,v.z };
 
-	if (ImGui::InputFloat3(memberName.c_str(), f))
+ 	ImGui::InputFloat3(memberName.c_str(), f);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 

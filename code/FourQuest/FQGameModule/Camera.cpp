@@ -41,17 +41,16 @@ entt::meta_handle fq::game_module::Camera::GetHandle()
 
 void fq::game_module::Camera::SetMainCamera(bool bIsMain)
 {
-	mbIsMain = bIsMain;
-
 	// 다른 메인 카메라는 해제합니다
 	if (bIsMain)
 	{
-		GetScene()->ViewComponents<Camera>([](GameObject& object, Camera& camera)
+		GetScene()->ViewComponents<Camera>([this](GameObject& object, Camera& camera)
 			{
 				camera.SetMainCamera(false);
 			});
 	}
 
+	mbIsMain = bIsMain;
 }
 
 void fq::game_module::Camera::SetFieldOfView(float degree)

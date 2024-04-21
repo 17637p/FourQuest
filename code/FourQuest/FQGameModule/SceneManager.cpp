@@ -16,6 +16,7 @@ fq::game_module::SceneManager::SceneManager()
 	, mNextSceneName{}
 	, mRequestChangeSceneHandler{}
 	, mRequestExitGameHadler{}
+	, mbIsInvokeStartScene(false)
 {
 }
 
@@ -47,13 +48,15 @@ void fq::game_module::SceneManager::Finalize()
 void fq::game_module::SceneManager::ChangeScene(const std::string& nextSceneName)
 {
 	UnloadScene();
-	mEventManager->FireEvent<fq::event::OnUnloadScene>({});
 
 	mCurrentScene->mSceneName = nextSceneName;
 
 	LoadScene();
-	// Event CallBack
-	mEventManager->FireEvent<fq::event::OnLoadScene>({ nextSceneName });
+
+	if (mbIsInvokeStartScene)
+	{
+		StartScene();
+	}
 }
 
 void fq::game_module::SceneManager::Update(float dt)
@@ -86,6 +89,9 @@ void fq::game_module::SceneManager::StartScene()
 	{
 		object.OnStart();
 	}
+
+	//Event CaallBack
+	mEventManager->FireEvent<fq::event::StartScene>({});
 }
 
 void fq::game_module::SceneManager::PostUpdate()
@@ -97,6 +103,7 @@ void fq::game_module::SceneManager::PostUpdate()
 	if (mCurrentScene->GetSceneName() != mNextSceneName)
 	{
 		ChangeScene(mNextSceneName);
+		StartScene();
 	}
 }
 
@@ -117,9 +124,12 @@ void fq::game_module::SceneManager::LoadScene()
 		auto prefab = mObjectManager->LoadPrefab(prefabPath);
 		assert(!prefab.empty());
 
+		// 가장 상위계층을 추가하면 아래 계층을 안에서 같이 추가합니다 
 		mCurrentScene->AddGameObject(prefab[0]);
 	}
 
+	// Event CallBack
+	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName()});
 }
 
 void fq::game_module::SceneManager::UnloadScene()
@@ -127,11 +137,14 @@ void fq::game_module::SceneManager::UnloadScene()
 	mCurrentScene->CleanUp();
 
 	mCurrentScene->mObjects.clear();
+
+	mEventManager->FireEvent<fq::event::OnUnloadScene>({});
 }
 
 void fq::game_module::SceneManager::RequestChangeScene(fq::event::RequestChangeScene event)
 {
 	mNextSceneName = event.sceneName;
+	mbIsInvokeStartScene = event.bIsInvokeStartScene;
 }
 
 void fq::game_module::SceneManager::RequestExitGame(fq::event::RequestExitGame event)

@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
+    <ClInclude Include="EditorEnum.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="ImGuiSystem.h" />
@@ -164,7 +165,7 @@
     <ClInclude Include="IEngine.h" />
     <ClInclude Include="imgui_stdlib.h" />
     <ClInclude Include="Inspector.h" />
-    <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
     <ClInclude Include="PrefabSystem.h" />
     <ClInclude Include="Test.h" />
@@ -191,7 +192,7 @@
     <ClCompile Include="IEngine.cpp" />
     <ClCompile Include="imgui_stdlib.cpp" />
     <ClCompile Include="Inspector.cpp" />
-    <ClCompile Include="MenuBar.cpp" />
+    <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
     <ClCompile Include="Test.cpp" />
