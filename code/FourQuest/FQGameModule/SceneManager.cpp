@@ -100,10 +100,12 @@ void fq::game_module::SceneManager::PostUpdate()
 	mCurrentScene->CleanUp();
 
 	// 씬변경 처리 
-	if (mCurrentScene->GetSceneName() != mNextSceneName)
+	if (!mNextSceneName.empty())
 	{
 		ChangeScene(mNextSceneName);
 		StartScene();
+
+		mNextSceneName.clear();
 	}
 }
 
@@ -129,7 +131,7 @@ void fq::game_module::SceneManager::LoadScene()
 	}
 
 	// Event CallBack
-	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName()});
+	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
 }
 
 void fq::game_module::SceneManager::UnloadScene()
@@ -143,8 +145,12 @@ void fq::game_module::SceneManager::UnloadScene()
 
 void fq::game_module::SceneManager::RequestChangeScene(fq::event::RequestChangeScene event)
 {
-	mNextSceneName = event.sceneName;
-	mbIsInvokeStartScene = event.bIsInvokeStartScene;
+	// 씬변경 요청은 먼저 들어온 요청만 처리합니다
+	if (mNextSceneName.empty())
+	{
+		mNextSceneName = event.sceneName;
+		mbIsInvokeStartScene = event.bIsInvokeStartScene;
+	}
 }
 
 void fq::game_module::SceneManager::RequestExitGame(fq::event::RequestExitGame event)

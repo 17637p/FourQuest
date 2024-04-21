@@ -78,7 +78,12 @@ void fq::game_engine::Test::aa()
 {
 	auto scene =  GetScene();
 
+}
 
-
+void fq::game_engine::Test::OnUpdate(float dt)
+{
+	auto transform =  GetComponent<fq::game_module::Transform>();
+	
+	transform->AddPosition({ 1.f,0.f,1.f });
 }
 

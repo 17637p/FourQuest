@@ -43,6 +43,11 @@ namespace fq
 			/// </summary>
 			void InitializeEditor();
 
+			/// <summary>
+			/// 에디터 관련 업데이트를 진행합니다
+			/// </summary>
+			void UpdateEditor();
+
 		private:
 			std::unique_ptr<GameProcess> mGame;
 			std::unique_ptr<EditorProcess> mEditor;

@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
+#include "../FQGameModule/InputManager.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "CommandSystem.h"
@@ -16,6 +17,7 @@ fq::game_engine::Hierarchy::Hierarchy()
 	, mInputManager(nullptr)
 	, mEventManager(nullptr)
 	, mSelectObject(nullptr)
+	, mCloneObject(nullptr)
 	, mSelectObjectHandle{}
 {}
 
@@ -336,7 +338,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 			fq::game_module::GameObject* dropObject
 				= static_cast<fq::game_module::GameObject*>(objectPayLoad->Data);
 
-			auto parent =  dropObject->GetParent();
+			auto parent = dropObject->GetParent();
 
 			if (parent != nullptr)
 			{
@@ -353,5 +355,32 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 void fq::game_engine::Hierarchy::Finalize()
 {
 	mEventManager->RemoveHandle(mSelectObjectHandle);
+}
+
+void fq::game_engine::Hierarchy::ExcuteShortcut()
+{
+	const auto& input = mEditorProcess->mInputManager;
+
+	if (input->IsKeyState(Key::Ctrl, KeyState::Hold))
+	{
+		// Ctrl + C
+		if (input->IsKeyState(Key::C, KeyState::Tap) && mSelectObject)
+		{
+			mCloneObject = mSelectObject;
+		}
+		// Ctrl + V
+		else if (input->IsKeyState(Key::V, KeyState::Tap) && mCloneObject)
+		{
+			auto clone = std::make_shared<fq::game_module::GameObject>(*mCloneObject.get());
+			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
+				, clone);
+		}
+	}
+	else if (mSelectObject && input->IsKeyState(Key::Del, KeyState::Tap))
+	{
+		// Delete
+		mEditorProcess->mCommandSystem->Push<DestroyObjectCommand>(mScene
+			, mSelectObject);
+	}
 }
 

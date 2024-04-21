@@ -66,7 +66,7 @@ void fq::game_engine::CommandSystem::undo()
 }
 
 
-void fq::game_engine::CommandSystem::Update()
+void fq::game_engine::CommandSystem::ExcuteShortcut()
 {
 	// Ctrl + Z
 	if (mInputManager->IsKeyState(Key::Ctrl, KeyState::Hold)

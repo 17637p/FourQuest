@@ -33,7 +33,7 @@ namespace fq::game_engine
 		/// <summary>
 		/// 단축키 관련 처리를 합니다 
 		/// </summary>
-		void Update();
+		void ExcutShortcut();
 
 		/// <summary>
 		/// 게임 창을 표시합니다 

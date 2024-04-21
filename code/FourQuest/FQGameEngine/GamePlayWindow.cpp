@@ -5,6 +5,7 @@
 #include "../FQGameModule/InputManager.h"
 #include "EditorProcess.h"
 #include "GameProcess.h"
+#include "EditorEvent.h"
 
 fq::game_engine::GamePlayWindow::GamePlayWindow()
 	:mGameProcess(nullptr)
@@ -140,10 +141,12 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
 	}
 
+	mGameProcess->mEventManager->FireEvent<editor_event::SelectObject>({ nullptr });
+
 	mMode = mode;
 }
 
-void fq::game_engine::GamePlayWindow::Update()
+void fq::game_engine::GamePlayWindow::ExcutShortcut()
 {
 	const auto& input = mEditorProcess->mInputManager;
 

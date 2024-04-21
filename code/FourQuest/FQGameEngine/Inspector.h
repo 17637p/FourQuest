@@ -55,7 +55,7 @@ namespace fq::game_engine
 		fq::game_module::InputManager* mInputManager;
 		
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
-		fq::game_module::EventHandler mSelectObjectHandle;
+		fq::game_module::EventHandler mSelectObjectHandler;
 		std::vector<entt::meta_type> mComponentTypes;
 		UINT mCurrentAddComponentIndex;
 

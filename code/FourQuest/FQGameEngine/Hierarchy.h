@@ -43,6 +43,11 @@ namespace fq::game_engine
 		/// </summary>
 		void Render() override;
 
+		/// <summary>
+		/// 단축키를 처리합니다
+		/// </summary>
+		void ExcuteShortcut();
+
 	private:
 		/// <summary>
 		/// 마우스 우클릭 창
@@ -107,6 +112,7 @@ namespace fq::game_engine
 		fq::game_module::InputManager* mInputManager;
 		fq::game_module::EventManager* mEventManager;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
+		std::shared_ptr<fq::game_module::GameObject> mCloneObject;
 
 		std::string mSearchString;
 

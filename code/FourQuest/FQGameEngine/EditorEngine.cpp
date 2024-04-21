@@ -8,6 +8,7 @@
 
 #include "WindowSystem.h"
 #include "FQGameEngineRegister.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::EditorEngine::EditorEngine()
 	:mGame(std::make_unique<GameProcess>())
@@ -71,27 +72,30 @@ void fq::game_engine::EditorEngine::Process()
 				mGame->mWindowSystem->OnResize();
 			}
 
-			// 시간,입력 처리
-			float deltaTime = mGame->mTimeManager->Update();
-			mEditor->mInputManager->Update();
-			mGame->mInputManager->Update();
+			auto mode = mEditor->mGamePlayWindow->GetMode();
 
-			// 물리처리
-			mGame->mSceneManager->FixedUpdate(0.f);
-			
-			mGame->mSceneManager->Update(deltaTime);
-			mGame->mSceneManager->LateUpdate(deltaTime);
+			if (mode == EditorMode::Play)
+			{
+				// 시간,입력 처리
+				float deltaTime = mGame->mTimeManager->Update();
+				mGame->mInputManager->Update();
+
+				// 물리처리
+				mGame->mSceneManager->FixedUpdate(0.f);
+
+				mGame->mSceneManager->Update(deltaTime);
+				mGame->mSceneManager->LateUpdate(deltaTime);
+			}
 
 			mEditor->mImGuiSystem->NewFrame();
+
+			UpdateEditor();
 
 			// 랜더링 
 			mD3D->Clear();
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
 			mD3D->Present();
-
-			mEditor->mGamePlayWindow->Update();
-			mEditor->mCommandSystem->Update();
 
 			mGame->mSceneManager->PostUpdate();
 			if (mGame->mSceneManager->IsEnd())
@@ -113,8 +117,8 @@ void fq::game_engine::EditorEngine::Finalize()
 
 	// GameProcess
 	mGame->mSceneManager->Finalize();
-	mGame->mEventManager->RemoveAllHandles();	
-	
+	mGame->mEventManager->RemoveAllHandles();
+
 	// Window 종료
 	mGame->mWindowSystem->Finalize();
 }
@@ -133,13 +137,13 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 {
 	// Editor InputManager 초기화
 	mEditor->mInputManager->Initialize(mGame->mWindowSystem->GetHWND());
-	
+
 	// System 초기화
 	mEditor->mImGuiSystem->Initialize(mGame->mWindowSystem->GetHWND()
 		, mD3D->GetDevice(), mD3D->GetDC());
 	mEditor->mCommandSystem->Initialize(mGame.get(), mEditor.get());
 	mEditor->mPrefabSystem->Initialize(mGame.get(), mEditor.get());
-	
+
 	// Window 초기화
 	mEditor->mInspector->Initialize(mGame.get(), mEditor.get());
 	mEditor->mHierarchy->Initialize(mGame.get(), mEditor.get());
@@ -149,4 +153,14 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mLogWindow->Initialize();
 }
 
+void fq::game_engine::EditorEngine::UpdateEditor()
+{
+
+
+
+	mEditor->mInputManager->Update();
+	mEditor->mGamePlayWindow->ExcutShortcut();
+	mEditor->mCommandSystem->ExcuteShortcut();
+	mEditor->mHierarchy->ExcuteShortcut();
+}
 

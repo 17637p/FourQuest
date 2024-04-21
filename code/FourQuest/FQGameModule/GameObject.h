@@ -32,14 +32,11 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사 생성자
 		/// </summary>
-		/// <param name="other"></param>
 		GameObject(const GameObject& other);
 
 		/// <summary>
 		/// 복사 대입 연산자
 		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		GameObject& operator=(const GameObject& other);
 
 		/// <summary>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../FQGameModule/EventHandler.h"
 
 namespace fq::game_engine
 {
@@ -34,7 +35,7 @@ namespace fq::game_engine
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 
-
+		fq::game_module::EventHandler mOnLoadSceneHandler;
 	};
 
 

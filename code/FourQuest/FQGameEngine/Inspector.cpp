@@ -18,6 +18,7 @@ fq::game_engine::Inspector::Inspector()
 	, mComponentTypes{}
 	, mCurrentAddComponentIndex(0)
 	, mPrevColor{}
+	, mSelectObjectHandler{}
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -31,7 +32,7 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 
 
 	// 이벤트 핸들 등록
-	mSelectObjectHandle = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
+	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
 		([this](editor_event::SelectObject event) {
 		mSelectObject = event.object;
 			});
