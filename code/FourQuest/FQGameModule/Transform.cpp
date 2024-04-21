@@ -78,6 +78,15 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 
 	mParent = parent;
 
+	if (parent == nullptr)
+	{
+		mFQTransform.parent = nullptr;
+	}
+	else
+	{
+		mFQTransform.parent = &parent->mFQTransform;
+	}
+
 	if (mParent != nullptr)
 	{
 		mParent->AddChild(this);
