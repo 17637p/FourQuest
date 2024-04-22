@@ -169,6 +169,12 @@
     <FxCompile Include="ModelPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="FullScreenVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="FullScreenPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Common.hlsli">

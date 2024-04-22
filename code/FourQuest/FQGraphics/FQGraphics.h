@@ -62,9 +62,9 @@ namespace fq::graphics
 		//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) override;
 
 		/// For IMGUI(D3D11)
-		//virtual FQ_GRAPHICS void* GetDivice() override;
-		//virtual FQ_GRAPHICS void* GetDeviceContext() override;
-		//virtual FQ_GRAPHICS void* GetSRV() override;
+		ID3D11Device* GetDivice() override;
+		ID3D11DeviceContext* GetDeviceContext() override;
+		ID3D11ShaderResourceView* GetSRV() override;
 
 	private:
 		std::map<std::string, fq::common::Model> mModels;

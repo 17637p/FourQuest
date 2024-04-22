@@ -203,3 +203,19 @@ void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)
 {
 	mObjectManager->DeleteSkinnedMeshObject(iSkinnedMeshObject);
 }
+
+
+ID3D11Device* FQGraphics::GetDivice()
+{
+	assert(mDevice != nullptr);
+	return mDevice->GetDevice().Get();
+}
+ID3D11DeviceContext* FQGraphics::GetDeviceContext()
+{
+	assert(mDevice != nullptr);
+	return mDevice->GetDeviceContext().Get();
+}
+ID3D11ShaderResourceView* FQGraphics::GetSRV()
+{
+	return mRenderManager->GetBackBufferSRV();
+}
