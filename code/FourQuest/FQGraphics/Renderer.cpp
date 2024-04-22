@@ -1,9 +1,12 @@
 #include "Renderer.h"
 
+#include <directxtk/SimpleMath.h>
+
 #include "D3D11Device.h"
 #include "D3D11State.h"
 #include "D3D11View.h"
 #include "D3D11Buffer.h"
+#include "D3D11TextManager.h"
 
 #include "D3D11ResourceManager.h"
 #include "Define.h"
@@ -30,6 +33,18 @@ void Renderer::Initialize(const HWND hWnd, const unsigned short width, const uns
 	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 	mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 
+	D3D11_VIEWPORT screenViewport{};
+
+	/// 뷰포트 변환을 셋팅한다.
+	screenViewport.TopLeftX = 0;
+	screenViewport.TopLeftY = 0;
+	screenViewport.Width = static_cast<float>(width);
+	screenViewport.Height = static_cast<float>(height);
+	screenViewport.MinDepth = 0.0f;
+	screenViewport.MaxDepth = 1.0f;
+
+	mDevice->GetDeviceContext()->RSSetViewports(1, &screenViewport);
+
 	struct Trasform
 	{
 		int a;
@@ -55,6 +70,11 @@ void Renderer::BeginRender()
 {
 	// 렌더 타겟을 바인딩 한다
 	mRTVRenderer->Bind(mDevice, mResourceManager->Get<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None));
+
+	int a = 1;
+
+	std::shared_ptr<D3D11TextManager> testText = std::make_shared<D3D11TextManager>(mDevice);
+	testText->DrawTextColor(500, 500, DirectX::SimpleMath::Color{ 1, 1, 1, 1 }, L"Test %d", a);
 }
 
 void Renderer::Render()

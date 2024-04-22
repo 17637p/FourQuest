@@ -40,6 +40,12 @@
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
+    <ClInclude Include="LightBase.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11TextManager.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Renderer">
@@ -94,6 +100,12 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="LightBase.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11TextManager.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
