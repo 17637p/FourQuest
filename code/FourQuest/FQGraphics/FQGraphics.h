@@ -2,12 +2,13 @@
 
 #include "IFQGraphics.h"
 
+#include <map>
 #include <memory>
+#include <string>
+#include <filesystem>
 
 namespace fq::graphics
 {
-	class Renderer;
-
 	class FQGraphics : public IFQGraphics
 	{
 	public:
@@ -27,6 +28,18 @@ namespace fq::graphics
 		/// 창 크기 변환
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
+
+		// RenderObject
+		void ConvertModel(std::string fbxFile, std::string path) override;
+		const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
+		const fq::common::Model& GetModel(std::string path);
+		void DeleteModel(std::string path);
+
+		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
+		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
+
+		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
+		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
 		/// Gizmo && Background
 
@@ -54,7 +67,12 @@ namespace fq::graphics
 		//virtual FQ_GRAPHICS void* GetSRV() override;
 
 	private:
-		std::shared_ptr<Renderer> mRenderer;
+		std::map<std::string, fq::common::Model> mModels;
+		std::shared_ptr<class D3D11Device> mDevice;
+		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
+		std::shared_ptr<class D3D11JobManager> mJobManager;
+		std::shared_ptr<class D3D11RenderManager> mRenderManager;
 	};
 }
 

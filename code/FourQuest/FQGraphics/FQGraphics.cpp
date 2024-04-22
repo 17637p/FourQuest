@@ -2,6 +2,12 @@
 
 #include "Renderer.h"
 
+#include "D3D11Device.h"
+#include "ManagementCommon.h"
+
+#include "../FQLoader/ModelLoader.h"
+#include "../FQLoader/ModelConverter.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -10,14 +16,21 @@ FQGraphics::~FQGraphics()
 }
 
 FQGraphics::FQGraphics()
-	:mRenderer(nullptr)
+	: mDevice(std::make_shared<D3D11Device>())
+	, mResourceManager(nullptr)
+	, mObjectManager(std::make_shared<D3D11ObjectManager>())
+	, mJobManager(std::make_shared<D3D11JobManager>())
+	, mRenderManager(std::make_shared<D3D11RenderManager>())
 {
-	mRenderer = std::make_shared<Renderer>();
 }
 
 bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height)
 {
-	mRenderer->Initialize(hWnd, width, height);
+	mDevice->Initialize(hWnd, width, height);
+	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
+	mObjectManager;
+	mJobManager;
+	mRenderManager->Initialize(mDevice, mResourceManager, width, height);
 
 	return true;
 }
@@ -29,21 +42,27 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 
 bool FQGraphics::BeginRender()
 {
-	mRenderer->BeginRender();
+	mRenderManager->BeginRender(mDevice);
 
 	return true;
 }
 
 bool FQGraphics::Render()
 {
-	mRenderer->Render();
+	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
+
+	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
+	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
 
 	return true;
 }
 
 bool FQGraphics::EndRender()
 {
-	mRenderer->EndRender();
+	mRenderManager->EndRender(mDevice);
+
+	mJobManager->ClearAll();
 
 	return true;
 }
@@ -52,7 +71,6 @@ bool FQGraphics::Finalize()
 {
 	return true;
 }
-
 
 bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned short height)
 {
@@ -64,3 +82,124 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 	return true;
 }
 
+const fq::common::Model& FQGraphics::CreateModel(std::string path, std::filesystem::path textureBasePath)
+{
+	auto find = mModels.find(path);
+
+	if (find != mModels.end())
+	{
+		return find->second;
+	}
+
+	fq::common::Model model = fq::loader::ModelLoader::ReadModel(path);
+
+	for (const auto& material : model.Materials)
+	{
+		if (material.Name.empty())
+		{
+			continue;
+		}
+
+		mObjectManager->CreateMaterial(mDevice, path + material.Name, material, textureBasePath);
+	}
+
+	for (const auto& nodeMeshPair : model.Meshes)
+	{
+		const auto& mesh = nodeMeshPair.second;
+
+		if (mesh.Name.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			mObjectManager->CreateStaticMesh(mDevice, path + mesh.Name, mesh);
+		}
+		else
+		{
+			mObjectManager->CreateSkinnedMesh(mDevice, path + mesh.Name, mesh);
+		}
+	}
+
+	mModels.insert({ path, std::move(model) });
+
+	return mModels[path];
+}
+
+const fq::common::Model& FQGraphics::GetModel(std::string path)
+{
+	auto find = mModels.find(path);
+	assert(find != mModels.end());
+	return find->second;
+}
+
+void FQGraphics::DeleteModel(std::string path)
+{
+	auto find = mModels.find(path);
+
+	if (find == mModels.end())
+	{
+		return;
+	}
+
+	const fq::common::Model& model = find->second;
+
+	for (const auto& material : model.Materials)
+	{
+		if (material.Name.empty())
+		{
+			continue;
+		}
+
+		mObjectManager->DeleteMaterial(path + material.Name);
+	}
+
+	for (const auto& nodeMeshPair : model.Meshes)
+	{
+		const auto& mesh = nodeMeshPair.second;
+
+		if (mesh.Name.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			mObjectManager->DeleteStaticMesh(path + mesh.Name);
+		}
+		else
+		{
+			mObjectManager->DeleteSkinnedMesh(path + mesh.Name);
+		}
+	}
+
+	mModels.erase(find);
+}
+
+void FQGraphics::ConvertModel(std::string fbxFile, std::string path)
+{
+	fq::loader::ModelConverter converter;
+	converter.ReadFBXFile(fbxFile);
+	converter.WriteModel(path);
+}
+
+IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)
+{
+	return mObjectManager->CreateStaticMeshObject(info);
+}
+
+void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)
+{
+	mObjectManager->DeleteStaticMeshObject(meshObject);
+}
+
+ISkinnedMeshObject* FQGraphics::CreateSkinnedMeshObject(MeshObjectInfo info)
+{
+	return mObjectManager->CreateSkinnedMeshObject(info);
+}
+
+void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)
+{
+	mObjectManager->DeleteSkinnedMeshObject(iSkinnedMeshObject);
+}

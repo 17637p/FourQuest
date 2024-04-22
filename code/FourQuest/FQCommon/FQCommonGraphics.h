@@ -1,6 +1,7 @@
 #pragma once
 
 #include <directxtk/SimpleMath.h>
+#include <string>
 
 namespace fq::graphics
 {
@@ -34,6 +35,14 @@ namespace fq::graphics
 
 		// Spot
 		float spot = 1; //Todo: 아마도 spot 지름인거 같은데 확인해보고 바꾸기
+	};
+
+	struct MeshObjectInfo
+	{
+		std::string ModelPath;
+		std::string MeshName;
+		std::vector<std::string> MaterialNames;
+		DirectX::SimpleMath::Matrix Transform;
 	};
 }
 

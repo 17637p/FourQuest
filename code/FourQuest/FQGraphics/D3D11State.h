@@ -16,7 +16,7 @@ namespace fq::graphics
 	/*=============================================================================
 		SamplerState
 	=============================================================================*/
-	struct D3D11SamplerState : public ResourceBase
+	class D3D11SamplerState : public ResourceBase
 	{
 	public:
 		D3D11SamplerState(const std::shared_ptr<D3D11Device>& d3d11Device,

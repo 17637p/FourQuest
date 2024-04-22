@@ -44,4 +44,3 @@ namespace fq::graphics
 		DirectX::SimpleMath::Quaternion mRotation;
 	};
 }
-

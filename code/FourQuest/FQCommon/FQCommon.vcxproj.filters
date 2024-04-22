@@ -10,6 +10,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{0ca554b7-5e24-4625-9245-da4eafa1df62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Loader">
+      <UniqueIdentifier>{fe10f757-16b7-4414-90bc-d96127463b77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FQCommonGraphics.h">
@@ -20,6 +23,9 @@
     </ClInclude>
     <ClInclude Include="FQPath.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FQCommonLoader.h">
+      <Filter>Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,11 +6,14 @@
 //temp
 #include "../FQGraphics/IFQGraphics.h"
 
+#include "../FQLoader/ModelConverter.h"
+#include "../FQLoader/ModelLoader.h"
+
 Process::Process()
 	:
-	mWindowPosX(0), 
+	mWindowPosX(0),
 	mWindowPosY(0),
-	mScreenWidth(1920), 
+	mScreenWidth(1920),
 	mScreenHeight(1080),
 	mResizing(false),
 	mTestGraphics(nullptr)
@@ -23,6 +26,14 @@ Process::Process()
 
 Process::~Process()
 {
+<<<<<<< HEAD
+	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
+	{
+		mTestGraphics->DeleteStaticMeshObject(iobj);
+	}
+
+=======
+>>>>>>> main
 	mEngineExporter->DeleteEngine(mTestGraphics);
 }
 
@@ -33,6 +44,39 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
+
+	mTestGraphics->ConvertModel("../Temp/gun.fbx", "../Temp/gun/gun");
+	auto model = mTestGraphics->CreateModel("../Temp/gun/gun", "../Temp");
+	auto model1 = mTestGraphics->GetModel("../Temp/gun/gun");
+	for (auto mesh : model.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = "../Temp/gun/gun";
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix;
+
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
+
+		if (mesh.second.BoneVertices.empty())
+		{
+			mStaticMeshObjects.push_back(mTestGraphics->CreateStaticMeshObject(meshInfo));
+			mStaticMeshObjects.back()->UpdateTransform(mStaticMeshObjects.back()->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(3.14 * 1.5f));
+		}
+		else
+		{
+			mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+		}
+	}
+	mTestGraphics->DeleteModel("../Temp/gun/gun");
+	auto model2 = mTestGraphics->GetModel("../Temp/gun/gun");
 
 	return true;
 }
@@ -75,27 +119,27 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg)
 	{
-		case WM_SIZE:
-		{
-			//if (m_pRenderer == nullptr)
-			//{
-			//	return 0;
-			//}
-			//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
-		}
+	case WM_SIZE:
+	{
+		//if (m_pRenderer == nullptr)
+		//{
+		//	return 0;
+		//}
+		//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
+	}
 
-		case WM_PAINT:
-		{
-			hdc = BeginPaint(mHwnd, &ps);
-			EndPaint(mHwnd, &ps);
-			break;
-		}
+	case WM_PAINT:
+	{
+		hdc = BeginPaint(mHwnd, &ps);
+		EndPaint(mHwnd, &ps);
+		break;
+	}
 
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			break;
-		}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		break;
+	}
 	}
 
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);
@@ -115,6 +159,9 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
+
+	mTestGraphics->Render();
+
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
 	//
@@ -133,5 +180,11 @@ void Process::Render()
 	//_guiManager->Render();
 	///// 그리기를 끝낸다.
 	//m_pRenderer->EndRender();
+
+	for (auto& obj : mStaticMeshObjects)
+	{
+		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(0.0001f));
+	}
+
 	mTestGraphics->EndRender();
 }

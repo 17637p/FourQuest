@@ -53,15 +53,16 @@ std::string D3D11RenderTargetView::GenerateRID(const ED3D11RenderTargetViewType 
 
 void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView)
 {
-	std::shared_ptr<D3D11DepthStencilView> dsv = nullptr; 
+	// 사용되지 않는 변수 주석_홍지환
+	// std::shared_ptr<D3D11DepthStencilView> dsv = nullptr; 
 
-	const float blackBackgroundColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const float blackBackgroundColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	d3d11Device->GetDeviceContext()->ClearRenderTargetView(mRTV.Get(), blackBackgroundColor);
 
 	// Todo: 일단은 none 을 넘기면 mDSV가 nullptr이라고 가정하고 한다
 	if (depthStencilView->mDSV != nullptr)
 	{
-		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), dsv->mDSV.Get());
+		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), depthStencilView->mDSV.Get());
 	}
 	else
 	{
@@ -169,6 +170,11 @@ fq::graphics::D3D11DepthStencilView::D3D11DepthStencilView(const std::shared_ptr
 			HR(device->CreateDepthStencilView(depthStencilBuffer, 0, mDSV.GetAddressOf()));
 		}
 		ReleaseCOM(depthStencilBuffer);
+}
+
+void D3D11DepthStencilView::ClearDepth(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	d3d11Device->GetDeviceContext()->ClearDepthStencilView(mDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 }
 
 std::string D3D11DepthStencilView::GenerateRID(const ED3D11DepthStencilViewType eViewType)

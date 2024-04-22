@@ -2,6 +2,12 @@
 
 #include "IEditorWindow.h"
 
+#include <list>
+#include <memory>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/callback_sink.h>
+
 namespace fq::game_engine
 {
 	/// <summary>
@@ -19,9 +25,10 @@ namespace fq::game_engine
 
 		void Render() override;
 
+
 	private:
-
-
+		std::shared_ptr<spdlog::logger> mLogger;
+		std::list<spdlog::details::log_msg> mLogList;
 	};
 
 

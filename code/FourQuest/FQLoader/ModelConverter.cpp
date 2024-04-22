@@ -10,12 +10,13 @@ namespace fq::loader
 	ModelConverter::ModelConverter()
 		: mAiScene(nullptr)
 	{
-		mImpoter.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
+		mImpoter = std::make_unique<Assimp::Importer>();
+		mImpoter->SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, 0);
 	}
 
 	ModelConverter::~ModelConverter()
 	{
-		mImpoter.FreeScene();
+		mImpoter->FreeScene();
 	}
 
 	bool ModelConverter::ReadFBXFile(const std::string& fileName)
@@ -33,9 +34,10 @@ namespace fq::loader
 			aiProcess_GenUVCoords |
 			aiProcess_CalcTangentSpace |
 			aiProcess_LimitBoneWeights |
+			aiProcess_PreTransformVertices |
 			aiProcess_ConvertToLeftHanded;
 
-		mAiScene = mImpoter.ReadFile(path.string(), importFlags);
+		mAiScene = mImpoter->ReadFile(path.string(), importFlags);
 
 		return mAiScene != nullptr;
 	}
@@ -51,6 +53,7 @@ namespace fq::loader
 	{
 		assert(mAiScene != nullptr);
 		using namespace std;
+		using namespace fq::common;
 
 		vector<pair<Node, Mesh>> meshData = convertModel();
 		ModelLoader::WriteMeshByData(meshData, saveName);
@@ -60,6 +63,7 @@ namespace fq::loader
 	{
 		assert(mAiScene != nullptr);
 		using namespace std;
+		using namespace fq::common;
 
 		vector<Material> materials = convertMaterial();
 		ModelLoader::WriteMaterialByData(materials, saveName);
@@ -69,14 +73,16 @@ namespace fq::loader
 	{
 		assert(mAiScene != nullptr);
 		using namespace std;
+		using namespace fq::common;
 
 		vector<AnimationClip> animationClips = convertAnimation();
 		ModelLoader::WriteAnimationByData(animationClips, saveName);
 	}
 
-	std::vector<std::pair< Node, Mesh>> ModelConverter::convertModel()
+	std::vector<std::pair<fq::common::Node, fq::common::Mesh>> ModelConverter::convertModel()
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		vector<pair<Node, Mesh>> meshData;
 
@@ -86,9 +92,10 @@ namespace fq::loader
 		return meshData;
 	}
 
-	std::vector< Material> ModelConverter::convertMaterial()
+	std::vector<fq::common::Material> ModelConverter::convertMaterial()
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		vector<Material> materials;
 
@@ -150,9 +157,10 @@ namespace fq::loader
 		return materials;
 	}
 
-	std::vector< AnimationClip> ModelConverter::convertAnimation()
+	std::vector<fq::common::AnimationClip> ModelConverter::convertAnimation()
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		vector<AnimationClip> animationClips;
 		animationClips.reserve(mAiScene->mNumAnimations);
@@ -217,17 +225,18 @@ namespace fq::loader
 		return animationClips;
 	}
 
-	void ModelConverter::parseNode(aiNode* aiNode, std::vector<std::pair< Node, Mesh>>* outMeshes)
+	void ModelConverter::parseNode(aiNode* aiNode, std::vector<std::pair<fq::common::Node, fq::common::Mesh>>* outMeshes)
 	{
 		using namespace std;
-
+		using namespace fq::common;
 
 		parseNodeRecursive(aiNode, outMeshes, Node::INVALID_INDEX);
 	}
 
-	void ModelConverter::parseNodeRecursive(aiNode* aiNode, std::vector<std::pair< Node, Mesh>>* outMeshes, unsigned int parentIndex)
+	void ModelConverter::parseNodeRecursive(aiNode* aiNode, std::vector<std::pair<fq::common::Node, fq::common::Mesh>>* outMeshes, unsigned int parentIndex)
 	{
 		using namespace std;
+		using namespace fq::common;
 
 		Node node;
 
@@ -246,8 +255,10 @@ namespace fq::loader
 		}
 	}
 
-	Mesh ModelConverter::parseMesh(aiNode* aiNode)
+	fq::common::Mesh ModelConverter::parseMesh(aiNode* aiNode)
 	{
+		using namespace fq::common;
+
 		if (aiNode->mNumMeshes == 0)
 		{
 			return Mesh();
@@ -349,8 +360,10 @@ namespace fq::loader
 		return resultMesh;
 	}
 
-	void ModelConverter::parseBone(std::vector<std::pair<Node, Mesh>>* inoutMeshes)
+	void ModelConverter::parseBone(std::vector<std::pair<fq::common::Node, fq::common::Mesh>>* inoutMeshes)
 	{
+		using namespace fq::common;
+
 		auto findNodeIndex = [inoutMeshes](std::string nodeName)
 			{
 				for (auto& nodeMeshPair : *inoutMeshes)
