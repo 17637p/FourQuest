@@ -40,6 +40,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	HWND hwnd = mGame->mWindowSystem->GetHWND();
 	float width = mGame->mWindowSystem->GetScreenWidth();
 	float height = mGame->mWindowSystem->GetScreenHeight();
+	
 	mGame->mGraphics->Initialize(hwnd, width,height);
 
 	// Editor 초기화
@@ -59,13 +60,12 @@ void fq::game_engine::EditorEngine::Process()
 		// 윈도우 메세지를 처리합니다
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-
 			if (msg.message == WM_QUIT)
 			{
 				bIsDone = true;
 			}
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 		}
 		else
 		{
@@ -73,6 +73,8 @@ void fq::game_engine::EditorEngine::Process()
 			if (mGame->mWindowSystem->IsResizedWindow())
 			{
 				mGame->mWindowSystem->OnResize();
+				mGame->mGraphics->SetWindowSize(mGame->mWindowSystem->GetScreenWidth()
+					, mGame->mWindowSystem->GetScreenHeight());
 			}
 
 			auto mode = mEditor->mGamePlayWindow->GetMode();
@@ -148,14 +150,15 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mInputManager->Initialize(mGame->mWindowSystem->GetHWND());
 
 	// System 초기화
-	///mEditor->mImGuiSystem->Initialize(mGame->mWindowSystem->GetHWND(), mD3D->GetDevice(), mD3D->GetDC());
+	mEditor->mImGuiSystem->Initialize(mGame->mWindowSystem->GetHWND()
+		, mGame->mGraphics->GetDivice(), mGame->mGraphics->GetDeviceContext());
 	mEditor->mCommandSystem->Initialize(mGame.get(), mEditor.get());
 	mEditor->mPrefabSystem->Initialize(mGame.get(), mEditor.get());
 
 	// Window 초기화
 	mEditor->mInspector->Initialize(mGame.get(), mEditor.get());
 	mEditor->mHierarchy->Initialize(mGame.get(), mEditor.get());
-///	mEditor->mFileDialog->Initialize(mGame.get(), mEditor.get(), mD3D->GetDevice());
+	mEditor->mFileDialog->Initialize(mGame.get(), mEditor.get());
 	mEditor->mMainMenuBar->Initialize(mGame.get(), mEditor.get());
 	mEditor->mGamePlayWindow->Initialize(mGame.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize();

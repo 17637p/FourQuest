@@ -6,9 +6,10 @@
 #include <directxtk/WICTextureLoader.h>
 
 #include "imgui_stdlib.h"
-#include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
 #include "../FQCommon/FQPath.h"
+#include "../FQGameModule/GameModule.h"
+#include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "WindowSystem.h"
@@ -46,13 +47,13 @@ void fq::game_engine::FileDialog::Render()
 	ImGui::End();
 }
 
-void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* editor, ID3D11Device* device)
+void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* editor)
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
 	mResourcePath = fq::path::GetResourcePath();
 	mSelectPath = mResourcePath;
-	mDevice = device;
+	mDevice = mGameProcess->mGraphics->GetDivice();
 
 	loadIcon();
 }

@@ -3,6 +3,8 @@
 #include <imgui.h>
 
 #include "../FQGameModule/InputManager.h"
+#include "../FQGraphics/IFQGraphics.h"
+
 #include "EditorProcess.h"
 #include "GameProcess.h"
 #include "EditorEvent.h"
@@ -24,6 +26,11 @@ void fq::game_engine::GamePlayWindow::Render()
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
 		beginMenuBar_Control();
+		auto size =  ImGui::GetWindowSize();
+
+		mGameProcess->mGraphics->SetViewportSize(size.x, size.y);
+
+		//ImGui::Image(mGameProcess->mGraphics->GetSRV(),ImGui::GetWindowSize());
 	}
 
 	ImGui::End();
@@ -33,6 +40,8 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
+
+
 }
 
 void fq::game_engine::GamePlayWindow::Finalize()

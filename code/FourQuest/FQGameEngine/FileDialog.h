@@ -26,7 +26,7 @@ namespace fq::game_engine
 		/// <summary>
 		/// 현재 리소스 경로를 초기화합니다
 		/// </summary>
-		void Initialize(GameProcess* game, EditorProcess* editor,ID3D11Device* device);
+		void Initialize(GameProcess* game, EditorProcess* editor);
 
 		/// <summary>
 		/// 로드한 리소스 해제
