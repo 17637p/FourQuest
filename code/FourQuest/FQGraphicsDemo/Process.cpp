@@ -26,14 +26,11 @@ Process::Process()
 
 Process::~Process()
 {
-<<<<<<< HEAD
 	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
 	}
 
-=======
->>>>>>> main
 	mEngineExporter->DeleteEngine(mTestGraphics);
 }
 
@@ -76,7 +73,7 @@ bool Process::Init(HINSTANCE hInstance)
 		}
 	}
 	mTestGraphics->DeleteModel("../Temp/gun/gun");
-	auto model2 = mTestGraphics->GetModel("../Temp/gun/gun");
+	// auto model2 = mTestGraphics->GetModel("../Temp/gun/gun");
 
 	return true;
 }

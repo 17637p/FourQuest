@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+/*
 //#include "Renderer.h"
 //
 //#include "D3D11Device.h"
@@ -85,6 +85,7 @@
 //}
 //
 //
+<<<<<<< HEAD
 //
 =======
 #include "Renderer.h"
@@ -186,3 +187,7 @@ void Renderer::Finalize()
 
 
 >>>>>>> main
+=======
+//
+>>>>>>> d73a8d3 (Merge : 그래?�스 충돌 ?�정)
+*/
