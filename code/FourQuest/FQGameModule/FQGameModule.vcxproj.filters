@@ -119,6 +119,9 @@
     <ClInclude Include="GameModuleRegister.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -174,6 +177,9 @@
     </ClCompile>
     <ClCompile Include="GameModuleRegister.cpp">
       <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

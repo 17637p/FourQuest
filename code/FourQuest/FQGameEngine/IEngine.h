@@ -36,10 +36,10 @@ namespace fq
 			static FQ_ENGNIE_API IEngine* GetGameEngine();
 
 			/// <summary>
-			/// 툴엔진을 할당하고 반환
+			/// 에디터 엔진을 할당하고 반환
 			/// </summary>
 			/// <returns>할당한 툴엔진</returns>
-			static FQ_ENGNIE_API IEngine* GetToolEngine();
+			static FQ_ENGNIE_API IEngine* GetEditorEngine();
 
 			/// <summary>
 			/// 할당된 게임엔진을 삭제

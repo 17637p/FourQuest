@@ -34,6 +34,8 @@ fq::game_engine::FileDialog::~FileDialog()
 
 void fq::game_engine::FileDialog::Render()
 {
+	ProcessWindowDropFile();
+
 	if (ImGui::Begin("FileDialog"), &mbIsOpen)
 	{
 		beginWindow_FilePathWindow();
@@ -234,7 +236,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		ImVec2 min = ImGui::GetCursorScreenPos();
 		ImVec2 max = { min.x + mIconSize.x, min.y + mIconSize.y };
-		ImGui::Image(getIcon(L"folder.png"), mIconSize);
+		ImGui::Image(GetIcon(L"folder.png"), mIconSize);
 
 		if (isMouseHoveringRect(min, max)
 			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -244,23 +246,23 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	}
 	else if (extension == ".fbx")
 	{
-		ImGui::Image(getIcon(L"fbx.png"), mIconSize);
+		ImGui::Image(GetIcon(L"fbx.png"), mIconSize);
 	}
 	else if (extension == ".json")
 	{
-		ImGui::Image(getIcon(L"json.png"), mIconSize);
+		ImGui::Image(GetIcon(L"json.png"), mIconSize);
 	}
 	else if (extension == ".mp3")
 	{
-		ImGui::Image(getIcon(L"mp3.png"), mIconSize);
+		ImGui::Image(GetIcon(L"mp3.png"), mIconSize);
 	}
 	else if (extension == ".wav")
 	{
-		ImGui::Image(getIcon(L"wav.png"), mIconSize);
+		ImGui::Image(GetIcon(L"wav.png"), mIconSize);
 	}
 	else if (extension == ".prefab")
 	{
-		ImGui::Image(getIcon(L"prefab.png"), mIconSize);
+		ImGui::Image(GetIcon(L"prefab.png"), mIconSize);
 	}
 	else if (extension == ".png" || extension == ".jpg")
 	{
@@ -268,7 +270,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	}
 	else
 	{
-		ImGui::Image(getIcon(L"error.png"), mIconSize);
+		ImGui::Image(GetIcon(L"error.png"), mIconSize);
 	}
 
 	beginPopupContextItem_File(path);
@@ -294,7 +296,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	ImGui::PopItemWidth();
 }
 
-ID3D11ShaderResourceView* fq::game_engine::FileDialog::getIcon(const std::wstring& name)
+ID3D11ShaderResourceView* fq::game_engine::FileDialog::GetIcon(const std::wstring& name)
 {
 	auto iter = mIconTexture.find(name);
 

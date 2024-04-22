@@ -4,6 +4,7 @@
 
 fq::game_module::TimeManager::TimeManager()
 	:mDeltaTime(0.)
+	,mTimeScale(1.)
 	,mFrequency()
 	,mPrevCount()
 	,mCurentCount()
@@ -37,5 +38,5 @@ float fq::game_module::TimeManager::Update()
 		mUpdateCount = 0;
 	}
 
-	return static_cast<float>(mDeltaTime);
+	return static_cast<float>(mDeltaTime * mTimeScale);
 }

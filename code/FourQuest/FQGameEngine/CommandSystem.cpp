@@ -14,10 +14,10 @@ fq::game_engine::CommandSystem::CommandSystem()
 
 fq::game_engine::CommandSystem::~CommandSystem()
 {
-	Clear();
+	ClearCommandList();
 }
 
-void fq::game_engine::CommandSystem::Clear()
+void fq::game_engine::CommandSystem::ClearCommandList()
 {
 	mCommandList.clear();
 	mCommandOrder = mCommandList.end();
@@ -36,7 +36,7 @@ void fq::game_engine::CommandSystem::Initialize(GameProcess* game, EditorProcess
 		->RegisterHandle <fq::event::OnUnloadScene>(
 		[this](fq::event::OnUnloadScene event) 
 		{
-			this->Clear();
+			this->ClearCommandList();
 		});
 }
 
@@ -66,7 +66,7 @@ void fq::game_engine::CommandSystem::undo()
 }
 
 
-void fq::game_engine::CommandSystem::Update()
+void fq::game_engine::CommandSystem::ExcuteShortcut()
 {
 	// Ctrl + Z
 	if (mInputManager->IsKeyState(Key::Ctrl, KeyState::Hold)
@@ -81,4 +81,5 @@ void fq::game_engine::CommandSystem::Update()
 		excute();
 	}
 }
+
 

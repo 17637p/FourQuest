@@ -2,23 +2,6 @@
 
 #include <queue>
 
-FQ_REGISTRATION
-{
-	using namespace entt::literals;
-	using namespace fq::game_module;
-
-	entt::meta<Transform>()
-		.type("Transform"_hs)
-		.prop(fq::reflect::prop::name, "Transform")
-		.data<&Transform::SetLocalPosition,&Transform::GetLocalPosition>("Position"_hs)
-		.prop(fq::reflect::prop::name,"Position")
-		.prop(fq::reflect::prop::comment, u8"·ÎÄÃ ÁÂÇ¥")
-		.data<&Transform::SetLocalRotation, &Transform::GetLocalRotation>("Rotation"_hs)
-		.prop(fq::reflect::prop::name,"Rotation")
-		.data<&Transform::SetLocalScale, &Transform::GetLocalScale>("Scale"_hs)
-		.prop(fq::reflect::prop::name,"Scale")
-		.base<Component>();
-}
 
 using namespace DirectX::SimpleMath;
 

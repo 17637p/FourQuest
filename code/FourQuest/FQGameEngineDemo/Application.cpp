@@ -18,7 +18,7 @@ void Application::Initialize(Mode mode)
 	}
 	else
 	{
-		mEngine = fq::game_engine::Exporter::GetToolEngine();
+		mEngine = fq::game_engine::Exporter::GetEditorEngine();
 	}
 
 	mEngine->Initialize();

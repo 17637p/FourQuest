@@ -2,9 +2,11 @@
 
 #include <string>
 
+
 namespace fq::game_module
 {
 	class GameObject;
+	class Camera;
 }
 
 namespace fq::event
@@ -24,6 +26,14 @@ namespace fq::event
 	{
 		std::string sceneName;
 	};
+
+	/// <summary>
+	/// Scene Start 할때 호출
+	/// </summary>
+	struct StartScene
+	{
+
+	};
 	
 	/// <summary>
 	/// Scene Unload할 때 호출
@@ -38,7 +48,8 @@ namespace fq::event
 	struct RequestChangeScene
 	{
 		std::string sceneName;
-	};
+		bool bIsInvokeStartScene; // 클라이언트에서는 true로 호출합니다
+ 	};
 
 	/// <summary>
 	/// 게임 종료 요청 이벤트 
@@ -55,5 +66,12 @@ namespace fq::event
 		fq::game_module::GameObject* object;
 	};
 
+	/// <summary>
+	/// 메인카메라를 설정합니다 
+	/// </summary>
+	struct SetMainCamera
+	{
+		fq::game_module::Camera* mainCamera;
+	};
 
 }

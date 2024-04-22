@@ -15,3 +15,8 @@ void fq::game_engine::PrefabSystem::Initialize(GameProcess* game, EditorProcess*
 	mGameProcess = game;
 	mEditorProcess = editor;
 }
+
+void fq::game_engine::PrefabSystem::Finalize()
+{
+
+}

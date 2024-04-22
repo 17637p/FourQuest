@@ -21,17 +21,11 @@
     <Filter Include="include\10.Editor">
       <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\10.Editor\imgui">
-      <UniqueIdentifier>{f447241a-c2c1-4cc2-86e2-14889ac66a83}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\11.EditorWindow">
       <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\10.Editor">
       <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\10.Editor\imgui">
-      <UniqueIdentifier>{4c8323d4-e48f-497d-ac50-681d120fd094}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\11.Window">
       <UniqueIdentifier>{3ca10ecb-1121-4a91-b4a7-6cac146d0d26}</UniqueIdentifier>
@@ -62,7 +56,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ToolEngine.h">
+    <ClInclude Include="EditorEngine.h">
       <Filter>include\01.Engine</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine.h">
@@ -74,7 +68,7 @@
     <ClInclude Include="GameProcess.h">
       <Filter>include\02.GameProcess</Filter>
     </ClInclude>
-    <ClInclude Include="Editor.h">
+    <ClInclude Include="TmpD3D.h">
       <Filter>include\10.Editor</Filter>
     </ClInclude>
     <ClInclude Include="WindowSystem.h">
@@ -101,13 +95,10 @@
     <ClInclude Include="Command.h">
       <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_stdlib.h">
-      <Filter>include\10.Editor\imgui</Filter>
-    </ClInclude>
     <ClInclude Include="EditorProcess.h">
       <Filter>include\10.Editor</Filter>
     </ClInclude>
-    <ClInclude Include="MenuBar.h">
+    <ClInclude Include="MainMenuBar.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="GamePlayWindow.h">
@@ -131,12 +122,21 @@
     <ClInclude Include="PrefabSystem.h">
       <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_stdlib.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorEnum.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
       <Filter>src\01.Engine</Filter>
     </ClCompile>
-    <ClCompile Include="ToolEngine.cpp">
+    <ClCompile Include="EditorEngine.cpp">
       <Filter>src\01.Engine</Filter>
     </ClCompile>
     <ClCompile Include="IEngine.cpp">
@@ -145,7 +145,7 @@
     <ClCompile Include="GameProcess.cpp">
       <Filter>src\02.GameProcess</Filter>
     </ClCompile>
-    <ClCompile Include="Editor.cpp">
+    <ClCompile Include="TmpD3D.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
     <ClCompile Include="WindowSystem.cpp">
@@ -172,16 +172,13 @@
     <ClCompile Include="LogWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_stdlib.cpp">
-      <Filter>src\10.Editor\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="Command.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
     <ClCompile Include="EditorProcess.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
-    <ClCompile Include="MenuBar.cpp">
+    <ClCompile Include="MainMenuBar.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="GamePlayWindow.cpp">
@@ -203,6 +200,12 @@
       <Filter>src\10.Editor</Filter>
     </ClCompile>
     <ClCompile Include="PrefabSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_stdlib.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
   </ItemGroup>

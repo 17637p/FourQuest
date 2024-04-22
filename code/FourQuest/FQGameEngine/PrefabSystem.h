@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../FQGameModule/EventHandler.h"
 
 namespace fq::game_engine
 {
@@ -22,6 +23,11 @@ namespace fq::game_engine
 		/// <param name="editor">에디터 프로세스</param>
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
+		/// <summary>
+		/// 프리팹 시스템을 종료합니다
+		/// </summary>
+		void Finalize();
+
 	private:
 
 
@@ -29,7 +35,7 @@ namespace fq::game_engine
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 
-
+		fq::game_module::EventHandler mOnLoadSceneHandler;
 	};
 
 

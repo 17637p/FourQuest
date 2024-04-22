@@ -14,6 +14,8 @@ namespace fq::game_engine
 
 		entt::meta_handle GetHandle() override;
 
+		void OnUpdate(float dt) override;
+
 		void aa();
 
 		int iVal = 10;

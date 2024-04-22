@@ -18,6 +18,7 @@ fq::game_engine::Inspector::Inspector()
 	, mComponentTypes{}
 	, mCurrentAddComponentIndex(0)
 	, mPrevColor{}
+	, mSelectObjectHandler{}
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -31,7 +32,7 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 
 
 	// 이벤트 핸들 등록
-	mSelectObjectHandle = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
+	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
 		([this](editor_event::SelectObject event) {
 		mSelectObject = event.object;
 			});
@@ -128,11 +129,14 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 		int val = data.get(handle->GetHandle()).cast<int>();
 		std::string memberName = fq::reflect::GetName(data);
 
-		if (ImGui::InputInt(memberName.c_str(), &val))
+		ImGui::InputInt(memberName.c_str(), &val);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
 		{
 			mEditorProcess->mCommandSystem->Push<SetMetaData>(
 				data, mSelectObject, handle, val);
 		}
+
 		beginIsItemHovered_Comment(data);
 	}
 	else if (metaType == entt::resolve<unsigned int>())
@@ -140,11 +144,14 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 		unsigned int val = data.get(handle->GetHandle()).cast<unsigned int>();
 		std::string memberName = fq::reflect::GetName(data);
 
-		if (ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U32, &val))
+		ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U32, &val);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
 		{
 			mEditorProcess->mCommandSystem->Push<SetMetaData>(
 				data, mSelectObject, handle, val);
 		}
+
 		beginIsItemHovered_Comment(data);
 	}
 	else if (metaType == entt::resolve<float>())
@@ -152,7 +159,9 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 		float val = data.get(handle->GetHandle()).cast<float>();
 		std::string memberName = fq::reflect::GetName(data);
 
-		if (ImGui::InputFloat(memberName.c_str(), &val))
+		ImGui::InputFloat(memberName.c_str(), &val);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
 		{
 			mEditorProcess->mCommandSystem->Push<SetMetaData>(
 				data, mSelectObject, handle, val);
@@ -164,16 +173,30 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 		double val = data.get(handle->GetHandle()).cast<double>();
 		std::string memberName = fq::reflect::GetName(data);
 
-		if (ImGui::InputDouble(memberName.c_str(), &val))
+		ImGui::InputDouble(memberName.c_str(), &val);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
 		{
 			mEditorProcess->mCommandSystem->Push<SetMetaData>(
 				data, mSelectObject, handle, val);
 		}
+
 		beginIsItemHovered_Comment(data);
 	}
 	else if (metaType.is_sequence_container())
 	{
 		beginSequenceContainer(data, handle);
+	}
+	else if (metaType == entt::resolve<bool>())
+	{
+		bool val = data.get(handle->GetHandle()).cast<bool>();
+		std::string memberName = fq::reflect::GetName(data);
+
+		if (ImGui::Checkbox(memberName.c_str(), &val))
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
 	}
 }
 
@@ -232,12 +255,14 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 	std::string name = data.get(handle->GetHandle()).cast<std::string>();
 	std::string memberName = fq::reflect::GetName(data);
 
-	if (ImGui::InputText(memberName.c_str(), &name)
-		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	ImGui::InputText(memberName.c_str(), &name);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, name);
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 
@@ -248,11 +273,14 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 
 	float f[3]{ v.x,v.y,v.z };
 
-	if (ImGui::InputFloat3(memberName.c_str(), f))
+ 	ImGui::InputFloat3(memberName.c_str(), f);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 
@@ -267,8 +295,9 @@ void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data dat
 
 	float f[3]{ euler.x,euler.y,euler.z };
 
-	if (ImGui::InputFloat3(memberName.c_str(), f)
-		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	ImGui::InputFloat3(memberName.c_str(), f);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		euler.x = f[0];
 		euler.y = f[1];
@@ -278,6 +307,7 @@ void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data dat
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, quatarnion);
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 
@@ -369,7 +399,7 @@ void fq::game_engine::Inspector::beginAddComponent()
 
 		fq::game_module::Component* component =
 			anyComponent.try_cast<fq::game_module::Component>();
-		
+
 		auto clone = std::shared_ptr<fq::game_module::Component>(component->Clone(nullptr));
 
 		auto remove = [selectObject = mSelectObject, id]()
@@ -396,12 +426,13 @@ void fq::game_engine::Inspector::beginInputFloat2_Vector2(entt::meta_data data, 
 
 	float f[2]{ v.x,v.y };
 
-	if (ImGui::InputFloat2(memberName.c_str(), f)
-		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	ImGui::InputFloat2(memberName.c_str(), f);
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector2(f[0], f[1]));
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 
@@ -412,8 +443,9 @@ void fq::game_engine::Inspector::beginInputFloat4_Vector4(entt::meta_data data, 
 
 	float f[4]{ v.x,v.y,v.z,v.w };
 
-	if (ImGui::InputFloat4(memberName.c_str(), f)
-		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+	ImGui::InputFloat4(memberName.c_str(), f);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector4(f[0], f[1], f[2], f[3]));

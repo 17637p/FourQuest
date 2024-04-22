@@ -43,6 +43,13 @@ namespace fq::game_engine
 		/// </summary>
 		void ProcessWindowDropFile();
 
+		/// <summary>
+		/// 아이콘을 이미지를 반환합닌다 
+		/// </summary>
+		/// <param name="name">아이콘 이름</param>
+		/// <returns>아잌노 이미지</returns>
+		ID3D11ShaderResourceView* GetIcon(const std::wstring& name);
+
 	private:
 
 		/// <summary>
@@ -65,7 +72,7 @@ namespace fq::game_engine
 		void drawFile(const Path& path);
 
 		void drawTextureImage(const Path& path);
-		ID3D11ShaderResourceView* getIcon(const std::wstring& name);
+	
 		ID3D11ShaderResourceView* loadTexture(const Path& path);
 
 		void SelectPath(Path path);

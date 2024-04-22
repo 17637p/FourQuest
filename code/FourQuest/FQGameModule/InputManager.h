@@ -48,7 +48,6 @@ namespace fq::game_module
 		POINT GetDeltaMousePosition()const { return mDeltaMousePosition; }
 
 		// 키보드
-
 		/// <summary>
 		/// 이번프레임의 Key상태를 반환합니다
 		/// </summary>

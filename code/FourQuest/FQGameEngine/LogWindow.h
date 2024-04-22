@@ -15,6 +15,8 @@ namespace fq::game_engine
 
 		void Initialize();
 
+		void Finalize();
+
 		void Render() override;
 
 	private:

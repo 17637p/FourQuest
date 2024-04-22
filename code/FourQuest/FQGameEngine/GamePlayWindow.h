@@ -2,7 +2,7 @@
 
 
 #include "IEditorWindow.h"
-
+#include "EditorEnum.h"
 
 namespace fq::game_engine
 {
@@ -25,14 +25,42 @@ namespace fq::game_engine
 		/// <param name="editor"></param>
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
+		/// <summary>
+		/// 게임 창을 종료합니다
+		/// </summary>
+		void Finalize();
+
+		/// <summary>
+		/// 단축키 관련 처리를 합니다 
+		/// </summary>
+		void ExcutShortcut();
+
+		/// <summary>
+		/// 게임 창을 표시합니다 
+		/// </summary>
 		void Render() override;
 
+		/// <summary>
+		/// 모드를 설정합니다
+		/// </summary>
+		/// <param name="mode">모드</param>
+		void SetMode(EditorMode mode);
+
+		EditorMode GetMode()const { return mMode; }
+
+
+	private:
+		void beginMenuBar_Control();
 		
+		void beginButton_Play();
+		void beginButton_Stop();
 
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
-
+		
+		EditorMode mMode;
+		bool mbIsPauseGame;
 
 	};
 
