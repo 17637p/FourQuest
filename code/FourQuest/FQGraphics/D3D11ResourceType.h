@@ -18,6 +18,7 @@ namespace fq::graphics
 	enum class ED3D11RenderTargetViewType
 	{
 		Default,
+		Offscreen,
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -38,6 +39,7 @@ namespace fq::graphics
 	enum class ED3D11SamplerState
 	{
 		Default,
+		AnisotropicWrap
 	};
 
 	enum class ED3D11RasterizerState

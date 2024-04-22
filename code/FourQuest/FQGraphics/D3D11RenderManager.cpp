@@ -20,18 +20,32 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
-		mRTVRenderer = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
+
+		mBackBufferRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
+		mBackBufferSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mBackBufferRTV);
+
+		mSwapChainRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mDSV = resourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+		mNullDSV = resourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 
 		mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"../FQGraphics/ModelVS.hlsl");
+		mFullScreenVS = std::make_shared<D3D11VertexShader>(device, L"../FQGraphics/FullScreenVS.hlsl");
+
 		mStaticMeshPS = std::make_shared<D3D11PixelShader>(device, L"../FQGraphics/ModelPS.hlsl");
+		mFullScreenPS = std::make_shared<D3D11PixelShader>(device, L"../FQGraphics/FullScreenPS.hlsl");
+
 		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(device, mStaticMeshVS->GetBlob().Get());
-		mSamplerState = std::make_shared<D3D11SamplerState>(device, ED3D11SamplerState::Default);
+		mFullScreenLayout = std::make_shared<D3D11InputLayout>(device, mFullScreenVS->GetBlob().Get());
+
+		mAnisotropicWrapSamplerState = std::make_shared<D3D11SamplerState>(device, ED3D11SamplerState::AnisotropicWrap);
+		mLinearClampSamplerState = std::make_shared<D3D11SamplerState>(device, ED3D11SamplerState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(device, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(device, ED3D11ConstantBuffer::Transform);
 		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(device, ED3D11ConstantBuffer::Transform);
 		mSceneLightCB = std::make_shared<D3D11ConstantBuffer<SceneLight>>(device, ED3D11ConstantBuffer::Transform);
+
+		createFullScreenBuffer(device);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -48,14 +62,26 @@ namespace fq::graphics
 
 	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device)
 	{
-		mDSV->ClearDepth(device);
-		mRTVRenderer->Bind(device, mDSV);
+		mDSV->Clear(device);
+		mBackBufferRTV->Clear(device);
 
+		mBackBufferRTV->Bind(device, mDSV);
 		device->GetDeviceContext()->RSSetViewports(1, &mViewport);
 	}
 
 	void D3D11RenderManager::EndRender(const std::shared_ptr<D3D11Device>& device)
 	{
+		mSwapChainRTV->Bind(device, mNullDSV);
+		mBackBufferSRV->Bind(device, 0, ED3D11ShaderType::Pixelshader);
+		mFullScreenVB->Bind(device);
+		mFullScreenIB->Bind(device);
+
+		mFullScreenLayout->Bind(device);
+		mFullScreenVS->Bind(device);
+		mFullScreenPS->Bind(device);
+
+		device->GetDeviceContext()->DrawIndexed(6u, 0, 0);
+
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = device->GetSwapChain();
 		HR(swapChain->Present(0, 0));
 	}
@@ -81,8 +107,8 @@ namespace fq::graphics
 		mSceneTransformCB->Bind(device, ED3D11ShaderType::VertexShader, 1);
 		mModelTexutreCB->Bind(device, ED3D11ShaderType::Pixelshader);
 		mSceneLightCB->Bind(device, ED3D11ShaderType::Pixelshader, 1);
-		mSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
-
+		mAnisotropicWrapSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
+		mLinearClampSamplerState->Bind(device, 1, ED3D11ShaderType::Pixelshader);
 		// 임시 데이터, 카메라 반영시켜줘야 함
 		SceneTrnasform sceneTransform;
 		DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookAtLH({ 0, 0, -300 }, { 0, 0,0 }, { 0, 1, 0 });
@@ -138,5 +164,30 @@ namespace fq::graphics
 		modelTexture.bUseOpacityMap = material->GetHasOpacity();
 
 		mModelTexutreCB->Update(device, modelTexture);
+	}
+
+	ID3D11ShaderResourceView* D3D11RenderManager::GetBackBufferSRV() const
+	{
+		return mBackBufferSRV->GetSRV().Get();
+	}
+
+	void D3D11RenderManager::createFullScreenBuffer(const std::shared_ptr<D3D11Device>& device)
+	{
+		std::vector<DirectX::SimpleMath::Vector2> positions =
+		{
+			{ -1, 1 },
+			{ 1, 1 },
+			{ -1, -1 },
+			{ 1, -1 }
+		};
+
+		std::vector<unsigned int> indices =
+		{
+			0,1,2,
+			1,3,2
+		};
+
+		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 	}
 }

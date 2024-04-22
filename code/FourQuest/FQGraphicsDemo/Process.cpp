@@ -42,10 +42,11 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
-	mTestGraphics->ConvertModel("../Temp/gun.fbx", "../Temp/gun/gun");
+	const std::string modelPath = "./resource/example/gun/gun";
 
-	auto model = mTestGraphics->CreateModel("../Temp/gun/gun", "../Temp");
-	auto model1 = mTestGraphics->GetModel("../Temp/gun/gun");
+	mTestGraphics->ConvertModel("./resource/example/gun.fbx", "./resource/example/gun/gun");
+	auto model = mTestGraphics->CreateModel(modelPath, "./resource/example");
+	auto model1 = mTestGraphics->GetModel(modelPath);
 	for (auto mesh : model.Meshes)
 	{
 		if (mesh.second.Vertices.empty())
@@ -54,7 +55,7 @@ bool Process::Init(HINSTANCE hInstance)
 		}
 
 		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = "../Temp/gun/gun";
+		meshInfo.ModelPath = modelPath;
 		meshInfo.MeshName = mesh.second.Name;
 		meshInfo.Transform = mesh.first.ToParentMatrix;
 
@@ -73,9 +74,9 @@ bool Process::Init(HINSTANCE hInstance)
 			mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 		}
 	}
-	mTestGraphics->DeleteModel("../Temp/gun/gun");
-	// auto model2 = mTestGraphics->GetModel("../Temp/gun/gun");
-
+	mTestGraphics->DeleteModel("./resource/example/gun/gun");
+	// auto model2 = mTestGraphics->GetModel("../Temp/gun/gun"); // assert (false)
+	mTestGraphics->GetSRV();
 	return true;
 }
 

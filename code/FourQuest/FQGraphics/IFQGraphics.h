@@ -5,6 +5,8 @@
 #include <string>
 #include <filesystem>
 
+#include "d3d11.h"
+
 #include "IRenderObject.h"
 
 #include "../FQCommon/FQCommonLoader.h"
@@ -92,9 +94,9 @@ extern "C" {
 			//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) abstract;
 
 			/// For IMGUI(D3D11)
-			//virtual FQ_GRAPHICS void* GetDivice() abstract;
-			//virtual FQ_GRAPHICS void* GetDeviceContext() abstract;
-			//virtual FQ_GRAPHICS void* GetSRV() abstract;
+			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;
+			virtual FQ_GRAPHICS ID3D11DeviceContext* GetDeviceContext() abstract;
+			virtual FQ_GRAPHICS ID3D11ShaderResourceView* GetSRV() abstract;
 		};
 
 		class EngineExporter
