@@ -154,7 +154,6 @@
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="ImGuiSystem.h" />
     <ClInclude Include="LogWindow.h" />
-    <ClInclude Include="TmpD3D.h" />
     <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
     <ClInclude Include="FileDialog.h" />
@@ -181,7 +180,6 @@
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="TmpD3D.cpp" />
     <ClCompile Include="EditorEvent.cpp" />
     <ClCompile Include="EditorProcess.cpp" />
     <ClCompile Include="FileDialog.cpp" />
@@ -206,6 +204,9 @@
     </ProjectReference>
     <ProjectReference Include="..\FQGameModule\FQGameModule.vcxproj">
       <Project>{9f999a18-37fc-4a3e-9303-7be8a0ed2f1e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQGraphics\FQGraphics.vcxproj">
+      <Project>{b977a79f-fe96-446a-b70b-ae1a9a59bd8f}</Project>
     </ProjectReference>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">
       <Project>{6fa5f6a1-93bf-4c23-a2e7-e20c7e82377e}</Project>

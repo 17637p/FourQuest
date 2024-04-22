@@ -43,6 +43,7 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
 	mTestGraphics->ConvertModel("../Temp/gun.fbx", "../Temp/gun/gun");
+
 	auto model = mTestGraphics->CreateModel("../Temp/gun/gun", "../Temp");
 	auto model1 = mTestGraphics->GetModel("../Temp/gun/gun");
 	for (auto mesh : model.Meshes)

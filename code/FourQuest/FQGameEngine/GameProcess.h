@@ -11,6 +11,11 @@ namespace fq::game_module
 	class ObjectManager;
 }
 
+namespace fq::graphics
+{
+	class IFQGraphics;
+}
+
 namespace fq::game_engine
 {
 	class WindowSystem;
@@ -35,7 +40,7 @@ namespace fq::game_engine
 		std::unique_ptr<fq::game_module::ObjectManager> mObjectManager;
 
 		// Graphics
-		
+		fq::graphics::IFQGraphics* mGraphics;
 			
 		// Physics
 

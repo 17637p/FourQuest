@@ -121,7 +121,7 @@ namespace fq::common
 	struct Model
 	{
 		std::vector<std::pair<Node, Mesh>> Meshes;
-		std::vector<Material> Materials;
 		std::vector<AnimationClip> Animations;
+		std::vector<Material> Materials;
 	};
 }

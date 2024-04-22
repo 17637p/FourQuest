@@ -1,10 +1,10 @@
 #include "EditorEngine.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGraphics/IFQGraphics.h"
 
 #include "GameProcess.h"
 #include "EditorProcess.h"
-#include "TmpD3D.h"
 
 #include "WindowSystem.h"
 #include "FQGameEngineRegister.h"
@@ -13,7 +13,6 @@
 fq::game_engine::EditorEngine::EditorEngine()
 	:mGame(std::make_unique<GameProcess>())
 	, mEditor(std::make_unique<EditorProcess>())
-	, mD3D(std::make_unique<TmpD3D>())
 {}
 
 fq::game_engine::EditorEngine::~EditorEngine()
@@ -36,8 +35,12 @@ void fq::game_engine::EditorEngine::Initialize()
 		, mGame->mEventManager.get()
 		, mGame->mInputManager.get());
 
-	// d3d 초기화
-	mD3D->Initialize(mGame.get());
+	// 그래픽스 엔진 초기화
+	mGame->mGraphics = fq::graphics::EngineExporter().GetEngine();
+	HWND hwnd = mGame->mWindowSystem->GetHWND();
+	float width = mGame->mWindowSystem->GetScreenWidth();
+	float height = mGame->mWindowSystem->GetScreenHeight();
+	mGame->mGraphics->Initialize(hwnd, width,height);
 
 	// Editor 초기화
 	InitializeEditor();
@@ -93,10 +96,13 @@ void fq::game_engine::EditorEngine::Process()
 			UpdateEditor();
 
 			// 랜더링 
-			mD3D->Clear();
+			mGame->mGraphics->BeginRender();
+			mGame->mGraphics->Render();
+
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
-			mD3D->Present();
+
+			mGame->mGraphics->EndRender();
 
 			mGame->mSceneManager->PostUpdate();
 			if (mGame->mSceneManager->IsEnd())
@@ -120,6 +126,8 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGame->mSceneManager->Finalize();
 	mGame->mEventManager->RemoveAllHandles();
 
+	mGame->mGraphics->Finalize();
+
 	// Window 종료
 	mGame->mWindowSystem->Finalize();
 }
@@ -140,15 +148,14 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mInputManager->Initialize(mGame->mWindowSystem->GetHWND());
 
 	// System 초기화
-	mEditor->mImGuiSystem->Initialize(mGame->mWindowSystem->GetHWND()
-		, mD3D->GetDevice(), mD3D->GetDC());
+	///mEditor->mImGuiSystem->Initialize(mGame->mWindowSystem->GetHWND(), mD3D->GetDevice(), mD3D->GetDC());
 	mEditor->mCommandSystem->Initialize(mGame.get(), mEditor.get());
 	mEditor->mPrefabSystem->Initialize(mGame.get(), mEditor.get());
 
 	// Window 초기화
 	mEditor->mInspector->Initialize(mGame.get(), mEditor.get());
 	mEditor->mHierarchy->Initialize(mGame.get(), mEditor.get());
-	mEditor->mFileDialog->Initialize(mGame.get(), mEditor.get(), mD3D->GetDevice());
+///	mEditor->mFileDialog->Initialize(mGame.get(), mEditor.get(), mD3D->GetDevice());
 	mEditor->mMainMenuBar->Initialize(mGame.get(), mEditor.get());
 	mEditor->mGamePlayWindow->Initialize(mGame.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize();
