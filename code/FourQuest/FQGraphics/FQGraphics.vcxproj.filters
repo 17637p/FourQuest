@@ -13,9 +13,6 @@
     <ClInclude Include="D3D11Device.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11View.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -81,9 +78,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Renderer">
-      <UniqueIdentifier>{4d9c6449-de37-4741-8db1-b59999b9177e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="D3D11">
       <UniqueIdentifier>{6c3f3643-8390-495e-8c04-edefb2f87b65}</UniqueIdentifier>
     </Filter>
@@ -115,9 +109,6 @@
     </ClCompile>
     <ClCompile Include="D3D11Device.cpp">
       <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="D3D11View.cpp">
       <Filter>D3D11</Filter>
@@ -179,6 +170,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="ModelPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="FullScreenVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="FullScreenPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

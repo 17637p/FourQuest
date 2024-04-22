@@ -23,12 +23,26 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 		case ED3D11SamplerState::Default:
 		{
 			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+			samplerDesc.MinLOD = -FLT_MAX;
+			samplerDesc.MaxLOD = FLT_MAX;
+			samplerDesc.MipLODBias = 0.f;
+			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+			break;
+		}
+		case ED3D11SamplerState::AnisotropicWrap:
+		{
+			samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 			samplerDesc.MinLOD = -FLT_MAX;
 			samplerDesc.MaxLOD = FLT_MAX;
 			samplerDesc.MipLODBias = 0.f;
+			samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
 			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
 			break;
