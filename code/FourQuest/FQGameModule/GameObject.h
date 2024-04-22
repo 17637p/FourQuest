@@ -32,14 +32,11 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사 생성자
 		/// </summary>
-		/// <param name="other"></param>
 		GameObject(const GameObject& other);
 
 		/// <summary>
 		/// 복사 대입 연산자
 		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		GameObject& operator=(const GameObject& other);
 
 		/// <summary>
@@ -48,12 +45,7 @@ namespace fq::game_module
 		~GameObject();
 
 		GameObject(const GameObject&& other) = delete;
-
-		/// <summary>
-		/// Gameobject가 프리팹에서 인스턴스화 후에 호출
-		/// </summary>
-		void OnAwake();
-
+		
 		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
@@ -246,7 +238,6 @@ namespace fq::game_module
 		bool mbIsDestroyed;
 
 		friend class Scene;
-		FQ_REGISTRATION_FRIEND
 	};
 
 	template <typename T>

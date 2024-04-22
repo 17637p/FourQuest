@@ -21,6 +21,10 @@ namespace fq::game_module
 		Component(Component&& other) = default;
 
 		virtual ~Component();
+
+		/// <summary>
+		/// 핸들을 반환합니다 
+		/// </summary>
 		virtual entt::meta_handle GetHandle() abstract;
 
 		/// <summary>
@@ -29,11 +33,6 @@ namespace fq::game_module
 		/// <param name="clone"></param>
 		/// <returns></returns>
 		virtual Component* Clone(Component* clone = nullptr)const abstract;
-
-		/// <summary>
-		/// GameObject가 프리팹에서 인스턴스화 후에 호출
-		/// </summary>
-		virtual void OnAwake() {};
 
 		/// <summary>
 		/// Scene 시작시 호출

@@ -2,16 +2,6 @@
 #include "Component.h"
 #include "Transform.h"
 
-FQ_REGISTRATION
-{
-	entt::meta<fq::game_module::GameObject>()
-		.type(entt::hashed_string("GameObject"))
-		.prop(fq::reflect::prop::name, "GameObject")
-		.data<&fq::game_module::GameObject::SetName, &fq::game_module::GameObject::GetName>(entt::hashed_string("mName"))
-		.prop(fq::reflect::prop::name, "mName")
-		.data<&fq::game_module::GameObject::SetTag ,&fq::game_module::GameObject::GetTag>(entt::hashed_string("mTag"))
-		.prop(fq::reflect::prop::name, "mTag");
-}
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
@@ -28,31 +18,59 @@ fq::game_module::GameObject::~GameObject()
 {}
 
 fq::game_module::GameObject::GameObject(const GameObject& other)
+	:mID(LastID++)
+	, mName(other.mName)
+	, mTag(other.mTag)
+	, mScene(other.mScene)
+	, mbIsDestroyed(other.mbIsDestroyed)
 {
-	this->mID = other.mID;
-	this->mName = other.mName;
-	this->mTag = other.mTag;
-	this->mScene = other.mScene;
-	this->mbIsDestroyed = other.mbIsDestroyed;
+	// 컴포넌트 복사
+	for (const auto& [id, component] : other.GetComponentContainer())
+	{
+		std::shared_ptr<Component> cloneComponent(component->Clone());
+		mComponents.insert({ id,cloneComponent });
+	}
 }
 
 fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameObject& other)
 {
-	this->mID = other.mID;
 	this->mName = other.mName;
 	this->mTag = other.mTag;
 	this->mScene = other.mScene;
+	this->mbIsDestroyed = other.mbIsDestroyed;
+
+	// 중복하지 않는 컴포넌트는 삭제합니다 
+	for (auto iter = mComponents.begin(); iter != mComponents.end();)
+	{
+		if (other.mComponents.find(iter->first) == other.mComponents.end())
+		{
+			iter = mComponents.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
+	// 컴포넌트 복사
+	for (const auto& [id, component] : other.mComponents)
+	{
+		auto iter = mComponents.find(id);
+
+		if (iter == mComponents.end())
+		{
+			std::shared_ptr<Component> cloneComponent(component->Clone());
+			mComponents.insert({ id,cloneComponent });
+		}
+		else
+		{
+			component->Clone(iter->second.get());
+		}
+	}
 
 	return *this;
 }
 
-void fq::game_module::GameObject::OnAwake()
-{
-	for (const auto& [key, component] : mComponents)
-	{
-		component->OnAwake();
-	}
-}
 
 void fq::game_module::GameObject::OnStart()
 {
@@ -166,6 +184,7 @@ void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr
 	assert(iter == mComponents.end());
 
 	component->mbIsToBeRemoved = false;
+	component->SetGameObject(this);
 	mComponents.insert({ id, std::move(component) });
 }
 
@@ -218,7 +237,7 @@ void fq::game_module::GameObject::CleanUpComponent()
 
 }
 
-bool fq::game_module::GameObject::HasParent() 
+bool fq::game_module::GameObject::HasParent()
 {
 	return GetParent() != nullptr;
 }

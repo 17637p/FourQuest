@@ -26,11 +26,14 @@ Process::Process()
 
 Process::~Process()
 {
+<<<<<<< HEAD
 	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
 	}
 
+=======
+>>>>>>> main
 	mEngineExporter->DeleteEngine(mTestGraphics);
 }
 

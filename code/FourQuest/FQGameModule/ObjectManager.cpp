@@ -161,6 +161,14 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::ObjectManager::loa
 	for (const auto& element : objectData.items())
 	{
 		const std::string& componentID = element.key();
+		entt::id_type id = std::stoul(componentID);
+
+		// 삭제된 컴포넌트에 대한 처리
+		if (entt::resolve(id))
+		{
+			continue;
+		}
+		
 		entt::meta_any anyComponent = mConverter.ParseClassFromJson(componentID, element.value());
 		object->AddComponent(anyComponent);
 	}

@@ -58,7 +58,6 @@ void fq::game_module::InputManager::Update()
 void fq::game_module::InputManager::Initialize(HWND hwnd)
 {
 	mHWND = hwnd;
-
 }
 
 void fq::game_module::InputManager::updateMouse()

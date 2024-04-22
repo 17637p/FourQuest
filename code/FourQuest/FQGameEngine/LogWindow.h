@@ -13,9 +13,14 @@ namespace fq::game_engine
 		LogWindow();
 		~LogWindow();
 
+		void Initialize();
+
+		void Finalize();
+
 		void Render() override;
 
 	private:
+
 
 	};
 

@@ -2,7 +2,7 @@
 #include "IEngine.h"
 
 #include "GameEngine.h"
-#include "ToolEngine.h"
+#include "EditorEngine.h"
 #include "WindowSystem.h"
 
 
@@ -16,9 +16,9 @@ FQ_ENGNIE_API fq::game_engine::IEngine* fq::game_engine::Exporter::GetGameEngine
 	return mEngine;
 }
 
-FQ_ENGNIE_API fq::game_engine::IEngine* fq::game_engine::Exporter::GetToolEngine()
+FQ_ENGNIE_API fq::game_engine::IEngine* fq::game_engine::Exporter::GetEditorEngine()
 {
-	mEngine = new ToolEngine();
+	mEngine = new EditorEngine();
 
 	return mEngine;
 }

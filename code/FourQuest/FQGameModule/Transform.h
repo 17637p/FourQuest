@@ -18,7 +18,6 @@ namespace fq::game_module
 		using Matrix = DirectX::SimpleMath::Matrix;
 
 	public:
-
 		Transform();
 		~Transform();
 

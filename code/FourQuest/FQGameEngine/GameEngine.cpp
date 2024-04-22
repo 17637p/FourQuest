@@ -4,6 +4,8 @@
 #include <windows.h>
 
 #include "../FQGameModule/GameModule.h"
+#include "FQGameEngineRegister.h"
+
 #include "GameProcess.h"
 #include "WindowSystem.h"
 
@@ -19,16 +21,22 @@ void fq::game_engine::GameEngine::Initialize()
 {
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
+	fq::game_engine::RegisterMetaData();
 
+	// 윈도우 창을 초기화
 	mGameProcess->mWindowSystem->Initialize();
 
+	// GameProcess 초기화
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get());
 
+	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
+
+	// 게임을 시작하므로 StartScene 호출
 	mGameProcess->mSceneManager->StartScene();
 }
 
@@ -55,6 +63,7 @@ void fq::game_engine::GameEngine::Process()
 			{
 				mGameProcess->mWindowSystem->OnResize();
 			}
+			
 
 			// 시간, 키입력 처리 
 			float deltaTime = mGameProcess->mTimeManager->Update();
@@ -63,10 +72,8 @@ void fq::game_engine::GameEngine::Process()
 			// 물리처리
 			mGameProcess->mSceneManager->FixedUpdate(0.f);
 
-
 			mGameProcess->mSceneManager->Update(deltaTime);
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
-
 
 			mGameProcess->mSceneManager->PostUpdate();
 			if (mGameProcess->mSceneManager->IsEnd())

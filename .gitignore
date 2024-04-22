@@ -4,6 +4,7 @@
 # 4QProject ingnore
 resource/
 imgui.ini
+fqlog/
 
 ### C++ ###
 # Prerequisites
