@@ -74,11 +74,12 @@ void fq::game_engine::EditorEngine::Process()
 
 			auto mode = mEditor->mGamePlayWindow->GetMode();
 
+			float deltaTime = mGame->mTimeManager->Update();
+
 			if (mode == EditorMode::Play)
 			{
 				// 矫埃,涝仿 贸府
-				float deltaTime = mGame->mTimeManager->Update();
-				mGame->mInputManager->Update();
+				mGame->mInputManager->Update();  
 
 				// 拱府贸府
 				mGame->mSceneManager->FixedUpdate(0.f);
@@ -155,12 +156,10 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 
 void fq::game_engine::EditorEngine::UpdateEditor()
 {
-
-
-
 	mEditor->mInputManager->Update();
 	mEditor->mGamePlayWindow->ExcutShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();
 	mEditor->mHierarchy->ExcuteShortcut();
+	mEditor->mMainMenuBar->ExcuteShortcut();
 }
 

@@ -30,6 +30,11 @@ namespace fq::game_engine
 		/// <param name="editor">에디터프로세스</param>
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
+		/// <summary>
+		/// 단축키관련 처리를 합니다
+		/// </summary>
+		void ExcuteShortcut();
+
 		void Render() override;
 
 		/// <summary>

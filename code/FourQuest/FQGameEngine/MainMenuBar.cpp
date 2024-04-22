@@ -7,6 +7,7 @@
 #include "../FQCommon/FQPath.h"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
+#include "EditorProcess.h"
 
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
@@ -194,7 +195,6 @@ void fq::game_engine::MainMenuBar::beginText_FPS()
 
 void fq::game_engine::MainMenuBar::SaveScene()
 {
-
 	auto scenePath = fq::path::GetScenePath();
 	scenePath /= mCreateSceneName;
 
@@ -217,4 +217,15 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 2. ... etc 
 
 
+}
+
+void fq::game_engine::MainMenuBar::ExcuteShortcut()
+{
+	const auto& input = mEditorProcess->mInputManager;
+
+	if (input->IsKeyState(Key::Ctrl, KeyState::Hold)
+		&& input->IsKeyState(Key::S, KeyState::Tap))
+	{
+		SaveScene();
+	}
 }

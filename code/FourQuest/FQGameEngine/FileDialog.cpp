@@ -290,7 +290,15 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		fs::path newFileName = path.parent_path();
 		newFileName += "//" + fileName;
 
-		fs::rename(path, newFileName);
+		try
+		{
+			fs::rename(path, newFileName);
+		}
+		catch (const std::exception& e)
+		{
+			// e.what();
+		}
+
 	}
 
 	ImGui::PopItemWidth();
