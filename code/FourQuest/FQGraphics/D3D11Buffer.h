@@ -95,11 +95,7 @@ namespace fq::graphics
 		static_assert(sizeof(ConstantType) % 16 == 0, "constant buffer must be aligned by 16 bytes");
 
 	public:
-<<<<<<< HEAD
-		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device,
-=======
 		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device, 
->>>>>>> main
 			const ED3D11ConstantBuffer eConstantBuffer);
 
 		static std::string GenerateRID(const ED3D11ConstantBuffer eConstantBuffer);
@@ -114,7 +110,6 @@ namespace fq::graphics
 
 	template<typename ConstantType>
 	std::string fq::graphics::D3D11ConstantBuffer<ConstantType>::GenerateRID(const ED3D11ConstantBuffer eConstantBuffer)
-<<<<<<< HEAD
 	{
 		return typeid(D3D11ConstantBuffer<ConstantType>).name() + std::to_string(static_cast<int>(eConstantBuffer));
 	}
@@ -128,44 +123,10 @@ namespace fq::graphics
 	template<typename ConstantType>
 	void fq::graphics::D3D11ConstantBuffer<ConstantType>::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11ShaderType eShaderType, const UINT startSlot /*0*/)
 	{
-=======
-	{
-		return typeid(D3D11ConstantBuffer<ConstantType>).name() + std::to_string(static_cast<int>(eConstantBuffer));
-	}
-
-	template<typename ConstantType>
-	void fq::graphics::D3D11ConstantBuffer<ConstantType>::Update(const std::shared_ptr<D3D11Device>& d3d11Device, const ConstantType& value)
-	{
-		mConstantBuffer->SetData(d3d11Device->GetDeviceContext().Get(), value);
-	}
-
-	template<typename ConstantType>
-	void fq::graphics::D3D11ConstantBuffer<ConstantType>::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11ShaderType eShaderType, const UINT startSlot /*0*/)
-	{
->>>>>>> main
 		ID3D11Buffer* constantBuffer = mConstantBuffer->GetBuffer();
 
 		switch (eShaderType)
 		{
-<<<<<<< HEAD
-		case ED3D11ShaderType::VertexShader:
-		{
-			d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		case ED3D11ShaderType::GeometryShader:
-		{
-			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		case ED3D11ShaderType::Pixelshader:
-		{
-			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		default:
-			break;
-=======
 			case ED3D11ShaderType::VertexShader:
 			{
 				d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
@@ -183,7 +144,6 @@ namespace fq::graphics
 			}
 			default:
 				break;
->>>>>>> main
 		}
 	}
 
