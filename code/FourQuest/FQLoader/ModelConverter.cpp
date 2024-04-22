@@ -34,6 +34,7 @@ namespace fq::loader
 			aiProcess_GenUVCoords |
 			aiProcess_CalcTangentSpace |
 			aiProcess_LimitBoneWeights |
+			aiProcess_PreTransformVertices |
 			aiProcess_ConvertToLeftHanded;
 
 		mAiScene = mImpoter->ReadFile(path.string(), importFlags);
@@ -50,7 +51,7 @@ namespace fq::loader
 
 	void ModelConverter::WriteMesh(const std::string& saveName)
 	{
-		assert(mAiScene != nullptr); 
+		assert(mAiScene != nullptr);
 		using namespace std;
 		using namespace fq::common;
 

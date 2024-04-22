@@ -49,7 +49,6 @@ Texture2D gSpecularBRDF_LUT : register(t8);
 
 static const float3 Fdielectric = 0.04;
 
-
 float4 main(VertexOut pin) : SV_TARGET
 {
     float opacity = 1.f;
@@ -85,8 +84,8 @@ float4 main(VertexOut pin) : SV_TARGET
     
     if (cUseNormalMap)
     {
-        normal = gNormalMap.Sample(gSamplerAnisotropic, pin.UV).xyz;
-        normal = NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW);
+        normal = gNormalMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
     float3 emissive = 1.f;

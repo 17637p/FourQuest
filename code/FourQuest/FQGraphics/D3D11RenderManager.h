@@ -15,7 +15,7 @@ namespace fq::graphics
 	class D3D11VertexShader;
 	class D3D11PixelShader;
 	class D3D11Device;
-	struct D3D11SamplerState;
+	class D3D11SamplerState;
 	class D3D11RenderTargetView;
 	class D3D11DepthStencilView;
 

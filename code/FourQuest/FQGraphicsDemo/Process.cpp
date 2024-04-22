@@ -26,7 +26,7 @@ Process::Process()
 
 Process::~Process()
 {
-	for (fq::graphics::IStaticMeshObject* iobj :mStaticMeshObjects)
+	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
 	}
@@ -42,57 +42,38 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
-	std::string basePath = "../Temp/Model/";
-	std::string filePath = basePath + "gun/gun";
+	mTestGraphics->ConvertModel("../Temp/gun.fbx", "../Temp/gun/gun");
+	auto model = mTestGraphics->CreateModel("../Temp/gun/gun", "../Temp");
+	auto model1 = mTestGraphics->GetModel("../Temp/gun/gun");
+	for (auto mesh : model.Meshes)
 	{
-		fq::loader::ModelConverter converter;
-		converter.ReadFBXFile(basePath + "gun.fbx");
-		converter.WriteModel(filePath);
-	}
-
-	fq::common::Model model = fq::loader::ModelLoader::ReadModel(filePath);
-
-	for (const auto& material : model.Materials)
-	{
-		if (!material.Name.empty())
+		if (mesh.second.Vertices.empty())
 		{
-			mTestGraphics->CreateMaterial(filePath + material.Name, material, basePath);
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = "../Temp/gun/gun";
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix;
+
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
+
+		if (mesh.second.BoneVertices.empty())
+		{
+			mStaticMeshObjects.push_back(mTestGraphics->CreateStaticMeshObject(meshInfo));
+			mStaticMeshObjects.back()->UpdateTransform(mStaticMeshObjects.back()->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(3.14 * 1.5f));
+		}
+		else
+		{
+			mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 		}
 	}
-
-	for (const auto& nodeMeshPair : model.Meshes)
-	{
-		const auto& node = nodeMeshPair.first;
-		const auto& mesh = nodeMeshPair.second;
-
-		if (!mesh.Name.empty())
-		{
-			fq::graphics::MeshObjectInfo info;
-
-			for (const auto& subset : mesh.Subsets)
-			{
-				std::string materialKey = filePath + subset.MaterialName;
-
-				info.MaterialKeys.push_back(materialKey);
-				info.Transform = nodeMeshPair.first.ToParentMatrix;
-			}
-
-			std::string meshKey = filePath + mesh.Name;
-			info.MeshKey = meshKey;
-
-			if (mesh.BoneVertices.empty())
-			{
-				mTestGraphics->CreateStaticMesh(meshKey, mesh);
-				fq::graphics::IStaticMeshObject* object = mTestGraphics->CreateStaticMeshObject(info);
-				mStaticMeshObjects.push_back(object);
-			}
-			else
-			{
-				mTestGraphics->CreateSkinnedMesh(meshKey, mesh);
-				fq::graphics::ISkinnedMeshObject* object = mTestGraphics->CreateSkinnedMeshObject(info);
-			}
-		}
-	}
+	mTestGraphics->DeleteModel("../Temp/gun/gun");
+	auto model2 = mTestGraphics->GetModel("../Temp/gun/gun");
 
 	return true;
 }
@@ -199,7 +180,7 @@ void Process::Render()
 
 	for (auto& obj : mStaticMeshObjects)
 	{
-		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(0.001f));
+		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(0.0001f));
 	}
 
 	mTestGraphics->EndRender();

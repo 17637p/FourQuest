@@ -48,10 +48,22 @@ namespace fq::graphics
 
 		return true;
 	}
+	void D3D11ObjectManager::DeleteStaticMesh(std::string key)
+	{
+		mStaticMeshResources.erase(key);
+	}
+	void D3D11ObjectManager::DeleteSkinnedMesh(std::string key)
+	{
+		mSkinnedMeshResources.erase(key);
+	}
+	void D3D11ObjectManager::DeleteMaterial(std::string key)
+	{
+		mMaterialResources.erase(key);
+	}
 
 	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(MeshObjectInfo info)
 	{
-		auto findedStaticMesh = mStaticMeshResources.find(info.MeshKey);
+		auto findedStaticMesh = mStaticMeshResources.find(info.ModelPath + info.MeshName);
 
 		if (findedStaticMesh == mStaticMeshResources.end())
 		{
@@ -59,7 +71,7 @@ namespace fq::graphics
 		}
 
 		std::vector<std::shared_ptr<Material>> materials;
-		findMaterial(info.MaterialKeys, &materials);
+		findMaterial(info.ModelPath, info.MaterialNames, &materials);
 
 		StaticMeshObject* staticMeshObject = new StaticMeshObject(findedStaticMesh->second, materials, info.Transform);
 		mStaticMeshObjects.insert(staticMeshObject);
@@ -76,7 +88,7 @@ namespace fq::graphics
 
 	ISkinnedMeshObject* D3D11ObjectManager::CreateSkinnedMeshObject(MeshObjectInfo info)
 	{
-		auto findedStaticMesh = mSkinnedMeshResources.find(info.MeshKey);
+		auto findedStaticMesh = mSkinnedMeshResources.find(info.ModelPath + info.MeshName);
 
 		if (findedStaticMesh == mSkinnedMeshResources.end())
 		{
@@ -84,7 +96,7 @@ namespace fq::graphics
 		}
 
 		std::vector<std::shared_ptr<Material>> materials;
-		findMaterial(info.MaterialKeys, &materials);
+		findMaterial(info.ModelPath, info.MaterialNames, &materials);
 
 		SkinnedMeshObject* skinnedMeshObject = new SkinnedMeshObject(findedStaticMesh->second, materials, info.Transform);
 		mSkinnedMeshObjects.insert(skinnedMeshObject);
@@ -99,14 +111,15 @@ namespace fq::graphics
 		delete skinnedMeshObject;
 	}
 
-	void D3D11ObjectManager::findMaterial(const std::vector<std::string>& materialKeys,
+	void D3D11ObjectManager::findMaterial(const std::string& modelPath,
+		const std::vector<std::string>& materialNames,
 		std::vector<std::shared_ptr<Material>>* outMaterials) const
 	{
-		outMaterials->reserve(materialKeys.size());
+		outMaterials->reserve(materialNames.size());
 
-		for (const std::string& materialKey : materialKeys)
+		for (const std::string& materialName : materialNames)
 		{
-			auto findedMaterial = mMaterialResources.find(materialKey);
+			auto findedMaterial = mMaterialResources.find(modelPath + materialName);
 
 			if (findedMaterial != mMaterialResources.end())
 			{

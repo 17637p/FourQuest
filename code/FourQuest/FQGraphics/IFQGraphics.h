@@ -61,9 +61,10 @@ extern "C" {
 			virtual FQ_GRAPHICS bool SetViewportSize(const unsigned short width, const unsigned short height) abstract; // 툴에서 씬을 그리는 영역
 
 			// 랜더 오브젝트
-			virtual FQ_GRAPHICS bool CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) abstract;
-			virtual FQ_GRAPHICS bool CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) abstract;
-			virtual FQ_GRAPHICS bool CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath) abstract;
+			virtual FQ_GRAPHICS void ConvertModel(std::string fbxFile, std::string path) abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& GetModel(std::string path) abstract;
+			virtual FQ_GRAPHICS void DeleteModel(std::string path) abstract;
 
 			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) abstract;
 			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* meshObject) abstract;

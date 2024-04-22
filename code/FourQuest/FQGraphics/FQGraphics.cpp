@@ -5,6 +5,9 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
+#include "../FQLoader/ModelLoader.h"
+#include "../FQLoader/ModelConverter.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -79,19 +82,106 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 	return true;
 }
 
-bool FQGraphics::CreateStaticMesh(std::string key, const fq::common::Mesh& meshData)
+const fq::common::Model& FQGraphics::CreateModel(std::string path, std::filesystem::path textureBasePath)
 {
-	return mObjectManager->CreateStaticMesh(mDevice, key, meshData);
+	auto find = mModels.find(path);
+
+	if (find != mModels.end())
+	{
+		return find->second;
+	}
+
+	fq::common::Model model = fq::loader::ModelLoader::ReadModel(path);
+
+	for (const auto& material : model.Materials)
+	{
+		if (material.Name.empty())
+		{
+			continue;
+		}
+
+		mObjectManager->CreateMaterial(mDevice, path + material.Name, material, textureBasePath);
+	}
+
+	for (const auto& nodeMeshPair : model.Meshes)
+	{
+		const auto& mesh = nodeMeshPair.second;
+
+		if (mesh.Name.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			mObjectManager->CreateStaticMesh(mDevice, path + mesh.Name, mesh);
+		}
+		else
+		{
+			mObjectManager->CreateSkinnedMesh(mDevice, path + mesh.Name, mesh);
+		}
+	}
+
+	mModels.insert({ path, std::move(model) });
+
+	return mModels[path];
 }
 
-bool FQGraphics::CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData)
+const fq::common::Model& FQGraphics::GetModel(std::string path)
 {
-	return mObjectManager->CreateSkinnedMesh(mDevice, key, meshData);
+	auto find = mModels.find(path);
+	assert(find != mModels.end());
+	return find->second;
 }
 
-bool FQGraphics::CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath)
+void FQGraphics::DeleteModel(std::string path)
 {
-	return mObjectManager->CreateMaterial(mDevice, key, matrialData, basePath);
+	auto find = mModels.find(path);
+
+	if (find == mModels.end())
+	{
+		return;
+	}
+
+	const fq::common::Model& model = find->second;
+
+	for (const auto& material : model.Materials)
+	{
+		if (material.Name.empty())
+		{
+			continue;
+		}
+
+		mObjectManager->DeleteMaterial(path + material.Name);
+	}
+
+	for (const auto& nodeMeshPair : model.Meshes)
+	{
+		const auto& mesh = nodeMeshPair.second;
+
+		if (mesh.Name.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			mObjectManager->DeleteStaticMesh(path + mesh.Name);
+		}
+		else
+		{
+			mObjectManager->DeleteSkinnedMesh(path + mesh.Name);
+		}
+	}
+
+	mModels.erase(find);
+}
+
+void FQGraphics::ConvertModel(std::string fbxFile, std::string path)
+{
+	fq::loader::ModelConverter converter;
+	converter.ReadFBXFile(fbxFile);
+	converter.WriteModel(path);
 }
 
 IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)

@@ -118,7 +118,7 @@ namespace fq::common
 	};
 
 	// fbx에 대응되는 친구
-	struct Model 
+	struct Model
 	{
 		std::vector<std::pair<Node, Mesh>> Meshes;
 		std::vector<Material> Materials;

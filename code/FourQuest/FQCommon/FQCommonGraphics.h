@@ -39,8 +39,9 @@ namespace fq::graphics
 
 	struct MeshObjectInfo
 	{
-		std::string MeshKey;
-		std::vector<std::string> MaterialKeys;
+		std::string ModelPath;
+		std::string MeshName;
+		std::vector<std::string> MaterialNames;
 		DirectX::SimpleMath::Matrix Transform;
 	};
 }

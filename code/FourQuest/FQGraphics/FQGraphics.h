@@ -2,8 +2,10 @@
 
 #include "IFQGraphics.h"
 
+#include <map>
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace fq::graphics
 {
@@ -28,9 +30,10 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// RenderObject
-		bool CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) override;
-		bool CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) override;
-		bool CreateMaterial(std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath) override;
+		void ConvertModel(std::string fbxFile, std::string path) override;
+		const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
+		const fq::common::Model& GetModel(std::string path);
+		void DeleteModel(std::string path);
 
 		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
 		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
@@ -64,6 +67,7 @@ namespace fq::graphics
 		//virtual FQ_GRAPHICS void* GetSRV() override;
 
 	private:
+		std::map<std::string, fq::common::Model> mModels;
 		std::shared_ptr<class D3D11Device> mDevice;
 		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;

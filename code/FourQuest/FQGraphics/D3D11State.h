@@ -13,11 +13,10 @@ using namespace Microsoft::WRL;
 
 namespace fq::graphics
 {
-	// to do : 구조체인 이유 묻기
 	/*=============================================================================
 		SamplerState
 	=============================================================================*/
-	struct D3D11SamplerState : public ResourceBase
+	class D3D11SamplerState : public ResourceBase
 	{
 	public:
 		D3D11SamplerState(const std::shared_ptr<D3D11Device>& d3d11Device,

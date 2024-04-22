@@ -85,7 +85,7 @@ namespace fq::graphics
 
 		// 임시 데이터, 카메라 반영시켜줘야 함
 		SceneTrnasform sceneTransform;
-		DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookAtLH({ 0, 0, -200 }, { 0, 0,0 }, { 0, 1, 0 });
+		DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookAtLH({ 0, 0, -300 }, { 0, 0,0 }, { 0, 1, 0 });
 		DirectX::SimpleMath::Matrix proj = DirectX::XMMatrixPerspectiveFovLH(0.25f * 3.14f, 1.f, 1.f, 1000.f); // width / height
 		sceneTransform.ViewProjMat = (view * proj).Transpose();
 		sceneTransform.ShadowViewProjTexMat;
@@ -93,15 +93,15 @@ namespace fq::graphics
 
 		// 임시 데이터, 조명 반영시켜줘야 함
 		SceneLight scenelight;
-		scenelight.Lights[0].Direction = { 0.0f, 0.0f, 1.f };
+		scenelight.Lights[0].Direction = { -1.0f, 0.0f, 0.f };
 		scenelight.Lights[0].Intensity = { 1.f, 1.f, 1.f };
 		scenelight.Lights[1].Direction = { 1.0f, 0.f, 0.f };
 		scenelight.Lights[1].Direction.Normalize();
-		scenelight.Lights[1].Intensity = { 1.f, 1.f, 1.f };
+		scenelight.Lights[1].Intensity = { 0.f, 0.f, 0.f };
 		scenelight.Lights[2].Direction = { 0.0f, -1.f ,0.f };
 		scenelight.Lights[2].Direction.Normalize();
-		scenelight.Lights[2].Intensity = { 1.f, 1.f, 1.f };
-		scenelight.EyePosition = { 0, 0, -200 };
+		scenelight.Lights[2].Intensity = { 0.f, 0.f, 0.f };
+		scenelight.EyePosition = { 0, 0, -300 };
 		scenelight.bUseIBL = false;
 		mSceneLightCB->Update(device, scenelight);
 

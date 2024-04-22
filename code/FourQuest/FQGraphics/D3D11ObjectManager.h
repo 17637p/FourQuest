@@ -25,6 +25,9 @@ namespace fq::graphics
 		bool CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
 		bool CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
 		bool CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath);
+		void DeleteStaticMesh(std::string key);
+		void DeleteSkinnedMesh(std::string key);
+		void DeleteMaterial(std::string key);
 
 		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info);
 		void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObjectInterface);
@@ -36,7 +39,8 @@ namespace fq::graphics
 		inline const std::set<ISkinnedMeshObject*>& GetSkinnedMeshObjects() const;
 
 	private:
-		void findMaterial(const std::vector<std::string>& materialKeys,
+		void findMaterial(const std::string& modelPath,
+			const std::vector<std::string>& materialKeys,
 			std::vector<std::shared_ptr<Material>>* outMaterials) const;
 
 	private:

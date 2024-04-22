@@ -148,6 +148,7 @@
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="D3D11ObjectManager.h" />
     <ClInclude Include="IRenderObject.h" />
+    <ClInclude Include="ManagementCommon.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="RenderJob.h" />
@@ -155,7 +156,6 @@
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
-    <ClInclude Include="ManagementCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -195,6 +195,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Common.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FQLoader\FQLoader.vcxproj">
+      <Project>{6567f0ff-6867-4c18-888d-6b7b5ff432f3}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
