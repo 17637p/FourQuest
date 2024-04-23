@@ -528,6 +528,17 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 
 		fs::copy(filePath, target, fs::copy_options::recursive
 			| fs::copy_options::overwrite_existing);
+
+		if (target.extension() == ".fbx")
+		{
+
+			std::wstring fileName = target.filename();
+			fileName = fileName.substr(0, fileName.size() - 4);
+
+			fs::path directory = target.parent_path() / fileName/ fileName;
+			mGameProcess->mGraphics->ConvertModel(target.string(), directory.string());
+		}
+
 	}
 
 	dropFiles.clear();

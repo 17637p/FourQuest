@@ -24,9 +24,6 @@
     <Filter Include="include\11.EditorWindow">
       <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\10.Editor">
-      <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\11.Window">
       <UniqueIdentifier>{3ca10ecb-1121-4a91-b4a7-6cac146d0d26}</UniqueIdentifier>
     </Filter>
@@ -53,6 +50,9 @@
     </Filter>
     <Filter Include="include\03.GameSystem">
       <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem\10.Editor">
+      <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +173,7 @@
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
     <ClCompile Include="EditorProcess.cpp">
-      <Filter>src\10.Editor</Filter>
+      <Filter>src\03.GameSystem\10.Editor</Filter>
     </ClCompile>
     <ClCompile Include="MainMenuBar.cpp">
       <Filter>src\11.Window</Filter>
@@ -194,7 +194,7 @@
       <Filter>src\00.Define</Filter>
     </ClCompile>
     <ClCompile Include="EditorEvent.cpp">
-      <Filter>src\10.Editor</Filter>
+      <Filter>src\03.GameSystem\10.Editor</Filter>
     </ClCompile>
     <ClCompile Include="PrefabSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>

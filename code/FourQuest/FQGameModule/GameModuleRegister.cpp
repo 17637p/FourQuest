@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "StaticMeshRenderer.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -58,4 +59,17 @@ void fq::game_module::RegisterMetaData()
 		.data<&Camera::SetNearPlain, &Camera::GetNearPlain>("NearPlain"_hs)
 		.prop(fq::reflect::prop::name, "NearPlain")
 		.base<Component>();
+
+	// StaticMeshRenderer
+	entt::meta<StaticMeshRenderer>()
+		.type("StaticMeshRenderer"_hs)
+		.prop(fq::reflect::prop::name, "StaticMeshRenderer")
+		.data<nullptr , &StaticMeshRenderer::GetModelPath>("ModelPath"_hs)
+		.prop(fq::reflect::prop::name, "ModelPath")
+		.data<nullptr, &StaticMeshRenderer::GetMeshName>("MeshName"_hs)
+		.prop(fq::reflect::prop::name, "MeshName")
+		.data<nullptr, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
+		.prop(fq::reflect::prop::name, "Materials")
+		.base<Component>();
+
 }
