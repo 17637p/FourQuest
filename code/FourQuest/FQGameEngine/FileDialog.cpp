@@ -13,6 +13,7 @@
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "WindowSystem.h"
+#include "ModelSystem.h"
 
 namespace fs = std::filesystem;
 
@@ -42,7 +43,6 @@ void fq::game_engine::FileDialog::Render()
 		beginWindow_FilePathWindow();
 
 		beginWindow_FileList();
-
 	}
 	ImGui::End();
 }
@@ -480,7 +480,6 @@ void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryP
 
 void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 {
-
 	std::string contextName = "context##" + path.string();
 
 	if (ImGui::BeginPopupContextItem(contextName.c_str()))
@@ -498,6 +497,18 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 			fs::rename(path, garbagePath);
 		}
 
+		if (path.extension() == ".fbx")
+		{
+			if (ImGui::MenuItem("Convert"))
+			{
+				std::wstring fileName = path.filename();
+				fileName = fileName.substr(0, fileName.size() - 4);
+
+				fs::path directory = path.parent_path() / fileName;
+				mGameProcess->mGraphics->ConvertModel(path.string(), directory.string());
+			}
+		}
+
 		if (ImGui::MenuItem("Create Directory"))
 		{
 			auto directory = mSelectPath;
@@ -509,6 +520,7 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 				directory += "!";
 			}
 		}
+
 
 		ImGui::EndPopup();
 	}

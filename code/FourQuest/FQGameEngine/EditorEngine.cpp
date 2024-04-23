@@ -105,7 +105,6 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mGraphics->BeginRender();
 
 			mGameProcess->mGraphics->Render();
-			mEditor->mGamePlayWindow->Update();
 
 			mEditor->mImGuiSystem->NewFrame();
 			UpdateEditor();

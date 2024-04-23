@@ -28,7 +28,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 	scene->ViewComponents<Transform, StaticMeshRenderer>
 		([](GameObject& object, Transform& transform, StaticMeshRenderer& mesh)
 			{
-				mesh.GetStaticMeshObject()->UpdateTransform(transform.GetWorldMatrix());
+				auto meshObject = mesh.GetStaticMeshObject();
+				if (meshObject)
+				{
+					meshObject->UpdateTransform(transform.GetWorldMatrix());
+				}
 			});
 
 }

@@ -4,8 +4,6 @@
 #include "IEditorWindow.h"
 #include "EditorEnum.h"
 
-class ID3D11ShaderResourceView;
-
 namespace fq::game_engine
 {
 	class GameProcess;
@@ -37,7 +35,6 @@ namespace fq::game_engine
 		/// </summary>
 		void ExcutShortcut();
 
-		void Update();
 
 		/// <summary>
 		/// 게임 창을 표시합니다 
@@ -55,6 +52,7 @@ namespace fq::game_engine
 
 	private:
 		void beginMenuBar_Control();
+		void beginImage_GameScreen();
 		
 		void beginButton_Play();
 		void beginButton_Stop();
@@ -65,9 +63,6 @@ namespace fq::game_engine
 		
 		EditorMode mMode;
 		bool mbIsPauseGame;
-
-		ID3D11ShaderResourceView* mTexture;
-
 	};
 
 

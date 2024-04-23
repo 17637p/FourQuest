@@ -328,7 +328,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 				mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
 					, prefab[0]);
 			}
-			else if (std::filesystem::is_directory(*path)) // 임시적으로 모델을 생성해보자
+			else if (path->extension() == ".model") // 모델 생성
 			{
 				mGameProcess->mModelSystem->BuildModel(*path);
 			}
