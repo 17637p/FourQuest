@@ -65,6 +65,12 @@ namespace fq::game_module
 		const std::vector<std::string>& GetMaterials()const { return mMeshInfomation.MaterialNames; }
 
 		/// <summary>
+		/// 메테리얼을 설정합니다
+		/// </summary>
+		/// <param name="materials"></param>
+		void SetMaterials(std::vector<std::string> materials);
+
+		/// <summary>
 		/// 메쉬정보를 설정합니다
 		/// </summary>
 		/// <param name="info"></param>

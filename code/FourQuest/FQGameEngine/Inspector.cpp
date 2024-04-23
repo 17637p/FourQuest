@@ -489,22 +489,28 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 	auto view = any.as_sequence_container();
 	assert(view);
 
-	// 컨테이너 사이즈 표시
-	int size = static_cast<int>(view.size());
-	std::string sizeString = "size " + std::to_string(size);
-	ImGui::Text(sizeString.c_str());
-
-	ImGui::SameLine();
+	ImGui::Text(fq::reflect::GetName(data).c_str());
 
 	// Add Elemnent
-	auto baseValue = view.value_type().construct();
-	if (ImGui::Button(fq::reflect::GetName(data).c_str()))
-	{
-		auto last = view.end();
-		view.insert(last, baseValue);
+	//auto baseValue = view.value_type().construct();
+	//if (ImGui::Button(fq::reflect::GetName(data).c_str()))
+	//{
+	//	auto last = view.end();
+	//	view.insert(last, baseValue);
 
-		// 컨테이너를 복사합니다
-		data.set(handle->GetHandle(), any);
+	//	// 컨테이너를 복사합니다
+	//	data.set(handle->GetHandle(), any);
+	//}
+
+	auto valueType = view.value_type();
+
+	if (valueType == entt::resolve<std::string>())
+	{
+		for (auto element : view)
+		{
+			std::string val = element.cast<std::string>();
+			ImGui::Text(val.c_str());
+		}
 	}
 }
 

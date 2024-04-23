@@ -48,7 +48,7 @@ namespace fq::reflect
 		
 		entt::meta_any ParseClassFromJson(const std::string& classID,const nlohmann::json& inJson);
 		
-		entt::meta_any ParseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType);
+		entt::meta_any ParseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType, const entt::meta_data& metaData);
 
 		std::string ConvertString(const entt::meta_any& any);
 	};

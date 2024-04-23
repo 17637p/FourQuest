@@ -49,3 +49,8 @@ void fq::game_module::StaticMeshRenderer::SetMeshObjectInfomation(fq::graphics::
 
 }
 
+void fq::game_module::StaticMeshRenderer::SetMaterials(std::vector<std::string> materials)
+{
+	mMeshInfomation.MaterialNames = std::move(materials);
+}
+
