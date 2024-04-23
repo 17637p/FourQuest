@@ -22,8 +22,8 @@ namespace fq::graphics
 	class D3D11ObjectManager
 	{
 	public:
-		void ConvertModel(std::string fbxFile, std::string path);
-		const fq::common::Model& CreateModel(const std::shared_ptr<D3D11Device>& device, std::string path, std::filesystem::path textureBasePath = "");
+		void ConvertModel(std::string fbxFile, std::string fileName);
+		const fq::common::Model& CreateModel(const std::shared_ptr<D3D11Device>& device, std::string fileName, std::filesystem::path textureBasePath = "");
 		const fq::common::Model& GetModel(std::string path);
 		void DeleteModel(std::string path);
 

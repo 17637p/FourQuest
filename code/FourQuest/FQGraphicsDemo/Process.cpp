@@ -42,10 +42,10 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
-	const std::string modelPath = "./resource/example/zeldaPosed001/zeldaPosed001";
+	const std::string modelPath = "./resource/example/model/box.model";
 
-	mTestGraphics->ConvertModel("./resource/example/zeldaPosed001.fbx", modelPath);
-	auto model = mTestGraphics->CreateModel(modelPath, "./resource/example");
+	mTestGraphics->ConvertModel("./resource/example/fbx/box.fbx", modelPath);
+	auto model = mTestGraphics->CreateModel(modelPath, "./resource/example/texture");
 	auto model1 = mTestGraphics->GetModel(modelPath);
 	for (auto mesh : model.Meshes)
 	{

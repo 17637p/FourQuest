@@ -9,22 +9,22 @@
 
 namespace fq::graphics
 {
-	void D3D11ObjectManager::ConvertModel(std::string fbxFile, std::string path)
+	void D3D11ObjectManager::ConvertModel(std::string fbxFile, std::string fileName)
 	{
 		fq::loader::ModelConverter converter;
 		converter.ReadFBXFile(fbxFile);
-		converter.WriteModel(path);
+		fq::loader::ModelLoader::Write(converter.Convert(), fileName);
 	}
-	const fq::common::Model& D3D11ObjectManager::CreateModel(const std::shared_ptr<D3D11Device>& device, std::string path, std::filesystem::path textureBasePath)
+	const fq::common::Model& D3D11ObjectManager::CreateModel(const std::shared_ptr<D3D11Device>& device, std::string fileName, std::filesystem::path textureBasePath)
 	{
-		auto find = mModels.find(path);
+		auto find = mModels.find(fileName);
 
 		if (find != mModels.end())
 		{
 			return find->second;
 		}
 
-		fq::common::Model model = fq::loader::ModelLoader::ReadModel(path);
+		fq::common::Model model = fq::loader::ModelLoader::Read(fileName);
 
 		for (const auto& material : model.Materials)
 		{
@@ -33,7 +33,7 @@ namespace fq::graphics
 				continue;
 			}
 
-			CreateMaterial(device, path + material.Name, material, textureBasePath);
+			CreateMaterial(device, fileName + material.Name, material, textureBasePath);
 		}
 
 		for (const auto& nodeMeshPair : model.Meshes)
@@ -47,17 +47,17 @@ namespace fq::graphics
 
 			if (mesh.BoneVertices.empty())
 			{
-				CreateStaticMesh(device, path + mesh.Name, mesh);
+				CreateStaticMesh(device, fileName + mesh.Name, mesh);
 			}
 			else
 			{
-				CreateSkinnedMesh(device, path + mesh.Name, mesh);
+				CreateSkinnedMesh(device, fileName + mesh.Name, mesh);
 			}
 		}
 
-		mModels.insert({ path, std::move(model) });
+		mModels.insert({ fileName, std::move(model) });
 
-		return mModels[path];
+		return mModels[fileName];
 	}
 	const fq::common::Model& D3D11ObjectManager::GetModel(std::string path)
 	{

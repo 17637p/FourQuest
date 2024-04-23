@@ -30,7 +30,7 @@ namespace fq::graphics
 		std::shared_ptr<T> Create(EType eType, Params... params);
 
 	private:
-		std::unordered_map<std::string, std::weak_ptr<ResourceBase> > mResources;
+		std::unordered_map<std::string, std::weak_ptr<ResourceBase>> mResources;
 
 		// 생성할 때 필요한 외부 팩토리나 생성에 관련된 클래스들
 		std::shared_ptr<D3D11Device> mDevice;

@@ -1,8 +1,6 @@
 #include "pch.h"
 
 #include "ModelConverter.h"
-#include "ModelLoader.h"
-#include "FileUtil.h"
 #include "Util.h"
 
 namespace fq::loader
@@ -42,41 +40,18 @@ namespace fq::loader
 		return mAiScene != nullptr;
 	}
 
-	void ModelConverter::WriteModel(const std::string& savePath)
-	{
-		WriteMesh(savePath + ".mesh");
-		WriteMaterial(savePath + ".material");
-		WriteAnimation(savePath + ".animation");
-	}
-
-	void ModelConverter::WriteMesh(const std::string& saveName)
+	fq::common::Model ModelConverter::Convert()
 	{
 		assert(mAiScene != nullptr);
 		using namespace std;
 		using namespace fq::common;
 
-		vector<pair<Node, Mesh>> meshData = convertModel();
-		ModelLoader::WriteMeshByData(meshData, saveName);
-	}
+		Model model;
+		model.Meshes = convertModel();
+		model.Materials = convertMaterial();
+		model.Animations = convertAnimation();
 
-	void ModelConverter::WriteMaterial(const std::string& saveName)
-	{
-		assert(mAiScene != nullptr);
-		using namespace std;
-		using namespace fq::common;
-
-		vector<Material> materials = convertMaterial();
-		ModelLoader::WriteMaterialByData(materials, saveName);
-	}
-
-	void ModelConverter::WriteAnimation(const std::string& saveName)
-	{
-		assert(mAiScene != nullptr);
-		using namespace std;
-		using namespace fq::common;
-
-		vector<AnimationClip> animationClips = convertAnimation();
-		ModelLoader::WriteAnimationByData(animationClips, saveName);
+		return model;
 	}
 
 	std::vector<std::pair<fq::common::Node, fq::common::Mesh>> ModelConverter::convertModel()
