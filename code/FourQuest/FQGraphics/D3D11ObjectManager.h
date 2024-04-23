@@ -22,9 +22,15 @@ namespace fq::graphics
 	class D3D11ObjectManager
 	{
 	public:
+		void ConvertModel(std::string fbxFile, std::string path);
+		const fq::common::Model& CreateModel(const std::shared_ptr<D3D11Device>& device, std::string path, std::filesystem::path textureBasePath = "");
+		const fq::common::Model& GetModel(std::string path);
+		void DeleteModel(std::string path);
+
 		bool CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
 		bool CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
 		bool CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath);
+		bool CreateBoneHierarchy(std::string key, const fq::common::Model modelData);
 
 		void DeleteStaticMesh(std::string key);
 		void DeleteSkinnedMesh(std::string key);
@@ -45,6 +51,8 @@ namespace fq::graphics
 			std::vector<std::shared_ptr<Material>>* outMaterials) const;
 
 	private:
+		std::map<std::string, fq::common::Model> mModels;
+
 		std::map<std::string, std::shared_ptr<StaticMesh>> mStaticMeshResources;
 		std::map<std::string, std::shared_ptr<SkinnedMesh>> mSkinnedMeshResources;
 		std::map<std::string, std::shared_ptr<Material>> mMaterialResources;

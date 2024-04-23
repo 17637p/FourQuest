@@ -28,6 +28,7 @@ extern "C" {
 		{
 		public:
 			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
+
 			virtual FQ_GRAPHICS void UpdateBoneMatrix(const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices) = 0;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 

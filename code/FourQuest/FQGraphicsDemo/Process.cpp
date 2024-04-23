@@ -125,6 +125,9 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//	return 0;
 		//}
 		//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
+
+		mScreenWidth = LOWORD(lParam);
+		mScreenHeight = HIWORD(lParam);
 	}
 
 	case WM_PAINT:
@@ -150,6 +153,11 @@ void Process::Update()
 	if (GetAsyncKeyState(VK_ESCAPE))
 	{
 		PostQuitMessage(0);
+	}
+
+	if (GetAsyncKeyState(VK_F1) & 0x8000)
+	{
+		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
 	}
 
 	InputManager::GetInstance().Update();

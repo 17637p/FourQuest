@@ -40,8 +40,8 @@ private:
 	const int mWindowPosY;
 
 	// 화면 크기
-	const int mScreenWidth;
-	const int mScreenHeight;
+	int mScreenWidth;
+	int mScreenHeight;
 
 	bool mResizing;
 

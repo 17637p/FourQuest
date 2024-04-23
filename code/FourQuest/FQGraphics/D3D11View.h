@@ -32,9 +32,13 @@ namespace fq::graphics
 
 		static std::string GenerateRID(const ED3D11RenderTargetViewType eViewType);
 
-		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device, const DirectX::SimpleMath::Color& clearColor = { 0.f, 0.f, 0.f, 1.f });
-
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
+
+		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device, const DirectX::SimpleMath::Color& clearColor = { 0.f, 0.f, 0.f, 1.f });
+		void OnResize(const std::shared_ptr<D3D11Device>& d3d11Device,
+			const ED3D11RenderTargetViewType eViewType,
+			const unsigned short width, const unsigned short height);
+		void Release();
 
 	private:
 		ComPtr<ID3D11RenderTargetView> mRTV;
@@ -78,6 +82,10 @@ namespace fq::graphics
 		static std::string GenerateRID(const ED3D11DepthStencilViewType eViewType);
 
 		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void OnResize(const std::shared_ptr<D3D11Device>& d3d11Device,
+			const ED3D11DepthStencilViewType eViewType,
+			const unsigned short width, const unsigned short height);
+		void Release();
 
 		friend class D3D11RenderTargetView;
 
