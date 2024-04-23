@@ -81,6 +81,7 @@ namespace fq::graphics
 
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<StaticMeshJob>& staticMeshJobs);
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<SkinnedMeshJob>& skinnedMeshJobs);
+		void RenderBackBuffer(const std::shared_ptr<D3D11Device>& device);
 
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;
 

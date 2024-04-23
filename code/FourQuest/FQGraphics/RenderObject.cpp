@@ -27,8 +27,4 @@ namespace fq::graphics
 	{
 		mTransform = transform;
 	}
-	void SkinnedMeshObject::UpdateBoneMatrix(const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices)
-	{
-		mBoneMatrices = boneMatrices;
-	}
 }

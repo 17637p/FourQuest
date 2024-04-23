@@ -75,19 +75,6 @@ namespace fq::graphics
 
 	void D3D11RenderManager::EndRender(const std::shared_ptr<D3D11Device>& device)
 	{
-		mSwapChainRTV->Bind(device, mNullDSV);
-		mBackBufferSRV->Bind(device, 0, ED3D11ShaderType::Pixelshader);
-		mFullScreenVB->Bind(device);
-		mFullScreenIB->Bind(device);
-
-		mFullScreenLayout->Bind(device);
-		mFullScreenVS->Bind(device);
-		mFullScreenPS->Bind(device);
-
-		mPointClampSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
-
-		device->GetDeviceContext()->DrawIndexed(6u, 0, 0);
-
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = device->GetSwapChain();
 		HR(swapChain->Present(0, 0));
 	}
@@ -168,6 +155,22 @@ namespace fq::graphics
 	void D3D11RenderManager::Render(const std::shared_ptr<D3D11Device>& device, const std::vector<SkinnedMeshJob>& skinnedMeshJobs)
 	{
 
+	}
+
+	void D3D11RenderManager::RenderBackBuffer(const std::shared_ptr<D3D11Device>& device)
+	{
+		mSwapChainRTV->Bind(device, mNullDSV);
+		mBackBufferSRV->Bind(device, 0, ED3D11ShaderType::Pixelshader);
+		mFullScreenVB->Bind(device);
+		mFullScreenIB->Bind(device);
+
+		mFullScreenLayout->Bind(device);
+		mFullScreenVS->Bind(device);
+		mFullScreenPS->Bind(device);
+
+		mPointClampSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
+
+		device->GetDeviceContext()->DrawIndexed(6u, 0, 0);
 	}
 
 	void D3D11RenderManager::updateModelTransformCB(const std::shared_ptr<D3D11Device>& device, const DirectX::SimpleMath::Matrix& transform)

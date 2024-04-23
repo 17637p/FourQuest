@@ -150,7 +150,6 @@
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="LightBase.h" />
     <ClInclude Include="D3D11ObjectManager.h" />
-    <ClInclude Include="IRenderObject.h" />
     <ClInclude Include="ManagementCommon.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />

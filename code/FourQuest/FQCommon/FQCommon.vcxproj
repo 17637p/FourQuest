@@ -133,6 +133,7 @@
     <ClInclude Include="FQCommonGraphics.h" />
     <ClInclude Include="FQCommonLoader.h" />
     <ClInclude Include="FQPath.h" />
+    <ClInclude Include="IFQRenderObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp" />

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "IRenderObject.h"
+#include "../FQCommon/IFQRenderObject.h"
 
 namespace fq::graphics
 {
@@ -55,7 +55,6 @@ namespace fq::graphics
 		~SkinnedMeshObject() = default;
 
 		virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		virtual void UpdateBoneMatrix(const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices) override;
 		virtual inline const DirectX::SimpleMath::Matrix& GetTransform() const override;
 
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;

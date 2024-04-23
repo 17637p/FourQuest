@@ -49,6 +49,7 @@ bool FQGraphics::Render()
 
 	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
 	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
+	mRenderManager->RenderBackBuffer(mDevice);
 
 	return true;
 }
@@ -56,7 +57,6 @@ bool FQGraphics::Render()
 bool FQGraphics::EndRender()
 {
 	mRenderManager->EndRender(mDevice);
-
 	mJobManager->ClearAll();
 
 	return true;

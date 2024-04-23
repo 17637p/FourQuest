@@ -7,7 +7,7 @@
 
 #include "d3d11.h"
 
-#include "IRenderObject.h"
+#include "../FQCommon/IFQRenderObject.h"
 
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQCommon/FQCommonGraphics.h"
