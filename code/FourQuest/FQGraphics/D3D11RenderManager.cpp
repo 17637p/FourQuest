@@ -64,7 +64,7 @@ namespace fq::graphics
 	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device)
 	{
 		mDSV->Clear(device);
-		mBackBufferRTV->Clear(device);
+		mBackBufferRTV->Clear(device, { 1.f, 1.f, 1.f, 1.f });
 
 		ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
 		device->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
@@ -122,7 +122,7 @@ namespace fq::graphics
 		mLinearClampSamplerState->Bind(device, 1, ED3D11ShaderType::Pixelshader);
 		// 임시 데이터, 카메라 반영시켜줘야 함
 		SceneTrnasform sceneTransform;
-		DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookAtLH({ 0, 0, -300 }, { 0, 0,0 }, { 0, 1, 0 });
+		DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookAtLH({ 0, 200, -500 }, { 0, 0,0 }, { 0, 1, 0 });
 		DirectX::SimpleMath::Matrix proj = DirectX::XMMatrixPerspectiveFovLH(0.25f * 3.14f, 1.f, 1.f, 1000.f); // width / height
 		sceneTransform.ViewProjMat = (view * proj).Transpose();
 		sceneTransform.ShadowViewProjTexMat;
@@ -130,15 +130,15 @@ namespace fq::graphics
 
 		// 임시 데이터, 조명 반영시켜줘야 함
 		SceneLight scenelight;
-		scenelight.Lights[0].Direction = { -1.0f, 0.0f, 0.f };
+		scenelight.Lights[0].Direction = { 0.0f, 0.0f, 1.f };
 		scenelight.Lights[0].Intensity = { 1.f, 1.f, 1.f };
 		scenelight.Lights[1].Direction = { 1.0f, 0.f, 0.f };
 		scenelight.Lights[1].Direction.Normalize();
-		scenelight.Lights[1].Intensity = { 0.f, 0.f, 0.f };
+		scenelight.Lights[1].Intensity = { 1.f, 1.f, 1.f };
 		scenelight.Lights[2].Direction = { 0.0f, -1.f ,0.f };
 		scenelight.Lights[2].Direction.Normalize();
-		scenelight.Lights[2].Intensity = { 0.f, 0.f, 0.f };
-		scenelight.EyePosition = { 0, 0, -300 };
+		scenelight.Lights[2].Intensity = { 1.f, 1.f, 1.f };
+		scenelight.EyePosition = { 0, 200, -500 };
 		scenelight.bUseIBL = false;
 		mSceneLightCB->Update(device, scenelight);
 
@@ -186,6 +186,7 @@ namespace fq::graphics
 		ModelTexutre modelTexture;
 		modelTexture.bUseAlbedoMap = material->GetHasBaseColor();
 		modelTexture.bUseMetalnessMap = material->GetHasMetalness();
+		modelTexture.bUseNormalMap = material->GetHasNormal();
 		modelTexture.bUseRoughnessMap = material->GetHasRoughness();
 		modelTexture.bUseEmissiveMap = material->GetHasEmissive();
 		modelTexture.bUseOpacityMap = material->GetHasOpacity();
