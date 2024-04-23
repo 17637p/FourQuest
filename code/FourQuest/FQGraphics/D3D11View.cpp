@@ -81,6 +81,71 @@ void  fq::graphics::D3D11RenderTargetView::Clear(const std::shared_ptr<D3D11Devi
 {
 	d3d11Device->GetDeviceContext()->ClearRenderTargetView(mRTV.Get(), clearColor);
 }
+void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11Device>& d3d11Device,
+	const ED3D11RenderTargetViewType eViewType,
+	const unsigned short width, const unsigned short height)
+{
+	switch (eViewType)
+	{
+	case ED3D11RenderTargetViewType::Default:
+	{
+		ID3D11Device* device = d3d11Device->GetDevice().Get();
+		IDXGISwapChain* swapChain = d3d11Device->GetSwapChain().Get();
+
+		assert(device);
+		assert(swapChain);
+
+		// 화면에 그려질 버퍼 렌더 타겟 생성
+		ID3D11Texture2D* backBuffer = nullptr;
+
+		HR(swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
+		if (backBuffer == nullptr)
+		{
+			MessageBox(NULL, L"backBuffer가 생성되지 않았습니다.", L"에러", MB_ICONERROR);
+		}
+		else
+		{
+			HR(d3d11Device->GetDevice()->CreateRenderTargetView(backBuffer, 0, mRTV.GetAddressOf()));
+		}
+		ReleaseCOM(backBuffer);
+
+		return;
+	}
+	case ED3D11RenderTargetViewType::Offscreen:
+	{
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM; // DXGI_FORMAT_R16G16B16A16_FLOAT : HDR
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		ComPtr<ID3D11Texture2D> pTexture;
+		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = textureDesc.Format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+		HR(d3d11Device->GetDevice()->CreateRenderTargetView(pTexture.Get(), &rtvDesc, mRTV.GetAddressOf()));
+
+		break;
+	}
+	default:
+		break;
+	}
+}
+void fq::graphics::D3D11RenderTargetView::Release()
+{
+	ULONG refCount = mRTV.Reset();
+	assert(refCount == 0);
+}
 
 void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView)
 {
@@ -200,6 +265,52 @@ fq::graphics::D3D11DepthStencilView::D3D11DepthStencilView(const std::shared_ptr
 void D3D11DepthStencilView::Clear(const std::shared_ptr<D3D11Device>& d3d11Device)
 {
 	d3d11Device->GetDeviceContext()->ClearDepthStencilView(mDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+}
+void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11Device,
+	const ED3D11DepthStencilViewType eViewType,
+	const unsigned short width, const unsigned short height)
+{
+	ID3D11Device* device = d3d11Device->GetDevice().Get();
+
+	if (eViewType == ED3D11DepthStencilViewType::None)
+	{
+		return;
+	}
+
+	// Depth stencil Buffer 생성
+	D3D11_TEXTURE2D_DESC depthStencilDesc{};
+
+	depthStencilDesc.Width = width;
+	depthStencilDesc.Height = height;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* depthStencilBuffer;
+
+	HR(device->CreateTexture2D(&depthStencilDesc, 0, &depthStencilBuffer));
+	if (depthStencilBuffer == nullptr)
+	{
+		MessageBox(NULL, L"depthStencilBuffer가 생성되지 않았습니다.", L"에러", MB_ICONERROR);
+	}
+	else
+	{
+		HR(device->CreateDepthStencilView(depthStencilBuffer, 0, mDSV.GetAddressOf()));
+	}
+	ReleaseCOM(depthStencilBuffer);
+}
+void D3D11DepthStencilView::Release()
+{
+	ULONG refCount = mDSV.Reset();
+	assert(refCount == 0);
 }
 
 std::string D3D11DepthStencilView::GenerateRID(const ED3D11DepthStencilViewType eViewType)

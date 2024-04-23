@@ -61,3 +61,8 @@ bool D3D11Device::Initialize(const HWND hWnd, const unsigned short width, const 
 
 	return true;
 }
+
+void D3D11Device::OnResize(const unsigned short width, const unsigned short height)
+{
+	mSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+}

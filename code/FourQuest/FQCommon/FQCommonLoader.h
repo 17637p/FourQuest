@@ -117,11 +117,11 @@ namespace fq::common
 		std::vector<NodeClip> NodeClips;
 	};
 
-	// fbx에 대응되는 친구
 	struct Model
 	{
 		std::vector<std::pair<Node, Mesh>> Meshes;
 		std::vector<AnimationClip> Animations;
 		std::vector<Material> Materials;
 	};
+
 }

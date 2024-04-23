@@ -74,7 +74,10 @@ namespace fq::graphics
 		void BeginRender(const std::shared_ptr<D3D11Device>& device);
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
 
-		void OnResize(unsigned short width, unsigned short height);
+		void OnResize(const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+			unsigned short width,
+			unsigned short height);
 
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<StaticMeshJob>& staticMeshJobs);
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<SkinnedMeshJob>& skinnedMeshJobs);
@@ -108,7 +111,7 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
-		std::shared_ptr<D3D11SamplerState> mPointClamp;
+		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;

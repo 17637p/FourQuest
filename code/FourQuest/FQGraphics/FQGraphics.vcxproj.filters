@@ -13,9 +13,6 @@
     <ClInclude Include="D3D11Device.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11View.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -39,6 +36,12 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="LightBase.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11TextManager.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Resource</Filter>
@@ -75,9 +78,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Renderer">
-      <UniqueIdentifier>{4d9c6449-de37-4741-8db1-b59999b9177e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="D3D11">
       <UniqueIdentifier>{6c3f3643-8390-495e-8c04-edefb2f87b65}</UniqueIdentifier>
     </Filter>
@@ -110,9 +110,6 @@
     <ClCompile Include="D3D11Device.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="D3D11View.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
@@ -136,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="LightBase.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11TextManager.cpp">
+      <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Resource</Filter>

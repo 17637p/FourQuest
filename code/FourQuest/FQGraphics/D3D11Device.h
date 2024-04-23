@@ -12,6 +12,8 @@ namespace fq::graphics
 
 		bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height);
 
+		void OnResize(const unsigned short width, const unsigned short height);
+
 		Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() const { return mDevice; }
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetDeviceContext() const { return mDeviceContext; }
 		Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() const { return mSwapChain; }

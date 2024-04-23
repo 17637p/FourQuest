@@ -13,10 +13,10 @@ namespace fq::graphics
 		float farPlain = 0;
 	};
 
-	enum class LightType
+	enum class ELightType
 	{
 		Directional,
-		Point,
+		Point, 
 		Spot
 	};
 
@@ -25,7 +25,7 @@ namespace fq::graphics
 		// Common
 		unsigned int id = -1;
 
-		LightType type;
+		ELightType type;
 		DirectX::SimpleMath::Vector3 color = { -1.0f, -1.0f, -1.0f };
 		float intensity = -1.0f;
 

@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D11Buffer.h" />
+    <ClInclude Include="D3D11TextManager.h" />
     <ClInclude Include="D3D11JobManager.h" />
     <ClInclude Include="D3D11RenderManager.h" />
     <ClInclude Include="D3D11ResourceType.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="D3D11State.h" />
     <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
+    <ClInclude Include="LightBase.h" />
     <ClInclude Include="D3D11ObjectManager.h" />
     <ClInclude Include="IRenderObject.h" />
     <ClInclude Include="ManagementCommon.h" />
@@ -155,13 +157,13 @@
     <ClInclude Include="RenderJob.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceBase.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
+    <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
     <ClCompile Include="D3D11RenderManager.cpp" />
     <ClCompile Include="D3D11Shader.cpp" />
@@ -171,10 +173,10 @@
     <ClCompile Include="D3D11View.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
+    <ClCompile Include="LightBase.cpp" />
     <ClCompile Include="D3D11ObjectManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />

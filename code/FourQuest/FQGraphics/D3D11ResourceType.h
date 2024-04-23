@@ -39,7 +39,8 @@ namespace fq::graphics
 	enum class ED3D11SamplerState
 	{
 		Default,
-		AnisotropicWrap
+		AnisotropicWrap,
+		PointClamp
 	};
 
 	enum class ED3D11RasterizerState
