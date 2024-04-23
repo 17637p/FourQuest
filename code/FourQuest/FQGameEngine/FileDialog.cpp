@@ -531,7 +531,6 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 
 		if (target.extension() == ".fbx")
 		{
-
 			std::wstring fileName = target.filename();
 			fileName = fileName.substr(0, fileName.size() - 4);
 

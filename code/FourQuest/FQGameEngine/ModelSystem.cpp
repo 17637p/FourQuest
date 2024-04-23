@@ -10,13 +10,10 @@
 
 fq::game_engine::ModelSystem::ModelSystem()
 	:mGameProcess(nullptr)
-{
-}
+{}
 
 fq::game_engine::ModelSystem::~ModelSystem()
-{
-
-}
+{}
 
 void fq::game_engine::ModelSystem::Initialize(GameProcess* game)
 {
@@ -25,9 +22,6 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game)
 	auto& graphics =  mGameProcess->mGraphics;
 }
 
-void fq::game_engine::ModelSystem::Render()
-{
-}
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
@@ -83,6 +77,8 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		{
 			auto& staticMeshRenderer
 				= nodeObject->AddComponent<fq::game_module::StaticMeshRenderer>();
+
+			staticMeshRenderer.SetMeshObjectInfomation(meshInfo);
 
 			auto meshObject = graphics->CreateStaticMeshObject(meshInfo);
 			staticMeshRenderer.SetStaticMeshObject(meshObject);

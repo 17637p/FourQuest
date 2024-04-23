@@ -8,6 +8,7 @@
 
 #include "WindowSystem.h"
 #include "ModelSystem.h"
+#include "RenderingSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -45,6 +46,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mGraphics->Initialize(hwnd, width,height);
 
 	mGameProcess->mModelSystem->Initialize(mGameProcess.get());
+	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
@@ -96,9 +98,11 @@ void fq::game_engine::EditorEngine::Process()
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
 
+			// 시스템 업데이트
+			mGameProcess->mRenderingSystem->Update(deltaTime);
+
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
-			mGameProcess->mModelSystem->Render();
 
 			mGameProcess->mGraphics->Render();
 			mEditor->mGamePlayWindow->Update();
