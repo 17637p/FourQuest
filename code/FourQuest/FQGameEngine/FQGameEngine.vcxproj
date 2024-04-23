@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
     <ClInclude Include="EditorEnum.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="WndProc.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />

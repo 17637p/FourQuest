@@ -134,6 +134,9 @@
     <ClInclude Include="RenderingSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="CameraSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -212,6 +215,9 @@
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="RenderingSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
