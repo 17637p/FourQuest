@@ -27,6 +27,9 @@
     <ClInclude Include="FQCommonLoader.h">
       <Filter>Loader</Filter>
     </ClInclude>
+    <ClInclude Include="IFQRenderObject.h">
+      <Filter>Grphiacs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp">

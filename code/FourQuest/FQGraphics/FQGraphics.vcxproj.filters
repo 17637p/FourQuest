@@ -58,9 +58,6 @@
     <ClInclude Include="RenderJob.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="IRenderObject.h">
-      <Filter>Object</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11Util.h">
       <Filter>D3D11</Filter>
     </ClInclude>
