@@ -167,6 +167,7 @@
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
     <ClInclude Include="PrefabSystem.h" />
+    <ClInclude Include="ModelSystem.h" />
     <ClInclude Include="Test.h" />
     <ClInclude Include="EditorEngine.h" />
     <ClInclude Include="WindowSystem.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
+    <ClCompile Include="ModelSystem.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="EditorEngine.cpp" />
     <ClCompile Include="WindowSystem.cpp" />

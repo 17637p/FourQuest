@@ -19,6 +19,7 @@ namespace fq::graphics
 namespace fq::game_engine
 {
 	class WindowSystem;
+	class ModelSystem;
 
 	/// <summary>
 	/// GameProcess에서 사용되는 클래스 집합
@@ -29,9 +30,6 @@ namespace fq::game_engine
 		GameProcess();
 		~GameProcess();
 
-		// Window 
-		std::unique_ptr<WindowSystem> mWindowSystem;
-
 		// GameModule
 		std::unique_ptr<fq::game_module::InputManager> mInputManager;
 		std::unique_ptr<fq::game_module::TimeManager>  mTimeManager;
@@ -41,8 +39,12 @@ namespace fq::game_engine
 
 		// Graphics
 		fq::graphics::IFQGraphics* mGraphics;
-			
+		
 		// Physics
+
+		// System
+		std::unique_ptr<WindowSystem> mWindowSystem;
+		std::unique_ptr<ModelSystem> mModelSystem;
 
 	};
 }

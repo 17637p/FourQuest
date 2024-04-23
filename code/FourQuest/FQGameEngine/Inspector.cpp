@@ -30,7 +30,6 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 	mEditorProcess = editor;
 	mInputManager = editor->mInputManager.get();
 
-
 	// 이벤트 핸들 등록
 	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
 		([this](editor_event::SelectObject event) {

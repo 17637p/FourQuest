@@ -12,14 +12,14 @@ void fq::game_module::RegisterMetaData()
 	using namespace fq::game_module;
 
 	// Tag
-	entt::meta<Tag>()
+	entt::meta<ETag>()
 		.prop(fq::reflect::prop::name, "Tag")
-		.conv<std::underlying_type_t<Tag>>()
-		.data<Tag::Untagged>("Untagged"_hs)
+		.conv<std::underlying_type_t<ETag>>()
+		.data<ETag::Untagged>("Untagged"_hs)
 		.prop(fq::reflect::prop::name, "Untagged")
-		.data<Tag::Camera>("Camera"_hs)
+		.data<ETag::Camera>("Camera"_hs)
 		.prop(fq::reflect::prop::name, "Camera")
-		.data<Tag::Player>("Player"_hs)
+		.data<ETag::Player>("Player"_hs)
 		.prop(fq::reflect::prop::name, "Player");
 
 	// GameObject 

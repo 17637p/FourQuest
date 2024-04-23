@@ -48,7 +48,7 @@ namespace fq
 			void UpdateEditor();
 
 		private:
-			std::unique_ptr<GameProcess> mGame;
+			std::unique_ptr<GameProcess> mGameProcess;
 			std::unique_ptr<EditorProcess> mEditor;
 		};
 	}

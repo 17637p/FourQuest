@@ -1,6 +1,7 @@
 #include "GamePlayWindow.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include "../FQGameModule/InputManager.h"
 #include "../FQGraphics/IFQGraphics.h"
@@ -23,14 +24,26 @@ fq::game_engine::GamePlayWindow::~GamePlayWindow()
 
 void fq::game_engine::GamePlayWindow::Render()
 {
+	auto size = ImGui::GetWindowSize();
+	mGameProcess->mGraphics->SetViewportSize(size.x, size.y);
+
+
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
 		beginMenuBar_Control();
-		auto size =  ImGui::GetWindowSize();
 
-		mGameProcess->mGraphics->SetViewportSize(size.x, size.y);
+		auto current = ImGui::GetCurrentContext();
+		auto pos = current->CurrentWindow->Pos;
+		auto size = current->CurrentWindow->Size;
+		auto idealSize = ImVec2(size.x, size.y - 3);
+		auto maxpos = ImVec2(pos.x + idealSize.x, pos.y + idealSize.y);
+		auto borderSize = current->CurrentWindow->WindowBorderSize;
 
-		//ImGui::Image(mGameProcess->mGraphics->GetSRV(),ImGui::GetWindowSize());
+		ImGui::GetWindowDrawList()->AddImage(
+			mTexture,
+			ImVec2(pos.x, pos.y + 22),
+			ImVec2(maxpos.x, maxpos.y)
+		);
 	}
 
 	ImGui::End();
@@ -40,7 +53,6 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
-
 
 }
 
@@ -188,5 +200,10 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		}
 	}
 
+}
+
+void fq::game_engine::GamePlayWindow::Update()
+{
+	mTexture = mGameProcess->mGraphics->GetSRV();
 }
 

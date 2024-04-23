@@ -7,11 +7,13 @@
 #include "EditorProcess.h"
 
 #include "WindowSystem.h"
+#include "ModelSystem.h"
+
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
 
 fq::game_engine::EditorEngine::EditorEngine()
-	:mGame(std::make_unique<GameProcess>())
+	:mGameProcess(std::make_unique<GameProcess>())
 	, mEditor(std::make_unique<EditorProcess>())
 {}
 
@@ -25,29 +27,30 @@ void fq::game_engine::EditorEngine::Initialize()
 	fq::game_engine::RegisterMetaData();
 
 	// 윈도우 창 초기화 
-	mGame->mWindowSystem->InitializeEditorType();
+	mGameProcess->mWindowSystem->InitializeEditorType();
 
 	// GameProcess 초기화
-	mGame->mInputManager->
-		Initialize(mGame->mWindowSystem->GetHWND());
+	mGameProcess->mInputManager->
+		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mGame->mSceneManager->Initialize("example"
-		, mGame->mEventManager.get()
-		, mGame->mInputManager.get());
+	mGameProcess->mSceneManager->Initialize("example"
+		, mGameProcess->mEventManager.get()
+		, mGameProcess->mInputManager.get());
 
 	// 그래픽스 엔진 초기화
-	mGame->mGraphics = fq::graphics::EngineExporter().GetEngine();
-	HWND hwnd = mGame->mWindowSystem->GetHWND();
-	float width = mGame->mWindowSystem->GetScreenWidth();
-	float height = mGame->mWindowSystem->GetScreenHeight();
-	
-	mGame->mGraphics->Initialize(hwnd, width,height);
+	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
+	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
+	float width = mGameProcess->mWindowSystem->GetScreenWidth();
+	float height = mGameProcess->mWindowSystem->GetScreenHeight();
+	mGameProcess->mGraphics->Initialize(hwnd, width,height);
+
+	mGameProcess->mModelSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
 
 	// Scene 로드 
-	mGame->mSceneManager->LoadScene();
+	mGameProcess->mSceneManager->LoadScene();
 }
 
 void fq::game_engine::EditorEngine::Process()
@@ -70,44 +73,45 @@ void fq::game_engine::EditorEngine::Process()
 		else
 		{
 			// 화면 크기 조정
-			if (mGame->mWindowSystem->IsResizedWindow())
+			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
-				mGame->mWindowSystem->OnResize();
-				mGame->mGraphics->SetWindowSize(mGame->mWindowSystem->GetScreenWidth()
-					, mGame->mWindowSystem->GetScreenHeight());
+				mGameProcess->mWindowSystem->OnResize();
+				mGameProcess->mGraphics->SetWindowSize(mGameProcess->mWindowSystem->GetScreenWidth()
+					, mGameProcess->mWindowSystem->GetScreenHeight());
 			}
 
 			auto mode = mEditor->mGamePlayWindow->GetMode();
 
-			float deltaTime = mGame->mTimeManager->Update();
+			float deltaTime = mGameProcess->mTimeManager->Update();
 
 			if (mode == EditorMode::Play)
 			{
 				// 시간,입력 처리
-				mGame->mInputManager->Update();  
+				mGameProcess->mInputManager->Update();  
 
 				// 물리처리
-				mGame->mSceneManager->FixedUpdate(0.f);
+				mGameProcess->mSceneManager->FixedUpdate(0.f);
 
-				mGame->mSceneManager->Update(deltaTime);
-				mGame->mSceneManager->LateUpdate(deltaTime);
+				mGameProcess->mSceneManager->Update(deltaTime);
+				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
 
-			mEditor->mImGuiSystem->NewFrame();
-
-			UpdateEditor();
-
 			// 랜더링 
-			mGame->mGraphics->BeginRender();
-			mGame->mGraphics->Render();
+			mGameProcess->mGraphics->BeginRender();
+			mGameProcess->mModelSystem->Render();
+
+			mGameProcess->mGraphics->Render();
+			mEditor->mGamePlayWindow->Update();
+
+			mEditor->mImGuiSystem->NewFrame();
+			UpdateEditor();
 
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
+			mGameProcess->mGraphics->EndRender();
 
-			mGame->mGraphics->EndRender();
-
-			mGame->mSceneManager->PostUpdate();
-			if (mGame->mSceneManager->IsEnd())
+			mGameProcess->mSceneManager->PostUpdate();
+			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;
 			}
@@ -125,42 +129,42 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mLogWindow->Finalize();
 
 	// GameProcess
-	mGame->mSceneManager->Finalize();
-	mGame->mEventManager->RemoveAllHandles();
+	mGameProcess->mSceneManager->Finalize();
+	mGameProcess->mEventManager->RemoveAllHandles();
 
-	mGame->mGraphics->Finalize();
+	mGameProcess->mGraphics->Finalize();
 
 	// Window 종료
-	mGame->mWindowSystem->Finalize();
+	mGameProcess->mWindowSystem->Finalize();
 }
 
 void fq::game_engine::EditorEngine::RenderEditorWinodw()
 {
+	mEditor->mGamePlayWindow->Render();
 	mEditor->mHierarchy->Render();
 	mEditor->mInspector->Render();
 	mEditor->mLogWindow->Render();
 	mEditor->mFileDialog->Render();
-	mEditor->mGamePlayWindow->Render();
 	mEditor->mMainMenuBar->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
 {
 	// Editor InputManager 초기화
-	mEditor->mInputManager->Initialize(mGame->mWindowSystem->GetHWND());
+	mEditor->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
 	// System 초기화
-	mEditor->mImGuiSystem->Initialize(mGame->mWindowSystem->GetHWND()
-		, mGame->mGraphics->GetDivice(), mGame->mGraphics->GetDeviceContext());
-	mEditor->mCommandSystem->Initialize(mGame.get(), mEditor.get());
-	mEditor->mPrefabSystem->Initialize(mGame.get(), mEditor.get());
+	mEditor->mImGuiSystem->Initialize(mGameProcess->mWindowSystem->GetHWND()
+		, mGameProcess->mGraphics->GetDivice(), mGameProcess->mGraphics->GetDeviceContext());
+	mEditor->mCommandSystem->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mPrefabSystem->Initialize(mGameProcess.get(), mEditor.get());
 
 	// Window 초기화
-	mEditor->mInspector->Initialize(mGame.get(), mEditor.get());
-	mEditor->mHierarchy->Initialize(mGame.get(), mEditor.get());
-	mEditor->mFileDialog->Initialize(mGame.get(), mEditor.get());
-	mEditor->mMainMenuBar->Initialize(mGame.get(), mEditor.get());
-	mEditor->mGamePlayWindow->Initialize(mGame.get(), mEditor.get());
+	mEditor->mInspector->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mHierarchy->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mFileDialog->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mMainMenuBar->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mGamePlayWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize();
 }
 
@@ -168,8 +172,8 @@ void fq::game_engine::EditorEngine::UpdateEditor()
 {
 	mEditor->mInputManager->Update();
 	mEditor->mGamePlayWindow->ExcutShortcut();
+	mEditor->mMainMenuBar->ExcuteShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();
 	mEditor->mHierarchy->ExcuteShortcut();
-	mEditor->mMainMenuBar->ExcuteShortcut();
 }
 
