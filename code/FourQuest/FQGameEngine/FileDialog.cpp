@@ -269,6 +269,10 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		drawTextureImage(path);
 	}
+	else if (extension == ".model")
+	{
+		ImGui::Image(GetIcon(L"model.png"), mIconSize);
+	}
 	else
 	{
 		ImGui::Image(GetIcon(L"error.png"), mIconSize);
@@ -534,10 +538,9 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 			std::wstring fileName = target.filename();
 			fileName = fileName.substr(0, fileName.size() - 4);
 
-			fs::path directory = target.parent_path() / fileName/ fileName;
+			fs::path directory = target.parent_path() / fileName;
 			mGameProcess->mGraphics->ConvertModel(target.string(), directory.string());
 		}
-
 	}
 
 	dropFiles.clear();

@@ -330,9 +330,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 			}
 			else if (std::filesystem::is_directory(*path)) // 임시적으로 모델을 생성해보자
 			{
-				std::string sPath = path->string();
-
-				mGameProcess->mModelSystem->BuildModel(sPath);
+				mGameProcess->mModelSystem->BuildModel(*path);
 			}
 		}
 

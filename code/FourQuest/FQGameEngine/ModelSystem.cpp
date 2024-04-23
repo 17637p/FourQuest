@@ -26,7 +26,7 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game)
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
 	std::filesystem::path texturePath = path.parent_path();
-	std::filesystem::path modelPath = path / path.filename();
+	std::filesystem::path modelPath = path;
 
 	auto& graphics =  mGameProcess->mGraphics;
 	const auto& model =  graphics->CreateModel(modelPath.string(), texturePath);
