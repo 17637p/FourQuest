@@ -94,9 +94,9 @@ void FQGraphics::DeleteModel(std::string path)
 	mObjectManager->DeleteModel(path);
 }
 
-void FQGraphics::ConvertModel(std::string fbxFile, std::string path)
+void FQGraphics::ConvertModel(std::string fbxFile, std::string fileName)
 {
-	mObjectManager->ConvertModel(fbxFile, path);
+	mObjectManager->ConvertModel(fbxFile, fileName);
 }
 
 IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)

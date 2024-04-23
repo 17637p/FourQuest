@@ -62,6 +62,24 @@ namespace fq::loader
 		vector<pair<Node, Mesh>> meshData;
 
 		parseNode(mAiScene->mRootNode, &meshData);
+
+		size_t index = 0;
+		set<string> meshNameSet;
+
+		for (auto& nodeMeshPair : meshData)
+		{
+			std::string& meshName = nodeMeshPair.second.Name;
+
+			auto find = meshNameSet.find(meshName);
+
+			if (find != meshNameSet.end())
+			{
+				meshName += std::to_string(index++);
+			}
+
+			meshNameSet.insert(meshName);
+		}
+
 		parseBone(&meshData);
 
 		return meshData;
