@@ -123,5 +123,4 @@ namespace fq::common
 		std::vector<Material> Materials;
 		std::vector<AnimationClip> Animations;
 	};
-
 }

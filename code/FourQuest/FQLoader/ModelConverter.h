@@ -17,11 +17,7 @@ namespace fq::loader
 		~ModelConverter();
 
 		bool ReadFBXFile(const std::string& fileName);
-
-		void WriteModel(const std::string& savePath);
-		void WriteMesh(const std::string& saveName);
-		void WriteMaterial(const std::string& saveName);
-		void WriteAnimation(const std::string& saveName);
+		fq::common::Model Convert();
 
 	private:
 		std::vector<std::pair<fq::common::Node, fq::common::Mesh>> convertModel();
