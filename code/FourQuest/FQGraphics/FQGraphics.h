@@ -32,8 +32,8 @@ namespace fq::graphics
 		// RenderObject
 		void ConvertModel(std::string fbxFile, std::string path) override;
 		const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
-		const fq::common::Model& GetModel(std::string path);
-		void DeleteModel(std::string path);
+		const fq::common::Model& GetModel(std::string path) override;
+		void DeleteModel(std::string path) override;
 
 		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
 		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
@@ -67,7 +67,6 @@ namespace fq::graphics
 		ID3D11ShaderResourceView* GetSRV() override;
 
 	private:
-		std::map<std::string, fq::common::Model> mModels;
 		std::shared_ptr<class D3D11Device> mDevice;
 		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;

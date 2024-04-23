@@ -39,6 +39,7 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = std::make_shared<D3D11SamplerState>(device, ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = std::make_shared<D3D11SamplerState>(device, ED3D11SamplerState::Default);
+		mPointClampSamplerState = std::make_shared< D3D11SamplerState>(device, ED3D11SamplerState::PointClamp);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(device, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(device, ED3D11ConstantBuffer::Transform);
@@ -65,6 +66,9 @@ namespace fq::graphics
 		mDSV->Clear(device);
 		mBackBufferRTV->Clear(device);
 
+		ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
+		device->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
+
 		mBackBufferRTV->Bind(device, mDSV);
 		device->GetDeviceContext()->RSSetViewports(1, &mViewport);
 	}
@@ -80,14 +84,34 @@ namespace fq::graphics
 		mFullScreenVS->Bind(device);
 		mFullScreenPS->Bind(device);
 
+		mPointClampSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
+
 		device->GetDeviceContext()->DrawIndexed(6u, 0, 0);
 
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = device->GetSwapChain();
 		HR(swapChain->Present(0, 0));
 	}
 
-	void D3D11RenderManager::OnResize(unsigned short width, unsigned short height)
+	void D3D11RenderManager::OnResize(const std::shared_ptr<D3D11Device>& device,
+		std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+		unsigned short width,
+		unsigned short height)
 	{
+		mBackBufferRTV->Release();
+		mSwapChainRTV->Release();
+		mDSV->Release();
+		mNullDSV->Release();
+
+		device->OnResize(width, height);
+
+		mBackBufferRTV->OnResize(device, ED3D11RenderTargetViewType::Offscreen, width, height);
+		mSwapChainRTV->OnResize(device, ED3D11RenderTargetViewType::Default, width, height);
+
+		mBackBufferSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mBackBufferRTV);
+
+		mDSV->OnResize(device, ED3D11DepthStencilViewType::Default, width, height);
+		mNullDSV->OnResize(device, ED3D11DepthStencilViewType::None, width, height);
+
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
 		mViewport.MinDepth = 0.f;

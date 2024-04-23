@@ -4,8 +4,110 @@
 #include "Mesh.h"
 #include "Material.h"
 
+#include "../FQLoader/ModelLoader.h"
+#include "../FQLoader/ModelConverter.h"
+
 namespace fq::graphics
 {
+	void D3D11ObjectManager::ConvertModel(std::string fbxFile, std::string path)
+	{
+		fq::loader::ModelConverter converter;
+		converter.ReadFBXFile(fbxFile);
+		converter.WriteModel(path);
+	}
+	const fq::common::Model& D3D11ObjectManager::CreateModel(const std::shared_ptr<D3D11Device>& device, std::string path, std::filesystem::path textureBasePath)
+	{
+		auto find = mModels.find(path);
+
+		if (find != mModels.end())
+		{
+			return find->second;
+		}
+
+		fq::common::Model model = fq::loader::ModelLoader::ReadModel(path);
+
+		for (const auto& material : model.Materials)
+		{
+			if (material.Name.empty())
+			{
+				continue;
+			}
+
+			CreateMaterial(device, path + material.Name, material, textureBasePath);
+		}
+
+		for (const auto& nodeMeshPair : model.Meshes)
+		{
+			const auto& mesh = nodeMeshPair.second;
+
+			if (mesh.Name.empty())
+			{
+				continue;
+			}
+
+			if (mesh.BoneVertices.empty())
+			{
+				CreateStaticMesh(device, path + mesh.Name, mesh);
+			}
+			else
+			{
+				CreateSkinnedMesh(device, path + mesh.Name, mesh);
+			}
+		}
+
+		mModels.insert({ path, std::move(model) });
+
+		return mModels[path];
+	}
+	const fq::common::Model& D3D11ObjectManager::GetModel(std::string path)
+	{
+		auto find = mModels.find(path);
+		assert(find != mModels.end());
+		return find->second;
+	}
+	void D3D11ObjectManager::DeleteModel(std::string path)
+	{
+		auto find = mModels.find(path);
+
+		if (find == mModels.end())
+		{
+			return;
+		}
+
+		const fq::common::Model& model = find->second;
+
+		for (const auto& material : model.Materials)
+		{
+			if (material.Name.empty())
+			{
+				continue;
+			}
+
+			DeleteMaterial(path + material.Name);
+		}
+
+		for (const auto& nodeMeshPair : model.Meshes)
+		{
+			const auto& mesh = nodeMeshPair.second;
+
+			if (mesh.Name.empty())
+			{
+				continue;
+			}
+
+			if (mesh.BoneVertices.empty())
+			{
+				DeleteStaticMesh(path + mesh.Name);
+			}
+			else
+			{
+				DeleteSkinnedMesh(path + mesh.Name);
+			}
+		}
+
+		mModels.erase(find);
+	}
+
 	bool D3D11ObjectManager::CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData)
 	{
 		auto find = mStaticMeshResources.find(key);
@@ -46,6 +148,10 @@ namespace fq::graphics
 		std::shared_ptr<Material> staticMesh = std::make_shared <Material>(device, matrialData, basePath);
 		mMaterialResources.insert({ key, staticMesh });
 
+		return true;
+	}
+	bool D3D11ObjectManager::CreateBoneHierarchy(std::string key, const fq::common::Model modelData)
+	{
 		return true;
 	}
 	void D3D11ObjectManager::DeleteStaticMesh(std::string key)

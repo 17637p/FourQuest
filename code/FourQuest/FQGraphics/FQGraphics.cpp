@@ -5,9 +5,6 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
-#include "../FQLoader/ModelLoader.h"
-#include "../FQLoader/ModelConverter.h"
-
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -79,109 +76,29 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
+	mRenderManager->OnResize(mDevice, mResourceManager, width, height);
+
 	return true;
 }
 
 const fq::common::Model& FQGraphics::CreateModel(std::string path, std::filesystem::path textureBasePath)
 {
-	auto find = mModels.find(path);
-
-	if (find != mModels.end())
-	{
-		return find->second;
-	}
-
-	fq::common::Model model = fq::loader::ModelLoader::ReadModel(path);
-
-	for (const auto& material : model.Materials)
-	{
-		if (material.Name.empty())
-		{
-			continue;
-		}
-
-		mObjectManager->CreateMaterial(mDevice, path + material.Name, material, textureBasePath);
-	}
-
-	for (const auto& nodeMeshPair : model.Meshes)
-	{
-		const auto& mesh = nodeMeshPair.second;
-
-		if (mesh.Name.empty())
-		{
-			continue;
-		}
-
-		if (mesh.BoneVertices.empty())
-		{
-			mObjectManager->CreateStaticMesh(mDevice, path + mesh.Name, mesh);
-		}
-		else
-		{
-			mObjectManager->CreateSkinnedMesh(mDevice, path + mesh.Name, mesh);
-		}
-	}
-
-	mModels.insert({ path, std::move(model) });
-
-	return mModels[path];
+	return mObjectManager->CreateModel(mDevice, path, textureBasePath);
 }
 
 const fq::common::Model& FQGraphics::GetModel(std::string path)
 {
-	auto find = mModels.find(path);
-	assert(find != mModels.end());
-	return find->second;
+	return mObjectManager->GetModel(path);
 }
 
 void FQGraphics::DeleteModel(std::string path)
 {
-	auto find = mModels.find(path);
-
-	if (find == mModels.end())
-	{
-		return;
-	}
-
-	const fq::common::Model& model = find->second;
-
-	for (const auto& material : model.Materials)
-	{
-		if (material.Name.empty())
-		{
-			continue;
-		}
-
-		mObjectManager->DeleteMaterial(path + material.Name);
-	}
-
-	for (const auto& nodeMeshPair : model.Meshes)
-	{
-		const auto& mesh = nodeMeshPair.second;
-
-		if (mesh.Name.empty())
-		{
-			continue;
-		}
-
-		if (mesh.BoneVertices.empty())
-		{
-			mObjectManager->DeleteStaticMesh(path + mesh.Name);
-		}
-		else
-		{
-			mObjectManager->DeleteSkinnedMesh(path + mesh.Name);
-		}
-	}
-
-	mModels.erase(find);
+	mObjectManager->DeleteModel(path);
 }
 
 void FQGraphics::ConvertModel(std::string fbxFile, std::string path)
 {
-	fq::loader::ModelConverter converter;
-	converter.ReadFBXFile(fbxFile);
-	converter.WriteModel(path);
+	mObjectManager->ConvertModel(fbxFile, path);
 }
 
 IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)
@@ -203,7 +120,6 @@ void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)
 {
 	mObjectManager->DeleteSkinnedMeshObject(iSkinnedMeshObject);
 }
-
 
 ID3D11Device* FQGraphics::GetDivice()
 {
