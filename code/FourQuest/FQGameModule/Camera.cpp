@@ -7,6 +7,7 @@ fq::game_module::Camera::Camera()
 	:mbIsMain(false)
 	,mCameraInfomation{}
 {
+	mCameraInfomation.isPerspective = true;
 	SetNearPlain(0.3f);
 	SetFarPlain(1000.f);
 	SetFieldOfView(60);

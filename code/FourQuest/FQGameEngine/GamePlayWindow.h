@@ -1,5 +1,9 @@
 #pragma once
 
+#include <imgui.h>
+#include <ImGuizmo.h>
+
+#include "../FQGameModule/GameModule.h"
 
 #include "IEditorWindow.h"
 #include "EditorEnum.h"
@@ -35,7 +39,6 @@ namespace fq::game_engine
 		/// </summary>
 		void ExcutShortcut();
 
-
 		/// <summary>
 		/// 게임 창을 표시합니다 
 		/// </summary>
@@ -49,13 +52,14 @@ namespace fq::game_engine
 
 		EditorMode GetMode()const { return mMode; }
 
-
+		void UpdateCamera(float dt);
 	private:
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
 		
 		void beginButton_Play();
 		void beginButton_Stop();
+		void beginGizumo();
 
 	private:
 		GameProcess* mGameProcess;
@@ -63,6 +67,20 @@ namespace fq::game_engine
 		
 		EditorMode mMode;
 		bool mbIsPauseGame;
+
+		// 에디터 카메라
+		std::shared_ptr<fq::game_module::GameObject> mCameraObject;
+		float mCameraMoveSpeed;
+		float mCameraRotateSpeed;
+		DirectX::SimpleMath::Matrix mViewTM;
+		DirectX::SimpleMath::Matrix mProjTM;
+
+		// 기즈모관련
+		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
+		ImGuizmo::OPERATION mOperation;
+
+		// 이벤트 핸들
+		fq::game_module::EventHandler mSelectObjectHandler;
 	};
 
 

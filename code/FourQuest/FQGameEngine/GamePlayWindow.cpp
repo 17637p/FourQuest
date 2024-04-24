@@ -7,14 +7,25 @@
 #include "../FQGraphics/IFQGraphics.h"
 
 #include "EditorProcess.h"
+#include "EditorEvent.h"
 #include "GameProcess.h"
 #include "EditorEvent.h"
+#include "CameraSystem.h"
+#include "WindowSystem.h"
 
 fq::game_engine::GamePlayWindow::GamePlayWindow()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
 	, mMode(EditorMode::Edit)
 	, mbIsPauseGame(false)
+	, mCameraObject(nullptr)
+	, mCameraMoveSpeed(20.f)
+	, mCameraRotateSpeed(0.0065f)
+	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
+	, mSelectObjectHandler{}
+	, mSelectObject(nullptr)
+	, mViewTM{}
+	, mProjTM{}
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -26,6 +37,8 @@ void fq::game_engine::GamePlayWindow::Render()
 	{
 		beginMenuBar_Control();
 		beginImage_GameScreen();
+
+		beginGizumo();
 	}
 	ImGui::End();
 }
@@ -35,11 +48,22 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	mGameProcess = game;
 	mEditorProcess = editor;
 
+	// 朝五虞 持失
+	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
+	mCameraObject->AddComponent<fq::game_module::Camera>();
+
+	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
+	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+
+	mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>(
+		[this](editor_event::SelectObject event)
+		{
+			this->mSelectObject = event.object;
+		});
 }
 
 void fq::game_engine::GamePlayWindow::Finalize()
 {
-
 }
 
 void fq::game_engine::GamePlayWindow::beginMenuBar_Control()
@@ -177,6 +201,22 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		}
 	}
 
+	if (input->IsKeyState(Key::W, KeyState::Tap))
+	{
+		mOperation = ImGuizmo::TRANSLATE;
+	}
+	if (input->IsKeyState(Key::E, KeyState::Tap))
+	{
+		mOperation = ImGuizmo::ROTATE;
+	}
+	if (input->IsKeyState(Key::R, KeyState::Tap))
+	{
+		mOperation = ImGuizmo::SCALE;
+	}
+	if (input->IsKeyState(Key::Q, KeyState::Tap))
+	{
+		mOperation = ImGuizmo::BOUNDS;
+	}
 }
 
 void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
@@ -195,4 +235,93 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 		mGameProcess->mGraphics->GetSRV(),
 		ImVec2(pos.x, pos.y + 22),
 		ImVec2(maxpos.x, maxpos.y));
+}
+
+void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
+{
+	auto& input = mEditorProcess->mInputManager;
+	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
+	auto matrix = cameraT->GetLocalMatrix();
+	auto position = cameraT->GetLocalPosition();
+	auto rotation = cameraT->GetLocalRotation();
+	float distance = mCameraMoveSpeed * dt;
+
+	if (input->IsKeyState(Key::W, KeyState::Hold))
+	{
+		position.x += matrix._31 * distance;
+		position.y += matrix._32 * distance;
+		position.z += matrix._33 * distance;
+	}
+	if (input->IsKeyState(Key::S, KeyState::Hold))
+	{
+		position.x -= matrix._31 * distance;
+		position.y -= matrix._32 * distance;
+		position.z -= matrix._33 * distance;
+	}
+	if (input->IsKeyState(Key::A, KeyState::Hold))
+	{
+		position.x -= matrix._11 * distance;
+		position.y -= matrix._12 * distance;
+		position.z -= matrix._13 * distance;
+	}
+	if (input->IsKeyState(Key::D, KeyState::Hold))
+	{
+		position.x += matrix._11 * distance;
+		position.y += matrix._12 * distance;
+		position.z += matrix._13 * distance;
+	}
+	if (input->IsKeyState(Key::Q, KeyState::Hold))
+	{
+		position.x -= matrix._21 * distance;
+		position.y -= matrix._22 * distance;
+		position.z -= matrix._23 * distance;
+	}
+	if (input->IsKeyState(Key::E, KeyState::Hold))
+	{
+		position.x += matrix._21 * distance;
+		position.y += matrix._22 * distance;
+		position.z += matrix._23 * distance;
+	}
+
+	if (input->IsKeyState(Key::RMouse, KeyState::Hold))
+	{
+		float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
+		auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
+
+		float dy = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().y);
+		auto y = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 1,0,0 }, dy);
+
+		rotation = y * rotation * x;
+
+		cameraT->SetLocalRotation(rotation);
+	}
+
+	cameraT->SetLocalPosition(position);
+}
+
+void fq::game_engine::GamePlayWindow::beginGizumo()
+{
+	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS)
+	{
+		ImGuizmo::Enable(false);
+		return;
+	}
+
+	ImGuizmo::Enable(true);
+
+	using namespace DirectX::SimpleMath;
+
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
+	auto cameraInfo = camera->GetCameraInfomation();
+	auto matrix = cameraT->GetLocalMatrix();
+	auto fov = cameraInfo.filedOfView;
+	auto aspectRatio = mGameProcess->mWindowSystem->GetScreenWidth() 
+		/ mGameProcess->mWindowSystem->GetScreenHeight();
+	auto nearPlain = cameraInfo.nearPlain;
+	auto farPlain = cameraInfo.farPlain;
+
+	//mProjTM = Matrix::CreatePerspectiveFieldOfView()
+
+
 }

@@ -60,6 +60,12 @@ namespace fq::game_module
 		/// </summary>
 		void SetFarPlain(float distance);
 
+		/// <summary>
+		/// 카메라 정보를 담은 구조체로 반환합니다 
+		/// </summary>
+		/// <returns>카메라 정보</returns>
+		fq::graphics::CameraInfo GetCameraInfomation()const { return mCameraInfomation; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 

@@ -103,6 +103,7 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 시스템 업데이트
 			mGameProcess->mRenderingSystem->Update(deltaTime);
+			mGameProcess->mCameraSystem->Update();
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
@@ -110,7 +111,7 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mGraphics->Render();
 
 			mEditor->mImGuiSystem->NewFrame();
-			UpdateEditor();
+			UpdateEditor(deltaTime);
 
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
@@ -174,9 +175,11 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mLogWindow->Initialize();
 }
 
-void fq::game_engine::EditorEngine::UpdateEditor()
+void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 {
 	mEditor->mInputManager->Update();
+
+	mEditor->mGamePlayWindow->UpdateCamera(dt);
 	mEditor->mGamePlayWindow->ExcutShortcut();
 	mEditor->mMainMenuBar->ExcuteShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();
