@@ -61,7 +61,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 
-	mRenderManager->Render(mDevice, mCameraManager, mJobManager->GetStaticMeshJobs());
+	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
 	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
 	mRenderManager->RenderBackBuffer(mDevice);
 
