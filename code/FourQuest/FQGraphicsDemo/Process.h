@@ -8,6 +8,7 @@
 #include <string>
 
 #include <directxtk\SimpleMath.h>
+#include <FQCommon.h>
 
 #include "../FQLoader/ModelLoader.h"
 
@@ -33,6 +34,10 @@ private:
 	void Update();
 	void Render();
 
+	void strafe(float distance);
+	void walk(float distance);
+	void worldUpdown(float distance);
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
@@ -51,5 +56,8 @@ private:
 
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
+
+	// Camera
+	fq::common::Transform cameraTransform;
 };
 

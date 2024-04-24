@@ -9,6 +9,8 @@
 #include "../FQLoader/ModelConverter.h"
 #include "../FQLoader/ModelLoader.h"
 
+#include <FQCommonGraphics.h>
+
 Process::Process()
 	:
 	mWindowPosX(0),
@@ -44,12 +46,24 @@ bool Process::Init(HINSTANCE hInstance)
 	//m_timer = std::make_unique<GameTimer>();
 
 	mTestGraphics = mEngineExporter->GetEngine();
+
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
 	const std::string modelBasePath = "./resource/example/model/";
 	const std::string FBXBasePath = "./resource/example/fbx/";
 	const std::string model1 = "SkinningTest";
 	const std::string model2 = "kick";
+	// 카메라 초기화
+	fq::graphics::CameraInfo cameraInfo;
+
+	cameraInfo.isPerspective = true;
+	cameraInfo.filedOfView = 0.25f * 3.1415f;
+	cameraInfo.nearPlain = 0.03f;
+	cameraInfo.farPlain = 1000.0f;
+
+	mTestGraphics->SetCamera(cameraInfo);
+	//-------------------------------------
+	const std::string modelPath = "./resource/example/model/box.model";
 
 	mTestGraphics->ConvertModel(FBXBasePath + model1 + ".fbx", modelBasePath + model1 + ".model");
 	mTestGraphics->ConvertModel(FBXBasePath + model2 + ".fbx", modelBasePath + model2 + ".model");
@@ -88,6 +102,16 @@ bool Process::Init(HINSTANCE hInstance)
 			mSkinnedMeshObjects.push_back(iSkinned);
 		}
 	}
+
+	/// camera 초기화
+	cameraTransform.worldPosition = { 0, 0, 0 };
+	cameraTransform.worldRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f));
+	cameraTransform.worldScale = { 1, 1, 1 };
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 
 	return true;
 }
@@ -175,6 +199,34 @@ void Process::Update()
 		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
 	}
 
+	// 카메라 조작
+	const float speed = 0.01f;
+	if (InputManager::GetInstance().IsGetKey('W'))
+	{
+		walk(speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('S'))
+	{
+		walk(-speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('A'))
+	{
+		strafe(speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('D'))
+	{
+		strafe(-speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('E'))
+	{
+		worldUpdown(speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('Q'))
+	{
+		worldUpdown(-speed);
+	}
+	mTestGraphics->UpdateCamera(cameraTransform);
+
 	InputManager::GetInstance().Update();
 }
 
@@ -228,4 +280,53 @@ void Process::Render()
 	}
 
 	mTestGraphics->EndRender();
+}
+
+void Process::strafe(float distance)
+{
+	//mPosition = XMFLOAT3(mRight.x * d + mPosition.x, mRight.y * d + mPosition.y, mRight.z * d + mPosition.z);
+	DirectX::SimpleMath::Matrix tempMatrix;
+	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
+
+	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
+		tempMatrix._11 * distance + cameraTransform.worldPosition.x,
+		tempMatrix._12 * distance + cameraTransform.worldPosition.y, 
+		tempMatrix._13 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::walk(float distance)
+{
+	DirectX::SimpleMath::Matrix tempMatrix;
+	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
+
+	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
+		tempMatrix._31 * distance + cameraTransform.worldPosition.x,
+		tempMatrix._32 * distance + cameraTransform.worldPosition.y, 
+		tempMatrix._33 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::worldUpdown(float distance)
+{
+	DirectX::SimpleMath::Matrix tempMatrix;
+	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
+
+	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
+		tempMatrix._21 * distance + cameraTransform.worldPosition.x,
+		tempMatrix._22 * distance + cameraTransform.worldPosition.y, 
+		tempMatrix._23 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 }

@@ -7,43 +7,43 @@ FQ_REGISTRATION
 
 	entt::meta<fq::game_engine::Test>()
 		.type("Test"_hs)
-		.prop(fq::reflect::prop::name, "Test")
+		.prop(fq::reflect::prop::Name, "Test")
 		
 		.data<&Test::iVal>("iVal"_hs)
-		.prop(fq::reflect::prop::name, "iVal")
-		.prop( fq::reflect::prop::comment , "single¶û" )
+		.prop(fq::reflect::prop::Name, "iVal")
+		.prop( fq::reflect::prop::Comment , "single¶û" )
 
 		.data<&Test::fVal>("fVal"_hs)
-		.prop(fq::reflect::prop::name, "fVal")
-		.prop(fq::reflect::prop::comment, u8"single¶û")
+		.prop(fq::reflect::prop::Name, "fVal")
+		.prop(fq::reflect::prop::Comment, u8"single¶û")
 
 		.data<&Test::dVal>("dVal"_hs)
-		.prop(fq::reflect::prop::name, "dVal")
-		.prop( fq::reflect::prop::comment , "single" )
+		.prop(fq::reflect::prop::Name, "dVal")
+		.prop( fq::reflect::prop::Comment , "single" )
 
 		.data<&Test::uiVal>("uiVal"_hs)
-		.prop(fq::reflect::prop::name, "uiVal")
+		.prop(fq::reflect::prop::Name, "uiVal")
 
 		.data<&Test::v2Val>("v2Val"_hs)
-		.prop(fq::reflect::prop::name, "v2Val")
+		.prop(fq::reflect::prop::Name, "v2Val")
 
 		.data<&Test::v3Val>("v3Val"_hs)
-		.prop(fq::reflect::prop::name, "v3Val")
+		.prop(fq::reflect::prop::Name, "v3Val")
 
 		.data<&Test::v4Val>("v4Val"_hs)
-		.prop(fq::reflect::prop::name, "v4Val")
+		.prop(fq::reflect::prop::Name, "v4Val")
 
 		.data<&Test::cVal>("cVal"_hs)
-		.prop(fq::reflect::prop::name, "cVal")
+		.prop(fq::reflect::prop::Name, "cVal")
 
 		.data<&Test::sVal>("sVal"_hs)
-		.prop(fq::reflect::prop::name, "sVal")
+		.prop(fq::reflect::prop::Name, "sVal")
 
 		.data<&Test::veciVal>("veciVal"_hs)
-		.prop(fq::reflect::prop::name, "veciVal")
+		.prop(fq::reflect::prop::Name, "veciVal")
 
 		.data<&Test::vecv3Val>("vecv3Val"_hs)
-		.prop(fq::reflect::prop::name, "vecv3Val")
+		.prop(fq::reflect::prop::Name, "vecv3Val")
 
 		.base<fq::game_module::Component>();
 

@@ -10,7 +10,6 @@ namespace fq
 	{
 		class GameProcess;
 		class EditorProcess;
-		class TmpD3D;
 
 		class EditorEngine : public IEngine
 		{
@@ -49,9 +48,8 @@ namespace fq
 			void UpdateEditor();
 
 		private:
-			std::unique_ptr<GameProcess> mGame;
+			std::unique_ptr<GameProcess> mGameProcess;
 			std::unique_ptr<EditorProcess> mEditor;
-			std::unique_ptr<TmpD3D> mD3D;
 		};
 	}
 }

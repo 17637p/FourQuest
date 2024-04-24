@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 
+#include "../FQCommon/FQPath.h"
 #include "prop.h"
 
 using json = nlohmann::json;
@@ -25,7 +26,7 @@ void fq::reflect::Converter::ParseClassToJson(const entt::meta_any& object
 
 	if (memberClass.empty())
 	{
-		std::string className =  std::to_string(metaType.id());
+		std::string className = std::to_string(metaType.id());
 		outJson[className] = memberJson;
 	}
 	else
@@ -39,7 +40,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	, const entt::meta_any& object
 	, nlohmann::json& outJson)
 {
-	entt::meta_prop prop = metaData.prop(prop::name);
+	entt::meta_prop prop = metaData.prop(prop::Name);
 	assert(prop && "멤버 변수의 name 설정이 없습니다.");
 
 	const entt::meta_any& metaName = prop.value();
@@ -93,24 +94,45 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	else if (metaType == entt::resolve<std::string>())
 	{
 		std::string val = anyValue.cast<std::string>();
+
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val).string();
+		}
+
 		outJson[name] = val;
 	}
 	// std::wstring
 	else if (metaType == entt::resolve<std::wstring>())
 	{
 		std::wstring val = anyValue.cast<std::wstring>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val);
+		}
+
 		outJson[name] = val;
 	}
 	// const char*
 	else if (metaType == entt::resolve<const char*>())
 	{
 		const char* val = anyValue.cast<const char*>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val).string().c_str();
+		}
+
 		outJson[name] = val;
 	}
 	// const wchar_t*
 	else if (metaType == entt::resolve<const wchar_t*>())
 	{
 		const wchar_t* val = anyValue.cast<const wchar_t*>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val).c_str();
+		}
+
 		outJson[name] = val;
 	}
 	// enum 
@@ -219,7 +241,7 @@ entt::meta_any fq::reflect::Converter::ParseClassFromJson(const std::string& cla
 
 		if (memberMetaData)
 		{
-			entt::meta_any val = ParseMemberFromJson(element.value(), memberMetaData.type());
+			entt::meta_any val = ParseMemberFromJson(element.value(), memberMetaData.type(),memberMetaData);
 			memberMetaData.set(instance, val);
 		}
 		else
@@ -231,7 +253,9 @@ entt::meta_any fq::reflect::Converter::ParseClassFromJson(const std::string& cla
 	return instance;
 }
 
-entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json& inJson, const entt::meta_type& metaType)
+entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json& inJson
+	, const entt::meta_type& metaType
+	, const entt::meta_data& metaData)
 {
 	entt::meta_any output;
 
@@ -280,24 +304,46 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	else if (metaType == entt::resolve<std::string>())
 	{
 		std::string val = inJson.get<std::string>();
+
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetAbsolutePath(val).string();
+		}
+
 		output = val;
 	}
 	// std::wstring
 	else if (metaType == entt::resolve<std::wstring>())
 	{
 		std::wstring val = inJson.get<std::wstring>();
+
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetAbsolutePath(val);
+		}
 		output = val;
 	}
 	// const char*
 	else if (metaType == entt::resolve<const char*>())
 	{
 		std::string val = inJson.get<std::string>();
+
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetAbsolutePath(val).string();
+		}
+
 		output = val.c_str();
 	}
 	// const wchar_t*
 	else if (metaType == entt::resolve<const wchar_t*>())
 	{
 		std::wstring val = inJson.get<std::wstring>();
+
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetAbsolutePath(val);
+		}
 		output = val.c_str();
 	}
 	// enum 
@@ -316,7 +362,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 
 		for (auto& item : inJson)
 		{
-			entt::meta_any itemInstance = ParseMemberFromJson(item, itemMetaType);
+			entt::meta_any itemInstance = ParseMemberFromJson(item, itemMetaType, {});
 			view.insert(view.end(), itemInstance);
 		}
 	}
@@ -473,7 +519,7 @@ std::string fq::reflect::Converter::ConvertString(const entt::meta_any& any)
 	// unsigned long long
 	else if (metaType == entt::resolve<unsigned long long>())
 	{
-		unsigned long long val = any.cast<unsigned long long> ();
+		unsigned long long val = any.cast<unsigned long long>();
 		output = std::to_string(val);
 	}
 	// float 

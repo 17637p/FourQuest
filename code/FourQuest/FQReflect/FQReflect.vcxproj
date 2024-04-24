@@ -157,6 +157,11 @@
     <ClCompile Include="IHandle.cpp" />
     <ClCompile Include="Helper.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">
+      <Project>{80b6857c-9c5d-4d1f-9765-01fb3bb4c720}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

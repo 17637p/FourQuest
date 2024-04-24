@@ -2,7 +2,7 @@
 
 #include <windows.h>
 #include <d3dcommon.h>
-#include <directxtk/SimpleMath.h>'
+#include <directxtk/SimpleMath.h>
 
 namespace fq::graphics
 {

@@ -37,7 +37,7 @@ namespace fq::game_module::internal
 			return mScene->GetObjectByIndex(mIndex);
 		}
 
-		bool IsIncludeToBeDestroyed()const { return mIsIncludeToBeDestroyed; }
+		bool IsIncludeDestroyed()const { return mIsIncludeDestroyed; }
 
 		std::shared_ptr<GameObject> operator*() const { return Get(); }
 
@@ -83,7 +83,7 @@ namespace fq::game_module::internal
 
 				isEnd = (mIndex < mScene->GetObjectSize()) &&
 					(object == nullptr || !object->template HasComponent<Types...>()
-						|| (object->IsDestroyed() && IsIncludeToBeDestroyed()));
+						|| (object->IsDestroyed() && IsIncludeDestroyed()));
 
 			} while (isEnd);
 
@@ -99,15 +99,15 @@ namespace fq::game_module::internal
 		size_t mIndex;
 		class fq::game_module::Scene* mScene;
 		bool mbIsEnd;
-		bool mIsIncludeToBeDestroyed;
+		bool mIsIncludeDestroyed;
 	};
 
 	template<typename ...Types>
-	inline internal::ComponentIterator<Types...>::ComponentIterator(Scene* scene, size_t index, bool bIsEnd, bool bIsIncludeToBeDestroyed)
+	inline internal::ComponentIterator<Types...>::ComponentIterator(Scene* scene, size_t index, bool bIsEnd, bool bIsIncludeDestroyed)
 		:mScene(scene)
 		, mIndex(index)
 		, mbIsEnd(bIsEnd)
-		, mIsIncludeToBeDestroyed(bIsIncludeToBeDestroyed)
+		, mIsIncludeDestroyed(bIsIncludeDestroyed)
 	{
 		if (mIndex >= mScene->GetObjectSize())
 		{

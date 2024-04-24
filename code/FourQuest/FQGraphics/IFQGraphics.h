@@ -26,17 +26,10 @@
 extern "C" {
 #endif
 
+	namespace fq::common { struct Transform; }
+
 	namespace fq::graphics
 	{
-		// 구조체 재정의로 임시 주석_홍지환
-		//struct CameraInfo
-		//{
-		//	float _fieldOfView = 0;
-		//	float _nearPlain = 0;
-		//	float _farPlain = 0;
-		//	bool _isPerspective = false;
-		//};
-
 		/// <summary>
 		/// FPGraphics 인터페이스
 		/// dll로 만들면 빌드 시간을 줄이고 종속성이 줄어들어 유지 보수가 편해진다.
@@ -89,7 +82,8 @@ extern "C" {
 			/// Light
 
 			/// Camera
-			//virtual FQ_GRAPHICS void SetCamera(CameraInfo cameraInfo) abstract;
+			virtual FQ_GRAPHICS void SetCamera(const CameraInfo& cameraInfo) abstract;
+			virtual FQ_GRAPHICS void UpdateCamera(const fq::common::Transform& cameraTransform) abstract;
 
 			/// Picking
 			//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) abstract;

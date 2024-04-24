@@ -1367,8 +1367,8 @@ namespace entt {
 			Type value;
 		};
 
-		template<typename Type, std::size_t Tag>
-		struct compressed_pair_element<Type, Tag, std::enable_if_t<is_ebco_eligible_v<Type>>> : Type {
+		template<typename Type, std::size_t ETag>
+		struct compressed_pair_element<Type, ETag, std::enable_if_t<is_ebco_eligible_v<Type>>> : Type {
 			using reference = Type&;
 			using const_reference = const Type&;
 			using base_type = Type;
@@ -7645,8 +7645,8 @@ namespace entt {
 			Type value;
 		};
 
-		template<typename Type, std::size_t Tag>
-		struct compressed_pair_element<Type, Tag, std::enable_if_t<is_ebco_eligible_v<Type>>> : Type {
+		template<typename Type, std::size_t ETag>
+		struct compressed_pair_element<Type, ETag, std::enable_if_t<is_ebco_eligible_v<Type>>> : Type {
 			using reference = Type&;
 			using const_reference = const Type&;
 			using base_type = Type;

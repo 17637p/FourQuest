@@ -3,6 +3,8 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
+#include "D3D11CameraManager.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -16,6 +18,7 @@ FQGraphics::FQGraphics()
 	, mObjectManager(std::make_shared<D3D11ObjectManager>())
 	, mJobManager(std::make_shared<D3D11JobManager>())
 	, mRenderManager(std::make_shared<D3D11RenderManager>())
+	, mCameraManager(std::make_shared<D3D11CameraManager>())
 {
 }
 
@@ -26,6 +29,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mObjectManager;
 	mJobManager;
 	mRenderManager->Initialize(mDevice, mResourceManager, width, height);
+	mCameraManager->Initialize(width, height);
 
 	return true;
 }
@@ -33,6 +37,16 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 bool fq::graphics::FQGraphics::Update(float deltaTime)
 {
 	return true;
+}
+
+void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)
+{
+	mCameraManager->Update(ECameraType::Player, cameraTransform);
+}
+
+void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
+{
+	mCameraManager->SetCamera(ECameraType::Player, cameraInfo);
 }
 
 bool FQGraphics::BeginRender()
@@ -47,7 +61,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 
-	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
+	mRenderManager->Render(mDevice,  mJobManager->GetStaticMeshJobs());
 	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
 	mRenderManager->RenderBackBuffer(mDevice);
 
@@ -75,6 +89,7 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
 	mRenderManager->OnResize(mDevice, mResourceManager, width, height);
+	mCameraManager->OnResize(width, height);
 
 	return true;
 }

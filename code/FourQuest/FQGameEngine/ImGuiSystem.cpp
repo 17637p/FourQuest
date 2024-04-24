@@ -71,8 +71,8 @@ void fq::game_engine::ImGuiSystem::NewFrame()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	auto imguiID = ImGui::DockSpaceOverViewport(
-		ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+	auto imguiID = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
 	ImGui::DockBuilderGetCentralNode(imguiID);
 }
 
