@@ -51,7 +51,7 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
-	mRenderManager->BeginRender(mDevice);
+	mRenderManager->BeginRender(mDevice, mCameraManager);
 
 	return true;
 }
@@ -61,7 +61,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 
-	mRenderManager->Render(mDevice,  mJobManager->GetStaticMeshJobs());
+	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
 	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
 	mRenderManager->RenderBackBuffer(mDevice);
 

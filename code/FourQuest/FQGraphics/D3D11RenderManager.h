@@ -77,7 +77,7 @@ namespace fq::graphics
 			unsigned short height);
 		void Finalize();
 
-		void BeginRender(const std::shared_ptr<D3D11Device>& device);
+		void BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager);
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
 
 		void OnResize(const std::shared_ptr<D3D11Device>& device,

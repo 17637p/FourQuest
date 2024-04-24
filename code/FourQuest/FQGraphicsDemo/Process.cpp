@@ -200,7 +200,7 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = 0.01f;
+	const float speed = 1.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		walk(speed);

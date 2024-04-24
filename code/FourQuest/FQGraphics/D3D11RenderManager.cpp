@@ -1,4 +1,5 @@
 #include "D3D11RenderManager.h"
+#include "D3D11CameraManager.h"
 #include "D3D11ResourceManager.h"
 
 #include "D3D11View.h"
@@ -70,7 +71,7 @@ namespace fq::graphics
 
 	}
 
-	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device)
+	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager)
 	{
 		mDSV->Clear(device);
 		mBackBufferRTV->Clear(device, { 1.f, 1.f, 1.f, 1.f });
@@ -83,8 +84,8 @@ namespace fq::graphics
 
 		// 임시 데이터, 카메라 반영시켜줘야 함
 		SceneTrnasform sceneTransform;
-		DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookAtLH({ 0, 200, -500 }, { 0, 0,0 }, { 0, 1, 0 });
-		DirectX::SimpleMath::Matrix proj = DirectX::XMMatrixPerspectiveFovLH(0.25f * 3.14f, 1.f, 1.f, 1000.f); // width / height
+		DirectX::SimpleMath::Matrix view = cameraManager->GetViewMatrix(ECameraType::Player);
+		DirectX::SimpleMath::Matrix proj = cameraManager->GetProjectionMatrix(ECameraType::Player);
 		sceneTransform.ViewProjMat = (view * proj).Transpose();
 		sceneTransform.ShadowViewProjTexMat;
 		mSceneTransformCB->Update(device, sceneTransform);
@@ -99,7 +100,7 @@ namespace fq::graphics
 		scenelight.Lights[2].Direction = { 0.0f, -1.f ,0.f };
 		scenelight.Lights[2].Direction.Normalize();
 		scenelight.Lights[2].Intensity = { 1.f, 1.f, 1.f };
-		scenelight.EyePosition = { 0, 200, -500 };
+		scenelight.EyePosition = (DirectX::SimpleMath::Vector4)cameraManager->GetPosition(ECameraType::Player);
 		scenelight.bUseIBL = false;
 		mSceneLightCB->Update(device, scenelight);
 	}
