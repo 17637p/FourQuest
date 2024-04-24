@@ -8,6 +8,7 @@
 
 #include "WindowSystem.h"
 #include "ModelSystem.h"
+#include "CameraSystem.h"
 #include "RenderingSystem.h"
 
 #include "FQGameEngineRegister.h"
@@ -45,8 +46,10 @@ void fq::game_engine::EditorEngine::Initialize()
 	float height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width,height);
 
+	// 시스템 초기화
 	mGameProcess->mModelSystem->Initialize(mGameProcess.get());
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
+	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();

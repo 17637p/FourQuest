@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../FQGameModule/GameModule.h"
 
 namespace fq::game_engine
 {
@@ -15,6 +16,8 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
+		fq::game_module::EventHandler mSetMainCameraHandler;
+		fq::game_module::Camera* mMainCamera;
 	};
 
 }
