@@ -29,6 +29,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mObjectManager;
 	mJobManager;
 	mRenderManager->Initialize(mDevice, mResourceManager, width, height);
+	mCameraManager->Initialize(width, height);
 
 	return true;
 }
@@ -60,7 +61,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 
-	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
+	mRenderManager->Render(mDevice, mCameraManager, mJobManager->GetStaticMeshJobs());
 	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
 	mRenderManager->RenderBackBuffer(mDevice);
 
@@ -88,6 +89,7 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
 	mRenderManager->OnResize(mDevice, mResourceManager, width, height);
+	mCameraManager->OnResize(width, height);
 
 	return true;
 }

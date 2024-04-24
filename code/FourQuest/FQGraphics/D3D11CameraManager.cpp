@@ -7,13 +7,9 @@
 fq::graphics::D3D11CameraManager::D3D11CameraManager()
 	:mCameras{}
 {
-}
-
-void fq::graphics::D3D11CameraManager::AddCamera(const ECameraType& cameraType, const unsigned short width, const unsigned short height, const CameraInfo& cameraInfo)
-{
+	// Todo: 일단 수동으로 해주고 나중에 바꾸자
 	std::shared_ptr<Camera> tempCamera = std::make_shared<Camera>();
-	tempCamera->Initialize(width, height, cameraInfo);
-	mCameras[cameraType] = tempCamera;
+	mCameras[ECameraType::Player] = tempCamera;
 }
 
 void fq::graphics::D3D11CameraManager::Update(const ECameraType& cameraType, const fq::common::Transform& transform)
@@ -49,5 +45,18 @@ DirectX::SimpleMath::Vector3 fq::graphics::D3D11CameraManager::GetPosition(const
 DirectX::SimpleMath::Quaternion fq::graphics::D3D11CameraManager::GetRotation(const ECameraType& cameraType) const
 {
 	return mCameras.at(ECameraType::Player)->GetRotation();
+}
+
+void fq::graphics::D3D11CameraManager::Initialize(const unsigned short width, const unsigned short height)
+{
+	OnResize(width, height);
+}
+
+void fq::graphics::D3D11CameraManager::OnResize(const unsigned short width, const unsigned short height)
+{
+	for (const auto& camera : mCameras)
+	{
+		camera.second->SetViewportSize(width, height);
+	}
 }
 

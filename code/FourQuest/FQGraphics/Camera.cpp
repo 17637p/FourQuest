@@ -51,7 +51,10 @@ void fq::graphics::Camera::SetViewportSize(const unsigned short width, const uns
 	mWidth = width;
 	mHeight = height;
 
-	makeProjectionMatrix();
+	if (mFarPlain > 0)
+	{
+		makeProjectionMatrix();
+	}
 }
 
 DirectX::SimpleMath::Matrix fq::graphics::Camera::GetViewMatrix() const

@@ -22,10 +22,11 @@ namespace fq::graphics
 	{
 	public:
 		D3D11CameraManager();
+		void Initialize(const unsigned short width, const unsigned short height);
+		void OnResize(const unsigned short width, const unsigned short height);
 
-		void AddCamera(const ECameraType& cameraType, const unsigned short width, const unsigned short height, const CameraInfo& cameraInfo);
-		
 		void Update(const ECameraType& cameraType, const fq::common::Transform& transform);
+
 		void SetCamera(const ECameraType& cameraType, const CameraInfo& cameraInfo);
 		void SetViewportSize(const ECameraType& cameraType, const unsigned short width, const unsigned short height);
 
