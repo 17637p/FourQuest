@@ -73,8 +73,14 @@ namespace fq::game_module
 		/// <summary>
 		/// 메쉬정보를 설정합니다
 		/// </summary>
-		/// <param name="info"></param>
+		/// <param name="info">메쉬 정보</param>
 		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info);
+
+		/// <summary>
+		/// 메쉬정보를 반환합니다
+		/// </summary>
+		/// <returns>메쉬 정보</returns>
+		fq::graphics::MeshObjectInfo GetMeshObjectInfomation()const { return mMeshInfomation; }
 
 	private:
 		entt::meta_handle GetHandle() override;

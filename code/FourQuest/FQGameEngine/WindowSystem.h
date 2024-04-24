@@ -90,6 +90,4 @@ namespace fq::game_engine
 		HWND mHWND;
 		HINSTANCE mHInstance;
 	};
-
-
 }

@@ -40,7 +40,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	, const entt::meta_any& object
 	, nlohmann::json& outJson)
 {
-	entt::meta_prop prop = metaData.prop(prop::name);
+	entt::meta_prop prop = metaData.prop(prop::Name);
 	assert(prop && "멤버 변수의 name 설정이 없습니다.");
 
 	const entt::meta_any& metaName = prop.value();
@@ -95,7 +95,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	{
 		std::string val = anyValue.cast<std::string>();
 
-		if (metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetRelativePath(val).string();
 		}
@@ -106,7 +106,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	else if (metaType == entt::resolve<std::wstring>())
 	{
 		std::wstring val = anyValue.cast<std::wstring>();
-		if (metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetRelativePath(val);
 		}
@@ -117,7 +117,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	else if (metaType == entt::resolve<const char*>())
 	{
 		const char* val = anyValue.cast<const char*>();
-		if (metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetRelativePath(val).string().c_str();
 		}
@@ -128,7 +128,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 	else if (metaType == entt::resolve<const wchar_t*>())
 	{
 		const wchar_t* val = anyValue.cast<const wchar_t*>();
-		if (metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetRelativePath(val).c_str();
 		}
@@ -305,7 +305,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	{
 		std::string val = inJson.get<std::string>();
 
-		if (metaData && metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetAbsolutePath(val).string();
 		}
@@ -317,7 +317,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	{
 		std::wstring val = inJson.get<std::wstring>();
 
-		if (metaData && metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetAbsolutePath(val);
 		}
@@ -328,7 +328,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	{
 		std::string val = inJson.get<std::string>();
 
-		if (metaData && metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetAbsolutePath(val).string();
 		}
@@ -340,7 +340,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	{
 		std::wstring val = inJson.get<std::wstring>();
 
-		if (metaData && metaData.prop(fq::reflect::prop::relative_path))
+		if (metaData && metaData.prop(fq::reflect::prop::RelativePath))
 		{
 			val = fq::path::GetAbsolutePath(val);
 		}

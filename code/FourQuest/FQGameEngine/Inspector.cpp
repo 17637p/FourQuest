@@ -454,7 +454,7 @@ void fq::game_engine::Inspector::beginInputFloat4_Vector4(entt::meta_data data, 
 
 void fq::game_engine::Inspector::beginIsItemHovered_Comment(entt::meta_data data)
 {
-	auto prop = data.prop(fq::reflect::prop::comment);
+	auto prop = data.prop(fq::reflect::prop::Comment);
 
 	if (!prop)
 	{

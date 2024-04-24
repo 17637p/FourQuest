@@ -14,63 +14,63 @@ void fq::game_module::RegisterMetaData()
 
 	// Tag
 	entt::meta<ETag>()
-		.prop(fq::reflect::prop::name, "Tag")
+		.prop(fq::reflect::prop::Name, "Tag")
 		.conv<std::underlying_type_t<ETag>>()
 		.data<ETag::Untagged>("Untagged"_hs)
-		.prop(fq::reflect::prop::name, "Untagged")
+		.prop(fq::reflect::prop::Name, "Untagged")
 		.data<ETag::Camera>("Camera"_hs)
-		.prop(fq::reflect::prop::name, "Camera")
+		.prop(fq::reflect::prop::Name, "Camera")
 		.data<ETag::Player>("Player"_hs)
-		.prop(fq::reflect::prop::name, "Player");
+		.prop(fq::reflect::prop::Name, "Player");
 
 	// GameObject 
 	entt::meta<GameObject>()
 		.type("GameObject"_hs)
-		.prop(fq::reflect::prop::name, "GameObject")
+		.prop(fq::reflect::prop::Name, "GameObject")
 		.data<&GameObject::SetName, &GameObject::GetName>("mName"_hs)
-		.prop(fq::reflect::prop::name, "mName")
+		.prop(fq::reflect::prop::Name, "mName")
 		.data<&GameObject::SetTag, &GameObject::GetTag>("mTag"_hs)
-		.prop(fq::reflect::prop::name, "mTag");
+		.prop(fq::reflect::prop::Name, "mTag");
 
 	// Transform
 	entt::meta<Transform>()
 		.type("Transform"_hs)
-		.prop(fq::reflect::prop::name, "Transform")
+		.prop(fq::reflect::prop::Name, "Transform")
 		.data<&Transform::SetLocalPosition, &Transform::GetLocalPosition>("Position"_hs)
-		.prop(fq::reflect::prop::name, "Position")
-		.prop(fq::reflect::prop::comment, u8"·ÎÄÃ ÁÂÇ¥")
+		.prop(fq::reflect::prop::Name, "Position")
+		.prop(fq::reflect::prop::Comment, u8"·ÎÄÃ ÁÂÇ¥")
 		.data<&Transform::SetLocalRotation, &Transform::GetLocalRotation>("Rotation"_hs)
-		.prop(fq::reflect::prop::name, "Rotation")
+		.prop(fq::reflect::prop::Name, "Rotation")
 		.data<&Transform::SetLocalScale, &Transform::GetLocalScale>("Scale"_hs)
-		.prop(fq::reflect::prop::name, "Scale")
+		.prop(fq::reflect::prop::Name, "Scale")
 		.base<Component>();
 
 	// Camera
 	entt::meta<Camera>()
 		.type("Camera"_hs)
-		.prop(fq::reflect::prop::name, "Camera")
+		.prop(fq::reflect::prop::Name, "Camera")
 		.data<&Camera::SetFieldOfView, &Camera::GetFieldOfView>("FOV"_hs)
-		.prop(fq::reflect::prop::name, "FOV")
-		.prop(fq::reflect::prop::comment, "0 ~ 180")
+		.prop(fq::reflect::prop::Name, "FOV")
+		.prop(fq::reflect::prop::Comment, "0 ~ 180")
 		.data<&Camera::SetMainCamera, &Camera::IsMain>("IsMain"_hs)
-		.prop(fq::reflect::prop::name, "IsMain")
+		.prop(fq::reflect::prop::Name, "IsMain")
 		.data<&Camera::SetFarPlain, &Camera::GetFarPlain>("FarPlain"_hs)
-		.prop(fq::reflect::prop::name, "FarPlain")
+		.prop(fq::reflect::prop::Name, "FarPlain")
 		.data<&Camera::SetNearPlain, &Camera::GetNearPlain>("NearPlain"_hs)
-		.prop(fq::reflect::prop::name, "NearPlain")
+		.prop(fq::reflect::prop::Name, "NearPlain")
 		.base<Component>();
 
 	// StaticMeshRenderer
 	entt::meta<StaticMeshRenderer>()
 		.type("StaticMeshRenderer"_hs)
-		.prop(fq::reflect::prop::name, "StaticMeshRenderer")
+		.prop(fq::reflect::prop::Name, "StaticMeshRenderer")
 		.data<&StaticMeshRenderer::SetModelPath , &StaticMeshRenderer::GetModelPath>("ModelPath"_hs)
-		.prop(fq::reflect::prop::name, "ModelPath")
-		.prop(fq::reflect::prop::relative_path)
+		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&StaticMeshRenderer::SetMeshName, &StaticMeshRenderer::GetMeshName>("MeshName"_hs)
-		.prop(fq::reflect::prop::name, "MeshName")
+		.prop(fq::reflect::prop::Name, "MeshName")
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
-		.prop(fq::reflect::prop::name, "Materials")
+		.prop(fq::reflect::prop::Name, "Materials")
 		.base<Component>();
 
 }
