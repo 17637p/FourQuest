@@ -50,9 +50,14 @@ namespace fq::game_engine
 		/// <param name="mode">모드</param>
 		void SetMode(EditorMode mode);
 
+		/// <summary>
+		/// 에디터의 모드를 반환합니다
+		/// </summary>
 		EditorMode GetMode()const { return mMode; }
 
 		void UpdateCamera(float dt);
+
+
 	private:
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
@@ -76,6 +81,8 @@ namespace fq::game_engine
 		DirectX::SimpleMath::Matrix mProjTM;
 
 		// 기즈모관련
+		DirectX::SimpleMath::Matrix mStart;
+		bool mbIsUsingGizumo;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		ImGuizmo::OPERATION mOperation;
 

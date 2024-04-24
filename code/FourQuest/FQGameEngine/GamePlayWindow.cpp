@@ -12,6 +12,8 @@
 #include "EditorEvent.h"
 #include "CameraSystem.h"
 #include "WindowSystem.h"
+#include "CommandSystem.h"
+#include "Command.h"
 
 fq::game_engine::GamePlayWindow::GamePlayWindow()
 	:mGameProcess(nullptr)
@@ -26,6 +28,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mSelectObject(nullptr)
 	, mViewTM{}
 	, mProjTM{}
+	, mbIsUsingGizumo(false)
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -55,7 +58,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 
-	mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>(
+	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>(
 		[this](editor_event::SelectObject event)
 		{
 			this->mSelectObject = event.object;
@@ -240,6 +243,11 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 {
 	auto& input = mEditorProcess->mInputManager;
+	if (!input->IsKeyState(Key::RMouse, KeyState::Hold))
+	{
+		return;
+	}
+
 	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
 	auto matrix = cameraT->GetLocalMatrix();
 	auto position = cameraT->GetLocalPosition();
@@ -283,19 +291,16 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 		position.z += matrix._23 * distance;
 	}
 
-	if (input->IsKeyState(Key::RMouse, KeyState::Hold))
-	{
-		float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
-		auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
+	
+	float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
+	auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
 
-		float dy = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().y);
-		auto y = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 1,0,0 }, dy);
+	float dy = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().y);
+	auto y = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 1,0,0 }, dy);
 
-		rotation = y * rotation * x;
+	rotation = y * rotation * x;
 
-		cameraT->SetLocalRotation(rotation);
-	}
-
+	cameraT->SetLocalRotation(rotation);
 	cameraT->SetLocalPosition(position);
 }
 
@@ -314,14 +319,74 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
 	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
 	auto cameraInfo = camera->GetCameraInfomation();
+
 	auto matrix = cameraT->GetLocalMatrix();
 	auto fov = cameraInfo.filedOfView;
-	auto aspectRatio = mGameProcess->mWindowSystem->GetScreenWidth() 
+	auto aspectRatio = mGameProcess->mWindowSystem->GetScreenWidth()
 		/ mGameProcess->mWindowSystem->GetScreenHeight();
 	auto nearPlain = cameraInfo.nearPlain;
 	auto farPlain = cameraInfo.farPlain;
 
-	//mProjTM = Matrix::CreatePerspectiveFieldOfView()
+	mViewTM = matrix.Invert();
+	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
 
+	auto x = ImGui::GetWindowPos().x;
+	auto y = ImGui::GetWindowPos().y;
+	auto width = ImGui::GetWindowSize().x;
+	auto height = ImGui::GetWindowSize().y;
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(x, y, width, height);
+
+	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
+	auto objectMatrix = objectT->GetWorldMatrix();
+	auto beforeMatrix = objectT->GetWorldMatrix();
+
+	auto& input = mEditorProcess->mInputManager;
+
+	if (ImGuizmo::Manipulate(&mViewTM._11, &mProjTM._11
+		, mOperation, ImGuizmo::WORLD, &objectMatrix._11))
+	{
+		if (objectT->HasParent())
+		{
+			auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
+			objectMatrix = objectMatrix * parentMatrix.Invert();
+
+			objectT->SetLocalMatrix(objectMatrix);
+		}
+		else
+		{
+			objectT->SetLocalMatrix(objectMatrix);
+		}
+	}
+
+	if (ImGuizmo::IsUsing()
+		&& input->IsKeyState(Key::LMouse, KeyState::Tap))
+	{
+		mStart = beforeMatrix;
+		mbIsUsingGizumo = true;
+	}
+	
+	if (mbIsUsingGizumo && input->IsKeyState(Key::LMouse, KeyState::Away))
+	{
+		mEditorProcess->mCommandSystem->Push<SetValueCommand<DirectX::SimpleMath::Matrix>>
+			(
+				[ objectT, selectObject = mSelectObject](DirectX::SimpleMath::Matrix mat)
+				{
+					if (objectT->HasParent())
+					{
+						auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
+						mat = mat * parentMatrix.Invert();
+
+						objectT->SetLocalMatrix(mat);
+					}
+					else
+					{
+						objectT->SetLocalMatrix(mat);
+					}
+				}, mStart, objectMatrix
+			);
+		mbIsUsingGizumo = false;
+	}
 
 }
