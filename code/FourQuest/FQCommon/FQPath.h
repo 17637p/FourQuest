@@ -65,5 +65,20 @@ namespace fq
 		/// <param name="path">탐색할 폴더 경로</param>
 		/// <returns>폴더 경로 내부의 모든 파일</returns>
 		std::vector<std::filesystem::path> GetFileList(const std::filesystem::path& directory);
+
+		/// <summary>
+		/// CurrentPath 기준의 상대경로를 반환합니다
+		/// </summary>
+		/// <param name="filePath">변환할 경로</param>
+		/// <returns>상대경로</returns>
+		std::filesystem::path GetRelativePath(const std::filesystem::path& filePath);
+
+		/// <summary>
+		/// 상대경로를 CurrentPath기준 절대경로로 변환합니다
+		/// </summary>
+		/// <param name="relativePath">상대경로</param>
+		/// <returns>절대경로</returns>
+		std::filesystem::path GetAbsolutePath(const std::filesystem::path& relativePath);
+
 	}
 }

@@ -8,6 +8,7 @@
 #include "EditorProcess.h"
 #include "CommandSystem.h"
 #include "Command.h"
+#include "ModelSystem.h"
 #include "EditorEvent.h"
 
 fq::game_engine::Hierarchy::Hierarchy()
@@ -317,18 +318,20 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
 
 			// 일단은 Prefab은 json형식입니다
-			if (path->extension() != ".prefab")
+			if (path->extension() == ".prefab")
 			{
-				return;
+				auto prefab = mGameProcess->mObjectManager->LoadPrefab(*path);
+
+				assert(!prefab.empty());
+
+				// 부모를 등록하면 자식계층도 같이 등록합니다
+				mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
+					, prefab[0]);
 			}
-
-			auto prefab = mGameProcess->mObjectManager->LoadPrefab(*path);
-
-			assert(!prefab.empty());
-
-			// 부모를 등록하면 자식계층도 같이 등록합니다
-			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
-				, prefab[0]);
+			else if (path->extension() == ".model") // 모델 생성
+			{
+				mGameProcess->mModelSystem->BuildModel(*path);
+			}
 		}
 
 		const ImGuiPayload* objectPayLoad = ImGui::AcceptDragDropPayload("GameObject");

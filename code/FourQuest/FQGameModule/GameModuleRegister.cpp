@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "StaticMeshRenderer.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -12,14 +13,14 @@ void fq::game_module::RegisterMetaData()
 	using namespace fq::game_module;
 
 	// Tag
-	entt::meta<Tag>()
+	entt::meta<ETag>()
 		.prop(fq::reflect::prop::name, "Tag")
-		.conv<std::underlying_type_t<Tag>>()
-		.data<Tag::Untagged>("Untagged"_hs)
+		.conv<std::underlying_type_t<ETag>>()
+		.data<ETag::Untagged>("Untagged"_hs)
 		.prop(fq::reflect::prop::name, "Untagged")
-		.data<Tag::Camera>("Camera"_hs)
+		.data<ETag::Camera>("Camera"_hs)
 		.prop(fq::reflect::prop::name, "Camera")
-		.data<Tag::Player>("Player"_hs)
+		.data<ETag::Player>("Player"_hs)
 		.prop(fq::reflect::prop::name, "Player");
 
 	// GameObject 
@@ -58,4 +59,18 @@ void fq::game_module::RegisterMetaData()
 		.data<&Camera::SetNearPlain, &Camera::GetNearPlain>("NearPlain"_hs)
 		.prop(fq::reflect::prop::name, "NearPlain")
 		.base<Component>();
+
+	// StaticMeshRenderer
+	entt::meta<StaticMeshRenderer>()
+		.type("StaticMeshRenderer"_hs)
+		.prop(fq::reflect::prop::name, "StaticMeshRenderer")
+		.data<&StaticMeshRenderer::SetModelPath , &StaticMeshRenderer::GetModelPath>("ModelPath"_hs)
+		.prop(fq::reflect::prop::name, "ModelPath")
+		.prop(fq::reflect::prop::relative_path)
+		.data<&StaticMeshRenderer::SetMeshName, &StaticMeshRenderer::GetMeshName>("MeshName"_hs)
+		.prop(fq::reflect::prop::name, "MeshName")
+		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
+		.prop(fq::reflect::prop::name, "Materials")
+		.base<Component>();
+
 }

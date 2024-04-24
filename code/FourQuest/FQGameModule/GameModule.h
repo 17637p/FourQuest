@@ -12,6 +12,8 @@
 #include "Component.h"
 
 #include "Transform.h"
+#include "Camera.h"
+#include "StaticMeshRenderer.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"

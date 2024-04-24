@@ -6,7 +6,7 @@
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
 	, mName("GameObject")
-	, mTag(Tag::Player)
+	, mTag(ETag::Player)
 	, mComponents{}
 	, mScene(nullptr)
 	, mbIsDestroyed(false)

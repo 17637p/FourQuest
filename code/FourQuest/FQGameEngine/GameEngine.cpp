@@ -63,7 +63,6 @@ void fq::game_engine::GameEngine::Process()
 			{
 				mGameProcess->mWindowSystem->OnResize();
 			}
-			
 
 			// 시간, 키입력 처리 
 			float deltaTime = mGameProcess->mTimeManager->Update();

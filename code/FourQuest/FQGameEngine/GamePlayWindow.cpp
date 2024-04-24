@@ -1,8 +1,11 @@
 #include "GamePlayWindow.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include "../FQGameModule/InputManager.h"
+#include "../FQGraphics/IFQGraphics.h"
+
 #include "EditorProcess.h"
 #include "GameProcess.h"
 #include "EditorEvent.h"
@@ -15,17 +18,15 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
-{
-
-}
+{}
 
 void fq::game_engine::GamePlayWindow::Render()
 {
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
 		beginMenuBar_Control();
+		beginImage_GameScreen();
 	}
-
 	ImGui::End();
 }
 
@@ -33,6 +34,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
+
 }
 
 void fq::game_engine::GamePlayWindow::Finalize()
@@ -49,8 +51,6 @@ void fq::game_engine::GamePlayWindow::beginMenuBar_Control()
 
 		ImGui::EndMenuBar();
 	}
-
-
 }
 
 void fq::game_engine::GamePlayWindow::beginButton_Stop()
@@ -79,8 +79,6 @@ void fq::game_engine::GamePlayWindow::beginButton_Stop()
 	{
 		ImGui::SetTooltip("Ctrl + Shift + P");
 	}
-
-
 }
 
 void fq::game_engine::GamePlayWindow::beginButton_Play()
@@ -181,3 +179,20 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 
 }
 
+void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
+{
+	//auto size = ImGui::GetWindowSize();
+	//mGameProcess->mGraphics->SetViewportSize(size.x, size.y);
+
+	auto current = ImGui::GetCurrentContext();
+	auto pos = current->CurrentWindow->Pos;
+	auto size = current->CurrentWindow->Size;
+	auto idealSize = ImVec2(size.x, size.y - 3);
+	auto maxpos = ImVec2(pos.x + idealSize.x, pos.y + idealSize.y);
+	auto borderSize = current->CurrentWindow->WindowBorderSize;
+
+	ImGui::GetWindowDrawList()->AddImage(
+		mGameProcess->mGraphics->GetSRV(),
+		ImVec2(pos.x, pos.y + 22),
+		ImVec2(maxpos.x, maxpos.y));
+}
