@@ -56,7 +56,8 @@ namespace fq::graphics
 		/// Light
 
 		/// Camera
-		//virtual FQ_GRAPHICS void SetCamera(CameraInfo cameraInfo) override;
+		virtual void SetCamera(const CameraInfo& cameraInfo) override;
+		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
 
 		/// Picking
 		//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) override;
@@ -72,6 +73,8 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<class D3D11JobManager> mJobManager;
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;
+		
+		std::shared_ptr<class D3D11CameraManager> mCameraManager;
 	};
 }
 
