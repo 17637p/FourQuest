@@ -72,6 +72,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* meshObject) abstract;
 
 			virtual FQ_GRAPHICS ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) abstract;
+			virtual FQ_GRAPHICS void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) abstract;
 			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) abstract;
 			/// Gizmo && Background
 

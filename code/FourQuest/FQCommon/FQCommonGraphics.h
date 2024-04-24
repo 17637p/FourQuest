@@ -16,7 +16,7 @@ namespace fq::graphics
 	enum class ELightType
 	{
 		Directional,
-		Point, 
+		Point,
 		Spot
 	};
 
@@ -43,6 +43,13 @@ namespace fq::graphics
 		std::string MeshName;
 		std::vector<std::string> MaterialNames;
 		DirectX::SimpleMath::Matrix Transform;
+	};
+
+	struct AnimationInfo
+	{
+		std::string ModelPath;
+		std::string AnimationName; // Model Data의 Animation 이름
+		std::string AnimationKey; // ISkinnedMeshObject SetAnimation에서 사용할 이름
 	};
 }
 

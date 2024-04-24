@@ -42,7 +42,8 @@ namespace fq::graphics
 		const std::shared_ptr<SkinnedMesh>& skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
 		const std::vector<std::shared_ptr<Material>> materials = skinnedMeshObject->GetMaterials();
 		const fq::common::Mesh& meshData = skinnedMesh->GetMeshData();
-		const std::vector<DirectX::SimpleMath::Matrix>& boneMatrices = skinnedMeshObject->GetBoneMatrices();
+		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms = skinnedMeshObject->GetFinalTransforms();
+	
 		assert(meshData.Subsets.size() <= materials.size());
 
 		for (size_t i = 0; i < meshData.Subsets.size(); ++i)
@@ -52,7 +53,7 @@ namespace fq::graphics
 			job.TransformPtr = &skinnedMeshObject->GetTransform();
 			job.Material = materials[i];
 			job.SkinnedMesh = skinnedMesh;
-			job.BoneMatricesPtr = &boneMatrices;
+			job.BoneMatricesPtr = &finalTransforms;
 
 			mSkinnedMeshJobs.push_back(job);
 		}

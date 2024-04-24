@@ -43,12 +43,6 @@
     <ClInclude Include="D3D11TextManager.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
     <ClInclude Include="RenderObject.h">
       <Filter>Object</Filter>
     </ClInclude>
@@ -72,6 +66,18 @@
     </ClInclude>
     <ClInclude Include="ManagementCommon.h">
       <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneHierarchy.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationHelper.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +104,15 @@
     </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{5bd1b6bc-5961-4bd8-be6b-3055d44ba8e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\Header">
+      <UniqueIdentifier>{1845f703-c9db-4a53-97b7-e3a6b0d20d9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource\Source">
+      <UniqueIdentifier>{179a8e60-2314-48ef-aeb1-7eea7502e0a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{2b2795e0-47e3-4696-a1f7-3313bb82e005}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -137,12 +152,6 @@
     <ClCompile Include="D3D11TextManager.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>Object</Filter>
     </ClCompile>
@@ -160,6 +169,18 @@
     </ClCompile>
     <ClCompile Include="D3D11RenderManager.cpp">
       <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneHierarchy.cpp">
+      <Filter>Resource\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Resource\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Resource\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationHelper.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

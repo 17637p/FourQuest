@@ -132,6 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationHelper.h" />
+    <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11TextManager.h" />
@@ -158,6 +160,8 @@
     <ClInclude Include="D3D11ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationHelper.cpp" />
+    <ClCompile Include="BoneHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11Device.cpp" />

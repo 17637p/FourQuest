@@ -39,6 +39,7 @@ namespace fq::graphics
 		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
 
 		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
+		void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
 		/// Gizmo && Background

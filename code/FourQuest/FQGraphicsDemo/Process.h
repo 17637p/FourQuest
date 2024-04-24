@@ -50,5 +50,6 @@ private:
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
+	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 };
 
