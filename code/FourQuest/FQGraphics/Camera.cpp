@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <FQCommon.h>
+#include <FQCommonGraphics.h>
 
 fq::graphics::Camera::Camera()
 	:mWidth{0},

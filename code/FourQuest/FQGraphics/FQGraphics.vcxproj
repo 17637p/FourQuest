@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D11Buffer.h" />
+    <ClInclude Include="D3D11CameraManager.h" />
     <ClInclude Include="D3D11TextManager.h" />
     <ClInclude Include="D3D11JobManager.h" />
     <ClInclude Include="D3D11RenderManager.h" />
@@ -160,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
+    <ClCompile Include="D3D11CameraManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />

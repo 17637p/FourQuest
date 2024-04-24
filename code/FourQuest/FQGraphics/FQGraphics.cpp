@@ -3,6 +3,8 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
+#include "D3D11CameraManager.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -16,6 +18,7 @@ FQGraphics::FQGraphics()
 	, mObjectManager(std::make_shared<D3D11ObjectManager>())
 	, mJobManager(std::make_shared<D3D11JobManager>())
 	, mRenderManager(std::make_shared<D3D11RenderManager>())
+	, mCameraManager(std::make_shared<D3D11CameraManager>())
 {
 }
 
@@ -33,6 +36,16 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 bool fq::graphics::FQGraphics::Update(float deltaTime)
 {
 	return true;
+}
+
+void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)
+{
+	mCameraManager->Update(ECameraType::Player, cameraTransform);
+}
+
+void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
+{
+	mCameraManager->SetCamera(ECameraType::Player, cameraInfo);
 }
 
 bool FQGraphics::BeginRender()

@@ -128,6 +128,8 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		mScreenWidth = LOWORD(lParam);
 		mScreenHeight = HIWORD(lParam);
+
+		break;
 	}
 
 	case WM_PAINT:
