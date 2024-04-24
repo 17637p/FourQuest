@@ -1,9 +1,6 @@
 #include "FQGraphics.h"
-
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
-
-#include "D3D11CameraManager.h"
 
 using namespace fq::graphics;
 
@@ -19,6 +16,7 @@ FQGraphics::FQGraphics()
 	, mJobManager(std::make_shared<D3D11JobManager>())
 	, mRenderManager(std::make_shared<D3D11RenderManager>())
 	, mCameraManager(std::make_shared<D3D11CameraManager>())
+	, mModelManager(std::make_shared<D3D11ModelManager>())
 {
 }
 
@@ -96,27 +94,27 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 
 const fq::common::Model& FQGraphics::CreateModel(std::string path, std::filesystem::path textureBasePath)
 {
-	return mObjectManager->CreateModel(mDevice, path, textureBasePath);
+	return mModelManager->CreateModel(mDevice, path, textureBasePath);
 }
 
 const fq::common::Model& FQGraphics::GetModel(std::string path)
 {
-	return mObjectManager->GetModel(path);
+	return mModelManager->FindModel(path);
 }
 
 void FQGraphics::DeleteModel(std::string path)
 {
-	mObjectManager->DeleteModel(path);
+	mModelManager->DeleteModel(path);
 }
 
 void FQGraphics::ConvertModel(std::string fbxFile, std::string fileName)
 {
-	mObjectManager->ConvertModel(fbxFile, fileName);
+	mModelManager->ConvertModel(fbxFile, fileName);
 }
 
 IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)
 {
-	return mObjectManager->CreateStaticMeshObject(info);
+	return mObjectManager->CreateStaticMeshObject(mModelManager, info);
 }
 
 void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)
@@ -126,12 +124,12 @@ void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)
 
 ISkinnedMeshObject* FQGraphics::CreateSkinnedMeshObject(MeshObjectInfo info)
 {
-	return mObjectManager->CreateSkinnedMeshObject(info);
+	return mObjectManager->CreateSkinnedMeshObject(mModelManager, info);
 }
 
 void FQGraphics::AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info)
 {
-	mObjectManager->AddAnimation(iSkinnedMeshObject, info);
+	mObjectManager->AddAnimation(mModelManager, iSkinnedMeshObject, info);
 }
 
 void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)

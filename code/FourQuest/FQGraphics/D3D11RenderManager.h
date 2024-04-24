@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-
-#include <directxtk/SimpleMath.h>
-#include <d3d11.h>
+#include "CommonHeader.h"
 
 #include "RenderJob.h"
 

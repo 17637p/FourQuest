@@ -71,10 +71,11 @@ namespace fq::graphics
 	private:
 		std::shared_ptr<class D3D11Device> mDevice;
 		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<class D3D11ModelManager> mModelManager;
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<class D3D11JobManager> mJobManager;
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;
-		
+
 		std::shared_ptr<class D3D11CameraManager> mCameraManager;
 	};
 }

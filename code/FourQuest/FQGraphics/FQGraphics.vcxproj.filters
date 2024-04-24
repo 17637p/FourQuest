@@ -82,6 +82,12 @@
     <ClInclude Include="BoneHierarchy.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11ModelManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonHeader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -102,14 +108,14 @@
     <Filter Include="Object">
       <UniqueIdentifier>{1fd9c50e-f004-44e8-99a8-b1ae104857f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{1f33f771-493f-48fd-b2e3-1ac0c55eefaa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{5bd1b6bc-5961-4bd8-be6b-3055d44ba8e9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{fc331d0b-bd4c-4ad2-be02-28bcf5dc3dfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{1f33f771-493f-48fd-b2e3-1ac0c55eefaa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="BoneHierarchy.cpp">
       <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ModelManager.cpp">
+      <Filter>Management</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
