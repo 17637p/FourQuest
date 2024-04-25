@@ -49,11 +49,13 @@ namespace fq::physics
 		ColliderInfo colliderInfo;
 		DirectX::SimpleMath::Vector3 boxExtent;
 	};
+
 	struct SphereColliderInfo
 	{
 		ColliderInfo colliderInfo;
 		float raidus;
 	};
+
 	struct CapsuleColliderInfo
 	{
 		ColliderInfo colliderInfo;

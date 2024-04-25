@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FQCommonPhysics.h"
+#include "../FQCommon/FQCommonPhysics.h"
 
 #pragma comment(lib, "LowLevel_static_64.lib")
 #pragma comment(lib, "LowLevelAABB_static_64.lib")

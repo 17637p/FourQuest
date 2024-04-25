@@ -22,6 +22,7 @@ namespace fq
 			/// </summary>
 			void Initialize() override;
 			
+
 			/// <summary>
 			/// 에디터를 실행합니다
 			/// </summary>

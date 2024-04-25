@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQphysics/IFQPhysics.h"
 
 #include "GameProcess.h"
 #include "EditorProcess.h"
@@ -44,7 +45,13 @@ void fq::game_engine::EditorEngine::Initialize()
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
 	float width = mGameProcess->mWindowSystem->GetScreenWidth();
 	float height = mGameProcess->mWindowSystem->GetScreenHeight();
-	mGameProcess->mGraphics->Initialize(hwnd, width,height);
+	mGameProcess->mGraphics->Initialize(hwnd, width, height);
+
+	// 물리 엔진 초기화
+	mGameProcess->mPhysics = fq::physics::EngineExporter().GetEngine();
+	fq::physics::PhysicsEngineInfo info;
+	info.gravity = { 0.f,-10.f,0.f };
+	mGameProcess->mPhysics->Initialize(info);
 
 	// 시스템 초기화
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
@@ -91,10 +98,11 @@ void fq::game_engine::EditorEngine::Process()
 			if (mode == EditorMode::Play)
 			{
 				// 시간,입력 처리
-				mGameProcess->mInputManager->Update();  
+				mGameProcess->mInputManager->Update();
 
 				// 물리처리
-				mGameProcess->mSceneManager->FixedUpdate(0.f);
+				mGameProcess->mSceneManager->FixedUpdate(deltaTime);
+				mGameProcess->mPhysics->Update(deltaTime);
 
 				mGameProcess->mSceneManager->Update(deltaTime);
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
@@ -139,6 +147,8 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mEventManager->RemoveAllHandles();
 
 	mGameProcess->mGraphics->Finalize();
+	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
+	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 
 	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();

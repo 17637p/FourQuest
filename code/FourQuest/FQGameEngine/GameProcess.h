@@ -16,6 +16,11 @@ namespace fq::graphics
 	class IFQGraphics;
 }
 
+namespace fq::physics
+{
+	class IFQPhysics;
+}
+
 namespace fq::game_engine
 {
 	class WindowSystem;
@@ -46,6 +51,7 @@ namespace fq::game_engine
 		fq::graphics::IFQGraphics* mGraphics;
 		
 		// Physics
+		fq::physics::IFQPhysics* mPhysics;
 
 		// System
 		std::unique_ptr<WindowSystem> mWindowSystem;

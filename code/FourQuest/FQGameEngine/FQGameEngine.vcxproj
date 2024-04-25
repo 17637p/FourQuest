@@ -121,7 +121,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,7 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -168,6 +168,7 @@
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
+    <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PrefabSystem.h" />
     <ClInclude Include="ModelSystem.h" />
     <ClInclude Include="RenderingSystem.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
     <ClCompile Include="ModelSystem.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />
@@ -214,6 +216,9 @@
     </ProjectReference>
     <ProjectReference Include="..\FQGraphics\FQGraphics.vcxproj">
       <Project>{b977a79f-fe96-446a-b70b-ae1a9a59bd8f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQphysics\FQphysics.vcxproj">
+      <Project>{76516359-368d-4b53-a618-89c14d71805c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">
       <Project>{6fa5f6a1-93bf-4c23-a2e7-e20c7e82377e}</Project>

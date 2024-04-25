@@ -49,7 +49,6 @@ namespace fq::physics
 		/// </summary>
 		virtual bool RemoveAllRigidBody() override;
 
-
 	private:
 		// ¾À
 		physx::PxScene* mScene;
