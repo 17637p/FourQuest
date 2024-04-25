@@ -34,8 +34,3 @@ namespace fq::physics
 	{
 	}
 }
-
-EnterCollision(int id, int otherid);
-EndCollision();
-OnCollision();
-EnterTirgger();

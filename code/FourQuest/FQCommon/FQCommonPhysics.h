@@ -24,7 +24,9 @@ namespace fq::physics
 	struct CollisionData
 	{
 		unsigned int id;
-		unsigned int otherId;
+		unsigned int layerNumber;
+		unsigned int otherid;
+		unsigned int otherlayerNumber;
 		DirectX::SimpleMath::Vector3 CollisionPoint;
 	};
 
