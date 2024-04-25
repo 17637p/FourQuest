@@ -23,18 +23,20 @@ namespace fq::graphics
 	struct LightInfo
 	{
 		// Common
-		unsigned int id = -1;
-
 		ELightType type;
-		DirectX::SimpleMath::Vector3 color = { -1.0f, -1.0f, -1.0f };
+		DirectX::SimpleMath::Color color = { 1.0f, 0.0f, 1.0f, 1.0f};
 		float intensity = -1.0f;
 
 		// Point, Spot
 		DirectX::SimpleMath::Vector3 attenuation = { 0, 0, 1 };
 		float range = 10;
+		DirectX::SimpleMath::Vector3 position;
 
 		// Spot
 		float spot = 1; //Todo: 아마도 spot 지름인거 같은데 확인해보고 바꾸기
+
+		// Directional, Spot
+		DirectX::SimpleMath::Vector3 direction;
 	};
 
 	struct MeshObjectInfo

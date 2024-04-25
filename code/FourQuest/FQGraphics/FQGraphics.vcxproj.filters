@@ -76,6 +76,9 @@
     <ClInclude Include="D3D11CameraManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11LightManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -165,6 +168,9 @@
       <Filter>Management</Filter>
     </ClCompile>
     <ClCompile Include="D3D11CameraManager.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11LightManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
   </ItemGroup>

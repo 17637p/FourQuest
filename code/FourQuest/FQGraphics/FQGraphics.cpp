@@ -4,6 +4,7 @@
 #include "ManagementCommon.h"
 
 #include "D3D11CameraManager.h"
+#include "D3D11LightManager.h"
 
 using namespace fq::graphics;
 
@@ -19,6 +20,7 @@ FQGraphics::FQGraphics()
 	, mJobManager(std::make_shared<D3D11JobManager>())
 	, mRenderManager(std::make_shared<D3D11RenderManager>())
 	, mCameraManager(std::make_shared<D3D11CameraManager>())
+	, mLightManager(std::make_shared<D3D11LightManager>())
 {
 }
 
@@ -30,6 +32,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mJobManager;
 	mRenderManager->Initialize(mDevice, mResourceManager, width, height);
 	mCameraManager->Initialize(width, height);
+	mLightManager->Initialize(mDevice);
 
 	return true;
 }
@@ -37,6 +40,21 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 bool fq::graphics::FQGraphics::Update(float deltaTime)
 {
 	return true;
+}
+
+void FQGraphics::DeleteLight(const unsigned int id)
+{
+	mLightManager->DeleteLight(id);
+}
+
+void FQGraphics::SetLight(const unsigned int id, const LightInfo& lightInfo)
+{
+	mLightManager->SetLight(id, lightInfo);
+}
+
+void FQGraphics::AddLight(const unsigned int id, const LightInfo& lightInfo)
+{
+	mLightManager->AddLight(id, lightInfo);
 }
 
 void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)

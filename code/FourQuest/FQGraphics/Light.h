@@ -3,69 +3,70 @@
 #include <memory>
 #include <directxtk/SimpleMath.h>
 
+#include <FQCommon.h>
 #include <FQCommonGraphics.h>
-
-#include "D3D11Device.h"
-#include "D3D11Buffer.h"
 
 namespace fq::graphics
 {
 	struct DirectionalLight
 	{
-		DirectX::SimpleMath::Vector4 color;
-		DirectX::SimpleMath::Vector3 direction;
+		DirectX::SimpleMath::Vector3 color;
 		float intensity;
+		DirectX::SimpleMath::Vector3 direction;
+		float pad;
 	};
 
 	struct PointLight
 	{
-		DirectX::SimpleMath::Vector4 color;
-		DirectX::SimpleMath::Vector3 position;
+		DirectX::SimpleMath::Vector3 color;
 		float intensity;
-		DirectX::SimpleMath::Vector3 attenuation;
+		DirectX::SimpleMath::Vector3 position;
 		float range;
+		DirectX::SimpleMath::Vector3 attenuation;
+		float pad;
 	};
 
 	struct SpotLight
 	{
-		DirectX::SimpleMath::Vector4 color;
-		DirectX::SimpleMath::Vector3 position;
+		DirectX::SimpleMath::Vector3 color;
 		float intensity;
-		DirectX::SimpleMath::Vector3 direction;
+		DirectX::SimpleMath::Vector3 position;
 		float range;
-		DirectX::SimpleMath::Vector3 attenuation;
+		DirectX::SimpleMath::Vector3 direction;
 		float spot;
+		DirectX::SimpleMath::Vector3 attenuation;
+		float pad;
 	};
-
-	//template<typename ConstantBuffer>
-	//class D3D11ConstantBuffer;
-	//
-	//class D3D11Device;
 
 	template<typename LightData>
 	class Light
 	{
 	public:
 		Light();
-		virtual ~Light();
 
-		void Update(const std::shared_ptr<D3D11Device>& d3d11Device, const LightData& lightData);
+		LightData GetData() const;
+		void SetData(const LightData& lightData);
 
 	private:
-		std::shared_ptr<LightData> mData;
+		LightData mData;
 	};
 
 	template<typename LightData>
-	fq::graphics::Light<LightData>::Light()
-		:mData(nullptr)
+	LightData fq::graphics::Light<LightData>::GetData() const
 	{
-
+		return mData;
 	}
 
 	template<typename LightData>
-	void fq::graphics::Light<LightData>::Update(const std::shared_ptr<D3D11Device>& d3d11Device, const LightData& lightData)
+	fq::graphics::Light<LightData>::Light()
+		:mData()
 	{
-		*mData = lightData;
+	}
+
+	template<typename LightData>
+	void fq::graphics::Light<LightData>::SetData(const LightData& lightData)
+	{
+		mData = lightData;
 	}
 }
 

@@ -52,3 +52,36 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 
     return bumpedNormalW;
 }
+
+/*=============================================================================
+		Light
+=============================================================================*/
+struct DirectionalLight
+{
+    float3  color;
+    float   intensity;
+    float3  direction;
+    float   pad;
+};
+
+struct PointLight
+{
+    float3  color;
+    float   intensity;
+    float3  position;
+    float   range;
+    float3  attenuation;
+    float   pad;
+};
+
+struct SpotLight
+{
+    float3  color;
+    float   intensity;
+    float3  position;
+    float   range;
+    float3  direction;
+    float   spot;
+    float3  attenuation;
+    float   pad;
+};
