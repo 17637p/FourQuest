@@ -32,7 +32,6 @@ namespace fq::loader
 			aiProcess_GenUVCoords |
 			aiProcess_CalcTangentSpace |
 			aiProcess_LimitBoneWeights |
-			aiProcess_PreTransformVertices |
 			aiProcess_ConvertToLeftHanded;
 
 		mAiScene = mImpoter->ReadFile(path.string(), importFlags);
@@ -235,7 +234,7 @@ namespace fq::loader
 
 		node.Name = aiNode->mName.C_Str();
 		node.Index = outMeshes->size();
-		node.Parentindex = parentIndex;
+		node.ParentIndex = parentIndex;
 		node.ToParentMatrix = DirectX::SimpleMath::Matrix(aiNode->mTransformation[0]).Transpose();
 
 		Mesh mesh = parseMesh(aiNode);

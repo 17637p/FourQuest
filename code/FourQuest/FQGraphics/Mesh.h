@@ -16,6 +16,7 @@ namespace fq::graphics
 		MeshBase(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~MeshBase() = 0 {};
 
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 		void Draw(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex);
 
 		inline const fq::common::Mesh& GetMeshData() const;
@@ -36,8 +37,6 @@ namespace fq::graphics
 	public:
 		StaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~StaticMesh() = default;
-
-		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 	};
 
 	class SkinnedMesh : public MeshBase
@@ -45,10 +44,5 @@ namespace fq::graphics
 	public:
 		SkinnedMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~SkinnedMesh() = default;
-
-		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
-
-	private:
-		std::shared_ptr<D3D11VertexBuffer> mBoneVertexBuffer;
 	};
 }

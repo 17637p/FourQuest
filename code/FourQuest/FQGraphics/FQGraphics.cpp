@@ -69,7 +69,7 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
-	mRenderManager->BeginRender(mDevice);
+	mRenderManager->BeginRender(mDevice, mCameraManager);
 
 	return true;
 }
@@ -145,6 +145,11 @@ void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)
 ISkinnedMeshObject* FQGraphics::CreateSkinnedMeshObject(MeshObjectInfo info)
 {
 	return mObjectManager->CreateSkinnedMeshObject(info);
+}
+
+void FQGraphics::AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info)
+{
+	mObjectManager->AddAnimation(iSkinnedMeshObject, info);
 }
 
 void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)

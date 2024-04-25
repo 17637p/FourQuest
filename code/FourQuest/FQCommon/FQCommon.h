@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <vector>
 #include <directxtk/SimpleMath.h>
 

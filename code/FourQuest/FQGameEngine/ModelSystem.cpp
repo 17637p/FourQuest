@@ -18,8 +18,6 @@ fq::game_engine::ModelSystem::~ModelSystem()
 void fq::game_engine::ModelSystem::Initialize(GameProcess* game)
 {
 	mGameProcess = game;
-
-	auto& graphics =  mGameProcess->mGraphics;
 }
 
 
@@ -86,7 +84,6 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		}
 		else // SkinnedMesh »ý¼º
  		{
-
 		}
 	}
 

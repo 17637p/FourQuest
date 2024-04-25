@@ -28,7 +28,6 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 {
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
-	mNextSceneName = startSceneName;
 
 	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr);
 
@@ -137,9 +136,7 @@ void fq::game_module::SceneManager::LoadScene()
 void fq::game_module::SceneManager::UnloadScene()
 {
 	mCurrentScene->CleanUp();
-
-	mCurrentScene->mObjects.clear();
-
+	mCurrentScene->DestroyAll();
 	mEventManager->FireEvent<fq::event::OnUnloadScene>({});
 }
 
@@ -157,4 +154,5 @@ void fq::game_module::SceneManager::RequestExitGame(fq::event::RequestExitGame e
 {
 	mbIsEnd = true;
 }
+
 

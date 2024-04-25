@@ -1,4 +1,5 @@
 #include "RenderObject.h"
+#include "BoneHierarchy.h"
 
 namespace fq::graphics
 {
@@ -17,14 +18,12 @@ namespace fq::graphics
 
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<Material>> materials,
-		DirectX::SimpleMath::Matrix transform)
+		DirectX::SimpleMath::Matrix transform,
+		BoneHierarchyCache boneHierarchyCache)
 		: mSkinnedMesh(skinnedMesh)
 		, mMaterials(materials)
 		, mTransform(transform)
+		, mBoneHierarchyCache(boneHierarchyCache)
 	{
-	}
-	void SkinnedMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
-	{
-		mTransform = transform;
 	}
 }

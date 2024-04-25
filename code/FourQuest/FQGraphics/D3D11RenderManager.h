@@ -37,6 +37,12 @@ namespace fq::graphics
 			DirectX::SimpleMath::Matrix ShadowViewProjTexMat;
 		};
 
+		struct BoneTransform
+		{
+			enum { MAX_BOND_COUNT = 128 };
+			DirectX::SimpleMath::Matrix FinalTransforms[128];
+		};
+
 		struct ModelTexutre
 		{
 			int bUseAlbedoMap;
@@ -71,7 +77,7 @@ namespace fq::graphics
 			unsigned short height);
 		void Finalize();
 
-		void BeginRender(const std::shared_ptr<D3D11Device>& device);
+		void BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager);
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
 
 		void OnResize(const std::shared_ptr<D3D11Device>& device,
@@ -88,6 +94,7 @@ namespace fq::graphics
 	private:
 		void updateModelTransformCB(const std::shared_ptr<D3D11Device>& device, const DirectX::SimpleMath::Matrix& transform);
 		void updateModelTextureCB(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<Material>& material);
+		void updateBoneTransformCB(const std::shared_ptr<D3D11Device>& device, const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);
 
 		void createFullScreenBuffer(const std::shared_ptr<D3D11Device>& device);
 
@@ -102,12 +109,14 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mNullDSV;
 
 		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
+		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
 		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
 
 		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
+		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
 		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
 
-		std::shared_ptr<D3D11PixelShader> mStaticMeshPS;
+		std::shared_ptr<D3D11PixelShader> mMeshPS;
 		std::shared_ptr<D3D11PixelShader> mFullScreenPS;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
@@ -116,6 +125,7 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneLight>> mSceneLightCB;
 

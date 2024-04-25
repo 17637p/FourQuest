@@ -32,6 +32,12 @@ Process::~Process()
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
 	}
+
+	for (fq::graphics::ISkinnedMeshObject* iobj : mSkinnedMeshObjects)
+	{
+		mTestGraphics->DeleteSkinnedMeshObject(iobj);
+	}
+
 	mTestGraphics->DeleteLight(1);
 	mTestGraphics->DeleteLight(3);
 
@@ -47,6 +53,10 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
 
+	const std::string modelBasePath = "./resource/example/model/";
+	const std::string FBXBasePath = "./resource/example/fbx/";
+	const std::string model1 = "SkinningTest";
+	const std::string model2 = "kick";
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
 
@@ -59,10 +69,13 @@ bool Process::Init(HINSTANCE hInstance)
 	//-------------------------------------
 	const std::string modelPath = "./resource/example/model/box.model";
 
-	mTestGraphics->ConvertModel("./resource/example/fbx/box.fbx", modelPath);
-	auto model = mTestGraphics->CreateModel(modelPath, "./resource/example/texture");
-	auto model1 = mTestGraphics->GetModel(modelPath);
-	for (auto mesh : model.Meshes)
+	mTestGraphics->ConvertModel(FBXBasePath + model1 + ".fbx", modelBasePath + model1 + ".model");
+	mTestGraphics->ConvertModel(FBXBasePath + model2 + ".fbx", modelBasePath + model2 + ".model");
+
+	auto modelData1 = mTestGraphics->CreateModel(modelBasePath + model1 + ".model", "./resource/example/texture");
+	auto modelData2 = mTestGraphics->CreateModel(modelBasePath + model2 + ".model", "./resource/example/texture");
+
+	for (auto mesh : modelData1.Meshes)
 	{
 		if (mesh.second.Vertices.empty())
 		{
@@ -70,7 +83,7 @@ bool Process::Init(HINSTANCE hInstance)
 		}
 
 		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = modelPath;
+		meshInfo.ModelPath = modelBasePath + model1 + ".model";
 		meshInfo.MeshName = mesh.second.Name;
 		meshInfo.Transform = mesh.first.ToParentMatrix;
 
@@ -86,12 +99,13 @@ bool Process::Init(HINSTANCE hInstance)
 		}
 		else
 		{
-			mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+			auto* iSkinned = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+			mTestGraphics->AddAnimation(iSkinned, { modelBasePath + model1 + ".model",  modelData1.Animations.front().Name, "Idle" });
+			mTestGraphics->AddAnimation(iSkinned, { modelBasePath + model2 + ".model",  modelData2.Animations.front().Name, "kick" });
+			iSkinned->SetAnimationKey("Idle");
+			mSkinnedMeshObjects.push_back(iSkinned);
 		}
 	}
-	mTestGraphics->DeleteModel("./resource/example/gun/gun");
-	// auto model2 = mTestGraphics->GetModel("../Temp/gun/gun"); // assert (false)
-	mTestGraphics->GetSRV();
 
 	/// camera 초기화
 	cameraTransform.worldPosition = { 0, 0, 0 };
@@ -170,10 +184,11 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		mScreenWidth = LOWORD(lParam);
 		mScreenHeight = HIWORD(lParam);
+		mScreenWidth = max(200, mScreenWidth);
+		mScreenHeight = max(200, mScreenHeight);
 
 		break;
 	}
-
 	case WM_PAINT:
 	{
 		hdc = BeginPaint(mHwnd, &ps);
@@ -205,7 +220,7 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = 0.01f;
+	const float speed = 1.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		walk(speed);
@@ -263,6 +278,25 @@ void Process::Render()
 	for (auto& obj : mStaticMeshObjects)
 	{
 		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(0.0001f));
+	}
+
+	static float s_time = 0.f;
+	s_time += 0.001f;
+	s_time = fmod(s_time, 3.f);
+
+	for (auto& obj : mSkinnedMeshObjects)
+	{
+		if (GetAsyncKeyState('1') & 0x8000)
+		{
+			obj->SetAnimationKey("kick");
+		}
+		else
+		{
+			obj->SetAnimationKey("Idle");
+		}
+
+		obj->UpdateAnimationTime(s_time);
+		auto data1 = obj->GetAnimationKeys();
 	}
 
 	mTestGraphics->EndRender();

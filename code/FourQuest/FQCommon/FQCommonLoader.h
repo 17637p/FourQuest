@@ -14,7 +14,7 @@ namespace fq::common
 
 		std::string Name;
 		unsigned int Index = INVALID_INDEX;
-		unsigned int Parentindex = INVALID_INDEX;
+		unsigned int ParentIndex = INVALID_INDEX;
 		DirectX::SimpleMath::Matrix ToParentMatrix;
 	};
 
@@ -53,8 +53,8 @@ namespace fq::common
 			}
 		};
 
-		struct Subset
-		{
+		struct Subset 
+		{ 
 			unsigned int VertexStart = 0u;
 			unsigned int VertexCount = 0u;
 			unsigned int IndexStart = 0u;

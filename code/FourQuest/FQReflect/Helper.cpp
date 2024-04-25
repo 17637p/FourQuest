@@ -6,7 +6,7 @@
 
 std::string fq::reflect::GetName(const entt::meta_data& metaData)
 {
-	auto prop = metaData.prop(fq::reflect::prop::name);
+	auto prop = metaData.prop(fq::reflect::prop::Name);
 
 	if (!prop)
 	{
@@ -17,7 +17,7 @@ std::string fq::reflect::GetName(const entt::meta_data& metaData)
 
 std::string fq::reflect::GetName(const entt::meta_type& metaType)
 {
-	auto prop = metaType.prop(fq::reflect::prop::name);
+	auto prop = metaType.prop(fq::reflect::prop::Name);
 
 	if (!prop)
 	{
@@ -28,7 +28,7 @@ std::string fq::reflect::GetName(const entt::meta_type& metaType)
 
 std::string fq::reflect::GetLabel(const entt::meta_type& metaType)
 {
-	auto prop = metaType.prop(fq::reflect::prop::label);
+	auto prop = metaType.prop(fq::reflect::prop::Label);
 
 	if (!prop)
 	{
@@ -39,7 +39,7 @@ std::string fq::reflect::GetLabel(const entt::meta_type& metaType)
 
 std::string fq::reflect::GetComment(const entt::meta_data& metaData)
 {
-	auto prop = metaData.prop(fq::reflect::prop::comment);
+	auto prop = metaData.prop(fq::reflect::prop::Comment);
 
 	if (!prop)
 	{

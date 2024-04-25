@@ -37,7 +37,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Quaternion GetRotation(const ECameraType& cameraType) const;
 
 	private:
-		std::unordered_map<ECameraType, std::shared_ptr<Camera> > mCameras;
+		std::unordered_map<ECameraType, std::shared_ptr<Camera>> mCameras;
 	};
 }
 

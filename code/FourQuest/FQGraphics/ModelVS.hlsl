@@ -36,9 +36,9 @@ cbuffer cbSceneTransform : register(b1)
 };
 
 #ifdef SKINNING
-cbuffer cbBonePalette : register(b2)
+cbuffer cbBoneTransform : register(b2)
 {
-    float4x4 cBonePalette[128];
+    float4x4 cFinalTransforms[128];
 };
 #endif
 
@@ -49,11 +49,11 @@ VertexOut main(VertexIn vin)
     float4x4 worldMat;
     
 #ifdef SKINNING 
-    worldMat = mul(vin.Weights.x, cBonePalette[vin.Indices.x]);
-    worldMat += mul(vin.Weights.y, cBonePalette[vin.Indices.y]);
-    worldMat += mul(vin.Weights.z, cBonePalette[vin.Indices.z]);
-    worldMat += mul(vin.Weights.w, cBonePalette[vin.Indices.w]);
-   // worldMat = mul(worldMat, cWorld);
+    worldMat = mul(vin.Weights.x, cFinalTransforms[vin.Indices.x]);
+    worldMat += mul(vin.Weights.y, cFinalTransforms[vin.Indices.y]);
+    worldMat += mul(vin.Weights.z, cFinalTransforms[vin.Indices.z]);
+    worldMat += mul(vin.Weights.w, cFinalTransforms[vin.Indices.w]);
+    worldMat = mul(worldMat, cWorld);
 #elif defined INSTANCING
     worldMat = vin.World;
 #else
@@ -65,9 +65,9 @@ VertexOut main(VertexIn vin)
     
     vout.PositionW = mul(float4(vin.Position, 1.f), worldMat);
 
-    vout.NormalW = normalize(mul(vin.NormalL, (float3x3)worldMat));
+    vout.NormalW = normalize(mul(vin.NormalL, (float3x3) worldMat));
     
-    vout.TangentW = normalize(mul(vin.TangentL, (float3x3)worldMat));
+    vout.TangentW = normalize(mul(vin.TangentL, (float3x3) worldMat));
     
     vout.UV = vin.UV;
     
