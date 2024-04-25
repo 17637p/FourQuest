@@ -1,7 +1,8 @@
 #include "Camera.h"
 
 #include "Scene.h"
-
+#include "EventManager.h"
+#include "Event.h"
 
 fq::game_module::Camera::Camera()
 	:mbIsMain(false)
@@ -42,13 +43,16 @@ entt::meta_handle fq::game_module::Camera::GetHandle()
 
 void fq::game_module::Camera::SetMainCamera(bool bIsMain)
 {
+	
 	// 다른 메인 카메라는 해제합니다
-	if (bIsMain)
+	if (bIsMain && GetGameObject())
 	{
 		GetScene()->ViewComponents<Camera>([this](GameObject& object, Camera& camera)
 			{
 				camera.SetMainCamera(false);
 			});
+
+		GetScene()->GetEventManager()->FireEvent<fq::event::SetMainCamera>({this});
 	}
 
 	mbIsMain = bIsMain;

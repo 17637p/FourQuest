@@ -137,6 +137,9 @@
     <ClInclude Include="CameraSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiColor.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">

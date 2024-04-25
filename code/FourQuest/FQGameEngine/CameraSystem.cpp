@@ -1,12 +1,14 @@
 #include "CameraSystem.h"
 
-#include "../FQGraphics/IFQGraphics.h"
+#include <spdlog/spdlog.h>
 
+#include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 
 fq::game_engine::CameraSystem::CameraSystem()
 	:mGameProcess(nullptr)
 	, mSetMainCameraHandler{}
+	, mOnLoadedSceneHandler{}
 	, mGameMainCamera(nullptr)
 	, mEditorCamera(nullptr)
 	, mCameraType(CameraType::None)
@@ -22,12 +24,19 @@ void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 	mGameProcess = gameProcess;
 
 	// 이벤트 핸들 등록 
-	mGameProcess->mEventManager->RegisterHandle<fq::event::SetMainCamera>(
+	mSetMainCameraHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::SetMainCamera>(
 		[this](fq::event::SetMainCamera event)
 		{
-			this->mGameMainCamera = event.mainCamera;
-		}
-	);
+			SetMainGameCamera(event.mainCamera);
+		});
+
+	mOnLoadedSceneHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::OnLoadScene>(
+		[this](fq::event::OnLoadScene event)
+		{
+			SetMainGameCamera(FindMainCamera());
+			
+			if (!mGameMainCamera) SPDLOG_WARN("Can't Find MainCamera");
+		});
 }
 
 void fq::game_engine::CameraSystem::SetMainGameCamera(fq::game_module::Camera* camera)
@@ -71,4 +80,21 @@ void fq::game_engine::CameraSystem::Update()
 		// 초기화 필요
 		assert(nullptr);
 	}
+}
+
+fq::game_module::Camera* fq::game_engine::CameraSystem::FindMainCamera() const
+{
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	for (const auto& object : scene->GetComponentView<fq::game_module::Camera>())
+	{
+		auto camera =  object->GetComponent<fq::game_module::Camera>();
+
+		if (camera->IsMain())
+		{
+			return camera;
+		}
+	}
+
+	return nullptr;
 }

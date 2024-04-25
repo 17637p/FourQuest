@@ -25,8 +25,19 @@ namespace fq::game_engine
 
 		void Render() override;
 
+		void AddLog(spdlog::details::log_msg msg);
+		
+	private:
+		void beginButton_LogController();
+		void beginChild_LogList();
+		void beginText_Log(const spdlog::details::log_msg& msg);
 
 	private:
+		UINT mMaxLogListSize;
+
+		bool mbIsShowTime;
+		spdlog::level::level_enum mLevel;
+
 		std::shared_ptr<spdlog::logger> mLogger;
 		std::list<spdlog::details::log_msg> mLogList;
 	};

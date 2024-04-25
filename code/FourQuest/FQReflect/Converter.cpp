@@ -262,7 +262,8 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	// bool
 	if (metaType == entt::resolve<bool>())
 	{
-		std::cout << inJson << '\n';
+		bool val = inJson.get<bool>();
+		output = val;
 	}
 	// int
 	else if (metaType == entt::resolve<int>())

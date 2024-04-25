@@ -44,18 +44,30 @@ namespace fq::game_engine
 		void SetMainGameCamera(fq::game_module::Camera* camera);
 
 		/// <summary>
+		/// 씬에서 메인카메라를 가져옵니다
+		/// </summary>
+		/// <returns>메인 카메라</returns>
+		fq::game_module::Camera* FindMainCamera()const;
+
+		/// <summary>
 		/// 에디터의 카메라를 설정합니다
 		/// </summary>
 		/// <param name="camera">카메라</param>
 		void SetEditorCamera(fq::game_module::Camera* camera);
+
+		/// <summary>
+		/// 현재 사용하는 카메라 타입을 반환합니다
+		/// </summary>
+		/// <returns>카메라 타입</returns>
+		CameraType GetCameraType()const { return mCameraType; }
 
 	private:
 		GameProcess* mGameProcess;
 		CameraType mCameraType;
 
 		fq::game_module::EventHandler mSetMainCameraHandler;
+		fq::game_module::EventHandler mOnLoadedSceneHandler;
 		fq::game_module::Camera* mGameMainCamera;
 		fq::game_module::Camera* mEditorCamera;
 	};
-
 }

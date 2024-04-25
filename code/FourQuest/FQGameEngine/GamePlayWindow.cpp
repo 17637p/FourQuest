@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <spdlog/spdlog.h>
 
 #include "../FQGameModule/InputManager.h"
 #include "../FQGraphics/IFQGraphics.h"
@@ -73,6 +74,7 @@ void fq::game_engine::GamePlayWindow::beginMenuBar_Control()
 {
 	if (ImGui::BeginMenuBar())
 	{
+		beginButton_SwapCamera();
 		beginButton_Play();
 		beginButton_Stop();
 
@@ -175,10 +177,11 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 {
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(Key::Ctrl, KeyState::Hold)
-		&& input->IsKeyState(Key::P, KeyState::Tap))
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+		&& input->IsKeyState(EKey::P, EKeyState::Tap))
 	{
-		if (input->IsKeyState(Key::LShift, KeyState::Hold))
+		// [Ctrl + LShift + P] 게임 정지
+		if (input->IsKeyState(EKey::LShift, EKeyState::Hold))
 		{
 			if (mbIsPauseGame)
 			{
@@ -193,6 +196,7 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		}
 		else
 		{
+			// [Ctrl + P] 게임플레이 
 			if (mMode == EditorMode::Edit)
 			{
 				SetMode(EditorMode::Play);
@@ -204,21 +208,36 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		}
 	}
 
-	if (input->IsKeyState(Key::W, KeyState::Tap))
+	if (input->IsKeyState(EKey::RMouse, EKeyState::None))
 	{
-		mOperation = ImGuizmo::TRANSLATE;
+		if (input->IsKeyState(EKey::W, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::TRANSLATE;
+		}
+		if (input->IsKeyState(EKey::E, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::ROTATE;
+		}
+		if (input->IsKeyState(EKey::R, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::SCALE;
+		}
+		if (input->IsKeyState(EKey::Q, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::BOUNDS;
+		}
 	}
-	if (input->IsKeyState(Key::E, KeyState::Tap))
+
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
 	{
-		mOperation = ImGuizmo::ROTATE;
-	}
-	if (input->IsKeyState(Key::R, KeyState::Tap))
-	{
-		mOperation = ImGuizmo::SCALE;
-	}
-	if (input->IsKeyState(Key::Q, KeyState::Tap))
-	{
-		mOperation = ImGuizmo::BOUNDS;
+		if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
+		{
+			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+		}
+		if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
+		{
+			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+		}
 	}
 }
 
@@ -243,7 +262,8 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 {
 	auto& input = mEditorProcess->mInputManager;
-	if (!input->IsKeyState(Key::RMouse, KeyState::Hold))
+	if (!input->IsKeyState(EKey::RMouse, EKeyState::Hold)
+		|| !input->IsKeyState(EKey::LMouse, EKeyState::None))
 	{
 		return;
 	}
@@ -254,44 +274,44 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 	auto rotation = cameraT->GetLocalRotation();
 	float distance = mCameraMoveSpeed * dt;
 
-	if (input->IsKeyState(Key::W, KeyState::Hold))
+	if (input->IsKeyState(EKey::W, EKeyState::Hold))
 	{
 		position.x += matrix._31 * distance;
 		position.y += matrix._32 * distance;
 		position.z += matrix._33 * distance;
 	}
-	if (input->IsKeyState(Key::S, KeyState::Hold))
+	if (input->IsKeyState(EKey::S, EKeyState::Hold))
 	{
 		position.x -= matrix._31 * distance;
 		position.y -= matrix._32 * distance;
 		position.z -= matrix._33 * distance;
 	}
-	if (input->IsKeyState(Key::A, KeyState::Hold))
+	if (input->IsKeyState(EKey::A, EKeyState::Hold))
 	{
 		position.x -= matrix._11 * distance;
 		position.y -= matrix._12 * distance;
 		position.z -= matrix._13 * distance;
 	}
-	if (input->IsKeyState(Key::D, KeyState::Hold))
+	if (input->IsKeyState(EKey::D, EKeyState::Hold))
 	{
 		position.x += matrix._11 * distance;
 		position.y += matrix._12 * distance;
 		position.z += matrix._13 * distance;
 	}
-	if (input->IsKeyState(Key::Q, KeyState::Hold))
+	if (input->IsKeyState(EKey::Q, EKeyState::Hold))
 	{
 		position.x -= matrix._21 * distance;
 		position.y -= matrix._22 * distance;
 		position.z -= matrix._23 * distance;
 	}
-	if (input->IsKeyState(Key::E, KeyState::Hold))
+	if (input->IsKeyState(EKey::E, EKeyState::Hold))
 	{
 		position.x += matrix._21 * distance;
 		position.y += matrix._22 * distance;
 		position.z += matrix._23 * distance;
 	}
 
-	
+
 	float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
 	auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
 
@@ -306,7 +326,8 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
 {
-	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS)
+	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
+		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
 	{
 		ImGuizmo::Enable(false);
 		return;
@@ -321,9 +342,11 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto cameraInfo = camera->GetCameraInfomation();
 
 	auto matrix = cameraT->GetLocalMatrix();
-	auto fov = cameraInfo.filedOfView;
+	auto fov = cameraInfo.filedOfView;/*
 	auto aspectRatio = mGameProcess->mWindowSystem->GetScreenWidth()
-		/ mGameProcess->mWindowSystem->GetScreenHeight();
+		/ mGameProcess->mWindowSystem->GetScreenHeight();*/
+	auto aspectRatio = ImGui::GetWindowSize().x
+		/ ImGui::GetWindowSize().y;
 	auto nearPlain = cameraInfo.nearPlain;
 	auto farPlain = cameraInfo.farPlain;
 
@@ -357,21 +380,21 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 		else
 		{
 			objectT->SetLocalMatrix(objectMatrix);
-		}
+		}	
 	}
 
-	if (ImGuizmo::IsUsing()
-		&& input->IsKeyState(Key::LMouse, KeyState::Tap))
+	if (ImGuizmo::IsOver()
+		&& input->IsKeyState(EKey::LMouse, EKeyState::Tap))
 	{
 		mStart = beforeMatrix;
 		mbIsUsingGizumo = true;
 	}
-	
-	if (mbIsUsingGizumo && input->IsKeyState(Key::LMouse, KeyState::Away))
+
+	if (mbIsUsingGizumo && input->IsKeyState(EKey::LMouse, EKeyState::Away))
 	{
 		mEditorProcess->mCommandSystem->Push<SetValueCommand<DirectX::SimpleMath::Matrix>>
 			(
-				[ objectT, selectObject = mSelectObject](DirectX::SimpleMath::Matrix mat)
+				[objectT, selectObject = mSelectObject](DirectX::SimpleMath::Matrix mat)
 				{
 					if (objectT->HasParent())
 					{
@@ -388,5 +411,38 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 			);
 		mbIsUsingGizumo = false;
 	}
+
+}
+
+void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
+{
+	auto& cameraSystem = mGameProcess->mCameraSystem;
+
+	auto type = cameraSystem->GetCameraType();
+
+	std::string cameraType{};
+
+	if (type == CameraSystem::CameraType::Editor)
+	{
+		cameraType = "Editor";
+	}
+	else if (type == CameraSystem::CameraType::Game)
+	{
+		cameraType = "Game";
+	}
+
+	if (ImGui::Button(cameraType.c_str()))
+	{
+		if (type == CameraSystem::CameraType::Editor)
+		{
+			cameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+		}
+		else
+		{
+			cameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+		}
+	}
+
+	//	if(ImGui::Button(""))
 
 }

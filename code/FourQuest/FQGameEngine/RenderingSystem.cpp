@@ -70,6 +70,7 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 
 	// 2. PrefabInstance¸¦ ·Îµå
 
+	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::RenderingSystem::OnUnLoadScene()
@@ -77,6 +78,7 @@ void fq::game_engine::RenderingSystem::OnUnLoadScene()
 	// 1. Model Unload
 	unloadAllModel();
 
+	mbIsGameLoaded = false;
 }
 
 void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameObject& event)

@@ -56,8 +56,8 @@ namespace fq::game_module
 		float GetFarPlain() const;
 
 		/// <summary>
-		/// 먼 평면 거리를 설정합니다
 		/// </summary>
+		/// 먼 평면 거리를 설정합니다
 		void SetFarPlain(float distance);
 
 		/// <summary>

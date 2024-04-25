@@ -57,11 +57,11 @@ namespace fq::game_engine
 
 		void UpdateCamera(float dt);
 
-
 	private:
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
-		
+
+		void beginButton_SwapCamera();
 		void beginButton_Play();
 		void beginButton_Stop();
 		void beginGizumo();

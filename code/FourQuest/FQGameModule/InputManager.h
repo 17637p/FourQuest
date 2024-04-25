@@ -10,7 +10,7 @@ namespace fq::game_module
 	{
 		struct KeyInfo
 		{
-			KeyState state = KeyState::None;
+			EKeyState state = EKeyState::None;
 			bool prevPush = false;
 		};
 
@@ -53,7 +53,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="key">Key</param>
 		/// <returns>이번프레임 상태</returns>
-		KeyState GetKeyState(Key key)const;
+		EKeyState GetKeyState(EKey key)const;
 
 		/// <summary>
 		/// 이번 프레임이의 Key가 KeyState와 일치하는지 확인합니다.
@@ -61,7 +61,7 @@ namespace fq::game_module
 		/// <param name="key">Key</param>
 		/// <param name="state">KetState</param>
 		/// <returns>일치하면 true, 그렇지않으면 false</returns>
-		bool IsKeyState(Key key, KeyState state) const;
+		bool IsKeyState(EKey key, EKeyState state) const;
 
 		// 게임패드
 
@@ -71,7 +71,7 @@ namespace fq::game_module
 		void updateGamePad();
 
 	private:
-		static const int MatchVK[static_cast<size_t>(Key::Last)];
+		static const int MatchVK[static_cast<size_t>(EKey::Last)];
 		
 		HWND mHWND;
 
@@ -81,7 +81,7 @@ namespace fq::game_module
 		POINT mDeltaMousePosition;
 
 		// 키보드 
-		KeyInfo mKeyInfomations[static_cast<size_t>(Key::Last)];
+		KeyInfo mKeyInfomations[static_cast<size_t>(EKey::Last)];
 
 
 		// 게임패드
