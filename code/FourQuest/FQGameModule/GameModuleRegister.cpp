@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "StaticMeshRenderer.h"
+#include "SkinnedMeshRenderer.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -70,6 +71,19 @@ void fq::game_module::RegisterMetaData()
 		.data<&StaticMeshRenderer::SetMeshName, &StaticMeshRenderer::GetMeshName>("MeshName"_hs)
 		.prop(fq::reflect::prop::Name, "MeshName")
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
+		.prop(fq::reflect::prop::Name, "Materials")
+		.base<Component>();
+
+	// SkinnedMeshRenderer
+	entt::meta<SkinnedMeshRenderer>()
+		.type("SkinnedMeshRenderer"_hs)
+		.prop(fq::reflect::prop::Name, "SkinnedMeshRenderer")
+		.data<&SkinnedMeshRenderer::SetModelPath, &SkinnedMeshRenderer::GetModelPath>("ModelPath"_hs)
+		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&SkinnedMeshRenderer::SetMeshName, &SkinnedMeshRenderer::GetMeshName>("MeshName"_hs)
+		.prop(fq::reflect::prop::Name, "MeshName")
+		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.base<Component>();
 

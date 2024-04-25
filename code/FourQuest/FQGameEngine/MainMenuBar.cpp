@@ -223,8 +223,8 @@ void fq::game_engine::MainMenuBar::ExcuteShortcut()
 {
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(Key::Ctrl, KeyState::Hold)
-		&& input->IsKeyState(Key::S, KeyState::Tap))
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+		&& input->IsKeyState(EKey::S, EKeyState::Tap))
 	{
 		SaveScene();
 	}

@@ -290,7 +290,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	std::string textName = "##" + fileName;
 
 	if (ImGui::InputText(textName.c_str(), &fileName)
-		&& mEditorProcess->mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+		&& mEditorProcess->mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
 	{
 		fs::path newFileName = path.parent_path();
 		newFileName += "//" + fileName;

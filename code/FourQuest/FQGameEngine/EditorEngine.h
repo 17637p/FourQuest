@@ -45,7 +45,7 @@ namespace fq
 			/// <summary>
 			/// 에디터 관련 업데이트를 진행합니다
 			/// </summary>
-			void UpdateEditor();
+			void UpdateEditor(float dt);
 
 		private:
 			std::unique_ptr<GameProcess> mGameProcess;

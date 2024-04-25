@@ -37,6 +37,12 @@ namespace fq::game_module
 		void GenerateLocal(Vector3 position, Quaternion rotation, Vector3 scale);
 
 		/// <summary>
+		/// 트랜스폼을 반환합니다
+		/// </summary>
+		/// <returns>트랜스폼</returns>
+		FQTransform GetTransform()const { return mFQTransform; }
+
+		/// <summary>
 		/// 로컬 공간의 위치 반환합니다
 		/// </summary>
 		/// <returns>로컬 위치</returns>

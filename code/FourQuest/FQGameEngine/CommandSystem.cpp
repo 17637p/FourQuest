@@ -1,5 +1,8 @@
 
 #include "CommandSystem.h"
+
+#include <spdlog/spdlog.h>
+
 #include "Command.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
@@ -68,15 +71,20 @@ void fq::game_engine::CommandSystem::undo()
 
 void fq::game_engine::CommandSystem::ExcuteShortcut()
 {
+	if (!mInputManager->IsKeyState(EKey::LMouse, EKeyState::None))
+	{
+		return;
+	}
+
 	// Ctrl + Z
-	if (mInputManager->IsKeyState(Key::Ctrl, KeyState::Hold)
-		&& mInputManager->IsKeyState(Key::Z,KeyState::Tap))
+	if (mInputManager->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+		&& mInputManager->IsKeyState(EKey::Z,EKeyState::Tap))
 	{
 		undo();
 	}
 	// Ctrl + Y
-	else if (mInputManager->IsKeyState(Key::Ctrl, KeyState::Hold)
-		&& mInputManager->IsKeyState(Key::Y, KeyState::Tap))
+	else if (mInputManager->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+		&& mInputManager->IsKeyState(EKey::Y, EKeyState::Tap))
 	{
 		excute();
 	}

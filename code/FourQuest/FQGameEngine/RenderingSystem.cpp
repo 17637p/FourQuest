@@ -56,6 +56,16 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				}
 			});
 
+	scene->ViewComponents<Transform, SkinnedMeshRenderer>
+		([](GameObject& object, Transform& transform, SkinnedMeshRenderer& mesh)
+			{
+				auto meshObject = mesh.GetSkinnedMeshObject();
+				if (meshObject)
+				{
+					meshObject->UpdateTransform(transform.GetWorldMatrix());
+				}
+			});
+
 }
 
 void fq::game_engine::RenderingSystem::OnLoadScene()
@@ -66,10 +76,12 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	for (auto& object : scene->GetObjectView(true))
 	{
 		loadStaticMeshRenderer(&object);
+		loadSkinnedMeshRenderer(&object);
 	}
 
 	// 2. PrefabInstance甫 肺靛
 
+	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::RenderingSystem::OnUnLoadScene()
@@ -77,6 +89,7 @@ void fq::game_engine::RenderingSystem::OnUnLoadScene()
 	// 1. Model Unload
 	unloadAllModel();
 
+	mbIsGameLoaded = false;
 }
 
 void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameObject& event)
@@ -92,6 +105,37 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 1. StaticMesh 
 	loadStaticMeshRenderer(gameObject);
+
+	// 2. SkinnedMesh
+	loadSkinnedMeshRenderer(gameObject);
+
+}
+
+void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::SkinnedMeshRenderer>())
+	{
+		return;
+	}
+
+	auto skinnedMeshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+	auto meshInfo = skinnedMeshRenderer->GetMeshObjectInfomation();
+	auto transform = object->GetComponent<fq::game_module::Transform>();
+	
+	if (!std::filesystem::exists(meshInfo.ModelPath))
+	{
+		SPDLOG_WARN("\"{}\" does not exist", meshInfo.ModelPath);
+	}
+	else
+	{
+		loadModel(meshInfo.ModelPath);
+	}
+	meshInfo.Transform = transform->GetLocalMatrix();
+
+	// SkinnedMeshO 积己
+
+	auto skinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInfo);
+	skinnedMeshRenderer->SetSkinnedMeshObject(skinnedMeshObject);
 }
 
 void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::GameObject* object)
@@ -108,7 +152,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	// Model 积己
 	if (!std::filesystem::exists(meshInfo.ModelPath))
 	{
-		SPDLOG_WARN("\"{}\" does not exist", meshInfo.ModelPath);
+		SPDLOG_WARN("{} does not exist", meshInfo.ModelPath);
 	}
 	else
 	{
@@ -161,4 +205,18 @@ void fq::game_engine::RenderingSystem::unloadStaticMeshRenderer(fq::game_module:
 	auto staticMesh = staticMeshRenderer->GetStaticMeshObject();
 	mGameProcess->mGraphics->DeleteStaticMeshObject(staticMesh);
 	staticMeshRenderer->SetStaticMeshObject(nullptr);
+}
+
+
+void fq::game_engine::RenderingSystem::unloadSkinnedMeshRenderer(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::SkinnedMeshRenderer>())
+	{
+		return;
+	}
+
+	auto staticMeshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+	auto staticMesh = staticMeshRenderer->GetSkinnedMeshObject();
+	mGameProcess->mGraphics->DeleteSkinnedMeshObject(staticMesh);
+	staticMeshRenderer->SetSkinnedMeshObject(nullptr);
 }

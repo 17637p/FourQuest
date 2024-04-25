@@ -1,21 +1,16 @@
 #pragma once
-
 #include "Component.h"
-
 #include "../FQCommon/IFQRenderObject.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::game_module
 {
-	class StaticMeshRenderer : public Component
+	class SkinnedMeshRenderer :public Component
 	{
-		using StaticMeshObject = fq::graphics::IStaticMeshObject;
+		using SkinnedMeshObject = fq::graphics::ISkinnedMeshObject;
 	public:
-		/// <summary>
-		/// 생성자
-		/// </summary>
-		StaticMeshRenderer();
-		~StaticMeshRenderer();
+		SkinnedMeshRenderer();
+		~SkinnedMeshRenderer();
 
 		/// <summary>
 		/// 복사본을 반환합니다
@@ -23,26 +18,24 @@ namespace fq::game_module
 		Component* Clone(Component* clone /* = nullptr */)const override;
 
 		/// <summary>
-		/// 스태틱 메쉬를 반환합니다
+		/// 스키닝 메쉬를 반환합니다 
 		/// </summary>
-		StaticMeshObject* GetStaticMeshObject() const { return mStaticMeshObject; }
-		
+		SkinnedMeshObject* GetSkinnedMeshObject() const { return mSkinnedMeshObject; }
+
 		/// <summary>
-		/// 스태틱 메쉬를 설정합니다
+		/// 스키닝 메쉬를 설정합니다
 		/// </summary>
-		/// <param name="mesh"></param>
-		void SetStaticMeshObject(StaticMeshObject* mesh) { mStaticMeshObject = mesh; }
-	
+		void SetSkinnedMeshObject(SkinnedMeshObject* mesh) { mSkinnedMeshObject = mesh; }
+
 		/// <summary>
 		/// 모델의 경로를 반환합니다
 		/// </summary>
 		/// <returns></returns>
-		std::string GetModelPath()const { return mMeshInfomation.ModelPath;}
+		std::string GetModelPath()const { return mMeshInfomation.ModelPath; }
 
 		/// <summary>
 		/// 모델경로를 설정합니다
 		/// </summary>
-		/// <param name="path"></param>
 		void SetModelPath(std::string path);
 
 		/// <summary>
@@ -66,7 +59,6 @@ namespace fq::game_module
 		/// <summary>
 		/// 메테리얼을 설정합니다
 		/// </summary>
-		/// <param name="materials"></param>
 		void SetMaterials(std::vector<std::string> materials);
 
 		/// <summary>
@@ -85,8 +77,9 @@ namespace fq::game_module
 		entt::meta_handle GetHandle() override;
 
 	private:
-		StaticMeshObject* mStaticMeshObject;
+		SkinnedMeshObject* mSkinnedMeshObject;
 		fq::graphics::MeshObjectInfo mMeshInfomation;
 	};
+
 
 }

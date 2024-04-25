@@ -153,6 +153,7 @@
     <ClInclude Include="EditorEnum.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
+    <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="EditorEvent.h" />
