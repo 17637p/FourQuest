@@ -176,11 +176,17 @@ namespace fq::physics
 
 	bool FQPhysics::RemoveRigidBody(unsigned int id)
 	{
-		return false;
+		if (!mRigidBodyManager->RemoveRigidBody(id, mScene))
+			return false;
+
+		return true;
 	}
 
 	bool FQPhysics::RemoveAllRigidBody()
 	{
-		return false;
+		if (!mRigidBodyManager->RemoveAllRigidBody(mScene))
+			return false;
+
+		return true;
 	}
 }

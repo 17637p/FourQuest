@@ -24,6 +24,7 @@ namespace fq::physics
 			mPvd = nullptr;
 			PX_RELEASE(transport);
 		}
+
 		PX_RELEASE(mFoundation);
 	}
 
