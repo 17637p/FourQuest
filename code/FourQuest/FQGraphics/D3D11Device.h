@@ -23,5 +23,4 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext>		mDeviceContext;
 		Microsoft::WRL::ComPtr<IDXGISwapChain>			mSwapChain;
 	};
-}
-
+} 

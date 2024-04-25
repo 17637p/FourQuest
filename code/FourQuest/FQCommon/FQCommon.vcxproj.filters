@@ -30,6 +30,9 @@
     <ClInclude Include="IFQRenderObject.h">
       <Filter>Grphiacs</Filter>
     </ClInclude>
+    <ClInclude Include="FQCommonPhysics.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp">

@@ -132,10 +132,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="EngineDataConverter.h" />
+    <ClInclude Include="PhysicsCookingMeshTool.h" />
+    <ClInclude Include="DynamicRigidBody.h" />
+    <ClInclude Include="FQPhysics.h" />
     <ClInclude Include="IFQPhysics.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysicsRigidBodyManager.h" />
+    <ClInclude Include="PhysicsSimulationEventCallback.h" />
+    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EngineDataConverter.cpp" />
+    <ClCompile Include="PhysicsCookingMeshTool.cpp" />
+    <ClCompile Include="DynamicRigidBody.cpp" />
+    <ClCompile Include="FQPhysics.cpp" />
     <ClCompile Include="IFQPhysics.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PhysicsRigidBodyManager.cpp" />
+    <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="StaticRigidBody.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

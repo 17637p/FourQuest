@@ -132,6 +132,7 @@
     <ClInclude Include="FQCommon.h" />
     <ClInclude Include="FQCommonGraphics.h" />
     <ClInclude Include="FQCommonLoader.h" />
+    <ClInclude Include="FQCommonPhysics.h" />
     <ClInclude Include="FQPath.h" />
     <ClInclude Include="IFQRenderObject.h" />
   </ItemGroup>
