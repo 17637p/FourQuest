@@ -30,7 +30,7 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// RenderObject
-		void ConvertModel(std::string fbxFile, std::string path) override;
+		void ConvertModel(std::string fbxFile, std::string fileName) override;
 		const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
 		const fq::common::Model& GetModel(std::string path) override;
 		void DeleteModel(std::string path) override;
@@ -39,6 +39,7 @@ namespace fq::graphics
 		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
 
 		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
+		void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
 		/// Gizmo && Background
@@ -54,9 +55,14 @@ namespace fq::graphics
 		/// UI
 
 		/// Light
+		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
+		virtual void AddLight(const unsigned int id, const LightInfo& lightInfo) override;
+		virtual void SetLight(const unsigned int id, const LightInfo& lightInfo) override;
+		virtual void DeleteLight(const unsigned int id) override;
 
 		/// Camera
-		//virtual FQ_GRAPHICS void SetCamera(CameraInfo cameraInfo) override;
+		virtual void SetCamera(const CameraInfo& cameraInfo) override;
+		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
 
 		/// Picking
 		//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) override;
@@ -72,6 +78,9 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<class D3D11JobManager> mJobManager;
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;
+		
+		std::shared_ptr<class D3D11CameraManager> mCameraManager;
+		std::shared_ptr<class D3D11LightManager> mLightManager;
 	};
 }
 

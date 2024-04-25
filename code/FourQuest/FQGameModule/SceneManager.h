@@ -102,7 +102,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="event">요청에 필요한 정보</param>
 		void RequestExitGame(fq::event::RequestExitGame event);
-
+		
 	private:
 		std::unique_ptr<Scene> mCurrentScene;
 		

@@ -135,19 +135,19 @@ namespace fq::game_module
 
 
 	template<typename ...Types>
-	inline internal::ComponentView<Types...> Scene::GetComponentView(bool bIsIncludeToBeDestroyed)
+	inline internal::ComponentView<Types...> Scene::GetComponentView(bool bIsIncludeDestroyed)
 	{
-		internal::ComponentIterator<Types...> beginIter(this, 0, false, bIsIncludeToBeDestroyed);
-		internal::ComponentIterator<Types...> endIter(this, GetObjectSize(), true, bIsIncludeToBeDestroyed);
+		internal::ComponentIterator<Types...> beginIter(this, 0, false, bIsIncludeDestroyed);
+		internal::ComponentIterator<Types...> endIter(this, GetObjectSize(), true, bIsIncludeDestroyed);
 
 		return internal::ComponentView<Types...>(beginIter, endIter);
 	}
 
 	template<typename ...Types>
 	inline void Scene::ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction
-		, bool bIsIncludeToBeDestroyed)
+		, bool bIsIncludeDestroyed)
 	{
-		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeToBeDestroyed))
+		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeDestroyed))
 		{
 			viewFunction(*object, *(object->template GetComponent<Types>()) ...);
 		}

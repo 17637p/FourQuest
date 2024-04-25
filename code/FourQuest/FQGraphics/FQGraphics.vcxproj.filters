@@ -73,6 +73,18 @@
     <ClInclude Include="ManagementCommon.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11CameraManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11LightManager.h">
+      <Filter>Management</Filter>
+	</ClInclude>
+    <ClInclude Include="AnimationHelper.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneHierarchy.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -98,6 +110,9 @@
     </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{5bd1b6bc-5961-4bd8-be6b-3055d44ba8e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{fc331d0b-bd4c-4ad2-be02-28bcf5dc3dfd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +175,18 @@
     </ClCompile>
     <ClCompile Include="D3D11RenderManager.cpp">
       <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11CameraManager.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11LightManager.cpp">
+      <Filter>Management</Filter>
+	</ClCompile>
+    <ClCompile Include="AnimationHelper.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneHierarchy.cpp">
+      <Filter>Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
+
 #include <directxtk/SimpleMath.h>
-#include <FQCommonGraphics.h>
 
 namespace fq::common { struct Transform; }
 

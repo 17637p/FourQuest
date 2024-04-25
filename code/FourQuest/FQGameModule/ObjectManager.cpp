@@ -164,7 +164,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::ObjectManager::loa
 		entt::id_type id = std::stoul(componentID);
 
 		// 삭제된 컴포넌트에 대한 처리
-		if (entt::resolve(id))
+		if (!entt::resolve(id))
 		{
 			continue;
 		}

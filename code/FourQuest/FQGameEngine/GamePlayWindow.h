@@ -35,6 +35,7 @@ namespace fq::game_engine
 		/// </summary>
 		void ExcutShortcut();
 
+
 		/// <summary>
 		/// 게임 창을 표시합니다 
 		/// </summary>
@@ -51,6 +52,7 @@ namespace fq::game_engine
 
 	private:
 		void beginMenuBar_Control();
+		void beginImage_GameScreen();
 		
 		void beginButton_Play();
 		void beginButton_Stop();
@@ -61,7 +63,6 @@ namespace fq::game_engine
 		
 		EditorMode mMode;
 		bool mbIsPauseGame;
-
 	};
 
 

@@ -114,13 +114,13 @@ namespace fq::game_module
 		/// 오브젝트의 Tag를 반환합니다
 		/// </summary>
 		/// <returns>오브젝트 Tag</returns>
-		Tag GetTag()const { return mTag; }
+		ETag GetTag()const { return mTag; }
 
 		/// <summary>
 		/// Tag를 설정합니다
 		/// </summary>
 		/// <param name="tag">태그</param>
-		void SetTag(Tag tag) { mTag = tag; }
+		void SetTag(ETag tag) { mTag = tag; }
 
 		/// <summary>
 		/// 계층구조의 부모를 반환합니다 
@@ -232,7 +232,7 @@ namespace fq::game_module
 	private:
 		unsigned int mID;
 		std::string mName;
-		Tag mTag;
+		ETag mTag;
 		ComponentContainer mComponents;
 		Scene* mScene;
 		bool mbIsDestroyed;

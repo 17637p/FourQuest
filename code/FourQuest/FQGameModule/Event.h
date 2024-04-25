@@ -12,16 +12,16 @@ namespace fq::game_module
 namespace fq::event
 {
 	/// <summary>
+	/// Scene Load 할때 호출
+	/// </summary>
 	/// 게임 오브젝트 파괴시 호출
 	/// </summary>
-	struct OnGameObjectDestroyed
+	struct OnDestoryedGameObject
 	{
 		fq::game_module::GameObject* object;
 	};
 
 	/// <summary>
-	/// Scene Load 할때 호출
-	/// </summary>
 	struct OnLoadScene
 	{
 		std::string sceneName;
@@ -73,5 +73,6 @@ namespace fq::event
 	{
 		fq::game_module::Camera* mainCamera;
 	};
+
 
 }

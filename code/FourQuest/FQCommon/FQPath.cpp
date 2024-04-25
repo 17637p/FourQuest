@@ -70,6 +70,30 @@ std::vector<std::filesystem::path> fq::path::GetFileList(const std::filesystem::
 	return directoryList;
 }
 
+std::filesystem::path fq::path::GetRelativePath(const std::filesystem::path& filePath)
+{
+	if (filePath.empty())
+	{
+		return {};
+	}
+
+	std::filesystem::path currentPath = GetCurrentPath();
+
+	std::filesystem::path  relativePath = std::filesystem::relative(filePath, currentPath);
+
+	return relativePath;
+}
+
+std::filesystem::path fq::path::GetAbsolutePath(const std::filesystem::path& relativePath)
+{
+	if (relativePath.empty())
+	{
+		return {};
+	}
+
+	return GetCurrentPath() / relativePath;
+}
+
 std::filesystem::path fq::path::GetGarbagePath()
 {
 	std::filesystem::path scenePath = std::filesystem::current_path();

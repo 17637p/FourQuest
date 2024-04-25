@@ -9,7 +9,12 @@ fq::game_module::Transform::Transform()
 	: mFQTransform{}
 	, mParent(nullptr)
 	, mChidren{}
-{}
+{
+	mFQTransform.localMatrix = Matrix::Identity;
+	mFQTransform.worldMatrix = Matrix::Identity;
+	mFQTransform.localScale = Vector3(1.f, 1.f, 1.f);
+
+}
 
 fq::game_module::Transform::~Transform()
 {}
@@ -194,16 +199,16 @@ void fq::game_module::Transform::AddPosition(Vector3 deltaPosition)
 
 void fq::game_module::Transform::decomposeLocalMatrix()
 {
-	mFQTransform.localMatrix.Decompose(mFQTransform.localPosition
+	mFQTransform.localMatrix.Decompose(mFQTransform.localScale
 		, mFQTransform.localRotation
-		, mFQTransform.localScale);
+		, mFQTransform.localPosition);
 }
 
 void fq::game_module::Transform::decomposeWorldMatrix()
 {
-	mFQTransform.localMatrix.Decompose(mFQTransform.worldPosition
+	mFQTransform.localMatrix.Decompose(mFQTransform.worldScale
 		, mFQTransform.worldRotation
-		, mFQTransform.worldScale);
+		, mFQTransform.worldPosition);
 }
 
 void fq::game_module::Transform::GenerateLocal(Vector3 position, Quaternion rotation, Vector3 scale)

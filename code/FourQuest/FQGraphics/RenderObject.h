@@ -1,8 +1,9 @@
 #pragma once
 
+#include <cassert>
 #include <memory>
 #include <vector>
-
+#include "BoneHierarchy.h"
 #include "../FQCommon/IFQRenderObject.h"
 
 namespace fq::graphics
@@ -20,8 +21,8 @@ namespace fq::graphics
 		~StaticMeshObject() = default;
 
 		virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		virtual inline const DirectX::SimpleMath::Matrix& GetTransform() const override;
 
+		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 
@@ -51,23 +52,75 @@ namespace fq::graphics
 	public:
 		SkinnedMeshObject(std::shared_ptr<SkinnedMesh> SkinnedMesh,
 			std::vector<std::shared_ptr<Material>> materials,
-			DirectX::SimpleMath::Matrix transform);
+			DirectX::SimpleMath::Matrix transform,
+			BoneHierarchyCache boneHierarchyCache);
 		~SkinnedMeshObject() = default;
 
-		virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		virtual inline const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		inline virtual void UpdateAnimationTime(float timePos) override;
 
+		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
+
+		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
+
+		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual std::set<std::string> GetAnimationKeys() const override;
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
-		inline const std::vector<DirectX::SimpleMath::Matrix> GetBoneMatrices() const;
+		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
 
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
 		DirectX::SimpleMath::Matrix mTransform;
-		std::vector<DirectX::SimpleMath::Matrix> mBoneMatrices;
+		BoneHierarchyCache mBoneHierarchyCache;
+		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
 	};
 
+#pragma region inlineFunc
+	inline void SkinnedMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+	inline void SkinnedMeshObject::UpdateAnimationTime(float timePos)
+	{
+		mBoneHierarchyCache.Update(timePos);
+	}
+
+	inline void SkinnedMeshObject::AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip)
+	{
+		mAnimationMap.insert({ animationKey, animationClip });
+	}
+
+	inline bool SkinnedMeshObject::SetAnimationKey(const std::string& animationKey)
+	{
+		auto find = mAnimationMap.find(animationKey);
+
+		if (find == mAnimationMap.end())
+		{
+			return false;
+		}
+
+		mBoneHierarchyCache.SetAnimation(find->second);
+
+		return true;
+	}
+
+	inline const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetTransform() const
+	{
+		return mTransform;
+	}
+	inline  std::set<std::string> SkinnedMeshObject::GetAnimationKeys() const
+	{
+		std::set<std::string> animationKeys;
+
+		for (const auto& [name, clip] : mAnimationMap)
+		{
+			animationKeys.insert(name);
+		}
+
+		return animationKeys;
+	}
 	inline const std::shared_ptr<SkinnedMesh>& SkinnedMeshObject::GetSkinnedMesh() const
 	{
 		return mSkinnedMesh;
@@ -76,13 +129,10 @@ namespace fq::graphics
 	{
 		return mMaterials;
 	}
-	inline const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetTransform() const
+	inline const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetFinalTransforms() const
 	{
-		return mTransform;
+		return mBoneHierarchyCache.GetFinalTransforms();
 	}
-	inline const std::vector<DirectX::SimpleMath::Matrix> SkinnedMeshObject::GetBoneMatrices() const
-	{
-		return mBoneMatrices;
-	}
+#pragma endregion
 }
 

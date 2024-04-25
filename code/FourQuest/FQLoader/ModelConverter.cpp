@@ -1,8 +1,6 @@
 #include "pch.h"
 
 #include "ModelConverter.h"
-#include "ModelLoader.h"
-#include "FileUtil.h"
 #include "Util.h"
 
 namespace fq::loader
@@ -34,7 +32,6 @@ namespace fq::loader
 			aiProcess_GenUVCoords |
 			aiProcess_CalcTangentSpace |
 			aiProcess_LimitBoneWeights |
-			aiProcess_PreTransformVertices |
 			aiProcess_ConvertToLeftHanded;
 
 		mAiScene = mImpoter->ReadFile(path.string(), importFlags);
@@ -42,41 +39,18 @@ namespace fq::loader
 		return mAiScene != nullptr;
 	}
 
-	void ModelConverter::WriteModel(const std::string& savePath)
-	{
-		WriteMesh(savePath + ".mesh");
-		WriteMaterial(savePath + ".material");
-		WriteAnimation(savePath + ".animation");
-	}
-
-	void ModelConverter::WriteMesh(const std::string& saveName)
+	fq::common::Model ModelConverter::Convert()
 	{
 		assert(mAiScene != nullptr);
 		using namespace std;
 		using namespace fq::common;
 
-		vector<pair<Node, Mesh>> meshData = convertModel();
-		ModelLoader::WriteMeshByData(meshData, saveName);
-	}
+		Model model;
+		model.Meshes = convertModel();
+		model.Materials = convertMaterial();
+		model.Animations = convertAnimation();
 
-	void ModelConverter::WriteMaterial(const std::string& saveName)
-	{
-		assert(mAiScene != nullptr);
-		using namespace std;
-		using namespace fq::common;
-
-		vector<Material> materials = convertMaterial();
-		ModelLoader::WriteMaterialByData(materials, saveName);
-	}
-
-	void ModelConverter::WriteAnimation(const std::string& saveName)
-	{
-		assert(mAiScene != nullptr);
-		using namespace std;
-		using namespace fq::common;
-
-		vector<AnimationClip> animationClips = convertAnimation();
-		ModelLoader::WriteAnimationByData(animationClips, saveName);
+		return model;
 	}
 
 	std::vector<std::pair<fq::common::Node, fq::common::Mesh>> ModelConverter::convertModel()
@@ -87,6 +61,24 @@ namespace fq::loader
 		vector<pair<Node, Mesh>> meshData;
 
 		parseNode(mAiScene->mRootNode, &meshData);
+
+		size_t index = 0;
+		set<string> meshNameSet;
+
+		for (auto& nodeMeshPair : meshData)
+		{
+			std::string& meshName = nodeMeshPair.second.Name;
+
+			auto find = meshNameSet.find(meshName);
+
+			if (find != meshNameSet.end())
+			{
+				meshName += std::to_string(index++);
+			}
+
+			meshNameSet.insert(meshName);
+		}
+
 		parseBone(&meshData);
 
 		return meshData;
@@ -242,7 +234,7 @@ namespace fq::loader
 
 		node.Name = aiNode->mName.C_Str();
 		node.Index = outMeshes->size();
-		node.Parentindex = parentIndex;
+		node.ParentIndex = parentIndex;
 		node.ToParentMatrix = DirectX::SimpleMath::Matrix(aiNode->mTransformation[0]).Transpose();
 
 		Mesh mesh = parseMesh(aiNode);

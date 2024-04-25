@@ -6,12 +6,14 @@
 #include <directxtk/WICTextureLoader.h>
 
 #include "imgui_stdlib.h"
-#include "../FQGameModule/GameModule.h"
 #include "../FQReflect/FQReflect.h"
 #include "../FQCommon/FQPath.h"
+#include "../FQGameModule/GameModule.h"
+#include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "WindowSystem.h"
+#include "ModelSystem.h"
 
 namespace fs = std::filesystem;
 
@@ -41,18 +43,17 @@ void fq::game_engine::FileDialog::Render()
 		beginWindow_FilePathWindow();
 
 		beginWindow_FileList();
-
 	}
 	ImGui::End();
 }
 
-void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* editor, ID3D11Device* device)
+void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* editor)
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
 	mResourcePath = fq::path::GetResourcePath();
 	mSelectPath = mResourcePath;
-	mDevice = device;
+	mDevice = mGameProcess->mGraphics->GetDivice();
 
 	loadIcon();
 }
@@ -268,6 +269,10 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		drawTextureImage(path);
 	}
+	else if (extension == ".model")
+	{
+		ImGui::Image(GetIcon(L"model.png"), mIconSize);
+	}
 	else
 	{
 		ImGui::Image(GetIcon(L"error.png"), mIconSize);
@@ -475,7 +480,6 @@ void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryP
 
 void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 {
-
 	std::string contextName = "context##" + path.string();
 
 	if (ImGui::BeginPopupContextItem(contextName.c_str()))
@@ -493,6 +497,18 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 			fs::rename(path, garbagePath);
 		}
 
+		if (path.extension() == ".fbx")
+		{
+			if (ImGui::MenuItem("Convert"))
+			{
+				std::wstring fileName = path.filename();
+				fileName = fileName.substr(0, fileName.size() - 4);
+
+				fs::path directory = path.parent_path() / fileName;
+				mGameProcess->mGraphics->ConvertModel(path.string(), directory.string());
+			}
+		}
+
 		if (ImGui::MenuItem("Create Directory"))
 		{
 			auto directory = mSelectPath;
@@ -504,6 +520,7 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 				directory += "!";
 			}
 		}
+
 
 		ImGui::EndPopup();
 	}
@@ -527,6 +544,15 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 
 		fs::copy(filePath, target, fs::copy_options::recursive
 			| fs::copy_options::overwrite_existing);
+
+		if (target.extension() == ".fbx")
+		{
+			std::wstring fileName = target.filename();
+			fileName = fileName.substr(0, fileName.size() - 4);
+
+			fs::path directory = target.parent_path() / fileName;
+			mGameProcess->mGraphics->ConvertModel(target.string(), directory.string());
+		}
 	}
 
 	dropFiles.clear();

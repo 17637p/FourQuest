@@ -3,6 +3,9 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
+#include "D3D11CameraManager.h"
+#include "D3D11LightManager.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -16,6 +19,8 @@ FQGraphics::FQGraphics()
 	, mObjectManager(std::make_shared<D3D11ObjectManager>())
 	, mJobManager(std::make_shared<D3D11JobManager>())
 	, mRenderManager(std::make_shared<D3D11RenderManager>())
+	, mCameraManager(std::make_shared<D3D11CameraManager>())
+	, mLightManager(std::make_shared<D3D11LightManager>())
 {
 }
 
@@ -26,6 +31,8 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mObjectManager;
 	mJobManager;
 	mRenderManager->Initialize(mDevice, mResourceManager, width, height);
+	mCameraManager->Initialize(width, height);
+	mLightManager->Initialize(mDevice);
 
 	return true;
 }
@@ -35,9 +42,34 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 	return true;
 }
 
+void FQGraphics::DeleteLight(const unsigned int id)
+{
+	mLightManager->DeleteLight(id);
+}
+
+void FQGraphics::SetLight(const unsigned int id, const LightInfo& lightInfo)
+{
+	mLightManager->SetLight(id, lightInfo);
+}
+
+void FQGraphics::AddLight(const unsigned int id, const LightInfo& lightInfo)
+{
+	mLightManager->AddLight(id, lightInfo);
+}
+
+void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)
+{
+	mCameraManager->Update(ECameraType::Player, cameraTransform);
+}
+
+void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
+{
+	mCameraManager->SetCamera(ECameraType::Player, cameraInfo);
+}
+
 bool FQGraphics::BeginRender()
 {
-	mRenderManager->BeginRender(mDevice);
+	mRenderManager->BeginRender(mDevice, mCameraManager);
 
 	return true;
 }
@@ -75,6 +107,7 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
 	mRenderManager->OnResize(mDevice, mResourceManager, width, height);
+	mCameraManager->OnResize(width, height);
 
 	return true;
 }
@@ -94,9 +127,9 @@ void FQGraphics::DeleteModel(std::string path)
 	mObjectManager->DeleteModel(path);
 }
 
-void FQGraphics::ConvertModel(std::string fbxFile, std::string path)
+void FQGraphics::ConvertModel(std::string fbxFile, std::string fileName)
 {
-	mObjectManager->ConvertModel(fbxFile, path);
+	mObjectManager->ConvertModel(fbxFile, fileName);
 }
 
 IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)
@@ -112,6 +145,11 @@ void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)
 ISkinnedMeshObject* FQGraphics::CreateSkinnedMeshObject(MeshObjectInfo info)
 {
 	return mObjectManager->CreateSkinnedMeshObject(info);
+}
+
+void FQGraphics::AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info)
+{
+	mObjectManager->AddAnimation(iSkinnedMeshObject, info);
 }
 
 void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)

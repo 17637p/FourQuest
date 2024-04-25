@@ -127,7 +127,7 @@ void fq::game_module::Scene::DestroyGameObject(GameObject* object)
 	}
 
 	object->OnDestroy();
-	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
+	mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object });
 }
 
 void fq::game_module::Scene::destroyChild(GameObject* object)
@@ -145,10 +145,17 @@ void fq::game_module::Scene::destroyChild(GameObject* object)
 	}
 
 	object->OnDestroy();
-	mEventManager->FireEvent<fq::event::OnGameObjectDestroyed>({ object });
+	mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object });
 }
 void fq::game_module::Scene::DestroyAll()
 {
+	for (auto& object : mObjects)
+	{
+		object->mbIsDestroyed = true;
+		object->OnDestroy();
+		mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object.get()});
+	}
 
+	mObjects.clear();
 }
 
