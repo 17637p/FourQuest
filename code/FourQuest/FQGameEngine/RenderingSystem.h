@@ -56,6 +56,9 @@ namespace fq::game_engine
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
+		void loadSkinnedMeshRenderer(fq::game_module::GameObject* object);
+		void unloadSkinnedMeshRenderer(fq::game_module::GameObject* object);
+
 		void loadModel(ModelPath path);
 		void unloadAllModel();
 

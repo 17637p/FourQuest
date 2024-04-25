@@ -15,6 +15,13 @@ namespace fq::game_engine
 	/// </summary>
 	class LogWindow : public IEditorWindow
 	{
+		struct LogMessage
+		{
+			std::string time;
+			std::string payload;
+			std::string level;
+		};
+
 	public:
 		LogWindow();
 		~LogWindow();
@@ -30,7 +37,7 @@ namespace fq::game_engine
 	private:
 		void beginButton_LogController();
 		void beginChild_LogList();
-		void beginText_Log(const spdlog::details::log_msg& msg);
+		void beginText_Log(const LogMessage& msg);
 
 	private:
 		UINT mMaxLogListSize;
@@ -39,7 +46,7 @@ namespace fq::game_engine
 		spdlog::level::level_enum mLevel;
 
 		std::shared_ptr<spdlog::logger> mLogger;
-		std::list<spdlog::details::log_msg> mLogList;
+		std::list<LogMessage> mLogList;
 	};
 
 

@@ -14,6 +14,7 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "StaticMeshRenderer.h"
+#include "SkinnedMeshRenderer.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"
@@ -21,6 +22,5 @@
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "ObjectManager.h"
-
 
 #endif // 

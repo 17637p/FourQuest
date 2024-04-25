@@ -9,6 +9,7 @@ namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::game_engine
 {
 	class GameProcess;
+	class EditorProcess;
 
 	class ModelSystem
 	{
@@ -16,7 +17,7 @@ namespace fq::game_engine
 		ModelSystem();
 		~ModelSystem();
 
-		void Initialize(GameProcess* game);
+		void Initialize(GameProcess* game, EditorProcess* editor);
 
 		/// <summary>
 		/// 모델 생성하고 게임씬에 추가합니다
@@ -25,6 +26,7 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
+		EditorProcess* mEditorProcess;
 	};
 
 

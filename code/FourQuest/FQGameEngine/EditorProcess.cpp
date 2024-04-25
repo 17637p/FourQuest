@@ -12,6 +12,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mMainMenuBar(std::make_unique<MainMenuBar>())
 	, mPrefabSystem(std::make_unique<PrefabSystem>())
 	, mImGuiSystem(std::make_unique<ImGuiSystem>())
+	, mModelSystem(std::make_unique <ModelSystem>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

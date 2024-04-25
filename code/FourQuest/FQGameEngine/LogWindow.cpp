@@ -49,51 +49,40 @@ void fq::game_engine::LogWindow::Finalize()
 {
 }
 
-void fq::game_engine::LogWindow::beginText_Log(const spdlog::details::log_msg& msg)
+void fq::game_engine::LogWindow::beginText_Log(const LogMessage& msg)
 {
 	// Time 
 	if (mbIsShowTime)
 	{
-		std::time_t time = std::chrono::system_clock::to_time_t(msg.time);
-		std::tm now_tm;
-		localtime_s(&now_tm, &time);
-		char buffer[80];
-		std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &now_tm);
-		ImGui::Text(buffer);
+		ImGui::Text(msg.time.c_str());
 		ImGui::SameLine();
 	}
 
 	// level
 	std::string level{};
-	if (spdlog::level::trace == msg.level)
+	if ("[trace]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::STEEL_GRAY);
-		level = "[trace]";
 	}
-	else if (spdlog::level::debug == msg.level)
+	else if ("[debug]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::TURQUOISE);
-		level = "[dubug]";
 	}
-	else if (spdlog::level::info == msg.level)
+	else if ("[info]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::SPRING_GREEN);
-		level = "[info]";
 	}
-	else if (spdlog::level::warn == msg.level)
+	else if ("[warn]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::ORANGE);
-		level = "[warn]";
 	}
-	else if (spdlog::level::err == msg.level)
+	else if ("[error]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::YELLOW);
-		level = "[error]";
 	}
-	else if (spdlog::level::critical == msg.level)
+	else if ("[critical]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::RED);
-		level = "[critical]";
 	}
 
 	ImGui::Text(level.c_str());
@@ -101,7 +90,7 @@ void fq::game_engine::LogWindow::beginText_Log(const spdlog::details::log_msg& m
 
 	// payload
 	ImGui::SameLine();
-	ImGui::Text(msg.payload.data());
+	ImGui::Text(msg.payload.c_str());
 }
 
 void fq::game_engine::LogWindow::AddLog(spdlog::details::log_msg msg)
@@ -110,7 +99,27 @@ void fq::game_engine::LogWindow::AddLog(spdlog::details::log_msg msg)
 	{
 		mLogList.pop_back();
 	}
-	mLogList.push_front(msg);
+
+	std::time_t time = std::chrono::system_clock::to_time_t(msg.time);
+	std::tm now_tm;
+	localtime_s(&now_tm, &time);
+	char buffer[80];
+	std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &now_tm);
+
+	LogMessage logMsg;
+	logMsg.time = buffer;
+
+	if (spdlog::level::trace == msg.level)		   logMsg.level = "[trace]";
+	else if (spdlog::level::debug == msg.level)    logMsg.level = "[dubug]";
+	else if (spdlog::level::info == msg.level)	   logMsg.level = "[info]";
+	else if (spdlog::level::warn == msg.level)	   logMsg.level = "[warn]";
+	else if (spdlog::level::err == msg.level)	   logMsg.level = "[error]";
+	else if (spdlog::level::critical == msg.level) logMsg.level = "[critical]";
+
+	// payload
+	logMsg.payload = msg.payload.data();
+
+	mLogList.push_front(logMsg);
 }
 
 void fq::game_engine::LogWindow::beginChild_LogList()

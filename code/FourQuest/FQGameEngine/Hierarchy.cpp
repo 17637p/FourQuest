@@ -330,7 +330,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 			}
 			else if (path->extension() == ".model") // ¸ðµ¨ »ý¼º
 			{
-				mGameProcess->mModelSystem->BuildModel(*path);
+				mEditorProcess->mModelSystem->BuildModel(*path);
 			}
 		}
 

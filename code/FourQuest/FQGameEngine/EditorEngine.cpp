@@ -47,7 +47,6 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mGraphics->Initialize(hwnd, width,height);
 
 	// 시스템 초기화
-	mGameProcess->mModelSystem->Initialize(mGameProcess.get());
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
 
@@ -165,6 +164,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 		, mGameProcess->mGraphics->GetDivice(), mGameProcess->mGraphics->GetDeviceContext());
 	mEditor->mCommandSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mPrefabSystem->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mModelSystem->Initialize(mGameProcess.get(), mEditor.get());
 
 	// Window 초기화
 	mEditor->mInspector->Initialize(mGameProcess.get(), mEditor.get());
