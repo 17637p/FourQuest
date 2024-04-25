@@ -52,16 +52,14 @@ namespace fq::game_engine
 
 	private:
 
-		/// <summary>
 		/// 파일 디랙토리 관련 창
-		/// </summary>
+		
 		void beginWindow_FilePathWindow();
 		void beginDirectory(const Path& path);
 		void beginDragDrop_Directory(const Path& directoryPath);
 
-		/// <summary>
 		/// 파일 디랙토리안에 리소스 창
-		/// </summary>
+		
 		void beginWindow_FileList();
 		void beginPopupContextWindow_FileList();
 		void beginDragDropTarget_FileList();

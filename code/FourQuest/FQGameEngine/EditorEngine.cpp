@@ -43,8 +43,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
-	float width = mGameProcess->mWindowSystem->GetScreenWidth();
-	float height = mGameProcess->mWindowSystem->GetScreenHeight();
+	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
+	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width, height);
 
 	// 물리 엔진 초기화
@@ -114,7 +114,6 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
-
 			mGameProcess->mGraphics->Render();
 
 			mEditor->mImGuiSystem->NewFrame();

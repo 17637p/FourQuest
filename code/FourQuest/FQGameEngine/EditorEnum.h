@@ -7,6 +7,7 @@ namespace fq::game_engine
 	{
 		Edit, // 편집
 		Play, // 플레이
+		Pause, // 정지
 	};
 
 

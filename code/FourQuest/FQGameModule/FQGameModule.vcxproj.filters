@@ -51,6 +51,12 @@
     <Filter Include="src\06.ObjectManager">
       <UniqueIdentifier>{e974bfdd-6214-4649-80f2-85ffc3273cb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.EntityComponent\Physics">
+      <UniqueIdentifier>{d91e34b4-b6a1-4c6b-8c91-d5600f81eed5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Physics">
+      <UniqueIdentifier>{0a699caa-a806-4f97-8407-14a42b2e44c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -128,6 +134,15 @@
     <ClInclude Include="SkinnedMeshRenderer.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -192,6 +207,15 @@
     </ClCompile>
     <ClCompile Include="SkinnedMeshRenderer.cpp">
       <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

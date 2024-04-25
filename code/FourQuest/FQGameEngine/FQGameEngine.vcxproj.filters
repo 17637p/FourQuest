@@ -220,9 +220,6 @@
     <ClCompile Include="ImGuiSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
-    <ClCompile Include="ModelSystem.cpp">
-      <Filter>src\03.GameSystem</Filter>
-    </ClCompile>
     <ClCompile Include="RenderingSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
@@ -237,6 +234,9 @@
     </ClCompile>
     <ClCompile Include="PhysicsSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

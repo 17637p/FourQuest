@@ -10,9 +10,6 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RigidBody">
-      <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SimulationEventCallback">
       <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
     </Filter>
@@ -21,6 +18,9 @@
     </Filter>
     <Filter Include="Tool">
       <UniqueIdentifier>{b44d4da7-2419-4b10-93d2-155e5d2d13d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RigidBody">
+      <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
