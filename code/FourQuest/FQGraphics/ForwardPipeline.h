@@ -3,9 +3,6 @@
 #include "CommonHeader.h"
 #include "ConstantBufferStructure.h"
 #include "RenderJob.h"
-#include "DeferredPipeline.h"
-#include "ForwardPipeline.h"
-#include "EPipelineType.h"
 
 namespace fq::graphics
 {
@@ -21,53 +18,51 @@ namespace fq::graphics
 	class D3D11DepthStencilView;
 	class D3D11VertexBuffer;
 	class D3D11IndexBuffer;
-	class ForwardPipeline;
-	class DeferredPipeline;
 
-	class D3D11RenderManager
+	class ForwardPipeline
 	{
 	public:
-		D3D11RenderManager();
-		~D3D11RenderManager() = default;
-
 		void Initialize(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<class D3D11ResourceManager>& resourceManager,
 			unsigned short width,
-			unsigned short height,
-			EPipelineType pipelineType);
+			unsigned short height);
 		void Finalize();
 
 		void OnResize(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<class D3D11ResourceManager>& resourceManager,
 			unsigned short width,
 			unsigned short height);
-
+		
 		void BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager);
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
 
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<StaticMeshJob>& staticMeshJobs);
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<SkinnedMeshJob>& skinnedMeshJobs);
-		void RenderBackBuffer(const std::shared_ptr<D3D11Device>& device);
 
-		ID3D11ShaderResourceView* GetBackBufferSRV() const;
-
-	private:
-		void createFullScreenBuffer(const std::shared_ptr<D3D11Device>& device);
+		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
-		EPipelineType mPipelineType;
-		std::unique_ptr<ForwardPipeline> mForwardPipeline;
-		std::unique_ptr<DeferredPipeline> mDeferredPipeline;
+		D3D11_VIEWPORT mViewport;
 
-		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
-		std::shared_ptr<D3D11DepthStencilView> mNullDSV;
+		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
+		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
+		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
-		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
-		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
-		std::shared_ptr<D3D11PixelShader> mFullScreenPS;
-		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
-		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
+		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
+		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
+		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
+		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
+		std::shared_ptr<D3D11PixelShader> mMeshPS;
+
+		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
+
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
+		std::shared_ptr<D3D11ConstantBuffer<SceneLight>> mSceneLightCB;
 	};
 }
 

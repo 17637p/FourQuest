@@ -16,7 +16,7 @@ namespace fq::graphics
 		virtual ~FQGraphics();
 
 		/// Framework
-		virtual bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height) override;
+		virtual bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType) override;
 		virtual bool Update(float deltaTime) override;
 
 		virtual bool BeginRender() override;

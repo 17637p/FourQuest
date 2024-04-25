@@ -44,15 +44,12 @@ bool Process::Init(HINSTANCE hInstance)
 {
 	InputManager::GetInstance().Init(mHwnd);
 	//m_timer = std::make_unique<GameTimer>();
+	mTimeManager.Init();
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
-	const std::string modelBasePath = "./resource/example/model/";
-	const std::string FBXBasePath = "./resource/example/fbx/";
-	const std::string model1 = "SkinningTest";
-	const std::string model2 = "kick";
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
 
@@ -63,44 +60,26 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics->SetCamera(cameraInfo);
 	//-------------------------------------
-	const std::string modelPath = "./resource/example/model/box.model";
+	const std::string modelPath = "./resource/example/model/gun.model";
+	const std::string animModelPath0 = "./resource/example/model/SkinningTest.model";
+	const std::string animModelPath1 = "./resource/example/model/kick.model";
+	const std::string textureBasePath = "./resource/example/texture";
 
-	mTestGraphics->ConvertModel(FBXBasePath + model1 + ".fbx", modelBasePath + model1 + ".model");
-	mTestGraphics->ConvertModel(FBXBasePath + model2 + ".fbx", modelBasePath + model2 + ".model");
+	mTestGraphics->CreateModel(modelPath, textureBasePath);
 
-	auto modelData1 = mTestGraphics->CreateModel(modelBasePath + model1 + ".model", "./resource/example/texture");
-	auto modelData2 = mTestGraphics->CreateModel(modelBasePath + model2 + ".model", "./resource/example/texture");
+	std::vector<fq::graphics::AnimationInfo> animInfo;
+	auto modelData = mTestGraphics->CreateModel(animModelPath0, textureBasePath);
+	animInfo.push_back({ animModelPath0, modelData.Animations.front().Name, "Idle" });
+	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
+	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
-	for (auto mesh : modelData1.Meshes)
+	for (size_t i = 0; i < 100; ++i)
 	{
-		if (mesh.second.Vertices.empty())
-		{
-			continue;
-		}
-
-		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = modelBasePath + model1 + ".model";
-		meshInfo.MeshName = mesh.second.Name;
-		meshInfo.Transform = mesh.first.ToParentMatrix;
-
-		for (auto subset : mesh.second.Subsets)
-		{
-			meshInfo.MaterialNames.push_back(subset.MaterialName);
-		}
-
-		if (mesh.second.BoneVertices.empty())
-		{
-			mStaticMeshObjects.push_back(mTestGraphics->CreateStaticMeshObject(meshInfo));
-			mStaticMeshObjects.back()->UpdateTransform(mStaticMeshObjects.back()->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(3.14 * 1.5f));
-		}
-		else
-		{
-			auto* iSkinned = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
-			mTestGraphics->AddAnimation(iSkinned, { modelBasePath + model1 + ".model",  modelData1.Animations.front().Name, "Idle" });
-			mTestGraphics->AddAnimation(iSkinned, { modelBasePath + model2 + ".model",  modelData2.Animations.front().Name, "kick" });
-			iSkinned->SetAnimationKey("Idle");
-			mSkinnedMeshObjects.push_back(iSkinned);
-		}
+		float randX = (float)(rand() % 500 - 250);
+		float randY = (float)(rand() % 500 - 250);
+		float randZ = (float)(rand() % 500 - 250);
+		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
 
 	/// camera 초기화
@@ -188,6 +167,9 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void Process::Update()
 {
+	mTimeManager.Update();
+	calculateFrameStats();
+
 	// ESC 버튼 누르면 프로그램 종료
 	if (GetAsyncKeyState(VK_ESCAPE))
 	{
@@ -200,7 +182,7 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = 1.f;
+	const float speed = mTimeManager.GetDeltaTime() * 1000.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		walk(speed);
@@ -257,20 +239,20 @@ void Process::Render()
 
 	for (auto& obj : mStaticMeshObjects)
 	{
-		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(0.0001f));
+		obj->UpdateTransform(obj->GetTransform() * DirectX::SimpleMath::Matrix::CreateRotationY(mTimeManager.GetDeltaTime()));
 	}
 
 	static float s_time = 0.f;
-	s_time += 0.001f;
+	s_time += mTimeManager.GetDeltaTime();
 	s_time = fmod(s_time, 3.f);
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
 		if (GetAsyncKeyState('1') & 0x8000)
 		{
-			obj->SetAnimationKey("kick");
+			obj->SetAnimationKey("Kick");
 		}
-		else
+		else if (GetAsyncKeyState('2') & 0x8000)
 		{
 			obj->SetAnimationKey("Idle");
 		}
@@ -290,7 +272,7 @@ void Process::strafe(float distance)
 
 	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
 		tempMatrix._11 * distance + cameraTransform.worldPosition.x,
-		tempMatrix._12 * distance + cameraTransform.worldPosition.y, 
+		tempMatrix._12 * distance + cameraTransform.worldPosition.y,
 		tempMatrix._13 * distance + cameraTransform.worldPosition.z);
 
 	cameraTransform.worldMatrix =
@@ -306,7 +288,7 @@ void Process::walk(float distance)
 
 	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
 		tempMatrix._31 * distance + cameraTransform.worldPosition.x,
-		tempMatrix._32 * distance + cameraTransform.worldPosition.y, 
+		tempMatrix._32 * distance + cameraTransform.worldPosition.y,
 		tempMatrix._33 * distance + cameraTransform.worldPosition.z);
 
 	cameraTransform.worldMatrix =
@@ -322,11 +304,67 @@ void Process::worldUpdown(float distance)
 
 	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
 		tempMatrix._21 * distance + cameraTransform.worldPosition.x,
-		tempMatrix._22 * distance + cameraTransform.worldPosition.y, 
+		tempMatrix._22 * distance + cameraTransform.worldPosition.y,
 		tempMatrix._23 * distance + cameraTransform.worldPosition.z);
 
 	cameraTransform.worldMatrix =
 		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
 		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
+{
+	createModel(modelPath, {}, transform);
+}
+
+void Process::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
+{
+	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
+
+	for (auto mesh : modelData.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = modelPath;
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
+
+		if (mesh.second.BoneVertices.empty())
+		{
+			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+			mStaticMeshObjects.push_back(iStaticMeshObject);
+		}
+		else
+		{
+			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iSkinnedMeshObject, animInfo);
+			}
+			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
+		}
+	}
+}
+
+void Process::calculateFrameStats()
+{
+	float fps = (float)mTimeManager.GetFps();
+	float mspf = 1000.0f / fps;
+
+	std::wostringstream outs;
+	outs.precision(6);
+	outs << L"FPS: " << fps << L"    "
+		<< L"Frame Time: " << mspf << L" (ms)";
+	SetWindowText(mHwnd, outs.str().c_str());
 }

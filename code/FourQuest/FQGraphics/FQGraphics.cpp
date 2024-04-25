@@ -20,13 +20,15 @@ FQGraphics::FQGraphics()
 {
 }
 
-bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height)
+bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType)
 {
+	Finalize();
+
 	mDevice->Initialize(hWnd, width, height);
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
-	mRenderManager->Initialize(mDevice, mResourceManager, width, height);
+	mRenderManager->Initialize(mDevice, mResourceManager, width, height, pipelineType);
 	mCameraManager->Initialize(width, height);
 
 	return true;

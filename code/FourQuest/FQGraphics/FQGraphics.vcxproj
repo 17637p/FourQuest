@@ -136,8 +136,10 @@
     <ClInclude Include="AnimationHelper.h" />
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11CameraManager.h" />
+    <ClInclude Include="D3D11Common.h" />
     <ClInclude Include="D3D11ModelManager.h" />
     <ClInclude Include="D3D11TextManager.h" />
     <ClInclude Include="D3D11JobManager.h" />
@@ -147,9 +149,12 @@
     <ClInclude Include="D3D11Texture.h" />
     <ClInclude Include="D3D11Util.h" />
     <ClInclude Include="D3D11View.h" />
+    <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="D3D11Device.h" />
     <ClInclude Include="D3D11State.h" />
+    <ClInclude Include="EPipelineType.h" />
+    <ClInclude Include="ForwardPipeline.h" />
     <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="LightBase.h" />
@@ -167,6 +172,7 @@
     <ClCompile Include="AnimationHelper.cpp" />
     <ClCompile Include="BoneHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
@@ -179,6 +185,8 @@
     <ClCompile Include="D3D11Texture.cpp" />
     <ClCompile Include="D3D11Util.cpp" />
     <ClCompile Include="D3D11View.cpp" />
+    <ClCompile Include="DeferredPipeline.cpp" />
+    <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="LightBase.cpp" />
@@ -190,39 +198,33 @@
     <ClCompile Include="D3D11ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="FullScreenPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="FullScreenVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="ModelPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="ModelVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Common.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\FQLoader\FQLoader.vcxproj">
       <Project>{6567f0ff-6867-4c18-888d-6b7b5ff432f3}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

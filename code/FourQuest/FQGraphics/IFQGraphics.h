@@ -6,9 +6,9 @@
 #include <filesystem>
 
 #include "d3d11.h"
+#include "EPipelineType.h"
 
 #include "../FQCommon/IFQRenderObject.h"
-
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
@@ -42,7 +42,7 @@ extern "C" {
 			virtual ~IFQGraphics() {};
 
 			/// Framework
-			virtual FQ_GRAPHICS bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height) abstract;
+			virtual FQ_GRAPHICS bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType = EPipelineType::Forward) abstract;
 			virtual FQ_GRAPHICS bool Update(float deltaTime) abstract;
 
 			virtual FQ_GRAPHICS bool BeginRender() abstract;
