@@ -155,6 +155,9 @@
     <ClInclude Include="CollisionMatrixWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
+    <ClInclude Include="LightSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -243,6 +246,9 @@
     </ClCompile>
     <ClCompile Include="CollisionMatrixWindow.cpp">
       <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

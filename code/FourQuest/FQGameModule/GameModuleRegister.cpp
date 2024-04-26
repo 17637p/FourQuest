@@ -7,11 +7,16 @@
 #include "Camera.h"
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
+#include "Light.h"
 
 void fq::game_module::RegisterMetaData()
 {
 	using namespace entt::literals;
 	using namespace fq::game_module;
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Enum Class                                //
+	//////////////////////////////////////////////////////////////////////////
 
 	// Tag
 	entt::meta<ETag>()
@@ -30,8 +35,19 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Wall>("Wall"_hs) // 5
 		.prop(fq::reflect::prop::Name, "Wall");
 
+	entt::meta<fq::graphics::ELightType>()
+		.prop(fq::reflect::prop::Name, "LightType")
+		.data<fq::graphics::ELightType::Directional>("Directional"_hs)
+		.prop(fq::reflect::prop::Name, "Directional")
+		.data<fq::graphics::ELightType::Point>("Point"_hs)
+		.prop(fq::reflect::prop::Name, "Point")
+		.data<fq::graphics::ELightType::Spot>("Spot"_hs)
+		.prop(fq::reflect::prop::Name, "Spot");
 
-	// GameObject 
+	//////////////////////////////////////////////////////////////////////////
+	//                            GameObject                                //
+	//////////////////////////////////////////////////////////////////////////
+
 	entt::meta<GameObject>()
 		.type("GameObject"_hs)
 		.prop(fq::reflect::prop::Name, "GameObject")
@@ -39,6 +55,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mName")
 		.data<&GameObject::SetTag, &GameObject::GetTag>("mTag"_hs)
 		.prop(fq::reflect::prop::Name, "mTag");
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Component                                 //
+	//////////////////////////////////////////////////////////////////////////
 
 	// Transform
 	entt::meta<Transform>()
@@ -93,5 +113,15 @@ void fq::game_module::RegisterMetaData()
 		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.base<Component>();
+
+	// Light 
+	entt::meta<Light>()
+		.type("Light"_hs)
+		.prop(fq::reflect::prop::Name, "Light")
+		.data<&Light::SetLightColor, &Light::GetLightColor>("Color"_hs)
+		.prop(fq::reflect::prop::Name, "Color")
+		.base<Component>();
+
+
 
 }

@@ -11,6 +11,8 @@
 #include "GameProcess.h"
 #include "WindowSystem.h"
 #include "RenderingSystem.h"
+#include "PhysicsSystem.h"
+#include "LightSystem.h"
 #include "CameraSystem.h"
 
 fq::game_engine::GameEngine::GameEngine()
@@ -53,6 +55,8 @@ void fq::game_engine::GameEngine::Initialize()
 	// 시스템 초기화
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
+	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
+	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();

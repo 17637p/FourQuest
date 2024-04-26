@@ -25,7 +25,7 @@ namespace fq::graphics
 		// Common
 		ELightType type;
 		DirectX::SimpleMath::Color color = { 1.0f, 0.0f, 1.0f, 1.0f};
-		float intensity = -1.0f;
+		float intensity = 1.0f;
 
 		// Point, Spot
 		DirectX::SimpleMath::Vector3 attenuation = { 0, 0, 1 };

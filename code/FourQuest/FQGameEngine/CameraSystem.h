@@ -61,6 +61,7 @@ namespace fq::game_engine
 		/// <returns>카메라 타입</returns>
 		CameraType GetCameraType()const { return mCameraType; }
 
+
 	private:
 		GameProcess* mGameProcess;
 		CameraType mCameraType;

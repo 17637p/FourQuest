@@ -156,6 +156,7 @@
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
+    <ClInclude Include="LightSystem.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
+    <ClCompile Include="LightSystem.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />

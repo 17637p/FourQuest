@@ -11,6 +11,7 @@
 #include "ModelSystem.h"
 #include "CameraSystem.h"
 #include "RenderingSystem.h"
+#include "LightSystem.h"
 #include "PhysicsSystem.h"
 
 #include "FQGameEngineRegister.h"
@@ -58,6 +59,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
+	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 
 	// Editor √ ±‚»≠
 	InitializeEditor();

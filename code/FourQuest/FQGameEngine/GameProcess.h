@@ -27,6 +27,7 @@ namespace fq::game_engine
 	class CameraSystem;
 	class RenderingSystem;
 	class PhysicsSystem;
+	class LightSystem;
 }
 
 namespace fq::game_engine
@@ -58,5 +59,6 @@ namespace fq::game_engine
 		std::unique_ptr<RenderingSystem> mRenderingSystem;
 		std::unique_ptr<CameraSystem> mCameraSystem;
 		std::unique_ptr<PhysicsSystem> mPhysicsSystem;
+		std::unique_ptr<LightSystem> mLightSystem;
 	};
 }
