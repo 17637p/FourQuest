@@ -30,10 +30,10 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
-	mRenderManager->Initialize(mDevice, mResourceManager, width, height, pipelineType);
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
+	mRenderManager->Initialize(mDevice, mResourceManager, mLightManager, width, height, pipelineType);
 
 	return true;
 }
@@ -48,7 +48,7 @@ void FQGraphics::DeleteLight(const unsigned int id)
 	mLightManager->DeleteLight(id);
 }
 
-void FQGraphics::SetLight(const unsigned int id, const LightInfo& lightInfo)
+void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
 	mLightManager->SetLight(id, lightInfo);
 }
@@ -85,7 +85,7 @@ bool FQGraphics::Render()
 	mRenderManager->Shading(mDevice);
 
 	mDebugDrawManager->Excute(mDevice, mCameraManager);
-	
+
 	mRenderManager->RenderBackBuffer(mDevice);
 
 	return true;
@@ -200,7 +200,7 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mResourceManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mResourceManager, mLightManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

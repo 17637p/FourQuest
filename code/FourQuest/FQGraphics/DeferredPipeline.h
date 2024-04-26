@@ -26,6 +26,7 @@ namespace fq::graphics
 	public:
 		void Initialize(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+			const std::shared_ptr<D3D11LightManager>& lightManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize();
@@ -97,7 +98,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
-		std::shared_ptr<D3D11ConstantBuffer<SceneLight>> mSceneLightCB;
+		std::shared_ptr<D3D11ConstantBuffer<LightData>> mLightConstantBuffer;
 
 		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
 		std::shared_ptr<D3D11VertexShader> mFullScreenVS;

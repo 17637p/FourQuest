@@ -127,12 +127,10 @@ void fq::graphics::D3D11LightManager::DeleteLight(const unsigned int id)
 	MessageBox(NULL, L"지우려는 ID를 가진 라이트가 존재하지 않습니다! 안돼 돌아가~", L"에러", MB_ICONERROR);
 }
 
-void fq::graphics::D3D11LightManager::BindConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11ShaderType eShaderType, const UINT startSlot /*= 0*/)
-{
-	mLightConstantBuffer->Bind(d3d11Device, eShaderType, startSlot);
-}
-
-void fq::graphics::D3D11LightManager::UpdateConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device, const DirectX::SimpleMath::Vector3& eyePosition)
+void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
+	const std::shared_ptr<D3D11Device>& d3d11Device, 
+	const DirectX::SimpleMath::Vector3& eyePosition, 
+	const unsigned int isUseIBL)
 {
 	LightData lightData;
 
@@ -164,6 +162,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(const std::shared_ptr
 	lightData.numOfSpotLight = count;
 
 	lightData.eyePosition = eyePosition;
+	lightData.isUseIBL = isUseIBL;
 
 	mLightConstantBuffer->Update(d3d11Device, lightData);
 }

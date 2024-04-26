@@ -1,6 +1,7 @@
 #include "D3D11RenderManager.h"
 
 #include "D3D11CameraManager.h"
+#include "D3D11LightManager.h"
 #include "D3D11ResourceManager.h"
 #include "D3D11Common.h"
 #include "D3D11Util.h"
@@ -21,6 +22,7 @@ namespace fq::graphics
 
 	void D3D11RenderManager::Initialize(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager,
 		unsigned short width,
 		unsigned short height,
 		EPipelineType pipelineType)
@@ -42,10 +44,10 @@ namespace fq::graphics
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->Initialize(device, resourceManager, width, height);
+			mForwardPipeline->Initialize(device, resourceManager, lightManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Initialize(device, resourceManager, width, height);
+			mDeferredPipeline->Initialize(device, resourceManager, lightManager, width, height);
 			mDeferredPipeline->SetFullScreenBindable(mFullScreenLayout, mFullScreenVS, mFullScreenVB, mFullScreenIB);
 			break;
 		default:

@@ -93,7 +93,7 @@ extern "C" {
 
 			/// Light
 			virtual FQ_GRAPHICS void AddLight(const unsigned int id, const LightInfo& lightInfo) abstract;
-			virtual FQ_GRAPHICS void SetLight(const unsigned int id, const LightInfo& lightInfo) abstract;
+			virtual FQ_GRAPHICS void UpdateLight(const unsigned int id, const LightInfo& lightInfo) abstract;
 			virtual FQ_GRAPHICS void DeleteLight(const unsigned int id) abstract;
 
 			/// Camera

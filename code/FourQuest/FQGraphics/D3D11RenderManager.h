@@ -34,6 +34,7 @@ namespace fq::graphics
 
 		void Initialize(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+			const std::shared_ptr<D3D11LightManager>& lightManager,
 			unsigned short width,
 			unsigned short height,
 			EPipelineType pipelineType);

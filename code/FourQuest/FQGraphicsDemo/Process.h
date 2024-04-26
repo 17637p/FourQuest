@@ -41,6 +41,8 @@ private:
 	void walk(float distance);
 	void worldUpdown(float distance);
 
+	void yaw(float angle);
+	void pitch(float angle);
 	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 

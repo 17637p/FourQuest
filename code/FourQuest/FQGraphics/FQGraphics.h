@@ -68,7 +68,7 @@ namespace fq::graphics
 		/// Light
 		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
 		virtual void AddLight(const unsigned int id, const LightInfo& lightInfo) override;
-		virtual void SetLight(const unsigned int id, const LightInfo& lightInfo) override;
+		virtual void UpdateLight(const unsigned int id, const LightInfo& lightInfo) override;
 		virtual void DeleteLight(const unsigned int id) override;
 
 		/// Camera

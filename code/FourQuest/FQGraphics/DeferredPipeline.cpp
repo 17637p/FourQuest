@@ -13,6 +13,7 @@ namespace fq::graphics
 {
 	void DeferredPipeline::Initialize(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -69,7 +70,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(device, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(device, ED3D11ConstantBuffer::Transform);
 		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(device, ED3D11ConstantBuffer::Transform);
-		mSceneLightCB = std::make_shared<D3D11ConstantBuffer<SceneLight>>(device, ED3D11ConstantBuffer::Transform);
+		mLightConstantBuffer = lightManager->GetLightConstnatBuffer();
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -115,7 +116,7 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mModelTexutreCB = nullptr;
-		mSceneLightCB = nullptr;
+		mLightConstantBuffer = nullptr;
 
 		mFullScreenLayout = nullptr;
 		mFullScreenVS = nullptr;
@@ -201,21 +202,7 @@ namespace fq::graphics
 		sceneTransform.ShadowViewProjTexMat;
 		mSceneTransformCB->Update(device, sceneTransform);
 
-		// lightManager->UpdateConstantBuffer(device, cameraManager->GetPosition(ECameraType::Player));
-		// lightManager->BindConstantBuffer(device, ED3D11ShaderType::Pixelshader, 0);
-
-		SceneLight scenelight;
-		scenelight.Lights[0].Direction = { 0.0f, 0.0f, 1.f };
-		scenelight.Lights[0].Intensity = { 1.f, 1.f, 1.f };
-		scenelight.Lights[1].Direction = { 1.0f, 0.f, 0.f };
-		scenelight.Lights[1].Direction.Normalize();
-		scenelight.Lights[1].Intensity = { 1.f, 1.f, 1.f };
-		scenelight.Lights[2].Direction = { 0.0f, -1.f ,0.f };
-		scenelight.Lights[2].Direction.Normalize();
-		scenelight.Lights[2].Intensity = { 1.f, 1.f, 1.f };
-		scenelight.EyePosition = (DirectX::SimpleMath::Vector4)cameraManager->GetPosition(ECameraType::Player);
-		scenelight.bUseIBL = false;
-		mSceneLightCB->Update(device, scenelight);
+		lightManager->UpdateConstantBuffer(device, cameraManager->GetPosition(ECameraType::Player), false);
 	}
 	void DeferredPipeline::EndRender(const std::shared_ptr<D3D11Device>& device)
 	{
@@ -292,13 +279,13 @@ namespace fq::graphics
 		mNormalSRV->Bind(device, 3, ED3D11ShaderType::Pixelshader);
 		mEmissiveSRV->Bind(device, 4, ED3D11ShaderType::Pixelshader);
 		mPositionSRV->Bind(device, 5, ED3D11ShaderType::Pixelshader);
-		mSceneLightCB->Bind(device, ED3D11ShaderType::Pixelshader, 1);
+		mLightConstantBuffer->Bind(device, ED3D11ShaderType::Pixelshader, 1);
 		mAnisotropicWrapSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 		mLinearClampSamplerState->Bind(device, 1, ED3D11ShaderType::Pixelshader);
 		mPointClampSamplerState->Bind(device, 2, ED3D11ShaderType::Pixelshader);
 
 		device->GetDeviceContext()->DrawIndexed(6, 0, 0);
-	
+
 		mBackBufferRTV->Bind(device, mDSV);
 	}
 

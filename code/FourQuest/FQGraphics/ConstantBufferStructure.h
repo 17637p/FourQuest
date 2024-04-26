@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CommonHeader.h"
+#include "Light.h"
 
 namespace fq::graphics
 {
@@ -44,6 +45,21 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 EyePosition;
 		int bUseIBL;
 		int unused[3];
+	};
+
+	struct LightData
+	{
+		DirectionalLight directionalLight[3];
+		PointLight pointLight[10];
+		SpotLight spotLight[5];
+
+		unsigned int numOfDirectionalLight;
+		unsigned int numOfPointLight;
+		unsigned int numOfSpotLight;
+		unsigned int isUseIBL;
+
+		DirectX::SimpleMath::Vector3 eyePosition;
+		float pad2;
 	};
 
 	template <typename T>

@@ -189,4 +189,16 @@ namespace fq::physics
 
 		return true;
 	}
+
+	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
+	{
+		mMyEventCallback->SetCallbackFunction(func);
+	}
+
+	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo info)
+	{
+		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, info.gravity.z));
+		mCollisionMatrix = info.collisionMatrix;
+		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
+	}
 }
