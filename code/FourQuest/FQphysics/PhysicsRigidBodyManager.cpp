@@ -4,6 +4,7 @@
 #include "RigidBody.h"
 #include "DynamicRigidBody.h"
 #include "StaticRigidBody.h"
+#include "EngineDataConverter.h"
 
 namespace fq::physics
 {
@@ -49,6 +50,30 @@ namespace fq::physics
 		mUpcomingActors.clear();
 
 		return true;
+	}
+
+	DirectX::SimpleMath::Matrix PhysicsRigidBodyManager::GetRigidBodyMatrix(unsigned int id)
+	{
+		DirectX::SimpleMath::Matrix dxMatrix;
+
+		auto body = mRigidBodys.find(id)->second;
+
+		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
+		if (dynamicBody)
+		{
+			physx::PxTransform pxTransform = dynamicBody->GetRigidDynamic()->getGlobalPose();
+			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
+			return std::move(dxMatrix);
+		}
+		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
+		if (staticBody)
+		{
+			physx::PxTransform pxTransform = staticBody->GetRigidStatic()->getGlobalPose();
+			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
+			return std::move(dxMatrix);
+		}
+
+		return std::move(dxMatrix);
 	}
 
 #pragma region UpdateFilterData

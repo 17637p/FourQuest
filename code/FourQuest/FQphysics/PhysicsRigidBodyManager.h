@@ -49,6 +49,8 @@ namespace fq::physics
 		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
 		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
 
+		DirectX::SimpleMath::Matrix GetRigidBodyMatrix(unsigned int id);
+
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 		/// </summary>

@@ -25,7 +25,9 @@ namespace fq::physics
 		{
 			if ((((1 << filterData0.word0) & filterData1.word1) > 0) && (((1 << filterData1.word0) & filterData0.word1) > 0))
 			{
-				pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
+				pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT
+					| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+					| physx::PxPairFlag::eNOTIFY_TOUCH_LOST;
 				return physx::PxFilterFlag::eDEFAULT;
 			}
 		}
@@ -39,7 +41,8 @@ namespace fq::physics
 				| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
 				| physx::PxPairFlag::eNOTIFY_TOUCH_LOST
 				| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
-				| physx::PxPairFlag::eCONTACT_EVENT_POSE;
+				| physx::PxPairFlag::eCONTACT_EVENT_POSE
+				| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 			return physx::PxFilterFlag::eDEFAULT;
 		}
 		else
@@ -174,6 +177,8 @@ namespace fq::physics
 
 #pragma endregion
 
+#pragma region RemoveRigidBody
+
 	bool FQPhysics::RemoveRigidBody(unsigned int id)
 	{
 		if (!mRigidBodyManager->RemoveRigidBody(id, mScene))
@@ -190,15 +195,31 @@ namespace fq::physics
 		return true;
 	}
 
+#pragma endregion
+
+#pragma region SetCallBackFunction
+
 	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
 	{
 		mMyEventCallback->SetCallbackFunction(func);
 	}
+
+#pragma endregion
+
+#pragma region SetPhysicsInfo
 
 	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo info)
 	{
 		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, info.gravity.z));
 		mCollisionMatrix = info.collisionMatrix;
 		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
+	}
+
+#pragma endregion
+
+	DirectX::SimpleMath::Matrix FQPhysics::GetRigidBodyMatrix(unsigned int id)
+	{
+		DirectX::SimpleMath::Matrix dxMatrix = mRigidBodyManager->GetRigidBodyMatrix(id);
+		return std::move(dxMatrix);
 	}
 }

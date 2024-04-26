@@ -45,7 +45,7 @@ namespace fq::physics
 		unsigned int otherId;
 		unsigned int myLayerNumber;
 		unsigned int otherLayerNumber;
-		DirectX::SimpleMath::Vector3 CollisionPoint;
+		std::vector<DirectX::SimpleMath::Vector3> ContectPoints;
 	};
 
 	/// <summary>
