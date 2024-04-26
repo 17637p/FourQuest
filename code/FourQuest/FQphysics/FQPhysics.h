@@ -49,6 +49,18 @@ namespace fq::physics
 		/// </summary>
 		virtual bool RemoveAllRigidBody() override;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="func"></param>
+		/// <param name="eventType"></param>
+		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) override;
+
+		/// <summary>
+		/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )
+		/// </summary>
+		/// <param name="info"> 물리 엔진 정보 </param>
+		virtual void SetPhysicsInfo(PhysicsEngineInfo info) override;
 
 	private:
 		// 씬

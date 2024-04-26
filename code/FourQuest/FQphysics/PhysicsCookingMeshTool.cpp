@@ -23,7 +23,7 @@ namespace fq::physics
 		return false;
 	}
 
-	physx::PxConvexMesh* PhysicsCookingMeshTool::CookingConvexMesh(DirectX::SimpleMath::Vector3* vertices, int vertexSize, int vertexLimit)
+	physx::PxConvexMesh* PhysicsCookingMeshTool::CookingConvexMesh(DirectX::SimpleMath::Vector3* vertices, int vertexSize, int vertexLimit, int polygonLimit)
 	{
 		physx::PxConvexMesh* convexMesh = FindConvexMesh(vertices);
 
@@ -35,6 +35,7 @@ namespace fq::physics
 			convexdesc.points.stride = sizeof(physx::PxVec3);
 			convexdesc.vertexLimit = vertexLimit;
 			convexdesc.points.data = vertices;
+			convexdesc.polygonLimit = polygonLimit;
 			convexdesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
 
 			physx::PxTolerancesScale scale;

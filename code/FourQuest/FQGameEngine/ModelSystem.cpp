@@ -45,9 +45,9 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		nodeObjectT->SetLocalMatrix(node.ToParentMatrix);
 
 		// 부모가 존재하는 경우
-		if (fq::common::Node::INVALID_INDEX != node.Parentindex)
+		if (fq::common::Node::INVALID_INDEX != node.ParentIndex)
 		{
-		 	auto& parent = modelObjects[node.Parentindex];
+		 	auto& parent = modelObjects[node.ParentIndex];
 			auto parentT = parent->GetComponent<fq::game_module::Transform>();
 
 			parentT->AddChild(nodeObjectT);

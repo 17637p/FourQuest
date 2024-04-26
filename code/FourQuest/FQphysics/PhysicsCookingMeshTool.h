@@ -22,7 +22,7 @@ namespace fq::physics
 		/// 모델 데이터의 버텍스 정보들을 읽어서 ConvexMesh 데이터를 추출합니다.
 		/// </summary>
 		/// <returns> PxShape에 들어갈 ConvexMesh를 생성하여 반환합니다. </returns>
-		physx::PxConvexMesh* CookingConvexMesh(DirectX::SimpleMath::Vector3* vertices, int vertexSize, int vertexLimit);
+		physx::PxConvexMesh* CookingConvexMesh(DirectX::SimpleMath::Vector3* vertices, int vertexSize, int vertexLimit, int polygonLimit);
 
 		/// <summary>
 		/// 모델 데이터의 버텍스 포인터 값을 읽어서 해당 포인터의 키 값을 가지고 있는 mConvexMeshMap에 ConvexMesh를 찾아 반환합니다.
