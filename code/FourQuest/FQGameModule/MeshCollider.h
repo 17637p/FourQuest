@@ -3,16 +3,17 @@
 
 namespace fq::game_module
 {
-	class RigidBody : public Component
+	class MeshCollider : public Component
 	{
 	public:
-		RigidBody();
-		~RigidBody();
+		MeshCollider();
+		~MeshCollider();
+
+	private:
 
 
 	private:
 
 	};
-
 
 }

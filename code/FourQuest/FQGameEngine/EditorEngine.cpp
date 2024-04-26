@@ -11,6 +11,7 @@
 #include "ModelSystem.h"
 #include "CameraSystem.h"
 #include "RenderingSystem.h"
+#include "PhysicsSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -56,6 +57,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 시스템 초기화
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
+	mGameProcess->mPhsicsSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();

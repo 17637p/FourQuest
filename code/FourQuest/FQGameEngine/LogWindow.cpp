@@ -16,9 +16,7 @@ fq::game_engine::LogWindow::LogWindow()
 {}
 
 fq::game_engine::LogWindow::~LogWindow()
-{
-
-}
+{}
 
 void fq::game_engine::LogWindow::Render()
 {

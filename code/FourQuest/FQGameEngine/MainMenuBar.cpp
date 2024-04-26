@@ -1,6 +1,7 @@
 #include "MainMenuBar.h"
 
 #include <string>
+#include <spdlog/spdlog.h>
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
@@ -41,6 +42,7 @@ void fq::game_engine::MainMenuBar::Render()
 	if (ImGui::BeginMainMenuBar())
 	{
 		beginMenu_File();
+		beginMenu_Window();
 
 		beginText_SceneName();
 		beginText_FPS();
@@ -94,7 +96,7 @@ void fq::game_engine::MainMenuBar::beginMenu_File()
 {
 	if (ImGui::BeginMenu("File"))
 	{
-		beginMenuItem_CreateScene();
+		beginMenuItem_CreateScene();	
 		beginMenuItem_LoadScene();
 		beginMenuItem_SaveScene();
 
@@ -159,6 +161,9 @@ void fq::game_engine::MainMenuBar::createScene(std::string sceneName)
 	prefabPath /= "prefab";
 	fs::create_directory(prefabPath);
 
+	// coliision_matrix 파일 생성
+	fq::physics::CollisionMatrix().Save(scenePath);
+
 	// ... etc 
 
 
@@ -215,8 +220,7 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	}
 
 	// 2. ... etc 
-
-
+	spdlog::trace("[MainMenuBar] Save Scene");
 }
 
 void fq::game_engine::MainMenuBar::ExcuteShortcut()
@@ -227,5 +231,14 @@ void fq::game_engine::MainMenuBar::ExcuteShortcut()
 		&& input->IsKeyState(EKey::S, EKeyState::Tap))
 	{
 		SaveScene();
+	}
+}
+
+void fq::game_engine::MainMenuBar::beginMenu_Window()
+{
+	if (ImGui::BeginMenu("Window"))
+	{
+
+		ImGui::EndMenu();
 	}
 }

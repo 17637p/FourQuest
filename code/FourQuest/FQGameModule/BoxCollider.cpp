@@ -12,12 +12,12 @@ fq::game_module::BoxCollider::~BoxCollider()
 
 void fq::game_module::BoxCollider::SetExtent(DirectX::SimpleMath::Vector3 extent)
 {
-	mBoxinfo.boxExtent = extent;
+	mBoxinfomation.boxExtent = extent;
 }
 
 DirectX::SimpleMath::Vector3 fq::game_module::BoxCollider::GetExtent() const
 {
-	return mBoxinfo.boxExtent;
+	return mBoxinfomation.boxExtent;
 }
 
 entt::meta_handle fq::game_module::BoxCollider::GetHandle()

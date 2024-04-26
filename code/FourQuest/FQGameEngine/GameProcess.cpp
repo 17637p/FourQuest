@@ -6,6 +6,7 @@
 #include "ModelSystem.h"
 #include "RenderingSystem.h"
 #include "CameraSystem.h"
+#include "PhysicsSystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -16,6 +17,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mWindowSystem(std::make_unique<WindowSystem>())
 	, mRenderingSystem(std::make_unique<RenderingSystem>())
 	, mCameraSystem(std::make_unique<CameraSystem>())
+	, mPhsicsSystem(std::make_unique<PhysicsSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

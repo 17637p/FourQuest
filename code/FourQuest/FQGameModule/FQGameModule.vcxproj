@@ -150,6 +150,8 @@
   <ItemGroup>
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CapsuleCollider.h" />
+    <ClInclude Include="CollisionMatrix.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentIterator.h" />
     <ClInclude Include="ComponentView.h" />
@@ -165,6 +167,7 @@
     <ClInclude Include="GameObjectView.h" />
     <ClInclude Include="InputEnum.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />
@@ -180,6 +183,8 @@
   <ItemGroup>
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CapsuleCollider.cpp" />
+    <ClCompile Include="CollisionMatrix.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentIterator.cpp" />
     <ClCompile Include="ComponentView.cpp" />
@@ -191,6 +196,7 @@
     <ClCompile Include="GameObjectIterator.cpp" />
     <ClCompile Include="GameObjectView.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />

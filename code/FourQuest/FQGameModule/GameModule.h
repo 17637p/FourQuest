@@ -23,4 +23,6 @@
 #include "SceneManager.h"
 #include "ObjectManager.h"
 
+#include "CollisionMatrix.h"
+
 #endif // 

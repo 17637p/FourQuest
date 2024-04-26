@@ -67,6 +67,7 @@ extern "C" {
 			/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
 			/// </summary>
 			virtual FQ_PHYSICS bool RemoveAllRigidBody() abstract;
+
 		};
 
 		class EngineExporter

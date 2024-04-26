@@ -1,19 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="src\03.Scene">
-      <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\04.Event">
-      <UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\05.Input">
-      <UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
@@ -30,32 +17,51 @@
     <Filter Include="include\01.EntityComponent">
       <UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\01.EntityComponent">
-      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\01.EntityComponent\Internal">
       <UniqueIdentifier>{f67d1a9f-b51e-4ff3-b023-f77a9cd51ee4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\01.EntityComponent\Internal">
-      <UniqueIdentifier>{f099fc72-a4ae-42b5-a922-1e37a39a9274}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\00.Define">
       <UniqueIdentifier>{2aed6e42-fa01-4b0a-9ac6-0d4c1275f424}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\00.Define">
-      <UniqueIdentifier>{e48d2721-5a19-4b1f-8b8e-66485dd1be2a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\06.ObjectManager">
       <UniqueIdentifier>{1c701873-e584-47bc-bca9-5e3cfb552373}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\06.ObjectManager">
-      <UniqueIdentifier>{e974bfdd-6214-4649-80f2-85ffc3273cb4}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\01.EntityComponent\Physics">
       <UniqueIdentifier>{d91e34b4-b6a1-4c6b-8c91-d5600f81eed5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\03.Scene">
+      <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\04.Event">
+      <UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\05.Input">
+      <UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent">
+      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Internal">
+      <UniqueIdentifier>{f099fc72-a4ae-42b5-a922-1e37a39a9274}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\01.EntityComponent\Physics">
       <UniqueIdentifier>{0a699caa-a806-4f97-8407-14a42b2e44c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\00.Define">
+      <UniqueIdentifier>{e48d2721-5a19-4b1f-8b8e-66485dd1be2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\06.ObjectManager">
+      <UniqueIdentifier>{e974bfdd-6214-4649-80f2-85ffc3273cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\07.Physics">
+      <UniqueIdentifier>{6ceb4e20-1ddc-4f7f-967f-942ca45d0d82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\07.Physics">
+      <UniqueIdentifier>{46982d69-3c1d-4224-877b-4ebd2d652872}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +149,15 @@
     <ClInclude Include="RigidBody.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="CapsuleCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionMatrix.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -216,6 +231,15 @@
     </ClCompile>
     <ClCompile Include="RigidBody.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsuleCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionMatrix.cpp">
+      <Filter>src\07.Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
