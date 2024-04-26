@@ -12,6 +12,7 @@ fq::game_engine::LogWindow::LogWindow()
 	, mLogList{}
 	, mMaxLogListSize(10)
 	, mbIsShowTime(true)
+	, mbIsOpen(true)
 	, mLevel(spdlog::level::level_enum::trace)
 {}
 
@@ -20,7 +21,9 @@ fq::game_engine::LogWindow::~LogWindow()
 
 void fq::game_engine::LogWindow::Render()
 {
-	if (ImGui::Begin("Log"))
+	if (!mbIsOpen) return;
+
+	if (ImGui::Begin("Log", &mbIsOpen))
 	{
 		beginButton_LogController();
 		beginChild_LogList();

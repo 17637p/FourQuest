@@ -50,6 +50,8 @@ namespace fq::game_engine
 		/// <returns>아잌노 이미지</returns>
 		ID3D11ShaderResourceView* GetIcon(const std::wstring& name);
 
+		bool& IsWindowOpen() { return mbIsOpen; }
+
 	private:
 
 		/// 파일 디랙토리 관련 창

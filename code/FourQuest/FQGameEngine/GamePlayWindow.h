@@ -55,6 +55,8 @@ namespace fq::game_engine
 		/// </summary>
 		EditorMode GetMode()const;
 
+		bool& IsWindowOpen() { return mbIsOpen; }
+
 		void UpdateCamera(float dt);
 	private:
 		void resizeWindow(ImVec2 size);
@@ -72,6 +74,7 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 		
 		EditorMode mMode;
+		bool mbIsOpen;
 		bool mbIsPauseGame;
 
 		// 에디터 카메라

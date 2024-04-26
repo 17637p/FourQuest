@@ -11,7 +11,7 @@
 
 fq::game_engine::ModelSystem::ModelSystem()
 	:mGameProcess(nullptr)
-	,mEditorProcess(nullptr)
+	, mEditorProcess(nullptr)
 {}
 
 fq::game_engine::ModelSystem::~ModelSystem()
@@ -28,18 +28,27 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 	std::filesystem::path texturePath = path.parent_path();
 	std::filesystem::path modelPath = path;
 
-	auto& graphics =  mGameProcess->mGraphics;
-	const auto& model =  graphics->CreateModel(modelPath.string(), texturePath);
+	auto& graphics = mGameProcess->mGraphics;
+	const auto& model = graphics->CreateModel(modelPath.string(), texturePath);
 
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> modelObjects;
 
 	// StaticMesh 생성
-	for (const auto& [node ,mesh]:model.Meshes)
+	for (const auto& [node, mesh] : model.Meshes)
 	{
 		// 게임오브젝트 생성
 		auto nodeObject = std::make_shared<fq::game_module::GameObject>();
-		
-		nodeObject->SetName(node.Name);
+
+		if (modelObjects.empty())
+		{
+			std::string modelName = modelPath.filename().string();
+			modelName = modelName.substr(0, modelName.size() - 6);
+			nodeObject->SetName(modelName);
+		}
+		else
+		{
+			nodeObject->SetName(node.Name);
+		}
 		modelObjects.push_back(nodeObject);
 
 		// 트랜스폼 설정
@@ -49,7 +58,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		// 부모가 존재하는 경우
 		if (fq::common::Node::INVALID_INDEX != node.ParentIndex)
 		{
-		 	auto& parent = modelObjects[node.ParentIndex];
+			auto& parent = modelObjects[node.ParentIndex];
 			auto parentT = parent->GetComponent<fq::game_module::Transform>();
 
 			parentT->AddChild(nodeObjectT);
@@ -80,7 +89,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			staticMeshRenderer.SetMeshObjectInfomation(meshInfo);
 		}
 		else // SkinnedMesh 생성
- 		{
+		{
 			auto& skinnedMeshRenderer
 				= nodeObject->AddComponent<fq::game_module::SkinnedMeshRenderer>();
 			skinnedMeshRenderer.SetMeshObjectInfomation(meshInfo);

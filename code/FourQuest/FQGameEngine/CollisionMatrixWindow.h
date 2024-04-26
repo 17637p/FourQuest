@@ -15,6 +15,8 @@ namespace fq::game_engine
 		void Initialize(GameProcess* game);
 		void Render()override;
 
+		bool& IsWindowOpen() { return mbIsOpen; }
+
 	private:
 		void beginButton_Reset();
 		void beginCollisionMatrix();

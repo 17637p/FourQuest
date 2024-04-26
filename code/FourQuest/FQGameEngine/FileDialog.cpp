@@ -36,6 +36,8 @@ fq::game_engine::FileDialog::~FileDialog()
 
 void fq::game_engine::FileDialog::Render()
 {
+	if (!mbIsOpen) return;
+
 	ProcessWindowDropFile();
 
 	if (ImGui::Begin("FileDialog"), &mbIsOpen)

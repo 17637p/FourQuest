@@ -18,7 +18,9 @@ fq::game_engine::CollisionMatrixWindow::~CollisionMatrixWindow()
 
 void fq::game_engine::CollisionMatrixWindow::Render()
 {
-	if (ImGui::Begin("CollisionMatrix", &mbIsOpen))
+	if (!mbIsOpen) return;
+
+	if (ImGui::Begin("CollisionMatrix",&mbIsOpen))
 	{
 		beginButton_Reset();
 		beginCollisionMatrix();

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <spdlog/spdlog.h>
+#include "spdlog/stopwatch.h"
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
@@ -225,9 +226,6 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
 
 	// 3. ... etc 
-
-
-
 	spdlog::trace("[MainMenuBar] Save Scene");
 }
 
@@ -246,6 +244,22 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 {
 	if (ImGui::BeginMenu("Window"))
 	{
+	    bool& hierarchy = mEditorProcess->mHierarchy->IsWindowOpen();
+		ImGui::Checkbox("Hierarchy", &hierarchy);
+
+		bool& inspector = mEditorProcess->mInspector->IsWindowOpen();
+		ImGui::Checkbox("Inspector", &inspector);
+
+		bool& fileDialog = mEditorProcess->mFileDialog->IsWindowOpen();
+		ImGui::Checkbox("FileDialog", &fileDialog);
+
+		bool& log = mEditorProcess->mLogWindow->IsWindowOpen();
+		ImGui::Checkbox("Log", &log);
+
+		ImGui::Separator();
+
+		bool& collisionMatrix = mEditorProcess->mCollisionMatrixWindow->IsWindowOpen();
+		ImGui::Checkbox("CollisionMatrix", &collisionMatrix);
 
 		ImGui::EndMenu();
 	}
