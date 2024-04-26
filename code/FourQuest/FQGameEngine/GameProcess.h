@@ -57,6 +57,6 @@ namespace fq::game_engine
 		std::unique_ptr<WindowSystem> mWindowSystem;
 		std::unique_ptr<RenderingSystem> mRenderingSystem;
 		std::unique_ptr<CameraSystem> mCameraSystem;
-		std::unique_ptr<PhysicsSystem> mPhsicsSystem;
+		std::unique_ptr<PhysicsSystem> mPhysicsSystem;
 	};
 }

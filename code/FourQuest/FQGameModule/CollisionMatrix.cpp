@@ -40,4 +40,11 @@ void fq::physics::CollisionMatrix::Save(const Path& directory)
     output.close();
 }
 
+void fq::physics::CollisionMatrix::Reset()
+{
+	for (int i = 0; i < static_cast<int>(Tag::End); ++i)
+	{
+        data[i].reset();
+	}
+}
 

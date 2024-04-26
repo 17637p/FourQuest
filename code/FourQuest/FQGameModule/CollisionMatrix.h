@@ -24,6 +24,11 @@ namespace fq::physics
 		/// <param name="path"></param>
 		void Load(const Path& path);
 
+		/// <summary>
+		/// √ ±‚»≠ 
+		/// </summary>
+		void Reset();
+
 		std::bitset<32> data[static_cast<int>(Tag::End)];
 	};
 

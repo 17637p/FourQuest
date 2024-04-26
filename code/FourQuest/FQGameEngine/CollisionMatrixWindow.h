@@ -4,6 +4,7 @@
 namespace fq::game_engine
 {
 	class GameProcess;
+	class PhysicsSystem;
 
 	class CollisionMatrixWindow : public IEditorWindow
 	{
@@ -12,12 +13,17 @@ namespace fq::game_engine
 		~CollisionMatrixWindow();
 
 		void Initialize(GameProcess* game);
-
 		void Render()override;
 
 	private:
-		GameProcess* mGameProcess;
+		void beginButton_Reset();
+		void beginCollisionMatrix();
 
+	private:
+		bool mbIsOpen;
+
+		GameProcess* mGameProcess;
+		PhysicsSystem* mPhysicsSystem;
 	};
 
 

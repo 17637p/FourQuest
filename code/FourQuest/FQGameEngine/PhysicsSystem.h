@@ -39,6 +39,9 @@ namespace fq::game_engine
 		/// </summary>
 		void OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event);
 
+		fq::physics::CollisionMatrix GetCollisionMatrix() const { return mCollisionMatrix; }
+		void SetCollisionMatrix(fq::physics::CollisionMatrix val) { mCollisionMatrix = val; }
+
 	private:
 		GameProcess* mGameProcess;
 		

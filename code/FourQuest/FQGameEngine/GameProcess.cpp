@@ -17,7 +17,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mWindowSystem(std::make_unique<WindowSystem>())
 	, mRenderingSystem(std::make_unique<RenderingSystem>())
 	, mCameraSystem(std::make_unique<CameraSystem>())
-	, mPhsicsSystem(std::make_unique<PhysicsSystem>())
+	, mPhysicsSystem(std::make_unique<PhysicsSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

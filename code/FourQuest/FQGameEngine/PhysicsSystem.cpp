@@ -9,7 +9,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	:mGameProcess(nullptr)
 	, mCollisionMatrix{}
 	, mbIsGameLoaded(false)
-	, mGravity{}
+	, mGravity{0.f,-10.f,0.f}
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -57,6 +57,14 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 
 	mCollisionMatrix.Load(scenePath);
 
-	mbIsGameLoaded = true;
+	fq::physics::PhysicsEngineInfo info;
 
+	for (int i = 0; i < 16; ++i)
+	{
+		info.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
+	}
+	info.gravity = mGravity;
+
+	mGameProcess->mPhysics->SetPhysicsInfo(info);
+	mbIsGameLoaded = true;
 }

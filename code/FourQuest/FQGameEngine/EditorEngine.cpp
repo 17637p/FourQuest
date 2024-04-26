@@ -57,7 +57,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 시스템 초기화
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
-	mGameProcess->mPhsicsSystem->Initialize(mGameProcess.get());
+	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
@@ -163,6 +163,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mLogWindow->Render();
 	mEditor->mFileDialog->Render();
 	mEditor->mMainMenuBar->Render();
+	mEditor->mCollisionMatrixWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -184,6 +185,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mMainMenuBar->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mGamePlayWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize();
+	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

@@ -13,6 +13,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mPrefabSystem(std::make_unique<PrefabSystem>())
 	, mImGuiSystem(std::make_unique<ImGuiSystem>())
 	, mModelSystem(std::make_unique <ModelSystem>())
+	, mCollisionMatrixWindow(std::make_unique<CollisionMatrixWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

@@ -9,6 +9,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "PhysicsSystem.h"
 
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
@@ -74,6 +75,7 @@ void fq::game_engine::MainMenuBar::beginMenuItem_LoadScene()
 
 			if (ImGui::MenuItem(sceneName.c_str()))
 			{
+				SaveScene();
 				// Scene 변경 요청 
 				mGameProcess->mEventManager
 					->FireEvent<fq::event::RequestChangeScene>({ sceneName, false });
@@ -219,7 +221,13 @@ void fq::game_engine::MainMenuBar::SaveScene()
 		}
 	}
 
-	// 2. ... etc 
+	// 2. CollisionMatrix 저장
+	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
+
+	// 3. ... etc 
+
+
+
 	spdlog::trace("[MainMenuBar] Save Scene");
 }
 
