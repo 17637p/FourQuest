@@ -24,7 +24,7 @@ namespace fq::graphics
 	{
 		// Common
 		ELightType type;
-		DirectX::SimpleMath::Color color = { 1.0f, 0.0f, 1.0f, 1.0f};
+		DirectX::SimpleMath::Color color = { 1.0f, 0.0f, 1.0f, 1.0f };
 		float intensity = -1.0f;
 
 		// Point, Spot
@@ -53,5 +53,65 @@ namespace fq::graphics
 		std::string AnimationName; // Model Data의 Animation 이름
 		std::string AnimationKey; // ISkinnedMeshObject SetAnimation에서 사용할 이름
 	};
+
+	namespace debug
+	{
+		struct SphereInfo
+		{
+			DirectX::BoundingSphere Sphere;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct AABBInfo
+		{
+			DirectX::BoundingBox AABB;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct OBBInfo
+		{
+			DirectX::BoundingOrientedBox OBB;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct FrustumInfo
+		{
+			DirectX::BoundingFrustum Frustum;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct GridInfo
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 XAxis;
+			DirectX::SimpleMath::Vector3 YAxis;
+			size_t XDivision;
+			size_t YDivision;
+			float GridSize;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct RingInfo
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 MajorAxis;
+			DirectX::SimpleMath::Vector3 MinorAxis;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct RayInfo
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 Direction;
+			bool Normalize = true;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct PolygonInfo
+		{
+			std::vector<DirectX::SimpleMath::Vector3> Points;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+	}
 }
 

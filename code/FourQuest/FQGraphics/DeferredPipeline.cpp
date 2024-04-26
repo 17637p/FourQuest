@@ -2,6 +2,7 @@
 
 #include "D3D11ResourceManager.h"
 #include "D3D11CameraManager.h"
+#include "D3D11LightManager.h"
 #include "D3D11Common.h"
 #include "RenderJob.h"
 #include "Material.h"
@@ -17,6 +18,7 @@ namespace fq::graphics
 	{
 		mBackBufferRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
 		mBackBufferSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mBackBufferRTV);
+		mNullDSV = resourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 		mDSV = resourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 
 		mAlbedoRTV = std::make_shared<fq::graphics::D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::Offscreen, width, height);
@@ -160,7 +162,9 @@ namespace fq::graphics
 		mViewport.TopLeftY = 0.f;
 	}
 
-	void DeferredPipeline::BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager)
+	void DeferredPipeline::BeginRender(const std::shared_ptr<D3D11Device>& device,
+		const std::shared_ptr<D3D11CameraManager>& cameraManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager)
 	{
 		ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
 		device->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
@@ -197,7 +201,9 @@ namespace fq::graphics
 		sceneTransform.ShadowViewProjTexMat;
 		mSceneTransformCB->Update(device, sceneTransform);
 
-		// 임시 데이터, 조명 반영시켜줘야 함
+		// lightManager->UpdateConstantBuffer(device, cameraManager->GetPosition(ECameraType::Player));
+		// lightManager->BindConstantBuffer(device, ED3D11ShaderType::Pixelshader, 0);
+
 		SceneLight scenelight;
 		scenelight.Lights[0].Direction = { 0.0f, 0.0f, 1.f };
 		scenelight.Lights[0].Intensity = { 1.f, 1.f, 1.f };
@@ -270,7 +276,7 @@ namespace fq::graphics
 		ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
 		device->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 
-		mBackBufferRTV->Bind(device, mDSV);
+		mBackBufferRTV->Bind(device, mNullDSV);
 
 		device->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		mFullScreenLayout->Bind(device);
@@ -291,9 +297,9 @@ namespace fq::graphics
 		mLinearClampSamplerState->Bind(device, 1, ED3D11ShaderType::Pixelshader);
 		mPointClampSamplerState->Bind(device, 2, ED3D11ShaderType::Pixelshader);
 
-
 		device->GetDeviceContext()->DrawIndexed(6, 0, 0);
-
+	
+		mBackBufferRTV->Bind(device, mDSV);
 	}
 
 	std::shared_ptr<D3D11ShaderResourceView>& DeferredPipeline::GetBackBufferSRV()

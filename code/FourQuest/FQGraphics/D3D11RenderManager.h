@@ -23,6 +23,8 @@ namespace fq::graphics
 	class D3D11IndexBuffer;
 	class ForwardPipeline;
 	class DeferredPipeline;
+	class D3D11CameraManager;
+	class D3D11LightManager;
 
 	class D3D11RenderManager
 	{
@@ -42,11 +44,14 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 
-		void BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager);
+		void BeginRender(const std::shared_ptr<D3D11Device>& device,
+			const std::shared_ptr<D3D11CameraManager>& cameraManager,
+			const std::shared_ptr< D3D11LightManager>& lightManager);
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
 
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<StaticMeshJob>& staticMeshJobs);
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<SkinnedMeshJob>& skinnedMeshJobs);
+		void Shading(const std::shared_ptr<D3D11Device>& device);
 		void RenderBackBuffer(const std::shared_ptr<D3D11Device>& device);
 
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;

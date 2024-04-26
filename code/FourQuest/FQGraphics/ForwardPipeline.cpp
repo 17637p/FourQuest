@@ -2,6 +2,7 @@
 
 #include "D3D11ResourceManager.h"
 #include "D3D11CameraManager.h"
+#include "D3D11LightManager.h"
 #include "D3D11Common.h"
 #include "RenderJob.h"
 #include "Material.h"
@@ -92,7 +93,9 @@ namespace fq::graphics
 		mViewport.TopLeftY = 0.f;
 	}
 
-	void ForwardPipeline::BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager)
+	void ForwardPipeline::BeginRender(const std::shared_ptr<D3D11Device>& device,
+		const std::shared_ptr<D3D11CameraManager>& cameraManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager)
 	{
 		mDSV->Clear(device);
 		mBackBufferRTV->Clear(device, { 1.f, 1.f, 1.f, 1.f });
@@ -111,6 +114,9 @@ namespace fq::graphics
 		mSceneTransformCB->Update(device, sceneTransform);
 
 		// 임시 데이터, 조명 반영시켜줘야 함
+		// lightManager->UpdateConstantBuffer(device, cameraManager->GetPosition(ECameraType::Player));
+		// lightManager->BindConstantBuffer(device, ED3D11ShaderType::Pixelshader, 0);
+
 		SceneLight scenelight;
 		scenelight.Lights[0].Direction = { 0.0f, 0.0f, 1.f };
 		scenelight.Lights[0].Intensity = { 1.f, 1.f, 1.f };

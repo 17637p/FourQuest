@@ -52,7 +52,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
@@ -60,7 +60,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 1000.0f;
+	cameraInfo.farPlain = 10000.0f;
 
 	mTestGraphics->SetCamera(cameraInfo);
 	//-------------------------------------
@@ -77,7 +77,7 @@ bool Process::Init(HINSTANCE hInstance)
 	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
-	for (size_t i = 0; i < 100; ++i)
+	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 500 - 250);
@@ -235,9 +235,8 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
-
+	debugRender();
 	mTestGraphics->Render();
-
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
 	//
@@ -291,6 +290,81 @@ void Process::Render()
 	{
 		mTestGraphics->SetPipelineType(fq::graphics::EPipelineType::Deferred);
 	}
+}
+
+void Process::debugRender()
+{
+	using namespace fq::graphics::debug;
+
+	SphereInfo sphereInfo;
+	sphereInfo.Sphere.Center = { 0, 0, 0 };
+	sphereInfo.Sphere.Radius = 500;
+	sphereInfo.Color = { 0,0,0,1 };
+	mTestGraphics->DrawSphere(sphereInfo);
+
+	AABBInfo aabbInfo;
+	aabbInfo.AABB.Center = { 0, 0, 0 };
+	aabbInfo.AABB.Extents = { 500, 500, 500 };
+	aabbInfo.Color = { 1, 0, 0, 1 };
+	mTestGraphics->DrawBox(aabbInfo);
+
+	OBBInfo obbInfo;
+	obbInfo.OBB.Center = { 0,0,0 };
+	obbInfo.OBB.Extents = { 500, 500, 500 };
+	obbInfo.OBB.Orientation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 3.14 * 0.25f, 3.14 * 0.25f, 0 });
+	obbInfo.Color = { 0, 1, 0, 1 };
+	mTestGraphics->DrawOBB(obbInfo);
+
+	FrustumInfo frustumInfo;
+
+	frustumInfo.Frustum.Origin = { 0, 0, 200 };
+	frustumInfo.Frustum .Near = 0.1f;
+	frustumInfo.Frustum.Far = 500.f;
+	frustumInfo.Frustum.LeftSlope = -0.5f;
+	frustumInfo.Frustum.RightSlope = 0.5f;
+	frustumInfo.Frustum.TopSlope = 0.5f;
+	frustumInfo.Frustum.BottomSlope = -0.5f;
+	frustumInfo.Color = { 0, 0, 1, 1 };
+	mTestGraphics->DrawFrustum(frustumInfo);
+
+	GridInfo gridInfo;
+	gridInfo.Origin = { 0,0,0 };
+	gridInfo.XAxis = { 1, 0, 0 };
+	gridInfo.YAxis = { 0, 0, 1 };
+	gridInfo.XDivision = 20;
+	gridInfo.YDivision = 20;
+	gridInfo.GridSize = 1000.f;
+	gridInfo.Color = { 0, 1, 1, 1 };
+	mTestGraphics->DrawGrid(gridInfo);
+
+	RingInfo ringInfo;
+	ringInfo.Origin = { 0, 0, 0 };
+	ringInfo.MajorAxis = { 300, 0, 0 };
+	ringInfo.MinorAxis = { 0, 300, 0 };
+	ringInfo.Color = { 1, 1, 0, 1 };
+	mTestGraphics->DrawRing(ringInfo);
+
+	RayInfo rayInfo;
+	rayInfo.Origin = { 0,0,-100 };
+	rayInfo.Direction = { 0, 100, 100 };
+	rayInfo.Normalize = false;
+	rayInfo.Color = { 0.5f, 0.5f, 0.5f, 1 };
+	mTestGraphics->DrawRay(rayInfo);
+
+	PolygonInfo polygonInfo;
+	polygonInfo.Points.push_back({ 200, 200, 0 });
+	polygonInfo.Points.push_back({ 400, 200, 0 });
+	polygonInfo.Points.push_back({ 400, 400, 0 });
+	polygonInfo.Color = { 0.1f, 0.2f, 0.3f, 1.f };
+	mTestGraphics->DrawPolygon(polygonInfo);
+
+	polygonInfo.Points.clear();
+	polygonInfo.Points.push_back({ -200, 200, 0 });
+	polygonInfo.Points.push_back({ -400, 200, 0 });
+	polygonInfo.Points.push_back({ -400, 400, 0 });
+	polygonInfo.Points.push_back({ -300, 500, 0 });
+	polygonInfo.Points.push_back({ -200, 400, 0 });
+	mTestGraphics->DrawPolygon(polygonInfo);
 
 }
 

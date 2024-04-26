@@ -98,15 +98,17 @@ namespace fq::graphics
 		}
 	}
 
-	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager)
+	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device,
+		const std::shared_ptr<D3D11CameraManager>& cameraManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager)
 	{
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->BeginRender(device, cameraManager);
+			mForwardPipeline->BeginRender(device, cameraManager, lightManager);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->BeginRender(device, cameraManager);
+			mDeferredPipeline->BeginRender(device, cameraManager, lightManager);
 			break;
 		default:
 			assert(false);
@@ -161,9 +163,16 @@ namespace fq::graphics
 			break;
 		}
 	}
-
+	void D3D11RenderManager::Shading(const std::shared_ptr<D3D11Device>& device)
+	{
+		if (mPipelineType == fq::graphics::EPipelineType::Deferred)
+		{
+			mDeferredPipeline->Shading(device);
+		}
+	}
 	void D3D11RenderManager::RenderBackBuffer(const std::shared_ptr<D3D11Device>& device)
 	{
+		device->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		switch (mPipelineType)
 		{
@@ -172,7 +181,6 @@ namespace fq::graphics
 			mForwardPipeline->GetBackBufferSRV()->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Shading(device);
 			mSwapChainRTV->Bind(device, mNullDSV);
 			mDeferredPipeline->GetBackBufferSRV()->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 			break;
@@ -207,6 +215,8 @@ namespace fq::graphics
 			assert(false);
 			break;
 		}
+
+		return nullptr;
 	}
 
 	void D3D11RenderManager::createFullScreenBuffer(const std::shared_ptr<D3D11Device>& device)

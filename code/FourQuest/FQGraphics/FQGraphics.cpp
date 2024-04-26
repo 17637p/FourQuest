@@ -18,6 +18,7 @@ FQGraphics::FQGraphics()
 	, mCameraManager(std::make_shared<D3D11CameraManager>())
 	, mModelManager(std::make_shared<D3D11ModelManager>())
 	, mLightManager(std::make_shared<D3D11LightManager>())
+	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 {
 }
 
@@ -32,6 +33,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mRenderManager->Initialize(mDevice, mResourceManager, width, height, pipelineType);
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
+	mDebugDrawManager->Initialize(mDevice);
 
 	return true;
 }
@@ -68,7 +70,7 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
-	mRenderManager->BeginRender(mDevice, mCameraManager);
+	mRenderManager->BeginRender(mDevice, mCameraManager, mLightManager);
 
 	return true;
 }
@@ -80,6 +82,10 @@ bool FQGraphics::Render()
 
 	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
 	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
+	mRenderManager->Shading(mDevice);
+
+	mDebugDrawManager->Excute(mDevice, mCameraManager);
+	
 	mRenderManager->RenderBackBuffer(mDevice);
 
 	return true;
@@ -155,10 +161,48 @@ void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)
 {
 	mObjectManager->DeleteSkinnedMeshObject(iSkinnedMeshObject);
 }
+
+void FQGraphics::DrawSphere(const debug::SphereInfo& sphereInfo)
+{
+	mDebugDrawManager->Submit(sphereInfo);
+}
+void FQGraphics::DrawBox(const debug::AABBInfo& aabbInfo)
+{
+	mDebugDrawManager->Submit(aabbInfo);
+}
+void FQGraphics::DrawOBB(const debug::OBBInfo& obbInfo)
+{
+	mDebugDrawManager->Submit(obbInfo);
+}
+void FQGraphics::DrawFrustum(const debug::FrustumInfo& frustumInfo)
+{
+	mDebugDrawManager->Submit(frustumInfo);
+}
+void FQGraphics::DrawGrid(const debug::GridInfo& gridInfo)
+{
+	mDebugDrawManager->Submit(gridInfo);
+}
+void FQGraphics::DrawRing(const debug::RingInfo& ringInfor)
+{
+	mDebugDrawManager->Submit(ringInfor);
+}
+void FQGraphics::DrawRay(const debug::RayInfo& rayInfo)
+{
+	mDebugDrawManager->Submit(rayInfo);
+}
+void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
+{
+	if (polygonInfo.Points.size() >= 3)
+	{
+		mDebugDrawManager->Submit(polygonInfo);
+	}
+}
+
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
 	mRenderManager->Initialize(mDevice, mResourceManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
+
 ID3D11Device* FQGraphics::GetDivice()
 {
 	assert(mDevice != nullptr);

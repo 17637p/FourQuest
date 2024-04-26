@@ -18,6 +18,8 @@ namespace fq::graphics
 	class D3D11DepthStencilView;
 	class D3D11VertexBuffer;
 	class D3D11IndexBuffer;
+	class D3D11CameraManager;
+	class D3D11LightManager;
 
 	class ForwardPipeline
 	{
@@ -33,7 +35,9 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		
-		void BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager);
+		void BeginRender(const std::shared_ptr<D3D11Device>& device,
+			const std::shared_ptr<D3D11CameraManager>& cameraManager,
+			const std::shared_ptr< D3D11LightManager>& lightManager);
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
 
 		void Render(const std::shared_ptr<D3D11Device>& device, const std::vector<StaticMeshJob>& staticMeshJobs);
