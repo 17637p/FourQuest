@@ -125,6 +125,9 @@
     <ClInclude Include="StaticMeshRenderer.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
+    <ClInclude Include="SkinnedMeshRenderer.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -185,6 +188,9 @@
       <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
     <ClCompile Include="StaticMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMeshRenderer.cpp">
       <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
   </ItemGroup>

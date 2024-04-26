@@ -26,12 +26,14 @@ namespace fq::graphics
 	class D3D11RenderTargetView : public ResourceBase
 	{
 	public:
-		D3D11RenderTargetView(const std::shared_ptr<D3D11Device>& d3d11Device,
+		D3D11RenderTargetView
+		(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const ED3D11RenderTargetViewType eViewType,
 			const unsigned short width, const unsigned short height);
 
 		static std::string GenerateRID(const ED3D11RenderTargetViewType eViewType);
-
+		
+		static void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 
 		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device, const DirectX::SimpleMath::Color& clearColor = { 0.f, 0.f, 0.f, 1.f });
@@ -53,9 +55,11 @@ namespace fq::graphics
 	{
 	public:
 		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
+		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11DepthStencilView>& depthStencilView);
 
 		static std::string GenerateRID(const ED3D11ShaderResourceViewType eViewType);
 
+		void Init(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 
 		inline ComPtr<ID3D11ShaderResourceView> GetSRV() const;
@@ -91,6 +95,8 @@ namespace fq::graphics
 
 	private:
 		ComPtr<ID3D11DepthStencilView> mDSV;
+
+		friend class D3D11ShaderResourceView;
 	};
 }
 

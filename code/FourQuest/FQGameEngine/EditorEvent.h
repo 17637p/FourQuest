@@ -11,5 +11,4 @@ namespace fq::game_engine::editor_event
 	{	
 		 std::shared_ptr<fq::game_module::GameObject> object;
 	};
-
 }

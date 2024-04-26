@@ -58,9 +58,6 @@
     <ClInclude Include="RenderJob.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Util.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11Shader.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -78,13 +75,24 @@
     </ClInclude>
     <ClInclude Include="D3D11LightManager.h">
       <Filter>Management</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="AnimationHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="BoneHierarchy.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11Util.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="ConstantBufferStructure.h" />
+    <ClInclude Include="D3D11Common.h" />
+    <ClInclude Include="D3D11ModelManager.h" />
+    <ClInclude Include="DeferredPipeline.h" />
+    <ClInclude Include="EPipelineType.h" />
+    <ClInclude Include="ForwardPipeline.h" />
+    <ClInclude Include="Light.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -105,14 +113,17 @@
     <Filter Include="Object">
       <UniqueIdentifier>{1fd9c50e-f004-44e8-99a8-b1ae104857f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{1f33f771-493f-48fd-b2e3-1ac0c55eefaa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{5bd1b6bc-5961-4bd8-be6b-3055d44ba8e9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{fc331d0b-bd4c-4ad2-be02-28bcf5dc3dfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{1f33f771-493f-48fd-b2e3-1ac0c55eefaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pipeline">
+      <UniqueIdentifier>{e7ab995b-e03c-49e3-835f-46bef3e6745f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -167,9 +178,6 @@
     <ClCompile Include="D3D11Shader.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11Util.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
     <ClCompile Include="D3D11JobManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
@@ -181,31 +189,44 @@
     </ClCompile>
     <ClCompile Include="D3D11LightManager.cpp">
       <Filter>Management</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="AnimationHelper.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="BoneHierarchy.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="D3D11Util.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferStructure.cpp" />
+    <ClCompile Include="D3D11ModelManager.cpp" />
+    <ClCompile Include="DeferredPipeline.cpp" />
+    <ClCompile Include="ForwardPipeline.cpp" />
+    <ClCompile Include="Light.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="ModelVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ModelPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="FullScreenVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="FullScreenPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Common.hlsli">
+    <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
       <Filter>Shader</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

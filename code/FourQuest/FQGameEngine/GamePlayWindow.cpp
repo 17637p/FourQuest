@@ -2,19 +2,34 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <spdlog/spdlog.h>
 
 #include "../FQGameModule/InputManager.h"
 #include "../FQGraphics/IFQGraphics.h"
 
 #include "EditorProcess.h"
+#include "EditorEvent.h"
 #include "GameProcess.h"
 #include "EditorEvent.h"
+#include "CameraSystem.h"
+#include "WindowSystem.h"
+#include "CommandSystem.h"
+#include "Command.h"
 
 fq::game_engine::GamePlayWindow::GamePlayWindow()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
 	, mMode(EditorMode::Edit)
 	, mbIsPauseGame(false)
+	, mCameraObject(nullptr)
+	, mCameraMoveSpeed(20.f)
+	, mCameraRotateSpeed(0.0065f)
+	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
+	, mSelectObjectHandler{}
+	, mSelectObject(nullptr)
+	, mViewTM{}
+	, mProjTM{}
+	, mbIsUsingGizumo(false)
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -26,6 +41,8 @@ void fq::game_engine::GamePlayWindow::Render()
 	{
 		beginMenuBar_Control();
 		beginImage_GameScreen();
+
+		beginGizumo();
 	}
 	ImGui::End();
 }
@@ -35,17 +52,29 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	mGameProcess = game;
 	mEditorProcess = editor;
 
+	// 카메라 생성
+	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
+	mCameraObject->AddComponent<fq::game_module::Camera>();
+
+	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
+	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+
+	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>(
+		[this](editor_event::SelectObject event)
+		{
+			this->mSelectObject = event.object;
+		});
 }
 
 void fq::game_engine::GamePlayWindow::Finalize()
 {
-
 }
 
 void fq::game_engine::GamePlayWindow::beginMenuBar_Control()
 {
 	if (ImGui::BeginMenuBar())
 	{
+		beginButton_SwapCamera();
 		beginButton_Play();
 		beginButton_Stop();
 
@@ -148,10 +177,11 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 {
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(Key::Ctrl, KeyState::Hold)
-		&& input->IsKeyState(Key::P, KeyState::Tap))
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+		&& input->IsKeyState(EKey::P, EKeyState::Tap))
 	{
-		if (input->IsKeyState(Key::LShift, KeyState::Hold))
+		// [Ctrl + LShift + P] 게임 정지
+		if (input->IsKeyState(EKey::LShift, EKeyState::Hold))
 		{
 			if (mbIsPauseGame)
 			{
@@ -166,6 +196,7 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		}
 		else
 		{
+			// [Ctrl + P] 게임플레이 
 			if (mMode == EditorMode::Edit)
 			{
 				SetMode(EditorMode::Play);
@@ -177,6 +208,37 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		}
 	}
 
+	if (input->IsKeyState(EKey::RMouse, EKeyState::None))
+	{
+		if (input->IsKeyState(EKey::W, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::TRANSLATE;
+		}
+		if (input->IsKeyState(EKey::E, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::ROTATE;
+		}
+		if (input->IsKeyState(EKey::R, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::SCALE;
+		}
+		if (input->IsKeyState(EKey::Q, EKeyState::Tap))
+		{
+			mOperation = ImGuizmo::BOUNDS;
+		}
+	}
+
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
+	{
+		if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
+		{
+			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+		}
+		if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
+		{
+			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+		}
+	}
 }
 
 void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
@@ -195,4 +257,192 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 		mGameProcess->mGraphics->GetSRV(),
 		ImVec2(pos.x, pos.y + 22),
 		ImVec2(maxpos.x, maxpos.y));
+}
+
+void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
+{
+	auto& input = mEditorProcess->mInputManager;
+	if (!input->IsKeyState(EKey::RMouse, EKeyState::Hold)
+		|| !input->IsKeyState(EKey::LMouse, EKeyState::None))
+	{
+		return;
+	}
+
+	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
+	auto matrix = cameraT->GetLocalMatrix();
+	auto position = cameraT->GetLocalPosition();
+	auto rotation = cameraT->GetLocalRotation();
+	float distance = mCameraMoveSpeed * dt;
+
+	if (input->IsKeyState(EKey::W, EKeyState::Hold))
+	{
+		position.x += matrix._31 * distance;
+		position.y += matrix._32 * distance;
+		position.z += matrix._33 * distance;
+	}
+	if (input->IsKeyState(EKey::S, EKeyState::Hold))
+	{
+		position.x -= matrix._31 * distance;
+		position.y -= matrix._32 * distance;
+		position.z -= matrix._33 * distance;
+	}
+	if (input->IsKeyState(EKey::A, EKeyState::Hold))
+	{
+		position.x -= matrix._11 * distance;
+		position.y -= matrix._12 * distance;
+		position.z -= matrix._13 * distance;
+	}
+	if (input->IsKeyState(EKey::D, EKeyState::Hold))
+	{
+		position.x += matrix._11 * distance;
+		position.y += matrix._12 * distance;
+		position.z += matrix._13 * distance;
+	}
+	if (input->IsKeyState(EKey::Q, EKeyState::Hold))
+	{
+		position.x -= matrix._21 * distance;
+		position.y -= matrix._22 * distance;
+		position.z -= matrix._23 * distance;
+	}
+	if (input->IsKeyState(EKey::E, EKeyState::Hold))
+	{
+		position.x += matrix._21 * distance;
+		position.y += matrix._22 * distance;
+		position.z += matrix._23 * distance;
+	}
+
+
+	float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
+	auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
+
+	float dy = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().y);
+	auto y = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 1,0,0 }, dy);
+
+	rotation = y * rotation * x;
+
+	cameraT->SetLocalRotation(rotation);
+	cameraT->SetLocalPosition(position);
+}
+
+void fq::game_engine::GamePlayWindow::beginGizumo()
+{
+	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
+		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
+	{
+		ImGuizmo::Enable(false);
+		return;
+	}
+
+	ImGuizmo::Enable(true);
+
+	using namespace DirectX::SimpleMath;
+
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
+	auto cameraInfo = camera->GetCameraInfomation();
+
+	auto matrix = cameraT->GetLocalMatrix();
+	auto fov = cameraInfo.filedOfView;/*
+	auto aspectRatio = mGameProcess->mWindowSystem->GetScreenWidth()
+		/ mGameProcess->mWindowSystem->GetScreenHeight();*/
+	auto aspectRatio = ImGui::GetWindowSize().x
+		/ ImGui::GetWindowSize().y;
+	auto nearPlain = cameraInfo.nearPlain;
+	auto farPlain = cameraInfo.farPlain;
+
+	mViewTM = matrix.Invert();
+	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
+
+	auto x = ImGui::GetWindowPos().x;
+	auto y = ImGui::GetWindowPos().y;
+	auto width = ImGui::GetWindowSize().x;
+	auto height = ImGui::GetWindowSize().y;
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(x, y, width, height);
+
+	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
+	auto objectMatrix = objectT->GetWorldMatrix();
+	auto beforeMatrix = objectT->GetWorldMatrix();
+
+	auto& input = mEditorProcess->mInputManager;
+
+	if (ImGuizmo::Manipulate(&mViewTM._11, &mProjTM._11
+		, mOperation, ImGuizmo::WORLD, &objectMatrix._11))
+	{
+		if (objectT->HasParent())
+		{
+			auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
+			objectMatrix = objectMatrix * parentMatrix.Invert();
+
+			objectT->SetLocalMatrix(objectMatrix);
+		}
+		else
+		{
+			objectT->SetLocalMatrix(objectMatrix);
+		}	
+	}
+
+	if (ImGuizmo::IsOver()
+		&& input->IsKeyState(EKey::LMouse, EKeyState::Tap))
+	{
+		mStart = beforeMatrix;
+		mbIsUsingGizumo = true;
+	}
+
+	if (mbIsUsingGizumo && input->IsKeyState(EKey::LMouse, EKeyState::Away))
+	{
+		mEditorProcess->mCommandSystem->Push<SetValueCommand<DirectX::SimpleMath::Matrix>>
+			(
+				[objectT, selectObject = mSelectObject](DirectX::SimpleMath::Matrix mat)
+				{
+					if (objectT->HasParent())
+					{
+						auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
+						mat = mat * parentMatrix.Invert();
+
+						objectT->SetLocalMatrix(mat);
+					}
+					else
+					{
+						objectT->SetLocalMatrix(mat);
+					}
+				}, mStart, objectMatrix
+			);
+		mbIsUsingGizumo = false;
+	}
+
+}
+
+void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
+{
+	auto& cameraSystem = mGameProcess->mCameraSystem;
+
+	auto type = cameraSystem->GetCameraType();
+
+	std::string cameraType{};
+
+	if (type == CameraSystem::CameraType::Editor)
+	{
+		cameraType = "Editor";
+	}
+	else if (type == CameraSystem::CameraType::Game)
+	{
+		cameraType = "Game";
+	}
+
+	if (ImGui::Button(cameraType.c_str()))
+	{
+		if (type == CameraSystem::CameraType::Editor)
+		{
+			cameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+		}
+		else
+		{
+			cameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+		}
+	}
+
+	//	if(ImGui::Button(""))
+
 }

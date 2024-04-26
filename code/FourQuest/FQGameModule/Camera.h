@@ -56,9 +56,15 @@ namespace fq::game_module
 		float GetFarPlain() const;
 
 		/// <summary>
-		/// 먼 평면 거리를 설정합니다
 		/// </summary>
+		/// 먼 평면 거리를 설정합니다
 		void SetFarPlain(float distance);
+
+		/// <summary>
+		/// 카메라 정보를 담은 구조체로 반환합니다 
+		/// </summary>
+		/// <returns>카메라 정보</returns>
+		fq::graphics::CameraInfo GetCameraInfomation()const { return mCameraInfomation; }
 
 	private:
 		entt::meta_handle GetHandle() override;

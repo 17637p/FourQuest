@@ -25,7 +25,6 @@ namespace fq::game_module
 		/// <summary>
 		/// 스태틱 메쉬를 반환합니다
 		/// </summary>
-		/// <returns></returns>
 		StaticMeshObject* GetStaticMeshObject() const { return mStaticMeshObject; }
 		
 		/// <summary>

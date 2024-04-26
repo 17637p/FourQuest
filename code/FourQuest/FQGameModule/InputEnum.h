@@ -1,6 +1,6 @@
 #pragma once
 
-enum class KeyState
+enum class EKeyState
 {
 	Tap,
 	Hold,
@@ -8,7 +8,7 @@ enum class KeyState
 	None
 };
 
-enum class Key
+enum class EKey
 {
 	Left,
 	Right,
@@ -66,6 +66,17 @@ enum class Key
 	End,
 	PgUp,
 	PgDn,
+
+	Num1,
+	Num2,
+	Num3,
+	Num4,
+	Num5,
+	Num6,
+	Num7,
+	Num8,
+	Num9,
+	Num0,
 
 	Last, // enum¿« ≥°
 };
