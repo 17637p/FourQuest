@@ -1,17 +1,93 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{8ccd3320-8ded-41f1-82ff-4b5a36c1a16c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="physx">
+      <UniqueIdentifier>{872a7053-a4db-4092-8d1b-7df60631faf6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RigidBody">
+      <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SimulationEventCallback">
+      <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineDataConverter">
+      <UniqueIdentifier>{752b9b18-cffd-4eb2-b3d8-9cbf956e680f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tool">
+      <UniqueIdentifier>{b44d4da7-2419-4b10-93d2-155e5d2d13d7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IFQPhysics.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="FQPhysics.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsRigidBodyManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticRigidBody.h">
+      <Filter>RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicRigidBody.h">
+      <Filter>RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics.h">
+      <Filter>physx</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSimulationEventCallback.h">
+      <Filter>SimulationEventCallback</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineDataConverter.h">
+      <Filter>EngineDataConverter</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCookingMeshTool.h">
+      <Filter>Tool</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IFQPhysics.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="FQPhysics.cpp">
+      <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsRigidBodyManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicRigidBody.cpp">
+      <Filter>RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticRigidBody.cpp">
+      <Filter>RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics.cpp">
+      <Filter>physx</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSimulationEventCallback.cpp">
+      <Filter>SimulationEventCallback</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineDataConverter.cpp">
+      <Filter>EngineDataConverter</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCookingMeshTool.cpp">
+      <Filter>Tool</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -136,10 +136,12 @@
     <ClInclude Include="AnimationHelper.h" />
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11CameraManager.h" />
     <ClInclude Include="D3D11Common.h" />
+    <ClInclude Include="D3D11LightManager.h" />
     <ClInclude Include="D3D11ModelManager.h" />
     <ClInclude Include="D3D11TextManager.h" />
     <ClInclude Include="D3D11JobManager.h" />
@@ -157,6 +159,7 @@
     <ClInclude Include="ForwardPipeline.h" />
     <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="LightBase.h" />
     <ClInclude Include="D3D11ObjectManager.h" />
     <ClInclude Include="ManagementCommon.h" />
@@ -166,7 +169,6 @@
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
-    <ClInclude Include="CommonHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationHelper.cpp" />
@@ -176,6 +178,7 @@
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
+    <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
     <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
@@ -189,6 +192,7 @@
     <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightBase.cpp" />
     <ClCompile Include="D3D11ObjectManager.cpp" />
     <ClCompile Include="Material.cpp" />

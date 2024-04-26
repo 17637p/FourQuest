@@ -6,20 +6,22 @@
 #include "../FQCommon/IFQRenderObject.h"
 #include "../FQGameModule/GameModule.h"
 
+#include "EditorProcess.h"
 #include "GameProcess.h"
 
 fq::game_engine::ModelSystem::ModelSystem()
 	:mGameProcess(nullptr)
+	,mEditorProcess(nullptr)
 {}
 
 fq::game_engine::ModelSystem::~ModelSystem()
 {}
 
-void fq::game_engine::ModelSystem::Initialize(GameProcess* game)
+void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* editor)
 {
 	mGameProcess = game;
+	mEditorProcess = editor;
 }
-
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
@@ -45,9 +47,9 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		nodeObjectT->SetLocalMatrix(node.ToParentMatrix);
 
 		// 부모가 존재하는 경우
-		if (fq::common::Node::INVALID_INDEX != node.Parentindex)
+		if (fq::common::Node::INVALID_INDEX != node.ParentIndex)
 		{
-		 	auto& parent = modelObjects[node.Parentindex];
+		 	auto& parent = modelObjects[node.ParentIndex];
 			auto parentT = parent->GetComponent<fq::game_module::Transform>();
 
 			parentT->AddChild(nodeObjectT);
@@ -75,20 +77,19 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		{
 			auto& staticMeshRenderer
 				= nodeObject->AddComponent<fq::game_module::StaticMeshRenderer>();
-
 			staticMeshRenderer.SetMeshObjectInfomation(meshInfo);
-
-			auto meshObject = graphics->CreateStaticMeshObject(meshInfo);
-			staticMeshRenderer.SetStaticMeshObject(meshObject);
-			meshObject->UpdateTransform(nodeObjectT->GetLocalMatrix());
 		}
 		else // SkinnedMesh 생성
  		{
+			auto& skinnedMeshRenderer
+				= nodeObject->AddComponent<fq::game_module::SkinnedMeshRenderer>();
+			skinnedMeshRenderer.SetMeshObjectInfomation(meshInfo);
 		}
 	}
 
 	assert(!modelObjects.empty());
 
-	mGameProcess->mSceneManager->GetCurrentScene()
-		->AddGameObject(modelObjects[0]);
+	mEditorProcess->mCommandSystem->Push<AddObjectCommand>(
+		mGameProcess->mSceneManager->GetCurrentScene()
+		, modelObjects[0]);
 }

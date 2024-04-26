@@ -3,6 +3,7 @@
 
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
+	,mMeshInfomation{}
 {}
 
 fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
@@ -27,8 +28,8 @@ fq::game_module::Component* fq::game_module::StaticMeshRenderer::Clone(Component
 		// 기본 대입 연산자 호출한다.
 		*cloneMesh = *this;
 	}
-	
-	cloneMesh->SetStaticMeshObject(nullptr);
+
+	cloneMesh->mStaticMeshObject = nullptr;
 
 	return cloneMesh;
 }

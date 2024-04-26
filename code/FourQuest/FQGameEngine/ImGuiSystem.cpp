@@ -6,6 +6,7 @@
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 #include "../FQCommon/FQPath.h"
 
@@ -70,6 +71,7 @@ void fq::game_engine::ImGuiSystem::NewFrame()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 
 	auto imguiID = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 

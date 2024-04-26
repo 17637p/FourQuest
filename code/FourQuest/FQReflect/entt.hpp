@@ -3030,11 +3030,11 @@ struct std::tuple_element<Index, entt::value_list<Value...>> : entt::value_list_
 namespace entt {
 
 	template<
-		typename Key,
+		typename EKey,
 		typename Type,
-		typename = std::hash<Key>,
-		typename = std::equal_to<Key>,
-		typename = std::allocator<std::pair<const Key, Type>>>
+		typename = std::hash<EKey>,
+		typename = std::equal_to<EKey>,
+		typename = std::allocator<std::pair<const EKey, Type>>>
 	class dense_map;
 
 	template<
@@ -3054,9 +3054,9 @@ namespace entt {
 	/*! @cond TURN_OFF_DOXYGEN */
 	namespace internal {
 
-		template<typename Key, typename Type>
+		template<typename EKey, typename Type>
 		struct dense_map_node final {
-			using value_type = std::pair<Key, Type>;
+			using value_type = std::pair<EKey, Type>;
 
 			template<typename... Args>
 			dense_map_node(const std::size_t pos, Args &&...args)
@@ -3285,14 +3285,14 @@ namespace entt {
 	 * @tparam KeyEqual Type of function to use to compare the keys for equality.
 	 * @tparam Allocator Type of allocator used to manage memory and elements.
 	 */
-	template<typename Key, typename Type, typename Hash, typename KeyEqual, typename Allocator>
+	template<typename EKey, typename Type, typename Hash, typename KeyEqual, typename Allocator>
 	class dense_map {
 		static constexpr float default_threshold = 0.875f;
 		static constexpr std::size_t minimum_capacity = 8u;
 
-		using node_type = internal::dense_map_node<Key, Type>;
+		using node_type = internal::dense_map_node<EKey, Type>;
 		using alloc_traits = std::allocator_traits<Allocator>;
-		static_assert(std::is_same_v<typename alloc_traits::value_type, std::pair<const Key, Type>>, "Invalid value type");
+		static_assert(std::is_same_v<typename alloc_traits::value_type, std::pair<const EKey, Type>>, "Invalid value type");
 		using sparse_container_type = std::vector<std::size_t, typename alloc_traits::template rebind_alloc<std::size_t>>;
 		using packed_container_type = std::vector<node_type, typename alloc_traits::template rebind_alloc<node_type>>;
 
@@ -3373,11 +3373,11 @@ namespace entt {
 
 	public:
 		/*! @brief Key type of the container. */
-		using key_type = Key;
+		using key_type = EKey;
 		/*! @brief Mapped type of the container. */
 		using mapped_type = Type;
 		/*! @brief Key-value type of the container. */
-		using value_type = std::pair<const Key, Type>;
+		using value_type = std::pair<const EKey, Type>;
 		/*! @brief Unsigned integer type. */
 		using size_type = std::size_t;
 		/*! @brief Type of function to use to hash the keys. */
@@ -4064,8 +4064,8 @@ namespace entt {
 /*! @cond TURN_OFF_DOXYGEN */
 namespace std {
 
-	template<typename Key, typename Value, typename Allocator>
-	struct uses_allocator<entt::internal::dense_map_node<Key, Value>, Allocator>
+	template<typename EKey, typename Value, typename Allocator>
+	struct uses_allocator<entt::internal::dense_map_node<EKey, Value>, Allocator>
 		: std::true_type {};
 
 } // namespace std

@@ -17,6 +17,7 @@
 #include "ImGuiSystem.h"
 #include "CommandSystem.h"
 #include "PrefabSystem.h"
+#include "ModelSystem.h"
 
 namespace fq::game_engine
 {
@@ -39,6 +40,7 @@ namespace fq::game_engine
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
 		std::unique_ptr<PrefabSystem> mPrefabSystem;
+		std::unique_ptr<ModelSystem> mModelSystem;
 
 		std::unique_ptr<fq::game_module::InputManager> mInputManager;
 	};

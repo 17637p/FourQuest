@@ -12,9 +12,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="src\01.Engine">
-      <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\02.GameProcess">
       <UniqueIdentifier>{e1e09096-e8be-487c-8bd4-af27fc6a6de5}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,18 @@
     <Filter Include="src\10.Editor">
       <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\01.Engine">
+      <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\12.EditorSystem\Define">
+      <UniqueIdentifier>{a8e49b76-a6b8-4b33-a16e-813e0f56706e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.EditorSystem\Define">
+      <UniqueIdentifier>{a95851d0-cef2-4ebe-9eea-ecbd90cc727f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.Window\Define">
+      <UniqueIdentifier>{d3c2eb36-dc13-40fb-967b-7e78d4464754}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorEngine.h">
@@ -89,9 +98,6 @@
     <ClInclude Include="CommandSystem.h">
       <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>include\12.EditorSystem</Filter>
-    </ClInclude>
     <ClInclude Include="EditorProcess.h">
       <Filter>include\10.Editor</Filter>
     </ClInclude>
@@ -122,19 +128,28 @@
     <ClInclude Include="ImGuiSystem.h">
       <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
-    <ClInclude Include="imgui_stdlib.h">
-      <Filter>include\12.EditorSystem</Filter>
-    </ClInclude>
     <ClInclude Include="EditorEnum.h">
       <Filter>include\10.Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelSystem.h">
-      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="RenderingSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="CameraSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>include\12.EditorSystem\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_stdlib.h">
+      <Filter>include\12.EditorSystem\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiColor.h">
+      <Filter>include\12.EditorSystem\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -175,9 +190,6 @@
     <ClCompile Include="LogWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
-      <Filter>src\12.EditorSystem</Filter>
-    </ClCompile>
     <ClCompile Include="EditorProcess.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
@@ -208,9 +220,6 @@
     <ClCompile Include="ImGuiSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_stdlib.cpp">
-      <Filter>src\12.EditorSystem</Filter>
-    </ClCompile>
     <ClCompile Include="ModelSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
@@ -218,6 +227,15 @@
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="CameraSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_stdlib.cpp">
+      <Filter>src\12.EditorSystem\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>src\12.EditorSystem\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>

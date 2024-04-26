@@ -13,11 +13,11 @@ fq::game_engine::GameProcess::GameProcess()
 	, mSceneManager(std::make_unique<fq::game_module::SceneManager>())
 	, mEventManager(std::make_unique<fq::game_module::EventManager>())
 	, mObjectManager(std::make_unique<fq::game_module::ObjectManager>())
-	, mModelSystem(std::make_unique <ModelSystem>())
 	, mWindowSystem(std::make_unique<WindowSystem>())
 	, mRenderingSystem(std::make_unique<RenderingSystem>())
 	, mCameraSystem(std::make_unique<CameraSystem>())
 	, mGraphics(nullptr)
+	, mPhysics(nullptr)
 {}
 
 fq::game_engine::GameProcess::~GameProcess()

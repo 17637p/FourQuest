@@ -6,3 +6,4 @@
 #include "D3D11ObjectManager.h"
 #include "D3D11RenderManager.h"
 #include "D3D11ResourceManager.h"
+#include "D3D11LightManager.h"

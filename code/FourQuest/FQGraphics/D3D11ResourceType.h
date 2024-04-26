@@ -66,5 +66,6 @@ namespace fq::graphics
 	enum class ED3D11ConstantBuffer
 	{
 		Transform,
+		Light,
 	};
 }

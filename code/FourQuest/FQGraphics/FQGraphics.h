@@ -56,6 +56,10 @@ namespace fq::graphics
 		/// UI
 
 		/// Light
+		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
+		virtual void AddLight(const unsigned int id, const LightInfo& lightInfo) override;
+		virtual void SetLight(const unsigned int id, const LightInfo& lightInfo) override;
+		virtual void DeleteLight(const unsigned int id) override;
 
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
@@ -77,6 +81,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11JobManager> mJobManager;
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;
 		std::shared_ptr<class D3D11CameraManager> mCameraManager;
+		std::shared_ptr<class D3D11LightManager> mLightManager;
 	};
 }
 

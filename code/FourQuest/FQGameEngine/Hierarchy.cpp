@@ -130,7 +130,7 @@ void fq::game_engine::Hierarchy::beginGameObjectNameBar(fq::game_module::GameObj
 	ImGui::SetNextItemWidth(150.f);
 
 	if (ImGui::InputText(id.c_str(), &objectName)
-		&& mInputManager->IsKeyState(Key::Enter, KeyState::Tap))
+		&& mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
 	{
 		std::shared_ptr<fq::game_module::GameObject> sObject
 			= object.shared_from_this();
@@ -330,7 +330,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 			}
 			else if (path->extension() == ".model") // ¸ðµ¨ »ý¼º
 			{
-				mGameProcess->mModelSystem->BuildModel(*path);
+				mEditorProcess->mModelSystem->BuildModel(*path);
 			}
 		}
 
@@ -364,22 +364,22 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 {
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(Key::Ctrl, KeyState::Hold))
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
 	{
 		// Ctrl + C
-		if (input->IsKeyState(Key::C, KeyState::Tap) && mSelectObject)
+		if (input->IsKeyState(EKey::C, EKeyState::Tap) && mSelectObject)
 		{
 			mCloneObject = mSelectObject;
 		}
 		// Ctrl + V
-		else if (input->IsKeyState(Key::V, KeyState::Tap) && mCloneObject)
+		else if (input->IsKeyState(EKey::V, EKeyState::Tap) && mCloneObject)
 		{
 			auto clone = std::make_shared<fq::game_module::GameObject>(*mCloneObject.get());
 			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
 				, clone);
 		}
 	}
-	else if (mSelectObject && input->IsKeyState(Key::Del, KeyState::Tap))
+	else if (mSelectObject && input->IsKeyState(EKey::Del, EKeyState::Tap))
 	{
 		// Delete
 		mEditorProcess->mCommandSystem->Push<DestroyObjectCommand>(mScene

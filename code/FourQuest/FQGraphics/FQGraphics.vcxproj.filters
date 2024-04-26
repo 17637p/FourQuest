@@ -73,34 +73,26 @@
     <ClInclude Include="D3D11CameraManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11LightManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
     <ClInclude Include="AnimationHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="BoneHierarchy.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11ModelManager.h">
-      <Filter>Management</Filter>
-    </ClInclude>
-    <ClInclude Include="CommonHeader.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredPipeline.h">
-      <Filter>Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="ForwardPipeline.h">
-      <Filter>Pipeline</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBufferStructure.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11Util.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Common.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
+    <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="ConstantBufferStructure.h" />
+    <ClInclude Include="D3D11Common.h" />
+    <ClInclude Include="D3D11ModelManager.h" />
+    <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="EPipelineType.h" />
+    <ClInclude Include="ForwardPipeline.h" />
+    <ClInclude Include="Light.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -195,27 +187,23 @@
     <ClCompile Include="D3D11CameraManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
+    <ClCompile Include="D3D11LightManager.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
     <ClCompile Include="AnimationHelper.cpp">
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="BoneHierarchy.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11ModelManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredPipeline.cpp">
-      <Filter>Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="ForwardPipeline.cpp">
-      <Filter>Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantBufferStructure.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="D3D11Util.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="ConstantBufferStructure.cpp" />
+    <ClCompile Include="D3D11ModelManager.cpp" />
+    <ClCompile Include="DeferredPipeline.cpp" />
+    <ClCompile Include="ForwardPipeline.cpp" />
+    <ClCompile Include="Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
