@@ -138,7 +138,10 @@ void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)
 {
 	mObjectManager->DeleteSkinnedMeshObject(iSkinnedMeshObject);
 }
-
+void FQGraphics::SetPipelineType(EPipelineType pipelineType)
+{
+	mRenderManager->Initialize(mDevice, mResourceManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+}
 ID3D11Device* FQGraphics::GetDivice()
 {
 	assert(mDevice != nullptr);

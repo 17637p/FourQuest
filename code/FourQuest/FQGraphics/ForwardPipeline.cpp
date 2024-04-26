@@ -25,9 +25,9 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"../resource/internal/shader/FQGraphics/ModelVS.hlsl");
-		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"../resource/internal/shader/FQGraphics/ModelVS.hlsl", macroSkinning);
-		mMeshPS = std::make_shared<D3D11PixelShader>(device, L"../resource/internal/shader/FQGraphics/ModelPS.hlsl");
+		mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/ModelVS.hlsl");
+		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
+		mMeshPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/ModelPS.hlsl");
 
 		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(device, mStaticMeshVS->GetBlob().Get());
 		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(device, mSkinnedMeshVS->GetBlob().Get());

@@ -14,14 +14,27 @@ namespace fq::graphics
 
 		void OnResize(const unsigned short width, const unsigned short height);
 
-		Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() const { return mDevice; }
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetDeviceContext() const { return mDeviceContext; }
-		Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() const { return mSwapChain; }
+		inline Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() const;
+		inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetDeviceContext() const;
+		inline Microsoft::WRL::ComPtr<IDXGISwapChain> GetSwapChain() const;
+
+		inline unsigned short GetWidth() const;
+		inline unsigned short GetHeight() const;
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Device>			mDevice;
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext>		mDeviceContext;
 		Microsoft::WRL::ComPtr<IDXGISwapChain>			mSwapChain;
+
+		unsigned short mWidth;
+		unsigned short mHeight;
 	};
+
+	inline Microsoft::WRL::ComPtr<ID3D11Device> D3D11Device::GetDevice() const { return mDevice; }
+	inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> D3D11Device::GetDeviceContext() const { return mDeviceContext; }
+	inline Microsoft::WRL::ComPtr<IDXGISwapChain> D3D11Device::GetSwapChain() const { return mSwapChain; }
+
+	inline unsigned short D3D11Device::GetWidth() const { return mWidth; }
+	inline unsigned short D3D11Device::GetHeight() const { return mHeight; }
 }
 

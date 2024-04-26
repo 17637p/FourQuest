@@ -262,6 +262,16 @@ void Process::Render()
 	}
 
 	mTestGraphics->EndRender();
+
+	if (GetAsyncKeyState(VK_F2) & 0x8000)
+	{
+		mTestGraphics->SetPipelineType(fq::graphics::EPipelineType::Forward);
+	}
+	else if (GetAsyncKeyState(VK_F3) & 0x8000)
+	{
+		mTestGraphics->SetPipelineType(fq::graphics::EPipelineType::Deferred);
+	}
+
 }
 
 void Process::strafe(float distance)
