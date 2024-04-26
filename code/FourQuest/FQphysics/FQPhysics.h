@@ -40,6 +40,13 @@ namespace fq::physics
 		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		virtual DirectX::SimpleMath::Matrix GetRigidBodyMatrix(unsigned int id) override;
+
+		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 		/// </summary>
 		virtual bool RemoveRigidBody(unsigned int id) override;

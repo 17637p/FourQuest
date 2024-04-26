@@ -59,6 +59,13 @@ extern "C" {
 			virtual FQ_PHYSICS bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
 
 			/// <summary>
+			/// 
+			/// </summary>
+			/// <param name="id">  </param>
+			/// <returns>  </returns>
+			virtual FQ_PHYSICS DirectX::SimpleMath::Matrix GetRigidBodyMatrix(unsigned int id) abstract;
+
+			/// <summary>
 			/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 			/// </summary>
 			virtual FQ_PHYSICS bool RemoveRigidBody(unsigned int id) abstract;
