@@ -12,19 +12,18 @@ fq::game_engine::LogWindow::LogWindow()
 	, mLogList{}
 	, mMaxLogListSize(10)
 	, mbIsShowTime(true)
+	, mbIsOpen(true)
 	, mLevel(spdlog::level::level_enum::trace)
 {}
 
 fq::game_engine::LogWindow::~LogWindow()
-{
-
-}
+{}
 
 void fq::game_engine::LogWindow::Render()
 {
-	SPDLOG_TRACE("DD");
+	if (!mbIsOpen) return;
 
-	if (ImGui::Begin("Log"))
+	if (ImGui::Begin("Log", &mbIsOpen))
 	{
 		beginButton_LogController();
 		beginChild_LogList();
@@ -64,7 +63,7 @@ void fq::game_engine::LogWindow::beginText_Log(const LogMessage& msg)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::STEEL_GRAY);
 	}
-	else if ("[debug]" == msg.level)
+	else if ("[dubug]" == msg.level)
 	{
 		ImGui::PushStyleColor(0, ImGuiColor::TURQUOISE);
 	}
@@ -85,7 +84,7 @@ void fq::game_engine::LogWindow::beginText_Log(const LogMessage& msg)
 		ImGui::PushStyleColor(0, ImGuiColor::RED);
 	}
 
-	ImGui::Text(level.c_str());
+	ImGui::Text(msg.level.c_str());
 	ImGui::PopStyleColor();
 
 	// payload
@@ -141,6 +140,13 @@ void fq::game_engine::LogWindow::beginButton_LogController()
 	if (ImGui::Button("Time"))
 	{
 		mbIsShowTime = !mbIsShowTime;
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Clear"))
+	{
+		mLogList.clear();
 	}
 
 }

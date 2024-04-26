@@ -20,6 +20,7 @@ fq::game_engine::Hierarchy::Hierarchy()
 	, mSelectObject(nullptr)
 	, mCloneObject(nullptr)
 	, mSelectObjectHandle{}
+	, mbIsOpen(true)
 {}
 
 fq::game_engine::Hierarchy::~Hierarchy()
@@ -45,7 +46,9 @@ void fq::game_engine::Hierarchy::Initialize(GameProcess* game, EditorProcess* ed
 
 void fq::game_engine::Hierarchy::Render()
 {
-	if (ImGui::Begin("Hierarchy"))
+	if (!mbIsOpen) return;
+
+	if (ImGui::Begin("Hierarchy", &mbIsOpen))
 	{
 		beginSearchBar();
 

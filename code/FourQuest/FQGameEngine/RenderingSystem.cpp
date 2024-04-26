@@ -37,7 +37,6 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 
 	mDestroyedGameObjectHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnDestoryedGameObject>(this, &RenderingSystem::OnDestroyedGameObject);
-
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)
@@ -192,6 +191,7 @@ void fq::game_engine::RenderingSystem::unloadAllModel()
 void fq::game_engine::RenderingSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
 	unloadStaticMeshRenderer(event.object);
+	unloadSkinnedMeshRenderer(event.object);
 }
 
 void fq::game_engine::RenderingSystem::unloadStaticMeshRenderer(fq::game_module::GameObject* object)

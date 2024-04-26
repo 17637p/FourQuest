@@ -33,7 +33,9 @@ namespace fq::game_engine
 		void Render() override;
 
 		void AddLog(spdlog::details::log_msg msg);
-		
+
+		bool& IsWindowOpen() { return mbIsOpen; }
+
 	private:
 		void beginButton_LogController();
 		void beginChild_LogList();
@@ -41,7 +43,7 @@ namespace fq::game_engine
 
 	private:
 		UINT mMaxLogListSize;
-
+		bool mbIsOpen;
 		bool mbIsShowTime;
 		spdlog::level::level_enum mLevel;
 

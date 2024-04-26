@@ -80,6 +80,7 @@ namespace fq::physics
 		float raidus;
 		float halfHeight;
 	};
+
 	struct ConvexMeshColliderInfo
 	{
 		ColliderInfo colliderInfo;

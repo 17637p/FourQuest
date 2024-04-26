@@ -11,6 +11,7 @@
 #include "ModelSystem.h"
 #include "CameraSystem.h"
 #include "RenderingSystem.h"
+#include "PhysicsSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -43,8 +44,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
-	float width = mGameProcess->mWindowSystem->GetScreenWidth();
-	float height = mGameProcess->mWindowSystem->GetScreenHeight();
+	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
+	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width, height);
 
 	// 물리 엔진 초기화
@@ -56,6 +57,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 시스템 초기화
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
+	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
@@ -114,7 +116,6 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
-
 			mGameProcess->mGraphics->Render();
 
 			mEditor->mImGuiSystem->NewFrame();
@@ -162,6 +163,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mLogWindow->Render();
 	mEditor->mFileDialog->Render();
 	mEditor->mMainMenuBar->Render();
+	mEditor->mCollisionMatrixWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -183,6 +185,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mMainMenuBar->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mGamePlayWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize();
+	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

@@ -53,11 +53,14 @@ namespace fq::game_engine
 		/// <summary>
 		/// 에디터의 모드를 반환합니다
 		/// </summary>
-		EditorMode GetMode()const { return mMode; }
+		EditorMode GetMode()const;
+
+		bool& IsWindowOpen() { return mbIsOpen; }
 
 		void UpdateCamera(float dt);
-
 	private:
+		void resizeWindow(ImVec2 size);
+	
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
 
@@ -71,9 +74,11 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 		
 		EditorMode mMode;
+		bool mbIsOpen;
 		bool mbIsPauseGame;
 
 		// 에디터 카메라
+		ImVec2 mWindowSize;
 		std::shared_ptr<fq::game_module::GameObject> mCameraObject;
 		float mCameraMoveSpeed;
 		float mCameraRotateSpeed;
@@ -85,6 +90,7 @@ namespace fq::game_engine
 		bool mbIsUsingGizumo;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		ImGuizmo::OPERATION mOperation;
+
 
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;

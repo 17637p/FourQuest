@@ -49,6 +49,8 @@ namespace fq::game_engine
 		void SaveScene();
 	private:
 		void beginMenu_File();
+		void beginMenu_Window();
+
 		void beginMenuItem_CreateScene();
 		void beginMenuItem_LoadScene();
 		void beginMenuItem_SaveScene();

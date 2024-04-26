@@ -19,6 +19,7 @@ fq::game_engine::Inspector::Inspector()
 	, mCurrentAddComponentIndex(0)
 	, mPrevColor{}
 	, mSelectObjectHandler{}
+	, mbIsOpen(true)
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -41,7 +42,9 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 
 void fq::game_engine::Inspector::Render()
 {
-	if (ImGui::Begin("Inspector"))
+	if (!mbIsOpen) return;
+
+	if (ImGui::Begin("Inspector", &mbIsOpen))
 	{
 		if (mSelectObject)
 		{

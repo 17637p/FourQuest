@@ -1,6 +1,8 @@
 #include "MainMenuBar.h"
 
 #include <string>
+#include <spdlog/spdlog.h>
+#include "spdlog/stopwatch.h"
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
@@ -8,6 +10,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "PhysicsSystem.h"
 
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
@@ -41,6 +44,7 @@ void fq::game_engine::MainMenuBar::Render()
 	if (ImGui::BeginMainMenuBar())
 	{
 		beginMenu_File();
+		beginMenu_Window();
 
 		beginText_SceneName();
 		beginText_FPS();
@@ -72,6 +76,7 @@ void fq::game_engine::MainMenuBar::beginMenuItem_LoadScene()
 
 			if (ImGui::MenuItem(sceneName.c_str()))
 			{
+				SaveScene();
 				// Scene 函版 夸没 
 				mGameProcess->mEventManager
 					->FireEvent<fq::event::RequestChangeScene>({ sceneName, false });
@@ -94,7 +99,7 @@ void fq::game_engine::MainMenuBar::beginMenu_File()
 {
 	if (ImGui::BeginMenu("File"))
 	{
-		beginMenuItem_CreateScene();
+		beginMenuItem_CreateScene();	
 		beginMenuItem_LoadScene();
 		beginMenuItem_SaveScene();
 
@@ -159,6 +164,9 @@ void fq::game_engine::MainMenuBar::createScene(std::string sceneName)
 	prefabPath /= "prefab";
 	fs::create_directory(prefabPath);
 
+	// coliision_matrix 颇老 积己
+	fq::physics::CollisionMatrix().Save(scenePath);
+
 	// ... etc 
 
 
@@ -214,9 +222,11 @@ void fq::game_engine::MainMenuBar::SaveScene()
 		}
 	}
 
-	// 2. ... etc 
+	// 2. CollisionMatrix 历厘
+	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
 
-
+	// 3. ... etc 
+	spdlog::trace("[MainMenuBar] Save Scene");
 }
 
 void fq::game_engine::MainMenuBar::ExcuteShortcut()
@@ -227,5 +237,30 @@ void fq::game_engine::MainMenuBar::ExcuteShortcut()
 		&& input->IsKeyState(EKey::S, EKeyState::Tap))
 	{
 		SaveScene();
+	}
+}
+
+void fq::game_engine::MainMenuBar::beginMenu_Window()
+{
+	if (ImGui::BeginMenu("Window"))
+	{
+	    bool& hierarchy = mEditorProcess->mHierarchy->IsWindowOpen();
+		ImGui::Checkbox("Hierarchy", &hierarchy);
+
+		bool& inspector = mEditorProcess->mInspector->IsWindowOpen();
+		ImGui::Checkbox("Inspector", &inspector);
+
+		bool& fileDialog = mEditorProcess->mFileDialog->IsWindowOpen();
+		ImGui::Checkbox("FileDialog", &fileDialog);
+
+		bool& log = mEditorProcess->mLogWindow->IsWindowOpen();
+		ImGui::Checkbox("Log", &log);
+
+		ImGui::Separator();
+
+		bool& collisionMatrix = mEditorProcess->mCollisionMatrixWindow->IsWindowOpen();
+		ImGui::Checkbox("CollisionMatrix", &collisionMatrix);
+
+		ImGui::EndMenu();
 	}
 }

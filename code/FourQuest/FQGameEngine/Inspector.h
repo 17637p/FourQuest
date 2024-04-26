@@ -27,6 +27,7 @@ namespace fq::game_engine
 		void Initialize(GameProcess* game, EditorProcess* editor);
 		void Render() override;
 		void Finalize();
+		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
 		void getComponentTypes();
@@ -54,6 +55,8 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 		fq::game_module::InputManager* mInputManager;
 		
+		bool mbIsOpen;
+
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		fq::game_module::EventHandler mSelectObjectHandler;
 		std::vector<entt::meta_type> mComponentTypes;

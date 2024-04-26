@@ -12,12 +12,14 @@
 #include "LogWindow.h"
 #include "GamePlayWindow.h"
 #include "MainMenuBar.h"
+#include "CollisionMatrixWindow.h"
 
 // system
 #include "ImGuiSystem.h"
 #include "CommandSystem.h"
 #include "PrefabSystem.h"
 #include "ModelSystem.h"
+
 
 namespace fq::game_engine
 {
@@ -36,7 +38,8 @@ namespace fq::game_engine
 		std::unique_ptr<LogWindow> mLogWindow;
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
 		std::unique_ptr<MainMenuBar> mMainMenuBar;
-		
+		std::unique_ptr<CollisionMatrixWindow> mCollisionMatrixWindow;
+
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
 		std::unique_ptr<PrefabSystem> mPrefabSystem;

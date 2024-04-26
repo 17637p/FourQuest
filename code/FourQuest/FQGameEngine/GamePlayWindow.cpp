@@ -30,6 +30,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mViewTM{}
 	, mProjTM{}
 	, mbIsUsingGizumo(false)
+	, mWindowSize{1.f,1.f}
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -37,8 +38,16 @@ fq::game_engine::GamePlayWindow::~GamePlayWindow()
 
 void fq::game_engine::GamePlayWindow::Render()
 {
+
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
+		if (mWindowSize.x != ImGui::GetWindowSize().x
+			|| mWindowSize.y != ImGui::GetWindowSize().y)
+		{
+			resizeWindow(ImGui::GetWindowSize());
+		}
+
+
 		beginMenuBar_Control();
 		beginImage_GameScreen();
 
@@ -243,9 +252,6 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 
 void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 {
-	//auto size = ImGui::GetWindowSize();
-	//mGameProcess->mGraphics->SetViewportSize(size.x, size.y);
-
 	auto current = ImGui::GetCurrentContext();
 	auto pos = current->CurrentWindow->Pos;
 	auto size = current->CurrentWindow->Size;
@@ -337,22 +343,6 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 
 	using namespace DirectX::SimpleMath;
 
-	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
-	auto cameraInfo = camera->GetCameraInfomation();
-
-	auto matrix = cameraT->GetLocalMatrix();
-	auto fov = cameraInfo.filedOfView;/*
-	auto aspectRatio = mGameProcess->mWindowSystem->GetScreenWidth()
-		/ mGameProcess->mWindowSystem->GetScreenHeight();*/
-	auto aspectRatio = ImGui::GetWindowSize().x
-		/ ImGui::GetWindowSize().y;
-	auto nearPlain = cameraInfo.nearPlain;
-	auto farPlain = cameraInfo.farPlain;
-
-	mViewTM = matrix.Invert();
-	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
-
 	auto x = ImGui::GetWindowPos().x;
 	auto y = ImGui::GetWindowPos().y;
 	auto width = ImGui::GetWindowSize().x;
@@ -443,6 +433,31 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 		}
 	}
 
-	//	if(ImGui::Button(""))
+}
 
+void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
+{
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
+	auto cameraInfo = camera->GetCameraInfomation();
+
+	auto matrix = cameraT->GetLocalMatrix();
+	auto fov = cameraInfo.filedOfView;
+	auto aspectRatio = ImGui::GetWindowSize().x
+		/ ImGui::GetWindowSize().y;
+	auto nearPlain = cameraInfo.nearPlain;
+	auto farPlain = cameraInfo.farPlain;
+
+	mViewTM = matrix.Invert();
+	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
+}
+
+fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
+{
+	if (mbIsPauseGame && mMode == EditorMode::Play)
+	{
+		return EditorMode::Pause;
+	}
+
+	return mMode;
 }

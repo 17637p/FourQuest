@@ -17,12 +17,19 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<ETag>()
 		.prop(fq::reflect::prop::Name, "Tag")
 		.conv<std::underlying_type_t<ETag>>()
-		.data<ETag::Untagged>("Untagged"_hs)
+		.data<ETag::Untagged>("Untagged"_hs) // 0
 		.prop(fq::reflect::prop::Name, "Untagged")
-		.data<ETag::Camera>("Camera"_hs)
+		.data<ETag::Camera>("Camera"_hs) // 1
 		.prop(fq::reflect::prop::Name, "Camera")
-		.data<ETag::Player>("Player"_hs)
-		.prop(fq::reflect::prop::Name, "Player");
+		.data<ETag::Player>("Player"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Player")
+		.data<ETag::Alien>("Alien"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Alien")
+		.data<ETag::Obstacle>("Obstacle"_hs) // 4
+		.prop(fq::reflect::prop::Name, "Obstacle")
+		.data<ETag::Wall>("Wall"_hs) // 5
+		.prop(fq::reflect::prop::Name, "Wall");
+
 
 	// GameObject 
 	entt::meta<GameObject>()
@@ -65,7 +72,7 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<StaticMeshRenderer>()
 		.type("StaticMeshRenderer"_hs)
 		.prop(fq::reflect::prop::Name, "StaticMeshRenderer")
-		.data<&StaticMeshRenderer::SetModelPath , &StaticMeshRenderer::GetModelPath>("ModelPath"_hs)
+		.data<&StaticMeshRenderer::SetModelPath, &StaticMeshRenderer::GetModelPath>("ModelPath"_hs)
 		.prop(fq::reflect::prop::Name, "ModelPath")
 		.prop(fq::reflect::prop::RelativePath)
 		.data<&StaticMeshRenderer::SetMeshName, &StaticMeshRenderer::GetMeshName>("MeshName"_hs)
