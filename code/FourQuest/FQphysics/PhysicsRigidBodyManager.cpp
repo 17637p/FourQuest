@@ -138,7 +138,7 @@ namespace fq::physics
 
 	bool PhysicsRigidBodyManager::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.vertexLimit);
+		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.convexVertexLimit, info.convexPolygonLimit);
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(mesh), *material);
 
@@ -200,7 +200,7 @@ namespace fq::physics
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.vertexLimit);
+		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.convexVertexLimit, info.convexPolygonLimit);
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(mesh), *material);
 
@@ -282,6 +282,39 @@ namespace fq::physics
 		mUpcomingActors.clear();
 
 		return true;
+	}
+
+#pragma endregion
+
+#pragma region UpdateCollisionMatrix
+
+	void PhysicsRigidBodyManager::UpdateCollisionMatrix(int* collisionMatrix)
+	{
+		for (const auto& body : mRigidBodys)
+		{
+			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
+			if (dynamicBody)
+			{
+				physx::PxShape* shpae;
+				physx::PxFilterData filterData;
+
+				filterData.word0 = dynamicBody->GetLayerNumber();
+				filterData.word1 = collisionMatrix[dynamicBody->GetLayerNumber()];
+
+				continue;
+			}
+			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body.second);
+			if (staticBody)
+			{
+				physx::PxShape* shpae;
+				physx::PxFilterData filterData;
+
+				filterData.word0 = dynamicBody->GetLayerNumber();
+				filterData.word1 = collisionMatrix[dynamicBody->GetLayerNumber()];
+
+				continue;
+			}
+		}
 	}
 
 #pragma endregion

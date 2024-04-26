@@ -38,6 +38,8 @@ namespace fq::physics
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
+		/// <param name="info"> 리지드 바디의 도형 형태 입니다. </param>
+		/// <param name="colliderType"> 콜라이더 타입(트리거, 콜리전) 입니다. </param>
 		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType);
 		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType);
 		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
@@ -50,12 +52,18 @@ namespace fq::physics
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 		/// </summary>
-		virtual bool RemoveRigidBody(unsigned int id, physx::PxScene* scene);
+		bool RemoveRigidBody(unsigned int id, physx::PxScene* scene);
 
 		/// <summary>
 		/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
 		/// </summary>
-		virtual bool RemoveAllRigidBody(physx::PxScene* scene);
+		bool RemoveAllRigidBody(physx::PxScene* scene);
+
+		/// <summary>
+		/// 충돌 매트릭스가 수정이 된다면 모든 리지드 바디들의 충돌 매트릭스를 업데이트합니다.
+		/// </summary>
+		/// <param name="collisionMatrix"></param>
+		void UpdateCollisionMatrix(int* collisionMatrix);
 
 	private:
 		physx::PxPhysics* mPhysics;

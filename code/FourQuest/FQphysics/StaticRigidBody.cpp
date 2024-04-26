@@ -25,8 +25,8 @@ namespace fq::physics
 		}
 
 		CollisionData* data = new CollisionData;
-		data->id = GetID();
-		data->layerNumber = GetLayerNumber();
+		data->myId = GetID();
+		data->myLayerNumber = GetLayerNumber();
 		shape->userData = data;
 
 		physx::PxMat44 matrix;

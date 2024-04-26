@@ -1,6 +1,7 @@
 #pragma once
 
 #include <physx\PxPhysicsAPI.h>
+#include "FQCommonPhysics.h"
 
 namespace fq::physics
 {
@@ -17,7 +18,17 @@ namespace fq::physics
 		virtual void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count) override;
 		virtual void onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count) override;
 
-	private:
 
+		inline void SetCallbackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func);
+
+	private:
+		std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> mFunction;
 	};
+
+
+	void PhysicsSimulationEventCallback::SetCallbackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func)
+	{
+		mFunction = func;
+	}
+
 }
