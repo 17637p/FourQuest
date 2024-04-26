@@ -3,7 +3,6 @@
 #include <memory>
 #include <directxtk/SimpleMath.h>
 
-#include <FQCommon.h>
 #include <FQCommonGraphics.h>
 
 namespace fq::graphics

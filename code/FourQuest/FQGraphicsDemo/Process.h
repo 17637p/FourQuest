@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseWindow.h"
+#include "TimeManager.h"
 
 #include <memory>
 #include <vector>
@@ -11,6 +12,7 @@
 #include <FQCommon.h>
 
 #include "../FQLoader/ModelLoader.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::graphics { class Renderer; }
 namespace fq::graphics { class IFQGraphics; }
@@ -38,9 +40,18 @@ private:
 	void walk(float distance);
 	void worldUpdown(float distance);
 
+	void yaw(float angle);
+	void pitch(float angle);
+	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+
+	void calculateFrameStats();
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
+	TimeManager mTimeManager;
+
 	const int mWindowPosX;
 	const int mWindowPosY;
 

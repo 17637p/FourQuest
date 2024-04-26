@@ -19,6 +19,8 @@ namespace fq::graphics
 	{
 		Default,
 		Offscreen,
+		OffscreenHDR,
+		OffscreenGrayscale
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -29,8 +31,8 @@ namespace fq::graphics
 	enum class ED3D11DepthStencilViewType
 	{
 		None,
-
 		Default,
+		ShaderInputDepthStencil
 	};
 
 	/*=============================================================================

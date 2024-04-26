@@ -1,0 +1,11 @@
+diff a/code/FourQuest/FQCommon/FQCommonPhysics.h b/code/FourQuest/FQCommon/FQCommonPhysics.h	(rejected hunks)
+@@ -90,9 +90,6 @@
+ 	struct ConvexMeshColliderInfo
+ 	{
+ 		ColliderInfo colliderInfo;
+-		DirectX::SimpleMath::Vector3* vertices;
+-		int vertexSize;
+-		int vertexLimit;								// ������ �޽ÿ� ������ ���ؽ� �ִ� ��
+ 		DirectX::SimpleMath::Vector3* vertices;				// �� ���ؽ�
+ 		int vertexSize;										// �� ���ؽ� ������
+ 		unsigned char convexVertexLimit;					// ������ �޽ÿ� ������ ���ؽ� �ִ� �� ( �ּ� : 4�� �̻�, �ִ� 256�� �̸� )

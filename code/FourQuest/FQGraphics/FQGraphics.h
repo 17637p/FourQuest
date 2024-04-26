@@ -16,7 +16,7 @@ namespace fq::graphics
 		virtual ~FQGraphics();
 
 		/// Framework
-		virtual bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height) override;
+		virtual bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType) override;
 		virtual bool Update(float deltaTime) override;
 
 		virtual bool BeginRender() override;
@@ -45,6 +45,7 @@ namespace fq::graphics
 		/// Gizmo && Background
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
+		virtual void SetPipelineType(EPipelineType pipelineType) override;
 
 		/// Primitive
 
@@ -57,7 +58,7 @@ namespace fq::graphics
 		/// Light
 		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
 		virtual void AddLight(const unsigned int id, const LightInfo& lightInfo) override;
-		virtual void SetLight(const unsigned int id, const LightInfo& lightInfo) override;
+		virtual void UpdateLight(const unsigned int id, const LightInfo& lightInfo) override;
 		virtual void DeleteLight(const unsigned int id) override;
 
 		/// Camera
@@ -75,10 +76,10 @@ namespace fq::graphics
 	private:
 		std::shared_ptr<class D3D11Device> mDevice;
 		std::shared_ptr<class D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<class D3D11ModelManager> mModelManager;
 		std::shared_ptr<class D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<class D3D11JobManager> mJobManager;
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;
-		
 		std::shared_ptr<class D3D11CameraManager> mCameraManager;
 		std::shared_ptr<class D3D11LightManager> mLightManager;
 	};

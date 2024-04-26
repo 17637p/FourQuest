@@ -7,12 +7,17 @@ using namespace fq::graphics;
 D3D11Device::D3D11Device()
 	:mDevice(nullptr),
 	mDeviceContext(nullptr),
-	mSwapChain(nullptr)
+	mSwapChain(nullptr),
+	mWidth(0),
+	mHeight(0)
 {
 }
 
 bool D3D11Device::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height)
 {
+	mWidth = width;
+	mHeight = height;
+
 	UINT createDeviceFlags = 0;
 #if defined(DEBUG) || defined(_DEBUG)
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -64,5 +69,7 @@ bool D3D11Device::Initialize(const HWND hWnd, const unsigned short width, const 
 
 void D3D11Device::OnResize(const unsigned short width, const unsigned short height)
 {
+	mWidth = width;
+	mHeight = height;
 	mSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 }

@@ -11,8 +11,12 @@ namespace fq::game_engine
 		CollisionMatrixWindow();
 		~CollisionMatrixWindow();
 
+		void Initialize(GameProcess* game);
+
+		void Render()override;
+
 	private:
-		
+		GameProcess* mGameProcess;
 
 	};
 
