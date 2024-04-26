@@ -1,5 +1,6 @@
 #include "D3D11RenderManager.h"
 #include "D3D11CameraManager.h"
+#include "D3D11LightManager.h"
 #include "D3D11ResourceManager.h"
 
 #include "D3D11View.h"
@@ -71,7 +72,8 @@ namespace fq::graphics
 
 	}
 
-	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<class D3D11CameraManager>& cameraManager)
+	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device, 
+		const std::shared_ptr<class D3D11CameraManager>& cameraManager)
 	{
 		mDSV->Clear(device);
 		mBackBufferRTV->Clear(device, { 1.f, 1.f, 1.f, 1.f });
@@ -91,6 +93,8 @@ namespace fq::graphics
 		mSceneTransformCB->Update(device, sceneTransform);
 
 		// 임시 데이터, 조명 반영시켜줘야 함
+		//DirectX::SimpleMath::Vector3 eyePos = { view._41, view._42, view._43 };
+		//lightManager->UpdateConstantBuffer(device, eyePos, false);
 		SceneLight scenelight;
 		scenelight.Lights[0].Direction = { 0.0f, 0.0f, 1.f };
 		scenelight.Lights[0].Intensity = { 1.f, 1.f, 1.f };
@@ -148,7 +152,8 @@ namespace fq::graphics
 		mModelTransformCB->Bind(device, ED3D11ShaderType::VertexShader);
 		mSceneTransformCB->Bind(device, ED3D11ShaderType::VertexShader, 1);
 		mModelTexutreCB->Bind(device, ED3D11ShaderType::Pixelshader);
-		mSceneLightCB->Bind(device, ED3D11ShaderType::Pixelshader, 1);
+		//mSceneLightCB->Bind(device, ED3D11ShaderType::Pixelshader, 1);
+		
 		mAnisotropicWrapSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 		mLinearClampSamplerState->Bind(device, 1, ED3D11ShaderType::Pixelshader);
 
@@ -176,6 +181,7 @@ namespace fq::graphics
 		mBoneTransformCB->Bind(device, ED3D11ShaderType::VertexShader, 2);
 		mModelTexutreCB->Bind(device, ED3D11ShaderType::Pixelshader);
 		mSceneLightCB->Bind(device, ED3D11ShaderType::Pixelshader, 1);
+		//lightManager->BindConstantBuffer(device, ED3D11ShaderType::Pixelshader, 2);
 		mAnisotropicWrapSamplerState->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 		mLinearClampSamplerState->Bind(device, 1, ED3D11ShaderType::Pixelshader);
 

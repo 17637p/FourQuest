@@ -132,7 +132,10 @@ void fq::graphics::D3D11LightManager::BindConstantBuffer(const std::shared_ptr<D
 	mLightConstantBuffer->Bind(d3d11Device, eShaderType, startSlot);
 }
 
-void fq::graphics::D3D11LightManager::UpdateConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device, const DirectX::SimpleMath::Vector3& eyePosition)
+void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
+	const std::shared_ptr<D3D11Device>& d3d11Device, 
+	const DirectX::SimpleMath::Vector3& eyePosition, 
+	const unsigned int isUseIBL)
 {
 	LightData lightData;
 
@@ -164,6 +167,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(const std::shared_ptr
 	lightData.numOfSpotLight = count;
 
 	lightData.eyePosition = eyePosition;
+	lightData.isUseIBL = isUseIBL;
 
 	mLightConstantBuffer->Update(d3d11Device, lightData);
 }

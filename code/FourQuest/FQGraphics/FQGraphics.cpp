@@ -47,7 +47,7 @@ void FQGraphics::DeleteLight(const unsigned int id)
 	mLightManager->DeleteLight(id);
 }
 
-void FQGraphics::SetLight(const unsigned int id, const LightInfo& lightInfo)
+void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
 	mLightManager->SetLight(id, lightInfo);
 }

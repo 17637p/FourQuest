@@ -38,8 +38,10 @@ Process::~Process()
 		mTestGraphics->DeleteSkinnedMeshObject(iobj);
 	}
 
-	mTestGraphics->DeleteLight(1);
-	mTestGraphics->DeleteLight(3);
+	//mTestGraphics->DeleteLight(1);
+	//mTestGraphics->DeleteLight(2);
+	//mTestGraphics->DeleteLight(3);
+	mTestGraphics->DeleteLight(4);
 
 	mEngineExporter->DeleteEngine(mTestGraphics);
 }
@@ -119,19 +121,33 @@ bool Process::Init(HINSTANCE hInstance)
 
 	/// Light ÃÊ±âÈ­ 
 	fq::graphics::LightInfo directionalLightInfo;
-	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1,0,0, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 1,0,0 };
-
-	mTestGraphics->AddLight(1, directionalLightInfo);
+	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	//directionalLightInfo.color = { 0,1,0, 1 };
+	//directionalLightInfo.intensity = 1;
+	//directionalLightInfo.direction = { 1,0,0 };
+	//
+	//mTestGraphics->AddLight(1, directionalLightInfo);
+	//
+	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	//directionalLightInfo.color = { 1,0,0, 1 };
+	//directionalLightInfo.intensity = 1;
+	//directionalLightInfo.direction = { -1,0,0 };
+	//
+	//mTestGraphics->AddLight(2, directionalLightInfo);
+	//
+	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	//directionalLightInfo.color = { 0,0,1, 1 };
+	//directionalLightInfo.intensity = 1;
+	//directionalLightInfo.direction = { 0,-1,0 };
+	//
+	//mTestGraphics->AddLight(3, directionalLightInfo);
 
 	directionalLightInfo.type = fq::graphics::ELightType::Point;
-	directionalLightInfo.color = { 1,0,0, 1 };
+	directionalLightInfo.color = { 1,1,0, 1 };
 	directionalLightInfo.intensity = 1;
-	directionalLightInfo.position = { 1,0,0 };
+	directionalLightInfo.position = { 10,0,0 };
 
-	mTestGraphics->AddLight(3, directionalLightInfo);
+	mTestGraphics->AddLight(4, directionalLightInfo);
 
 	return true;
 }
@@ -229,11 +245,11 @@ void Process::Update()
 	{
 		walk(-speed);
 	}
-	if (InputManager::GetInstance().IsGetKey('A'))
+	if (InputManager::GetInstance().IsGetKey('D'))
 	{
 		strafe(speed);
 	}
-	if (InputManager::GetInstance().IsGetKey('D'))
+	if (InputManager::GetInstance().IsGetKey('A'))
 	{
 		strafe(-speed);
 	}
@@ -244,6 +260,14 @@ void Process::Update()
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
 		worldUpdown(-speed);
+	}
+	if (InputManager::GetInstance().IsGetKey(VK_RBUTTON))
+	{
+		float dx = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().x) * (3.141592f / 180.0f));
+		float dy = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().y) * (3.141592f / 180.0f));
+
+		pitch(dy);
+		yaw(dx);
 	}
 	mTestGraphics->UpdateCamera(cameraTransform);
 
@@ -344,6 +368,35 @@ void Process::worldUpdown(float distance)
 		tempMatrix._21 * distance + cameraTransform.worldPosition.x,
 		tempMatrix._22 * distance + cameraTransform.worldPosition.y, 
 		tempMatrix._23 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::yaw(float angle)
+{
+	DirectX::SimpleMath::Vector3 up{ 0, 1, 0 };
+	//up.Normalize();
+	up = up * angle;
+	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(up.y, up.x, up.z);
+
+	cameraTransform.worldRotation = quaternion * cameraTransform.worldRotation;
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::pitch(float angle)
+{
+	DirectX::SimpleMath::Vector3 right{ 1, 0, 0 };
+	right = right * angle;
+	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(right.y, right.x, right.z);
+
+	cameraTransform.worldRotation = quaternion * cameraTransform.worldRotation;
 
 	cameraTransform.worldMatrix =
 		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *

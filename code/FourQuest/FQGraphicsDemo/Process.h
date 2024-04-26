@@ -38,6 +38,9 @@ private:
 	void walk(float distance);
 	void worldUpdown(float distance);
 
+	void yaw(float angle);
+	void pitch(float angle);
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
