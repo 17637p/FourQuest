@@ -1,10 +1,15 @@
 #pragma once
 
+#include <unordered_map>
 #include <directxtk/SimpleMath.h>
 
-#include "../FQGameModule/EventHandler.h"
-#include "../FQGameModule/Event.h"
-#include "../FQGameModule/CollisionMatrix.h"
+#include "../FQCommon/FQCommonPhysics.h"
+#include "../FQGameModule/GameModule.h"
+
+namespace fq::physics
+{
+	class IFQPhysics;
+}
 
 namespace fq::game_engine
 {
@@ -12,12 +17,18 @@ namespace fq::game_engine
 
 	class PhysicsSystem
 	{
+		using ColliderID = unsigned int;
+		using ColliderInfo = std::pair<entt::id_type, fq::game_module::Component*>;
+		using ColliderContainer = std::unordered_map<ColliderID, ColliderInfo>;
+
 		using EventHandler = fq::game_module::EventHandler;
 	public:
 		PhysicsSystem();
 		~PhysicsSystem();
 
 		void Initialize(GameProcess* game);
+
+		void Update();
 
 		/// <summary>
 		/// 씬을 로드할때 랜더링에 관련된 리소스를 로드합니다
@@ -39,21 +50,50 @@ namespace fq::game_engine
 		/// </summary>
 		void OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event);
 
+		/// <summary>
+		/// AddComponent 이벤트
+		/// </summary>
+		void AddComponent(const fq::event::AddComponent& event);
+
+		/// <summary>
+		/// RemoveCompnoent 이벤트
+		/// </summary>
+		void RemoveComponent(const fq::event::RemoveComponent& event);
+
 		fq::physics::CollisionMatrix GetCollisionMatrix() const { return mCollisionMatrix; }
-		void SetCollisionMatrix(fq::physics::CollisionMatrix val) { mCollisionMatrix = val; }
+		void SetCollisionMatrix(fq::physics::CollisionMatrix matrix);
+
+
+	private:
+		void addCollider(fq::game_module::GameObject* object);
+		void removeCollider(fq::game_module::GameObject* object);
+		void setPhysicsEngineinfo();
+
+		void callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type);
 
 	private:
 		GameProcess* mGameProcess;
+		fq::game_module::Scene* mScene;
+		physics::IFQPhysics* mPhysicsEngine;
 		
 		DirectX::SimpleMath::Vector3 mGravity;
 		fq::physics::CollisionMatrix mCollisionMatrix;
 
+		EventHandler mAddComponentHandler;
+		EventHandler mRemoveComponentHandler;
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
 
+		const entt::id_type mBoxID;
+		const entt::id_type mSphereID;
+		//const entt::id_type mCapsuleID;
+		const entt::id_type mMeshID;
+
 		bool mbIsGameLoaded;
+		ColliderContainer mColliderContainer;
+		ColliderID mLastColliderID;
 	};
 
 

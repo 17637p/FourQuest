@@ -42,6 +42,11 @@ namespace fq::game_module
 		/// </summary>
 		void SetType(fq::physics::EColliderType type) { mType = type; }
 	
+		/// <summary>
+		/// 박스 콜라이더의 정보를 설정합니다
+		/// </summary>
+		void SetBoxInfomation(BoxInfo info) { mBoxinfomation = info; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 

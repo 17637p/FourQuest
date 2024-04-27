@@ -199,6 +199,7 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 			mEditorProcess->mCommandSystem->Push<SetMetaData>(
 				data, mSelectObject, handle, val);
 		}
+		beginIsItemHovered_Comment(data);
 	}
 }
 

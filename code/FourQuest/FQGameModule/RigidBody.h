@@ -9,9 +9,26 @@ namespace fq::game_module
 		RigidBody();
 		~RigidBody();
 
+		/// <summary>
+		/// 복사본을 반환합니다
+		/// </summary>
+		Component* Clone(Component* clone /* = nullptr */)const override;
+
+		/// <summary>
+		/// true면 static body, false 는 dynamic body 입니다
+		/// </summary>
+		bool IsStatic() const { return mbIsStatic; }
+
+		/// <summary>
+		/// true면 static body, false 는 dynamic body 입니다
+		/// </summary>
+		void SetStatic(bool isStatic) { mbIsStatic = isStatic; }
 
 	private:
+		entt::meta_handle GetHandle() override;
 
+	private:
+		bool mbIsStatic;
 	};
 
 

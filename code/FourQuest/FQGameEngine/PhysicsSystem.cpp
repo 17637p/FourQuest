@@ -7,9 +7,16 @@
 
 fq::game_engine::PhysicsSystem::PhysicsSystem()
 	:mGameProcess(nullptr)
+	, mScene(nullptr)
 	, mCollisionMatrix{}
 	, mbIsGameLoaded(false)
-	, mGravity{0.f,-10.f,0.f}
+	, mGravity{ 0.f,-10.f,0.f }
+	, mPhysicsEngine(nullptr)
+	, mLastColliderID(physics::unregisterID)
+	, mBoxID(entt::resolve<fq::game_module::BoxCollider>().id())
+	, mSphereID(entt::resolve<fq::game_module::SphereCollider>().id())
+	//, mCapsuleID(entt::resolve<fq::game_module::RigidBody>().id())
+	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -18,36 +25,35 @@ fq::game_engine::PhysicsSystem::~PhysicsSystem()
 void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 {
 	mGameProcess = game;
+	mPhysicsEngine = mGameProcess->mPhysics;
+	mScene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	mPhysicsEngine->SetCallBackFunction([this](fq::physics::CollisionData data
+		, fq::physics::ECollisionEventType type)
+		{
+			this->callBackEvent(data, type);
+		}
+	);
 
 	// EventHandle µî·Ï
 	auto& eventMgr = mGameProcess->mEventManager;
-
 	mOnLoadSceneHandler = eventMgr->
 		RegisterHandle<fq::event::OnLoadScene>(this, &PhysicsSystem::OnLoadScene);
-
 	mOnUnloadSceneHandler = eventMgr->
 		RegisterHandle<fq::event::OnUnloadScene>(this, &PhysicsSystem::OnUnLoadScene);
-
 	mOnAddGameObjectHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::AddGameObject>(this, &PhysicsSystem::OnAddGameObject);
-
 	mDestroyedGameObjectHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnDestoryedGameObject>(this, &PhysicsSystem::OnDestroyedGameObject);
+	mAddComponentHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::AddComponent>(this, &PhysicsSystem::AddComponent);
+	mRemoveComponentHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::RemoveComponent>(this, &PhysicsSystem::RemoveComponent);
 }
 
-void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
-{
-
-}
-
-void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObject& event)
-{
-
-}
 
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
-
 	mbIsGameLoaded = false;
 }
 
@@ -56,6 +62,157 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 	auto scenePath = fq::path::GetScenePath() / event.sceneName / "collision_matrix.txt";
 	mCollisionMatrix.Load(scenePath);
 
+//	setPhysicsEngineinfo();
+
+	for (auto& object : mScene->GetObjectView())
+	{
+		addCollider(&object);
+	}
+
+	mbIsGameLoaded = true;
+}
+
+void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
+{
+	removeCollider(event.object);
+}
+
+void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObject& event)
+{
+	if (!mbIsGameLoaded)
+	{
+		return;
+	}
+
+	addCollider(event.object);
+}
+
+
+void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
+{
+	if (event.id != entt::resolve<fq::game_module::BoxCollider>().id()
+		|| event.id != entt::resolve<fq::game_module::SphereCollider>().id()
+		|| event.id != entt::resolve<fq::game_module::MeshCollider>().id())
+		//		|| event.id != entt::resolve<fq::game_module::CapsuleColldier>().id()
+	{
+		removeCollider(event.component->GetGameObject());
+	}
+}
+
+void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComponent& event)
+{
+	if (event.id != entt::resolve<fq::game_module::BoxCollider>().id()
+		|| event.id != entt::resolve<fq::game_module::SphereCollider>().id()
+		|| event.id != entt::resolve<fq::game_module::MeshCollider>().id())
+		//		|| event.id != entt::resolve<fq::game_module::CapsuleColldier>().id()
+	{
+		removeCollider(event.component->GetGameObject());
+	}
+}
+
+void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMatrix matrix)
+{
+	mCollisionMatrix = matrix;
+	setPhysicsEngineinfo();
+}
+
+void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* object)
+{
+	return;
+
+	using namespace fq::game_module;
+
+	if (!object->HasComponent<RigidBody>())
+	{
+		return;
+	}
+	auto rigid = object->GetComponent<RigidBody>();
+	auto transform = object->GetComponent<Transform>();
+
+	bool isStatic = rigid->IsStatic();
+
+	// 1. Box Colllider
+	if (object->HasComponent<BoxCollider>())
+	{
+		auto boxCollider = object->GetComponent<BoxCollider>();
+		auto type = boxCollider->GetType();
+		auto boxInfo = boxCollider->GetBoxInfomation();
+
+		ColliderID id = ++mLastColliderID;
+		boxInfo.colliderInfo.id = id;
+		boxInfo.colliderInfo.layerNumber = 0;
+		boxInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		boxCollider->SetBoxInfomation(boxInfo);
+
+		if (isStatic)
+		{
+			bool check = mPhysicsEngine->CreateStaticBody(boxInfo, type);
+			assert(check);
+			mColliderContainer.insert({ id, {mBoxID, boxCollider} });
+		}
+		else
+		{
+			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type);
+			assert(check);
+			mColliderContainer.insert({ id, {mBoxID, boxCollider} });
+		}
+		
+	}
+	// 2. Sphere Collider
+
+	// 3. Capsule Collider
+
+	// 4. Mesh Collider
+
+}
+
+void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject* object)
+{
+	return;
+
+	using namespace fq::game_module;
+	if (!object->HasComponent<RigidBody>())
+	{
+		return;
+	}
+
+	// 1. Box Colllider
+	if (object->HasComponent<BoxCollider>())
+	{
+		auto boxCollider = object->GetComponent<BoxCollider>();
+		auto id = boxCollider->GetBoxInfomation().colliderInfo.id;
+		assert(id != physics::unregisterID);
+
+		mPhysicsEngine->RemoveRigidBody(id);
+		mColliderContainer.erase(mColliderContainer.find(id));
+	}
+	// 2. Sphere Collider
+
+	// 3. Capsule Collider
+
+	// 4. Mesh Collider
+}
+
+void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
+{
+
+}
+
+void fq::game_engine::PhysicsSystem::Update()
+{
+	for (auto& [id, colliderInfo] : mColliderContainer)
+	{
+		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
+
+		auto matrix =  mPhysicsEngine->GetRigidBodyMatrix(id);
+
+		transform->SetLocalMatrix(matrix);
+	}
+
+}
+
+void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
+{
 	fq::physics::PhysicsEngineInfo info;
 
 	for (int i = 0; i < 16; ++i)
@@ -65,5 +222,4 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 	info.gravity = mGravity;
 
 	mGameProcess->mPhysics->SetPhysicsInfo(info);
-	mbIsGameLoaded = true;
 }

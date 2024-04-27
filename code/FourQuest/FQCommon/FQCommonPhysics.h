@@ -48,18 +48,20 @@ namespace fq::physics
 		std::vector<DirectX::SimpleMath::Vector3> ContectPoints;
 	};
 
+	constexpr unsigned int unregisterID = 0;
+
 	/// <summary>
 	/// 콜라이더 : 물리 충돌 처리를 위한 오브젝트 형태
 	/// </summary>
 	struct ColliderInfo
 	{
-		unsigned int id;
-		unsigned int layerNumber;
+		unsigned int id = unregisterID;
+		unsigned int layerNumber =0;
 		fq::common::Transform collisionTransform;
-		float staticFriction;								// 정적 마찰 계수
-		float dynamicFriction;								// 동적 마찰 계수
-		float restitution;									// 복원 계수
-		float density;										// 밀도
+		float staticFriction = 1.f;								// 정적 마찰 계수
+		float dynamicFriction = 1.f;								// 동적 마찰 계수
+		float restitution = 1.f;									// 복원 계수
+		float density = 1.f;										// 밀도
 	};
 
 	struct BoxColliderInfo

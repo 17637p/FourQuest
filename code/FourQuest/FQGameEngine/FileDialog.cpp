@@ -58,6 +58,7 @@ void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* e
 	mDevice = mGameProcess->mGraphics->GetDivice();
 
 	loadIcon();
+	clearGarbage();
 }
 
 void fq::game_engine::FileDialog::Finalize()
@@ -558,5 +559,10 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 	}
 
 	dropFiles.clear();
+}
+
+void fq::game_engine::FileDialog::clearGarbage()
+{
+	fq::path::ClearDirectory(fq::path::GetGarbagePath());
 }
 

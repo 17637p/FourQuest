@@ -8,6 +8,11 @@
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
 #include "Light.h"
+#include "RigidBody.h"
+#include "BoxCollider.h"
+#include "SphereCollider.h"
+#include "CapsuleCollider.h"
+#include "MeshCollider.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -141,6 +146,28 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetSpot, &Light::GetSpot>("Spot"_hs)
 		.prop(fq::reflect::prop::Name, "Spot")
 		.prop(fq::reflect::prop::Comment, u8"Spot 설정 (Spot)")
+		.base<Component>();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//                              Physics                                 //
+	//////////////////////////////////////////////////////////////////////////
+
+	// Rigid Body
+	entt::meta<RigidBody>()
+		.type("RigidBody"_hs)
+		.prop(fq::reflect::prop::Name, "RigidBody")
+		.data<&RigidBody::SetStatic, &RigidBody::IsStatic>("IsStatic"_hs)
+		.prop(fq::reflect::prop::Name, "IsStatic")
+		.prop(fq::reflect::prop::Comment, "static or dynamic")
+		.base<Component>();
+
+	entt::meta<BoxCollider>()
+		.type("BoxCollider"_hs)
+		.prop(fq::reflect::prop::Name, "BoxCollider")
+		.data<&BoxCollider::SetExtent, &BoxCollider::GetExtent>("Extent"_hs)
+		.prop(fq::reflect::prop::Name, "Extent")
+		.prop(fq::reflect::prop::Comment, u8"박스의 크기")
 		.base<Component>();
 
 

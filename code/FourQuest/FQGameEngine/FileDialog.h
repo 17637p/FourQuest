@@ -53,9 +53,7 @@ namespace fq::game_engine
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
-
 		/// 파일 디랙토리 관련 창
-		
 		void beginWindow_FilePathWindow();
 		void beginDirectory(const Path& path);
 		void beginDragDrop_Directory(const Path& directoryPath);
@@ -79,6 +77,7 @@ namespace fq::game_engine
 
 		void clearTexture();
 		void clearIconTexture();
+		void clearGarbage();
 
 		bool isMouseHoveringRect(const ImVec2& min, const ImVec2& max);
 	private:
