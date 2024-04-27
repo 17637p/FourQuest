@@ -215,7 +215,7 @@ namespace fq::physics
 
 		std::shared_ptr<StaticRigidBody> dynamicBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false
+			return false;
 
 		mRigidBodys.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
