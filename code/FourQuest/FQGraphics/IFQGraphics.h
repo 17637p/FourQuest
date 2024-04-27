@@ -67,6 +67,17 @@ extern "C" {
 			virtual FQ_GRAPHICS ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) abstract;
 			virtual FQ_GRAPHICS void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) abstract;
 			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) abstract;
+
+			// Debug Draw
+			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;
+			virtual FQ_GRAPHICS void DrawBox(const debug::AABBInfo& aabbInfo) abstract;
+			virtual FQ_GRAPHICS void DrawOBB(const debug::OBBInfo& obbInfo) abstract;
+			virtual FQ_GRAPHICS void DrawFrustum(const debug::FrustumInfo& frustumInfo) abstract;
+			virtual FQ_GRAPHICS void DrawGrid(const debug::GridInfo& gridInfo) abstract;
+			virtual FQ_GRAPHICS void DrawRing(const debug::RingInfo& ringInfo) abstract;
+			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
+			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
+
 			/// Gizmo && Background
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)

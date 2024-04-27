@@ -9,7 +9,6 @@ namespace fq::graphics
 	class IStaticMeshObject;
 	class ISkinnedMeshObject;
 
-
 	class D3D11JobManager
 	{
 	public:

@@ -88,11 +88,22 @@
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Common.h" />
-    <ClInclude Include="D3D11ModelManager.h" />
-    <ClInclude Include="DeferredPipeline.h" />
-    <ClInclude Include="EPipelineType.h" />
-    <ClInclude Include="ForwardPipeline.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="DeferredPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardPipeline.h">
+      <Filter>Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="EPipelineType.h">
+      <Filter>Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11ModelManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11DebugDrawManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -124,6 +135,9 @@
     </Filter>
     <Filter Include="Pipeline">
       <UniqueIdentifier>{e7ab995b-e03c-49e3-835f-46bef3e6745f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Enum">
+      <UniqueIdentifier>{66654c26-2bfd-407b-bbaa-5b2daa0dd1de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -200,10 +214,19 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBufferStructure.cpp" />
-    <ClCompile Include="D3D11ModelManager.cpp" />
-    <ClCompile Include="DeferredPipeline.cpp" />
-    <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="DeferredPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="ForwardPipeline.cpp">
+      <Filter>Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ModelManager.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11DebugDrawManager.h.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
