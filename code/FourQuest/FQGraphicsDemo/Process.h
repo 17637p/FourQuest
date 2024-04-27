@@ -35,6 +35,7 @@ public:
 private:
 	void Update();
 	void Render();
+	void debugRender();
 
 	void strafe(float distance);
 	void walk(float distance);
@@ -46,6 +47,7 @@ private:
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	void calculateFrameStats();
+	
 
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------

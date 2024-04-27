@@ -42,6 +42,16 @@ namespace fq::graphics
 		void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
+		// Debug Draw
+		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;
+		virtual void DrawBox(const debug::AABBInfo& aabbInfo) override;
+		virtual void DrawOBB(const debug::OBBInfo& obbInfo) override;
+		virtual void DrawFrustum(const debug::FrustumInfo& frustumInfo) override;
+		virtual void DrawGrid(const debug::GridInfo& gridInfo) override;
+		virtual void DrawRing(const debug::RingInfo& ringInfo) override;
+		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
+		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
+
 		/// Gizmo && Background
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
@@ -82,6 +92,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11RenderManager> mRenderManager;
 		std::shared_ptr<class D3D11CameraManager> mCameraManager;
 		std::shared_ptr<class D3D11LightManager> mLightManager;
+		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 	};
 }
 

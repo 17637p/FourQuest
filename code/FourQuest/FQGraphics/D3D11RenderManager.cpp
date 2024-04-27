@@ -22,6 +22,7 @@ namespace fq::graphics
 
 	void D3D11RenderManager::Initialize(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<class D3D11ResourceManager>& resourceManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager,
 		unsigned short width,
 		unsigned short height,
 		EPipelineType pipelineType)
@@ -43,10 +44,10 @@ namespace fq::graphics
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->Initialize(device, resourceManager, width, height);
+			mForwardPipeline->Initialize(device, resourceManager, lightManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Initialize(device, resourceManager, width, height);
+			mDeferredPipeline->Initialize(device, resourceManager, lightManager, width, height);
 			mDeferredPipeline->SetFullScreenBindable(mFullScreenLayout, mFullScreenVS, mFullScreenVB, mFullScreenIB);
 			break;
 		default:
@@ -99,20 +100,17 @@ namespace fq::graphics
 		}
 	}
 
-	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device, 
-		const std::shared_ptr<class D3D11CameraManager>& cameraManager)
+	void D3D11RenderManager::BeginRender(const std::shared_ptr<D3D11Device>& device,
+		const std::shared_ptr<D3D11CameraManager>& cameraManager,
+		const std::shared_ptr<D3D11LightManager>& lightManager)
 	{
-		// 임시 데이터, 조명 반영시켜줘야 함
-		//DirectX::SimpleMath::Vector3 eyePos = { view._41, view._42, view._43 };
-		//lightManager->UpdateConstantBuffer(device, eyePos, false);
-
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->BeginRender(device, cameraManager);
+			mForwardPipeline->BeginRender(device, cameraManager, lightManager);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->BeginRender(device, cameraManager);
+			mDeferredPipeline->BeginRender(device, cameraManager, lightManager);
 			break;
 		default:
 			assert(false);
@@ -140,15 +138,15 @@ namespace fq::graphics
 	{
 		switch (mPipelineType)
 		{
-			case fq::graphics::EPipelineType::Forward:
-				mForwardPipeline->Render(device, staticMeshJobs);
-				break;
-			case fq::graphics::EPipelineType::Deferred:
-				mDeferredPipeline->Render(device, staticMeshJobs);
-				break;
-			default:
-				assert(false);
-				break;
+		case fq::graphics::EPipelineType::Forward:
+			mForwardPipeline->Render(device, staticMeshJobs);
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			mDeferredPipeline->Render(device, staticMeshJobs);
+			break;
+		default:
+			assert(false);
+			break;
 		}
 	}
 
@@ -156,20 +154,28 @@ namespace fq::graphics
 	{
 		switch (mPipelineType)
 		{
-			case fq::graphics::EPipelineType::Forward:
-				mForwardPipeline->Render(device, skinnedMeshJobs);
-				break;
-			case fq::graphics::EPipelineType::Deferred:
-				mDeferredPipeline->Render(device, skinnedMeshJobs);
-				break;
-			default:
-				assert(false);
-				break;
+		case fq::graphics::EPipelineType::Forward:
+			mForwardPipeline->Render(device, skinnedMeshJobs);
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			mDeferredPipeline->Render(device, skinnedMeshJobs);
+			break;
+		default:
+			assert(false);
+			break;
 		}
 	}
-
+	void D3D11RenderManager::Shading(const std::shared_ptr<D3D11Device>& device)
+	{
+		if (mPipelineType == fq::graphics::EPipelineType::Deferred)
+		{
+			mDeferredPipeline->Shading(device);
+		}
+	}
 	void D3D11RenderManager::RenderBackBuffer(const std::shared_ptr<D3D11Device>& device)
 	{
+		device->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
@@ -177,7 +183,6 @@ namespace fq::graphics
 			mForwardPipeline->GetBackBufferSRV()->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Shading(device);
 			mSwapChainRTV->Bind(device, mNullDSV);
 			mDeferredPipeline->GetBackBufferSRV()->Bind(device, 0, ED3D11ShaderType::Pixelshader);
 			break;
@@ -212,6 +217,8 @@ namespace fq::graphics
 			assert(false);
 			break;
 		}
+
+		return nullptr;
 	}
 
 	void D3D11RenderManager::createFullScreenBuffer(const std::shared_ptr<D3D11Device>& device)
