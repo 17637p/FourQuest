@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../FQGameModule/EventHandler.h"
-#include "../FQGameModule/Event.h"
+#include "../FQGameModule/GameModule.h"
 
 namespace fq::game_engine
 {
@@ -39,9 +38,21 @@ namespace fq::game_engine
 		/// </summary>
 		void OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event);
 
+		/// <summary>
+		/// 라이트 설정 이벤트
+		/// </summary>
+		void SetLightInfo(const fq::event::SetLightInfo& event);
+
+
+	private:
+		void addLight(fq::game_module::GameObject* object);
+		void updateLight(fq::game_module::Light& light, fq::game_module::Transform& transform);
+		void deleteLight(fq::game_module::GameObject* object);
+
 	private:
 		GameProcess* mGameProcess;
 
+		EventHandler mSetLightInfoHandler;
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;

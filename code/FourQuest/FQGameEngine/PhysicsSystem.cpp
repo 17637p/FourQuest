@@ -54,7 +54,6 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
 {
 	auto scenePath = fq::path::GetScenePath() / event.sceneName / "collision_matrix.txt";
-
 	mCollisionMatrix.Load(scenePath);
 
 	fq::physics::PhysicsEngineInfo info;

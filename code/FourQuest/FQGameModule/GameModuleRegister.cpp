@@ -14,8 +14,9 @@ void fq::game_module::RegisterMetaData()
 	using namespace entt::literals;
 	using namespace fq::game_module;
 
+
 	//////////////////////////////////////////////////////////////////////////
-	//                            Enum Class                                //
+	//                            GameObject                                //
 	//////////////////////////////////////////////////////////////////////////
 
 	// Tag
@@ -35,19 +36,8 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Wall>("Wall"_hs) // 5
 		.prop(fq::reflect::prop::Name, "Wall");
 
-	entt::meta<fq::graphics::ELightType>()
-		.prop(fq::reflect::prop::Name, "LightType")
-		.data<fq::graphics::ELightType::Directional>("Directional"_hs)
-		.prop(fq::reflect::prop::Name, "Directional")
-		.data<fq::graphics::ELightType::Point>("Point"_hs)
-		.prop(fq::reflect::prop::Name, "Point")
-		.data<fq::graphics::ELightType::Spot>("Spot"_hs)
-		.prop(fq::reflect::prop::Name, "Spot");
 
-	//////////////////////////////////////////////////////////////////////////
-	//                            GameObject                                //
-	//////////////////////////////////////////////////////////////////////////
-
+	// GameObject
 	entt::meta<GameObject>()
 		.type("GameObject"_hs)
 		.prop(fq::reflect::prop::Name, "GameObject")
@@ -88,6 +78,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "NearPlain")
 		.base<Component>();
 
+	//////////////////////////////////////////////////////////////////////////
+	//                                Mesh                                  //
+	//////////////////////////////////////////////////////////////////////////
+
 	// StaticMeshRenderer
 	entt::meta<StaticMeshRenderer>()
 		.type("StaticMeshRenderer"_hs)
@@ -114,14 +108,40 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Materials")
 		.base<Component>();
 
+	//////////////////////////////////////////////////////////////////////////
+	//                               Light                                  //
+	//////////////////////////////////////////////////////////////////////////
+
+	// LightType
+	entt::meta<fq::graphics::ELightType>()
+		.prop(fq::reflect::prop::Name, "LightType")
+		.data<fq::graphics::ELightType::Directional>("Directional"_hs)
+		.prop(fq::reflect::prop::Name, "Directional")
+		.data<fq::graphics::ELightType::Point>("Point"_hs)
+		.prop(fq::reflect::prop::Name, "Point")
+		.data<fq::graphics::ELightType::Spot>("Spot"_hs)
+		.prop(fq::reflect::prop::Name, "Spot");
+
 	// Light 
 	entt::meta<Light>()
 		.type("Light"_hs)
 		.prop(fq::reflect::prop::Name, "Light")
+		.data<&Light::SetLightType, &Light::GetLightType>("Type"_hs)
+		.prop(fq::reflect::prop::Name, "Type")
 		.data<&Light::SetLightColor, &Light::GetLightColor>("Color"_hs)
 		.prop(fq::reflect::prop::Name, "Color")
+		.data<&Light::SetIntensity, &Light::GetIntensity>("Intensity"_hs)
+		.prop(fq::reflect::prop::Name, "Intensity")
+		.data<&Light::SetAttenuation, &Light::GetAttenuation>("Attenuation"_hs)
+		.prop(fq::reflect::prop::Name, "Attenuation")
+		.prop(fq::reflect::prop::Comment, u8"감쇠 상수 (Point, Spot)")
+		.data<&Light::SetRange, &Light::GetRange>("Range"_hs)
+		.prop(fq::reflect::prop::Name, "Range")
+		.prop(fq::reflect::prop::Comment, u8"거리 (Point, Spot)")
+		.data<&Light::SetSpot, &Light::GetSpot>("Spot"_hs)
+		.prop(fq::reflect::prop::Name, "Spot")
+		.prop(fq::reflect::prop::Comment, u8"Spot 설정 (Spot)")
 		.base<Component>();
-
 
 
 }

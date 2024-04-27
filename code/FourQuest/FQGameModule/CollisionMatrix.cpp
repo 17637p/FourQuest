@@ -6,7 +6,6 @@
 
 void fq::physics::CollisionMatrix::Load(const Path& path)
 {
-
     std::ifstream input(path);
 
     assert(input.is_open());

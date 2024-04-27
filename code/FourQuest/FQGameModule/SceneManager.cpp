@@ -1,6 +1,8 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
+#include <spdlog/spdlog.h>
+
 #include "../FQCommon/FQPath.h"
 
 #include "ObjectManager.h"
@@ -110,6 +112,8 @@ void fq::game_module::SceneManager::PostUpdate()
 
 void fq::game_module::SceneManager::LoadScene()
 {
+	spdlog::trace("[SceneManager] Load \"{}\" Scene", mCurrentScene->GetSceneName());
+
 	auto scenePath = fq::path::GetScenePath();
 
 	scenePath /= mCurrentScene->GetSceneName();

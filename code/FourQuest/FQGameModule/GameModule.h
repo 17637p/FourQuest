@@ -15,6 +15,11 @@
 #include "Camera.h"
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
+#include "Light.h"
+#include "BoxCollider.h"
+#include "SphereCollider.h"
+#include "MeshCollider.h"
+#include "RigidBody.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"

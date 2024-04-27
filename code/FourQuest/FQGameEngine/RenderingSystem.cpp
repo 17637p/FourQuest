@@ -64,7 +64,6 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					meshObject->UpdateTransform(transform.GetWorldMatrix());
 				}
 			});
-
 }
 
 void fq::game_engine::RenderingSystem::OnLoadScene()
@@ -93,7 +92,7 @@ void fq::game_engine::RenderingSystem::OnUnLoadScene()
 
 void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameObject& event)
 {
-	// 씬이 로드한 시점에서만 처리합니다
+	// 씬이 로드된 시점에서만 처리합니다
 	if (!mbIsGameLoaded)
 	{
 		return;

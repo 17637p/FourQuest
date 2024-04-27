@@ -177,7 +177,7 @@ void fq::game_engine::MainMenuBar::createScene(std::string sceneName)
 
 void fq::game_engine::MainMenuBar::SetCurrentSceneName(std::string sceneName)
 {
-	mCreateSceneName = std::move(sceneName);
+	mCurrentSceneName = std::move(sceneName);
 }
 
 void fq::game_engine::MainMenuBar::beginText_SceneName()
@@ -204,7 +204,7 @@ void fq::game_engine::MainMenuBar::beginText_FPS()
 void fq::game_engine::MainMenuBar::SaveScene()
 {
 	auto scenePath = fq::path::GetScenePath();
-	scenePath /= mCreateSceneName;
+	scenePath /= mCurrentSceneName;
 
 	// 1. ÇÁ¸®ÆÕ ÀúÀå 
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
@@ -226,7 +226,7 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
 
 	// 3. ... etc 
-	spdlog::trace("[MainMenuBar] Save Scene");
+	spdlog::trace("[MainMenuBar] Save \"{}\" Scene", mCurrentSceneName);
 }
 
 void fq::game_engine::MainMenuBar::ExcuteShortcut()

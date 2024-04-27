@@ -159,7 +159,7 @@
       <Filter>include\07.Physics</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
-      <Filter>include</Filter>
+      <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

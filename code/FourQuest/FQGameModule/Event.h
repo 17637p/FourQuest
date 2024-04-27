@@ -7,6 +7,7 @@ namespace fq::game_module
 {
 	class GameObject;
 	class Camera;
+	class Light;
 }
 
 namespace fq::event
@@ -74,5 +75,13 @@ namespace fq::event
 		fq::game_module::Camera* mainCamera;
 	};
 
+	/// <summary>
+	/// 라이트 정보 설정 
+	/// </summary>
+	struct SetLightInfo
+	{
+		fq::game_module::Light* light;
+		bool bIsChangedType;
+	};
 
 }

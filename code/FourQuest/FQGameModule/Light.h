@@ -14,8 +14,11 @@ namespace fq::game_module
 	public:
 		Light();
 		~Light();
-		
-		void OnUpdate(float dt)override;
+
+		/// <summary>
+		/// 복사본을 반환합니다 
+		/// </summary>
+		Component* Clone(Component* clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 라이트 타입을 반환합니다
@@ -72,13 +75,26 @@ namespace fq::game_module
 		/// </summary>
 		LightInfo GetLightInfomation()const { return mInfomation; }
 
+		/// <summary>
+		/// 라이트 정보를 설정합니다 
+		/// </summary>
 		void SetLightInfomation(LightInfo info);
 
+		/// <summary>
+		/// Spot 의 변수를 설정합니다 
+		/// </summary>
+		void SetSpot(float spot);
+
+		/// <summary>
+		/// Spot을 반환합니다 
+		/// </summary>
+		float GetSpot()const { return mInfomation.spot; }
+
 	private:
+		void fireSetLight(bool isChangedType = false);
 		entt::meta_handle GetHandle() override;
 
 	private:
-		bool mbIsChanged;
 		LightInfo mInfomation;
 	};
 
