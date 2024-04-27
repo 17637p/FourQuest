@@ -206,7 +206,7 @@ void fq::game_module::Transform::decomposeLocalMatrix()
 
 void fq::game_module::Transform::decomposeWorldMatrix()
 {
-	mFQTransform.localMatrix.Decompose(mFQTransform.worldScale
+	mFQTransform.worldMatrix.Decompose(mFQTransform.worldScale
 		, mFQTransform.worldRotation
 		, mFQTransform.worldPosition);
 }

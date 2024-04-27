@@ -158,6 +158,9 @@
     <ClInclude Include="LightSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="DebugSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -249,6 +252,9 @@
     </ClCompile>
     <ClCompile Include="LightSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -47,7 +47,6 @@ void fq::game_engine::GamePlayWindow::Render()
 			resizeWindow(ImGui::GetWindowSize());
 		}
 
-
 		beginMenuBar_Control();
 		beginImage_GameScreen();
 
@@ -64,6 +63,8 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	// 카메라 생성
 	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
 	mCameraObject->AddComponent<fq::game_module::Camera>();
+	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(10000.f);
+
 
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
@@ -167,12 +168,14 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 		// 현재 씬을 저장합니다 
 		mEditorProcess->mMainMenuBar->SaveScene();
 
+		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, true });
 	}
 	// Play -> Edit
 	else if (mode == EditorMode::Edit)
 	{
+		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
 	}

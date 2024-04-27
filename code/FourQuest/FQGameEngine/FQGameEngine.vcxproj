@@ -151,6 +151,7 @@
     <ClInclude Include="CollisionMatrixWindow.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
+    <ClInclude Include="DebugSystem.h" />
     <ClInclude Include="EditorEnum.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="CollisionMatrixWindow.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
+    <ClCompile Include="DebugSystem.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
     <ClCompile Include="LightSystem.cpp" />

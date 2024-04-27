@@ -121,13 +121,14 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
+			mEditor->mDebugSystem->Render();
 			mGameProcess->mGraphics->Render();
 
 			mEditor->mImGuiSystem->NewFrame();
 			UpdateEditor(deltaTime);
-
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
+
 			mGameProcess->mGraphics->EndRender();
 
 			mGameProcess->mSceneManager->PostUpdate();
@@ -182,6 +183,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mCommandSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mPrefabSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mModelSystem->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mDebugSystem->Initialize(mGameProcess.get());
 
 	// Window 초기화
 	mEditor->mInspector->Initialize(mGameProcess.get(), mEditor.get());
