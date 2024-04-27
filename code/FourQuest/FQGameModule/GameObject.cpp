@@ -1,7 +1,9 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "Transform.h"
-
+#include "Scene.h"
+#include "EventManager.h"
+#include "Event.h"
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
@@ -175,6 +177,12 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 
 	clone->SetGameObject(this);
 	mComponents.insert({ type.id(), std::shared_ptr<Component>(clone) });
+
+	if (GetScene())
+	{
+		GetScene()->GetEventManager()
+			->FireEvent<fq::event::AddComponent>({ iter->first,iter->second.get() });
+	}
 }
 
 void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr<Component> component)
@@ -186,6 +194,12 @@ void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr
 	component->mbIsToBeRemoved = false;
 	component->SetGameObject(this);
 	mComponents.insert({ id, std::move(component) });
+
+	if (GetScene())
+	{
+		GetScene()->GetEventManager()
+			->FireEvent<fq::event::AddComponent>({ iter->first,iter->second.get() });
+	}
 }
 
 void fq::game_module::GameObject::RemoveAllComponent()
@@ -201,6 +215,12 @@ void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
 		&& !iter->second->mbIsToBeRemoved)
 	{
 		iter->second->mbIsToBeRemoved = true;
+
+		if (GetScene())
+		{
+			GetScene()->GetEventManager()
+				->FireEvent<fq::event::RemoveComponent>({ iter->first,iter->second.get() });
+		}
 	}
 }
 

@@ -2,10 +2,12 @@
 
 #include <string>
 
+#include "../FQReflect/entt.hpp"
 
 namespace fq::game_module
 {
 	class GameObject;
+	class Component;
 	class Camera;
 	class Light;
 }
@@ -84,4 +86,21 @@ namespace fq::event
 		bool bIsChangedType;
 	};
 
+	/// <summary>
+	/// 컴포넌트 추가
+	/// </summary>
+	struct AddComponent
+	{
+		entt::id_type id;
+		fq::game_module::Component* component;
+	};
+
+	/// <summary>
+	/// 컴포넌트 제거
+	/// </summary>
+	struct RemoveComponent
+	{
+		entt::id_type id;
+		fq::game_module::Component* component;
+	};
 }

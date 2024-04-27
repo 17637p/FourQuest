@@ -269,15 +269,9 @@ namespace fq::game_module
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		assert(mComponents.find(id) == mComponents.end()
-			&& "가지고있는 컴포넌트입니다.");
-
-		mComponents.insert({ id, std::make_shared<T>(std::forward<Args>(args)...) });
+		AddComponent(id, std::make_shared<T>(std::forward<Args>(args)...));
 
 		T* component = static_cast<T*>(mComponents[id].get());
-
-		component->SetGameObject(this);
-
 		return *component;
 	}
 
