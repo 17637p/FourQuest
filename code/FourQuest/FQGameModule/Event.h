@@ -78,12 +78,11 @@ namespace fq::event
 	};
 
 	/// <summary>
-	/// 라이트 정보 설정 
+	/// 라이트 타입 변경
 	/// </summary>
-	struct SetLightInfo
+	struct SetLightType
 	{
 		fq::game_module::Light* light;
-		bool bIsChangedType;
 	};
 
 	/// <summary>

@@ -21,36 +21,31 @@ entt::meta_handle fq::game_module::Light::GetHandle()
 void fq::game_module::Light::SetLightType(LightType type)
 {
 	mInfomation.type = type;
-
-	fireSetLight(true);
+	fireSetLightType(true);
 }
 
 void fq::game_module::Light::SetRange(float range)
 {
 	mInfomation.range = range;
-
-	fireSetLight();
 }
 
 void fq::game_module::Light::SetIntensity(float intensity)
 {
 	mInfomation.intensity = intensity;
 
-	fireSetLight();
+	fireSetLightType();
 }
 
 void fq::game_module::Light::SetLightColor(LightColor color)
 {
 	mInfomation.color = color;
 
-	fireSetLight();
+	fireSetLightType();
 }
 
 void fq::game_module::Light::SetAttenuation(Vector3 attenuation)
 {
 	mInfomation.attenuation = attenuation;
-
-	fireSetLight();
 }
 
 void fq::game_module::Light::SetLightInfomation(LightInfo info)
@@ -61,15 +56,13 @@ void fq::game_module::Light::SetLightInfomation(LightInfo info)
 void fq::game_module::Light::SetSpot(float spot)
 {
 	mInfomation.spot = spot;
-
-	fireSetLight();
 }
 
-void fq::game_module::Light::fireSetLight(bool isChangedType /*= false*/)
+void fq::game_module::Light::fireSetLightType(bool isChangedType /*= false*/)
 {
 	if (GetGameObject() && GetScene())
 	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::SetLightInfo>({this ,isChangedType });
+		GetScene()->GetEventManager()->FireEvent<fq::event::SetLightType>({this});
 	}
 }
 

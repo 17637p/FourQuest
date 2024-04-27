@@ -114,6 +114,7 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 시스템 업데이트
 			mGameProcess->mRenderingSystem->Update(deltaTime);
+			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 
 			// 랜더링 

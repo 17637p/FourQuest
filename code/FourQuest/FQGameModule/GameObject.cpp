@@ -188,12 +188,13 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr<Component> component)
 {
 	auto iter = mComponents.find(id);
-
 	assert(iter == mComponents.end());
 
 	component->mbIsToBeRemoved = false;
 	component->SetGameObject(this);
-	mComponents.insert({ id, std::move(component) });
+	mComponents.insert({ id, component });
+
+	iter = mComponents.find(id);
 
 	if (GetScene())
 	{

@@ -269,9 +269,10 @@ namespace fq::game_module
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		AddComponent(id, std::make_shared<T>(std::forward<Args>(args)...));
+		auto component = std::make_shared<T>(std::forward<Args>(args)...);
 
-		T* component = static_cast<T*>(mComponents[id].get());
+		AddComponent(id, component);
+
 		return *component;
 	}
 

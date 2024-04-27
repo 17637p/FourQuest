@@ -53,6 +53,16 @@ namespace fq::game_engine
 		/// </summary>
 		void OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event);
 
+		/// <summary>
+		/// AddComponent 이벤트
+		/// </summary>
+		void AddComponent(const fq::event::AddComponent& event);
+
+		/// <summary>
+		/// RemoveCompnoent 이벤트
+		/// </summary>
+		void RemoveComponent(const fq::event::RemoveComponent& event);
+
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
@@ -68,7 +78,9 @@ namespace fq::game_engine
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
-		
+		EventHandler mAddComponentHandler;
+		EventHandler mRemoveComponentHandler;
+
 		bool mbIsGameLoaded;
 
 		std::set<ModelPath> mLoadModels;

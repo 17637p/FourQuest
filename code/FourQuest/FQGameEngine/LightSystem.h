@@ -19,6 +19,11 @@ namespace fq::game_engine
 		void Initialize(GameProcess* game);
 
 		/// <summary>
+		/// 라이트를 업데이트 합니다
+		/// </summary>
+		void Update();
+
+		/// <summary>
 		/// 씬을 로드할때 랜더링에 관련된 리소스를 로드합니다
 		/// </summary>
 		void OnLoadScene(const fq::event::OnLoadScene event);
@@ -41,8 +46,17 @@ namespace fq::game_engine
 		/// <summary>
 		/// 라이트 설정 이벤트
 		/// </summary>
-		void SetLightInfo(const fq::event::SetLightInfo& event);
+		void SetLightType(const fq::event::SetLightType& event);
 
+		/// <summary>
+		/// AddComponent 이벤트
+		/// </summary>
+		void AddComponent(const fq::event::AddComponent& event);
+
+		/// <summary>
+		/// RemoveCompnoent 이벤트
+		/// </summary>
+		void RemoveComponent(const fq::event::RemoveComponent& event);
 
 	private:
 		void addLight(fq::game_module::GameObject* object);
@@ -51,7 +65,10 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
+		fq::game_module::Scene* mScene;
 
+		EventHandler mAddComponentHandler;
+		EventHandler mRemoveComponentHandler;
 		EventHandler mSetLightInfoHandler;
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;

@@ -13,6 +13,8 @@ fq::game_engine::RenderingSystem::RenderingSystem()
 	, mOnLoadSceneHandler{}
 	, mOnUnloadSceneHandler{}
 	, mDestroyedGameObjectHandler{}
+	, mRemoveComponentHandler{}
+	, mAddComponentHandler{}
 	, mbIsGameLoaded(false)
 {}
 
@@ -37,6 +39,12 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 
 	mDestroyedGameObjectHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnDestoryedGameObject>(this, &RenderingSystem::OnDestroyedGameObject);
+
+	mAddComponentHandler = eventMgr->
+		RegisterHandle<fq::event::AddComponent>(this, &RenderingSystem::AddComponent);
+
+	mRemoveComponentHandler = eventMgr->
+		RegisterHandle<fq::event::RemoveComponent>(this, &RenderingSystem::RemoveComponent);
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)
@@ -150,7 +158,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	// Model »ý¼º
 	if (!std::filesystem::exists(meshInfo.ModelPath))
 	{
-		SPDLOG_WARN("{} does not exist", meshInfo.ModelPath);
+		SPDLOG_WARN("[RenderingSystem] Model Path \"{}\" does not exist", meshInfo.ModelPath);
 	}
 	else
 	{
@@ -218,4 +226,31 @@ void fq::game_engine::RenderingSystem::unloadSkinnedMeshRenderer(fq::game_module
 	auto staticMesh = staticMeshRenderer->GetSkinnedMeshObject();
 	mGameProcess->mGraphics->DeleteSkinnedMeshObject(staticMesh);
 	staticMeshRenderer->SetSkinnedMeshObject(nullptr);
+}
+
+void fq::game_engine::RenderingSystem::AddComponent(const fq::event::AddComponent& event)
+{
+	if (event.id == entt::resolve<fq::game_module::StaticMeshRenderer>().id())
+	{
+		loadStaticMeshRenderer(event.component->GetGameObject());
+	}
+
+	if (event.id == entt::resolve<fq::game_module::SkinnedMeshRenderer>().id())
+	{
+		loadSkinnedMeshRenderer(event.component->GetGameObject());
+	}
+}
+
+void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveComponent& event)
+{
+	if (event.id == entt::resolve<fq::game_module::StaticMeshRenderer>().id())
+	{
+		unloadStaticMeshRenderer(event.component->GetGameObject());
+	}
+
+	if (event.id == entt::resolve<fq::game_module::SkinnedMeshRenderer>().id())
+	{
+		unloadSkinnedMeshRenderer(event.component->GetGameObject());
+	}
+
 }

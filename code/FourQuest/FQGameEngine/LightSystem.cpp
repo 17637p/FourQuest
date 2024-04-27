@@ -6,6 +6,7 @@
 
 fq::game_engine::LightSystem::LightSystem()
 	:mGameProcess(nullptr)
+	, mScene(nullptr)
 	, mbIsGameLoaded(false)
 {}
 
@@ -15,6 +16,7 @@ fq::game_engine::LightSystem::~LightSystem()
 void fq::game_engine::LightSystem::Initialize(GameProcess* game)
 {
 	mGameProcess = game;
+	mScene = game->mSceneManager->GetCurrentScene();
 
 	// EventHandle 등록
 	auto& eventMgr = mGameProcess->mEventManager;
@@ -32,7 +34,13 @@ void fq::game_engine::LightSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::OnDestoryedGameObject>(this, &LightSystem::OnDestroyedGameObject);
 
 	mSetLightInfoHandler = eventMgr->
-		RegisterHandle<fq::event::SetLightInfo>(this, &LightSystem::SetLightInfo);
+		RegisterHandle<fq::event::SetLightType>(this, &LightSystem::SetLightType);
+
+	mAddComponentHandler = eventMgr->
+		RegisterHandle<fq::event::AddComponent>(this, &LightSystem::AddComponent);
+
+	mRemoveComponentHandler = eventMgr->
+		RegisterHandle<fq::event::RemoveComponent>(this, &LightSystem::RemoveComponent);
 }
 
 void fq::game_engine::LightSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -46,7 +54,7 @@ void fq::game_engine::LightSystem::OnLoadScene(const fq::event::OnLoadScene even
 	}
 
 	mbIsGameLoaded = true;
-}
+} 
 
 void fq::game_engine::LightSystem::OnUnLoadScene()
 {
@@ -70,21 +78,13 @@ void fq::game_engine::LightSystem::OnDestroyedGameObject(const fq::event::OnDest
 	deleteLight(event.object);
 }
 
-void fq::game_engine::LightSystem::SetLightInfo(const fq::event::SetLightInfo& event)
+void fq::game_engine::LightSystem::SetLightType(const fq::event::SetLightType& event)
 {
 	auto id = event.light->GetGameObject()->GetID();
 
 	// 라이트를 재생성
-	if (event.bIsChangedType)
-	{
-		mGameProcess->mGraphics->DeleteLight(id);
-		mGameProcess->mGraphics->AddLight(id, event.light->GetLightInfomation());
-	}
-	else
-	{
-
-	}
-
+	mGameProcess->mGraphics->DeleteLight(id);
+	mGameProcess->mGraphics->AddLight(id, event.light->GetLightInfomation());
 }
 
 void fq::game_engine::LightSystem::addLight(fq::game_module::GameObject* object)
@@ -120,5 +120,38 @@ void fq::game_engine::LightSystem::deleteLight(fq::game_module::GameObject* obje
 	}
 
 	mGameProcess->mGraphics->DeleteLight(object->GetID());
+}
+
+void fq::game_engine::LightSystem::Update()
+{
+	using namespace fq::game_module;
+
+	mScene->ViewComponents<Transform, Light>(
+		[this](GameObject& object, Transform transform, Light& light)
+		{
+			updateLight(light, transform);
+			mGameProcess->mGraphics->UpdateLight(object.GetID(), light.GetLightInfomation());
+		}
+	);
+}
+
+void fq::game_engine::LightSystem::AddComponent(const fq::event::AddComponent& event)
+{
+	if (event.id != entt::resolve<fq::game_module::Light>().id())
+	{
+		return;
+	}
+
+	addLight(event.component->GetGameObject());
+}
+
+void fq::game_engine::LightSystem::RemoveComponent(const fq::event::RemoveComponent& event)
+{
+	if (event.id != entt::resolve<fq::game_module::Light>().id())
+	{
+		return;
+	}
+
+	deleteLight(event.component->GetGameObject());
 }
 
