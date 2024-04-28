@@ -33,8 +33,8 @@ namespace fq::physics
 		memcpy(&matrix, &colliderInfo.collisionTransform.worldMatrix, sizeof(physx::PxMat44));
 		physx::PxTransform transform(matrix);
 
-		physx::PxRigidStatic* body = physics->createRigidStatic(transform);
-		if (!body->attachShape(*shape)) 
+		mRigidStatic = physics->createRigidStatic(transform);
+		if (!mRigidStatic->attachShape(*shape))
 			return false;
 
 		return true;
