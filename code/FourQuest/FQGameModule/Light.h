@@ -91,7 +91,7 @@ namespace fq::game_module
 		float GetSpot()const { return mInfomation.spot; }
 
 	private:
-		void fireSetLightType(bool isChangedType = false);
+		void fireSetLightType();
 		entt::meta_handle GetHandle() override;
 
 	private:

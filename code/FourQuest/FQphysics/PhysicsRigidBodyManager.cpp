@@ -334,8 +334,8 @@ namespace fq::physics
 				physx::PxShape* shpae;
 				physx::PxFilterData filterData;
 
-				filterData.word0 = dynamicBody->GetLayerNumber();
-				filterData.word1 = collisionMatrix[dynamicBody->GetLayerNumber()];
+				filterData.word0 = staticBody->GetLayerNumber();
+				filterData.word1 = collisionMatrix[staticBody->GetLayerNumber()];
 
 				continue;
 			}

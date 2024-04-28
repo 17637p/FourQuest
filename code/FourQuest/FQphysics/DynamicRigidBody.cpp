@@ -34,7 +34,7 @@ namespace fq::physics
 		mRigidDynamic = physics->createRigidDynamic(transform);
 		if (!mRigidDynamic->attachShape(*shape))
 			return false;
-		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density)) 
+		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density);
 
 		return true;
 	}

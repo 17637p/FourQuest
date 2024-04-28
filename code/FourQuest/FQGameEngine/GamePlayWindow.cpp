@@ -65,7 +65,6 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	mCameraObject->AddComponent<fq::game_module::Camera>();
 	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(10000.f);
 
-
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 
@@ -101,7 +100,6 @@ void fq::game_engine::GamePlayWindow::beginButton_Stop()
 		if (ImGui::Button("Stop"))
 		{
 			mbIsPauseGame = false;
-			mGameProcess->mTimeManager->SetTimeScale(1.);
 		}
 		ImGui::PopStyleColor(2);
 	}
@@ -110,7 +108,6 @@ void fq::game_engine::GamePlayWindow::beginButton_Stop()
 		if (ImGui::Button("Stop"))
 		{
 			mbIsPauseGame = true;
-			mGameProcess->mTimeManager->SetTimeScale(0.);
 		}
 	}
 
@@ -195,15 +192,6 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		// [Ctrl + LShift + P] 게임 정지
 		if (input->IsKeyState(EKey::LShift, EKeyState::Hold))
 		{
-			if (mbIsPauseGame)
-			{
-				mGameProcess->mTimeManager->SetTimeScale(1.);
-			}
-			else
-			{
-				mGameProcess->mTimeManager->SetTimeScale(0.);
-			}
-
 			mbIsPauseGame = !mbIsPauseGame;
 		}
 		else
@@ -453,6 +441,8 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 
 	mViewTM = matrix.Invert();
 	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
+
+	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 }
 
 fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
