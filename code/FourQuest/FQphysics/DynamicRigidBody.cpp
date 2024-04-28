@@ -31,11 +31,10 @@ namespace fq::physics
 		memcpy(&matrix, &colliderInfo.collisionTransform.worldMatrix, sizeof(physx::PxMat44));
 		physx::PxTransform transform(matrix);
 
-		physx::PxRigidDynamic* body = physics->createRigidDynamic(transform);
-		if (!body->attachShape(*shape))	
+		mRigidDynamic = physics->createRigidDynamic(transform);
+		if (!mRigidDynamic->attachShape(*shape))
 			return false;
-		if (!physx::PxRigidBodyExt::updateMassAndInertia(*body, colliderInfo.density)) 
-			return false;
+		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density)) 
 
 		return true;
 	}
