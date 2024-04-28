@@ -95,7 +95,7 @@ namespace fq::physics
 		mScene = physics->createScene(sceneDesc);
 		assert(mScene);
 
-		// PVD 클라이언트에 PhysX Scene 연결
+		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
 		mPhysics->SettingPVDClient(mScene);
 #endif
@@ -111,6 +111,14 @@ namespace fq::physics
 		if (!mScene->simulate(deltaTime))
 			return false;
 		if (!mScene->fetchResults(true))
+			return false;
+
+		return true;
+	}
+
+	bool FQPhysics::FinalUpdate()
+	{
+		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 
 		return true;
@@ -219,7 +227,22 @@ namespace fq::physics
 
 	DirectX::SimpleMath::Matrix FQPhysics::GetRigidBodyMatrix(unsigned int id)
 	{
-		DirectX::SimpleMath::Matrix dxMatrix = mRigidBodyManager->GetRigidBodyMatrix(id);
-		return std::move(dxMatrix);
+		DirectX::SimpleMath::Matrix dxMatrix;
+		mRigidBodyManager->GetRigidBodyMatrix(id, dxMatrix);
+
+		return dxMatrix;
+	}
+
+	const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& FQPhysics::GetDebugBox()
+	{
+		return mRigidBodyManager->GetDebugBox();
+	}
+	const std::set<std::shared_ptr<DirectX::BoundingSphere>>& FQPhysics::GetDebugShere()
+	{
+		return mRigidBodyManager->GetDebugShere();
+	}
+	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& FQPhysics::GetDebugPolygon()
+	{
+		return mRigidBodyManager->GetDebugPolygon();
 	}
 }

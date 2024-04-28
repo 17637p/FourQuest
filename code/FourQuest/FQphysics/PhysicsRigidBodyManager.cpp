@@ -49,13 +49,25 @@ namespace fq::physics
 		}
 		mUpcomingActors.clear();
 
+
+#ifdef _DEBUG
+		ExtractDebugData();
+#endif
+
 		return true;
 	}
 
-	DirectX::SimpleMath::Matrix PhysicsRigidBodyManager::GetRigidBodyMatrix(unsigned int id)
+	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
-		DirectX::SimpleMath::Matrix dxMatrix;
+		mDebugBoundingBox.clear();
+		mDebugBoundingSphere.clear();
+		mDebugPolygon.clear();
 
+		return true;
+	}
+
+	void PhysicsRigidBodyManager::GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix)
+	{
 		auto body = mRigidBodys.find(id)->second;
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
@@ -63,17 +75,13 @@ namespace fq::physics
 		{
 			physx::PxTransform pxTransform = dynamicBody->GetRigidDynamic()->getGlobalPose();
 			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
-			return std::move(dxMatrix);
 		}
 		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 		if (staticBody)
 		{
 			physx::PxTransform pxTransform = staticBody->GetRigidStatic()->getGlobalPose();
 			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
-			return std::move(dxMatrix);
 		}
-
-		return std::move(dxMatrix);
 	}
 
 #pragma region UpdateFilterData
@@ -334,8 +342,8 @@ namespace fq::physics
 				physx::PxShape* shpae;
 				physx::PxFilterData filterData;
 
-				filterData.word0 = dynamicBody->GetLayerNumber();
-				filterData.word1 = collisionMatrix[dynamicBody->GetLayerNumber()];
+				filterData.word0 = staticBody->GetLayerNumber();
+				filterData.word1 = collisionMatrix[staticBody->GetLayerNumber()];
 
 				continue;
 			}
@@ -344,4 +352,74 @@ namespace fq::physics
 
 #pragma endregion
 
+#pragma region ExtractDebugData
+
+	void PhysicsRigidBodyManager::ExtractDebugData()
+	{
+		using namespace std;
+
+		for (const auto& body : mRigidBodys)
+		{
+			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
+			if (dynamicBody)
+			{
+				physx::PxShape* shape;
+				physx::PxRigidActor* actor = dynamicBody->GetRigidDynamic();
+				actor->getShapes(&shape, sizeof(physx::PxShape));
+
+				if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
+				{
+					shared_ptr<DirectX::BoundingOrientedBox> box = make_shared<DirectX::BoundingOrientedBox>();
+					ExtractDebugBox(actor, shape, *box.get());
+
+					mDebugBoundingBox.insert(box);
+				}
+				else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
+				{
+					shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
+					ExtractDebugSphere(actor, shape, *sphere.get());
+
+					mDebugBoundingSphere.insert(sphere);
+				}
+				else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+				{
+					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
+					ExtractDebugConvexMesh(actor, shape, *polygon.get());
+
+					mDebugPolygon.insert(polygon);
+				}
+			}
+			std::shared_ptr<StaticRigidBody> staticBody = dynamic_pointer_cast<StaticRigidBody>(body.second);
+			if (staticBody)
+			{
+				physx::PxShape* shape;
+				physx::PxRigidActor* actor = staticBody->GetRigidStatic();
+				actor->getShapes(&shape, sizeof(physx::PxShape));
+
+				if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
+				{
+					shared_ptr<DirectX::BoundingOrientedBox> box = make_shared<DirectX::BoundingOrientedBox>();
+					ExtractDebugBox(actor, shape, *box.get());
+
+					mDebugBoundingBox.insert(box);
+				}
+				else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
+				{
+					shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
+					ExtractDebugSphere(actor, shape, *sphere.get());
+
+					mDebugBoundingSphere.insert(sphere);
+				}
+				else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+				{
+					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
+					ExtractDebugConvexMesh(actor, shape, *polygon.get());
+
+					mDebugPolygon.insert(polygon);
+				}
+			}
+		}
+	}
+
+#pragma endregion
 }

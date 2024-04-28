@@ -1,8 +1,10 @@
 #pragma once
 #include "IFQPhysics.h"
+#define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
 #include <physx\PxPhysicsAPI.h>
 #include <memory>
+#include <set>
 
 namespace fq::physics
 {
@@ -26,6 +28,11 @@ namespace fq::physics
 		/// 시뮬레이션이 끝마쳤을 시에 충돌 이벤트가 콜백 함수를 통해 실행됩니다.
 		/// </summary>
 		virtual bool Update(float deltaTime) override;
+
+		/// <summary>
+		/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트
+		/// </summary>
+		virtual bool FinalUpdate() override;
 
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
@@ -68,6 +75,10 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="info"> 물리 엔진 정보 </param>
 		virtual void SetPhysicsInfo(PhysicsEngineInfo info) override;
+
+		const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& GetDebugBox() override;
+		const std::set<std::shared_ptr<DirectX::BoundingSphere>>& GetDebugShere() override;
+		const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() override;
 
 	private:
 		// 씬

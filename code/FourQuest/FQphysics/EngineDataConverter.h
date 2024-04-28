@@ -22,26 +22,26 @@ void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix,
 /// </summary>
 /// <param name="_body"> 리지드 바디 </param>
 /// <param name="_shape"> 도형 </param>
-void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void ExtractDebugCapsule(physx::PxRigidActor* body, physx::PxShape* shape);
 
 /// <summary>
 /// Box 도형을 가진 RigidBody 디버그 데이터 추출
 /// </summary>
 /// <param name="_body"> 리지드 바디 </param>
 /// <param name="_shape"> 도형 </param>
-void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void ExtractDebugBox(physx::PxRigidActor* body, physx::PxShape* shape, DirectX::BoundingOrientedBox& myBox);
 
 /// <summary>
 /// Sphere 도형을 가진 RigidBody 디버그 데이터 추출
 /// </summary>
 /// <param name="_body"> 리지드 바디 </param>
 /// <param name="_shape"> 도형 </param>
-void DebugSphere(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void ExtractDebugSphere(physx::PxRigidActor* body, physx::PxShape* shape, DirectX::BoundingSphere& mySphere);
 
 /// <summary>
 /// ConvexMesh 도형을 가진 RigidBody 디버그 데이터 추출
 /// </summary>
 /// <param name="_body"> 리지드 바디 </param>
 /// <param name="_shape"> 도형 </param>
-void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape);
+void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, std::vector<std::vector<DirectX::SimpleMath::Vector3>>& myPolygon);
 

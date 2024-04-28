@@ -42,7 +42,7 @@ void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix,
 
 #pragma region DebugDataExtract
 
-void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape)
+void ExtractDebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape)
 {
 	using namespace DirectX::SimpleMath;
 	using namespace std;
@@ -91,56 +91,57 @@ void DebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape)
 	//RENDER->AddDebugSphere(sphere1);
 }
 
-void DebugBox(physx::PxRigidActor* _body, physx::PxShape* _shape)
+void ExtractDebugBox(physx::PxRigidActor* body, physx::PxShape* shape, DirectX::BoundingOrientedBox& debugBox)
 {
 	using namespace DirectX::SimpleMath;
 	using namespace std;
 
-	shared_ptr<DirectX::BoundingOrientedBox> orientBox = make_shared<DirectX::BoundingOrientedBox>();
-	const physx::PxBoxGeometry& boxGeometry = static_cast<const physx::PxBoxGeometry&>(_shape->getGeometry());
+	DirectX::BoundingOrientedBox orientBox;
+	const physx::PxBoxGeometry& boxGeometry = static_cast<const physx::PxBoxGeometry&>(shape->getGeometry());
 
 	Matrix dxMatrix;
-	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
+	CopyPxTransformToDirectXMatrix(body->getGlobalPose(), dxMatrix);
 
 	Vector3 scale;
 	Vector3 translation;
 	Quaternion quaternion;
 	dxMatrix.Decompose(scale, quaternion, translation);
 
-	orientBox->Center = translation;
-	orientBox->Extents = (const Vector3&)boxGeometry.halfExtents;
-	orientBox->Orientation = quaternion;
+	debugBox.Center = translation;
+	debugBox.Extents = (const Vector3&)boxGeometry.halfExtents;
+	debugBox.Orientation = quaternion;
 
 	//RENDER->AddDebugBox(orientBox);
 }
 
-void DebugSphere(physx::PxRigidActor* _body, physx::PxShape* _shape)
+void ExtractDebugSphere(physx::PxRigidActor* body, physx::PxShape* shape, DirectX::BoundingSphere& debugSphere)
 {
 	using namespace DirectX::SimpleMath;
 	using namespace std;
 
-	shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
-	const physx::PxSphereGeometry& sphereGeometry = static_cast<const physx::PxSphereGeometry&>(_shape->getGeometry());
+	DirectX::BoundingSphere sphere;
+	const physx::PxSphereGeometry& sphereGeometry = static_cast<const physx::PxSphereGeometry&>(shape->getGeometry());
 
 	Matrix dxMatrix;
-	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
+	CopyPxTransformToDirectXMatrix(body->getGlobalPose(), dxMatrix);
 
-	sphere->Center = dxMatrix.Translation();
-	sphere->Radius = sphereGeometry.radius;
+	debugSphere.Center = dxMatrix.Translation();
+	debugSphere.Radius = sphereGeometry.radius;
 
 	//RENDER->AddDebugSphere(sphere);
 }
 
-void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
+void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, std::vector<std::vector<DirectX::SimpleMath::Vector3>>& debugPolygon)
 {
 	using namespace DirectX::SimpleMath;
 	using namespace std;
 
-	const physx::PxConvexMeshGeometry& convexMeshGeometry = static_cast<const physx::PxConvexMeshGeometry&>(_shape->getGeometry());
+	const physx::PxConvexMeshGeometry& convexMeshGeometry = static_cast<const physx::PxConvexMeshGeometry&>(shape->getGeometry());
 
 	Matrix dxMatrix;
 	Matrix matrix;
-	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
+	vector<vector<Vector3>> polygon;
+	CopyPxTransformToDirectXMatrix(body->getGlobalPose(), dxMatrix);
 
 	// PxConvexMesh에서 정점 및 인덱스 정보 얻기
 	const physx::PxVec3* convexMeshVertices = convexMeshGeometry.convexMesh->getVertices();
@@ -148,13 +149,14 @@ void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
 
 	const physx::PxU8* convexMeshIndices = convexMeshGeometry.convexMesh->getIndexBuffer();
 	const physx::PxU32 PolygonCount = convexMeshGeometry.convexMesh->getNbPolygons();
+	polygon.reserve(PolygonCount);
 
 	for (int i = 0; i < PolygonCount - 1; i++)
 	{
-		physx::PxHullPolygon polygon;
-		convexMeshGeometry.convexMesh->getPolygonData(i, polygon);
-		int vertexTotalNumber = polygon.mNbVerts;
-		int startIndexNumber = polygon.mIndexBase;
+		physx::PxHullPolygon pxPolygon;
+		convexMeshGeometry.convexMesh->getPolygonData(i, pxPolygon);
+		int vertexTotalNumber = pxPolygon.mNbVerts;
+		int startIndexNumber = pxPolygon.mIndexBase;
 
 		vector<Vector3> vertices;
 		vertices.reserve(vertexTotalNumber);
@@ -171,6 +173,7 @@ void DebugConvexMesh(physx::PxRigidActor* _body, physx::PxShape* _shape)
 			vertices.push_back(vertex);
 		}
 
+		debugPolygon.push_back(vertices);
 		//RENDER->AddDebugPolygon(vertices);
 	}
 }

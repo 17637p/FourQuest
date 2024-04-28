@@ -2,6 +2,9 @@
 
 #include "../FQCommon/FQCommonPhysics.h"
 
+#include <memory>
+#include <set>
+
 #pragma comment(lib, "LowLevel_static_64.lib")
 #pragma comment(lib, "LowLevelAABB_static_64.lib")
 #pragma comment(lib, "LowLevelDynamics_static_64.lib")
@@ -47,6 +50,11 @@ extern "C" {
 			virtual FQ_PHYSICS bool Update(float deltaTime) abstract;
 
 			/// <summary>
+			/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트
+			/// </summary>
+			virtual FQ_PHYSICS bool FinalUpdate() abstract;
+
+			/// <summary>
 			/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성
 			/// </summary>
 			virtual FQ_PHYSICS bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
@@ -86,6 +94,10 @@ extern "C" {
 			/// </summary>
 			/// <param name="info"> 물리 엔진 정보 </param>
 			virtual FQ_PHYSICS void SetPhysicsInfo(PhysicsEngineInfo info) abstract;
+
+			virtual FQ_PHYSICS const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& GetDebugBox() abstract;
+			virtual FQ_PHYSICS const std::set<std::shared_ptr<DirectX::BoundingSphere>>& GetDebugShere() abstract;
+			virtual FQ_PHYSICS const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() abstract;
 		};
 
 		class EngineExporter

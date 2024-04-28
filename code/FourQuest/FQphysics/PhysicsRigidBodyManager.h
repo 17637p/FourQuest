@@ -5,6 +5,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 namespace fq::physics
 {
@@ -30,6 +31,11 @@ namespace fq::physics
 		bool Update(physx::PxScene* scene, int* collisionMatrix);
 
 		/// <summary>
+		/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트
+		/// </summary>
+		bool FinalUpdate();
+
+		/// <summary>
 		/// 리지드 바디들의 충돌 필터 데이터 ( 레이어 넘버, 충돌 매트릭스 ) 를 세팅합니다.
 		/// </summary>
 		bool UpdateFilterData(std::shared_ptr<StaticRigidBody> body, int* collisionMatrix);
@@ -49,7 +55,7 @@ namespace fq::physics
 		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
 		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
 
-		DirectX::SimpleMath::Matrix GetRigidBodyMatrix(unsigned int id);
+		void GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix);
 
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
@@ -67,11 +73,37 @@ namespace fq::physics
 		/// <param name="collisionMatrix"></param>
 		void UpdateCollisionMatrix(int* collisionMatrix);
 
+		/// <summary>
+		/// 현재 리지드 바디들의 디버그 데이터를 추출합니다.
+		/// </summary>
+		void ExtractDebugData();
+
+		inline const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& GetDebugBox();
+		inline const std::set<std::shared_ptr<DirectX::BoundingSphere>>& GetDebugShere();
+		inline const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon();
+
 	private:
 		physx::PxPhysics* mPhysics;
 
 		std::shared_ptr<PhysicsCookingMeshTool> mCookingMeshTool;
 		std::map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodys;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
+
+		std::set<std::shared_ptr<DirectX::BoundingOrientedBox>> mDebugBoundingBox;
+		std::set<std::shared_ptr<DirectX::BoundingSphere>> mDebugBoundingSphere;
+		std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>> mDebugPolygon;
 	};
+
+	const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& PhysicsRigidBodyManager::GetDebugBox()
+	{
+		return mDebugBoundingBox;
+	}
+	const std::set<std::shared_ptr<DirectX::BoundingSphere>>& PhysicsRigidBodyManager::GetDebugShere()
+	{
+		return mDebugBoundingSphere;
+	}
+	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& PhysicsRigidBodyManager::GetDebugPolygon()
+	{
+		return mDebugPolygon;
+	}
 }

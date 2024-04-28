@@ -103,8 +103,8 @@ namespace fq::physics
 		ActorData1.ContectPoints = points;
 		ActorData2.ContectPoints = points;
 
-		mFunction(std::move(ActorData1), eventType);
-		mFunction(std::move(ActorData2), eventType);
+		mFunction(ActorData1, eventType);
+		mFunction(ActorData2, eventType);
 	}
 
 	void PhysicsSimulationEventCallback::SettingTriggerData(const physx::PxTriggerPair* pairs, const ECollisionEventType& eventType)
@@ -124,8 +124,8 @@ namespace fq::physics
 		Otherdata.otherLayerNumber = TriggerActorData->myLayerNumber;
 
 		// 콜백 함수 실행
-		mFunction(std::move(Mydata), eventType);
-		mFunction(std::move(Otherdata), eventType);
+		mFunction(Mydata, eventType);
+		mFunction(Otherdata, eventType);
 	}
 
 #pragma endregion
