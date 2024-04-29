@@ -106,6 +106,8 @@ bool FQGraphics::Finalize()
 
 bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned short height)
 {
+	mCameraManager->OnResize(width, height);
+
 	return true;
 }
 

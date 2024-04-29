@@ -68,7 +68,7 @@ namespace fq::game_engine
 		void beginButton_Play();
 		void beginButton_Stop();
 		void beginGizumo();
-
+		void drawSelectObjectDebugInfomation();
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
@@ -90,7 +90,6 @@ namespace fq::game_engine
 		bool mbIsUsingGizumo;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		ImGuizmo::OPERATION mOperation;
-
 
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;

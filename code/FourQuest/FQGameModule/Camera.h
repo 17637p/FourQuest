@@ -66,6 +66,16 @@ namespace fq::game_module
 		/// <returns>카메라 정보</returns>
 		fq::graphics::CameraInfo GetCameraInfomation()const { return mCameraInfomation; }
 
+		/// <summary>
+		/// View 행렬을 반환합니다
+		/// </summary>
+		DirectX::SimpleMath::Matrix GetView();
+		
+		/// <summary>
+		/// Projection 행렬을 반환합니다 
+		/// </summary>
+		DirectX::SimpleMath::Matrix GetProjection(float aspectRatio)const;
+
 	private:
 		entt::meta_handle GetHandle() override;
 

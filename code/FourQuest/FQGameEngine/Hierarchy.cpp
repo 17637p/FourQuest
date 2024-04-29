@@ -389,4 +389,3 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 			, mSelectObject);
 	}
 }
-

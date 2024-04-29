@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "EventManager.h"
 #include "Event.h"
+#include "Transform.h"
 
 fq::game_module::Camera::Camera()
 	:mbIsMain(false)
@@ -91,5 +92,20 @@ void fq::game_module::Camera::SetNearPlain(float distance)
 void fq::game_module::Camera::SetFarPlain(float distance)
 {
 	mCameraInfomation.farPlain = distance;
+}
+
+DirectX::SimpleMath::Matrix fq::game_module::Camera::GetProjection(float aspectRatio) const
+{
+	return DirectX::XMMatrixPerspectiveFovLH(mCameraInfomation.filedOfView
+		, aspectRatio
+		, mCameraInfomation.nearPlain
+		, mCameraInfomation.farPlain);
+}
+
+DirectX::SimpleMath::Matrix fq::game_module::Camera::GetView()
+{
+	auto transform = GetComponent<Transform>();
+
+	return transform->GetWorldMatrix().Invert();
 }
 

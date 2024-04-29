@@ -38,7 +38,6 @@ fq::game_engine::GamePlayWindow::~GamePlayWindow()
 
 void fq::game_engine::GamePlayWindow::Render()
 {
-
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
 		if (mWindowSize.x != ImGui::GetWindowSize().x
@@ -47,13 +46,13 @@ void fq::game_engine::GamePlayWindow::Render()
 			resizeWindow(ImGui::GetWindowSize());
 		}
 
-
 		beginMenuBar_Control();
 		beginImage_GameScreen();
-
 		beginGizumo();
+		drawSelectObjectDebugInfomation();
 	}
 	ImGui::End();
+
 }
 
 void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProcess* editor)
@@ -64,6 +63,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	// 카메라 생성
 	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
 	mCameraObject->AddComponent<fq::game_module::Camera>();
+	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(10000000);
 
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
@@ -438,18 +438,13 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 {
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
-	auto cameraInfo = camera->GetCameraInfomation();
+	auto aspectRatio = ImGui::GetWindowSize().x / ImGui::GetWindowSize().y;
 
-	auto matrix = cameraT->GetLocalMatrix();
-	auto fov = cameraInfo.filedOfView;
-	auto aspectRatio = ImGui::GetWindowSize().x
-		/ ImGui::GetWindowSize().y;
-	auto nearPlain = cameraInfo.nearPlain;
-	auto farPlain = cameraInfo.farPlain;
+	mViewTM = camera->GetView();
+	mProjTM = camera->GetProjection(aspectRatio);
 
-	mViewTM = matrix.Invert();
-	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
+	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());
 }
 
 fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
@@ -460,4 +455,31 @@ fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
 	}
 
 	return mMode;
+}
+
+void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
+{
+	if (!mSelectObject || mGameProcess->mCameraSystem->GetCameraType() != CameraSystem::CameraType::Editor)  return;
+
+	using namespace fq::game_module;
+
+	// 카메라 정보 표시
+	if (mSelectObject->HasComponent<Camera>())
+	{
+		auto camera = mSelectObject->GetComponent<Camera>();
+		auto cameraT = mSelectObject->GetComponent<Transform>();
+
+		fq::graphics::debug::FrustumInfo frustum;
+		frustum.Color = { 0.f,0.f,0.f,1.f };
+
+		float ratio = ImGui::GetWindowSize().x/ ImGui::GetWindowSize().y;
+
+		DirectX::BoundingFrustum::CreateFromMatrix(frustum.Frustum, camera->GetProjection(ratio));
+		frustum.Frustum.Origin = cameraT->GetWorldPosition();
+		frustum.Frustum.Orientation = cameraT->GetWorldRotation();
+
+		mGameProcess->mGraphics->DrawFrustum(frustum);
+	}
+
+
 }
