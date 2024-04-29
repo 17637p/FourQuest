@@ -31,17 +31,13 @@ namespace fq::game_engine
 		/// </summary>
 		void SetGrid(fq::graphics::debug::GridInfo info);
 
-		void RenderCamera(fq::game_module::Transform& transform, fq::game_module::Camera& camera);
 		void RenderPointLight(fq::game_module::Light& light);
 		void RenderDirLight(fq::game_module::Light& light);
 		void RenderSpotLight(fq::game_module::Light& light);
-
 		void RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider);
 
 	private:
 		void renderGrid();
-		void renderLight();
-		void renderCamera();
 		void renderBoxCollider();
 
 	private:

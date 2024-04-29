@@ -30,7 +30,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mViewTM{}
 	, mProjTM{}
 	, mbIsUsingGizumo(false)
-	, mWindowSize{1.f,1.f}
+	, mWindowSize{ 1.f,1.f }
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -355,13 +355,8 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 		{
 			auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
 			objectMatrix = objectMatrix * parentMatrix.Invert();
-
-			objectT->SetLocalMatrix(objectMatrix);
 		}
-		else
-		{
-			objectT->SetLocalMatrix(objectMatrix);
-		}	
+		objectT->SetLocalMatrix(objectMatrix);
 	}
 
 	if (ImGuizmo::IsOver()
@@ -434,15 +429,10 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 	mViewTM = camera->GetView();
 	mProjTM = camera->GetProjection(aspectRatio);
 
-<<<<<<< HEAD
 	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());
-=======
-	mViewTM = matrix.Invert();
-	mProjTM = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlain, farPlain);
 
 	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
->>>>>>> DebugSystem
 }
 
 fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
@@ -484,6 +474,18 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 	{
 		auto light = mSelectObject->GetComponent<Light>();
 
+		if (light->GetLightType() == fq::graphics::ELightType::Directional)
+		{
+			mEditorProcess->mDebugSystem->RenderDirLight(*light);
+		}
+		else if (light->GetLightType() == fq::graphics::ELightType::Point)
+		{
+			mEditorProcess->mDebugSystem->RenderPointLight(*light);
+		}
+		else if (light->GetLightType() == fq::graphics::ELightType::Spot)
+		{
+			mEditorProcess->mDebugSystem->RenderSpotLight(*light);
+		}
 
 	}
 

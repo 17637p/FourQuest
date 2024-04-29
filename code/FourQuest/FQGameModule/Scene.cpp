@@ -101,8 +101,6 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 	object->mbIsDestroyed = false;
 	mObjects.push_back(object);
 
-	spdlog::trace("AddGameObject {}", object->GetName());
-
 	for (auto child : object->GetChildren())
 	{
 		AddGameObject(child->shared_from_this());
