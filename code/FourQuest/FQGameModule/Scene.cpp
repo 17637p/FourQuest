@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include <queue>
+#include <spdlog/spdlog.h>
 
 #include "GameObject.h"
 #include "SceneHelper.h"
@@ -98,8 +99,9 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 	object->SetScene(this);
 	SceneHeleper::CheckNameDuplication(*this, *object);
 	object->mbIsDestroyed = false;
-
 	mObjects.push_back(object);
+
+	spdlog::trace("AddGameObject {}", object->GetName());
 
 	for (auto child : object->GetChildren())
 	{

@@ -105,6 +105,7 @@ namespace fq::game_engine
 		/// </summary>
 		void dragDropWindow();
 
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
@@ -115,7 +116,7 @@ namespace fq::game_engine
 		fq::game_module::InputManager* mInputManager;
 		fq::game_module::EventManager* mEventManager;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
-		std::shared_ptr<fq::game_module::GameObject> mCloneObject;
+		std::shared_ptr<fq::game_module::GameObject> mCopyObject;
 
 		std::string mSearchString;
 

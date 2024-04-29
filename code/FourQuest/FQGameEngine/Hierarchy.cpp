@@ -1,5 +1,7 @@
 #include "Hierarchy.h"
 
+#include <queue>
+#include <map>
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
@@ -18,7 +20,7 @@ fq::game_engine::Hierarchy::Hierarchy()
 	, mInputManager(nullptr)
 	, mEventManager(nullptr)
 	, mSelectObject(nullptr)
-	, mCloneObject(nullptr)
+	, mCopyObject(nullptr)
 	, mSelectObjectHandle{}
 	, mbIsOpen(true)
 {}
@@ -354,8 +356,6 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 
 		ImGui::EndDragDropTarget();
 	}
-
-
 }
 
 void fq::game_engine::Hierarchy::Finalize()
@@ -365,21 +365,56 @@ void fq::game_engine::Hierarchy::Finalize()
 
 void fq::game_engine::Hierarchy::ExcuteShortcut()
 {
+	using namespace fq::game_module;
+
 	const auto& input = mEditorProcess->mInputManager;
 
 	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
 	{
-		// Ctrl + C
+		// Ctrl + C (복사)
 		if (input->IsKeyState(EKey::C, EKeyState::Tap) && mSelectObject)
 		{
-			mCloneObject = mSelectObject;
+			mCopyObject = mSelectObject;
 		}
-		// Ctrl + V
-		else if (input->IsKeyState(EKey::V, EKeyState::Tap) && mCloneObject)
+		// Ctrl + V (붙여넣기)
+		else if (input->IsKeyState(EKey::V, EKeyState::Tap) && mCopyObject)
 		{
-			auto clone = std::make_shared<fq::game_module::GameObject>(*mCloneObject.get());
-			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
-				, clone);
+			std::shared_ptr<GameObject> root = nullptr;
+			std::map<std::string, std::shared_ptr<GameObject>> matchParent;
+			std::queue<GameObject*> objectQueue;
+			objectQueue.push(mCopyObject.get());
+
+			while (!objectQueue.empty())
+			{
+				auto orginObject = objectQueue.front();
+				objectQueue.pop();
+				auto clone = std::make_shared<fq::game_module::GameObject>(*orginObject);
+				if (root == nullptr)
+				{
+					root = clone;
+				}
+				auto parentT = orginObject->GetComponent<Transform>()->GetParentTransform();
+				if (parentT != nullptr)
+				{
+					auto iter = matchParent.find(parentT->GetGameObject()->GetName());
+					if (iter == matchParent.end())
+					{
+						clone->GetComponent<Transform>()->SetParent(parentT);
+					}
+					else
+					{
+						clone->GetComponent<Transform>()->SetParent(iter->second->GetComponent<Transform>());
+					}
+				}
+
+				matchParent.insert({ clone->GetName(), clone });
+				for (auto child : orginObject->GetChildren())
+				{
+					objectQueue.push(child);
+				}
+			}
+
+			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene, root);
 		}
 	}
 	else if (mSelectObject && input->IsKeyState(EKey::Del, EKeyState::Tap))

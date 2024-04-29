@@ -13,7 +13,6 @@ fq::game_module::Transform::Transform()
 	mFQTransform.localMatrix = Matrix::Identity;
 	mFQTransform.worldMatrix = Matrix::Identity;
 	mFQTransform.localScale = Vector3(1.f, 1.f, 1.f);
-
 }
 
 fq::game_module::Transform::~Transform()
@@ -32,6 +31,10 @@ fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /
 		// 기본 대입 연산자 호출한다.
 		*cloneTransform = *this;
 	}
+
+	cloneTransform->mParent = nullptr;
+	cloneTransform->mChidren.clear();
+
 	return cloneTransform;
 }
 
@@ -82,10 +85,7 @@ void fq::game_module::Transform::SetParent(Transform* parent)
 
 void fq::game_module::Transform::AddChild(Transform* inChild)
 {
-	if (inChild == this || inChild == nullptr)
-	{
-		return;
-	}
+	assert(inChild != this || inChild != nullptr);
 
 	for (Transform* child : mChidren)
 	{

@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "EventManager.h"
 #include "Event.h"
+#include "SceneHelper.h"
 
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
@@ -30,6 +31,7 @@ fq::game_module::GameObject::GameObject(const GameObject& other)
 	for (const auto& [id, component] : other.GetComponentContainer())
 	{
 		std::shared_ptr<Component> cloneComponent(component->Clone());
+		cloneComponent->SetGameObject(this);
 		mComponents.insert({ id,cloneComponent });
 	}
 }
@@ -61,12 +63,16 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 
 		if (iter == mComponents.end())
 		{
+			// 货肺 积己
 			std::shared_ptr<Component> cloneComponent(component->Clone());
 			mComponents.insert({ id,cloneComponent });
+			cloneComponent->SetGameObject(this);
 		}
 		else
 		{
+			// 丹绢竞快扁
 			component->Clone(iter->second.get());
+			component->SetGameObject(this);
 		}
 	}
 

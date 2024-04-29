@@ -472,7 +472,7 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 		fq::graphics::debug::FrustumInfo frustum;
 		frustum.Color = { 0.f,0.f,0.f,1.f };
 
-		float ratio = ImGui::GetWindowSize().x/ ImGui::GetWindowSize().y;
+		float ratio = ImGui::GetWindowSize().x / ImGui::GetWindowSize().y;
 
 		DirectX::BoundingFrustum::CreateFromMatrix(frustum.Frustum, camera->GetProjection(ratio));
 		frustum.Frustum.Origin = cameraT->GetWorldPosition();
@@ -481,5 +481,12 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 		mGameProcess->mGraphics->DrawFrustum(frustum);
 	}
 
+	// 라이트 정보 표시
+	if (mSelectObject->HasComponent<Light>())
+	{
+		auto light = mSelectObject->GetComponent<Light>();
+
+
+	}
 
 }
