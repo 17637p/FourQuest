@@ -225,6 +225,8 @@ namespace fq::physics
 
 #pragma endregion
 
+#pragma region GetFunction
+
 	DirectX::SimpleMath::Matrix FQPhysics::GetRigidBodyMatrix(unsigned int id)
 	{
 		DirectX::SimpleMath::Matrix dxMatrix;
@@ -233,16 +235,11 @@ namespace fq::physics
 		return dxMatrix;
 	}
 
-	const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& FQPhysics::GetDebugBox()
-	{
-		return mRigidBodyManager->GetDebugBox();
-	}
-	const std::set<std::shared_ptr<DirectX::BoundingSphere>>& FQPhysics::GetDebugShere()
-	{
-		return mRigidBodyManager->GetDebugShere();
-	}
 	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
 	}
+
+#pragma endregion
+
 }

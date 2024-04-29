@@ -78,8 +78,6 @@ namespace fq::physics
 		/// </summary>
 		void ExtractDebugData();
 
-		inline const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& GetDebugBox();
-		inline const std::set<std::shared_ptr<DirectX::BoundingSphere>>& GetDebugShere();
 		inline const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon();
 
 	private:
@@ -89,19 +87,9 @@ namespace fq::physics
 		std::map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodys;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
 
-		std::set<std::shared_ptr<DirectX::BoundingOrientedBox>> mDebugBoundingBox;
-		std::set<std::shared_ptr<DirectX::BoundingSphere>> mDebugBoundingSphere;
 		std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>> mDebugPolygon;
 	};
 
-	const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& PhysicsRigidBodyManager::GetDebugBox()
-	{
-		return mDebugBoundingBox;
-	}
-	const std::set<std::shared_ptr<DirectX::BoundingSphere>>& PhysicsRigidBodyManager::GetDebugShere()
-	{
-		return mDebugBoundingSphere;
-	}
 	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& PhysicsRigidBodyManager::GetDebugPolygon()
 	{
 		return mDebugPolygon;

@@ -76,8 +76,6 @@ namespace fq::physics
 		/// <param name="info"> 물리 엔진 정보 </param>
 		virtual void SetPhysicsInfo(PhysicsEngineInfo info) override;
 
-		const std::set<std::shared_ptr<DirectX::BoundingOrientedBox>>& GetDebugBox() override;
-		const std::set<std::shared_ptr<DirectX::BoundingSphere>>& GetDebugShere() override;
 		const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() override;
 
 	private:

@@ -50,18 +50,14 @@ namespace fq::physics
 		mUpcomingActors.clear();
 
 
-#ifdef _DEBUG
-		ExtractDebugData();
-#endif
-
 		return true;
 	}
 
 	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
-		mDebugBoundingBox.clear();
-		mDebugBoundingSphere.clear();
-		mDebugPolygon.clear();
+#ifdef _DEBUG
+		ExtractDebugData();
+#endif
 
 		return true;
 	}
@@ -358,6 +354,8 @@ namespace fq::physics
 	{
 		using namespace std;
 
+		mDebugPolygon.clear();
+
 		for (const auto& body : mRigidBodys)
 		{
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
@@ -367,21 +365,7 @@ namespace fq::physics
 				physx::PxRigidActor* actor = dynamicBody->GetRigidDynamic();
 				actor->getShapes(&shape, sizeof(physx::PxShape));
 
-				if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
-				{
-					shared_ptr<DirectX::BoundingOrientedBox> box = make_shared<DirectX::BoundingOrientedBox>();
-					ExtractDebugBox(actor, shape, *box.get());
-
-					mDebugBoundingBox.insert(box);
-				}
-				else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
-				{
-					shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
-					ExtractDebugSphere(actor, shape, *sphere.get());
-
-					mDebugBoundingSphere.insert(sphere);
-				}
-				else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
 					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
 					ExtractDebugConvexMesh(actor, shape, *polygon.get());
@@ -396,21 +380,7 @@ namespace fq::physics
 				physx::PxRigidActor* actor = staticBody->GetRigidStatic();
 				actor->getShapes(&shape, sizeof(physx::PxShape));
 
-				if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
-				{
-					shared_ptr<DirectX::BoundingOrientedBox> box = make_shared<DirectX::BoundingOrientedBox>();
-					ExtractDebugBox(actor, shape, *box.get());
-
-					mDebugBoundingBox.insert(box);
-				}
-				else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
-				{
-					shared_ptr<DirectX::BoundingSphere> sphere = make_shared<DirectX::BoundingSphere>();
-					ExtractDebugSphere(actor, shape, *sphere.get());
-
-					mDebugBoundingSphere.insert(sphere);
-				}
-				else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
 					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
 					ExtractDebugConvexMesh(actor, shape, *polygon.get());
