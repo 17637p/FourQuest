@@ -1,5 +1,7 @@
 #include "EditorEngine.h"
 
+#include <algorithm>
+
 #include "../FQGameModule/GameModule.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
@@ -91,24 +93,24 @@ void fq::game_engine::EditorEngine::Process()
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
 				mGameProcess->mWindowSystem->OnResize();
-				mGameProcess->mGraphics->SetWindowSize(mGameProcess->mWindowSystem->GetScreenWidth()
-					, mGameProcess->mWindowSystem->GetScreenHeight());
+
+				unsigned short width = max(mGameProcess->mWindowSystem->GetScreenWidth(), 1);
+				unsigned short hegiht =max(mGameProcess->mWindowSystem->GetScreenHeight(), 1);
+				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 
 			auto mode = mEditor->mGamePlayWindow->GetMode();
 
+			// 시간,입력 처리
 			float deltaTime = mGameProcess->mTimeManager->Update();
+			mGameProcess->mInputManager->Update();
 
 			if (mode == EditorMode::Play)
 			{
-				// 시간,입력 처리
-				mGameProcess->mInputManager->Update();
-
 				// 물리처리
 				mGameProcess->mSceneManager->FixedUpdate(deltaTime);
 				mGameProcess->mPhysics->Update(deltaTime);
 				mGameProcess->mPhysicsSystem->Update();
-
 
 				mGameProcess->mSceneManager->Update(deltaTime);
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
@@ -121,13 +123,14 @@ void fq::game_engine::EditorEngine::Process()
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
+			mEditor->mDebugSystem->Render();
 			mGameProcess->mGraphics->Render();
 
 			mEditor->mImGuiSystem->NewFrame();
 			UpdateEditor(deltaTime);
-
 			RenderEditorWinodw();
 			mEditor->mImGuiSystem->RenderImGui();
+
 			mGameProcess->mGraphics->EndRender();
 
 			mGameProcess->mSceneManager->PostUpdate();
@@ -182,6 +185,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mCommandSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mPrefabSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mModelSystem->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mDebugSystem->Initialize(mGameProcess.get());
 
 	// Window 초기화
 	mEditor->mInspector->Initialize(mGameProcess.get(), mEditor.get());

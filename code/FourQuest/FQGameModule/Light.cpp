@@ -21,7 +21,7 @@ entt::meta_handle fq::game_module::Light::GetHandle()
 void fq::game_module::Light::SetLightType(LightType type)
 {
 	mInfomation.type = type;
-	fireSetLightType(true);
+	fireSetLightType();
 }
 
 void fq::game_module::Light::SetRange(float range)
@@ -32,15 +32,11 @@ void fq::game_module::Light::SetRange(float range)
 void fq::game_module::Light::SetIntensity(float intensity)
 {
 	mInfomation.intensity = intensity;
-
-	fireSetLightType();
 }
 
 void fq::game_module::Light::SetLightColor(LightColor color)
 {
 	mInfomation.color = color;
-
-	fireSetLightType();
 }
 
 void fq::game_module::Light::SetAttenuation(Vector3 attenuation)
@@ -58,7 +54,7 @@ void fq::game_module::Light::SetSpot(float spot)
 	mInfomation.spot = spot;
 }
 
-void fq::game_module::Light::fireSetLightType(bool isChangedType /*= false*/)
+void fq::game_module::Light::fireSetLightType()
 {
 	if (GetGameObject() && GetScene())
 	{
@@ -79,6 +75,7 @@ fq::game_module::Component* fq::game_module::Light::Clone(Component* clone /* = 
 		// 기본 대입 연산자 호출한다.
 		*cloneLight = *this;
 	}
+
 	return cloneLight;
 }
 

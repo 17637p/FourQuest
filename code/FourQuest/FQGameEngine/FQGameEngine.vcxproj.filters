@@ -14,9 +14,6 @@
     <Filter Include="include\11.EditorWindow">
       <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Test">
-      <UniqueIdentifier>{e1d570db-360d-4a25-b89a-56b01276bfa8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.GameProcess">
       <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,9 @@
     <Filter Include="src\01.Engine">
       <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{5b42f24e-09ee-48d8-a850-1e29f137c3a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorEngine.h">
@@ -106,9 +106,6 @@
     </ClInclude>
     <ClInclude Include="GamePlayWindow.h">
       <Filter>include\11.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="Test.h">
-      <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="FQGameEngine.h">
       <Filter>include\00.Define</Filter>
@@ -157,6 +154,12 @@
     </ClInclude>
     <ClInclude Include="LightSystem.h">
       <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -208,9 +211,6 @@
     <ClCompile Include="CommandSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
     <ClCompile Include="WndProc.cpp">
       <Filter>src\00.Define</Filter>
     </ClCompile>
@@ -249,6 +249,12 @@
     </ClCompile>
     <ClCompile Include="LightSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

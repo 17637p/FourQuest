@@ -62,7 +62,7 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 	auto scenePath = fq::path::GetScenePath() / event.sceneName / "collision_matrix.txt";
 	mCollisionMatrix.Load(scenePath);
 
-//	setPhysicsEngineinfo();
+	setPhysicsEngineinfo();
 
 	for (auto& object : mScene->GetObjectView())
 	{
@@ -95,7 +95,7 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 		|| event.id != entt::resolve<fq::game_module::MeshCollider>().id())
 		//		|| event.id != entt::resolve<fq::game_module::CapsuleColldier>().id()
 	{
-		removeCollider(event.component->GetGameObject());
+		addCollider(event.component->GetGameObject());
 	}
 }
 
@@ -118,8 +118,6 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 
 void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* object)
 {
-	return;
-
 	using namespace fq::game_module;
 
 	if (!object->HasComponent<RigidBody>())
@@ -168,8 +166,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject* object)
 {
-	return;
-
 	using namespace fq::game_module;
 	if (!object->HasComponent<RigidBody>())
 	{
