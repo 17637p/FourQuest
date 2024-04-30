@@ -85,10 +85,6 @@
     <ClInclude Include="D3D11Util.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="CommonHeader.h" />
-    <ClInclude Include="ConstantBufferStructure.h" />
-    <ClInclude Include="D3D11Common.h" />
-    <ClInclude Include="Light.h" />
     <ClInclude Include="DeferredPipeline.h">
       <Filter>Pipeline</Filter>
     </ClInclude>
@@ -103,6 +99,21 @@
     </ClInclude>
     <ClInclude Include="D3D11DebugDrawManager.h">
       <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Common.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferStructure.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonHeader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FowardPass.h">
+      <Filter>Pipeline\Pass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +149,9 @@
     </Filter>
     <Filter Include="Enum">
       <UniqueIdentifier>{66654c26-2bfd-407b-bbaa-5b2daa0dd1de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pipeline\Pass">
+      <UniqueIdentifier>{d6701fea-4ad9-4154-aad0-6dd191323d99}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -213,8 +227,6 @@
     <ClCompile Include="D3D11Util.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="ConstantBufferStructure.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="DeferredPipeline.cpp">
       <Filter>Pipeline</Filter>
     </ClCompile>
@@ -226,6 +238,15 @@
     </ClCompile>
     <ClCompile Include="D3D11DebugDrawManager.h.cpp">
       <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferStructure.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="FowardPass.cpp">
+      <Filter>Pipeline\Pass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

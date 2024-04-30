@@ -158,6 +158,7 @@
     <ClInclude Include="D3D11State.h" />
     <ClInclude Include="EPipelineType.h" />
     <ClInclude Include="ForwardPipeline.h" />
+    <ClInclude Include="FowardPass.h" />
     <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="Light.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="D3D11DebugDrawManager.h.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
+    <ClCompile Include="FowardPass.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Light.cpp" />
