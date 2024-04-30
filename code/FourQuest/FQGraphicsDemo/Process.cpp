@@ -359,7 +359,7 @@ void Process::yaw(float angle)
 	up = up * angle;
 	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(up.y, up.x, up.z);
 
-	cameraTransform.worldRotation = quaternion * cameraTransform.worldRotation;
+	cameraTransform.worldRotation = cameraTransform.worldRotation * quaternion;
 
 	cameraTransform.worldMatrix =
 		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *

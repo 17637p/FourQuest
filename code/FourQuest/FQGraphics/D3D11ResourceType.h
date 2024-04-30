@@ -20,7 +20,9 @@ namespace fq::graphics
 		Default,
 		Offscreen,
 		OffscreenHDR,
-		OffscreenGrayscale
+		OffscreenGrayscale,
+
+		Picking,
 	};
 
 	enum class ED3D11ShaderResourceViewType
