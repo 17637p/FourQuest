@@ -38,13 +38,13 @@ namespace fq::physics
 			if (dynamicBody)
 			{
 				UpdateFilterData(dynamicBody, collisionMatrix);
-				scene->addActor(*dynamicBody->GetRigidDynamic());
+				scene->addActor(*dynamicBody->GetPxRigidDynamic());
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
 				UpdateFilterData(staticBody, collisionMatrix);
-				scene->addActor(*staticBody->GetRigidStatic());
+				scene->addActor(*staticBody->GetPxRigidStatic());
 			}
 		}
 		mUpcomingActors.clear();
@@ -69,15 +69,61 @@ namespace fq::physics
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 		if (dynamicBody)
 		{
-			physx::PxTransform pxTransform = dynamicBody->GetRigidDynamic()->getGlobalPose();
+			physx::PxTransform pxTransform = dynamicBody->GetPxRigidDynamic()->getGlobalPose();
 			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
 		}
 		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 		if (staticBody)
 		{
-			physx::PxTransform pxTransform = staticBody->GetRigidStatic()->getGlobalPose();
+			physx::PxTransform pxTransform = staticBody->GetPxRigidStatic()->getGlobalPose();
 			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
 		}
+	}
+
+	bool PhysicsRigidBodyManager::SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform)
+	{
+		auto body = mRigidBodys.find(id)->second;
+
+		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
+		if (dynamicBody)
+		{
+			physx::PxTransform pxTransform;
+			CopyDirectXMatrixToPxTransform(worldTransform, pxTransform);
+			dynamicBody->GetPxRigidDynamic()->setGlobalPose(pxTransform);
+			
+			return true;
+		}
+		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
+		if (staticBody)
+		{
+			physx::PxTransform pxTransform;
+			CopyDirectXMatrixToPxTransform(worldTransform, pxTransform);
+			staticBody->GetPxRigidStatic()->setGlobalPose(pxTransform);
+			
+			return true;
+		}
+
+		return false;
+	}
+
+	bool PhysicsRigidBodyManager::AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity)
+	{
+		auto body = mRigidBodys.find(id)->second;
+
+		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
+		if (dynamicBody)
+		{
+			physx::PxVec3 pxVelocity = dynamicBody->GetPxRigidDynamic()->getLinearVelocity();
+			pxVelocity.x += velocity.x;
+			pxVelocity.y += velocity.y;
+			pxVelocity.z -= velocity.z;
+
+			dynamicBody->GetPxRigidDynamic()->setLinearVelocity(pxVelocity);
+			
+			return true;
+		}
+
+		return false;
 	}
 
 #pragma region UpdateFilterData
@@ -85,7 +131,7 @@ namespace fq::physics
 	bool PhysicsRigidBodyManager::UpdateFilterData(std::shared_ptr<StaticRigidBody> body, int* collisionMatrix)
 	{
 		physx::PxShape* shape;
-		physx::PxRigidStatic* rigidStatic = body->GetRigidStatic();
+		physx::PxRigidStatic* rigidStatic = body->GetPxRigidStatic();
 
 		rigidStatic->getShapes(&shape, sizeof(physx::PxShape));
 
@@ -102,7 +148,7 @@ namespace fq::physics
 	bool PhysicsRigidBodyManager::UpdateFilterData(std::shared_ptr<DynamicRigidBody> body, int* collisionMatrix)
 	{
 		physx::PxShape* shape;
-		physx::PxRigidDynamic* rigidStatic = body->GetRigidDynamic();
+		physx::PxRigidDynamic* rigidStatic = body->GetPxRigidDynamic();
 
 		rigidStatic->getShapes(&shape, sizeof(physx::PxShape));
 
@@ -247,7 +293,7 @@ namespace fq::physics
 
 #pragma region RemoveRigidBody
 
-	bool PhysicsRigidBodyManager::RemoveRigidBody(unsigned int id, physx::PxScene* scene)
+	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene)
 	{
 		std::shared_ptr<RigidBody> body = mRigidBodys.find(id)->second;
 
@@ -256,7 +302,7 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 			if (dynamicBody)
 			{
-				scene->removeActor(*dynamicBody->GetRigidDynamic());
+				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
 				mRigidBodys.erase(mRigidBodys.find(id));
 
 				return true;
@@ -264,7 +310,7 @@ namespace fq::physics
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
-				scene->removeActor(*staticBody->GetRigidStatic());
+				scene->removeActor(*staticBody->GetPxRigidStatic());
 				mRigidBodys.erase(mRigidBodys.find(id));
 
 				return true;
@@ -281,13 +327,13 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
 			if (dynamicBody)
 			{
-				scene->removeActor(*dynamicBody->GetRigidDynamic());
+				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
 				continue;
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body.second);
 			if (staticBody)
 			{
-				scene->removeActor(*staticBody->GetRigidStatic());
+				scene->removeActor(*staticBody->GetPxRigidStatic());
 				continue;
 			}
 		}
@@ -298,13 +344,13 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 			if (dynamicBody)
 			{
-				scene->removeActor(*dynamicBody->GetRigidDynamic());
+				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
 				continue;
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
-				scene->removeActor(*staticBody->GetRigidStatic());
+				scene->removeActor(*staticBody->GetPxRigidStatic());
 				continue;
 			}
 		}
@@ -362,7 +408,7 @@ namespace fq::physics
 			if (dynamicBody)
 			{
 				physx::PxShape* shape;
-				physx::PxRigidActor* actor = dynamicBody->GetRigidDynamic();
+				physx::PxRigidActor* actor = dynamicBody->GetPxRigidDynamic();
 				actor->getShapes(&shape, sizeof(physx::PxShape));
 
 				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
@@ -377,7 +423,7 @@ namespace fq::physics
 			if (staticBody)
 			{
 				physx::PxShape* shape;
-				physx::PxRigidActor* actor = staticBody->GetRigidStatic();
+				physx::PxRigidActor* actor = staticBody->GetPxRigidStatic();
 				actor->getShapes(&shape, sizeof(physx::PxShape));
 
 				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)

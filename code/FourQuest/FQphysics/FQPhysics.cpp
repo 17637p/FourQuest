@@ -187,7 +187,7 @@ namespace fq::physics
 
 #pragma region RemoveRigidBody
 
-	bool FQPhysics::RemoveRigidBody(unsigned int id)
+	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
 		if (!mRigidBodyManager->RemoveRigidBody(id, mScene))
 			return false;
@@ -207,7 +207,7 @@ namespace fq::physics
 
 #pragma region SetCallBackFunction
 
-	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
+	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)>& func)
 	{
 		mMyEventCallback->SetCallbackFunction(func);
 	}
@@ -216,7 +216,7 @@ namespace fq::physics
 
 #pragma region SetPhysicsInfo
 
-	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo info)
+	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
 	{
 		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, info.gravity.z));
 		mCollisionMatrix = info.collisionMatrix;
@@ -227,12 +227,22 @@ namespace fq::physics
 
 #pragma region GetFunction
 
-	DirectX::SimpleMath::Matrix FQPhysics::GetRigidBodyMatrix(unsigned int id)
+	DirectX::SimpleMath::Matrix FQPhysics::GetRigidBodyMatrix(const unsigned int& id)
 	{
-		DirectX::SimpleMath::Matrix dxMatrix;
+		DirectX::SimpleMath::Matrix dxMatrix{};
 		mRigidBodyManager->GetRigidBodyMatrix(id, dxMatrix);
 
 		return dxMatrix;
+	}
+
+	bool FQPhysics::SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform)
+	{
+		return mRigidBodyManager->SetRigidBodyMatrix(id, worldTransform);
+	}
+
+	bool FQPhysics::AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity)
+	{
+		return mRigidBodyManager->AddRigidBodyVelocity(id, velocity);
 	}
 
 	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& FQPhysics::GetDebugPolygon()

@@ -47,16 +47,24 @@ namespace fq::physics
 		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
 
 		/// <summary>
-		/// 
+		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
 		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		virtual DirectX::SimpleMath::Matrix GetRigidBodyMatrix(unsigned int id) override;
+		virtual DirectX::SimpleMath::Matrix GetRigidBodyMatrix(const unsigned int& id) override;
+
+		/// <summary>
+		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
+		/// </summary>
+		virtual bool SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform) override;
+
+		/// <summary>
+		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 속도 추가
+		/// </summary>
+		virtual bool AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity) override;
 
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 		/// </summary>
-		virtual bool RemoveRigidBody(unsigned int id) override;
+		virtual bool RemoveRigidBody(const unsigned int& id) override;
 
 		/// <summary>
 		/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
@@ -68,14 +76,17 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="func"> 콜리전 데이터 구조체 </param>
 		/// <param name="eventType"> 콜리전 이벤트 타입 </param>
-		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) override;
+		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)>& func) override;
 
 		/// <summary>
 		/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )
 		/// </summary>
 		/// <param name="info"> 물리 엔진 정보 </param>
-		virtual void SetPhysicsInfo(PhysicsEngineInfo info) override;
+		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
 
+		/// <summary>
+		/// 폴리곤의 디버그 데이터 
+		/// </summary>
 		const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() override;
 
 	private:
