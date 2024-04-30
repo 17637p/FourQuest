@@ -128,7 +128,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	}
 	auto rigid = object->GetComponent<RigidBody>();
 	auto transform = object->GetComponent<Transform>();
-
 	bool isStatic = rigid->IsStatic();
 
 	// 1. Box Colllider
@@ -159,6 +158,31 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		
 	}
 	// 2. Sphere Collider
+	if (object->HasComponent<SphereCollider>())
+	{
+		auto sphereCollider = object->GetComponent<SphereCollider>();
+		auto type = sphereCollider->GetType();
+		auto sphereInfo = sphereCollider->GetSphereInfomation();
+
+		ColliderID id = ++mLastColliderID;
+		sphereInfo.colliderInfo.id = id;
+		sphereInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
+		sphereInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		sphereCollider->SetSphereInfomation(sphereInfo);
+
+		if (isStatic)
+		{
+			bool check = mPhysicsEngine->CreateStaticBody(sphereInfo, type);
+			assert(check);
+			mColliderContainer.insert({ id, {mBoxID, sphereCollider} });
+		}
+		else
+		{
+			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type);
+			assert(check);
+			mColliderContainer.insert({ id, {mBoxID, sphereCollider} });
+		}
+	}
 
 	// 3. Capsule Collider
 
@@ -185,6 +209,15 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
 	// 2. Sphere Collider
+	if (object->HasComponent<SphereCollider>())
+	{
+		auto sphereCollider = object->GetComponent<SphereCollider>();
+		auto id = sphereCollider->GetSphereInfomation().colliderInfo.id;
+		assert(id != physics::unregisterID);
+
+		mPhysicsEngine->RemoveRigidBody(id);
+		mColliderContainer.erase(mColliderContainer.find(id));
+	}
 
 	// 3. Capsule Collider
 
@@ -240,14 +273,14 @@ void fq::game_engine::PhysicsSystem::Update()
 
 void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 {
-	fq::physics::PhysicsEngineInfo info;
+	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
 
 	for (int i = 0; i < 16; ++i)
 	{
-		info.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
+		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
 	}
-	info.gravity = mGravity;
+	mPhysicsEngineInfomation.gravity = mGravity;
 
-	mGameProcess->mPhysics->SetPhysicsInfo(info);
+	mGameProcess->mPhysics->SetPhysicsInfo(mPhysicsEngineInfomation);
 }
 

@@ -47,6 +47,46 @@ namespace fq::game_module
 		/// </summary>
 		void SetBoxInfomation(BoxInfo info) { mBoxinfomation = info; }
 
+		/// <summary>
+		/// 정지 마찰 계수를 반환합니다 
+		/// </summary>
+		float GetStaticFriction()const;
+		
+		/// <summary>
+		/// 정지 마찰 계수를 설정합니다
+		/// </summary>
+		void SetStaticFriction(float friction);
+		
+		/// <summary>
+		/// 동적 마찰 계수를 반환합니다 
+		/// </summary>
+		float GetDynamicFriction()const;
+
+		/// <summary>
+		/// 동적 마찰 계수를 설정합니다 
+		/// </summary>
+		void SetDynamicFriction(float friction);
+
+		/// <summary>
+		/// 복원 계수를 반환합니다 
+		/// </summary>
+		float GetRestituion()const;
+
+		/// <summary>
+		/// 복원 계수를 설정합니다 
+		/// </summary>
+		void SetRestituion(float restitution);
+
+		/// <summary>
+		/// 밀도를 설정합니다
+		/// </summary>
+		float GetDensity()const;
+	
+		/// <summary>
+		/// 밀도를 반환합니다
+		/// </summary>
+		void SetDensity(float density);
+
 	private:
 		entt::meta_handle GetHandle() override;
 

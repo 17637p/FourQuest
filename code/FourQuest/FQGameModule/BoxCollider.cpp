@@ -2,6 +2,7 @@
 
 fq::game_module::BoxCollider::BoxCollider()
 	:mBoxinfomation{}
+	,mType(fq::physics::EColliderType::COLLISION)
 {
 	mBoxinfomation.boxExtent = { 1.f, 1.f, 1.f };
 }
@@ -42,6 +43,48 @@ fq::game_module::Component* fq::game_module::BoxCollider::Clone(Component* clone
 		*cloneCollider = *this;
 	}
 
+	cloneCollider->mBoxinfomation.colliderInfo.id = fq::physics::unregisterID;
+
 	return cloneCollider;
+}
+
+float fq::game_module::BoxCollider::GetStaticFriction() const
+{
+	return mBoxinfomation.colliderInfo.staticFriction;
+}
+
+void fq::game_module::BoxCollider::SetStaticFriction(float friction)
+{
+	mBoxinfomation.colliderInfo.staticFriction = friction;
+}
+
+float fq::game_module::BoxCollider::GetDynamicFriction() const
+{
+	return mBoxinfomation.colliderInfo.dynamicFriction;
+}
+
+void fq::game_module::BoxCollider::SetDynamicFriction(float friction)
+{
+	mBoxinfomation.colliderInfo.dynamicFriction = friction;
+}
+
+float fq::game_module::BoxCollider::GetRestituion() const
+{
+	return mBoxinfomation.colliderInfo.restitution;
+}
+
+void fq::game_module::BoxCollider::SetRestituion(float restitution)
+{
+	mBoxinfomation.colliderInfo.restitution = restitution;
+}
+
+float fq::game_module::BoxCollider::GetDensity() const
+{
+	return mBoxinfomation.colliderInfo.density;
+}
+
+void fq::game_module::BoxCollider::SetDensity(float density)
+{
+	mBoxinfomation.colliderInfo.density = density;
 }
 

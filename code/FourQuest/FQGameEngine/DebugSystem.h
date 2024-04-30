@@ -35,9 +35,11 @@ namespace fq::game_engine
 		void RenderDirLight(fq::game_module::Light& light);
 		void RenderSpotLight(fq::game_module::Light& light);
 		void RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider);
+		void RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider);
 
 	private:
 		void renderGrid();
+		void renderSphereCollider();
 		void renderBoxCollider();
 
 	private:

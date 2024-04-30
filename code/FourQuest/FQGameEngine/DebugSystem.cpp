@@ -36,6 +36,7 @@ void fq::game_engine::DebugSystem::Render()
 {
 	renderGrid();
 	renderBoxCollider();
+	renderSphereCollider();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -115,5 +116,25 @@ void fq::game_engine::DebugSystem::renderBoxCollider()
 		[this](GameObject& object, Transform& transform, BoxCollider& box)
 		{
 			RenderBoxCollier(transform, box);
+		});
+}
+
+void fq::game_engine::DebugSystem::RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider)
+{
+	fq::graphics::debug::SphereInfo info;
+	info.Color = { 0.f,1.f,0.f,1.f };
+	info.Sphere.Center = transform.GetWorldPosition();
+	info.Sphere.Radius = collider.GetRadius();
+	mGameProcess->mGraphics->DrawSphere(info);
+}
+
+void fq::game_engine::DebugSystem::renderSphereCollider()
+{
+	using namespace fq::game_module;
+
+	mScene->ViewComponents< Transform, SphereCollider>(
+		[this](GameObject& object, Transform& transform, SphereCollider& sphere)
+		{
+			RenderSphereCollier(transform, sphere);
 		});
 }

@@ -162,13 +162,43 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, "static or dynamic")
 		.base<Component>();
 
+	// BoxCollider
 	entt::meta<BoxCollider>()
 		.type("BoxCollider"_hs)
 		.prop(fq::reflect::prop::Name, "BoxCollider")
 		.data<&BoxCollider::SetExtent, &BoxCollider::GetExtent>("Extent"_hs)
 		.prop(fq::reflect::prop::Name, "Extent")
 		.prop(fq::reflect::prop::Comment, u8"박스의 크기")
+		.data<&BoxCollider::SetStaticFriction, &BoxCollider::GetStaticFriction>("StaticFriction"_hs)
+		.prop(fq::reflect::prop::Name, "StaticFriction")
+		.data<&BoxCollider::SetDynamicFriction, &BoxCollider::GetDynamicFriction>("DynamicFriction"_hs)
+		.prop(fq::reflect::prop::Name, "DynamicFriction")
+		.data<&BoxCollider::SetRestituion, &BoxCollider::GetRestituion>("Restitution"_hs)
+		.prop(fq::reflect::prop::Name, "Restitution")
+		.data<&BoxCollider::SetDensity, &BoxCollider::GetDensity>("Density"_hs)
+		.prop(fq::reflect::prop::Name, "Density")
 		.base<Component>();
+
+	// SphereCollider
+	entt::meta<SphereCollider>()
+		.type("SphereCollider"_hs)
+		.prop(fq::reflect::prop::Name, "SphereCollider")
+		.data<&SphereCollider::SetRadius, &SphereCollider::GetRadius>("Radius"_hs)
+		.prop(fq::reflect::prop::Name, "Radius")
+		.data<&SphereCollider::SetStaticFriction, &SphereCollider::GetStaticFriction>("StaticFriction"_hs)
+		.prop(fq::reflect::prop::Name, "StaticFriction")
+		.data<&SphereCollider::SetDynamicFriction, &SphereCollider::GetDynamicFriction>("DynamicFriction"_hs)
+		.prop(fq::reflect::prop::Name, "DynamicFriction")
+		.data<&SphereCollider::SetRestituion, &SphereCollider::GetRestituion>("Restitution"_hs)
+		.prop(fq::reflect::prop::Name, "Restitution")
+		.data<&SphereCollider::SetDensity, &SphereCollider::GetDensity>("Density"_hs)
+		.prop(fq::reflect::prop::Name, "Density")
+		.base<Component>();
+
+	// CapsuleCollider
+
+
+	// MeshCollider
 
 
 }
