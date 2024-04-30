@@ -151,6 +151,7 @@
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionMatrix.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentIterator.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionMatrix.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentIterator.cpp" />

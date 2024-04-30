@@ -4,8 +4,8 @@
 #include <memory>
 
 #include "../FQReflect/FQReflect.h"
-
 #include "GameModuleEnum.h"
+#include "Collision.h"
 
 namespace fq::game_module
 {
@@ -15,7 +15,7 @@ namespace fq::game_module
 	/// <summary>
 	/// Component들을 저장하고 관리하는 컨테이너
 	/// </summary>
-	class GameObject : 
+	class GameObject :
 		public std::enable_shared_from_this<GameObject>,
 		public fq::reflect::IHandle
 	{
@@ -45,7 +45,11 @@ namespace fq::game_module
 		~GameObject();
 
 		GameObject(const GameObject&& other) = delete;
-		
+
+		//////////////////////////////////////////////////////////////////////////
+		//					      Call Back Event								//  
+		//////////////////////////////////////////////////////////////////////////
+
 		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
@@ -73,6 +77,13 @@ namespace fq::game_module
 		/// GameObject 파괴시 호출
 		/// </summary>
 		void OnDestroy();
+
+		void OnCollisionEnter(const Collision& collision);
+		void OnCollisionExit(const Collision& collision);
+		void OnCollisionStay(const Collision& collision);
+		void OnTriggerEnter(const Collision& collision);
+		void OnTriggerStay(const Collision& collision);
+		void OnTriggerExit(const Collision& collision);
 
 		/// <summary>
 		/// 오브젝트가 삭제예정인지 확인

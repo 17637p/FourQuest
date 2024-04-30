@@ -1,8 +1,9 @@
 #include "BoxCollider.h"
 
 fq::game_module::BoxCollider::BoxCollider()
+	:mBoxinfomation{}
 {
-
+	mBoxinfomation.boxExtent = { 1.f, 1.f, 1.f };
 }
 
 fq::game_module::BoxCollider::~BoxCollider()
@@ -12,7 +13,9 @@ fq::game_module::BoxCollider::~BoxCollider()
 
 void fq::game_module::BoxCollider::SetExtent(DirectX::SimpleMath::Vector3 extent)
 {
-	mBoxinfomation.boxExtent = extent;
+	mBoxinfomation.boxExtent.x = max(extent.x, 0.000001f);
+	mBoxinfomation.boxExtent.y = max(extent.y, 0.000001f);
+	mBoxinfomation.boxExtent.z = max(extent.z, 0.000001f);
 }
 
 DirectX::SimpleMath::Vector3 fq::game_module::BoxCollider::GetExtent() const

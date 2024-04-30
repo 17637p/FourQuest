@@ -37,31 +37,38 @@ namespace fq::game_module
 		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
-		virtual void OnStart() {};
+		virtual void OnStart() {}
 		
 		/// <summary>
 		/// 고정된 프레임으로 호출
 		/// </summary>
 		/// <param name="dt">FixedDeltaTime</param>
-		virtual void OnFixedUpdate(float dt) {};
+		virtual void OnFixedUpdate(float dt) {}
 		
 		/// <summary>
 		/// 매 프레임 호출
 		/// 컴포넌트의 기본적인 로직을 수행
 		/// </summary>
 		/// <param name="dt">DeltaTime</param>
-		virtual void OnUpdate(float dt) {};
+		virtual void OnUpdate(float dt) {}
 		
 		/// <summary>
 		/// Scene의 GameObject의 Update 이후에 호출합니다
 		/// </summary>
 		/// <param name="dt">DeltaTime</param>
-		virtual void OnLateUpdate(float dt) {};
+		virtual void OnLateUpdate(float dt) {}
 
 		/// <summary>
 		/// GameObject 파괴시 호출합니다
 		/// </summary>
-		virtual void OnDestroy() {};
+		virtual void OnDestroy() {}
+
+		virtual void OnCollisionEnter(const Collision& collision) {}
+		virtual void OnCollisionExit(const Collision& collision) {}
+		virtual void OnCollisionStay(const Collision& collision) {}
+		virtual void OnTriggerEnter(const Collision& collision) {}
+		virtual void OnTriggerStay(const Collision& collision) {}
+		virtual void OnTriggerExit(const Collision& collision) {}
 
 		/// <summary>
 		/// 컴포넌트를 소유하는 게임오브젝트 반환합니다

@@ -9,7 +9,7 @@
 fq::game_module::GameObject::GameObject()
 	:mID(LastID++)
 	, mName("GameObject")
-	, mTag(ETag::Player)
+	, mTag(ETag::Untagged)
 	, mComponents{}
 	, mScene(nullptr)
 	, mbIsDestroyed(false)
@@ -267,5 +267,53 @@ void fq::game_module::GameObject::CleanUpComponent()
 bool fq::game_module::GameObject::HasParent()
 {
 	return GetParent() != nullptr;
+}
+
+void fq::game_module::GameObject::OnCollisionEnter(const Collision& collision)
+{
+	for ( auto&  [id,component] : mComponents)
+	{
+		component->OnCollisionEnter(collision);
+	}
+}
+
+void fq::game_module::GameObject::OnCollisionExit(const Collision& collision)
+{
+	for (auto& [id, component] : mComponents)
+	{
+		component->OnCollisionExit(collision);
+	}
+}
+
+void fq::game_module::GameObject::OnCollisionStay(const Collision& collision)
+{
+	for (auto& [id, component] : mComponents)
+	{
+		component->OnCollisionStay(collision);
+	}
+}
+
+void fq::game_module::GameObject::OnTriggerEnter(const Collision& collision)
+{
+	for (auto& [id, component] : mComponents)
+	{
+		component->OnTriggerEnter(collision);
+	}
+}
+
+void fq::game_module::GameObject::OnTriggerStay(const Collision& collision)
+{
+	for (auto& [id, component] : mComponents)
+	{
+		component->OnTriggerStay(collision);
+	}
+}
+
+void fq::game_module::GameObject::OnTriggerExit(const Collision& collision)
+{
+	for (auto& [id, component] : mComponents)
+	{
+		component->OnTriggerExit(collision);
+	}
 }
 

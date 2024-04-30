@@ -28,6 +28,7 @@
 #include "SceneManager.h"
 #include "ObjectManager.h"
 
+#include "Collision.h"
 #include "CollisionMatrix.h"
 
 #endif // 

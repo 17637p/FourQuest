@@ -25,7 +25,7 @@ namespace fq::physics
 		}
 
 		CollisionData* data = new CollisionData;
-		data->myId = GetID();
+		data->myId = GetID(); 
 		data->myLayerNumber = GetLayerNumber();
 		shape->userData = data;
 

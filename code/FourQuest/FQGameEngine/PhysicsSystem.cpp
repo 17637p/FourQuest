@@ -138,7 +138,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		ColliderID id = ++mLastColliderID;
 		boxInfo.colliderInfo.id = id;
-		boxInfo.colliderInfo.layerNumber = 0;
+		boxInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		boxInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
 		boxCollider->SetBoxInfomation(boxInfo);
 
@@ -191,6 +191,15 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
 {
+	auto my =  mColliderContainer.find(data.myId);
+	auto other = mColliderContainer.find(data.otherId);
+	assert(my != mColliderContainer.end() || other != mColliderContainer.end());
+
+	auto object = my->second.second->GetGameObject();
+	auto otherObject = other->second.second->GetGameObject();
+	
+	//fq::game_module::Collision c;
+
 
 }
 
@@ -199,9 +208,7 @@ void fq::game_engine::PhysicsSystem::Update()
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-
 		auto matrix =  mPhysicsEngine->GetRigidBodyMatrix(id);
-
 		transform->SetLocalMatrix(matrix);
 	}
 

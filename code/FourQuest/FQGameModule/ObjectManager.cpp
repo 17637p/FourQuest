@@ -56,6 +56,13 @@ std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::Objec
 
 		std::string key = element.key();
 
+		// Tag 설정
+		std::string sTag = key.substr(key.find_last_of('-')+1);
+		ETag tag = static_cast<ETag>(std::stoi(sTag));
+		object->SetTag(tag);
+
+		key = key.substr(0, key.find_last_of('-'));
+
 		// 부모가 있는 경우
 		if (key.find('-') != std::string::npos)
 		{
@@ -95,15 +102,16 @@ void fq::game_module::ObjectManager::SavePrefab(GameObject* object, const std::f
 		GameObject* parent = tmp->GetParent();
 
 		std::string name;
+		std::string sTag = "-" + std::to_string(static_cast<int>(object->GetTag()));
 
 		// 자신은 부모가 있어도 저장할때는 제거합니다
 		if (parent == nullptr || tmp == object)
 		{
-			name = object->GetName();
+			name = object->GetName() + sTag;
 		}
 		else // "ParentName-ChildName" 형태로 저장
 		{
-			name = parent->GetName() + "-" + tmp->GetName();
+			name = parent->GetName() + "-" + tmp->GetName() + sTag;
 		}
 
 		// json 형식으로 저장

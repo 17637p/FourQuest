@@ -161,6 +161,9 @@
     <ClInclude Include="Light.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -246,6 +249,9 @@
     </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>src\07.Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
