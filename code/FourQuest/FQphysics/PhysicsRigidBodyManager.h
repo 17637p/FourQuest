@@ -46,14 +46,14 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="info"> 리지드 바디의 도형 형태 입니다. </param>
 		/// <param name="colliderType"> 콜라이더 타입(트리거, 콜리전) 입니다. </param>
-		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType);
-		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType);
-		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
-		bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
+		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 
 		void GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix);
 

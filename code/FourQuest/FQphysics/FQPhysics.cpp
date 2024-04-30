@@ -81,7 +81,7 @@ namespace fq::physics
 		sceneDesc.gravity.x = info.gravity.x;
 		sceneDesc.gravity.y = info.gravity.y;
 		sceneDesc.gravity.z = -info.gravity.z;
-		mCollisionMatrix = info.collisionMatrix;
+		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
 
 		// 충돌 쌍 플래그입니다.
 		physx::PxPairFlags pairFlags = physx::PxPairFlags();
@@ -128,56 +128,56 @@ namespace fq::physics
 
 	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType))
+		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType))
+		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType))
+		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType))
+		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType))
+		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType))
+		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType))
+		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
 	}
 	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType))
+		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
 			return false;
 
 		return true;
@@ -218,8 +218,8 @@ namespace fq::physics
 
 	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
 	{
-		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, info.gravity.z));
-		mCollisionMatrix = info.collisionMatrix;
+		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, -info.gravity.z));
+		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
 		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 

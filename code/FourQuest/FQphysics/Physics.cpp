@@ -53,7 +53,7 @@ namespace fq::physics
 		mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, mToleranceScale, true, mPvd); // Physics를 생성합니다.
 
 		// CPU 디스패처를 생성하고 설정합니다.
-		mDispatcher = physx::PxDefaultCpuDispatcherCreate(2); // CPU 디스패처를 생성합니다.
+		mDispatcher = physx::PxDefaultCpuDispatcherCreate(3); // CPU 디스패처를 생성합니다.
 #else
 		// 물리 시뮬레이션의 허용 오차 스케일을 설정합니다.
 		mToleranceScale.length = 100; // 길이 허용 오차 스케일을 설정합니다.

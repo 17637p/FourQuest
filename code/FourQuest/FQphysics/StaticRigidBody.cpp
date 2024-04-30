@@ -10,6 +10,11 @@ namespace fq::physics
 	}
 	StaticRigidBody::~StaticRigidBody()
 	{
+		if (mRigidStatic->userData != nullptr)
+		{
+			delete mRigidStatic->userData;
+			mRigidStatic->userData = nullptr;
+		}
 	}
 
 	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics)
@@ -28,12 +33,16 @@ namespace fq::physics
 		data->myId = GetID(); 
 		data->myLayerNumber = GetLayerNumber();
 		shape->userData = data;
+		shape->setContactOffset(0.01f);
 
-		physx::PxMat44 matrix;
-		memcpy(&matrix, &colliderInfo.collisionTransform.worldMatrix, sizeof(physx::PxMat44));
-		physx::PxTransform transform(matrix);
+		physx::PxTransform transform;
+		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 
 		mRigidStatic = physics->createRigidStatic(transform);
+		mRigidStatic->userData = data;
+
+		if (mRigidStatic == nullptr)
+			return false;
 		if (!mRigidStatic->attachShape(*shape))
 			return false;
 

@@ -37,18 +37,17 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 			if (dynamicBody)
 			{
-				UpdateFilterData(dynamicBody, collisionMatrix);
+				//UpdateFilterData(dynamicBody, collisionMatrix);
 				scene->addActor(*dynamicBody->GetPxRigidDynamic());
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
-				UpdateFilterData(staticBody, collisionMatrix);
+				//UpdateFilterData(staticBody, collisionMatrix);
 				scene->addActor(*staticBody->GetPxRigidStatic());
 			}
 		}
 		mUpcomingActors.clear();
-
 
 		return true;
 	}
@@ -140,7 +139,7 @@ namespace fq::physics
 		data.word0 = layerNumber;
 		data.word1 = collisionMatrix[layerNumber];
 
-		shape[0].setSimulationFilterData(data);
+		shape->setSimulationFilterData(data);
 
 		return true;
 	}
@@ -157,7 +156,7 @@ namespace fq::physics
 		data.word0 = layerNumber;
 		data.word1 = collisionMatrix[layerNumber];
 
-		shape[0].setSimulationFilterData(data);
+		shape->setSimulationFilterData(data);
 
 		return true;
 	}
@@ -166,10 +165,14 @@ namespace fq::physics
 
 #pragma region CreateDynamicAndStaticBody
 
-	bool PhysicsRigidBodyManager::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics)) 
@@ -181,10 +184,14 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -196,10 +203,14 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -211,11 +222,15 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.convexVertexLimit, info.convexPolygonLimit);
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(mesh), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -227,10 +242,14 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -242,10 +261,14 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -257,11 +280,14 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -273,11 +299,15 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.convexVertexLimit, info.convexPolygonLimit);
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(mesh), *material);
+		physx::PxFilterData data;
+		data.word0 = info.colliderInfo.layerNumber;
+		data.word1 = collisionMatrix[info.colliderInfo.layerNumber];
+		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
 		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
@@ -305,19 +335,26 @@ namespace fq::physics
 				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
 				mRigidBodys.erase(mRigidBodys.find(id));
 
-				return true;
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
 				scene->removeActor(*staticBody->GetPxRigidStatic());
 				mRigidBodys.erase(mRigidBodys.find(id));
-
-				return true;
 			}
 		}
 
-		return false;
+		auto bodyIter = mUpcomingActors.begin();
+		for (bodyIter; bodyIter != mUpcomingActors.end(); bodyIter++)
+		{
+			if ((*bodyIter)->GetID() == id)
+			{
+				mUpcomingActors.erase(bodyIter);
+				break;
+			}
+		}
+
+		return true;
 	}
 
 	bool PhysicsRigidBodyManager::RemoveAllRigidBody(physx::PxScene* scene)

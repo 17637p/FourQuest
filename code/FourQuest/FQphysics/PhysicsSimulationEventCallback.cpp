@@ -19,10 +19,12 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
 	{
+		std::cout << "onWake" << std::endl;
 	}
 
 	void PhysicsSimulationEventCallback::onSleep(physx::PxActor** actors, physx::PxU32 count)
 	{
+		std::cout << "onSleep" << std::endl;
 	}
 
 	void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
@@ -77,7 +79,9 @@ namespace fq::physics
 		physx::PxU32 contactCount = cp.contactCount;
 		contactPoints.resize(contactCount);
 		points.resize(contactCount);
-		cp.extractContacts(&contactPoints[0], contactCount);
+
+		if (contactCount > 0)
+			cp.extractContacts(&contactPoints[0], contactCount);
 
 		for (physx::PxU32 j = 0; j < contactCount; j++)
 		{
