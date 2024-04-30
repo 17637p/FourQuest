@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <set>
+#include <spdlog/spdlog.h>
+#include <spdlog/logger.h>
 
 #pragma comment(lib, "LowLevel_static_64.lib")
 #pragma comment(lib, "LowLevelAABB_static_64.lib")
@@ -104,6 +106,11 @@ extern "C" {
 			virtual FQ_PHYSICS void SetPhysicsInfo(PhysicsEngineInfo& info) abstract;
 
 			virtual FQ_PHYSICS const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() abstract;
+
+			/// <summary>
+			/// spdlog를 설정합니다
+			/// </summary>
+			virtual FQ_PHYSICS std::shared_ptr<spdlog::logger> SetUpLogger(std::vector<spdlog::sink_ptr> sinks) abstract;
 		};
 
 		class EngineExporter

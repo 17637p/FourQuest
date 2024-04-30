@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <spdlog/spdlog.h>
+#include <spdlog/logger.h>
 
 #include "d3d11.h"
 #include "EPipelineType.h"
@@ -107,6 +109,9 @@ extern "C" {
 			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;
 			virtual FQ_GRAPHICS ID3D11DeviceContext* GetDeviceContext() abstract;
 			virtual FQ_GRAPHICS ID3D11ShaderResourceView* GetSRV() abstract;
+
+			/// Log
+			virtual FQ_GRAPHICS std::shared_ptr<spdlog::logger> SetUpLogger(std::vector<spdlog::sink_ptr> sinks) abstract;
 		};
 
 		class EngineExporter

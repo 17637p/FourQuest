@@ -10,6 +10,8 @@
 
 namespace fq::game_engine
 {
+	class GameProcess;
+
 	/// <summary>
 	/// 디버그 로그에 대한 정보를 표시
 	/// </summary>
@@ -18,6 +20,7 @@ namespace fq::game_engine
 		struct LogMessage
 		{
 			std::string time;
+			std::string loggerName;
 			std::string payload;
 			std::string level;
 		};
@@ -26,7 +29,7 @@ namespace fq::game_engine
 		LogWindow();
 		~LogWindow();
 
-		void Initialize();
+		void Initialize(GameProcess* game);
 
 		void Finalize();
 
@@ -39,15 +42,20 @@ namespace fq::game_engine
 	private:
 		void beginButton_LogController();
 		void beginChild_LogList();
-		void beginText_Log(const LogMessage& msg);
+		void beginText_Log(const LogMessage& msg)const;
 
 	private:
+		GameProcess* mGameProcess;
+
 		UINT mMaxLogListSize;
 		bool mbIsOpen;
 		bool mbIsShowTime;
 		spdlog::level::level_enum mLevel;
 
 		std::shared_ptr<spdlog::logger> mLogger;
+		std::shared_ptr<spdlog::logger> mGraphicsLogger;
+		std::shared_ptr<spdlog::logger> mPhysicsLogger;
+
 		std::list<LogMessage> mLogList;
 	};
 

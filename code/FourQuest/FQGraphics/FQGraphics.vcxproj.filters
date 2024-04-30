@@ -37,9 +37,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="LightBase.h">
-      <Filter>Light</Filter>
-    </ClInclude>
     <ClInclude Include="D3D11TextManager.h">
       <Filter>D3D11</Filter>
     </ClInclude>
@@ -85,10 +82,14 @@
     <ClInclude Include="D3D11Util.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="CommonHeader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Common.h" />
-    <ClInclude Include="Light.h" />
+    <ClInclude Include="Light.h">
+      <Filter>Light</Filter>
+    </ClInclude>
     <ClInclude Include="DeferredPipeline.h">
       <Filter>Pipeline</Filter>
     </ClInclude>
@@ -102,6 +103,9 @@
       <Filter>Management</Filter>
     </ClInclude>
     <ClInclude Include="D3D11DebugDrawManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11PickingManager.h">
       <Filter>Management</Filter>
     </ClInclude>
   </ItemGroup>
@@ -171,9 +175,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
-    <ClCompile Include="LightBase.cpp">
-      <Filter>Light</Filter>
-    </ClCompile>
     <ClCompile Include="D3D11TextManager.cpp">
       <Filter>D3D11</Filter>
     </ClCompile>
@@ -214,7 +215,9 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="ConstantBufferStructure.cpp" />
-    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="Light.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
     <ClCompile Include="DeferredPipeline.cpp">
       <Filter>Pipeline</Filter>
     </ClCompile>
@@ -225,6 +228,9 @@
       <Filter>Management</Filter>
     </ClCompile>
     <ClCompile Include="D3D11DebugDrawManager.h.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11PickingManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
   </ItemGroup>

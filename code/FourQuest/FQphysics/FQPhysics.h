@@ -89,6 +89,11 @@ namespace fq::physics
 		/// </summary>
 		const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() override;
 
+		/// <summary>
+		/// spdlog를 설정합니다
+		/// </summary>
+		virtual FQ_PHYSICS std::shared_ptr<spdlog::logger> SetUpLogger(std::vector<spdlog::sink_ptr> sinks) override;
+
 	private:
 		// 씬
 		physx::PxScene* mScene;

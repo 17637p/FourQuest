@@ -193,7 +193,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mFileDialog->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mMainMenuBar->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mGamePlayWindow->Initialize(mGameProcess.get(), mEditor.get());
-	mEditor->mLogWindow->Initialize();
+	mEditor->mLogWindow->Initialize(mGameProcess.get());
 	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
 }
 
