@@ -58,9 +58,19 @@ namespace fq::physics
 		void GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix);
 
 		/// <summary>
+		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
+		/// </summary>
+		bool SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform);
+
+		/// <summary>
+		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 속도 추가
+		/// </summary>
+		bool AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity);
+
+		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 		/// </summary>
-		bool RemoveRigidBody(unsigned int id, physx::PxScene* scene);
+		bool RemoveRigidBody(const unsigned int& id, physx::PxScene* scene);
 
 		/// <summary>
 		/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.

@@ -27,13 +27,13 @@ namespace fq::physics
 		/// <summary>
 		/// 다이나믹 리지드 바디를 반환합니다.
 		/// </summary>
-		inline physx::PxRigidDynamic* GetRigidDynamic();
+		inline physx::PxRigidDynamic* GetPxRigidDynamic();
 
 	private:
 		physx::PxRigidDynamic* mRigidDynamic;
 	};
 
-	physx::PxRigidDynamic* DynamicRigidBody::GetRigidDynamic()
+	physx::PxRigidDynamic* DynamicRigidBody::GetPxRigidDynamic()
 	{
 		return mRigidDynamic;
 	}

@@ -67,16 +67,24 @@ extern "C" {
 			virtual FQ_PHYSICS bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
 
 			/// <summary>
-			/// 
+			/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
 			/// </summary>
-			/// <param name="id">  </param>
-			/// <returns>  </returns>
-			virtual FQ_PHYSICS DirectX::SimpleMath::Matrix GetRigidBodyMatrix(unsigned int id) abstract;
+			virtual FQ_PHYSICS DirectX::SimpleMath::Matrix GetRigidBodyMatrix(const unsigned int& id) abstract;
+
+			/// <summary>
+			/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
+			/// </summary>
+			virtual FQ_PHYSICS bool SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform) abstract;
+
+			/// <summary>
+			/// 아이디를 받으면 해당 아이디의 리지드 바디에게 속도 추가
+			/// </summary>
+			virtual FQ_PHYSICS bool AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity) abstract;
 
 			/// <summary>
 			/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 			/// </summary>
-			virtual FQ_PHYSICS bool RemoveRigidBody(unsigned int id) abstract;
+			virtual FQ_PHYSICS bool RemoveRigidBody(const unsigned int& id) abstract;
 
 			/// <summary>
 			/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
@@ -87,13 +95,13 @@ extern "C" {
 			/// 콜백 함수를 등록합니다.
 			/// </summary>
 			/// <param name="func"> 콜리전 콜백 함수 등록 </param>
-			virtual FQ_PHYSICS void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) abstract;
+			virtual FQ_PHYSICS void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)>& func) abstract;
 
 			/// <summary>
 			/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )
 			/// </summary>
 			/// <param name="info"> 물리 엔진 정보 </param>
-			virtual FQ_PHYSICS void SetPhysicsInfo(PhysicsEngineInfo info) abstract;
+			virtual FQ_PHYSICS void SetPhysicsInfo(PhysicsEngineInfo& info) abstract;
 
 
 			virtual FQ_PHYSICS const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() abstract;

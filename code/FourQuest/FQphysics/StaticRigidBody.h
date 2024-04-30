@@ -27,13 +27,13 @@ namespace fq::physics
 		/// <summary>
 		/// 스태틱 리지드 바디를 반환합니다.
 		/// </summary>
-		inline physx::PxRigidStatic* GetRigidStatic();
+		inline physx::PxRigidStatic* GetPxRigidStatic();
 
 	private:
 		physx::PxRigidStatic* mRigidStatic;
 	};
 
-	physx::PxRigidStatic* StaticRigidBody::GetRigidStatic()
+	physx::PxRigidStatic* StaticRigidBody::GetPxRigidStatic()
 	{
 		return mRigidStatic;
 	}
