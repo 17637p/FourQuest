@@ -95,7 +95,7 @@ extern "C" {
 			/// 콜백 함수를 등록합니다.
 			/// </summary>
 			/// <param name="func"> 콜리전 콜백 함수 등록 </param>
-			virtual FQ_PHYSICS void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)>& func) abstract;
+			virtual FQ_PHYSICS void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) abstract;
 
 			/// <summary>
 			/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )

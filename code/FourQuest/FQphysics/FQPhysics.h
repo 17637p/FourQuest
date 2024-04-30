@@ -76,7 +76,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="func"> 콜리전 데이터 구조체 </param>
 		/// <param name="eventType"> 콜리전 이벤트 타입 </param>
-		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)>& func) override;
+		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) override;
 
 		/// <summary>
 		/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )

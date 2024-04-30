@@ -44,6 +44,7 @@ void fq::physics::CollisionMatrix::Reset()
 	for (int i = 0; i < static_cast<int>(Tag::End); ++i)
 	{
         data[i].reset();
+        data[i].flip();
 	}
 }
 

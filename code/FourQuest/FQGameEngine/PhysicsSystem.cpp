@@ -1,5 +1,7 @@
 #include "PhysicsSystem.h"
 
+#include <spdlog/spdlog.h>
+
 #include "../FQCommon/FQPath.h"
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQGameModule/GameModule.h"
@@ -198,9 +200,31 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	auto object = my->second.second->GetGameObject();
 	auto otherObject = other->second.second->GetGameObject();
 	
-	//fq::game_module::Collision c;
+	fq::game_module::Collision collision{ object,otherObject, data.ContectPoints};
 
+	switch (type)
+	{
+		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+			object->OnTriggerEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_OVERLAP:
+			object->OnTriggerStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_OVERLAP:
+			object->OnTriggerExit(collision);
+			break;
+		case fq::physics::ECollisionEventType::ENTER_COLLISION:
+			object->OnCollisionEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_COLLISION:
+			object->OnCollisionStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_COLLISION:
+			object->OnCollisionExit(collision);
+			break;
+	}
 
+	spdlog::trace("collide");
 }
 
 void fq::game_engine::PhysicsSystem::Update()
@@ -226,3 +250,4 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 
 	mGameProcess->mPhysics->SetPhysicsInfo(info);
 }
+

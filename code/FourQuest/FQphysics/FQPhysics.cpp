@@ -207,7 +207,7 @@ namespace fq::physics
 
 #pragma region SetCallBackFunction
 
-	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)>& func)
+	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
 	{
 		mMyEventCallback->SetCallbackFunction(func);
 	}

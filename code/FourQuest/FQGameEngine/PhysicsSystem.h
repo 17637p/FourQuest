@@ -63,6 +63,7 @@ namespace fq::game_engine
 		fq::physics::CollisionMatrix GetCollisionMatrix() const { return mCollisionMatrix; }
 		void SetCollisionMatrix(fq::physics::CollisionMatrix matrix);
 
+
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
