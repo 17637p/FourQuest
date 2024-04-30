@@ -2,6 +2,8 @@
 #include "Scene.h"
 
 #include <spdlog/spdlog.h>
+#include <spdlog/stopwatch.h>
+#include <spdlog/fmt/chrono.h>
 
 #include "../FQCommon/FQPath.h"
 
@@ -112,7 +114,7 @@ void fq::game_module::SceneManager::PostUpdate()
 
 void fq::game_module::SceneManager::LoadScene()
 {
-	spdlog::trace("[SceneManager] Load \"{}\" Scene", mCurrentScene->GetSceneName());
+	spdlog::stopwatch sw;
 
 	auto scenePath = fq::path::GetScenePath();
 
@@ -135,6 +137,8 @@ void fq::game_module::SceneManager::LoadScene()
 
 	// Event CallBack
 	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
+
+	spdlog::trace("[SceneManager] Load \"{}\" Scene [{}s]", mCurrentScene->GetSceneName(), sw);
 }
 
 void fq::game_module::SceneManager::UnloadScene()

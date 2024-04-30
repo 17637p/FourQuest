@@ -109,8 +109,9 @@ void fq::game_engine::EditorEngine::Process()
 			{
 				// 물리처리
 				mGameProcess->mSceneManager->FixedUpdate(deltaTime);
+				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 				mGameProcess->mPhysics->Update(deltaTime);
-				mGameProcess->mPhysicsSystem->Update();
+				mGameProcess->mPhysicsSystem->SinkToGameScene();
 
 				mGameProcess->mSceneManager->Update(deltaTime);
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);

@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace fq::physics
 {
@@ -95,6 +96,9 @@ namespace fq::physics
 		CollisionData* myData = (CollisionData*)pairHeader.actors[0]->userData;
 		CollisionData* otherData = (CollisionData*)pairHeader.actors[1]->userData;
 
+		if (myData == nullptr || otherData == nullptr)
+			return;
+
 		ActorData1.myId = myData->myId;
 		ActorData1.otherId = otherData->myId;
 		ActorData1.myLayerNumber = myData->myLayerNumber;
@@ -117,6 +121,9 @@ namespace fq::physics
 		CollisionData Otherdata;
 		CollisionData* TriggerActorData = (CollisionData*)pairs->triggerActor->userData;
 		CollisionData* OtherActordata = (CollisionData*)pairs->triggerActor->userData;
+
+		if (TriggerActorData == nullptr || OtherActordata == nullptr)
+			return;
 
 		Mydata.myId = TriggerActorData->myId;
 		Mydata.otherId = OtherActordata->myId;

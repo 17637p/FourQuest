@@ -57,6 +57,7 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
+
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -71,7 +72,6 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
-	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
@@ -254,7 +254,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
 
-
 	// 4. Mesh Collider
 }
 
@@ -281,20 +280,24 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 			object->OnTriggerExit(collision);
 			break;
 		case fq::physics::ECollisionEventType::ENTER_COLLISION:
+		{
 			object->OnCollisionEnter(collision);
+			spdlog::debug("OnCollisionEnter");
+		}
 			break;
 		case fq::physics::ECollisionEventType::ON_COLLISION:
+			spdlog::debug("OnCollisionsStay");
 			object->OnCollisionStay(collision);
 			break;
 		case fq::physics::ECollisionEventType::END_COLLISION:
+			spdlog::debug("OnCollisionsExit");
 			object->OnCollisionExit(collision);
 			break;
 	}
 
-	spdlog::trace("collide");
 }
 
-void fq::game_engine::PhysicsSystem::Update()
+void fq::game_engine::PhysicsSystem::SinkToGameScene()
 {
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
@@ -302,7 +305,6 @@ void fq::game_engine::PhysicsSystem::Update()
 		auto matrix =  mPhysicsEngine->GetRigidBodyMatrix(id);
 		transform->SetLocalMatrix(matrix);
 	}
-
 }
 
 void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
@@ -316,5 +318,14 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 	mPhysicsEngineInfomation.gravity = mGravity;
 
 	mGameProcess->mPhysics->SetPhysicsInfo(mPhysicsEngineInfomation);
+}
+
+void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
+{
+	for (auto& [id, colliderInfo] : mColliderContainer)
+	{
+		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
+		mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
+	}
 }
 

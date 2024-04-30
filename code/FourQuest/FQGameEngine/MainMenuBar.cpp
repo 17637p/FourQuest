@@ -203,6 +203,8 @@ void fq::game_engine::MainMenuBar::beginText_FPS()
 
 void fq::game_engine::MainMenuBar::SaveScene()
 {
+	spdlog::stopwatch sw;
+
 	auto scenePath = fq::path::GetScenePath();
 	scenePath /= mCurrentSceneName;
 
@@ -226,7 +228,7 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
 
 	// 3. ... etc 
-	spdlog::trace("[MainMenuBar] Save \"{}\" Scene", mCurrentSceneName);
+	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);
 }
 
 void fq::game_engine::MainMenuBar::ExcuteShortcut()
