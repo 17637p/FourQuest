@@ -135,6 +135,32 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11RenderTargetViewType::Picking:
+	{
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		ComPtr<ID3D11Texture2D> pTexture;
+		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = textureDesc.Format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+		HR(d3d11Device->GetDevice()->CreateRenderTargetView(pTexture.Get(), &rtvDesc, mRTV.GetAddressOf()));
+
+		break;
+	}
 	default:
 		break;
 	}
@@ -179,6 +205,11 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	{
 		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), nullptr);
 	}
+}
+
+Microsoft::WRL::ComPtr<ID3D11RenderTargetView> D3D11RenderTargetView::GetRTV()
+{
+	return mRTV;
 }
 
 /*=============================================================================
