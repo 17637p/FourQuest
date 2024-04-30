@@ -183,8 +183,33 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			mColliderContainer.insert({ id, {mBoxID, sphereCollider} });
 		}
 	}
-
 	// 3. Capsule Collider
+	if (object->HasComponent<CapsuleCollider>())
+	{
+		auto capsuleCollider = object->GetComponent<CapsuleCollider>();
+		auto type = capsuleCollider->GetType();
+		auto capsuleInfo = capsuleCollider->GetCapsuleInfomation();
+
+		ColliderID id = ++mLastColliderID;
+		capsuleInfo.colliderInfo.id = id;
+		capsuleInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
+		capsuleInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		capsuleCollider->SetCapsuleInfomation(capsuleInfo);
+
+		if (isStatic)
+		{
+			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
+			assert(check);
+			mColliderContainer.insert({ id, {mBoxID, capsuleCollider} });
+		}
+		else
+		{
+			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type);
+			assert(check);
+			mColliderContainer.insert({ id, {mBoxID, capsuleCollider} });
+		}
+	}
+
 
 	// 4. Mesh Collider
 
@@ -218,8 +243,17 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
-
 	// 3. Capsule Collider
+	if (object->HasComponent<CapsuleCollider>())
+	{
+		auto sphereCollider = object->GetComponent<CapsuleCollider>();
+		auto id = sphereCollider->GetCapsuleInfomation().colliderInfo.id;
+		assert(id != physics::unregisterID);
+
+		mPhysicsEngine->RemoveRigidBody(id);
+		mColliderContainer.erase(mColliderContainer.find(id));
+	}
+
 
 	// 4. Mesh Collider
 }

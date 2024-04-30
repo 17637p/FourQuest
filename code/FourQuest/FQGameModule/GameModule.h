@@ -18,6 +18,7 @@
 #include "Light.h"
 #include "BoxCollider.h"
 #include "SphereCollider.h"
+#include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "RigidBody.h"
 

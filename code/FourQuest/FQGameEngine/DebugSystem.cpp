@@ -37,6 +37,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderGrid();
 	renderBoxCollider();
 	renderSphereCollider();
+	renderCapsuleCollider();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -136,5 +137,63 @@ void fq::game_engine::DebugSystem::renderSphereCollider()
 		[this](GameObject& object, Transform& transform, SphereCollider& sphere)
 		{
 			RenderSphereCollier(transform, sphere);
+		});
+}
+
+void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transform& transform, fq::game_module::CapsuleCollider& collider)
+{
+	auto up = transform.GetWorldMatrix().Up();
+	up.Normalize();
+	auto calpsuleInfo = collider.GetCapsuleInfomation();
+
+	// UpSphere
+	fq::graphics::debug::SphereInfo info;
+	info.Color = { 0.f,1.f,0.f,1.f };
+	info.Sphere.Center = transform.GetWorldPosition() + up * calpsuleInfo.halfHeight;
+	info.Sphere.Radius = calpsuleInfo.raidus;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// DownSphere
+	info.Sphere.Center = transform.GetWorldPosition() - up * calpsuleInfo.halfHeight;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// BodyRay 
+	fq::graphics::debug::RayInfo ray;
+
+	ray.Direction = up * calpsuleInfo.halfHeight * 2.f;
+	ray.Color = { 0.f,1.f,0.f,1.f };
+	ray.Normalize = false;
+	auto orgin = info.Sphere.Center;
+	auto foward = transform.GetWorldMatrix().Forward();
+	foward.Normalize();
+	foward *= calpsuleInfo.raidus;
+
+	auto right = transform.GetWorldMatrix().Right();
+	right.Normalize();
+	right *= calpsuleInfo.raidus;
+
+	ray.Origin = orgin + foward;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - foward;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin + right;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - right;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+
+}
+
+void fq::game_engine::DebugSystem::renderCapsuleCollider()
+{
+	using namespace fq::game_module;
+
+	mScene->ViewComponents< Transform, CapsuleCollider>(
+		[this](GameObject& object, Transform& transform, CapsuleCollider& capsule)
+		{
+			RenderCapsuleCollier(transform, capsule);
 		});
 }

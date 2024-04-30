@@ -2,7 +2,8 @@
 
 fq::game_module::CapsuleCollider::CapsuleCollider()
 {
-
+	mCapsuleInfomation.halfHeight = 1.f;
+	mCapsuleInfomation.raidus = 1.f;
 }
 
 fq::game_module::CapsuleCollider::~CapsuleCollider()
@@ -39,5 +40,50 @@ float fq::game_module::CapsuleCollider::GetRadius() const
 
 void fq::game_module::CapsuleCollider::SetRadius(float radius)
 {
-	mCapsuleInfomation.raidus = radius;
+	mCapsuleInfomation.raidus = max(0.0001f,radius);
+}
+
+void fq::game_module::CapsuleCollider::SetHalfHegiht(float halfHegiht)
+{
+	mCapsuleInfomation.halfHeight= halfHegiht;
+}
+
+void fq::game_module::CapsuleCollider::SetDensity(float density)
+{
+	mCapsuleInfomation.colliderInfo.density = density;
+}
+
+float fq::game_module::CapsuleCollider::GetDensity() const
+{
+	return mCapsuleInfomation.colliderInfo.density;
+}
+
+void fq::game_module::CapsuleCollider::SetRestituion(float restitution)
+{
+	mCapsuleInfomation.colliderInfo.restitution = restitution;
+}
+
+float fq::game_module::CapsuleCollider::GetRestituion() const
+{
+	return mCapsuleInfomation.colliderInfo.restitution;
+}
+
+void fq::game_module::CapsuleCollider::SetDynamicFriction(float friction)
+{
+	mCapsuleInfomation.colliderInfo.dynamicFriction = friction;
+}
+
+float fq::game_module::CapsuleCollider::GetDynamicFriction() const
+{
+	return mCapsuleInfomation.colliderInfo.dynamicFriction;
+}
+
+void fq::game_module::CapsuleCollider::SetStaticFriction(float friction)
+{
+	mCapsuleInfomation.colliderInfo.staticFriction = friction;
+}
+
+float fq::game_module::CapsuleCollider::GetStaticFriction() const
+{
+	return mCapsuleInfomation.colliderInfo.staticFriction;
 }

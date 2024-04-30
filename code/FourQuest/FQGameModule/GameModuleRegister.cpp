@@ -196,6 +196,22 @@ void fq::game_module::RegisterMetaData()
 		.base<Component>();
 
 	// CapsuleCollider
+	entt::meta<CapsuleCollider>()
+		.type("CapsuleCollider"_hs)
+		.prop(fq::reflect::prop::Name, "CapsuleCollider")
+		.data<&CapsuleCollider::SetRadius, &CapsuleCollider::GetRadius>("Radius"_hs)
+		.prop(fq::reflect::prop::Name, "Radius")
+		.data<&CapsuleCollider::SetHalfHegiht, &CapsuleCollider::GetHalfHeight>("HalfHeight"_hs)
+		.prop(fq::reflect::prop::Name, "HalfHeight")
+		.data<&CapsuleCollider::SetStaticFriction, &CapsuleCollider::GetStaticFriction>("StaticFriction"_hs)
+		.prop(fq::reflect::prop::Name, "StaticFriction")
+		.data<&CapsuleCollider::SetDynamicFriction, &CapsuleCollider::GetDynamicFriction>("DynamicFriction"_hs)
+		.prop(fq::reflect::prop::Name, "DynamicFriction")
+		.data<&CapsuleCollider::SetRestituion, &CapsuleCollider::GetRestituion>("Restitution"_hs)
+		.prop(fq::reflect::prop::Name, "Restitution")
+		.data<&CapsuleCollider::SetDensity, &CapsuleCollider::GetDensity>("Density"_hs)
+		.prop(fq::reflect::prop::Name, "Density")
+		.base<Component>();
 
 
 	// MeshCollider
