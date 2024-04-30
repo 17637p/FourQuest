@@ -169,10 +169,11 @@ void fq::game_engine::MainMenuBar::createScene(std::string sceneName)
 
 	// ... etc 
 
-
 	// Scene 변경 요청 
 	mGameProcess->mEventManager
 		->FireEvent<fq::event::RequestChangeScene>({ sceneName });
+
+	spdlog::trace("Create Scene");
 }
 
 void fq::game_engine::MainMenuBar::SetCurrentSceneName(std::string sceneName)
@@ -235,7 +236,9 @@ void fq::game_engine::MainMenuBar::ExcuteShortcut()
 {
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+	// 현재 씬이 플레이중이면 저장하지 않는다 
+	if (mEditorProcess->mGamePlayWindow->GetMode() == EditorMode::Edit
+		&& input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
 		&& input->IsKeyState(EKey::S, EKeyState::Tap))
 	{
 		SaveScene();

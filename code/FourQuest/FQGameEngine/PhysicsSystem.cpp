@@ -17,7 +17,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mLastColliderID(physics::unregisterID)
 	, mBoxID(entt::resolve<fq::game_module::BoxCollider>().id())
 	, mSphereID(entt::resolve<fq::game_module::SphereCollider>().id())
-	//, mCapsuleID(entt::resolve<fq::game_module::RigidBody>().id())
+	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
 {}
 
@@ -174,13 +174,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(sphereInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, sphereCollider} });
+			mColliderContainer.insert({ id, {mSphereID, sphereCollider} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, sphereCollider} });
+			mColliderContainer.insert({ id, {mSphereID, sphereCollider} });
 		}
 	}
 	// 3. Capsule Collider
@@ -200,13 +200,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, capsuleCollider} });
+			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, capsuleCollider} });
+			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
 		}
 	}
 
@@ -280,17 +280,12 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 			object->OnTriggerExit(collision);
 			break;
 		case fq::physics::ECollisionEventType::ENTER_COLLISION:
-		{
 			object->OnCollisionEnter(collision);
-			spdlog::debug("OnCollisionEnter");
-		}
 			break;
 		case fq::physics::ECollisionEventType::ON_COLLISION:
-			spdlog::debug("OnCollisionsStay");
 			object->OnCollisionStay(collision);
 			break;
 		case fq::physics::ECollisionEventType::END_COLLISION:
-			spdlog::debug("OnCollisionsExit");
 			object->OnCollisionExit(collision);
 			break;
 	}

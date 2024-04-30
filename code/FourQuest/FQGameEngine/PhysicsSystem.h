@@ -96,7 +96,7 @@ namespace fq::game_engine
 
 		const entt::id_type mBoxID;
 		const entt::id_type mSphereID;
-		//const entt::id_type mCapsuleID;
+		const entt::id_type mCapsuleID;
 		const entt::id_type mMeshID;
 
 		bool mbIsGameLoaded;

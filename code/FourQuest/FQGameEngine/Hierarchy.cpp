@@ -12,6 +12,7 @@
 #include "Command.h"
 #include "ModelSystem.h"
 #include "EditorEvent.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::Hierarchy::Hierarchy()
 	:mGameProcess(nullptr)
@@ -273,9 +274,16 @@ void fq::game_engine::Hierarchy::begineGameObectSelectButton(fq::game_module::Ga
 
 	if (ImGui::Button(buttonName.c_str()))
 	{
+		if (mSelectObject.get() == &object)
+		{
+			auto pos = object.GetComponent<fq::game_module::Transform>()->GetWorldPosition();
+			mEditorProcess->mGamePlayWindow->LookAtTarget(pos);
+		}
+
 		mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
 				mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject
 			});
+
 	}
 
 	if (isSelected)

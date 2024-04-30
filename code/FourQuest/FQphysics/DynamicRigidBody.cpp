@@ -42,8 +42,7 @@ namespace fq::physics
 
 		if (!mRigidDynamic->attachShape(*shape))
 			return false;
-		if(!physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density))
-			return false;
+		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density);
 
 		return true;
 	}
