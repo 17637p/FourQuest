@@ -8,6 +8,7 @@ fq::game_engine::DebugSystem::DebugSystem()
 	:mGameProcess(nullptr)
 	, mbOnGrid(true)
 	, mbOnLight(true)
+	, mScene(nullptr)
 {}
 
 fq::game_engine::DebugSystem::~DebugSystem()

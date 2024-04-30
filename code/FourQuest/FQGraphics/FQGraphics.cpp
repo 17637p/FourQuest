@@ -43,6 +43,16 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 	return true;
 }
 
+std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)
+{
+	auto logger = std::make_shared<spdlog::logger>("Graphics",
+		std::begin(sinks),
+		std::end(sinks));
+
+	spdlog::set_default_logger(logger);
+	return logger;
+}
+
 void FQGraphics::DeleteLight(const unsigned int id)
 {
 	mLightManager->DeleteLight(id);

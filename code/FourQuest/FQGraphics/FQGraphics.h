@@ -83,6 +83,9 @@ namespace fq::graphics
 		ID3D11DeviceContext* GetDeviceContext() override;
 		ID3D11ShaderResourceView* GetSRV() override;
 
+		/// spdlog ¼³Á¤
+		virtual FQ_GRAPHICS std::shared_ptr<spdlog::logger> SetUpLogger(std::vector<spdlog::sink_ptr> sinks) override;
+
 	private:
 		std::shared_ptr<class D3D11Device> mDevice;
 		std::shared_ptr<class D3D11ResourceManager> mResourceManager;

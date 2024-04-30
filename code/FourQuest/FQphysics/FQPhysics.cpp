@@ -249,7 +249,19 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->GetDebugPolygon();
 	}
+#pragma endregion
 
+
+#pragma  region spdlog
+	std::shared_ptr<spdlog::logger> FQPhysics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)
+	{
+		auto logger = std::make_shared<spdlog::logger>("Physics",
+			std::begin(sinks),
+			std::end(sinks));
+
+		spdlog::set_default_logger(logger);
+		return logger;
+	}
 #pragma endregion
 
 }

@@ -5,6 +5,9 @@
 #include <string>
 #include <iomanip>
 
+#include "../FQphysics/IFQPhysics.h"
+#include "../FQGraphics/IFQGraphics.h"
+#include "GameProcess.h"
 #include "ImGuiColor.h"
 
 fq::game_engine::LogWindow::LogWindow()
@@ -14,6 +17,7 @@ fq::game_engine::LogWindow::LogWindow()
 	, mbIsShowTime(true)
 	, mbIsOpen(true)
 	, mLevel(spdlog::level::level_enum::trace)
+	, mGameProcess(nullptr)
 {}
 
 fq::game_engine::LogWindow::~LogWindow()
@@ -31,24 +35,50 @@ void fq::game_engine::LogWindow::Render()
 	ImGui::End();
 }
 
-void fq::game_engine::LogWindow::Initialize()
+
+void fq::game_engine::LogWindow::Initialize(GameProcess* game)
 {
+	mGameProcess = game;
+
 	auto callback_sink = std::make_shared<spdlog::sinks::callback_sink_mt>([this](const spdlog::details::log_msg& msg) {
 		this->AddLog(msg);
 		});
+
 	auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("fqlog/editor");
 	spdlog::logger logger("custom_callback_logger", { fileSink, callback_sink });
 
 	logger.set_level(mLevel);
-	spdlog::set_default_logger(logger.clone("default"));
+	spdlog::set_default_logger(logger.clone("editor"));
 	mLogger = spdlog::get("default");
+
+	// 그래픽스 로그 연결 
+	auto graphicsCallBackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([this](const spdlog::details::log_msg& msg) {
+		this->AddLog(msg);
+		});
+	auto graphicsFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("fqlog/grahics");
+	std::vector<spdlog::sink_ptr> sinks;
+	sinks.push_back(graphicsCallBackSink);
+	sinks.push_back(graphicsFileSink);
+	mGraphicsLogger = mGameProcess->mGraphics->SetUpLogger(sinks);
+	mGraphicsLogger->set_level(mLevel);
+
+	// 물리엔진 로그 연결
+	auto physicsCallBackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([this](const spdlog::details::log_msg& msg) {
+		this->AddLog(msg);
+		});
+	auto physcisFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("fqlog/physics");
+	std::vector<spdlog::sink_ptr> physicsSinks;
+	physicsSinks.push_back(physcisFileSink);
+	physicsSinks.push_back(physicsCallBackSink);
+	mPhysicsLogger = mGameProcess->mPhysics->SetUpLogger(physicsSinks);
+	mPhysicsLogger->set_level(mLevel);
 }
 
 void fq::game_engine::LogWindow::Finalize()
 {
 }
 
-void fq::game_engine::LogWindow::beginText_Log(const LogMessage& msg)
+void fq::game_engine::LogWindow::beginText_Log(const LogMessage& msg)const
 {
 	// Time 
 	if (mbIsShowTime)
@@ -86,6 +116,9 @@ void fq::game_engine::LogWindow::beginText_Log(const LogMessage& msg)
 
 	ImGui::Text(msg.level.c_str());
 	ImGui::PopStyleColor();
+	ImGui::SameLine();
+	std::string loggerName = "[" + msg.loggerName + "]";
+	ImGui::Text(loggerName.c_str());
 
 	// payload
 	ImGui::SameLine();
@@ -114,6 +147,8 @@ void fq::game_engine::LogWindow::AddLog(spdlog::details::log_msg msg)
 	else if (spdlog::level::warn == msg.level)	   logMsg.level = "[warn]";
 	else if (spdlog::level::err == msg.level)	   logMsg.level = "[error]";
 	else if (spdlog::level::critical == msg.level) logMsg.level = "[critical]";
+
+	logMsg.loggerName = msg.logger_name.data();
 
 	// payload
 	logMsg.payload = msg.payload.data();
