@@ -13,17 +13,27 @@
 
 namespace fq::graphics
 {
-	void ForwardPipeline::Initialize(const std::shared_ptr<D3D11Device>& device,
-		const std::shared_ptr<D3D11JobManager>& jobManager,
-		const std::shared_ptr<D3D11CameraManager>& cameraManager,
-		const std::shared_ptr< D3D11LightManager>& lightManager,
+	ForwardPipeline::ForwardPipeline()
+		: mShadowPass(std::make_shared<ShadowPass>())
+		, mRenderPass(std::make_shared<ForwardRenderPass>())
+		, mFullScreenPass(std::make_shared<FullScreenPass>())
+	{
+	}
+
+	void ForwardPipeline::Initialize(std::shared_ptr<D3D11Device>& device,
+		std::shared_ptr<D3D11JobManager>& jobManager,
+		std::shared_ptr<D3D11CameraManager>& cameraManager,
+		std::shared_ptr< D3D11LightManager>& lightManager,
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
 		unsigned short width,
 		unsigned short height)
 	{
 		Finalize();
 
-		mShadowPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager);
+		mDevice = device;
+		mResourceManager = resourceManager;
+
+		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager);
 		mRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
@@ -31,6 +41,11 @@ namespace fq::graphics
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
 		mPasses.push_back(mFullScreenPass);
+
+		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
+		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
+		mDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mBackBufferRTV);
 	}
 	void ForwardPipeline::Finalize()
 	{
@@ -38,6 +53,11 @@ namespace fq::graphics
 		{
 			pass->Finalize();
 		}
+
+		mSwapChainRTV = nullptr;
+		mBackBufferRTV = nullptr;
+		mBackBufferSRV = nullptr;
+		mDSV = nullptr;
 
 		mPasses.clear();
 	}

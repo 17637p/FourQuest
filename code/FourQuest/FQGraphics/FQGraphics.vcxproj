@@ -137,6 +137,7 @@
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="CommonPass.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11CameraManager.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="D3D11Util.h" />
     <ClInclude Include="D3D11View.h" />
     <ClInclude Include="D3D11DebugDrawManager.h" />
+    <ClInclude Include="DeferredPass.h" />
     <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="D3D11Device.h" />
@@ -176,6 +178,7 @@
     <ClCompile Include="AnimationHelper.cpp" />
     <ClCompile Include="BoneHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CommonPass.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
@@ -191,6 +194,7 @@
     <ClCompile Include="D3D11Util.cpp" />
     <ClCompile Include="D3D11View.cpp" />
     <ClCompile Include="D3D11DebugDrawManager.h.cpp" />
+    <ClCompile Include="DeferredPass.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
     <ClCompile Include="FowardPass.cpp" />
@@ -229,6 +233,9 @@
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

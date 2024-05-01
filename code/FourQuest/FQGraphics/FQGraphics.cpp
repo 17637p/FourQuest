@@ -77,6 +77,8 @@ bool FQGraphics::BeginRender()
 
 bool FQGraphics::Render()
 {
+	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
+	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mRenderManager->Render();
 
 	return true;

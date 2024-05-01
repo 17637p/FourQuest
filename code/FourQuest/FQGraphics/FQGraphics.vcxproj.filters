@@ -115,6 +115,12 @@
     <ClInclude Include="FowardPass.h">
       <Filter>Pipeline\Pass</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredPass.h">
+      <Filter>Pipeline\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonPass.h">
+      <Filter>Pipeline\Pass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -248,6 +254,12 @@
     <ClCompile Include="FowardPass.cpp">
       <Filter>Pipeline\Pass</Filter>
     </ClCompile>
+    <ClCompile Include="DeferredPass.cpp">
+      <Filter>Pipeline\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonPass.cpp">
+      <Filter>Pipeline\Pass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
@@ -265,6 +277,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

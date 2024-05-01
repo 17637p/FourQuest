@@ -60,6 +60,19 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11SamplerState::Shadow:
+	{
+		samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.MaxAnisotropy = 1u;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+		break;
+	}
 	default:
 		break;
 	}
@@ -117,6 +130,16 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 		rasterizerDesc.FrontCounterClockwise = false;
 		rasterizerDesc.DepthClipEnable = true;
 
+		break;
+	}
+	case ED3D11RasterizerState::Shadow:
+	{
+		// 해당 값을 인자로 넘겨 받을 수 있게 수정해야함
+		rasterizerDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+		rasterizerDesc.DepthBias = 50;
+		rasterizerDesc.SlopeScaledDepthBias = 2.f;
+		rasterizerDesc.DepthBiasClamp = 0.1f;
+		
 		break;
 	}
 	default:

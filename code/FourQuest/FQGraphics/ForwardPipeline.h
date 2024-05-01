@@ -18,10 +18,13 @@ namespace fq::graphics
 	class ForwardPipeline
 	{
 	public:
-		void Initialize(const std::shared_ptr<D3D11Device>& device,
-			const std::shared_ptr<D3D11JobManager>& jobManager,
-			const std::shared_ptr<D3D11CameraManager>& cameraManager,
-			const std::shared_ptr< D3D11LightManager>& lightManager,
+		ForwardPipeline();
+		~ForwardPipeline() = default;
+
+		void Initialize(std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<D3D11JobManager>& jobManager,
+			std::shared_ptr<D3D11CameraManager>& cameraManager,
+			std::shared_ptr< D3D11LightManager>& lightManager,
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			unsigned short width,
 			unsigned short height);
@@ -36,19 +39,16 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
-		void linkPass() {};
-
-	private:
-		const std::shared_ptr<D3D11Device> mDevice;
+		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
 		std::vector<std::shared_ptr<class RenderPass>> mPasses;
 
-		std::shared_ptr<class ForwardShadowPass> mShadowPass;
+		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class ForwardRenderPass> mRenderPass;
-		std::shared_ptr<class ForwardFullScreenPass> mFullScreenPass;
+		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 
-		// resize가 일어나야 하는 것들은 파이프라인에서 전역 소스로 관리하는 건 어떨까
+		// resize 관리는 파이프라인에서
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
