@@ -454,29 +454,36 @@ namespace fq::physics
 		// 물리 공간의 리지드 바디들을 검색해서 해당 userData를 가지고 있는 리지드 바디가 없으면 userData 메모리 삭제
 		unsigned int ActorSize = scene->getNbActors(physx::PxActorTypeFlags(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC));
 
-		for (auto colliderContainer : mCollisionDataContainer)
-		{
-			physx::PxActor* pxActor;
-			scene->getActors(physx::PxActorTypeFlags(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC), &pxActor, sizeof(physx::PxActor) * ActorSize);
+		physx::PxActor** pxActor = new physx::PxActor * [ActorSize];;
+		scene->getActors(physx::PxActorTypeFlags(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC), pxActor, ActorSize);
 
+		std::vector<decltype(mCollisionDataContainer)::iterator> itemsToDelete;
+
+		for (auto it = mCollisionDataContainer.begin(); it != mCollisionDataContainer.end(); ++it)
+		{
 			bool IsDead = true;
 
 			for (int i = 0; i < ActorSize; i++)
 			{
-				CollisionData* collisiondata = (CollisionData*)pxActor[i].userData;
+				CollisionData* collisiondata = (CollisionData*)pxActor[i]->userData;
 
-				if (colliderContainer.first == collisiondata->myId)
+				if (it->first == collisiondata->myId)
 				{
 					IsDead = false;
 					break;
 				}
 			}
 
-			if (IsDead == true)
+			if (IsDead)
 			{
-				delete colliderContainer.second;
-				mCollisionDataContainer.erase(mCollisionDataContainer.find(colliderContainer.first));
+				delete it->second;
+				itemsToDelete.push_back(it);
 			}
+		}
+
+		for (auto it : itemsToDelete)
+		{
+			mCollisionDataContainer.erase(it);
 		}
 	}
 

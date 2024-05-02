@@ -93,10 +93,10 @@ namespace fq::game_module
 		unsigned int GetCollisionCount() const { return mCollisionCount; }
 
 	private:
-		virtual void OnCollisionEnter(const Collision& collision);
-		virtual void OnCollisionExit(const Collision& collision);
-		virtual void OnTriggerEnter(const Collision& collision);
-		virtual void OnTriggerExit(const Collision& collision);
+		void OnCollisionEnter(const Collision& collision) override;
+		void OnCollisionExit(const Collision& collision) override;
+		void OnTriggerEnter(const Collision& collision) override;
+		void OnTriggerExit(const Collision& collision) override;
 
 		entt::meta_handle GetHandle() override;
 
