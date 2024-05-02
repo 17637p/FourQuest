@@ -47,6 +47,7 @@ namespace fq::graphics
 
 		void BeginRender();
 		void Render();
+		void RenderBackBuffer();
 		void EndRender();
 
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;

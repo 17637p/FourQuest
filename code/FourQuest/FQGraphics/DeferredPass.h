@@ -109,6 +109,7 @@ namespace fq::graphics
 		D3D11_VIEWPORT mViewport;
 
 		std::shared_ptr<D3D11DepthStencilView> mNullDSV;
+		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;

@@ -113,6 +113,21 @@ namespace fq::graphics
 			break;
 		}
 	}
+	void D3D11RenderManager::RenderBackBuffer()
+	{
+		switch (mPipelineType)
+		{
+		case fq::graphics::EPipelineType::Forward:
+			mForwardPipeline->RenderBackBuffer();
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			mDeferredPipeline->RenderBackBuffer();
+			break;
+		default:
+			assert(false);
+			break;
+		}
+	}
 
 	void D3D11RenderManager::EndRender()
 	{

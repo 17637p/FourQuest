@@ -34,6 +34,7 @@ namespace fq::graphics
 
 		void BeginRender();
 		void Render();
+		void RenderBackBuffer();
 		void EndRender();
 
 		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();

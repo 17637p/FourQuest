@@ -220,6 +220,7 @@ namespace fq::graphics
 
 		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
 		mNullDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
+		mDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
@@ -254,6 +255,7 @@ namespace fq::graphics
 		mCameraManager = nullptr;
 
 		mNullDSV = nullptr;
+		mDSV = nullptr;
 
 		mAlbedoSRV = nullptr;
 		mMetalnessSRV = nullptr;
@@ -315,5 +317,7 @@ namespace fq::graphics
 		mPointClampSamplerState->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
 
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
+
+		mBackBufferRTV->Bind(mDevice, mDSV);
 	}
 }

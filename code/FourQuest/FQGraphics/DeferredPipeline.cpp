@@ -41,7 +41,6 @@ namespace fq::graphics
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
-		mPasses.push_back(mFullScreenPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
@@ -151,7 +150,10 @@ namespace fq::graphics
 			pass->Render();
 		}
 	}
-
+	void DeferredPipeline::RenderBackBuffer()
+	{
+		mFullScreenPass->Render();
+	}
 	void DeferredPipeline::EndRender()
 	{
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();

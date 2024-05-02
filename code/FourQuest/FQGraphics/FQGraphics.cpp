@@ -91,6 +91,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mRenderManager->Render();
 	mDebugDrawManager->Excute(mDevice, mCameraManager);
+	mRenderManager->RenderBackBuffer();
 	return true;
 }
 

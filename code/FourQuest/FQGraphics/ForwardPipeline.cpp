@@ -40,7 +40,6 @@ namespace fq::graphics
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
-		mPasses.push_back(mFullScreenPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
@@ -96,6 +95,11 @@ namespace fq::graphics
 		{
 			pass->Render();
 		}
+	}
+
+	void ForwardPipeline::RenderBackBuffer()
+	{
+		mFullScreenPass->Render();
 	}
 
 	void ForwardPipeline::EndRender()
