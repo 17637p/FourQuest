@@ -154,6 +154,7 @@ namespace fq::graphics
 		auto backBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
 		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, backBufferRTV);
 		mNoneDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
+		mDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 	}
 	void FullScreenPass::Finalize()
 	{
@@ -190,5 +191,6 @@ namespace fq::graphics
 		mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
+		mSwapChainRTV->Bind(mDevice, mDSV);
 	}
 }

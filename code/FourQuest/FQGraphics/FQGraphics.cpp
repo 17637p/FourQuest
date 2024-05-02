@@ -90,7 +90,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mRenderManager->Render();
-
+	mDebugDrawManager->Excute(mDevice, mCameraManager);
 	return true;
 }
 
