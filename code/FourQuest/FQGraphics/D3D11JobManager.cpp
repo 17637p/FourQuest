@@ -26,6 +26,8 @@ namespace fq::graphics
 			job.Material = materials[i];
 			job.StaticMesh = staticMesh;
 
+			job.tempObject = staticMeshObject;
+
 			mStaticMeshJobs.push_back(job);
 		}
 	}
@@ -54,6 +56,8 @@ namespace fq::graphics
 			job.Material = materials[i];
 			job.SkinnedMesh = skinnedMesh;
 			job.BoneMatricesPtr = &finalTransforms;
+
+			job.tempObject = skinnedMeshObject;
 
 			mSkinnedMeshJobs.push_back(job);
 		}

@@ -103,7 +103,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void UpdateCamera(const fq::common::Transform& cameraTransform) abstract;
 
 			/// Picking
-			//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) abstract;
+			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;
 
 			/// For IMGUI(D3D11)
 			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;

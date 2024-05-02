@@ -19,6 +19,7 @@ FQGraphics::FQGraphics()
 	, mModelManager(std::make_shared<D3D11ModelManager>())
 	, mLightManager(std::make_shared<D3D11LightManager>())
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
+	, mPickingManager(std::make_shared<D3D11PickingManager>())
 {
 }
 
@@ -34,6 +35,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
 	mRenderManager->Initialize(mDevice, mResourceManager, mLightManager, width, height, pipelineType);
+	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 
 	return true;
 }
@@ -41,6 +43,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 bool fq::graphics::FQGraphics::Update(float deltaTime)
 {
 	return true;
+}
+
+void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
+{
+	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, mObjectManager->GetStaticMeshObjects(), mObjectManager->GetSkinnedMeshObjects());
 }
 
 std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)

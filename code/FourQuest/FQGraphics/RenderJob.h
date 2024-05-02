@@ -11,12 +11,17 @@ namespace fq::graphics
 	class SkinnedMesh;
 	class Material;
 
+	class IStaticMeshObject;
+	class ISkinnedMeshObject;
+
 	struct StaticMeshJob
 	{
 		size_t SubsetIndex;
 		std::shared_ptr<StaticMesh> StaticMesh;
 		std::shared_ptr<Material> Material;
 		const DirectX::SimpleMath::Matrix* TransformPtr; 
+		
+		IStaticMeshObject* tempObject;
 	};
 
 	struct SkinnedMeshJob
@@ -26,5 +31,7 @@ namespace fq::graphics
 		std::shared_ptr<Material> Material;
 		const DirectX::SimpleMath::Matrix* TransformPtr;
 		const std::vector<DirectX::SimpleMath::Matrix>* BoneMatricesPtr;
+
+		ISkinnedMeshObject* tempObject;
 	};
 }
