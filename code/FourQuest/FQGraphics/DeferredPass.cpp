@@ -19,6 +19,8 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
+		Finalize();
+
 		mDevice = device;
 		mJobManager = jobManager;
 		mCameraManager = cameraManager;
@@ -40,6 +42,10 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
+
+		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::ShaderInputDepthStencil, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
+		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
+
 		mStaticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
 		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
 		mGeometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroGeometry);
@@ -48,6 +54,7 @@ namespace fq::graphics
 		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
+		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -57,6 +64,37 @@ namespace fq::graphics
 	}
 	void DeferredGeometryPass::Finalize()
 	{
+		mDevice = nullptr;
+		mJobManager = nullptr;
+		mCameraManager = nullptr;
+		mResourceManager = nullptr;
+
+		mDSV = nullptr;
+		mShadowSRV = nullptr;
+
+		mAlbedoRTV = nullptr;
+		mMetalnessRTV = nullptr;
+		mRoughnessRTV = nullptr;
+		mNormalRTV = nullptr;
+		mEmissiveRTV = nullptr;
+		mPositionRTV;
+		mShadowRatioRTV = nullptr;
+
+		mStaticMeshLayout = nullptr;
+		mSkinnedMeshLayout = nullptr;
+
+		mStaticMeshVS = nullptr;
+		mSkinnedMeshVS = nullptr;
+
+		mGeometryPS = nullptr;
+
+		mAnisotropicWrapSamplerState = nullptr;
+		mShadowSampler = nullptr;
+
+		mModelTransformCB = nullptr;
+		mSceneTransformCB = nullptr;
+		mBoneTransformCB = nullptr;
+		mModelTexutreCB = nullptr;
 
 	}
 	void DeferredGeometryPass::OnResize(unsigned short width, unsigned short height)
@@ -80,6 +118,7 @@ namespace fq::graphics
 		mNormalRTV->Clear(mDevice, { 1000, 0, 0, 0 });
 		mEmissiveRTV->Clear(mDevice);
 		mPositionRTV->Clear(mDevice);
+		mShadowRatioRTV->Clear(mDevice, { 0,0,0,0 });
 
 		std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
 		renderTargetViews.reserve(6u);
@@ -90,13 +129,14 @@ namespace fq::graphics
 		renderTargetViews.push_back(mNormalRTV);
 		renderTargetViews.push_back(mEmissiveRTV);
 		renderTargetViews.push_back(mPositionRTV);
+		renderTargetViews.push_back(mShadowRatioRTV);
 
 		D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDSV);
 
 		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
 		SceneTrnasform sceneTransform;
-		sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * DirectX::SimpleMath::Matrix::CreateTranslation(100, 0, 0) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
+		sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 		sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 		DirectX::SimpleMath::Matrix texTransform =
 		{
@@ -105,7 +145,7 @@ namespace fq::graphics
 			 0.0f, 0.0f, 1.0f, 0.0f,
 			 0.5f, 0.5f, 0.0f, 1.0f
 		};
-		sceneTransform.ShadowViewProjTexMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player) * texTransform;
+		sceneTransform.ShadowViewProjTexMat = mCameraManager->GetViewMatrix(ECameraType::Player) * DirectX::SimpleMath::Matrix::CreateTranslation(100, 0, 0) * mCameraManager->GetProjectionMatrix(ECameraType::Player) * texTransform;
 		sceneTransform.ShadowViewProjTexMat = sceneTransform.ShadowViewProjTexMat.Transpose();
 		mSceneTransformCB->Update(mDevice, sceneTransform);
 
@@ -117,6 +157,8 @@ namespace fq::graphics
 		mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 		mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 		mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+		mShadowSRV->Bind(mDevice, 5, ED3D11ShaderType::Pixelshader);
 
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
@@ -154,14 +196,16 @@ namespace fq::graphics
 		}
 	}
 
-	void DeferredShadingPass::Initialize(std::shared_ptr<D3D11Device> mDevice,
+	void DeferredShadingPass::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
 		std::shared_ptr< D3D11LightManager> lightManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		unsigned short width,
 		unsigned short height)
 	{
-		mDevice = mDevice;
+		Finalize();
+
+		mDevice = device;
 		mResourceManager = resourceManager;
 		mLightManager = lightManager;
 		mCameraManager = cameraManager;
@@ -174,16 +218,62 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		mShadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroShading);
+		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
+		mNullDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
-		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+
+		mFullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
+		mFullScreenLayout = std::make_shared<D3D11InputLayout>(device, mFullScreenVS->GetBlob().Get());
+		mShadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroShading);
+
+		std::vector<DirectX::SimpleMath::Vector2> positions =
+		{
+			{ -1, 1 },
+			{ 1, 1 },
+			{ -1, -1 },
+			{ 1, -1 }
+		};
+
+		std::vector<unsigned int> indices =
+		{
+			0,1,2,
+			1,3,2
+		};
+
+		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 	}
 	void DeferredShadingPass::Finalize()
 	{
+		mDevice = nullptr;
+		mResourceManager = nullptr;
+		mLightManager = nullptr;
+		mCameraManager = nullptr;
 
+		mNullDSV = nullptr;
+
+		mAlbedoSRV = nullptr;
+		mMetalnessSRV = nullptr;
+		mRoughnessSRV = nullptr;
+		mNormalSRV = nullptr;
+		mEmissiveSRV = nullptr;
+		mPositionSRV = nullptr;
+		mShadowRatioSRV = nullptr;
+
+		mBackBufferRTV = nullptr;
+
+		mAnisotropicWrapSamplerState = nullptr;
+		mLinearClampSamplerState = nullptr;
+		mPointClampSamplerState = nullptr;
+
+		mFullScreenLayout = nullptr;
+		mFullScreenVS = nullptr;
+		mFullScreenVB = nullptr;
+		mFullScreenIB = nullptr;
+		mShadingPS = nullptr;
 	}
 	void DeferredShadingPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -215,6 +305,7 @@ namespace fq::graphics
 		mNormalSRV->Bind(mDevice, 3, ED3D11ShaderType::Pixelshader);
 		mEmissiveSRV->Bind(mDevice, 4, ED3D11ShaderType::Pixelshader);
 		mPositionSRV->Bind(mDevice, 5, ED3D11ShaderType::Pixelshader);
+		mShadowRatioSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
 
 		mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
 		mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);

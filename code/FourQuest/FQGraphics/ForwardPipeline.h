@@ -48,7 +48,6 @@ namespace fq::graphics
 		std::shared_ptr<class ForwardRenderPass> mRenderPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 
-		// resize 관리는 파이프라인에서
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;

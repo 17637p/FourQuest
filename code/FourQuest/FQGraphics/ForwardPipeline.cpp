@@ -53,13 +53,16 @@ namespace fq::graphics
 		{
 			pass->Finalize();
 		}
+		mPasses.clear();
+
+		mDevice = nullptr;
+		mResourceManager = nullptr;
 
 		mSwapChainRTV = nullptr;
 		mBackBufferRTV = nullptr;
 		mBackBufferSRV = nullptr;
 		mDSV = nullptr;
 
-		mPasses.clear();
 	}
 
 	void ForwardPipeline::OnResize(unsigned short width, unsigned short height)
@@ -74,7 +77,7 @@ namespace fq::graphics
 		mBackBufferRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mDSV->OnResize(mDevice, ED3D11DepthStencilViewType::Default, width, height);
 
-		mBackBufferSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(mDevice, mBackBufferRTV);
+		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
 
 		for (std::shared_ptr<RenderPass> pass : mPasses)
 		{

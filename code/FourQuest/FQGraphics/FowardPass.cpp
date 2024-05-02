@@ -20,6 +20,8 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
+		Finalize();
+
 		mDevice = device;
 		mJobManager = jobManager;
 		mCameraManager = cameraManager;
@@ -62,8 +64,15 @@ namespace fq::graphics
 	}
 	void ForwardRenderPass::Finalize()
 	{
+		mDevice = nullptr;
+		mJobManager = nullptr;
+		mCameraManager = nullptr;
+		mLightManager = nullptr;
+		mResourceManager = nullptr;
+
 		mBackBufferRTV = nullptr;
 		mDSV = nullptr;
+		mShadowSRV = nullptr;
 
 		mStaticMeshLayout = nullptr;
 		mSkinnedMeshLayout = nullptr;
@@ -74,10 +83,12 @@ namespace fq::graphics
 		mAnisotropicWrapSamplerState = nullptr;
 		mLinearClampSamplerState = nullptr;
 		mPointClampSamplerState = nullptr;
+		mShadowSampler = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
+
 		mModelTexutreCB = nullptr;
 	}
 
@@ -118,7 +129,7 @@ namespace fq::graphics
 
 		mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
 		SceneTrnasform sceneTransform;
-		sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * DirectX::SimpleMath::Matrix::CreateTranslation(100, 0, 0) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
+		sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 		sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 		DirectX::SimpleMath::Matrix texTransform =
 		{
@@ -127,7 +138,7 @@ namespace fq::graphics
 			 0.0f, 0.0f, 1.0f, 0.0f,
 			 0.5f, 0.5f, 0.0f, 1.0f
 		};
-		sceneTransform.ShadowViewProjTexMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player) * texTransform;
+		sceneTransform.ShadowViewProjTexMat = mCameraManager->GetViewMatrix(ECameraType::Player) * DirectX::SimpleMath::Matrix::CreateTranslation(100, 0, 0) * mCameraManager->GetProjectionMatrix(ECameraType::Player) * texTransform;
 		sceneTransform.ShadowViewProjTexMat = sceneTransform.ShadowViewProjTexMat.Transpose();
 		mSceneTransformCB->Update(mDevice, sceneTransform);
 

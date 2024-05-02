@@ -40,7 +40,7 @@ namespace fq::graphics
 			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			//mDeferredPipeline->Initialize(device, resourceManager, lightManager, width, height);
+			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 			break;
 		default:
 			assert(false);
@@ -74,7 +74,7 @@ namespace fq::graphics
 			mForwardPipeline->OnResize(width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			// mDeferredPipeline->OnResize(mDevice, resourceManager, width, height);
+			mDeferredPipeline->OnResize(width, height);
 			break;
 		default:
 			assert(false);
@@ -84,7 +84,18 @@ namespace fq::graphics
 
 	void D3D11RenderManager::BeginRender()
 	{
-		mForwardPipeline->BeginRender();
+		switch (mPipelineType)
+		{
+		case fq::graphics::EPipelineType::Forward:
+			mForwardPipeline->BeginRender();
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			mDeferredPipeline->BeginRender();
+			break;
+		default:
+			assert(false);
+			break;
+		}
 	}
 
 	void D3D11RenderManager::Render()
@@ -95,7 +106,7 @@ namespace fq::graphics
 			mForwardPipeline->Render();
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			// mDeferredPipeline->Render(device, staticMeshJobs);
+			mDeferredPipeline->Render();
 			break;
 		default:
 			assert(false);
@@ -105,7 +116,18 @@ namespace fq::graphics
 
 	void D3D11RenderManager::EndRender()
 	{
-		mForwardPipeline->EndRender();
+		switch (mPipelineType)
+		{
+		case fq::graphics::EPipelineType::Forward:
+			mForwardPipeline->EndRender();
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			mDeferredPipeline->EndRender();
+			break;
+		default:
+			assert(false);
+			break;
+		}
 	}
 
 	ID3D11ShaderResourceView* D3D11RenderManager::GetBackBufferSRV() const
