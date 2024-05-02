@@ -86,12 +86,23 @@ namespace fq::game_module
 		/// </summary>
 		void SetDensity(float density);
 
+		/// <summary>
+		/// 현재 충돌중인 콜라이더의 갯수를 반환합니다 
+		/// <returns></returns>
+		unsigned int GetCollisionCount() const { return mCollisionCount; }
+
 	private:
+		void OnCollisionEnter(const Collision& collision) override;
+		void OnCollisionExit(const Collision& collision) override;
+		void OnTriggerEnter(const Collision& collision) override;
+		void OnTriggerExit(const Collision& collision) override;
+
 		entt::meta_handle GetHandle() override;
 
 	private:
 		fq::physics::EColliderType mType;
 		SphereColliderInfo mSphereColliderInfo;
+		unsigned int mCollisionCount;
 	};
 
 

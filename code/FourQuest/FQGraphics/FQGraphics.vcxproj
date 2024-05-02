@@ -46,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -127,6 +127,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,6 +141,7 @@
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="CommonPass.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11CameraManager.h" />
@@ -156,12 +158,14 @@
     <ClInclude Include="D3D11Util.h" />
     <ClInclude Include="D3D11View.h" />
     <ClInclude Include="D3D11DebugDrawManager.h" />
+    <ClInclude Include="DeferredPass.h" />
     <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="D3D11Device.h" />
     <ClInclude Include="D3D11State.h" />
     <ClInclude Include="EPipelineType.h" />
     <ClInclude Include="ForwardPipeline.h" />
+    <ClInclude Include="FowardPass.h" />
     <ClInclude Include="FQGraphics.h" />
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="Light.h" />
@@ -178,6 +182,7 @@
     <ClCompile Include="AnimationHelper.cpp" />
     <ClCompile Include="BoneHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CommonPass.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
@@ -194,8 +199,10 @@
     <ClCompile Include="D3D11Util.cpp" />
     <ClCompile Include="D3D11View.cpp" />
     <ClCompile Include="D3D11DebugDrawManager.h.cpp" />
+    <ClCompile Include="DeferredPass.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
+    <ClCompile Include="FowardPass.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Light.cpp" />

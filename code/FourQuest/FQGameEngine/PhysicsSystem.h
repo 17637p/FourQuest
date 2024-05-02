@@ -28,7 +28,15 @@ namespace fq::game_engine
 
 		void Initialize(GameProcess* game);
 
-		void Update();
+		/// <summary>
+		/// 물리엔진 시뮬레이션 이전에 물리공간과 게임공간을 연결해줍니다
+		/// </summary>
+		void SinkToPhysicsScene();
+
+		/// <summary>
+		/// 물리엔진 시뮬레이션이후에 물리공간과 게임공간을 연결해줍니다
+		/// </summary>
+		void SinkToGameScene();
 
 		/// <summary>
 		/// 씬을 로드할때 랜더링에 관련된 리소스를 로드합니다
@@ -88,7 +96,7 @@ namespace fq::game_engine
 
 		const entt::id_type mBoxID;
 		const entt::id_type mSphereID;
-		//const entt::id_type mCapsuleID;
+		const entt::id_type mCapsuleID;
 		const entt::id_type mMeshID;
 
 		bool mbIsGameLoaded;

@@ -2,15 +2,22 @@
 
 #include <physx\PxPhysicsAPI.h>
 #include "FQCommonPhysics.h"
+#include <map>
+#include <memory>
 
 namespace fq::physics
 {
+	class RigidBody;
+
 	class PhysicsSimulationEventCallback : public physx::PxSimulationEventCallback
 	{
 	public:
 		PhysicsSimulationEventCallback();
 		~PhysicsSimulationEventCallback();
 
+		/// <summary>
+		/// PhysX에서 충돌하면 발생되는 실행되는 함수들입니다.
+		/// </summary>
 		virtual void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) override;
 		virtual void onWake(physx::PxActor** actors, physx::PxU32 count) override;
 		virtual void onSleep(physx::PxActor** actors, physx::PxU32 count) override;

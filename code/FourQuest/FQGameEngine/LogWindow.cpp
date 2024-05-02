@@ -11,13 +11,21 @@
 #include "ImGuiColor.h"
 
 fq::game_engine::LogWindow::LogWindow()
-	:mLogger{}
+	:mEditorLogger{}
 	, mLogList{}
 	, mMaxLogListSize(10)
-	, mbIsShowTime(true)
+	, mbIsShowTime(false)
 	, mbIsOpen(true)
 	, mLevel(spdlog::level::level_enum::trace)
 	, mGameProcess(nullptr)
+	, mLevelString{
+		"trace",
+		"debug",
+		"info",
+		"warn",
+		"error",
+		"critical"
+	}
 {}
 
 fq::game_engine::LogWindow::~LogWindow()
@@ -49,7 +57,7 @@ void fq::game_engine::LogWindow::Initialize(GameProcess* game)
 
 	logger.set_level(mLevel);
 	spdlog::set_default_logger(logger.clone("editor"));
-	mLogger = spdlog::get("default");
+	mEditorLogger = spdlog::get("editor");
 
 	// 그래픽스 로그 연결 
 	auto graphicsCallBackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([this](const spdlog::details::log_msg& msg) {
@@ -172,17 +180,40 @@ void fq::game_engine::LogWindow::beginChild_LogList()
 
 void fq::game_engine::LogWindow::beginButton_LogController()
 {
-	if (ImGui::Button("Time"))
-	{
-		mbIsShowTime = !mbIsShowTime;
-	}
-
-	ImGui::SameLine();
-
 	if (ImGui::Button("Clear"))
 	{
 		mLogList.clear();
 	}
+	ImGui::SameLine();
+	
+	// 시간 설정
+	if (ImGui::Button("Time"))
+	{
+		mbIsShowTime = !mbIsShowTime;
+	}
+	ImGui::SameLine();
 
+	ImGui::SetNextItemWidth(100.f);
+	// LogLevel 설정
+	constexpr std::string_view  combo = "##Level_Combo";
+	if (ImGui::BeginCombo(combo.data(), mLevelString[mLevel].data()))
+	{
+		for (int i = 0; i < 6; ++i)
+		{
+			if (ImGui::Selectable(mLevelString[i].data()))
+			{
+				SetLevel(static_cast<spdlog::level::level_enum>(i));
+			}
+		}
+		ImGui::EndCombo();
+	}
+}
+
+void fq::game_engine::LogWindow::SetLevel(spdlog::level::level_enum level)
+{
+	mLevel = level;
+	mEditorLogger->set_level(level);
+	mGraphicsLogger->set_level(level);
+	mPhysicsLogger->set_level(level);
 }
 

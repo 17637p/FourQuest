@@ -1,4 +1,5 @@
 #include "DynamicRigidBody.h"
+#include "EngineDataConverter.h"
 
 namespace fq::physics
 {
@@ -26,12 +27,14 @@ namespace fq::physics
 		data->myId = GetID();
 		data->myLayerNumber = GetLayerNumber();
 		shape->userData = data;
+		shape->setContactOffset(0.01f);
 
-		physx::PxMat44 matrix;
-		memcpy(&matrix, &colliderInfo.collisionTransform.worldMatrix, sizeof(physx::PxMat44));
-		physx::PxTransform transform(matrix);
+		physx::PxTransform transform;
+		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 
 		mRigidDynamic = physics->createRigidDynamic(transform);
+		mRigidDynamic->userData = data;
+
 		if (!mRigidDynamic->attachShape(*shape))
 			return false;
 		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density);

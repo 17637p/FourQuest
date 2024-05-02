@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace fq::physics
 {
@@ -19,10 +20,13 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
 	{
+
+		std::cout << "onWake" << std::endl;
 	}
 
 	void PhysicsSimulationEventCallback::onSleep(physx::PxActor** actors, physx::PxU32 count)
 	{
+		std::cout << "onSleep" << std::endl;
 	}
 
 	void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
@@ -77,7 +81,9 @@ namespace fq::physics
 		physx::PxU32 contactCount = cp.contactCount;
 		contactPoints.resize(contactCount);
 		points.resize(contactCount);
-		cp.extractContacts(&contactPoints[0], contactCount);
+
+		if (contactCount > 0)
+			cp.extractContacts(&contactPoints[0], contactCount);
 
 		for (physx::PxU32 j = 0; j < contactCount; j++)
 		{
@@ -90,6 +96,9 @@ namespace fq::physics
 		CollisionData ActorData2;
 		CollisionData* myData = (CollisionData*)pairHeader.actors[0]->userData;
 		CollisionData* otherData = (CollisionData*)pairHeader.actors[1]->userData;
+
+		if (myData == nullptr || otherData == nullptr)
+			return;
 
 		ActorData1.myId = myData->myId;
 		ActorData1.otherId = otherData->myId;
@@ -114,6 +123,9 @@ namespace fq::physics
 		CollisionData* TriggerActorData = (CollisionData*)pairs->triggerActor->userData;
 		CollisionData* OtherActordata = (CollisionData*)pairs->triggerActor->userData;
 
+		if (TriggerActorData == nullptr || OtherActordata == nullptr)
+			return;
+
 		Mydata.myId = TriggerActorData->myId;
 		Mydata.otherId = OtherActordata->myId;
 		Mydata.myLayerNumber = TriggerActorData->myLayerNumber;
@@ -129,5 +141,4 @@ namespace fq::physics
 	}
 
 #pragma endregion
-
 }

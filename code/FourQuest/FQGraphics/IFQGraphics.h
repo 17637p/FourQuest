@@ -16,6 +16,7 @@
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "dxguid.lib") 
 //#include <directxtk/SimpleMath.h>
 
 #ifdef FQ_GRAPHICS_EXPORT

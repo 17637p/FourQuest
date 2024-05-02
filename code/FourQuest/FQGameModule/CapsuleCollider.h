@@ -99,12 +99,22 @@ namespace fq::game_module
 		/// </summary>
 		void SetType(fq::physics::EColliderType type) { mType = type; }
 
+		/// <summary>
+		/// 현재 충돌중인 콜라이더 갯수를 반환합니다 
+		/// </summary>
+		unsigned int GetCollisionCount() const { return mCollisionCount; }
 	private:
+		void OnCollisionEnter(const Collision& collision) override;
+		void OnCollisionExit(const Collision& collision) override;
+		void OnTriggerEnter(const Collision& collision) override;
+		void OnTriggerExit(const Collision& collision) override;
+
 		entt::meta_handle GetHandle() override;
 
 	private:
 		physics::EColliderType mType;
 		CapsuleInfo mCapsuleInfomation;
+		unsigned int mCollisionCount;
 	};
 
 }

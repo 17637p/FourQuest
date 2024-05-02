@@ -104,7 +104,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;
 
 		// 충돌 매트릭스
-		int* mCollisionMatrix;
+		int mCollisionMatrix[16];
 	};
 }
 

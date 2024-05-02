@@ -101,8 +101,12 @@ void fq::game_engine::DebugSystem::RenderSpotLight(fq::game_module::Light& light
 
 void fq::game_engine::DebugSystem::RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider)
 {
+	using DirectX::SimpleMath::Color;
+
 	fq::graphics::debug::OBBInfo obb;
-	obb.Color = { 0.f,1.f,0.f,1.f };
+
+	obb.Color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
+
 	obb.OBB.Center = transform.GetWorldPosition();
 	obb.OBB.Extents = collider.GetExtent();
 	obb.OBB.Orientation = transform.GetWorldRotation();
@@ -123,8 +127,11 @@ void fq::game_engine::DebugSystem::renderBoxCollider()
 
 void fq::game_engine::DebugSystem::RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider)
 {
+	using DirectX::SimpleMath::Color;
+
 	fq::graphics::debug::SphereInfo info;
-	info.Color = { 0.f,1.f,0.f,1.f };
+	info.Color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
+
 	info.Sphere.Center = transform.GetWorldPosition();
 	info.Sphere.Radius = collider.GetRadius();
 	mGameProcess->mGraphics->DrawSphere(info);
@@ -143,13 +150,17 @@ void fq::game_engine::DebugSystem::renderSphereCollider()
 
 void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transform& transform, fq::game_module::CapsuleCollider& collider)
 {
+	using DirectX::SimpleMath::Color;
+
+	Color color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
+
 	auto up = transform.GetWorldMatrix().Up();
 	up.Normalize();
 	auto calpsuleInfo = collider.GetCapsuleInfomation();
 
 	// UpSphere
 	fq::graphics::debug::SphereInfo info;
-	info.Color = { 0.f,1.f,0.f,1.f };
+	info.Color = color;
 	info.Sphere.Center = transform.GetWorldPosition() + up * calpsuleInfo.halfHeight;
 	info.Sphere.Radius = calpsuleInfo.raidus;
 	mGameProcess->mGraphics->DrawSphere(info);
@@ -162,7 +173,7 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	fq::graphics::debug::RayInfo ray;
 
 	ray.Direction = up * calpsuleInfo.halfHeight * 2.f;
-	ray.Color = { 0.f,1.f,0.f,1.f };
+	ray.Color = color;
 	ray.Normalize = false;
 	auto orgin = info.Sphere.Center;
 	auto foward = transform.GetWorldMatrix().Forward();

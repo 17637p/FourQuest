@@ -234,7 +234,16 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 	texture->GetDesc(&textureDesc);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
-	shaderResourceViewDesc.Format = textureDesc.Format;
+
+	switch (textureDesc.Format)
+	{
+	case DXGI_FORMAT_R32_TYPELESS:
+		shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		break;
+	default:
+		assert(false);
+	}
+
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
@@ -304,54 +313,7 @@ fq::graphics::D3D11DepthStencilView::D3D11DepthStencilView(const std::shared_ptr
 	:ResourceBase(ResourceType::DepthStencilView),
 	mDSV(nullptr)
 {
-	ID3D11Device* device = d3d11Device->GetDevice().Get();
-
-	if (eViewType == ED3D11DepthStencilViewType::None)
-	{
-		return;
-	}
-
-	D3D11_TEXTURE2D_DESC depthStencilDesc{};
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-
-	switch (eViewType)
-	{
-	case ED3D11DepthStencilViewType::Default:
-		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-
-		break;
-	case ED3D11DepthStencilViewType::ShaderInputDepthStencil:
-		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-		break;
-	case ED3D11DepthStencilViewType::None:
-		// intentional fall through
-	default:
-		assert(false);
-		break;
-	}
-	// Depth stencil Buffer 생성
-	ID3D11Texture2D* depthStencilBuffer;
-	HR(device->CreateTexture2D(&depthStencilDesc, 0, &depthStencilBuffer));
-
-	if (depthStencilBuffer == nullptr)
-	{
-		MessageBox(NULL, L"depthStencilBuffer가 생성되지 않았습니다.", L"에러", MB_ICONERROR);
-	}
-	else
-	{
-		HR(device->CreateDepthStencilView(depthStencilBuffer, 0, mDSV.GetAddressOf()));
-	}
-	ReleaseCOM(depthStencilBuffer);
+	OnResize(d3d11Device, eViewType, width, height);
 }
 
 void D3D11DepthStencilView::Clear(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -369,33 +331,55 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		return;
 	}
 
-	// Depth stencil Buffer 생성
 	D3D11_TEXTURE2D_DESC depthStencilDesc{};
-
 	depthStencilDesc.Width = width;
 	depthStencilDesc.Height = height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
 	depthStencilDesc.SampleDesc.Count = 1;
 	depthStencilDesc.SampleDesc.Quality = 0;
-
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
-	ID3D11Texture2D* depthStencilBuffer;
+	D3D11_DEPTH_STENCIL_VIEW_DESC descView = {};
+	descView.Flags = 0;
+	descView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descView.Texture2D.MipSlice = 0;
 
+	switch (eViewType)
+	{
+	case ED3D11DepthStencilViewType::Default:
+		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+		break;
+	case ED3D11DepthStencilViewType::ShaderInputDepthStencil:
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+
+		break;
+	case ED3D11DepthStencilViewType::None:
+		// intentional fall through
+	default:
+		assert(false);
+		break;
+	}
+	// Depth stencil Buffer 생성
+	ID3D11Texture2D* depthStencilBuffer;
 	HR(device->CreateTexture2D(&depthStencilDesc, 0, &depthStencilBuffer));
+
 	if (depthStencilBuffer == nullptr)
 	{
 		MessageBox(NULL, L"depthStencilBuffer가 생성되지 않았습니다.", L"에러", MB_ICONERROR);
 	}
 	else
 	{
-		HR(device->CreateDepthStencilView(depthStencilBuffer, 0, mDSV.GetAddressOf()));
+		HR(device->CreateDepthStencilView(depthStencilBuffer, &descView, mDSV.GetAddressOf()));
 	}
 	ReleaseCOM(depthStencilBuffer);
 }

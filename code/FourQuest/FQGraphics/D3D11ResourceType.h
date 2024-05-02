@@ -44,12 +44,14 @@ namespace fq::graphics
 	{
 		Default,
 		AnisotropicWrap,
-		PointClamp
+		PointClamp,
+		Shadow
 	};
 
 	enum class ED3D11RasterizerState
 	{
 		Default,
+		Shadow
 	};
 
 	enum class ED3D11DepthStencilState

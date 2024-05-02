@@ -1,6 +1,8 @@
 #include "CapsuleCollider.h"
 
 fq::game_module::CapsuleCollider::CapsuleCollider()
+	:mCapsuleInfomation{}
+	,mCollisionCount(0)
 {
 	mCapsuleInfomation.halfHeight = 1.f;
 	mCapsuleInfomation.raidus = 1.f;
@@ -86,4 +88,27 @@ void fq::game_module::CapsuleCollider::SetStaticFriction(float friction)
 float fq::game_module::CapsuleCollider::GetStaticFriction() const
 {
 	return mCapsuleInfomation.colliderInfo.staticFriction;
+}
+
+void fq::game_module::CapsuleCollider::OnCollisionEnter(const Collision& collision)
+{
+	++mCollisionCount;
+}
+
+void fq::game_module::CapsuleCollider::OnCollisionExit(const Collision& collision)
+{
+	assert(mCollisionCount != 0);
+	--mCollisionCount;
+}
+
+void fq::game_module::CapsuleCollider::OnTriggerEnter(const Collision& collision)
+{
+	++mCollisionCount;
+
+}
+
+void fq::game_module::CapsuleCollider::OnTriggerExit(const Collision& collision)
+{
+	assert(mCollisionCount != 0);
+	--mCollisionCount;
 }

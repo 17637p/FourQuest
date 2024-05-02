@@ -34,8 +34,8 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mResourceManager, mLightManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, width, height, pipelineType);
 
 	return true;
 }
@@ -87,30 +87,24 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
-	mRenderManager->BeginRender(mDevice, mCameraManager, mLightManager);
+	mRenderManager->BeginRender();
 
 	return true;
 }
 
 bool FQGraphics::Render()
 {
-	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
-
-	mRenderManager->Render(mDevice, mJobManager->GetStaticMeshJobs());
-	mRenderManager->Render(mDevice, mJobManager->GetSkinnedMeshJobs());
-	mRenderManager->Shading(mDevice);
-
+	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	mRenderManager->Render();
 	mDebugDrawManager->Excute(mDevice, mCameraManager);
-
-	mRenderManager->RenderBackBuffer(mDevice);
-
+	mRenderManager->RenderBackBuffer();
 	return true;
 }
 
 bool FQGraphics::EndRender()
 {
-	mRenderManager->EndRender(mDevice);
+	mRenderManager->EndRender();
 	mJobManager->ClearAll();
 
 	return true;
@@ -130,7 +124,7 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
-	mRenderManager->OnResize(mDevice, mResourceManager, width, height);
+	mRenderManager->OnResize(width, height);
 	mCameraManager->OnResize(width, height);
 
 	return true;
@@ -219,7 +213,7 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mResourceManager, mLightManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

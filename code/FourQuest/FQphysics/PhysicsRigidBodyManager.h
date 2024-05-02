@@ -33,27 +33,21 @@ namespace fq::physics
 		/// <summary>
 		/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트
 		/// </summary>
-		bool FinalUpdate();
-
-		/// <summary>
-		/// 리지드 바디들의 충돌 필터 데이터 ( 레이어 넘버, 충돌 매트릭스 ) 를 세팅합니다.
-		/// </summary>
-		bool UpdateFilterData(std::shared_ptr<StaticRigidBody> body, int* collisionMatrix);
-		bool UpdateFilterData(std::shared_ptr<DynamicRigidBody> body, int* collisionMatrix);
+		bool FinalUpdate(physx::PxScene* scene);
 
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
 		/// <param name="info"> 리지드 바디의 도형 형태 입니다. </param>
 		/// <param name="colliderType"> 콜라이더 타입(트리거, 콜리전) 입니다. </param>
-		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType);
-		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType);
-		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
-		bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType);
-		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType);
+		bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 
 		void GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix);
 
@@ -88,13 +82,20 @@ namespace fq::physics
 		/// </summary>
 		void ExtractDebugData();
 
+		/// <summary>
+		/// 물리 공간의 리지드 바디들을 체크하여 리지드 바디가 없는 userData 삭제
+		/// </summary>
+		void UpdateUserData(physx::PxScene* scene);
+
 		inline const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon();
+		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodyContainer();
 
 	private:
 		physx::PxPhysics* mPhysics;
 
 		std::shared_ptr<PhysicsCookingMeshTool> mCookingMeshTool;
-		std::map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodys;
+		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
+		std::unordered_map<unsigned int, CollisionData*> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
 
 		std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>> mDebugPolygon;
@@ -103,5 +104,10 @@ namespace fq::physics
 	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& PhysicsRigidBodyManager::GetDebugPolygon()
 	{
 		return mDebugPolygon;
+	}
+
+	std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& PhysicsRigidBodyManager::GetRigidBodyContainer()
+	{
+		return mRigidBodyContainer;
 	}
 }

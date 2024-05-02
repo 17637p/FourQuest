@@ -39,6 +39,7 @@ namespace fq::game_engine
 
 		bool& IsWindowOpen() { return mbIsOpen; }
 
+		void SetLevel(spdlog::level::level_enum level);
 	private:
 		void beginButton_LogController();
 		void beginChild_LogList();
@@ -52,11 +53,13 @@ namespace fq::game_engine
 		bool mbIsShowTime;
 		spdlog::level::level_enum mLevel;
 
-		std::shared_ptr<spdlog::logger> mLogger;
+		std::shared_ptr<spdlog::logger> mEditorLogger;
 		std::shared_ptr<spdlog::logger> mGraphicsLogger;
 		std::shared_ptr<spdlog::logger> mPhysicsLogger;
 
 		std::list<LogMessage> mLogList;
+		std::string_view mLevelString[6];
+
 	};
 
 

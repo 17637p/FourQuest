@@ -490,3 +490,12 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 	}
 
 }
+
+void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 target)
+{
+	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
+	auto backward = cameraT->GetLocalMatrix().Forward();
+	auto cameraPosition = target + backward * 100.f;
+
+	cameraT->SetLocalPosition(cameraPosition);
+}

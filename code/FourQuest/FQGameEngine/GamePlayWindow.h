@@ -57,7 +57,16 @@ namespace fq::game_engine
 
 		bool& IsWindowOpen() { return mbIsOpen; }
 
+		/// <summary>
+		/// 에디터 카메라를 업데이트합니다
+		/// </summary>
 		void UpdateCamera(float dt);
+
+		/// <summary>
+		/// 에디터 카메라가 타겟을 바라봅니다
+		/// </summary>
+		void LookAtTarget(DirectX::SimpleMath::Vector3 target);
+
 	private:
 		void resizeWindow(ImVec2 size);
 	

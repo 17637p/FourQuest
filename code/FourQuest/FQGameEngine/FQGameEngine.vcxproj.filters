@@ -11,9 +11,6 @@
     <Filter Include="include\10.Editor">
       <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\11.EditorWindow">
-      <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.GameProcess">
       <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
     </Filter>
@@ -62,6 +59,9 @@
     </Filter>
     <Filter Include="Test">
       <UniqueIdentifier>{5b42f24e-09ee-48d8-a850-1e29f137c3a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.EditorWindow">
+      <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
