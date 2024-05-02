@@ -28,8 +28,6 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
 	, mSelectObject(nullptr)
-	, mViewTM{}
-	, mProjTM{}
 	, mbIsUsingGizumo(false)
 	, mWindowSize{ 1.f,1.f }
 {}
@@ -320,6 +318,7 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 	cameraT->SetLocalRotation(rotation);
 	cameraT->SetLocalPosition(position);
+
 }
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
@@ -349,7 +348,11 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 
 	auto& input = mEditorProcess->mInputManager;
 
-	if (ImGuizmo::Manipulate(&mViewTM._11, &mProjTM._11
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto view = camera->GetView();
+	auto proj = camera->GetProjection(mWindowSize.x / mWindowSize.y);
+
+	if (ImGuizmo::Manipulate(&view._11, &proj._11
 		, mOperation, ImGuizmo::WORLD, &objectMatrix._11))
 	{
 		if (objectT->HasParent())
@@ -425,12 +428,7 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 {
 	mWindowSize = size;
-
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	auto aspectRatio = mWindowSize.x / mWindowSize.y;
-
-	mViewTM = camera->GetView();
-	mProjTM = camera->GetProjection(aspectRatio);
 
 	mGameProcess->mGraphics->SetViewportSize(mWindowSize.x, mWindowSize.y);
 	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());

@@ -88,8 +88,6 @@ namespace fq::game_engine
 		std::shared_ptr<fq::game_module::GameObject> mCameraObject;
 		float mCameraMoveSpeed;
 		float mCameraRotateSpeed;
-		DirectX::SimpleMath::Matrix mViewTM;
-		DirectX::SimpleMath::Matrix mProjTM;
 
 		// 기즈모관련
 		DirectX::SimpleMath::Matrix mStart;
