@@ -35,7 +35,6 @@ namespace fq::physics
 		if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
 		{
 			SettingCollisionData(pairHeader, pairs, ECollisionEventType::ENTER_COLLISION);
-			spdlog::debug("Begin Collision");
 		}
 
 		/// END_COLLISION 충돌 이벤트 실행
@@ -43,7 +42,6 @@ namespace fq::physics
 		{
 			SettingCollisionData(pairHeader, pairs, ECollisionEventType::END_COLLISION);
 			CheckUserData(pairHeader);
-			spdlog::debug("End Collision");
 		}
 
 		/// ON_COLLSION 충돌 이벤트 실행
@@ -101,8 +99,8 @@ namespace fq::physics
 		CollisionData* myData = (CollisionData*)pairHeader.actors[0]->userData;
 		CollisionData* otherData = (CollisionData*)pairHeader.actors[1]->userData;
 
-		//if (myData == nullptr || otherData == nullptr)
-		//	return;
+		if (myData == nullptr || otherData == nullptr)
+			return;
 
 		ActorData1.myId = myData->myId;
 		ActorData1.otherId = otherData->myId;
@@ -127,8 +125,8 @@ namespace fq::physics
 		CollisionData* TriggerActorData = (CollisionData*)pairs->triggerActor->userData;
 		CollisionData* OtherActordata = (CollisionData*)pairs->triggerActor->userData;
 
-		//if (TriggerActorData == nullptr || OtherActordata == nullptr)
-		//	return;
+		if (TriggerActorData == nullptr || OtherActordata == nullptr)
+			return;
 
 		Mydata.myId = TriggerActorData->myId;
 		Mydata.otherId = OtherActordata->myId;
@@ -158,7 +156,9 @@ namespace fq::physics
 		auto otherBody = mRigidBodies->find(otherData->myId);
 
 		if (myBody == mRigidBodies->end())
+		{
 			delete myData;
+		}
 		if (otherBody == mRigidBodies->end())
 			delete otherData;
 	}

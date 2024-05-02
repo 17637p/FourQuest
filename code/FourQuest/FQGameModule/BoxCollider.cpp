@@ -88,3 +88,23 @@ void fq::game_module::BoxCollider::SetDensity(float density)
 	mBoxinfomation.colliderInfo.density = density;
 }
 
+void fq::game_module::BoxCollider::OnCollisionEnter(const Collision& collision)
+{
+	++mCollisionCount;
+}
+
+void fq::game_module::BoxCollider::OnCollisionExit(const Collision& collision)
+{
+	--mCollisionCount;
+}
+
+void fq::game_module::BoxCollider::OnTriggerEnter(const Collision& collision)
+{
+	++mCollisionCount;
+}
+
+void fq::game_module::BoxCollider::OnTriggerExit(const Collision& collision)
+{
+	--mCollisionCount;
+}
+

@@ -101,8 +101,12 @@ void fq::game_engine::DebugSystem::RenderSpotLight(fq::game_module::Light& light
 
 void fq::game_engine::DebugSystem::RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider)
 {
+	using DirectX::SimpleMath::Color;
+
 	fq::graphics::debug::OBBInfo obb;
-	obb.Color = { 0.f,1.f,0.f,1.f };
+
+	obb.Color = (collider.GetCollisionCount() == 0) ? Color{0.f,1.f,0.f} : Color{ 1.f,0.f,0.f };
+
 	obb.OBB.Center = transform.GetWorldPosition();
 	obb.OBB.Extents = collider.GetExtent();
 	obb.OBB.Orientation = transform.GetWorldRotation();

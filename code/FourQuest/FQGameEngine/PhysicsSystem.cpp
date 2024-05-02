@@ -259,34 +259,41 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
 {
-	auto my =  mColliderContainer.find(data.myId);
-	auto other = mColliderContainer.find(data.otherId);
-	assert(my != mColliderContainer.end() || other != mColliderContainer.end());
+	auto lfs =  mColliderContainer.find(data.myId);
+	auto rhs = mColliderContainer.find(data.otherId);
 
-	auto object = my->second.second->GetGameObject();
-	auto otherObject = other->second.second->GetGameObject();
+	bool isLfsVaild = lfs != mColliderContainer.end();
+	bool isRfsVaild = rhs != mColliderContainer.end();
+
+	if (!isLfsVaild)
+	{
+		return;
+	}
+
+	auto lhsObject = lfs->second.second->GetGameObject();
+	auto rhsObject = isRfsVaild ?  rhs->second.second->GetGameObject() : nullptr;
 	
-	fq::game_module::Collision collision{ object,otherObject, data.ContectPoints};
+	fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints};
 
 	switch (type)
 	{
 		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-			object->OnTriggerEnter(collision);
+			lhsObject->OnTriggerEnter(collision);
 			break;
 		case fq::physics::ECollisionEventType::ON_OVERLAP:
-			object->OnTriggerStay(collision);
+			lhsObject->OnTriggerStay(collision);
 			break;
 		case fq::physics::ECollisionEventType::END_OVERLAP:
-			object->OnTriggerExit(collision);
+			lhsObject->OnTriggerExit(collision);
 			break;
 		case fq::physics::ECollisionEventType::ENTER_COLLISION:
-			object->OnCollisionEnter(collision);
+			lhsObject->OnCollisionEnter(collision);
 			break;
 		case fq::physics::ECollisionEventType::ON_COLLISION:
-			object->OnCollisionStay(collision);
+			lhsObject->OnCollisionStay(collision);
 			break;
 		case fq::physics::ECollisionEventType::END_COLLISION:
-			object->OnCollisionExit(collision);
+			lhsObject->OnCollisionExit(collision);
 			break;
 	}
 
