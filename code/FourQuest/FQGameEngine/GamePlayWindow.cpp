@@ -21,6 +21,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mEditorProcess(nullptr)
 	, mMode(EditorMode::Edit)
 	, mbIsPauseGame(false)
+	, mbIsOpen(true)
 	, mCameraObject(nullptr)
 	, mCameraMoveSpeed(20.f)
 	, mCameraRotateSpeed(0.0065f)
@@ -46,13 +47,13 @@ void fq::game_engine::GamePlayWindow::Render()
 			resizeWindow(ImGui::GetWindowSize());
 		}
 
+		pickObject();
 		beginMenuBar_Control();
 		beginImage_GameScreen();
 		beginGizumo();
 		drawSelectObjectDebugInfomation();
 	}
 	ImGui::End();
-
 }
 
 void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProcess* editor)
@@ -423,16 +424,16 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 {
+	mWindowSize = size;
+
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	auto aspectRatio = ImGui::GetWindowSize().x / ImGui::GetWindowSize().y;
+	auto aspectRatio = mWindowSize.x / mWindowSize.y;
 
 	mViewTM = camera->GetView();
 	mProjTM = camera->GetProjection(aspectRatio);
 
-	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+	mGameProcess->mGraphics->SetViewportSize(mWindowSize.x, mWindowSize.y);
 	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());
-
-	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 }
 
 fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
@@ -498,4 +499,25 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 	auto cameraPosition = target + backward * 100.f;
 
 	cameraT->SetLocalPosition(cameraPosition);
+}
+
+
+void fq::game_engine::GamePlayWindow::pickObject()
+{
+	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap))
+	{
+		auto mousePos = ImGui::GetMousePos();
+		auto window = ImGui::GetWindowPos();
+
+		spdlog::trace("windowpos {} {}", window.x, window.y);
+
+		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(500, 580);
+
+		if (meshPtr != nullptr)
+		{
+			spdlog::trace("select object");
+		}
+
+		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+	}
 }

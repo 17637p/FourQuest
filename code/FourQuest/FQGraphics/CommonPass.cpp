@@ -52,7 +52,6 @@ namespace fq::graphics
 
 	void ShadowPass::Finalize()
 	{
-
 	}
 
 	void ShadowPass::Render()

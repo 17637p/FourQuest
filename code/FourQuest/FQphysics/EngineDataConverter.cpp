@@ -29,7 +29,7 @@ void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix,
 
 	// 회전 정보에서 z축 방향 반전 적용
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationMatrix(dxMatrix);
-	DirectX::XMVECTOR flippedZ = DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), DirectX::XM_PI);
+	DirectX::XMVECTOR flippedZ = DirectX::XMQuaternionRotationAxis(DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), DirectX::XM_PI);
 	quaternion = DirectX::XMQuaternionMultiply(quaternion, flippedZ);
 
 	pxTransform.q.x = DirectX::XMVectorGetX(quaternion);

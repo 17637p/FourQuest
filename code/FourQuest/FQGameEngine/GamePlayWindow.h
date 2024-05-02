@@ -35,11 +35,6 @@ namespace fq::game_engine
 		void Finalize();
 
 		/// <summary>
-		/// 단축키 관련 처리를 합니다 
-		/// </summary>
-		void ExcutShortcut();
-
-		/// <summary>
 		/// 게임 창을 표시합니다 
 		/// </summary>
 		void Render() override;
@@ -67,9 +62,11 @@ namespace fq::game_engine
 		/// </summary>
 		void LookAtTarget(DirectX::SimpleMath::Vector3 target);
 
+		void ExcutShortcut();
 	private:
 		void resizeWindow(ImVec2 size);
-	
+		void pickObject();
+
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
 

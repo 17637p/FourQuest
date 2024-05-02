@@ -12,7 +12,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mScene(nullptr)
 	, mCollisionMatrix{}
 	, mbIsGameLoaded(false)
-	, mGravity{ 0.f,-10.f,0.f }
+	, mGravity{ 0.f,-1.f,0.f }
 	, mPhysicsEngine(nullptr)
 	, mLastColliderID(physics::unregisterID)
 	, mBoxID(entt::resolve<fq::game_module::BoxCollider>().id())
@@ -92,10 +92,8 @@ void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObj
 
 void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
 {
-	if (event.id != entt::resolve<fq::game_module::BoxCollider>().id()
-		|| event.id != entt::resolve<fq::game_module::SphereCollider>().id()
-		|| event.id != entt::resolve<fq::game_module::MeshCollider>().id())
-		//		|| event.id != entt::resolve<fq::game_module::CapsuleColldier>().id()
+	if (event.id == mBoxID || event.id == mSphereID
+		|| event.id == mCapsuleID || event.id == mMeshID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -103,10 +101,8 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 
 void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComponent& event)
 {
-	if (event.id != entt::resolve<fq::game_module::BoxCollider>().id()
-		|| event.id != entt::resolve<fq::game_module::SphereCollider>().id()
-		|| event.id != entt::resolve<fq::game_module::MeshCollider>().id())
-		//		|| event.id != entt::resolve<fq::game_module::CapsuleColldier>().id()
+	if (event.id == mBoxID || event.id ==mSphereID
+		|| event.id == mCapsuleID || event.id == mMeshID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -305,7 +301,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
 		auto matrix =  mPhysicsEngine->GetRigidBodyMatrix(id);
-		transform->SetLocalMatrix(matrix);
+		transform->SetWorldMatrix(matrix);
 	}
 }
 
