@@ -6,7 +6,7 @@
 #pragma comment(lib, "../x64/Debug/FQGraphics.lib")
 //#pragma comment(lib, "../x64/Debug/ImpGraphicsEngine.lib")
 #else
-//#pragma comment(lib, "../x64/Release/ImpStructure.lib")
+#pragma comment(lib, "../x64/Release/FQGraphics.lib")
 //#pragma comment(lib, "../x64/Release/ImpGraphicsEngine.lib")
 #endif // DEBUG
 

@@ -108,6 +108,9 @@
     <ClInclude Include="D3D11PickingManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="CommonPass.h" />
+    <ClInclude Include="DeferredPass.h" />
+    <ClInclude Include="FowardPass.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -233,6 +236,9 @@
     <ClCompile Include="D3D11PickingManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
+    <ClCompile Include="CommonPass.cpp" />
+    <ClCompile Include="DeferredPass.cpp" />
+    <ClCompile Include="FowardPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">

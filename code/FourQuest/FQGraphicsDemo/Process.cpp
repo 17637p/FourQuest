@@ -54,7 +54,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
@@ -62,7 +62,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 10000.0f;
+	cameraInfo.farPlain = 1000.0f;
 
 	mTestGraphics->SetCamera(cameraInfo);
 	//-------------------------------------
@@ -105,21 +105,21 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 1,0,0 };
 
-	//mTestGraphics->AddLight(1, directionalLightInfo);
+	mTestGraphics->AddLight(1, directionalLightInfo);
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1,0,0, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { -1,0,0 };
 
-	//mTestGraphics->AddLight(2, directionalLightInfo);
+	mTestGraphics->AddLight(2, directionalLightInfo);
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 0,0,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0,-1,0 };
 
-	//mTestGraphics->AddLight(3, directionalLightInfo);
+	mTestGraphics->AddLight(3, directionalLightInfo);
 
 	directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	directionalLightInfo.color = { 1,0,0, 1 };

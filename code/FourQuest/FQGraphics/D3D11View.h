@@ -32,7 +32,7 @@ namespace fq::graphics
 			const unsigned short width, const unsigned short height);
 
 		static std::string GenerateRID(const ED3D11RenderTargetViewType eViewType);
-		
+
 		static void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 
@@ -80,6 +80,9 @@ namespace fq::graphics
 	=============================================================================*/
 	class D3D11DepthStencilView : public ResourceBase
 	{
+		friend class D3D11RenderTargetView;
+		friend class D3D11ShaderResourceView;
+
 	public:
 		D3D11DepthStencilView(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const ED3D11DepthStencilViewType eViewType,
@@ -93,12 +96,15 @@ namespace fq::graphics
 			const unsigned short width, const unsigned short height);
 		void Release();
 
-		friend class D3D11RenderTargetView;
+		inline ComPtr<ID3D11DepthStencilView> GetDSV() const;
 
 	private:
 		ComPtr<ID3D11DepthStencilView> mDSV;
-
-		friend class D3D11ShaderResourceView;
 	};
+
+	inline ComPtr<ID3D11DepthStencilView> D3D11DepthStencilView::GetDSV() const
+	{
+		return mDSV;
+	}
 }
 
