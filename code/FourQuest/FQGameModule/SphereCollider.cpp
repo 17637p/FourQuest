@@ -4,6 +4,7 @@ fq::game_module::SphereCollider::~SphereCollider()
 {}
 
 fq::game_module::SphereCollider::SphereCollider()
+	:mCollisionCount(0)
 {
 	mSphereColliderInfo.raidus = 1.f;
 }
@@ -75,4 +76,28 @@ void fq::game_module::SphereCollider::SetDensity(float density)
 void fq::game_module::SphereCollider::SetRadius(float radius)
 {
 	mSphereColliderInfo.raidus = max(0.00001f, radius);
+}
+
+void fq::game_module::SphereCollider::OnCollisionEnter(const Collision& collision)
+{
+	++mCollisionCount;
+
+}
+
+void fq::game_module::SphereCollider::OnCollisionExit(const Collision& collision)
+{
+	assert(mCollisionCount != 0);
+	--mCollisionCount;
+}
+
+void fq::game_module::SphereCollider::OnTriggerEnter(const Collision& collision)
+{
+	++mCollisionCount;
+
+}
+
+void fq::game_module::SphereCollider::OnTriggerExit(const Collision& collision)
+{
+	assert(mCollisionCount != 0);
+	--mCollisionCount;
 }
