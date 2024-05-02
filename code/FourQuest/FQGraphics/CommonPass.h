@@ -89,6 +89,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
 		std::shared_ptr<D3D11DepthStencilView> mNoneDSV;
+		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
 		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
 		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
