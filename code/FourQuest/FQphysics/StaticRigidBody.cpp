@@ -10,11 +10,6 @@ namespace fq::physics
 	}
 	StaticRigidBody::~StaticRigidBody()
 	{
-		if (mRigidStatic->userData != nullptr)
-		{
-			delete mRigidStatic->userData;
-			mRigidStatic->userData = nullptr;
-		}
 	}
 
 	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics)

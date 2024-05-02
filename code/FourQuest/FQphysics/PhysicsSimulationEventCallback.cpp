@@ -20,6 +20,7 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::onWake(physx::PxActor** actors, physx::PxU32 count)
 	{
+
 		std::cout << "onWake" << std::endl;
 	}
 
@@ -34,12 +35,15 @@ namespace fq::physics
 		if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
 		{
 			SettingCollisionData(pairHeader, pairs, ECollisionEventType::ENTER_COLLISION);
+			spdlog::debug("Begin Collision");
 		}
 
 		/// END_COLLISION 충돌 이벤트 실행
 		else if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
 		{
 			SettingCollisionData(pairHeader, pairs, ECollisionEventType::END_COLLISION);
+			CheckUserData(pairHeader);
+			spdlog::debug("End Collision");
 		}
 
 		/// ON_COLLSION 충돌 이벤트 실행
@@ -61,6 +65,7 @@ namespace fq::physics
 		if (pairs->status == physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 		{
 			SettingTriggerData(pairs, ECollisionEventType::END_OVERLAP);
+			CheckUserData(pairs);
 		}
 	}
 
@@ -96,8 +101,8 @@ namespace fq::physics
 		CollisionData* myData = (CollisionData*)pairHeader.actors[0]->userData;
 		CollisionData* otherData = (CollisionData*)pairHeader.actors[1]->userData;
 
-		if (myData == nullptr || otherData == nullptr)
-			return;
+		//if (myData == nullptr || otherData == nullptr)
+		//	return;
 
 		ActorData1.myId = myData->myId;
 		ActorData1.otherId = otherData->myId;
@@ -122,8 +127,8 @@ namespace fq::physics
 		CollisionData* TriggerActorData = (CollisionData*)pairs->triggerActor->userData;
 		CollisionData* OtherActordata = (CollisionData*)pairs->triggerActor->userData;
 
-		if (TriggerActorData == nullptr || OtherActordata == nullptr)
-			return;
+		//if (TriggerActorData == nullptr || OtherActordata == nullptr)
+		//	return;
 
 		Mydata.myId = TriggerActorData->myId;
 		Mydata.otherId = OtherActordata->myId;
@@ -140,5 +145,40 @@ namespace fq::physics
 	}
 
 #pragma endregion
+
+#pragma region CheckUserData
+
+	void PhysicsSimulationEventCallback::CheckUserData(const physx::PxContactPairHeader& pairHeader)
+	{
+		// 콜리전 충돌이 끝났을 때, 만약 게임에서 삭제된 오브젝트라면 삭제
+		CollisionData* myData = (CollisionData*)pairHeader.actors[0]->userData;
+		CollisionData* otherData = (CollisionData*)pairHeader.actors[1]->userData;
+
+		auto myBody = mRigidBodies->find(myData->myId);
+		auto otherBody = mRigidBodies->find(otherData->myId);
+
+		if (myBody == mRigidBodies->end())
+			delete myData;
+		if (otherBody == mRigidBodies->end())
+			delete otherData;
+	}
+
+	void PhysicsSimulationEventCallback::CheckUserData(physx::PxTriggerPair* pairs)
+	{
+		// 콜리전 겹침이 끝났을 때, 만약 게임에서 삭제된 오브젝트라면 삭제
+		CollisionData* myData = (CollisionData*)pairs->triggerActor->userData;
+		CollisionData* otherData = (CollisionData*)pairs->triggerActor->userData;
+
+		auto myBody = mRigidBodies->find(myData->myId);
+		auto otherBody = mRigidBodies->find(otherData->myId);
+
+		if (myBody == mRigidBodies->end())
+			delete myData;
+		if (otherBody == mRigidBodies->end())
+			delete otherData;
+	}
+
+#pragma endregion
+
 
 }

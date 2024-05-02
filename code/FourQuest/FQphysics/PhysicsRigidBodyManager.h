@@ -89,12 +89,13 @@ namespace fq::physics
 		void ExtractDebugData();
 
 		inline const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon();
+		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodies();
 
 	private:
 		physx::PxPhysics* mPhysics;
 
 		std::shared_ptr<PhysicsCookingMeshTool> mCookingMeshTool;
-		std::map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodys;
+		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodys;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
 
 		std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>> mDebugPolygon;
@@ -103,5 +104,10 @@ namespace fq::physics
 	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& PhysicsRigidBodyManager::GetDebugPolygon()
 	{
 		return mDebugPolygon;
+	}
+
+	std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& PhysicsRigidBodyManager::GetRigidBodies()
+	{
+		return mRigidBodys;
 	}
 }

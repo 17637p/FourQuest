@@ -71,6 +71,7 @@ namespace fq::physics
 		mPhysics->Initialize();
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics()))
 			return false;
+		mMyEventCallback->SettingRigidBodies(&mRigidBodyManager->GetRigidBodies());
 
 		physx::PxPhysics* physics = mPhysics->GetPhysics();
 

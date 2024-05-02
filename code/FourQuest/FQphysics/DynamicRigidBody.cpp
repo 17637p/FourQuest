@@ -10,11 +10,6 @@ namespace fq::physics
 	}
 	DynamicRigidBody::~DynamicRigidBody()
 	{
-		if (mRigidDynamic->userData != nullptr)
-		{
-			delete mRigidDynamic->userData;
-			mRigidDynamic->userData = nullptr;
-		}
 	}
 	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics)
 	{

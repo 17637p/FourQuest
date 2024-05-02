@@ -10,11 +10,15 @@ namespace fq::physics
 {
 	PhysicsRigidBodyManager::PhysicsRigidBodyManager()
 		: mCookingMeshTool(std::make_shared<PhysicsCookingMeshTool>())
+		, mPhysics(nullptr)
 	{
 	}
 
 	PhysicsRigidBodyManager::~PhysicsRigidBodyManager()
 	{
+		mRigidBodys.clear();
+		mUpcomingActors.clear();
+		mDebugPolygon.clear();
 	}
 
 	bool PhysicsRigidBodyManager::Initialize(physx::PxPhysics* physics)
