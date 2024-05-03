@@ -43,7 +43,6 @@ namespace fq::graphics
 		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mStaticMeshVS->GetBlob().Get());
 		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
 
-
 		mShadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
 		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
 
@@ -53,6 +52,7 @@ namespace fq::graphics
 		mShadowTransformCB = std::make_shared<D3D11ConstantBuffer<ShadowTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mCascadeShadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow, SHADOW_SIZE, SHADOW_SIZE);
+		mPointLightShadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::PointLightShadow, Point_LIGHT_SHADOW_SIZE, Point_LIGHT_SHADOW_SIZE);
 	}
 
 	void ShadowPass::Finalize()
@@ -147,6 +147,12 @@ namespace fq::graphics
 
 	void ShadowPass::Render()
 	{
+		// pointLight
+		{
+			// 포인트 라이트의 위치를 가져온 후 6방향에 해당하는 카메라를 만들어준다.
+			// DSV 바인딩 후 지오메트리 쉐이더로 한 방에 랜더링하기
+		}
+
 		if (mLightManager->GetDirectionalLights().size() == 0)
 		{
 			mCascadeShadowDSV->Clear(mDevice);

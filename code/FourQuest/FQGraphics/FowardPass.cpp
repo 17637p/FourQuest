@@ -61,6 +61,10 @@ namespace fq::graphics
 		mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
+	
+		// 포인트라이트 SRV 생성
+		auto pointLightShadow = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::PointLightShadow, ShadowPass::Point_LIGHT_SHADOW_SIZE, ShadowPass::Point_LIGHT_SHADOW_SIZE);
+		mPointLightShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pointLightShadow);
 	}
 	void ForwardRenderPass::Finalize()
 	{

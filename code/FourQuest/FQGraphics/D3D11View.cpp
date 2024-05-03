@@ -244,6 +244,7 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 		assert(false);
 	}
 
+	// if arraysize == 6 create cubeTexture
 	if (textureDesc.ArraySize > 1)
 	{
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
@@ -386,6 +387,18 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		descView.Texture2DArray.FirstArraySlice = 0;
 		descView.Texture2DArray.ArraySize = 3;
 
+		break;
+	case ED3D11DepthStencilViewType::PointLightShadow:
+		depthStencilDesc.ArraySize = 6;
+
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+		descView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		descView.Texture2DArray.MipSlice = 0;
+		descView.Texture2DArray.FirstArraySlice = 0;
+		descView.Texture2DArray.ArraySize = 6;
 		break;
 	case ED3D11DepthStencilViewType::None:
 		// intentional fall through

@@ -49,9 +49,13 @@ namespace fq::graphics
 
 		static std::vector<float> CalculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ);
 		static std::vector<DirectX::SimpleMath::Matrix> CalculateCascadeShadowTransform(std::vector<float> cascadeEnds, DirectX::SimpleMath::Matrix cameraView, DirectX::SimpleMath::Matrix cameraProj, DirectX::SimpleMath::Vector3 lightDirection);
+		
+	private:
+
 
 	public:
 		enum { SHADOW_SIZE = 1024 };
+		enum { Point_LIGHT_SHADOW_SIZE = 256 };
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
@@ -63,6 +67,7 @@ namespace fq::graphics
 		D3D11_VIEWPORT mViewport;
 
 		std::shared_ptr<D3D11DepthStencilView> mCascadeShadowDSV;
+		std::shared_ptr<D3D11DepthStencilView> mPointLightShadowDSV;
 
 		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
 		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
