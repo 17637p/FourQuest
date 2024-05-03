@@ -6,7 +6,7 @@ using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
 {
-
+	mRenderManager = nullptr;
 }
 
 FQGraphics::FQGraphics()

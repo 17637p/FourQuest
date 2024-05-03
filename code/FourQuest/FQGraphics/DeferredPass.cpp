@@ -42,7 +42,6 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-
 		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::ShaderInputDepthStencil, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
 

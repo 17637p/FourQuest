@@ -1,6 +1,7 @@
 #include "D3D11Device.h"
 
 #include <windows.h>
+#include <cassert>
 
 using namespace fq::graphics;
 
@@ -71,5 +72,6 @@ void D3D11Device::OnResize(const unsigned short width, const unsigned short heig
 {
 	mWidth = width;
 	mHeight = height;
-	mSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	HRESULT hr = mSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	assert(SUCCEEDED(hr));
 }
