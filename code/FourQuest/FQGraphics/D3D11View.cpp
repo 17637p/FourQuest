@@ -363,6 +363,13 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
 
 		break;
+	case ED3D11DepthStencilViewType::Picking:
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+		break;
 	case ED3D11DepthStencilViewType::None:
 		// intentional fall through
 	default:

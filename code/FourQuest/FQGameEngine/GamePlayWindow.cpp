@@ -509,7 +509,13 @@ void fq::game_engine::GamePlayWindow::pickObject()
 
 		spdlog::trace("windowpos {} {}", window.x, window.y);
 
-		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(500, 580);
+		auto pos =  mEditorProcess->mInputManager->GetMousePosition();
+
+		mGameProcess->mWindowSystem->GetScreenWidth();
+		mGameProcess->mWindowSystem->GetScreenWidth();
+
+		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(min( mousePos.x ,mGameProcess->mWindowSystem->GetScreenWidth())
+			, min( mousePos.y,	mGameProcess->mWindowSystem->GetScreenHeight()));
 
 		if (meshPtr != nullptr)
 		{

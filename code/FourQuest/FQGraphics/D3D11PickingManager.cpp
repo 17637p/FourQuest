@@ -71,7 +71,7 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	mConstantBuffer = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(device, ED3D11ConstantBuffer::Transform);
 	mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(device, ED3D11ConstantBuffer::Transform);
 
-	mDSV = resourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+	mDSV = resourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Picking, width, height);
 }
 
 void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects, const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
@@ -261,5 +261,11 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	/// 상수버퍼
 	// 카메라 데이터랑 모델 Trasform은 올려줘야 함 
 	// 상수 버퍼로 컬러 값 넘기기
+}
+
+void fq::graphics::D3D11PickingManager::OnResize(const short width, const short height, const std::shared_ptr<D3D11Device>& device)
+{
+	mPickingDrawRTV->OnResize(device, ED3D11RenderTargetViewType::Picking, width, height);
+	mDSV->OnResize(device, ED3D11DepthStencilViewType::Picking, width, height);
 }
 

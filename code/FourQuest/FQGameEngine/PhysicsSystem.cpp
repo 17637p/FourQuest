@@ -72,6 +72,7 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
+	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
@@ -205,8 +206,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
 		}
 	}
-
-
 	// 4. Mesh Collider
 
 }
