@@ -147,7 +147,6 @@ void fq::game_module::InputManager::updateKeybord()
 			}
 		}
 	}
-
 }
 
 void fq::game_module::InputManager::updateGamePad()
