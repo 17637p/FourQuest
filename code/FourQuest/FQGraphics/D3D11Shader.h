@@ -44,6 +44,40 @@ namespace fq::graphics
 		return mShader;
 	}
 
+	class D3D11GeometryShader
+	{
+	public:
+		D3D11GeometryShader(const std::shared_ptr<D3D11Device>& device,
+			const std::wstring& path,
+			const D3D_SHADER_MACRO* pDefines = nullptr,
+			const std::string& entryPoint = "main",
+			const std::string& shaderModel = "gs_5_0");
+
+		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+		inline const std::wstring& GetPath() const;
+		inline Microsoft::WRL::ComPtr<ID3D10Blob> GetBlob() const;
+		inline Microsoft::WRL::ComPtr<ID3D11GeometryShader> GetShader() const;
+
+	private:
+		std::wstring mPath;
+		Microsoft::WRL::ComPtr<ID3D10Blob> mBlob;
+		Microsoft::WRL::ComPtr<ID3D11GeometryShader> mShader;
+	};
+
+	inline const std::wstring& D3D11GeometryShader::GetPath() const
+	{
+		return mPath;
+	}
+	inline Microsoft::WRL::ComPtr<ID3D10Blob> D3D11GeometryShader::GetBlob() const
+	{
+		return mBlob;
+	}
+	inline Microsoft::WRL::ComPtr<ID3D11GeometryShader> D3D11GeometryShader::GetShader() const
+	{
+		return mShader;
+	}
+
 	class D3D11PixelShader
 	{
 	public:
@@ -51,7 +85,7 @@ namespace fq::graphics
 			const std::wstring& path,
 			const D3D_SHADER_MACRO* pDefines = nullptr,
 			const std::string& entryPoint = "main",
-			const std::string & shaderModel = "ps_5_0");
+			const std::string& shaderModel = "ps_5_0");
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 

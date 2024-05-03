@@ -33,8 +33,8 @@ namespace fq::graphics
 		mDevice = device;
 		mResourceManager = resourceManager;
 
-		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager);
-		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, width, height);
+		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
+		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 

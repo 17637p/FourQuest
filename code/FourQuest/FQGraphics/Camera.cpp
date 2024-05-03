@@ -4,12 +4,12 @@
 #include <FQCommonGraphics.h>
 
 fq::graphics::Camera::Camera()
-	:mWidth{0},
-	mHeight{0},
-	mIsPerspective{true},
-	mFieldOfView{0},
-	mNearPlain{0},
-	mFarPlain{0},
+	:mWidth{ 0 },
+	mHeight{ 0 },
+	mIsPerspective{ true },
+	mFieldOfView{ 0 },
+	mNearPlain{ 0 },
+	mFarPlain{ 0 },
 	mViewMatrix{},
 	mProjectionMatrix{},
 	mPosition{},
@@ -75,6 +75,16 @@ DirectX::SimpleMath::Vector3 fq::graphics::Camera::GetPosition() const
 DirectX::SimpleMath::Quaternion fq::graphics::Camera::GetRotation() const
 {
 	return mRotation;
+}
+
+float fq::graphics::Camera::GetNearPlain() const
+{
+	return mNearPlain;
+}
+
+float fq::graphics::Camera::GetFarPlain() const
+{
+	return mFarPlain;
 }
 
 void fq::graphics::Camera::makeProjectionMatrix()

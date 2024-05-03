@@ -134,12 +134,14 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 	}
 	case ED3D11RasterizerState::Shadow:
 	{
-		// 해당 값을 인자로 넘겨 받을 수 있게 수정해야함
+		// 물방울 책 참고
+		// 광원 기준으로 기울기에 따라 더 큰 편향치를 적용할 수 있다고 함
+		// bias = (float)depthBias * r + slopeScaledDepthBias * maxDepthSlope
+		// 24비트 깊이 버퍼의 경우 1 / 2^24
 		rasterizerDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
-		rasterizerDesc.DepthBias = 50;
-		rasterizerDesc.SlopeScaledDepthBias = 2.f;
-		rasterizerDesc.DepthBiasClamp = 0.1f;
-		
+		rasterizerDesc.DepthBias = 100000; // 고정된 편향치
+		rasterizerDesc.SlopeScaledDepthBias = 1.f; // 기울기 편형치 비례계수
+		rasterizerDesc.DepthBiasClamp = 0.0f; // 허용되는 최대 깊이 편향치
 		break;
 	}
 	default:

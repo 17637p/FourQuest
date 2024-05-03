@@ -14,13 +14,22 @@ namespace fq::graphics
 	struct SceneTrnasform
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;
-		DirectX::SimpleMath::Matrix ShadowViewProjTexMat;
 	};
 
 	struct BoneTransform
 	{
 		enum { MAX_BOND_COUNT = 128 };
 		DirectX::SimpleMath::Matrix FinalTransforms[128];
+	};
+
+	struct ShadowTransform
+	{
+		DirectX::SimpleMath::Matrix ShadowViewProj[3];
+	};
+
+	struct CascadeEnd
+	{
+		DirectX::SimpleMath::Vector4 CascadeEnds;
 	};
 
 	struct ModelTexutre

@@ -1,9 +1,6 @@
 #include "D3D11RenderManager.h"
 
-#include "D3D11JobManager.h"
-#include "D3D11CameraManager.h"
-#include "D3D11LightManager.h"
-#include "D3D11ResourceManager.h"
+#include "ManagementCommon.h"
 #include "D3D11Common.h"
 #include "D3D11Util.h"
 #include "RenderJob.h"

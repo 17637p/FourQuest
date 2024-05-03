@@ -85,8 +85,6 @@
     <ClInclude Include="CommonHeader.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBufferStructure.h" />
-    <ClInclude Include="D3D11Common.h" />
     <ClInclude Include="Light.h">
       <Filter>Light</Filter>
     </ClInclude>
@@ -108,9 +106,21 @@
     <ClInclude Include="D3D11PickingManager.h">
       <Filter>Management</Filter>
     </ClInclude>
-    <ClInclude Include="CommonPass.h" />
-    <ClInclude Include="DeferredPass.h" />
-    <ClInclude Include="FowardPass.h" />
+    <ClInclude Include="FowardPass.h">
+      <Filter>Pipeline\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredPass.h">
+      <Filter>Pipeline\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonPass.h">
+      <Filter>Pipeline\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Common.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferStructure.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -145,6 +155,12 @@
     </Filter>
     <Filter Include="Enum">
       <UniqueIdentifier>{66654c26-2bfd-407b-bbaa-5b2daa0dd1de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pipeline\Pass">
+      <UniqueIdentifier>{24e03728-f1e3-423a-85e5-0d6a6b22c700}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Shadow">
+      <UniqueIdentifier>{055a68e9-27d5-4f05-b8f7-0d0d44bf8087}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -217,7 +233,6 @@
     <ClCompile Include="D3D11Util.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="Light.cpp">
       <Filter>Light</Filter>
     </ClCompile>
@@ -236,9 +251,18 @@
     <ClCompile Include="D3D11PickingManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
-    <ClCompile Include="CommonPass.cpp" />
-    <ClCompile Include="DeferredPass.cpp" />
-    <ClCompile Include="FowardPass.cpp" />
+    <ClCompile Include="DeferredPass.cpp">
+      <Filter>Pipeline\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="FowardPass.cpp">
+      <Filter>Pipeline\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonPass.cpp">
+      <Filter>Pipeline\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferStructure.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
@@ -258,10 +282,16 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
+      <Filter>Shader\Shadow</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
       <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
+      <Filter>Shader\Shadow</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

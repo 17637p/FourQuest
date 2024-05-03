@@ -34,7 +34,8 @@ namespace fq::graphics
 	{
 		None,
 		Default,
-		ShaderInputDepthStencil
+		ShaderInputDepthStencil,
+		CascadeShadow
 	};
 
 	/*=============================================================================

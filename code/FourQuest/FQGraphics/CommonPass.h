@@ -1,5 +1,8 @@
 #pragma once
 
+#include <directxtk/SimpleMath.h>
+#include <vector>
+
 #include "ConstantBufferStructure.h"
 #include "RenderJob.h"
 
@@ -22,6 +25,7 @@ namespace fq::graphics
 	class D3D11LightManager;
 	class D3D11JobManager;
 	class D3D11RasterizerState;
+	class D3D11GeometryShader;
 
 	class RenderPass
 	{
@@ -37,26 +41,32 @@ namespace fq::graphics
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11JobManager> jobManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
-			std::shared_ptr<D3D11ResourceManager> resourceManager);
+			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			std::shared_ptr< D3D11LightManager> lightManager);
 		void Finalize() override;
 		void OnResize(unsigned short width, unsigned short height) override {}
 		void Render() override;
 
+		static std::vector<float> CalculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ);
+		static std::vector<DirectX::SimpleMath::Matrix> CalculateCascadeShadowTransform(std::vector<float> cascadeEnds, DirectX::SimpleMath::Matrix cameraView, DirectX::SimpleMath::Matrix cameraProj, DirectX::SimpleMath::Vector3 lightDirection);
+
 	public:
-		enum { SHADOW_SIZE = 2048 };
+		enum { SHADOW_SIZE = 1024 };
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr< D3D11LightManager> mLightManager;
 
 		D3D11_VIEWPORT mViewport;
 
-		std::shared_ptr<D3D11DepthStencilView> mShadowDSV;
+		std::shared_ptr<D3D11DepthStencilView> mCascadeShadowDSV;
 
 		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
 		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
+		std::shared_ptr<D3D11GeometryShader> mShadowGS;
 		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
 		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
 
@@ -66,6 +76,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowTransformCB;
 	};
 
 	class FullScreenPass : public RenderPass
