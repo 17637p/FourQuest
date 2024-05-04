@@ -37,6 +37,7 @@ namespace fq::graphics
 		void RenderBackBuffer();
 		void EndRender();
 
+		void SetSkyBox(const std::wstring& path);
 		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
@@ -49,6 +50,7 @@ namespace fq::graphics
 		std::shared_ptr<class DeferredGeometryPass> mGeometryPass;
 		std::shared_ptr<class DeferredShadingPass> mShadingPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
+		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;

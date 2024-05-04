@@ -52,12 +52,14 @@ namespace fq::graphics
 	enum class ED3D11RasterizerState
 	{
 		Default,
-		Shadow
+		Shadow,
+		CullFront
 	};
 
 	enum class ED3D11DepthStencilState
 	{
 		Default,
+		LessEqual,
 	};
 
 	enum class ED3D11BlendState
@@ -72,5 +74,6 @@ namespace fq::graphics
 	{
 		Transform,
 		Light,
+		ViewRotationProj,
 	};
 }

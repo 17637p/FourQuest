@@ -17,6 +17,7 @@ namespace fq::graphics
 		, mGeometryPass(std::make_shared<DeferredGeometryPass>())
 		, mShadingPass(std::make_shared<DeferredShadingPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
+		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
 	{
 	}
 
@@ -37,8 +38,10 @@ namespace fq::graphics
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
+		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
 
 		mPasses.push_back(mShadowPass);
+		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
 
@@ -164,4 +167,10 @@ namespace fq::graphics
 	{
 		return mBackBufferSRV;
 	}
+
+	void DeferredPipeline::SetSkyBox(const std::wstring& path)
+	{
+		mSkyBoxPass->SetSkyBox(path);
+	}
+
 }

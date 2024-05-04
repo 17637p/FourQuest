@@ -142,6 +142,13 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 		
 		break;
 	}
+	case ED3D11RasterizerState::CullFront:
+	{
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+		break;
+	}
 	default:
 		break;
 	}
@@ -179,6 +186,18 @@ fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_p
 		depthStencilDesc.DepthEnable = true;
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.StencilEnable = false;
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
+
+		break;
+	}
+	case ED3D11DepthStencilState::LessEqual:
+	{
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 		depthStencilDesc.StencilEnable = false;
 		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 		depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;

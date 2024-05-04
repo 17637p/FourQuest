@@ -56,6 +56,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
 		std::shared_ptr<D3D11PixelShader> mMeshPS;
 
+		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;

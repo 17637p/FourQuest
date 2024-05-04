@@ -94,6 +94,9 @@ extern "C" {
 
 			/// UI
 
+			/// SkyBox
+			virtual void SetSkyBox(const std::wstring& path) abstract;
+
 			/// Light
 			virtual FQ_GRAPHICS void AddLight(const unsigned int id, const LightInfo& lightInfo) abstract;
 			virtual FQ_GRAPHICS void UpdateLight(const unsigned int id, const LightInfo& lightInfo) abstract;

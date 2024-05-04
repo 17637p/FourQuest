@@ -65,6 +65,9 @@ namespace fq::graphics
 
 		/// UI
 
+		/// SkyBox
+		virtual void SetSkyBox(const std::wstring& path) override;
+
 		/// Light
 		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
 		virtual void AddLight(const unsigned int id, const LightInfo& lightInfo) override;

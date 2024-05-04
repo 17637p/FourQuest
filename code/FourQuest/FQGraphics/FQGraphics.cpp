@@ -45,6 +45,11 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 	return true;
 }
 
+void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
+{
+	mRenderManager->SetSkyBox(path);
+}
+
 void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
 	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, mObjectManager->GetStaticMeshObjects(), mObjectManager->GetSkinnedMeshObjects());

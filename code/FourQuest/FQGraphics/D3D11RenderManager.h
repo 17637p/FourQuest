@@ -50,6 +50,7 @@ namespace fq::graphics
 		void RenderBackBuffer();
 		void EndRender();
 
+		void SetSkyBox(const std::wstring& path);
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;
 
 	private:

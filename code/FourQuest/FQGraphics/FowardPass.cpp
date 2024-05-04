@@ -44,6 +44,7 @@ namespace fq::graphics
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
+		mDefaultRS = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -111,8 +112,8 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
-		mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
-		mDSV->Clear(mDevice);
+		//mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
+		//mDSV->Clear(mDevice);
 		mBackBufferRTV->Bind(mDevice, mDSV);
 
 		mStaticMeshLayout->Bind(mDevice);
@@ -126,6 +127,7 @@ namespace fq::graphics
 		mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 		mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 		mShadowSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
+		mDefaultRS->Bind(mDevice);
 
 		mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
 		SceneTrnasform sceneTransform;

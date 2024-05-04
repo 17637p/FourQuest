@@ -23,6 +23,11 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix FinalTransforms[128];
 	};
 
+	struct ViewRotationProjectionMatrix
+	{
+		DirectX::SimpleMath::Matrix ViewProjMat;
+	};
+
 	struct ModelTexutre
 	{
 		int bUseAlbedoMap;

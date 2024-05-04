@@ -54,7 +54,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
@@ -266,11 +266,17 @@ void Process::Update()
 		yaw(dx);
 	}
 
+	//picking 테스트
 	if (InputManager::GetInstance().IsGetKey('Y'))
 	{
 		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
 		if(mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
-		mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+		auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+	}
+	// 스카이박스 
+	if (InputManager::GetInstance().IsGetKeyDown('K'))
+	{
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/grasscube1024.dds");
 	}
 
 	mTestGraphics->UpdateCamera(cameraTransform);

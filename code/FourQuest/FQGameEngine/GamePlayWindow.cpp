@@ -501,12 +501,12 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+	//if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
 	{
 		// 스크린 좌표 -> 이미지 좌표변환 
 		auto mousePos = ImGui::GetMousePos();
-		mousePos.x = std::clamp(mousePos.x - mImagePos.x, 0.f, mViewportSize.x);
-		mousePos.y = std::clamp(mousePos.y - mImagePos.y, 0.f, mViewportSize.y);
+		mousePos.x = std::clamp(mousePos.x - mImagePos.x, 0.f, mViewportSize.x - 1);
+		mousePos.y = std::clamp(mousePos.y - mImagePos.y, 0.f, mViewportSize.y - 1);
 
 		UINT screenWidth = mGameProcess->mWindowSystem->GetScreenWidth();
 		UINT screenHeight = mGameProcess->mWindowSystem->GetScreenHeight();

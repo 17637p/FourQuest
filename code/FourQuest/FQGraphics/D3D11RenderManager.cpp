@@ -163,4 +163,20 @@ namespace fq::graphics
 		return nullptr;
 	}
 
+	void D3D11RenderManager::SetSkyBox(const std::wstring& path)
+	{
+		switch (mPipelineType)
+		{
+			case fq::graphics::EPipelineType::Forward:
+				return mForwardPipeline->SetSkyBox(path);
+				break;
+			case fq::graphics::EPipelineType::Deferred:
+				return mDeferredPipeline->SetSkyBox(path);
+				break;
+			default:
+				assert(false);
+				break;
+		}
+	}
+
 }
