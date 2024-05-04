@@ -507,9 +507,8 @@ void fq::game_engine::GamePlayWindow::pickObject()
 		auto mousePos = ImGui::GetMousePos();
 		auto window = ImGui::GetWindowPos();
 
-		spdlog::trace("windowpos {} {}", window.x, window.y);
-
-		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(500, 580);
+		auto pos = mEditorProcess->mInputManager->GetMousePosition();
+		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(pos.x, pos.y);
 
 		if (meshPtr != nullptr)
 		{

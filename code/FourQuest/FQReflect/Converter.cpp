@@ -67,6 +67,12 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 		unsigned int val = anyValue.cast<unsigned int>();
 		outJson[name] = val;
 	}
+	// unsigned char
+	else if (metaType == entt::resolve<unsigned char>())
+	{
+		unsigned char val = anyValue.cast<unsigned char>();
+		outJson[name] = val;
+	}
 	// long long
 	else if (metaType == entt::resolve<long long>())
 	{
@@ -277,7 +283,12 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 		unsigned int val = inJson.get<unsigned int>();
 		output = val;
 	}
-	// long long
+	// unsigned char
+	else if (metaType == entt::resolve<unsigned char>())
+	{
+		unsigned char val = inJson.get<unsigned char>();
+		output = val;
+	}	// long long
 	else if (metaType == entt::resolve<long long>())
 	{
 		long long val = inJson.get<long long>();

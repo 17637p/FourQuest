@@ -141,6 +141,23 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 
 		beginIsItemHovered_Comment(data);
 	}
+	else if (metaType == entt::resolve<unsigned char>())
+	{
+		unsigned char val = data.get(handle->GetHandle()).cast<unsigned char>();
+		
+		std::string memberName = fq::reflect::GetName(data);
+
+		ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U8, &val);
+
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
+
+		beginIsItemHovered_Comment(data);
+	}
+
 	else if (metaType == entt::resolve<unsigned int>())
 	{
 		unsigned int val = data.get(handle->GetHandle()).cast<unsigned int>();
