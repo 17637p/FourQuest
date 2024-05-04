@@ -63,6 +63,11 @@ namespace fq::game_engine
 		/// </summary>
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
+		/// <summary>
+		/// 모델이 로드된지 확인합니다
+		/// </summary>
+		bool IsLoadedModel(const ModelPath& path);
+
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);

@@ -55,6 +55,7 @@ namespace fq::graphics
 		{
 			pass->Finalize();
 		}
+		mFullScreenPass->Finalize();
 		mPasses.clear();
 
 		mDevice = nullptr;
@@ -64,7 +65,6 @@ namespace fq::graphics
 		mBackBufferRTV = nullptr;
 		mBackBufferSRV = nullptr;
 		mDSV = nullptr;
-
 	}
 
 	void ForwardPipeline::OnResize(unsigned short width, unsigned short height)
@@ -85,6 +85,7 @@ namespace fq::graphics
 		{
 			pass->OnResize(width, height);
 		}
+		mFullScreenPass->OnResize(width, height);
 	}
 
 	void ForwardPipeline::BeginRender()

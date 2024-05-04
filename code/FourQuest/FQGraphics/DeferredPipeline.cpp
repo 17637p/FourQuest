@@ -74,6 +74,7 @@ namespace fq::graphics
 		{
 			pass->Finalize();
 		}
+		mFullScreenPass->Finalize();
 		mPasses.clear();
 
 		mDevice = nullptr;
@@ -107,6 +108,13 @@ namespace fq::graphics
 		mBackBufferRTV->Release();
 		mDSV->Release();
 
+		mDevice->OnResize(width, height);
+
+		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, width, height);
+		mBackBufferRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
+		mDSV->OnResize(mDevice, ED3D11DepthStencilViewType::Default, width, height);
+		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
+
 		mAlbedoRTV->Release();
 		mMetalnessRTV->Release();
 		mRoughnessRTV->Release();
@@ -114,31 +122,29 @@ namespace fq::graphics
 		mEmissiveRTV->Release();
 		mPositionRTV->Release();
 
-		mDevice->OnResize(width, height);
-
-		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, width, height);
-		mBackBufferRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
-		mDSV->OnResize(mDevice, ED3D11DepthStencilViewType::Default, width, height);
-
 		mAlbedoRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mMetalnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
 		mRoughnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
 		mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
+		mShadowRatioRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
+		mGeometryPass->SetRenderTargets(mAlbedoRTV, mMetalnessRTV, mRoughnessRTV, mNormalRTV, mEmissiveRTV, mPositionRTV, mShadowRatioRTV);
 
-		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
 		mAlbedoSRV->Init(mDevice, mAlbedoRTV);
 		mMetalnessSRV->Init(mDevice, mMetalnessRTV);
 		mRoughnessSRV->Init(mDevice, mRoughnessRTV);
 		mNormalSRV->Init(mDevice, mNormalRTV);
 		mEmissiveSRV->Init(mDevice, mEmissiveRTV);
 		mPositionSRV->Init(mDevice, mPositionRTV);
+		mShadowRatioSRV->Init(mDevice, mShadowRatioRTV);
+		mShadingPass->SetShaderResourceViews(mAlbedoSRV, mMetalnessSRV, mRoughnessSRV, mNormalSRV, mEmissiveSRV, mPositionSRV, mShadowRatioSRV);
 
 		for (std::shared_ptr<RenderPass> pass : mPasses)
 		{
 			pass->OnResize(width, height);
 		}
+		mFullScreenPass->OnResize(width, height);
 	}
 
 	void DeferredPipeline::BeginRender()
