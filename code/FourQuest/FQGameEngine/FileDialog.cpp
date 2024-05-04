@@ -40,7 +40,7 @@ void fq::game_engine::FileDialog::Render()
 
 	ProcessWindowDropFile();
 
-	if (ImGui::Begin("FileDialog"), &mbIsOpen)
+	if (ImGui::Begin("FileDialog", &mbIsOpen))
 	{
 		beginWindow_FilePathWindow();
 
@@ -185,7 +185,7 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 
 		float fileSpace = mIconSize.x + 50.f;
 
-		int maxWidth = max(static_cast<int>(ImGui::GetWindowWidth() / fileSpace), 1);
+		int maxWidth = std::max(static_cast<int>(ImGui::GetWindowWidth() / fileSpace), 1);
 
 		float startCusorPosY = ImGui::GetCursorPosY();
 

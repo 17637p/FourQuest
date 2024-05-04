@@ -6,7 +6,7 @@ using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
 {
-
+	mRenderManager = nullptr;
 }
 
 FQGraphics::FQGraphics()
@@ -126,6 +126,7 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 {
 	mRenderManager->OnResize(width, height);
 	mCameraManager->OnResize(width, height);
+	mPickingManager->OnResize(width, height, mDevice);
 
 	return true;
 }

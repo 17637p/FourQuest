@@ -17,6 +17,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager)
 	{
+		Finalize();
+
 		mDevice = device;
 		mJobManager = jobManager;
 		mCameraManager = cameraManager;
@@ -52,6 +54,23 @@ namespace fq::graphics
 
 	void ShadowPass::Finalize()
 	{
+		mDevice = nullptr;
+		mJobManager = nullptr;
+		mCameraManager = nullptr;
+		mResourceManager = nullptr;
+
+		mShadowDSV = nullptr;
+		mStaticMeshVS = nullptr;
+		mSkinnedMeshVS = nullptr;
+		mStaticMeshLayout = nullptr;
+		mSkinnedMeshLayout = nullptr;
+
+		mShadowRS = nullptr;
+		mDefaultRS = nullptr;
+
+		mModelTransformCB = nullptr;
+		mSceneTransformCB = nullptr;
+		mBoneTransformCB = nullptr;
 	}
 
 	void ShadowPass::Render()
@@ -93,7 +112,7 @@ namespace fq::graphics
 
 		mSkinnedMeshLayout->Bind(mDevice);
 		mSkinnedMeshVS->Bind(mDevice);
-		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
+		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
@@ -115,6 +134,8 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
+		Finalize();
+
 		mDevice = device;
 		mResourceManager = resourceManager;
 
@@ -157,7 +178,20 @@ namespace fq::graphics
 	}
 	void FullScreenPass::Finalize()
 	{
+		mDevice = nullptr;
+		mResourceManager = nullptr;
 
+		mSwapChainRTV = nullptr;
+		mBackBufferSRV = nullptr;
+		mNoneDSV = nullptr;
+		mDSV = nullptr;
+
+		mFullScreenLayout = nullptr;
+		mFullScreenVS = nullptr;
+		mFullScreenPS = nullptr;
+		mFullScreenVB = nullptr;
+		mFullScreenIB = nullptr;
+		mPointClampSamplerState = nullptr;
 	}
 	void FullScreenPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -169,7 +203,7 @@ namespace fq::graphics
 		mViewport.TopLeftY = 0.f;
 
 		auto backBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
-		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, backBufferRTV);
+		mBackBufferSRV->Init(mDevice, backBufferRTV);
 	}
 	void FullScreenPass::Render()
 	{

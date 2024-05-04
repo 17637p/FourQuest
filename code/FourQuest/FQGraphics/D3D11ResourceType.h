@@ -34,6 +34,7 @@ namespace fq::graphics
 	{
 		None,
 		Default,
+		Picking,
 		ShaderInputDepthStencil
 	};
 

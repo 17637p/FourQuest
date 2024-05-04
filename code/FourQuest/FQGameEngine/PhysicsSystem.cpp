@@ -75,6 +75,7 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
+	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)

@@ -59,6 +59,7 @@ namespace fq::graphics
 			const std::shared_ptr<D3D11JobManager>& jobManager,
 			const std::set<IStaticMeshObject*>& staticMeshObjects,
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects);
+		void OnResize(const short width, const short height, const std::shared_ptr<D3D11Device>& device);
 
 	private:
 		// 1. 오브젝트 마다 해쉬 컬러 정하기

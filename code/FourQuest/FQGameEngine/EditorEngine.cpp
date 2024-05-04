@@ -94,8 +94,8 @@ void fq::game_engine::EditorEngine::Process()
 			{
 				mGameProcess->mWindowSystem->OnResize();
 
-				unsigned short width = max(mGameProcess->mWindowSystem->GetScreenWidth(), 1);
-				unsigned short hegiht =max(mGameProcess->mWindowSystem->GetScreenHeight(), 1);
+				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
+				unsigned short hegiht =std::max(mGameProcess->mWindowSystem->GetScreenHeight(),1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 

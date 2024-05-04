@@ -178,10 +178,20 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	UINT numViews = (UINT)renderTargetViews.size();
 	std::vector<ID3D11RenderTargetView*> RTVs;
 	RTVs.reserve(renderTargetViews.size());
+	
+	D3D11_TEXTURE2D_DESC textureDesc;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetDesc;
 
 	for (std::shared_ptr<D3D11RenderTargetView>& rtv : renderTargetViews)
 	{
 		RTVs.push_back(rtv->mRTV.Get());
+	
+
+		rtv->mRTV->GetDesc(&renderTargetDesc);
+		ID3D11Texture2D* rendertargetTexture = nullptr;
+		rtv->mRTV->GetResource(reinterpret_cast<ID3D11Resource**>(&rendertargetTexture));
+
+		rendertargetTexture->GetDesc(&textureDesc);
 	}
 
 	if (depthStencilView->mDSV != nullptr)
@@ -361,6 +371,13 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
 		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+
+		break;
+	case ED3D11DepthStencilViewType::Picking:
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 		break;
 	case ED3D11DepthStencilViewType::None:

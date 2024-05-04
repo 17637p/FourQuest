@@ -145,8 +145,26 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">
+      <Project>{80b6857c-9c5d-4d1f-9765-01fb3bb4c720}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FQGameEngine\FQGameEngine.vcxproj">
       <Project>{13c8105f-8d17-45d9-98d5-bfec27311f38}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQGameModule\FQGameModule.vcxproj">
+      <Project>{9f999a18-37fc-4a3e-9303-7be8a0ed2f1e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQGraphics\FQGraphics.vcxproj">
+      <Project>{b977a79f-fe96-446a-b70b-ae1a9a59bd8f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQLoader\FQLoader.vcxproj">
+      <Project>{6567f0ff-6867-4c18-888d-6b7b5ff432f3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQphysics\FQphysics.vcxproj">
+      <Project>{76516359-368d-4b53-a618-89c14d71805c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">
+      <Project>{6fa5f6a1-93bf-4c23-a2e7-e20c7e82377e}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
