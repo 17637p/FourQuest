@@ -60,6 +60,7 @@ namespace fq::graphics
 		mResourceManager = nullptr;
 
 		mShadowDSV = nullptr;
+
 		mStaticMeshVS = nullptr;
 		mSkinnedMeshVS = nullptr;
 		mStaticMeshLayout = nullptr;
@@ -171,8 +172,8 @@ namespace fq::graphics
 
 		// 리소스 매니저로부터 얻어오는 게 맞나?
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
-		auto backBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
-		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, backBufferRTV);
+		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
+		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mBackBufferRTV);
 		mNoneDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 		mDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 	}
@@ -202,8 +203,7 @@ namespace fq::graphics
 		mViewport.TopLeftX = 0.f;
 		mViewport.TopLeftY = 0.f;
 
-		auto backBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
-		mBackBufferSRV->Init(mDevice, backBufferRTV);
+		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
 	}
 	void FullScreenPass::Render()
 	{
@@ -234,7 +234,7 @@ namespace fq::graphics
 		:isSetSkyBox(false)
 	{
 	}
-	
+
 	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11CameraManager> cameraManager, std::shared_ptr<D3D11ResourceManager> resourceManager)
 	{
 		mDevice = device;

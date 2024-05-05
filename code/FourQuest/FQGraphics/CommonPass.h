@@ -136,6 +136,7 @@ namespace fq::graphics
 
 		// global sink
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
+		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
 		std::shared_ptr<D3D11DepthStencilView> mNoneDSV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;

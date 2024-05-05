@@ -37,11 +37,11 @@ namespace fq::graphics
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager);
 		mRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
-		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		// mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
-		mPasses.push_back(mSkyBoxPass);
+		// mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mRenderPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);

@@ -81,6 +81,7 @@ namespace fq::graphics
 		mSkinnedMeshVS = nullptr;
 		mMeshPS = nullptr;
 
+		mDefaultRS = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
 		mLinearClampSamplerState = nullptr;
 		mPointClampSamplerState = nullptr;
@@ -112,8 +113,8 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
-		//mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
-		//mDSV->Clear(mDevice);
+		mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
+		mDSV->Clear(mDevice);
 		mBackBufferRTV->Bind(mDevice, mDSV);
 
 		mStaticMeshLayout->Bind(mDevice);

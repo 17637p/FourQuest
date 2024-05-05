@@ -31,6 +31,8 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 	const ED3D11RenderTargetViewType eViewType,
 	const unsigned short width, const unsigned short height)
 {
+	Release();
+
 	switch (eViewType)
 	{
 	case ED3D11RenderTargetViewType::Default:
@@ -178,20 +180,13 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	UINT numViews = (UINT)renderTargetViews.size();
 	std::vector<ID3D11RenderTargetView*> RTVs;
 	RTVs.reserve(renderTargetViews.size());
-	
+
 	D3D11_TEXTURE2D_DESC textureDesc;
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetDesc;
 
 	for (std::shared_ptr<D3D11RenderTargetView>& rtv : renderTargetViews)
 	{
 		RTVs.push_back(rtv->mRTV.Get());
-	
-
-		rtv->mRTV->GetDesc(&renderTargetDesc);
-		ID3D11Texture2D* rendertargetTexture = nullptr;
-		rtv->mRTV->GetResource(reinterpret_cast<ID3D11Resource**>(&rendertargetTexture));
-
-		rendertargetTexture->GetDesc(&textureDesc);
 	}
 
 	if (depthStencilView->mDSV != nullptr)
@@ -285,7 +280,9 @@ void D3D11ShaderResourceView::Init(const std::shared_ptr<D3D11Device>& d3d11Devi
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 
-	mSRV.Reset();
+	ULONG refCount = mSRV.Reset();
+	assert(refCount == 0);
+
 	HR(d3d11Device->GetDevice()->CreateShaderResourceView(rendertargetTexture,
 		&shaderResourceViewDesc,
 		mSRV.GetAddressOf()));
@@ -334,6 +331,8 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 	const ED3D11DepthStencilViewType eViewType,
 	const unsigned short width, const unsigned short height)
 {
+	Release();
+
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
 
 	if (eViewType == ED3D11DepthStencilViewType::None)

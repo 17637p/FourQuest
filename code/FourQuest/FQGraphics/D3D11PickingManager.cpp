@@ -51,7 +51,7 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	textureDesc.BindFlags = 0;
 	textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 	textureDesc.MiscFlags = 0;
-	
+
 	device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &mCopyTexture);
 
 	// Ω¶¿Ã¥ı º≥¡§
@@ -199,8 +199,8 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 	return nullptr;
 }
 
-void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11Device>& device, 
-	const std::shared_ptr<D3D11CameraManager>& cameraManager, 
+void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11Device>& device,
+	const std::shared_ptr<D3D11CameraManager>& cameraManager,
 	const std::shared_ptr<D3D11JobManager>& jobManager,
 	const std::set<IStaticMeshObject*>& staticMeshObjects,
 	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)

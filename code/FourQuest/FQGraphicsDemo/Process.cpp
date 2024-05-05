@@ -79,7 +79,7 @@ bool Process::Init(HINSTANCE hInstance)
 	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
-	for (size_t i = 0; i < 10; ++i)
+	for (size_t i = 0; i < 1; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 500 - 250);

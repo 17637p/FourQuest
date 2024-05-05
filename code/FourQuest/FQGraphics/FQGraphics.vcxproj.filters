@@ -85,8 +85,6 @@
     <ClInclude Include="CommonHeader.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBufferStructure.h" />
-    <ClInclude Include="D3D11Common.h" />
     <ClInclude Include="Light.h">
       <Filter>Light</Filter>
     </ClInclude>
@@ -108,9 +106,21 @@
     <ClInclude Include="D3D11PickingManager.h">
       <Filter>Management</Filter>
     </ClInclude>
-    <ClInclude Include="CommonPass.h" />
-    <ClInclude Include="DeferredPass.h" />
-    <ClInclude Include="FowardPass.h" />
+    <ClInclude Include="CommonPass.h">
+      <Filter>Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredPass.h">
+      <Filter>Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="FowardPass.h">
+      <Filter>Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Common.h">
+      <Filter>D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferStructure.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -145,6 +155,9 @@
     </Filter>
     <Filter Include="Enum">
       <UniqueIdentifier>{66654c26-2bfd-407b-bbaa-5b2daa0dd1de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pass">
+      <UniqueIdentifier>{322f8807-5e6a-4c62-b559-53c53be006a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -217,7 +230,6 @@
     <ClCompile Include="D3D11Util.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="Light.cpp">
       <Filter>Light</Filter>
     </ClCompile>
@@ -236,9 +248,18 @@
     <ClCompile Include="D3D11PickingManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
-    <ClCompile Include="CommonPass.cpp" />
-    <ClCompile Include="DeferredPass.cpp" />
-    <ClCompile Include="FowardPass.cpp" />
+    <ClCompile Include="CommonPass.cpp">
+      <Filter>Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredPass.cpp">
+      <Filter>Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="FowardPass.cpp">
+      <Filter>Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferStructure.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
