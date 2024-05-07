@@ -23,6 +23,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr< D3D11LightManager> lightManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		unsigned short width,
 		unsigned short height,
 		EPipelineType pipelineType)
@@ -34,10 +35,10 @@ namespace fq::graphics
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
+			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
+			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, width, height);
 			break;
 		default:
 			assert(false);
@@ -110,21 +111,6 @@ namespace fq::graphics
 			break;
 		}
 	}
-	void D3D11RenderManager::RenderBackBuffer()
-	{
-		switch (mPipelineType)
-		{
-		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->RenderBackBuffer();
-			break;
-		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->RenderBackBuffer();
-			break;
-		default:
-			assert(false);
-			break;
-		}
-	}
 
 	void D3D11RenderManager::EndRender()
 	{
@@ -164,15 +150,15 @@ namespace fq::graphics
 	{
 		switch (mPipelineType)
 		{
-			case fq::graphics::EPipelineType::Forward:
-				return mForwardPipeline->SetSkyBox(path);
-				break;
-			case fq::graphics::EPipelineType::Deferred:
-				return mDeferredPipeline->SetSkyBox(path);
-				break;
-			default:
-				assert(false);
-				break;
+		case fq::graphics::EPipelineType::Forward:
+			return mForwardPipeline->SetSkyBox(path);
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			return mDeferredPipeline->SetSkyBox(path);
+			break;
+		default:
+			assert(false);
+			break;
 		}
 	}
 

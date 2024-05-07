@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <filesystem>
 
 #include <directxtk\SimpleMath.h>
 #include <FQCommon.h>
@@ -47,7 +48,8 @@ private:
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	void calculateFrameStats();
-	
+
+	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
 
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------

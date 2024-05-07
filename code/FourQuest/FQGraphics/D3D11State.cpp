@@ -263,12 +263,17 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 	case ED3D11BlendState::OITRender:
 	{
 		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = true;
+		
 		auto& acuumRT = blendDesc.RenderTarget[0];
 		acuumRT.BlendEnable = true;
 		acuumRT.SrcBlend = D3D11_BLEND_ONE;
 		acuumRT.DestBlend = D3D11_BLEND_ONE;
 		acuumRT.BlendOp = D3D11_BLEND_OP_ADD;
+		acuumRT.SrcBlendAlpha = D3D11_BLEND_ONE;
+		acuumRT.DestBlendAlpha = D3D11_BLEND_ONE;
+		acuumRT.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		acuumRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 		auto& revealRT = blendDesc.RenderTarget[1];
@@ -276,7 +281,8 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		revealRT.SrcBlend = D3D11_BLEND_ZERO;
 		revealRT.DestBlend = D3D11_BLEND_INV_SRC_COLOR;
 		revealRT.BlendOp = D3D11_BLEND_OP_ADD;
-		revealRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		// alpha 사용 안함
+		revealRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_RED;
 
 		break;
 	}

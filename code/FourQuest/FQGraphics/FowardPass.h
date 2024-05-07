@@ -44,7 +44,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 		std::shared_ptr< D3D11LightManager> mLightManager;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-		std::shared_ptr<D3D11DebugDrawManager> mDebugManager;
 
 		D3D11_VIEWPORT mViewport;
 

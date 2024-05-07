@@ -70,6 +70,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
 
+	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/SkinningTest.model";
 	const std::string animModelPath1 = "./resource/example/model/kick.model";
@@ -85,7 +87,7 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
-	for (size_t i = 0; i < 100; ++i)
+	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
@@ -316,7 +318,7 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
-	// debugRender();
+	debugRender();
 	mTestGraphics->Render();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
@@ -475,6 +477,31 @@ void Process::debugRender()
 	polygonInfo.Points.push_back({ -200, 400, 0 });
 	mTestGraphics->DrawPolygon(polygonInfo);
 
+	for (auto& obj : mSkinnedMeshObjects)
+	{
+		fq::graphics::debug::AABBInfo aabbInfo;
+		aabbInfo.Color = { 0, 1, 0, 1 };
+		obj->GetRenderBoundingBox().Transform(aabbInfo.AABB, obj->GetTransform());
+		mTestGraphics->DrawBox(aabbInfo);
+
+		fq::graphics::debug::SphereInfo sphererInfo;
+		sphererInfo.Color = { 1, 0, 0, 1 };
+		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
+		mTestGraphics->DrawSphere(sphererInfo);
+	}
+
+	for (auto& obj : mStaticMeshObjects)
+	{
+		fq::graphics::debug::AABBInfo aabbInfo;
+		aabbInfo.Color = { 0, 1, 0, 1 };
+		obj->GetRenderBoundingBox().Transform(aabbInfo.AABB, obj->GetTransform());
+		mTestGraphics->DrawBox(aabbInfo);
+
+		fq::graphics::debug::SphereInfo sphererInfo;
+		sphererInfo.Color = { 1, 0, 0, 1 };
+		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
+		mTestGraphics->DrawSphere(sphererInfo);
+	}
 }
 
 /*=============================================================================
@@ -614,4 +641,16 @@ void Process::calculateFrameStats()
 	outs << L"FPS: " << fps << L"    "
 		<< L"Frame Time: " << mspf << L" (ms)";
 	SetWindowText(mHwnd, outs.str().c_str());
+}
+
+void Process::convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath)
+{
+	for (const auto& iter : std::filesystem::directory_iterator{ readFolderPath })
+	{
+		auto outPath = iter.path();
+		outPath.replace_extension(".model");
+		outPath = outFolderPath / outPath.filename();
+
+		mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+	}
 }

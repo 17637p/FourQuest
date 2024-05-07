@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 #include <cmath>
+
+#include "Mesh.h"
 #include "BoneHierarchy.h"
 #include "../FQCommon/IFQRenderObject.h"
 
@@ -32,6 +34,8 @@ namespace fq::graphics
 		inline virtual EObjectRenderType GetObjectRenderType() const override;
 		inline virtual float GetAlpha() const override;
 		inline virtual bool GetUseShadow() const override;
+		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
+		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
@@ -85,7 +89,14 @@ namespace fq::graphics
 	{
 		return mbUseShadow;
 	}
-
+	inline DirectX::BoundingBox StaticMeshObject::GetRenderBoundingBox() const
+	{
+		return mStaticMesh->GetMeshData().RenderBoundingBox;
+	}
+	inline DirectX::BoundingSphere StaticMeshObject::GetRenderBoundingSphere() const
+	{
+		return mStaticMesh->GetMeshData().GetRenderBoundingSphere;
+	}
 	inline const std::vector<std::shared_ptr<Material>>& StaticMeshObject::GetMaterials() const
 	{
 		return mMaterials;
@@ -122,6 +133,8 @@ namespace fq::graphics
 		inline virtual float GetAlpha() const override;
 		inline virtual bool GetUseShadow() const override;
 		inline virtual std::set<std::string> GetAnimationKeys() const override;
+		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
+		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
@@ -200,6 +213,14 @@ namespace fq::graphics
 		}
 
 		return animationKeys;
+	}
+	inline DirectX::BoundingBox SkinnedMeshObject::GetRenderBoundingBox() const
+	{
+		return mSkinnedMesh->GetMeshData().RenderBoundingBox;
+	}
+	inline DirectX::BoundingSphere SkinnedMeshObject::GetRenderBoundingSphere() const
+	{
+		return mSkinnedMesh->GetMeshData().GetRenderBoundingSphere;
 	}
 	inline  EObjectRenderType SkinnedMeshObject::GetObjectRenderType() const
 	{

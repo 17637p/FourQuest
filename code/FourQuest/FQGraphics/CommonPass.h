@@ -28,6 +28,7 @@ namespace fq::graphics
 	class D3D11CameraManager;
 	class D3D11LightManager;
 	class D3D11JobManager;
+	class D3D11DebugDrawManager;
 
 	class D3D11RasterizerState;
 	class D3D11GeometryShader;
@@ -242,5 +243,32 @@ namespace fq::graphics
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
+	};
+
+	class DebugRenderPass : public RenderPass
+	{
+	public:
+		void Initialize(std::shared_ptr<D3D11Device> device,
+			std::shared_ptr<D3D11JobManager> jobManager,
+			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
+			std::shared_ptr<D3D11CameraManager> cameraManager,
+			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			unsigned short width,
+			unsigned short height);
+		void Finalize() override;
+		void OnResize(unsigned short width, unsigned short height) override;
+		void Render() override;
+
+	private:
+		std::shared_ptr<D3D11Device> mDevice;
+		std::shared_ptr<D3D11JobManager> mJobManager;
+		std::shared_ptr<D3D11DebugDrawManager> mDebugDrawManager;
+		std::shared_ptr<D3D11CameraManager> mCameraManager;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		
+		D3D11_VIEWPORT mViewport;
+
+		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
+		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
 	};
 }

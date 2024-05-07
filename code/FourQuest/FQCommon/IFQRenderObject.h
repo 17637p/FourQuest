@@ -16,7 +16,6 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
-
 		class IStaticMeshObject
 		{
 		public:
@@ -33,6 +32,8 @@ extern "C" {
 			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
 			virtual FQ_GRAPHICS float GetAlpha() const = 0;
 			virtual FQ_GRAPHICS bool GetUseShadow() const = 0;
+			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
+			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
@@ -59,6 +60,9 @@ extern "C" {
 			virtual FQ_GRAPHICS float GetAlpha() const = 0;
 			virtual FQ_GRAPHICS bool GetUseShadow() const = 0;
 			virtual FQ_GRAPHICS std::set<std::string> GetAnimationKeys() const = 0;
+			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
+			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
+
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출
 

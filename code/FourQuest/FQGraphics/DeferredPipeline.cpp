@@ -1,8 +1,6 @@
 #include "DeferredPipeline.h"
 
-#include "D3D11ResourceManager.h"
-#include "D3D11CameraManager.h"
-#include "D3D11LightManager.h"
+#include "ManagementCommon.h"
 #include "D3D11Common.h"
 #include "RenderJob.h"
 #include "Material.h"
@@ -16,10 +14,11 @@ namespace fq::graphics
 		: mShadowPass(std::make_shared<ShadowPass>())
 		, mGeometryPass(std::make_shared<DeferredGeometryPass>())
 		, mShadingPass(std::make_shared<DeferredShadingPass>())
-		, mFullScreenPass(std::make_shared<FullScreenPass>())
 		, mTransparentRenderPass(std::make_shared<TransparentRenderPass>())
 		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
+		, mDebugRenderPass(std::make_shared<DebugRenderPass>())
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
+		, mFullScreenPass(std::make_shared<FullScreenPass>())
 	{
 	}
 
@@ -28,6 +27,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11CameraManager>& cameraManager,
 		std::shared_ptr< D3D11LightManager>& lightManager,
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
+		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -41,16 +41,19 @@ namespace fq::graphics
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
-		mFullScreenPass->Initialize(device, resourceManager, width, height);
+		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
+		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
-		
+		mPasses.push_back(mFullScreenPass);
+
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
 		mBackBufferSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mBackBufferRTV);
@@ -80,7 +83,6 @@ namespace fq::graphics
 		{
 			pass->Finalize();
 		}
-		mFullScreenPass->Finalize();
 		mPasses.clear();
 
 		mDevice = nullptr;
@@ -150,7 +152,6 @@ namespace fq::graphics
 		{
 			pass->OnResize(width, height);
 		}
-		mFullScreenPass->OnResize(width, height);
 	}
 
 	void DeferredPipeline::BeginRender()
@@ -164,10 +165,6 @@ namespace fq::graphics
 		{
 			pass->Render();
 		}
-	}
-	void DeferredPipeline::RenderBackBuffer()
-	{
-		mFullScreenPass->Render();
 	}
 	void DeferredPipeline::EndRender()
 	{
