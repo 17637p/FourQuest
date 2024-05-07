@@ -25,6 +25,7 @@ namespace fq::graphics
 			job.TransformPtr = &staticMeshObject->GetTransform();
 			job.Material = materials[i];
 			job.StaticMesh = staticMesh;
+			job.ObjectRenderType = staticMeshObject->GetObjectRenderType();
 
 			mStaticMeshJobs.push_back(job);
 		}
@@ -54,6 +55,7 @@ namespace fq::graphics
 			job.Material = materials[i];
 			job.SkinnedMesh = skinnedMesh;
 			job.BoneMatricesPtr = &finalTransforms;
+			job.ObjectRenderType = skinnedMeshObject->GetObjectRenderType();
 
 			mSkinnedMeshJobs.push_back(job);
 		}

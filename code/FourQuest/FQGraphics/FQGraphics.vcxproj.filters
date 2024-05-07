@@ -162,6 +162,12 @@
     <Filter Include="Shader\Shadow">
       <UniqueIdentifier>{055a68e9-27d5-4f05-b8f7-0d0d44bf8087}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Transparent">
+      <UniqueIdentifier>{a5bce7ad-47b5-49e9-8f31-abef312d34a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Opaque">
+      <UniqueIdentifier>{cb6470c4-34cd-4a25-a71f-60049762d877}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11State.cpp">
@@ -276,22 +282,37 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
+      <Filter>Shader\Shadow</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
+      <Filter>Shader\Opaque</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
-      <Filter>Shader\Shadow</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
-      <Filter>Shader</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
       <Filter>Shader\Shadow</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+      <Filter>Shader\Opaque</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
+      <Filter>Shader\Transparent</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

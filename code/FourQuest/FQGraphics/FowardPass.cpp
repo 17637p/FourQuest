@@ -61,7 +61,7 @@ namespace fq::graphics
 		mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
 		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
-	
+
 		// 포인트라이트 SRV 생성
 		auto pointLightShadow = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::PointLightShadow, ShadowPass::Point_LIGHT_SHADOW_SIZE, ShadowPass::Point_LIGHT_SHADOW_SIZE);
 		mPointLightShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pointLightShadow);
@@ -77,6 +77,7 @@ namespace fq::graphics
 		mBackBufferRTV = nullptr;
 		mDSV = nullptr;
 		mShadowSRV = nullptr;
+		mPointLightShadowSRV = nullptr;
 
 		mStaticMeshLayout = nullptr;
 		mSkinnedMeshLayout = nullptr;
@@ -204,13 +205,16 @@ namespace fq::graphics
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
+				if (job.ObjectRenderType == EObjectRenderType::Opaque)
+				{
+					job.StaticMesh->Bind(mDevice);
+					job.Material->Bind(mDevice);
 
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-				ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
 
-				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+				}
 			}
 
 			mSkinnedMeshLayout->Bind(mDevice);
@@ -219,14 +223,17 @@ namespace fq::graphics
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
-				job.SkinnedMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
+				if (job.ObjectRenderType == EObjectRenderType::Opaque)
+				{
+					job.SkinnedMesh->Bind(mDevice);
+					job.Material->Bind(mDevice);
 
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-				ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
-				ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
-				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
+					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
+				}
 			}
 		}
 	}

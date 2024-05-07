@@ -21,8 +21,11 @@ namespace fq::graphics
 		Offscreen,
 		OffscreenHDR,
 		OffscreenGrayscale,
-
+		
 		Picking,
+
+		ColorAcuumulation,
+		PixeldRevealageThreshold
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -59,11 +62,14 @@ namespace fq::graphics
 	enum class ED3D11DepthStencilState
 	{
 		Default,
+		DisableDepthWirte
 	};
 
 	enum class ED3D11BlendState
 	{
 		Default,
+		OITRender,
+		OITComposite
 	};
 
 	/*=============================================================================

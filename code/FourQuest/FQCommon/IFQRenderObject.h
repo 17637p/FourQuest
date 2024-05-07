@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include <directxtk/SimpleMath.h>
+#include "EObjectRenderType.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -15,12 +16,17 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
+
 		class IStaticMeshObject
 		{
 		public:
 			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
 
+			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
+
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
+			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
+
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
@@ -32,10 +38,12 @@ extern "C" {
 			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
 			virtual FQ_GRAPHICS void UpdateAnimationTime(float timePos) = 0;
 
+			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
 			virtual FQ_GRAPHICS bool SetAnimationKey(const std::string& animationKey) = 0;
 
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 			virtual FQ_GRAPHICS std::set<std::string> GetAnimationKeys() const = 0;
+			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출
 

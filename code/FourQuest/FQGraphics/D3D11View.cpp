@@ -83,6 +83,8 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11RenderTargetViewType::ColorAcuumulation:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::OffscreenHDR:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -109,6 +111,9 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11RenderTargetViewType::PixeldRevealageThreshold:
+		// intentional fall through
+		// 식별을 위한 enum과 생성을 위한 enum을 분리하면 더 깔끔할 거 같네
 	case ED3D11RenderTargetViewType::OffscreenGrayscale:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};

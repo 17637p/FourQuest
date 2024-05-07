@@ -261,7 +261,6 @@ namespace fq::graphics
 		mViewport.TopLeftX = 0.f;
 		mViewport.TopLeftY = 0.f;
 
-		// 리소스 매니저로부터 얻어오는 게 맞나?
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		auto backBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
 		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, backBufferRTV);
@@ -304,5 +303,295 @@ namespace fq::graphics
 
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
 		mSwapChainRTV->Bind(mDevice, mDSV);
+	}
+
+	void TransparentRenderPass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11JobManager> jobManager,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
+		std::shared_ptr< D3D11LightManager> lightManager,
+		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		unsigned short width,
+		unsigned short height)
+	{
+		mDevice = device;
+		mJobManager = jobManager;
+		mCameraManager = cameraManager;
+		mLightManager = lightManager;
+		mResourceManager = resourceManager;
+
+		mColoraccumulationRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
+		mPixelRevealageThresholdRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
+		mDefaultDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+		D3D_SHADER_MACRO macroSkinning[] =
+		{
+			{"SKINNING", ""},
+			{ NULL, NULL}
+		};
+		D3D_SHADER_MACRO macroRender[] =
+		{
+			{"RENDER", ""},
+			{ NULL, NULL}
+		};
+
+		mStaticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
+		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
+		mTransparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroRender);
+		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mStaticMeshVS->GetBlob().Get());
+		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
+
+		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
+		mDisableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
+		mOITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
+
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
+
+		mViewport.Width = (float)width;
+		mViewport.Height = (float)height;
+		mViewport.MinDepth = 0.f;
+		mViewport.MaxDepth = 1.f;
+		mViewport.TopLeftX = 0.f;
+		mViewport.TopLeftY = 0.f;
+	}
+	void TransparentRenderPass::Finalize()
+	{
+		mDevice = nullptr;
+		mJobManager = nullptr;
+		mCameraManager = nullptr;
+		mLightManager = nullptr;
+		mResourceManager = nullptr;
+
+		mColoraccumulationRTV = nullptr;
+		mPixelRevealageThresholdRTV = nullptr;
+		mDefaultDSV = nullptr;
+
+		mStaticMeshLayout = nullptr;
+		mSkinnedMeshLayout = nullptr;
+		mStaticMeshVS = nullptr;
+		mSkinnedMeshVS = nullptr;
+		mTransparentRenderPS = nullptr;
+
+		mAnisotropicWrapSamplerState = nullptr;
+
+		mModelTransformCB = nullptr;
+		mSceneTransformCB = nullptr;
+		mBoneTransformCB = nullptr;
+		mModelTexutreCB = nullptr;
+	}
+	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
+	{
+		mViewport.Width = (float)width;
+		mViewport.Height = (float)height;
+		mViewport.MinDepth = 0.f;
+		mViewport.MaxDepth = 1.f;
+		mViewport.TopLeftX = 0.f;
+		mViewport.TopLeftY = 0.f;
+
+		mColoraccumulationRTV->OnResize(mDevice, ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
+		mPixelRevealageThresholdRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
+	}
+	void TransparentRenderPass::Render()
+	{
+		// update
+		{
+			SceneTrnasform sceneTransform;
+			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
+			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
+			mSceneTransformCB->Update(mDevice, sceneTransform);
+
+			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
+		}
+
+		// init
+		{
+			mColoraccumulationRTV->Clear(mDevice, { 0,0,0,0 });
+			mPixelRevealageThresholdRTV->Clear(mDevice, { 1, 1,1,1 });
+		}
+
+		// bind
+		{
+			ID3D11ShaderResourceView* SRVs[10] = { NULL };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
+
+			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
+
+			std::vector<std::shared_ptr<D3D11RenderTargetView>> RTVs =
+			{
+				mColoraccumulationRTV,
+				mPixelRevealageThresholdRTV
+			};
+			D3D11RenderTargetView::Bind(mDevice, RTVs, mDefaultDSV);
+
+			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
+			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
+
+			mTransparentRenderPS->Bind(mDevice);
+			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
+			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+			mOITRenderState->Bind(mDevice);
+			mDisableDepthWriteState->Bind(mDevice);
+		}
+
+		// Draw
+		{
+			mStaticMeshLayout->Bind(mDevice);
+			mStaticMeshVS->Bind(mDevice);
+
+			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+			{
+				if (job.ObjectRenderType == EObjectRenderType::Transparent)
+				{
+					job.StaticMesh->Bind(mDevice);
+					job.Material->Bind(mDevice);
+
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+
+					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+				}
+			}
+
+			mSkinnedMeshLayout->Bind(mDevice);
+			mSkinnedMeshVS->Bind(mDevice);
+			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
+
+			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
+			{
+				if (job.ObjectRenderType == EObjectRenderType::Transparent)
+				{
+					job.SkinnedMesh->Bind(mDevice);
+					job.Material->Bind(mDevice);
+
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
+
+					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
+				}
+			}
+		}
+
+		// unbind
+		{
+			mDevice->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+			mDevice->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
+		}
+	}
+
+	void TransparentCompositePass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		unsigned short width,
+		unsigned short height)
+	{
+		mDevice = device;
+		mResourceManager = resourceManager;
+
+		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
+		mNullDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
+		mDefaultDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
+		auto coloraccumulationRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
+		auto pixelRevealageThresholdRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
+		mColoraccumulationSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, coloraccumulationRTV);
+		mPixelRevealageThresholdSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pixelRevealageThresholdRTV);
+
+		mOITCompositeState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITComposite);
+
+		D3D_SHADER_MACRO macroComposite[] =
+		{
+			{"COMPOSITE", ""},
+			{ NULL, NULL}
+		};
+
+		mFullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
+		mFullScreenLayout = std::make_shared<D3D11InputLayout>(device, mFullScreenVS->GetBlob().Get());
+		mTransparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroComposite);
+		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+
+		std::vector<DirectX::SimpleMath::Vector2> positions =
+		{
+			{ -1, 1 },
+			{ 1, 1 },
+			{ -1, -1 },
+			{ 1, -1 }
+		};
+
+		std::vector<unsigned int> indices =
+		{
+			0,1,2,
+			1,3,2
+		};
+
+		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
+
+		mViewport.Width = (float)width;
+		mViewport.Height = (float)height;
+		mViewport.MinDepth = 0.f;
+		mViewport.MaxDepth = 1.f;
+		mViewport.TopLeftX = 0.f;
+		mViewport.TopLeftY = 0.f;
+	}
+	void TransparentCompositePass::Finalize()
+	{
+		mDevice = nullptr;
+		mResourceManager = nullptr;
+
+		mBackBufferRTV = nullptr;
+		mDefaultDSV = nullptr;
+		mColoraccumulationSRV = nullptr;
+		mPixelRevealageThresholdSRV = nullptr;
+
+		mFullScreenLayout = nullptr;
+		mFullScreenVS = nullptr;
+		mTransparentCompositePS = nullptr;
+		mFullScreenVB = nullptr;
+		mFullScreenIB = nullptr;
+		mPointClampSamplerState = nullptr;
+	}
+	void TransparentCompositePass::OnResize(unsigned short width, unsigned short height)
+	{
+		mViewport.Width = (float)width;
+		mViewport.Height = (float)height;
+		mViewport.MinDepth = 0.f;
+		mViewport.MaxDepth = 1.f;
+		mViewport.TopLeftX = 0.f;
+		mViewport.TopLeftY = 0.f;
+
+		auto coloraccumulationRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
+		auto pixelRevealageThresholdRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
+		mColoraccumulationSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, coloraccumulationRTV);
+		mPixelRevealageThresholdSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pixelRevealageThresholdRTV);
+
+	}
+	void TransparentCompositePass::Render()
+	{
+		ID3D11ShaderResourceView* SRVs[10] = { NULL };
+		mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
+
+		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
+
+		mBackBufferRTV->Bind(mDevice, mNullDSV);
+		mColoraccumulationSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mPixelRevealageThresholdSRV->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+		mPointClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+
+		mFullScreenLayout->Bind(mDevice);
+		mFullScreenVS->Bind(mDevice);
+		mTransparentCompositePS->Bind(mDevice);
+		mFullScreenVB->Bind(mDevice);
+		mFullScreenIB->Bind(mDevice);
+		mOITCompositeState->Bind(mDevice);
+
+		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
+
+		// unbind
+		{
+			mDevice->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+		}
 	}
 }
