@@ -6,6 +6,15 @@
 
 #include "IFQRenderObject.h"
 
+// temp
+#include "D3D11JobManager.h"
+#include "d3d11cameraManager.h"
+
+#include "RenderObject.h"
+#include "Mesh.h"
+#include "d3d11Shader.h"
+#include "ConstantBufferStructure.h"
+
 //윤서 코의 흔적
 ///Dear 유진Kim
 /// 언리얼 수업 듣고 올라왔더니 너 왜 없냐
@@ -42,33 +51,54 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	textureDesc.BindFlags = 0;
 	textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 	textureDesc.MiscFlags = 0;
-	
+
 	device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &mCopyTexture);
+
+	// 쉐이더 설정
+	D3D_SHADER_MACRO macroSkinning[] =
+	{
+		{"SKINNING", ""},
+		{ NULL, NULL}
+	};
+
+	mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/PickingVS.hlsl");
+	mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/PickingVS.hlsl", macroSkinning);
+	mMeshPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/PickingPS.hlsl");
+
+	mStaticMeshLayout = std::make_shared<D3D11InputLayout>(device, mStaticMeshVS->GetBlob().Get());
+	mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(device, mSkinnedMeshVS->GetBlob().Get());
+
+	mConstantBuffer = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(device, ED3D11ConstantBuffer::Transform);
+	mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(device, ED3D11ConstantBuffer::Transform);
+
+	mDSV = resourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Picking, width, height);
 }
 
 void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects, const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
 {
 	for (const auto& meshObject : staticMeshObjects)
 	{
-		unsigned int objectColor = MakeRGBAUnsignedInt();
-		mStaticMeshObjects[objectColor] = meshObject;
+		//unsigned int objectColor = MakeRGBAUnsignedInt();
+		NextColor();
+		mStaticMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
 	}
 	for (const auto& meshObject : skinnedMeshObjects)
 	{
-		unsigned int objectColor = MakeRGBAUnsignedInt();
-		mSkinnedMeshObjects[objectColor] = meshObject;
+		//unsigned int objectColor = MakeRGBAUnsignedInt();
+		NextColor();
+		mSkinnedMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
 	}
 }
 
 void fq::graphics::D3D11PickingManager::NextColor()
 {
-	if (mB = 255)
+	if (mB == 255)
 	{
 		mB++;
-		if (mG = 255)
+		if (mG == 255)
 		{
 			mG++;
-			if (mR = 255)
+			if (mR == 255)
 			{
 				MessageBox(NULL, L"오브젝트의 개수가 1600만 개를 넘은 것 같습니다.", L"에러", MB_ICONERROR);
 			}
@@ -88,14 +118,25 @@ void fq::graphics::D3D11PickingManager::NextColor()
 	}
 }
 
-unsigned int fq::graphics::D3D11PickingManager::GetHashColor(const std::shared_ptr<D3D11Device> device)
+unsigned int fq::graphics::D3D11PickingManager::GetHashColor(const std::shared_ptr<D3D11Device> device, const short x, const short y)
 {
 	ID3D11DeviceContext* deviceContext = device->GetDeviceContext().Get();
 
 	ID3D11Resource* pickingDrawResource = nullptr;
 	mPickingDrawRTV->GetRTV()->GetResource(&pickingDrawResource);
 
-	deviceContext->CopyResource(mCopyTexture.Get(), pickingDrawResource);
+	//deviceContext->CopyResource(mCopyTexture.Get(), pickingDrawResource);
+
+	D3D11_BOX box;
+
+	box.left = x;
+	box.right = x + 1;
+	box.top = y;
+	box.bottom = y + 1;
+	box.front = 0;
+	box.back = 1;
+
+	deviceContext->CopySubresourceRegion(mCopyTexture.Get(), 0, 0, 0, 0, pickingDrawResource, 0, &box);
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
@@ -111,43 +152,120 @@ unsigned int fq::graphics::D3D11PickingManager::GetHashColor(const std::shared_p
 
 	deviceContext->Unmap(mCopyTexture.Get(), 0);
 
+	pickingDrawResource->Release();
+
 	return pickedObjectColor;
 }
 
-unsigned int fq::graphics::D3D11PickingManager::MakeRGBAUnsignedInt()
+unsigned int fq::graphics::D3D11PickingManager::MakeRGBAUnsignedInt(DirectX::SimpleMath::Color color)
 {
-	NextColor();
-
 	unsigned int rgba = 0;
 
-	rgba = 1;
-	rgba += mB << 8;
-	rgba += mG << 16;
-	rgba += mR << 24;
+	rgba = 255 << 24; //A
+	rgba += (unsigned int)(color.z * 255) << 16; //B
+	rgba += (unsigned int)(color.y * 255) << 8; //G
+	rgba += (unsigned int)(color.x * 255); //R
 
 	return rgba;
 }
 
-void* fq::graphics::D3D11PickingManager::GetPickedObject(const std::shared_ptr<D3D11Device> device)
+
+void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<D3D11CameraManager>& cameraManager, const std::shared_ptr<D3D11JobManager>& jobManager, const std::set<IStaticMeshObject*>& staticMeshObjects, const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
 {
-	unsigned int pickedhashColor = GetHashColor(device);
-	
-	auto staticMeshIter = mStaticMeshObjects.find(pickedhashColor);
-	if (staticMeshIter != mStaticMeshObjects.end())
-	{
-		return mStaticMeshObjects[pickedhashColor];
+	mR = 0;
+	mG = 0;
+	mB = 0;
+
+	MakeObjectsHashColor(staticMeshObjects, skinnedMeshObjects);
+	DrawObject(device, cameraManager, jobManager, staticMeshObjects, skinnedMeshObjects);
+
+	unsigned int pickedhashColor = GetHashColor(device, x, y);
+
+	// static
+	for (auto it = mStaticMeshObjects.begin(); it != mStaticMeshObjects.end(); ++it) {
+		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
+			return it->first;
+		}
 	}
 
-	auto skinedMeshIter = mSkinnedMeshObjects.find(pickedhashColor);
-	if (skinedMeshIter != mSkinnedMeshObjects.end())
-	{
-		return mSkinnedMeshObjects[pickedhashColor];
+	// skinned
+	for (auto it = mSkinnedMeshObjects.begin(); it != mSkinnedMeshObjects.end(); ++it) {
+		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
+			return it->first;
+		}
 	}
 
 	// picked Object X 
 	return nullptr;
+}
 
-	// Bind해야함 
-	// 안쪽에서 드로우를 따로 해야하나?
+void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11Device>& device,
+	const std::shared_ptr<D3D11CameraManager>& cameraManager,
+	const std::shared_ptr<D3D11JobManager>& jobManager,
+	const std::set<IStaticMeshObject*>& staticMeshObjects,
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
+{
+	mPickingDrawRTV->Clear(device, { 0.f, 0.f, 0.f, 1.f });
+	mDSV->Clear(device);
+	mPickingDrawRTV->Bind(device, mDSV);
+
+	// 나중에는 position 만 있는 걸로 수정해야함
+	jobManager->CreateStaticMeshJobs(staticMeshObjects);
+	jobManager->CreateSkinnedMeshJobs(skinnedMeshObjects);
+
+	std::vector<StaticMeshJob> staticMeshJobs = jobManager->GetStaticMeshJobs();
+	std::vector<SkinnedMeshJob> skinnedMeshJobs = jobManager->GetSkinnedMeshJobs();
+
+	device->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mStaticMeshLayout->Bind(device);
+	mStaticMeshVS->Bind(device);
+	mMeshPS->Bind(device);
+	mConstantBuffer->Bind(device, ED3D11ShaderType::VertexShader);
+
+	for (const StaticMeshJob& job : staticMeshJobs)
+	{
+		job.StaticMesh->Bind(device);
+
+		ModelTransform modelTransform;
+		modelTransform.color = mStaticMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = (*job.TransformPtr).Transpose();
+		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
+
+		mConstantBuffer->Update(device, modelTransform);
+
+		job.StaticMesh->Draw(device, job.SubsetIndex);
+	}
+
+	mSkinnedMeshLayout->Bind(device);
+	mSkinnedMeshVS->Bind(device);
+
+	mBoneTransformCB->Bind(device, ED3D11ShaderType::VertexShader, 2);
+
+	for (const SkinnedMeshJob& job : skinnedMeshJobs)
+	{
+		job.SkinnedMesh->Bind(device);
+
+		ModelTransform modelTransform;
+		modelTransform.color = mSkinnedMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = (*job.TransformPtr).Transpose();
+		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
+
+		mConstantBuffer->Update(device, modelTransform);
+		ConstantBufferHelper::UpdateBoneTransformCB(device, mBoneTransformCB, *job.BoneMatricesPtr);
+
+		job.SkinnedMesh->Draw(device, job.SubsetIndex);
+	}
+
+	jobManager->ClearAll();
+
+	/// 상수버퍼
+	// 카메라 데이터랑 모델 Trasform은 올려줘야 함 
+	// 상수 버퍼로 컬러 값 넘기기
+}
+
+void fq::graphics::D3D11PickingManager::OnResize(const short width, const short height, const std::shared_ptr<D3D11Device>& device)
+{
+	mPickingDrawRTV->OnResize(device, ED3D11RenderTargetViewType::Picking, width, height);
+	mDSV->OnResize(device, ED3D11DepthStencilViewType::Picking, width, height);
 }
 

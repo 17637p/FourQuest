@@ -50,12 +50,7 @@ void fq::game_module::Transform::SetLocalPosition(DirectX::SimpleMath::Vector3 p
 }
 
 
-void fq::game_module::Transform::SetLocalMatrix(DirectX::SimpleMath::Matrix matrix)
-{
-	mFQTransform.localMatrix = matrix;
-	decomposeLocalMatrix();
-	updateWorldMatrix();
-}
+
 
 void fq::game_module::Transform::SetParent(Transform* parent)
 {
@@ -222,5 +217,19 @@ void fq::game_module::Transform::GenerateLocal(Vector3 position, Quaternion rota
 	mFQTransform.localScale = scale;
 
 	updateWorldMatrix();
+}
+
+void fq::game_module::Transform::SetLocalMatrix(DirectX::SimpleMath::Matrix matrix)
+{
+	mFQTransform.localMatrix = matrix;
+	decomposeLocalMatrix();
+	updateWorldMatrix();
+}
+
+void fq::game_module::Transform::SetWorldMatrix(Matrix matrix)
+{
+	mFQTransform.worldMatrix = matrix;
+	decomposeWorldMatrix();
+	updateLocalMatrix();
 }
 

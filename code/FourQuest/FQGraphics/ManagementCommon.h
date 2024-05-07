@@ -8,3 +8,4 @@
 #include "D3D11ResourceManager.h"
 #include "D3D11LightManager.h"
 #include "D3D11DebugDrawManager.h"
+#include "d3d11pickingManager.h"

@@ -254,3 +254,8 @@ void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveCo
 	}
 
 }
+
+bool fq::game_engine::RenderingSystem::IsLoadedModel(const ModelPath& path)
+{
+	return mLoadModels.find(path) != mLoadModels.end();
+}

@@ -19,6 +19,7 @@ namespace fq::graphics
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
 		, mTransparentRenderPass(std::make_shared<TransparentRenderPass>())
 		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
+		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
 	{
 	}
 
@@ -40,12 +41,14 @@ namespace fq::graphics
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
+		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
+		mPasses.push_back(mSkyBoxPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
@@ -58,6 +61,7 @@ namespace fq::graphics
 		{
 			pass->Finalize();
 		}
+		mFullScreenPass->Finalize();
 		mPasses.clear();
 
 		mDevice = nullptr;
@@ -67,7 +71,6 @@ namespace fq::graphics
 		mBackBufferRTV = nullptr;
 		mBackBufferSRV = nullptr;
 		mDSV = nullptr;
-
 	}
 
 	void ForwardPipeline::OnResize(unsigned short width, unsigned short height)
@@ -88,6 +91,7 @@ namespace fq::graphics
 		{
 			pass->OnResize(width, height);
 		}
+		mFullScreenPass->OnResize(width, height);
 	}
 
 	void ForwardPipeline::BeginRender()
@@ -118,4 +122,10 @@ namespace fq::graphics
 	{
 		return mBackBufferSRV;
 	}
+
+	void ForwardPipeline::SetSkyBox(const std::wstring& path)
+	{
+		mSkyBoxPass->SetSkyBox(path);
+	}
+
 }

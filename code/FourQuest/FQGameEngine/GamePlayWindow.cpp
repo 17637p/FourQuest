@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
+#include <algorithm>
 
 #include "../FQGameModule/InputManager.h"
 #include "../FQGraphics/IFQGraphics.h"
@@ -21,16 +22,15 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mEditorProcess(nullptr)
 	, mMode(EditorMode::Edit)
 	, mbIsPauseGame(false)
+	, mbIsOpen(true)
 	, mCameraObject(nullptr)
 	, mCameraMoveSpeed(20.f)
 	, mCameraRotateSpeed(0.0065f)
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
 	, mSelectObject(nullptr)
-	, mViewTM{}
-	, mProjTM{}
 	, mbIsUsingGizumo(false)
-	, mWindowSize{ 1.f,1.f }
+	, mViewportSize{ 1.f,1.f }
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -46,13 +46,13 @@ void fq::game_engine::GamePlayWindow::Render()
 			resizeWindow(ImGui::GetWindowSize());
 		}
 
+		pickObject();
 		beginMenuBar_Control();
 		beginImage_GameScreen();
 		beginGizumo();
 		drawSelectObjectDebugInfomation();
 	}
 	ImGui::End();
-
 }
 
 void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProcess* editor)
@@ -243,17 +243,12 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 
 void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 {
-	auto current = ImGui::GetCurrentContext();
-	auto pos = current->CurrentWindow->Pos;
-	auto size = current->CurrentWindow->Size;
-	auto idealSize = ImVec2(size.x, size.y - 3);
-	auto maxpos = ImVec2(pos.x + idealSize.x, pos.y + idealSize.y);
-	auto borderSize = current->CurrentWindow->WindowBorderSize;
+	auto windowPos = ImGui::GetWindowPos();
+	auto cursorPos = ImGui::GetCursorPos();
+	mImagePos.x = windowPos.x + cursorPos.x;
+	mImagePos.y = windowPos.y + cursorPos.y;
 
-	ImGui::GetWindowDrawList()->AddImage(
-		mGameProcess->mGraphics->GetSRV(),
-		ImVec2(pos.x, pos.y + 22),
-		ImVec2(maxpos.x, maxpos.y));
+	ImGui::Image(mGameProcess->mGraphics->GetSRV(), mViewportSize);
 }
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
@@ -319,6 +314,7 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 	cameraT->SetLocalRotation(rotation);
 	cameraT->SetLocalPosition(position);
+
 }
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
@@ -348,15 +344,21 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 
 	auto& input = mEditorProcess->mInputManager;
 
-	if (ImGuizmo::Manipulate(&mViewTM._11, &mProjTM._11
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto view = camera->GetView();
+	auto proj = camera->GetProjection(mViewportSize.x / mViewportSize.y);
+
+	if (ImGuizmo::Manipulate(&view._11, &proj._11
 		, mOperation, ImGuizmo::WORLD, &objectMatrix._11))
 	{
 		if (objectT->HasParent())
 		{
-			auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
-			objectMatrix = objectMatrix * parentMatrix.Invert();
+			objectT->SetWorldMatrix(objectMatrix);
 		}
-		objectT->SetLocalMatrix(objectMatrix);
+		else
+		{
+			objectT->SetLocalMatrix(objectMatrix);
+		}
 	}
 
 	if (ImGuizmo::IsOver()
@@ -374,10 +376,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 				{
 					if (objectT->HasParent())
 					{
-						auto parentMatrix = objectT->GetParentTransform()->GetWorldMatrix();
-						mat = mat * parentMatrix.Invert();
-
-						objectT->SetLocalMatrix(mat);
+						objectT->SetWorldMatrix(mat);
 					}
 					else
 					{
@@ -418,21 +417,20 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 			cameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 		}
 	}
-
 }
 
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 {
+	mWindowSize = size;
+
+	constexpr float offsetY = 70.f;
+
+	mViewportSize.x = size.x;
+	mViewportSize.y = size.y - offsetY;
+
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	auto aspectRatio = ImGui::GetWindowSize().x / ImGui::GetWindowSize().y;
-
-	mViewTM = camera->GetView();
-	mProjTM = camera->GetProjection(aspectRatio);
-
-	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+	mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
 	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());
-
-	mGameProcess->mGraphics->SetViewportSize(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 }
 
 fq::game_engine::EditorMode fq::game_engine::GamePlayWindow::GetMode() const
@@ -498,4 +496,63 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 	auto cameraPosition = target + backward * 100.f;
 
 	cameraT->SetLocalPosition(cameraPosition);
+}
+
+
+void fq::game_engine::GamePlayWindow::pickObject()
+{
+	//if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+	{
+		// 스크린 좌표 -> 이미지 좌표변환 
+		auto mousePos = ImGui::GetMousePos();
+		mousePos.x = std::clamp(mousePos.x - mImagePos.x, 0.f, mViewportSize.x - 1);
+		mousePos.y = std::clamp(mousePos.y - mImagePos.y, 0.f, mViewportSize.y - 1);
+
+		UINT screenWidth = mGameProcess->mWindowSystem->GetScreenWidth();
+		UINT screenHeight = mGameProcess->mWindowSystem->GetScreenHeight();
+		spdlog::trace("mousePos {} , {}", mousePos.x, mousePos.y);
+
+		// 이미지 좌표 -> 뷰포트 좌표 변환
+		mousePos.x = mousePos.x * static_cast<float>(screenWidth) / mViewportSize.x;
+		mousePos.y = mousePos.y * static_cast<float>(screenHeight) / mViewportSize.y;
+
+		spdlog::trace("screen size {} {}", screenWidth, screenHeight);
+		spdlog::trace("viewport size {} {}", mViewportSize.x, mViewportSize.y);
+
+		UINT mousePosX = std::clamp(static_cast<UINT>(mousePos.x), 0u, screenWidth);
+		UINT mousePosY = std::clamp(static_cast<UINT>(mousePos.y), 0u, screenHeight);
+
+		spdlog::trace("mousePos2 {} , {}", mousePosX, mousePosY);
+
+		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(mousePosX, mousePosY);
+
+		// 빈공간을 클릭한경우 
+		if (meshPtr == nullptr && mSelectObject)
+		{
+			mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+			mGameProcess->mEventManager.get(), nullptr, mSelectObject });
+			return;
+		}
+
+		// 피킹한 오브젝트 탐색
+		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+		scene->ViewComponents<fq::game_module::StaticMeshRenderer>(
+			[this, meshPtr](fq::game_module::GameObject& object, game_module::StaticMeshRenderer& mesh)
+			{
+				if (mesh.GetStaticMeshObject() == meshPtr)
+				{
+					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+				}
+			});
+		scene->ViewComponents<fq::game_module::SkinnedMeshRenderer>(
+			[this, meshPtr](fq::game_module::GameObject& object, game_module::SkinnedMeshRenderer& mesh)
+			{
+				if (mesh.GetSkinnedMeshObject() == meshPtr)
+				{
+					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+				}
+			});
+	}
 }

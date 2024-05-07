@@ -100,8 +100,8 @@ DirectX::SimpleMath::Matrix fq::game_module::Camera::GetProjection(float aspectR
 		, aspectRatio
 		, mCameraInfomation.nearPlain
 		, mCameraInfomation.farPlain);
-}
 
+}
 DirectX::SimpleMath::Matrix fq::game_module::Camera::GetView()
 {
 	auto transform = GetComponent<Transform>();

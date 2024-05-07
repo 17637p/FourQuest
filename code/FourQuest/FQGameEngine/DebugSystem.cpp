@@ -1,5 +1,6 @@
 #include "DebugSystem.h"
 
+#include "../FQphysics/IFQPhysics.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
@@ -39,6 +40,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderBoxCollider();
 	renderSphereCollider();
 	renderCapsuleCollider();
+	renderConvexMeshCollider();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -154,25 +156,25 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 
 	Color color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
 
-	auto up = transform.GetWorldMatrix().Up();
-	up.Normalize();
+	auto right = transform.GetWorldMatrix().Right();
+	right.Normalize();
 	auto calpsuleInfo = collider.GetCapsuleInfomation();
 
 	// UpSphere
 	fq::graphics::debug::SphereInfo info;
 	info.Color = color;
-	info.Sphere.Center = transform.GetWorldPosition() + up * calpsuleInfo.halfHeight;
+	info.Sphere.Center = transform.GetWorldPosition() + right * calpsuleInfo.halfHeight;
 	info.Sphere.Radius = calpsuleInfo.raidus;
 	mGameProcess->mGraphics->DrawSphere(info);
 
 	// DownSphere
-	info.Sphere.Center = transform.GetWorldPosition() - up * calpsuleInfo.halfHeight;
+	info.Sphere.Center = transform.GetWorldPosition() - right * calpsuleInfo.halfHeight;
 	mGameProcess->mGraphics->DrawSphere(info);
 
 	// BodyRay 
 	fq::graphics::debug::RayInfo ray;
 
-	ray.Direction = up * calpsuleInfo.halfHeight * 2.f;
+	ray.Direction = right * calpsuleInfo.halfHeight * 2.f;
 	ray.Color = color;
 	ray.Normalize = false;
 	auto orgin = info.Sphere.Center;
@@ -180,9 +182,9 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	foward.Normalize();
 	foward *= calpsuleInfo.raidus;
 
-	auto right = transform.GetWorldMatrix().Right();
-	right.Normalize();
-	right *= calpsuleInfo.raidus;
+	auto up = transform.GetWorldMatrix().Up();
+	up.Normalize();
+	up *= calpsuleInfo.raidus;
 
 	ray.Origin = orgin + foward;
 	mGameProcess->mGraphics->DrawRay(ray);
@@ -190,13 +192,11 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	ray.Origin = orgin - foward;
 	mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin + right;
+	ray.Origin = orgin + up;
 	mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin - right;
+	ray.Origin = orgin - up;
 	mGameProcess->mGraphics->DrawRay(ray);
-
-
 }
 
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
@@ -208,4 +208,21 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 		{
 			RenderCapsuleCollier(transform, capsule);
 		});
+}
+
+void fq::game_engine::DebugSystem::renderConvexMeshCollider()
+{
+	const auto& convexMeshs = mGameProcess->mPhysics->GetDebugPolygon();
+
+	for (const auto& mesh : convexMeshs)
+	{
+		for (const auto& polygon : *mesh)
+		{
+			fq::graphics::debug::PolygonInfo info;
+			info.Color = { 0.f,1.f,0.f,1.f };
+			info.Points = polygon;
+			mGameProcess->mGraphics->DrawPolygon(info);
+		}
+	}
+
 }

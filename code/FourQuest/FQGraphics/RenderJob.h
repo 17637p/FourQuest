@@ -14,6 +14,8 @@ namespace fq::graphics
 	class Material;
 
 	// job을 일반화시키거나 더 세부로 쪼개거나 결정해야함
+	class IStaticMeshObject;
+	class ISkinnedMeshObject;
 
 	struct StaticMeshJob
 	{
@@ -22,6 +24,7 @@ namespace fq::graphics
 		std::shared_ptr<Material> Material;
 		const DirectX::SimpleMath::Matrix* TransformPtr;
 		EObjectRenderType ObjectRenderType;
+		IStaticMeshObject* tempObject;
 	};
 
 	struct SkinnedMeshJob
@@ -32,5 +35,6 @@ namespace fq::graphics
 		const DirectX::SimpleMath::Matrix* TransformPtr;
 		const std::vector<DirectX::SimpleMath::Matrix>* BoneMatricesPtr;
 		EObjectRenderType ObjectRenderType;
+		ISkinnedMeshObject* tempObject;
 	};
 }

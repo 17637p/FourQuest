@@ -65,6 +65,9 @@ namespace fq::graphics
 
 		/// UI
 
+		/// SkyBox
+		virtual void SetSkyBox(const std::wstring& path) override;
+
 		/// Light
 		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
 		virtual void AddLight(const unsigned int id, const LightInfo& lightInfo) override;
@@ -76,7 +79,7 @@ namespace fq::graphics
 		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
 
 		/// Picking
-		//virtual FQ_GRAPHICS size_t GetPickingObjectID(UINT16 mouseX, UINT16 mouseY) override;
+		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
 
 		/// For IMGUI(D3D11)
 		ID3D11Device* GetDivice() override;
@@ -96,6 +99,8 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11CameraManager> mCameraManager;
 		std::shared_ptr<class D3D11LightManager> mLightManager;
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
+
+		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 	};
 }
 

@@ -62,7 +62,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 1000.0f;
+	cameraInfo.farPlain = 100000.0f;
 
 	mTestGraphics->SetCamera(cameraInfo);
 	//-------------------------------------
@@ -85,7 +85,7 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
 	//createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
-	for (size_t i = 0; i < 500; ++i)
+	for (size_t i = 0; i < 1; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
@@ -272,6 +272,20 @@ void Process::Update()
 		pitch(dy);
 		yaw(dx);
 	}
+
+	//picking 테스트
+	if (InputManager::GetInstance().IsGetKey('Y'))
+	{
+		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
+		if(mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
+		auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+	}
+	// 스카이박스 
+	if (InputManager::GetInstance().IsGetKeyDown('K'))
+	{
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/grasscube1024.dds");
+	}
+
 	mTestGraphics->UpdateCamera(cameraTransform);
 
 	InputManager::GetInstance().Update();

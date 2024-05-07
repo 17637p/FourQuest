@@ -102,3 +102,16 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		mGameProcess->mSceneManager->GetCurrentScene()
 		, modelObjects[0]);
 }
+
+const fq::common::Mesh& fq::game_engine::ModelSystem::GetMesh(const fq::common::Model& model, const std::string& meshName)
+{
+	for (const auto& [node, mesh] : model.Meshes)
+	{
+		if (mesh.Name == meshName)
+		{
+			return mesh;
+		}
+	}
+
+	return fq::common::Mesh{};
+}

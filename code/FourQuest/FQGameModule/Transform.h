@@ -110,6 +110,11 @@ namespace fq::game_module
 		void SetLocalMatrix(Matrix matrix);
 
 		/// <summary>
+		/// 월드행렬을 설정합니다
+		/// </summary>
+		void SetWorldMatrix(Matrix matrix);
+
+		/// <summary>
 		/// 로컬 행렬을 반환합니다
 		/// </summary>
 		/// <returns>로컬 행렬</returns>

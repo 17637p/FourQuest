@@ -230,6 +230,22 @@ void fq::game_module::RegisterMetaData()
 
 
 	// MeshCollider
-
+		// CapsuleCollider
+	entt::meta<MeshCollider>()
+		.type("MeshCollider"_hs)
+		.prop(fq::reflect::prop::Name, "MeshCollider")
+		.data<&MeshCollider::SetType, &MeshCollider::GetType>("Type"_hs)
+		.prop(fq::reflect::prop::Name, "Type")
+		.data<&MeshCollider::SetStaticFriction, &MeshCollider::GetStaticFriction>("StaticFriction"_hs)
+		.prop(fq::reflect::prop::Name, "StaticFriction")
+		.data<&MeshCollider::SetDynamicFriction, &MeshCollider::GetDynamicFriction>("DynamicFriction"_hs)
+		.prop(fq::reflect::prop::Name, "DynamicFriction")
+		.data<&MeshCollider::SetRestituion, &MeshCollider::GetRestituion>("Restitution"_hs)
+		.prop(fq::reflect::prop::Name, "Restitution")
+		.data<&MeshCollider::SetDensity, &MeshCollider::GetDensity>("Density"_hs)
+		.prop(fq::reflect::prop::Name, "Density")
+		.data<&MeshCollider::SetConvexPolygonLimit, &MeshCollider::GetConvexPolygonLimit>("PolygonLimit"_hs)
+		.prop(fq::reflect::prop::Name, "PolygonLimit")
+		.base<Component>();
 
 }

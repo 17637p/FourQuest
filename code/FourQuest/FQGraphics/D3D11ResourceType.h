@@ -21,7 +21,7 @@ namespace fq::graphics
 		Offscreen,
 		OffscreenHDR,
 		OffscreenGrayscale,
-		
+
 		Picking,
 
 		ColorAcuumulation,
@@ -40,6 +40,7 @@ namespace fq::graphics
 		ShaderInputDepthStencil,
 		CascadeShadow,
 		PointLightShadow,
+		Picking,
 	};
 
 	/*=============================================================================
@@ -56,13 +57,15 @@ namespace fq::graphics
 	enum class ED3D11RasterizerState
 	{
 		Default,
-		Shadow
+		Shadow,
+		CullFront
 	};
 
 	enum class ED3D11DepthStencilState
 	{
 		Default,
-		DisableDepthWirte
+		DisableDepthWirte,
+		LessEqual,
 	};
 
 	enum class ED3D11BlendState
@@ -79,5 +82,6 @@ namespace fq::graphics
 	{
 		Transform,
 		Light,
+		ViewRotationProj,
 	};
 }

@@ -32,6 +32,11 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 CascadeEnds;
 	};
 
+	struct ViewRotationProjectionMatrix
+	{
+		DirectX::SimpleMath::Matrix ViewProjMat;
+	};
+
 	struct ModelTexutre
 	{
 		int bUseAlbedoMap;

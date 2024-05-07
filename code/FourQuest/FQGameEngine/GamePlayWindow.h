@@ -35,11 +35,6 @@ namespace fq::game_engine
 		void Finalize();
 
 		/// <summary>
-		/// 단축키 관련 처리를 합니다 
-		/// </summary>
-		void ExcutShortcut();
-
-		/// <summary>
 		/// 게임 창을 표시합니다 
 		/// </summary>
 		void Render() override;
@@ -67,9 +62,11 @@ namespace fq::game_engine
 		/// </summary>
 		void LookAtTarget(DirectX::SimpleMath::Vector3 target);
 
+		void ExcutShortcut();
 	private:
 		void resizeWindow(ImVec2 size);
-	
+		void pickObject();
+
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
 
@@ -86,19 +83,20 @@ namespace fq::game_engine
 		bool mbIsOpen;
 		bool mbIsPauseGame;
 
-		// 에디터 카메라
 		ImVec2 mWindowSize;
+		ImVec2 mViewportSize;
+		ImVec2 mImagePos;
+	
+		// 에디터 카메라
 		std::shared_ptr<fq::game_module::GameObject> mCameraObject;
 		float mCameraMoveSpeed;
 		float mCameraRotateSpeed;
-		DirectX::SimpleMath::Matrix mViewTM;
-		DirectX::SimpleMath::Matrix mProjTM;
 
 		// 기즈모관련
 		DirectX::SimpleMath::Matrix mStart;
 		bool mbIsUsingGizumo;
-		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		ImGuizmo::OPERATION mOperation;
+		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;

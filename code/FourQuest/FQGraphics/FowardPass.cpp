@@ -42,6 +42,7 @@ namespace fq::graphics
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
+		mDefaultRS = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -85,6 +86,7 @@ namespace fq::graphics
 		mSkinnedMeshVS = nullptr;
 		mMeshPS = nullptr;
 
+		mDefaultRS = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
 		mLinearClampSamplerState = nullptr;
 		mPointClampSamplerState = nullptr;

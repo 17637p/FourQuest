@@ -31,6 +31,8 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 	const ED3D11RenderTargetViewType eViewType,
 	const unsigned short width, const unsigned short height)
 {
+	Release();
+
 	switch (eViewType)
 	{
 	case ED3D11RenderTargetViewType::Default:
@@ -184,6 +186,9 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	std::vector<ID3D11RenderTargetView*> RTVs;
 	RTVs.reserve(renderTargetViews.size());
 
+	D3D11_TEXTURE2D_DESC textureDesc;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetDesc;
+
 	for (std::shared_ptr<D3D11RenderTargetView>& rtv : renderTargetViews)
 	{
 		RTVs.push_back(rtv->mRTV.Get());
@@ -292,7 +297,9 @@ void D3D11ShaderResourceView::Init(const std::shared_ptr<D3D11Device>& d3d11Devi
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 
-	mSRV.Reset();
+	ULONG refCount = mSRV.Reset();
+	assert(refCount == 0);
+
 	HR(d3d11Device->GetDevice()->CreateShaderResourceView(rendertargetTexture,
 		&shaderResourceViewDesc,
 		mSRV.GetAddressOf()));
@@ -341,6 +348,8 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 	const ED3D11DepthStencilViewType eViewType,
 	const unsigned short width, const unsigned short height)
 {
+	Release();
+
 	ID3D11Device* device = d3d11Device->GetDevice().Get();
 
 	if (eViewType == ED3D11DepthStencilViewType::None)
@@ -404,6 +413,12 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		descView.Texture2DArray.MipSlice = 0;
 		descView.Texture2DArray.FirstArraySlice = 0;
 		descView.Texture2DArray.ArraySize = 6;
+		break;
+	case ED3D11DepthStencilViewType::Picking:
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+
 		break;
 	case ED3D11DepthStencilViewType::None:
 		// intentional fall through

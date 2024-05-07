@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions);NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>FQGameEnginePCH.h</PrecompiledHeaderFile>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions);NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>FQGameEnginePCH.h</PrecompiledHeaderFile>
