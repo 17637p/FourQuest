@@ -164,8 +164,8 @@ void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, st
 		for (int j = 0; j < vertexTotalNumber; j++)
 		{
 			Vector3 vertex;
-			vertex.x = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].x;
-			vertex.y = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].y;
+			vertex.x = convexMeshVertices[convexMeshIndices[startIndexNumber + j]].x;
+			vertex.y = convexMeshVertices[convexMeshIndices[startIndexNumber + j]].y;
 			vertex.z = -convexMeshVertices[convexMeshIndices[startIndexNumber + j]].z;
 
 			vertex = Vector3::Transform(vertex, dxMatrix);

@@ -1,5 +1,6 @@
 #include "DebugSystem.h"
 
+#include "../FQphysics/IFQPhysics.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
@@ -39,6 +40,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderBoxCollider();
 	renderSphereCollider();
 	renderCapsuleCollider();
+	renderConvexMeshCollider();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -206,4 +208,21 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 		{
 			RenderCapsuleCollier(transform, capsule);
 		});
+}
+
+void fq::game_engine::DebugSystem::renderConvexMeshCollider()
+{
+	const auto& convexMeshs = mGameProcess->mPhysics->GetDebugPolygon();
+
+	for (const auto& mesh : convexMeshs)
+	{
+		for (const auto& polygon : *mesh)
+		{
+			fq::graphics::debug::PolygonInfo info;
+			info.Color = { 0.f,1.f,0.f,1.f };
+			info.Points = polygon;
+			mGameProcess->mGraphics->DrawPolygon(info);
+		}
+	}
+
 }

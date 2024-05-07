@@ -64,7 +64,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
-	InitializeEditor();
+ 	InitializeEditor();
 
 	// Scene 로드 
 	mGameProcess->mSceneManager->LoadScene();

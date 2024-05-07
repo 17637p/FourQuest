@@ -23,7 +23,7 @@ namespace fq::physics
 		return false;
 	}
 
-	physx::PxConvexMesh* PhysicsCookingMeshTool::CookingConvexMesh(DirectX::SimpleMath::Vector3* vertices, int vertexSize, int vertexLimit, int polygonLimit)
+	physx::PxConvexMesh* PhysicsCookingMeshTool::CookingConvexMesh(DirectX::SimpleMath::Vector3* vertices, int vertexSize, int polygonLimit)
 	{
 		physx::PxConvexMesh* convexMesh = FindConvexMesh(vertices);
 
@@ -33,8 +33,8 @@ namespace fq::physics
 			physx::PxConvexMeshDesc convexdesc;
 			convexdesc.points.count = vertexSize;
 			convexdesc.points.stride = sizeof(physx::PxVec3);
-			convexdesc.vertexLimit = vertexLimit;
-			convexdesc.points.data = vertices;
+			convexdesc.vertexLimit = 255;
+			convexdesc.points.data = (void*)vertices;
 			convexdesc.polygonLimit = polygonLimit;
 			convexdesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
 
@@ -43,10 +43,13 @@ namespace fq::physics
 
 			physx::PxDefaultMemoryOutputStream buf;
 			physx::PxConvexMeshCookingResult::Enum result;
+
 			assert(PxCookConvexMesh(params, convexdesc, buf, &result));
 
 			physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 			physx::PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
+
+			return convexMesh;
 		}
 
 		return convexMesh;
