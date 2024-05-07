@@ -16,14 +16,15 @@ namespace fq::physics
 
 	bool PhysicsCharactorControllerManager::initialize(physx::PxScene* scene)
 	{
-
+		mCCTManager = PxCreateControllerManager(*scene);
+		assert(mCCTManager);
 
 		return true;
 	}
 
 	bool PhysicsCharactorControllerManager::CreateCCT(CharacterControllerInfo controllerInfo, CharacterMovementInfo movementInfo)
 	{
-
+		//std::shared_ptr<CharacterController> controller = std::make_shared<
 
 		return true;
 	}

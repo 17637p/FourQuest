@@ -410,9 +410,9 @@ namespace fq::physics
 
 		mDebugPolygon.clear();
 
-		for (const auto& body : mRigidBodyContainer)
+		for (const auto& iter : mRigidBodyContainer)
 		{
-			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
+			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(iter.second);
 			if (dynamicBody)
 			{
 				physx::PxShape* shape;
@@ -424,10 +424,10 @@ namespace fq::physics
 					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
 					ExtractDebugConvexMesh(actor, shape, *polygon.get());
 
-					mDebugPolygon.insert(polygon);
+					mDebugPolygon.insert(std::make_pair(dynamicBody->GetID(), polygon));
 				}
 			}
-			std::shared_ptr<StaticRigidBody> staticBody = dynamic_pointer_cast<StaticRigidBody>(body.second);
+			std::shared_ptr<StaticRigidBody> staticBody = dynamic_pointer_cast<StaticRigidBody>(iter.second);
 			if (staticBody)
 			{
 				physx::PxShape* shape;
@@ -439,7 +439,7 @@ namespace fq::physics
 					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
 					ExtractDebugConvexMesh(actor, shape, *polygon.get());
 
-					mDebugPolygon.insert(polygon);
+					mDebugPolygon.insert(std::make_pair(dynamicBody->GetID(), polygon));
 				}
 			}
 		}
