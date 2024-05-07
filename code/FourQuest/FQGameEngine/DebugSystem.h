@@ -43,6 +43,7 @@ namespace fq::game_engine
 		void renderSphereCollider();
 		void renderBoxCollider();
 		void renderCapsuleCollider();
+		void renderConvexMeshCollider();
 
 	private:
 		GameProcess* mGameProcess;

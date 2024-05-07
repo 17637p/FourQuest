@@ -97,19 +97,8 @@ unsigned char fq::game_module::MeshCollider::GetConvexPolygonLimit() const
 	return mConvexMeshInfomation.convexPolygonLimit;
 }
 
-unsigned char fq::game_module::MeshCollider::GetConvexVertexLimit() const
-{
-	return mConvexMeshInfomation.convexVertexLimit;
-}
-
 void fq::game_module::MeshCollider::SetConvexPolygonLimit(unsigned char limit)
 {
 	mConvexMeshInfomation.convexPolygonLimit = 
-		std::clamp(limit, (unsigned char)4, (unsigned char)255);
-}
-
-void fq::game_module::MeshCollider::SetConvexVertexLimit(unsigned char limit)
-{
-	mConvexMeshInfomation.convexVertexLimit =
 		std::clamp(limit, (unsigned char)4, (unsigned char)255);
 }

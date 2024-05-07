@@ -246,8 +246,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Density")
 		.data<&MeshCollider::SetConvexPolygonLimit, &MeshCollider::GetConvexPolygonLimit>("PolygonLimit"_hs)
 		.prop(fq::reflect::prop::Name, "PolygonLimit")
-		.data<&MeshCollider::SetConvexVertexLimit, &MeshCollider::GetConvexVertexLimit>("VertexLimit"_hs)
-		.prop(fq::reflect::prop::Name, "VertexLimit")
 		.base<Component>();
 
 }
