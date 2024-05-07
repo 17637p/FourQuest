@@ -10,6 +10,8 @@ namespace fq::graphics
 		, mMaterials(materials)
 		, mTransform(transform)
 		, mObjectRenderType(EObjectRenderType::Opaque)
+		, mAlpha(1.f)
+		, mbUseShadow(true)
 	{
 	}
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
@@ -21,6 +23,8 @@ namespace fq::graphics
 		, mTransform(transform)
 		, mBoneHierarchyCache(boneHierarchyCache)
 		, mObjectRenderType(EObjectRenderType::Opaque)
+		, mAlpha(1.f)
+		, mbUseShadow(true)
 	{
 	}
 }

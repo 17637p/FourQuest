@@ -1,8 +1,9 @@
 #pragma once
 
-#include <cassert>
+#include <algorithm>
 #include <memory>
 #include <vector>
+#include <cmath>
 #include "BoneHierarchy.h"
 #include "../FQCommon/IFQRenderObject.h"
 
@@ -21,10 +22,17 @@ namespace fq::graphics
 		~StaticMeshObject() = default;
 
 		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
+
+		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
 		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
+		inline virtual void SetAlpha(float alpha) override;
+		inline virtual void SetUseShadow(bool bUseShadow) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline virtual EObjectRenderType GetObjectRenderType() const override;
+		inline virtual float GetAlpha() const override;
+		inline virtual bool GetUseShadow() const override;
+
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 
@@ -33,6 +41,8 @@ namespace fq::graphics
 		std::vector<std::shared_ptr<Material>> mMaterials;
 		DirectX::SimpleMath::Matrix mTransform;
 		EObjectRenderType mObjectRenderType;
+		float mAlpha;
+		bool mbUseShadow;
 	};
 
 #pragma region inlineFunc
@@ -42,9 +52,21 @@ namespace fq::graphics
 		mTransform = transform;
 	}
 
+	inline void StaticMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
 	inline void StaticMeshObject::SetObjectRenderType(EObjectRenderType renderType)
 	{
 		mObjectRenderType = renderType;
+	}
+	inline void StaticMeshObject::SetAlpha(float alpha)
+	{
+		mAlpha = std::clamp<float>(alpha, 0.f, 1.f);
+	}
+	inline void StaticMeshObject::SetUseShadow(bool bUseShadow)
+	{
+		mbUseShadow = bUseShadow;
 	}
 
 	inline const std::shared_ptr<StaticMesh>& StaticMeshObject::GetStaticMesh() const
@@ -55,6 +77,15 @@ namespace fq::graphics
 	{
 		return mObjectRenderType;
 	}
+	inline float StaticMeshObject::GetAlpha() const
+	{
+		return mAlpha;
+	}
+	inline bool StaticMeshObject::GetUseShadow() const
+	{
+		return mbUseShadow;
+	}
+
 	inline const std::vector<std::shared_ptr<Material>>& StaticMeshObject::GetMaterials() const
 	{
 		return mMaterials;
@@ -63,6 +94,7 @@ namespace fq::graphics
 	{
 		return mTransform;
 	}
+
 #pragma endregion
 
 	class SkinnedMeshObject : public ISkinnedMeshObject
@@ -77,14 +109,21 @@ namespace fq::graphics
 		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
 		inline virtual void UpdateAnimationTime(float timePos) override;
 
-		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
-
-		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
+		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		inline virtual void SetAnimationTime(float timePos) override;
 		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
+		inline virtual void SetAlpha(float alpha) override;
+		inline virtual void SetUseShadow(bool bUseShadow) override;
+		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
-		inline virtual std::set<std::string> GetAnimationKeys() const override;
+		inline virtual float GetAnimationTime() const override;
 		inline virtual EObjectRenderType GetObjectRenderType() const override;
+		inline virtual float GetAlpha() const override;
+		inline virtual bool GetUseShadow() const override;
+		inline virtual std::set<std::string> GetAnimationKeys() const override;
+
+		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
@@ -93,9 +132,12 @@ namespace fq::graphics
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
 		DirectX::SimpleMath::Matrix mTransform;
+		float mTimePos;
 		BoneHierarchyCache mBoneHierarchyCache;
 		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
 		EObjectRenderType mObjectRenderType;
+		float mAlpha;
+		bool mbUseShadow;
 	};
 
 #pragma region inlineFunc
@@ -105,6 +147,7 @@ namespace fq::graphics
 	}
 	inline void SkinnedMeshObject::UpdateAnimationTime(float timePos)
 	{
+		mTimePos = timePos;
 		mBoneHierarchyCache.Update(timePos);
 	}
 
@@ -126,6 +169,15 @@ namespace fq::graphics
 
 		return true;
 	}
+	inline void SkinnedMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+	inline void SkinnedMeshObject::SetAnimationTime(float timePos)
+	{
+		mTimePos = timePos;
+		mBoneHierarchyCache.Update(timePos);
+	}
 	inline void SkinnedMeshObject::SetObjectRenderType(EObjectRenderType renderType)
 	{
 		mObjectRenderType = renderType;
@@ -133,6 +185,10 @@ namespace fq::graphics
 	inline const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetTransform() const
 	{
 		return mTransform;
+	}
+	inline float SkinnedMeshObject::GetAnimationTime() const
+	{
+		return mTimePos;
 	}
 	inline  std::set<std::string> SkinnedMeshObject::GetAnimationKeys() const
 	{
@@ -149,6 +205,14 @@ namespace fq::graphics
 	{
 		return mObjectRenderType;
 	}
+	inline float SkinnedMeshObject::GetAlpha() const
+	{
+		return mAlpha;
+	}
+	inline bool SkinnedMeshObject::GetUseShadow() const
+	{
+		return mbUseShadow;
+	}
 	inline const std::shared_ptr<SkinnedMesh>& SkinnedMeshObject::GetSkinnedMesh() const
 	{
 		return mSkinnedMesh;
@@ -161,6 +225,15 @@ namespace fq::graphics
 	{
 		return mBoneHierarchyCache.GetFinalTransforms();
 	}
+	inline void SkinnedMeshObject::SetAlpha(float alpha)
+	{
+		mAlpha = std::clamp<float>(alpha, 0.f, 1.f);
+	}
+	inline void SkinnedMeshObject::SetUseShadow(bool bUseShadow)
+	{
+		mbUseShadow = bUseShadow;
+	}
+
 #pragma endregion
 }
 

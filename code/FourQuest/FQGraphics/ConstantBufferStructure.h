@@ -5,7 +5,7 @@
 
 namespace fq::graphics
 {
-	struct ModelTransfrom
+	struct ModelTransform
 	{
 		DirectX::SimpleMath::Matrix WorldMat;
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
@@ -32,6 +32,13 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 CascadeEnds;
 	};
 
+	struct AlphaData
+	{
+		int bUseAlphaConstant;
+		float Alpha;
+		float unused[2];
+	};
+
 	struct ViewRotationProjectionMatrix
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;
@@ -46,19 +53,6 @@ namespace fq::graphics
 		int bUseEmissiveMap;
 		int bUseOpacityMap;
 		int unused[2];
-	};
-
-	struct SceneLight
-	{
-		struct Light
-		{
-			DirectX::SimpleMath::Vector4 Direction;
-			DirectX::SimpleMath::Vector4 Intensity;
-		} Lights[3];
-
-		DirectX::SimpleMath::Vector4 EyePosition;
-		int bUseIBL;
-		int unused[3];
 	};
 
 	struct LightData
@@ -85,7 +79,7 @@ namespace fq::graphics
 	{
 	public:
 		static void UpdateModelTransformCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>>& cbuffer,
+			std::shared_ptr<D3D11ConstantBuffer<ModelTransform>>& cbuffer,
 			const DirectX::SimpleMath::Matrix& transform);
 		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>>& cbuffer,

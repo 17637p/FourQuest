@@ -48,7 +48,7 @@ namespace fq::graphics
 		mShadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
 		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
 
-		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mShadowTransformCB = std::make_shared<D3D11ConstantBuffer<ShadowTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -214,12 +214,15 @@ namespace fq::graphics
 
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
-			job.StaticMesh->Bind(mDevice);
-			job.Material->Bind(mDevice);
+			if (job.bUseShadow)
+			{
+				job.StaticMesh->Bind(mDevice);
+				job.Material->Bind(mDevice);
 
-			ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 
-			job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+			}
 		}
 
 		mSkinnedMeshLayout->Bind(mDevice);
@@ -228,13 +231,16 @@ namespace fq::graphics
 
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
-			job.SkinnedMesh->Bind(mDevice);
-			job.Material->Bind(mDevice);
+			if (job.bUseShadow)
+			{
+				job.SkinnedMesh->Bind(mDevice);
+				job.Material->Bind(mDevice);
 
-			ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-			ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+				ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
-			job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
+				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
+			}
 		}
 
 		mDefaultRS->Bind(mDevice);
@@ -380,12 +386,13 @@ namespace fq::graphics
 		mDisableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		mOITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 
-		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransfrom>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mShadowViewProjTexCB = std::make_shared< D3D11ConstantBuffer<ShadowTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mCascadeEndCB = std::make_shared< D3D11ConstantBuffer<CascadeEnd>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mAlphaDataCB = std::make_shared< D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -516,13 +523,14 @@ namespace fq::graphics
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 
 			mTransparentRenderPS->Bind(mDevice);
-			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
-			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 			mOITRenderState->Bind(mDevice);
 			mDisableDepthWriteState->Bind(mDevice);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
+			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
+			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
 			mShadowViewProjTexCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 3);
 			mCascadeEndCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 4);
 		}
@@ -542,6 +550,12 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
 
+					AlphaData alphaData;
+					alphaData.bUseAlphaConstant = true;
+					alphaData.Alpha = job.Alpha;
+
+					mAlphaDataCB->Update(mDevice, alphaData);
+
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
 			}
@@ -560,6 +574,12 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
+
+					AlphaData alphaData;
+					alphaData.bUseAlphaConstant = true;
+					alphaData.Alpha = job.Alpha;
+
+					mAlphaDataCB->Update(mDevice, alphaData);
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

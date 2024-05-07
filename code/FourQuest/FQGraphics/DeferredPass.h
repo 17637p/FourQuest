@@ -58,7 +58,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
