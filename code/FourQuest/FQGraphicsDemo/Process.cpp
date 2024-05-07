@@ -267,7 +267,7 @@ void Process::Update()
 	}
 
 	//picking Å×½ºÆ®
-	if (InputManager::GetInstance().IsGetKey('Y'))
+	//if (InputManager::GetInstance().IsGetKey('Y'))
 	{
 		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
 		if(mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
