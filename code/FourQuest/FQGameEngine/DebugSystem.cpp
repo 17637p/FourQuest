@@ -221,6 +221,8 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 		for (const auto& polygon : *mesh)
 		{
 			auto collider = static_cast<fq::game_module::MeshCollider*>(mGameProcess->mPhysicsSystem->GetCollider(id));
+			if (!collider) continue;
+	
 			auto count = collider->GetCollisionCount();
 			fq::graphics::debug::PolygonInfo info;
 			info.Color = (count == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };

@@ -14,6 +14,8 @@ namespace fq::game_module
 		~SoundManager();
 
 
+	private:
+
 	};
 
 

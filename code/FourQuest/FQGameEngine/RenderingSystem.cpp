@@ -114,7 +114,6 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 2. SkinnedMesh
 	loadSkinnedMeshRenderer(gameObject);
-
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
