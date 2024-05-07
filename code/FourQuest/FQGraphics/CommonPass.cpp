@@ -283,8 +283,8 @@ namespace fq::graphics
 		mSkyBoxVB = std::make_shared<D3D11VertexBuffer>(device, positions);
 		mSkyboxIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 
-		mBackBufferRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
-		mDefaultDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDrawRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 		mCullFrontRS = mResourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullFront);
 		mDefaultSS = mResourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
@@ -300,9 +300,6 @@ namespace fq::graphics
 
 	void SkyBoxPass::Render()
 	{
-		mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
-		mDefaultDSV->Clear(mDevice);
-
 		if (!isSetSkyBox)
 		{
 			return;
@@ -310,7 +307,7 @@ namespace fq::graphics
 
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		mBackBufferRTV->Bind(mDevice, mDefaultDSV);
+		mDrawRTV->Bind(mDevice, mDrawDSV);
 
 		mSkyBoxLayout->Bind(mDevice);
 		mSkyBoxVS->Bind(mDevice);
