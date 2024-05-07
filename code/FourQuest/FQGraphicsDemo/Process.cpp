@@ -62,13 +62,13 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 100000.0f;
+	cameraInfo.farPlain = 1000.0f;
 
 	mTestGraphics->SetCamera(cameraInfo);
 	//-------------------------------------
-	//const std::string geoModelPath = "./resource/example/model/geoBox.model";
+	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 
-	//mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
+	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/SkinningTest.model";
@@ -76,7 +76,7 @@ bool Process::Init(HINSTANCE hInstance)
 	const std::string textureBasePath = "./resource/example/texture";
 
 	mTestGraphics->CreateModel(modelPath, textureBasePath);
-	//mTestGraphics->CreateModel(geoModelPath, textureBasePath);
+	mTestGraphics->CreateModel(geoModelPath, textureBasePath);
 
 	std::vector<fq::graphics::AnimationInfo> animInfo;
 	auto modelData = mTestGraphics->CreateModel(animModelPath0, textureBasePath);
@@ -84,8 +84,8 @@ bool Process::Init(HINSTANCE hInstance)
 	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
-	//createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
-	for (size_t i = 0; i < 1; ++i)
+	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
+	for (size_t i = 0; i < 100; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
@@ -113,41 +113,41 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-//
-//directionalLightInfo.type = fq::graphics::ELightType::Directional;
-//directionalLightInfo.color = { 1,0,0, 1 };
-//directionalLightInfo.intensity = 1;
-//directionalLightInfo.direction = { -1,0,0 };
-//
-//mTestGraphics->AddLight(2, directionalLightInfo);
-//
-//directionalLightInfo.type = fq::graphics::ELightType::Directional;
-//directionalLightInfo.color = { 0,0,1, 1 };
-//directionalLightInfo.intensity = 1;
-//directionalLightInfo.direction = { 1, 0,0 };
-//
-//mTestGraphics->AddLight(3, directionalLightInfo);
-//
-//directionalLightInfo.type = fq::graphics::ELightType::Spot;
-//directionalLightInfo.color = { 1,0,0, 1 };
-//directionalLightInfo.intensity = 1000;
-//directionalLightInfo.range = 1000;
-//directionalLightInfo.direction = { 0, 0, 1 };
-//directionalLightInfo.position = { 0, 0 ,-500 };
-//directionalLightInfo.attenuation = { 0, 1, 0 };
-//directionalLightInfo.spot = 8;
-//
-//mTestGraphics->AddLight(4, directionalLightInfo);
-//
-//fq::graphics::LightInfo pointLightInfo;
-//pointLightInfo.type = fq::graphics::ELightType::Point;
-//pointLightInfo.color = { 1, 1, 1, 1 };
-//pointLightInfo.intensity = 500;
-//pointLightInfo.range = 10000;
-//pointLightInfo.attenuation = { 0, 1, 0 };
-//pointLightInfo.position = { 10.f, 100.f, 0.f };
-//
-//mTestGraphics->AddLight(5, pointLightInfo);
+	//
+	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	//directionalLightInfo.color = { 1,0,0, 1 };
+	//directionalLightInfo.intensity = 1;
+	//directionalLightInfo.direction = { -1,0,0 };
+	//
+	//mTestGraphics->AddLight(2, directionalLightInfo);
+	//
+	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	//directionalLightInfo.color = { 0,0,1, 1 };
+	//directionalLightInfo.intensity = 1;
+	//directionalLightInfo.direction = { 1, 0,0 };
+	//
+	//mTestGraphics->AddLight(3, directionalLightInfo);
+	//
+	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
+	//directionalLightInfo.color = { 1,0,0, 1 };
+	//directionalLightInfo.intensity = 1000;
+	//directionalLightInfo.range = 1000;
+	//directionalLightInfo.direction = { 0, 0, 1 };
+	//directionalLightInfo.position = { 0, 0 ,-500 };
+	//directionalLightInfo.attenuation = { 0, 1, 0 };
+	//directionalLightInfo.spot = 8;
+	//
+	//mTestGraphics->AddLight(4, directionalLightInfo);
+	//
+	//fq::graphics::LightInfo pointLightInfo;
+	//pointLightInfo.type = fq::graphics::ELightType::Point;
+	//pointLightInfo.color = { 1, 1, 1, 1 };
+	//pointLightInfo.intensity = 500;
+	//pointLightInfo.range = 10000;
+	//pointLightInfo.attenuation = { 0, 1, 0 };
+	//pointLightInfo.position = { 10.f, 100.f, 0.f };
+	//
+	//mTestGraphics->AddLight(5, pointLightInfo);
 
 	return true;
 }
@@ -337,30 +337,56 @@ void Process::Render()
 	///// 그리기를 끝낸다.
 	//m_pRenderer->EndRender();
 
-	for (auto& obj : mStaticMeshObjects)
-	{
-		obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
-	}
-
 	static float s_time = 0.f;
 	s_time += mTimeManager.GetDeltaTime();
 	s_time = fmod(s_time, 3.f);
+
+	for (size_t i = 1; i < mStaticMeshObjects.size(); ++i)
+	{
+		auto& obj = mStaticMeshObjects[i];
+		if (GetAsyncKeyState('1') & 0x8000)
+		{
+			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
+		}
+		else if (GetAsyncKeyState('2') & 0x8000)
+		{
+			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+		}
+		if (GetAsyncKeyState('3') & 0x8000)
+		{
+			obj->SetUseShadow(true);
+		}
+		else if (GetAsyncKeyState('4') & 0x8000)
+		{
+			obj->SetUseShadow(false);
+		}
+
+		obj->SetAlpha(s_time * 0.33f);
+	}
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
 		if (GetAsyncKeyState('1') & 0x8000)
 		{
-			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
 			obj->SetAnimationKey("Kick");
+			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
-			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
 			obj->SetAnimationKey("Idle");
+			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+		}
+		if (GetAsyncKeyState('3') & 0x8000)
+		{
+			obj->SetUseShadow(true);
+		}
+		else if (GetAsyncKeyState('4') & 0x8000)
+		{
+			obj->SetUseShadow(false);
 		}
 
+		obj->SetAlpha(s_time * 0.33f);
 		obj->UpdateAnimationTime(s_time);
-		auto data1 = obj->GetAnimationKeys();
 	}
 
 	mTestGraphics->EndRender();

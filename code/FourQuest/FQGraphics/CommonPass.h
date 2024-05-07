@@ -124,7 +124,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RasterizerState> mShadowRS;
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowTransformCB;
@@ -202,12 +202,13 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilState> mDisableDepthWriteState;
 
 		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
 		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowViewProjTexCB;
 		std::shared_ptr<D3D11ConstantBuffer<CascadeEnd>> mCascadeEndCB;
+		std::shared_ptr<D3D11ConstantBuffer<AlphaData>> mAlphaDataCB;
 	};
 
 	class TransparentCompositePass : public RenderPass

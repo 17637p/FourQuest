@@ -24,6 +24,8 @@ namespace fq::graphics
 		std::shared_ptr<Material> Material;
 		const DirectX::SimpleMath::Matrix* TransformPtr;
 		EObjectRenderType ObjectRenderType;
+		float Alpha;
+		bool bUseShadow;
 		IStaticMeshObject* tempObject;
 	};
 
@@ -35,6 +37,8 @@ namespace fq::graphics
 		const DirectX::SimpleMath::Matrix* TransformPtr;
 		const std::vector<DirectX::SimpleMath::Matrix>* BoneMatricesPtr;
 		EObjectRenderType ObjectRenderType;
+		float Alpha;
+		bool bUseShadow;
 		ISkinnedMeshObject* tempObject;
 	};
 }
