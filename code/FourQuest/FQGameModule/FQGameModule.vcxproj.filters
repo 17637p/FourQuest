@@ -158,7 +158,7 @@
     <ClInclude Include="Collision.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
-    <ClInclude Include="AudioClip.h">
+    <ClInclude Include="SoundClip.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
     <ClInclude Include="StaticMeshRenderer.h">
@@ -174,7 +174,7 @@
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="SoundManager.h">
-      <Filter>include</Filter>
+      <Filter>include\05.Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -253,7 +253,7 @@
     <ClCompile Include="Collision.cpp">
       <Filter>src\07.Physics</Filter>
     </ClCompile>
-    <ClCompile Include="AudioClip.cpp">
+    <ClCompile Include="SoundClip.cpp">
       <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
     <ClCompile Include="SkinnedMeshRenderer.cpp">
@@ -269,7 +269,7 @@
       <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
-      <Filter>src</Filter>
+      <Filter>src\05.Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

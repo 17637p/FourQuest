@@ -47,3 +47,8 @@ std::string fq::reflect::GetComment(const entt::meta_data& metaData)
 	}
 	return prop.value().cast<const char*>();
 }
+
+bool fq::reflect::IsReadOnly(const entt::meta_data& data)
+{
+	return data.prop(fq::reflect::prop::ReadOnly) ? true : false;
+}

@@ -33,5 +33,11 @@ namespace fq::reflect
 	/// <param name="metaType">메타타입</param>
 	/// <returns>label이 정보가 없으면 빈 string을 반환합니다</returns>
 	std::string GetLabel(const entt::meta_type& metaType);
+
+
+	/// <summary>
+	/// 읽기전용 타입인지
+	/// </summary>
+	bool IsReadOnly(const entt::meta_data& data);
 }
 

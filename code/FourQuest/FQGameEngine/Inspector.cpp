@@ -144,7 +144,7 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 	else if (metaType == entt::resolve<unsigned char>())
 	{
 		unsigned char val = data.get(handle->GetHandle()).cast<unsigned char>();
-		
+
 		std::string memberName = fq::reflect::GetName(data);
 
 		ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U8, &val);
@@ -293,7 +293,7 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 
 	float f[3]{ v.x,v.y,v.z };
 
- 	ImGui::InputFloat3(memberName.c_str(), f);
+	ImGui::InputFloat3(memberName.c_str(), f);
 
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
@@ -512,25 +512,65 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 
 	ImGui::Text(fq::reflect::GetName(data).c_str());
 
-	// Add Elemnent
-	//auto baseValue = view.value_type().construct();
-	//if (ImGui::Button(fq::reflect::GetName(data).c_str()))
-	//{
-	//	auto last = view.end();
-	//	view.insert(last, baseValue);
+	bool bIsReadOnly = fq::reflect::IsReadOnly(data);
 
-	//	// 컨테이너를 복사합니다
-	//	data.set(handle->GetHandle(), any);
-	//}
+	if (!bIsReadOnly)
+	{
+		// Add element
+		std::string addText = "Add##AddButton";
+		if (ImGui::Button(addText.c_str()))
+		{
+			auto baseValue = view.value_type().construct();
+			auto last = view.begin();
+			view.insert(last, baseValue);
+			// 컨테이너를 복사합니다
+			data.set(handle->GetHandle(), any);
+		}
 
+		ImGui::SameLine();
+
+		// Delete element
+		std::string deleteText = "Delete##DelteButton";
+		if (ImGui::Button(deleteText.c_str()))
+		{
+			auto last = view.begin();
+
+			if (last != view.end())
+			{
+				view.erase(last);
+				data.set(handle->GetHandle(), any);
+			}
+		}
+	}
 	auto valueType = view.value_type();
 
+	// string 특수화 
 	if (valueType == entt::resolve<std::string>())
 	{
+		size_t index = 0;
 		for (auto element : view)
 		{
 			std::string val = element.cast<std::string>();
-			ImGui::Text(val.c_str());
+			std::string sIndex = "-> [" + std::to_string(index) + "]";
+
+			ImGui::Text(sIndex.c_str());
+			ImGui::SameLine();
+			if (bIsReadOnly)
+			{
+				ImGui::Text(val.c_str());
+			}
+			else
+			{
+				std::string textName = "##" + sIndex + val;
+				ImGui::InputText(textName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					view[index].cast<std::string&>() = val;
+					data.set(handle->GetHandle(), any);
+				}
+			}
+			++index;
 		}
 	}
 }

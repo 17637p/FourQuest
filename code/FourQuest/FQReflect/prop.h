@@ -16,6 +16,9 @@ namespace fq::reflect::prop
 	// 읽기 전용
 	constexpr static entt::hashed_string ReadOnly = entt::hashed_string("read_only");
 
+	// 리소스 드래그 드랍 설정
+	constexpr static entt::hashed_string DragDrop = entt::hashed_string("drag_drop");
+
 	// ??
 	constexpr static entt::hashed_string Label = entt::hashed_string("label"); 
 }

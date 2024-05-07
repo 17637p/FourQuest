@@ -501,7 +501,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Hold) && mOperation == ImGuizmo::BOUNDS)
 	{
 		// 창내부에 마우스가 있는지 확인
 		auto mousePos = ImGui::GetMousePos();
@@ -538,8 +538,6 @@ void fq::game_engine::GamePlayWindow::pickObject()
 				mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
 				mGameProcess->mEventManager.get(), nullptr, mSelectObject });
 			}
-			spdlog::trace("nullptr");
-
 			return;
 		}
 
