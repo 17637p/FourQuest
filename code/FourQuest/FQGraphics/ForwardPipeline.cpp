@@ -37,9 +37,9 @@ namespace fq::graphics
 
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
-		mFullScreenPass->Initialize(device, resourceManager, width, height);
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
+		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);

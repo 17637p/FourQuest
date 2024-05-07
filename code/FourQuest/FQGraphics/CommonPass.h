@@ -139,6 +139,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mColoraccumulationRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPixelRevealageThresholdRTV;
 		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
+		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 
 		// to do : 쉐이더 더 효율적으로 관리하는 기법이 필요함
 		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
@@ -148,6 +149,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11PixelShader> mTransparentRenderPS;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 		std::shared_ptr<D3D11BlendState> mOITRenderState;
 		std::shared_ptr<D3D11DepthStencilState> mDisableDepthWriteState;
 
@@ -156,6 +158,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
+		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowViewProjTexCB;
+		std::shared_ptr<D3D11ConstantBuffer<CascadeEnd>> mCascadeEndCB;
 	};
 
 	class TransparentCompositePass : public RenderPass

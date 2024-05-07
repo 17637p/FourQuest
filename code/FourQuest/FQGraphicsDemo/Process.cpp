@@ -85,7 +85,7 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
 	//createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
-	for (size_t i = 0; i < 5; ++i)
+	for (size_t i = 0; i < 500; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
@@ -113,41 +113,41 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-
-	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1,0,0, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { -1,0,0 };
-
-	mTestGraphics->AddLight(2, directionalLightInfo);
-
-	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 0,0,1, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 1, 0,0 };
-
-	mTestGraphics->AddLight(3, directionalLightInfo);
-
-	directionalLightInfo.type = fq::graphics::ELightType::Spot;
-	directionalLightInfo.color = { 1,0,0, 1 };
-	directionalLightInfo.intensity = 1000;
-	directionalLightInfo.range = 1000;
-	directionalLightInfo.direction = { 0, 0, 1 };
-	directionalLightInfo.position = { 0, 0 ,-500 };
-	directionalLightInfo.attenuation = { 0, 1, 0 };
-	directionalLightInfo.spot = 8;
-
-	mTestGraphics->AddLight(4, directionalLightInfo);
-
-	fq::graphics::LightInfo pointLightInfo;
-	pointLightInfo.type = fq::graphics::ELightType::Point;
-	pointLightInfo.color = { 1, 1, 1, 1 };
-	pointLightInfo.intensity = 500;
-	pointLightInfo.range = 10000;
-	pointLightInfo.attenuation = { 0, 1, 0 };
-	pointLightInfo.position = { 10.f, 100.f, 0.f };
-
-	mTestGraphics->AddLight(5, pointLightInfo);
+//
+//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+//directionalLightInfo.color = { 1,0,0, 1 };
+//directionalLightInfo.intensity = 1;
+//directionalLightInfo.direction = { -1,0,0 };
+//
+//mTestGraphics->AddLight(2, directionalLightInfo);
+//
+//directionalLightInfo.type = fq::graphics::ELightType::Directional;
+//directionalLightInfo.color = { 0,0,1, 1 };
+//directionalLightInfo.intensity = 1;
+//directionalLightInfo.direction = { 1, 0,0 };
+//
+//mTestGraphics->AddLight(3, directionalLightInfo);
+//
+//directionalLightInfo.type = fq::graphics::ELightType::Spot;
+//directionalLightInfo.color = { 1,0,0, 1 };
+//directionalLightInfo.intensity = 1000;
+//directionalLightInfo.range = 1000;
+//directionalLightInfo.direction = { 0, 0, 1 };
+//directionalLightInfo.position = { 0, 0 ,-500 };
+//directionalLightInfo.attenuation = { 0, 1, 0 };
+//directionalLightInfo.spot = 8;
+//
+//mTestGraphics->AddLight(4, directionalLightInfo);
+//
+//fq::graphics::LightInfo pointLightInfo;
+//pointLightInfo.type = fq::graphics::ELightType::Point;
+//pointLightInfo.color = { 1, 1, 1, 1 };
+//pointLightInfo.intensity = 500;
+//pointLightInfo.range = 10000;
+//pointLightInfo.attenuation = { 0, 1, 0 };
+//pointLightInfo.position = { 10.f, 100.f, 0.f };
+//
+//mTestGraphics->AddLight(5, pointLightInfo);
 
 	return true;
 }

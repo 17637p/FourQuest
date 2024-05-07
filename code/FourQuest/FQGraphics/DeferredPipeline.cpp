@@ -17,6 +17,8 @@ namespace fq::graphics
 		, mGeometryPass(std::make_shared<DeferredGeometryPass>())
 		, mShadingPass(std::make_shared<DeferredShadingPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
+		, mTransparentRenderPass(std::make_shared<TransparentRenderPass>())
+		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
 	{
 	}
 
@@ -36,11 +38,15 @@ namespace fq::graphics
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
+		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
+		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
+		mPasses.push_back(mTransparentRenderPass);
+		mPasses.push_back(mTransparentCompositePass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);

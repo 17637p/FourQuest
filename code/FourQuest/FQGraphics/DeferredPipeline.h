@@ -48,6 +48,8 @@ namespace fq::graphics
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class DeferredGeometryPass> mGeometryPass;
 		std::shared_ptr<class DeferredShadingPass> mShadingPass;
+		std::shared_ptr<class TransparentRenderPass> mTransparentRenderPass;
+		std::shared_ptr<class TransparentCompositePass> mTransparentCompositePass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;

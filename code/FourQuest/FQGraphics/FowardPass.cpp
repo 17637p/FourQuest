@@ -185,7 +185,6 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-			mCascadeEndCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 3);
 
 			mMeshPS->Bind(mDevice);
 			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
