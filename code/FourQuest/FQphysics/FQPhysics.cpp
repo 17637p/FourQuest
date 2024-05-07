@@ -245,7 +245,7 @@ namespace fq::physics
 		return mRigidBodyManager->AddRigidBodyVelocity(id, velocity);
 	}
 
-	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& FQPhysics::GetDebugPolygon()
+	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
 	}

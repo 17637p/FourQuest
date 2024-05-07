@@ -501,7 +501,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	//if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+	if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
 	{
 		// 스크린 좌표 -> 이미지 좌표변환 
 		auto mousePos = ImGui::GetMousePos();

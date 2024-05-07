@@ -14,6 +14,8 @@ namespace fq::physics
 	class StaticRigidBody;
 	class DynamicRigidBody;
 
+	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
+
 	class PhysicsRigidBodyManager
 	{
 	public:
@@ -87,7 +89,7 @@ namespace fq::physics
 		/// </summary>
 		void UpdateUserData(physx::PxScene* scene);
 
-		inline const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon();
+		inline std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
 		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodyContainer();
 
 	private:
@@ -98,10 +100,10 @@ namespace fq::physics
 		std::unordered_map<unsigned int, CollisionData*> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
 
-		std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>> mDebugPolygon;
+		std::unordered_map<unsigned int, PolygonMesh> mDebugPolygon;
 	};
 
-	const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& PhysicsRigidBodyManager::GetDebugPolygon()
+	std::unordered_map<unsigned int, PolygonMesh>& PhysicsRigidBodyManager::GetDebugPolygon()
 	{
 		return mDebugPolygon;
 	}

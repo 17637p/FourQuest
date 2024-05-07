@@ -2,6 +2,8 @@
 
 #include <directxtk\SimpleMath.h>
 
+#include "FQPhysics.h"
+
 namespace fq::physics
 {
 	class CharaterMovement
@@ -10,24 +12,24 @@ namespace fq::physics
 		CharaterMovement();
 		~CharaterMovement();
 
-		void initialize();
-
+		void initialize(const CharacterMovementInfo& info);
+		void Update(float deltaTime, const DirectX::SimpleMath::Vector3& input);
 
 	private:
 		bool mIsFall;
 
-		DirectX::SimpleMath::Vector3 m_Velocity;
-		DirectX::SimpleMath::Vector3 m_Direction;
+		DirectX::SimpleMath::Vector3 mVelocity;
+		DirectX::SimpleMath::Vector3 mDirection;
 
-		float m_MaxSpeed;
-		float m_Speed;
-		float m_Acceleration;
-		float m_StaticFriction;
-		float m_DynamicFriction;
-		float m_JumpSpeed;
-		float m_JumpXZAcceleration;
-		float m_JumpXZDeceleration;
-		float m_Gravity;
-		float m_MinDistance;
+		float mMaxSpeed;
+		float mSpeed;
+		float mAcceleration;
+		float mStaticFriction;
+		float mDynamicFriction;
+		float mJumpSpeed;
+		float mJumpXZAcceleration;
+		float mJumpXZDeceleration;
+		float mGravity;
+		float mMinDistance;
 	};
 }
