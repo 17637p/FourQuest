@@ -38,12 +38,12 @@ namespace fq::graphics
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
-		// mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
 
 		mPasses.push_back(mShadowPass);
-		// mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
+		mPasses.push_back(mSkyBoxPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = resourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);

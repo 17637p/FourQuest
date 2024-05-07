@@ -62,7 +62,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 1000.0f;
+	cameraInfo.farPlain = 100000.0f;
 
 	mTestGraphics->SetCamera(cameraInfo);
 	//-------------------------------------
@@ -267,7 +267,7 @@ void Process::Update()
 	}
 
 	//picking Å×½ºÆ®
-	if (InputManager::GetInstance().IsGetKey('Y'))
+	//if (InputManager::GetInstance().IsGetKey('Y'))
 	{
 		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
 		if(mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)

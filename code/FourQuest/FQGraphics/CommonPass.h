@@ -68,8 +68,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11VertexBuffer> mSkyBoxVB;
 		std::shared_ptr<D3D11IndexBuffer> mSkyboxIB;
 
-		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
+		std::shared_ptr<D3D11RenderTargetView> mDrawRTV;
+		std::shared_ptr<D3D11DepthStencilView> mDrawDSV;
 		std::shared_ptr<D3D11Texture> mSkyBoxTexture;
 
 		std::shared_ptr<D3D11RasterizerState> mCullFrontRS;
