@@ -184,24 +184,25 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 
 	unsigned int pickedhashColor = GetHashColor(device, x, y);
 
-	EndRender(device);
+	void* object = nullptr;
 
 	// static
 	for (auto it = mStaticMeshObjects.begin(); it != mStaticMeshObjects.end(); ++it) {
 		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
-			return it->first;
+			object = it->first;
 		}
 	}
 
 	// skinned
 	for (auto it = mSkinnedMeshObjects.begin(); it != mSkinnedMeshObjects.end(); ++it) {
 		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
-			return it->first;
+			object = it->first;
 		}
 	}
 
-	// picked Object X 
-	return nullptr;
+	EndRender(device);
+
+	return object;
 }
 
 void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11Device>& device,
@@ -277,5 +278,8 @@ void fq::graphics::D3D11PickingManager::OnResize(const short width, const short 
 void fq::graphics::D3D11PickingManager::EndRender(const std::shared_ptr<D3D11Device>& device)
 {
 	mBackBufferRTV->Bind(device, mBackBufferDSV);
+
+	mStaticMeshObjects.clear();
+	mSkinnedMeshObjects.clear();
 }
 

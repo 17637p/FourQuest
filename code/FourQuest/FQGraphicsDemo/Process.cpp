@@ -274,16 +274,38 @@ void Process::Update()
 	}
 
 	//picking 테스트
-	//if (InputManager::GetInstance().IsGetKey('Y'))
+	if (InputManager::GetInstance().IsGetKey('Y'))
 	{
 		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
-		if(mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
-		auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
+		{
+			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+			int a = 3;
+		}
 	}
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/grasscube1024.dds");
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('O'))
+	{
+		for (const auto& object : mStaticMeshObjects)
+		{
+			mTestGraphics->DeleteStaticMeshObject(object);
+		}
+
+		mStaticMeshObjects.clear();
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('P'))
+	{
+		const std::string modelPath = "./resource/example/model/gun.model";
+		const std::string textureBasePath = "./resource/example/texture";
+
+		float randX = (float)(rand() % 500 - 250);
+		float randY = (float)(rand() % 500 - 250);
+		float randZ = (float)(rand() % 500 - 250);
+		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
 
 	mTestGraphics->UpdateCamera(cameraTransform);
