@@ -34,6 +34,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
+<<<<<<< HEAD
+=======
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager,  width, height, pipelineType);
+	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
+>>>>>>> origin/renderObject
 	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 
@@ -219,7 +224,7 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager,  mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

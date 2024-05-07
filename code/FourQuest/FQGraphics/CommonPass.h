@@ -1,5 +1,7 @@
 #pragma once
 
+#include <directxtk/SimpleMath.h>
+#include <vector>
 #include <string>
 
 #include "ConstantBufferStructure.h"
@@ -28,8 +30,10 @@ namespace fq::graphics
 	class D3D11JobManager;
 
 	class D3D11RasterizerState;
-	class D3D11SamplerState;
+	class D3D11GeometryShader;
+	class D3D11BlendState;
 	class D3D11DepthStencilState;
+	class D3D11SamplerState;
 	class D3D11Texture;
 
 	class RenderPass
@@ -86,26 +90,34 @@ namespace fq::graphics
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11JobManager> jobManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
-			std::shared_ptr<D3D11ResourceManager> resourceManager);
+			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			std::shared_ptr< D3D11LightManager> lightManager);
 		void Finalize() override;
 		void OnResize(unsigned short width, unsigned short height) override {}
 		void Render() override;
 
+		static std::vector<float> CalculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ);
+		static std::vector<DirectX::SimpleMath::Matrix> CalculateCascadeShadowTransform(std::vector<float> cascadeEnds, DirectX::SimpleMath::Matrix cameraView, DirectX::SimpleMath::Matrix cameraProj, DirectX::SimpleMath::Vector3 lightDirection);
+
 	public:
-		enum { SHADOW_SIZE = 2048 };
+		enum { SHADOW_SIZE = 1024 };
+		enum { Point_LIGHT_SHADOW_SIZE = 256 };
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr< D3D11LightManager> mLightManager;
 
 		D3D11_VIEWPORT mViewport;
 
-		std::shared_ptr<D3D11DepthStencilView> mShadowDSV;
+		std::shared_ptr<D3D11DepthStencilView> mCascadeShadowDSV;
+		std::shared_ptr<D3D11DepthStencilView> mPointLightShadowDSV;
 
 		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
 		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
+		std::shared_ptr<D3D11GeometryShader> mShadowGS;
 		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
 		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
 
@@ -115,6 +127,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowTransformCB;
 	};
 
 	class FullScreenPass : public RenderPass
@@ -134,7 +147,6 @@ namespace fq::graphics
 
 		D3D11_VIEWPORT mViewport;
 
-		// global sink
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
@@ -144,6 +156,88 @@ namespace fq::graphics
 		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
 		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
 		std::shared_ptr<D3D11PixelShader> mFullScreenPS;
+		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
+		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
+		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
+	};
+
+	class TransparentRenderPass : public RenderPass
+	{
+	public:
+		void Initialize(std::shared_ptr<D3D11Device> device,
+			std::shared_ptr<D3D11JobManager> jobManager,
+			std::shared_ptr<D3D11CameraManager> cameraManager,
+			std::shared_ptr< D3D11LightManager> lightManager,
+			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			unsigned short width,
+			unsigned short height);
+		void Finalize() override;
+		void OnResize(unsigned short width, unsigned short height) override;
+		void Render() override;
+
+	private:
+		std::shared_ptr<D3D11Device> mDevice;
+		std::shared_ptr<D3D11JobManager> mJobManager;
+		std::shared_ptr<D3D11CameraManager> mCameraManager;
+		std::shared_ptr< D3D11LightManager> mLightManager;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+
+		D3D11_VIEWPORT mViewport;
+
+		std::shared_ptr<D3D11RenderTargetView> mColoraccumulationRTV;
+		std::shared_ptr<D3D11RenderTargetView> mPixelRevealageThresholdRTV;
+		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
+		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
+
+		// to do : 쉐이더 더 효율적으로 관리하는 기법이 필요함
+		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
+		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
+		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
+		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
+		std::shared_ptr<D3D11PixelShader> mTransparentRenderPS;
+
+		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mShadowSampler;
+		std::shared_ptr<D3D11BlendState> mOITRenderState;
+		std::shared_ptr<D3D11DepthStencilState> mDisableDepthWriteState;
+
+		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
+		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowViewProjTexCB;
+		std::shared_ptr<D3D11ConstantBuffer<CascadeEnd>> mCascadeEndCB;
+	};
+
+	class TransparentCompositePass : public RenderPass
+	{
+	public:
+		void Initialize(std::shared_ptr<D3D11Device> device,
+			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			unsigned short width,
+			unsigned short height);
+		void Finalize() override;
+		void OnResize(unsigned short width, unsigned short height) override;
+		void Render() override;
+
+	private:
+		std::shared_ptr<D3D11Device> mDevice;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+
+		D3D11_VIEWPORT mViewport;
+
+		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
+		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
+		std::shared_ptr<D3D11DepthStencilView> mNullDSV;
+		std::shared_ptr<D3D11ShaderResourceView> mColoraccumulationSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mPixelRevealageThresholdSRV;
+
+		std::shared_ptr<D3D11BlendState> mOITCompositeState;
+
+		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
+		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
+		std::shared_ptr<D3D11PixelShader> mTransparentCompositePS;
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
