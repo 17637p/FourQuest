@@ -75,6 +75,8 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
+	mGameProcess->mPhysics->FinalUpdate();
+
 	mbIsGameLoaded = true;
 }
 
@@ -243,7 +245,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{
-				convexMeshInfo.vertices[i] = mesh.Vertices[i].Pos;
+				convexMeshInfo.vertices[i] =-mesh.Vertices[i].Pos;
 			}
 		}
 		else // skinned mesh 
@@ -397,5 +399,12 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
 		mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
 	}
+}
+
+fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(ColliderID id) const
+{
+	auto iter = mColliderContainer.find(id);
+
+	return iter == mColliderContainer.end() ? nullptr : iter->second.second;
 }
 

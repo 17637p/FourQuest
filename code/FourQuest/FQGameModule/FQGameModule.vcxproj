@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AudioClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
@@ -177,12 +178,14 @@
     <ClInclude Include="SceneHelper.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SkinnedMeshRenderer.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="StaticMeshRenderer.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
@@ -208,6 +211,7 @@
     <ClCompile Include="SceneHelper.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SkinnedMeshRenderer.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="StaticMeshRenderer.cpp" />
     <ClCompile Include="TimeManager.cpp" />

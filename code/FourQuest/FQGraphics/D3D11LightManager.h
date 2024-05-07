@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 #include "Light.h"
 #include "D3D11Buffer.h"
@@ -30,6 +31,9 @@ namespace fq::graphics
 
 		inline std::shared_ptr<D3D11ConstantBuffer<LightData>> GetLightConstnatBuffer();
 
+		// 임시 추가
+		inline std::vector<std::shared_ptr<Light<DirectionalLight>>> GetDirectionalLights() const;
+
 	private:
 		std::shared_ptr<D3D11ConstantBuffer<LightData>> mLightConstantBuffer;
 
@@ -41,6 +45,19 @@ namespace fq::graphics
 	inline std::shared_ptr<D3D11ConstantBuffer<LightData>> D3D11LightManager::GetLightConstnatBuffer()
 	{
 		return mLightConstantBuffer;
+	}
+
+	inline std::vector<std::shared_ptr<Light<DirectionalLight>>> D3D11LightManager::GetDirectionalLights() const
+	{
+		std::vector<std::shared_ptr<Light<DirectionalLight>>> lights;
+		lights.reserve(mDirectionalLights.size());
+
+		for (auto [id, light] : mDirectionalLights)
+		{
+			lights.push_back(light);
+		}
+
+		return lights;
 	}
 }
 

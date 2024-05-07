@@ -136,7 +136,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CharacterController.h" />
+    <ClInclude Include="CharaterMovement.h" />
     <ClInclude Include="EngineDataConverter.h" />
+    <ClInclude Include="PhysicsCCTHitCallback.h" />
+    <ClInclude Include="PhysicsCharactorControllerManager.h" />
     <ClInclude Include="PhysicsCookingMeshTool.h" />
     <ClInclude Include="DynamicRigidBody.h" />
     <ClInclude Include="FQPhysics.h" />
@@ -148,7 +152,11 @@
     <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CharacterController.cpp" />
+    <ClCompile Include="CharaterMovement.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
+    <ClCompile Include="PhysicsCCTHitCallback.cpp" />
+    <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
     <ClCompile Include="PhysicsCookingMeshTool.cpp" />
     <ClCompile Include="DynamicRigidBody.cpp" />
     <ClCompile Include="FQPhysics.cpp" />

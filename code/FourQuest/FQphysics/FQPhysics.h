@@ -87,7 +87,7 @@ namespace fq::physics
 		/// <summary>
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
-		const std::set<std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>>& GetDebugPolygon() override;
+		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
 
 		/// <summary>
 		/// spdlog를 설정합니다

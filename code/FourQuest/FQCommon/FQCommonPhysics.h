@@ -58,7 +58,7 @@ namespace fq::physics
 		unsigned int id = unregisterID;
 		unsigned int layerNumber =0;
 		fq::common::Transform collisionTransform;
-		float staticFriction = 1.f;								// 정적 마찰 계수
+		float staticFriction = 1.f;									// 정적 마찰 계수
 		float dynamicFriction = 1.f;								// 동적 마찰 계수
 		float restitution = 1.f;									// 복원 계수
 		float density = 1.f;										// 밀도
@@ -86,8 +86,39 @@ namespace fq::physics
 	struct ConvexMeshColliderInfo
 	{
 		ColliderInfo colliderInfo;
-		DirectX::SimpleMath::Vector3* vertices;				// 모델 버텍스
-		int vertexSize;										// 모델 버텍스 사이즈
-		unsigned char convexPolygonLimit = 4;				// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
+		DirectX::SimpleMath::Vector3* vertices;					// 모델 버텍스
+		int vertexSize;											// 모델 버텍스 사이즈
+		unsigned char convexPolygonLimit = 4;					// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
+	};
+
+	/// <summary>
+	/// 캐릭터 무브먼트 : 캐릭터 이동에 관련된 데이터
+	/// </summary>
+	struct CharacterMovementInfo
+	{
+		float maxSpeed = 5.f;									// 이동 최대 속도 : 캐릭터가 움직일 수 있는 최대 속도
+		float acceleration = 50.f;								// 가속도 : 캐릭터가 입력 값을 받을 때 이동 가속도
+		float staticFriction = 0.4f;							// 정적 마찰 계수 : 캐릭터가 이동 중 멈췄을 때 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
+		float dynamicFriction = 0.1f;							// 동적 마찰 계수 : 이동 중에 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
+		float jumpSpeed = 5.f;									// 점프(y축) 속도
+		float jumpXZAcceleration = 10.f;						// 점프 중에 이동(XZ축) 가속도 값
+		float jumpXZDeceleration = 0.1f;						// 점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )
+		float gravity = 9.8f;									// 기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.
+	};
+
+	/// <summary>
+	/// 캐릭터 컨트롤러 : 캐릭터 컨트롤러 생성을 위한 컨트롤러 데이터
+	/// </summary>
+	struct CharacterControllerInfo
+	{
+		unsigned int id = unregisterID;							// 캐릭터 컨트롤러 아이디
+		unsigned int layerNumber = 0;							// 충돌 매트릭스 레이어 넘버
+
+		DirectX::SimpleMath::Vector3 position{0.f, 0.f, 0.f};	// 캐릭터 컨트롤러가 위치하는 처음 생성 위치
+		float height = 30.f;									// 캐릭터 컨트롤러(캡슐)의 높이
+		float radius = 20.f;									// 캐릭터 컨트롤러(캡슐)의 반지름
+		float stepOffset = 0.0f;								// 캐릭터 컨트롤러가 지나갈 수 있는 
+		float slopeLimit = 0.7f;								// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
+		float contactOffset = 0.1f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
 	};
 }

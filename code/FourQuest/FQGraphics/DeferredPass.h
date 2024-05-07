@@ -12,6 +12,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11JobManager> jobManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			std::shared_ptr< D3D11LightManager> lightManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize() override;
@@ -31,6 +32,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<D3D11LightManager> mLightManager;
 
 		D3D11_VIEWPORT mViewport;
 
@@ -60,6 +62,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
+		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowViewProjTexCB;
+		std::shared_ptr<D3D11ConstantBuffer<CascadeEnd>> mCascadeEndCB;
 	};
 
 	void DeferredGeometryPass::SetRenderTargets(std::shared_ptr<D3D11RenderTargetView> albedoRTV,

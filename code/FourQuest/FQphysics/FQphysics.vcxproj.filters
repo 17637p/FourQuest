@@ -10,9 +10,6 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SimulationEventCallback">
-      <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="EngineDataConverter">
       <UniqueIdentifier>{752b9b18-cffd-4eb2-b3d8-9cbf956e680f}</UniqueIdentifier>
     </Filter>
@@ -21,6 +18,21 @@
     </Filter>
     <Filter Include="RigidBody">
       <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character">
+      <UniqueIdentifier>{25a9dc98-8c40-4f55-8d6b-789cb7bffea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterController">
+      <UniqueIdentifier>{8b735414-48ea-4b82-9509-7398b9e8dd9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterMovement">
+      <UniqueIdentifier>{e0217dc4-9f71-4ff5-b98d-021dae82316a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\PhysicsCCTHitCallback">
+      <UniqueIdentifier>{b9f023b8-1c01-4bf5-8d6d-365c6c88543a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RigidBody\SimulationEventCallback">
+      <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,13 +58,25 @@
       <Filter>physx</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsSimulationEventCallback.h">
-      <Filter>SimulationEventCallback</Filter>
+      <Filter>RigidBody\SimulationEventCallback</Filter>
     </ClInclude>
     <ClInclude Include="EngineDataConverter.h">
       <Filter>EngineDataConverter</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsCookingMeshTool.h">
       <Filter>Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCharactorControllerManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Character\CharacterController</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCCTHitCallback.h">
+      <Filter>Character\PhysicsCCTHitCallback</Filter>
+    </ClInclude>
+    <ClInclude Include="CharaterMovement.h">
+      <Filter>Character\CharacterMovement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,13 +102,25 @@
       <Filter>physx</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsSimulationEventCallback.cpp">
-      <Filter>SimulationEventCallback</Filter>
+      <Filter>RigidBody\SimulationEventCallback</Filter>
     </ClCompile>
     <ClCompile Include="EngineDataConverter.cpp">
       <Filter>EngineDataConverter</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsCookingMeshTool.cpp">
       <Filter>Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCharactorControllerManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="CharaterMovement.cpp">
+      <Filter>Character\CharacterMovement</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCCTHitCallback.cpp">
+      <Filter>Character\PhysicsCCTHitCallback</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

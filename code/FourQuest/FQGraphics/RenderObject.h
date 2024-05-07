@@ -20,9 +20,11 @@ namespace fq::graphics
 			DirectX::SimpleMath::Matrix transform);
 		~StaticMeshObject() = default;
 
-		virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual EObjectRenderType GetObjectRenderType() const override;
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 
@@ -30,12 +32,28 @@ namespace fq::graphics
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
 		DirectX::SimpleMath::Matrix mTransform;
+		EObjectRenderType mObjectRenderType;
 	};
 
 #pragma region inlineFunc
+
+	void StaticMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+
+	inline void StaticMeshObject::SetObjectRenderType(EObjectRenderType renderType)
+	{
+		mObjectRenderType = renderType;
+	}
+
 	inline const std::shared_ptr<StaticMesh>& StaticMeshObject::GetStaticMesh() const
 	{
 		return mStaticMesh;
+	}
+	inline EObjectRenderType StaticMeshObject::GetObjectRenderType() const
+	{
+		return mObjectRenderType;
 	}
 	inline const std::vector<std::shared_ptr<Material>>& StaticMeshObject::GetMaterials() const
 	{
@@ -62,9 +80,11 @@ namespace fq::graphics
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 
 		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
+		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline virtual std::set<std::string> GetAnimationKeys() const override;
+		inline virtual EObjectRenderType GetObjectRenderType() const override;
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
@@ -75,6 +95,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix mTransform;
 		BoneHierarchyCache mBoneHierarchyCache;
 		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
+		EObjectRenderType mObjectRenderType;
 	};
 
 #pragma region inlineFunc
@@ -105,7 +126,10 @@ namespace fq::graphics
 
 		return true;
 	}
-
+	inline void SkinnedMeshObject::SetObjectRenderType(EObjectRenderType renderType)
+	{
+		mObjectRenderType = renderType;
+	}
 	inline const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetTransform() const
 	{
 		return mTransform;
@@ -120,6 +144,10 @@ namespace fq::graphics
 		}
 
 		return animationKeys;
+	}
+	inline  EObjectRenderType SkinnedMeshObject::GetObjectRenderType() const
+	{
+		return mObjectRenderType;
 	}
 	inline const std::shared_ptr<SkinnedMesh>& SkinnedMeshObject::GetSkinnedMesh() const
 	{

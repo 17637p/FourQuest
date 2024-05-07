@@ -219,7 +219,7 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager,  mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()
