@@ -75,6 +75,8 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
+	mGameProcess->mPhysics->FinalUpdate();
+
 	mbIsGameLoaded = true;
 }
 
@@ -243,7 +245,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{
-				convexMeshInfo.vertices[i] = mesh.Vertices[i].Pos;
+				convexMeshInfo.vertices[i] =-mesh.Vertices[i].Pos;
 			}
 		}
 		else // skinned mesh 

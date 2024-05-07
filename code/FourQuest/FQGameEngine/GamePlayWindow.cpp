@@ -501,28 +501,33 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	//if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+
+	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
 	{
-		// 스크린 좌표 -> 이미지 좌표변환 
+		// 창내부에 마우스가 있는지 확인
 		auto mousePos = ImGui::GetMousePos();
+		auto windowPos =ImGui::GetWindowPos();
+		auto windowSize = ImGui::GetWindowSize();
+
+		if (mousePos.x < windowPos.x || mousePos.y < windowPos.y ||
+			mousePos.x > windowPos.x + windowSize.x || mousePos.y > windowPos.y + windowSize.y)
+		{
+			return;
+		}
+
+		// 스크린 좌표 -> 이미지 좌표변환 
 		mousePos.x = std::clamp(mousePos.x - mImagePos.x, 0.f, mViewportSize.x - 1);
 		mousePos.y = std::clamp(mousePos.y - mImagePos.y, 0.f, mViewportSize.y - 1);
 
 		UINT screenWidth = mGameProcess->mWindowSystem->GetScreenWidth();
 		UINT screenHeight = mGameProcess->mWindowSystem->GetScreenHeight();
-		spdlog::trace("mousePos {} , {}", mousePos.x, mousePos.y);
 
 		// 이미지 좌표 -> 뷰포트 좌표 변환
 		mousePos.x = mousePos.x * static_cast<float>(screenWidth) / mViewportSize.x;
 		mousePos.y = mousePos.y * static_cast<float>(screenHeight) / mViewportSize.y;
 
-		spdlog::trace("screen size {} {}", screenWidth, screenHeight);
-		spdlog::trace("viewport size {} {}", mViewportSize.x, mViewportSize.y);
-
 		UINT mousePosX = std::clamp(static_cast<UINT>(mousePos.x), 0u, screenWidth);
 		UINT mousePosY = std::clamp(static_cast<UINT>(mousePos.y), 0u, screenHeight);
-
-		spdlog::trace("mousePos2 {} , {}", mousePosX, mousePosY);
 
 		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(mousePosX, mousePosY);
 
