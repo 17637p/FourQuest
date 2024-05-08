@@ -374,8 +374,8 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		auto matrix = mPhysicsEngine->GetRigidBodyMatrix(id);
-		transform->SetWorldMatrix(matrix);
+		//auto matrix = mPhysicsEngine->GetRigidBodyMatrix(id);
+		//transform->SetWorldMatrix(matrix);
 	}
 }
 
@@ -397,7 +397,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
+		//mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
 	}
 }
 
