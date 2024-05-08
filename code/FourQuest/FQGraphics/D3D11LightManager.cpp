@@ -132,11 +132,14 @@ void fq::graphics::D3D11LightManager::UseShadow(const unsigned int id, bool bUse
 {
 	if (bUseShadow)
 	{
-		auto find = mDirectionalLights.find(id);
-
-		if (find != mDirectionalLights.end())
+		if (mDirectionalShadows.size() < DirectionalShadowTransform::MAX_SHADOW_COUNT)
 		{
-			mDirectionalShadows.insert({ find->first, find->second });
+			auto find = mDirectionalLights.find(id);
+
+			if (find != mDirectionalLights.end())
+			{
+				mDirectionalShadows.insert({ find->first, find->second });
+			}
 		}
 	}
 	else
@@ -155,6 +158,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	/// Todo: 일단은 다 올리는 데 컬링을 넣기 시작하면 포인트 라이트와 스팟 라이트의 영역을 검사해서 컬링을 해야한다.
 
 	// Directional Light
+	// 임의로 쉐도우를 사용하는 라이트가 먼저 추가되도록 함_홍지환
 	unsigned short count = 0;
 	std::set<unsigned int> idSet;
 	for (const auto& shadowDirectionalLight : mDirectionalShadows)

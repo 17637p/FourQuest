@@ -53,6 +53,8 @@ namespace fq::graphics
 
 	inline std::vector<std::shared_ptr<Light<DirectionalLight>>> D3D11LightManager::GetDirectionalShadows() const
 	{
+		assert(mDirectionalShadows.size() <= DirectionalShadowTransform::MAX_SHADOW_COUNT);
+
 		std::vector<std::shared_ptr<Light<DirectionalLight>>> lights;
 		lights.reserve(mDirectionalShadows.size());
 

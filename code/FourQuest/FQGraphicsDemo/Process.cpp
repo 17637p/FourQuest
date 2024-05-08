@@ -132,6 +132,14 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(3, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1 ,1, 1 };
+	directionalLightInfo.intensity = 1;
+	directionalLightInfo.direction = { 0, -1, -1 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(4, directionalLightInfo);
 	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	//directionalLightInfo.color = { 1,0,0, 1 };
 	//directionalLightInfo.intensity = 1000;
@@ -512,11 +520,14 @@ void Process::shadowTest()
 	if (GetAsyncKeyState('5') & 0x8000)
 	{
 		mTestGraphics->UseShadow(1, true);
+		mTestGraphics->UseShadow(4, true);
 	}
 	else
 	{
 		mTestGraphics->UseShadow(1, false);
+		mTestGraphics->UseShadow(4, false);
 	}
+
 	if (GetAsyncKeyState('6') & 0x8000)
 	{
 		mTestGraphics->UseShadow(2, true);
