@@ -5,6 +5,7 @@ namespace fq::game_module
 {
 	class RigidBody : public Component
 	{
+		using Vector3 = DirectX::SimpleMath::Vector3;
 	public:
 		RigidBody();
 		~RigidBody();
@@ -24,11 +25,33 @@ namespace fq::game_module
 		/// </summary>
 		void SetStatic(bool isStatic) { mbIsStatic = isStatic; }
 
+		/// <summary>
+		/// 선속도를 반환합니다 
+		/// </summary>
+		fq::game_module::RigidBody::Vector3 GetLinearVelocity() const { return mLinearVelocity; }
+		
+		/// <summary>
+		/// 선속도를 설정합니다 
+		/// </summary>
+		void SetLinearVelocity(fq::game_module::RigidBody::Vector3 val) { mLinearVelocity = val; }
+		
+		/// <summary>
+		/// 각속도를 반환합니다 
+		/// </summary>
+		fq::game_module::RigidBody::Vector3 GetAngularVelocity() const { return mAngularVelocity; }
+		
+		/// <summary>
+		/// 각속도를 설정합니다 
+		/// </summary>
+		void SetAngularVelocity(fq::game_module::RigidBody::Vector3 val) { mAngularVelocity = val; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
 	private:
 		bool mbIsStatic;
+		Vector3 mLinearVelocity;
+		Vector3 mAngularVelocity;
 	};
 
 

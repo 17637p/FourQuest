@@ -172,6 +172,10 @@ void fq::game_module::RegisterMetaData()
 		.data<&RigidBody::SetStatic, &RigidBody::IsStatic>("IsStatic"_hs)
 		.prop(fq::reflect::prop::Name, "IsStatic")
 		.prop(fq::reflect::prop::Comment, "static or dynamic")
+		.data<&RigidBody::SetLinearVelocity, &RigidBody::GetLinearVelocity>("LinearVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "LinearVelocity")
+		.data<&RigidBody::SetAngularVelocity, &RigidBody::GetAngularVelocity>("AgularVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "AgularVelocity")
 		.base<Component>();
 
 	// BoxCollider

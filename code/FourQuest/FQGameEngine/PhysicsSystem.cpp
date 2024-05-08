@@ -374,8 +374,19 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		//auto matrix = mPhysicsEngine->GetRigidBodyMatrix(id);
-		//transform->SetWorldMatrix(matrix);
+		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+
+		auto data = mPhysicsEngine->GetRigidBodyData(id);
+
+		// 선속도
+		rigid->SetLinearVelocity(data.linearVelocity);
+
+		// 각속도
+		rigid->SetAngularVelocity(data.angularVelocity);
+
+		// 위치 
+		auto matrix = data.transform;
+		transform->SetWorldMatrix(matrix);
 	}
 }
 
@@ -396,8 +407,16 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
+		fq::physics::RigidBodyGetSetData data;
+
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		//mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
+		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+
+		data.transform = transform->GetWorldMatrix();
+		data.angularVelocity = rigid->GetAngularVelocity();
+		data.linearVelocity = rigid->GetLinearVelocity();
+		
+		mPhysicsEngine->SetRigidBodyData(id, data);
 	}
 }
 
