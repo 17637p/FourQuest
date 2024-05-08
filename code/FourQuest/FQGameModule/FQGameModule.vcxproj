@@ -148,12 +148,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
-=======
-    <ClInclude Include="Pool.h" />
-    <ClInclude Include="ObjectPool.h" />
-    <ClInclude Include="SoundClip.h" />
->>>>>>> PrefabInstance
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
@@ -189,12 +183,6 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
-=======
-    <ClCompile Include="Pool.cpp" />
-    <ClCompile Include="ObjectPool.cpp" />
-    <ClCompile Include="SoundClip.cpp" />
->>>>>>> PrefabInstance
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />

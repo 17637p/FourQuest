@@ -10,22 +10,21 @@ fq::game_module::MeshCollider::~MeshCollider()
 
 }
 
-std::shared_ptr<fq::game_module::Component> fq::game_module::MeshCollider::Clone(std::shared_ptr<Component> clone /*= nullptr*/) const
+fq::game_module::Component* fq::game_module::MeshCollider::Clone(Component* clone /* = nullptr */) const
 {
-	auto cloneMesh = std::dynamic_pointer_cast<MeshCollider>(clone);
+	MeshCollider* cloneCollider = static_cast<MeshCollider*>(clone);
 
-	if (cloneMesh == nullptr) // 새로 생성해서 복사본을 준다
+	if (cloneCollider == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneMesh = ObjectPool::GetInstance()->Assign<MeshCollider>(*this);
+		cloneCollider = new MeshCollider(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
-		*cloneMesh = *this;
+		// 기본 대입 연산자 호출한다.
+		*cloneCollider = *this;
 	}
 
-	cloneMesh->mConvexMeshInfomation.colliderInfo.id = fq::physics::unregisterID;
-
-	return cloneMesh;
+	return cloneCollider;
 }
 
 entt::meta_handle fq::game_module::MeshCollider::GetHandle()

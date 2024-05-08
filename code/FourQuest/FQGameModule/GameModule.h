@@ -28,9 +28,6 @@
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "ObjectManager.h"
-#include "SoundManager.h"
-#include "ObjectPool.h"
-#include "Pool.h"
 
 #include "Collision.h"
 #include "CollisionMatrix.h"

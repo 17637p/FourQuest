@@ -13,7 +13,7 @@ namespace fq::game_module
 		SphereCollider();
 		~SphereCollider();
 
-		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
+		Component* Clone(Component* clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 구 콜라이더의 정보를 반환합니다
