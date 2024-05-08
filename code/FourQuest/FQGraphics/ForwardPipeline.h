@@ -3,6 +3,7 @@
 #include "CommonHeader.h"
 #include "ConstantBufferStructure.h"
 #include "RenderJob.h"
+#include "RenderPipeline.h"
 
 namespace fq::graphics
 {
@@ -16,11 +17,11 @@ namespace fq::graphics
 	class D3D11DepthStencilView;
 	class D3D11DebugDrawManager;
 
-	class ForwardPipeline
+	class ForwardPipeline : public RenderPipeline
 	{
 	public:
 		ForwardPipeline();
-		~ForwardPipeline() = default;
+		virtual ~ForwardPipeline() override = default;
 
 		void Initialize(std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11JobManager>& jobManager,
@@ -30,23 +31,10 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
 			unsigned short width,
 			unsigned short height);
-		void Finalize();
-
-		void OnResize(unsigned short width, unsigned short height);
-
-		void BeginRender();
-		void Render();
-		void EndRender();
 
 		void SetSkyBox(const std::wstring& path);
-		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
-		std::shared_ptr<D3D11Device> mDevice;
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-
-		std::vector<std::shared_ptr<class RenderPass>> mPasses;
-
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class ForwardRenderPass> mRenderPass;
 		std::shared_ptr<class TransparentRenderPass> mTransparentRenderPass;
@@ -54,11 +42,6 @@ namespace fq::graphics
 		std::shared_ptr<class DebugRenderPass> mDebugRenderPass;
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
-
-		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
-		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
-		std::shared_ptr<D3D11DepthStencilView> mDSV;
 	};
 }
 

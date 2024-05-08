@@ -1,15 +1,7 @@
 #include "ForwardPipeline.h"
-
-#include "D3D11ResourceManager.h"
-#include "D3D11CameraManager.h"
-#include "D3D11LightManager.h"
+#include "ManagementCommon.h"
 #include "D3D11Common.h"
-#include "RenderJob.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "Define.h"
-#include "FowardPass.h"
-#include "D3D11View.h"
+#include "PassCommon.h"
 
 namespace fq::graphics
 {
@@ -35,8 +27,7 @@ namespace fq::graphics
 	{
 		Finalize();
 
-		mDevice = device;
-		mResourceManager = resourceManager;
+		RenderPipeline::Initialize(device, resourceManager, width, height);
 
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
@@ -54,76 +45,10 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mFullScreenPass);
-
-		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
-		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
-		mDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
-		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mBackBufferRTV);
-	}
-	void ForwardPipeline::Finalize()
-	{
-		for (std::shared_ptr<RenderPass> pass : mPasses)
-		{
-			pass->Finalize();
-		}
-		mPasses.clear();
-
-		mDevice = nullptr;
-		mResourceManager = nullptr;
-
-		mSwapChainRTV = nullptr;
-		mBackBufferRTV = nullptr;
-		mBackBufferSRV = nullptr;
-		mDSV = nullptr;
-	}
-
-	void ForwardPipeline::OnResize(unsigned short width, unsigned short height)
-	{
-		mSwapChainRTV->Release();
-		mBackBufferRTV->Release();
-		mDSV->Release();
-
-		mDevice->OnResize(width, height);
-
-		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, width, height);
-		mBackBufferRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
-		mDSV->OnResize(mDevice, ED3D11DepthStencilViewType::Default, width, height);
-
-		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
-
-		for (std::shared_ptr<RenderPass> pass : mPasses)
-		{
-			pass->OnResize(width, height);
-		}
-	}
-
-	void ForwardPipeline::BeginRender()
-	{
-		mSwapChainRTV->Clear(mDevice);
-	}
-
-	void ForwardPipeline::Render()
-	{
-		for (std::shared_ptr<RenderPass> pass : mPasses)
-		{
-			pass->Render();
-		}
-	}
-
-	void ForwardPipeline::EndRender()
-	{
-		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
-		HR(swapChain->Present(0, 0));
-	}
-
-	std::shared_ptr<D3D11ShaderResourceView>& ForwardPipeline::GetBackBufferSRV()
-	{
-		return mBackBufferSRV;
 	}
 
 	void ForwardPipeline::SetSkyBox(const std::wstring& path)
 	{
 		mSkyBoxPass->SetSkyBox(path);
 	}
-
 }

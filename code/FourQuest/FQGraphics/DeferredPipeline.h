@@ -3,6 +3,7 @@
 #include "CommonHeader.h"
 #include "ConstantBufferStructure.h"
 #include "RenderJob.h"
+#include "RenderPipeline.h"
 
 namespace fq::graphics
 {
@@ -16,7 +17,7 @@ namespace fq::graphics
 	class D3D11DebugDrawManager;
 	class D3D11DepthStencilView;
 
-	class DeferredPipeline
+	class DeferredPipeline : public RenderPipeline
 	{
 	public:
 		DeferredPipeline();
@@ -34,19 +35,9 @@ namespace fq::graphics
 
 		void OnResize(unsigned short width, unsigned short height);
 
-		void BeginRender();
-		void Render();
-		void EndRender();
-
 		void SetSkyBox(const std::wstring& path);
-		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
-		std::shared_ptr<D3D11Device> mDevice;
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-
-		std::vector<std::shared_ptr<class RenderPass>> mPasses;
-
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class DeferredGeometryPass> mGeometryPass;
 		std::shared_ptr<class DeferredShadingPass> mShadingPass;
@@ -56,24 +47,12 @@ namespace fq::graphics
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 
-		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
-		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
-		std::shared_ptr<D3D11DepthStencilView> mDSV;
-
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
 		std::shared_ptr<D3D11RenderTargetView> mRoughnessRTV;
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
-
-		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mRoughnessSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
 	};
 }
 

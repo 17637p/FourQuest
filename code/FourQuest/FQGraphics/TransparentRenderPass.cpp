@@ -1,16 +1,14 @@
-#include "FowardPass.h"
-
-#include "CommonPass.h"
-#include "D3D11Common.h"
+#include "TransparentRenderPass.h"
 #include "ManagementCommon.h"
-#include "RenderJob.h"
-#include "Material.h"
+#include "D3D11Common.h"
+#include "ShadowPass.h"
 #include "Mesh.h"
-#include "Define.h"
+#include "Material.h"
+#include "BoneHierarchy.h"
 
 namespace fq::graphics
 {
-	void ForwardRenderPass::Initialize(std::shared_ptr<D3D11Device> device,
+	void TransparentRenderPass::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11JobManager> jobManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr< D3D11LightManager> lightManager,
@@ -18,37 +16,47 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
-		Finalize();
-
 		mDevice = device;
 		mJobManager = jobManager;
 		mCameraManager = cameraManager;
 		mLightManager = lightManager;
 		mResourceManager = resourceManager;
 
+		mColoraccumulationRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
+		mPixelRevealageThresholdRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
+		
+		mDefaultDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		auto shadowDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3);
+		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
+
 		D3D_SHADER_MACRO macroSkinning[] =
 		{
 			{"SKINNING", ""},
 			{ NULL, NULL}
 		};
+		D3D_SHADER_MACRO macroRender[] =
+		{
+			{"RENDER", ""},
+			{ NULL, NULL}
+		};
 
 		mStaticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
 		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
-		mMeshPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPS.hlsl");
-
+		mTransparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroRender);
 		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mStaticMeshVS->GetBlob().Get());
 		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
-		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
-		mDefaultRS = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
+		mDisableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
+		mOITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mAlphaDataCB = std::make_shared< D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -56,17 +64,8 @@ namespace fq::graphics
 		mViewport.MaxDepth = 1.f;
 		mViewport.TopLeftX = 0.f;
 		mViewport.TopLeftY = 0.f;
-
-		mBackBufferRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
-		mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
-		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
-		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
-
-		// 포인트라이트 SRV 생성
-		auto pointLightShadow = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::PointLightShadow, ShadowPass::Point_LIGHT_SHADOW_SIZE, ShadowPass::Point_LIGHT_SHADOW_SIZE);
-		mPointLightShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pointLightShadow);
 	}
-	void ForwardRenderPass::Finalize()
+	void TransparentRenderPass::Finalize()
 	{
 		mDevice = nullptr;
 		mJobManager = nullptr;
@@ -74,31 +73,28 @@ namespace fq::graphics
 		mLightManager = nullptr;
 		mResourceManager = nullptr;
 
-		mBackBufferRTV = nullptr;
-		mDSV = nullptr;
+		mColoraccumulationRTV = nullptr;
+		mPixelRevealageThresholdRTV = nullptr;
+		mDefaultDSV = nullptr;
 		mShadowSRV = nullptr;
-		mPointLightShadowSRV = nullptr;
 
 		mStaticMeshLayout = nullptr;
 		mSkinnedMeshLayout = nullptr;
 		mStaticMeshVS = nullptr;
 		mSkinnedMeshVS = nullptr;
-		mMeshPS = nullptr;
+		mTransparentRenderPS = nullptr;
 
-		mDefaultRS = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
-		mLinearClampSamplerState = nullptr;
-		mPointClampSamplerState = nullptr;
 		mShadowSampler = nullptr;
+		mOITRenderState = nullptr;
+		mDisableDepthWriteState = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mModelTexutreCB = nullptr;
-		mDirectioanlShadowInfoCB = nullptr;
 	}
-
-	void ForwardRenderPass::OnResize(unsigned short width, unsigned short height)
+	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
 	{
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -106,13 +102,15 @@ namespace fq::graphics
 		mViewport.MaxDepth = 1.f;
 		mViewport.TopLeftX = 0.f;
 		mViewport.TopLeftY = 0.f;
-	}
 
-	void ForwardRenderPass::Render()
+		mColoraccumulationRTV->OnResize(mDevice, ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
+		mPixelRevealageThresholdRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
+	}
+	void TransparentRenderPass::Render()
 	{
 		using namespace DirectX::SimpleMath;
 
-		// Update
+		// update
 		{
 			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
 			DirectionalShadowInfo directionalShadowData;
@@ -121,6 +119,9 @@ namespace fq::graphics
 			if (currentDirectionaShadowCount > 0)
 			{
 				const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = mLightManager->GetDirectionalShadows();
+				DirectionalShadowTransform directionalShadowTransformData;
+				directionalShadowTransformData.ShadowCount = currentDirectionaShadowCount;
+
 
 				for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
 				{
@@ -144,11 +145,11 @@ namespace fq::graphics
 					auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
 					size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
 
-					directionalShadowData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
+					directionalShadowTransformData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
 					directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
-					directionalShadowData.ShadowViewProj[shaodwIndex + 1] = (shadowTransforms[1] * texTransform).Transpose();
+					directionalShadowTransformData.ShadowViewProj[shaodwIndex + 1] = (shadowTransforms[1] * texTransform).Transpose();
 					directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
-					directionalShadowData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2] * texTransform).Transpose();
+					directionalShadowTransformData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2] * texTransform).Transpose();
 					directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
 				}
 			}
@@ -163,13 +164,13 @@ namespace fq::graphics
 			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
 		}
 
-		// Init
+		// init
 		{
-			mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
-			mDSV->Clear(mDevice);
+			mColoraccumulationRTV->Clear(mDevice, { 0,0,0,0 });
+			mPixelRevealageThresholdRTV->Clear(mDevice, { 1, 1,1,1 });
 		}
 
-		// Bind
+		// bind
 		{
 			ID3D11ShaderResourceView* SRVs[10] = { NULL };
 			mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
@@ -177,19 +178,26 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
-			mBackBufferRTV->Bind(mDevice, mDSV);
+			std::vector<std::shared_ptr<D3D11RenderTargetView>> RTVs =
+			{
+				mColoraccumulationRTV,
+				mPixelRevealageThresholdRTV
+			};
+			D3D11RenderTargetView::Bind(mDevice, RTVs, mDefaultDSV);
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 
-			mMeshPS->Bind(mDevice);
+			mTransparentRenderPS->Bind(mDevice);
+			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+			mOITRenderState->Bind(mDevice);
+			mDisableDepthWriteState->Bind(mDevice);
+			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
 			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
-			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-			mShadowSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
-			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
+			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
+			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 3);
 		}
 
 		// Draw
@@ -199,13 +207,19 @@ namespace fq::graphics
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Opaque)
+				if (job.ObjectRenderType == EObjectRenderType::Transparent)
 				{
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+
+					AlphaData alphaData;
+					alphaData.bUseAlphaConstant = true;
+					alphaData.Alpha = job.Alpha;
+
+					mAlphaDataCB->Update(mDevice, alphaData);
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -217,7 +231,7 @@ namespace fq::graphics
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Opaque)
+				if (job.ObjectRenderType == EObjectRenderType::Transparent)
 				{
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
@@ -226,9 +240,22 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
+					AlphaData alphaData;
+					alphaData.bUseAlphaConstant = true;
+					alphaData.Alpha = job.Alpha;
+
+					mAlphaDataCB->Update(mDevice, alphaData);
+
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}
 			}
 		}
+
+		// unbind
+		{
+			mDevice->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+			mDevice->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
+		}
 	}
+
 }

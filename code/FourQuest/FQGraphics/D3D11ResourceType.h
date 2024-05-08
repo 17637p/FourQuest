@@ -25,7 +25,15 @@ namespace fq::graphics
 		Picking,
 
 		ColorAcuumulation,
-		PixeldRevealageThreshold
+		PixeldRevealageThreshold,
+
+		// Deferred
+		Albedo,
+		Metalness,
+		Roughness,
+		Normal,
+		Emissive,
+		PositionWClipZ,
 	};
 
 	enum class ED3D11ShaderResourceViewType
