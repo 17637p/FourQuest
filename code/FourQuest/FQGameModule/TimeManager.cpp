@@ -19,6 +19,7 @@ fq::game_module::TimeManager::~TimeManager()
 float fq::game_module::TimeManager::Update()
 {
 	QueryPerformanceCounter(&mCurentCount);
+	QueryPerformanceFrequency(&mFrequency);
 
 	mDeltaTime = (mCurentCount.QuadPart - mPrevCount.QuadPart) /
 		(double)mFrequency.QuadPart;

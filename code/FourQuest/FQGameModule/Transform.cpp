@@ -50,8 +50,6 @@ void fq::game_module::Transform::SetLocalPosition(DirectX::SimpleMath::Vector3 p
 }
 
 
-
-
 void fq::game_module::Transform::SetParent(Transform* parent)
 {
 	if (parent == mParent || parent == this || IsDescendant(parent))

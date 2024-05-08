@@ -9,6 +9,7 @@ namespace fq::game_module
 	class InputManager;
 	class TimeManager;
 	class ObjectManager;
+	class SoundManager; 
 }
 
 namespace fq::graphics
@@ -28,6 +29,7 @@ namespace fq::game_engine
 	class RenderingSystem;
 	class PhysicsSystem;
 	class LightSystem;
+	class SoundSystem;
 }
 
 namespace fq::game_engine
@@ -47,6 +49,7 @@ namespace fq::game_engine
 		std::unique_ptr<fq::game_module::SceneManager> mSceneManager;
 		std::unique_ptr<fq::game_module::EventManager> mEventManager;
 		std::unique_ptr<fq::game_module::ObjectManager> mObjectManager;
+		std::unique_ptr<fq::game_module::SoundManager> mSoundManager;
 
 		// Graphics
 		fq::graphics::IFQGraphics* mGraphics;
@@ -60,5 +63,6 @@ namespace fq::game_engine
 		std::unique_ptr<CameraSystem> mCameraSystem;
 		std::unique_ptr<PhysicsSystem> mPhysicsSystem;
 		std::unique_ptr<LightSystem> mLightSystem;
+		std::unique_ptr<SoundSystem> mSoundSystem;
 	};
 }
