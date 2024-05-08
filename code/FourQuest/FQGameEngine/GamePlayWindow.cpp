@@ -501,11 +501,11 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	if (mEditorProcess->mInputManager->IsKeyState(EKey::A, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Hold) && mOperation == ImGuizmo::BOUNDS)
 	{
 		// 창내부에 마우스가 있는지 확인
 		auto mousePos = ImGui::GetMousePos();
-		auto windowPos =ImGui::GetWindowPos();
+		auto windowPos = ImGui::GetWindowPos();
 		auto windowSize = ImGui::GetWindowSize();
 
 		if (mousePos.x < windowPos.x || mousePos.y < windowPos.y ||
@@ -531,14 +531,15 @@ void fq::game_engine::GamePlayWindow::pickObject()
 		void* meshPtr = mGameProcess->mGraphics->GetPickingObject(mousePosX, mousePosY);
 
 		// 빈공간을 클릭한경우 
-		if (meshPtr == nullptr && mSelectObject)
+		if (meshPtr == nullptr)
 		{
-			mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-			mGameProcess->mEventManager.get(), nullptr, mSelectObject });
-			spdlog::trace("nullptr");
+			if (mSelectObject)
+			{
+				mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+				mGameProcess->mEventManager.get(), nullptr, mSelectObject });
+			}
 			return;
 		}
-		spdlog::trace("! nullptr");
 
 		// 피킹한 오브젝트 탐색
 		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
@@ -551,6 +552,7 @@ void fq::game_engine::GamePlayWindow::pickObject()
 					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
 				}
 			});
+
 		scene->ViewComponents<fq::game_module::SkinnedMeshRenderer>(
 			[this, meshPtr](fq::game_module::GameObject& object, game_module::SkinnedMeshRenderer& mesh)
 			{
