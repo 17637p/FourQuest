@@ -37,6 +37,7 @@ private:
 	void Update();
 	void Render();
 	void debugRender();
+	void shadowTest();
 
 	void strafe(float distance);
 	void walk(float distance);

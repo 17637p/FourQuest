@@ -22,14 +22,22 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix FinalTransforms[128];
 	};
 
-	struct ShadowTransform
+	struct DirectionalShadowTransform
 	{
-		DirectX::SimpleMath::Matrix ShadowViewProj[3];
+		enum { CASCADE_COUNT = 3 };
+		enum { MAX_SHADOW_COUNT = 3 };
+
+		DirectX::SimpleMath::Matrix ShadowViewProj[CASCADE_COUNT * MAX_SHADOW_COUNT];
+		int ShadowCount;
+		int unused[3];
 	};
 
-	struct CascadeEnd
+	struct DirectionalShadowInfo
 	{
-		DirectX::SimpleMath::Vector4 CascadeEnds;
+		DirectX::SimpleMath::Matrix ShadowViewProj[DirectionalShadowTransform::CASCADE_COUNT * DirectionalShadowTransform::MAX_SHADOW_COUNT];
+		DirectX::SimpleMath::Vector4 CascadeEnds[DirectionalShadowTransform::MAX_SHADOW_COUNT];
+		int ShadowCount;
+		float unused[3];
 	};
 
 	struct AlphaData

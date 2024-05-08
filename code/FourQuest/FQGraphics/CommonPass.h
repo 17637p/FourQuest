@@ -128,7 +128,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowTransform>> mDirectionalShadowTransformCB;
 	};
 
 	class FullScreenPass : public RenderPass
@@ -207,8 +207,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
-		std::shared_ptr<D3D11ConstantBuffer<ShadowTransform>> mShadowViewProjTexCB;
-		std::shared_ptr<D3D11ConstantBuffer<CascadeEnd>> mCascadeEndCB;
+		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 		std::shared_ptr<D3D11ConstantBuffer<AlphaData>> mAlphaDataCB;
 	};
 
@@ -230,7 +229,6 @@ namespace fq::graphics
 		D3D11_VIEWPORT mViewport;
 
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
 		std::shared_ptr<D3D11DepthStencilView> mNullDSV;
 		std::shared_ptr<D3D11ShaderResourceView> mColoraccumulationSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPixelRevealageThresholdSRV;

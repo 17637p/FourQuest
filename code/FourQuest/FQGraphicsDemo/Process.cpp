@@ -108,28 +108,30 @@ bool Process::Init(HINSTANCE hInstance)
 
 	/// Light 초기화 
 	fq::graphics::LightInfo directionalLightInfo;
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1,1,1, 1 };
+	directionalLightInfo.color = { 1, 1, 1, 1 };
 	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 0,-1, 0.1 };
+	directionalLightInfo.direction = { 0,-1, 1 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-	//
-	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	//directionalLightInfo.color = { 1,0,0, 1 };
-	//directionalLightInfo.intensity = 1;
-	//directionalLightInfo.direction = { -1,0,0 };
-	//
-	//mTestGraphics->AddLight(2, directionalLightInfo);
-	//
-	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	//directionalLightInfo.color = { 0,0,1, 1 };
-	//directionalLightInfo.intensity = 1;
-	//directionalLightInfo.direction = { 1, 0,0 };
-	//
-	//mTestGraphics->AddLight(3, directionalLightInfo);
-	//
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1,1,1, 1 };
+	directionalLightInfo.intensity = 1;
+	directionalLightInfo.direction = { 1 ,-1, 0 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(2, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1 ,1, 1 };
+	directionalLightInfo.intensity = 1;
+	directionalLightInfo.direction = { -1, -1, 0 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(3, directionalLightInfo);
 	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	//directionalLightInfo.color = { 1,0,0, 1 };
 	//directionalLightInfo.intensity = 1000;
@@ -141,15 +143,15 @@ bool Process::Init(HINSTANCE hInstance)
 	//
 	//mTestGraphics->AddLight(4, directionalLightInfo);
 	//
-	//fq::graphics::LightInfo pointLightInfo;
-	//pointLightInfo.type = fq::graphics::ELightType::Point;
-	//pointLightInfo.color = { 1, 1, 1, 1 };
-	//pointLightInfo.intensity = 500;
-	//pointLightInfo.range = 10000;
-	//pointLightInfo.attenuation = { 0, 1, 0 };
-	//pointLightInfo.position = { 10.f, 100.f, 0.f };
-	//
-	//mTestGraphics->AddLight(5, pointLightInfo);
+	fq::graphics::LightInfo pointLightInfo;
+	pointLightInfo.type = fq::graphics::ELightType::Point;
+	pointLightInfo.color = { 1, 0, 0, 1 };
+	pointLightInfo.intensity = 500;
+	pointLightInfo.range = 10000;
+	pointLightInfo.attenuation = { 0, 1, 0 };
+	pointLightInfo.position = { 10.f, 100.f, 0.f };
+
+	mTestGraphics->AddLight(5, pointLightInfo);
 
 	return true;
 }
@@ -311,6 +313,7 @@ void Process::Update()
 	}
 
 	mTestGraphics->UpdateCamera(cameraTransform);
+	shadowTest();
 
 	InputManager::GetInstance().Update();
 }
@@ -318,7 +321,7 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
-	debugRender();
+	//debugRender();
 	mTestGraphics->Render();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
@@ -501,6 +504,34 @@ void Process::debugRender()
 		sphererInfo.Color = { 1, 0, 0, 1 };
 		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
 		mTestGraphics->DrawSphere(sphererInfo);
+	}
+}
+
+void Process::shadowTest()
+{
+	if (GetAsyncKeyState('5') & 0x8000)
+	{
+		mTestGraphics->UseShadow(1, true);
+	}
+	else
+	{
+		mTestGraphics->UseShadow(1, false);
+	}
+	if (GetAsyncKeyState('6') & 0x8000)
+	{
+		mTestGraphics->UseShadow(2, true);
+	}
+	else
+	{
+		mTestGraphics->UseShadow(2, false);
+	}
+	if (GetAsyncKeyState('7') & 0x8000)
+	{
+		mTestGraphics->UseShadow(3, true);
+	}
+	else
+	{
+		mTestGraphics->UseShadow(3, false);
 	}
 }
 

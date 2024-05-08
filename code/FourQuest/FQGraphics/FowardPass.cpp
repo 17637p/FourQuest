@@ -48,8 +48,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mShadowViewProjTexCB = std::make_shared< D3D11ConstantBuffer<ShadowTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mCascadeEndCB = std::make_shared< D3D11ConstantBuffer<CascadeEnd>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -60,7 +59,7 @@ namespace fq::graphics
 
 		mBackBufferRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
 		mDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
-		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
+		auto shadowDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3, ShadowPass::SHADOW_SIZE, ShadowPass::SHADOW_SIZE);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
 
 		// 포인트라이트 SRV 생성
@@ -95,8 +94,8 @@ namespace fq::graphics
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
-
 		mModelTexutreCB = nullptr;
+		mDirectioanlShadowInfoCB = nullptr;
 	}
 
 	void ForwardRenderPass::OnResize(unsigned short width, unsigned short height)
@@ -115,51 +114,46 @@ namespace fq::graphics
 
 		// Update
 		{
-			if (mLightManager->GetDirectionalLights().size() != 0)
-			{
-				std::vector<float> cascadeEnds = ShadowPass::CalculateCascadeEnds({ 0.33, 0.66 },
-					mCameraManager->GetNearPlain(ECameraType::Player),
-					mCameraManager->GetFarPlain(ECameraType::Player));
-				std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = ShadowPass::CalculateCascadeShadowTransform(cascadeEnds,
-					mCameraManager->GetViewMatrix(ECameraType::Player),
-					mCameraManager->GetProjectionMatrix(ECameraType::Player),
-					mLightManager->GetDirectionalLights().front()->GetData().direction);
-				assert(shadowTransforms.size() == 3);
+			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
+			DirectionalShadowInfo directionalShadowData;
+			directionalShadowData.ShadowCount = currentDirectionaShadowCount;
 
-				ShadowTransform shadowTransformData;
-				DirectX::SimpleMath::Matrix texTransform =
+			if (currentDirectionaShadowCount > 0)
+			{
+				const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = mLightManager->GetDirectionalShadows();
+
+				for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
 				{
-					 0.5f, 0.0f, 0.0f, 0.0f,
-					 0.0f, -0.5f, 0.0f, 0.0f,
-					 0.0f, 0.0f, 1.0f, 0.0f,
-					 0.5f, 0.5f, 0.0f, 1.0f
-				};
-				shadowTransformData.ShadowViewProj[0] = (shadowTransforms[0] * texTransform).Transpose();
-				shadowTransformData.ShadowViewProj[1] = (shadowTransforms[1] * texTransform).Transpose();
-				shadowTransformData.ShadowViewProj[2] = (shadowTransforms[2] * texTransform).Transpose();
-				mShadowViewProjTexCB->Update(mDevice, shadowTransformData);
+					std::vector<float> cascadeEnds = ShadowPass::CalculateCascadeEnds({ 0.33, 0.66 },
+						mCameraManager->GetNearPlain(ECameraType::Player),
+						mCameraManager->GetFarPlain(ECameraType::Player));
 
-				CascadeEnd cascadeEndData;
-				auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
-				cascadeEndData.CascadeEnds.x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
-				cascadeEndData.CascadeEnds.y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
-				cascadeEndData.CascadeEnds.z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
-				mCascadeEndCB->Update(mDevice, cascadeEndData);
-			}
-			else
-			{
-				ShadowTransform shadowTransformData;
-				shadowTransformData.ShadowViewProj[0] = Matrix::Identity;
-				shadowTransformData.ShadowViewProj[1] = Matrix::Identity;
-				shadowTransformData.ShadowViewProj[2] = Matrix::Identity;
-				mShadowViewProjTexCB->Update(mDevice, shadowTransformData);
+					std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = ShadowPass::CalculateCascadeShadowTransform(cascadeEnds,
+						mCameraManager->GetViewMatrix(ECameraType::Player),
+						mCameraManager->GetProjectionMatrix(ECameraType::Player),
+						directioanlShadows[i]->GetData().direction);
+					assert(shadowTransforms.size() == 3);
 
-				CascadeEnd cascadeEndData;
-				cascadeEndData.CascadeEnds.x = 0;
-				cascadeEndData.CascadeEnds.y = 0;
-				cascadeEndData.CascadeEnds.z = 0;
-				mCascadeEndCB->Update(mDevice, cascadeEndData);
+					DirectX::SimpleMath::Matrix texTransform =
+					{
+						 0.5f, 0.0f, 0.0f, 0.0f,
+						 0.0f, -0.5f, 0.0f, 0.0f,
+						 0.0f, 0.0f, 1.0f, 0.0f,
+						 0.5f, 0.5f, 0.0f, 1.0f
+					};
+					auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
+					size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
+
+					directionalShadowData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
+					directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
+					directionalShadowData.ShadowViewProj[shaodwIndex + 1] = (shadowTransforms[1] * texTransform).Transpose();
+					directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
+					directionalShadowData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2] * texTransform).Transpose();
+					directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
+				}
 			}
+
+			mDirectioanlShadowInfoCB->Update(mDevice, directionalShadowData);
 
 			SceneTrnasform sceneTransform;
 			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
@@ -191,8 +185,7 @@ namespace fq::graphics
 			mMeshPS->Bind(mDevice);
 			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
-			mShadowViewProjTexCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
-			mCascadeEndCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 3);
+			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 			mShadowSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);

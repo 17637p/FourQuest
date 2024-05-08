@@ -77,3 +77,4 @@ namespace fq::graphics
 		device->GetDeviceContext()->PSSetShader(mShader.Get(), NULL, NULL);
 	}
 }
+
