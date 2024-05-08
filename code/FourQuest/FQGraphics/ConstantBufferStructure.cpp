@@ -8,10 +8,10 @@
 namespace fq::graphics
 {
 	void ConstantBufferHelper::UpdateModelTransformCB(const std::shared_ptr<D3D11Device>& device,
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>>& cbuffer,
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>>& cbuffer,
 		const DirectX::SimpleMath::Matrix& transform)
 	{
-		ModelTransfrom modelTransform;
+		ModelTransform modelTransform;
 		modelTransform.WorldMat = transform.Transpose();
 		modelTransform.WorldInvTransposeMat = D3D11Util::InverseTranspose(transform).Transpose();
 		cbuffer->Update(device, modelTransform);

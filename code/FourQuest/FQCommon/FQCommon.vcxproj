@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\FQGraphics\EObjectRenderType.h" />
     <ClInclude Include="FQCommon.h" />
     <ClInclude Include="FQCommonGraphics.h" />
     <ClInclude Include="FQCommonLoader.h" />

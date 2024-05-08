@@ -26,6 +26,9 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 GetPosition() const;
 		DirectX::SimpleMath::Quaternion GetRotation() const;
 
+		float GetNearPlain() const;
+		float GetFarPlain() const;
+
 	private:
 		void makeProjectionMatrix();
 

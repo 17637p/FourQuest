@@ -106,6 +106,9 @@
     <ClInclude Include="D3D11PickingManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11CullingManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
     <ClInclude Include="CommonPass.h">
       <Filter>Pass</Filter>
     </ClInclude>
@@ -115,11 +118,11 @@
     <ClInclude Include="FowardPass.h">
       <Filter>Pass</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11Common.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBufferStructure.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Common.h">
+      <Filter>D3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -157,7 +160,7 @@
       <UniqueIdentifier>{66654c26-2bfd-407b-bbaa-5b2daa0dd1de}</UniqueIdentifier>
     </Filter>
     <Filter Include="Pass">
-      <UniqueIdentifier>{322f8807-5e6a-4c62-b559-53c53be006a8}</UniqueIdentifier>
+      <UniqueIdentifier>{97a8e610-7877-490c-8080-7b0aeb522652}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -230,9 +233,6 @@
     <ClCompile Include="D3D11Util.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Light</Filter>
-    </ClCompile>
     <ClCompile Include="DeferredPipeline.cpp">
       <Filter>Pipeline</Filter>
     </ClCompile>
@@ -248,6 +248,12 @@
     <ClCompile Include="D3D11PickingManager.cpp">
       <Filter>Management</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11CullingManager.cpp">
+      <Filter>Management</Filter>
+    </ClCompile>
     <ClCompile Include="CommonPass.cpp">
       <Filter>Pass</Filter>
     </ClCompile>
@@ -260,11 +266,6 @@
     <ClCompile Include="ConstantBufferStructure.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
-      <Filter>Shader</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
@@ -291,9 +292,21 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
       <Filter>Shader</Filter>
     </CustomBuild>
   </ItemGroup>

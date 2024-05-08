@@ -72,6 +72,9 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(device, ED3D11ConstantBuffer::Transform);
 
 	mDSV = resourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Picking, width, height);
+
+	mBackBufferDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
+	mBackBufferRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
 }
 
 void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects, const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
@@ -181,22 +184,25 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 
 	unsigned int pickedhashColor = GetHashColor(device, x, y);
 
+	void* object = nullptr;
+
 	// static
 	for (auto it = mStaticMeshObjects.begin(); it != mStaticMeshObjects.end(); ++it) {
 		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
-			return it->first;
+			object = it->first;
 		}
 	}
 
 	// skinned
 	for (auto it = mSkinnedMeshObjects.begin(); it != mSkinnedMeshObjects.end(); ++it) {
 		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
-			return it->first;
+			object = it->first;
 		}
 	}
 
-	// picked Object X 
-	return nullptr;
+	EndRender(device);
+
+	return object;
 }
 
 void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11Device>& device,
@@ -267,5 +273,13 @@ void fq::graphics::D3D11PickingManager::OnResize(const short width, const short 
 {
 	mPickingDrawRTV->OnResize(device, ED3D11RenderTargetViewType::Picking, width, height);
 	mDSV->OnResize(device, ED3D11DepthStencilViewType::Picking, width, height);
+}
+
+void fq::graphics::D3D11PickingManager::EndRender(const std::shared_ptr<D3D11Device>& device)
+{
+	mBackBufferRTV->Bind(device, mBackBufferDSV);
+
+	mStaticMeshObjects.clear();
+	mSkinnedMeshObjects.clear();
 }
 
