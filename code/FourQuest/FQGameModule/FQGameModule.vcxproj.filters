@@ -176,6 +176,12 @@
     <ClInclude Include="SoundManager.h">
       <Filter>include\05.Input</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -270,6 +276,12 @@
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

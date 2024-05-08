@@ -9,10 +9,11 @@ namespace fq::game_module
 		RigidBody();
 		~RigidBody();
 
-		/// <summary>
-		/// 복사본을 반환합니다
+		/// <summary>	
+		/// 복사본을 할당해서 반환합니다 
 		/// </summary>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
+
 
 		/// <summary>
 		/// true면 static body, false 는 dynamic body 입니다

@@ -24,9 +24,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사본을 할당해서 반환합니다 
 		/// </summary>
-		/// <param name="clone"></param>
-		/// <returns>복사본</returns>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 
 		/// <summary>
 		/// 로컬 공간 정보를 갱신합니다 

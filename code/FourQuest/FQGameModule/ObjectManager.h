@@ -39,7 +39,6 @@ namespace fq::game_module
 		nlohmann::json saveGameObject(GameObject* object);
 
 		std::shared_ptr<GameObject> loadGameObject(const nlohmann::json& objectData);
-
 	private:
 		fq::reflect::Converter mConverter;
 	};

@@ -151,6 +151,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ComponentPool.h" />
+    <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
@@ -188,6 +190,8 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ComponentPool.cpp" />
+    <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />

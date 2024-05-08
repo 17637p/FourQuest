@@ -19,9 +19,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사본을 할당해서 반환합니다 
 		/// </summary>
-		/// <param name="clone"></param>
-		/// <returns>복사본</returns>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 
 		/// <summary>
 		/// 사운드들을 담은 컨테이너를 반환합니다 

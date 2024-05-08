@@ -30,6 +30,8 @@
 #include "SceneManager.h"
 #include "ObjectManager.h"
 #include "SoundManager.h"
+#include "ObjectPool.h"
+#include "ComponentPool.h"
 
 #include "Collision.h"
 #include "CollisionMatrix.h"
