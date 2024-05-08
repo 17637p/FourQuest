@@ -16,7 +16,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::RigidBody::Clone(st
 
 	if (cloneRigid == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneRigid = ObjectPool::GetInstance()->AssignComponent<RigidBody>(*this);
+		cloneRigid = ObjectPool::GetInstance()->Assign<RigidBody>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{

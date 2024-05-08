@@ -21,7 +21,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::StaticMeshRenderer:
 
 	if (cloneMesh == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneMesh = ObjectPool::GetInstance()->AssignComponent<StaticMeshRenderer>(*this);
+		cloneMesh = ObjectPool::GetInstance()->Assign<StaticMeshRenderer>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{

@@ -2,21 +2,16 @@
 
 fq::game_module::ObjectPool* fq::game_module::ObjectPool::GetInstance()
 {
-	if (ObjectPool::mPool == nullptr)
+	if (ObjectPool::mInstance == nullptr)
 	{
-		ObjectPool::mPool = new ObjectPool();
+		ObjectPool::mInstance = new ObjectPool();
 	}
 
-	return ObjectPool::mPool;
+	return ObjectPool::mInstance;
 }
 
-fq::game_module::ObjectPool::~ObjectPool()
+void fq::game_module::ObjectPool::Finalize()
 {
-
-}
-
-fq::game_module::ObjectPool::ObjectPool()
-{
-
+	delete mInstance;
 }
 

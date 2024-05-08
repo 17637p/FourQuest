@@ -31,7 +31,7 @@
 #include "ObjectManager.h"
 #include "SoundManager.h"
 #include "ObjectPool.h"
-#include "ComponentPool.h"
+#include "Pool.h"
 
 #include "Collision.h"
 #include "CollisionMatrix.h"

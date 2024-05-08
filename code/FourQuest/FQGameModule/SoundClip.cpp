@@ -35,7 +35,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SoundClip::Clone(st
 
 	if (cloneSoundClip == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneSoundClip = ObjectPool::GetInstance()->AssignComponent<SoundClip>(*this);
+		cloneSoundClip = ObjectPool::GetInstance()->Assign<SoundClip>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{

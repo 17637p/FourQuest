@@ -68,7 +68,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Light::Clone(std::s
 
 	if (cloneLight == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneLight = ObjectPool::GetInstance()->AssignComponent<Light>(*this);
+		cloneLight = ObjectPool::GetInstance()->Assign<Light>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{

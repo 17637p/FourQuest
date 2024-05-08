@@ -8,22 +8,21 @@ namespace fq::game_module
 {
 	class Component;
 
-	class IComponentPool
+	class IPool
 	{
 	public:
+		virtual void Clear() abstract;
+		virtual size_t GetSize()const abstract;
 	};
 
 	/// <summary>
 	/// 컴포넌트 풀
 	/// </summary>
 	template <typename T>
-	class ComponentPool : public IComponentPool
+	class Pool : public IPool
 	{
 		using ComponentContainer = std::vector<std::shared_ptr<T>>;
 	public:
-		ComponentPool(){}
-		~ComponentPool(){}
-
 		/// <summary>
 		/// 새로운 컴포넌트를 풀에서 가져옵니다 
 		/// </summary>
@@ -49,12 +48,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 풀사이즈를 반환합니다 
 		/// </summary>
-		size_t GetSize()const { return mContainer.size(); }
+		size_t GetSize()const override { return mContainer.size(); }
 
 		/// <summary>
 		/// 풀을 초기화합니다 
 		/// </summary>
-		void Clear() { mContainer.clear(); }
+		void Clear() override { mContainer.clear(); }
 
 	private:
 		ComponentContainer mContainer;

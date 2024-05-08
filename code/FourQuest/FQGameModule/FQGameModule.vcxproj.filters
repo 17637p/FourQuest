@@ -179,7 +179,7 @@
     <ClInclude Include="ObjectPool.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentPool.h">
+    <ClInclude Include="Pool.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
   </ItemGroup>
@@ -280,7 +280,7 @@
     <ClCompile Include="ObjectPool.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentPool.cpp">
+    <ClCompile Include="Pool.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>

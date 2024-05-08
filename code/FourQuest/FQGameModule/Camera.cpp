@@ -26,7 +26,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Camera::Clone(std::
 
 	if (cloneCamera == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneCamera = ObjectPool::GetInstance()->AssignComponent<Camera>(*this);
+		cloneCamera = ObjectPool::GetInstance()->Assign<Camera>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
