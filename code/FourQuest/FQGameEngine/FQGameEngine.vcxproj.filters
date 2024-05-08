@@ -57,9 +57,6 @@
     <Filter Include="src\01.Engine">
       <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Test">
-      <UniqueIdentifier>{5b42f24e-09ee-48d8-a850-1e29f137c3a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\11.EditorWindow">
       <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
     </Filter>
@@ -158,8 +155,8 @@
     <ClInclude Include="DebugSystem.h">
       <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Test.h">
-      <Filter>Test</Filter>
+    <ClInclude Include="SoundSystem.h">
+      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -253,8 +250,13 @@
     <ClCompile Include="DebugSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Test.cpp">
       <Filter>Test</Filter>
+=======
+    <ClCompile Include="SoundSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+>>>>>>> PrefabInstance
     </ClCompile>
   </ItemGroup>
 </Project>

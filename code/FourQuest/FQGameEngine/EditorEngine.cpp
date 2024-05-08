@@ -43,6 +43,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get());
+	mGameProcess->mSoundManager->Initialize();
 
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
@@ -64,7 +65,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
- 	InitializeEditor();
+	InitializeEditor();
 
 	// Scene 로드 
 	mGameProcess->mSceneManager->LoadScene();
@@ -95,7 +96,7 @@ void fq::game_engine::EditorEngine::Process()
 				mGameProcess->mWindowSystem->OnResize();
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
-				unsigned short hegiht =std::max(mGameProcess->mWindowSystem->GetScreenHeight(),1u);
+				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 
@@ -152,10 +153,12 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
+	mEditor->mInspector->Finalize();
 
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();
+	fq::game_module::ObjectPool::Finalize();
 
 	mGameProcess->mGraphics->Finalize();
 	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);

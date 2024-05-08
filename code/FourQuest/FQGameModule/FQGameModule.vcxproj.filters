@@ -164,6 +164,12 @@
     <ClInclude Include="Collision.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Pool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -253,5 +259,32 @@
     <ClCompile Include="Collision.cpp">
       <Filter>src\07.Physics</Filter>
     </ClCompile>
+<<<<<<< HEAD
+=======
+    <ClCompile Include="SoundClip.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Pool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+>>>>>>> PrefabInstance
   </ItemGroup>
 </Project>

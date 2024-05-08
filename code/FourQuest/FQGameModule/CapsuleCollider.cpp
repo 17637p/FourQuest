@@ -13,19 +13,20 @@ fq::game_module::CapsuleCollider::~CapsuleCollider()
 
 }
 
-fq::game_module::Component* fq::game_module::CapsuleCollider::Clone(Component* clone /* = nullptr */) const
+std::shared_ptr<fq::game_module::Component> fq::game_module::CapsuleCollider::Clone(std::shared_ptr<Component> clone /*= nullptr*/) const
 {
-	CapsuleCollider* cloneCollider = static_cast<CapsuleCollider*>(clone);
+	auto cloneCollider = std::dynamic_pointer_cast<CapsuleCollider>(clone);
 
 	if (cloneCollider == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneCollider = new CapsuleCollider(*this);
+		cloneCollider = ObjectPool::GetInstance()->Assign<CapsuleCollider>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
-		// 기본 대입 연산자 호출한다.
 		*cloneCollider = *this;
 	}
+
+	cloneCollider->mCapsuleInfomation.colliderInfo.id = fq::physics::unregisterID;
 
 	return cloneCollider;
 }
@@ -42,7 +43,7 @@ float fq::game_module::CapsuleCollider::GetRadius() const
 
 void fq::game_module::CapsuleCollider::SetRadius(float radius)
 {
-	mCapsuleInfomation.raidus = max(0.0001f,radius);
+	mCapsuleInfomation.raidus = std::max(0.0001f,radius);
 }
 
 void fq::game_module::CapsuleCollider::SetHalfHegiht(float halfHegiht)

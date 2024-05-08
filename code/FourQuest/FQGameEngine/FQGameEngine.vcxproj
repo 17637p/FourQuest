@@ -176,7 +176,11 @@
     <ClInclude Include="ModelSystem.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="EditorEngine.h" />
+<<<<<<< HEAD
     <ClInclude Include="Test.h" />
+=======
+    <ClInclude Include="SoundSystem.h" />
+>>>>>>> PrefabInstance
     <ClInclude Include="WindowSystem.h" />
     <ClInclude Include="WndProc.h" />
   </ItemGroup>
@@ -209,7 +213,11 @@
     <ClCompile Include="ModelSystem.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />
     <ClCompile Include="EditorEngine.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="Test.cpp" />
+=======
+    <ClCompile Include="SoundSystem.cpp" />
+>>>>>>> PrefabInstance
     <ClCompile Include="WindowSystem.cpp" />
     <ClCompile Include="WndProc.cpp" />
   </ItemGroup>

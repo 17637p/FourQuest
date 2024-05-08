@@ -20,19 +20,19 @@ fq::game_module::Camera::~Camera()
 
 }
 
-fq::game_module::Component* fq::game_module::Camera::Clone(Component* clone /* = nullptr */) const
+std::shared_ptr<fq::game_module::Component> fq::game_module::Camera::Clone(std::shared_ptr<Component> clone /*= nullptr*/) const
 {
-	Camera* cloneCamera = static_cast<Camera*>(clone);
+	auto cloneCamera = std::dynamic_pointer_cast<Camera>(clone);
 
 	if (cloneCamera == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneCamera = new Camera(*this);
+		cloneCamera = ObjectPool::GetInstance()->Assign<Camera>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
-		// 기본 대입 연산자 호출한다.
 		*cloneCamera = *this;
 	}
+
 	return cloneCamera;
 }
 

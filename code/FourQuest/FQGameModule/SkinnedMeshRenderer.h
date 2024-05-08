@@ -13,9 +13,9 @@ namespace fq::game_module
 		~SkinnedMeshRenderer();
 
 		/// <summary>
-		/// 복사본을 반환합니다
+		/// 복사본을 할당해서 반환합니다 
 		/// </summary>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 
 		/// <summary>
 		/// 스키닝 메쉬를 반환합니다 
