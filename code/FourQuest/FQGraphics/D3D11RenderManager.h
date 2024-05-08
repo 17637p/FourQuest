@@ -23,11 +23,9 @@ namespace fq::graphics
 	class D3D11IndexBuffer;
 	class ForwardPipeline;
 	class DeferredPipeline;
-	class D3D11DebugDrawManager;
 	class D3D11CameraManager;
 	class D3D11LightManager;
 	class D3D11JobManager;
-	class D3D11DebugDrawManager;
 
 	class D3D11RenderManager
 	{
@@ -40,7 +38,6 @@ namespace fq::graphics
 			std::shared_ptr<D3D11CameraManager> cameraManager,
 			std::shared_ptr< D3D11LightManager> lightManager,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
-			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			unsigned short width,
 			unsigned short height,
 			EPipelineType pipelineType);
@@ -50,6 +47,7 @@ namespace fq::graphics
 
 		void BeginRender();
 		void Render();
+		void RenderBackBuffer();
 		void EndRender();
 
 		void SetSkyBox(const std::wstring& path);

@@ -47,16 +47,6 @@ DirectX::SimpleMath::Quaternion fq::graphics::D3D11CameraManager::GetRotation(co
 	return mCameras.at(ECameraType::Player)->GetRotation();
 }
 
-float fq::graphics::D3D11CameraManager::GetNearPlain(const ECameraType& cameraType) const
-{
-	return mCameras.at(ECameraType::Player)->GetNearPlain();
-}
-
-float fq::graphics::D3D11CameraManager::GetFarPlain(const ECameraType& cameraType) const
-{
-	return mCameras.at(ECameraType::Player)->GetFarPlain();
-}
-
 void fq::graphics::D3D11CameraManager::Initialize(const unsigned short width, const unsigned short height)
 {
 	OnResize(width, height);

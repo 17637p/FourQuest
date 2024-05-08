@@ -106,6 +106,7 @@ void fq::game_module::SceneManager::PostUpdate()
 	if (!mNextSceneName.empty())
 	{
 		ChangeScene(mNextSceneName);
+		StartScene();
 
 		mNextSceneName.clear();
 	}

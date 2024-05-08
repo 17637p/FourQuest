@@ -32,7 +32,6 @@ namespace fq::loader
 			aiProcess_GenUVCoords |
 			aiProcess_CalcTangentSpace |
 			aiProcess_LimitBoneWeights |
-			aiProcess_GenBoundingBoxes |
 			aiProcess_ConvertToLeftHanded;
 
 		mAiScene = mImpoter->ReadFile(path.string(), importFlags);
@@ -250,7 +249,6 @@ namespace fq::loader
 
 	fq::common::Mesh ModelConverter::parseMesh(aiNode* aiNode)
 	{
-		using namespace DirectX::SimpleMath;
 		using namespace fq::common;
 
 		if (aiNode->mNumMeshes == 0)
@@ -284,9 +282,7 @@ namespace fq::loader
 		resultMesh.Name = meshName;
 		resultMesh.NodeName = aiNode->mName.C_Str();
 		resultMesh.Vertices.reserve(vertexSize);
-
-		Vector3 min;
-		Vector3 max;
+		resultMesh.Indices.reserve(indexSize);
 
 		for (aiMesh* aiMeshPtr : aiSubMeshes)
 		{
@@ -295,12 +291,6 @@ namespace fq::loader
 
 			vertices.reserve(aiMeshPtr->mNumVertices);
 			indices.reserve(aiMeshPtr->mNumFaces * 3);
-
-			Vector3 meshMin = { aiMeshPtr->mAABB.mMin.x, aiMeshPtr->mAABB.mMin.y, aiMeshPtr->mAABB.mMin.z };
-			Vector3 meshMax = { aiMeshPtr->mAABB.mMax.x,  aiMeshPtr->mAABB.mMax.y,  aiMeshPtr->mAABB.mMax.z };
-
-			min = Vector3::Min(min, meshMin);
-			max = Vector3::Max(max, meshMax);
 
 			for (unsigned int i = 0; i < aiMeshPtr->mNumVertices; ++i)
 			{
@@ -358,9 +348,6 @@ namespace fq::loader
 			resultMesh.Vertices.insert(resultMesh.Vertices.end(), vertices.begin(), vertices.end());
 			resultMesh.Indices.insert(resultMesh.Indices.end(), indices.begin(), indices.end());
 		}
-
-		DirectX::BoundingBox::CreateFromPoints(resultMesh.RenderBoundingBox, min, max);
-		DirectX::BoundingSphere::CreateFromBoundingBox(resultMesh.GetRenderBoundingSphere, resultMesh.RenderBoundingBox);
 
 		return resultMesh;
 	}

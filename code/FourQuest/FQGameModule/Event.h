@@ -102,22 +102,4 @@ namespace fq::event
 		entt::id_type id;
 		fq::game_module::Component* component;
 	};
-
-
-	//////////////////////////////////////////////////////////////////////////
-	//							Sound Event									// 
-	//////////////////////////////////////////////////////////////////////////
-
-	struct OnPlaySound
-	{
-		std::string path;
-		bool bIsLoop;
-		unsigned int channelIndex;
-	};
-
-	struct OnStopChannel
-	{
-		unsigned int channelIndex;
-	};
-
 }

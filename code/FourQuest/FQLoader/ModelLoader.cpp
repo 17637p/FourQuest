@@ -1,7 +1,4 @@
 #include "pch.h"
-
-#include <DirectXCollision.h>
-
 #include "ModelLoader.h"
 #include "FileUtil.h"
 
@@ -112,9 +109,6 @@ namespace fq::loader
 
 				mesh.Subsets.push_back(subset);
 			}
-
-			fileUtil.Read<DirectX::BoundingBox>(&mesh.RenderBoundingBox);
-			fileUtil.Read<DirectX::BoundingSphere>(&mesh.GetRenderBoundingSphere);
 
 			modelData.push_back({ std::move(node), std::move(mesh) });
 		}
@@ -253,9 +247,6 @@ namespace fq::loader
 				fileUtil.Write<unsigned int>(subset.IndexCount);
 				fileUtil.Write<string>(subset.MaterialName);
 			}
-
-			fileUtil.Write<DirectX::BoundingBox>(mesh.RenderBoundingBox);
-			fileUtil.Write<DirectX::BoundingSphere>(mesh.GetRenderBoundingSphere);
 		}
 	}
 	void ModelLoader::WriteMaterialByData(const std::vector<fq::common::Material>& materialData, FileUtil& fileUtil)

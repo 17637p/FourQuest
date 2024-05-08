@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <directxtk/SimpleMath.h>
-#include <DirectXCollision.h>
 
 class aiMesh;
 
@@ -54,8 +53,8 @@ namespace fq::common
 			}
 		};
 
-		struct Subset
-		{
+		struct Subset 
+		{ 
 			unsigned int VertexStart = 0u;
 			unsigned int VertexCount = 0u;
 			unsigned int IndexStart = 0u;
@@ -74,9 +73,6 @@ namespace fq::common
 
 		std::vector<Bone> Bones;
 		std::vector<Subset> Subsets;
-
-		DirectX::BoundingBox RenderBoundingBox;
-		DirectX::BoundingSphere GetRenderBoundingSphere;
 	};
 
 	struct Material
@@ -126,7 +122,5 @@ namespace fq::common
 		std::vector<std::pair<Node, Mesh>> Meshes;
 		std::vector<AnimationClip> Animations;
 		std::vector<Material> Materials;
-		DirectX::BoundingBox RenderBoundingBox;
-		DirectX::BoundingSphere GetRenderBoundingSphere;
 	};
 }

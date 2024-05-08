@@ -74,12 +74,9 @@ namespace fq::graphics
 		virtual void UpdateLight(const unsigned int id, const LightInfo& lightInfo) override;
 		virtual void DeleteLight(const unsigned int id) override;
 
-		virtual void UseShadow(const unsigned int id, bool bUseShadow);
-
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
 		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
-		virtual void UpdateColCamera(const fq::common::Transform& cameraTransform) override;
 
 		/// Picking
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
@@ -104,7 +101,6 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
-		std::shared_ptr<class D3D11CullingManager> mCullingManager;
 	};
 }
 

@@ -25,9 +25,7 @@ namespace fq::graphics
 			job.TransformPtr = &staticMeshObject->GetTransform();
 			job.Material = materials[i];
 			job.StaticMesh = staticMesh;
-			job.ObjectRenderType = staticMeshObject->GetObjectRenderType();
-			job.Alpha = staticMeshObject->GetAlpha();
-			job.bUseShadow = staticMeshObject->GetUseShadow();
+
 			job.tempObject = staticMeshObject;
 
 			mStaticMeshJobs.push_back(job);
@@ -47,7 +45,7 @@ namespace fq::graphics
 		const std::vector<std::shared_ptr<Material>> materials = skinnedMeshObject->GetMaterials();
 		const fq::common::Mesh& meshData = skinnedMesh->GetMeshData();
 		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms = skinnedMeshObject->GetFinalTransforms();
-
+	
 		assert(meshData.Subsets.size() <= materials.size());
 
 		for (size_t i = 0; i < meshData.Subsets.size(); ++i)
@@ -58,9 +56,7 @@ namespace fq::graphics
 			job.Material = materials[i];
 			job.SkinnedMesh = skinnedMesh;
 			job.BoneMatricesPtr = &finalTransforms;
-			job.ObjectRenderType = skinnedMeshObject->GetObjectRenderType();
-			job.Alpha = skinnedMeshObject->GetAlpha();
-			job.bUseShadow = skinnedMeshObject->GetUseShadow();
+
 			job.tempObject = skinnedMeshObject;
 
 			mSkinnedMeshJobs.push_back(job);

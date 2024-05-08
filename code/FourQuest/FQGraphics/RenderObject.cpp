@@ -9,11 +9,13 @@ namespace fq::graphics
 		: mStaticMesh(staticMesh)
 		, mMaterials(materials)
 		, mTransform(transform)
-		, mObjectRenderType(EObjectRenderType::Opaque)
-		, mAlpha(1.f)
-		, mbUseShadow(true)
 	{
 	}
+	void StaticMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<Material>> materials,
 		DirectX::SimpleMath::Matrix transform,
@@ -22,9 +24,6 @@ namespace fq::graphics
 		, mMaterials(materials)
 		, mTransform(transform)
 		, mBoneHierarchyCache(boneHierarchyCache)
-		, mObjectRenderType(EObjectRenderType::Opaque)
-		, mAlpha(1.f)
-		, mbUseShadow(true)
 	{
 	}
 }

@@ -33,9 +33,6 @@
     <ClInclude Include="FQCommonPhysics.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\FQGraphics\EObjectRenderType.h">
-      <Filter>Grphiacs</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp">

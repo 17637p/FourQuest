@@ -83,6 +83,17 @@ namespace fq::game_module
 		void SetConvexPolygonLimit(unsigned char limit);
 
 		/// <summary>
+		/// 컨벡스 메시에 생성할 폴리곤 최대 갯수를 반환합니다
+		/// </summary>
+		/// <returns></returns>
+		unsigned char GetConvexVertexLimit()const;
+
+		/// <summary>
+		/// 컨벡스 메시에 생성할 폴리곤 최대 갯수를 설정합니다
+		/// </summary>
+		void SetConvexVertexLimit(unsigned char limit);
+
+		/// <summary>
 		/// 컨벡스 메쉬에 대한 정보를 반환합니다 
 		/// </summary>
 		ConvexMeshInfo GetConvexMeshInfomation()const { return mConvexMeshInfomation; }

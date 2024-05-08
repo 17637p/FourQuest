@@ -40,7 +40,7 @@ namespace fq::reflect
 		 
 		void ParseMemberToJson(const entt::meta_data& metaData, const entt::meta_any& object, nlohmann::json& outJson);
 		
-		void ParseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson, const entt::meta_data& metaData);
+		void ParseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson);
 
 		void ParseAssociativeContainer(const entt::meta_any& key, const entt::meta_any& value, nlohmann::json& outJson);
 

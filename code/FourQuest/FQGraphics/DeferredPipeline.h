@@ -13,7 +13,6 @@ namespace fq::graphics
 	class D3D11LightManager;
 	class D3D11JobManager;
 	class D3D11RenderTargetView;
-	class D3D11DebugDrawManager;
 	class D3D11DepthStencilView;
 
 	class DeferredPipeline
@@ -27,7 +26,6 @@ namespace fq::graphics
 			std::shared_ptr<D3D11CameraManager>& cameraManager,
 			std::shared_ptr< D3D11LightManager>& lightManager,
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
-			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize();
@@ -36,6 +34,7 @@ namespace fq::graphics
 
 		void BeginRender();
 		void Render();
+		void RenderBackBuffer();
 		void EndRender();
 
 		void SetSkyBox(const std::wstring& path);
@@ -50,11 +49,8 @@ namespace fq::graphics
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class DeferredGeometryPass> mGeometryPass;
 		std::shared_ptr<class DeferredShadingPass> mShadingPass;
-		std::shared_ptr<class TransparentRenderPass> mTransparentRenderPass;
-		std::shared_ptr<class TransparentCompositePass> mTransparentCompositePass;
-		std::shared_ptr<class DebugRenderPass> mDebugRenderPass;
-		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
+		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
@@ -67,6 +63,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
+		std::shared_ptr<D3D11RenderTargetView> mShadowRatioRTV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
@@ -74,6 +71,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mShadowRatioSRV;
 	};
 }
 

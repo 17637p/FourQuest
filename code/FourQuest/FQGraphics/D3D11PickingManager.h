@@ -61,8 +61,6 @@ namespace fq::graphics
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects);
 		void OnResize(const short width, const short height, const std::shared_ptr<D3D11Device>& device);
 
-		void EndRender(const std::shared_ptr<D3D11Device>& device);
-
 	private:
 		// 1. 오브젝트 마다 해쉬 컬러 정하기
 		// 일단은 그냥 오브젝트 전부를 받는데 컬링 하고 나면 이렇게 전부 받을 필요 없다.
@@ -113,10 +111,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
 		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
 		std::shared_ptr<D3D11PixelShader> mMeshPS;
-
-		// 마무리를 위한 렌더타겟과 뎁스스텐실뷰
-		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11DepthStencilView> mBackBufferDSV;
 	};
 
 	// 1. 오브젝트 마다 해쉬 컬러 정하기

@@ -63,12 +63,6 @@
     <Filter Include="src\07.Physics">
       <UniqueIdentifier>{46982d69-3c1d-4224-877b-4ebd2d652872}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\01.EntityComponent\Graphics">
-      <UniqueIdentifier>{34e035ca-cf74-450f-b506-3d731aa5bc6f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\01.EntityComponent\Graphics">
-      <UniqueIdentifier>{03c7b1cc-2fb8-435a-a4d9-ca9f80bc4d16}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -137,6 +131,15 @@
     <ClInclude Include="GameModuleRegister.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshRenderer.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMeshRenderer.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
     <ClInclude Include="BoxCollider.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
@@ -155,26 +158,11 @@
     <ClInclude Include="CollisionMatrix.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Collision.h">
-      <Filter>include\07.Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundClip.h">
+    <ClInclude Include="Light.h">
       <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
-    <ClInclude Include="StaticMeshRenderer.h">
-      <Filter>include\01.EntityComponent\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>include\01.EntityComponent\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinnedMeshRenderer.h">
-      <Filter>include\01.EntityComponent\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>include\01.EntityComponent\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundManager.h">
-      <Filter>include\05.Input</Filter>
+    <ClInclude Include="Collision.h">
+      <Filter>include\07.Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +220,15 @@
     <ClCompile Include="GameModuleRegister.cpp">
       <Filter>src\00.Define</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
@@ -250,26 +247,11 @@
     <ClCompile Include="CollisionMatrix.cpp">
       <Filter>src\07.Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Collision.cpp">
-      <Filter>src\07.Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundClip.cpp">
+    <ClCompile Include="Light.cpp">
       <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
-    <ClCompile Include="SkinnedMeshRenderer.cpp">
-      <Filter>src\01.EntityComponent\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticMeshRenderer.cpp">
-      <Filter>src\01.EntityComponent\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>src\01.EntityComponent\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>src\01.EntityComponent\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
-      <Filter>src\05.Input</Filter>
+    <ClCompile Include="Collision.cpp">
+      <Filter>src\07.Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

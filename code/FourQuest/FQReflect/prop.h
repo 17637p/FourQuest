@@ -16,10 +16,6 @@ namespace fq::reflect::prop
 	// 읽기 전용
 	constexpr static entt::hashed_string ReadOnly = entt::hashed_string("read_only");
 
-	// 리소스 드래그 드랍 설정 
-	// value를 ".mp3/.wav"로 설정하면 mp3, wav 파일을 드래그 드랍 받기 가능합니다 
-	constexpr static entt::hashed_string DragDrop = entt::hashed_string("drag_drop");
-
 	// ??
 	constexpr static entt::hashed_string Label = entt::hashed_string("label"); 
 }

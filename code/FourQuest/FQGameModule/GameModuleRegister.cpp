@@ -13,7 +13,6 @@
 #include "SphereCollider.h"
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
-#include "SoundClip.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -99,7 +98,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeshName")
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
-		.prop(fq::reflect::prop::ReadOnly)
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -113,7 +111,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeshName")
 		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
-		.prop(fq::reflect::prop::ReadOnly)
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -233,6 +230,7 @@ void fq::game_module::RegisterMetaData()
 
 
 	// MeshCollider
+		// CapsuleCollider
 	entt::meta<MeshCollider>()
 		.type("MeshCollider"_hs)
 		.prop(fq::reflect::prop::Name, "MeshCollider")
@@ -250,17 +248,4 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PolygonLimit")
 		.base<Component>();
 
-	//////////////////////////////////////////////////////////////////////////
-	//                              Sound                                   //
-	//////////////////////////////////////////////////////////////////////////
-
-	entt::meta<SoundClip>()
-		.type("SoundClip"_hs)
-		.prop(fq::reflect::prop::Name, "SoundClip")
-		.data<&SoundClip::SetSounds, &SoundClip::GetSounds>("Sounds"_hs)
-		.prop(fq::reflect::prop::Name, "Sounds")
-		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
-		.prop(fq::reflect::prop::RelativePath)
-		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
-		.base<Component>();
 }
