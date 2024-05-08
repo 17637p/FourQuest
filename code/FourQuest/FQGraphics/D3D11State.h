@@ -42,6 +42,7 @@ namespace fq::graphics
 		static std::string GenerateRID(const ED3D11RasterizerState eStateType);
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void UnBind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	private:
 		ComPtr<ID3D11RasterizerState> mState;
@@ -59,6 +60,7 @@ namespace fq::graphics
 		static std::string GenerateRID(const ED3D11DepthStencilState eStateType);
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void UnBind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	private:
 		ComPtr<ID3D11DepthStencilState> mState;

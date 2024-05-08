@@ -158,6 +158,11 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 	HR(device->CreateRasterizerState(&rasterizerDesc, mState.GetAddressOf()));
 }
 
+void D3D11RasterizerState::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	d3d11Device->GetDeviceContext()->RSSetState(nullptr);
+}
+
 std::string D3D11RasterizerState::GenerateRID(const ED3D11RasterizerState eStateType)
 {
 	return typeid(D3D11RasterizerState).name() + std::to_string(static_cast<int>(eStateType));
@@ -219,6 +224,11 @@ fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_p
 	}
 
 	HR(device->CreateDepthStencilState(&depthStencilDesc, mState.GetAddressOf()));
+}
+
+void D3D11DepthStencilState::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	d3d11Device->GetDeviceContext()->OMSetDepthStencilState(nullptr, 0);
 }
 
 std::string D3D11DepthStencilState::GenerateRID(const ED3D11DepthStencilState eStateType)

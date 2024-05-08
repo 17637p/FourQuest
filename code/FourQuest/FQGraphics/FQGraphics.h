@@ -77,6 +77,7 @@ namespace fq::graphics
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
 		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
+		virtual void UpdateColCamera(const fq::common::Transform& cameraTransform) override;
 
 		/// Picking
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
@@ -101,6 +102,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
+		std::shared_ptr<class D3D11CullingManager> mCullingManager;
 	};
 }
 
