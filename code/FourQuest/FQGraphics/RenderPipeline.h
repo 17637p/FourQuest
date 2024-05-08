@@ -22,7 +22,6 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		virtual	void Finalize();
-
 		virtual void OnResize(unsigned short width, unsigned short height);
 
 		virtual void BeginRender();

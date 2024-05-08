@@ -32,7 +32,6 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		void Finalize();
-
 		void OnResize(unsigned short width, unsigned short height);
 
 		void SetSkyBox(const std::wstring& path);

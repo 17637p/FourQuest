@@ -204,133 +204,157 @@
     <Filter Include="Pass\Common">
       <UniqueIdentifier>{889ed25c-ef20-4220-888b-b52dee6d08d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource\Source">
+      <UniqueIdentifier>{d745c4c7-c2a3-4639-8d5f-08e06ea7bd0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pipeline\Source">
+      <UniqueIdentifier>{e690574b-9134-46e4-98e3-2db65ea3b2af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pass\PipelineIndependentPass\Source">
+      <UniqueIdentifier>{864379e6-f4a6-4723-a454-37c0fca263ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pass\DeferredPipelinePass\Source">
+      <UniqueIdentifier>{c5106147-5025-4352-ae5c-cb83425dbedb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Management\Source">
+      <UniqueIdentifier>{c7df1768-221d-429a-89eb-266bc28f71f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface\Source">
+      <UniqueIdentifier>{ab28085f-c2bd-40c8-aecf-62403fba26aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11\Source">
+      <UniqueIdentifier>{4ac7734e-88ea-4fe9-8f94-3fd8b76c1c79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Source">
+      <UniqueIdentifier>{51c71a07-0194-40f7-b0b2-3f398fe65888}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D11State.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11Device.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11View.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11ResourceManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceBase.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="FQGraphics.cpp">
-      <Filter>Interface</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11Buffer.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11Texture.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="IFQGraphics.cpp">
-      <Filter>Interface</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11TextManager.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Resource</Filter>
     </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>Object</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11ObjectManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11Shader.cpp">
-      <Filter>D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11JobManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11RenderManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11CameraManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11LightManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationHelper.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="BoneHierarchy.cpp">
-      <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11Util.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredPipeline.cpp">
-      <Filter>Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="ForwardPipeline.cpp">
-      <Filter>Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11ModelManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11DebugDrawManager.h.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11PickingManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11CullingManager.cpp">
-      <Filter>Management</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantBufferStructure.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPipeline.cpp">
-      <Filter>Pipeline</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredPass.cpp">
-      <Filter>Pass\DeferredPipelinePass</Filter>
-    </ClCompile>
     <ClCompile Include="FowardRenderPass.cpp">
       <Filter>Pass\ForwardPipelinePass</Filter>
     </ClCompile>
-    <ClCompile Include="SkyBoxPass.cpp">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+    <ClCompile Include="BoneHierarchy.cpp">
+      <Filter>Resource\Source</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowPass.cpp">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+    <ClCompile Include="Material.cpp">
+      <Filter>Resource\Source</Filter>
     </ClCompile>
-    <ClCompile Include="FullScreenPass.cpp">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Resource\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredPipeline.cpp">
+      <Filter>Pipeline\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ForwardPipeline.cpp">
+      <Filter>Pipeline\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPipeline.cpp">
+      <Filter>Pipeline\Source</Filter>
     </ClCompile>
     <ClCompile Include="DebugRenderPass.cpp">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="FullScreenPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="TransparentCompositePass.cpp">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="TransparentRenderPass.cpp">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
-    <ClCompile Include="DeferredGeometryPass.cpp">
-      <Filter>Pass\DeferredPipelinePass</Filter>
+    <ClCompile Include="DeferredPass.cpp">
+      <Filter>Pass\DeferredPipelinePass\Source</Filter>
     </ClCompile>
     <ClCompile Include="DeferredShadingPass.cpp">
-      <Filter>Pass\DeferredPipelinePass</Filter>
+      <Filter>Pass\DeferredPipelinePass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredGeometryPass.cpp">
+      <Filter>Pass\DeferredPipelinePass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11JobManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11DebugDrawManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11CullingManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11CameraManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11LightManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ModelManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ObjectManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11PickingManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11RenderManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ResourceManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="IFQGraphics.cpp">
+      <Filter>Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="FQGraphics.cpp">
+      <Filter>Interface\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Buffer.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Device.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Shader.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11State.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11TextManager.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Texture.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11View.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBase.cpp">
+      <Filter>D3D11\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationHelper.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferStructure.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Util.cpp">
+      <Filter>Common\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
