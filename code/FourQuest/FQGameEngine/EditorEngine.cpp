@@ -15,6 +15,7 @@
 #include "RenderingSystem.h"
 #include "LightSystem.h"
 #include "PhysicsSystem.h"
+#include "SoundSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -46,7 +47,6 @@ void fq::game_engine::EditorEngine::Initialize()
 	
 	mGameProcess->mSoundManager->Initialize();
 
-
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
@@ -65,6 +65,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
+	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
  	InitializeEditor();

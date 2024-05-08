@@ -14,15 +14,25 @@ void fq::game_engine::SoundSystem::Initialize(fq::game_engine::GameProcess* game
 	mOnUnloadSceneHandler = mEventManager->
 		RegisterHandle<fq::event::OnUnloadScene>(this, &SoundSystem::OnUnLoadScene);
 
-	mOnAddGameObjectHandler = mEventManager->
-		RegisterHandle<fq::event::AddGameObject>(this, &SoundSystem::OnAddGameObject);
+	mOnStopChannelHandler = mEventManager->
+		RegisterHandle<fq::event::OnStopChannel>(this, &SoundSystem::OnStopChannel);
 
-	mAddComponentHandler = mEventManager->
-		RegisterHandle<fq::event::AddComponent>(this, &SoundSystem::AddComponent);
+	mOnPlaySoundHandler = mEventManager->
+		RegisterHandle<fq::event::OnPlaySound>(this, &SoundSystem::OnPlaySound);
 }
 
 void fq::game_engine::SoundSystem::OnLoadScene(const fq::event::OnLoadScene event)
 {
+	mScene->ViewComponents<fq::game_module::SoundClip>(
+		[this](fq::game_module::GameObject& object, fq::game_module::SoundClip& clip)
+		{
+			auto sounds = clip.GetSounds();
+			for (auto& sound : sounds)
+			{
+				mSoundManager->LoadSound(sound);
+			}
+		}
+	);
 
 	mbIsGameLoaded = true;
 }
@@ -34,12 +44,12 @@ void fq::game_engine::SoundSystem::OnUnLoadScene()
 	mbIsGameLoaded = false;
 }
 
-void fq::game_engine::SoundSystem::OnAddGameObject(const fq::event::AddGameObject& event)
+void fq::game_engine::SoundSystem::OnPlaySound(fq::event::OnPlaySound event)
 {
-
+	mSoundManager->Play(event.path, event.bIsLoop, event.channelIndex);
 }
 
-void fq::game_engine::SoundSystem::AddComponent(const fq::event::AddComponent& event)
+void fq::game_engine::SoundSystem::OnStopChannel(fq::event::OnStopChannel event)
 {
-
+	mSoundManager->StopChannel(event.channelIndex);
 }

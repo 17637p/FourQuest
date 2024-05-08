@@ -8,6 +8,7 @@
 #include "CameraSystem.h"
 #include "PhysicsSystem.h"
 #include "LightSystem.h"
+#include "SoundSystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -21,6 +22,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mCameraSystem(std::make_unique<CameraSystem>())
 	, mPhysicsSystem(std::make_unique<PhysicsSystem>())
 	, mLightSystem(std::make_unique<LightSystem>())
+	, mSoundSystem(std::make_unique<SoundSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

@@ -23,26 +23,18 @@ namespace fq::game_engine
 		/// </summary>
 		void OnUnLoadScene();
 
-		/// <summary>
-		/// 게임오브젝트 추가 이벤트
-		/// </summary>
-		void OnAddGameObject(const fq::event::AddGameObject& event);
+		void OnPlaySound(fq::event::OnPlaySound event);
 
-		/// <summary>
-		/// AddComponent 이벤트 처리
-		/// </summary>
-		void AddComponent(const fq::event::AddComponent& event);
-
-
+		void OnStopChannel(fq::event::OnStopChannel event);
 	private:
 		fq::game_module::Scene* mScene;
 		fq::game_module::SoundManager* mSoundManager;
 		fq::game_module::EventManager* mEventManager;
 
-		EventHandler mAddComponentHandler;
-		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
-		EventHandler mOnAddGameObjectHandler;
+		EventHandler mOnLoadSceneHandler;
+		EventHandler mOnPlaySoundHandler;
+		EventHandler mOnStopChannelHandler;
 
 		bool mbIsGameLoaded;
 	};

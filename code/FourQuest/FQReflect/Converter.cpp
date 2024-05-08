@@ -159,7 +159,7 @@ void fq::reflect::Converter::ParseMemberToJson(const entt::meta_data& metaData
 		for (const entt::meta_any& element : view)
 		{
 			entt::meta_type elementType = element.type();
-			ParseSequenceContainerToJson(element, arrayJson);
+			ParseSequenceContainerToJson(element, arrayJson, metaData);
 		}
 
 		outJson[name] = arrayJson;
@@ -374,7 +374,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 
 		for (auto& item : inJson)
 		{
-			entt::meta_any itemInstance = ParseMemberFromJson(item, itemMetaType, {});
+			entt::meta_any itemInstance = ParseMemberFromJson(item, itemMetaType, metaData);
 			view.insert(view.end(), itemInstance);
 		}
 	}
@@ -397,7 +397,9 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 }
 
 
-void fq::reflect::Converter::ParseSequenceContainerToJson(const entt::meta_any& element, nlohmann::json& arrayJson)
+void fq::reflect::Converter::ParseSequenceContainerToJson(const entt::meta_any& element
+	, nlohmann::json& arrayJson
+	, const entt::meta_data& metaData)
 {
 	entt::meta_type metaType = element.type();
 
@@ -448,24 +450,40 @@ void fq::reflect::Converter::ParseSequenceContainerToJson(const entt::meta_any& 
 	else if (metaType == entt::resolve<std::string>())
 	{
 		std::string val = element.cast<std::string>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val).string().c_str();
+		}
 		arrayJson.push_back(val);
 	}
 	// std::wstring
 	else if (metaType == entt::resolve<std::wstring>())
 	{
 		std::wstring val = element.cast<std::wstring>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val);
+		}
 		arrayJson.push_back(val);
 	}
 	// const char*
 	else if (metaType == entt::resolve<const char*>())
 	{
 		const char* val = element.cast<const char*>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val).string().c_str();
+		}
 		arrayJson.push_back(val);
 	}
 	// const wchar_t*
 	else if (metaType == entt::resolve<const wchar_t*>())
 	{
 		const wchar_t* val = element.cast<const wchar_t*>();
+		if (metaData.prop(fq::reflect::prop::RelativePath))
+		{
+			val = fq::path::GetRelativePath(val).c_str();
+		}
 		arrayJson.push_back(val);
 	}
 	// enum 

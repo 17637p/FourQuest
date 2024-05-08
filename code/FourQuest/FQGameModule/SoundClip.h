@@ -37,7 +37,7 @@ namespace fq::game_module
 		/// 사운드를 재생합니다 
 		/// </summary>
 		/// <param name="index"></param>
-		void PlaySound(SoundIndex soundIndex, bool bIsLoop, ChannelIndex channelIndex);
+		void Play(SoundIndex soundIndex, bool bIsLoop, ChannelIndex channelIndex);
 
 		/// <summary>
 		/// 채널을 정지합니다 

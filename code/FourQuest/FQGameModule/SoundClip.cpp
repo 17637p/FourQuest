@@ -14,14 +14,14 @@ fq::game_module::SoundClip::SoundClip()
 
 }
 
-void fq::game_module::SoundClip::PlaySound(SoundIndex soundIndex, bool bIsLoop, ChannelIndex channelIndex)
+void fq::game_module::SoundClip::Play(SoundIndex soundIndex, bool bIsLoop, ChannelIndex channelIndex)
 {
-	GetScene()->GetEventManager()->FireEvent<fq::event::PlaySound>({ mSounds[soundIndex], bIsLoop, channelIndex });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSounds[soundIndex], bIsLoop, channelIndex });
 }
 
 void fq::game_module::SoundClip::StopChannel(ChannelIndex index)
 {
-	GetScene()->GetEventManager()->FireEvent<fq::event::StopChannel>({ index });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnStopChannel>({ index });
 }
 
 entt::meta_handle fq::game_module::SoundClip::GetHandle()

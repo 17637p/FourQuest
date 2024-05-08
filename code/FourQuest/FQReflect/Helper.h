@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <filesystem>
 
 #include "entt.hpp"
 
@@ -34,10 +36,14 @@ namespace fq::reflect
 	/// <returns>label이 정보가 없으면 빈 string을 반환합니다</returns>
 	std::string GetLabel(const entt::meta_type& metaType);
 
-
 	/// <summary>
 	/// 읽기전용 타입인지
 	/// </summary>
 	bool IsReadOnly(const entt::meta_data& data);
+
+	/// <summary>
+	/// fq::reflect::prop::DragDrop을 설정한 확장자명들을 반환합니다
+	/// </summary>
+	std::vector<std::filesystem::path> GetDragDropExtension(const entt::meta_data& data);
 }
 

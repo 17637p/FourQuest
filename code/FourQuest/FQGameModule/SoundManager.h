@@ -61,7 +61,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 사운드를 재생합니다 
 		/// </summary>
-		void PlaySound(const SoundPath& path, bool bIsLoop, ChannelIndex index);
+		void Play(const SoundPath& path, bool bIsLoop, ChannelIndex index);
 
 	private:
 		static constexpr ChannelIndex MaxChannel = 32;

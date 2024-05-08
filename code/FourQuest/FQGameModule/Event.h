@@ -108,14 +108,14 @@ namespace fq::event
 	//							Sound Event									// 
 	//////////////////////////////////////////////////////////////////////////
 
-	struct PlaySound
+	struct OnPlaySound
 	{
 		std::string path;
 		bool bIsLoop;
 		unsigned int channelIndex;
 	};
 
-	struct StopChannel
+	struct OnStopChannel
 	{
 		unsigned int channelIndex;
 	};

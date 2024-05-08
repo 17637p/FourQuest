@@ -511,11 +511,13 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 	assert(view);
 
 	ImGui::Text(fq::reflect::GetName(data).c_str());
+	beginIsItemHovered_Comment(data);
 
 	bool bIsReadOnly = fq::reflect::IsReadOnly(data);
 
 	if (!bIsReadOnly)
 	{
+		ImGui::SameLine();
 		// Add element
 		std::string addText = "Add##AddButton";
 		if (ImGui::Button(addText.c_str()))
@@ -523,8 +525,8 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 			auto baseValue = view.value_type().construct();
 			auto last = view.begin();
 			view.insert(last, baseValue);
-			// 컨테이너를 복사합니다
-			data.set(handle->GetHandle(), any);
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, any);
 		}
 
 		ImGui::SameLine();
@@ -538,7 +540,8 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 			if (last != view.end())
 			{
 				view.erase(last);
-				data.set(handle->GetHandle(), any);
+				mEditorProcess->mCommandSystem->Push<SetMetaData>(
+					data, mSelectObject, handle, any);
 			}
 		}
 	}
@@ -551,7 +554,7 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		for (auto element : view)
 		{
 			std::string val = element.cast<std::string>();
-			std::string sIndex = "-> [" + std::to_string(index) + "]";
+			std::string sIndex = "  [" + std::to_string(index) + "]";
 
 			ImGui::Text(sIndex.c_str());
 			ImGui::SameLine();
@@ -559,7 +562,7 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 			{
 				ImGui::Text(val.c_str());
 			}
-			else
+			else // not read_only
 			{
 				std::string textName = "##" + sIndex + val;
 				ImGui::InputText(textName.c_str(), &val);
@@ -567,7 +570,32 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 				if (ImGui::IsItemDeactivatedAfterEdit())
 				{
 					view[index].cast<std::string&>() = val;
-					data.set(handle->GetHandle(), any);
+					mEditorProcess->mCommandSystem->Push<SetMetaData>(
+						data, mSelectObject, handle, any);
+				}
+
+				// DragDrop 받기
+				if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+					if (pathPayLoad)
+					{
+						std::filesystem::path* dropPath
+							= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+						auto extensions = fq::reflect::GetDragDropExtension(data);
+
+						for (auto& extension : extensions)
+						{
+							if (dropPath->extension() == extension)
+							{
+								view[index].cast<std::string&>() = dropPath->string();
+								mEditorProcess->mCommandSystem->Push<SetMetaData>(
+									data, mSelectObject, handle, any);
+							}
+						}
+					}
 				}
 			}
 			++index;

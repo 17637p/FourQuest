@@ -259,5 +259,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoundClip")
 		.data<&SoundClip::SetSounds, &SoundClip::GetSounds>("Sounds"_hs)
 		.prop(fq::reflect::prop::Name, "Sounds")
+		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
 		.base<Component>();
 }

@@ -41,6 +41,8 @@ void fq::game_module::SoundManager::Finalize()
 
 void fq::game_module::SoundManager::LoadSound(const SoundPath& path)
 {
+	if (mSoundList.find(path) != mSoundList.end()) return;
+
 	FMOD::Sound* sound = nullptr;
 
 	mFmodResult = mSoundSystem->createSound(path.c_str(), FMOD_DEFAULT, 0, &sound);
@@ -48,7 +50,7 @@ void fq::game_module::SoundManager::LoadSound(const SoundPath& path)
 	if (mFmodResult != FMOD_OK)
 	{
 		sound->release();
-		SPDLOG_WARN("{} load fail", path.c_str());
+		spdlog::warn("[SoundManager]  \"{}\" load failed", path.c_str());
 		return;
 	}
 
@@ -86,7 +88,7 @@ void fq::game_module::SoundManager::UnloadSound(const SoundPath& path)
 
 void fq::game_module::SoundManager::StopChannel(ChannelIndex index)
 {
-	assert(MaxChannel <= index);
+	assert(MaxChannel > index);
 
 	if (mChannel[index])
 	{
@@ -94,7 +96,7 @@ void fq::game_module::SoundManager::StopChannel(ChannelIndex index)
 	}
 }
 
-void fq::game_module::SoundManager::PlaySound(const SoundPath& path, bool bIsLoop, ChannelIndex index)
+void fq::game_module::SoundManager::Play(const SoundPath& path, bool bIsLoop, ChannelIndex index)
 {
 	auto iter = mSoundList.find(path);
 	
@@ -106,7 +108,7 @@ void fq::game_module::SoundManager::PlaySound(const SoundPath& path, bool bIsLoo
 
 	mFmodResult = mSoundSystem->playSound(iter->second, nullptr, false, &mChannel[index]);
 
-	if (mFmodResult = FMOD_OK)
+	if (mFmodResult == FMOD_OK)
 	{
 		bIsLoop ? mChannel[index]->setMode(FMOD_LOOP_NORMAL) : mChannel[index]->setMode(FMOD_LOOP_OFF);
 	}

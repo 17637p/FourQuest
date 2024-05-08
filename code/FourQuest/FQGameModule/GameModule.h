@@ -21,6 +21,7 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "RigidBody.h"
+#include "SoundClip.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"
