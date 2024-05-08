@@ -146,6 +146,7 @@
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11CameraManager.h" />
     <ClInclude Include="D3D11Common.h" />
+    <ClInclude Include="D3D11CullingManager.h" />
     <ClInclude Include="D3D11LightManager.h" />
     <ClInclude Include="D3D11ModelManager.h" />
     <ClInclude Include="D3D11PickingManager.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
+    <ClCompile Include="D3D11CullingManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
@@ -219,36 +221,60 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </CustomBuild>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </CustomBuild>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>

@@ -4,6 +4,7 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
+#include "PhysicsSystem.h"
 
 fq::game_engine::DebugSystem::DebugSystem()
 	:mGameProcess(nullptr)
@@ -212,14 +213,19 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 
 void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 {
+	using DirectX::SimpleMath::Color;
 	const auto& convexMeshs = mGameProcess->mPhysics->GetDebugPolygon();
 
-	for (const auto& mesh : convexMeshs)
+	for (const auto& [id, mesh] : convexMeshs)
 	{
 		for (const auto& polygon : *mesh)
 		{
+			auto collider = static_cast<fq::game_module::MeshCollider*>(mGameProcess->mPhysicsSystem->GetCollider(id));
+			if (!collider) continue;
+	
+			auto count = collider->GetCollisionCount();
 			fq::graphics::debug::PolygonInfo info;
-			info.Color = { 0.f,1.f,0.f,1.f };
+			info.Color = (count == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
 			info.Points = polygon;
 			mGameProcess->mGraphics->DrawPolygon(info);
 		}

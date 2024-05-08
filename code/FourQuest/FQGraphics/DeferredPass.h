@@ -12,6 +12,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11JobManager> jobManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			std::shared_ptr< D3D11LightManager> lightManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize() override;
@@ -23,19 +24,18 @@ namespace fq::graphics
 			std::shared_ptr<D3D11RenderTargetView> mRoughnessRTV,
 			std::shared_ptr<D3D11RenderTargetView> mNormalRTV,
 			std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV,
-			std::shared_ptr<D3D11RenderTargetView> mPositionRTV,
-			std::shared_ptr<D3D11RenderTargetView> shadowRatioRTV);
+			std::shared_ptr<D3D11RenderTargetView> mPositionRTV);
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<D3D11LightManager> mLightManager;
 
 		D3D11_VIEWPORT mViewport;
 
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
-		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
@@ -43,7 +43,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
-		std::shared_ptr<D3D11RenderTargetView> mShadowRatioRTV;
 
 		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
 		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
@@ -54,9 +53,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11PixelShader> mGeometryPS;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
-		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransfrom>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
@@ -67,8 +65,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> roughnessRTV,
 		std::shared_ptr<D3D11RenderTargetView> normalRTV,
 		std::shared_ptr<D3D11RenderTargetView> emissiveRTV,
-		std::shared_ptr<D3D11RenderTargetView> positionRTV,
-		std::shared_ptr<D3D11RenderTargetView> shadowRatioRTV)
+		std::shared_ptr<D3D11RenderTargetView> positionRTV)
 	{
 		mAlbedoRTV = albedoRTV;
 		mMetalnessRTV = metalnessRTV;
@@ -76,7 +73,6 @@ namespace fq::graphics
 		mNormalRTV = normalRTV;
 		mEmissiveRTV = emissiveRTV;
 		mPositionRTV = positionRTV;
-		mShadowRatioRTV = shadowRatioRTV;
 	}
 
 	class DeferredShadingPass : public RenderPass
@@ -97,8 +93,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ShaderResourceView> roughnessSRV,
 			std::shared_ptr<D3D11ShaderResourceView> normalSRV,
 			std::shared_ptr<D3D11ShaderResourceView> emissiveSRV,
-			std::shared_ptr<D3D11ShaderResourceView> positionSRV,
-			std::shared_ptr<D3D11ShaderResourceView> shadowRatioSRV);
+			std::shared_ptr<D3D11ShaderResourceView> positionSRV);
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
@@ -107,9 +102,9 @@ namespace fq::graphics
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 
 		D3D11_VIEWPORT mViewport;
-
+		
+		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 		std::shared_ptr<D3D11DepthStencilView> mNullDSV;
-		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
@@ -117,19 +112,21 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mShadowRatioSRV;
 
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
+		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 
 		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
 		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<D3D11PixelShader> mShadingPS;
+
+		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 	};
 
 	void DeferredShadingPass::SetShaderResourceViews(std::shared_ptr<D3D11ShaderResourceView> albedoSRV,
@@ -137,8 +134,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> roughnessSRV,
 		std::shared_ptr<D3D11ShaderResourceView> normalSRV,
 		std::shared_ptr<D3D11ShaderResourceView> emissiveSRV,
-		std::shared_ptr<D3D11ShaderResourceView> positionSRV,
-		std::shared_ptr<D3D11ShaderResourceView> shadowRatioSRV)
+		std::shared_ptr<D3D11ShaderResourceView> positionSRV)
 	{
 		mAlbedoSRV = albedoSRV;
 		mMetalnessSRV = metalnessSRV;
@@ -146,6 +142,5 @@ namespace fq::graphics
 		mNormalSRV = normalSRV;
 		mEmissiveSRV = emissiveSRV;
 		mPositionSRV = positionSRV;
-		mShadowRatioSRV = shadowRatioSRV;
 	}
 }
