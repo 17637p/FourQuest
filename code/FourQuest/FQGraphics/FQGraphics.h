@@ -74,6 +74,8 @@ namespace fq::graphics
 		virtual void UpdateLight(const unsigned int id, const LightInfo& lightInfo) override;
 		virtual void DeleteLight(const unsigned int id) override;
 
+		virtual void UseShadow(const unsigned int id, bool bUseShadow);
+
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
 		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;

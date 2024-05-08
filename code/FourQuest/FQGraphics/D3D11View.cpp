@@ -389,7 +389,7 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
 
 		break;
-	case ED3D11DepthStencilViewType::CascadeShadow:
+	case ED3D11DepthStencilViewType::CascadeShadow1:
 		depthStencilDesc.ArraySize = 3;
 
 		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
@@ -400,6 +400,32 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 		descView.Texture2DArray.MipSlice = 0;
 		descView.Texture2DArray.FirstArraySlice = 0;
 		descView.Texture2DArray.ArraySize = 3;
+
+		break;
+	case ED3D11DepthStencilViewType::CascadeShadow2:
+		depthStencilDesc.ArraySize = 6;
+
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+		descView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		descView.Texture2DArray.MipSlice = 0;
+		descView.Texture2DArray.FirstArraySlice = 0;
+		descView.Texture2DArray.ArraySize = 6;
+
+		break;
+	case ED3D11DepthStencilViewType::CascadeShadow3:
+		depthStencilDesc.ArraySize = 9;
+
+		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+		descView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+		descView.Texture2DArray.MipSlice = 0;
+		descView.Texture2DArray.FirstArraySlice = 0;
+		descView.Texture2DArray.ArraySize = 9;
 
 		break;
 	case ED3D11DepthStencilViewType::PointLightShadow:

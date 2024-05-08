@@ -74,10 +74,6 @@ std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink
 	return logger;
 }
 
-void FQGraphics::DeleteLight(const unsigned int id)
-{
-	mLightManager->DeleteLight(id);
-}
 
 void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
@@ -87,6 +83,16 @@ void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 void FQGraphics::AddLight(const unsigned int id, const LightInfo& lightInfo)
 {
 	mLightManager->AddLight(id, lightInfo);
+}
+
+void FQGraphics::DeleteLight(const unsigned int id)
+{
+	mLightManager->DeleteLight(id);
+}
+
+void FQGraphics::UseShadow(const unsigned int id, bool bUseShadow)
+{
+	mLightManager->UseShadow(id, bUseShadow);
 }
 
 void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)

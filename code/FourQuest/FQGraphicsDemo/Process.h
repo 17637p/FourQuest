@@ -37,6 +37,7 @@ private:
 	void Update();
 	void Render();
 	void debugRender();
+	void shadowTest();
 
 	void strafe(fq::common::Transform& cameraTransform, float distance);
 	void walk(fq::common::Transform& cameraTransform, float distance);

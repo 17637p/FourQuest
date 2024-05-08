@@ -67,7 +67,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
-		std::shared_ptr<D3D11RenderTargetView> mShadowRatioRTV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
@@ -75,7 +74,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mShadowRatioSRV;
 	};
 }
 
