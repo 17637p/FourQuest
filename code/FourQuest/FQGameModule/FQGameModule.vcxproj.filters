@@ -299,7 +299,7 @@
       <Filter>src\08.Prefab</Filter>
     </ClCompile>
     <ClCompile Include="PrefabTest.cpp">
-      <Filter>src</Filter>
+      <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

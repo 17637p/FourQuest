@@ -9,7 +9,7 @@ namespace fq::game_module
 	/// </summary>
 	class PrefabResource
 	{
-		using Path = std::wstring;
+		using Path = std::string;
 	public:
 		/// <summary>
 		/// 프리팹의 경로를 반환합니다 
@@ -20,10 +20,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 프리팹의 경로를 설정합니다
 		/// </summary>
-		void SetPrefabPath(fq::game_module::PrefabResource::Path path) { mPrefabPath = path; }
-
-
-
+		void SetPrefabPath(fq::game_module::PrefabResource::Path path);
 	private:
 		Path mPrefabPath;
 	};

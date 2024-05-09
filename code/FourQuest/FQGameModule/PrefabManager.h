@@ -20,7 +20,7 @@ namespace fq::game_module
 	class PrefabManager
 	{
 		using PrefabInstance = std::vector<std::shared_ptr<GameObject>>;
-		using PrefabContainer = std::unordered_map<std::wstring, PrefabInstance>;
+		using PrefabContainer = std::unordered_map<std::string, PrefabInstance>;
 	public:
 		PrefabManager();
 		~PrefabManager();
@@ -50,6 +50,12 @@ namespace fq::game_module
 		/// </summary>
 		void UnloadPrefabResource();
 
+		/// <summary>
+		/// 프리팹리소스를 인스턴스화합니다 
+		/// </summary>
+		/// <param name="resource">로드할 프리팹 리소스</param>
+		/// <returns>프리팹 계층구조를 담은 인스턴스를 반환합니다</returns>
+		PrefabInstance InstantiatePrefabResoure(const PrefabResource& resource)const;
 
 	private:
 		nlohmann::json saveGameObject(GameObject* object);

@@ -6,6 +6,7 @@
 #include "../FQReflect/FQReflect.h"
 #include "GameModuleEnum.h"
 #include "Collision.h"
+#include "ObjectPool.h"
 
 namespace fq::game_module
 {

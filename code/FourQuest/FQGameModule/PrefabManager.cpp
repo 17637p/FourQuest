@@ -24,7 +24,6 @@ fq::game_module::PrefabManager::~PrefabManager()
 
 std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::PrefabManager::LoadPrefab(const std::filesystem::path& filePath)
 {
-
 	// 1. Prefab데이터 불러오기
 	std::ifstream readData(filePath);
 
@@ -203,18 +202,20 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 		q.pop();
 
 		// 컴포넌트를 순회하면서 프리팹리소드를 로드
-		for (auto& component : object->GetComponentContainer())
+		for (const auto& [id, component] : object->GetComponentContainer())
 		{
 			// PrefabResouece 멤버변수를 탐색
-			for (auto [id, metaData] : component.second->GetHandle()->type().data())
+			for (auto [id, metaData] : entt::resolve(id).data())
 			{
-				if (id == entt::resolve<PrefabResource>().id())
+				if (metaData.type() == entt::resolve<PrefabResource>())
 				{
 					// PrefabResource를 Instance원본형태로 로드 
-					auto prefabresource = metaData.get(component.second->GetHandle()).cast<PrefabResource>();
+					auto prefabresource = metaData.get(component->GetHandle()).cast<PrefabResource>();
 					auto prefabPath = prefabresource.GetPrefabPath();
 
 					if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()) continue;
+
+					if (!std::filesystem::exists(prefabPath)) continue;
 
 					auto instance = LoadPrefab(prefabPath);
 
@@ -235,3 +236,42 @@ void fq::game_module::PrefabManager::UnloadPrefabResource()
 {
 	mPrefabInstances.clear();
 }
+
+fq::game_module::PrefabManager::PrefabInstance fq::game_module::PrefabManager::InstantiatePrefabResoure(const PrefabResource& resource) const
+{
+	auto path = resource.GetPrefabPath();
+	auto iter = mPrefabInstances.find(path);
+	assert(iter != mPrefabInstances.end());
+	const auto& origin = iter->second;
+
+	// origin의 복사본을 생성합니다 
+	std::map<std::string, std::shared_ptr<GameObject>> matchParent;
+	std::queue<GameObject*> objectQueue;
+	objectQueue.push(origin.begin()->get());
+	PrefabInstance instance;
+
+	while (!objectQueue.empty())
+	{
+		auto orginObject = objectQueue.front();
+		objectQueue.pop();
+		auto clone = std::make_shared<fq::game_module::GameObject>(*orginObject);
+		instance.push_back(clone);
+
+		auto parentT = orginObject->GetComponent<Transform>()->GetParentTransform();
+		if (parentT != nullptr)
+		{
+			auto iter = matchParent.find(parentT->GetGameObject()->GetName());
+			clone->GetComponent<Transform>()->SetParent(iter->second->GetComponent<Transform>());
+		}
+		matchParent.insert({ clone->GetName(), clone });
+
+		// 자식들을 큐에 추가합니다
+		for (auto child : orginObject->GetChildren())
+		{
+			objectQueue.push(child);
+		}
+	}
+
+	return instance;
+}
+

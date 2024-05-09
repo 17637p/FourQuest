@@ -15,6 +15,7 @@
 #include "MeshCollider.h"
 #include "SoundClip.h"
 #include "PrefabResource.h"
+#include "PrefabTest.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -52,19 +53,20 @@ void fq::game_module::RegisterMetaData()
 		.data<&GameObject::SetTag, &GameObject::GetTag>("mTag"_hs)
 		.prop(fq::reflect::prop::Name, "mTag");
 
-	// PrefabObject 
+	// PrefabResource
 	entt::meta<PrefabResource>()
-		.type("PrefabObject"_hs)
-		.prop(fq::reflect::prop::Name, "PrefabObject")
+		.type("PrefabResource"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabResource")
 		.data<&PrefabResource::SetPrefabPath, &PrefabResource::GetPrefabPath>("Path"_hs)
-		.prop(fq::reflect::prop::Name, "Path");
+		.prop(fq::reflect::prop::Name, "Path")
+		.prop(fq::reflect::prop::RelativePath);
 
-	//////////////////////////////////////////////////////////////////////////
-	//                            Component                                 //
-	//////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////
+		//                            Component                                 //
+		//////////////////////////////////////////////////////////////////////////
 
-	// Transform
-	entt::meta<Transform>()
+		// Transform
+		entt::meta<Transform>()
 		.type("Transform"_hs)
 		.prop(fq::reflect::prop::Name, "Transform")
 		.data<&Transform::SetLocalPosition, &Transform::GetLocalPosition>("Position"_hs)
@@ -274,4 +276,20 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
 		.base<Component>();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//                              Prefab                                  //
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PrefabTest>()
+		.type("PrefabTest"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabTest")
+		.data<&PrefabTest::SetFireObject, &PrefabTest::GetFireObject>("FireObject"_hs)
+		.prop(fq::reflect::prop::Name, "FireObject")
+		.prop(fq::reflect::prop::Comment, u8"프리팹을 추가하면 자동 발사!")
+		.data<&PrefabTest::SetCreateTime, &PrefabTest::GetCreateTime>("CreateTime"_hs)
+		.prop(fq::reflect::prop::Name, "CreateTime")
+		.base<Component>();
+
 }
