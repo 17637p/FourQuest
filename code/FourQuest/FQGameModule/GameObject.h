@@ -281,7 +281,7 @@ namespace fq::game_module
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		auto component = std::make_shared<T>(std::forward<Args>(args)...);
+		auto component = ObjectPool::GetInstance()->Assign<T>(std::forward<Args>(args)...);
 
 		AddComponent(id, component);
 

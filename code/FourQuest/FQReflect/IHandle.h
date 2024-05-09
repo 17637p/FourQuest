@@ -10,6 +10,8 @@ namespace fq::reflect
 	class IHandle
 	{
 	public:
+		virtual ~IHandle() {}
+
 		/// <summary>
 		/// 자신의 핸들 객체를 반환합니다. 
 		/// </summary>

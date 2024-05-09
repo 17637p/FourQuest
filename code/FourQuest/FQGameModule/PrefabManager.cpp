@@ -164,7 +164,7 @@ nlohmann::json fq::game_module::PrefabManager::saveGameObject(GameObject* object
 
 std::shared_ptr<fq::game_module::GameObject> fq::game_module::PrefabManager::loadGameObject(const nlohmann::json& objectData)
 {
-	auto  object = std::make_shared<GameObject>();
+	auto  object = ObjectPool::GetInstance()->Assign<GameObject>();
 
 	// 컴포넌트 불러오기
 	for (const auto& element : objectData.items())
@@ -179,6 +179,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::PrefabManager::loa
 		}
 
 		entt::meta_any anyComponent = mConverter.ParseClassFromJson(componentID, element.value());
+
 		object->AddComponent(anyComponent);
 	}
 

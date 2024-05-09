@@ -168,7 +168,7 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 
 	assert(type.can_cast(componentType));
 
-	const Component* component = any.try_cast<Component>();
+	Component* component = any.try_cast<Component>();
 
 	assert(component);
 

@@ -11,6 +11,8 @@ namespace fq::game_module
 	class IPool
 	{
 	public:
+		virtual ~IPool(){}
+
 		virtual void Clear() abstract;
 		virtual size_t GetSize()const abstract;
 	};

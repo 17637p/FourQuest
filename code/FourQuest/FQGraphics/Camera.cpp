@@ -15,6 +15,7 @@ fq::graphics::Camera::Camera()
 	mPosition{},
 	mRotation{}
 {
+
 }
 
 fq::graphics::Camera::~Camera()
