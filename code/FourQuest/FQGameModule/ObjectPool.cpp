@@ -12,6 +12,15 @@ fq::game_module::ObjectPool* fq::game_module::ObjectPool::GetInstance()
 
 void fq::game_module::ObjectPool::Finalize()
 {
+	if (mInstance == nullptr) return;
+
+	for (auto& pool : mInstance->mPools)
+	{
+		pool.second->Clear();
+	}
+
+	mInstance->mPools.clear();
+
 	delete mInstance;
 }
 

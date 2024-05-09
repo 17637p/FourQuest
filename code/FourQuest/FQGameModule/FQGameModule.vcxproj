@@ -193,7 +193,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InstantiatePrefab.cpp" />
-    <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />

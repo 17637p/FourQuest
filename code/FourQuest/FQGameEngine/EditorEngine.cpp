@@ -160,15 +160,18 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
+	mEditor->mImGuiSystem->Finalize();
 
+	// SystemFinalize
+	mGameProcess->mGraphics->Finalize();
+	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
+	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();
 
-	mGameProcess->mGraphics->Finalize();
-	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
-	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
+	fq::game_module::ObjectPool::Finalize();
 
 	// Window Á¾·á
 	mGameProcess->mWindowSystem->Finalize();

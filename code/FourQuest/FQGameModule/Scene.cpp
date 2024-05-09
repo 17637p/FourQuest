@@ -19,7 +19,9 @@ fq::game_module::Scene::Scene()
 {}
 
 fq::game_module::Scene::~Scene()
-{}
+{
+	mObjects.clear();
+}
 
 void fq::game_module::Scene::Initialize(std::string sceneName
 	, EventManager* eventMgr

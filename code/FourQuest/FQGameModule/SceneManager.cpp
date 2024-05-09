@@ -50,6 +50,7 @@ void fq::game_module::SceneManager::Finalize()
 {
 	mEventManager->RemoveHandle(mRequestChangeSceneHandler);
 	mEventManager->RemoveHandle(mRequestExitGameHadler);
+
 }
 
 void fq::game_module::SceneManager::ChangeScene(const std::string& nextSceneName)

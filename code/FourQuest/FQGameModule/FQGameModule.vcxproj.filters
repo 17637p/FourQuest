@@ -289,9 +289,6 @@
     <ClCompile Include="ObjectPool.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
-    <ClCompile Include="Pool.cpp">
-      <Filter>src\06.ObjectManager</Filter>
-    </ClCompile>
     <ClCompile Include="PrefabResource.cpp">
       <Filter>src\08.Prefab</Filter>
     </ClCompile>

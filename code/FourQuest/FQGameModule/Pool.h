@@ -53,7 +53,9 @@ namespace fq::game_module
 		/// <summary>
 		/// 풀을 초기화합니다 
 		/// </summary>
-		void Clear() override { mContainer.clear(); }
+		void Clear() override {
+			mContainer.clear();
+		}
 
 	private:
 		ComponentContainer mContainer;
