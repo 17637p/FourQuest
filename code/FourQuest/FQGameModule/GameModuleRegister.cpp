@@ -14,6 +14,7 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "SoundClip.h"
+#include "PrefabObject.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -42,7 +43,6 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Wall>("Wall"_hs) // 5
 		.prop(fq::reflect::prop::Name, "Wall");
 
-
 	// GameObject
 	entt::meta<GameObject>()
 		.type("GameObject"_hs)
@@ -51,6 +51,13 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mName")
 		.data<&GameObject::SetTag, &GameObject::GetTag>("mTag"_hs)
 		.prop(fq::reflect::prop::Name, "mTag");
+
+	// PrefabObject 
+	entt::meta<PrefabObject>()
+		.type("PrefabObject"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabObject")
+		.data<&PrefabObject::SetPrefabPath, &PrefabObject::GetPrefabPath>("Path"_hs)
+		.prop(fq::reflect::prop::Name, "Path");
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            Component                                 //

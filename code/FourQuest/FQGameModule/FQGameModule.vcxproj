@@ -178,7 +178,6 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="ObjectManager.h" />
-    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneHelper.h" />
@@ -214,7 +213,6 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneHelper.cpp" />

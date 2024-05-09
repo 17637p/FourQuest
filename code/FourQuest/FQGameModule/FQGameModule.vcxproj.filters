@@ -131,9 +131,6 @@
     <ClInclude Include="SceneHelper.h">
       <Filter>include\03.Scene</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>include\06.ObjectManager</Filter>
-    </ClInclude>
     <ClInclude Include="GameModuleRegister.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
@@ -234,9 +231,6 @@
     </ClCompile>
     <ClCompile Include="SceneHelper.cpp">
       <Filter>src\03.Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="GameModuleRegister.cpp">
       <Filter>src\00.Define</Filter>
