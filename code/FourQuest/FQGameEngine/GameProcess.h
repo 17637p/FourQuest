@@ -8,7 +8,7 @@ namespace fq::game_module
 	class EventManager;
 	class InputManager;
 	class TimeManager;
-	class ObjectManager;
+	class PrefabManager;
 	class SoundManager; 
 }
 
@@ -48,7 +48,7 @@ namespace fq::game_engine
 		std::unique_ptr<fq::game_module::TimeManager>  mTimeManager;
 		std::unique_ptr<fq::game_module::SceneManager> mSceneManager;
 		std::unique_ptr<fq::game_module::EventManager> mEventManager;
-		std::unique_ptr<fq::game_module::ObjectManager> mObjectManager;
+		std::unique_ptr<fq::game_module::PrefabManager> mPrefabManager;
 		std::unique_ptr<fq::game_module::SoundManager> mSoundManager;
 
 		// Graphics

@@ -18,7 +18,7 @@ namespace fq::game_module
 		using ComponentPool = std::unique_ptr<IPool>;
 		using ComponentID = entt::id_type;
 		using PoolContainer = std::unordered_map<ComponentID, ComponentPool>;
-		using GameObjectPool = std::unique_ptr<Pool<GameObject>>;
+
 	public:
 		/// <summary>
 		/// 싱글톤 클래스 인스턴스를 반환합니다 

@@ -10,7 +10,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "Component.h"
-#include "PrefabObject.h"
+#include "PrefabResource.h"
 #include "InstantiatePrefab.h"
 
 #include "Transform.h"
@@ -30,7 +30,7 @@
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-#include "ObjectManager.h"
+#include "PrefabManager.h"
 #include "SoundManager.h"
 
 #include "Collision.h"

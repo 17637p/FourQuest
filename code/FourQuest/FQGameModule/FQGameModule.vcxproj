@@ -154,7 +154,8 @@
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
-    <ClInclude Include="PrefabObject.h" />
+    <ClInclude Include="PrefabResource.h" />
+    <ClInclude Include="PrefabTest.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
@@ -178,7 +179,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MeshCollider.h" />
-    <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="PrefabManager.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneHelper.h" />
@@ -194,7 +195,8 @@
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
-    <ClCompile Include="PrefabObject.cpp" />
+    <ClCompile Include="PrefabResource.cpp" />
+    <ClCompile Include="PrefabTest.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -214,7 +216,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MeshCollider.cpp" />
-    <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="PrefabManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneHelper.cpp" />

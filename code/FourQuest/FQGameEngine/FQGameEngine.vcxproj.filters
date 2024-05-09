@@ -158,9 +158,6 @@
     <ClInclude Include="SoundSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="PrefabObjectSystem.h">
-      <Filter>include\03.GameSystem</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -254,9 +251,6 @@
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
     <ClCompile Include="SoundSystem.cpp">
-      <Filter>src\03.GameSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="PrefabObjectSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>

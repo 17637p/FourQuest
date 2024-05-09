@@ -131,7 +131,7 @@
     <ClInclude Include="GameModuleEnum.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectManager.h">
+    <ClInclude Include="PrefabManager.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="SceneHelper.h">
@@ -185,11 +185,14 @@
     <ClInclude Include="Pool.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
-    <ClInclude Include="PrefabObject.h">
+    <ClInclude Include="PrefabResource.h">
       <Filter>include\08.Prefab</Filter>
     </ClInclude>
     <ClInclude Include="InstantiatePrefab.h">
       <Filter>include\08.Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabTest.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -235,7 +238,7 @@
     <ClCompile Include="GameModuleEnum.cpp">
       <Filter>src\00.Define</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
+    <ClCompile Include="PrefabManager.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="SceneHelper.cpp">
@@ -289,11 +292,14 @@
     <ClCompile Include="Pool.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
-    <ClCompile Include="PrefabObject.cpp">
+    <ClCompile Include="PrefabResource.cpp">
       <Filter>src\08.Prefab</Filter>
     </ClCompile>
     <ClCompile Include="InstantiatePrefab.cpp">
       <Filter>src\08.Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabTest.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

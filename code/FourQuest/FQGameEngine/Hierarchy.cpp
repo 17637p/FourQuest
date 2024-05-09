@@ -333,7 +333,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 			// 일단은 Prefab은 json형식입니다
 			if (path->extension() == ".prefab")
 			{
-				auto prefab = mGameProcess->mObjectManager->LoadPrefab(*path);
+				auto prefab = mGameProcess->mPrefabManager->LoadPrefab(*path);
 
 				assert(!prefab.empty());
 
