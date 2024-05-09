@@ -50,6 +50,8 @@ namespace fq::physics
 		inline const unsigned int& GetID();
 		inline const unsigned int& GetLayerNumber();
 		inline const std::shared_ptr<CharacterMovement> GetCharacterMovement();
+		inline void GetPosition(DirectX::SimpleMath::Vector3& position);
+		inline void SetPosition(const DirectX::SimpleMath::Vector3& position);
 
 	protected:
 		unsigned int mID;
@@ -79,6 +81,22 @@ namespace fq::physics
 	const std::shared_ptr<CharacterMovement> CharacterController::GetCharacterMovement()
 	{
 		return mCharacterMovement;
+	}
+	void CharacterController::GetPosition(DirectX::SimpleMath::Vector3& position)
+	{
+		position.x = mPxController->getPosition().x;
+		position.y = mPxController->getPosition().y;
+		position.z = -mPxController->getPosition().z;
+	}
+	void CharacterController::SetPosition(const DirectX::SimpleMath::Vector3& position)
+	{
+		physx::PxExtendedVec3 vector;
+
+		vector.x = position.x;
+		vector.y = position.y;
+		vector.z = -position.z;
+
+		mPxController->setPosition(vector);
 	}
 
 #pragma endregion

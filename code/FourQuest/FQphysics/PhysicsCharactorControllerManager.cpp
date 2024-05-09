@@ -5,10 +5,16 @@
 #include "CharacterController.h"
 #include "PhysicsCCTHitCallback.h"
 #include "PlayerCharacterController.h"
+#include "CharacterMovement.h"
 
 namespace fq::physics
 {
 	PhysicsCharactorControllerManager::PhysicsCharactorControllerManager()
+		: mPhysics(nullptr)
+		, mMaterial(nullptr)
+		, mCCTManager(nullptr)
+		, mCCTmap()
+		, mCollisionDataContainer()
 	{
 	}
 
@@ -93,5 +99,36 @@ namespace fq::physics
 			controller.second->GetPxController()->getActor()->getShapes(&shape, 1);
 			shape->setSimulationFilterData(filterData);
 		}
+	}
+
+	void PhysicsCharactorControllerManager::GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data)
+	{
+		auto& controller = mCCTmap.find(id)->second;
+		physx::PxController* pxController = controller->GetPxController();
+
+		controller->GetPosition(data.position);
+	}
+	void PhysicsCharactorControllerManager::GetCharacterMovementData(const unsigned int& id, CharacterMovementGetSetData& data)
+	{
+		auto& controller = mCCTmap.find(id)->second;
+		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
+
+		data.velocity = movement->GetDisplacementVector();
+		data.isFall = movement->GetIsFall();
+	}
+	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
+	{
+		auto& controller = mCCTmap.find(id)->second;
+		physx::PxController* pxController = controller->GetPxController();
+
+		controller->SetPosition(controllerData.position);
+	}
+	void PhysicsCharactorControllerManager::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
+	{
+		auto& controller = mCCTmap.find(id)->second;
+		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
+
+		movement->SetIsFall(movementData.isFall);
+		movement->SetVelocity(movementData.velocity);
 	}
 }

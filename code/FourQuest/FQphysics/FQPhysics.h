@@ -111,6 +111,14 @@ namespace fq::physics
 		/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
 		virtual void AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input) override;
 
+		/// <summary>
+		/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set합니다.
+		/// </summary>
+		virtual CharacterControllerGetSetData GetCharacterControllerData(const unsigned int& id) override;
+		virtual CharacterMovementGetSetData GetCharacterMovementData(const unsigned int& id) override;
+		virtual void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData) override;
+		virtual void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData) override;
+
 #pragma endregion
 
 		/// <summary>

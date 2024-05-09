@@ -48,6 +48,7 @@ namespace fq::physics
 
 
 		inline const DirectX::SimpleMath::Vector3& GetVelocity();
+		inline const DirectX::SimpleMath::Vector3& GetDisplacementVector();
 		inline const bool& GetIsFall();
 		inline const float& GetMaxSpeed();
 		inline const float& GetSpeed();
@@ -58,6 +59,7 @@ namespace fq::physics
 		inline const float& GetJumpXZAcceleration();
 		inline const float& GetJumpXZDeceleration();
 		inline const float& GetGravityWeight();
+		inline void SetVelocity(const DirectX::SimpleMath::Vector3& velocity);
 		inline void SetIsFall(const bool& isFall);
 		inline void SetMaxSpeed(const float& maxSpeed);
 		inline void SetAcceleration(const float& acceleration);
@@ -93,6 +95,10 @@ namespace fq::physics
 	const DirectX::SimpleMath::Vector3& CharacterMovement::GetVelocity()
 	{
 		return mVelocity;
+	}
+	const DirectX::SimpleMath::Vector3& CharacterMovement::GetDisplacementVector()
+	{
+		return mDisplacementVector;
 	}
 	const bool& CharacterMovement::GetIsFall()
 	{
@@ -135,6 +141,10 @@ namespace fq::physics
 		return mGravityWeight;
 	}
 
+	void CharacterMovement::SetVelocity(const DirectX::SimpleMath::Vector3& velocity)
+	{
+		mVelocity = velocity;
+	}
 	void CharacterMovement::SetIsFall(const bool& isFall)
 	{
 		mIsFall = isFall;

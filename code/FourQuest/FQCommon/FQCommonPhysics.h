@@ -37,6 +37,17 @@ namespace fq::physics
 		DirectX::SimpleMath::Vector3 angularVelocity = {};		// 값이 0이면 StaticBody 입니다.
 	};
 
+	struct CharacterControllerGetSetData
+	{
+		DirectX::SimpleMath::Vector3 position;					// 캐릭터 컨트롤러의 위치
+	};
+
+	struct CharacterMovementGetSetData
+	{
+		DirectX::SimpleMath::Vector3 velocity;					// 캐릭터 컨트롤러의 x,y,z축 속도
+		bool isFall;											// 캐릭터가 떨어지고 있는지 체크 변수
+	};
+
 	/// <summary>
 	/// 물리 엔진 세팅 데이터 : 중력, 충돌 매트릭스
 	/// </summary>
@@ -131,4 +142,5 @@ namespace fq::physics
 		float slopeLimit = 0.7f;								// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
 		float contactOffset = 0.1f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
 	};
+
 }

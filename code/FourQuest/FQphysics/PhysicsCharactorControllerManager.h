@@ -55,6 +55,13 @@ namespace fq::physics
 		/// <param name="collisionMatrix"></param>
 		void UpdateCollisionMatrix(int* collisionMatrix);
 
+		/// <summary>
+		/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set합니다.
+		/// </summary>
+		void GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data);
+		void GetCharacterMovementData(const unsigned int& id, CharacterMovementGetSetData& data);
+		void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData);
+		void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData);
 
 	private:
 		physx::PxPhysics*				mPhysics;

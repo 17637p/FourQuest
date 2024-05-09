@@ -92,7 +92,7 @@ extern "C" {
 			/// <summary>
 			/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
 			/// </summary>
-			virtual FQ_PHYSICS bool SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& worldTransform) abstract;
+			virtual FQ_PHYSICS bool SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData) abstract;
 
 			/// <summary>
 			/// 아이디 값을 받은 리지드 바디를 삭제합니다.
@@ -133,6 +133,14 @@ extern "C" {
 			/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>
 			/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
 			virtual FQ_PHYSICS void AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input) abstract;
+
+			/// <summary>
+			/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set할 수 있습니다.
+			/// </summary>
+			virtual FQ_PHYSICS CharacterControllerGetSetData GetCharacterControllerData(const unsigned int& id) abstract;
+			virtual FQ_PHYSICS CharacterMovementGetSetData GetCharacterMovementData(const unsigned int& id) abstract;
+			virtual FQ_PHYSICS void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData) abstract;
+			virtual FQ_PHYSICS void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData) abstract;
 
 #pragma endregion
 

@@ -65,6 +65,8 @@ namespace fq::physics
 
 	FQPhysics::~FQPhysics()
 	{
+		mCCTManager = nullptr;
+		mRigidBodyManager = nullptr;
 		PX_RELEASE(mScene);
 	}
 
@@ -251,6 +253,32 @@ namespace fq::physics
 	void FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
 	{
 		mCCTManager->AddInputMove(id, input);
+	}
+
+	CharacterControllerGetSetData FQPhysics::GetCharacterControllerData(const unsigned int& id)
+	{
+		CharacterControllerGetSetData data;
+		mCCTManager->GetCharacterControllerData(id, data);
+
+		return data;
+	}
+
+	CharacterMovementGetSetData FQPhysics::GetCharacterMovementData(const unsigned int& id)
+	{
+		CharacterMovementGetSetData data;
+		mCCTManager->GetCharacterMovementData(id, data);
+
+		return data;
+	}
+
+	void FQPhysics::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
+	{
+		mCCTManager->SetCharacterControllerData(id, controllerData);
+	}
+
+	void FQPhysics::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
+	{
+		mCCTManager->SetCharacterMovementData(id, movementData);
 	}
 
 #pragma endregion

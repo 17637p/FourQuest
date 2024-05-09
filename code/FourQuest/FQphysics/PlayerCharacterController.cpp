@@ -7,6 +7,7 @@
 namespace fq::physics
 {
 	PlayerCharacterController::PlayerCharacterController()
+		: mCCTHitCallback(nullptr)
 	{
 	}
 

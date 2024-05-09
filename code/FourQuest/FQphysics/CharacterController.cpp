@@ -5,6 +5,12 @@
 namespace fq::physics
 {
 	CharacterController::CharacterController()
+		: mID()
+		, mLayerNumber()
+		, mInputMove()
+		, mCharacterMovement(nullptr)
+		, mMaterial(nullptr)
+		, mPxController(nullptr)
 	{
 	}
 
