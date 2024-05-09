@@ -182,6 +182,9 @@
     <ClInclude Include="Pool.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="PrefabObject.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -281,6 +284,9 @@
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="Pool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabObject.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>

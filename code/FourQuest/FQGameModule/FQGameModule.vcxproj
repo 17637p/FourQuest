@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="PrefabObject.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
@@ -192,6 +193,7 @@
   <ItemGroup>
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
+    <ClCompile Include="PrefabObject.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
