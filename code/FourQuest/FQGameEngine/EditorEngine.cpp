@@ -152,12 +152,15 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	mGameProcess->mSceneManager->UnloadScene();
+
 	// Editor Process
 	mEditor->mPrefabSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
+
 
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();

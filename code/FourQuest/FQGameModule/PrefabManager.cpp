@@ -202,10 +202,10 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 		q.pop();
 
 		// 컴포넌트를 순회하면서 프리팹리소드를 로드
-		for (const auto& [id, component] : object->GetComponentContainer())
+		for (const auto& [componentID, component] : object->GetComponentContainer())
 		{
 			// PrefabResouece 멤버변수를 탐색
-			for (auto [id, metaData] : entt::resolve(id).data())
+			for (auto [memberID, metaData] : entt::resolve(componentID).data())
 			{
 				if (metaData.type() == entt::resolve<PrefabResource>())
 				{
@@ -215,7 +215,13 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 
 					if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()) continue;
 
-					if (!std::filesystem::exists(prefabPath)) continue;
+					if (!std::filesystem::exists(prefabPath))
+					{
+						spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
+							, fq::reflect::GetName(entt::resolve(componentID))
+							, fq::reflect::GetName(metaData));
+						continue;
+					}
 
 					auto instance = LoadPrefab(prefabPath);
 
