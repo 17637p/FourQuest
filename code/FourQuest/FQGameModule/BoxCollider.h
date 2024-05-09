@@ -15,7 +15,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 박스 콜라이더의 범위를 반환합니다 

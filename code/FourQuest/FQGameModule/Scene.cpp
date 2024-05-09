@@ -15,16 +15,21 @@ fq::game_module::Scene::Scene()
 	, mSceneName{}
 	, mInputManager(nullptr)
 	, mEventManager(nullptr)
+	, mPrefabManager(nullptr)
 {}
 
 fq::game_module::Scene::~Scene()
 {}
 
-void fq::game_module::Scene::Initialize(std::string sceneName, EventManager* eventMgr, InputManager* inputMgr)
+void fq::game_module::Scene::Initialize(std::string sceneName
+	, EventManager* eventMgr
+	, InputManager* inputMgr
+	, PrefabManager* prefabMgr)
 {
 	mSceneName = std::move(sceneName);
 	mEventManager = eventMgr;
 	mInputManager = inputMgr;
+	mPrefabManager = prefabMgr;
 }
 
 

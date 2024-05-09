@@ -29,13 +29,13 @@ entt::meta_handle fq::game_module::BoxCollider::GetHandle()
 	return *this;
 }
 
-fq::game_module::Component* fq::game_module::BoxCollider::Clone(Component* clone /* = nullptr */) const
+std::shared_ptr<fq::game_module::Component> fq::game_module::BoxCollider::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
-	BoxCollider* cloneCollider = static_cast<BoxCollider*>(clone);
+	auto cloneCollider = std::dynamic_pointer_cast<BoxCollider>(clone);
 
 	if (cloneCollider == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneCollider = new BoxCollider(*this);
+		cloneCollider = ObjectPool::GetInstance()->Assign<BoxCollider>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{

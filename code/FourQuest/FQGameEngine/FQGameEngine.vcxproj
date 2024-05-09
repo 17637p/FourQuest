@@ -177,7 +177,6 @@
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="EditorEngine.h" />
     <ClInclude Include="SoundSystem.h" />
-    <ClInclude Include="Test.h" />
     <ClInclude Include="WindowSystem.h" />
     <ClInclude Include="WndProc.h" />
   </ItemGroup>
@@ -211,7 +210,6 @@
     <ClCompile Include="RenderingSystem.cpp" />
     <ClCompile Include="EditorEngine.cpp" />
     <ClCompile Include="SoundSystem.cpp" />
-    <ClCompile Include="Test.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
     <ClCompile Include="WndProc.cpp" />
   </ItemGroup>

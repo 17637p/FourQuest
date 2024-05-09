@@ -18,7 +18,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 라이트 타입을 반환합니다

@@ -7,14 +7,14 @@
 
 #include "../FQCommon/FQPath.h"
 
-#include "ObjectManager.h"
+#include "PrefabManager.h"
 #include "InputManager.h"
 #include "EventManager.h"
 #include "GameObject.h"
 
 fq::game_module::SceneManager::SceneManager()
 	:mCurrentScene(nullptr)
-	, mObjectManager(nullptr)
+	, mPrefabManager(nullptr)
 	, mEventManager(nullptr)
 	, mbIsEnd(false)
 	, mNextSceneName{}
@@ -28,12 +28,16 @@ fq::game_module::SceneManager::~SceneManager()
 {
 }
 
-void fq::game_module::SceneManager::Initialize(const std::string& startSceneName, EventManager* eventMgr, InputManager* inputMgr)
+void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
+	, EventManager* eventMgr
+	, InputManager* inputMgr
+	, PrefabManager* prefabMgr)
 {
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
+	mPrefabManager = prefabMgr;
 
-	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr);
+	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr);
 
 	mRequestExitGameHadler =
 		mEventManager->RegisterHandle<fq::event::RequestExitGame>(this, &SceneManager::RequestExitGame);
@@ -127,12 +131,15 @@ void fq::game_module::SceneManager::LoadScene()
 	auto prefabList = fq::path::GetFileList(prefabPath);
 	for (const auto& prefabPath : prefabList)
 	{
-		auto prefab = mObjectManager->LoadPrefab(prefabPath);
+		auto prefab = mPrefabManager->LoadPrefab(prefabPath);
 		assert(!prefab.empty());
 
 		// 가장 상위계층을 추가하면 아래 계층을 안에서 같이 추가합니다 
 		mCurrentScene->AddGameObject(prefab[0]);
 	}
+
+	// PrefabResource Load
+	mPrefabManager->LoadPrefabResource(mCurrentScene.get());
 
 	// Event CallBack
 	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
@@ -142,6 +149,7 @@ void fq::game_module::SceneManager::LoadScene()
 
 void fq::game_module::SceneManager::UnloadScene()
 {
+	mPrefabManager->UnloadPrefabResource();
 	mCurrentScene->CleanUp();
 	mCurrentScene->DestroyAll();
 	mEventManager->FireEvent<fq::event::OnUnloadScene>({});

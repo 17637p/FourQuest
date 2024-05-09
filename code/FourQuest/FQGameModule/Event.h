@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-
 #include "../FQReflect/entt.hpp"
 
 namespace fq::game_module

@@ -1,4 +1,4 @@
-#include "ObjectManager.h"
+#include "PrefabManager.h"
 
 #include <assert.h>
 #include <fstream>
@@ -9,20 +9,21 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "Transform.h"
+#include "Scene.h"
+
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-fq::game_module::ObjectManager::ObjectManager()
+fq::game_module::PrefabManager::PrefabManager()
 	:mConverter{}
 {}
 
-fq::game_module::ObjectManager::~ObjectManager()
+fq::game_module::PrefabManager::~PrefabManager()
 {}
 
-std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::ObjectManager::LoadPrefab(const std::filesystem::path& filePath)
+std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::PrefabManager::LoadPrefab(const std::filesystem::path& filePath)
 {
-
 	// 1. Prefab데이터 불러오기
 	std::ifstream readData(filePath);
 
@@ -57,7 +58,7 @@ std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::Objec
 		std::string key = element.key();
 
 		// Tag 설정
-		std::string sTag = key.substr(key.find_last_of('-')+1);
+		std::string sTag = key.substr(key.find_last_of('-') + 1);
 		ETag tag = static_cast<ETag>(std::stoi(sTag));
 		object->SetTag(tag);
 
@@ -86,7 +87,7 @@ std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::Objec
 	return instanceVector;
 }
 
-void fq::game_module::ObjectManager::SavePrefab(GameObject* object, const std::filesystem::path& directory)
+void fq::game_module::PrefabManager::SavePrefab(GameObject* object, const std::filesystem::path& directory)
 {
 	nlohmann::ordered_json prefabData;
 
@@ -139,7 +140,7 @@ void fq::game_module::ObjectManager::SavePrefab(GameObject* object, const std::f
 	}
 }
 
-nlohmann::json fq::game_module::ObjectManager::saveGameObject(GameObject* object)
+nlohmann::json fq::game_module::PrefabManager::saveGameObject(GameObject* object)
 {
 	json componentsJson;
 
@@ -161,7 +162,7 @@ nlohmann::json fq::game_module::ObjectManager::saveGameObject(GameObject* object
 	return componentsJson;
 }
 
-std::shared_ptr<fq::game_module::GameObject> fq::game_module::ObjectManager::loadGameObject(const nlohmann::json& objectData)
+std::shared_ptr<fq::game_module::GameObject> fq::game_module::PrefabManager::loadGameObject(const nlohmann::json& objectData)
 {
 	auto  object = std::make_shared<GameObject>();
 
@@ -176,10 +177,107 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::ObjectManager::loa
 		{
 			continue;
 		}
-		
+
 		entt::meta_any anyComponent = mConverter.ParseClassFromJson(componentID, element.value());
 		object->AddComponent(anyComponent);
 	}
 
 	return object;
 }
+
+void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
+{
+	std::queue<GameObject*> q;
+
+	// 1. 씬에있는 오브젝트를 가져옵니다 
+	for (auto& object : scene->GetObjectView())
+	{
+		q.push(&object);
+	}
+
+	// 2. 프리팹 리소스로드 
+	while (!q.empty())
+	{
+		GameObject* object = q.front();
+		q.pop();
+
+		// 컴포넌트를 순회하면서 프리팹리소드를 로드
+		for (const auto& [componentID, component] : object->GetComponentContainer())
+		{
+			// PrefabResouece 멤버변수를 탐색
+			for (auto [memberID, metaData] : entt::resolve(componentID).data())
+			{
+				if (metaData.type() == entt::resolve<PrefabResource>())
+				{
+					// PrefabResource를 Instance원본형태로 로드 
+					auto prefabresource = metaData.get(component->GetHandle()).cast<PrefabResource>();
+					auto prefabPath = prefabresource.GetPrefabPath();
+
+					if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()) continue;
+
+					if (!std::filesystem::exists(prefabPath))
+					{
+						spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
+							, fq::reflect::GetName(entt::resolve(componentID))
+							, fq::reflect::GetName(metaData));
+						continue;
+					}
+
+					auto instance = LoadPrefab(prefabPath);
+
+					// 프리팹 리소스내부에 존재하는 프리팹 리소도 같이로드
+					for (auto& object : instance)
+					{
+						q.push(object.get());
+					}
+
+					mPrefabInstances.insert({ prefabPath, std::move(instance) });
+				}
+			}
+		}
+	}
+}
+
+void fq::game_module::PrefabManager::UnloadPrefabResource()
+{
+	mPrefabInstances.clear();
+}
+
+fq::game_module::PrefabManager::PrefabInstance fq::game_module::PrefabManager::InstantiatePrefabResoure(const PrefabResource& resource) const
+{
+	auto path = resource.GetPrefabPath();
+	auto iter = mPrefabInstances.find(path);
+	assert(iter != mPrefabInstances.end());
+	const auto& origin = iter->second;
+
+	// origin의 복사본을 생성합니다 
+	std::map<std::string, std::shared_ptr<GameObject>> matchParent;
+	std::queue<GameObject*> objectQueue;
+	objectQueue.push(origin.begin()->get());
+	PrefabInstance instance;
+
+	while (!objectQueue.empty())
+	{
+		auto orginObject = objectQueue.front();
+		objectQueue.pop();
+		auto clone = std::make_shared<fq::game_module::GameObject>(*orginObject);
+		instance.push_back(clone);
+
+		auto parentT = orginObject->GetComponent<Transform>()->GetParentTransform();
+		if (parentT != nullptr)
+		{
+			auto iter = matchParent.find(parentT->GetGameObject()->GetName());
+			clone->GetComponent<Transform>()->SetParent(iter->second->GetComponent<Transform>());
+		}
+		matchParent.insert({ clone->GetName(), clone });
+
+		// 자식들을 큐에 추가합니다
+		for (auto child : orginObject->GetChildren())
+		{
+			objectQueue.push(child);
+		}
+	}
+
+	return instance;
+}
+

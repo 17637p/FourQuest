@@ -43,7 +43,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
-		, mGameProcess->mInputManager.get());
+		, mGameProcess->mInputManager.get()
+		, mGameProcess->mPrefabManager.get());
 	
 	mGameProcess->mSoundManager->Initialize();
 
@@ -151,12 +152,15 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	mGameProcess->mSceneManager->UnloadScene();
+
 	// Editor Process
 	mEditor->mPrefabSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
+
 
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
