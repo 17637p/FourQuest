@@ -151,6 +151,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="PrefabObject.h" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="Pool.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="PrefabObject.cpp" />
