@@ -34,7 +34,7 @@ namespace fq::physics
 		/// </summary>
 		inline const EColliderType& GetColliderType() const;
 
-	private:
+	protected:
 		unsigned int mID;
 		unsigned int mLayerNumber;
 		fq::physics::EColliderType	mColliderType;

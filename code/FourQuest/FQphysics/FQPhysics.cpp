@@ -2,6 +2,7 @@
 
 #include "Physics.h"
 #include "PhysicsRigidBodyManager.h"
+#include "PhysicsCharactorControllerManager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 namespace fq::physics
@@ -55,6 +56,7 @@ namespace fq::physics
 	FQPhysics::FQPhysics()
 		: mPhysics(std::make_shared<Physics>())
 		, mRigidBodyManager(std::make_shared<PhysicsRigidBodyManager>())
+		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
 		, mCollisionMatrix{}
@@ -63,14 +65,15 @@ namespace fq::physics
 
 	FQPhysics::~FQPhysics()
 	{
+		mCCTManager = nullptr;
+		mRigidBodyManager = nullptr;
+
 		PX_RELEASE(mScene);
 	}
 
 	bool FQPhysics::Initialize(PhysicsEngineInfo& info)
 	{
 		mPhysics->Initialize();
-		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics()))
-			return false;
 
 		physx::PxPhysics* physics = mPhysics->GetPhysics();
 
@@ -94,6 +97,10 @@ namespace fq::physics
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
 		assert(mScene);
+
+		// 매니저 초기화
+		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics())) return false;
+		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics())) return false;
 
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
@@ -124,7 +131,20 @@ namespace fq::physics
 		return true;
 	}
 
-#pragma region CreateStaticAndDynamicBody
+	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
+	{
+		mMyEventCallback->SetCallbackFunction(func);
+	}
+
+	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
+	{
+		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, -info.gravity.z));
+		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
+		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
+		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
+	}
+
+#pragma region RigidBodyManager
 
 	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType)
 	{
@@ -183,10 +203,6 @@ namespace fq::physics
 		return true;
 	}
 
-#pragma endregion
-
-#pragma region RemoveRigidBody
-
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
 		if (!mRigidBodyManager->RemoveRigidBody(id, mScene))
@@ -203,56 +219,47 @@ namespace fq::physics
 		return true;
 	}
 
-#pragma endregion
-
-#pragma region SetCallBackFunction
-
-	void FQPhysics::SetCallBackFunction(std::function<void(fq::physics::CollisionData, ECollisionEventType)> func)
+	RigidBodyGetSetData FQPhysics::GetRigidBodyData(const unsigned int& id)
 	{
-		mMyEventCallback->SetCallbackFunction(func);
+		RigidBodyGetSetData rigidBodyData;
+		mRigidBodyManager->GetRigidBodyData(id, rigidBodyData);
+
+		return rigidBodyData;
 	}
 
-#pragma endregion
-
-#pragma region SetPhysicsInfo
-
-	void FQPhysics::SetPhysicsInfo(PhysicsEngineInfo& info)
+	bool FQPhysics::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData)
 	{
-		mScene->setGravity(physx::PxVec3(info.gravity.x, info.gravity.y, -info.gravity.z));
-		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
-		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
-	}
-
-#pragma endregion
-
-#pragma region GetFunction
-
-	DirectX::SimpleMath::Matrix FQPhysics::GetRigidBodyMatrix(const unsigned int& id)
-	{
-		DirectX::SimpleMath::Matrix dxMatrix{};
-		mRigidBodyManager->GetRigidBodyMatrix(id, dxMatrix);
-
-		return dxMatrix;
-	}
-
-	bool FQPhysics::SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform)
-	{
-		return mRigidBodyManager->SetRigidBodyMatrix(id, worldTransform);
-	}
-
-	bool FQPhysics::AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity)
-	{
-		return mRigidBodyManager->AddRigidBodyVelocity(id, velocity);
+		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData);
 	}
 
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
 	}
+
 #pragma endregion
 
+#pragma region CCTManager
+
+	bool FQPhysics::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo)
+	{
+		return mCCTManager->CreateCCT(controllerInfo, movementInfo, mCollisionMatrix);
+	}
+
+	bool FQPhysics::RemoveController(const unsigned int& id)
+	{
+		return mCCTManager->RemoveController(id);
+	}
+
+	void FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
+	{
+		mCCTManager->AddInputMove(id, input);
+	}
+
+#pragma endregion
 
 #pragma  region spdlog
+
 	std::shared_ptr<spdlog::logger> FQPhysics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)
 	{
 		auto logger = std::make_shared<spdlog::logger>("Physics",

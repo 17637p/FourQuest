@@ -51,17 +51,12 @@ namespace fq::physics
 		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 
-		void GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix);
+		void GetRigidBodyData(unsigned int id, RigidBodyGetSetData& rigidBodyData);
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
 		/// </summary>
-		bool SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform);
-
-		/// <summary>
-		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 속도 추가
-		/// </summary>
-		bool AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity);
+		bool SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData);
 
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.

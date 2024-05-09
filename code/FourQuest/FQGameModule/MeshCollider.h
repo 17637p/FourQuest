@@ -13,9 +13,9 @@ namespace fq::game_module
 		~MeshCollider();
 
 		/// <summary>
-		/// 복사본을 할당해서 반환합니다 
+		/// 복사본을 반환합니다 
 		/// </summary>
-		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
+		Component* Clone(Component* clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 정지 마찰 계수를 반환합니다 

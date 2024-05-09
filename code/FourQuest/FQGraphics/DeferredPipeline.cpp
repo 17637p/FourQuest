@@ -65,8 +65,7 @@ namespace fq::graphics
 		mNormalRTV = std::make_shared<fq::graphics::D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
 		mEmissiveRTV = std::make_shared<fq::graphics::D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mPositionRTV = std::make_shared<fq::graphics::D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
-		mShadowRatioRTV = std::make_shared<D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
-		mGeometryPass->SetRenderTargets(mAlbedoRTV, mMetalnessRTV, mRoughnessRTV, mNormalRTV, mEmissiveRTV, mPositionRTV, mShadowRatioRTV);
+		mGeometryPass->SetRenderTargets(mAlbedoRTV, mMetalnessRTV, mRoughnessRTV, mNormalRTV, mEmissiveRTV, mPositionRTV);
 
 		mAlbedoSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mAlbedoRTV);
 		mMetalnessSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mMetalnessRTV);
@@ -74,8 +73,7 @@ namespace fq::graphics
 		mNormalSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mNormalRTV);
 		mEmissiveSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mEmissiveRTV);
 		mPositionSRV = std::make_shared<fq::graphics::D3D11ShaderResourceView>(device, mPositionRTV);
-		mShadowRatioSRV = std::make_shared<D3D11ShaderResourceView>(device, mShadowRatioRTV);
-		mShadingPass->SetShaderResourceViews(mAlbedoSRV, mMetalnessSRV, mRoughnessSRV, mNormalSRV, mEmissiveSRV, mPositionSRV, mShadowRatioSRV);
+		mShadingPass->SetShaderResourceViews(mAlbedoSRV, mMetalnessSRV, mRoughnessSRV, mNormalSRV, mEmissiveSRV, mPositionSRV);
 	}
 	void DeferredPipeline::Finalize()
 	{
@@ -99,7 +97,6 @@ namespace fq::graphics
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
-		mShadowRatioRTV = nullptr;
 
 		mAlbedoSRV = nullptr;
 		mMetalnessSRV = nullptr;
@@ -107,7 +104,6 @@ namespace fq::graphics
 		mNormalSRV = nullptr;
 		mEmissiveSRV = nullptr;
 		mPositionSRV = nullptr;
-		mShadowRatioSRV = nullptr;
 	}
 
 	void DeferredPipeline::OnResize(unsigned short width, unsigned short height)
@@ -136,8 +132,7 @@ namespace fq::graphics
 		mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
-		mShadowRatioRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
-		mGeometryPass->SetRenderTargets(mAlbedoRTV, mMetalnessRTV, mRoughnessRTV, mNormalRTV, mEmissiveRTV, mPositionRTV, mShadowRatioRTV);
+		mGeometryPass->SetRenderTargets(mAlbedoRTV, mMetalnessRTV, mRoughnessRTV, mNormalRTV, mEmissiveRTV, mPositionRTV);
 
 		mAlbedoSRV->Init(mDevice, mAlbedoRTV);
 		mMetalnessSRV->Init(mDevice, mMetalnessRTV);
@@ -145,8 +140,7 @@ namespace fq::graphics
 		mNormalSRV->Init(mDevice, mNormalRTV);
 		mEmissiveSRV->Init(mDevice, mEmissiveRTV);
 		mPositionSRV->Init(mDevice, mPositionRTV);
-		mShadowRatioSRV->Init(mDevice, mShadowRatioRTV);
-		mShadingPass->SetShaderResourceViews(mAlbedoSRV, mMetalnessSRV, mRoughnessSRV, mNormalSRV, mEmissiveSRV, mPositionSRV, mShadowRatioSRV);
+		mShadingPass->SetShaderResourceViews(mAlbedoSRV, mMetalnessSRV, mRoughnessSRV, mNormalSRV, mEmissiveSRV, mPositionSRV);
 
 		for (std::shared_ptr<RenderPass> pass : mPasses)
 		{

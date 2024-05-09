@@ -28,9 +28,11 @@ namespace fq::game_module
 		virtual entt::meta_handle GetHandle() abstract;
 
 		/// <summary>
-		/// 복사본을 반환합니다
+		/// 복사본을 Component*로 반환합니다
 		/// </summary>
-		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const abstract;
+		/// <param name="clone"></param>
+		/// <returns></returns>
+		virtual Component* Clone(Component* clone = nullptr)const abstract;
 
 		/// <summary>
 		/// Scene 시작시 호출

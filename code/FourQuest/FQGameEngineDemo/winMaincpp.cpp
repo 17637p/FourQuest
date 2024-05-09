@@ -21,7 +21,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	app->Process();
 
 	app->Finalize();
-	
 	delete app;
 
 	return 0;

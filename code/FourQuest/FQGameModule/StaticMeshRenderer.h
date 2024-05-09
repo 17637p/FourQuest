@@ -20,7 +20,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사본을 반환합니다
 		/// </summary>
-		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
+		Component* Clone(Component* clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 스태틱 메쉬를 반환합니다

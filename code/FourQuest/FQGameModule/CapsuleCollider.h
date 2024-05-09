@@ -14,9 +14,9 @@ namespace fq::game_module
 		~CapsuleCollider();
 
 		/// <summary>
-		/// 복사본을 할당해서 반환합니다 
+		/// 복사본을 반환합니다 
 		/// </summary>
-		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
+		Component* Clone(Component* clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 캡슐의 반지름을 설정합니다

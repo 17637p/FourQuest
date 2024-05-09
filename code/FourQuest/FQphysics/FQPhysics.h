@@ -11,6 +11,7 @@ namespace fq::physics
 	class Physics;
 	class PhysicsRigidBodyManager;
 	class PhysicsSimulationEventCallback;
+	class PhysicsCharactorControllerManager;
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -35,6 +36,21 @@ namespace fq::physics
 		virtual bool FinalUpdate() override;
 
 		/// <summary>
+		/// 콜백 함수 등록
+		/// </summary>
+		/// <param name="func"> 콜리전 데이터 구조체 </param>
+		/// <param name="eventType"> 콜리전 이벤트 타입 </param>
+		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) override;
+
+		/// <summary>
+		/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )
+		/// </summary>
+		/// <param name="info"> 물리 엔진 정보 </param>
+		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
+
+#pragma region RigidBodyManager
+
+		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
 		virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) override;
@@ -49,17 +65,12 @@ namespace fq::physics
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
 		/// </summary>
-		virtual DirectX::SimpleMath::Matrix GetRigidBodyMatrix(const unsigned int& id) override;
+		virtual RigidBodyGetSetData GetRigidBodyData(const unsigned int& id) override;
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
 		/// </summary>
-		virtual bool SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform) override;
-
-		/// <summary>
-		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 속도 추가
-		/// </summary>
-		virtual bool AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity) override;
+		virtual bool SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData) override;
 
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
@@ -72,22 +83,35 @@ namespace fq::physics
 		virtual bool RemoveAllRigidBody() override;
 
 		/// <summary>
-		/// 콜백 함수 등록
-		/// </summary>
-		/// <param name="func"> 콜리전 데이터 구조체 </param>
-		/// <param name="eventType"> 콜리전 이벤트 타입 </param>
-		virtual void SetCallBackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func) override;
-
-		/// <summary>
-		/// 물리 엔진의 수정할 정보를 전달 받습니다. ( 중력, 충돌 매트릭스 )
-		/// </summary>
-		/// <param name="info"> 물리 엔진 정보 </param>
-		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
-
-		/// <summary>
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
+		
+#pragma endregion
+
+#pragma region CharacterControllerManager
+
+		/// <summary>
+		/// 캐릭터 컨트롤러 생성 함수
+		/// </summary>
+		/// <param name="controllerInfo"> 캐릭터 컨트롤러 생성 데이터 </param>
+		/// <param name="movementInfo"> 캐릭터 무브먼트 생성 데이터 </param>
+		virtual bool CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo) override;
+
+		/// <summary>
+		/// 캐릭터 컨트롤러 삭제 함수
+		/// </summary>
+		/// <param name="id"> 삭제할 캐릭터 컨트롤러의 아이디 </param>
+		virtual bool RemoveController(const unsigned int& id) override;
+
+		/// <summary>
+		/// 특정 캐릭터 컨트롤러의 입력 값 추가 함수
+		/// </summary>
+		/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>
+		/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
+		virtual void AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input) override;
+
+#pragma endregion
 
 		/// <summary>
 		/// spdlog를 설정합니다
@@ -99,6 +123,7 @@ namespace fq::physics
 		physx::PxScene* mScene;
 		std::shared_ptr<Physics> mPhysics;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
+		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 
 		// 충돌 이벤트 클래스
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;

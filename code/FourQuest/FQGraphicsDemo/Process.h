@@ -37,13 +37,15 @@ private:
 	void Update();
 	void Render();
 	void debugRender();
+	void shadowTest();
 
-	void strafe(float distance);
-	void walk(float distance);
-	void worldUpdown(float distance);
+	void strafe(fq::common::Transform& cameraTransform, float distance);
+	void walk(fq::common::Transform& cameraTransform, float distance);
+	void worldUpdown(fq::common::Transform& cameraTransform, float distance);
 
-	void yaw(float angle);
-	void pitch(float angle);
+	void yaw(fq::common::Transform& cameraTransform, float angle);
+	void pitch(fq::common::Transform& cameraTransform, float angle);
+
 	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
@@ -74,5 +76,6 @@ private:
 
 	// Camera
 	fq::common::Transform cameraTransform;
+	fq::common::Transform cameraTransform2;
 };
 

@@ -29,19 +29,20 @@ entt::meta_handle fq::game_module::SoundClip::GetHandle()
 	return *this;
 }
 
-std::shared_ptr<fq::game_module::Component> fq::game_module::SoundClip::Clone(std::shared_ptr<Component> clone /*= nullptr*/) const
+fq::game_module::Component* fq::game_module::SoundClip::Clone(Component* clone /* = nullptr */) const
 {
-	auto cloneSoundClip = std::dynamic_pointer_cast<SoundClip>(clone);
+	SoundClip* soundClip = static_cast<SoundClip*>(clone);
 
-	if (cloneSoundClip == nullptr) // 새로 생성해서 복사본을 준다
+	if (soundClip == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneSoundClip = ObjectPool::GetInstance()->Assign<SoundClip>(*this);
+		soundClip = new SoundClip(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
-		*cloneSoundClip = *this;
+		// 기본 대입 연산자 호출한다.
+		*soundClip = *this;
 	}
 
-	return cloneSoundClip;
+	return soundClip;
 }
 

@@ -54,18 +54,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
-	// 카메라 초기화
-	fq::graphics::CameraInfo cameraInfo;
-
-	cameraInfo.isPerspective = true;
-	cameraInfo.filedOfView = 0.25f * 3.1415f;
-	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 1000.0f;
-
-	mTestGraphics->SetCamera(cameraInfo);
-	//-------------------------------------
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
@@ -96,6 +86,16 @@ bool Process::Init(HINSTANCE hInstance)
 		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
 
+	// 카메라 초기화
+	fq::graphics::CameraInfo cameraInfo;
+
+	cameraInfo.isPerspective = true;
+	cameraInfo.filedOfView = 0.25f * 3.1415f;
+	cameraInfo.nearPlain = 0.03f;
+	cameraInfo.farPlain = 3000;
+
+	mTestGraphics->SetCamera(cameraInfo);
+
 	/// camera 초기화
 	cameraTransform.worldPosition = { 0, 0, 0 };
 	cameraTransform.worldRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f));
@@ -106,30 +106,42 @@ bool Process::Init(HINSTANCE hInstance)
 		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 
+	//-------------------------------------
+
 	/// Light 초기화 
 	fq::graphics::LightInfo directionalLightInfo;
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1,1,1, 1 };
+	directionalLightInfo.color = { 1, 1, 1, 1 };
 	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 0,-1, 0.1 };
+	directionalLightInfo.direction = { 0,-1, 1 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-	//
-	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	//directionalLightInfo.color = { 1,0,0, 1 };
-	//directionalLightInfo.intensity = 1;
-	//directionalLightInfo.direction = { -1,0,0 };
-	//
-	//mTestGraphics->AddLight(2, directionalLightInfo);
-	//
-	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	//directionalLightInfo.color = { 0,0,1, 1 };
-	//directionalLightInfo.intensity = 1;
-	//directionalLightInfo.direction = { 1, 0,0 };
-	//
-	//mTestGraphics->AddLight(3, directionalLightInfo);
-	//
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1,1,1, 1 };
+	directionalLightInfo.intensity = 1;
+	directionalLightInfo.direction = { 1 ,-1, 0 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(2, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1 ,1, 1 };
+	directionalLightInfo.intensity = 1;
+	directionalLightInfo.direction = { -1, -1, 0 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(3, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1 ,1, 1 };
+	directionalLightInfo.intensity = 1;
+	directionalLightInfo.direction = { 0, -1, -1 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(4, directionalLightInfo);
 	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	//directionalLightInfo.color = { 1,0,0, 1 };
 	//directionalLightInfo.intensity = 1000;
@@ -141,15 +153,15 @@ bool Process::Init(HINSTANCE hInstance)
 	//
 	//mTestGraphics->AddLight(4, directionalLightInfo);
 	//
-	//fq::graphics::LightInfo pointLightInfo;
-	//pointLightInfo.type = fq::graphics::ELightType::Point;
-	//pointLightInfo.color = { 1, 1, 1, 1 };
-	//pointLightInfo.intensity = 500;
-	//pointLightInfo.range = 10000;
-	//pointLightInfo.attenuation = { 0, 1, 0 };
-	//pointLightInfo.position = { 10.f, 100.f, 0.f };
-	//
-	//mTestGraphics->AddLight(5, pointLightInfo);
+	fq::graphics::LightInfo pointLightInfo;
+	pointLightInfo.type = fq::graphics::ELightType::Point;
+	pointLightInfo.color = { 1, 0, 0, 1 };
+	pointLightInfo.intensity = 500;
+	pointLightInfo.range = 10000;
+	pointLightInfo.attenuation = { 0, 1, 0 };
+	pointLightInfo.position = { 10.f, 100.f, 0.f };
+
+	mTestGraphics->AddLight(5, pointLightInfo);
 
 	return true;
 }
@@ -244,35 +256,65 @@ void Process::Update()
 	const float speed = mTimeManager.GetDeltaTime() * 1000.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
-		walk(speed);
+		walk(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('S'))
 	{
-		walk(-speed);
+		walk(cameraTransform , -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('D'))
 	{
-		strafe(speed);
+		strafe(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('A'))
 	{
-		strafe(-speed);
+		strafe(cameraTransform , -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('E'))
 	{
-		worldUpdown(speed);
+		worldUpdown(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
-		worldUpdown(-speed);
+		worldUpdown(cameraTransform , -speed);
 	}
+
+	// Test용 두 번째 카메라
+	if (InputManager::GetInstance().IsGetKey('I'))
+	{
+		walk(cameraTransform2, speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('K'))
+	{
+		walk(cameraTransform2 , -speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('L'))
+	{
+		strafe(cameraTransform2, speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('J'))
+	{
+		strafe(cameraTransform2, -speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('O'))
+	{
+		worldUpdown(cameraTransform2, speed);
+	}
+	if (InputManager::GetInstance().IsGetKey('U'))
+	{
+		worldUpdown(cameraTransform2, -speed);
+	}
+
+	mTestGraphics->UpdateCamera(cameraTransform);
+	//mTestGraphics->UpdateColCamera(cameraTransform2); 이거 키면 두 번째 카메라로 컬링 테스트 가능
+
 	if (InputManager::GetInstance().IsGetKey(VK_RBUTTON))
 	{
 		float dx = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().x) * (3.141592f / 180.0f));
 		float dy = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().y) * (3.141592f / 180.0f));
 
-		pitch(dy);
-		yaw(dx);
+		pitch(cameraTransform, dy);
+		yaw(cameraTransform, dx);
 	}
 
 	//picking 테스트
@@ -288,8 +330,8 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		mTestGraphics->SetSkyBox(L"./resource/example/texture/grasscube1024.dds");
-	}
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+ 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
 		for (const auto& object : mStaticMeshObjects)
@@ -310,7 +352,7 @@ void Process::Update()
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
 
-	mTestGraphics->UpdateCamera(cameraTransform);
+	shadowTest();
 
 	InputManager::GetInstance().Update();
 }
@@ -318,7 +360,7 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
-	debugRender();
+	//debugRender();
 	mTestGraphics->Render();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
@@ -411,41 +453,41 @@ void Process::debugRender()
 	sphereInfo.Sphere.Center = { 0, 0, 0 };
 	sphereInfo.Sphere.Radius = 500;
 	sphereInfo.Color = { 0,0,0,1 };
-	mTestGraphics->DrawSphere(sphereInfo);
+	//mTestGraphics->DrawSphere(sphereInfo);
 
 	AABBInfo aabbInfo;
 	aabbInfo.AABB.Center = { 0, 0, 0 };
 	aabbInfo.AABB.Extents = { 500, 500, 500 };
 	aabbInfo.Color = { 1, 0, 0, 1 };
-	mTestGraphics->DrawBox(aabbInfo);
+	//mTestGraphics->DrawBox(aabbInfo);
 
 	OBBInfo obbInfo;
 	obbInfo.OBB.Center = { 0,0,0 };
 	obbInfo.OBB.Extents = { 500, 500, 500 };
 	obbInfo.OBB.Orientation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 3.14 * 0.25f, 3.14 * 0.25f, 0 });
 	obbInfo.Color = { 0, 1, 0, 1 };
-	mTestGraphics->DrawOBB(obbInfo);
+	//mTestGraphics->DrawOBB(obbInfo);
 
 	FrustumInfo frustumInfo;
-
-	frustumInfo.Frustum.Origin = { 0, 0, 200 };
-	frustumInfo.Frustum.Near = 0.1f;
-	frustumInfo.Frustum.Far = 500.f;
-	frustumInfo.Frustum.LeftSlope = -0.5f;
-	frustumInfo.Frustum.RightSlope = 0.5f;
-	frustumInfo.Frustum.TopSlope = 0.5f;
-	frustumInfo.Frustum.BottomSlope = -0.5f;
-	frustumInfo.Color = { 0, 0, 1, 1 };
+	frustumInfo.Frustum.Origin = cameraTransform2.worldPosition;
+	frustumInfo.Frustum.Orientation = cameraTransform2.worldRotation;
+	frustumInfo.Frustum.Near = 0.03f;
+	frustumInfo.Frustum.Far = 3000.f;
+	frustumInfo.Frustum.LeftSlope = -0.736355f;
+	frustumInfo.Frustum.RightSlope = 0.736355f;
+	frustumInfo.Frustum.TopSlope = 0.4142f;
+	frustumInfo.Frustum.BottomSlope = -0.4142;
+	frustumInfo.Color = { 0, 1, 0, 1 };
 	mTestGraphics->DrawFrustum(frustumInfo);
 
 	GridInfo gridInfo;
 	gridInfo.Origin = { 0,0,0 };
 	gridInfo.XAxis = { 1, 0, 0 };
 	gridInfo.YAxis = { 0, 0, 1 };
-	gridInfo.XDivision = 20;
-	gridInfo.YDivision = 20;
+	gridInfo.XDivision = 1;
+	gridInfo.YDivision = 1;
 	gridInfo.GridSize = 1000.f;
-	gridInfo.Color = { 0, 1, 1, 1 };
+	gridInfo.Color = { 1, 0, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
 
 	RingInfo ringInfo;
@@ -453,21 +495,21 @@ void Process::debugRender()
 	ringInfo.MajorAxis = { 300, 0, 0 };
 	ringInfo.MinorAxis = { 0, 300, 0 };
 	ringInfo.Color = { 1, 1, 0, 1 };
-	mTestGraphics->DrawRing(ringInfo);
+	//mTestGraphics->DrawRing(ringInfo);
 
 	RayInfo rayInfo;
 	rayInfo.Origin = { 0,0,-100 };
 	rayInfo.Direction = { 0, 100, 100 };
 	rayInfo.Normalize = false;
 	rayInfo.Color = { 0.5f, 0.5f, 0.5f, 1 };
-	mTestGraphics->DrawRay(rayInfo);
+	//mTestGraphics->DrawRay(rayInfo);
 
 	PolygonInfo polygonInfo;
 	polygonInfo.Points.push_back({ 200, 200, 0 });
 	polygonInfo.Points.push_back({ 400, 200, 0 });
 	polygonInfo.Points.push_back({ 400, 400, 0 });
 	polygonInfo.Color = { 0.1f, 0.2f, 0.3f, 1.f };
-	mTestGraphics->DrawPolygon(polygonInfo);
+	//mTestGraphics->DrawPolygon(polygonInfo);
 
 	polygonInfo.Points.clear();
 	polygonInfo.Points.push_back({ -200, 200, 0 });
@@ -475,27 +517,27 @@ void Process::debugRender()
 	polygonInfo.Points.push_back({ -400, 400, 0 });
 	polygonInfo.Points.push_back({ -300, 500, 0 });
 	polygonInfo.Points.push_back({ -200, 400, 0 });
-	mTestGraphics->DrawPolygon(polygonInfo);
+	//mTestGraphics->DrawPolygon(polygonInfo);
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
-		fq::graphics::debug::AABBInfo aabbInfo;
-		aabbInfo.Color = { 0, 1, 0, 1 };
-		obj->GetRenderBoundingBox().Transform(aabbInfo.AABB, obj->GetTransform());
-		mTestGraphics->DrawBox(aabbInfo);
+		//fq::graphics::debug::AABBInfo aabbInfo;
+		//aabbInfo.Color = { 0, 1, 0, 1 };
+		//obj->GetRenderBoundingBox().Transform(aabbInfo.AABB, obj->GetTransform());
+		//mTestGraphics->DrawBox(aabbInfo);
 
 		fq::graphics::debug::SphereInfo sphererInfo;
-		sphererInfo.Color = { 1, 0, 0, 1 };
+		sphererInfo.Color = { 0, 0, 1, 1 };
 		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
 		mTestGraphics->DrawSphere(sphererInfo);
 	}
 
 	for (auto& obj : mStaticMeshObjects)
 	{
-		fq::graphics::debug::AABBInfo aabbInfo;
-		aabbInfo.Color = { 0, 1, 0, 1 };
-		obj->GetRenderBoundingBox().Transform(aabbInfo.AABB, obj->GetTransform());
-		mTestGraphics->DrawBox(aabbInfo);
+		//fq::graphics::debug::AABBInfo aabbInfo;
+		//aabbInfo.Color = { 0, 1, 0, 1 };
+		//obj->GetRenderBoundingBox().Transform(aabbInfo.AABB, obj->GetTransform());
+		//mTestGraphics->DrawBox(aabbInfo);
 
 		fq::graphics::debug::SphereInfo sphererInfo;
 		sphererInfo.Color = { 1, 0, 0, 1 };
@@ -504,11 +546,42 @@ void Process::debugRender()
 	}
 }
 
+void Process::shadowTest()
+{
+	if (GetAsyncKeyState('5') & 0x8000)
+	{
+		mTestGraphics->UseShadow(1, true);
+		mTestGraphics->UseShadow(4, true);
+	}
+	else
+	{
+		mTestGraphics->UseShadow(1, false);
+		mTestGraphics->UseShadow(4, false);
+	}
+
+	if (GetAsyncKeyState('6') & 0x8000)
+	{
+		mTestGraphics->UseShadow(2, true);
+	}
+	else
+	{
+		mTestGraphics->UseShadow(2, false);
+	}
+	if (GetAsyncKeyState('7') & 0x8000)
+	{
+		mTestGraphics->UseShadow(3, true);
+	}
+	else
+	{
+		mTestGraphics->UseShadow(3, false);
+	}
+}
+
 /*=============================================================================
 		camera
 =============================================================================*/
 #pragma region camera
-void Process::strafe(float distance)
+void Process::strafe(fq::common::Transform& cameraTransform, float distance)
 {
 	//mPosition = XMFLOAT3(mRight.x * d + mPosition.x, mRight.y * d + mPosition.y, mRight.z * d + mPosition.z);
 	DirectX::SimpleMath::Matrix tempMatrix;
@@ -525,7 +598,7 @@ void Process::strafe(float distance)
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 }
 
-void Process::walk(float distance)
+void Process::walk(fq::common::Transform& cameraTransform, float distance)
 {
 	DirectX::SimpleMath::Matrix tempMatrix;
 	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
@@ -541,7 +614,7 @@ void Process::walk(float distance)
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 }
 
-void Process::worldUpdown(float distance)
+void Process::worldUpdown(fq::common::Transform& cameraTransform, float distance)
 {
 	DirectX::SimpleMath::Matrix tempMatrix;
 	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
@@ -557,7 +630,7 @@ void Process::worldUpdown(float distance)
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 }
 
-void Process::yaw(float angle)
+void Process::yaw(fq::common::Transform& cameraTransform, float angle)
 {
 	DirectX::SimpleMath::Vector3 up{ 0, 1, 0 };
 	//up.Normalize();
@@ -572,7 +645,7 @@ void Process::yaw(float angle)
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
 }
 
-void Process::pitch(float angle)
+void Process::pitch(fq::common::Transform& cameraTransform, float angle)
 {
 	DirectX::SimpleMath::Vector3 right{ 1, 0, 0 };
 	right = right * angle;

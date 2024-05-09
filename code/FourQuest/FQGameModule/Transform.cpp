@@ -18,16 +18,17 @@ fq::game_module::Transform::Transform()
 fq::game_module::Transform::~Transform()
 {}
 
-std::shared_ptr<fq::game_module::Component> fq::game_module::Transform::Clone(std::shared_ptr<Component> clone /*= nullptr*/) const
+fq::game_module::Component* fq::game_module::Transform::Clone(Component* clone /* = nullptr */) const
 {
-	auto cloneTransform = std::dynamic_pointer_cast<Transform>(clone);
+	Transform* cloneTransform = static_cast<Transform*>(clone);
 
 	if (cloneTransform == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneTransform = ObjectPool::GetInstance()->Assign<Transform>(*this);
+		cloneTransform = new Transform(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
+		// 기본 대입 연산자 호출한다.
 		*cloneTransform = *this;
 	}
 

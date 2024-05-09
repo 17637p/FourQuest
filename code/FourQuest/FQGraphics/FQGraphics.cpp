@@ -2,6 +2,9 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
+// temp - 컬링 테스트할 때 transform 잠깐 쓰려고
+#include "../FQCommon/FQCommon.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -20,6 +23,7 @@ FQGraphics::FQGraphics()
 	, mLightManager(std::make_shared<D3D11LightManager>())
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 	, mPickingManager(std::make_shared<D3D11PickingManager>())
+	, mCullingManager(std::make_shared<D3D11CullingManager>())
 {
 }
 
@@ -50,6 +54,11 @@ void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
 	mRenderManager->SetSkyBox(path);
 }
 
+void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
+{
+	mCullingManager->UpdateCameraFrustum(cameraTransform.worldPosition, cameraTransform.worldRotation, mCameraManager->GetProjectionMatrix(ECameraType::Player));
+}
+
 void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
 	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, mObjectManager->GetStaticMeshObjects(), mObjectManager->GetSkinnedMeshObjects());
@@ -65,10 +74,6 @@ std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink
 	return logger;
 }
 
-void FQGraphics::DeleteLight(const unsigned int id)
-{
-	mLightManager->DeleteLight(id);
-}
 
 void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
@@ -80,9 +85,21 @@ void FQGraphics::AddLight(const unsigned int id, const LightInfo& lightInfo)
 	mLightManager->AddLight(id, lightInfo);
 }
 
+void FQGraphics::DeleteLight(const unsigned int id)
+{
+	mLightManager->DeleteLight(id);
+}
+
+void FQGraphics::UseShadow(const unsigned int id, bool bUseShadow)
+{
+	mLightManager->UseShadow(id, bUseShadow);
+}
+
 void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)
 {
 	mCameraManager->Update(ECameraType::Player, cameraTransform);
+
+	mCullingManager->UpdateCameraFrustum(mCameraManager->GetPosition(ECameraType::Player), mCameraManager->GetRotation(ECameraType::Player), mCameraManager->GetProjectionMatrix(ECameraType::Player));
 }
 
 void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
@@ -99,8 +116,18 @@ bool FQGraphics::BeginRender()
 
 bool FQGraphics::Render()
 {
-	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
-	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
+	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+	
+	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
+	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
+	
+	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
+	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
+
+	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
+
 	mRenderManager->Render();
 	return true;
 }

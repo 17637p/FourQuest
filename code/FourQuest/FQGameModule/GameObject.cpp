@@ -64,14 +64,14 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 		if (iter == mComponents.end())
 		{
 			// 새로 생성
-			std::shared_ptr<Component> cloneComponent = component->Clone();
+			std::shared_ptr<Component> cloneComponent(component->Clone());
 			mComponents.insert({ id,cloneComponent });
 			cloneComponent->SetGameObject(this);
 		}
 		else
 		{
 			// 덮어씌우기
-			component->Clone(iter->second);
+			component->Clone(iter->second.get());
 			component->SetGameObject(this);
 		}
 	}
@@ -172,7 +172,7 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 
 	assert(component);
 
-	std::shared_ptr<Component> clone = component->Clone(nullptr);
+	Component* clone = component->Clone(nullptr);
 
 	// 기존에 있던 컴포넌트는 제거합니다.
 	auto iter = mComponents.find(type.id());
@@ -182,7 +182,7 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 	}
 
 	clone->SetGameObject(this);
-	mComponents.insert({ type.id(), clone });
+	mComponents.insert({ type.id(), std::shared_ptr<Component>(clone) });
 
 	if (GetScene())
 	{
