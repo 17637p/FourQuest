@@ -158,8 +158,10 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetSpot, &Light::GetSpot>("Spot"_hs)
 		.prop(fq::reflect::prop::Name, "Spot")
 		.prop(fq::reflect::prop::Comment, u8"Spot 설정 (Spot)")
+		.data<&Light::SetShadow, &Light::OnShadow>("OnShadow"_hs)
+		.prop(fq::reflect::prop::Name, "OnShadow")
+		.prop(fq::reflect::prop::Comment, u8"Directional Light 3개 제한")
 		.base<Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //

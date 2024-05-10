@@ -5,12 +5,11 @@
 #include "Event.h"
 
 fq::game_module::Light::~Light()
-{
-
-}
+{}
 
 fq::game_module::Light::Light()
 	: mInfomation{}
+	, mbOnShadow(false)
 {}
 
 entt::meta_handle fq::game_module::Light::GetHandle()
@@ -21,6 +20,8 @@ entt::meta_handle fq::game_module::Light::GetHandle()
 void fq::game_module::Light::SetLightType(LightType type)
 {
 	mInfomation.type = type;
+	if (type != LightType::Directional) mbOnShadow = false;
+
 	fireSetLightType();
 }
 
@@ -58,7 +59,7 @@ void fq::game_module::Light::fireSetLightType()
 {
 	if (GetGameObject() && GetScene())
 	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::SetLightType>({this});
+		GetScene()->GetEventManager()->FireEvent<fq::event::SetLightType>({ this });
 	}
 }
 
@@ -77,5 +78,19 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Light::Clone(std::s
 	}
 
 	return cloneLight;
+}
+
+void fq::game_module::Light::SetShadow(bool bUseShadow)
+{
+	if (mInfomation.type != LightType::Directional) mbOnShadow = false;
+
+	mbOnShadow = bUseShadow;
+}
+
+bool fq::game_module::Light::OnShadow() const
+{
+	if (mInfomation.type != LightType::Directional) return false;
+
+	return mbOnShadow;
 }
 
