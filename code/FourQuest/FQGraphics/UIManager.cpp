@@ -25,7 +25,23 @@ fq::graphics::UIManager::UIManager()
 
 fq::graphics::UIManager::~UIManager()
 {
+	for (const auto& fontPath : mFontPath)
+	{
+		RemoveFontResourceEx(fontPath.c_str(), FR_PRIVATE, NULL);
+	}
 
+	for (const auto& brush : mBrushes)
+	{
+		brush.second->Release();
+	}
+
+	for (const auto& font : mFonts)
+	{
+		font.second->Release();
+	}
+
+	mRenderTarget->Release();
+	mDirect2DFactory->Release();
 }
 
 void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device, const short width, const short height)
@@ -78,6 +94,8 @@ HRESULT fq::graphics::UIManager::createDeviceResources(std::shared_ptr<D3D11Devi
 		backBuffer,
 		&props,
 		&mRenderTarget);
+
+	backBuffer->Release();
 	
 	return hr;
 }
@@ -129,10 +147,7 @@ void fq::graphics::UIManager::Render()
 
 void fq::graphics::UIManager::Finalize()
 {
-	for (const auto& fontPath : mFontPath)
-	{
-		RemoveFontResourceEx(fontPath.c_str(), FR_PRIVATE, NULL);
-	}
+	
 }
 
 void fq::graphics::UIManager::AddFont(const std::wstring& path)
