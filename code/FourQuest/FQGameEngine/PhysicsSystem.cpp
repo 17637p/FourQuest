@@ -60,7 +60,6 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
-
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -324,7 +323,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
-
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)

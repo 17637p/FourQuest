@@ -448,7 +448,7 @@ void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
 			fq::game_module::GameObject* dropObject
 				= static_cast<fq::game_module::GameObject*>(payLoad->Data);
 
-			mGameProcess->mObjectManager->SavePrefab(dropObject, mSelectPath);
+			mGameProcess->mPrefabManager->SavePrefab(dropObject, mSelectPath);
 		}
 
 		ImGui::EndDragDropTarget();

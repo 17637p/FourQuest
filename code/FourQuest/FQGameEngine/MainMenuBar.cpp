@@ -211,7 +211,7 @@ void fq::game_engine::MainMenuBar::SaveScene()
 
 	// 1. ÇÁ¸®ÆÕ ÀúÀå 
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-	auto& objectManager = mGameProcess->mObjectManager;
+	auto& objectManager = mGameProcess->mPrefabManager;
 	auto prefabPath = scenePath / "prefab";
 
 	fq::path::ClearDirectory(prefabPath);

@@ -46,6 +46,7 @@ namespace fq::game_engine
 		void beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginSequenceContainer(entt::meta_data data, fq::reflect::IHandle* handle);
+		void beginInputText_PrefabResource(entt::meta_data data, fq::reflect::IHandle* handle);
 
 		void beginPopupContextItem_Component(fq::reflect::IHandle* handle);
 		void beginIsItemHovered_Comment(entt::meta_data data);

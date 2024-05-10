@@ -15,13 +15,13 @@ entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()
 	return *this;
 }
 
-fq::game_module::Component* fq::game_module::StaticMeshRenderer::Clone(Component* clone /* = nullptr */) const
+std::shared_ptr<fq::game_module::Component> fq::game_module::StaticMeshRenderer::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
-	StaticMeshRenderer* cloneMesh = static_cast<StaticMeshRenderer*>(clone);
+	auto cloneMesh = std::dynamic_pointer_cast<StaticMeshRenderer>(clone);
 
 	if (cloneMesh == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneMesh = new StaticMeshRenderer(*this);
+		cloneMesh = ObjectPool::GetInstance()->Assign<StaticMeshRenderer>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{

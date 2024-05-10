@@ -126,6 +126,10 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 	{
 		beginColorEdit4_Color(data, handle);
 	}
+	else if (metaType == entt::resolve<fq::game_module::PrefabResource>())
+	{
+		beginInputText_PrefabResource(data, handle);
+	}
 	else if (metaType == entt::resolve<int>())
 	{
 		int val = data.get(handle->GetHandle()).cast<int>();
@@ -634,5 +638,37 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 
 		ImGui::EndPopup();
 	}
+}
+
+void fq::game_engine::Inspector::beginInputText_PrefabResource(entt::meta_data data, fq::reflect::IHandle* handle)
+{
+	auto prefabRes = data.get(handle->GetHandle()).cast<fq::game_module::PrefabResource>();
+
+	auto name = fq::reflect::GetName(data);
+	std::string prefabPath = prefabRes.GetPrefabPath();
+
+	ImGui::InputText(name.c_str(), &prefabPath);
+
+	// DragDrop ¹Þ±â
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* dropPath
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			if (dropPath->extension() == ".prefab")
+			{
+				prefabPath = dropPath->string();
+				prefabRes.SetPrefabPath(prefabPath);
+
+				data.set(handle->GetHandle(), prefabRes);
+			}
+		}
+	}
+
+	beginIsItemHovered_Comment(data);
 }
 
