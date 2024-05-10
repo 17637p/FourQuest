@@ -20,6 +20,11 @@ namespace fq::graphics
 		BlendState,
 
 		ConstantBuffer,
+		ConstantBufferNT,
+
+		VertexShader,
+		GeometryShader,
+		PixelShader,
 	};
 
 	class ResourceBase

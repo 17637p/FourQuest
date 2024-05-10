@@ -1,28 +1,51 @@
 #pragma once
 
+#include <map>
+#include <memory>
 #include "CommonHeader.h"
 #include "Light.h"
 
 namespace fq::graphics
 {
-	struct ModelTransform
+	template <typename T>
+	struct ConstantBuffer
 	{
+	public:
+		static std::string GetName()
+		{
+			std::string name = typeid(T).name();
+			size_t spacePos = name.find_first_of(' ');
+			size_t colonPos = name.find_last_of(':');
+			size_t classNamePos = std::max<size_t>(spacePos, colonPos);
+
+			if (classNamePos != std::string::npos)
+			{
+				name = name.substr(classNamePos + 1, name.length());
+			}
+
+			return name;
+		}
+	};
+
+	struct cbModelTransform : public ConstantBuffer<cbModelTransform>
+	{
+
 		DirectX::SimpleMath::Matrix WorldMat;
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
-	struct SceneTrnasform
+	struct cbSceneTransform : public ConstantBuffer<cbSceneTransform>
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;
 	};
 
-	struct BoneTransform
+	struct cbBoneTransform : public ConstantBuffer<cbBoneTransform>
 	{
 		enum { MAX_BOND_COUNT = 128 };
 		DirectX::SimpleMath::Matrix FinalTransforms[128];
 	};
 
-	struct DirectionalShadowTransform
+	struct cbShadowTransform : public ConstantBuffer<cbShadowTransform>
 	{
 		enum { CASCADE_COUNT = 3 };
 		enum { MAX_SHADOW_COUNT = 3 };
@@ -32,15 +55,15 @@ namespace fq::graphics
 		int unused[3];
 	};
 
-	struct DirectionalShadowInfo
+	struct cbShadowTransformCascaseEnd : public ConstantBuffer<cbShadowTransformCascaseEnd>
 	{
-		DirectX::SimpleMath::Matrix ShadowViewProj[DirectionalShadowTransform::CASCADE_COUNT * DirectionalShadowTransform::MAX_SHADOW_COUNT];
-		DirectX::SimpleMath::Vector4 CascadeEnds[DirectionalShadowTransform::MAX_SHADOW_COUNT];
+		DirectX::SimpleMath::Matrix ShadowViewProj[cbShadowTransform::CASCADE_COUNT * cbShadowTransform::MAX_SHADOW_COUNT];
+		DirectX::SimpleMath::Vector4 CascadeEnds[cbShadowTransform::MAX_SHADOW_COUNT];
 		int ShadowCount;
 		float unused[3];
 	};
 
-	struct AlphaData
+	struct cbAlpha : public ConstantBuffer<cbAlpha>
 	{
 		int bUseAlphaConstant;
 		float Alpha;
@@ -52,7 +75,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix ViewProjMat;
 	};
 
-	struct ModelTexutre
+	struct cbModelTexture : public ConstantBuffer<cbModelTexture>
 	{
 		int bUseAlbedoMap;
 		int bUseMetalnessMap;
@@ -63,7 +86,7 @@ namespace fq::graphics
 		int unused[2];
 	};
 
-	struct LightData
+	struct cbLight : public ConstantBuffer<cbLight>
 	{
 		DirectionalLight directionalLight[3];
 		PointLight pointLight[10];
@@ -87,13 +110,13 @@ namespace fq::graphics
 	{
 	public:
 		static void UpdateModelTransformCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<ModelTransform>>& cbuffer,
+			std::shared_ptr<D3D11ConstantBuffer<cbModelTransform>>& cbuffer,
 			const DirectX::SimpleMath::Matrix& transform);
 		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>>& cbuffer,
+			std::shared_ptr<D3D11ConstantBuffer<cbModelTexture>>& cbuffer,
 			const std::shared_ptr<Material>& material);
 		static void UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
+			std::shared_ptr<D3D11ConstantBuffer<cbBoneTransform>>& cbuffer,
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);
 	};
 }

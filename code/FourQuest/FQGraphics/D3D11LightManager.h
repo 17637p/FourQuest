@@ -31,13 +31,14 @@ namespace fq::graphics
 			const DirectX::SimpleMath::Vector3& eyePosition,
 			const unsigned int isUseIBL);
 
-		inline std::shared_ptr<D3D11ConstantBuffer<LightData>> GetLightConstnatBuffer();
+		inline std::shared_ptr<D3D11ConstantBuffer<cbLight>> GetLightConstnatBuffer();
 
 		// 임시 추가
 		inline std::vector<std::shared_ptr<Light<DirectionalLight>>> GetDirectionalShadows() const;
+		cbLight GetLightData() const;
 
 	private:
-		std::shared_ptr<D3D11ConstantBuffer<LightData>> mLightConstantBuffer;
+		std::shared_ptr<D3D11ConstantBuffer<cbLight>> mLightConstantBuffer;
 
 		std::unordered_map<unsigned int, std::shared_ptr<Light<DirectionalLight>>>	mDirectionalLights;
 		std::unordered_map<unsigned int, std::shared_ptr<Light<PointLight>>>		mPointLights;
@@ -46,14 +47,14 @@ namespace fq::graphics
 		std::unordered_map<unsigned int, std::shared_ptr<Light<DirectionalLight>>>	mDirectionalShadows;
 	};
 
-	inline std::shared_ptr<D3D11ConstantBuffer<LightData>> D3D11LightManager::GetLightConstnatBuffer()
+	inline std::shared_ptr<D3D11ConstantBuffer<cbLight>> D3D11LightManager::GetLightConstnatBuffer()
 	{
 		return mLightConstantBuffer;
 	}
 
 	inline std::vector<std::shared_ptr<Light<DirectionalLight>>> D3D11LightManager::GetDirectionalShadows() const
 	{
-		assert(mDirectionalShadows.size() <= DirectionalShadowTransform::MAX_SHADOW_COUNT);
+		assert(mDirectionalShadows.size() <= cbShadowTransform::MAX_SHADOW_COUNT);
 
 		std::vector<std::shared_ptr<Light<DirectionalLight>>> lights;
 		lights.reserve(mDirectionalShadows.size());

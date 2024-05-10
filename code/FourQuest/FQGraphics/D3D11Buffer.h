@@ -18,20 +18,6 @@ namespace fq::graphics
 	class D3D11Device;
 
 	/*=============================================================================
-		Input Layout
-	=============================================================================*/
-	class D3D11InputLayout
-	{
-	public:
-		D3D11InputLayout(const std::shared_ptr<D3D11Device>& device, ID3DBlob* VSBytecode);
-
-		void Bind(const std::shared_ptr<D3D11Device>& device);
-
-	private:
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInputLayout;
-	};
-
-	/*=============================================================================
 		Vertex Buffer
 	=============================================================================*/
 	class D3D11VertexBuffer
@@ -89,13 +75,15 @@ namespace fq::graphics
 	/*=============================================================================
 		Constant Buffer
 	=============================================================================*/
+	// 상수버퍼도 메모리 덩어리라고 하면 그냥 고렇게 처리하는 것도 가능하긴 하네
+	// 이름이랑 구조체를 매핑할 방법이 있나
 	template<typename ConstantType>
 	class D3D11ConstantBuffer : public ResourceBase
 	{
 		static_assert(sizeof(ConstantType) % 16 == 0, "constant buffer must be aligned by 16 bytes");
 
 	public:
-		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device, 
+		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device,
 			const ED3D11ConstantBuffer eConstantBuffer);
 
 		static std::string GenerateRID(const ED3D11ConstantBuffer eConstantBuffer);
@@ -127,23 +115,23 @@ namespace fq::graphics
 
 		switch (eShaderType)
 		{
-			case ED3D11ShaderType::VertexShader:
-			{
-				d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::GeometryShader:
-			{
-				d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::Pixelshader:
-			{
-				d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			default:
-				break;
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		default:
+			break;
 		}
 	}
 
@@ -155,5 +143,25 @@ namespace fq::graphics
 	{
 		mConstantBuffer = std::make_shared<DirectX::ConstantBuffer<ConstantType>>(device->GetDevice().Get());
 	}
+
+	class D3D11ConstantBufferNT : public ResourceBase
+	{
+	public:
+		D3D11ConstantBufferNT(const std::shared_ptr<D3D11Device>& device, ED3D11ConstantBufferNT type);
+		D3D11ConstantBufferNT(const std::shared_ptr<D3D11Device>& device, ED3D11ConstantBufferNT type, size_t size);
+		D3D11ConstantBufferNT(const std::shared_ptr<D3D11Device>& device, ED3D11ConstantBufferNT type, CD3D11_BUFFER_DESC desc);
+
+		static std::string GenerateRID(const ED3D11ConstantBufferNT eConstantBuffer);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11ShaderType eShaderType, const UINT startSlot = 0);
+		void Update(const std::shared_ptr<D3D11Device>& d3d11Device, const void* data, size_t size);
+
+	private:
+		void create(const std::shared_ptr<D3D11Device>& device, size_t size);
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mBuffer;
+		size_t mSize;
+	};
 }
 

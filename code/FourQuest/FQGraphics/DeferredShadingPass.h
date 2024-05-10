@@ -50,6 +50,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<D3D11PixelShader> mShadingPS;
 
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbShadowTransformCascaseEnd>> mDirectioanlShadowInfoCB;
 	};
 }

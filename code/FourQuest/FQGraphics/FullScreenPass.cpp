@@ -41,6 +41,7 @@ namespace fq::graphics
 			1,3,2
 		};
 
+
 		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
 		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 

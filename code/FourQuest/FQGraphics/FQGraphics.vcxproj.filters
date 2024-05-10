@@ -118,9 +118,6 @@
     <ClInclude Include="RenderPipeline.h">
       <Filter>Pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="DeferredPass.h">
-      <Filter>Pass\DeferredPipelinePass</Filter>
-    </ClInclude>
     <ClInclude Include="FowardRenderPass.h">
       <Filter>Pass\ForwardPipelinePass</Filter>
     </ClInclude>
@@ -275,9 +272,6 @@
     <ClCompile Include="TransparentRenderPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
-    <ClCompile Include="DeferredPass.cpp">
-      <Filter>Pass\DeferredPipelinePass\Source</Filter>
-    </ClCompile>
     <ClCompile Include="DeferredShadingPass.cpp">
       <Filter>Pass\DeferredPipelinePass\Source</Filter>
     </ClCompile>
@@ -378,12 +372,26 @@
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
       <Filter>Shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl" />
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl" />
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl" />
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl" />
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl" />
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl" />
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

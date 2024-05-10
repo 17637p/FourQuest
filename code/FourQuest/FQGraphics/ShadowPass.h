@@ -49,9 +49,9 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RasterizerState> mShadowRS;
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowTransform>> mDirectionalShadowTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbModelTransform>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbSceneTransform>> mSceneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbBoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbShadowTransform>> mDirectionalShadowTransformCB;
 	};
 }

@@ -55,10 +55,10 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 
-		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<cbModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<cbSceneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<cbBoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<cbModelTexture>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 	void DeferredGeometryPass::Finalize()
 	{
@@ -108,7 +108,7 @@ namespace fq::graphics
 
 		// update
 		{
-			SceneTrnasform sceneTransform;
+			cbSceneTransform sceneTransform;
 			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);

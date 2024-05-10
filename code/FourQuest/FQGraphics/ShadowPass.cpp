@@ -47,10 +47,10 @@ namespace fq::graphics
 		mShadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
 		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
 
-		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mDirectionalShadowTransformCB = std::make_shared<D3D11ConstantBuffer<DirectionalShadowTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<cbModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<cbSceneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<cbBoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDirectionalShadowTransformCB = std::make_shared<D3D11ConstantBuffer<cbShadowTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 
 	void ShadowPass::Finalize()
@@ -203,7 +203,7 @@ namespace fq::graphics
 		}
 
 		const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = mLightManager->GetDirectionalShadows();
-		DirectionalShadowTransform directionalShadowTransformData;
+		cbShadowTransform directionalShadowTransformData;
 		directionalShadowTransformData.ShadowCount = currentDirectionaShadowCount;
 
 		for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
@@ -219,7 +219,7 @@ namespace fq::graphics
 			assert(shadowTransforms.size() == 3);
 
 
-			size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
+			size_t shaodwIndex = i * cbShadowTransform::MAX_SHADOW_COUNT;
 
 			directionalShadowTransformData.ShadowViewProj[shaodwIndex + 0] = shadowTransforms[0].Transpose();
 			directionalShadowTransformData.ShadowViewProj[shaodwIndex + 1] = shadowTransforms[1].Transpose();

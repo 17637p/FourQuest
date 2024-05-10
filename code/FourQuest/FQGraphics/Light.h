@@ -37,33 +37,33 @@ namespace fq::graphics
 		float pad;
 	};
 
-	template<typename LightData>
+	template<typename cbLight>
 	class Light
 	{
 	public:
 		Light();
 
-		LightData GetData() const;
-		void SetData(const LightData& lightData);
+		cbLight GetData() const;
+		void SetData(const cbLight& lightData);
 
 	private:
-		LightData mData;
+		cbLight mData;
 	};
 
-	template<typename LightData>
-	LightData fq::graphics::Light<LightData>::GetData() const
+	template<typename cbLight>
+	cbLight fq::graphics::Light<cbLight>::GetData() const
 	{
 		return mData;
 	}
 
-	template<typename LightData>
-	fq::graphics::Light<LightData>::Light()
+	template<typename cbLight>
+	fq::graphics::Light<cbLight>::Light()
 		:mData()
 	{
 	}
 
-	template<typename LightData>
-	void fq::graphics::Light<LightData>::SetData(const LightData& lightData)
+	template<typename cbLight>
+	void fq::graphics::Light<cbLight>::SetData(const cbLight& lightData)
 	{
 		mData = lightData;
 	}

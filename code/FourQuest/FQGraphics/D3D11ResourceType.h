@@ -94,4 +94,39 @@ namespace fq::graphics
 		Light,
 		ViewRotationProj,
 	};
+
+	enum class ED3D11ConstantBufferNT
+	{
+		cbModelTransform,
+		cbSceneTransform,
+		cbBoneTransform,
+		cbShadowTransform,
+		cbShadowTransformCascaseEnd,
+		cbAlpha,
+		ViewRotationProjectionMatrix,
+		cbModelTexture,
+		cbLight,
+	};
+
+	/*=============================================================================
+			Shader/ShaderProgram
+	=============================================================================*/
+	enum class ED3D11VertexShader
+	{
+		None,
+		StaticModel,
+		SkinnedModel
+	};
+
+	enum class ED3D11GeometryShader
+	{
+		None,
+	};
+
+	enum class ED3D11PixelShader
+	{
+		None,
+		Model,
+	};
+
 }

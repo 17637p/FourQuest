@@ -11,7 +11,7 @@ fq::graphics::D3D11LightManager::D3D11LightManager()
 
 void fq::graphics::D3D11LightManager::Initialize(const std::shared_ptr<D3D11Device>& d3d11Device)
 {
-	mLightConstantBuffer = std::make_shared<D3D11ConstantBuffer<LightData>>(d3d11Device, ED3D11ConstantBuffer::Light);
+	mLightConstantBuffer = std::make_shared<D3D11ConstantBuffer<cbLight>>(d3d11Device, ED3D11ConstantBuffer::Light);
 }
 
 void fq::graphics::D3D11LightManager::AddLight(const unsigned int id, const LightInfo& lightInfo)
@@ -132,7 +132,7 @@ void fq::graphics::D3D11LightManager::UseShadow(const unsigned int id, bool bUse
 {
 	if (bUseShadow)
 	{
-		if (mDirectionalShadows.size() < DirectionalShadowTransform::MAX_SHADOW_COUNT)
+		if (mDirectionalShadows.size() < cbShadowTransform::MAX_SHADOW_COUNT)
 		{
 			auto find = mDirectionalLights.find(id);
 
@@ -153,7 +153,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	const DirectX::SimpleMath::Vector3& eyePosition,
 	const unsigned int isUseIBL)
 {
-	LightData lightData;
+	cbLight lightData;
 
 	/// Todo: 일단은 다 올리는 데 컬링을 넣기 시작하면 포인트 라이트와 스팟 라이트의 영역을 검사해서 컬링을 해야한다.
 
@@ -201,5 +201,53 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	lightData.isUseIBL = isUseIBL;
 
 	mLightConstantBuffer->Update(d3d11Device, lightData);
+}
+
+fq::graphics::cbLight fq::graphics::D3D11LightManager::GetLightData() const
+{
+	cbLight lightData;
+	/// Todo: 일단은 다 올리는 데 컬링을 넣기 시작하면 포인트 라이트와 스팟 라이트의 영역을 검사해서 컬링을 해야한다.
+
+	// Directional Light
+	// 임의로 쉐도우를 사용하는 라이트가 먼저 추가되도록 함_홍지환
+	unsigned short count = 0;
+	std::set<unsigned int> idSet;
+	for (const auto& shadowDirectionalLight : mDirectionalShadows)
+	{
+		idSet.insert(shadowDirectionalLight.first);
+
+		lightData.directionalLight[count] = shadowDirectionalLight.second->GetData();
+		count++;
+	}
+	for (const auto& directionalLight : mDirectionalLights)
+	{
+		auto find = idSet.find(directionalLight.first);
+
+		if (find == idSet.end())
+		{
+			lightData.directionalLight[count] = directionalLight.second->GetData();
+			count++;
+		}
+	}
+
+	lightData.numOfDirectionalLight = count;
+	// Point Light
+	count = 0;
+	for (const auto& pointLight : mPointLights)
+	{
+		lightData.pointLight[count] = pointLight.second->GetData();
+		count++;
+	}
+	lightData.numOfPointLight = count;
+	// Spot Light
+	count = 0;
+	for (const auto& spotLight : mSpotLight)
+	{
+		lightData.spotLight[count] = spotLight.second->GetData();
+		count++;
+	}
+	lightData.numOfSpotLight = count;
+
+	return lightData;
 }
 

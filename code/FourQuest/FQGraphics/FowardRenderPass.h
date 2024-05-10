@@ -7,6 +7,9 @@
 
 namespace fq::graphics
 {
+	class D3D11ShaderProgram;
+	class D3D11ConstantBufferNT;
+
 	class ForwardRenderPass : public Pass
 	{
 	public:
@@ -35,22 +38,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPointLightShadowSRV;
 
-		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
-		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
-		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
-		std::shared_ptr<D3D11PixelShader> mMeshPS;
-
-		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
-		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
-		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
-		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
-		std::shared_ptr<D3D11SamplerState> mShadowSampler;
-
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
+		std::shared_ptr<D3D11ShaderProgram> mStaticMeshProgram;
+		std::shared_ptr<D3D11ShaderProgram> mSkinnedMeshProgram;
 	};
 }

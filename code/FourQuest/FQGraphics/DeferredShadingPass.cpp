@@ -58,7 +58,7 @@ namespace fq::graphics
 		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
 		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 
-		mDirectioanlShadowInfoCB = std::make_shared<D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDirectioanlShadowInfoCB = std::make_shared<D3D11ConstantBuffer<cbShadowTransformCascaseEnd>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 	void DeferredShadingPass::Finalize()
 	{
@@ -119,7 +119,7 @@ namespace fq::graphics
 		// update
 		{
 			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
-			DirectionalShadowInfo directionalShadowData;
+			cbShadowTransformCascaseEnd directionalShadowData;
 			directionalShadowData.ShadowCount = currentDirectionaShadowCount;
 
 			if (currentDirectionaShadowCount > 0)
@@ -146,7 +146,7 @@ namespace fq::graphics
 						 0.5f, 0.5f, 0.0f, 1.0f
 					};
 					auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
-					size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
+					size_t shaodwIndex = i * cbShadowTransform::MAX_SHADOW_COUNT;
 
 					directionalShadowData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
 					directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;

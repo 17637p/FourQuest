@@ -21,6 +21,22 @@ namespace fq::graphics
 		mNoneDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 
 		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mBackBufferRTV);
+
+		// 자동화하고 싶다 요기 부분을!
+		std::map<std::string, ED3D11SamplerState> samplerStateMap;
+		samplerStateMap.insert({ "gSamplerAnisotropic", ED3D11SamplerState::AnisotropicWrap });
+		samplerStateMap.insert({ "gLinearClamp", ED3D11SamplerState::Default });
+		samplerStateMap.insert({ "gShadowSampler", ED3D11SamplerState::Shadow });
+		D3D11ShaderProgram::SetSamplerStateMap(samplerStateMap);
+
+		std::map<std::string, ED3D11ConstantBufferNT> constnatBufferMap;
+		constnatBufferMap.insert({ "cbModelTransform", ED3D11ConstantBufferNT::cbModelTransform });
+		constnatBufferMap.insert({ "cbSceneTransform", ED3D11ConstantBufferNT::cbSceneTransform });
+		constnatBufferMap.insert({ "cbBoneTransform", ED3D11ConstantBufferNT::cbBoneTransform });
+		constnatBufferMap.insert({ "cbModelTexture", ED3D11ConstantBufferNT::cbModelTexture });
+		constnatBufferMap.insert({ "cbLight", ED3D11ConstantBufferNT::cbLight });
+		constnatBufferMap.insert({ "cbShadowTransformCascaseEnd", ED3D11ConstantBufferNT::cbShadowTransformCascaseEnd });
+		D3D11ShaderProgram::SetConstantBufferMap(constnatBufferMap);
 	}
 
 	void RenderPipeline::Finalize()

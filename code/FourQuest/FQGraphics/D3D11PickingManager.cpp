@@ -68,8 +68,8 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	mStaticMeshLayout = std::make_shared<D3D11InputLayout>(device, mStaticMeshVS->GetBlob().Get());
 	mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(device, mSkinnedMeshVS->GetBlob().Get());
 
-	mConstantBuffer = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(device, ED3D11ConstantBuffer::Transform);
-	mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(device, ED3D11ConstantBuffer::Transform);
+	mConstantBuffer = std::make_shared<D3D11ConstantBuffer<cbModelTransform>>(device, ED3D11ConstantBuffer::Transform);
+	mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<cbBoneTransform>>(device, ED3D11ConstantBuffer::Transform);
 
 	mDSV = resourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Picking, width, height);
 
@@ -232,7 +232,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	{
 		job.StaticMesh->Bind(device);
 
-		ModelTransform modelTransform;
+		cbModelTransform modelTransform;
 		modelTransform.color = mStaticMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
 		modelTransform.world = (*job.TransformPtr).Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
@@ -251,7 +251,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	{
 		job.SkinnedMesh->Bind(device);
 
-		ModelTransform modelTransform;
+		cbModelTransform modelTransform;
 		modelTransform.color = mSkinnedMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
 		modelTransform.world = (*job.TransformPtr).Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();

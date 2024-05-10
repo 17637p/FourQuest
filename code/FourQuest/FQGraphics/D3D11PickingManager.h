@@ -37,7 +37,7 @@ namespace fq::graphics
 	class D3D11VertexShader;
 	class D3D11PixelShader;
 
-	struct BoneTransform;
+	struct cbBoneTransform;
 
 	/// <summary>
 	/// 내 생각에는 우리는 에디터에서만 Picking을 사용할 거니까 텍스처에 찍는 거 해봐도 될 듯 
@@ -98,7 +98,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> mCopyTexture;
 
-		struct ModelTransform
+		struct cbModelTransform
 		{
 			DirectX::SimpleMath::Color color;
 			DirectX::SimpleMath::Matrix world;
@@ -107,8 +107,8 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
 		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mConstantBuffer;
-		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbModelTransform>> mConstantBuffer;
+		std::shared_ptr<D3D11ConstantBuffer<cbBoneTransform>> mBoneTransformCB;
 
 		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
 		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;

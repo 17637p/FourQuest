@@ -48,12 +48,12 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilState> mDisableDepthWriteState;
 
 		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
-		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
-		std::shared_ptr<D3D11ConstantBuffer<AlphaData>> mAlphaDataCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbModelTransform>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbSceneTransform>> mSceneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbBoneTransform>> mBoneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbModelTexture>> mModelTexutreCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbShadowTransformCascaseEnd>> mDirectioanlShadowInfoCB;
+		std::shared_ptr<D3D11ConstantBuffer<cbAlpha>> mAlphaDataCB;
 	};
 
 }

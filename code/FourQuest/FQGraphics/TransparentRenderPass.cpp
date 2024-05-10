@@ -51,12 +51,12 @@ namespace fq::graphics
 		mDisableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		mOITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 
-		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mAlphaDataCB = std::make_shared< D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<cbModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<cbSceneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<cbBoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<cbModelTexture>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<cbShadowTransformCascaseEnd>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mAlphaDataCB = std::make_shared< D3D11ConstantBuffer<cbAlpha>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -113,13 +113,13 @@ namespace fq::graphics
 		// update
 		{
 			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
-			DirectionalShadowInfo directionalShadowData;
+			cbShadowTransformCascaseEnd directionalShadowData;
 			directionalShadowData.ShadowCount = currentDirectionaShadowCount;
 
 			if (currentDirectionaShadowCount > 0)
 			{
 				const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = mLightManager->GetDirectionalShadows();
-				DirectionalShadowTransform directionalShadowTransformData;
+				cbShadowTransform directionalShadowTransformData;
 				directionalShadowTransformData.ShadowCount = currentDirectionaShadowCount;
 
 
@@ -143,7 +143,7 @@ namespace fq::graphics
 						 0.5f, 0.5f, 0.0f, 1.0f
 					};
 					auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
-					size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
+					size_t shaodwIndex = i * cbShadowTransform::MAX_SHADOW_COUNT;
 
 					directionalShadowTransformData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
 					directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
@@ -156,7 +156,7 @@ namespace fq::graphics
 
 			mDirectioanlShadowInfoCB->Update(mDevice, directionalShadowData);
 
-			SceneTrnasform sceneTransform;
+			cbSceneTransform sceneTransform;
 			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
@@ -215,7 +215,7 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
 
-					AlphaData alphaData;
+					cbAlpha alphaData;
 					alphaData.bUseAlphaConstant = true;
 					alphaData.Alpha = job.Alpha;
 
@@ -240,7 +240,7 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
-					AlphaData alphaData;
+					cbAlpha alphaData;
 					alphaData.bUseAlphaConstant = true;
 					alphaData.Alpha = job.Alpha;
 

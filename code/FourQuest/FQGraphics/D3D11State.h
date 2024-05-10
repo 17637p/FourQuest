@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <memory>
 #include <string>
+#include <cassert>
 
 #include "D3D11ResourceType.h"
 #include "D3D11Device.h"
@@ -79,5 +80,34 @@ namespace fq::graphics
 
 	private:
 		ComPtr<ID3D11BlendState> mState;
+	};
+
+	class PipelineState
+	{
+	public:
+		PipelineState(std::shared_ptr<D3D11RasterizerState> rasterizerState,
+			std::shared_ptr<D3D11DepthStencilState> depthStencilState,
+			std::shared_ptr<D3D11BlendState> blendState)
+			: mRasterizerState(rasterizerState)
+			, mDepthStencilState(depthStencilState)
+			, mBlendState(blendState)
+		{
+			assert(rasterizerState != nullptr);
+			assert(depthStencilState != nullptr);
+			assert(blendState != nullptr);
+		}
+		~PipelineState() = default;
+
+		void Bind(const std::shared_ptr<D3D11Device>& device)
+		{
+			mRasterizerState->Bind(device);
+			mDepthStencilState->Bind(device);
+			mBlendState->Bind(device);
+		}
+
+	private:
+		std::shared_ptr<D3D11RasterizerState> mRasterizerState;
+		std::shared_ptr<D3D11DepthStencilState> mDepthStencilState;
+		std::shared_ptr<D3D11BlendState> mBlendState;
 	};
 }
