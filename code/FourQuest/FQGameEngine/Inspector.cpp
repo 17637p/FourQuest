@@ -29,7 +29,7 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
-	mInputManager = editor->mInputManager.get();
+	mInputManager = game->mInputManager.get();
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
@@ -125,6 +125,10 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 	else if (metaType == entt::resolve<DirectX::SimpleMath::Color>())
 	{
 		beginColorEdit4_Color(data, handle);
+	}
+	else if (metaType == entt::resolve<fq::game_module::PrefabResource>())
+	{
+		beginInputText_PrefabResource(data, handle);
 	}
 	else if (metaType == entt::resolve<int>())
 	{
@@ -313,15 +317,17 @@ void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data dat
 
 	Vector3 euler = quatarnion.ToEuler();
 
-	float f[3]{ euler.x,euler.y,euler.z };
+	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+		, DirectX::XMConvertToDegrees(euler.y)
+		, DirectX::XMConvertToDegrees(euler.z) };
 
 	ImGui::InputFloat3(memberName.c_str(), f);
 
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		euler.x = f[0];
-		euler.y = f[1];
-		euler.z = f[2];
+		euler.x = DirectX::XMConvertToRadians(f[0]);
+		euler.y = DirectX::XMConvertToRadians(f[1]);
+		euler.z = DirectX::XMConvertToRadians(f[2]);
 		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
 
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
@@ -629,10 +635,61 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 				BindFunctionCommand{
 					remove, add
 				});
+		}	
 
+		if (type == entt::resolve<fq::game_module::Transform>() && ImGui::MenuItem("Reset"))
+		{
+		 	auto transform = mSelectObject->GetComponent<fq::game_module::Transform>();
+			auto prevMatrix = transform->GetLocalMatrix();
+
+			auto excute = [transform, object = mSelectObject]()
+				{
+					transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::Identity);
+				};
+			auto undo = [transform, object = mSelectObject, prevMatrix]()
+				{
+					transform->SetLocalMatrix(prevMatrix);
+				};
+
+			mEditorProcess->mCommandSystem->Push<BindFunctionCommand>(
+				BindFunctionCommand{ excute, undo }
+			);
 		}
+
 
 		ImGui::EndPopup();
 	}
+}
+
+void fq::game_engine::Inspector::beginInputText_PrefabResource(entt::meta_data data, fq::reflect::IHandle* handle)
+{
+	auto prefabRes = data.get(handle->GetHandle()).cast<fq::game_module::PrefabResource>();
+
+	auto name = fq::reflect::GetName(data);
+	std::string prefabPath = prefabRes.GetPrefabPath();
+
+	ImGui::InputText(name.c_str(), &prefabPath);
+
+	// DragDrop 받기
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* dropPath
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			if (dropPath->extension() == ".prefab")
+			{
+				prefabPath = dropPath->string();
+				prefabRes.SetPrefabPath(prefabPath);
+
+				data.set(handle->GetHandle(), prefabRes);
+			}
+		}
+	}
+
+	beginIsItemHovered_Comment(data);
 }
 

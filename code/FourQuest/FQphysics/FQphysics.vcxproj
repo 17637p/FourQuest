@@ -137,7 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CharacterController.h" />
-    <ClInclude Include="CharaterMovement.h" />
+    <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
@@ -148,12 +148,13 @@
     <ClInclude Include="Physics.h" />
     <ClInclude Include="PhysicsRigidBodyManager.h" />
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
+    <ClInclude Include="PlayerCharacterController.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterController.cpp" />
-    <ClCompile Include="CharaterMovement.cpp" />
+    <ClCompile Include="CharacterMovement.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PhysicsRigidBodyManager.cpp" />
     <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
+    <ClCompile Include="PlayerCharacterController.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="StaticRigidBody.cpp" />
   </ItemGroup>

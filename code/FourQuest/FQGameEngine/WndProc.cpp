@@ -5,6 +5,7 @@
 #include <imgui.h>
 
 #include "WindowSystem.h"
+#include "../FQGameModule/InputManager.h"
 
 LRESULT CALLBACK fq::game_engine::WndProc::GameWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -71,6 +72,14 @@ LRESULT CALLBACK fq::game_engine::WndProc::ToolWndProc(HWND hWnd, UINT message, 
 					delete[] fileName;
 				}
 			}
+		}
+		break;
+
+		case WM_MOUSEWHEEL:
+		{	
+			SHORT wheelDeta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+			fq::game_module::InputManager::DeltaMouseWheel += wheelDeta;
 		}
 		break;
 		default:

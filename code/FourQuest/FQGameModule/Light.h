@@ -18,7 +18,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 라이트 타입을 반환합니다
@@ -90,12 +90,24 @@ namespace fq::game_module
 		/// </summary>
 		float GetSpot()const { return mInfomation.spot; }
 
+		/// <summary>
+		/// 라이트 그림자 사용여부를 반환합니다 
+		/// </summary>
+		bool OnShadow() const;
+		
+		/// <summary>
+		/// 라이트 그림자를 설정합니다 
+		/// 디렉션라이트 3개까지 가능 [5.10일 기준]
+		/// </summary>
+		void SetShadow(bool bOnShadow);
+
 	private:
 		void fireSetLightType();
 		entt::meta_handle GetHandle() override;
 
 	private:
 		LightInfo mInfomation;
+		bool mbOnShadow;
 	};
 
 

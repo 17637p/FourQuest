@@ -43,7 +43,6 @@ void fq::game_engine::FileDialog::Render()
 	if (ImGui::Begin("FileDialog", &mbIsOpen))
 	{
 		beginWindow_FilePathWindow();
-
 		beginWindow_FileList();
 	}
 	ImGui::End();
@@ -95,7 +94,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 	if (ImGui::Button(fileName.c_str()))
 	{
-		SelectPath(path);
+		selectPath(path);
 	}
 
 	beginDragDrop_Directory(path);
@@ -152,6 +151,8 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 	if (ImGui::BeginChild("FileListWindow"
 		, ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
 	{
+		setIconSize();
+
 		beginPopupContextWindow_FileList();
 
 		// 현재 폴더 경로 
@@ -183,9 +184,10 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 			});
 
 
-		float fileSpace = mIconSize.x + 50.f;
+		float fileSpaceX = mIconSize.x * 1.25f;
+		float fileSpaceY = mIconSize.x * 1.25f + ImGui::GetFontSize();
 
-		int maxWidth = std::max(static_cast<int>(ImGui::GetWindowWidth() / fileSpace), 1);
+		int maxWidth = std::max(static_cast<int>(ImGui::GetWindowWidth() / fileSpaceX), 1);
 
 		float startCusorPosY = ImGui::GetCursorPosY();
 
@@ -197,7 +199,7 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 				continue;
 			}
 
-			ImVec2 cursorPos = { fileSpace * (i % maxWidth) , startCusorPosY + fileSpace * (i / maxWidth) };
+			ImVec2 cursorPos = { fileSpaceX * (i % maxWidth) , startCusorPosY + fileSpaceY * (i / maxWidth) };
 			ImGui::SetCursorPos(cursorPos);
 			drawFile(directoryList[i]);
 		}
@@ -245,7 +247,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		if (isMouseHoveringRect(min, max)
 			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
-			SelectPath(path);
+			selectPath(path);
 		}
 	}
 	else if (extension == ".fbx")
@@ -286,14 +288,14 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 
 	ImGui::SetCursorPos({ cursorPos.x, cursorPos.y + mIconSize.y });
 
-	ImGui::PushItemWidth(100);
+	ImGui::PushItemWidth(mIconSize.x);
 
 	// 파일 이름 
 	std::string fileName = path.filename().string();
 	std::string textName = "##" + fileName;
 
 	if (ImGui::InputText(textName.c_str(), &fileName)
-		&& mEditorProcess->mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
+		&& mGameProcess->mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
 	{
 		fs::path newFileName = path.parent_path();
 		newFileName += "//" + fileName;
@@ -448,14 +450,14 @@ void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
 			fq::game_module::GameObject* dropObject
 				= static_cast<fq::game_module::GameObject*>(payLoad->Data);
 
-			mGameProcess->mObjectManager->SavePrefab(dropObject, mSelectPath);
+			mGameProcess->mPrefabManager->SavePrefab(dropObject, mSelectPath);
 		}
 
 		ImGui::EndDragDropTarget();
 	}
 }
 
-void fq::game_engine::FileDialog::SelectPath(Path path)
+void fq::game_engine::FileDialog::selectPath(Path path)
 {
 	mSelectPath = path;
 	clearTexture();
@@ -564,5 +566,36 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 void fq::game_engine::FileDialog::clearGarbage()
 {
 	fq::path::ClearDirectory(fq::path::GetGarbagePath());
+}
+
+void fq::game_engine::FileDialog::setIconSize()
+{
+	ImVec2 min = ImGui::GetWindowPos();
+	ImVec2 max = ImGui::GetWindowSize();
+	max.x += min.x;
+	max.y += min.y;
+
+	auto& input = mGameProcess->mInputManager;
+
+	if (ImGui::IsMouseHoveringRect(min, max)
+		&& input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
+	{
+		auto deltaWheel = input->GetDeltaMouseWheel();
+
+		if (deltaWheel > 0)
+		{
+			constexpr float maxSize = 150.f;
+			mIconSize.x = std::min(mIconSize.x + 1.f, maxSize);
+			mIconSize.y = std::min(mIconSize.y + 1.f, maxSize);
+		}
+		else if (deltaWheel < 0)
+		{
+			constexpr float minSize = 50.f;
+			mIconSize.x = std::max(mIconSize.x - 1.f, minSize);
+			mIconSize.y = std::max(mIconSize.y - 1.f, minSize);
+		}
+
+	}
+
 }
 

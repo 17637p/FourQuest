@@ -43,7 +43,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
-		, mGameProcess->mInputManager.get());
+		, mGameProcess->mInputManager.get()
+		, mGameProcess->mPrefabManager.get());
 	
 	mGameProcess->mSoundManager->Initialize();
 
@@ -151,20 +152,26 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	mGameProcess->mSceneManager->UnloadScene();
+
 	// Editor Process
 	mEditor->mPrefabSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
+	mEditor->mImGuiSystem->Finalize();
+
+	// SystemFinalize
+	mGameProcess->mGraphics->Finalize();
+	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
+	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();
 
-	mGameProcess->mGraphics->Finalize();
-	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
-	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
+	fq::game_module::ObjectPool::Finalize();
 
 	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();
@@ -179,13 +186,11 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mFileDialog->Render();
 	mEditor->mMainMenuBar->Render();
 	mEditor->mCollisionMatrixWindow->Render();
+	mEditor->mSkyBoxWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
 {
-	// Editor InputManager 초기화
-	mEditor->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
-
 	// System 초기화
 	mEditor->mImGuiSystem->Initialize(mGameProcess->mWindowSystem->GetHWND()
 		, mGameProcess->mGraphics->GetDivice(), mGameProcess->mGraphics->GetDeviceContext());
@@ -202,16 +207,15 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mGamePlayWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize(mGameProcess.get());
 	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
+	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 {
-	mEditor->mInputManager->Update();
-
 	mEditor->mGamePlayWindow->UpdateCamera(dt);
 	mEditor->mGamePlayWindow->ExcutShortcut();
 	mEditor->mMainMenuBar->ExcuteShortcut();
-	mEditor->mCommandSystem->ExcuteShortcut();
 	mEditor->mHierarchy->ExcuteShortcut();
+	mEditor->mCommandSystem->ExcuteShortcut();
 }
 

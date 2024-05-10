@@ -1,5 +1,6 @@
 #include "Command.h"
 #include <queue>
+#include <spdlog/spdlog.h>
 
 #include "EditorEvent.h"
 

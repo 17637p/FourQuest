@@ -10,7 +10,7 @@ namespace fq::game_module
 {
 	class Scene;
 
-	class ObjectManager;
+	class PrefabManager;
 	class InputManager;
 	class EventManager;
 
@@ -28,7 +28,10 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="startSceneName">시작 씬의 이름</param>
 		/// <param name="eventMgr">이벤트 매니져</param>
-		void Initialize(const std::string& startSceneName, EventManager* eventMgr, InputManager* inputMgr);
+		void Initialize(const std::string& startSceneName
+			, EventManager* eventMgr
+			, InputManager* inputMgr
+			, PrefabManager* prefabMgr);
 
 		/// <summary>
 		/// 씬 매니져를 종료합니다
@@ -107,7 +110,7 @@ namespace fq::game_module
 		std::unique_ptr<Scene> mCurrentScene;
 		
 		EventManager* mEventManager;
-		ObjectManager* mObjectManager;
+		PrefabManager* mPrefabManager;
 
 		EventHandler mRequestChangeSceneHandler;
 		EventHandler mRequestExitGameHadler;

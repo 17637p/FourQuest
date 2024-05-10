@@ -71,7 +71,7 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 		else
 		{
 			// 덮어씌우기
-			component->Clone(iter->second.get());
+			component->Clone(iter->second);
 			component->SetGameObject(this);
 		}
 	}
@@ -168,11 +168,11 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 
 	assert(type.can_cast(componentType));
 
-	const Component* component = any.try_cast<Component>();
+	Component* component = any.try_cast<Component>();
 
 	assert(component);
 
-	Component* clone = component->Clone(nullptr);
+	auto clone = component->Clone(nullptr);
 
 	// 기존에 있던 컴포넌트는 제거합니다.
 	auto iter = mComponents.find(type.id());
@@ -182,7 +182,7 @@ void fq::game_module::GameObject::AddComponent(entt::meta_any any)
 	}
 
 	clone->SetGameObject(this);
-	mComponents.insert({ type.id(), std::shared_ptr<Component>(clone) });
+	mComponents.insert({ type.id(), clone });
 
 	if (GetScene())
 	{
@@ -214,9 +214,11 @@ void fq::game_module::GameObject::RemoveAllComponent()
 	mComponents.clear();
 }
 
-void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
+void fq::game_module::GameObject::RemoveComponent(entt::id_type id, bool bImmediately)
 {
 	auto iter = mComponents.find(id);
+
+	assert(iter != mComponents.end());
 
 	if (iter != mComponents.end()
 		&& !iter->second->mbIsToBeRemoved)
@@ -228,6 +230,11 @@ void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
 			GetScene()->GetEventManager()
 				->FireEvent<fq::event::RemoveComponent>({ iter->first,iter->second.get() });
 		}
+	}
+
+	if (bImmediately)
+	{
+		mComponents.erase(iter);
 	}
 }
 

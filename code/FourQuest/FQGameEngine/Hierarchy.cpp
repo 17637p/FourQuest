@@ -38,7 +38,7 @@ void fq::game_engine::Hierarchy::Initialize(GameProcess* game, EditorProcess* ed
 
 	mScene = mGameProcess->mSceneManager->GetCurrentScene();
 	mEventManager = mGameProcess->mEventManager.get();
-	mInputManager = mEditorProcess->mInputManager.get();
+	mInputManager = mGameProcess->mInputManager.get();
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandle = mEventManager->RegisterHandle<editor_event::SelectObject>
@@ -333,7 +333,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 			// 일단은 Prefab은 json형식입니다
 			if (path->extension() == ".prefab")
 			{
-				auto prefab = mGameProcess->mObjectManager->LoadPrefab(*path);
+				auto prefab = mGameProcess->mPrefabManager->LoadPrefab(*path);
 
 				assert(!prefab.empty());
 
@@ -375,7 +375,7 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 {
 	using namespace fq::game_module;
 
-	const auto& input = mEditorProcess->mInputManager;
+	const auto& input = mGameProcess->mInputManager;
 
 	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
 	{

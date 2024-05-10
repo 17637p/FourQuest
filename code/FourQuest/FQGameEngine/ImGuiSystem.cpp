@@ -52,7 +52,7 @@ void fq::game_engine::ImGuiSystem::Initialize(HWND hwnd, ID3D11Device* device, I
 	std::string fontPath = path::GetResourcePath().string() + "\\internal\\font\\MalangmalangR.ttf";
 
 	io.Fonts->AddFontFromFileTTF(fontPath.c_str(),
-		20.f,
+		18.f,
 		NULL,
 		io.Fonts->GetGlyphRangesKorean());
 

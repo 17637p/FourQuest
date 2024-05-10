@@ -6,6 +6,7 @@
 #include "../FQReflect/FQReflect.h"
 #include "GameModuleEnum.h"
 #include "Collision.h"
+#include "ObjectPool.h"
 
 namespace fq::game_module
 {
@@ -161,7 +162,7 @@ namespace fq::game_module
 		/// id_type에 해당하는 컴포넌트를 삭제합니다
 		/// </summary>
 		/// <param name="id">id_type</param>
-		void RemoveComponent(entt::id_type id);
+		void RemoveComponent(entt::id_type id, bool bImmediately = false);
 
 		/// <summary>
 		/// T타입 컴포넌트를 반환합니다
@@ -230,7 +231,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <typeparam name="T">컴포넌트 타입</typeparam>
 		template <typename T>
-		void RemoveComponent();
+		void RemoveComponent(bool bImmediately = false);
 
 		/// <summary>
 		/// 제거 예정인 컴포넌트를 제거합니다
@@ -252,11 +253,11 @@ namespace fq::game_module
 	};
 
 	template <typename T>
-	void fq::game_module::GameObject::RemoveComponent()
+	void fq::game_module::GameObject::RemoveComponent(bool bImmediately)
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		RemoveComponent(id);
+		RemoveComponent(id, bImmediately);
 	}
 
 	template <typename T>
@@ -280,7 +281,7 @@ namespace fq::game_module
 	{
 		entt::id_type id = entt::resolve<T>().id();
 
-		auto component = std::make_shared<T>(std::forward<Args>(args)...);
+		auto component = ObjectPool::GetInstance()->Assign<T>(std::forward<Args>(args)...);
 
 		AddComponent(id, component);
 

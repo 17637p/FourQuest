@@ -10,6 +10,8 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "Component.h"
+#include "PrefabResource.h"
+#include "InstantiatePrefab.h"
 
 #include "Transform.h"
 #include "Camera.h"
@@ -21,14 +23,14 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "RigidBody.h"
-#include "SoundClip.h"
+#include "SoundClip.h"\
 
 #include "EventHandler.h"
 #include "EventManager.h"
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-#include "ObjectManager.h"
+#include "PrefabManager.h"
 #include "SoundManager.h"
 
 #include "Collision.h"

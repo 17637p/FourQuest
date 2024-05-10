@@ -22,6 +22,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mSphereID(entt::resolve<fq::game_module::SphereCollider>().id())
 	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
+	, mRigidID(entt::resolve<fq::game_module::RigidBody>().id())
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -60,7 +61,6 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
-
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -99,7 +99,8 @@ void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObj
 void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -108,7 +109,8 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -324,7 +326,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
-
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
@@ -374,7 +375,18 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		auto matrix = mPhysicsEngine->GetRigidBodyMatrix(id);
+		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+
+		auto data = mPhysicsEngine->GetRigidBodyData(id);
+
+		// 선속도
+		rigid->SetLinearVelocity(data.linearVelocity);
+
+		// 각속도
+		rigid->SetAngularVelocity(data.angularVelocity);
+
+		// 위치 
+		auto matrix = data.transform;
 		transform->SetWorldMatrix(matrix);
 	}
 }
@@ -396,8 +408,16 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
+		fq::physics::RigidBodyGetSetData data;
+
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
+		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+
+		data.transform = transform->GetWorldMatrix();
+		data.angularVelocity = rigid->GetAngularVelocity();
+		data.linearVelocity = rigid->GetLinearVelocity();
+		
+		mPhysicsEngine->SetRigidBodyData(id, data);
 	}
 }
 

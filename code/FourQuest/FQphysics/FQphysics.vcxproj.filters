@@ -25,14 +25,14 @@
     <Filter Include="Character\CharacterController">
       <UniqueIdentifier>{8b735414-48ea-4b82-9509-7398b9e8dd9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Character\CharacterMovement">
-      <UniqueIdentifier>{e0217dc4-9f71-4ff5-b98d-021dae82316a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Character\PhysicsCCTHitCallback">
       <UniqueIdentifier>{b9f023b8-1c01-4bf5-8d6d-365c6c88543a}</UniqueIdentifier>
     </Filter>
     <Filter Include="RigidBody\SimulationEventCallback">
       <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterController\PlayerController">
+      <UniqueIdentifier>{411263d7-70ef-4d83-9fa5-c7d7c49189e7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -69,14 +69,17 @@
     <ClInclude Include="PhysicsCharactorControllerManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterController.h">
-      <Filter>Character\CharacterController</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsCCTHitCallback.h">
       <Filter>Character\PhysicsCCTHitCallback</Filter>
     </ClInclude>
-    <ClInclude Include="CharaterMovement.h">
-      <Filter>Character\CharacterMovement</Filter>
+    <ClInclude Include="PlayerCharacterController.h">
+      <Filter>Character\CharacterController\PlayerController</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Character\CharacterController</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterMovement.h">
+      <Filter>Character\CharacterController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -116,11 +119,14 @@
     <ClCompile Include="CharacterController.cpp">
       <Filter>Character\CharacterController</Filter>
     </ClCompile>
-    <ClCompile Include="CharaterMovement.cpp">
-      <Filter>Character\CharacterMovement</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsCCTHitCallback.cpp">
       <Filter>Character\PhysicsCCTHitCallback</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCharacterController.cpp">
+      <Filter>Character\CharacterController\PlayerController</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterMovement.cpp">
+      <Filter>Character\CharacterController</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

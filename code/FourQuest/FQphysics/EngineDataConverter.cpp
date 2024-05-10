@@ -42,95 +42,6 @@ void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix,
 
 #pragma region DebugDataExtract
 
-void ExtractDebugCapsule(physx::PxRigidActor* _body, physx::PxShape* _shape)
-{
-	using namespace DirectX::SimpleMath;
-	using namespace std;
-
-	const physx::PxCapsuleGeometry& capsuleGeometry = static_cast<const physx::PxCapsuleGeometry&>(_shape->getGeometry());
-	Matrix dxMatrix;
-	CopyPxTransformToDirectXMatrix(_body->getGlobalPose(), dxMatrix);
-
-	Vector3 scale;
-	Vector3 translation;
-	Quaternion quaternion;
-	dxMatrix.Decompose(scale, quaternion, translation);
-
-	Matrix Sphere0Matrix = dxMatrix * Matrix::CreateTranslation(capsuleGeometry.radius * dxMatrix.Right());
-	Matrix Sphere1Matrix = dxMatrix * Matrix::CreateTranslation(-capsuleGeometry.radius * dxMatrix.Right());
-
-	shared_ptr<DirectX::BoundingSphere> sphere0 = make_shared<DirectX::BoundingSphere>();
-	shared_ptr<DirectX::BoundingSphere> sphere1 = make_shared<DirectX::BoundingSphere>();
-	//shared_ptr<GraphicsEngine::DebugLineData> line1 = make_shared<GraphicsEngine::DebugLineData>();
-	//shared_ptr<GraphicsEngine::DebugLineData> line2 = make_shared<GraphicsEngine::DebugLineData>();
-	//shared_ptr<GraphicsEngine::DebugLineData> line3 = make_shared<GraphicsEngine::DebugLineData>();
-	//shared_ptr<GraphicsEngine::DebugLineData> line4 = make_shared<GraphicsEngine::DebugLineData>();
-
-	sphere0->Center = Sphere0Matrix.Translation();
-	sphere1->Center = Sphere1Matrix.Translation();
-	//line1->Pos0 = Sphere0Matrix.Translation() + Vector3(0.f, capsuleGeometry.radius, 0.f);
-	//line1->Pos1 = Sphere1Matrix.Translation() + Vector3(0.f, capsuleGeometry.radius, 0.f);
-	//line1->Color = Color(1.f, 1.f, 0.f, 1.f);
-	//line2->Pos0 = Sphere0Matrix.Translation() + Vector3(0.f, -capsuleGeometry.radius, 0.f);
-	//line2->Pos1 = Sphere1Matrix.Translation() + Vector3(0.f, -capsuleGeometry.radius, 0.f);
-	//line2->Color = Color(1.f, 1.f, 0.f, 1.f);
-	//line3->Pos0 = Sphere0Matrix.Translation() + Vector3(0.f, 0.f, capsuleGeometry.radius);
-	//line3->Pos1 = Sphere1Matrix.Translation() + Vector3(0.f, 0.f, capsuleGeometry.radius);
-	//line3->Color = Color(1.f, 1.f, 0.f, 1.f);
-	//line4->Pos0 = Sphere0Matrix.Translation() + Vector3(0.f, 0.f, -capsuleGeometry.radius);
-	//line4->Pos1 = Sphere1Matrix.Translation() + Vector3(0.f, 0.f, -capsuleGeometry.radius);
-	//line4->Color = Color(1.f, 1.f, 0.f, 1.f);
-	sphere0->Radius = capsuleGeometry.radius;
-	sphere1->Radius = capsuleGeometry.radius;
-
-	//RENDER->AddDebugLine(line1);
-	//RENDER->AddDebugLine(line2);
-	//RENDER->AddDebugLine(line3);
-	//RENDER->AddDebugLine(line4);
-	//RENDER->AddDebugSphere(sphere0);
-	//RENDER->AddDebugSphere(sphere1);
-}
-
-void ExtractDebugBox(physx::PxRigidActor* body, physx::PxShape* shape, DirectX::BoundingOrientedBox& debugBox)
-{
-	using namespace DirectX::SimpleMath;
-	using namespace std;
-
-	DirectX::BoundingOrientedBox orientBox;
-	const physx::PxBoxGeometry& boxGeometry = static_cast<const physx::PxBoxGeometry&>(shape->getGeometry());
-
-	Matrix dxMatrix;
-	CopyPxTransformToDirectXMatrix(body->getGlobalPose(), dxMatrix);
-
-	Vector3 scale;
-	Vector3 translation;
-	Quaternion quaternion;
-	dxMatrix.Decompose(scale, quaternion, translation);
-
-	debugBox.Center = translation;
-	debugBox.Extents = (const Vector3&)boxGeometry.halfExtents;
-	debugBox.Orientation = quaternion;
-
-	//RENDER->AddDebugBox(orientBox);
-}
-
-void ExtractDebugSphere(physx::PxRigidActor* body, physx::PxShape* shape, DirectX::BoundingSphere& debugSphere)
-{
-	using namespace DirectX::SimpleMath;
-	using namespace std;
-
-	DirectX::BoundingSphere sphere;
-	const physx::PxSphereGeometry& sphereGeometry = static_cast<const physx::PxSphereGeometry&>(shape->getGeometry());
-
-	Matrix dxMatrix;
-	CopyPxTransformToDirectXMatrix(body->getGlobalPose(), dxMatrix);
-
-	debugSphere.Center = dxMatrix.Translation();
-	debugSphere.Radius = sphereGeometry.radius;
-
-	//RENDER->AddDebugSphere(sphere);
-}
-
 void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, std::vector<std::vector<DirectX::SimpleMath::Vector3>>& debugPolygon)
 {
 	using namespace DirectX::SimpleMath;
@@ -179,3 +90,19 @@ void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, st
 }
 
 #pragma endregion
+
+
+
+void CopyPxVec3ToDxVec3(const physx::PxVec3& pxVector, DirectX::SimpleMath::Vector3& dxVector)
+{
+	dxVector.x = pxVector.x;
+	dxVector.y = pxVector.y;
+	dxVector.z = -pxVector.z;
+}
+
+void CopyDxVec3ToPxVec3(const DirectX::SimpleMath::Vector3& dxVector, physx::PxVec3& pxVector)
+{
+	pxVector.x = dxVector.x;
+	pxVector.y = dxVector.y;
+	pxVector.z = -dxVector.z;
+}

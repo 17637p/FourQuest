@@ -100,6 +100,11 @@ void fq::game_engine::LightSystem::addLight(fq::game_module::GameObject* object)
 
 	auto lightInfo = light->GetLightInfomation();
 	mGameProcess->mGraphics->AddLight(object->GetID(), lightInfo);
+
+	if (lightInfo.type == fq::graphics::ELightType::Directional)
+	{
+		mGameProcess->mGraphics->UseShadow(object->GetID(), light->OnShadow());
+	}
 }
 
 void fq::game_engine::LightSystem::updateLight(fq::game_module::Light& light, fq::game_module::Transform& transform)

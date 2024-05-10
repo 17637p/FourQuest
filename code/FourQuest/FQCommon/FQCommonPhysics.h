@@ -28,6 +28,27 @@ namespace fq::physics
 	};
 
 	/// <summary>
+	/// 물리 엔진에서 리지드 바디 정보들을 주고 받는 GetSet 구조체
+	/// </summary>
+	struct RigidBodyGetSetData
+	{
+		DirectX::SimpleMath::Matrix transform = {};				// 트랜스폼 정보입니다.
+		DirectX::SimpleMath::Vector3 linearVelocity = {};		// 값이 0이면 StaticBody 입니다.
+		DirectX::SimpleMath::Vector3 angularVelocity = {};		// 값이 0이면 StaticBody 입니다.
+	};
+
+	struct CharacterControllerGetSetData
+	{
+		DirectX::SimpleMath::Vector3 position;					// 캐릭터 컨트롤러의 위치
+	};
+
+	struct CharacterMovementGetSetData
+	{
+		DirectX::SimpleMath::Vector3 velocity;					// 캐릭터 컨트롤러의 x,y,z축 속도
+		bool isFall;											// 캐릭터가 떨어지고 있는지 체크 변수
+	};
+
+	/// <summary>
 	/// 물리 엔진 세팅 데이터 : 중력, 충돌 매트릭스
 	/// </summary>
 	struct PhysicsEngineInfo
@@ -103,7 +124,7 @@ namespace fq::physics
 		float jumpSpeed = 5.f;									// 점프(y축) 속도
 		float jumpXZAcceleration = 10.f;						// 점프 중에 이동(XZ축) 가속도 값
 		float jumpXZDeceleration = 0.1f;						// 점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )
-		float gravity = 9.8f;									// 기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.
+		float gravityWeight = 9.8f;								// 기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.
 	};
 
 	/// <summary>
@@ -121,4 +142,5 @@ namespace fq::physics
 		float slopeLimit = 0.7f;								// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
 		float contactOffset = 0.1f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
 	};
+
 }

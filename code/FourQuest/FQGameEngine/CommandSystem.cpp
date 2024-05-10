@@ -30,7 +30,7 @@ void fq::game_engine::CommandSystem::Initialize(GameProcess* game, EditorProcess
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
-	mInputManager = mEditorProcess->mInputManager.get();
+	mInputManager = mGameProcess->mInputManager.get();
 
 	mCommandOrder = mCommandList.end();
 
