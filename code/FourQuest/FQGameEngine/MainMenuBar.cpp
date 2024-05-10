@@ -234,7 +234,7 @@ void fq::game_engine::MainMenuBar::SaveScene()
 
 void fq::game_engine::MainMenuBar::ExcuteShortcut()
 {
-	const auto& input = mEditorProcess->mInputManager;
+	const auto& input = mGameProcess->mInputManager;
 
 	// 현재 씬이 플레이중이면 저장하지 않는다 
 	if (mEditorProcess->mGamePlayWindow->GetMode() == EditorMode::Edit
@@ -265,6 +265,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		bool& collisionMatrix = mEditorProcess->mCollisionMatrixWindow->IsWindowOpen();
 		ImGui::Checkbox("CollisionMatrix", &collisionMatrix);
+
+		bool& skyBox = mEditorProcess->mSkyBoxWindow->IsWindowOpen();
+		ImGui::Checkbox("SkyBox", &skyBox);
 
 		ImGui::EndMenu();
 	}

@@ -46,15 +46,12 @@ void fq::game_engine::CollisionMatrixWindow::beginButton_Reset()
 
 void fq::game_engine::CollisionMatrixWindow::beginCollisionMatrix()
 {
-
 	for (int i = 0; i < 16; ++i)
 	{
 		ImGui::SameLine();
 		std::string row = std::to_string(i);
 		ImGui::Button(row.c_str(), ImVec2(25, 25));
 	}
-
-
 
 	auto matrix = mPhysicsSystem->GetCollisionMatrix();
 

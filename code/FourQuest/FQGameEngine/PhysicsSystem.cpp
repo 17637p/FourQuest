@@ -22,6 +22,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mSphereID(entt::resolve<fq::game_module::SphereCollider>().id())
 	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
+	, mRigidID(entt::resolve<fq::game_module::RigidBody>().id())
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -98,7 +99,8 @@ void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObj
 void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -107,7 +109,8 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}

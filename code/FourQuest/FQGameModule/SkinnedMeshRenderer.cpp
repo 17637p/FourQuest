@@ -46,7 +46,6 @@ void fq::game_module::SkinnedMeshRenderer::SetMaterials(std::vector<std::string>
 	mMeshInfomation.MaterialNames = std::move(materials);
 }
 
-
 void fq::game_module::SkinnedMeshRenderer::SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info)
 {
 	mMeshInfomation = std::move(info);

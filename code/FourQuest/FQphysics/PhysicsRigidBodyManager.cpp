@@ -443,6 +443,8 @@ namespace fq::physics
 		// 물리 공간의 리지드 바디들을 검색해서 해당 userData를 가지고 있는 리지드 바디가 없으면 userData 메모리 삭제
 		unsigned int ActorSize = scene->getNbActors(physx::PxActorTypeFlags(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC));
 
+		if (ActorSize == 0) return;
+
 		physx::PxActor** pxActor = new physx::PxActor * [ActorSize];;
 		scene->getActors(physx::PxActorTypeFlags(physx::PxActorTypeFlag::eRIGID_DYNAMIC | physx::PxActorTypeFlag::eRIGID_STATIC), pxActor, ActorSize);
 

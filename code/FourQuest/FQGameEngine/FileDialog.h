@@ -73,7 +73,8 @@ namespace fq::game_engine
 	
 		ID3D11ShaderResourceView* loadTexture(const Path& path);
 
-		void SelectPath(Path path);
+		void selectPath(Path path);
+		void setIconSize();
 
 		void clearTexture();
 		void clearIconTexture();

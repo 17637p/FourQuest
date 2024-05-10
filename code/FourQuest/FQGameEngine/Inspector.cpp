@@ -29,7 +29,7 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
-	mInputManager = editor->mInputManager.get();
+	mInputManager = game->mInputManager.get();
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
@@ -317,15 +317,17 @@ void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data dat
 
 	Vector3 euler = quatarnion.ToEuler();
 
-	float f[3]{ euler.x,euler.y,euler.z };
+	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+		, DirectX::XMConvertToDegrees(euler.y)
+		, DirectX::XMConvertToDegrees(euler.z) };
 
 	ImGui::InputFloat3(memberName.c_str(), f);
 
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		euler.x = f[0];
-		euler.y = f[1];
-		euler.z = f[2];
+		euler.x = DirectX::XMConvertToRadians(f[0]);
+		euler.y = DirectX::XMConvertToRadians(f[1]);
+		euler.z = DirectX::XMConvertToRadians(f[2]);
 		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
 
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
@@ -633,8 +635,27 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 				BindFunctionCommand{
 					remove, add
 				});
+		}	
 
+		if (type == entt::resolve<fq::game_module::Transform>() && ImGui::MenuItem("Reset"))
+		{
+		 	auto transform = mSelectObject->GetComponent<fq::game_module::Transform>();
+			auto prevMatrix = transform->GetLocalMatrix();
+
+			auto excute = [transform, object = mSelectObject]()
+				{
+					transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::Identity);
+				};
+			auto undo = [transform, object = mSelectObject, prevMatrix]()
+				{
+					transform->SetLocalMatrix(prevMatrix);
+				};
+
+			mEditorProcess->mCommandSystem->Push<BindFunctionCommand>(
+				BindFunctionCommand{ excute, undo }
+			);
 		}
+
 
 		ImGui::EndPopup();
 	}

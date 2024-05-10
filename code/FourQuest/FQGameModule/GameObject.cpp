@@ -214,9 +214,11 @@ void fq::game_module::GameObject::RemoveAllComponent()
 	mComponents.clear();
 }
 
-void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
+void fq::game_module::GameObject::RemoveComponent(entt::id_type id, bool bImmediately)
 {
 	auto iter = mComponents.find(id);
+
+	assert(iter != mComponents.end());
 
 	if (iter != mComponents.end()
 		&& !iter->second->mbIsToBeRemoved)
@@ -228,6 +230,11 @@ void fq::game_module::GameObject::RemoveComponent(entt::id_type id)
 			GetScene()->GetEventManager()
 				->FireEvent<fq::event::RemoveComponent>({ iter->first,iter->second.get() });
 		}
+	}
+
+	if (bImmediately)
+	{
+		mComponents.erase(iter);
 	}
 }
 

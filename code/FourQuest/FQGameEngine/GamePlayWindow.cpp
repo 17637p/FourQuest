@@ -63,7 +63,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	// 카메라 생성
 	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
 	mCameraObject->AddComponent<fq::game_module::Camera>();
-	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(10000000);
+	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(1000);
 
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
@@ -184,7 +184,7 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 
 void fq::game_engine::GamePlayWindow::ExcutShortcut()
 {
-	const auto& input = mEditorProcess->mInputManager;
+	const auto& input = mGameProcess->mInputManager;
 
 	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
 		&& input->IsKeyState(EKey::P, EKeyState::Tap))
@@ -253,7 +253,7 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 {
-	auto& input = mEditorProcess->mInputManager;
+	auto& input = mGameProcess->mInputManager;
 	if (!input->IsKeyState(EKey::RMouse, EKeyState::Hold)
 		|| !input->IsKeyState(EKey::LMouse, EKeyState::None))
 	{
@@ -342,7 +342,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto objectMatrix = objectT->GetWorldMatrix();
 	auto beforeMatrix = objectT->GetWorldMatrix();
 
-	auto& input = mEditorProcess->mInputManager;
+	auto& input = mGameProcess->mInputManager;
 
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
 	auto view = camera->GetView();
@@ -501,7 +501,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
+	if (mGameProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
 	{
 		// 창내부에 마우스가 있는지 확인
 		auto mousePos = ImGui::GetMousePos();

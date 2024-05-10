@@ -2,9 +2,6 @@
 
 #include <memory>
 
-//input
-#include "../FQGameModule/InputManager.h"
-
 // window
 #include "Hierarchy.h"
 #include "Inspector.h"
@@ -13,6 +10,7 @@
 #include "GamePlayWindow.h"
 #include "MainMenuBar.h"
 #include "CollisionMatrixWindow.h"
+#include "SkyBoxWindow.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -39,14 +37,13 @@ namespace fq::game_engine
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
 		std::unique_ptr<MainMenuBar> mMainMenuBar;
 		std::unique_ptr<CollisionMatrixWindow> mCollisionMatrixWindow;
+		std::unique_ptr<SkyBoxWindow> mSkyBoxWindow;
 
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
 		std::unique_ptr<PrefabSystem> mPrefabSystem;
 		std::unique_ptr<ModelSystem> mModelSystem;
 		std::unique_ptr<DebugSystem> mDebugSystem;
-
-		std::unique_ptr<fq::game_module::InputManager> mInputManager;
 	};
 
 
