@@ -67,6 +67,7 @@ namespace fq::physics
 		unsigned int myLayerNumber;
 		unsigned int otherLayerNumber;
 		std::vector<DirectX::SimpleMath::Vector3> ContectPoints;
+		bool isDead = false;
 	};
 
 	constexpr unsigned int unregisterID = 0;
@@ -118,7 +119,7 @@ namespace fq::physics
 	struct CharacterMovementInfo
 	{
 		float maxSpeed = 5.f;									// 이동 최대 속도 : 캐릭터가 움직일 수 있는 최대 속도
-		float acceleration = 50.f;								// 가속도 : 캐릭터가 입력 값을 받을 때 이동 가속도
+		float acceleration = 100.f;								// 가속도 : 캐릭터가 입력 값을 받을 때 이동 가속도
 		float staticFriction = 0.4f;							// 정적 마찰 계수 : 캐릭터가 이동 중 멈췄을 때 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
 		float dynamicFriction = 0.1f;							// 동적 마찰 계수 : 이동 중에 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
 		float jumpSpeed = 5.f;									// 점프(y축) 속도

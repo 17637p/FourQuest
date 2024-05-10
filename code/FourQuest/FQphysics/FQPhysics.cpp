@@ -113,6 +113,7 @@ namespace fq::physics
 	{
 		if (!mRigidBodyManager->Update(mScene, mCollisionMatrix))
 			return false;
+		if (!mCCTManager->Update(deltaTime));
 
 		if (!mScene->simulate(deltaTime))
 			return false;

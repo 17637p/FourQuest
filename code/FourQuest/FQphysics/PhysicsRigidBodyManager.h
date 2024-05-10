@@ -51,6 +51,9 @@ namespace fq::physics
 		bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 		bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
 
+		bool SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+		bool SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix);
+
 		void GetRigidBodyData(unsigned int id, RigidBodyGetSetData& rigidBodyData);
 
 		/// <summary>
@@ -79,11 +82,6 @@ namespace fq::physics
 		/// </summary>
 		void ExtractDebugData();
 
-		/// <summary>
-		/// 물리 공간의 리지드 바디들을 체크하여 리지드 바디가 없는 userData 삭제
-		/// </summary>
-		void UpdateUserData(physx::PxScene* scene);
-
 		inline std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
 		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodyContainer();
 
@@ -92,7 +90,7 @@ namespace fq::physics
 
 		std::shared_ptr<PhysicsCookingMeshTool> mCookingMeshTool;
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
-		std::unordered_map<unsigned int, CollisionData*> mCollisionDataContainer;
+		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
 
 		std::unordered_map<unsigned int, PolygonMesh> mDebugPolygon;

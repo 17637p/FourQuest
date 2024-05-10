@@ -45,16 +45,6 @@ namespace fq::physics
 				return false;
 		}
 
-		// 콜리전 데이터 없애기
-		for (auto& iter : mCollisionDataContainer)
-		{
-			auto collision = mCCTmap.find(iter.first);
-			if (collision != mCCTmap.end())
-			{
-				mCollisionDataContainer.erase(mCollisionDataContainer.find(iter.first));
-			}
-		}
-
 		return true;
 	}
 

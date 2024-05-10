@@ -11,7 +11,7 @@ namespace fq::physics
 	DynamicRigidBody::~DynamicRigidBody()
 	{
 	}
-	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics)
+	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
 	{
 		if (GetColliderType() == EColliderType::COLLISION)
 		{
@@ -23,21 +23,20 @@ namespace fq::physics
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
-		CollisionData* data = new CollisionData;
 		data->myId = GetID();
 		data->myLayerNumber = GetLayerNumber();
-		shape->userData = data;
+		shape->userData = data.get();
 		shape->setContactOffset(0.01f);
 
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 
 		mRigidDynamic = physics->createRigidDynamic(transform);
-		mRigidDynamic->userData = data;
+		mRigidDynamic->userData = data.get();
 
 		if (!mRigidDynamic->attachShape(*shape))
 			return false;
-		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, colliderInfo.density);
+		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, 1.f);
 
 		return true;
 	}
