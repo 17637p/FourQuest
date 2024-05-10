@@ -60,7 +60,6 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
-
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -324,7 +323,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
-
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
@@ -374,7 +372,18 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		auto matrix = mPhysicsEngine->GetRigidBodyMatrix(id);
+		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+
+		auto data = mPhysicsEngine->GetRigidBodyData(id);
+
+		// 선속도
+		rigid->SetLinearVelocity(data.linearVelocity);
+
+		// 각속도
+		rigid->SetAngularVelocity(data.angularVelocity);
+
+		// 위치 
+		auto matrix = data.transform;
 		transform->SetWorldMatrix(matrix);
 	}
 }
@@ -396,8 +405,16 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
+		fq::physics::RigidBodyGetSetData data;
+
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		mPhysicsEngine->SetRigidBodyMatrix(id, transform->GetWorldMatrix());
+		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+
+		data.transform = transform->GetWorldMatrix();
+		data.angularVelocity = rigid->GetAngularVelocity();
+		data.linearVelocity = rigid->GetLinearVelocity();
+		
+		mPhysicsEngine->SetRigidBodyData(id, data);
 	}
 }
 

@@ -24,7 +24,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mbIsPauseGame(false)
 	, mbIsOpen(true)
 	, mCameraObject(nullptr)
-	, mCameraMoveSpeed(20.f)
+	, mCameraMoveSpeed(200.f)
 	, mCameraRotateSpeed(0.0065f)
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
@@ -501,7 +501,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 
 void fq::game_engine::GamePlayWindow::pickObject()
 {
-	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Hold) && mOperation == ImGuizmo::BOUNDS)
+	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
 	{
 		// 창내부에 마우스가 있는지 확인
 		auto mousePos = ImGui::GetMousePos();

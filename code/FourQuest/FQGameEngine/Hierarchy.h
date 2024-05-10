@@ -105,7 +105,6 @@ namespace fq::game_engine
 		/// </summary>
 		void dragDropWindow();
 
-
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;

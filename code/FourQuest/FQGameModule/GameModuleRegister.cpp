@@ -14,6 +14,8 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "SoundClip.h"
+#include "PrefabResource.h"
+#include "PrefabTest.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -42,7 +44,6 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Wall>("Wall"_hs) // 5
 		.prop(fq::reflect::prop::Name, "Wall");
 
-
 	// GameObject
 	entt::meta<GameObject>()
 		.type("GameObject"_hs)
@@ -52,12 +53,20 @@ void fq::game_module::RegisterMetaData()
 		.data<&GameObject::SetTag, &GameObject::GetTag>("mTag"_hs)
 		.prop(fq::reflect::prop::Name, "mTag");
 
-	//////////////////////////////////////////////////////////////////////////
-	//                            Component                                 //
-	//////////////////////////////////////////////////////////////////////////
+	// PrefabResource
+	entt::meta<PrefabResource>()
+		.type("PrefabResource"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabResource")
+		.data<&PrefabResource::SetPrefabPath, &PrefabResource::GetPrefabPath>("Path"_hs)
+		.prop(fq::reflect::prop::Name, "Path")
+		.prop(fq::reflect::prop::RelativePath);
 
-	// Transform
-	entt::meta<Transform>()
+		//////////////////////////////////////////////////////////////////////////
+		//                            Component                                 //
+		//////////////////////////////////////////////////////////////////////////
+
+		// Transform
+		entt::meta<Transform>()
 		.type("Transform"_hs)
 		.prop(fq::reflect::prop::Name, "Transform")
 		.data<&Transform::SetLocalPosition, &Transform::GetLocalPosition>("Position"_hs)
@@ -149,8 +158,10 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetSpot, &Light::GetSpot>("Spot"_hs)
 		.prop(fq::reflect::prop::Name, "Spot")
 		.prop(fq::reflect::prop::Comment, u8"Spot 설정 (Spot)")
+		.data<&Light::SetShadow, &Light::OnShadow>("OnShadow"_hs)
+		.prop(fq::reflect::prop::Name, "OnShadow")
+		.prop(fq::reflect::prop::Comment, u8"Directional Light 3개 제한")
 		.base<Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
@@ -172,6 +183,10 @@ void fq::game_module::RegisterMetaData()
 		.data<&RigidBody::SetStatic, &RigidBody::IsStatic>("IsStatic"_hs)
 		.prop(fq::reflect::prop::Name, "IsStatic")
 		.prop(fq::reflect::prop::Comment, "static or dynamic")
+		.data<&RigidBody::SetLinearVelocity, &RigidBody::GetLinearVelocity>("LinearVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "LinearVelocity")
+		.data<&RigidBody::SetAngularVelocity, &RigidBody::GetAngularVelocity>("AgularVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "AgularVelocity")
 		.base<Component>();
 
 	// BoxCollider
@@ -263,4 +278,20 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
 		.base<Component>();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//                              Prefab                                  //
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PrefabTest>()
+		.type("PrefabTest"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabTest")
+		.data<&PrefabTest::SetFireObject, &PrefabTest::GetFireObject>("FireObject"_hs)
+		.prop(fq::reflect::prop::Name, "FireObject")
+		.prop(fq::reflect::prop::Comment, u8"프리팹을 추가하면 자동 발사!")
+		.data<&PrefabTest::SetCreateTime, &PrefabTest::GetCreateTime>("CreateTime"_hs)
+		.prop(fq::reflect::prop::Name, "CreateTime")
+		.base<Component>();
+
 }

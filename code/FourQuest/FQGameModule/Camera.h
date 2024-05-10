@@ -14,9 +14,9 @@ namespace fq::game_module
 		~Camera();
 
 		/// <summary>
-		/// 복사복을 반환합니다 
+		/// 복사본을 반환합니다 
 		/// </summary>
-		Component* Clone(Component* clone /* = nullptr */)const override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		/// <summary>
 		/// 메인 카메라인지 여부를 반환합니다

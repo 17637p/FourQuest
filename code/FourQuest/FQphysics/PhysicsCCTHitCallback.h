@@ -10,12 +10,25 @@ namespace fq::physics
 		PhysicsCCTHitCallback();
 		virtual ~PhysicsCCTHitCallback();
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="hit"></param>
 		virtual void onShapeHit(const physx::PxControllerShapeHit& hit) override;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="hit"></param>
 		virtual void onControllerHit(const physx::PxControllersHit& hit) override;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="hit"></param>
 		virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) override;
 
 	private:
 
 	};
-
 }

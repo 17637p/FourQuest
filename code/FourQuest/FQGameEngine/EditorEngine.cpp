@@ -43,7 +43,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
-		, mGameProcess->mInputManager.get());
+		, mGameProcess->mInputManager.get()
+		, mGameProcess->mPrefabManager.get());
 	
 	mGameProcess->mSoundManager->Initialize();
 
@@ -151,20 +152,26 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	mGameProcess->mSceneManager->UnloadScene();
+
 	// Editor Process
 	mEditor->mPrefabSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
+	mEditor->mImGuiSystem->Finalize();
+
+	// SystemFinalize
+	mGameProcess->mGraphics->Finalize();
+	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
+	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();
 
-	mGameProcess->mGraphics->Finalize();
-	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
-	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
+	fq::game_module::ObjectPool::Finalize();
 
 	// Window Á¾·á
 	mGameProcess->mWindowSystem->Finalize();

@@ -69,6 +69,12 @@
     <Filter Include="include\01.EntityComponent\Graphics">
       <UniqueIdentifier>{03c7b1cc-2fb8-435a-a4d9-ca9f80bc4d16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\08.Prefab">
+      <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\08.Prefab">
+      <UniqueIdentifier>{d8a213a9-9766-44a7-8f3a-0bbf7584100e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -125,14 +131,11 @@
     <ClInclude Include="GameModuleEnum.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectManager.h">
+    <ClInclude Include="PrefabManager.h">
       <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="SceneHelper.h">
       <Filter>include\03.Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>include\06.ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="GameModuleRegister.h">
       <Filter>include\00.Define</Filter>
@@ -175,6 +178,21 @@
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Pool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabResource.h">
+      <Filter>include\08.Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="InstantiatePrefab.h">
+      <Filter>include\08.Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabTest.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -220,14 +238,11 @@
     <ClCompile Include="GameModuleEnum.cpp">
       <Filter>src\00.Define</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
+    <ClCompile Include="PrefabManager.cpp">
       <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="SceneHelper.cpp">
       <Filter>src\03.Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>src\06.ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="GameModuleRegister.cpp">
       <Filter>src\00.Define</Filter>
@@ -270,6 +285,18 @@
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabResource.cpp">
+      <Filter>src\08.Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="InstantiatePrefab.cpp">
+      <Filter>src\08.Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabTest.cpp">
+      <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

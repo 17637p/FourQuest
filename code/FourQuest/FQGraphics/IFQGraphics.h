@@ -107,6 +107,7 @@ extern "C" {
 			/// Camera
 			virtual FQ_GRAPHICS void SetCamera(const CameraInfo& cameraInfo) abstract;
 			virtual FQ_GRAPHICS void UpdateCamera(const fq::common::Transform& cameraTransform) abstract;
+			virtual FQ_GRAPHICS void UpdateColCamera(const fq::common::Transform& cameraTransform) abstract;
 
 			/// Picking
 			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;

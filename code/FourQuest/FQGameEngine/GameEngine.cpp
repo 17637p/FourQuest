@@ -37,7 +37,8 @@ void fq::game_engine::GameEngine::Initialize()
 
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
-		, mGameProcess->mInputManager.get());
+		, mGameProcess->mInputManager.get()
+		, mGameProcess->mPrefabManager.get());
 
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();

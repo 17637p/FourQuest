@@ -68,25 +68,28 @@ namespace fq::physics
 
 #pragma region GetSetRigidBodyMatrix
 
-	void PhysicsRigidBodyManager::GetRigidBodyMatrix(unsigned int id, DirectX::SimpleMath::Matrix& dxMatrix)
+	void PhysicsRigidBodyManager::GetRigidBodyData(unsigned int id, RigidBodyGetSetData& rigidBodyData)
 	{
 		auto body = mRigidBodyContainer.find(id)->second;
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 		if (dynamicBody)
 		{
-			physx::PxTransform pxTransform = dynamicBody->GetPxRigidDynamic()->getGlobalPose();
-			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
+			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
+			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), rigidBodyData.transform);
+			CopyPxVec3ToDxVec3(pxBody->getLinearVelocity(), rigidBodyData.linearVelocity);
+			CopyPxVec3ToDxVec3(pxBody->getAngularVelocity(), rigidBodyData.angularVelocity);
+
 		}
 		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 		if (staticBody)
 		{
-			physx::PxTransform pxTransform = staticBody->GetPxRigidStatic()->getGlobalPose();
-			CopyPxTransformToDirectXMatrix(pxTransform, dxMatrix);
+			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
+			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), rigidBodyData.transform);
 		}
 	}
 
-	bool PhysicsRigidBodyManager::SetRigidBodyMatrix(const unsigned int& id, const DirectX::SimpleMath::Matrix& worldTransform)
+	bool PhysicsRigidBodyManager::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData)
 	{
 		auto body = mRigidBodyContainer.find(id)->second;
 
@@ -94,8 +97,16 @@ namespace fq::physics
 		if (dynamicBody)
 		{
 			physx::PxTransform pxTransform;
-			CopyDirectXMatrixToPxTransform(worldTransform, pxTransform);
-			dynamicBody->GetPxRigidDynamic()->setGlobalPose(pxTransform);
+			physx::PxVec3 pxLinearVelocity;
+			physx::PxVec3 pxangularVelocity;
+			CopyDirectXMatrixToPxTransform(rigidBodyData.transform, pxTransform);
+			CopyDxVec3ToPxVec3(rigidBodyData.linearVelocity, pxLinearVelocity);
+			CopyDxVec3ToPxVec3(rigidBodyData.angularVelocity, pxangularVelocity);
+
+			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
+			pxBody->setGlobalPose(pxTransform);
+			pxBody->setLinearVelocity(pxLinearVelocity);
+			pxBody->setAngularVelocity(pxangularVelocity);
 
 			return true;
 		}
@@ -103,28 +114,10 @@ namespace fq::physics
 		if (staticBody)
 		{
 			physx::PxTransform pxTransform;
-			CopyDirectXMatrixToPxTransform(worldTransform, pxTransform);
-			staticBody->GetPxRigidStatic()->setGlobalPose(pxTransform);
+			CopyDirectXMatrixToPxTransform(rigidBodyData.transform, pxTransform);
 
-			return true;
-		}
-
-		return false;
-	}
-
-	bool PhysicsRigidBodyManager::AddRigidBodyVelocity(const unsigned int& id, const DirectX::SimpleMath::Vector3& velocity)
-	{
-		auto body = mRigidBodyContainer.find(id)->second;
-
-		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
-		if (dynamicBody)
-		{
-			physx::PxVec3 pxVelocity = dynamicBody->GetPxRigidDynamic()->getLinearVelocity();
-			pxVelocity.x += velocity.x;
-			pxVelocity.y += velocity.y;
-			pxVelocity.z -= velocity.z;
-
-			dynamicBody->GetPxRigidDynamic()->setLinearVelocity(pxVelocity);
+			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
+			pxBody->setGlobalPose(pxTransform);
 
 			return true;
 		}
@@ -146,8 +139,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics)) 
-			return false;
+		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
 		mUpcomingActors.push_back(staticBody);
@@ -165,8 +157,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
 		mUpcomingActors.push_back(staticBody);
@@ -184,8 +175,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
 		mUpcomingActors.push_back(staticBody);
@@ -204,8 +194,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!staticBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
 		mUpcomingActors.push_back(staticBody);
@@ -223,8 +212,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
@@ -242,8 +230,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
@@ -261,8 +248,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
@@ -281,8 +267,7 @@ namespace fq::physics
 		shape->setSimulationFilterData(data);
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.colliderInfo.id, info.colliderInfo.layerNumber);
-		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics))
-			return false;
+		if (!dynamicBody->Initialize(info.colliderInfo, shape, mPhysics)) return false;
 
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
@@ -378,22 +363,26 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
 			if (dynamicBody)
 			{
-				physx::PxShape* shpae;
+				physx::PxShape* shape;
+				dynamicBody->GetPxRigidDynamic()->getShapes(&shape, 1);
 				physx::PxFilterData filterData;
 
 				filterData.word0 = dynamicBody->GetLayerNumber();
 				filterData.word1 = collisionMatrix[dynamicBody->GetLayerNumber()];
+				shape->setSimulationFilterData(filterData);
 
 				continue;
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body.second);
 			if (staticBody)
 			{
-				physx::PxShape* shpae;
+				physx::PxShape* shape;
+				staticBody->GetPxRigidStatic()->getShapes(&shape, 1);
 				physx::PxFilterData filterData;
 
 				filterData.word0 = staticBody->GetLayerNumber();
 				filterData.word1 = collisionMatrix[staticBody->GetLayerNumber()];
+				shape->setSimulationFilterData(filterData);
 
 				continue;
 			}
