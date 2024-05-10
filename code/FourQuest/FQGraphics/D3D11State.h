@@ -80,4 +80,17 @@ namespace fq::graphics
 	private:
 		ComPtr<ID3D11BlendState> mState;
 	};
+
+	class PipelineState
+	{
+	public:
+		PipelineState(std::shared_ptr<D3D11RasterizerState> rasterizerOrNull, std::shared_ptr<D3D11DepthStencilState> depthStencilOrNull, std::shared_ptr<D3D11BlendState> blendStateOrNull);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+
+	private:
+		std::shared_ptr<D3D11RasterizerState> mRasterizerOrNull;
+		std::shared_ptr<D3D11DepthStencilState> mDepthStencilOrNull;
+		std::shared_ptr<D3D11BlendState> mBlendStateOrNull;
+	};
 }

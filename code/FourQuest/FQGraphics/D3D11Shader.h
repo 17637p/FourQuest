@@ -2,13 +2,23 @@
 
 #include <memory>
 #include <string>
-
 #include <wrl.h>
 #include <d3d11.h>
 
 namespace fq::graphics
 {
 	class D3D11Device;
+
+	class D3D11InputLayout
+	{
+	public:
+		D3D11InputLayout(const std::shared_ptr<D3D11Device>& device, ID3DBlob* VSBytecode);
+
+		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInputLayout;
+	};
 
 	class D3D11VertexShader
 	{
@@ -111,5 +121,26 @@ namespace fq::graphics
 	{
 		return mShader;
 	}
+
+	class PipelineState;
+
+	class ShaderProgram
+	{
+	public:
+		ShaderProgram(const std::shared_ptr<D3D11Device>& device, 
+			std::shared_ptr<D3D11VertexShader> vsOrNull, 
+			std::shared_ptr<D3D11GeometryShader> gsOrNull, 
+			std::shared_ptr<D3D11PixelShader> psOrNull, 
+			std::shared_ptr<PipelineState> pipelineState);
+
+		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+	private:
+		std::shared_ptr<D3D11VertexShader> mVSOrNull;
+		std::shared_ptr<D3D11InputLayout> mInputLayoutOrNull;
+		std::shared_ptr<D3D11GeometryShader> mGSOrNull;
+		std::shared_ptr<D3D11PixelShader> mPSOrNull;
+		std::shared_ptr<PipelineState> mPipelineState;
+	};
 }
 

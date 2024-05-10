@@ -38,14 +38,13 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		mStaticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelShadowVS.hlsl");
-		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelShadowVS.hlsl", macroSkinning);
-		mShadowGS = std::make_shared<D3D11GeometryShader>(mDevice, L"./resource/internal/shader/ModelShadowGS.hlsl");
-		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mStaticMeshVS->GetBlob().Get());
-		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
-
-		mShadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
-		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
+		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelShadowVS.hlsl");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelShadowVS.hlsl", macroSkinning);
+		auto shadowGS = std::make_shared<D3D11GeometryShader>(mDevice, L"./resource/internal/shader/ModelShadowGS.hlsl");
+		auto shadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
+		auto pipelieState = std::make_shared<PipelineState>(shadowRS, nullptr, nullptr);
+		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, shadowGS, nullptr, pipelieState);
+		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, shadowGS, nullptr, pipelieState);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -63,15 +62,6 @@ namespace fq::graphics
 
 		mCascadeShadowDSV = nullptr;
 		mPointLightShadowDSV = nullptr;
-
-		mStaticMeshVS = nullptr;
-		mSkinnedMeshVS = nullptr;
-		mShadowGS = nullptr;
-		mStaticMeshLayout = nullptr;
-		mSkinnedMeshLayout = nullptr;
-
-		mShadowRS = nullptr;
-		mDefaultRS = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
@@ -239,15 +229,12 @@ namespace fq::graphics
 		ID3D11RenderTargetView* renderTargets[1] = { NULL, };
 		mDevice->GetDeviceContext()->OMSetRenderTargets(1, renderTargets, mCascadeShadowDSV->GetDSV().Get());
 
-		mStaticMeshLayout->Bind(mDevice);
-		mStaticMeshVS->Bind(mDevice);
-		mShadowGS->Bind(mDevice);
 		mDevice->GetDeviceContext()->PSSetShader(NULL, NULL, NULL);
 
 		mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 		mDirectionalShadowTransformCB->Bind(mDevice, ED3D11ShaderType::GeometryShader);
-		mShadowRS->Bind(mDevice);
 
+		mStaticMeshShaderProgram->Bind(mDevice);
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
 			if (job.bUseShadow)
@@ -261,10 +248,8 @@ namespace fq::graphics
 			}
 		}
 
-		mSkinnedMeshLayout->Bind(mDevice);
-		mSkinnedMeshVS->Bind(mDevice);
 		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-
+		mSkinnedMeshShaderProgram->Bind(mDevice);
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
 			if (job.bUseShadow)
@@ -278,8 +263,5 @@ namespace fq::graphics
 				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
-
-		mDefaultRS->Bind(mDevice);
-		mDevice->GetDeviceContext()->GSSetShader(NULL, NULL, NULL);
 	}
 }

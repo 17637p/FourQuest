@@ -18,20 +18,6 @@ namespace fq::graphics
 	class D3D11Device;
 
 	/*=============================================================================
-		Input Layout
-	=============================================================================*/
-	class D3D11InputLayout
-	{
-	public:
-		D3D11InputLayout(const std::shared_ptr<D3D11Device>& device, ID3DBlob* VSBytecode);
-
-		void Bind(const std::shared_ptr<D3D11Device>& device);
-
-	private:
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInputLayout;
-	};
-
-	/*=============================================================================
 		Vertex Buffer
 	=============================================================================*/
 	class D3D11VertexBuffer

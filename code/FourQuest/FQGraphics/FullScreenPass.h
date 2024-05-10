@@ -29,9 +29,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mNoneDSV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
-		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
-		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
-		std::shared_ptr<D3D11PixelShader> mFullScreenPS;
+		std::unique_ptr<class ShaderProgram> mFullScreenShaderProgram;
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;

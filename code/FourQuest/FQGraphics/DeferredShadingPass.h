@@ -39,16 +39,15 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
 
+		std::unique_ptr<class ShaderProgram> mShaderProgram;
+
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 
-		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
-		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
-		std::shared_ptr<D3D11PixelShader> mShadingPS;
 
 		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 	};

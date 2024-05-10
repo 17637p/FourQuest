@@ -46,12 +46,12 @@ namespace fq::graphics
 		mPositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-		mStaticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
-		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
-		mGeometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroGeometry);
-
-		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mStaticMeshVS->GetBlob().Get());
-		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
+		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
+		auto geometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroGeometry);
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, geometryPS, pipelieState);
+		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 
@@ -77,13 +77,8 @@ namespace fq::graphics
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
 
-		mStaticMeshLayout = nullptr;
-		mSkinnedMeshLayout = nullptr;
-
-		mStaticMeshVS = nullptr;
-		mSkinnedMeshVS = nullptr;
-
-		mGeometryPS = nullptr;
+		mStaticMeshShaderProgram = nullptr;
+		mSkinnedMeshShaderProgram = nullptr;
 
 		mAnisotropicWrapSamplerState = nullptr;
 
@@ -145,7 +140,6 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mGeometryPS->Bind(mDevice);
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
@@ -154,8 +148,7 @@ namespace fq::graphics
 
 		// Draw
 		{
-			mStaticMeshLayout->Bind(mDevice);
-			mStaticMeshVS->Bind(mDevice);
+			mStaticMeshShaderProgram->Bind(mDevice);
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
@@ -171,8 +164,7 @@ namespace fq::graphics
 				}
 			}
 
-			mSkinnedMeshLayout->Bind(mDevice);
-			mSkinnedMeshVS->Bind(mDevice);
+			mSkinnedMeshShaderProgram->Bind(mDevice);
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())

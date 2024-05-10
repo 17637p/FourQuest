@@ -7,6 +7,8 @@
 
 namespace fq::graphics
 {
+	class ShaderProgram;
+
 	class DeferredGeometryPass : public Pass
 	{
 	public:
@@ -39,13 +41,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
 
-		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
-		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-
-		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
-		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
-
-		std::shared_ptr<D3D11PixelShader> mGeometryPS;
+		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 

@@ -19,17 +19,18 @@ namespace fq::graphics
 		mColoraccumulationSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, coloraccumulationRTV);
 		mPixelRevealageThresholdSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pixelRevealageThresholdRTV);
 
-		mOITCompositeState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITComposite);
-
 		D3D_SHADER_MACRO macroComposite[] =
 		{
 			{"COMPOSITE", ""},
 			{ NULL, NULL}
 		};
 
-		mFullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
-		mFullScreenLayout = std::make_shared<D3D11InputLayout>(device, mFullScreenVS->GetBlob().Get());
-		mTransparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroComposite);
+		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
+		auto transparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroComposite);
+		auto OITCompositeState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITComposite);
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, OITCompositeState);
+		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, transparentCompositePS, pipelieState);
+
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
 
 		std::vector<DirectX::SimpleMath::Vector2> positions =
@@ -67,11 +68,8 @@ namespace fq::graphics
 		mColoraccumulationSRV = nullptr;
 		mPixelRevealageThresholdSRV = nullptr;
 
-		mOITCompositeState = nullptr;
+		mShaderProgram = nullptr;
 
-		mFullScreenLayout = nullptr;
-		mFullScreenVS = nullptr;
-		mTransparentCompositePS = nullptr;
 		mFullScreenVB = nullptr;
 		mFullScreenIB = nullptr;
 		mPointClampSamplerState = nullptr;
@@ -105,18 +103,10 @@ namespace fq::graphics
 		mPixelRevealageThresholdSRV->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 		mPointClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 
-		mFullScreenLayout->Bind(mDevice);
-		mFullScreenVS->Bind(mDevice);
-		mTransparentCompositePS->Bind(mDevice);
+		mShaderProgram->Bind(mDevice);
 		mFullScreenVB->Bind(mDevice);
 		mFullScreenIB->Bind(mDevice);
-		mOITCompositeState->Bind(mDevice);
 
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
-
-		// unbind
-		{
-			mDevice->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
-		}
 	}
 }

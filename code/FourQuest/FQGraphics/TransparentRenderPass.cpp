@@ -24,7 +24,7 @@ namespace fq::graphics
 
 		mColoraccumulationRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::ColorAcuumulation, width, height);
 		mPixelRevealageThresholdRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PixeldRevealageThreshold, width, height);
-		
+
 		mDefaultDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 		auto shadowDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
@@ -40,17 +40,17 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		mStaticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
-		mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
-		mTransparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroRender);
-		mStaticMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mStaticMeshVS->GetBlob().Get());
-		mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(mDevice, mSkinnedMeshVS->GetBlob().Get());
+		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
+		auto transparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroRender);
+		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
+		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, disableDepthWriteState, OITRenderState);
+		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, transparentRenderPS, pipelieState);
+		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, transparentRenderPS, pipelieState);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
-		mDisableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
-		mOITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
-
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -73,21 +73,17 @@ namespace fq::graphics
 		mLightManager = nullptr;
 		mResourceManager = nullptr;
 
+		mStaticMeshShaderProgram = nullptr;
+		mSkinnedMeshShaderProgram = nullptr;
+
 		mColoraccumulationRTV = nullptr;
 		mPixelRevealageThresholdRTV = nullptr;
 		mDefaultDSV = nullptr;
 		mShadowSRV = nullptr;
 
-		mStaticMeshLayout = nullptr;
-		mSkinnedMeshLayout = nullptr;
-		mStaticMeshVS = nullptr;
-		mSkinnedMeshVS = nullptr;
-		mTransparentRenderPS = nullptr;
 
 		mAnisotropicWrapSamplerState = nullptr;
 		mShadowSampler = nullptr;
-		mOITRenderState = nullptr;
-		mDisableDepthWriteState = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
@@ -188,11 +184,8 @@ namespace fq::graphics
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 
-			mTransparentRenderPS->Bind(mDevice);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-			mOITRenderState->Bind(mDevice);
-			mDisableDepthWriteState->Bind(mDevice);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
 			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
@@ -202,8 +195,7 @@ namespace fq::graphics
 
 		// Draw
 		{
-			mStaticMeshLayout->Bind(mDevice);
-			mStaticMeshVS->Bind(mDevice);
+			mStaticMeshShaderProgram->Bind(mDevice);
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
@@ -225,9 +217,8 @@ namespace fq::graphics
 				}
 			}
 
-			mSkinnedMeshLayout->Bind(mDevice);
-			mSkinnedMeshVS->Bind(mDevice);
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
+			mSkinnedMeshShaderProgram->Bind(mDevice);
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
@@ -250,12 +241,5 @@ namespace fq::graphics
 				}
 			}
 		}
-
-		// unbind
-		{
-			mDevice->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
-			mDevice->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
-		}
 	}
-
 }

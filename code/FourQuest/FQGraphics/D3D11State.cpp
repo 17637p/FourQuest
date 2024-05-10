@@ -265,7 +265,7 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = true;
-		
+
 		auto& acuumRT = blendDesc.RenderTarget[0];
 		acuumRT.BlendEnable = true;
 		acuumRT.SrcBlend = D3D11_BLEND_ONE;
@@ -318,4 +318,41 @@ void D3D11BlendState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 {
 	// 특별히 blend factor 값을 사용하지 않는 이상 두 번째 인자 값은 항상 null로 넘겨도 된다.
 	d3d11Device->GetDeviceContext()->OMSetBlendState(mState.Get(), nullptr, 0xFFFFFFFF);
+}
+
+PipelineState::PipelineState(std::shared_ptr<D3D11RasterizerState> rasterizerOrNull, std::shared_ptr<D3D11DepthStencilState> depthStencilOrNull, std::shared_ptr<D3D11BlendState> blendStateOrNull)
+	: mRasterizerOrNull(rasterizerOrNull)
+	, mDepthStencilOrNull(depthStencilOrNull)
+	, mBlendStateOrNull(blendStateOrNull)
+{
+}
+
+void PipelineState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	if (mRasterizerOrNull != nullptr)
+	{
+		mRasterizerOrNull->Bind(d3d11Device);
+	}
+	else
+	{
+		d3d11Device->GetDeviceContext()->RSSetState(NULL);
+	}
+
+	if (mDepthStencilOrNull != nullptr)
+	{
+		mDepthStencilOrNull->Bind(d3d11Device);
+	}
+	else
+	{
+		d3d11Device->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
+	}
+
+	if (mBlendStateOrNull != nullptr)
+	{
+		mBlendStateOrNull->Bind(d3d11Device);
+	}
+	else
+	{
+		d3d11Device->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+	}
 }

@@ -21,9 +21,10 @@ namespace fq::graphics
 		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-		mFullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
-		mFullScreenLayout = std::make_shared<D3D11InputLayout>(device, mFullScreenVS->GetBlob().Get());
-		mFullScreenPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/FullScreenPS.hlsl");
+		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
+		auto fullScreenPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/FullScreenPS.hlsl");
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+		mFullScreenShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, fullScreenPS, pipelieState);
 
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
 
@@ -57,9 +58,8 @@ namespace fq::graphics
 		mNoneDSV = nullptr;
 		mDSV = nullptr;
 
-		mFullScreenLayout = nullptr;
-		mFullScreenVS = nullptr;
-		mFullScreenPS = nullptr;
+		mFullScreenShaderProgram = nullptr;
+
 		mFullScreenVB = nullptr;
 		mFullScreenIB = nullptr;
 		mPointClampSamplerState = nullptr;
@@ -86,9 +86,7 @@ namespace fq::graphics
 		mSwapChainRTV->Bind(mDevice, mNoneDSV);
 		mBackBufferSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 
-		mFullScreenLayout->Bind(mDevice);
-		mFullScreenVS->Bind(mDevice);
-		mFullScreenPS->Bind(mDevice);
+		mFullScreenShaderProgram->Bind(mDevice);
 		mFullScreenVB->Bind(mDevice);
 		mFullScreenIB->Bind(mDevice);
 		mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);

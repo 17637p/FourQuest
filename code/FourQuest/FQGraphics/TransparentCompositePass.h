@@ -29,11 +29,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mColoraccumulationSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPixelRevealageThresholdSRV;
 
-		std::shared_ptr<D3D11BlendState> mOITCompositeState;
-
-		std::shared_ptr<D3D11InputLayout> mFullScreenLayout;
-		std::shared_ptr<D3D11VertexShader> mFullScreenVS;
-		std::shared_ptr<D3D11PixelShader> mTransparentCompositePS;
+		std::unique_ptr<class ShaderProgram> mShaderProgram;
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;

@@ -21,11 +21,6 @@ namespace fq::graphics
 
 		OnResize(width, height);
 
-		D3D_SHADER_MACRO macroShading[] =
-		{
-			{"SHADING", ""},
-			{ NULL, NULL}
-		};
 
 		auto shadowDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
@@ -37,9 +32,16 @@ namespace fq::graphics
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 
-		mFullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
-		mFullScreenLayout = std::make_shared<D3D11InputLayout>(device, mFullScreenVS->GetBlob().Get());
-		mShadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroShading);
+		D3D_SHADER_MACRO macroShading[] =
+		{
+			{"SHADING", ""},
+			{ NULL, NULL}
+		};
+
+		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
+		auto shadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroShading);
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, shadingPS, pipelieState);
 
 		std::vector<DirectX::SimpleMath::Vector2> positions =
 		{
@@ -79,16 +81,15 @@ namespace fq::graphics
 
 		mBackBufferRTV = nullptr;
 
+		mShaderProgram = nullptr;
+
 		mAnisotropicWrapSamplerState = nullptr;
 		mLinearClampSamplerState = nullptr;
 		mPointClampSamplerState = nullptr;
 		mShadowSampler = nullptr;
 
-		mFullScreenLayout = nullptr;
-		mFullScreenVS = nullptr;
 		mFullScreenVB = nullptr;
 		mFullScreenIB = nullptr;
-		mShadingPS = nullptr;
 	}
 	void DeferredShadingPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -172,13 +173,11 @@ namespace fq::graphics
 			mBackBufferRTV->Bind(mDevice, mNullDSV);
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mFullScreenLayout->Bind(mDevice);
+			mShaderProgram->Bind(mDevice);
+			
 			mFullScreenVB->Bind(mDevice);
 			mFullScreenIB->Bind(mDevice);
 
-			mFullScreenVS->Bind(mDevice);
-
-			mShadingPS->Bind(mDevice);
 			mAlbedoSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mMetalnessSRV->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 			mRoughnessSRV->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);

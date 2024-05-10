@@ -15,9 +15,12 @@ namespace fq::graphics
 		mCameraManager = cameraManager;
 		mResourceManager = resourceManager;
 
-		mSkyBoxVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SkyBoxVS.hlsl");
-		mSkyboxPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/SkyBoxPS.hlsl");
-		mSkyBoxLayout = std::make_shared<D3D11InputLayout>(device, mSkyBoxVS->GetBlob().Get());
+		auto skyBoxVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SkyBoxVS.hlsl");
+		auto skyboxPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/SkyBoxPS.hlsl");
+		auto cullFrontRS = mResourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullFront);
+		auto lessEqualDepthStencilDS = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
+		auto pipelieState = std::make_shared<PipelineState>(cullFrontRS, lessEqualDepthStencilDS, nullptr);
+		mSkyBoxShaderProgram = std::make_unique<ShaderProgram>(mDevice, skyBoxVS, nullptr, skyboxPS, pipelieState);
 
 		mDefaultSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 
@@ -60,16 +63,29 @@ namespace fq::graphics
 		mDrawRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-		mCullFrontRS = mResourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullFront);
 		mDefaultSS = mResourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
-		mLessEqualDepthStencilDS = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
 
 		mViewProjectionMatrix = mResourceManager->Create<D3D11ConstantBuffer<ViewRotationProjectionMatrix>>(ED3D11ConstantBuffer::ViewRotationProj);
 	}
 
 	void SkyBoxPass::Finalize()
 	{
+		mDevice = nullptr;
+		mCameraManager = nullptr;
+		mResourceManager = nullptr;
 
+		mSkyBoxShaderProgram = nullptr;
+
+		mSkyBoxVB = nullptr;
+		mSkyboxIB = nullptr;
+
+		mDrawRTV = nullptr;
+		mDrawDSV = nullptr;
+		mSkyBoxTexture = nullptr;
+
+		mDefaultSS = nullptr;
+
+		mViewProjectionMatrix = nullptr;
 	}
 
 	void SkyBoxPass::Render()
@@ -83,16 +99,12 @@ namespace fq::graphics
 
 		mDrawRTV->Bind(mDevice, mDrawDSV);
 
-		mSkyBoxLayout->Bind(mDevice);
-		mSkyBoxVS->Bind(mDevice);
-		mSkyboxPS->Bind(mDevice);
+		mSkyBoxShaderProgram->Bind(mDevice);
 
 		mSkyBoxVB->Bind(mDevice);
 		mSkyboxIB->Bind(mDevice);
 
 		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-		mCullFrontRS->Bind(mDevice);
-		mLessEqualDepthStencilDS->Bind(mDevice);
 
 		mSkyBoxTexture->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 

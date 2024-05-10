@@ -40,14 +40,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mCascadeShadowDSV;
 		std::shared_ptr<D3D11DepthStencilView> mPointLightShadowDSV;
 
-		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
-		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
-		std::shared_ptr<D3D11GeometryShader> mShadowGS;
-		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
-		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-
-		std::shared_ptr<D3D11RasterizerState> mShadowRS;
-		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
+		std::unique_ptr<class ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<class ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;

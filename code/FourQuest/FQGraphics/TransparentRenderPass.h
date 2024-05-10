@@ -35,17 +35,11 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
 		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 
-		// to do : 쉐이더 더 효율적으로 관리하는 기법이 필요함
-		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
-		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
-		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
-		std::shared_ptr<D3D11PixelShader> mTransparentRenderPS;
+		std::unique_ptr<class ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<class ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
-		std::shared_ptr<D3D11BlendState> mOITRenderState;
-		std::shared_ptr<D3D11DepthStencilState> mDisableDepthWriteState;
 
 		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;

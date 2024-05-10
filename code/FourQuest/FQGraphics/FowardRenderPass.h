@@ -7,6 +7,8 @@
 
 namespace fq::graphics
 {
+	class ShaderProgram;
+
 	class ForwardRenderPass : public Pass
 	{
 	public:
@@ -35,11 +37,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPointLightShadowSRV;
 
-		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
-		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
-		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
-		std::shared_ptr<D3D11PixelShader> mMeshPS;
+		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;

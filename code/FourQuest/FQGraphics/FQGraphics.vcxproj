@@ -161,7 +161,6 @@
     <ClInclude Include="D3D11DebugDrawManager.h" />
     <ClInclude Include="DebugRenderPass.h" />
     <ClInclude Include="DeferredGeometryPass.h" />
-    <ClInclude Include="DeferredPass.h" />
     <ClInclude Include="DeferredPipeline.h" />
     <ClInclude Include="DeferredShadingPass.h" />
     <ClInclude Include="Define.h" />
@@ -212,7 +211,6 @@
     <ClCompile Include="D3D11DebugDrawManager.cpp" />
     <ClCompile Include="DebugRenderPass.cpp" />
     <ClCompile Include="DeferredGeometryPass.cpp" />
-    <ClCompile Include="DeferredPass.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="DeferredShadingPass.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
