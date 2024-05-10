@@ -93,9 +93,19 @@ extern "C" {
 			/// Bounding Volume
 
 			/// UI
+			virtual FQ_GRAPHICS void AddFont(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void DeleteFont(const std::wstring& path) abstract;
+
+			virtual FQ_GRAPHICS void SetDefaultFont(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) abstract;
+			virtual FQ_GRAPHICS void SetDefaultFontSize(const unsigned short fontSize) abstract;
+
+			// SetDefault를 하면 fontSize, fontPath, color 가 입력안할 때 설정한 값으로 적용됨 
+			// fontName은 일단은 파일명 aa.ttf라면 aa
+			virtual FQ_GRAPHICS void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize = 50, const std::wstring& fontName = L"Verdana", const DirectX::SimpleMath::Color& color = { 0, 1, 1, 1 }) abstract;
 
 			/// SkyBox
-			virtual void SetSkyBox(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path) abstract;
 
 			/// Light
 			virtual FQ_GRAPHICS void AddLight(const unsigned int id, const LightInfo& lightInfo) abstract;

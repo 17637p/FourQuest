@@ -150,7 +150,6 @@
     <ClInclude Include="D3D11LightManager.h" />
     <ClInclude Include="D3D11ModelManager.h" />
     <ClInclude Include="D3D11PickingManager.h" />
-    <ClInclude Include="D3D11TextManager.h" />
     <ClInclude Include="D3D11JobManager.h" />
     <ClInclude Include="D3D11RenderManager.h" />
     <ClInclude Include="D3D11ResourceType.h" />
@@ -178,6 +177,7 @@
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationHelper.cpp" />
@@ -192,7 +192,6 @@
     <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
     <ClCompile Include="D3D11PickingManager.cpp" />
-    <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
     <ClCompile Include="D3D11RenderManager.cpp" />
     <ClCompile Include="D3D11Shader.cpp" />
@@ -214,6 +213,7 @@
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQLoader\FQLoader.vcxproj">

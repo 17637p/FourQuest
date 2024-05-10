@@ -24,6 +24,7 @@ FQGraphics::FQGraphics()
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 	, mPickingManager(std::make_shared<D3D11PickingManager>())
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
+	, mUIManager(std::make_shared<UIManager>())
 {
 }
 
@@ -40,6 +41,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mDebugDrawManager->Initialize(mDevice);
 	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
+	mUIManager->Initialize(hWnd, mDevice, width, height);
 
 	return true;
 }
@@ -52,6 +54,36 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
 {
 	mRenderManager->SetSkyBox(path);
+}
+
+void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)
+{
+	mUIManager->DrawText(text, drawRect, fontSize, fontPath, color);
+}
+
+void FQGraphics::SetDefaultFontSize(const unsigned short fontSize)
+{
+	mUIManager->SetDefaultFontSize(fontSize);
+}
+
+void FQGraphics::SetDefaultFontColor(const DirectX::SimpleMath::Color& color)
+{
+	mUIManager->SetDefaultFontColor(color);
+}
+
+void FQGraphics::SetDefaultFont(const std::wstring& path)
+{
+	mUIManager->SetDefaultFont(path);
+}
+
+void FQGraphics::AddFont(const std::wstring& path)
+{
+	mUIManager->AddFont(path);
+}
+
+void FQGraphics::DeleteFont(const std::wstring& path)
+{
+	mUIManager->DeleteFont(path);
 }
 
 void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
@@ -134,6 +166,7 @@ bool FQGraphics::Render()
 
 bool FQGraphics::EndRender()
 {
+	mUIManager->Render();
 	mRenderManager->EndRender();
 	mJobManager->ClearAll();
 
@@ -157,6 +190,7 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 	mRenderManager->OnResize(width, height);
 	mCameraManager->OnResize(width, height);
 	mPickingManager->OnResize(width, height, mDevice);
+	mUIManager->OnResize(mDevice, width, height);
 
 	return true;
 }

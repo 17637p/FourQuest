@@ -19,7 +19,7 @@ bool D3D11Device::Initialize(const HWND hWnd, const unsigned short width, const 
 	mWidth = width;
 	mHeight = height;
 
-	UINT createDeviceFlags = 0;
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT; // D2D랑 연결하려면 플래그를 설정해야함
 #if defined(DEBUG) || defined(_DEBUG)
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif

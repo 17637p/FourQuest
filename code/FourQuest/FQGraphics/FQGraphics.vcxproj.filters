@@ -37,9 +37,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11TextManager.h">
-      <Filter>D3D11</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Resource</Filter>
     </ClInclude>
@@ -124,6 +121,9 @@
     <ClInclude Include="D3D11Common.h">
       <Filter>D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -162,6 +162,9 @@
     <Filter Include="Pass">
       <UniqueIdentifier>{97a8e610-7877-490c-8080-7b0aeb522652}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{def5e414-8a80-45ce-adac-b074d5cbd020}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D11State.cpp">
@@ -193,9 +196,6 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11TextManager.cpp">
-      <Filter>D3D11</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Resource</Filter>
@@ -266,20 +266,11 @@
     <ClCompile Include="ConstantBufferStructure.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
@@ -292,15 +283,6 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
@@ -309,5 +291,12 @@
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
       <Filter>Shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl" />
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl" />
   </ItemGroup>
 </Project>

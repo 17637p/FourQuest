@@ -64,6 +64,14 @@ namespace fq::graphics
 		/// Bounding Volume
 
 		/// UI
+		virtual void AddFont(const std::wstring& path) override;
+		virtual void DeleteFont(const std::wstring& path) override;
+
+		virtual void SetDefaultFont(const std::wstring& path) override;
+		virtual void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) override;
+		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
+
+		virtual void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize, const std::wstring& fontPath, const DirectX::SimpleMath::Color& color) override;
 
 		/// SkyBox
 		virtual void SetSkyBox(const std::wstring& path) override;
@@ -105,6 +113,7 @@ namespace fq::graphics
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;
+		std::shared_ptr<class UIManager> mUIManager;
 	};
 }
 

@@ -163,6 +163,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics->AddLight(5, pointLightInfo);
 
+	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+
 	return true;
 }
 
@@ -332,25 +334,6 @@ void Process::Update()
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
  	}
-	if (InputManager::GetInstance().IsGetKeyDown('O'))
-	{
-		for (const auto& object : mStaticMeshObjects)
-		{
-			mTestGraphics->DeleteStaticMeshObject(object);
-		}
-
-		mStaticMeshObjects.clear();
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('P'))
-	{
-		const std::string modelPath = "./resource/example/model/gun.model";
-		const std::string textureBasePath = "./resource/example/texture";
-
-		float randX = (float)(rand() % 500 - 250);
-		float randY = (float)(rand() % 500 - 250);
-		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-	}
 
 	shadowTest();
 
@@ -432,6 +415,19 @@ void Process::Render()
 		obj->SetAlpha(s_time * 0.33f);
 		obj->UpdateAnimationTime(s_time);
 	}
+
+	// --------------------font Test-------------------------------
+	DirectX::SimpleMath::Rectangle drawRect;
+	drawRect.x = 600;
+	drawRect.y = 600;
+	drawRect.width = 1000;
+	drawRect.height = 1000;
+	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+
+	drawRect.x = 600;
+	drawRect.y = 700;
+	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+	// ---------------------------------------------------
 
 	mTestGraphics->EndRender();
 
