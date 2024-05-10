@@ -55,15 +55,17 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::FinalUpdate(physx::PxScene* scene)
+	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
 #ifdef _DEBUG
 		ExtractDebugData();
 #endif
+		UserDataClear();
+
 		return true;
 	}
 
-#pragma region GetSetRigidBodyMatrix
+#pragma region GetSetRigidBodyData
 
 	void PhysicsRigidBodyManager::GetRigidBodyData(unsigned int id, RigidBodyGetSetData& rigidBodyData)
 	{
@@ -252,6 +254,9 @@ namespace fq::physics
 
 	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene)
 	{
+		if (mRigidBodyContainer.find(id) == mRigidBodyContainer.end())
+			return false;
+
 		std::shared_ptr<RigidBody> body = mRigidBodyContainer.find(id)->second;
 
 		if (body)
@@ -327,6 +332,24 @@ namespace fq::physics
 		}
 
 		return true;
+	}
+
+	void PhysicsRigidBodyManager::UserDataClear()
+	{
+		auto dataIter = mCollisionDataContainer.begin();
+		std::vector<std::unordered_map<unsigned int, std::shared_ptr<CollisionData>>::iterator> iterContainer;
+
+		for (; dataIter != mCollisionDataContainer.end(); dataIter++)
+		{
+			if (dataIter->second->isDead == true)
+				iterContainer.push_back(dataIter);
+		}
+
+		for (auto& deleteIter : iterContainer)
+		{
+			mCollisionDataContainer.erase(deleteIter);
+		}
+		iterContainer.clear();
 	}
 
 #pragma endregion
@@ -412,4 +435,5 @@ namespace fq::physics
 	}
 
 #pragma endregion
+
 }

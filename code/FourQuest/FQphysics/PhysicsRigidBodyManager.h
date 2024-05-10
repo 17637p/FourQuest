@@ -35,7 +35,7 @@ namespace fq::physics
 		/// <summary>
 		/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트
 		/// </summary>
-		bool FinalUpdate(physx::PxScene* scene);
+		bool FinalUpdate();
 
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
@@ -81,6 +81,11 @@ namespace fq::physics
 		/// 현재 리지드 바디들의 디버그 데이터를 추출합니다.
 		/// </summary>
 		void ExtractDebugData();
+
+		/// <summary>
+		/// 현재 유저 데이터를 클리어 합니다.
+		/// </summary>
+		void UserDataClear();
 
 		inline std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
 		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodyContainer();

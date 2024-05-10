@@ -113,7 +113,8 @@ namespace fq::physics
 	{
 		if (!mRigidBodyManager->Update(mScene, mCollisionMatrix))
 			return false;
-		if (!mCCTManager->Update(deltaTime));
+		if (!mCCTManager->Update(deltaTime))
+			return false;
 
 		if (!mScene->simulate(deltaTime))
 			return false;
@@ -125,7 +126,9 @@ namespace fq::physics
 
 	bool FQPhysics::FinalUpdate()
 	{
-		if (!mRigidBodyManager->FinalUpdate(mScene))
+		if (!mRigidBodyManager->FinalUpdate())
+			return false;
+		if (!mCCTManager->FinalUpdate())
 			return false;
 
 		return true;
@@ -251,9 +254,9 @@ namespace fq::physics
 		return mCCTManager->RemoveController(id);
 	}
 
-	void FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
+	bool FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
 	{
-		mCCTManager->AddInputMove(id, input);
+		return mCCTManager->AddInputMove(id, input);
 	}
 
 	CharacterControllerGetSetData FQPhysics::GetCharacterControllerData(const unsigned int& id)

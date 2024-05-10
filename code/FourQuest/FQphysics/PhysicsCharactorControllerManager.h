@@ -28,6 +28,11 @@ namespace fq::physics
 		bool Update(float deltaTime);
 
 		/// <summary>
+		/// 캐릭터 컨트롤러 유저 데이터 클리어용 업데이트
+		/// </summary>
+		bool FinalUpdate();
+
+		/// <summary>
 		/// 캐릭터 컨트롤러 생성 함수
 		/// </summary>
 		/// <param name="controllerInfo"> 캐릭터 컨트롤러 생성 데이터 </param>
@@ -40,7 +45,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>
 		/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
-		void AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input);
+		bool AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input);
 
 		/// <summary>
 		/// 캐릭터 컨트롤러 삭제 함수
@@ -54,6 +59,11 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="collisionMatrix"></param>
 		void UpdateCollisionMatrix(int* collisionMatrix);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void UserDataClear();
 
 		/// <summary>
 		/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set합니다.
