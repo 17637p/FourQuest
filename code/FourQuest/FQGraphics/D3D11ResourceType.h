@@ -85,5 +85,6 @@ namespace fq::graphics
 		Transform,
 		Light,
 		ViewRotationProj,
+		ModelTexture
 	};
 }

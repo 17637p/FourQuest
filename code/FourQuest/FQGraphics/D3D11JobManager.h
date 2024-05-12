@@ -32,6 +32,7 @@ namespace fq::graphics
 
 		std::vector<StaticMeshJob> mStaticMeshJobs;
 		std::vector<SkinnedMeshJob> mSkinnedMeshJobs;
+		std::vector<SkinnedMeshJob> mTerrainMeshJobs;
 	};
 
 	inline const std::vector<StaticMeshJob>& D3D11JobManager::GetStaticMeshJobs() const

@@ -256,5 +256,34 @@ namespace fq::graphics
 	}
 
 #pragma endregion
+
+	class TerrainMeshObject : public ITerrainMeshObject
+	{
+	public:
+		TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh,
+			std::vector<std::shared_ptr<Material>> materials,
+			DirectX::SimpleMath::Matrix transform);
+		~TerrainMeshObject() = default;
+
+		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
+
+		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
+
+		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
+		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
+
+		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
+		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
+
+	private:
+		std::shared_ptr<StaticMesh> mStaticMesh;
+		std::vector<std::shared_ptr<Material>> mMaterials;
+		DirectX::SimpleMath::Matrix mTransform;
+		EObjectRenderType mObjectRenderType;
+		float mAlpha;
+		bool mbUseShadow;
+	};
 }
 

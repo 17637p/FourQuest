@@ -135,4 +135,28 @@ namespace fq::graphics
 		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
 		delete skinnedMeshObject;
 	}
+
+	graphics::IStaticMeshObject* D3D11ObjectManager::CreateTerrainMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info)
+	{
+		std::shared_ptr<StaticMesh> staticMesh = modelManager->FindStaticMeshOrNull(modelManager->GenerateStaticMeshKey(info.ModelPath, info.MeshName));
+
+		if (staticMesh == nullptr)
+		{
+			return nullptr;
+		}
+
+		std::vector<std::shared_ptr<Material>> materials;
+		materials.reserve(info.MaterialNames.size());
+
+		for (const std::string& materialName : info.MaterialNames)
+		{
+			std::shared_ptr<Material> material = modelManager->FindMaterialOrNull(modelManager->GenerateMaterialKey(info.ModelPath, materialName));
+			materials.push_back(material);
+		}
+
+		StaticMeshObject* staticMeshObject = new StaticMeshObject(staticMesh, materials, info.Transform);
+		mStaticMeshObjects.insert(staticMeshObject);
+
+		return staticMeshObject;
+	}
 }

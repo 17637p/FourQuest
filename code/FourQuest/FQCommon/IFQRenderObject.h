@@ -69,6 +69,25 @@ extern "C" {
 		protected:
 			virtual ~ISkinnedMeshObject() = default;
 		};
+
+		// 타일 기능 같은거 추가해야겠지
+		class ITerrainMeshObject
+		{
+		public:
+			// 지울 예정인 함수
+			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
+
+		public:
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
+			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
+
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
+			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
+			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
+
+		protected:
+			virtual ~ITerrainMeshObject() = default;
+		};
 	}
 #ifdef __cplusplus
 }
