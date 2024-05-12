@@ -22,6 +22,9 @@ namespace fq::game_engine
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
+		void dragDropTarget_SkyBox();
+
+	private:
 		bool mbIsOpen;
 		fq::graphics::IFQGraphics* mGraphicsEngine;
 	};

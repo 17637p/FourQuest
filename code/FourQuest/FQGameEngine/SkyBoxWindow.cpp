@@ -25,8 +25,28 @@ void fq::game_engine::SkyBoxWindow::Render()
 
 	if (ImGui::Begin("SkyBox", &mbIsOpen))
 	{
+		dragDropTarget_SkyBox();
 	}
 
 	ImGui::End();
+}
+
+void fq::game_engine::SkyBoxWindow::dragDropTarget_SkyBox()
+{
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* path
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			if (path->extension() == ".dds") // ¸ðµ¨ »ý¼º
+			{
+				mGraphicsEngine->SetSkyBox(*path);
+			}
+		}
+	}
 }
 

@@ -192,7 +192,7 @@
       <Filter>include\08.Prefab</Filter>
     </ClInclude>
     <ClInclude Include="PrefabTest.h">
-      <Filter>include</Filter>
+      <Filter>include\01.EntityComponent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
