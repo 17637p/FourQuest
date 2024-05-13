@@ -45,4 +45,30 @@ namespace fq::graphics
 	inline bool Material::GetHasNormal() const { return mNormal != nullptr; }
 	inline bool Material::GetHasEmissive() const { return mEmissive != nullptr; }
 	inline bool Material::GetHasOpacity() const { return mOpacity != nullptr; }
+
+	class TerrainMaterial
+	{
+	public:
+		TerrainMaterial(const std::shared_ptr<D3D11Device>& device, 
+			const fq::common::TerrainMaterial& materialData, 
+			std::filesystem::path basePath = "");
+		~TerrainMaterial() = default;
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void SetMaterial(const std::shared_ptr<D3D11Device>& device, const fq::common::TerrainMaterial& materialData);
+		inline unsigned short GetNumOfTexture() const;
+
+	private:
+		fq::common::TerrainMaterial mMaterialData;
+
+		std::filesystem::path mBasePath;
+
+		std::vector<std::shared_ptr<D3D11Texture>> mBaseColors;
+		std::vector<std::shared_ptr<D3D11Texture>> mMetalnesses;
+		std::vector<std::shared_ptr<D3D11Texture>> mRoughnesses;
+		std::vector<std::shared_ptr<D3D11Texture>> mNormals;
+		std::shared_ptr<D3D11Texture> mAlpha;
+	};
+
+	inline unsigned short TerrainMaterial::GetNumOfTexture() const { return mMaterialData.NumOfTexture; }
 }

@@ -14,6 +14,7 @@ namespace fq::graphics
 	class StaticMesh;
 	class SkinnedMesh;
 	class Material;
+	class TerrainMaterial;
 
 	class StaticMeshObject : public IStaticMeshObject
 	{
@@ -261,29 +262,51 @@ namespace fq::graphics
 	{
 	public:
 		TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh,
-			std::vector<std::shared_ptr<Material>> materials,
 			DirectX::SimpleMath::Matrix transform);
 		~TerrainMeshObject() = default;
 
-		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
-
 		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
+		virtual void SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device,
+			const fq::common::TerrainMaterial& terrainMaterial);
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
-		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
+		inline const std::shared_ptr<TerrainMaterial>& GetTerrainMaterial() const;
 
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
-		std::vector<std::shared_ptr<Material>> mMaterials;
+		std::shared_ptr<TerrainMaterial> mMaterial;
 		DirectX::SimpleMath::Matrix mTransform;
-		EObjectRenderType mObjectRenderType;
-		float mAlpha;
-		bool mbUseShadow;
 	};
+
+#pragma region inlineFunc
+	inline void TerrainMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+	inline const std::shared_ptr<StaticMesh>& TerrainMeshObject::GetStaticMesh() const
+	{
+		return mStaticMesh;
+	}
+	inline DirectX::BoundingBox TerrainMeshObject::GetRenderBoundingBox() const
+	{
+		return mStaticMesh->GetMeshData().RenderBoundingBox;
+	}
+	inline DirectX::BoundingSphere TerrainMeshObject::GetRenderBoundingSphere() const
+	{
+		return mStaticMesh->GetMeshData().GetRenderBoundingSphere;
+	}
+	inline const std::shared_ptr<TerrainMaterial>& TerrainMeshObject::GetTerrainMaterial() const
+	{
+		return mMaterial;
+	}
+	inline const DirectX::SimpleMath::Matrix& TerrainMeshObject::GetTransform() const
+	{
+		return mTransform;
+	}
+#pragma endregion inlineFunc
 }
 

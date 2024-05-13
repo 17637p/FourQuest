@@ -312,6 +312,6 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
+		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>> mTerrainTextureCB;
 	};
 }

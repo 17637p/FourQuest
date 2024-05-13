@@ -54,6 +54,7 @@ namespace fq::graphics
 		void Render();
 		void Finalize();
 
+		void ReleaseRenderTarget();
 		void OnResize(std::shared_ptr<D3D11Device> device, const short width, const short height);
 
 		// Font

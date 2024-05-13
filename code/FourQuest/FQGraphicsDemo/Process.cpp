@@ -57,8 +57,10 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
+	const std::string planeModelPath = "./resource/example/model/Plane.model";
 
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
+	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
 
@@ -69,6 +71,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics->CreateModel(modelPath, textureBasePath);
 	mTestGraphics->CreateModel(geoModelPath, textureBasePath);
+	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
 
 	std::vector<fq::graphics::AnimationInfo> animInfo;
 	auto modelData = mTestGraphics->CreateModel(animModelPath0, textureBasePath);
@@ -77,6 +80,7 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 100, 1, 100 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
@@ -697,6 +701,37 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 			}
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
+	}
+}
+
+void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
+{
+	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
+
+	for (auto mesh : modelData.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = modelPath;
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+
+		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
+		mTerrainMeshObjects.push_back(iTerrainMeshObject);
+
+		fq::common::TerrainMaterial terrainMaterial;
+		terrainMaterial.NumOfTexture = 3;
+		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t1.jpg");
+		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t2.jpg");
+		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t3.jpg");
+
+		terrainMaterial.AlPhaFileName = L"./resource/example/texture/TestAlpha4.png";
+
+		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
 }
 

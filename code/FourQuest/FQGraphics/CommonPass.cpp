@@ -753,7 +753,9 @@ namespace fq::graphics
 	{
 	}
 
-	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11CameraManager> cameraManager, std::shared_ptr<D3D11ResourceManager> resourceManager)
+	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, 
+		std::shared_ptr<D3D11CameraManager> cameraManager, 
+		std::shared_ptr<D3D11ResourceManager> resourceManager)
 	{
 		mDevice = device;
 		mCameraManager = cameraManager;
@@ -937,11 +939,15 @@ namespace fq::graphics
 		mDefaultDS(nullptr),
 		mModelTransformCB(nullptr),
 		mSceneTransformCB(nullptr),
-		mModelTexutreCB(nullptr)
+		mTerrainTextureCB(nullptr)
 	{
 	}
 
-	void TerrainPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11JobManager> jobManager, std::shared_ptr<D3D11CameraManager> cameraManager, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr< D3D11LightManager> lightManager)
+	void TerrainPass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11JobManager> jobManager,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
+		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		std::shared_ptr< D3D11LightManager> lightManager)
 	{
 		mDevice = device;
 		mJobManager = jobManager;
@@ -958,17 +964,16 @@ namespace fq::graphics
 		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
-		mDefaultSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11RasterizerState::Default);
-		mDefaultDS = std::make_shared<D3D11DepthStencilState>(mDevice, ED3D11RasterizerState::Default);
+		mDefaultSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11SamplerState::Default);
+		mDefaultDS = std::make_shared<D3D11DepthStencilState>(mDevice, ED3D11DepthStencilState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mModelTexutreCB = std::make_shared<D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::ModelTexture);
+		mTerrainTextureCB = std::make_shared<D3D11ConstantBuffer<TerrainTexture>>(mDevice, ED3D11ConstantBuffer::TerrainTexture);
 	}
 
 	void TerrainPass::Finalize()
 	{
-
 	}
 
 	void TerrainPass::Render()
@@ -993,7 +998,7 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
+			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 
 			mTerrainVS->Bind(mDevice);
 			mTerrainPS->Bind(mDevice);
@@ -1002,18 +1007,15 @@ namespace fq::graphics
 
 		// Draw
 		{
-			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Opaque)
-				{
-					job.StaticMesh->Bind(mDevice);
-					job.Material->Bind(mDevice);
+				job.StaticMesh->Bind(mDevice);
+				job.TerrainMaterial->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+				ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial);
 
-					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
-				}
+				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
 	}

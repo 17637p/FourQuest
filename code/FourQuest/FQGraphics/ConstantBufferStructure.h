@@ -63,6 +63,12 @@ namespace fq::graphics
 		int unused[2];
 	};
 
+	struct TerrainTexture
+	{
+		int NumOfTexture;
+		int pad[3];
+	};
+
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];
@@ -82,6 +88,7 @@ namespace fq::graphics
 	class D3D11ConstantBuffer;
 	class D3D11Device;
 	class Material;
+	class TerrainMaterial;
 
 	class ConstantBufferHelper
 	{
@@ -92,6 +99,9 @@ namespace fq::graphics
 		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>>& cbuffer,
 			const std::shared_ptr<Material>& material);
+		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
+			const std::shared_ptr<TerrainMaterial>& material);
 		static void UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);

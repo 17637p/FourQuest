@@ -56,6 +56,21 @@ void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
 	mRenderManager->SetSkyBox(path);
 }
 
+void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, fq::common::TerrainMaterial material)
+{
+	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
+}
+
+void FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
+{
+	mObjectManager->DeleteTerrainMeshObject(meshObject);
+}
+
+fq::graphics::ITerrainMeshObject* FQGraphics::CreateTerrainMeshObject(MeshObjectInfo info)
+{
+	return mObjectManager->CreateTerrainMeshObject(mModelManager, info);
+}
+
 void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)
 {
 	mUIManager->DrawText(text, drawRect, fontSize, fontPath, color);
@@ -150,12 +165,16 @@ bool FQGraphics::Render()
 {
 	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
 	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+
+	// 컬링 추가해야 됨 
+	std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
 	
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 	
 	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
 	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
+	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
@@ -187,6 +206,7 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
+	mUIManager->ReleaseRenderTarget();
 	mRenderManager->OnResize(width, height);
 	mCameraManager->OnResize(width, height);
 	mPickingManager->OnResize(width, height, mDevice);

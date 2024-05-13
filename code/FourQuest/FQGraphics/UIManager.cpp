@@ -62,11 +62,6 @@ void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device>
 HRESULT fq::graphics::UIManager::createDeviceResources(std::shared_ptr<D3D11Device> device, const short width, const short height)
 {
 	HRESULT hr = S_OK;
-
-	if (mRenderTarget != nullptr)
-	{
-		mRenderTarget->Release();
-	}
 	// 2. Create a Direct2D render target.
 	//RECT rc;
 	//GetClientRect(mHWnd, &rc);
@@ -275,4 +270,12 @@ void fq::graphics::UIManager::RegisterFont(const std::wstring& path)
 	auto a =  AddFontResourceEx(path.c_str(), FR_NOT_ENUM, NULL);
 	std::wstring filename = std::filesystem::path(path).filename();
 	AddFont(filename.substr(0, filename.find_last_of(L".")));
+}
+
+void fq::graphics::UIManager::ReleaseRenderTarget()
+{
+	if (mRenderTarget != nullptr)
+	{
+		mRenderTarget->Release();
+	}
 }

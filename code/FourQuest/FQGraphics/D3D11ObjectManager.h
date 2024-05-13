@@ -7,9 +7,13 @@
 
 namespace fq::graphics
 {
+	class D3D11Device;
+
 	class D3D11ModelManager;
+
 	class IStaticMeshObject;
 	class ISkinnedMeshObject;
+	class ITerrainMeshObject;
 
 	class D3D11ObjectManager
 	{
@@ -26,26 +30,29 @@ namespace fq::graphics
 		void AddAnimation(const std::shared_ptr<D3D11ModelManager>& modelManager, ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info);
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObjectInterface);
 
-		IStaticMeshObject* CreateTerrainMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info);
-		void DeleteTerrainMeshObject(IStaticMeshObject* terrainMeshObjectInterface);
+		ITerrainMeshObject* CreateTerrainMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info);
+		void DeleteTerrainMeshObject(ITerrainMeshObject* terrainMeshObjectInterface);
+		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device,
+			ITerrainMeshObject* iTerrainMeshObject, 
+			const fq::common::TerrainMaterial& material);
 
 		inline const std::set<IStaticMeshObject*>& GetStaticMeshObjects() const;
 		inline const std::set<ISkinnedMeshObject*>& GetSkinnedMeshObjects() const;
-		inline const std::set<IStaticMeshObject*>& GetTerrainMeshObjects() const;
+		inline const std::set<ITerrainMeshObject*>& GetTerrainMeshObjects() const;
 
 	private:
 		void deleteIStaticMeshObject(IStaticMeshObject* iStaticMeshObject) const;
 		void deleteISkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) const;
-		void deleteTerrainMeshObject(IStaticMeshObject* iStaticMeshObject) const;
+		void deleteITerrainMeshObject(ITerrainMeshObject* iTerrainMeshObject) const;
 
 	private:
 		std::set<IStaticMeshObject*> mStaticMeshObjects;
 		std::set<ISkinnedMeshObject*> mSkinnedMeshObjects;
-		std::set<IStaticMeshObject*> mTerrainMeshObjects;
+		std::set<ITerrainMeshObject*> mTerrainMeshObjects;
 
 		std::queue<IStaticMeshObject*> mStaticMeshDeleteQueue;
 		std::queue<ISkinnedMeshObject*> mSkinnedMeshDeleteQueue;
-		std::queue<IStaticMeshObject*> mTerrainMeshDeleteQueue;
+		std::queue<ITerrainMeshObject*> mTerrainMeshDeleteQueue;
 	};
 
 	inline const std::set<IStaticMeshObject*>& D3D11ObjectManager::GetStaticMeshObjects() const
@@ -58,7 +65,7 @@ namespace fq::graphics
 		return mSkinnedMeshObjects;
 	}
 
-	inline const std::set<IStaticMeshObject*>& D3D11ObjectManager::GetTerrainMeshObjects() const
+	inline const std::set<ITerrainMeshObject*>& D3D11ObjectManager::GetTerrainMeshObjects() const
 	{
 		return mTerrainMeshObjects;
 	}
