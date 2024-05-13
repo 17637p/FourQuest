@@ -365,7 +365,21 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 
 			if (parent != nullptr)
 			{
-				dropObject->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
+				auto childSP = dropObject->shared_from_this();
+				auto parentSP = parent->shared_from_this();
+
+				auto excute = [childSP]()
+					{
+						childSP->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
+					};
+				auto undo = [childSP, parentSP]() 
+					{
+						childSP->GetComponent<fq::game_module::Transform>()
+							->SetParent(parentSP->GetComponent<fq::game_module::Transform>());
+					};
+
+				mEditorProcess->mCommandSystem->Push<BindFunctionCommand>(BindFunctionCommand{ excute,undo });
+
 			}
 		}
 
