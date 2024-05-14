@@ -158,6 +158,9 @@
     <ClInclude Include="SoundSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -252,6 +255,9 @@
     </ClCompile>
     <ClCompile Include="SoundSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsAnimatorWindow.cpp">
+      <Filter>src\11.Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

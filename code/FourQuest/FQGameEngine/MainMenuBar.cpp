@@ -266,6 +266,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& collisionMatrix = mEditorProcess->mCollisionMatrixWindow->IsWindowOpen();
 		ImGui::Checkbox("CollisionMatrix", &collisionMatrix);
 
+		bool& physicsAnimator = mEditorProcess->mPhysicsAnimatorWindow->IsWindowOpen();
+		ImGui::Checkbox("PhysicsAnimator", &physicsAnimator);
+
 		ImGui::EndMenu();
 	}
 }
