@@ -151,6 +151,8 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animator.h" />
+    <ClInclude Include="AnimatorController.h" />
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
@@ -192,6 +194,8 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="AnimatorController.cpp" />
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="PrefabResource.cpp" />

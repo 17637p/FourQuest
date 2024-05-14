@@ -125,6 +125,10 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(cursorPosX);
 
+		// 현재 선택경로가 자식경로인 경우 트리노드를 펼칩니다
+		if (mSelectPath.parent_path() == path)
+			ImGui::SetNextItemOpen(true);
+
 		if (ImGui::TreeNode(treeName.c_str()))
 		{
 			for (const auto& directory : directoryList)

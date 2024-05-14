@@ -120,6 +120,7 @@ void fq::game_engine::EditorEngine::Process()
 				mGameProcess->mPhysics->FinalUpdate();
 				mGameProcess->mPhysicsSystem->SinkToGameScene();
 
+				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}

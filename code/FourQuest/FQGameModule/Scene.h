@@ -94,6 +94,11 @@ namespace fq::game_module
 		std::shared_ptr<GameObject> GetObjectByID(unsigned int id);
 
 		/// <summary>
+		/// Scene에서 오브젝트 이름으로 탐색해서 반환합니다 
+		/// </summary>
+		std::shared_ptr<GameObject> GetObjectByName(std::string name);
+
+		/// <summary>
 		/// Scene의 게임오브젝트를 순회하는 view 객체를 반환 
 		/// </summary>
 		/// <param name="bIsIncludeToBeDestroyed">삭제예정인 오브젝트를 포함 여부</param>
