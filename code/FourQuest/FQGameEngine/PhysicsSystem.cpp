@@ -15,7 +15,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mScene(nullptr)
 	, mCollisionMatrix{}
 	, mbIsGameLoaded(false)
-	, mGravity{ 0.f,-1.f,0.f }
+	, mGravity{ 0.f,-10.f,0.f }
 	, mPhysicsEngine(nullptr)
 	, mLastColliderID(physics::unregisterID)
 	, mBoxID(entt::resolve<fq::game_module::BoxCollider>().id())
