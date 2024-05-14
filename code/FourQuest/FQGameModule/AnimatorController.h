@@ -20,7 +20,15 @@ namespace fq::game_module
 		AnimatorController();
 		~AnimatorController();
 		
+		/// <summary>
+		/// 파라미터 값을 설정합니다 
+		/// </summary>
 		void SetParameter(ParameterID id, Parameter parameter);
+
+		/// <summary>
+		/// 파라미터를 추가합니다 
+		/// </summary>
+		void AddParameter(ParameterID id, ParameterID parameter);
 
 	private:
 		ParameterPack mParmeters;
