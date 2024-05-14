@@ -166,3 +166,17 @@ void fq::game_module::Scene::DestroyAll()
 	mObjects.clear();
 }
 
+std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectByName(std::string name)
+{
+	for (const auto& object : mObjects)
+	{
+		if (object->GetName() == name)
+		{
+			return object;
+		}
+
+	}
+
+	return  nullptr;
+}
+

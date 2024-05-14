@@ -3,11 +3,15 @@
 
 namespace fq::game_module
 {
+	class AnimatorController;
+
 	/// <summary>
 	/// 애니메이션을 관리하는 컴포넌트
 	/// </summary>
 	class Animator :public Component
 	{
+		using ControllerPath = std::string;
+
 	public:
 		Animator();
 		~Animator();
@@ -21,6 +25,8 @@ namespace fq::game_module
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
+		ControllerPath mPath;
+		std::shared_ptr<AnimatorController> mController;
 
 	};
 
