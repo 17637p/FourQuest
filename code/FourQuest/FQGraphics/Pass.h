@@ -17,6 +17,7 @@ namespace fq::graphics
 	class D3D11CameraManager;
 	class D3D11LightManager;
 	class D3D11JobManager;
+	class D3D11ParticleManager;
 	class D3D11DebugDrawManager;
 	class D3D11RasterizerState;
 	class D3D11GeometryShader;

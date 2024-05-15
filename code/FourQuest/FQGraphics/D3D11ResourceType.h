@@ -9,7 +9,8 @@ namespace fq::graphics
 	{
 		Pixelshader,
 		VertexShader,
-		GeometryShader
+		GeometryShader,
+		ComputeShader,
 	};
 
 	/*=============================================================================

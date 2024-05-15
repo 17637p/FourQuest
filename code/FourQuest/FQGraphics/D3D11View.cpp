@@ -5,6 +5,7 @@
 #include "Define.h"
 #include "D3D11Device.h"
 #include "D3D11ResourceManager.h"
+#include "D3D11Buffer.h"
 
 using namespace fq::graphics;
 
@@ -486,4 +487,40 @@ void D3D11DepthStencilView::Release()
 std::string D3D11DepthStencilView::GenerateRID(const ED3D11DepthStencilViewType eViewType)
 {
 	return typeid(D3D11DepthStencilView).name() + std::to_string(static_cast<int>(eViewType));
+}
+
+
+D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type)
+{
+	Microsoft::WRL::ComPtr<ID3D11Buffer>  d3dBuffer = buffer->GetBuffer();
+
+	D3D11_BUFFER_DESC bufferDesc;
+	d3dBuffer->GetDesc(&bufferDesc);
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+
+	switch (type)
+	{
+	case fq::graphics::eUAVType::Default:
+		uavDesc.Buffer.Flags = 0;
+		break;
+	case fq::graphics::eUAVType::Comsume:
+		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
+		break;
+	case fq::graphics::eUAVType::Append:
+		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
+		break;
+	default:
+		break;
+	}
+
+	uavDesc.Buffer.NumElements = buffer->GetMaxCount();
+}
+
+void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot)
+{
+	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), nullptr);
 }

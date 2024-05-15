@@ -141,6 +141,8 @@
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="D3D11ParticleManager.h" />
+    <ClInclude Include="ParticlePass.h" />
     <ClInclude Include="PassCommon.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Buffer.h" />
@@ -199,6 +201,7 @@
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
+    <ClCompile Include="D3D11ParticleManager.cpp" />
     <ClCompile Include="D3D11PickingManager.cpp" />
     <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
@@ -222,6 +225,7 @@
     <ClCompile Include="D3D11ObjectManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ParticlePass.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="RenderPipeline.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
@@ -291,6 +295,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </CustomBuild>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl" />
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl" />
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl" />
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl" />
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>

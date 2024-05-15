@@ -3,6 +3,7 @@
 #include "D3D11Util.h"
 #include "D3D11Device.h"
 #include "D3D11State.h"
+#include "Define.h"
 
 namespace fq::graphics
 {
@@ -66,10 +67,24 @@ namespace fq::graphics
 			VSBytecode->GetBufferSize(),
 			mInputLayout.GetAddressOf());
 	}
-
 	void D3D11InputLayout::Bind(const std::shared_ptr<D3D11Device>& device)
 	{
 		device->GetDeviceContext()->IASetInputLayout(mInputLayout.Get());
+	}
+
+	D3D11Shader::D3D11Shader(const std::shared_ptr<D3D11Device>& device,
+		const std::wstring& path,
+		const D3D_SHADER_MACRO* pDefines,
+		const std::string& entryPoint,
+		const std::string& shaderModel)
+		: mPath(path)
+		, mBlob(nullptr)
+	{
+		HRESULT hr = D3D11Util::CompileShaderFromFile(path.c_str(),
+			pDefines,
+			entryPoint.c_str(),
+			shaderModel.c_str(),
+			mBlob.GetAddressOf());
 	}
 
 	D3D11VertexShader::D3D11VertexShader(const std::shared_ptr<D3D11Device>& device,
@@ -77,21 +92,14 @@ namespace fq::graphics
 		const D3D_SHADER_MACRO* pDefines,
 		const std::string& entryPoint,
 		const std::string& shaderModel)
-		: mPath(path)
-		, mBlob(nullptr)
+		: D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
 		, mShader(nullptr)
 	{
-		HRESULT hr = D3D11Util::CompileShaderFromFile(path.c_str(),
-			pDefines,
-			entryPoint.c_str(),
-			shaderModel.c_str(),
-			mBlob.GetAddressOf());
-
-		hr = device->GetDevice()->CreateVertexShader(
+		HR(device->GetDevice()->CreateVertexShader(
 			mBlob->GetBufferPointer(),
 			mBlob->GetBufferSize(),
 			nullptr,
-			mShader.GetAddressOf());
+			mShader.GetAddressOf()));
 	}
 	void D3D11VertexShader::Bind(const std::shared_ptr<D3D11Device>& device)
 	{
@@ -103,18 +111,14 @@ namespace fq::graphics
 		const D3D_SHADER_MACRO* pDefines,
 		const std::string& entryPoint,
 		const std::string& shaderModel)
+		: D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
+		, mShader(nullptr)
 	{
-		HRESULT hr = D3D11Util::CompileShaderFromFile(path.c_str(),
-			pDefines,
-			entryPoint.c_str(),
-			shaderModel.c_str(),
-			mBlob.GetAddressOf());
-
-		hr = device->GetDevice()->CreateGeometryShader(
+		HR(device->GetDevice()->CreateGeometryShader(
 			mBlob->GetBufferPointer(),
 			mBlob->GetBufferSize(),
 			nullptr,
-			mShader.GetAddressOf());
+			mShader.GetAddressOf()));
 	}
 
 	void D3D11GeometryShader::Bind(const std::shared_ptr<D3D11Device>& device)
@@ -127,33 +131,60 @@ namespace fq::graphics
 		const D3D_SHADER_MACRO* pDefines,
 		const std::string& entryPoint,
 		const std::string& shaderModel)
+		: D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
+		, mShader(nullptr)
 	{
-		HRESULT hr = D3D11Util::CompileShaderFromFile(path.c_str(),
-			pDefines,
-			entryPoint.c_str(),
-			shaderModel.c_str(),
-			mBlob.GetAddressOf());
-
-		hr = device->GetDevice()->CreatePixelShader(
+		HR(device->GetDevice()->CreatePixelShader(
 			mBlob->GetBufferPointer(),
 			mBlob->GetBufferSize(),
 			nullptr,
-			mShader.GetAddressOf());
+			mShader.GetAddressOf()));
 	}
 	void D3D11PixelShader::Bind(const std::shared_ptr<D3D11Device>& device)
 	{
 		device->GetDeviceContext()->PSSetShader(mShader.Get(), NULL, NULL);
 	}
 
+	D3D11ComputeShader::D3D11ComputeShader(const std::shared_ptr<D3D11Device>& device,
+		const std::wstring& path,
+		const D3D_SHADER_MACRO* pDefines,
+		const std::string& entryPoint,
+		const std::string& shaderModel)
+		: D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
+		, mShader(nullptr)
+	{
+		HR(device->GetDevice()->CreateComputeShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+
+	void D3D11ComputeShader::Bind(const std::shared_ptr<D3D11Device>& device)
+	{
+		device->GetDeviceContext()->CSSetShader(mShader.Get(), NULL, NULL);
+	}
+
 	ShaderProgram::ShaderProgram(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<D3D11VertexShader> vsOrNull,
-		std::shared_ptr<D3D11GeometryShader> gsOrNull,
 		std::shared_ptr<D3D11PixelShader> psOrNull,
+		std::shared_ptr<D3D11GeometryShader> gsOrNull,
 		std::shared_ptr<PipelineState> pipelineState)
-		: mVSOrNull(vsOrNull)
-		, mGSOrNull(gsOrNull)
+		: ShaderProgram(device, pipelineState, vsOrNull, psOrNull, gsOrNull, nullptr)
+	{
+	}
+
+	ShaderProgram::ShaderProgram(const std::shared_ptr<D3D11Device>& device,
+		std::shared_ptr<PipelineState> pipelineState,
+		std::shared_ptr<D3D11VertexShader> vsOrNull,
+		std::shared_ptr<D3D11PixelShader> psOrNull,
+		std::shared_ptr<D3D11GeometryShader> gsOrNull,
+		std::shared_ptr<D3D11ComputeShader> csOrNull)
+		: mPipelineState(pipelineState)
+		, mVSOrNull(vsOrNull)
 		, mPSOrNull(psOrNull)
-		, mPipelineState(pipelineState)
+		, mGSOrNull(gsOrNull)
+		, mCSOrNull(csOrNull)
 	{
 		assert(pipelineState != nullptr);
 
@@ -192,6 +223,15 @@ namespace fq::graphics
 		else
 		{
 			device->GetDeviceContext()->PSSetShader(NULL, NULL, NULL);
+		}
+
+		if (mCSOrNull != nullptr)
+		{
+			mCSOrNull->Bind(device);
+		}
+		else
+		{
+			device->GetDeviceContext()->CSSetShader(NULL, NULL, NULL);
 		}
 
 		mPipelineState->Bind(device);

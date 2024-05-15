@@ -106,5 +106,26 @@ namespace fq::graphics
 	{
 		return mDSV;
 	}
+
+	class D3D11StructuredBuffer;
+
+	enum class eUAVType
+	{
+		Default,
+		Comsume,
+		Append
+	};
+
+	class D3D11UnorderedAccessView
+	{
+	public:
+		D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type);
+		~D3D11UnorderedAccessView() = default;
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot);
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mView;
+	};
 }
 

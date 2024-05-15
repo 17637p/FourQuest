@@ -12,6 +12,7 @@
 
 #include "D3D11Device.h"
 #include "D3D11ResourceType.h"
+#include "Define.h"
 
 namespace fq::graphics
 {
@@ -81,7 +82,7 @@ namespace fq::graphics
 		static_assert(sizeof(ConstantType) % 16 == 0, "constant buffer must be aligned by 16 bytes");
 
 	public:
-		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device, 
+		D3D11ConstantBuffer(const std::shared_ptr<D3D11Device>& device,
 			const ED3D11ConstantBuffer eConstantBuffer);
 
 		static std::string GenerateRID(const ED3D11ConstantBuffer eConstantBuffer);
@@ -113,23 +114,23 @@ namespace fq::graphics
 
 		switch (eShaderType)
 		{
-			case ED3D11ShaderType::VertexShader:
-			{
-				d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::GeometryShader:
-			{
-				d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::Pixelshader:
-			{
-				d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			default:
-				break;
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		default:
+			break;
 		}
 	}
 
@@ -141,5 +142,48 @@ namespace fq::graphics
 	{
 		mConstantBuffer = std::make_shared<DirectX::ConstantBuffer<ConstantType>>(device->GetDevice().Get());
 	}
+
+	class D3D11StructuredBuffer
+	{
+	public:
+		D3D11StructuredBuffer(const std::shared_ptr<D3D11Device>& device, size_t typeSize, size_t maxCount)
+		{
+			D3D11_BUFFER_DESC desc;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.ByteWidth = typeSize * maxCount;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			desc.CPUAccessFlags = 0;
+			desc.StructureByteStride = typeSize;
+			desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+			HR(device->GetDevice()->CreateBuffer(&desc, nullptr, mBuffer.GetAddressOf()));
+		}
+		~D3D11StructuredBuffer() = default;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetBuffer() const
+		{
+			return mBuffer;
+		}
+
+		size_t GetTypeSize() const
+		{
+			return mTypeSize;
+		}
+
+		size_t GetMaxCount() const
+		{
+			return mMaxCount;
+		}
+
+		size_t GetByteWidth() const
+		{
+			return GetTypeSize() * GetMaxCount();
+		}
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mBuffer;
+		size_t mTypeSize;
+		size_t mMaxCount;
+	};
 }
 
