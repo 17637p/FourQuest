@@ -11,6 +11,7 @@ namespace fq::game_module
 		AnimationLoader();
 		~AnimationLoader();
 
+
 	private:
 
 	};

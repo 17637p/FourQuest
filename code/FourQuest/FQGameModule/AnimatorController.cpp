@@ -4,7 +4,6 @@
 
 fq::game_module::AnimatorController::AnimatorController()
 {
-
 }
 
 fq::game_module::AnimatorController::~AnimatorController()
@@ -51,4 +50,19 @@ void fq::game_module::AnimatorController::EraseParameter(ParameterID id)
 	{
 		mParmeters.erase(iter);
 	}
+}
+
+void fq::game_module::AnimatorController::CreateStateNode()
+{
+	std::string name = "NewState";
+
+	if (mStates.find(name) != mStates.end())
+	{
+		spdlog::warn("[AnimationController] The state name is duplicated [{}]", name);
+		return;
+	}
+
+	AnimationStateNode stateNode; 
+	stateNode.SetType(AnimationStateNode::Type::State);
+	mStates.insert({ name,stateNode });
 }

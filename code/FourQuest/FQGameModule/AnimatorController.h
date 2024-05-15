@@ -4,9 +4,12 @@
 #include <string>
 
 #include "../FQReflect/entt.hpp"
+#include "AnimationStateNode.h"
 
 namespace fq::game_module
 {
+	class AnimationStateNode;
+
 	/// <summary>
 	/// 애니메이션의 상태를 컨트롤하는 클래스
 	/// </summary>
@@ -16,10 +19,13 @@ namespace fq::game_module
 		using Parameter = entt::meta_any;
 		using ParameterPack = std::unordered_map<ParameterID, Parameter>;
 
+		using StateName = std::string;
+		using StateMap = std::unordered_map<StateName, AnimationStateNode>;
+
 	public:
 		AnimatorController();
 		~AnimatorController();
-		
+
 		/// <summary>
 		/// 파라미터 값을 설정합니다 
 		/// </summary>
@@ -45,12 +51,29 @@ namespace fq::game_module
 		/// </summary>
 		ParameterPack GetParameterPack()const { return mParmeters; }
 
+		/// <summary>
+		/// 현재 애니메이션 이름을 반환합니다 
+		/// </summary>
+		StateName GetCurrentState() const { return mCurrentState; }
+
+		/// <summary>
+		/// 새로운 스테이트를 추가합니다 
+		/// </summary>
+		void CreateStateNode();
+
+		/// <summary>
+		/// State를 담은 맵을 반환합니다
+		/// </summary>
+		const StateMap& GetStateMap()const { return mStates; }
+
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);
 
 	private:
 		ParameterPack mParmeters;
+		StateMap mStates;
+		StateName mCurrentState;
 	};
 
 }

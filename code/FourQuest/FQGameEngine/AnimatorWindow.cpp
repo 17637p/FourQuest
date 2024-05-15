@@ -29,7 +29,7 @@ void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProces
 
 	// Context 생성
 	ed::Config config;
-	config.SettingsFile = "Simple.json";
+	config.SettingsFile = "resource/internal/animator/Simple.json";
 	mContext = ed::CreateEditor(&config);
 
 	// 임시로 컨트롤러 생성
@@ -48,7 +48,7 @@ void fq::game_engine::AnimatorWindow::Render()
 
 		ImGui::SameLine();
 
-		beginChild_Node();
+		beginChild_NodeEditor();
 	}
 	ImGui::End();
 }
@@ -94,6 +94,7 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 
 			if (parameter.type() == entt::resolve<int>())
 			{
+				ImGui::SetNextItemWidth(100.f);
 				int val = parameter.cast<int>();
 				if (ImGui::InputInt(parameterSetLabel.c_str(), &val))
 				{
@@ -102,6 +103,7 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 			}
 			else if (parameter.type() == entt::resolve<float>())
 			{
+				ImGui::SetNextItemWidth(100.f);
 				float val = parameter.cast<float>();
 				if (ImGui::InputFloat(parameterSetLabel.c_str(), &val))
 				{
@@ -141,29 +143,52 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 
 }
 
-void fq::game_engine::AnimatorWindow::beginChild_Node()
+void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 {
 	if (ImGui::BeginChild("Node", ImVec2(0, 0)))
 	{
-		ImGui::Separator();
 		ed::SetCurrentEditor(mContext);
-		ed::Begin("My Editor", ImVec2(0.0, 0.0f));
+		ImGui::Separator();
+		ed::Begin("NodeEditor", ImVec2(0.0, 0.0f));
+
+
+		const auto& stateMap = mSelectController->GetStateMap();
+		for (const auto& [stateName, state] : stateMap)
+		{
+			beginNode_AnimationStateNode(stateName, state);
+		}
+
+
 		int uniqueId = 1;
-		// Start drawing nodes.
-		ed::BeginNode(uniqueId++);
+		ed::BeginNode(uniqueId++);//1
 		ImGui::Text("Node A");
-		ed::BeginPin(uniqueId++, ed::PinKind::Input);
+		ed::BeginPin(uniqueId++, ed::PinKind::Input); //2
 		ImGui::Text("-> In");
 		ed::EndPin();
 		ImGui::SameLine();
-		ed::BeginPin(uniqueId++, ed::PinKind::Output);
+		ed::BeginPin(uniqueId++, ed::PinKind::Output); //3
 		ImGui::Text("Out ->");
 		ed::EndPin();
 		ed::EndNode();
+		ed::BeginNode(uniqueId++); //4
+		ImGui::Text("Node A");
+		ed::BeginPin(uniqueId++, ed::PinKind::Input); //5
+		ImGui::Text("-> In");
+		ed::EndPin();
+		ImGui::SameLine();
+		ed::BeginPin(uniqueId++, ed::PinKind::Output); //6
+		ImGui::Text("Out ->");
+		ed::EndPin();
+		ed::EndNode();
+
+		ed::Link(uniqueId, 2, 6);
+
 		ed::End();
 		ed::SetCurrentEditor(nullptr);
+		beginPopupContextWindow_NodeEditor();
+
+		ImGui::EndChild();
 	}
-	ImGui::EndChild();
 
 }
 
@@ -193,5 +218,31 @@ void fq::game_engine::AnimatorWindow::beginCombo_AddParameter()
 		ImGui::EndCombo();
 	}
 
+	ImGui::Separator();
+}
+
+void fq::game_engine::AnimatorWindow::beginPopupContextWindow_NodeEditor()
+{
+	if (ImGui::BeginPopupContextWindow())
+	{
+		if (ImGui::MenuItem("Create State"))
+		{
+			mSelectController->CreateStateNode();
+		}
+		ImGui::EndPopup();
+	}
 
 }
+
+void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::string& name, const fq::game_module::AnimationStateNode& node)
+{
+	auto nodeID = entt::hashed_string(name.c_str()).value();
+
+	ed::BeginNode(nodeID);
+
+	ImGui::Text(name.c_str());
+
+
+	ed::EndNode();
+}
+

@@ -209,6 +209,12 @@
     <ClInclude Include="AnimationLoader.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationStateNode.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTransition.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -320,6 +326,12 @@
       <Filter>src\09.Animation</Filter>
     </ClCompile>
     <ClCompile Include="AnimationLoader.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationStateNode.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationTransition.cpp">
       <Filter>src\09.Animation</Filter>
     </ClCompile>
   </ItemGroup>

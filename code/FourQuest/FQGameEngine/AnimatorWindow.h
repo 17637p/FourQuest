@@ -34,14 +34,16 @@ namespace fq::game_engine
 		void beginCombo_AddParameter();
 
 		// 노드관련
-		void beginChild_Node();
-
+		void beginChild_NodeEditor();
+		void beginPopupContextWindow_NodeEditor();
+		void beginNode_AnimationStateNode(const std::string& name
+			, const fq::game_module::AnimationStateNode& node);
+		
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
-
 		ax::NodeEditor::EditorContext* mContext;
 
 		bool mbIsOpen;

@@ -41,7 +41,8 @@ namespace fq::game_module
 		void SetParameterFloat(const std::string& id, float val);
 		void SetParameterBoolean(const std::string& id, bool val);
 		void SetParameterTrigger(const std::string& id);
-		
+
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
