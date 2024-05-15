@@ -23,7 +23,7 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "RigidBody.h"
-#include "SoundClip.h"\
+#include "SoundClip.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"
@@ -35,5 +35,10 @@
 
 #include "Collision.h"
 #include "CollisionMatrix.h"
+
+// Animation
+#include "AnimationLoader.h"
+#include "Animator.h"
+#include "AnimatorController.h"
 
 #endif // 

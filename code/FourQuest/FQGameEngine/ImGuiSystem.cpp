@@ -7,6 +7,7 @@
 #include <imgui_impl_win32.h>
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
+#include <imgui-node-editor/imgui_node_editor.h>
 
 #include "../FQCommon/FQPath.h"
 

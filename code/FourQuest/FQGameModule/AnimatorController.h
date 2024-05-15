@@ -12,7 +12,7 @@ namespace fq::game_module
 	/// </summary>
 	class AnimatorController
 	{
-		using ParameterID = unsigned int;
+		using ParameterID = std::string;
 		using Parameter = entt::meta_any;
 		using ParameterPack = std::unordered_map<ParameterID, Parameter>;
 
@@ -26,9 +26,28 @@ namespace fq::game_module
 		void SetParameter(ParameterID id, Parameter parameter);
 
 		/// <summary>
+		/// 파라미터 값을 반환합니다 
+		/// </summary>
+		Parameter GetParameter(ParameterID id)const;
+
+		/// <summary>
+		/// 파라미터를 삭제합니다 
+		/// </summary>
+		void EraseParameter(ParameterID id);
+
+		/// <summary>
 		/// 파라미터를 추가합니다 
 		/// </summary>
-		void AddParameter(ParameterID id, ParameterID parameter);
+		void AddParameter(ParameterID id, Parameter parameter);
+
+		/// <summary>
+		/// 파타미터 팩을 반환합니다  
+		/// </summary>
+		ParameterPack GetParameterPack()const { return mParmeters; }
+
+	public:
+		static constexpr char OnTrigger = static_cast<char>(true);
+		static constexpr char OffTrigger = static_cast<char>(false);
 
 	private:
 		ParameterPack mParmeters;

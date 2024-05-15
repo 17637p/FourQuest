@@ -188,6 +188,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mMainMenuBar->Render();
 	mEditor->mCollisionMatrixWindow->Render();
 	mEditor->mSkyBoxWindow->Render();
+	mEditor->mAnimatorWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -209,6 +210,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mLogWindow->Initialize(mGameProcess.get());
 	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
 	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
+	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

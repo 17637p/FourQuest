@@ -37,11 +37,6 @@ namespace fq::game_module
 		/// </summary>
 		void SetControllerPath(fq::game_module::Animator::ControllerPath path) { mControllerPath = path; }
 
-
-		void SetParameterInt(ParameterID id, int val);
-		void SetParameterFloat(ParameterID id, float val);
-		void SetParameterBoolean(ParameterID id, bool val);
-		void SetParameterTrigger(ParameterID id);
 		void SetParameterInt(const std::string& id, int val);
 		void SetParameterFloat(const std::string& id, float val);
 		void SetParameterBoolean(const std::string& id, bool val);
@@ -53,8 +48,6 @@ namespace fq::game_module
 	private:
 		ControllerPath mControllerPath;
 		std::shared_ptr<AnimatorController> mController;
-
-
 	};
 
 }

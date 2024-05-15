@@ -1,5 +1,7 @@
 #include "AnimatorController.h"
 
+#include <spdlog/spdlog.h>
+
 fq::game_module::AnimatorController::AnimatorController()
 {
 
@@ -19,8 +21,34 @@ void fq::game_module::AnimatorController::SetParameter(ParameterID id, Parameter
 	iter->second = parameter;
 }
 
-void fq::game_module::AnimatorController::AddParameter(ParameterID id, ParameterID parameter)
+void fq::game_module::AnimatorController::AddParameter(ParameterID id, Parameter parameter)
 {
-	assert(mParmeters.find(id) == mParmeters.end());
+	if (mParmeters.find(id) != mParmeters.end())
+	{
+		spdlog::warn("[AnimationController] The parameter name is duplicated [{}]", id);
+		return;
+	}
 	mParmeters.insert({ id,parameter });
+}
+
+fq::game_module::AnimatorController::Parameter fq::game_module::AnimatorController::GetParameter(ParameterID id) const
+{
+	auto iter = mParmeters.find(id);
+
+	if (iter == mParmeters.end())
+	{
+		return entt::meta_any();
+	}
+	
+	return iter->second;
+}
+
+void fq::game_module::AnimatorController::EraseParameter(ParameterID id)
+{
+	auto iter = mParmeters.find(id);
+
+	if (iter != mParmeters.end())
+	{
+		mParmeters.erase(iter);
+	}
 }

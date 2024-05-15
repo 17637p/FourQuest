@@ -36,47 +36,24 @@ void fq::game_module::Animator::SetController(std::shared_ptr<AnimatorController
 	mController = std::move(controller);
 }
 
-void fq::game_module::Animator::SetParameterInt(ParameterID id, int val)
-{
-	mController->SetParameter(id, val);
-}
-
 void fq::game_module::Animator::SetParameterInt(const std::string& id, int val)
 {
-   unsigned int uiID = entt::hashed_string(id.c_str()).value();
-   mController->SetParameter(uiID, val);
-}
-
-void fq::game_module::Animator::SetParameterFloat(ParameterID id, float val)
-{
-	mController->SetParameter(id, val);
+   mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterFloat(const std::string& id, float val)
-{
-	unsigned int uiID = entt::hashed_string(id.c_str()).value();
-	mController->SetParameter(uiID, val);
-}
-
-void fq::game_module::Animator::SetParameterBoolean(ParameterID id, bool val)
 {
 	mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterBoolean(const std::string& id, bool val)
 {
-	unsigned int uiID = entt::hashed_string(id.c_str()).value();
-	mController->SetParameter(uiID, val);
+	mController->SetParameter(id, val);
 }
 
-void fq::game_module::Animator::SetParameterTrigger(ParameterID id)
-{
-	mController->SetParameter(id, 'A');
-}
 
 void fq::game_module::Animator::SetParameterTrigger(const std::string& id)
 {
-	unsigned int uiID = entt::hashed_string(id.c_str()).value();
-	mController->SetParameter(uiID, 'A');
+	mController->SetParameter(id, AnimatorController::OffTrigger);
 }
 

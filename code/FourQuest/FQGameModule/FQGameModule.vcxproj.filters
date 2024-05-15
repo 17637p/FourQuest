@@ -206,6 +206,9 @@
     <ClInclude Include="AnimatorController.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationLoader.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -314,6 +317,9 @@
       <Filter>src\09.Animation</Filter>
     </ClCompile>
     <ClCompile Include="AnimatorController.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationLoader.cpp">
       <Filter>src\09.Animation</Filter>
     </ClCompile>
   </ItemGroup>
