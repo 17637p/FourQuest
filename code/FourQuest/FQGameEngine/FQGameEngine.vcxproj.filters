@@ -57,6 +57,12 @@
     <Filter Include="src\03.GameSystem">
       <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\11.Window\Define">
+      <UniqueIdentifier>{175fceb5-a0e0-4fa3-a5b3-99e4af8ea1ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.EditorWindow\Define">
+      <UniqueIdentifier>{d0631955-d9a8-444b-a5e5-d8f56c94c845}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorEngine.h">
@@ -164,6 +170,9 @@
     <ClInclude Include="AnimationSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="NodeEditorStruct.h">
+      <Filter>include\11.EditorWindow\Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -267,6 +276,9 @@
     </ClCompile>
     <ClCompile Include="AnimationSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeEditorStruct.cpp">
+      <Filter>src\11.Window\Define</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

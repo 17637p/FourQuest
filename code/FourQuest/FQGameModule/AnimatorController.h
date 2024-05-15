@@ -5,11 +5,10 @@
 
 #include "../FQReflect/entt.hpp"
 #include "AnimationStateNode.h"
+#include "AnimationTransition.h"
 
 namespace fq::game_module
 {
-	class AnimationStateNode;
-
 	/// <summary>
 	/// 애니메이션의 상태를 컨트롤하는 클래스
 	/// </summary>
@@ -66,6 +65,11 @@ namespace fq::game_module
 		/// </summary>
 		const StateMap& GetStateMap()const { return mStates; }
 
+		/// <summary>
+		/// 애니메이션 변환을 추가합니다 
+		/// </summary>
+		void AddTransition(StateName prev, StateName next);
+
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);
@@ -74,6 +78,7 @@ namespace fq::game_module
 		ParameterPack mParmeters;
 		StateMap mStates;
 		StateName mCurrentState;
+		std::vector<AnimationTransition> mTransitions;
 	};
 
 }

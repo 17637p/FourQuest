@@ -66,3 +66,17 @@ void fq::game_module::AnimatorController::CreateStateNode()
 	stateNode.SetType(AnimationStateNode::Type::State);
 	mStates.insert({ name,stateNode });
 }
+
+void fq::game_module::AnimatorController::AddTransition(StateName prev, StateName next)
+{
+	for (const auto& transition : mTransitions)
+	{
+		if (transition.GetNextState() == next
+			&& transition.GetPrevState() == prev)
+		{
+			return;
+		}
+	}
+
+	mTransitions.push_back({ prev,next });
+}

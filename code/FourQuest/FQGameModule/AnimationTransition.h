@@ -45,6 +45,9 @@ namespace fq::game_module
 	class AnimationTransition
 	{
 	public:
+		AnimationTransition();
+		AnimationTransition(std::string prev, std::string next);
+
 		/// <summary>
 		/// 조건을 추가합니다 
 		/// </summary>
@@ -72,7 +75,10 @@ namespace fq::game_module
 		/// </summary>
 		void SetNextState(std::string state) { mNextState = state; }
 
+		std::string GetPrevState() const { return mPrevState; }
+		void SetPrevState(std::string val) { mPrevState = val; }
 	private:
+		std::string mPrevState;
 		std::string mNextState; 
 		std::vector<TransitionCondition> mConditions;
 	};

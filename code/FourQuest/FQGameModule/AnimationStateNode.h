@@ -2,7 +2,6 @@
 
 #include "../FQCommon/FQCommonGraphics.h"
 
-#include "AnimationTransition.h"
 
 namespace fq::game_module
 {
@@ -25,8 +24,6 @@ namespace fq::game_module
 		AnimationStateNode();
 		~AnimationStateNode();
 
-		bool CheckTransition();
-
 		fq::game_module::AnimationStateNode::Type GetType() const { return mType; }
 		void SetType(fq::game_module::AnimationStateNode::Type val) { mType = val; }
 
@@ -41,7 +38,6 @@ namespace fq::game_module
 		Type mType;
 		fq::graphics::AnimationInfo mAniInfo;
 		float mPlayBackSpeed;
-		std::vector<AnimationTransition> mTransitions;
 	};
 
 }

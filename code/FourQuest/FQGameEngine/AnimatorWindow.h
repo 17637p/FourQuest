@@ -38,7 +38,7 @@ namespace fq::game_engine
 		void beginPopupContextWindow_NodeEditor();
 		void beginNode_AnimationStateNode(const std::string& name
 			, const fq::game_module::AnimationStateNode& node);
-		
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;

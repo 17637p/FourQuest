@@ -5,6 +5,7 @@
 #include "imgui_stdlib.h"
 #include "EditorProcess.h"
 #include "GameProcess.h"
+#include "ImGuiColor.h"
 
 namespace ed = ax::NodeEditor;
 
@@ -31,6 +32,7 @@ void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProces
 	ed::Config config;
 	config.SettingsFile = "resource/internal/animator/Simple.json";
 	mContext = ed::CreateEditor(&config);
+
 
 	// 임시로 컨트롤러 생성
 	mSelectController = std::make_shared<fq::game_module::AnimatorController>();
@@ -159,29 +161,28 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 		}
 
 
-		int uniqueId = 1;
-		ed::BeginNode(uniqueId++);//1
-		ImGui::Text("Node A");
-		ed::BeginPin(uniqueId++, ed::PinKind::Input); //2
-		ImGui::Text("-> In");
-		ed::EndPin();
-		ImGui::SameLine();
-		ed::BeginPin(uniqueId++, ed::PinKind::Output); //3
-		ImGui::Text("Out ->");
-		ed::EndPin();
-		ed::EndNode();
-		ed::BeginNode(uniqueId++); //4
-		ImGui::Text("Node A");
-		ed::BeginPin(uniqueId++, ed::PinKind::Input); //5
-		ImGui::Text("-> In");
-		ed::EndPin();
-		ImGui::SameLine();
-		ed::BeginPin(uniqueId++, ed::PinKind::Output); //6
-		ImGui::Text("Out ->");
-		ed::EndPin();
-		ed::EndNode();
-
-		ed::Link(uniqueId, 2, 6);
+		//int uniqueId = 1;
+		//ed::BeginNode(uniqueId++);//1
+		//ImGui::Text("Node A");
+		//ed::BeginPin(uniqueId++, ed::PinKind::Input); //2
+		//ImGui::Text("-> In");
+		//ed::EndPin();
+		//ImGui::SameLine();
+		//ed::BeginPin(uniqueId++, ed::PinKind::Output); //3
+		//ImGui::Text("Out ->");
+		//ed::EndPin();
+		//ed::EndNode();
+		//ed::BeginNode(uniqueId++); //4
+		//ImGui::Text("Node A");
+		//ed::BeginPin(uniqueId++, ed::PinKind::Input); //5
+		//ImGui::Text("-> In");
+		//ed::EndPin();
+		//ImGui::SameLine();
+		//ed::BeginPin(uniqueId++, ed::PinKind::Output); //6
+		//ImGui::Text("Out ->");
+		//ed::EndPin();
+		//ed::EndNode();
+		//ed::Link(uniqueId, 2, 6);
 
 		ed::End();
 		ed::SetCurrentEditor(nullptr);
@@ -234,15 +235,25 @@ void fq::game_engine::AnimatorWindow::beginPopupContextWindow_NodeEditor()
 
 }
 
-void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::string& name, const fq::game_module::AnimationStateNode& node)
+void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::string& name
+	, const fq::game_module::AnimationStateNode& node)
 {
+	using NodeType = game_module::AnimationStateNode::Type;
+
+	// Node 컬러 
+	ImVec4 nodeColor = ImGuiColor::DARK_GRAY;
+	if (node.GetType() == NodeType::Entry) nodeColor = ImGuiColor::GREEN;
+	else if (node.GetType() == NodeType::Exit) nodeColor = ImGuiColor::RED;
+	else if (node.GetType() ==	NodeType::AnyState)	nodeColor = ImGuiColor::SPRING_GREEN;
+	else if (node.GetType() == NodeType::State)	nodeColor = ImGuiColor::ORANGE;
+	ed::PushStyleColor(ed::StyleColor_NodeBorder, nodeColor);
+
 	auto nodeID = entt::hashed_string(name.c_str()).value();
-
 	ed::BeginNode(nodeID);
-
 	ImGui::Text(name.c_str());
 
-
 	ed::EndNode();
+
+	ed::PopStyleColor(1);
 }
 
