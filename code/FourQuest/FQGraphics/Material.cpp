@@ -38,10 +38,11 @@ namespace fq::graphics
 
 	void TerrainMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
-		for (unsigned short i = 0; i < mMaterialData.NumOfTexture; i++)
-		{
-			mBaseColors[i]->Bind(d3d11Device, i, ED3D11ShaderType::Pixelshader);
-		}
+		D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::Pixelshader);
+			//for (unsigned short i = 0; i < mMaterialData.NumOfTexture; i++)
+			//{
+			//	mBaseColors[i]->Bind(d3d11Device, i, ED3D11ShaderType::Pixelshader);
+			//}
 
 		mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
 	}

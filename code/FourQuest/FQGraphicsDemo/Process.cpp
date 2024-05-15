@@ -725,6 +725,7 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 
 		fq::common::TerrainMaterial terrainMaterial;
 		terrainMaterial.NumOfTexture = 3;
+		//terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t1.jpg");
 		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t1.jpg");
 		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t2.jpg");
 		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t3.jpg");

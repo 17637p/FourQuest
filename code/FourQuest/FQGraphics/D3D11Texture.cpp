@@ -18,7 +18,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 			texturePath.c_str(),
 			nullptr, mTextureSRV.GetAddressOf()));
 	}
-	else if(fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff")
+	else if(fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
 		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
 			d3d11Device->GetDeviceContext().Get(),
@@ -27,7 +27,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 	else
 	{
-		MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
+		MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff, gif 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
 	}
 }
 
@@ -56,6 +56,39 @@ void fq::graphics::D3D11Texture::Bind(const std::shared_ptr<D3D11Device>& d3d11D
 		case ED3D11ShaderType::GeometryShader:
 		{
 			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, mTextureSRV.GetAddressOf());
+			break;
+		}
+		default:
+			break;
+	}
+}
+
+void fq::graphics::D3D11Texture::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11Texture>> textures, const UINT startSlot, const ED3D11ShaderType eShaderType)
+{
+	unsigned short numOfTexture = textures.size();
+	std::vector<ID3D11ShaderResourceView*> textureSRVs;
+	textureSRVs.reserve(numOfTexture);
+	for (const auto& texture : textures)
+
+	{
+		textureSRVs.push_back(texture->mTextureSRV.Get());
+	}
+
+	switch (eShaderType)
+	{
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, numOfTexture, textureSRVs.data());
+			break;
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, numOfTexture, textureSRVs.data());
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, numOfTexture, textureSRVs.data());
 			break;
 		}
 		default:
