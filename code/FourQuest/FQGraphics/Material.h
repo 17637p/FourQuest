@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "../FQCommon/FQCommonLoader.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::graphics
 {

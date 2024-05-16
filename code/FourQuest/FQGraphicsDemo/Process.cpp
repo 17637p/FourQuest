@@ -730,6 +730,10 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t2.jpg");
 		terrainMaterial.BaseColorFileNames.push_back(L"./resource/example/texture/t3.jpg");
 
+		terrainMaterial.NormalFileNames.push_back(L"./resource/example/texture/boxNormal.jpg");
+		terrainMaterial.NormalFileNames.push_back(L"./resource/example/texture/cerberus_N.png");
+		terrainMaterial.NormalFileNames.push_back(L"./resource/example/texture/character_normal.png");
+
 		terrainMaterial.AlPhaFileName = L"./resource/example/texture/TestAlpha4.png";
 
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);

@@ -98,43 +98,6 @@ namespace fq::common
 		std::wstring OpacityFileName;
 	};
 
-	struct TerrainMaterial
-	{
-		struct Desc
-		{
-			DirectX::SimpleMath::Color BaseColor = { 0.f, 0.f, 0.f, 1.f };
-			float Metalness = 0.f;
-			float Roughness = 0.f;
-		} MaterialDesc;
-
-		std::string Name;
-
-		unsigned short NumOfTexture; // 일단 최대 4
-
-		std::vector<std::wstring> BaseColorFileNames;
-		std::vector<std::wstring> MetalnessFileNames;
-		std::vector<std::wstring> RoughnessFileNames;
-		std::vector<std::wstring> NormalFileNames;
-
-		std::wstring AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
-
-		// 유니티에서 메탈릭 맵이랑 러프니스 맵을 왜 안쓰는지 벌써 알 것만 같다... 해보고 그래픽 퀄리티 차이가 없다면 하나로 통일해야겠다...
-		//std::wstring Metalness1FileName;
-		//std::wstring Metalness2FileName;
-		//std::wstring Metalness3FileName;
-		//std::wstring Metalness4FileName;
-		//
-		//std::wstring Roughness1FileName;
-		//std::wstring Roughness2FileName;
-		//std::wstring Roughness3FileName;
-		//std::wstring Roughness4FileName;
-		//
-		//std::wstring Normal1FileName;
-		//std::wstring Normal2FileName;
-		//std::wstring Normal3FileName;
-		//std::wstring Normal4FileName;
-	};
-
 	struct Keyframe
 	{
 		float TimePos = 0.f;

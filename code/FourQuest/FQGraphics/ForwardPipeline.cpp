@@ -56,6 +56,7 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mTerrainPass);
+		mPasses.push_back(mFullScreenPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);

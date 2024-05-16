@@ -999,6 +999,7 @@ namespace fq::graphics
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
 
 			mTerrainVS->Bind(mDevice);
 			mTerrainPS->Bind(mDevice);

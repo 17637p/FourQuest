@@ -42,9 +42,9 @@ namespace fq::graphics
 		void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
-		virtual ITerrainMeshObject* CreateTerrainMeshObject(MeshObjectInfo info) override;
+		virtual ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) override;
 		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
-		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, fq::common::TerrainMaterial material) override;
+		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const fq::common::TerrainMaterial& material) override;
 
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;

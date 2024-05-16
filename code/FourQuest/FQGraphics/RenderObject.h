@@ -7,7 +7,13 @@
 
 #include "Mesh.h"
 #include "BoneHierarchy.h"
+
 #include "../FQCommon/IFQRenderObject.h"
+
+namespace fq::common
+{
+	struct TerrainMaterial;
+}
 
 namespace fq::graphics
 {

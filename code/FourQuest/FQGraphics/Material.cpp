@@ -1,4 +1,5 @@
 #include <d3dcompiler.h>
+#include <spdlog/spdlog.h>
 
 #include "Material.h"
 #include "D3D11Texture.h"
@@ -39,10 +40,7 @@ namespace fq::graphics
 	void TerrainMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
 		D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::Pixelshader);
-			//for (unsigned short i = 0; i < mMaterialData.NumOfTexture; i++)
-			//{
-			//	mBaseColors[i]->Bind(d3d11Device, i, ED3D11ShaderType::Pixelshader);
-			//}
+		D3D11Texture::Bind(d3d11Device, mNormals, 12, ED3D11ShaderType::Pixelshader);
 
 		mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
 	}
@@ -51,9 +49,22 @@ namespace fq::graphics
 	{
 		for (unsigned short i = 0; i < materialData.NumOfTexture; i++)
 		{
-			if (!materialData.BaseColorFileNames[i].empty())
+			if (materialData.BaseColorFileNames.size() != 0)
 			{
 				mBaseColors.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.BaseColorFileNames[i]));
+			}
+			else
+			{
+				spdlog::error("Terrain baseColor Texture is not existed");
+			}
+
+			if (materialData.NormalFileNames.size() != 0)
+			{
+				mNormals.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.NormalFileNames[i]));
+			}
+			else
+			{
+				spdlog::error("Terrain Normal Texture is not existed");
 			}
 
 			mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);

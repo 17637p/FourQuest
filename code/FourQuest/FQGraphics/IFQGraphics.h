@@ -71,9 +71,9 @@ extern "C" {
 			virtual FQ_GRAPHICS void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) abstract;
 			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) abstract;
 
-			virtual FQ_GRAPHICS ITerrainMeshObject* CreateTerrainMeshObject(MeshObjectInfo info) abstract;
+			virtual FQ_GRAPHICS ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) abstract;
 			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) abstract;
-			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, fq::common::TerrainMaterial material) abstract;
+			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const fq::common::TerrainMaterial& material) abstract;
 
 			// Debug Draw
 			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;
