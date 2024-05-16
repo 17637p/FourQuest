@@ -83,14 +83,14 @@ void fq::game_module::AnimationTransition::PopBackCondition()
 }
 
 fq::game_module::AnimationTransition::AnimationTransition(std::string prev, std::string next)
-	:mNextState(next)
-	,mPrevState(prev)
+	:mEnterState(next)
+	,mExitState(prev)
 	,mConditions{}
 {}
 
 fq::game_module::AnimationTransition::AnimationTransition()
-	:mNextState{}
-	,mPrevState{}
+	:mEnterState{}
+	,mExitState{}
 	,mConditions{}
 {
 }

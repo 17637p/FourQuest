@@ -14,9 +14,8 @@ fq::game_engine::AnimatorWindow::AnimatorWindow()
 	, mEditorProcess(nullptr)
 	, mbIsOpen(false)
 	, mContext(nullptr)
-{
-
-}
+	, mMatchPinID{}
+{}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
 {
@@ -155,36 +154,23 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 
 
 		const auto& stateMap = mSelectController->GetStateMap();
+
+		// Node, Pin
 		for (const auto& [stateName, state] : stateMap)
 		{
 			beginNode_AnimationStateNode(stateName, state);
 		}
 
+		// Link
+		for (const auto& transition : mSelectController->GetTransitions())
+		{
+			beginLink_AnimationTransition(transition);
+		}
 
-		//int uniqueId = 1;
-		//ed::BeginNode(uniqueId++);//1
-		//ImGui::Text("Node A");
-		//ed::BeginPin(uniqueId++, ed::PinKind::Input); //2
-		//ImGui::Text("-> In");
-		//ed::EndPin();
-		//ImGui::SameLine();
-		//ed::BeginPin(uniqueId++, ed::PinKind::Output); //3
-		//ImGui::Text("Out ->");
-		//ed::EndPin();
-		//ed::EndNode();
-		//ed::BeginNode(uniqueId++); //4
-		//ImGui::Text("Node A");
-		//ed::BeginPin(uniqueId++, ed::PinKind::Input); //5
-		//ImGui::Text("-> In");
-		//ed::EndPin();
-		//ImGui::SameLine();
-		//ed::BeginPin(uniqueId++, ed::PinKind::Output); //6
-		//ImGui::Text("Out ->");
-		//ed::EndPin();
-		//ed::EndNode();
-		//ed::Link(uniqueId, 2, 6);
-
+		beginCreate_Link();
+		beginDelete_LinK();
 		ed::End();
+
 		ed::SetCurrentEditor(nullptr);
 		beginPopupContextWindow_NodeEditor();
 
@@ -244,16 +230,121 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	ImVec4 nodeColor = ImGuiColor::DARK_GRAY;
 	if (node.GetType() == NodeType::Entry) nodeColor = ImGuiColor::GREEN;
 	else if (node.GetType() == NodeType::Exit) nodeColor = ImGuiColor::RED;
-	else if (node.GetType() ==	NodeType::AnyState)	nodeColor = ImGuiColor::SPRING_GREEN;
+	else if (node.GetType() == NodeType::AnyState)	nodeColor = ImGuiColor::SPRING_GREEN;
 	else if (node.GetType() == NodeType::State)	nodeColor = ImGuiColor::ORANGE;
 	ed::PushStyleColor(ed::StyleColor_NodeBorder, nodeColor);
 
 	auto nodeID = entt::hashed_string(name.c_str()).value();
 	ed::BeginNode(nodeID);
+
 	ImGui::Text(name.c_str());
+
+	beginPin_AnimationStateNode(name, node.GetType());
 
 	ed::EndNode();
 
 	ed::PopStyleColor(1);
+}
+
+void fq::game_engine::AnimatorWindow::beginPin_AnimationStateNode(const std::string& nodeName, fq::game_module::AnimationStateNode::Type type)
+{
+	if (type != game_module::AnimationStateNode::Type::AnyState
+		&& type != game_module::AnimationStateNode::Type::Entry)
+	{
+		ed::BeginPin(getInputPinID(nodeName), ed::PinKind::Input);
+		ImGui::Text("Enter");
+		ed::EndPin();
+	}
+
+	if (type == game_module::AnimationStateNode::Type::State) ImGui::SameLine();
+
+	if (type != game_module::AnimationStateNode::Type::Exit)
+	{
+		ed::BeginPin(getOutputPinID(nodeName), ed::PinKind::Output);
+		ImGui::Text("Exit");
+		ed::EndPin();
+	}
+}
+
+fq::game_engine::AnimatorWindow::PinID fq::game_engine::AnimatorWindow::getInputPinID(const std::string& nodeName)
+{
+	auto inputPinName = nodeName + "__InputPin";
+	auto pinID = entt::hashed_string(inputPinName.c_str()).value();
+
+	mMatchPinID[pinID] = nodeName;
+
+	return pinID;
+}
+
+fq::game_engine::AnimatorWindow::PinID fq::game_engine::AnimatorWindow::getOutputPinID(const std::string& nodeName)
+{
+	auto outputPinName = nodeName + "__OutputPin";
+	auto pinID = entt::hashed_string(outputPinName.c_str()).value();
+
+	mMatchPinID[pinID] = nodeName;
+
+	return pinID;
+}
+
+void fq::game_engine::AnimatorWindow::beginCreate_Link()
+{
+	if (ed::BeginCreate())
+	{
+		ed::PinId inputID, outputID;
+		if (ed::QueryNewLink(&inputID, &outputID))
+		{
+			if (inputID && outputID)
+			{
+				if (ed::AcceptNewItem())
+				{
+					// Transition 추가
+
+					size_t exit = inputID.Get();
+					size_t enter = outputID.Get();
+
+					auto exitState = mMatchPinID.find(exit)->second;
+					auto enterState = mMatchPinID.find(enter)->second;
+
+					mSelectController->AddTransition(exitState, enterState);
+				}
+			}
+		}
+	}
+	ed::EndCreate(); // Wrap up deletion action
+
+}
+
+void fq::game_engine::AnimatorWindow::beginDelete_LinK()
+{
+	if (ed::BeginDelete())
+	{
+		ed::LinkId deleteLinkID;
+		while (ed::QueryDeletedLink(&deleteLinkID))
+		{
+			if (ed::AcceptDeletedItem())
+			{
+				// Transition 삭제 
+
+
+			}
+		}
+
+	}
+	ed::EndDelete();
+}
+
+void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition)
+{
+	auto exit = transition.GetExitState(); // exit
+	auto exitID = getOutputPinID(exit);
+	auto enter = transition.GetEnterState(); // enter 
+	auto enterID = getInputPinID(enter);
+
+	auto linkID = entt::hashed_string((exit + enter).c_str()).value();
+
+	if (mMatchLinkID.find(linkID) == mMatchLinkID.end())
+		mMatchLinkID.insert({ linkID, {exit, enter } });
+
+	ed::Link(linkID, exitID, enterID);
 }
 

@@ -68,18 +68,18 @@ namespace fq::game_module
 		/// <summary>
 		/// 다음 스테이트 노드의 이름을 반환합니다 
 		/// </summary>
-		std::string GetNextState() const { return mNextState; }
+		std::string GetEnterState() const { return mEnterState; }
 		
 		/// <summary>
 		/// 다음 스테이트 노드의 이름을 설정합니다 
 		/// </summary>
-		void SetNextState(std::string state) { mNextState = state; }
+		void SetEnterState(std::string state) { mEnterState = state; }
 
-		std::string GetPrevState() const { return mPrevState; }
-		void SetPrevState(std::string val) { mPrevState = val; }
+		std::string GetExitState() const { return mExitState; }
+		void SetExitState(std::string val) { mExitState = val; }
 	private:
-		std::string mPrevState;
-		std::string mNextState; 
+		std::string mExitState;
+		std::string mEnterState; 
 		std::vector<TransitionCondition> mConditions;
 	};
 

@@ -3,7 +3,27 @@
 #include <spdlog/spdlog.h>
 
 fq::game_module::AnimatorController::AnimatorController()
+	:mParmeters{}
+	,mStates{}
+	,mCurrentState{"Entry"}
 {
+	// Entry
+	AnimationStateNode entry(this);
+	entry.SetType(AnimationStateNode::Type::Entry);
+	entry.SetAniInfo({ {}, {}, "Entry"});
+	mStates.insert({ "Entry", entry });
+
+	// Exit 
+	AnimationStateNode exit(this);
+	exit.SetType(AnimationStateNode::Type::Exit);
+	exit.SetAniInfo({ {}, {}, "Exit" });
+	mStates.insert({ "Exit",exit });
+
+	// AnyState
+	AnimationStateNode anyState(this);
+	anyState.SetType(AnimationStateNode::Type::AnyState);
+	anyState.SetAniInfo({ {}, {}, "AnyState" });
+	mStates.insert({ "AnyState", anyState });
 }
 
 fq::game_module::AnimatorController::~AnimatorController()
@@ -62,21 +82,21 @@ void fq::game_module::AnimatorController::CreateStateNode()
 		return;
 	}
 
-	AnimationStateNode stateNode; 
+	AnimationStateNode stateNode(this);
 	stateNode.SetType(AnimationStateNode::Type::State);
 	mStates.insert({ name,stateNode });
 }
 
-void fq::game_module::AnimatorController::AddTransition(StateName prev, StateName next)
+void fq::game_module::AnimatorController::AddTransition(StateName exit, StateName enter)
 {
 	for (const auto& transition : mTransitions)
 	{
-		if (transition.GetNextState() == next
-			&& transition.GetPrevState() == prev)
+		if (transition.GetEnterState() == enter
+			&& transition.GetExitState() == exit)
 		{
 			return;
 		}
 	}
 
-	mTransitions.push_back({ prev,next });
+	mTransitions.push_back({ exit,enter });
 }

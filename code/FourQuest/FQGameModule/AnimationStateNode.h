@@ -21,11 +21,11 @@ namespace fq::game_module
 			AnyState, 
 		};
 
-		AnimationStateNode();
+		AnimationStateNode(AnimatorController* controller);
 		~AnimationStateNode();
 
-		fq::game_module::AnimationStateNode::Type GetType() const { return mType; }
-		void SetType(fq::game_module::AnimationStateNode::Type val) { mType = val; }
+		Type GetType() const { return mType; }
+		void SetType(Type val) { mType = val; }
 
 		fq::graphics::AnimationInfo GetAniInfo() const { return mAniInfo; }
 		void SetAniInfo(fq::graphics::AnimationInfo info) { mAniInfo = info; }

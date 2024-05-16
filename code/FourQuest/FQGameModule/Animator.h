@@ -42,7 +42,6 @@ namespace fq::game_module
 		void SetParameterBoolean(const std::string& id, bool val);
 		void SetParameterTrigger(const std::string& id);
 
-
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

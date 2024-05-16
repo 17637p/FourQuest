@@ -68,7 +68,9 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션 변환을 추가합니다 
 		/// </summary>
-		void AddTransition(StateName prev, StateName next);
+		void AddTransition(StateName exit, StateName enter);
+
+		const std::vector<AnimationTransition>& GetTransitions()const { return mTransitions; }
 
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
