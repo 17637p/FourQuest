@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <directxtk/SimpleMath.h>
+#include <d3d11.h>
 
 #include "D3D11ResourceType.h"
 #include "ResourceBase.h"
@@ -58,6 +59,7 @@ namespace fq::graphics
 	public:
 		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
 		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11DepthStencilView>& depthStencilView);
+		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11UnorderedAccessView>& unorderedAccessView);
 
 		static std::string GenerateRID(const ED3D11ShaderResourceViewType eViewType);
 
@@ -112,17 +114,19 @@ namespace fq::graphics
 	enum class eUAVType
 	{
 		Default,
-		Comsume,
-		Append
+		ComsumeAppend,
 	};
 
 	class D3D11UnorderedAccessView
 	{
+		friend class D3D11ShaderResourceView;
+
 	public:
 		D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type);
 		~D3D11UnorderedAccessView() = default;
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot);
+		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mView;

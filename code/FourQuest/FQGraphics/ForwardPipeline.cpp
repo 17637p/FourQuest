@@ -13,6 +13,7 @@ namespace fq::graphics
 		, mDebugRenderPass(std::make_shared<DebugRenderPass>())
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
+		, mParticlePass(std::make_shared<ParticlePass>())
 	{
 	}
 
@@ -22,6 +23,7 @@ namespace fq::graphics
 		std::shared_ptr< D3D11LightManager>& lightManager,
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
+		std::shared_ptr<D3D11ParticleManager> particleManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -36,6 +38,7 @@ namespace fq::graphics
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
+		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
@@ -45,6 +48,7 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mFullScreenPass);
+		mPasses.push_back(mParticlePass);
 	}
 
 	void ForwardPipeline::SetSkyBox(const std::wstring& path)

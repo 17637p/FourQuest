@@ -16,6 +16,7 @@ namespace fq::graphics
 	class D3D11RenderTargetView;
 	class D3D11DepthStencilView;
 	class D3D11DebugDrawManager;
+	class D3D11ParticleManager;
 
 	class ForwardPipeline : public RenderPipeline
 	{
@@ -28,7 +29,8 @@ namespace fq::graphics
 			std::shared_ptr<D3D11CameraManager>& cameraManager,
 			std::shared_ptr< D3D11LightManager>& lightManager,
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
-			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
+			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
+			std::shared_ptr<D3D11ParticleManager> particleManager,
 			unsigned short width,
 			unsigned short height);
 
@@ -42,6 +44,7 @@ namespace fq::graphics
 		std::shared_ptr<class DebugRenderPass> mDebugRenderPass;
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
+		std::shared_ptr<class ParticlePass> mParticlePass;
 	};
 }
 

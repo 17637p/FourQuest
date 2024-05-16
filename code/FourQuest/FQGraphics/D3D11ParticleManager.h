@@ -1,5 +1,5 @@
-
 #include "CommonHeader.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 /*
 파티클 매니저 진행 방식
@@ -10,152 +10,95 @@
 
 namespace fq::graphics
 {
-	// 입자 인스턴스
 	struct Particle
 	{
 		DirectX::SimpleMath::Vector3 Position;
+		DirectX::SimpleMath::Vector2 Size;
 		DirectX::SimpleMath::Vector3 Velocity;
 		float TimeToLive;
 	};
-
-	// 파티클의 초기 위치와 변화량에 대한 처리
-	struct ParticleEmitterInfo
-	{
-		// 방출기 데이터
-		size_t MaxParticleCount;
-
-		// 입자 초기 데이터
-		DirectX::SimpleMath::Vector3 InitPosition;
-		DirectX::SimpleMath::Vector3 InitVelocity;
-		float InitTimeToLive;
-
-		// 입자마다 무작위성 부여
-		DirectX::SimpleMath::Vector3 RandomRangePosition;
-		DirectX::SimpleMath::Vector3 RandomRangeVelocity;
-		float RandomRangeTimeToLive;
-	};
+	class D3D11UnorderedAccessView;
+	class D3D11StructuredBuffer;
+	class D3D11Device;
+	class D3D11ShaderResourceView;
 
 	class ParticleEmitter
 	{
 	public:
-		ParticleEmitter(const ParticleEmitterInfo& info)
-			: mInfo(info)
-		{
-		}
+		ParticleEmitter(const std::shared_ptr<D3D11Device>& device, const ParticleEmitterInfo& info);
 
-		void Update(float delta)
-		{
+		void Swap();
 
-		}
+		inline void SetParticleCount(size_t count) { mParticleCount = count; }
 
-		const std::vector<Particle*>& GetParticles() const { return mParticles; }
+		inline size_t GetParticleCount() const { return mParticleCount; }
+		inline const ParticleEmitterInfo& GetInfo() const;
+		inline const std::shared_ptr<D3D11UnorderedAccessView>& GetAppendUAV() const;
+		inline const std::shared_ptr<D3D11UnorderedAccessView>& GetConsumeUAV() const;
+		inline const std::shared_ptr<D3D11StructuredBuffer>& GetAppendBuffer() const;
+		inline const std::shared_ptr<D3D11StructuredBuffer>& GetConsumeBuffer() const;
+		inline const std::shared_ptr<D3D11ShaderResourceView>& GetAppendSRV() const;
+		inline const std::shared_ptr<D3D11ShaderResourceView>& GetConsumeSRV() const;
 
 	private:
 		ParticleEmitterInfo mInfo;
-		std::vector<Particle*> mParticles;
+
+		size_t mParticleCount;
+		std::shared_ptr<D3D11UnorderedAccessView> mAppendUAV;
+		std::shared_ptr<D3D11UnorderedAccessView> mConsumeUAV;
+		std::shared_ptr<D3D11StructuredBuffer> mAppendBuffer;
+		std::shared_ptr<D3D11StructuredBuffer> mConsumeBuffer;
+		std::shared_ptr<D3D11ShaderResourceView> mAppendSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mConsumeSRV;
 	};
 
-	template <typename T>
-	class ObjectPool
+	inline const ParticleEmitterInfo& ParticleEmitter::GetInfo() const
 	{
-	public:
-		ObjectPool(size_t poolSize)
-			: mPoolSize(poolSize)
-		{
-		}
+		return mInfo;
+	}
+	inline const std::shared_ptr<D3D11UnorderedAccessView>& ParticleEmitter::GetAppendUAV() const
+	{
+		return mAppendUAV;
+	}
+	inline const std::shared_ptr<D3D11UnorderedAccessView>& ParticleEmitter::GetConsumeUAV() const
+	{
+		return mConsumeUAV;
+	}
+	inline const std::shared_ptr<D3D11StructuredBuffer>& ParticleEmitter::GetAppendBuffer() const
+	{
+		return mAppendBuffer;
+	}
+	inline const std::shared_ptr<D3D11StructuredBuffer>& ParticleEmitter::GetConsumeBuffer() const
+	{
+		return mConsumeBuffer;
+	}
+	inline const std::shared_ptr<D3D11ShaderResourceView>& ParticleEmitter::GetAppendSRV() const
+	{
+		return mAppendSRV;
+	}
+	inline const std::shared_ptr<D3D11ShaderResourceView>& ParticleEmitter::GetConsumeSRV() const
+	{
+		return mConsumeSRV;
+	}
 
-		~ObjectPool()
-		{
-			while (!mPool.empty())
-			{
-				T* obj = mPool.front();
-				mPool.pop();
-
-				delete obj;
-			}
-		}
-
-		void Resize(size_t poolSize)
-		{
-			mPoolSize = poolSize;
-
-			while (mPool.size() > mPoolSize)
-			{
-				delete mPool.front();
-				mPool.pop();
-			}
-		}
-
-		T* Get()
-		{
-			T* obj = nullptr;
-
-			if (mPool.empty())
-			{
-				obj = new T();
-			}
-			else
-			{
-				obj = mPool.front();
-				mPool.pop();
-			}
-
-			assert(obj != nullptr);
-			return obj;
-		}
-
-		void Return(T* object)
-		{
-			if (mPool.size() > mPoolSize)
-			{
-				delete object;
-			}
-
-			mPool.push(object);
-		}
-
-		const std::queue<T*> GetPool() const
-		{
-			return mPool;
-		}
-
-	private:
-		size_t mPoolSize;
-		std::queue<T*> mPool;
-	};
+	class D3D11Device;
 
 	class D3D11ParticleManager
 	{
 	public:
 		D3D11ParticleManager() = default;
 
-		void Update(float deltaTime)
-		{
+		void AddParticleEmitter(size_t id, const std::shared_ptr<D3D11Device>& device, ParticleEmitterInfo emitter);
+		void DeleteParticleEmitter(size_t id);
 
-		}
-
-		void SetParticleEmiiter(size_t id, ParticleEmitterInfo emitter)
-		{
-
-		}
-
-		void AddParticleEmitter(size_t id, ParticleEmitterInfo emitter)
-		{
-			
-		}
-
-		void DeleteParticleEmitter(size_t id)
-		{
-			mParticleEmitters.erase(id);
-		}
-
-		const std::map<size_t, ParticleEmitter>& GetParticleEmitters() const
-		{
-			return mParticleEmitters;
-		}
+		inline const std::map<size_t, std::shared_ptr<ParticleEmitter>>& GetParticleEmitters() const;
 
 	private:
-		std::map<size_t, ParticleEmitter> mParticleEmitters;
-		ObjectPool<Particle> ObjectPool;
+		std::map<size_t, std::shared_ptr<ParticleEmitter>> mParticleEmitters;
 	};
+
+	inline const std::map<size_t, std::shared_ptr<ParticleEmitter>>& D3D11ParticleManager::GetParticleEmitters() const
+	{
+		return mParticleEmitters;
+	}
 }

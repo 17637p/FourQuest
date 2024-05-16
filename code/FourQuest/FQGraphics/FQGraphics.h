@@ -30,17 +30,17 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// RenderObject
-		void ConvertModel(std::string fbxFile, std::string fileName) override;
-		const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
-		const fq::common::Model& GetModel(std::string path) override;
-		void DeleteModel(std::string path) override;
+		virtual void ConvertModel(std::string fbxFile, std::string fileName) override;
+		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
+		virtual const fq::common::Model& GetModel(std::string path) override;
+		virtual void DeleteModel(std::string path) override;
 
-		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
-		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
+		virtual IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
+		virtual void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
 
-		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
-		void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
-		void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
+		virtual ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
+		virtual void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
+		virtual void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
 
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;
@@ -51,6 +51,10 @@ namespace fq::graphics
 		virtual void DrawRing(const debug::RingInfo& ringInfo) override;
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
+
+		// VFX
+		virtual void AddParticleEmitter(size_t id, const ParticleEmitterInfo& info) override;
+		virtual void DeleteParticleEmitter(size_t id) override;
 
 		/// Gizmo && Background
 
@@ -102,6 +106,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11CameraManager> mCameraManager;
 		std::shared_ptr<class D3D11LightManager> mLightManager;
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
+		std::shared_ptr<class D3D11ParticleManager> mParticleManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;

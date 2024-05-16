@@ -7,6 +7,7 @@
 #include "SkyboxPass.h"
 #include "TransparentCompositePass.h"
 #include "TransparentRenderPass.h"
+#include "ParticlePass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"

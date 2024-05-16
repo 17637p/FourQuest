@@ -372,9 +372,6 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
@@ -382,6 +379,9 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="ComputeShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
@@ -411,6 +411,9 @@
       <Filter>Shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
       <Filter>Shader</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -78,6 +78,23 @@ namespace fq::graphics
 		float pad2;
 	};
 
+	struct Emitter
+	{
+		DirectX::SimpleMath::Vector4 InitPositionW;
+		DirectX::SimpleMath::Vector4 ReadomPositionW;
+
+		DirectX::SimpleMath::Vector4 InitVelocityW;
+		DirectX::SimpleMath::Vector4 ReadomVelocityW;
+
+		DirectX::SimpleMath::Vector4 InitSizeW;
+		DirectX::SimpleMath::Vector4 ReadomSizeW;
+
+		float InitLifeTime;
+		float ReadomLifeTime;
+		unsigned int ParticleCount;
+		float DeltaTime; 
+	};
+
 	template <typename T>
 	class D3D11ConstantBuffer;
 	class D3D11Device;

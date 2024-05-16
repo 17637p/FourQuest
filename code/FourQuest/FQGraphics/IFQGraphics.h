@@ -81,6 +81,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
 
+			// VFX
+			virtual FQ_GRAPHICS void AddParticleEmitter(size_t id, const ParticleEmitterInfo& info) abstract;
+			virtual FQ_GRAPHICS void DeleteParticleEmitter(size_t id) abstract;
+
 			/// Gizmo && Background
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)

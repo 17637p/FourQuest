@@ -60,8 +60,6 @@ namespace fq::graphics
 		inline Microsoft::WRL::ComPtr<ID3D11VertexShader> GetShader() const;
 
 	private:
-		std::wstring mPath;
-		Microsoft::WRL::ComPtr<ID3D10Blob> mBlob;
 		Microsoft::WRL::ComPtr<ID3D11VertexShader> mShader;
 	};
 
@@ -143,8 +141,8 @@ namespace fq::graphics
 	public:
 		ShaderProgram(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11VertexShader> vsOrNull,
-			std::shared_ptr<D3D11PixelShader> psOrNull,
 			std::shared_ptr<D3D11GeometryShader> gsOrNull,
+			std::shared_ptr<D3D11PixelShader> psOrNull,
 			std::shared_ptr<PipelineState> pipelineState);
 		ShaderProgram(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<PipelineState> pipelineState,

@@ -83,7 +83,8 @@ namespace fq::graphics
 	{
 		Default,
 		OITRender,
-		OITComposite
+		OITComposite,
+		Additive,
 	};
 
 	/*=============================================================================

@@ -54,7 +54,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 
@@ -161,7 +161,9 @@ bool Process::Init(HINSTANCE hInstance)
 	pointLightInfo.attenuation = { 0, 1, 0 };
 	pointLightInfo.position = { 10.f, 100.f, 0.f };
 
-	mTestGraphics->AddLight(5, pointLightInfo);
+	//mTestGraphics->AddLight(5, pointLightInfo);
+
+	particleInit();
 
 	return true;
 }
@@ -260,7 +262,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('S'))
 	{
-		walk(cameraTransform , -speed);
+		walk(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('D'))
 	{
@@ -268,7 +270,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('A'))
 	{
-		strafe(cameraTransform , -speed);
+		strafe(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('E'))
 	{
@@ -276,7 +278,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
-		worldUpdown(cameraTransform , -speed);
+		worldUpdown(cameraTransform, -speed);
 	}
 
 	// Test용 두 번째 카메라
@@ -286,7 +288,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('K'))
 	{
-		walk(cameraTransform2 , -speed);
+		walk(cameraTransform2, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('L'))
 	{
@@ -331,7 +333,7 @@ void Process::Update()
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
- 	}
+	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
 		for (const auto& object : mStaticMeshObjects)
@@ -575,6 +577,26 @@ void Process::shadowTest()
 	{
 		mTestGraphics->UseShadow(3, false);
 	}
+}
+
+void Process::particleInit()
+{
+	using namespace fq::graphics;
+
+	ParticleEmitterInfo particleInfo;
+	particleInfo.MaxParticleCount = 100;
+
+	particleInfo.InitPosition = { 0, 0, 0 };
+	particleInfo.InitSize = { 100, 100 };
+	particleInfo.InitVelocity = { 0, 20, 0 };
+	particleInfo.InitTimeToLive = 10.f;
+
+	particleInfo.RandomRangePosition = { 50.f, 50.f, 50.f };
+	particleInfo.RandomSize = { 50.f, 50.f };
+	particleInfo.RandomRangeVelocity = { 10.f, 10.f, 10.f };
+	particleInfo.RandomRangeTimeToLive = 5.f;
+
+	mTestGraphics->AddParticleEmitter(10, particleInfo);
 }
 
 /*=============================================================================

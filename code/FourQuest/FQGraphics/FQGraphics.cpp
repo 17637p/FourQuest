@@ -24,6 +24,7 @@ FQGraphics::FQGraphics()
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 	, mPickingManager(std::make_shared<D3D11PickingManager>())
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
+	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 {
 }
 
@@ -35,10 +36,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
+	mParticleManager;
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 
 	return true;
@@ -118,10 +120,10 @@ bool FQGraphics::Render()
 {
 	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
 	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
-	
+
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
-	
+
 	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
 	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
 
@@ -242,9 +244,18 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 	}
 }
 
+void FQGraphics::AddParticleEmitter(size_t id, const ParticleEmitterInfo& info)
+{
+	mParticleManager->AddParticleEmitter(id, mDevice, info);
+}
+void FQGraphics::DeleteParticleEmitter(size_t id)
+{
+	mParticleManager->DeleteParticleEmitter(id);
+}
+
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

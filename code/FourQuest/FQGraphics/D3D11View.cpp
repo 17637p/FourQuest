@@ -1,7 +1,5 @@
-#include "D3D11View.h"
-
 #include <assert.h>
-
+#include "D3D11View.h"
 #include "Define.h"
 #include "D3D11Device.h"
 #include "D3D11ResourceManager.h"
@@ -289,6 +287,27 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 	ReleaseCOM(texture);
 }
 
+fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11UnorderedAccessView>& unorderedAccessView)
+	: ResourceBase(ResourceType::ShaderResourceView)
+	, mSRV(nullptr)
+{
+	ComPtr<ID3D11Buffer> buffer;
+	unorderedAccessView->mView->GetResource(reinterpret_cast<ID3D11Resource**>(buffer.GetAddressOf()));
+
+	D3D11_BUFFER_DESC bufferDesc;
+	buffer->GetDesc(&bufferDesc);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
+	shaderResourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	shaderResourceViewDesc.Buffer.ElementWidth = bufferDesc.StructureByteStride;
+	shaderResourceViewDesc.Buffer.FirstElement = 0;
+	shaderResourceViewDesc.Buffer.NumElements = bufferDesc.ByteWidth / bufferDesc.StructureByteStride;
+	assert(bufferDesc.ByteWidth % bufferDesc.StructureByteStride == 0);
+
+	HR(d3d11Device->GetDevice()->CreateShaderResourceView(buffer.Get(), &shaderResourceViewDesc, &mSRV));
+}
+
 std::string D3D11ShaderResourceView::GenerateRID(const ED3D11ShaderResourceViewType eViewType)
 {
 	return typeid(D3D11ShaderResourceView).name() + std::to_string(static_cast<int>(eViewType));
@@ -489,10 +508,9 @@ std::string D3D11DepthStencilView::GenerateRID(const ED3D11DepthStencilViewType 
 	return typeid(D3D11DepthStencilView).name() + std::to_string(static_cast<int>(eViewType));
 }
 
-
 D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type)
 {
-	Microsoft::WRL::ComPtr<ID3D11Buffer>  d3dBuffer = buffer->GetBuffer();
+	Microsoft::WRL::ComPtr<ID3D11Buffer> d3dBuffer = buffer->GetBuffer();
 
 	D3D11_BUFFER_DESC bufferDesc;
 	d3dBuffer->GetDesc(&bufferDesc);
@@ -501,16 +519,15 @@ D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11De
 	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.NumElements = bufferDesc.ByteWidth / bufferDesc.StructureByteStride;
+	assert(bufferDesc.ByteWidth % bufferDesc.StructureByteStride == 0);
 
 	switch (type)
 	{
 	case fq::graphics::eUAVType::Default:
 		uavDesc.Buffer.Flags = 0;
 		break;
-	case fq::graphics::eUAVType::Comsume:
-		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
-		break;
-	case fq::graphics::eUAVType::Append:
+	case fq::graphics::eUAVType::ComsumeAppend:
 		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
 		break;
 	default:
@@ -518,9 +535,17 @@ D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11De
 	}
 
 	uavDesc.Buffer.NumElements = buffer->GetMaxCount();
+
+	HR(d3d11Device->GetDevice()->CreateUnorderedAccessView(d3dBuffer.Get(), &uavDesc, mView.GetAddressOf()));
 }
 
 void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot)
 {
 	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), nullptr);
+}
+
+void D3D11UnorderedAccessView::Clear(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	UINT initValue = 0;
+	d3d11Device->GetDeviceContext()->ClearUnorderedAccessViewUint(mView.Get(), &initValue);
 }

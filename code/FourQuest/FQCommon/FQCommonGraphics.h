@@ -113,5 +113,20 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
 		};
 	}
+
+	struct ParticleEmitterInfo
+	{
+		size_t MaxParticleCount;
+
+		DirectX::SimpleMath::Vector3 InitPosition;
+		DirectX::SimpleMath::Vector2 InitSize;
+		DirectX::SimpleMath::Vector3 InitVelocity;
+		float InitTimeToLive;
+
+		DirectX::SimpleMath::Vector3 RandomRangePosition;
+		DirectX::SimpleMath::Vector2 RandomSize;
+		DirectX::SimpleMath::Vector3 RandomRangeVelocity;
+		float RandomRangeTimeToLive;
+	};
 }
 

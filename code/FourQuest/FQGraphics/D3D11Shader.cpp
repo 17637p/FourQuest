@@ -167,8 +167,8 @@ namespace fq::graphics
 
 	ShaderProgram::ShaderProgram(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<D3D11VertexShader> vsOrNull,
-		std::shared_ptr<D3D11PixelShader> psOrNull,
 		std::shared_ptr<D3D11GeometryShader> gsOrNull,
+		std::shared_ptr<D3D11PixelShader> psOrNull,
 		std::shared_ptr<PipelineState> pipelineState)
 		: ShaderProgram(device, pipelineState, vsOrNull, psOrNull, gsOrNull, nullptr)
 	{

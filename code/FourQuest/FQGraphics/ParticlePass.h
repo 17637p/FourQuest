@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <memory>
 #include "Pass.h"
+#include "ConstantBufferStructure.h"
 
 namespace fq::graphics
 {
@@ -36,6 +37,8 @@ namespace fq::graphics
 		std::unique_ptr<ShaderProgram> mParticleGenerateProgram;
 		std::unique_ptr<ShaderProgram> mParticleUpdateProgram;
 		std::unique_ptr<ShaderProgram> mParticleRenderProgram;
+
+		std::shared_ptr<D3D11ConstantBuffer<Emitter>> mEmitterCB;
 	};
 }
 

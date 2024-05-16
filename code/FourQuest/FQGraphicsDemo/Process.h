@@ -38,6 +38,7 @@ private:
 	void Render();
 	void debugRender();
 	void shadowTest();
+	void particleInit();
 
 	void strafe(fq::common::Transform& cameraTransform, float distance);
 	void walk(fq::common::Transform& cameraTransform, float distance);

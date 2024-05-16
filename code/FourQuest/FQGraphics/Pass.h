@@ -25,6 +25,8 @@ namespace fq::graphics
 	class D3D11DepthStencilState;
 	class D3D11SamplerState;
 	class D3D11Texture;
+	class D3D11UnorderedAccessView;
+	class D3D11StructuredBuffer;
 
 	class Pass
 	{

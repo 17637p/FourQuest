@@ -129,6 +129,11 @@ namespace fq::graphics
 			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
 			break;
 		}
+		case ED3D11ShaderType::ComputeShader:
+		{
+			d3d11Device->GetDeviceContext()->CSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
 		default:
 			break;
 		}
@@ -147,6 +152,9 @@ namespace fq::graphics
 	{
 	public:
 		D3D11StructuredBuffer(const std::shared_ptr<D3D11Device>& device, size_t typeSize, size_t maxCount)
+			: mBuffer(nullptr)
+			, mTypeSize(typeSize)
+			, mMaxCount(maxCount)
 		{
 			D3D11_BUFFER_DESC desc;
 			desc.Usage = D3D11_USAGE_DEFAULT;
@@ -157,12 +165,23 @@ namespace fq::graphics
 			desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
 			HR(device->GetDevice()->CreateBuffer(&desc, nullptr, mBuffer.GetAddressOf()));
+
+			desc.Usage = D3D11_USAGE_STAGING;
+			desc.BindFlags = 0;
+			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+			HR(device->GetDevice()->CreateBuffer(&desc, nullptr, mDebugBuffer.GetAddressOf()));
 		}
 		~D3D11StructuredBuffer() = default;
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> GetBuffer() const
 		{
 			return mBuffer;
+		}
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetDebugBuffer() const 
+		{
+			return mDebugBuffer; 
 		}
 
 		size_t GetTypeSize() const
@@ -180,8 +199,10 @@ namespace fq::graphics
 			return GetTypeSize() * GetMaxCount();
 		}
 
+
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mDebugBuffer;
 		size_t mTypeSize;
 		size_t mMaxCount;
 	};
