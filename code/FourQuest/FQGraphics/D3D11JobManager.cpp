@@ -74,10 +74,39 @@ namespace fq::graphics
 		}
 	}
 
+	void D3D11JobManager::CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct)
+	{
+		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObjct);
+		const std::shared_ptr<StaticMesh>& staticMesh = terrainMeshObject->GetStaticMesh();
+		const std::shared_ptr<TerrainMaterial> material = terrainMeshObject->GetTerrainMaterial();
+		const fq::common::Mesh& meshData = staticMesh->GetMeshData();
+
+		for (size_t i = 0; i < meshData.Subsets.size(); ++i)
+		{
+			TerrainMeshJob job;
+			job.SubsetIndex = i;
+			job.TransformPtr = &terrainMeshObject->GetTransform();
+			job.TerrainMaterial = material;
+			job.StaticMesh = staticMesh;
+			job.tempObject = terrainMeshObject;
+
+			mTerrainMeshJobs.push_back(job);
+		}
+	}
+
+	void D3D11JobManager::CreateTerrainMeshJobs(const std::set<ITerrainMeshObject*>& terrainMeshObjects)
+	{
+		for (ITerrainMeshObject* iTerrainMeshRenderJob : terrainMeshObjects)
+		{
+			CreateTerrainMeshJob(iTerrainMeshRenderJob);
+		}
+	}
+
 	void D3D11JobManager::ClearAll()
 	{
 		ClearStaticMeshJobs();
 		ClearSkinnedMeshJobs();
+		ClearTerrainMeshJobs();
 	}
 	void D3D11JobManager::ClearStaticMeshJobs()
 	{
@@ -87,4 +116,9 @@ namespace fq::graphics
 	{
 		mSkinnedMeshJobs.clear();
 	}
+	void D3D11JobManager::ClearTerrainMeshJobs()
+	{
+		mTerrainMeshJobs.clear();
+	}
 }
+

@@ -18,6 +18,7 @@ namespace fq::graphics
 		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
 		, mDebugRenderPass(std::make_shared<DebugRenderPass>())
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
+		, mTerrainPass(std::make_shared<TerrainPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
 	{
 	}
@@ -43,6 +44,7 @@ namespace fq::graphics
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		mPasses.push_back(mShadowPass);
@@ -52,6 +54,7 @@ namespace fq::graphics
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
+		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mFullScreenPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);

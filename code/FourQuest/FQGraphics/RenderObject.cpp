@@ -1,6 +1,8 @@
 #include "RenderObject.h"
 #include "BoneHierarchy.h"
 
+#include "Material.h"
+
 namespace fq::graphics
 {
 	StaticMeshObject::StaticMeshObject(std::shared_ptr<StaticMesh> staticMesh,
@@ -27,4 +29,18 @@ namespace fq::graphics
 		, mbUseShadow(true)
 	{
 	}
+
+	TerrainMeshObject::TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh, 
+		DirectX::SimpleMath::Matrix transform)
+		:mStaticMesh(staticMesh),
+		mMaterial{},
+		mTransform(transform)
+	{
+	}
+
+	void TerrainMeshObject::SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device, const fq::common::TerrainMaterial& terrainMaterial)
+	{
+		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
+	}
+
 }

@@ -41,4 +41,14 @@ namespace fq::graphics
 
 		cbuffer->Update(device, boneTransform);
 	}
+	void ConstantBufferHelper::UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device, 
+		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer, 
+		const std::shared_ptr<TerrainMaterial>& material)
+	{
+		TerrainTexture terrainTexture;
+		terrainTexture.NumOfTexture = material->GetNumOfTexture();
+
+		cbuffer->Update(device, terrainTexture);
+	}
+
 }

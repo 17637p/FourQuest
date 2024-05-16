@@ -24,6 +24,7 @@ FQGraphics::FQGraphics()
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 	, mPickingManager(std::make_shared<D3D11PickingManager>())
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
+	, mUIManager(std::make_shared<UIManager>())
 {
 }
 
@@ -40,6 +41,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mDebugDrawManager->Initialize(mDevice);
 	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
+	mUIManager->Initialize(hWnd, mDevice, width, height);
 
 	return true;
 }
@@ -52,6 +54,51 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
 {
 	mRenderManager->SetSkyBox(path);
+}
+
+void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const fq::common::TerrainMaterial& material)
+{
+	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
+}
+
+void FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
+{
+	mObjectManager->DeleteTerrainMeshObject(meshObject);
+}
+
+fq::graphics::ITerrainMeshObject* FQGraphics::CreateTerrainMeshObject(const MeshObjectInfo& info)
+{
+	return mObjectManager->CreateTerrainMeshObject(mModelManager, info);
+}
+
+void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)
+{
+	mUIManager->DrawText(text, drawRect, fontSize, fontPath, color);
+}
+
+void FQGraphics::SetDefaultFontSize(const unsigned short fontSize)
+{
+	mUIManager->SetDefaultFontSize(fontSize);
+}
+
+void FQGraphics::SetDefaultFontColor(const DirectX::SimpleMath::Color& color)
+{
+	mUIManager->SetDefaultFontColor(color);
+}
+
+void FQGraphics::SetDefaultFont(const std::wstring& path)
+{
+	mUIManager->SetDefaultFont(path);
+}
+
+void FQGraphics::AddFont(const std::wstring& path)
+{
+	mUIManager->AddFont(path);
+}
+
+void FQGraphics::DeleteFont(const std::wstring& path)
+{
+	mUIManager->DeleteFont(path);
 }
 
 void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
@@ -118,12 +165,16 @@ bool FQGraphics::Render()
 {
 	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
 	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+
+	// 컬링 추가해야 됨 
+	std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
 	
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 	
 	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
 	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
+	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
 	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
@@ -134,6 +185,7 @@ bool FQGraphics::Render()
 
 bool FQGraphics::EndRender()
 {
+	mUIManager->Render();
 	mRenderManager->EndRender();
 	mJobManager->ClearAll();
 
@@ -154,9 +206,11 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
+	mUIManager->ReleaseRenderTarget();
 	mRenderManager->OnResize(width, height);
 	mCameraManager->OnResize(width, height);
 	mPickingManager->OnResize(width, height, mDevice);
+	mUIManager->OnResize(mDevice, width, height);
 
 	return true;
 }

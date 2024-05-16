@@ -21,6 +21,10 @@ namespace fq::graphics
 		{
 			deleteISkinnedMeshObject(iSkinnedMeshObject);
 		}
+		for (ITerrainMeshObject* iTerrainMeshObject : mTerrainMeshObjects)
+		{
+			deleteITerrainMeshObject(iTerrainMeshObject);
+		}
 		while (!mStaticMeshDeleteQueue.empty())
 		{
 			deleteIStaticMeshObject(mStaticMeshDeleteQueue.front());
@@ -30,6 +34,11 @@ namespace fq::graphics
 		{
 			deleteISkinnedMeshObject(mSkinnedMeshDeleteQueue.front());
 			mSkinnedMeshDeleteQueue.pop();
+		}
+		while (!mTerrainMeshDeleteQueue.empty())
+		{
+			deleteITerrainMeshObject(mTerrainMeshDeleteQueue.front());
+			mTerrainMeshDeleteQueue.pop();
 		}
 	}
 
@@ -123,6 +132,11 @@ namespace fq::graphics
 			deleteISkinnedMeshObject(mSkinnedMeshDeleteQueue.front());
 			mSkinnedMeshDeleteQueue.pop();
 		}
+		while (!mTerrainMeshDeleteQueue.empty())
+		{
+			deleteITerrainMeshObject(mTerrainMeshDeleteQueue.front());
+			mTerrainMeshDeleteQueue.pop();
+		}
 	}
 
 	void D3D11ObjectManager::deleteIStaticMeshObject(IStaticMeshObject* iStaticMeshObject) const
@@ -135,4 +149,38 @@ namespace fq::graphics
 		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
 		delete skinnedMeshObject;
 	}
+	void D3D11ObjectManager::deleteITerrainMeshObject(ITerrainMeshObject* iTerrainMeshObject) const
+	{
+		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
+		delete terrainMeshObject;
+	}
+
+	graphics::ITerrainMeshObject* D3D11ObjectManager::CreateTerrainMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info)
+	{
+		std::shared_ptr<StaticMesh> staticMesh = modelManager->FindStaticMeshOrNull(modelManager->GenerateStaticMeshKey(info.ModelPath, info.MeshName));
+
+		if (staticMesh == nullptr)
+		{
+			return nullptr;
+		}
+
+		TerrainMeshObject* terrainMeshObject = new TerrainMeshObject(staticMesh, info.Transform);
+		mTerrainMeshObjects.insert(terrainMeshObject);
+
+		return terrainMeshObject;
+	}
+
+	void D3D11ObjectManager::DeleteTerrainMeshObject(ITerrainMeshObject* terrainMeshObjectInterface)
+	{
+		mTerrainMeshDeleteQueue.push(terrainMeshObjectInterface);
+		mTerrainMeshObjects.erase(terrainMeshObjectInterface);
+	}
+
+	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const fq::common::TerrainMaterial& material)
+	{
+		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
+
+		terrainMeshObject->SetTerrainMaterial(device, material);
+	}
+
 }

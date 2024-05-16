@@ -178,6 +178,7 @@
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationHelper.cpp" />
@@ -214,6 +215,7 @@
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQLoader\FQLoader.vcxproj">
@@ -285,6 +287,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>

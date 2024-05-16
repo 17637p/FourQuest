@@ -1,4 +1,5 @@
 #include <d3dcompiler.h>
+#include <spdlog/spdlog.h>
 
 #include "Material.h"
 #include "D3D11Texture.h"
@@ -25,4 +26,54 @@ namespace fq::graphics
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::Pixelshader);
 		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::Pixelshader);
 	}
+
+	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device, 
+		const fq::common::TerrainMaterial& materialData,
+		std::filesystem::path basePath /*= ""*/)
+	{
+		mBasePath = basePath;
+		mMaterialData = materialData;
+
+		SetMaterial(device, materialData);
+	}
+
+	void TerrainMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+	{
+		D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::Pixelshader);
+		D3D11Texture::Bind(d3d11Device, mNormals, 12, ED3D11ShaderType::Pixelshader);
+
+		mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
+	}
+
+	void TerrainMaterial::SetMaterial(const std::shared_ptr<D3D11Device>& device, const fq::common::TerrainMaterial& materialData)
+	{
+		for (unsigned short i = 0; i < materialData.NumOfTexture; i++)
+		{
+			if (materialData.BaseColorFileNames.size() != 0)
+			{
+				mBaseColors.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.BaseColorFileNames[i]));
+			}
+			else
+			{
+				spdlog::error("Terrain baseColor Texture is not existed");
+			}
+
+			if (materialData.NormalFileNames.size() != 0)
+			{
+				mNormals.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.NormalFileNames[i]));
+			}
+			else
+			{
+				spdlog::error("Terrain Normal Texture is not existed");
+			}
+
+			mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);
+			// ¿œ¥‹ BaseColor ∏∏
+			//if (!materialData.MetalnessFileNames[i].empty()) mMetalness = std::make_shared<D3D11Texture>(device, basePath / materialData.MetalnessFileName);
+			//if (!materialData.RoughnessFileNames[i].empty()) mRoughness = std::make_shared<D3D11Texture>(device, basePath / materialData.RoughnessFileName);
+			//if (!materialData.NormalFileNames[i].empty()) mNormal = std::make_shared<D3D11Texture>(device, basePath / materialData.NormalFileName);
+		}
+	}
+
 }
+
