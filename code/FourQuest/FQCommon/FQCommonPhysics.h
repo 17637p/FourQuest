@@ -3,6 +3,7 @@
 
 namespace fq::physics
 {
+#pragma region EnumClass
 	/// <summary>
 	/// 콜라이더 타입
 	/// 트리거 : 충돌되지 않고 겹치면 오버랩 이벤트만 호출
@@ -13,7 +14,7 @@ namespace fq::physics
 		TRIGGER,
 		COLLISION
 	};
-	
+
 	/// <summary>
 	/// 콜백 함수에 전달되는 콜리전 이벤트 형태
 	/// </summary>
@@ -28,25 +29,25 @@ namespace fq::physics
 	};
 
 	/// <summary>
-	/// 물리 엔진에서 리지드 바디 정보들을 주고 받는 GetSet 구조체
+	/// 관절 축
 	/// </summary>
-	struct RigidBodyGetSetData
+	enum class EArticulationAxis
 	{
-		DirectX::SimpleMath::Matrix transform = {};				// 트랜스폼 정보입니다.
-		DirectX::SimpleMath::Vector3 linearVelocity = {};		// 값이 0이면 StaticBody 입니다.
-		DirectX::SimpleMath::Vector3 angularVelocity = {};		// 값이 0이면 StaticBody 입니다.
+		SWING_1,
+		SWING_2,
+		TWIST
 	};
 
-	struct CharacterControllerGetSetData
+	/// <summary>
+	/// 관절 모션
+	/// </summary>
+	enum class EArticulationMotion
 	{
-		DirectX::SimpleMath::Vector3 position;					// 캐릭터 컨트롤러의 위치
+		LOCKED,
+		LIMITED,
+		FREE
 	};
-
-	struct CharacterMovementGetSetData
-	{
-		DirectX::SimpleMath::Vector3 velocity;					// 캐릭터 컨트롤러의 x,y,z축 속도
-		bool isFall;											// 캐릭터가 떨어지고 있는지 체크 변수
-	};
+#pragma endregion
 
 	/// <summary>
 	/// 물리 엔진 세팅 데이터 : 중력, 충돌 매트릭스
@@ -70,6 +71,30 @@ namespace fq::physics
 		bool isDead = false;
 	};
 
+#pragma region GetSetData
+	/// <summary>
+	/// 물리 엔진에서 리지드 바디 정보들을 주고 받는 GetSet 구조체
+	/// </summary>
+	struct RigidBodyGetSetData
+	{
+		DirectX::SimpleMath::Matrix transform = {};				// 트랜스폼 정보입니다.
+		DirectX::SimpleMath::Vector3 linearVelocity = {};		// 값이 0이면 StaticBody 입니다.
+		DirectX::SimpleMath::Vector3 angularVelocity = {};		// 값이 0이면 StaticBody 입니다.
+	};
+
+	struct CharacterControllerGetSetData
+	{
+		DirectX::SimpleMath::Vector3 position;					// 캐릭터 컨트롤러의 위치
+	};
+
+	struct CharacterMovementGetSetData
+	{
+		DirectX::SimpleMath::Vector3 velocity;					// 캐릭터 컨트롤러의 x,y,z축 속도
+		bool isFall;											// 캐릭터가 떨어지고 있는지 체크 변수
+	};
+#pragma endregion
+
+#pragma region Collider
 	constexpr unsigned int unregisterID = 0;
 
 	/// <summary>
@@ -78,7 +103,7 @@ namespace fq::physics
 	struct ColliderInfo
 	{
 		unsigned int id = unregisterID;
-		unsigned int layerNumber =0;
+		unsigned int layerNumber = 0;
 		fq::common::Transform collisionTransform;
 		float staticFriction = 1.f;									// 정적 마찰 계수
 		float dynamicFriction = 1.f;								// 동적 마찰 계수
@@ -112,7 +137,9 @@ namespace fq::physics
 		int vertexSize;											// 모델 버텍스 사이즈
 		unsigned char convexPolygonLimit = 4;					// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
 	};
+#pragma endregion
 
+#pragma region CharacterController
 	/// <summary>
 	/// 캐릭터 무브먼트 : 캐릭터 이동에 관련된 데이터
 	/// </summary>
@@ -136,12 +163,29 @@ namespace fq::physics
 		unsigned int id = unregisterID;							// 캐릭터 컨트롤러 아이디
 		unsigned int layerNumber = 0;							// 충돌 매트릭스 레이어 넘버
 
-		DirectX::SimpleMath::Vector3 position{0.f, 0.f, 0.f};	// 캐릭터 컨트롤러가 위치하는 처음 생성 위치
+		DirectX::SimpleMath::Vector3 position{ 0.f, 0.f, 0.f };	// 캐릭터 컨트롤러가 위치하는 처음 생성 위치
 		float height = 30.f;									// 캐릭터 컨트롤러(캡슐)의 높이
 		float radius = 20.f;									// 캐릭터 컨트롤러(캡슐)의 반지름
 		float stepOffset = 0.0f;								// 캐릭터 컨트롤러가 지나갈 수 있는 
 		float slopeLimit = 0.7f;								// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
 		float contactOffset = 0.1f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
 	};
+#pragma endregion
 
+#pragma region CharacterPhysics
+	struct CharacterJointInfo
+	{
+
+	};
+
+	struct CharacterLinkInfo
+	{
+
+	};
+
+	struct CharacterPhysicsInfo
+	{
+
+	};
+#pragma endregion
 }

@@ -34,6 +34,15 @@
     <Filter Include="Character\CharacterController\PlayerController">
       <UniqueIdentifier>{411263d7-70ef-4d83-9fa5-c7d7c49189e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Character\CharacterPhysics">
+      <UniqueIdentifier>{c17eaaae-1433-4f14-8b3c-8cf2bf1ae99c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterPhysics\Joint">
+      <UniqueIdentifier>{a11ee2a5-114c-4e19-8459-e0495128c902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterPhysics\Link">
+      <UniqueIdentifier>{a693cbab-bd00-4576-b60b-752e605ecfde}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IFQPhysics.h">
@@ -81,6 +90,18 @@
     <ClInclude Include="CharacterMovement.h">
       <Filter>Character\CharacterController</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsCharacterPhysicsManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPhysics.h">
+      <Filter>Character\CharacterPhysics</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterJoint.h">
+      <Filter>Character\CharacterPhysics\Joint</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterLink.h">
+      <Filter>Character\CharacterPhysics\Link</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -127,6 +148,18 @@
     </ClCompile>
     <ClCompile Include="CharacterMovement.cpp">
       <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCharacterPhysicsManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterPhysics.cpp">
+      <Filter>Character\CharacterPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterJoint.cpp">
+      <Filter>Character\CharacterPhysics\Joint</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterLink.cpp">
+      <Filter>Character\CharacterPhysics\Link</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

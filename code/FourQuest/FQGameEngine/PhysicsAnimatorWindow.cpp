@@ -161,7 +161,7 @@ namespace fq::game_engine
 	{
 		// 추출한 애니메이션 텍스트 ( ex. Animation00 ... Animation99 )
 		std::string animationName;
-		animationName = "Animation Clip" + std::to_string(number) + "(Frame : " + std::to_string(mAnimationClipContainer[number].find(mExtractObjectNames[0])->second.size()) + ")";
+		animationName = "Animation Clip " + std::to_string(number) + "(Frame : " + std::to_string(mAnimationClipContainer[number].find(mExtractObjectNames[0])->second.size()) + ")";
 
 		if (ImGui::TreeNode(animationName.c_str()))
 		{
@@ -169,6 +169,7 @@ namespace fq::game_engine
 				beginButton_AnimationPlay(number);
 			else
 				beginButton_AnimationStop(number);
+			ImGui::SameLine(80.f);
 			beginButton_AnimationSave(number);
 			ImGui::TreePop();
 		}
