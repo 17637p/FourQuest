@@ -36,6 +36,31 @@ namespace fq::game_module
 		/// </summary>
 		ParameterID GetParameterID()const { return mParameterID; }
 
+		/// <summary>
+		/// 비교할 파라미터 아이디를 설정합니다 
+		/// </summary>
+		void SetParameterID(ParameterID id) { mParameterID = id; }
+
+		/// <summary>
+		/// 비교할 연산자를 반환합니다 
+		/// </summary>
+		CheckType GetCheckType() const { return mCheckType; }
+		
+		/// <summary>
+		/// 비교할 연산자를 설정합니다 
+		/// </summary>
+		void SetCheckType(CheckType val) { mCheckType = val; }
+
+		/// <summary>
+		/// 비교할 파라미터를 반환합니다 
+		/// </summary>
+		Parameter GetCompareParameter() const { return mCompareParameter; }
+		
+		/// <summary>
+		/// 비교할 파라미터를 설정합니다 
+		/// </summary>
+		void SetCompareParameter(Parameter val);
+	
 	private:
 		CheckType mCheckType;
 		ParameterID mParameterID;
@@ -63,7 +88,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 조건들을 담은 컨테이너를 반환합니다
 		/// </summary>
-		const std::vector<TransitionCondition>& GetConditions()const { return mConditions; };
+		std::vector<TransitionCondition>& GetConditions() { return mConditions; };
 
 		/// <summary>
 		/// 다음 스테이트 노드의 이름을 반환합니다 

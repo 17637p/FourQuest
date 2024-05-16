@@ -46,8 +46,8 @@ namespace fq::game_engine
 			, fq::game_module::AnimationStateNode::Type type);
 		void beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition);
 	
-		void beginCreate_Link();
-		void beginDelete_LinK();
+		void beginCreate();
+		void beginDelete();
 
 		PinID getInputPinID(const std::string& nodeName);
 		PinID getOutputPinID(const std::string& nodeName);
@@ -55,6 +55,7 @@ namespace fq::game_engine
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
+		fq::game_module::EventManager* mEventManager;
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		ax::NodeEditor::EditorContext* mContext;

@@ -6,13 +6,14 @@
 #include "EditorProcess.h"
 #include "GameProcess.h"
 #include "ImGuiColor.h"
+#include "EditorEvent.h"
 
 namespace ed = ax::NodeEditor;
 
 fq::game_engine::AnimatorWindow::AnimatorWindow()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
-	, mbIsOpen(false)
+	, mbIsOpen(true)
 	, mContext(nullptr)
 	, mMatchPinID{}
 {}
@@ -26,6 +27,7 @@ void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProces
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
+	mEventManager = mGameProcess->mEventManager.get();
 
 	// Context 생성
 	ed::Config config;
@@ -167,8 +169,8 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 			beginLink_AnimationTransition(transition);
 		}
 
-		beginCreate_Link();
-		beginDelete_LinK();
+		beginCreate();
+		beginDelete();
 		ed::End();
 
 		ed::SetCurrentEditor(nullptr);
@@ -218,7 +220,6 @@ void fq::game_engine::AnimatorWindow::beginPopupContextWindow_NodeEditor()
 		}
 		ImGui::EndPopup();
 	}
-
 }
 
 void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::string& name
@@ -239,7 +240,17 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 
 	ImGui::Text(name.c_str());
 
+	// 핀 
 	beginPin_AnimationStateNode(name, node.GetType());
+
+	// Node 선택
+	if (ed::IsNodeSelected(nodeID) 
+		&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+	{
+		mEventManager->FireEvent<editor_event::SelectAnimationController>(
+			{ mSelectController, name }
+		);
+	}
 
 	ed::EndNode();
 
@@ -255,8 +266,9 @@ void fq::game_engine::AnimatorWindow::beginPin_AnimationStateNode(const std::str
 		ImGui::Text("Enter");
 		ed::EndPin();
 	}
+	else ImGui::Text("     ");
 
-	if (type == game_module::AnimationStateNode::Type::State) ImGui::SameLine();
+	ImGui::SameLine();
 
 	if (type != game_module::AnimationStateNode::Type::Exit)
 	{
@@ -286,7 +298,7 @@ fq::game_engine::AnimatorWindow::PinID fq::game_engine::AnimatorWindow::getOutpu
 	return pinID;
 }
 
-void fq::game_engine::AnimatorWindow::beginCreate_Link()
+void fq::game_engine::AnimatorWindow::beginCreate()
 {
 	if (ed::BeginCreate())
 	{
@@ -298,12 +310,11 @@ void fq::game_engine::AnimatorWindow::beginCreate_Link()
 				if (ed::AcceptNewItem())
 				{
 					// Transition 추가
-
 					size_t exit = inputID.Get();
 					size_t enter = outputID.Get();
 
-					auto exitState = mMatchPinID.find(exit)->second;
-					auto enterState = mMatchPinID.find(enter)->second;
+					auto& exitState = mMatchPinID.find(exit)->second;
+					auto& enterState = mMatchPinID.find(enter)->second;
 
 					mSelectController->AddTransition(exitState, enterState);
 				}
@@ -314,7 +325,7 @@ void fq::game_engine::AnimatorWindow::beginCreate_Link()
 
 }
 
-void fq::game_engine::AnimatorWindow::beginDelete_LinK()
+void fq::game_engine::AnimatorWindow::beginDelete()
 {
 	if (ed::BeginDelete())
 	{
@@ -324,8 +335,9 @@ void fq::game_engine::AnimatorWindow::beginDelete_LinK()
 			if (ed::AcceptDeletedItem())
 			{
 				// Transition 삭제 
-
-
+				spdlog::trace("delete");
+				const auto& linkPair = mMatchLinkID.find(deleteLinkID.Get())->second;
+				mSelectController->DeleteTransition(linkPair.first, linkPair.second);
 			}
 		}
 

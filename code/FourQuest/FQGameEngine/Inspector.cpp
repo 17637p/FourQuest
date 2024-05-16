@@ -14,12 +14,12 @@ fq::game_engine::Inspector::Inspector()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
 	, mSelectObject(nullptr)
-	, mInputManager(nullptr)
 	, mComponentTypes{}
 	, mCurrentAddComponentIndex(0)
 	, mPrevColor{}
 	, mSelectObjectHandler{}
 	, mbIsOpen(true)
+	, mViewType(ViewType::None)
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -29,15 +29,30 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
-	mInputManager = game->mInputManager.get();
+
+	getComponentTypes();
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
 		([this](editor_event::SelectObject event) {
 		mSelectObject = event.object;
+
+		if (mSelectObject == nullptr)
+			mViewType = ViewType::None;
+		else
+			mViewType = ViewType::GameObject;
 			});
 
-	getComponentTypes();
+	mSelectAnimationController = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectAnimationController>
+		([this](editor_event::SelectAnimationController event) {
+		mSelectController = event.controller;
+		mSelectAnimationStateName = event.stateName;
+
+		if (mSelectController == nullptr)
+			mViewType = ViewType::None;
+		else
+			mViewType = ViewType::AnimationController;
+			});
 }
 
 void fq::game_engine::Inspector::Render()
@@ -46,10 +61,10 @@ void fq::game_engine::Inspector::Render()
 
 	if (ImGui::Begin("Inspector", &mbIsOpen))
 	{
-		if (mSelectObject)
-		{
+		if (mViewType == ViewType::GameObject)
 			beginGameObject(mSelectObject);
-		}
+		else if (mViewType == ViewType::AnimationController)
+			beginAnimationController(mSelectController);
 
 	}
 	ImGui::End();
@@ -89,7 +104,6 @@ void fq::game_engine::Inspector::beginClass(fq::reflect::IHandle* handle, bool b
 		}
 		ImGui::TreePop();
 	}
-
 
 	ImGui::Separator();
 }
@@ -635,11 +649,11 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 				BindFunctionCommand{
 					remove, add
 				});
-		}	
+		}
 
 		if (type == entt::resolve<fq::game_module::Transform>() && ImGui::MenuItem("Reset"))
 		{
-		 	auto transform = mSelectObject->GetComponent<fq::game_module::Transform>();
+			auto transform = mSelectObject->GetComponent<fq::game_module::Transform>();
 			auto prevMatrix = transform->GetLocalMatrix();
 
 			auto excute = [transform, object = mSelectObject]()
@@ -691,5 +705,155 @@ void fq::game_engine::Inspector::beginInputText_PrefabResource(entt::meta_data d
 	}
 
 	beginIsItemHovered_Comment(data);
+}
+
+void fq::game_engine::Inspector::beginAnimationController(std::shared_ptr<fq::game_module::AnimatorController> controller)
+{
+	auto iter = controller->GetStateMap().find(mSelectAnimationStateName);
+
+	// State GUI를 표시합니다 
+	auto& state = iter->second;
+
+	std::string StateName = state.GetAnimationKey();
+
+	ImGui::InputText("##StateName", &StateName);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
+	{
+		if (controller->ChangeStateName(state.GetAnimationKey(), StateName))
+			mSelectAnimationStateName = StateName;
+	}
+
+	ImGui::Separator();
+
+	ImGui::Text("Transition");
+
+	// Transition GUI를 표시합니다 
+	auto& transitions = controller->GetTransitions();
+	for (auto& transition : transitions)
+	{
+		auto exitState = transition.GetExitState();
+		if (exitState == StateName)
+		{
+			auto& conditions = transition.GetConditions();
+			auto enterState = transition.GetEnterState();
+
+			// Condition GUI
+
+			// Setter
+			int index = 0;
+			for (auto& condition : conditions)
+			{
+				++index;
+				beginTransitionCondition(condition, index);
+			}
+
+			// Add Delete Button
+			if (ImGui::Button("+##PushBackCondition"))
+				transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
+			ImGui::SameLine();
+			if (ImGui::Button("-##PopBackCondition"))
+				transition.PopBackCondition();
+		}
+	}
+}
+
+
+void fq::game_engine::Inspector::beginTransitionCondition(fq::game_module::TransitionCondition& condition, int index)
+{
+	auto parameterPack = mSelectController->GetParameterPack();
+
+	// 파라미터 선택 콤보창
+	ImGui::SetNextItemWidth(150.f);
+	std::string parameterComboName = "##Parameters" + std::to_string(index);
+	if (ImGui::BeginCombo(parameterComboName.c_str(), condition.GetParameterID().c_str()))
+	{
+		for (auto& [id, parameter] : parameterPack)
+		{
+			// 파라미터 선택지
+			if (ImGui::Selectable(id.c_str()))
+			{
+				condition.SetParameterID(id);
+				condition.SetCompareParameter(parameter);
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	// 비교 연산자 콤보창
+	auto compareParam = condition.GetCompareParameter();
+
+	bool isInt = compareParam.type() == entt::resolve<int>();
+	bool isFloat = compareParam.type() == entt::resolve<float>();
+	bool isBool = compareParam.type() == entt::resolve<bool>();
+	bool isChar = compareParam.type() == entt::resolve<char>();
+
+	if (!isInt && !isFloat && !isBool) return;
+	ImGui::SameLine();
+
+	constexpr const char* type[4] = { "Greater","Less" ,"Equals", "NotEqual" };
+	int checkType = static_cast<int>(condition.GetCheckType());
+
+	ImGui::SetNextItemWidth(100.f);
+	std::string OperatorComboName = "##Operator" + std::to_string(index);
+
+	if (ImGui::BeginCombo(OperatorComboName.c_str(), type[checkType]))
+	{
+		if (!isBool)
+		{
+			if (ImGui::Selectable(type[0]))
+			{
+				condition.SetCheckType(game_module::TransitionCondition::CheckType::Greater);
+			}
+			if (ImGui::Selectable(type[1]))
+			{
+				condition.SetCheckType(game_module::TransitionCondition::CheckType::Less);
+			}
+		}
+		if (!isFloat)
+		{
+			if (ImGui::Selectable(type[2]))
+			{
+				condition.SetCheckType(game_module::TransitionCondition::CheckType::Equals);
+			}
+			if (ImGui::Selectable(type[3]))
+			{
+				condition.SetCheckType(game_module::TransitionCondition::CheckType::NotEqual);
+			}
+		}
+
+		ImGui::EndCombo();
+	}
+
+	ImGui::SameLine();
+	std::string compareParameterName = "##compareParameter" + std::to_string(index);
+	// 비교 파라미터 입력창
+	if (isBool)
+	{
+		bool val = compareParam.cast<bool>();
+
+		if (ImGui::Checkbox(compareParameterName.c_str(), &val))
+		{
+			condition.SetCompareParameter(val);
+		}
+	}
+	else if (isInt)
+	{
+		int val = compareParam.cast<int>();
+		ImGui::SetNextItemWidth(100.f);
+		if (ImGui::DragInt(compareParameterName.c_str(), &val))
+		{
+			condition.SetCompareParameter(val);
+		}
+	}
+	else if (isFloat)
+	{
+		float val = compareParam.cast<float>();
+		ImGui::SetNextItemWidth(100.f);
+		if (ImGui::InputFloat(compareParameterName.c_str(), &val))
+		{
+			condition.SetCompareParameter(val);
+		}
+	}
 }
 

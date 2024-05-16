@@ -4,25 +4,25 @@
 
 fq::game_module::AnimatorController::AnimatorController()
 	:mParmeters{}
-	,mStates{}
-	,mCurrentState{"Entry"}
+	, mStates{}
+	, mCurrentState{ "Entry" }
 {
 	// Entry
 	AnimationStateNode entry(this);
 	entry.SetType(AnimationStateNode::Type::Entry);
-	entry.SetAniInfo({ {}, {}, "Entry"});
+	entry.SetAnimationKey("Entry");
 	mStates.insert({ "Entry", entry });
 
 	// Exit 
 	AnimationStateNode exit(this);
 	exit.SetType(AnimationStateNode::Type::Exit);
-	exit.SetAniInfo({ {}, {}, "Exit" });
+	exit.SetAnimationKey("Exit");
 	mStates.insert({ "Exit",exit });
 
 	// AnyState
 	AnimationStateNode anyState(this);
 	anyState.SetType(AnimationStateNode::Type::AnyState);
-	anyState.SetAniInfo({ {}, {}, "AnyState" });
+	anyState.SetAnimationKey("AnyState");
 	mStates.insert({ "AnyState", anyState });
 }
 
@@ -58,7 +58,7 @@ fq::game_module::AnimatorController::Parameter fq::game_module::AnimatorControll
 	{
 		return entt::meta_any();
 	}
-	
+
 	return iter->second;
 }
 
@@ -76,14 +76,14 @@ void fq::game_module::AnimatorController::CreateStateNode()
 {
 	std::string name = "NewState";
 
-	if (mStates.find(name) != mStates.end())
+	while (mStates.find(name) != mStates.end())
 	{
-		spdlog::warn("[AnimationController] The state name is duplicated [{}]", name);
-		return;
+		name += "+";
 	}
 
 	AnimationStateNode stateNode(this);
 	stateNode.SetType(AnimationStateNode::Type::State);
+	stateNode.SetAnimationKey(name);
 	mStates.insert({ name,stateNode });
 }
 
@@ -99,4 +99,50 @@ void fq::game_module::AnimatorController::AddTransition(StateName exit, StateNam
 	}
 
 	mTransitions.push_back({ exit,enter });
+}
+
+void fq::game_module::AnimatorController::DeleteTransition(StateName exit, StateName enter)
+{
+	for (auto iter = mTransitions.begin(); iter != mTransitions.end();)
+	{
+		if (iter->GetEnterState() == enter
+			&& iter->GetExitState() == exit)
+		{
+			iter = mTransitions.erase(iter);
+		}
+		else ++iter;
+	}
+}
+
+bool fq::game_module::AnimatorController::ChangeStateName(StateName orginName, StateName changeName)
+{
+	auto iter = mStates.find(orginName);
+
+	if (iter == mStates.end()) return false;
+
+	AnimationStateNode state = iter->second;
+
+	if (state.GetType() != AnimationStateNode::Type::State)
+		return false;
+
+	state.SetAnimationKey(changeName);
+	mStates.erase(iter);
+	mStates.insert({ changeName, state });
+
+	// Transition º¯°æ
+
+	for (auto& transition : mTransitions)
+	{
+		if (transition.GetEnterState() == orginName)
+		{
+			transition.SetEnterState(changeName);
+		}
+
+		if (transition.GetExitState() == orginName)
+		{
+			transition.SetExitState(changeName);
+		}
+	}
+
+	return true;
 }

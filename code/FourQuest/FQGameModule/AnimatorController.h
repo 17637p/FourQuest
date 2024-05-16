@@ -12,7 +12,7 @@ namespace fq::game_module
 	/// <summary>
 	/// 애니메이션의 상태를 컨트롤하는 클래스
 	/// </summary>
-	class AnimatorController
+	class AnimatorController 
 	{
 		using ParameterID = std::string;
 		using Parameter = entt::meta_any;
@@ -63,14 +63,24 @@ namespace fq::game_module
 		/// <summary>
 		/// State를 담은 맵을 반환합니다
 		/// </summary>
-		const StateMap& GetStateMap()const { return mStates; }
+		StateMap& GetStateMap() { return mStates; }
 
 		/// <summary>
-		/// 애니메이션 변환을 추가합니다 
+		/// 애니메이션 전환을 추가합니다 
 		/// </summary>
 		void AddTransition(StateName exit, StateName enter);
 
-		const std::vector<AnimationTransition>& GetTransitions()const { return mTransitions; }
+		/// <summary>
+		/// 애니메이션 전환을 삭제합니다 
+		/// </summary>
+		void DeleteTransition(StateName exit, StateName enter);
+
+		/// <summary>
+		/// 스테이트의 이름을 변경합니다 
+		/// </summary>
+		bool ChangeStateName(StateName orginName, StateName changeName);
+
+		std::vector<AnimationTransition>& GetTransitions() { return mTransitions; }
 
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
