@@ -151,9 +151,11 @@
     <ClInclude Include="PassCommon.h">
       <Filter>Pass\Common</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11ParticleManager.h" />
     <ClInclude Include="ParticlePass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11ParticleManager.h">
+      <Filter>Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -354,9 +356,11 @@
     <ClCompile Include="D3D11Util.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11ParticleManager.cpp" />
     <ClCompile Include="ParticlePass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ParticleManager.cpp">
+      <Filter>Management\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

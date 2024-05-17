@@ -82,8 +82,9 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
 
 			// VFX
-			virtual FQ_GRAPHICS void AddParticleEmitter(size_t id, const ParticleEmitterInfo& info) abstract;
-			virtual FQ_GRAPHICS void DeleteParticleEmitter(size_t id) abstract;
+			virtual FQ_GRAPHICS void AddDeltaTime(float deltaTime) abstract;
+			virtual FQ_GRAPHICS void AddParticleSystem(size_t id, const ParticleSystemInfo& info) abstract;
+			virtual FQ_GRAPHICS void DeleteParticleSystem(size_t id) abstract;
 
 			/// Gizmo && Background
 

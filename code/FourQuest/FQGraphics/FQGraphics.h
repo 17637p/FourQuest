@@ -53,8 +53,9 @@ namespace fq::graphics
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
 
 		// VFX
-		virtual void AddParticleEmitter(size_t id, const ParticleEmitterInfo& info) override;
-		virtual void DeleteParticleEmitter(size_t id) override;
+		virtual void AddDeltaTime(float deltaTime) override;
+		virtual void AddParticleSystem(size_t id, const ParticleSystemInfo& info) override;
+		virtual void DeleteParticleSystem(size_t id) override;
 
 		/// Gizmo && Background
 

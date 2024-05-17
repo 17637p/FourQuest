@@ -114,19 +114,117 @@ namespace fq::graphics
 		};
 	}
 
-	struct ParticleEmitterInfo
+	struct ParticleSystemInfo
 	{
-		size_t MaxParticleCount;
+		// main module
+		enum { MAX_PARTICLE_COUNT = 1000 };
 
-		DirectX::SimpleMath::Vector3 InitPosition;
-		DirectX::SimpleMath::Vector2 InitSize;
-		DirectX::SimpleMath::Vector3 InitVelocity;
-		float InitTimeToLive;
+		enum class EOption
+		{
+			Constant,
+			RandomBetweenTwoConstant,
+		};
 
-		DirectX::SimpleMath::Vector3 RandomRangePosition;
-		DirectX::SimpleMath::Vector2 RandomSize;
-		DirectX::SimpleMath::Vector3 RandomRangeVelocity;
-		float RandomRangeTimeToLive;
+		float Duration = 5; // 총 재생시간
+		bool bIsLooping = true;
+
+		EOption StartDelayOption = EOption::Constant;
+		float StartDelay[2] = { 0.f, }; // 방출 시작 시간
+
+		EOption StartLifeTimeOption = EOption::Constant;
+		float StartLifeTime[2] = { 5.f, }; // 파티클 생존 시간
+
+		EOption StartSpeedOption = EOption::Constant;
+		float StartSpeed[2] = { 5.f, }; // 방출 속도
+
+		EOption StartSizeOption = EOption::Constant;
+		DirectX::SimpleMath::Vector2 StartSize[2] = { {1.f, 1.f} , }; // 파티클 크기
+
+		EOption StartRotationOption = EOption::Constant;
+		float StartRotation[2] = { 0.f, }; // 파티클 회전
+
+		EOption StartColorOption = EOption::Constant;
+		DirectX::SimpleMath::Color StartColor[2] = { { 1.f, 1.f, 1.f, 1.f }, }; // 파티클 색상
+
+		EOption GravityModifierOption = EOption::Constant;
+		float GravityModifier[2] = { 0.f, }; // 파티클 중력
+
+		float SimulationSpeed = 1.f; // 시뮬레이션 가중치
+
+		size_t MaxParticleCount = MAX_PARTICLE_COUNT;
+
+		int RandomSeed = rand(); // 파티클 생성에 사용할 랜덤 시드값
+
+		DirectX::SimpleMath::Vector3 WorldPosition = { 0, 0, 0 };
+		DirectX::SimpleMath::Vector3 WorldRotation = { 0, 0, 0 };
+		DirectX::SimpleMath::Vector3 WorldScale = { 1, 1, 1 };
+
+		// emission module
+		size_t RateOverTime = 10u; // 시간 단위당 방출되는 파티클 수
+		size_t RateOverDistance = 0u; // 이동한 거리 단위당 방출되는 파티클 수
+
+		struct Burst
+		{
+			float TimePos = 0.f; // 처리할 시간
+			size_t Count = 30u; // 방출될 파티클 수
+			size_t Cycles = 1u; // 버스트 반복 횟수
+			float Interval = 0.01f; // 버스트 사이 간격
+			float Probability = 1.f; // 0 ~ 1 사이의 확률 값을 사용
+		};
+
+		std::vector<Burst> Bursts;
+
+		// shape module
+		enum class EShape
+		{
+			Sphere,
+			// Hemisphere,
+			// Cone,
+			// Donut,
+			// Box,
+			// Circle,
+			// Rectangle,
+			// Edge
+		};
+
+		enum class EMode
+		{
+			Random,
+			// Loop,
+			// PingPong,
+			// BurstSpread
+		};
+
+		EShape ShapeType = EShape::Sphere; // 방출 모양
+		EMode ModeType = EMode::Random; // 방출 방식
+		float Angle = 25; // 
+		float Radius = 1; // 반지름
+		float DountRadius = 0.2f; // 도넛 반지름
+		float Arc = 360.f; // 호 크기, 각도 사용
+
+		DirectX::SimpleMath::Vector3 Position = { 0, 0, 0 };
+		DirectX::SimpleMath::Vector3 Rotation = { 0, 0, 0 };
+		DirectX::SimpleMath::Vector3 Scale = { 1, 1, 1 };
+
+		float Speed = 1.f;	 // 이 펙터는 아직 미반영
+		float Spread = 0.f;	 // 이 펙터는 아직 미반영
+		float RadiusThickness = 0.f; // 입방체의 어느 부분 부터 방출될 것인지 0 ~ 1f
+
+		// render module
+		enum class ERenderMode
+		{
+			Billboard,
+		};
+		enum class EBlendMode
+		{
+			Additive,
+			//Subtractive,
+			//Moudulate
+		};
+
+		ERenderMode RenderMode = ERenderMode::Billboard;
+		EBlendMode BlendMode = EBlendMode::Additive;
+		std::wstring TexturePath = L"";
 	};
 }
 

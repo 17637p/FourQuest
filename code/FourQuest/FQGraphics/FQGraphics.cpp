@@ -243,14 +243,17 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
-
-void FQGraphics::AddParticleEmitter(size_t id, const ParticleEmitterInfo& info)
+void FQGraphics::AddDeltaTime(float deltaTime)
 {
-	mParticleManager->AddParticleEmitter(id, mDevice, info);
+	mParticleManager->AddDeltaTime(deltaTime);
 }
-void FQGraphics::DeleteParticleEmitter(size_t id)
+void FQGraphics::AddParticleSystem(size_t id, const ParticleSystemInfo& info)
 {
-	mParticleManager->DeleteParticleEmitter(id);
+	mParticleManager->AddParticleSystem(id, mDevice, info);
+}
+void FQGraphics::DeleteParticleSystem(size_t id)
+{
+	mParticleManager->DeleteParticleSystem(id);
 }
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)

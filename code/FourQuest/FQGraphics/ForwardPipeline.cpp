@@ -38,17 +38,17 @@ namespace fq::graphics
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
-		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager);
+		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
+		mPasses.push_back(mParticlePass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mFullScreenPass);
-		mPasses.push_back(mParticlePass);
 	}
 
 	void ForwardPipeline::SetSkyBox(const std::wstring& path)

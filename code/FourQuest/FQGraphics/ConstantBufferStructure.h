@@ -16,6 +16,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix ViewProjMat;
 	};
 
+	struct SceneInfomation
+	{
+		DirectX::SimpleMath::Matrix ViewProjMat;
+		DirectX::SimpleMath::Vector4 EyePosition;
+	};
+
 	struct BoneTransform
 	{
 		enum { MAX_BOND_COUNT = 128 };
@@ -92,7 +98,54 @@ namespace fq::graphics
 		float InitLifeTime;
 		float ReadomLifeTime;
 		unsigned int ParticleCount;
-		float DeltaTime; 
+		float DeltaTime;
+		float TotalTime;
+		float unused[3];
+	};
+
+	struct ParticleMain
+	{
+		DirectX::SimpleMath::Matrix Transform;
+
+		DirectX::SimpleMath::Vector4 StartSize;
+		DirectX::SimpleMath::Vector4 StartColor1;
+		DirectX::SimpleMath::Vector4 StartColor2;
+		DirectX::SimpleMath::Vector2 StartLifeTime;
+		DirectX::SimpleMath::Vector2 StartSpeed;
+		DirectX::SimpleMath::Vector2 StartRotation;
+		DirectX::SimpleMath::Vector2 GravityModifier;
+		
+		int StartLifeTimeOption;
+		int StartSpeedOption;
+		int StartSizeOption;
+		int StartRotationOption;
+
+		int StartColorOption;
+		int GravityModifierOption;
+		int RandomSeed;
+		float DeltaTime;
+
+		float SimulationSpeed;
+		unsigned int ParticleCount;
+		float unused[2];
+	};
+
+	struct ParticleShape
+	{
+		DirectX::SimpleMath::Matrix Transform;
+
+		int ShapeType;
+		int ModeType;
+		float Angle;
+		float Radius;
+		
+		float DountRadius;
+		float Arc;
+		float Speed;
+		float Spread;
+
+		float RadiusThickness;
+		float unused[3];
 	};
 
 	template <typename T>

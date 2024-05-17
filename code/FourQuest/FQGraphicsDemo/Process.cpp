@@ -583,20 +583,13 @@ void Process::particleInit()
 {
 	using namespace fq::graphics;
 
-	ParticleEmitterInfo particleInfo;
-	particleInfo.MaxParticleCount = 100;
-
-	particleInfo.InitPosition = { 0, 0, 0 };
-	particleInfo.InitSize = { 100, 100 };
-	particleInfo.InitVelocity = { 0, 20, 0 };
-	particleInfo.InitTimeToLive = 10.f;
-
-	particleInfo.RandomRangePosition = { 50.f, 50.f, 50.f };
-	particleInfo.RandomSize = { 50.f, 50.f };
-	particleInfo.RandomRangeVelocity = { 10.f, 10.f, 10.f };
-	particleInfo.RandomRangeTimeToLive = 5.f;
-
-	mTestGraphics->AddParticleEmitter(10, particleInfo);
+	ParticleSystemInfo particleInfo;
+	particleInfo.WorldPosition = { 0, 500.f, 0 };
+	particleInfo.StartSize[0] = { 10, 10 };
+	particleInfo.StartColor[0] = { 1.f, 0.f, 0.f, 0.5f };
+	particleInfo.StartColor[1] = { 0.f, 1.f, 1.f, 1.f };
+	particleInfo.StartColorOption = ParticleSystemInfo::EOption::RandomBetweenTwoConstant;
+	mTestGraphics->AddParticleSystem(10, particleInfo);
 }
 
 /*=============================================================================

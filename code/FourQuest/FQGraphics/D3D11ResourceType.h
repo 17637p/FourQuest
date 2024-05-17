@@ -62,14 +62,16 @@ namespace fq::graphics
 		Default,
 		AnisotropicWrap,
 		PointClamp,
-		Shadow
+		Shadow,
+		LinearWrap,
 	};
 
 	enum class ED3D11RasterizerState
 	{
 		Default,
 		Shadow,
-		CullFront
+		CullFront,
+		CullOff,
 	};
 
 	enum class ED3D11DepthStencilState
@@ -77,6 +79,7 @@ namespace fq::graphics
 		Default,
 		DisableDepthWirte,
 		LessEqual,
+		DepthOff,
 	};
 
 	enum class ED3D11BlendState

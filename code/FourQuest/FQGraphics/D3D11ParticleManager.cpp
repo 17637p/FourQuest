@@ -3,39 +3,53 @@
 
 namespace fq::graphics
 {
-	ParticleEmitter::ParticleEmitter(const std::shared_ptr<D3D11Device>& device, const ParticleEmitterInfo& info)
+	ParticleSystem::ParticleSystem(const std::shared_ptr<D3D11Device>& device, const ParticleSystemInfo& info)
 		: mInfo(info)
 		, mParticleCount(0u)
+		, mAccumulateTime(0.f)
+		, mEmissionRemainTime(0.f)
 	{
+		mInfo.MaxParticleCount = std::min<size_t>(mInfo.MaxParticleCount, ParticleSystemInfo::MAX_PARTICLE_COUNT);
+
 		mAppendBuffer = std::make_shared<D3D11StructuredBuffer>(device, sizeof(Particle), mInfo.MaxParticleCount);
 		mConsumeBuffer = std::make_shared<D3D11StructuredBuffer>(device, sizeof(Particle), mInfo.MaxParticleCount);
 		mAppendUAV = std::make_shared<D3D11UnorderedAccessView>(device, mAppendBuffer, eUAVType::ComsumeAppend);
 		mConsumeUAV = std::make_shared<D3D11UnorderedAccessView>(device, mConsumeBuffer, eUAVType::ComsumeAppend);
 		mAppendSRV = std::make_shared<D3D11ShaderResourceView>(device, mAppendUAV);
 		mConsumeSRV = std::make_shared<D3D11ShaderResourceView>(device, mConsumeUAV);
+
+		mEmissionTime = mInfo.RateOverTime;
+		
 	}
 
-	void ParticleEmitter::Swap()
+	void ParticleSystem::Swap()
 	{
 		std::swap(mAppendUAV, mConsumeUAV);
 		std::swap(mAppendBuffer, mConsumeBuffer);
 		std::swap(mAppendSRV, mConsumeSRV);
 	}
 
-	void D3D11ParticleManager::AddParticleEmitter(size_t id, const std::shared_ptr<D3D11Device>& device, ParticleEmitterInfo emitterInfo)
+	void D3D11ParticleManager::AddDeltaTime(float deltaTime)
 	{
-		auto find = mParticleEmitters.find(id);
+		for (auto& [key, system] : mParticleSystems)
+		{
+			system->AddDeltaTime(deltaTime);
+		}
+	}
+	void D3D11ParticleManager::AddParticleSystem(size_t id, const std::shared_ptr<D3D11Device>& device, ParticleSystemInfo emitterInfo)
+	{
+		auto find = mParticleSystems.find(id);
 
-		if (find != mParticleEmitters.end())
+		if (find != mParticleSystems.end())
 		{
 			return;
 		}
 
-		std::shared_ptr<ParticleEmitter> emitter = std::make_shared<ParticleEmitter>(device, emitterInfo);
-		mParticleEmitters.insert({ id, emitter });
+		std::shared_ptr<ParticleSystem> emitter = std::make_shared<ParticleSystem>(device, emitterInfo);
+		mParticleSystems.insert({ id, emitter });
 	}
-	void D3D11ParticleManager::DeleteParticleEmitter(size_t id)
+	void D3D11ParticleManager::DeleteParticleSystem(size_t id)
 	{
-		mParticleEmitters.erase(id);
+		mParticleSystems.erase(id);
 	}
 }
