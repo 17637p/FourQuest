@@ -7,31 +7,40 @@
 #include <directxtk\SimpleMath.h>
 #include <physx\PxPhysicsAPI.h>
 
+#include "FQCommonPhysics.h"
+
 namespace fq::physics
 {
 	class CharacterJoint;
 
-	class CharacterLink
+	class CharacterLink : public std::enable_shared_from_this<CharacterLink>
 	{
 	public:
 		CharacterLink();
 		~CharacterLink();
 
-		void Initialize();
+		bool Initialize(const CharacterLinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
+
+		bool CreateShape(const physx::PxMaterial* material, const physx::PxVec3& extent, std::shared_ptr<CollisionData> collisionData);
+		bool CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData);
+		bool CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData);
 
 		inline physx::PxArticulationLink* GetPxLink();
-		inline const std::string GetName();
-		inline const DirectX::SimpleMath::Matrix GetLocalTransform();
+		inline const std::string& GetName();
+		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();
 		inline const std::shared_ptr<CharacterJoint> GetCharacterJoint();
-		inline const std::vector<std::shared_ptr<CharacterLink>>& GetChildrenCharacterLink();
-		inline const std::shared_ptr<CharacterLink> GetChildCharacterLink(std::string linkName);
+		inline const std::weak_ptr<CharacterLink> GetParentLink();
+		inline const std::vector<std::weak_ptr<CharacterLink>>& GetChildrenCharacterLink();
+		inline const std::weak_ptr<CharacterLink> GetChildCharacterLink(std::string linkName);
 
 	private:
 		std::string mName;
+		float mDensity;
 		DirectX::SimpleMath::Matrix mLocalTransform;
 
 		std::shared_ptr<CharacterJoint> mMyJoint;
-		std::vector<std::shared_ptr<CharacterLink>> mMyChildrenLink;
+		std::weak_ptr<CharacterLink> mParentLink;
+		std::vector<std::weak_ptr<CharacterLink>> mMyChildrenLink;
 
 	private:
 		physx::PxArticulationLink* mPxLink;
@@ -42,11 +51,11 @@ namespace fq::physics
 	{
 		return mPxLink;
 	}
-	const std::string CharacterLink::GetName()
+	const std::string& CharacterLink::GetName()
 	{
 		return mName;
 	}
-	const DirectX::SimpleMath::Matrix CharacterLink::GetLocalTransform()
+	const DirectX::SimpleMath::Matrix& CharacterLink::GetLocalTransform()
 	{
 		return mLocalTransform;
 	}
@@ -54,15 +63,19 @@ namespace fq::physics
 	{
 		return mMyJoint;
 	}
-	const std::vector<std::shared_ptr<CharacterLink>>& CharacterLink::GetChildrenCharacterLink()
+	const std::weak_ptr<CharacterLink> CharacterLink::GetParentLink()
+	{
+		return mParentLink;
+	}
+	const std::vector<std::weak_ptr<CharacterLink>>& CharacterLink::GetChildrenCharacterLink()
 	{
 		return mMyChildrenLink;
 	}
-	const std::shared_ptr<CharacterLink> CharacterLink::GetChildCharacterLink(std::string linkName)
+	const std::weak_ptr<CharacterLink> CharacterLink::GetChildCharacterLink(std::string linkName)
 	{
 		for (const auto& childLink : mMyChildrenLink)
 		{
-			if (childLink->GetName() == linkName)
+			if (childLink.lock()->GetName() == linkName)
 			{
 				return childLink;
 			}

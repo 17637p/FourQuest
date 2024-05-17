@@ -37,11 +37,8 @@
     <Filter Include="Character\CharacterPhysics">
       <UniqueIdentifier>{c17eaaae-1433-4f14-8b3c-8cf2bf1ae99c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Character\CharacterPhysics\Joint">
+    <Filter Include="Character\CharacterPhysics\Articulation">
       <UniqueIdentifier>{a11ee2a5-114c-4e19-8459-e0495128c902}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Character\CharacterPhysics\Link">
-      <UniqueIdentifier>{a693cbab-bd00-4576-b60b-752e605ecfde}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,11 +94,13 @@
       <Filter>Character\CharacterPhysics</Filter>
     </ClInclude>
     <ClInclude Include="CharacterJoint.h">
-      <Filter>Character\CharacterPhysics\Joint</Filter>
+      <Filter>Character\CharacterPhysics\Articulation</Filter>
     </ClInclude>
     <ClInclude Include="CharacterLink.h">
-      <Filter>Character\CharacterPhysics\Link</Filter>
+      <Filter>Character\CharacterPhysics\Articulation</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsResourceManager.h" />
+    <ClInclude Include="ResourceBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -156,11 +155,13 @@
       <Filter>Character\CharacterPhysics</Filter>
     </ClCompile>
     <ClCompile Include="CharacterJoint.cpp">
-      <Filter>Character\CharacterPhysics\Joint</Filter>
+      <Filter>Character\CharacterPhysics\Articulation</Filter>
     </ClCompile>
     <ClCompile Include="CharacterLink.cpp">
-      <Filter>Character\CharacterPhysics\Link</Filter>
+      <Filter>Character\CharacterPhysics\Articulation</Filter>
     </ClCompile>
+    <ClCompile Include="PhysicsResourceManager.cpp" />
+    <ClCompile Include="ResourceBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

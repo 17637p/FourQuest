@@ -150,9 +150,11 @@
     <ClInclude Include="FQPhysics.h" />
     <ClInclude Include="IFQPhysics.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysicsResourceManager.h" />
     <ClInclude Include="PhysicsRigidBodyManager.h" />
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
     <ClInclude Include="PlayerCharacterController.h" />
+    <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
@@ -171,9 +173,11 @@
     <ClCompile Include="FQPhysics.cpp" />
     <ClCompile Include="IFQPhysics.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PhysicsResourceManager.cpp" />
     <ClCompile Include="PhysicsRigidBodyManager.cpp" />
     <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
     <ClCompile Include="PlayerCharacterController.cpp" />
+    <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="StaticRigidBody.cpp" />
   </ItemGroup>
