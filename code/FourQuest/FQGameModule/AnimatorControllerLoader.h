@@ -25,7 +25,5 @@ namespace fq::game_module
 		/// Controller를 로드합니다 
 		/// </summary>
 		std::shared_ptr<AnimatorController> Load(const Path& path);
-
 	};
-
 }

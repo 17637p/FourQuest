@@ -18,6 +18,7 @@
 #include "PrefabResource.h"
 #include "PrefabTest.h"
 #include "AnimationStateNode.h"
+#include "Animator.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -313,11 +314,21 @@ void fq::game_module::RegisterMetaData()
 		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
 
-	//////////////////////////////////////////////////////////////////////////
-	//                              Prefab                                  //
-	//////////////////////////////////////////////////////////////////////////
+	entt::meta<Animator>()
+		.type("Animator"_hs)
+		.prop(fq::reflect::prop::Name, "Animator")
+		.data<&Animator::SetControllerPath, &Animator::GetControllerPath>("ControllerPath"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerPath")
+		.prop(fq::reflect::prop::DragDrop, ".controller")
+		.prop(fq::reflect::prop::RelativePath)
+		.base<Component>();
 
-	entt::meta<PrefabTest>()
+
+		//////////////////////////////////////////////////////////////////////////
+		//                              Prefab                                  //
+		//////////////////////////////////////////////////////////////////////////
+
+		entt::meta<PrefabTest>()
 		.type("PrefabTest"_hs)
 		.prop(fq::reflect::prop::Name, "PrefabTest")
 		.data<&PrefabTest::SetFireObject, &PrefabTest::GetFireObject>("FireObject"_hs)
@@ -326,5 +337,4 @@ void fq::game_module::RegisterMetaData()
 		.data<&PrefabTest::SetCreateTime, &PrefabTest::GetCreateTime>("CreateTime"_hs)
 		.prop(fq::reflect::prop::Name, "CreateTime")
 		.base<Component>();
-
 }

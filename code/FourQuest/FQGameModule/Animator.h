@@ -30,12 +30,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 로드할 컨트롤러 경로를 반환합니다
 		/// </summary>
-		fq::game_module::Animator::ControllerPath GetControllerPath() const { return mControllerPath; }
+		ControllerPath GetControllerPath() const { return mControllerPath; }
 		
 		/// <summary>
 		/// 로드할 컨트롤러 경로를 설정합니다 
 		/// </summary>
-		void SetControllerPath(fq::game_module::Animator::ControllerPath path) { mControllerPath = path; }
+		void SetControllerPath(ControllerPath path) { mControllerPath = path; }
 
 		void SetParameterInt(const std::string& id, int val);
 		void SetParameterFloat(const std::string& id, float val);

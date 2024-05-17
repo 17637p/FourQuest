@@ -29,14 +29,6 @@ void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProces
 	mGameProcess = game;
 	mEditorProcess = editor;
 	mEventManager = mGameProcess->mEventManager.get();
-
-	// Context 积己
-	ed::Config config;
-	config.SettingsFile = "resource/internal/animator/Simple.json";
-	mContext = ed::CreateEditor(&config);
-
-	// 烙矫肺 牧飘费矾 积己
-	mSelectController = std::make_shared<fq::game_module::AnimatorController>();
 }
 
 void fq::game_engine::AnimatorWindow::Render()
@@ -48,9 +40,7 @@ void fq::game_engine::AnimatorWindow::Render()
 	if (ImGui::Begin("Animator"))
 	{
 		beginChild_ParameterWindow();
-
 		ImGui::SameLine();
-
 		beginChild_NodeEditor();
 		dragDropWindow();
 	}
@@ -59,13 +49,19 @@ void fq::game_engine::AnimatorWindow::Render()
 
 void fq::game_engine::AnimatorWindow::Finalize()
 {
-	ed::DestroyEditor(mContext);
+	destroyContext();
 }
 
 void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 {
 	if (ImGui::BeginChild("Parameter", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX))
 	{
+		if (!mSelectController)
+		{
+			ImGui::EndChild();
+			return;
+		}
+
 		// Add Parametr
 		beginCombo_AddParameter();
 
@@ -151,6 +147,12 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 {
 	if (ImGui::BeginChild("Node", ImVec2(0, 0)))
 	{
+		if (!mSelectController)
+		{
+			ImGui::EndChild();
+			return;
+		}
+
 		ed::SetCurrentEditor(mContext);
 		ImGui::Separator();
 		ed::Begin("NodeEditor", ImVec2(0.0, 0.0f));
@@ -367,13 +369,6 @@ void fq::game_engine::AnimatorWindow::ExcuteShortcut()
 	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
 		&& input->IsKeyState(EKey::S, EKeyState::Tap))
 	{
-		if (mSelectControllerPath.empty())
-		{
-			mSelectControllerPath = fq::path::GetResourcePath();
-
-			mSelectControllerPath /= "sameple.controller";
-		}
-
 		mLoader.Save(*mSelectController, mSelectControllerPath);
 	}
 }
@@ -393,8 +388,33 @@ void fq::game_engine::AnimatorWindow::dragDropWindow()
 			{
 				mSelectController = mLoader.Load(*path);
 				mSelectControllerPath = *path;
+				createContext();
 			}
 		}
+	}
+}
+
+void fq::game_engine::AnimatorWindow::createContext()
+{
+	destroyContext();
+
+	auto hash = entt::hashed_string(mSelectControllerPath.string().c_str()).value();
+
+	 mSettingFilePath ="resource/internal/animator/" + std::to_string(hash)
+		+".json";
+
+	// Context 积己
+	ed::Config config;
+	config.SettingsFile = mSettingFilePath.c_str();
+	mContext = ed::CreateEditor(&config);
+}
+
+void fq::game_engine::AnimatorWindow::destroyContext()
+{
+	if (mContext)
+	{
+		ed::DestroyEditor(mContext);
+		mContext = nullptr;
 	}
 }
 

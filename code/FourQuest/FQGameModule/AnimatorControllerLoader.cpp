@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <assert.h>
 
+#include "../FQCommon/FQPath.h"
 #include "AnimatorController.h"
 #include "AnimationTransition.h"
 #include "AnimationStateNode.h"
@@ -70,7 +71,8 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		AnimationStateNode stateNode(controller.get());
 		std::string stateName = key;
 
-	 	std::string path = value.at("modelPath");
+		std::string path = value.at("modelPath");
+		path = fq::path::GetAbsolutePath(path).string();
 		std::string name = value.at("animationName");
 		float playbackSpeed = value.at("playbackSpeed").get<float>();
 
@@ -85,6 +87,39 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 
 	// 3. Transition 로드 
 	auto transitionsJson = controllerJson.find("transitions");
+	for (const auto& value : transitionsJson.value())
+	{
+		std::string exit = value.at("exitState");
+		std::string enter = value.at("enterState");
+		controller->AddTransition(exit, enter);
+
+		json conditionsJson = value.at("conditions");
+		for (auto& conditionJson : conditionsJson)
+		{
+			auto checkType = static_cast<TransitionCondition::CheckType>(conditionJson.at("type").get<int>());
+			std::string id = conditionJson.at("parameterID");
+			json parameterJson = conditionJson.at("parameter");
+			entt::meta_any parameter;
+
+			if (parameterJson.is_number_float())
+			{
+				parameter = parameterJson.get<float>();
+			}
+			else if (parameterJson.is_number_integer())
+			{
+				parameter = parameterJson.get<int>();
+			}
+			else if (parameterJson.is_boolean())
+			{
+				parameter = parameterJson.get<bool>();
+			}
+			else
+			{
+				parameter = AnimatorController::OnTrigger;
+			}
+			controller->GetTransitions().back().PushBackCondition(checkType, id, parameter);
+		}
+	}
 
 
 	return controller;
@@ -130,7 +165,7 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		if (stateNode.GetType() != AnimationStateNode::Type::State) continue;
 
 		ordered_json stateJson;
-		stateJson["modelPath"] = stateNode.GetModelPath();
+		stateJson["modelPath"] =  fq::path::GetRelativePath(stateNode.GetModelPath()).string();
 		stateJson["animationName"] = stateNode.GetAnimationName();
 		stateJson["playbackSpeed"] = stateNode.GetPlayBackSpeed();
 		stateMapJson[stateName] = stateJson;
@@ -148,6 +183,7 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		transitionJson["exitState"] = transition.GetExitState();
 		transitionJson["enterState"] = transition.GetEnterState();
 
+		ordered_json conditionsJson;
 		// 조건 저장 
 		for (const auto& condition : transition.GetConditions())
 		{
@@ -158,16 +194,17 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 			auto compareParameter = condition.GetCompareParameter();
 
 			if (compareParameter.type() == entt::resolve<int>())
-				conditionJson["int"] = compareParameter.cast<int>();
+				conditionJson["parameter"] = compareParameter.cast<int>();
 			else if (compareParameter.type() == entt::resolve<float>())
-				conditionJson["float"] = compareParameter.cast<float>();
+				conditionJson["parameter"] = compareParameter.cast<float>();
 			else if (compareParameter.type() == entt::resolve<bool>())
-				conditionJson["bool"] = compareParameter.cast<bool>();
+				conditionJson["parameter"] = compareParameter.cast<bool>();
 			else
-				conditionJson["char"] = compareParameter.cast<char>();
+				conditionJson["parameter"] = "trigger";
 
-			transitionJson["condition"] = conditionJson;
+			conditionsJson.push_back(conditionJson);
 		}
+		transitionJson["conditions"] = conditionsJson;
 
 		transitionsJson.push_back(transitionJson);
 	}

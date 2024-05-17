@@ -57,6 +57,9 @@ namespace fq::game_engine
 		PinID getInputPinID(const std::string& nodeName);
 		PinID getOutputPinID(const std::string& nodeName);
 
+		void createContext();
+		void destroyContext();
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
@@ -65,6 +68,7 @@ namespace fq::game_engine
 		fq::game_module::AnimatorControllerLoader mLoader;
 		std::filesystem::path mSelectControllerPath;
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
+		std::string mSettingFilePath;
 		ax::NodeEditor::EditorContext* mContext;
 
 		bool mbIsOpen;

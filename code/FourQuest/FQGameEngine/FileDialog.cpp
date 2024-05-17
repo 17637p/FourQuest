@@ -282,6 +282,10 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		ImGui::Image(GetIcon(L"model.png"), mIconSize);
 	}
+	else if (extension == ".controller")
+	{
+		ImGui::Image(GetIcon(L"controller.png"), mIconSize);
+	}
 	else
 	{
 		ImGui::Image(GetIcon(L"error.png"), mIconSize);

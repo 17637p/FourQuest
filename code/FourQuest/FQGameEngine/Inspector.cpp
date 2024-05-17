@@ -303,6 +303,30 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 			data, mSelectObject, handle, name);
 	}
 
+	// DragDrop ¹Þ±â
+	if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* dropPath
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			auto extensions = fq::reflect::GetDragDropExtension(data);
+
+			for (auto& extension : extensions)
+			{
+				if (dropPath->extension() == extension)
+				{
+					name = dropPath->string();
+					mEditorProcess->mCommandSystem->Push<SetMetaData>(
+						data, mSelectObject, handle, name);
+				}
+			}
+		}
+	}
+
 	beginIsItemHovered_Comment(data);
 }
 
