@@ -64,6 +64,8 @@ namespace fq::game_module
 		/// State를 담은 맵을 반환합니다
 		/// </summary>
 		StateMap& GetStateMap() { return mStates; }
+		const StateMap& GetStateMap()const { return mStates; }
+
 
 		/// <summary>
 		/// 애니메이션 전환을 추가합니다 
@@ -81,6 +83,7 @@ namespace fq::game_module
 		bool ChangeStateName(StateName orginName, StateName changeName);
 
 		std::vector<AnimationTransition>& GetTransitions() { return mTransitions; }
+		const std::vector<AnimationTransition>& GetTransitions() const { return mTransitions; }
 
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);

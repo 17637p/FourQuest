@@ -68,13 +68,16 @@ namespace fq::game_engine
 		/// </summary>
 		bool IsLoadedModel(const ModelPath& path);
 
+		/// <summary>
+		/// 모델을 로드합니다 
+		/// </summary>
+		void LoadModel(const ModelPath& path);
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void loadSkinnedMeshRenderer(fq::game_module::GameObject* object);
 		void unloadSkinnedMeshRenderer(fq::game_module::GameObject* object);
 
-		void loadModel(ModelPath path);
 		void unloadAllModel();
 
 	private:

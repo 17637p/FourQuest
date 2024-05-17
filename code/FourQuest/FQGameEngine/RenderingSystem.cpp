@@ -133,7 +133,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	}
 	else
 	{
-		loadModel(meshInfo.ModelPath);
+		LoadModel(meshInfo.ModelPath);
 	}
 	meshInfo.Transform = transform->GetLocalMatrix();
 
@@ -161,7 +161,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	}
 	else
 	{
-		loadModel(meshInfo.ModelPath);
+		LoadModel(meshInfo.ModelPath);
 	}
 	meshInfo.Transform = transform->GetLocalMatrix();
 
@@ -170,7 +170,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	staticMeshRenderer->SetStaticMeshObject(staticMeshObject);
 }
 
-void fq::game_engine::RenderingSystem::loadModel(ModelPath path)
+void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 {
 	auto iter = mLoadModels.find(path);
 

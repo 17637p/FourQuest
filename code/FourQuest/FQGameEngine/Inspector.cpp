@@ -4,11 +4,13 @@
 #include "imgui_stdlib.h"
 
 #include "../FQReflect/FQReflect.h"
+#include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "EditorEvent.h"
 #include "CommandSystem.h"
 #include "Command.h"
+#include "RenderingSystem.h"
 
 fq::game_engine::Inspector::Inspector()
 	:mGameProcess(nullptr)
@@ -707,7 +709,7 @@ void fq::game_engine::Inspector::beginInputText_PrefabResource(entt::meta_data d
 	beginIsItemHovered_Comment(data);
 }
 
-void fq::game_engine::Inspector::beginAnimationController(std::shared_ptr<fq::game_module::AnimatorController> controller)
+void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<fq::game_module::AnimatorController>& controller)
 {
 	auto iter = controller->GetStateMap().find(mSelectAnimationStateName);
 
@@ -716,16 +718,18 @@ void fq::game_engine::Inspector::beginAnimationController(std::shared_ptr<fq::ga
 
 	std::string StateName = state.GetAnimationKey();
 
-	ImGui::InputText("##StateName", &StateName);
-
+	// Animation State 표시
+	ImGui::InputText("StateName##StateName", &StateName);
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
 		if (controller->ChangeStateName(state.GetAnimationKey(), StateName))
 			mSelectAnimationStateName = StateName;
 	}
 
-	ImGui::Separator();
+	// Animation 정보 표시
+	beginAnimationStateNode(state);
 
+	ImGui::Separator();
 	ImGui::Text("Transition");
 
 	// Transition GUI를 표시합니다 
@@ -855,5 +859,63 @@ void fq::game_engine::Inspector::beginTransitionCondition(fq::game_module::Trans
 			condition.SetCompareParameter(val);
 		}
 	}
+}
+
+void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode)
+{
+	// ModelPath GUI
+	std::string modelPath = stateNode.GetModelPath();
+	ImGui::InputText("ModelPath", &modelPath);
+
+	// DragDrop 받기
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* dropPath
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			if (dropPath->extension() == ".model")
+			{
+				stateNode.SetModelPath(dropPath->string());
+			}
+		}
+	}
+
+	if (modelPath.empty()) return;
+
+	if (!mGameProcess->mRenderingSystem->IsLoadedModel(modelPath))
+	{
+		mGameProcess->mRenderingSystem->LoadModel(modelPath);
+	}
+	const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
+
+	// Animation Name 선택 
+	auto aniName = stateNode.GetAnimationName();
+
+	if (ImGui::BeginCombo("AnimationName", aniName.c_str()))
+	{
+		for (const auto& animationClip : model.Animations)
+		{
+			const auto& clipName = animationClip.Name;
+			if (ImGui::Selectable(clipName.c_str()))
+			{
+				stateNode.SetAnimationName(clipName);
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	// PlayBackSpeed
+	float playBackSpeed = stateNode.GetPlayBackSpeed();
+
+	if (ImGui::InputFloat("PlayBackSpeed", &playBackSpeed))
+	{
+		stateNode.SetPlayBackSpeed(playBackSpeed);
+	}
+
+
 }
 

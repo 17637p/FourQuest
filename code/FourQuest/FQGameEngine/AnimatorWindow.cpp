@@ -322,7 +322,6 @@ void fq::game_engine::AnimatorWindow::beginCreate()
 		}
 	}
 	ed::EndCreate(); // Wrap up deletion action
-
 }
 
 void fq::game_engine::AnimatorWindow::beginDelete()
@@ -340,7 +339,6 @@ void fq::game_engine::AnimatorWindow::beginDelete()
 				mSelectController->DeleteTransition(linkPair.first, linkPair.second);
 			}
 		}
-
 	}
 	ed::EndDelete();
 }
@@ -358,5 +356,14 @@ void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::ga
 		mMatchLinkID.insert({ linkID, {exit, enter } });
 
 	ed::Link(linkID, exitID, enterID);
+}
+
+void fq::game_engine::AnimatorWindow::ExcuteShortcut()
+{
+	if (!mSelectController) return;
+
+
+
+
 }
 

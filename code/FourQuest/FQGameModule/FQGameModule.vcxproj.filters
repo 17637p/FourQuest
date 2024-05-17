@@ -206,7 +206,7 @@
     <ClInclude Include="AnimatorController.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationLoader.h">
+    <ClInclude Include="AnimatorControllerLoader.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
     <ClInclude Include="AnimationStateNode.h">
@@ -325,7 +325,7 @@
     <ClCompile Include="AnimatorController.cpp">
       <Filter>src\09.Animation</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationLoader.cpp">
+    <ClCompile Include="AnimatorControllerLoader.cpp">
       <Filter>src\09.Animation</Filter>
     </ClCompile>
     <ClCompile Include="AnimationStateNode.cpp">

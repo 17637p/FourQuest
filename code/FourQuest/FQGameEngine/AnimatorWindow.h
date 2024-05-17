@@ -32,6 +32,8 @@ namespace fq::game_engine
 
 		bool& IsWindowOpen() { return mbIsOpen; }
 
+		void ExcuteShortcut();
+
 	private:
 		// 파라미터 관련
 		void beginChild_ParameterWindow();

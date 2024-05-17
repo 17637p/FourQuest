@@ -44,8 +44,9 @@ namespace fq::game_engine
 		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginAddComponent();
 
-		void beginAnimationController(std::shared_ptr<fq::game_module::AnimatorController> controller);
+		void beginAnimationController(const std::shared_ptr<fq::game_module::AnimatorController>& controller);
 		void beginTransitionCondition(fq::game_module::TransitionCondition& condition, int index);
+		void beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode);
 
 		// 데이터 타입 관련
 		void beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle);
