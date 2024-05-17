@@ -61,11 +61,15 @@ namespace fq::game_module
 		void CreateStateNode();
 
 		/// <summary>
+		/// 새로운 스테이트를 추가합니다 
+		/// </summary>
+		void AddStateNode(AnimationStateNode node);
+
+		/// <summary>
 		/// State를 담은 맵을 반환합니다
 		/// </summary>
 		StateMap& GetStateMap() { return mStates; }
 		const StateMap& GetStateMap()const { return mStates; }
-
 
 		/// <summary>
 		/// 애니메이션 전환을 추가합니다 
@@ -84,7 +88,6 @@ namespace fq::game_module
 
 		std::vector<AnimationTransition>& GetTransitions() { return mTransitions; }
 		const std::vector<AnimationTransition>& GetTransitions() const { return mTransitions; }
-
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);

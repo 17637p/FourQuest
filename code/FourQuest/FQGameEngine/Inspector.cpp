@@ -711,20 +711,28 @@ void fq::game_engine::Inspector::beginInputText_PrefabResource(entt::meta_data d
 
 void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<fq::game_module::AnimatorController>& controller)
 {
-	auto iter = controller->GetStateMap().find(mSelectAnimationStateName);
+	auto& stateMap = controller->GetStateMap();
+	auto iter = stateMap.find(mSelectAnimationStateName);
 
 	// State GUI를 표시합니다 
-	auto& state = iter->second;
-
-	std::string StateName = state.GetAnimationKey();
-
-	// Animation State 표시
-	ImGui::InputText("StateName##StateName", &StateName);
-	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		if (controller->ChangeStateName(state.GetAnimationKey(), StateName))
-			mSelectAnimationStateName = StateName;
+		auto& state = iter->second;
+
+		std::string StateName = state.GetAnimationKey();
+
+		// Animation State 표시
+		ImGui::InputText("StateName##StateName", &StateName);
+		if (ImGui::IsItemDeactivatedAfterEdit())
+		{
+			if (controller->ChangeStateName(state.GetAnimationKey(), StateName))
+			{
+				mSelectAnimationStateName = StateName;
+				iter = stateMap.find(mSelectAnimationStateName);
+			}
+		}
 	}
+
+	auto& state = iter->second;
 
 	// Animation 정보 표시
 	beginAnimationStateNode(state);
@@ -737,7 +745,7 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 	for (auto& transition : transitions)
 	{
 		auto exitState = transition.GetExitState();
-		if (exitState == StateName)
+		if (exitState == state.GetAnimationKey())
 		{
 			auto& conditions = transition.GetConditions();
 			auto enterState = transition.GetEnterState();
@@ -865,6 +873,7 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 {
 	// ModelPath GUI
 	std::string modelPath = stateNode.GetModelPath();
+
 	ImGui::InputText("ModelPath", &modelPath);
 
 	// DragDrop 받기
@@ -884,6 +893,7 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 		}
 	}
 
+	modelPath = stateNode.GetModelPath();
 	if (modelPath.empty()) return;
 
 	if (!mGameProcess->mRenderingSystem->IsLoadedModel(modelPath))

@@ -90,6 +90,8 @@ namespace fq::game_module
 		/// </summary>
 		std::vector<TransitionCondition>& GetConditions() { return mConditions; };
 
+		const std::vector<TransitionCondition>& GetConditions() const  { return mConditions; };
+
 		/// <summary>
 		/// 다음 스테이트 노드의 이름을 반환합니다 
 		/// </summary>

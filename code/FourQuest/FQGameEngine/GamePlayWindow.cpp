@@ -153,10 +153,7 @@ void fq::game_engine::GamePlayWindow::beginButton_Play()
 
 void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 {
-	if (mMode == mode)
-	{
-		return;
-	}
+	if (mMode == mode) return;
 
 	auto currentSceneName = mGameProcess->mSceneManager->
 		GetCurrentScene()->GetSceneName();
@@ -307,7 +304,6 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 		position.z += matrix._23 * distance;
 	}
 
-
 	float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
 	auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
 
@@ -318,7 +314,6 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 	cameraT->SetLocalRotation(rotation);
 	cameraT->SetLocalPosition(position);
-
 }
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
@@ -585,12 +580,8 @@ void fq::game_engine::GamePlayWindow::checkMouse()
 
 		if (mousePos.x >= pos.x && mousePos.y >= pos.y
 			&& mousePos.x <= pos.x + size.x && mousePos.y <= pos.y + size.y)
-		{
 			mbIsMouseHoveredWindow = true;
-		}
 		else
-		{
 			mbIsMouseHoveredWindow = false;
-		}
-	}	
+	}
 }

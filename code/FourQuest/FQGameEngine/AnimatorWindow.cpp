@@ -2,6 +2,7 @@
 
 #include <imgui-node-editor/imgui_node_editor.h>
 
+#include "../FQCommon/FQPath.h"
 #include "imgui_stdlib.h"
 #include "EditorProcess.h"
 #include "GameProcess.h"
@@ -34,7 +35,6 @@ void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProces
 	config.SettingsFile = "resource/internal/animator/Simple.json";
 	mContext = ed::CreateEditor(&config);
 
-
 	// 임시로 컨트롤러 생성
 	mSelectController = std::make_shared<fq::game_module::AnimatorController>();
 }
@@ -52,6 +52,7 @@ void fq::game_engine::AnimatorWindow::Render()
 		ImGui::SameLine();
 
 		beginChild_NodeEditor();
+		dragDropWindow();
 	}
 	ImGui::End();
 }
@@ -154,7 +155,6 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 		ImGui::Separator();
 		ed::Begin("NodeEditor", ImVec2(0.0, 0.0f));
 
-
 		const auto& stateMap = mSelectController->GetStateMap();
 
 		// Node, Pin
@@ -244,7 +244,7 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	beginPin_AnimationStateNode(name, node.GetType());
 
 	// Node 선택
-	if (ed::IsNodeSelected(nodeID) 
+	if (ed::IsNodeSelected(nodeID)
 		&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 	{
 		mEventManager->FireEvent<editor_event::SelectAnimationController>(
@@ -362,8 +362,39 @@ void fq::game_engine::AnimatorWindow::ExcuteShortcut()
 {
 	if (!mSelectController) return;
 
+	auto& input = mGameProcess->mInputManager;
 
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
+		&& input->IsKeyState(EKey::S, EKeyState::Tap))
+	{
+		if (mSelectControllerPath.empty())
+		{
+			mSelectControllerPath = fq::path::GetResourcePath();
 
+			mSelectControllerPath /= "sameple.controller";
+		}
 
+		mLoader.Save(*mSelectController, mSelectControllerPath);
+	}
+}
+
+void fq::game_engine::AnimatorWindow::dragDropWindow()
+{
+	if (ImGui::BeginDragDropTarget())
+	{
+		const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+		if (pathPayLoad)
+		{
+			std::filesystem::path* path
+				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+			if (path->extension() == ".controller")
+			{
+				mSelectController = mLoader.Load(*path);
+				mSelectControllerPath = *path;
+			}
+		}
+	}
 }
 

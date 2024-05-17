@@ -2,6 +2,7 @@
 #include "IEditorWindow.h"
 
 #include <memory>
+#include <filesystem>
 #include <imgui-node-editor/imgui_node_editor.h>
 
 #include "../FQGameModule/GameModule.h"
@@ -35,6 +36,8 @@ namespace fq::game_engine
 		void ExcuteShortcut();
 
 	private:
+		void dragDropWindow();
+
 		// 파라미터 관련
 		void beginChild_ParameterWindow();
 		void beginCombo_AddParameter();
@@ -59,6 +62,8 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 		fq::game_module::EventManager* mEventManager;
 
+		fq::game_module::AnimatorControllerLoader mLoader;
+		std::filesystem::path mSelectControllerPath;
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		ax::NodeEditor::EditorContext* mContext;
 

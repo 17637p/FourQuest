@@ -4,6 +4,9 @@ fq::game_module::AnimationStateNode::AnimationStateNode(AnimatorController* cont
 	:mController(controller)
 	, mType(Type::State)
 	, mPlayBackSpeed(1.f)
+	, mModelPath{}
+	, mAnimationName{}
+	, mAnimationKey{}
 {}
 
 fq::game_module::AnimationStateNode::~AnimationStateNode()

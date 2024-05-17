@@ -89,6 +89,8 @@ void fq::game_module::AnimatorController::CreateStateNode()
 
 void fq::game_module::AnimatorController::AddTransition(StateName exit, StateName enter)
 {
+	if (exit == enter) return;
+
 	for (const auto& transition : mTransitions)
 	{
 		if (transition.GetEnterState() == enter
@@ -130,7 +132,6 @@ bool fq::game_module::AnimatorController::ChangeStateName(StateName orginName, S
 	mStates.insert({ changeName, state });
 
 	// Transition º¯°æ
-
 	for (auto& transition : mTransitions)
 	{
 		if (transition.GetEnterState() == orginName)
@@ -145,4 +146,10 @@ bool fq::game_module::AnimatorController::ChangeStateName(StateName orginName, S
 	}
 
 	return true;
+}
+
+void fq::game_module::AnimatorController::AddStateNode(AnimationStateNode node)
+{
+	assert(mStates.find(node.GetAnimationKey()) == mStates.end());
+	mStates.insert({ node.GetAnimationKey(), node });
 }

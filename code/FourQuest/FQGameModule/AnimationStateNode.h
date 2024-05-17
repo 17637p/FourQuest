@@ -42,11 +42,9 @@ namespace fq::game_module
 	private:
 		AnimatorController* mController;
 		Type mType;
-
 		std::string mModelPath;
 		std::string mAnimationName;
 		std::string mAnimationKey;
-
 		float mPlayBackSpeed;
 	};
 
