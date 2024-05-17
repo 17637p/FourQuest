@@ -74,11 +74,11 @@ extern "C" {
 		class ITerrainMeshObject
 		{
 		public:
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
-			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
-			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const abstract;
+			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const abstract;
 
 		protected:
 			virtual ~ITerrainMeshObject() = default;

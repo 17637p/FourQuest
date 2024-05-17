@@ -51,25 +51,40 @@ namespace fq::graphics
 	{
 	public:
 		TerrainMaterial(const std::shared_ptr<D3D11Device>& device, 
-			const fq::common::TerrainMaterial& materialData, 
+			const TerrainMaterialInfo& materialData, 
 			std::filesystem::path basePath = "");
 		~TerrainMaterial() = default;
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
-		void SetMaterial(const std::shared_ptr<D3D11Device>& device, const fq::common::TerrainMaterial& materialData);
+		void SetMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& materialData);
 		inline unsigned short GetNumOfTexture() const;
 
+		float GetTileSizeX(unsigned short index) const { return mTileSizeXs[index]; }
+		float GetTileSizeY(unsigned short index) const { return mTileSizeYs[index]; }
+		float GetTileOffsetX(unsigned short index) const { return mTileOffsetXs[index]; }
+		float GetTileOffsetY(unsigned short index) const { return mTileOffsetYs[index]; }
+
+		float GetMetalic(unsigned short index) const { return mMetalics[index]; }
+		float GetRoughness(unsigned short index) const { return mRoughnesses[index]; }
+
 	private:
-		fq::common::TerrainMaterial mMaterialData;
+		unsigned short numOfTexture;
 
 		std::filesystem::path mBasePath;
 
 		std::vector<std::shared_ptr<D3D11Texture>> mBaseColors;
-		std::vector<std::shared_ptr<D3D11Texture>> mMetalnesses;
-		std::vector<std::shared_ptr<D3D11Texture>> mRoughnesses;
 		std::vector<std::shared_ptr<D3D11Texture>> mNormals;
+
+		std::vector<float> mTileSizeXs;
+		std::vector<float> mTileSizeYs;
+		std::vector<float> mTileOffsetXs;
+		std::vector<float> mTileOffsetYs;
+
+		std::vector<float> mMetalics;
+		std::vector<float> mRoughnesses;
+
 		std::shared_ptr<D3D11Texture> mAlpha;
 	};
 
-	inline unsigned short TerrainMaterial::GetNumOfTexture() const { return mMaterialData.NumOfTexture; }
+	inline unsigned short TerrainMaterial::GetNumOfTexture() const { return numOfTexture; }
 }

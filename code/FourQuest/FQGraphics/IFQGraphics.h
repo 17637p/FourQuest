@@ -73,7 +73,7 @@ extern "C" {
 
 			virtual FQ_GRAPHICS ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) abstract;
 			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) abstract;
-			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const fq::common::TerrainMaterial& material) abstract;
+			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
 			// Debug Draw
 			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;
@@ -97,12 +97,15 @@ extern "C" {
 			/// Bounding Volume
 
 			/// UI
+			// text
 			virtual FQ_GRAPHICS void SetDefaultFontSize(const unsigned short fontSize) abstract;
 			virtual FQ_GRAPHICS void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) abstract;
 			virtual FQ_GRAPHICS void SetDefaultFont(const std::wstring& path) abstract;
-			virtual FQ_GRAPHICS void AddFont(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void AddFont(const std::wstring& path) abstract; // ttf
 			virtual FQ_GRAPHICS void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) abstract;
 			virtual FQ_GRAPHICS void DeleteFont(const std::wstring& path) abstract;
+			// image
+
 
 			/// SkyBox
 			virtual void SetSkyBox(const std::wstring& path) abstract;

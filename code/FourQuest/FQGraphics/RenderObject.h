@@ -10,17 +10,13 @@
 
 #include "../FQCommon/IFQRenderObject.h"
 
-namespace fq::common
-{
-	struct TerrainMaterial;
-}
-
 namespace fq::graphics
 {
 	class StaticMesh;
 	class SkinnedMesh;
 	class Material;
 	class TerrainMaterial;
+	struct TerrainMaterialInfo;
 
 	class StaticMeshObject : public IStaticMeshObject
 	{
@@ -272,8 +268,8 @@ namespace fq::graphics
 		~TerrainMeshObject() = default;
 
 		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		virtual void SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device,
-			const fq::common::TerrainMaterial& terrainMaterial);
+		void SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device,
+			const TerrainMaterialInfo& terrainMaterial);
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
@@ -285,6 +281,7 @@ namespace fq::graphics
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::shared_ptr<TerrainMaterial> mMaterial;
+
 		DirectX::SimpleMath::Matrix mTransform;
 	};
 

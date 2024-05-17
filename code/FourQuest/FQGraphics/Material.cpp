@@ -28,11 +28,10 @@ namespace fq::graphics
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device, 
-		const fq::common::TerrainMaterial& materialData,
+		const TerrainMaterialInfo& materialData,
 		std::filesystem::path basePath /*= ""*/)
 	{
 		mBasePath = basePath;
-		mMaterialData = materialData;
 
 		SetMaterial(device, materialData);
 	}
@@ -45,27 +44,36 @@ namespace fq::graphics
 		mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
 	}
 
-	void TerrainMaterial::SetMaterial(const std::shared_ptr<D3D11Device>& device, const fq::common::TerrainMaterial& materialData)
+	void TerrainMaterial::SetMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& materialData)
 	{
-		for (unsigned short i = 0; i < materialData.NumOfTexture; i++)
+		numOfTexture = materialData.Layers.size();
+		for (unsigned short i = 0; i < numOfTexture; i++)
 		{
-			if (materialData.BaseColorFileNames.size() != 0)
+			if (!materialData.Layers[i].BaseColor.empty())
 			{
-				mBaseColors.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.BaseColorFileNames[i]));
+				mBaseColors.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.Layers[i].BaseColor));
 			}
 			else
 			{
 				spdlog::error("Terrain baseColor Texture is not existed");
 			}
 
-			if (materialData.NormalFileNames.size() != 0)
+			if (!materialData.Layers[i].NormalMap.empty())
 			{
-				mNormals.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.NormalFileNames[i]));
+				mNormals.push_back(std::make_shared<D3D11Texture>(device, mBasePath / materialData.Layers[i].NormalMap));
 			}
 			else
 			{
 				spdlog::error("Terrain Normal Texture is not existed");
 			}
+
+			mTileSizeXs.push_back(materialData.Layers[i].TileSizeX);
+			mTileSizeYs.push_back(materialData.Layers[i].TileSizeY);
+			mTileOffsetXs.push_back(materialData.Layers[i].TileOffsetX);
+			mTileOffsetYs.push_back(materialData.Layers[i].TileOffsetY);
+
+			mMetalics.push_back(materialData.Layers[i].Metalic);
+			mRoughnesses.push_back(materialData.Layers[i].Roughness);
 
 			mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);
 			// ¿œ¥‹ BaseColor ∏∏

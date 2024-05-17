@@ -44,7 +44,7 @@ namespace fq::graphics
 
 		virtual ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) override;
 		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
-		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const fq::common::TerrainMaterial& material) override;
+		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;

@@ -307,7 +307,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mDrawDSV;
 
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
-		std::shared_ptr<D3D11SamplerState> mDefaultSS;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSS;
 		std::shared_ptr<D3D11DepthStencilState> mDefaultDS;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;

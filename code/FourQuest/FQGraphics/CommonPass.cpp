@@ -935,7 +935,7 @@ namespace fq::graphics
 		mDrawRTV(nullptr),
 		mDrawDSV(nullptr),
 		mDefaultRS(nullptr),
-		mDefaultSS(nullptr),
+		mAnisotropicWrapSS(nullptr),
 		mDefaultDS(nullptr),
 		mModelTransformCB(nullptr),
 		mSceneTransformCB(nullptr),
@@ -964,7 +964,7 @@ namespace fq::graphics
 		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
-		mDefaultSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11SamplerState::Default);
+		mAnisotropicWrapSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11SamplerState::AnisotropicWrap);
 		mDefaultDS = std::make_shared<D3D11DepthStencilState>(mDevice, ED3D11DepthStencilState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -993,7 +993,7 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 			mDefaultRS->Bind(mDevice);
-			mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+			mAnisotropicWrapSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mDefaultDS->Bind(mDevice);
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
@@ -1014,7 +1014,7 @@ namespace fq::graphics
 				job.TerrainMaterial->Bind(mDevice);
 
 				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-				ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial);
+				ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}

@@ -3,28 +3,6 @@
 #include <directxtk/SimpleMath.h>
 #include <string>
 
-namespace fq::common
-{
-	struct TerrainMaterial
-	{
-		struct Desc
-		{
-			DirectX::SimpleMath::Color BaseColor = { 0.f, 0.f, 0.f, 1.f };
-			float Metalness = 0.f;
-			float Roughness = 0.f;
-		} MaterialDesc;
-
-		unsigned short NumOfTexture; // 일단 최대 4
-
-		std::vector<std::wstring> BaseColorFileNames;
-		std::vector<std::wstring> MetalnessFileNames;
-		std::vector<std::wstring> RoughnessFileNames;
-		std::vector<std::wstring> NormalFileNames;
-
-		std::wstring AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
-	};
-}
-
 namespace fq::graphics
 {
 	struct CameraInfo
@@ -74,6 +52,34 @@ namespace fq::graphics
 		std::string ModelPath;
 		std::string AnimationName; // Model Data의 Animation 이름
 		std::string AnimationKey; // ISkinnedMeshObject SetAnimation에서 사용할 이름
+	};
+
+	struct TerrainLayer
+	{
+		std::wstring BaseColor;
+		std::wstring NormalMap;
+
+		float Metalic;
+		float Roughness;
+
+		float TileSizeX;
+		float TileSizeY;
+		float TileOffsetX;
+		float TileOffsetY;
+	};
+
+	struct TerrainMaterialInfo
+	{
+		//unsigned short NumOfTexture; // 일단 최대 4
+
+		//std::vector<std::wstring> BaseColorFileNames;
+		//std::vector<std::wstring> MetalnessFileNames;
+		//std::vector<std::wstring> RoughnessFileNames;
+		//std::vector<std::wstring> NormalFileNames;
+
+		std::vector<TerrainLayer> Layers; // 최대 4
+
+		std::wstring AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
 	};
 }
 

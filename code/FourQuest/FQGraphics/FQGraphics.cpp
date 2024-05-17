@@ -56,7 +56,7 @@ void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
 	mRenderManager->SetSkyBox(path);
 }
 
-void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const fq::common::TerrainMaterial& material)
+void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
 {
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
 }

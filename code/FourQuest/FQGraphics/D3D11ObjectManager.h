@@ -34,7 +34,7 @@ namespace fq::graphics
 		void DeleteTerrainMeshObject(ITerrainMeshObject* terrainMeshObjectInterface);
 		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device,
 			ITerrainMeshObject* iTerrainMeshObject, 
-			const fq::common::TerrainMaterial& material);
+			const TerrainMaterialInfo& material);
 
 		inline const std::set<IStaticMeshObject*>& GetStaticMeshObjects() const;
 		inline const std::set<ISkinnedMeshObject*>& GetSkinnedMeshObjects() const;

@@ -176,7 +176,7 @@ namespace fq::graphics
 		mTerrainMeshObjects.erase(terrainMeshObjectInterface);
 	}
 
-	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const fq::common::TerrainMaterial& material)
+	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material)
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
 

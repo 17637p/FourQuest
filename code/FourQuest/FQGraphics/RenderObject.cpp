@@ -38,7 +38,7 @@ namespace fq::graphics
 	{
 	}
 
-	void TerrainMeshObject::SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device, const fq::common::TerrainMaterial& terrainMaterial)
+	void TerrainMeshObject::SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& terrainMaterial)
 	{
 		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
 	}
