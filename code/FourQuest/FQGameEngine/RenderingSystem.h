@@ -77,6 +77,7 @@ namespace fq::game_engine
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void loadSkinnedMeshRenderer(fq::game_module::GameObject* object);
 		void unloadSkinnedMeshRenderer(fq::game_module::GameObject* object);
+		void loadAnimation(fq::game_module::GameObject * object);
 
 		void unloadAllModel();
 

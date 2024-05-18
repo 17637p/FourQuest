@@ -66,6 +66,8 @@ void fq::game_engine::GameEngine::Initialize()
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
 
+	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+
 	// 게임을 시작하므로 StartScene 호출
 	mGameProcess->mSceneManager->StartScene();
 }
@@ -112,6 +114,10 @@ void fq::game_engine::GameEngine::Process()
 
 			// Scene Update
 			mGameProcess->mSceneManager->Update(deltaTime);
+
+			// Animation Update
+
+			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
 
 			// 시스템 업데이트

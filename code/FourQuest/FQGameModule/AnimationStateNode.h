@@ -29,13 +29,14 @@ namespace fq::game_module
 
 		float GetPlayBackSpeed() const { return mPlayBackSpeed; }
 		void SetPlayBackSpeed(float speed) { mPlayBackSpeed = speed; }
-
 		std::string GetModelPath() const { return mModelPath; }
 		void SetModelPath(std::string val) { mModelPath = val; }
 		std::string GetAnimationName() const { return mAnimationName; }
 		void SetAnimationName(std::string val) { mAnimationName = val; }
 		std::string GetAnimationKey() const { return mAnimationKey; }
 		void SetAnimationKey(std::string val) { mAnimationKey = val; }
+		float GetDuration() const { return mDuration; }
+		void SetDuration(float val) { mDuration = val; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -46,6 +47,7 @@ namespace fq::game_module
 		std::string mAnimationName;
 		std::string mAnimationKey;
 		float mPlayBackSpeed;
+		float mDuration;
 	};
 
 }

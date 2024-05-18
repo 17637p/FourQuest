@@ -442,6 +442,28 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 			}
 		}
 
+		if (ImGui::MenuItem("Create Controller"))
+		{
+			auto controllerPath = mSelectPath;
+			controllerPath /= "NewController.controller";
+			
+			fq::game_module::AnimatorController controller;
+
+			fq::game_module::AnimatorControllerLoader loader;
+
+			int index = 0;
+			while (fs::exists(controllerPath))
+			{
+				++index;
+				Path newFileName = "NewController";
+				newFileName += std::to_string(index) + ".controller";
+				controllerPath.replace_filename(newFileName);
+			}
+
+			loader.Save(controller, controllerPath);
+		}
+
+
 		ImGui::EndPopup();
 	}
 }

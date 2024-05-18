@@ -59,14 +59,13 @@ namespace fq::game_engine
 		void beginDragDrop_Directory(const Path& directoryPath);
 
 		/// 파일 디랙토리안에 리소스 창
-		
 		void beginWindow_FileList();
 		void beginPopupContextWindow_FileList();
 		void beginDragDropTarget_FileList();
 
 		void loadIcon();
 		void beginDragDrop_File(const Path& path);
-		void beginPopupContextItem_File(const Path& path);
+		void beginPopupContextItem_File(const Path& path); 
 		void drawFile(const Path& path);
 
 		void drawTextureImage(const Path& path);

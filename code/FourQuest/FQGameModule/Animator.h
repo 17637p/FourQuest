@@ -28,6 +28,21 @@ namespace fq::game_module
 		void SetController(std::shared_ptr<AnimatorController> controller);
 
 		/// <summary>
+		/// 컨트롤러를 반환합니다 
+		/// </summary>
+		AnimatorController& GetController()const { return *mController; }
+
+		/// <summary>
+		/// 애니메이션 상태를 업데이트 합니다 
+		/// </summary>
+		void UpdateState(float dt);
+
+		/// <summary>
+		/// 애니메이션의 프레임을 업데이트 합니다 
+		/// </summary>
+		float UpdateAnimation(float dt);
+
+		/// <summary>
 		/// 로드할 컨트롤러 경로를 반환합니다
 		/// </summary>
 		ControllerPath GetControllerPath() const { return mControllerPath; }

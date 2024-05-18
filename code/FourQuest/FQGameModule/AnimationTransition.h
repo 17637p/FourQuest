@@ -29,7 +29,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 전이 조건을 체크합니다 
 		/// </summary>
-		bool CheckCondition(Parameter parameter);
+		bool CheckCondition(Parameter parameter)const;
 
 		/// <summary>
 		/// 비교할 파라미터의 아이디를 반환합니다 

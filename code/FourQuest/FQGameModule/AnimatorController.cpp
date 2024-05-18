@@ -2,10 +2,16 @@
 
 #include <spdlog/spdlog.h>
 
+#include "Animator.h"
+#include "Scene.h"
+#include "EventManager.h"
+#include "Event.h"
+
 fq::game_module::AnimatorController::AnimatorController()
 	:mParmeters{}
 	, mStates{}
 	, mCurrentState{ "Entry" }
+	, mElapsedTime(0.f)
 {
 	// Entry
 	AnimationStateNode entry(this);
@@ -152,4 +158,77 @@ void fq::game_module::AnimatorController::AddStateNode(AnimationStateNode node)
 {
 	assert(mStates.find(node.GetAnimationKey()) == mStates.end());
 	mStates.insert({ node.GetAnimationKey(), node });
+}
+
+void fq::game_module::AnimatorController::UpdateState(float dt)
+{
+	for (auto& transition : mTransitions)
+	{
+		auto exitState = transition.GetExitState();
+
+		// AnyState or 현재상태와 일치하면 확인
+		if (exitState == mCurrentState || exitState == "AnyState")
+		{
+			bool passCondition = checkConditions(transition);
+
+			// 상태를 변경합니다 
+			if (passCondition)
+			{
+				auto eventMgr = mAnimator->GetScene()->GetEventManager();
+
+				std::string enterState = transition.GetEnterState();
+				mElapsedTime = 0.f;
+				mCurrentState = enterState;
+
+				// 애니메이션 상태변경 이벤트
+				eventMgr->FireEvent<fq::event::ChangeAnimationState>({
+					exitState,
+					enterState,
+					mAnimator->GetGameObject()
+				});
+
+				return;
+			}
+		}
+	}
+}
+
+
+bool fq::game_module::AnimatorController::checkConditions(AnimationTransition& transition)
+{
+	// 조건이 없으면 true 
+	if (transition.GetConditions().empty())
+		return true;
+
+	// 전이 조건을 체크합니다 
+	for (const auto& condition : transition.GetConditions())
+	{
+		auto iter = mParmeters.find(condition.GetParameterID());
+		assert(iter != mParmeters.end());
+		if (!condition.CheckCondition(iter->second))
+		{
+			return false;
+		}
+	}
+
+	// 트리거 조건인 경우에 off상태로 바꾼다
+	for (const auto& condition : transition.GetConditions())
+	{
+		auto iter = mParmeters.find(condition.GetParameterID());
+
+		if (iter->second.type() == entt::resolve<char>())
+		{
+			iter->second = OffTrigger;
+		}
+	}
+
+	return true;
+}
+
+float fq::game_module::AnimatorController::UpdateAnimation(float dt)
+{
+	float duration = mStates.find(mCurrentState)->second.GetDuration();
+	mElapsedTime = std::fmod(mElapsedTime + dt, duration);
+
+	return mElapsedTime;
 }

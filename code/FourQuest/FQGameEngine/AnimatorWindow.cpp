@@ -178,8 +178,8 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 		ed::SetCurrentEditor(nullptr);
 		beginPopupContextWindow_NodeEditor();
 
-		ImGui::EndChild();
 	}
+	ImGui::EndChild();
 
 }
 
@@ -398,10 +398,11 @@ void fq::game_engine::AnimatorWindow::createContext()
 {
 	destroyContext();
 
-	auto hash = entt::hashed_string(mSelectControllerPath.string().c_str()).value();
+	auto relativePath = fq::path::GetRelativePath(mSelectControllerPath);
+	auto hash = entt::hashed_string(relativePath.string().c_str()).value();
 
-	 mSettingFilePath ="resource/internal/animator/" + std::to_string(hash)
-		+".json";
+	mSettingFilePath = "resource/internal/animator/" + std::to_string(hash)
+		+ ".json";
 
 	// Context »ý¼º
 	ed::Config config;

@@ -9,6 +9,8 @@
 
 namespace fq::game_module
 {
+	class Animator;
+
 	/// <summary>
 	/// 애니메이션의 상태를 컨트롤하는 클래스
 	/// </summary>
@@ -24,6 +26,21 @@ namespace fq::game_module
 	public:
 		AnimatorController();
 		~AnimatorController();
+
+		/// <summary>
+		/// 애니메이터를 연결합니다 
+		/// </summary>
+		void SetAnimator(Animator* animator) { mAnimator = animator; }
+
+		/// <summary>
+		/// 애니메이션 상태를 업데이트합니다 
+		/// </summary>
+		void UpdateState(float dt);
+
+		/// <summary>
+		/// 애니메이션의 프레임을 업데이트합니다
+		/// </summary>
+		float UpdateAnimation(float dt);
 
 		/// <summary>
 		/// 파라미터 값을 설정합니다 
@@ -88,15 +105,23 @@ namespace fq::game_module
 
 		std::vector<AnimationTransition>& GetTransitions() { return mTransitions; }
 		const std::vector<AnimationTransition>& GetTransitions() const { return mTransitions; }
+
+	private:
+		bool checkConditions(AnimationTransition& transition);
+
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);
 
 	private:
+		Animator* mAnimator;
+
 		ParameterPack mParmeters;
 		StateMap mStates;
 		StateName mCurrentState;
 		std::vector<AnimationTransition> mTransitions;
+
+		float mElapsedTime;
 	};
 
 }

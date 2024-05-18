@@ -950,6 +950,16 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 		stateNode.SetPlayBackSpeed(playBackSpeed);
 	}
 
+	for (const auto& animationClip : model.Animations)
+	{
+		const auto& clipName = animationClip.Name;
+		if (clipName == stateNode.GetAnimationName())
+		{
+			stateNode.SetDuration(animationClip.Duration);
+		}
+	}
 
+	float duration = stateNode.GetDuration();
+	ImGui::InputFloat("Duration", &duration);
 }
 

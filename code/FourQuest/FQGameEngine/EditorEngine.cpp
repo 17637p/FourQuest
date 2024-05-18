@@ -14,6 +14,7 @@
 #include "CameraSystem.h"
 #include "RenderingSystem.h"
 #include "LightSystem.h"
+#include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "SoundSystem.h"
 
@@ -67,6 +68,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
+	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 
 	// Editor ÃÊ±âÈ­
  	InitializeEditor();
@@ -122,6 +124,11 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
+				
+				// Animation Update
+				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+
+				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
 

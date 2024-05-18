@@ -6,6 +6,7 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
+#include "AnimationSystem.h"
 
 fq::game_engine::RenderingSystem::RenderingSystem()
 	:mGameProcess(nullptr)
@@ -83,6 +84,7 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	{
 		loadStaticMeshRenderer(&object);
 		loadSkinnedMeshRenderer(&object);
+		loadAnimation(&object);
 	}
 
 	// 2. PrefabInstance를 로드
@@ -114,6 +116,9 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 2. SkinnedMesh
 	loadSkinnedMeshRenderer(gameObject);
+
+	// 3. Animation
+	loadAnimation(gameObject);
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
@@ -126,7 +131,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	auto skinnedMeshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
 	auto meshInfo = skinnedMeshRenderer->GetMeshObjectInfomation();
 	auto transform = object->GetComponent<fq::game_module::Transform>();
-	
+
 	if (!std::filesystem::exists(meshInfo.ModelPath))
 	{
 		SPDLOG_WARN("\"{}\" does not exist", meshInfo.ModelPath);
@@ -169,6 +174,41 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	auto staticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInfo);
 	staticMeshRenderer->SetStaticMeshObject(staticMeshObject);
 }
+
+void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::SkinnedMeshRenderer, fq::game_module::Animator>())
+	{
+		return;
+	}
+
+	// AnimatorController 로드 요청
+	mGameProcess->mAnimationSystem->LoadAnimatorController(object);
+
+	auto animator = object->GetComponent<fq::game_module::Animator>();
+	auto meshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+	auto meshObject = meshRenderer->GetSkinnedMeshObject();
+
+	const auto& stateMap = animator->GetController().GetStateMap();
+
+	for (const auto& [id, state] : stateMap)
+	{
+		fq::graphics::AnimationInfo info;
+
+		info.ModelPath = state.GetModelPath();
+		info.AnimationName = state.GetAnimationName();
+		info.AnimationKey = state.GetAnimationKey();
+
+		if (info.ModelPath.empty() 
+			|| info.AnimationName.empty() 
+			|| info.AnimationKey.empty())
+			continue;
+
+		LoadModel(info.ModelPath);
+		mGameProcess->mGraphics->AddAnimation(meshObject, info);
+	}
+}
+
 
 void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 {
@@ -258,3 +298,4 @@ bool fq::game_engine::RenderingSystem::IsLoadedModel(const ModelPath& path)
 {
 	return mLoadModels.find(path) != mLoadModels.end();
 }
+

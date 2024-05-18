@@ -2,7 +2,7 @@
 
 #include "AnimatorController.h"
 
-bool fq::game_module::TransitionCondition::CheckCondition(Parameter parameter)
+bool fq::game_module::TransitionCondition::CheckCondition(Parameter parameter)const
 {
 	auto parameterType = parameter.type();
 	auto compareType = GetCompareParameter().type();
