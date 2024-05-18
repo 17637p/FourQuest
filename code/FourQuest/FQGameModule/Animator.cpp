@@ -51,7 +51,6 @@ void fq::game_module::Animator::SetParameterBoolean(const std::string& id, bool 
 	mController->SetParameter(id, val);
 }
 
-
 void fq::game_module::Animator::SetParameterTrigger(const std::string& id)
 {
 	mController->SetParameter(id, AnimatorController::OffTrigger);

@@ -67,7 +67,7 @@ void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::Cha
 	skinnedMesh->SetAnimationKey(event.enterState);
 }
 
-void fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
+bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
 {
 	auto animator = object->GetComponent<fq::game_module::Animator>();
 
@@ -76,10 +76,12 @@ void fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	if (!std::filesystem::exists(controllerPath))
 	{
 		spdlog::warn("{} animation controller load fail", object->GetName());
-		return;
+		return false;
 	}
 
 	auto controller = mLoader.Load(controllerPath);
 	controller->SetAnimator(animator);
 	animator->SetController(controller);
+
+	return true;
 }

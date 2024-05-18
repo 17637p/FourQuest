@@ -33,7 +33,7 @@ namespace fq::game_engine
 		/// 애니메이터 컨트롤러 로드
 		/// </summary>
 		/// <param name="object"></param>
-		void LoadAnimatorController(fq::game_module::GameObject* object);
+		bool LoadAnimatorController(fq::game_module::GameObject* object);
 
 	private:
 		void updateAnimtorState(float dt);

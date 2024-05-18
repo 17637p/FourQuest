@@ -183,13 +183,16 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 	}
 
 	// AnimatorController 로드 요청
-	mGameProcess->mAnimationSystem->LoadAnimatorController(object);
+	bool check = mGameProcess->mAnimationSystem->LoadAnimatorController(object);
+
+	if (!check) return;
 
 	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto meshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
 	auto meshObject = meshRenderer->GetSkinnedMeshObject();
 
 	const auto& stateMap = animator->GetController().GetStateMap();
+
 
 	for (const auto& [id, state] : stateMap)
 	{

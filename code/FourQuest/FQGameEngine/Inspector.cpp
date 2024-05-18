@@ -765,9 +765,11 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 	ImGui::Text("Transition");
 
 	// Transition GUI를 표시합니다 
+	int index = 0;
 	auto& transitions = controller->GetTransitions();
 	for (auto& transition : transitions)
 	{
+		++index;
 		auto exitState = transition.GetExitState();
 		if (exitState == state.GetAnimationKey())
 		{
@@ -775,20 +777,26 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 			auto enterState = transition.GetEnterState();
 
 			// Condition GUI
+			ImGui::Separator();
+
+			std::string transitionName = exitState + " -> " + enterState;
+
+			ImGui::Text(transitionName.c_str());
 
 			// Setter
-			int index = 0;
 			for (auto& condition : conditions)
 			{
-				++index;
-				beginTransitionCondition(condition, index);
+				beginTransitionCondition(condition, ++index);
 			}
 
 			// Add Delete Button
-			if (ImGui::Button("+##PushBackCondition"))
+			std::string addButtonNaem = "+##PushBackCondition" + transitionName;
+			std::string deleteButtonName = "-##PopBackCondition" + transitionName;
+
+			if (ImGui::Button(addButtonNaem.c_str()))
 				transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
 			ImGui::SameLine();
-			if (ImGui::Button("-##PopBackCondition"))
+			if (ImGui::Button(deleteButtonName.c_str()))
 				transition.PopBackCondition();
 		}
 	}
@@ -806,8 +814,9 @@ void fq::game_engine::Inspector::beginTransitionCondition(fq::game_module::Trans
 	{
 		for (auto& [id, parameter] : parameterPack)
 		{
+			std::string idName = id + "##" + std::to_string(index);
 			// 파라미터 선택지
-			if (ImGui::Selectable(id.c_str()))
+			if (ImGui::Selectable(idName.c_str()))
 			{
 				condition.SetParameterID(id);
 				condition.SetCompareParameter(parameter);
@@ -837,22 +846,28 @@ void fq::game_engine::Inspector::beginTransitionCondition(fq::game_module::Trans
 	{
 		if (!isBool)
 		{
-			if (ImGui::Selectable(type[0]))
+			std::string type0 = std::string(type[0]) + "##" + std::to_string(index);
+			std::string type1 = std::string(type[1]) + "##" + std::to_string(index);
+
+			if (ImGui::Selectable(type0.c_str()))
 			{
 				condition.SetCheckType(game_module::TransitionCondition::CheckType::Greater);
 			}
-			if (ImGui::Selectable(type[1]))
+			if (ImGui::Selectable(type1.c_str()))
 			{
 				condition.SetCheckType(game_module::TransitionCondition::CheckType::Less);
 			}
 		}
 		if (!isFloat)
 		{
-			if (ImGui::Selectable(type[2]))
+			std::string type2 = std::string(type[2]) + "##" + std::to_string(index);
+			std::string type3 = std::string(type[3]) + "##" + std::to_string(index);
+
+			if (ImGui::Selectable(type2.c_str()))
 			{
 				condition.SetCheckType(game_module::TransitionCondition::CheckType::Equals);
 			}
-			if (ImGui::Selectable(type[3]))
+			if (ImGui::Selectable(type3.c_str()))
 			{
 				condition.SetCheckType(game_module::TransitionCondition::CheckType::NotEqual);
 			}
