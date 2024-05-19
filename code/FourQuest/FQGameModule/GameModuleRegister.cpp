@@ -1,6 +1,7 @@
 #include "GameModuleRegister.h"
 
 #include "../FQReflect/FQReflect.h"
+#include "../FQCommon/FQCommonGraphics.h"
 #include "GameModuleEnum.h"
 #include "GameObject.h"
 #include "Transform.h"
@@ -16,6 +17,8 @@
 #include "SoundClip.h"
 #include "PrefabResource.h"
 #include "PrefabTest.h"
+#include "AnimationStateNode.h"
+#include "Animator.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -61,12 +64,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Path")
 		.prop(fq::reflect::prop::RelativePath);
 
-		//////////////////////////////////////////////////////////////////////////
-		//                            Component                                 //
-		//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//                            Component                                 //
+	//////////////////////////////////////////////////////////////////////////
 
-		// Transform
-		entt::meta<Transform>()
+	// Transform
+	entt::meta<Transform>()
 		.type("Transform"_hs)
 		.prop(fq::reflect::prop::Name, "Transform")
 		.data<&Transform::SetLocalPosition, &Transform::GetLocalPosition>("Position"_hs)
@@ -281,10 +284,51 @@ void fq::game_module::RegisterMetaData()
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//                              Prefab                                  //
+	//                            Animation                                 //
 	//////////////////////////////////////////////////////////////////////////
 
-	entt::meta<PrefabTest>()
+	entt::meta<AnimationStateNode::Type>()
+		.type("AnimationStateNodeType"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationStateNodeType")
+		.data<AnimationStateNode::Type::Entry>("Entry"_hs)
+		.prop(fq::reflect::prop::Name, "Entry")
+		.data<AnimationStateNode::Type::AnyState>("AnyState"_hs)
+		.prop(fq::reflect::prop::Name, "AnyState")
+		.data<AnimationStateNode::Type::Exit>("Exit"_hs)
+		.prop(fq::reflect::prop::Name, "Exit")
+		.data<AnimationStateNode::Type::State>("State"_hs)
+		.prop(fq::reflect::prop::Name, "State");
+
+	entt::meta<AnimationStateNode>()
+		.type("AnimationStateNode"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationStateNode")
+		.data<&AnimationStateNode::SetType, &AnimationStateNode::GetType>("Type"_hs)
+		.prop(fq::reflect::prop::Name, "Type")
+		.data<&AnimationStateNode::SetModelPath, &AnimationStateNode::GetModelPath>("ModelPath"_hs)
+		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&AnimationStateNode::SetAnimationName, &AnimationStateNode::GetAnimationName>("AnimationName"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationName")
+		.data<&AnimationStateNode::SetAnimationKey, &AnimationStateNode::GetAnimationKey>("AnimationKey"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationKey")
+		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
+
+	entt::meta<Animator>()
+		.type("Animator"_hs)
+		.prop(fq::reflect::prop::Name, "Animator")
+		.data<&Animator::SetControllerPath, &Animator::GetControllerPath>("ControllerPath"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerPath")
+		.prop(fq::reflect::prop::DragDrop, ".controller")
+		.prop(fq::reflect::prop::RelativePath)
+		.base<Component>();
+
+
+		//////////////////////////////////////////////////////////////////////////
+		//                              Prefab                                  //
+		//////////////////////////////////////////////////////////////////////////
+
+		entt::meta<PrefabTest>()
 		.type("PrefabTest"_hs)
 		.prop(fq::reflect::prop::Name, "PrefabTest")
 		.data<&PrefabTest::SetFireObject, &PrefabTest::GetFireObject>("FireObject"_hs)
@@ -293,5 +337,4 @@ void fq::game_module::RegisterMetaData()
 		.data<&PrefabTest::SetCreateTime, &PrefabTest::GetCreateTime>("CreateTime"_hs)
 		.prop(fq::reflect::prop::Name, "CreateTime")
 		.base<Component>();
-
 }

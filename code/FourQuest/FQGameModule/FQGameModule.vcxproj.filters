@@ -8,9 +8,6 @@
     <Filter Include="include\03.Scene">
       <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\04.Event">
-      <UniqueIdentifier>{888e2fa8-48cf-4600-afba-d2abbbd0b5b1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\05.Input">
       <UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
     </Filter>
@@ -74,6 +71,15 @@
     </Filter>
     <Filter Include="src\08.Prefab">
       <UniqueIdentifier>{d8a213a9-9766-44a7-8f3a-0bbf7584100e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\04.Event">
+      <UniqueIdentifier>{888e2fa8-48cf-4600-afba-d2abbbd0b5b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\09.Animation">
+      <UniqueIdentifier>{839fc744-eae7-473a-8fc8-2afd7441da3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\09.Animation">
+      <UniqueIdentifier>{fd4953c8-86f8-4c50-a374-0eea1dfb28bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -192,7 +198,22 @@
       <Filter>include\08.Prefab</Filter>
     </ClInclude>
     <ClInclude Include="PrefabTest.h">
-      <Filter>include</Filter>
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatorController.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatorControllerLoader.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationStateNode.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTransition.h">
+      <Filter>include\09.Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +318,21 @@
     </ClCompile>
     <ClCompile Include="PrefabTest.cpp">
       <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatorController.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatorControllerLoader.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationStateNode.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationTransition.cpp">
+      <Filter>src\09.Animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

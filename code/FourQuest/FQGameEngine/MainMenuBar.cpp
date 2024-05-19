@@ -263,6 +263,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		ImGui::Separator();
 
+		bool& animator = mEditorProcess->mAnimatorWindow->IsWindowOpen();
+		ImGui::Checkbox("Animator", &animator);
+
 		bool& collisionMatrix = mEditorProcess->mCollisionMatrixWindow->IsWindowOpen();
 		ImGui::Checkbox("CollisionMatrix", &collisionMatrix);
 

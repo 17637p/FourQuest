@@ -97,7 +97,6 @@ namespace fq::game_engine
 		/// <summary>
 		/// 드래그 드랍 게임오브젝트 처리
 		/// </summary>
-		/// <param name="object"></param>
 		void dragDropGameObjectBar(fq::game_module::GameObject& object);
 
 		/// <summary>

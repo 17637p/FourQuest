@@ -125,6 +125,10 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(cursorPosX);
 
+		// 현재 선택경로가 자식경로인 경우 트리노드를 펼칩니다
+		if (mSelectPath.parent_path() == path)
+			ImGui::SetNextItemOpen(true);
+
 		if (ImGui::TreeNode(treeName.c_str()))
 		{
 			for (const auto& directory : directoryList)
@@ -275,6 +279,10 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	else if (extension == ".model")
 	{
 		ImGui::Image(GetIcon(L"model.png"), mIconSize);
+	}
+	else if (extension == ".controller")
+	{
+		ImGui::Image(GetIcon(L"controller.png"), mIconSize);
 	}
 	else
 	{
@@ -431,6 +439,28 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 				directory += "!";
 			}
 		}
+
+		if (ImGui::MenuItem("Create Controller"))
+		{
+			auto controllerPath = mSelectPath;
+			controllerPath /= "NewController.controller";
+			
+			fq::game_module::AnimatorController controller;
+
+			fq::game_module::AnimatorControllerLoader loader;
+
+			int index = 0;
+			while (fs::exists(controllerPath))
+			{
+				++index;
+				Path newFileName = "NewController";
+				newFileName += std::to_string(index) + ".controller";
+				controllerPath.replace_filename(newFileName);
+			}
+
+			loader.Save(controller, controllerPath);
+		}
+
 
 		ImGui::EndPopup();
 	}

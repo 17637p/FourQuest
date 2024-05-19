@@ -189,6 +189,13 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 		ImGui::SetCursorPosX(cursorPosX);
 
 		std::string treeNodeName = "##Tree" + std::to_string(object.GetID());
+
+		// 선택한 오브젝트가 자식 계층인 경우에서 TreeNode를 펼칩니다
+		if (mSelectObject && objectT->IsDescendant(mSelectObject->GetComponent<fq::game_module::Transform>()))
+		{
+			ImGui::SetNextItemOpen(true);
+		}
+
 		if (ImGui::TreeNode(treeNodeName.c_str()))
 		{
 			for (auto& child : children)
@@ -358,7 +365,21 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 
 			if (parent != nullptr)
 			{
-				dropObject->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
+				auto childSP = dropObject->shared_from_this();
+				auto parentSP = parent->shared_from_this();
+
+				auto excute = [childSP]()
+					{
+						childSP->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
+					};
+				auto undo = [childSP, parentSP]() 
+					{
+						childSP->GetComponent<fq::game_module::Transform>()
+							->SetParent(parentSP->GetComponent<fq::game_module::Transform>());
+					};
+
+				mEditorProcess->mCommandSystem->Push<BindFunctionCommand>(BindFunctionCommand{ excute,undo });
+
 			}
 		}
 

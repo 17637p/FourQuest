@@ -23,6 +23,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mMode(EditorMode::Edit)
 	, mbIsPauseGame(false)
 	, mbIsOpen(true)
+	, mbIsMouseHoveredWindow(false)
 	, mCameraObject(nullptr)
 	, mCameraMoveSpeed(200.f)
 	, mCameraRotateSpeed(0.0065f)
@@ -46,6 +47,7 @@ void fq::game_engine::GamePlayWindow::Render()
 			resizeWindow(ImGui::GetWindowSize());
 		}
 
+		checkMouse();
 		pickObject();
 		beginMenuBar_Control();
 		beginImage_GameScreen();
@@ -151,10 +153,7 @@ void fq::game_engine::GamePlayWindow::beginButton_Play()
 
 void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 {
-	if (mMode == mode)
-	{
-		return;
-	}
+	if (mMode == mode) return;
 
 	auto currentSceneName = mGameProcess->mSceneManager->
 		GetCurrentScene()->GetSceneName();
@@ -253,9 +252,11 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 {
-	auto& input = mEditorProcess->mInputManager;
+	auto& input = mGameProcess->mInputManager;
+
 	if (!input->IsKeyState(EKey::RMouse, EKeyState::Hold)
-		|| !input->IsKeyState(EKey::LMouse, EKeyState::None))
+		|| !input->IsKeyState(EKey::LMouse, EKeyState::None)
+		|| !mbIsMouseHoveredWindow)
 	{
 		return;
 	}
@@ -303,7 +304,6 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 		position.z += matrix._23 * distance;
 	}
 
-
 	float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
 	auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
 
@@ -314,7 +314,6 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 	cameraT->SetLocalRotation(rotation);
 	cameraT->SetLocalPosition(position);
-
 }
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
@@ -562,5 +561,27 @@ void fq::game_engine::GamePlayWindow::pickObject()
 					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
 				}
 			});
+	}
+}
+
+void fq::game_engine::GamePlayWindow::checkMouse()
+{
+
+	if (mGameProcess->mInputManager->IsKeyState(EKey::RMouse, EKeyState::Away))
+	{
+		mbIsMouseHoveredWindow = false;
+	}
+
+	if (mGameProcess->mInputManager->IsKeyState(EKey::RMouse, EKeyState::Tap))
+	{
+		auto pos = ImGui::GetWindowPos();
+		auto size = ImGui::GetWindowSize();
+		auto mousePos = ImGui::GetMousePos();
+
+		if (mousePos.x >= pos.x && mousePos.y >= pos.y
+			&& mousePos.x <= pos.x + size.x && mousePos.y <= pos.y + size.y)
+			mbIsMouseHoveredWindow = true;
+		else
+			mbIsMouseHoveredWindow = false;
 	}
 }

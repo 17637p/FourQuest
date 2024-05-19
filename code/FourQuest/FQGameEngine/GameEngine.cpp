@@ -10,6 +10,7 @@
 
 #include "GameProcess.h"
 #include "WindowSystem.h"
+#include "SoundSystem.h"
 #include "RenderingSystem.h"
 #include "PhysicsSystem.h"
 #include "LightSystem.h"
@@ -40,6 +41,8 @@ void fq::game_engine::GameEngine::Initialize()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());
 
+	mGameProcess->mSoundManager->Initialize();
+
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
@@ -58,9 +61,12 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
+	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
+
+	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 
 	// 게임을 시작하므로 StartScene 호출
 	mGameProcess->mSceneManager->StartScene();
@@ -85,11 +91,14 @@ void fq::game_engine::GameEngine::Process()
 		}
 		else
 		{
+			// 화면 크기 조정
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
 				mGameProcess->mWindowSystem->OnResize();
-				mGameProcess->mGraphics->SetWindowSize(mGameProcess->mWindowSystem->GetScreenWidth()
-					, mGameProcess->mWindowSystem->GetScreenHeight());
+
+				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
+				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
+				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 
 			// 시간, 키입력 처리 
@@ -97,14 +106,23 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mInputManager->Update();
 
 			// 물리처리
-			mGameProcess->mSceneManager->FixedUpdate(0.f);
+			mGameProcess->mSceneManager->FixedUpdate(deltaTime);
+			mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 			mGameProcess->mPhysics->Update(deltaTime);
+			mGameProcess->mPhysics->FinalUpdate();
+			mGameProcess->mPhysicsSystem->SinkToGameScene();
 
+			// Scene Update
 			mGameProcess->mSceneManager->Update(deltaTime);
+
+			// Animation Update
+
+			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
 
 			// 시스템 업데이트
 			mGameProcess->mRenderingSystem->Update(deltaTime);
+			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 
 			// 랜더링
@@ -123,15 +141,19 @@ void fq::game_engine::GameEngine::Process()
 
 void fq::game_engine::GameEngine::Finalize()
 {
+	mGameProcess->mSceneManager->UnloadScene();
+
 	mGameProcess->mGraphics->Finalize();
+	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
+	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
 	
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();
 
-	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
-	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
+	fq::game_module::ObjectPool::Finalize();
 
+	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();
 }
 
