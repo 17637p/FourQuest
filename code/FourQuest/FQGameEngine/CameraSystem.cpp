@@ -85,9 +85,9 @@ fq::game_module::Camera* fq::game_engine::CameraSystem::FindMainCamera() const
 {
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
-	for (const auto& object : scene->GetComponentView<fq::game_module::Camera>())
+	for ( auto& object : scene->GetComponentView<fq::game_module::Camera>())
 	{
-		auto camera =  object->GetComponent<fq::game_module::Camera>();
+		auto camera =  object.GetComponent<fq::game_module::Camera>();
 
 		if (camera->IsMain())
 		{

@@ -27,7 +27,7 @@ namespace fq::game_module::internal
 			return mIndex >= mScene->GetObjectSize() || mbIsEnd;
 		}
 
-		std::shared_ptr<GameObject> Get() const
+		GameObject* Get() const
 		{
 			if (IsEnd())
 			{
@@ -39,7 +39,7 @@ namespace fq::game_module::internal
 
 		bool IsIncludeDestroyed()const { return mIsIncludeDestroyed; }
 
-		std::shared_ptr<GameObject> operator*() const { return Get(); }
+		GameObject& operator*() const { return *Get(); }
 
 		bool operator==(const ComponentIterator<Types...>& other)const
 		{
@@ -79,7 +79,7 @@ namespace fq::game_module::internal
 			{
 				++mIndex;
 
-				std::shared_ptr<GameObject> object = Get();
+				GameObject* object = Get();
 
 				isEnd = (mIndex < mScene->GetObjectSize()) &&
 					(object == nullptr || !object->template HasComponent<Types...>()

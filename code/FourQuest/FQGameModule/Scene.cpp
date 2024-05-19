@@ -35,15 +35,14 @@ void fq::game_module::Scene::Initialize(std::string sceneName
 }
 
 
-
-std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectByIndex(size_t index)
+fq::game_module::GameObject* fq::game_module::Scene::GetObjectByIndex(size_t index)
 {
 	if (mObjects.size() <= index)
 	{
 		return nullptr;
 	}
 
-	return mObjects[index];
+	return mObjects[index].get();
 }
 
 fq::game_module::internal::GameObjectView fq::game_module::Scene::GetObjectView(bool bIsIncludeToBeDestroyed /*= false*/)
