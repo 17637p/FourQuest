@@ -228,6 +228,9 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 2. CollisionMatrix 저장
 	mGameProcess->mPhysicsSystem->GetCollisionMatrix().Save(scenePath);
 
+	// 3. AnimatorController 저장
+	mEditorProcess->mAnimatorWindow->SaveAnimatorController();
+
 	// 3. ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);
 }

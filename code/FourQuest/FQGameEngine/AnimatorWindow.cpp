@@ -14,21 +14,31 @@ namespace ed = ax::NodeEditor;
 fq::game_engine::AnimatorWindow::AnimatorWindow()
 	:mGameProcess(nullptr)
 	, mEditorProcess(nullptr)
-	, mbIsOpen(true)
+	, mbIsOpen(false)
 	, mContext(nullptr)
 	, mMatchPinID{}
+	, mEventManager(nullptr)
+	, mSelectController(nullptr)
+	, mSelectControllerPath{}
+	, mSelectObjectName{}
+	, mOnLoadSceneHandler{}
+	, mStartSceneHandler{}
 {}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
-{
-
-}
+{}
 
 void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProcess* editor)
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
 	mEventManager = mGameProcess->mEventManager.get();
+
+	mOnLoadSceneHandler = mEventManager
+		->RegisterHandle<fq::event::OnUnloadScene>(this, &AnimatorWindow::OnUnloadScene);
+
+	mStartSceneHandler = mEventManager
+		->RegisterHandle<fq::event::StartScene>(this, &AnimatorWindow::OnStartScene);
 }
 
 void fq::game_engine::AnimatorWindow::Render()
@@ -240,10 +250,22 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	auto nodeID = entt::hashed_string(name.c_str()).value();
 	ed::BeginNode(nodeID);
 
+	// 노드 이름
 	ImGui::Text(name.c_str());
 
 	// 핀 
 	beginPin_AnimationStateNode(name, node.GetType());
+
+	// 애니메이션 진행상황 표시
+	if (node.GetType() == NodeType::State 
+		&& mSelectController->GetCurrentState() == name)
+	{
+		float duration = node.GetDuration();
+		float timePos = mSelectController->GetTimePos();
+		float ratio = timePos / duration;
+
+		ImGui::ProgressBar(ratio, ImVec2(200.f, 20.f));
+	}
 
 	// Node 선택
 	if (ed::IsNodeSelected(nodeID)
@@ -360,19 +382,6 @@ void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::ga
 	ed::Link(linkID, exitID, enterID);
 }
 
-void fq::game_engine::AnimatorWindow::ExcuteShortcut()
-{
-	if (!mSelectController) return;
-
-	auto& input = mGameProcess->mInputManager;
-
-	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold)
-		&& input->IsKeyState(EKey::S, EKeyState::Tap))
-	{
-		mLoader.Save(*mSelectController, mSelectControllerPath);
-	}
-}
-
 void fq::game_engine::AnimatorWindow::dragDropWindow()
 {
 	if (ImGui::BeginDragDropTarget())
@@ -388,7 +397,30 @@ void fq::game_engine::AnimatorWindow::dragDropWindow()
 			{
 				mSelectController = mLoader.Load(*path);
 				mSelectControllerPath = *path;
+				mSelectObjectName = {};
 				createContext();
+			}
+		}
+
+		const ImGuiPayload* objectPayLoad = ImGui::AcceptDragDropPayload("GameObject");
+		if (objectPayLoad)
+		{
+			fq::game_module::GameObject* dropObject
+				= static_cast<fq::game_module::GameObject*>(objectPayLoad->Data);
+
+			auto animator = dropObject->GetComponent<fq::game_module::Animator>();
+
+			if (animator)
+			{
+				auto controller = animator->GetSharedController();
+
+				if (controller)
+				{
+					mSelectControllerPath = animator->GetControllerPath();
+					mSelectController = controller;
+					mSelectObjectName = dropObject->GetName();
+					createContext();
+				}
 			}
 		}
 	}
@@ -417,5 +449,34 @@ void fq::game_engine::AnimatorWindow::destroyContext()
 		ed::DestroyEditor(mContext);
 		mContext = nullptr;
 	}
+}
+
+void fq::game_engine::AnimatorWindow::OnStartScene()
+{
+	// 게임을 시작하는 경우 애니메이터를 연결해줍니다 
+	if (!mSelectObjectName.empty())
+	{
+		auto object = mGameProcess->mSceneManager->GetCurrentScene()->GetObjectByName(mSelectObjectName);
+
+		if (object)
+		{
+			auto animator = object->GetComponent<fq::game_module::Animator>();
+			mSelectController = animator->GetSharedController();
+			mSelectControllerPath = animator->GetControllerPath();
+		}
+	}
+}
+
+void fq::game_engine::AnimatorWindow::SaveAnimatorController()
+{
+	if (!mSelectController) return;
+
+	mLoader.Save(*mSelectController, mSelectControllerPath);
+}
+
+void fq::game_engine::AnimatorWindow::OnUnloadScene()
+{
+	mSelectController = nullptr;
+	mSelectControllerPath.clear();
 }
 

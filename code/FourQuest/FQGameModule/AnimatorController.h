@@ -106,6 +106,11 @@ namespace fq::game_module
 		std::vector<AnimationTransition>& GetTransitions() { return mTransitions; }
 		const std::vector<AnimationTransition>& GetTransitions() const { return mTransitions; }
 
+		/// <summary>
+		/// 현재 애니메이션 재생 시간을 반환합니다
+		/// </summary>
+		float GetTimePos()const { return mTimePos; }
+
 	private:
 		bool checkConditions(AnimationTransition& transition);
 
@@ -121,7 +126,7 @@ namespace fq::game_module
 		StateName mCurrentState;
 		std::vector<AnimationTransition> mTransitions;
 
-		float mElapsedTime;
+		float mTimePos;
 	};
 
 }

@@ -21,6 +21,7 @@ namespace fq::game_engine
 		using LinkID = unsigned int;
 		using LinkPair = std::pair<std::string, std::string>;
 
+		using EventHandler = fq::game_module::EventHandler;
 	public:
 		AnimatorWindow();
 		~AnimatorWindow();
@@ -33,7 +34,11 @@ namespace fq::game_engine
 
 		bool& IsWindowOpen() { return mbIsOpen; }
 
-		void ExcuteShortcut();
+		void OnStartScene();
+
+		void OnUnloadScene();
+
+		void SaveAnimatorController();
 
 	private:
 		void dragDropWindow();
@@ -59,13 +64,13 @@ namespace fq::game_engine
 
 		void createContext();
 		void destroyContext();
-
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 		fq::game_module::EventManager* mEventManager;
 
 		fq::game_module::AnimatorControllerLoader mLoader;
+		std::string mSelectObjectName;
 		std::filesystem::path mSelectControllerPath;
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSettingFilePath;
@@ -74,6 +79,9 @@ namespace fq::game_engine
 		bool mbIsOpen;
 		std::unordered_map<PinID, std::string> mMatchPinID;
 		std::unordered_map<LinkID, LinkPair> mMatchLinkID;
+
+		EventHandler mOnLoadSceneHandler;
+		EventHandler mStartSceneHandler;
 	};
 
 

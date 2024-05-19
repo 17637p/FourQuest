@@ -33,6 +33,11 @@ namespace fq::game_module
 		AnimatorController& GetController()const { return *mController; }
 
 		/// <summary>
+		/// 컨트롤러를 반환합니다
+		/// </summary>
+		std::shared_ptr<AnimatorController> GetSharedController()const { return mController; }
+
+		/// <summary>
 		/// 애니메이션 상태를 업데이트 합니다 
 		/// </summary>
 		void UpdateState(float dt);

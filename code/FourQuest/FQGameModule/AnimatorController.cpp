@@ -11,7 +11,7 @@ fq::game_module::AnimatorController::AnimatorController()
 	:mParmeters{}
 	, mStates{}
 	, mCurrentState{ "Entry" }
-	, mElapsedTime(0.f)
+	, mTimePos(0.f)
 {
 	// Entry
 	AnimationStateNode entry(this);
@@ -177,7 +177,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 				auto eventMgr = mAnimator->GetScene()->GetEventManager();
 
 				std::string enterState = transition.GetEnterState();
-				mElapsedTime = 0.f;
+				mTimePos = 0.f;
 				mCurrentState = enterState;
 
 				// 애니메이션 상태변경 이벤트
@@ -228,7 +228,7 @@ bool fq::game_module::AnimatorController::checkConditions(AnimationTransition& t
 float fq::game_module::AnimatorController::UpdateAnimation(float dt)
 {
 	float duration = mStates.find(mCurrentState)->second.GetDuration();
-	mElapsedTime = std::fmod(mElapsedTime + dt, duration);
+	mTimePos = std::fmod(mTimePos + dt, duration);
 
-	return mElapsedTime;
+	return mTimePos;
 }

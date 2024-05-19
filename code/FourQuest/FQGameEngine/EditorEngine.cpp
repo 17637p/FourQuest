@@ -232,6 +232,5 @@ void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 	mEditor->mMainMenuBar->ExcuteShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();
 	mEditor->mHierarchy->ExcuteShortcut();
-	mEditor->mAnimatorWindow->ExcuteShortcut();
 }
 

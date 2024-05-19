@@ -306,15 +306,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		fs::path newFileName = path.parent_path();
 		newFileName += "//" + fileName;
 
-		try
-		{
-			fs::rename(path, newFileName);
-		}
-		catch (const std::exception& e)
-		{
-			// e.what();
-		}
-
+		fs::rename(path, newFileName);
 	}
 
 	ImGui::PopItemWidth();
@@ -444,7 +436,7 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 		{
 			auto controllerPath = mSelectPath;
 			controllerPath /= "NewController.controller";
-			
+
 			fq::game_module::AnimatorController controller;
 
 			fq::game_module::AnimatorControllerLoader loader;
