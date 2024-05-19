@@ -63,12 +63,19 @@ namespace fq::game_module
 		/// <returns>일치하면 true, 그렇지않으면 false</returns>
 		bool IsKeyState(EKey key, EKeyState state) const;
 
+		/// <summary>
+		/// 마우스 휠 변화량을 반환합니다 
+		/// </summary>
+		short GetDeltaMouseWheel() const { return mDeltaMouseWheel; }
 		// 게임패드
 
 	private:
 		void updateMouse();
 		void updateKeybord();
 		void updateGamePad();
+
+	public:
+		static short DeltaMouseWheel;
 
 	private:
 		static const int MatchVK[static_cast<size_t>(EKey::Last)];
@@ -79,6 +86,7 @@ namespace fq::game_module
 		POINT mCurrentMousePosition;
 		POINT mPrevMousePosition;
 		POINT mDeltaMousePosition;
+		short mDeltaMouseWheel;
 
 		// 키보드 
 		KeyInfo mKeyInfomations[static_cast<size_t>(EKey::Last)];
