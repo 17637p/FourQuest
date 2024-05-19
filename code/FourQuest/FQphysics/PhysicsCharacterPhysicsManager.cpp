@@ -1,5 +1,7 @@
 #include "PhysicsCharacterPhysicsManager.h"
 
+#include "CharacterPhysics.h"
+
 namespace fq::physics
 {
 	PhysicsCharacterPhysicsManager::PhysicsCharacterPhysicsManager()
@@ -20,8 +22,51 @@ namespace fq::physics
 
 	bool PhysicsCharacterPhysicsManager::CreateCharacterphysics(const CharacterPhysicsInfo& info)
 	{
-		return false;
+		if (mCharacterPhysicsContainer.find(info.id) != mCharacterPhysicsContainer.end())
+			return false;
+
+		std::shared_ptr<CharacterPhysics> characterPhysics = std::make_shared<CharacterPhysics>();
+
+		characterPhysics->Initialize(info, mPhysics);
+		mCharacterPhysicsContainer.insert(std::make_pair(info.id, characterPhysics));
+
+		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
+		collisionData->myId = info.id;
+		collisionData->myLayerNumber = info.layerNumber;
+
+		return true;
 	}
 
+	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	{
+		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
+			return false;
 
+		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
+		characterPhysics->AddArticulationLink(info, extent);
+
+		return true;
+	}
+
+	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
+	{
+		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
+			return false;
+
+		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
+		characterPhysics->AddArticulationLink(info, radius);
+
+		return true;
+	}
+
+	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
+	{
+		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
+			return false;
+
+		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
+		characterPhysics->AddArticulationLink(info, halfHeight, radius);
+
+		return true;
+	}
 }

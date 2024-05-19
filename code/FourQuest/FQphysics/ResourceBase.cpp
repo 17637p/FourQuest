@@ -2,7 +2,8 @@
 
 namespace fq::physics
 {
-	ResourceBase::ResourceBase()
+	ResourceBase::ResourceBase(const EResourceType& type)
+		: mType(type)
 	{
 
 	}

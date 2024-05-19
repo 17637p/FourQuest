@@ -21,7 +21,11 @@ namespace fq::physics
 
 		bool CreateCharacterphysics(const CharacterPhysicsInfo& info);
 
-		std::shared_ptr<CharacterPhysics> GetCharacterPhysics();
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent);
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius);
+		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius);
+
+		inline std::shared_ptr<CharacterPhysics> GetCharacterPhysics(unsigned int id);
 
 	private:
 		physx::PxPhysics* mPhysics;
@@ -30,4 +34,9 @@ namespace fq::physics
 		std::unordered_map<unsigned int, std::shared_ptr<CharacterPhysics>> mCharacterPhysicsContainer;
 		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>>	mCollisionDataConttainer;
 	};
+
+	std::shared_ptr<CharacterPhysics> PhysicsCharacterPhysicsManager::GetCharacterPhysics(unsigned int id)
+	{
+		return mCharacterPhysicsContainer.find(id)->second;
+	}
 }
