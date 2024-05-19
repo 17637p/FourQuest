@@ -246,18 +246,28 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	else if (node.GetType() == NodeType::AnyState)	nodeColor = ImGuiColor::SPRING_GREEN;
 	else if (node.GetType() == NodeType::State)	nodeColor = ImGuiColor::ORANGE;
 	ed::PushStyleColor(ed::StyleColor_NodeBorder, nodeColor);
+	ed::PushStyleColor(ed::StyleColor_NodeBg, ImGuiColor::DARK_GREEN);
 
 	auto nodeID = entt::hashed_string(name.c_str()).value();
+
 	ed::BeginNode(nodeID);
 
-	// 노드 이름
+	constexpr float nodeWidth = 150.f;
+
+	// 노드 이름(중앙 정렬)
+	float cursorPosX = ImGui::GetCursorPosX() + nodeWidth * 0.5f
+		- ImGui::CalcTextSize(name.c_str()).x * 0.5f;
+	ImGui::SetCursorPosX(cursorPosX);
 	ImGui::Text(name.c_str());
+
+	// 노드 기본사이즈 설정
+	ImGui::Dummy(ImVec2(nodeWidth, 0.f));
 
 	// 핀 
 	beginPin_AnimationStateNode(name, node.GetType());
 
 	// 애니메이션 진행상황 표시
-	if (node.GetType() == NodeType::State 
+	if (node.GetType() == NodeType::State
 		&& mSelectController->GetCurrentState() == name)
 	{
 		float duration = node.GetDuration();
@@ -278,26 +288,27 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 
 	ed::EndNode();
 
-	ed::PopStyleColor(1);
+	ed::PopStyleColor(2);
 }
 
 void fq::game_engine::AnimatorWindow::beginPin_AnimationStateNode(const std::string& nodeName, fq::game_module::AnimationStateNode::Type type)
 {
+	constexpr float nodeWidth = 150.f;
 	if (type != game_module::AnimationStateNode::Type::AnyState
 		&& type != game_module::AnimationStateNode::Type::Entry)
 	{
+		float cursorPosX = ImGui::GetCursorPosX() + nodeWidth/2 - ImGui::CalcTextSize("->").x;
+		ImGui::SetCursorPosX(cursorPosX);
 		ed::BeginPin(getInputPinID(nodeName), ed::PinKind::Input);
-		ImGui::Text("Enter");
+		ImGui::Text("->");
 		ed::EndPin();
+		ImGui::SameLine();
 	}
-	else ImGui::Text("     ");
-
-	ImGui::SameLine();
 
 	if (type != game_module::AnimationStateNode::Type::Exit)
 	{
 		ed::BeginPin(getOutputPinID(nodeName), ed::PinKind::Output);
-		ImGui::Text("Exit");
+		ImGui::Text("->");
 		ed::EndPin();
 	}
 }
@@ -379,7 +390,7 @@ void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::ga
 	if (mMatchLinkID.find(linkID) == mMatchLinkID.end())
 		mMatchLinkID.insert({ linkID, {exit, enter } });
 
-	ed::Link(linkID, exitID, enterID);
+	ed::Link(linkID, exitID, enterID); 
 }
 
 void fq::game_engine::AnimatorWindow::dragDropWindow()

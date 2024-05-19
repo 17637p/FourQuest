@@ -227,8 +227,11 @@ bool fq::game_module::AnimatorController::checkConditions(AnimationTransition& t
 
 float fq::game_module::AnimatorController::UpdateAnimation(float dt)
 {
-	float duration = mStates.find(mCurrentState)->second.GetDuration();
-	mTimePos = std::fmod(mTimePos + dt, duration);
+	auto& state = mStates.find(mCurrentState)->second;
 
+	float duration = state.GetDuration();
+	float playbackSpeed = state.GetPlayBackSpeed();
+
+	mTimePos = std::fmod(mTimePos + dt * playbackSpeed, duration);
 	return mTimePos;
 }
