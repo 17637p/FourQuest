@@ -14,6 +14,8 @@
 #include "MainMenuBar.h"
 #include "CollisionMatrixWindow.h"
 #include "PhysicsAnimatorWindow.h"
+#include "SkyBoxWindow.h"
+#include "AnimatorWindow.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -33,15 +35,21 @@ namespace fq::game_engine
 		EditorProcess();
 		~EditorProcess();
 
+		// Open
 		std::unique_ptr<Hierarchy>  mHierarchy;
 		std::unique_ptr<Inspector>	mInspector;
 		std::unique_ptr<FileDialog> mFileDialog;
 		std::unique_ptr<LogWindow> mLogWindow;
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
 		std::unique_ptr<MainMenuBar> mMainMenuBar;
-		std::unique_ptr<CollisionMatrixWindow> mCollisionMatrixWindow;
 		std::unique_ptr<PhysicsAnimatorWindow> mPhysicsAnimatorWindow;
 
+		// Close
+		std::unique_ptr<AnimatorWindow> mAnimatorWindow;
+		std::unique_ptr<CollisionMatrixWindow> mCollisionMatrixWindow;
+		std::unique_ptr<SkyBoxWindow> mSkyBoxWindow;
+
+		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
 		std::unique_ptr<PrefabSystem> mPrefabSystem;

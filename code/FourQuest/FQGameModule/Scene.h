@@ -84,7 +84,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="index">인덱스</param>
 		/// <returns>index를 초과한경우 nulllptr 이고 아니면 정상적인 게임 오브젝트</returns>
-		std::shared_ptr<GameObject> GetObjectByIndex(size_t index);
+		GameObject* GetObjectByIndex(size_t index);
 
 		/// <summary>
 		/// 오브젝트 ID에 해당하는 오브젝트 반환
@@ -92,6 +92,11 @@ namespace fq::game_module
 		/// <param name="id">오브젝트의 고유 ID</param>
 		/// <returns>찾지못한경우 nullptr 반환하고 아니면 id를 소유하는 객체반환</returns>
 		std::shared_ptr<GameObject> GetObjectByID(unsigned int id);
+
+		/// <summary>
+		/// Scene에서 오브젝트 이름으로 탐색해서 반환합니다 
+		/// </summary>
+		std::shared_ptr<GameObject> GetObjectByName(std::string name);
 
 		/// <summary>
 		/// Scene의 게임오브젝트를 순회하는 view 객체를 반환 
@@ -157,9 +162,9 @@ namespace fq::game_module
 	inline void Scene::ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction
 		, bool bIsIncludeDestroyed)
 	{
-		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeDestroyed))
+		for (GameObject& object : GetComponentView<Types ...>(bIsIncludeDestroyed))
 		{
-			viewFunction(*object, *(object->template GetComponent<Types>()) ...);
+			viewFunction(object, *(object.template GetComponent<Types>()) ...);
 		}
 	}
 

@@ -62,12 +62,26 @@ extern "C" {
 			virtual FQ_GRAPHICS std::set<std::string> GetAnimationKeys() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
-
+			 
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;
+		};
+
+		// 타일 기능 같은거 추가해야겠지
+		class ITerrainMeshObject
+		{
+		public:
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const abstract;
+			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const abstract;
+
+		protected:
+			virtual ~ITerrainMeshObject() = default;
 		};
 	}
 #ifdef __cplusplus

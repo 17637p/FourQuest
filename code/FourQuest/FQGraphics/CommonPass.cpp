@@ -753,7 +753,9 @@ namespace fq::graphics
 	{
 	}
 
-	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11CameraManager> cameraManager, std::shared_ptr<D3D11ResourceManager> resourceManager)
+	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, 
+		std::shared_ptr<D3D11CameraManager> cameraManager, 
+		std::shared_ptr<D3D11ResourceManager> resourceManager)
 	{
 		mDevice = device;
 		mCameraManager = cameraManager;
@@ -916,5 +918,106 @@ namespace fq::graphics
 		mBackBufferRTV->Bind(mDevice, mDefaultDSV);
 
 		mDebugDrawManager->Excute(mDevice, mCameraManager);
+	}
+
+	// --------------------------------------------------------------
+	//						TerrainPass
+	// --------------------------------------------------------------
+	TerrainPass::TerrainPass()
+		:mDevice(nullptr),
+		mJobManager(nullptr),
+		mCameraManager(nullptr),
+		mResourceManager(nullptr),
+		mLightManager(nullptr),
+		mTerrainVS(nullptr),
+		mTerrainPS(nullptr),
+		mTerrainLayout(nullptr),
+		mDrawRTV(nullptr),
+		mDrawDSV(nullptr),
+		mDefaultRS(nullptr),
+		mAnisotropicWrapSS(nullptr),
+		mDefaultDS(nullptr),
+		mModelTransformCB(nullptr),
+		mSceneTransformCB(nullptr),
+		mTerrainTextureCB(nullptr)
+	{
+	}
+
+	void TerrainPass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11JobManager> jobManager,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
+		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		std::shared_ptr< D3D11LightManager> lightManager)
+	{
+		mDevice = device;
+		mJobManager = jobManager;
+		mCameraManager = cameraManager;
+		mResourceManager = resourceManager;
+		mLightManager = lightManager;
+
+		mTerrainVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/TerrainVS.hlsl");
+		mTerrainPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/TerrainPS.hlsl");
+		mTerrainLayout = std::make_shared<D3D11InputLayout>(mDevice, mTerrainVS->GetBlob().Get());
+
+		// 스카이 박스랑 동일하게 가져가면 될듯?
+		mDrawRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+
+		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
+		mAnisotropicWrapSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11SamplerState::AnisotropicWrap);
+		mDefaultDS = std::make_shared<D3D11DepthStencilState>(mDevice, ED3D11DepthStencilState::Default);
+
+		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mTerrainTextureCB = std::make_shared<D3D11ConstantBuffer<TerrainTexture>>(mDevice, ED3D11ConstantBuffer::TerrainTexture);
+	}
+
+	void TerrainPass::Finalize()
+	{
+	}
+
+	void TerrainPass::Render()
+	{
+		// update
+		{
+			SceneTrnasform sceneTransform;
+			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
+			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
+			mSceneTransformCB->Update(mDevice, sceneTransform);
+		}
+
+		// Bind
+		{
+			mDrawRTV->Bind(mDevice, mDrawDSV);
+
+			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			mDefaultRS->Bind(mDevice);
+			mAnisotropicWrapSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+			mDefaultDS->Bind(mDevice);
+
+			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
+			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
+			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
+
+			mTerrainVS->Bind(mDevice);
+			mTerrainPS->Bind(mDevice);
+			mTerrainLayout->Bind(mDevice);
+		}
+
+		// Draw
+		{
+			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
+			{
+				job.StaticMesh->Bind(mDevice);
+				job.TerrainMaterial->Bind(mDevice);
+
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+				ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
+
+				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+			}
+		}
 	}
 }

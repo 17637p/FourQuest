@@ -36,9 +36,6 @@
     <Filter Include="src\11.Window">
       <UniqueIdentifier>{3ca10ecb-1121-4a91-b4a7-6cac146d0d26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\11.Window\Define">
-      <UniqueIdentifier>{d3c2eb36-dc13-40fb-967b-7e78d4464754}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\00.Define">
       <UniqueIdentifier>{3764341c-45c0-4783-b734-1c8fb4e4e247}</UniqueIdentifier>
     </Filter>
@@ -48,9 +45,6 @@
     <Filter Include="src\12.EditorSystem\Define">
       <UniqueIdentifier>{a95851d0-cef2-4ebe-9eea-ecbd90cc727f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\03.GameSystem">
-      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\10.Editor">
       <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
     </Filter>
@@ -59,6 +53,15 @@
     </Filter>
     <Filter Include="include\11.EditorWindow">
       <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem">
+      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.Window\Define">
+      <UniqueIdentifier>{175fceb5-a0e0-4fa3-a5b3-99e4af8ea1ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.EditorWindow\Define">
+      <UniqueIdentifier>{d0631955-d9a8-444b-a5e5-d8f56c94c845}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +162,18 @@
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsAnimatorWindow.h">
+		<Filter>include\11.EditorWindow</Filter>
+	</ClInclude>
+	<ClInclude Include="AnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeEditorStruct.h">
+      <Filter>include\11.EditorWindow\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBoxWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
   </ItemGroup>
@@ -257,6 +272,18 @@
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsAnimatorWindow.cpp">
+		<Filter>src\11.Window</Filter>
+	</ClCompile>
+	<ClCompile Include="AnimatorWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeEditorStruct.cpp">
+      <Filter>src\11.Window\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
   </ItemGroup>

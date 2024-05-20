@@ -7,6 +7,7 @@
 
 #include "Mesh.h"
 #include "BoneHierarchy.h"
+
 #include "../FQCommon/IFQRenderObject.h"
 
 namespace fq::graphics
@@ -14,6 +15,8 @@ namespace fq::graphics
 	class StaticMesh;
 	class SkinnedMesh;
 	class Material;
+	class TerrainMaterial;
+	struct TerrainMaterialInfo;
 
 	class StaticMeshObject : public IStaticMeshObject
 	{
@@ -256,5 +259,57 @@ namespace fq::graphics
 	}
 
 #pragma endregion
+
+	class TerrainMeshObject : public ITerrainMeshObject
+	{
+	public:
+		TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh,
+			DirectX::SimpleMath::Matrix transform);
+		~TerrainMeshObject() = default;
+
+		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		void SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device,
+			const TerrainMaterialInfo& terrainMaterial);
+
+		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
+		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
+
+		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
+		inline const std::shared_ptr<TerrainMaterial>& GetTerrainMaterial() const;
+
+	private:
+		std::shared_ptr<StaticMesh> mStaticMesh;
+		std::shared_ptr<TerrainMaterial> mMaterial;
+
+		DirectX::SimpleMath::Matrix mTransform;
+	};
+
+#pragma region inlineFunc
+	inline void TerrainMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+	inline const std::shared_ptr<StaticMesh>& TerrainMeshObject::GetStaticMesh() const
+	{
+		return mStaticMesh;
+	}
+	inline DirectX::BoundingBox TerrainMeshObject::GetRenderBoundingBox() const
+	{
+		return mStaticMesh->GetMeshData().RenderBoundingBox;
+	}
+	inline DirectX::BoundingSphere TerrainMeshObject::GetRenderBoundingSphere() const
+	{
+		return mStaticMesh->GetMeshData().GetRenderBoundingSphere;
+	}
+	inline const std::shared_ptr<TerrainMaterial>& TerrainMeshObject::GetTerrainMaterial() const
+	{
+		return mMaterial;
+	}
+	inline const DirectX::SimpleMath::Matrix& TerrainMeshObject::GetTransform() const
+	{
+		return mTransform;
+	}
+#pragma endregion inlineFunc
 }
 
