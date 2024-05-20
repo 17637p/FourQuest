@@ -25,7 +25,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mbIsOpen(true)
 	, mbIsMouseHoveredWindow(false)
 	, mCameraObject(nullptr)
-	, mCameraMoveSpeed(200.f)
+	, mCameraMoveSpeed(0.5f)
 	, mCameraRotateSpeed(0.0065f)
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
@@ -267,6 +267,11 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 	auto rotation = cameraT->GetLocalRotation();
 	float distance = mCameraMoveSpeed * dt;
 
+	if (input->IsKeyState(EKey::LShift, EKeyState::Hold))
+	{
+		distance *= 5.f;
+	}
+
 	if (input->IsKeyState(EKey::W, EKeyState::Hold))
 	{
 		position.x += matrix._31 * distance;
@@ -492,7 +497,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 {
 	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
 	auto backward = cameraT->GetLocalMatrix().Forward();
-	auto cameraPosition = target + backward * 100.f;
+	auto cameraPosition = target + backward ;
 
 	cameraT->SetLocalPosition(cameraPosition);
 }

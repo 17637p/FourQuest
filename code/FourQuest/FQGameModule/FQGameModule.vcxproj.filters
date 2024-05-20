@@ -217,8 +217,8 @@
     </ClInclude>
     <ClInclude Include="CharacterController.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
-	</ClInclude>
-	<ClInclude Include="Terrain.h">
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -340,11 +340,11 @@
     <ClCompile Include="AnimationTransition.cpp">
       <Filter>src\09.Animation</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterController.cpp">
-      <Filter>src</Filter>
-	</ClCompile>
-	<ClCompile Include="Terrain.cpp">
+    <ClCompile Include="Terrain.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

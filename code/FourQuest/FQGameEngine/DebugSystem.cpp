@@ -27,9 +27,9 @@ void fq::game_engine::DebugSystem::Initialize(GameProcess* game)
 	//						    그리드 설정									//
 	//////////////////////////////////////////////////////////////////////////
 	mGridInfo.Color = { 0.8f,0.8f,0.8f,1.f };
-	mGridInfo.GridSize = 10000.f;
-	mGridInfo.XDivision = 100;
-	mGridInfo.YDivision = 100;
+	mGridInfo.GridSize = 1000.f;
+	mGridInfo.XDivision = 1000;
+	mGridInfo.YDivision = 1000;
 	mGridInfo.Origin = Vector3::Zero;
 	mGridInfo.XAxis = Vector3::UnitX;
 	mGridInfo.YAxis = Vector3::UnitZ;
@@ -75,7 +75,7 @@ void fq::game_engine::DebugSystem::RenderDirLight(fq::game_module::Light& light)
 	fq::graphics::debug::RayInfo ray;
 	ray.Color = lightinfo.color;
 	ray.Normalize = false;
-	ray.Direction = lightinfo.direction * 100.f;
+	ray.Direction = lightinfo.direction ;
 	ray.Origin = lightinfo.position;
 
 	mGameProcess->mGraphics->DrawRay(ray);
@@ -84,7 +84,7 @@ void fq::game_engine::DebugSystem::RenderDirLight(fq::game_module::Light& light)
 
 	sphere.Color = lightinfo.color;
 	sphere.Sphere.Center = lightinfo.position;
-	sphere.Sphere.Radius = 5.f;
+	sphere.Sphere.Radius = 0.1f;
 
 	mGameProcess->mGraphics->DrawSphere(sphere);
 }

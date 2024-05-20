@@ -42,7 +42,7 @@ namespace fq::game_engine
 		void beginGameObject(std::shared_ptr<fq::game_module::GameObject> object);
 		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent =false);
 		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
-		bool beginPOD(entt::meta_any& pod);
+		bool beginPOD(entt::meta_any& pod, unsigned int index = -1);
 		void beginAddComponent();
 
 		// Animator
@@ -68,7 +68,6 @@ namespace fq::game_engine
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 		bool mbIsOpen;
-		unsigned int mUniqueID;
 
 		ViewType mViewType;
 

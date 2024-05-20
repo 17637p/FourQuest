@@ -23,7 +23,6 @@ fq::game_engine::Inspector::Inspector()
 	, mSelectObjectHandler{}
 	, mbIsOpen(true)
 	, mViewType(ViewType::None)
-	, mUniqueID(0)
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -62,8 +61,6 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 void fq::game_engine::Inspector::Render()
 {
 	if (!mbIsOpen) return;
-
-	mUniqueID = 0;
 
 	if (ImGui::Begin("Inspector", &mbIsOpen))
 	{
@@ -372,15 +369,17 @@ void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data dat
 
 	Vector3 euler = quatarnion.ToEuler();
 
-	float f[3]{ euler.x,euler.y,euler.z };
+	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+		,DirectX::XMConvertToDegrees(euler.y)
+		,DirectX::XMConvertToDegrees(euler.z) };
 
 	ImGui::InputFloat3(memberName.c_str(), f);
 
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		euler.x = f[0];
-		euler.y = f[1];
-		euler.z = f[2];
+		euler.x = DirectX::XMConvertToRadians(f[0]);
+		euler.y = DirectX::XMConvertToRadians(f[1]);
+		euler.z = DirectX::XMConvertToRadians(f[2]);
 		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
 
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
@@ -609,10 +608,11 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 	// POD Data 
 	if (valueType.prop(fq::reflect::prop::POD))
 	{
+		unsigned int index = 0;
 		for (auto element : view)
 		{
 			entt::meta_any val = element.as_ref();
-			bool isChanged = beginPOD(val);
+			bool isChanged = beginPOD(val, index++);
 
 			if (isChanged)
 			{
@@ -1008,15 +1008,20 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	ImGui::InputFloat("Duration", &duration);
 }
 
-bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod)
+bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int index)
 {
 	bool changedData = false;
 	auto metaType = pod.type();
 
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
-
 	// POD 이름 표시 
-	std::string podName = fq::reflect::GetName(metaType) + "[" + std::to_string(mUniqueID++) + "]";
+
+	std::string podName = fq::reflect::GetName(metaType);
+
+	if (index != -1)
+	{
+		podName += "[" + std::to_string(index) + "]";
+	}
 
 	if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 	{
