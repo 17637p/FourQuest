@@ -29,6 +29,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetUseShadow(bool bUseShadow) = 0;
 			virtual FQ_GRAPHICS void SetAnimationTime(float timePos) = 0;
 			virtual FQ_GRAPHICS bool SetAnimationKey(const std::string& animationKey) = 0;
+			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::array<std::string, 2> animKeys) = 0;
+			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::string& animKey, const std::string& blendAnimKey) = 0;
+			virtual FQ_GRAPHICS void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) = 0;
+			virtual FQ_GRAPHICS void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) = 0;
 
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
@@ -37,6 +41,7 @@ extern "C" {
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
 			virtual FQ_GRAPHICS float GetAnimationTime() const = 0;
+			virtual FQ_GRAPHICS float GetBlendTime() const = 0;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
@@ -53,14 +58,14 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetBindPose() = 0;
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
 			virtual FQ_GRAPHICS void SetAnimationTime(float timePos) = 0;
-			virtual FQ_GRAPHICS void SetBlendAnimationTime(const std::array<float, 2>& timePos, float lhsWeight) = 0;
-			virtual FQ_GRAPHICS void SetBlendAnimationTime(float lhsTimePos, float rhsTimePos, float lhsWeight) = 0;
 			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
 			virtual FQ_GRAPHICS void SetAlpha(float alpha) = 0;
 			virtual FQ_GRAPHICS void SetUseShadow(bool bUseShadow) = 0;
 			virtual FQ_GRAPHICS bool SetAnimationKey(const std::string& animationKey) = 0;
-			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::array<std::string, 2> animationKeys) = 0;
-			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::string& lhsAnimationKey, const std::string& rhsAnimationKey) = 0;
+			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::array<std::string, 2> animKeys) = 0;
+			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::string& animKey, const std::string& blendAnimKey) = 0;
+			virtual FQ_GRAPHICS void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) = 0;
+			virtual FQ_GRAPHICS void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) = 0;
 
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 			virtual FQ_GRAPHICS float GetAnimationTime() const = 0;

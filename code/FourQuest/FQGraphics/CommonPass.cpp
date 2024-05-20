@@ -1011,10 +1011,13 @@ namespace fq::graphics
 			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
 			{
 				job.StaticMesh->Bind(mDevice);
-				job.TerrainMaterial->Bind(mDevice);
-
 				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-				ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
+
+				if (job.TerrainMaterial != nullptr)
+				{
+					job.TerrainMaterial->Bind(mDevice);
+					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
+				}
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
