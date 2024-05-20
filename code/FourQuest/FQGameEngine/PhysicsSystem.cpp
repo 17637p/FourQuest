@@ -22,6 +22,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mSphereID(entt::resolve<fq::game_module::SphereCollider>().id())
 	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
+	, mCharactorControllerID(entt::resolve<fq::game_module::CharacterController>().id())
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -224,6 +225,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
+		mColliderContainer.insert({ id, {mCharactorControllerID, controller} });
+		controller->SetControllerInfo(controllerInfo);
 	}
 
 	bool hasStaticMesh = object->HasComponent<StaticMeshRenderer>();
@@ -260,7 +263,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{
-				convexMeshInfo.vertices[i] =-mesh.Vertices[i].Pos;
+				convexMeshInfo.vertices[i] = -mesh.Vertices[i].Pos;
 			}
 		}
 		else // skinned mesh 
@@ -330,6 +333,16 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
+	if (object->HasComponent<CharacterController>())
+	{
+		auto controller = object->GetComponent<CharacterController>();
+		auto id = controller->GetControllerInfo().id;
+		assert(id != physics::unregisterID);
+
+		mPhysicsEngine->RemoveRigidBody(id);
+		mColliderContainer.erase(mColliderContainer.find(id));
+	}
+
 	// 4. Mesh Collider
 	if (object->HasComponent<MeshCollider>())
 	{
@@ -362,24 +375,24 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 
 	switch (type)
 	{
-	case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-		lhsObject->OnTriggerEnter(collision);
-		break;
-	case fq::physics::ECollisionEventType::ON_OVERLAP:
-		lhsObject->OnTriggerStay(collision);
-		break;
-	case fq::physics::ECollisionEventType::END_OVERLAP:
-		lhsObject->OnTriggerExit(collision);
-		break;
-	case fq::physics::ECollisionEventType::ENTER_COLLISION:
-		lhsObject->OnCollisionEnter(collision);
-		break;
-	case fq::physics::ECollisionEventType::ON_COLLISION:
-		lhsObject->OnCollisionStay(collision);
-		break;
-	case fq::physics::ECollisionEventType::END_COLLISION:
-		lhsObject->OnCollisionExit(collision);
-		break;
+		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+			lhsObject->OnTriggerEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_OVERLAP:
+			lhsObject->OnTriggerStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_OVERLAP:
+			lhsObject->OnTriggerExit(collision);
+			break;
+		case fq::physics::ECollisionEventType::ENTER_COLLISION:
+			lhsObject->OnCollisionEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_COLLISION:
+			lhsObject->OnCollisionStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_COLLISION:
+			lhsObject->OnCollisionExit(collision);
+			break;
 	}
 
 }
@@ -391,17 +404,28 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
 
-		auto data = mPhysicsEngine->GetRigidBodyData(id);
+		if (colliderInfo.first == mCharactorControllerID)
+		{
+			auto controller = colliderInfo.second->GetComponent<fq::game_module::CharacterController>();
 
-		// 선속도
-		rigid->SetLinearVelocity(data.linearVelocity);
+			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
+			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
 
-		// 각속도
-		rigid->SetAngularVelocity(data.angularVelocity);
-
-		// 위치 
-		auto matrix = data.transform;
-		transform->SetWorldMatrix(matrix);
+			controller->SetFalling(movement.isFall);
+			rigid->SetLinearVelocity(movement.velocity);
+			transform->SetLocalPosition(controll.position);
+		}
+		else
+		{
+			auto data = mPhysicsEngine->GetRigidBodyData(id);
+			// 선속도
+			rigid->SetLinearVelocity(data.linearVelocity);
+			// 각속도
+			rigid->SetAngularVelocity(data.angularVelocity);
+			// 위치 
+			auto matrix = data.transform;
+			transform->SetWorldMatrix(matrix);
+		}
 	}
 }
 
@@ -422,16 +446,31 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-		fq::physics::RigidBodyGetSetData data;
 
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
 
-		data.transform = transform->GetWorldMatrix();
-		data.angularVelocity = rigid->GetAngularVelocity();
-		data.linearVelocity = rigid->GetLinearVelocity();
-		
-		mPhysicsEngine->SetRigidBodyData(id, data);
+		if (colliderInfo.first == mCharactorControllerID)
+		{
+			auto controller = colliderInfo.second->GetComponent<fq::game_module::CharacterController>();
+
+			fq::physics::CharacterControllerGetSetData pos;
+			fq::physics::CharacterMovementGetSetData movement;
+			pos.position = transform->GetWorldPosition();
+			movement.isFall = controller->IsFalling();
+			movement.velocity = rigid->GetLinearVelocity();
+                                                                                                                      
+			mPhysicsEngine->SetCharacterControllerData(id, pos);
+			mPhysicsEngine->SetCharacterMovementData(id, movement);
+		}
+		else
+		{
+			fq::physics::RigidBodyGetSetData data;
+			data.transform = transform->GetWorldMatrix();
+			data.angularVelocity = rigid->GetAngularVelocity();
+			data.linearVelocity = rigid->GetLinearVelocity();
+			mPhysicsEngine->SetRigidBodyData(id, data);
+		}
 	}
 }
 

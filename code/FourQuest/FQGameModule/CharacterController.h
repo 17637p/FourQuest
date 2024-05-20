@@ -36,6 +36,15 @@ namespace fq::game_module
 		/// </summary>
 		void SetMovementInfo(fq::physics::CharacterMovementInfo val) { mMovementInfo = val; }
 	
+		/// <summary>
+		/// 현재 캐릭터가 떨어지는지 반환합니다 
+		/// </summary>
+		bool IsFalling() const { return mbIsFalling; }
+	
+		/// <summary>
+		/// 현재 캐릭터가 떨어지는 상태인지 설정합니다 
+		/// </summary>
+		void SetFalling(bool val) { mbIsFalling = val; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -43,6 +52,7 @@ namespace fq::game_module
 		fq::physics::CharacterControllerInfo mControllerInfo;
 		fq::physics::CharacterMovementInfo mMovementInfo;
 
+		bool mbIsFalling;
 	};
 
 }

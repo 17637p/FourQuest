@@ -488,9 +488,7 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 		{
 			mEditorProcess->mDebugSystem->RenderSpotLight(*light);
 		}
-
 	}
-
 }
 
 void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 target)
