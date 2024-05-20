@@ -102,6 +102,7 @@ namespace fq::game_engine
 		EventHandler mWriteAnimationHandler;
 
 		bool mbIsGameLoaded;
+		DirectX::SimpleMath::Matrix mPlaneMatrix;
 
 		std::set<ModelPath> mLoadModels;
 	};

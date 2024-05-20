@@ -47,7 +47,7 @@ void fq::game_engine::AnimatorWindow::Render()
 
 	auto& io = ImGui::GetIO();
 
-	if (ImGui::Begin("Animator"))
+	if (ImGui::Begin("Animator", &mbIsOpen))
 	{
 		beginChild_ParameterWindow();
 		ImGui::SameLine();
@@ -166,6 +166,9 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 		ed::SetCurrentEditor(mContext);
 		ImGui::Separator();
 		ed::Begin("NodeEditor", ImVec2(0.0, 0.0f));
+
+		ed::Style& style = ed::GetStyle();
+		style.LinkStrength = 0.f;
 
 		const auto& stateMap = mSelectController->GetStateMap();
 

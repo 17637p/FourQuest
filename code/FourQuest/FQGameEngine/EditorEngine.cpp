@@ -169,6 +169,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
 	mEditor->mImGuiSystem->Finalize();
+	mEditor->mAnimatorWindow->Finalize();
 
 	// SystemFinalize
 	mGameProcess->mGraphics->Finalize();

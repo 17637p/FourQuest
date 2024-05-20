@@ -78,12 +78,12 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 			});
 
 	scene->ViewComponents<Transform, Terrain>
-		([](GameObject& object, Transform& transform, Terrain& mesh)
+		([this](GameObject& object, Transform& transform, Terrain& mesh)
 			{
 				auto meshObject = mesh.GetTerrainMeshObject();
 				if (meshObject)
 				{
-					meshObject->SetTransform(transform.GetWorldMatrix());
+					meshObject->SetTransform(mPlaneMatrix * transform.GetWorldMatrix());
 				}
 			});
 }
@@ -387,10 +387,18 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	fq::graphics::MeshObjectInfo meshInfo;
 	meshInfo.ModelPath = terrainPath;
 	meshInfo.MeshName = mesh.second.Name;
-	meshInfo.Transform = transform->GetLocalMatrix();
+	meshInfo.Transform = mesh.first.ToParentMatrix *transform->GetWorldMatrix();
+
+	mPlaneMatrix = mesh.first.ToParentMatrix;
 
 	fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mGameProcess->mGraphics->CreateTerrainMeshObject(meshInfo);
 	terrain->SetTerrainMeshObject(iTerrainMeshObject);
+
+	fq::graphics::TerrainMaterialInfo info;
+	info.AlPhaFileName = terrain->GetAlphaMap();
+	info.Layers = terrain->GetTerrainLayers();
+
+	mGameProcess->mGraphics->SetTerrainMeshObject(iTerrainMeshObject, info);
 }
 
 void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject* object)

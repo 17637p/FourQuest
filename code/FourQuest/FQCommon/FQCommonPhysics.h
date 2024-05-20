@@ -52,7 +52,7 @@ namespace fq::physics
 #pragma endregion
 
 	/// <summary>
-	/// 물리 엔진 세팅 데이터 : 중력, 충돌 매트릭스
+	/// 물리 엔진 세팅 데이터 : 중력, 충돌 매트릭스 
 	/// </summary>
 	struct PhysicsEngineInfo
 	{

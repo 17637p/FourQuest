@@ -59,13 +59,13 @@ namespace fq::graphics
 		std::string BaseColor;
 		std::string NormalMap;
 
-		float Metalic;
-		float Roughness;
+		float Metalic = 0.f;
+		float Roughness =0.f;
 
-		float TileSizeX;
-		float TileSizeY;
-		float TileOffsetX;
-		float TileOffsetY;
+		float TileSizeX = 1.f;
+		float TileSizeY = 1.f;
+		float TileOffsetX =0.f;
+		float TileOffsetY =0.f;
 	};
 
 	struct TerrainMaterialInfo

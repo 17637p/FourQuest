@@ -42,6 +42,7 @@ namespace fq::game_engine
 		void beginGameObject(std::shared_ptr<fq::game_module::GameObject> object);
 		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent =false);
 		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
+		bool beginPOD(entt::meta_any& pod);
 		void beginAddComponent();
 
 		// Animator
@@ -49,7 +50,7 @@ namespace fq::game_engine
 		void beginTransitionCondition(fq::game_module::TransitionCondition& condition, int index);
 		void beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode);
 
-		// 데이터 타입 관련
+		// 멤버변수 인스펙터 창
 		void beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginInputText_String(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginInputFloat2_Vector2(entt::meta_data data, fq::reflect::IHandle* handle);
@@ -67,6 +68,7 @@ namespace fq::game_engine
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 		bool mbIsOpen;
+		unsigned int mUniqueID;
 
 		ViewType mViewType;
 

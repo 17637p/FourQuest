@@ -210,11 +210,26 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
 		}
 	}
+	// 5.CharacterController
+	if (object->HasComponent<CharacterController>())
+	{
+		auto controller = object->GetComponent<CharacterController>();
+
+		auto controllerInfo = controller->GetControllerInfo();
+		auto movementInfo = controller->GetMovementInfo();
+		ColliderID id = ++mLastColliderID;
+		controllerInfo.id = id;
+		controllerInfo.layerNumber = static_cast<int>(object->GetTag());
+		controllerInfo.position = transform->GetWorldPosition();
+
+		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
+		assert(check);
+	}
 
 	bool hasStaticMesh = object->HasComponent<StaticMeshRenderer>();
 	bool hasSkinnedMesh = object->HasComponent<SkinnedMeshRenderer>();
 
-	// 4. Mesh Collider
+	// 5. Mesh Collider
 	if (object->HasComponent<MeshCollider>() &&
 		(hasStaticMesh || hasSkinnedMesh))
 	{

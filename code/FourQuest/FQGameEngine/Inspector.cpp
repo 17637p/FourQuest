@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include "imgui_stdlib.h"
+#include "ImGuiColor.h"
 
 #include "../FQReflect/FQReflect.h"
 #include "../FQGraphics/IFQGraphics.h"
@@ -22,6 +23,7 @@ fq::game_engine::Inspector::Inspector()
 	, mSelectObjectHandler{}
 	, mbIsOpen(true)
 	, mViewType(ViewType::None)
+	, mUniqueID(0)
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -60,6 +62,8 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 void fq::game_engine::Inspector::Render()
 {
 	if (!mbIsOpen) return;
+
+	mUniqueID = 0;
 
 	if (ImGui::Begin("Inspector", &mbIsOpen))
 	{
@@ -237,6 +241,17 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 				data, mSelectObject, handle, val);
 		}
 		beginIsItemHovered_Comment(data);
+	}
+	else if (metaType.prop(fq::reflect::prop::POD))
+	{
+		entt::meta_any val = data.get(handle->GetHandle());
+		bool isChangedData = beginPOD(val);
+
+		if (isChangedData)
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
 	}
 }
 
@@ -567,7 +582,7 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		if (ImGui::Button(addText.c_str()))
 		{
 			auto baseValue = view.value_type().construct();
-			auto last = view.begin();
+			auto last = view.end();
 			view.insert(last, baseValue);
 			mEditorProcess->mCommandSystem->Push<SetMetaData>(
 				data, mSelectObject, handle, any);
@@ -591,8 +606,23 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 	}
 	auto valueType = view.value_type();
 
+	// POD Data 
+	if (valueType.prop(fq::reflect::prop::POD))
+	{
+		for (auto element : view)
+		{
+			entt::meta_any val = element.as_ref();
+			bool isChanged = beginPOD(val);
+
+			if (isChanged)
+			{
+				mEditorProcess->mCommandSystem->Push<SetMetaData>(
+					data, mSelectObject, handle, any);
+			}
+		}
+	}
 	// string 특수화 
-	if (valueType == entt::resolve<std::string>())
+	else if (valueType == entt::resolve<std::string>())
 	{
 		size_t index = 0;
 		for (auto element : view)
@@ -976,5 +1006,118 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	float duration = stateNode.GetDuration();
 	ImGui::InputFloat("Duration", &duration);
+}
+
+bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod)
+{
+	bool changedData = false;
+	auto metaType = pod.type();
+
+	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
+
+	// POD 이름 표시 
+	std::string podName = fq::reflect::GetName(metaType) + "[" + std::to_string(mUniqueID++) + "]";
+
+	if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
+	{
+		ImGui::Text(podName.c_str());
+
+		for (auto [id, data] : metaType.data())
+		{
+			std::string memberName = fq::reflect::GetName(data);
+
+			if (data.type() == entt::resolve<int>())
+			{
+				int val = data.get(pod).cast<int>();
+				ImGui::InputInt(memberName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<float>())
+			{
+				float val = data.get(pod).cast<float>();
+
+				ImGui::InputFloat(memberName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<double>())
+			{
+				double val = data.get(pod).cast<double>();
+
+				ImGui::InputDouble(memberName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<bool>())
+			{
+				bool val = data.get(pod).cast<bool>();
+
+				if (ImGui::Checkbox(memberName.c_str(), &val))
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<std::string>())
+			{
+				std::string val = data.get(pod).cast<std::string>();
+
+				ImGui::InputText(memberName.c_str(), &val);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+
+				// DragDrop 받기
+				if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+					if (pathPayLoad)
+					{
+						std::filesystem::path* dropPath
+							= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+						auto extensions = fq::reflect::GetDragDropExtension(data);
+
+						for (auto& extension : extensions)
+						{
+							if (dropPath->extension() == extension)
+							{
+								val = dropPath->string();
+								data.set(pod, val);
+								changedData = true;
+							}
+						}
+					}
+				}
+				beginIsItemHovered_Comment(data);
+			}
+		}
+
+	}
+	ImGui::EndChild();
+
+	ImGui::PopStyleColor(1);
+
+	return changedData;
 }
 
