@@ -12,7 +12,7 @@ namespace fq::game_engine
 	class GameProcess;
 	class EditorProcess;
 
-	using AnimationClipContainer = std::vector<std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Matrix>>>;
+	using AnimationClipContainer = std::vector<std::unordered_map<std::string, std::vector<DirectX::SimpleMath::Matrix>>>;
 
 	class PhysicsAnimatorWindow : public IEditorWindow
 	{
@@ -36,6 +36,8 @@ namespace fq::game_engine
 
 		void beginTree_Animation(const int& number);
 		void beginButton_AnimationPlay(const int& number);
+		void beginButton_AnimationStop(const int& number);
+		void beginButton_AnimationReset();
 		void beginButton_AnimationSave(const int& number);
 
 		/// <summary>
@@ -43,6 +45,8 @@ namespace fq::game_engine
 		/// </summary>
 		/// <param name="object"></param>
 		void dragDropGameObject();
+
+		void resetAnimation();
 
 	private:
 		GameProcess* mGameProcess;
@@ -54,14 +58,15 @@ namespace fq::game_engine
 
 		int mKeyFrameSize;
 		int mPlayAnimationClipNumber;
+		int mCurrentKeyFrame;
 		float mDurationTime;
 
-		fq::game_module::GameObject*	mRegisteredObject;
-		std::vector<fq::game_module::GameObject*> mExtractObjects;
+		std::shared_ptr<fq::game_module::GameObject> mRegisteredObject;
+		std::vector<std::string> mExtractObjectNames;
 		AnimationClipContainer mAnimationClipContainer;
-		std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Matrix>> mAnimationClip;
+		std::unordered_map<std::string, std::vector<DirectX::SimpleMath::Matrix>> mAnimationClip;
 
-		fq::game_module::EventManager*	mEventManager;
+		fq::game_module::EventManager* mEventManager;
 		fq::game_module::EventHandler	mStartSceneHandle;
 	};
 }

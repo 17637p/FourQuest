@@ -60,65 +60,54 @@ namespace fq::game_engine
 
 	void PhysicsAnimatorWindow::UpdateAnimation(float dt)
 	{
-		static int currentKeyFrame = 0;
-
-		if (mbIsPlay)
-		{
-			if (mbIsStartScene)
-			{
-				for (int i = 0; i < mAnimationClipContainer[mPlayAnimationClipNumber].size(); i++)
-				{
-					fq::game_module::Transform* trnasform = mExtractObjects[i]->GetComponent<fq::game_module::Transform>();
-					unsigned int objectID = mExtractObjects[i]->GetID();
-
-					DirectX::SimpleMath::Matrix Transform = mAnimationClipContainer[mPlayAnimationClipNumber].find(objectID)->second[0];
-					trnasform->SetLocalMatrix(Transform);
-				}
-			}
-			else
-			{
-				mDurationTime += dt;
-				if (mDurationTime >= (1 / 30.f))
-				{
-					mDurationTime -= (1 / 30.f);
-					currentKeyFrame++;
-				}
-
-				if (currentKeyFrame > mAnimationClipContainer[mPlayAnimationClipNumber].size())
-				{
-					mbIsPlay = false;
-					currentKeyFrame = 0;
-				}
-
-				for (int i = 0; i < mAnimationClipContainer[mPlayAnimationClipNumber].size(); i++)
-				{
-					fq::game_module::Transform* trnasform = mExtractObjects[i]->GetComponent<fq::game_module::Transform>();
-					unsigned int objectID = mExtractObjects[i]->GetID();
-
-					DirectX::SimpleMath::Matrix Transform = mAnimationClipContainer[mPlayAnimationClipNumber].find(objectID)->second[currentKeyFrame];
-					trnasform->SetLocalMatrix(Transform);
-				}
-			}
-		}
-
-		if (mbIsStartScene)
+		if (mbIsStartScene && mbIsOpen)
 		{
 			mDurationTime += dt;
-
-			for (auto& object : mExtractObjects)
+			if (mDurationTime >= 1.f / 30.f)
 			{
-				DirectX::SimpleMath::Matrix localTransform = object->GetComponent<fq::game_module::Transform>()->GetLocalMatrix();
+				for (auto& objectName : mExtractObjectNames)
+				{
+					auto object = mScene->GetObjectByName(objectName);
+					DirectX::SimpleMath::Matrix localTransform = object->GetComponent<fq::game_module::Transform>()->GetLocalMatrix();
 
-				mAnimationClip.find(object->GetID())->second.push_back(localTransform);
+					mAnimationClip.find(objectName)->second.push_back(localTransform);
+				}
+
+				if (mCurrentKeyFrame >= mKeyFrameSize)
+				{
+					mCurrentKeyFrame = 0;
+					mbIsStartScene = false;
+					mAnimationClipContainer.push_back(mAnimationClip);
+					mAnimationClip.clear();
+				}
+
+				mDurationTime -= 1.f / 30.f;
+				mCurrentKeyFrame++;
 			}
-
-			currentKeyFrame++;
-
-			if (currentKeyFrame > mKeyFrameSize)
+		}
+		else if (mbIsPlay && !mbIsStartScene && mbIsOpen)
+		{
+			mDurationTime += dt;
+			if (mDurationTime >= (1 / 30.f))
 			{
-				mbIsStartScene = false;
-				mAnimationClipContainer.push_back(mAnimationClip);
-				mAnimationClip.clear();
+				if (mCurrentKeyFrame >= mAnimationClipContainer[mPlayAnimationClipNumber].find(mExtractObjectNames[0])->second.size())
+				{
+					mbIsPlay = false;
+					mCurrentKeyFrame = 0;
+				}
+
+				for (int i = 0; i < mAnimationClipContainer[mPlayAnimationClipNumber].size(); i++)
+				{
+					auto& objectName = mExtractObjectNames[i];
+					auto object = mScene->GetObjectByName(objectName);
+					fq::game_module::Transform* trnasform = object->GetComponent<fq::game_module::Transform>();
+
+					DirectX::SimpleMath::Matrix Transform = mAnimationClipContainer[mPlayAnimationClipNumber].find(objectName)->second[mCurrentKeyFrame];
+					trnasform->SetLocalMatrix(Transform);
+				}
+
+				mDurationTime -= (1 / 30.f);
+				mCurrentKeyFrame++;
 			}
 		}
 	}
@@ -126,12 +115,18 @@ namespace fq::game_engine
 	void PhysicsAnimatorWindow::StartScene()
 	{
 		mbIsStartScene = true;
-		mDurationTime = 0.f;
+		mbIsPlay = false;
 
-		for (auto& object : mExtractObjects)
+		resetAnimation();
+
+		for (auto& objectName : mExtractObjectNames)
 		{
+			auto object = mScene->GetObjectByName(objectName);
+			fq::game_module::Transform* objectTransform = object->GetComponent<fq::game_module::Transform>();
+
 			std::vector<DirectX::SimpleMath::Matrix> localTrnasform;
-			mAnimationClip.insert(std::make_pair(object->GetID(), localTrnasform));
+			localTrnasform.push_back(objectTransform->GetLocalMatrix());
+			mAnimationClip.insert(std::make_pair(objectName, localTrnasform));
 		}
 	}
 
@@ -142,6 +137,7 @@ namespace fq::game_engine
 			// 애니메이터 창
 			beginText_ObjectName();
 			beginInputInt_KeyFrameSize();
+			beginButton_AnimationReset();
 
 			for (int clipNumber = 0; clipNumber < mAnimationClipContainer.size(); clipNumber++)
 			{
@@ -165,13 +161,15 @@ namespace fq::game_engine
 	{
 		// 추출한 애니메이션 텍스트 ( ex. Animation00 ... Animation99 )
 		std::string animationName;
-		animationName = "Animation Clip" + std::to_string(number) + "(Frame : " + std::to_string(mAnimationClipContainer[number][0].size()) + ")";
+		animationName = "Animation Clip" + std::to_string(number) + "(Frame : " + std::to_string(mAnimationClipContainer[number].find(mExtractObjectNames[0])->second.size()) + ")";
 
 		if (ImGui::TreeNode(animationName.c_str()))
 		{
-			beginButton_AnimationPlay(number);
+			if (!mbIsPlay)
+				beginButton_AnimationPlay(number);
+			else
+				beginButton_AnimationStop(number);
 			beginButton_AnimationSave(number);
-
 			ImGui::TreePop();
 		}
 	}
@@ -184,6 +182,29 @@ namespace fq::game_engine
 			mPlayAnimationClipNumber = number;
 			mDurationTime = 0.f;
 			mbIsPlay = true;
+		}
+	}
+
+	void PhysicsAnimatorWindow::beginButton_AnimationStop(const int& number)
+	{
+		// 추출한 애니메이션 플레이 ( 플레이 버튼 누르면 업데이트 되면서 해당 메시 컴포넌트들에게 setTransform을 통해 애니메이션 플레이 )
+		if (ImGui::Button("Stop"))
+		{
+			mPlayAnimationClipNumber = number;
+			mDurationTime = 0.f;
+			mbIsPlay = false;
+		}
+	}
+
+	void PhysicsAnimatorWindow::beginButton_AnimationReset()
+	{
+		// 추출한 애니메이션 플레이 ( 플레이 버튼 누르면 업데이트 되면서 해당 메시 컴포넌트들에게 setTransform을 통해 애니메이션 플레이 )
+		if (ImGui::Button("Reset"))
+		{
+			mDurationTime = 0.f;
+			mbIsPlay = false;
+
+			resetAnimation();
 		}
 	}
 
@@ -205,14 +226,17 @@ namespace fq::game_engine
 			if (PathPayLoad)
 			{
 				mRegisteredObject = nullptr;
-				mExtractObjects.clear();
+				mExtractObjectNames.clear();
 				mAnimationClipContainer.clear();
 
-				mRegisteredObject = static_cast<fq::game_module::GameObject*>(PathPayLoad->Data);
+				auto object = static_cast<fq::game_module::GameObject*>(PathPayLoad->Data);
+
+				mRegisteredObject = object->shared_from_this();
 
 				std::vector<fq::game_module::GameObject*> gameObjects = mRegisteredObject->GetChildren();
-				mExtractObjects.reserve(gameObjects.size());
-				mExtractObjects.push_back(mRegisteredObject);
+				mExtractObjectNames.reserve(gameObjects.size());
+				mExtractObjectNames.push_back(mRegisteredObject->GetName());
+
 				for (auto& object : gameObjects)
 				{
 					if (object->HasComponent<fq::game_module::SkinnedMeshRenderer>() || object->HasComponent<fq::game_module::StaticMeshRenderer>())
@@ -220,15 +244,28 @@ namespace fq::game_engine
 						if (!object->HasComponent<fq::game_module::RigidBody>())
 							break;
 
-						mExtractObjects.push_back(object);
+						mExtractObjectNames.push_back(object->GetName());
 					}
 				}
 			}
 			ImGui::EndDragDropTarget();
 		}
+	}
 
+	void PhysicsAnimatorWindow::resetAnimation()
+	{
+		mCurrentKeyFrame = 0;
 
-		int a = 0;
+		for (auto& objectName : mExtractObjectNames)
+		{
+			auto object = mScene->GetObjectByName(objectName);
+			fq::game_module::Transform* objectTransform = object->GetComponent<fq::game_module::Transform>();
 
+			if (!mAnimationClipContainer.empty())
+			{
+				DirectX::SimpleMath::Matrix localMatrix = mAnimationClipContainer[mPlayAnimationClipNumber].find(objectName)->second[0];
+				objectTransform->SetLocalMatrix(localMatrix);
+			}
+		}
 	}
 }
