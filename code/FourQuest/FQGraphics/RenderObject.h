@@ -36,15 +36,19 @@ namespace fq::graphics
 		inline virtual void SetUseShadow(bool bUseShadow) override;
 		inline virtual void SetAnimationTime(float timePos) override;
 		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
+		inline virtual bool SetBlendAnimationKey(const std::array<std::string, 2> animationKeys) override;
+		inline virtual bool SetBlendAnimationKey(const std::string& lhsAnimationKey, const std::string& rhsAnimationKey) override;
+		inline virtual void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) override;
+		inline virtual void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
-
 		inline virtual EObjectRenderType GetObjectRenderType() const override;
 		inline virtual float GetAlpha() const override;
 		inline virtual bool GetUseShadow() const override;
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 		inline virtual float GetAnimationTime() const override;
+		inline virtual float GetBlendTime() const override;
 
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
@@ -62,6 +66,10 @@ namespace fq::graphics
 		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
 		const fq::common::NodeClip* mNodeCache;
 		std::shared_ptr<fq::common::AnimationClip> mClipCache;
+
+		const fq::common::NodeClip* mBlendNodeCache;
+		std::shared_ptr<fq::common::AnimationClip> mBlendClipCache;
+		float mBlendTimePos;
 	};
 
 #pragma region inlineFunc
@@ -123,6 +131,89 @@ namespace fq::graphics
 
 		return true;
 	}
+	inline bool StaticMeshObject::SetBlendAnimationKey(const std::array<std::string, 2> animationKeys)
+	{
+		return SetBlendAnimationKey(animationKeys[0], animationKeys[1]);
+	}
+	inline bool StaticMeshObject::SetBlendAnimationKey(const std::string& animationKey, const std::string& blendAnimationKey)
+	{
+		auto find = mAnimationMap.find(animationKey);
+
+		if (find == mAnimationMap.end())
+		{
+			return false;
+		}
+
+		auto secondFind = mAnimationMap.find(blendAnimationKey);
+
+		if (secondFind == mAnimationMap.end())
+		{
+			return false;
+		}
+
+		const std::vector<fq::common::NodeClip>& nodeClips = find->second->NodeClips;
+		auto nodeClip = std::find_if(nodeClips.begin(), nodeClips.end(), [&](const fq::common::NodeClip& nodeClip) { return nodeClip.NodeName == mStaticMesh->GetMeshData().NodeName; });
+		mClipCache = find->second;
+
+		if (nodeClip != nodeClips.end())
+		{
+			mNodeCache = &(*nodeClip);
+		}
+
+		const std::vector<fq::common::NodeClip>& secondNodeClips = secondFind->second->NodeClips;
+		auto secondNodeClip = std::find_if(secondNodeClips.begin(), secondNodeClips.end(), [&](const fq::common::NodeClip& nodeClip) { return nodeClip.NodeName == mStaticMesh->GetMeshData().NodeName; });
+		mBlendClipCache = secondFind->second;
+
+		if (secondNodeClip != secondNodeClips.end())
+		{
+			mBlendNodeCache = &(*secondNodeClip);
+		}
+
+		return true;
+	}
+	inline void StaticMeshObject::SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight)
+	{
+		SetBlendAnimationTime(timePos[0], timePos[1], blendWeight);
+	}
+	inline void StaticMeshObject::SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight)
+	{
+		mTimePos = timePos;
+		mBlendTimePos = blendTimePos;
+
+		if (mNodeCache == nullptr && mBlendNodeCache == nullptr)
+		{
+			return;
+		}
+
+		blendWeight = std::min<float>(blendWeight, 1.f);
+		blendWeight = std::max<float>(blendWeight, 0.f);
+
+		fq::common::Keyframe srcAnimation;
+		fq::common::Keyframe destAnimation;
+
+		if (mNodeCache != nullptr && mClipCache != nullptr)
+		{
+			fq::common::Keyframe lhs;
+			fq::common::Keyframe rhs;
+			float weight;
+
+			AnimationHelper::FindKeyframe(mNodeCache->Keyframes, *mClipCache, timePos, &lhs, &rhs, &weight);
+			srcAnimation = AnimationHelper::Interpolate(lhs, rhs, weight);
+		}
+
+		if (mBlendNodeCache != nullptr && mBlendClipCache != nullptr)
+		{
+			fq::common::Keyframe lhs;
+			fq::common::Keyframe rhs;
+			float weight;
+
+			AnimationHelper::FindKeyframe(mBlendNodeCache->Keyframes, *mBlendClipCache, timePos, &lhs, &rhs, &weight);
+			destAnimation = AnimationHelper::Interpolate(lhs, rhs, weight);
+		}
+
+		fq::common::Keyframe resultKeyframe = AnimationHelper::Interpolate(srcAnimation, destAnimation, blendWeight);
+		mTransform = AnimationHelper::CreateMatrix(resultKeyframe);
+	}
 
 	inline const std::shared_ptr<StaticMesh>& StaticMeshObject::GetStaticMesh() const
 	{
@@ -151,6 +242,10 @@ namespace fq::graphics
 	inline float StaticMeshObject::GetAnimationTime() const
 	{
 		return mTimePos;
+	}
+	inline float StaticMeshObject::GetBlendTime() const
+	{
+		return mBlendTimePos;
 	}
 	inline const std::vector<std::shared_ptr<Material>>& StaticMeshObject::GetMaterials() const
 	{
@@ -182,14 +277,14 @@ namespace fq::graphics
 		inline virtual void SetBindPose() override;
 		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
 		inline virtual void SetAnimationTime(float timePos) override;
-		inline virtual void SetBlendAnimationTime(const std::array<float, 2>& timePos, float lhsWeight) override;
-		inline virtual void SetBlendAnimationTime(float srcAnimTimePos, float destAnimTimePos, float srcBlendWeight) override;
 		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
 		inline virtual void SetAlpha(float alpha) override;
 		inline virtual void SetUseShadow(bool bUseShadow) override;
 		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
-		inline virtual bool SetBlendAnimationKey(const std::array<std::string, 2> animationKey) override;
-		inline virtual bool SetBlendAnimationKey(const std::string& srcAnimationKey, const std::string& destAnimationKey) override;
+		inline virtual bool SetBlendAnimationKey(const std::array<std::string, 2> animKey) override;
+		inline virtual bool SetBlendAnimationKey(const std::string& animKey, const std::string& blendAnimKey) override;
+		inline virtual void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) override;
+		inline virtual void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline virtual float GetAnimationTime() const override;
@@ -212,7 +307,6 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix mTransform;
 		float mTimePos;
 		float mBlendTimePos;
-		float mWeight;
 		BoneHierarchyCache mBoneHierarchyCache;
 		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
 		EObjectRenderType mObjectRenderType;
@@ -288,16 +382,17 @@ namespace fq::graphics
 		mTimePos = timePos;
 		mBoneHierarchyCache.Update(timePos);
 	}
-	inline void SkinnedMeshObject::SetBlendAnimationTime(const std::array<float, 2>& timePos, float lhsWeight)
+	inline void SkinnedMeshObject::SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight)
 	{
-		SetBlendAnimationTime(timePos[0], timePos[1], lhsWeight);
+		SetBlendAnimationTime(timePos[0], timePos[1], blendWeight);
 	}
-	inline void SkinnedMeshObject::SetBlendAnimationTime(float lhsTimePos, float rhsTimePos, float lhsWeight)
+	inline void SkinnedMeshObject::SetBlendAnimationTime(float lhsTimePos, float rhsTimePos, float blendWeight)
 	{
 		mTimePos = lhsTimePos;
 		mBlendTimePos = rhsTimePos;
-		mWeight = std::min<float>(lhsWeight, 1.f);
-		mBoneHierarchyCache.Update(mTimePos, mBlendTimePos, mWeight);
+		blendWeight = std::min<float>(blendWeight, 1.f);
+		blendWeight = std::max<float>(blendWeight, 0.f);
+		mBoneHierarchyCache.Update(mTimePos, mBlendTimePos, blendWeight);
 	}
 	inline void SkinnedMeshObject::SetObjectRenderType(EObjectRenderType renderType)
 	{
