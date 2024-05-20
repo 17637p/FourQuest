@@ -54,64 +54,91 @@ namespace fq::graphics
 		std::string AnimationKey; // ISkinnedMeshObject SetAnimation에서 사용할 이름
 	};
 
-	namespace debug
+	struct TerrainLayer
 	{
-		struct SphereInfo
-		{
-			DirectX::BoundingSphere Sphere;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
+		std::wstring BaseColor;
+		std::wstring NormalMap;
 
-		struct AABBInfo
-		{
-			DirectX::BoundingBox AABB;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
+		float Metalic;
+		float Roughness;
 
-		struct OBBInfo
-		{
-			DirectX::BoundingOrientedBox OBB;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
+		float TileSizeX;
+		float TileSizeY;
+		float TileOffsetX;
+		float TileOffsetY;
+	};
 
-		struct FrustumInfo
-		{
-			DirectX::BoundingFrustum Frustum;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
+	struct TerrainMaterialInfo
+	{
+		//unsigned short NumOfTexture; // 일단 최대 4
 
-		struct GridInfo
-		{
-			DirectX::SimpleMath::Vector3 Origin;
-			DirectX::SimpleMath::Vector3 XAxis;
-			DirectX::SimpleMath::Vector3 YAxis;
-			size_t XDivision;
-			size_t YDivision;
-			float GridSize;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
+		//std::vector<std::wstring> BaseColorFileNames;
+		//std::vector<std::wstring> MetalnessFileNames;
+		//std::vector<std::wstring> RoughnessFileNames;
+		//std::vector<std::wstring> NormalFileNames;
 
-		struct RingInfo
-		{
-			DirectX::SimpleMath::Vector3 Origin;
-			DirectX::SimpleMath::Vector3 MajorAxis;
-			DirectX::SimpleMath::Vector3 MinorAxis;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
+		std::vector<TerrainLayer> Layers; // 최대 4
 
-		struct RayInfo
-		{
-			DirectX::SimpleMath::Vector3 Origin;
-			DirectX::SimpleMath::Vector3 Direction;
-			bool Normalize = true;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
-
-		struct PolygonInfo
-		{
-			std::vector<DirectX::SimpleMath::Vector3> Points;
-			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
-		};
-	}
+		std::wstring AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
+	};
 }
 
+namespace fq::graphics::debug
+{
+	struct SphereInfo
+	{
+		DirectX::BoundingSphere Sphere;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct AABBInfo
+	{
+		DirectX::BoundingBox AABB;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct OBBInfo
+	{
+		DirectX::BoundingOrientedBox OBB;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct FrustumInfo
+	{
+		DirectX::BoundingFrustum Frustum;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct GridInfo
+	{
+		DirectX::SimpleMath::Vector3 Origin;
+		DirectX::SimpleMath::Vector3 XAxis;
+		DirectX::SimpleMath::Vector3 YAxis;
+		size_t XDivision;
+		size_t YDivision;
+		float GridSize;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct RingInfo
+	{
+		DirectX::SimpleMath::Vector3 Origin;
+		DirectX::SimpleMath::Vector3 MajorAxis;
+		DirectX::SimpleMath::Vector3 MinorAxis;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct RayInfo
+	{
+		DirectX::SimpleMath::Vector3 Origin;
+		DirectX::SimpleMath::Vector3 Direction;
+		bool Normalize = true;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+
+	struct PolygonInfo
+	{
+		std::vector<DirectX::SimpleMath::Vector3> Points;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+	};
+}

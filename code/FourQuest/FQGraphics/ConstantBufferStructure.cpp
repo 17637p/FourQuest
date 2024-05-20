@@ -1,5 +1,7 @@
 #include "ConstantBufferStructure.h"
 
+#include <IFQRenderObject.h>
+
 #include "D3D11Device.h"
 #include "D3D11Buffer.h"
 #include "Material.h"
@@ -41,4 +43,29 @@ namespace fq::graphics
 
 		cbuffer->Update(device, boneTransform);
 	}
+
+	void ConstantBufferHelper::UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device, 
+		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer, 
+		const std::shared_ptr<TerrainMaterial>& material, 
+		const ITerrainMeshObject* iTerrainObject)
+	{
+		TerrainTexture terrainTexture;
+		terrainTexture.NumOfTexture = material->GetNumOfTexture();
+		
+		for (unsigned short i = 0; i < terrainTexture.NumOfTexture; i++)
+		{
+			terrainTexture.layer[i].TileSizeX = material->GetTileSizeX(i);
+			terrainTexture.layer[i].TileSizeY = material->GetTileSizeY(i);
+			terrainTexture.layer[i].TileOffsetX = material->GetTileOffsetX(i);
+			terrainTexture.layer[i].TileOffsetY = material->GetTileOffsetY(i);
+		
+			terrainTexture.layer[i].Metalic = material->GetMetalic(i);
+			terrainTexture.layer[i].Roughness = material->GetRoughness(i);
+		}
+
+		int a = sizeof(TerrainTexture);
+
+		cbuffer->Update(device, terrainTexture);
+	}
+
 }

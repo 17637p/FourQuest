@@ -84,7 +84,7 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="index">인덱스</param>
 		/// <returns>index를 초과한경우 nulllptr 이고 아니면 정상적인 게임 오브젝트</returns>
-		std::shared_ptr<GameObject> GetObjectByIndex(size_t index);
+		GameObject* GetObjectByIndex(size_t index);
 
 		/// <summary>
 		/// 오브젝트 ID에 해당하는 오브젝트 반환
@@ -162,9 +162,9 @@ namespace fq::game_module
 	inline void Scene::ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction
 		, bool bIsIncludeDestroyed)
 	{
-		for (const std::shared_ptr<GameObject>& object : GetComponentView<Types ...>(bIsIncludeDestroyed))
+		for (GameObject& object : GetComponentView<Types ...>(bIsIncludeDestroyed))
 		{
-			viewFunction(*object, *(object->template GetComponent<Types>()) ...);
+			viewFunction(object, *(object.template GetComponent<Types>()) ...);
 		}
 	}
 

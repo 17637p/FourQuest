@@ -12,10 +12,12 @@ namespace fq::graphics
 	class StaticMesh;
 	class SkinnedMesh;
 	class Material;
+	class TerrainMaterial;
 
 	// job을 일반화시키거나 더 세부로 쪼개거나 결정해야함
 	class IStaticMeshObject;
 	class ISkinnedMeshObject;
+	class ITerrainMeshObject;
 
 	struct StaticMeshJob
 	{
@@ -40,5 +42,14 @@ namespace fq::graphics
 		float Alpha;
 		bool bUseShadow;
 		ISkinnedMeshObject* tempObject;
+	};
+
+	struct TerrainMeshJob
+	{
+		size_t SubsetIndex;
+		std::shared_ptr<StaticMesh> StaticMesh;
+		std::shared_ptr<TerrainMaterial> TerrainMaterial;
+		const DirectX::SimpleMath::Matrix* TransformPtr;
+		ITerrainMeshObject* tempObject;
 	};
 }

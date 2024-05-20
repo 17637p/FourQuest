@@ -14,6 +14,7 @@
 #include "CameraSystem.h"
 #include "RenderingSystem.h"
 #include "LightSystem.h"
+#include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "SoundSystem.h"
 
@@ -67,6 +68,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
+	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 
 	// Editor ÃÊ±âÈ­
  	InitializeEditor();
@@ -122,6 +124,11 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
+				
+				// Animation Update
+				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+
+				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
 
@@ -188,6 +195,8 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mMainMenuBar->Render();
 	mEditor->mCollisionMatrixWindow->Render();
 	mEditor->mPhysicsAnimatorWindow->Render();
+	mEditor->mSkyBoxWindow->Render();
+	mEditor->mAnimatorWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -212,6 +221,8 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mLogWindow->Initialize(mGameProcess.get());
 	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
 	mEditor->mPhysicsAnimatorWindow->Initialize(mGameProcess.get());
+	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
+	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

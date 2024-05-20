@@ -20,6 +20,13 @@ namespace fq::game_engine
 	/// </summary>
 	class Inspector : public IEditorWindow
 	{
+		enum class ViewType 
+		{
+			GameObject,
+			AnimationController,
+			None,
+		};
+
 	public:
 		Inspector();
 		~Inspector();
@@ -36,6 +43,11 @@ namespace fq::game_engine
 		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent =false);
 		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginAddComponent();
+
+		// Animator
+		void beginAnimationController(const std::shared_ptr<fq::game_module::AnimatorController>& controller);
+		void beginTransitionCondition(fq::game_module::TransitionCondition& condition, int index);
+		void beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode);
 
 		// 데이터 타입 관련
 		void beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle);
@@ -54,16 +66,20 @@ namespace fq::game_engine
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
-		fq::game_module::InputManager* mInputManager;
-		
 		bool mbIsOpen;
 
-		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
-		fq::game_module::EventHandler mSelectObjectHandler;
-		std::vector<entt::meta_type> mComponentTypes;
-		UINT mCurrentAddComponentIndex;
+		ViewType mViewType;
 
+		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
+		UINT mCurrentAddComponentIndex;
+		std::vector<entt::meta_type> mComponentTypes;
 		DirectX::SimpleMath::Color mPrevColor;
+
+		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
+		std::string mSelectAnimationStateName;
+
+		fq::game_module::EventHandler mSelectObjectHandler;
+		fq::game_module::EventHandler mSelectAnimationController;
 	};
 
 
