@@ -176,6 +176,9 @@
     <ClInclude Include="SkyBoxWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -273,8 +276,8 @@
     </ClCompile>
     <ClCompile Include="PhysicsAnimatorWindow.cpp">
 		<Filter>src\11.Window</Filter>
-	</ClCompile>
-	<ClCompile Include="AnimatorWindow.cpp">
+    </ClCompile>
+    <ClCompile Include="AnimatorWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="AnimationSystem.cpp">
