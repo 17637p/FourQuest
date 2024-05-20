@@ -24,6 +24,7 @@ namespace fq::graphics
 		void DeletePushedObject();
 
 		IStaticMeshObject* CreateStaticMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info);
+		void AddAnimation(const std::shared_ptr<D3D11ModelManager>& modelManager, IStaticMeshObject* staticMeshObjectInterface, AnimationInfo info);
 		void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObjectInterface);
 
 		ISkinnedMeshObject* CreateSkinnedMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info);

@@ -30,12 +30,14 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// RenderObject
+		void WriteModel(std::string path, const fq::common::Model& modelData) override;
 		void ConvertModel(std::string fbxFile, std::string fileName) override;
 		const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
 		const fq::common::Model& GetModel(std::string path) override;
 		void DeleteModel(std::string path) override;
 
 		IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
+		void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) override;
 		void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
 
 		ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;

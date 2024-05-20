@@ -136,36 +136,54 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ArticulationResource.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="CharacterMovement.h" />
+    <ClInclude Include="CharacterPhysics.h" />
+    <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="EngineDataConverter.h" />
+    <ClInclude Include="CharacterJoint.h" />
+    <ClInclude Include="CharacterLink.h" />
+    <ClInclude Include="MaterialResource.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
+    <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
     <ClInclude Include="PhysicsCookingMeshTool.h" />
     <ClInclude Include="DynamicRigidBody.h" />
     <ClInclude Include="FQPhysics.h" />
     <ClInclude Include="IFQPhysics.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysicsResourceManager.h" />
     <ClInclude Include="PhysicsRigidBodyManager.h" />
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
     <ClInclude Include="PlayerCharacterController.h" />
+    <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArticulationResource.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="CharacterMovement.cpp" />
+    <ClCompile Include="CharacterPhysics.cpp" />
+    <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
+    <ClCompile Include="CharacterJoint.cpp" />
+    <ClCompile Include="CharacterLink.cpp" />
+    <ClCompile Include="MaterialResource.cpp" />
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
+    <ClCompile Include="PhysicsCharacterPhysicsManager.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
     <ClCompile Include="PhysicsCookingMeshTool.cpp" />
     <ClCompile Include="DynamicRigidBody.cpp" />
     <ClCompile Include="FQPhysics.cpp" />
     <ClCompile Include="IFQPhysics.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PhysicsResourceManager.cpp" />
     <ClCompile Include="PhysicsRigidBodyManager.cpp" />
     <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
     <ClCompile Include="PlayerCharacterController.cpp" />
+    <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="StaticRigidBody.cpp" />
   </ItemGroup>

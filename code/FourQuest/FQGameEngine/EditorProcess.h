@@ -13,6 +13,7 @@
 #include "GamePlayWindow.h"
 #include "MainMenuBar.h"
 #include "CollisionMatrixWindow.h"
+#include "PhysicsAnimatorWindow.h"
 #include "SkyBoxWindow.h"
 #include "AnimatorWindow.h"
 
@@ -41,6 +42,7 @@ namespace fq::game_engine
 		std::unique_ptr<LogWindow> mLogWindow;
 		std::unique_ptr<GamePlayWindow> mGamePlayWindow;
 		std::unique_ptr<MainMenuBar> mMainMenuBar;
+		std::unique_ptr<PhysicsAnimatorWindow> mPhysicsAnimatorWindow;
 
 		// Close
 		std::unique_ptr<AnimatorWindow> mAnimatorWindow;

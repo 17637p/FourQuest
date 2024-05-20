@@ -18,6 +18,7 @@ namespace fq::graphics
 		D3D11ModelManager() = default;
 		~D3D11ModelManager() = default;
 
+		void WriteModel(const std::string& fileName, const fq::common::Model& modelData);
 		void ConvertModel(const std::string& fbxFile, const std::string& fileName);
 
 		const fq::common::Model& CreateModel(const std::shared_ptr<D3D11Device>& device, std::string fileName, std::filesystem::path textureBasePath = "");

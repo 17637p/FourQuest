@@ -49,6 +49,7 @@ namespace fq::graphics
 		BoneHierarchyCache(std::shared_ptr<BoneHierarchy> boneHierarchy);
 		~BoneHierarchyCache() = default;
 
+		void Clear();
 		void Update(float timePos);
 
 		inline void SetAnimation(std::shared_ptr<fq::common::AnimationClip> animationCilp);

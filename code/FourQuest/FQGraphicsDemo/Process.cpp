@@ -67,6 +67,7 @@ bool Process::Init(HINSTANCE hInstance)
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/SkinningTest.model";
 	const std::string animModelPath1 = "./resource/example/model/kick.model";
+	const std::string staticAnimModelPath0 = "./resource/example/model/animBoxNA.model";
 	const std::string textureBasePath = "./resource/example/texture";
 
 	mTestGraphics->CreateModel(modelPath, textureBasePath);
@@ -79,16 +80,22 @@ bool Process::Init(HINSTANCE hInstance)
 	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
+	mTestGraphics->WriteModel("./cocoa.model", modelData);
+	modelData= mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
+	std::vector<fq::graphics::AnimationInfo> staticAnimInfo;
+	modelData = mTestGraphics->CreateModel(staticAnimModelPath0, textureBasePath);
+	staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
+	createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 100, 1, 100 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
-	for (size_t i = 0; i < 10; ++i)
-	{
-		float randX = (float)(rand() % 500 - 250);
-		float randY = (float)(rand() % 100);
-		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-	}
+	// for (size_t i = 0; i < 10; ++i)
+	// {
+	// 	float randX = (float)(rand() % 500 - 250);
+	// 	float randY = (float)(rand() % 100);
+	// 	float randZ = (float)(rand() % 500 - 250);
+	// 	createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+	// 	createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+	// }
 
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
@@ -266,7 +273,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('S'))
 	{
-		walk(cameraTransform , -speed);
+		walk(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('D'))
 	{
@@ -274,7 +281,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('A'))
 	{
-		strafe(cameraTransform , -speed);
+		strafe(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('E'))
 	{
@@ -282,7 +289,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
-		worldUpdown(cameraTransform , -speed);
+		worldUpdown(cameraTransform, -speed);
 	}
 
 	// Test용 두 번째 카메라
@@ -292,7 +299,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('K'))
 	{
-		walk(cameraTransform2 , -speed);
+		walk(cameraTransform2, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('L'))
 	{
@@ -337,7 +344,7 @@ void Process::Update()
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
- 	}
+	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
 		for (const auto& object : mStaticMeshObjects)
@@ -396,7 +403,7 @@ void Process::Render()
 	s_time += mTimeManager.GetDeltaTime();
 	s_time = fmod(s_time, 3.f);
 
-	for (size_t i = 1; i < mStaticMeshObjects.size(); ++i)
+	for (size_t i = 0; i < mStaticMeshObjects.size(); ++i)
 	{
 		auto& obj = mStaticMeshObjects[i];
 		if (GetAsyncKeyState('1') & 0x8000)
@@ -405,8 +412,15 @@ void Process::Render()
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
+			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+			obj->SetAnimationTime(s_time);
 		}
+		else
+		{
+			obj->SetAnimationTime(0.f);
+		}
+
 		if (GetAsyncKeyState('3') & 0x8000)
 		{
 			obj->SetUseShadow(true);
@@ -425,11 +439,17 @@ void Process::Render()
 		{
 			obj->SetAnimationKey("Kick");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
+			obj->UpdateAnimationTime(s_time);
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
 			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+			obj->UpdateAnimationTime(s_time);
+		}
+		else
+		{
+			obj->SetBindPose();
 		}
 		if (GetAsyncKeyState('3') & 0x8000)
 		{
@@ -441,7 +461,6 @@ void Process::Render()
 		}
 
 		obj->SetAlpha(s_time * 0.33f);
-		obj->UpdateAnimationTime(s_time);
 	}
 
 	// --------------------font Test-------------------------------
@@ -713,6 +732,12 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		if (mesh.second.BoneVertices.empty())
 		{
 			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
+			}
+
 			mStaticMeshObjects.push_back(iStaticMeshObject);
 		}
 		else
