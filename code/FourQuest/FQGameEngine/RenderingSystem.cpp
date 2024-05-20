@@ -73,6 +73,16 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					meshObject->UpdateTransform(transform.GetWorldMatrix());
 				}
 			});
+
+	scene->ViewComponents<Transform, Terrain>
+		([](GameObject& object, Transform& transform, Terrain& mesh)
+			{
+				auto meshObject = mesh.GetTerrainMeshObject();
+				if (meshObject)
+				{
+					meshObject->SetTransform(transform.GetWorldMatrix());
+				}
+			});
 }
 
 void fq::game_engine::RenderingSystem::OnLoadScene()
@@ -84,6 +94,7 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	{
 		loadStaticMeshRenderer(&object);
 		loadSkinnedMeshRenderer(&object);
+		loadTerrain(&object);
 		loadAnimation(&object);
 	}
 
@@ -119,6 +130,9 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 3. Animation
 	loadAnimation(gameObject);
+
+	// 4. Terrain
+	loadTerrain(gameObject);
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
@@ -241,6 +255,7 @@ void fq::game_engine::RenderingSystem::OnDestroyedGameObject(const fq::event::On
 {
 	unloadStaticMeshRenderer(event.object);
 	unloadSkinnedMeshRenderer(event.object);
+	unloadTerrain(event.object);
 }
 
 void fq::game_engine::RenderingSystem::unloadStaticMeshRenderer(fq::game_module::GameObject* object)
@@ -281,6 +296,11 @@ void fq::game_engine::RenderingSystem::AddComponent(const fq::event::AddComponen
 	{
 		loadSkinnedMeshRenderer(event.component->GetGameObject());
 	}
+
+	if (event.id == entt::resolve<fq::game_module::Terrain>().id())
+	{
+		loadTerrain(event.component->GetGameObject());
+	}
 }
 
 void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveComponent& event)
@@ -295,6 +315,11 @@ void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveCo
 		unloadSkinnedMeshRenderer(event.component->GetGameObject());
 	}
 
+	if (event.id == entt::resolve<fq::game_module::Terrain>().id())
+	{
+		unloadTerrain(event.component->GetGameObject());
+	}
+
 }
 
 bool fq::game_engine::RenderingSystem::IsLoadedModel(const ModelPath& path)
@@ -302,3 +327,39 @@ bool fq::game_engine::RenderingSystem::IsLoadedModel(const ModelPath& path)
 	return mLoadModels.find(path) != mLoadModels.end();
 }
 
+void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Terrain>())
+	{
+		return;
+	}
+
+	auto terrain = object->GetComponent<fq::game_module::Terrain>();
+	auto transform = object->GetComponent<fq::game_module::Transform>();
+
+	// Model »ý¼º
+	LoadModel("resource/internal/terrain/Plain.model");
+	const fq::common::Model& modelData = mGameProcess->mGraphics->GetModel("resource/internal/terrain/Plain.model");
+	auto mesh = modelData.Meshes[0];
+
+	fq::graphics::MeshObjectInfo meshInfo;
+	meshInfo.ModelPath = "resource/internal/terrain/Plain.model";
+	meshInfo.MeshName = mesh.second.Name;
+	meshInfo.Transform = transform->GetLocalMatrix();
+
+	fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mGameProcess->mGraphics->CreateTerrainMeshObject(meshInfo);
+	terrain->SetTerrainMeshObject(iTerrainMeshObject);
+}
+
+void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Terrain>())
+	{
+		return;
+	}
+
+	auto terrain = object->GetComponent<fq::game_module::Terrain>();
+	auto terrainMeshObject = terrain->GetTerrainMeshObject();
+	mGameProcess->mGraphics->DeleteTerrainMeshObject(terrainMeshObject);
+	terrain->SetTerrainMeshObject(nullptr);
+}

@@ -80,7 +80,9 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 100, 1, 100 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
@@ -96,7 +98,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 3000;
+	cameraInfo.farPlain = 300000;
 
 	mTestGraphics->SetCamera(cameraInfo);
 
@@ -266,7 +268,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('S'))
 	{
-		walk(cameraTransform , -speed);
+		walk(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('D'))
 	{
@@ -274,7 +276,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('A'))
 	{
-		strafe(cameraTransform , -speed);
+		strafe(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('E'))
 	{
@@ -282,7 +284,7 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
-		worldUpdown(cameraTransform , -speed);
+		worldUpdown(cameraTransform, -speed);
 	}
 
 	// Test용 두 번째 카메라
@@ -360,7 +362,9 @@ void Process::Update()
 
 	if (InputManager::GetInstance().IsGetKeyDown('R'))
 	{
-		//mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0]);
+		terrainMaterial.Layers[0].TileSizeX = 100;
+		terrainMaterial.Layers[0].TileSizeY = 100;
+		mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
 	}
 
 	shadowTest();
@@ -747,19 +751,20 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
 		mTerrainMeshObjects.push_back(iTerrainMeshObject);
 
-		fq::graphics::TerrainMaterialInfo terrainMaterial;
+		//fq::graphics::TerrainMaterialInfo terrainMaterial;
+		terrainMaterial.Layers.clear();
 
 		fq::graphics::TerrainLayer layer1;
 		fq::graphics::TerrainLayer layer2;
 		fq::graphics::TerrainLayer layer3;
 
-		layer1.BaseColor = L"./resource/example/texture/t1.jpg";
-		layer2.BaseColor = L"./resource/example/texture/t2.jpg";
-		layer3.BaseColor = L"./resource/example/texture/t3.jpg";
+		layer1.BaseColor = "./resource/example/texture/t1.jpg";
+		layer2.BaseColor = "./resource/example/texture/t2.jpg";
+		layer3.BaseColor = "./resource/example/texture/t3.jpg";
 
-		layer1.NormalMap = L"./resource/example/texture/boxNormal.jpg";
-		layer2.NormalMap = L"./resource/example/texture/cerberus_N.png";
-		layer3.NormalMap = L"./resource/example/texture/character_normal.png";
+		layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
+		layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
+		layer3.NormalMap = "./resource/example/texture/character_normal.png";
 
 		layer1.TileOffsetX = 0.5;
 		layer1.TileOffsetY = 0.5;
@@ -783,7 +788,7 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		layer2.Roughness = 0;
 		layer3.Roughness = 0;
 
-		terrainMaterial.AlPhaFileName = L"./resource/example/texture/TestAlpha4.png";
+		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
 
 		terrainMaterial.Layers.push_back(layer1);
 		terrainMaterial.Layers.push_back(layer2);
