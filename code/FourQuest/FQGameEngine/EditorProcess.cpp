@@ -17,6 +17,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mModelSystem(std::make_unique <ModelSystem>())
 	, mDebugSystem(std::make_unique <DebugSystem>())
 	, mCollisionMatrixWindow(std::make_unique<CollisionMatrixWindow>())
+	, mPhysicsAnimatorWindow(std::make_unique<PhysicsAnimatorWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

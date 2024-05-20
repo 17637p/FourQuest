@@ -161,7 +161,10 @@
     <ClInclude Include="SoundSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="AnimatorWindow.h">
+    <ClInclude Include="PhysicsAnimatorWindow.h">
+		<Filter>include\11.EditorWindow</Filter>
+	</ClInclude>
+	<ClInclude Include="AnimatorWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="AnimationSystem.h">
@@ -171,6 +174,9 @@
       <Filter>include\11.EditorWindow\Define</Filter>
     </ClInclude>
     <ClInclude Include="SkyBoxWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
   </ItemGroup>
@@ -267,6 +273,9 @@
     </ClCompile>
     <ClCompile Include="SoundSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsAnimatorWindow.cpp">
+		<Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="AnimatorWindow.cpp">
       <Filter>src\11.Window</Filter>

@@ -127,7 +127,6 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region CreateDynamicAndStaticBody
-
 	bool PhysicsRigidBodyManager::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
@@ -247,11 +246,9 @@ namespace fq::physics
 
 		return true;
 	}
-
 #pragma endregion
 
 #pragma region RemoveRigidBody
-
 	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene)
 	{
 		if (mRigidBodyContainer.find(id) == mRigidBodyContainer.end())
@@ -351,11 +348,9 @@ namespace fq::physics
 		}
 		iterContainer.clear();
 	}
-
 #pragma endregion
 
 #pragma region UpdateCollisionMatrix
-
 	void PhysicsRigidBodyManager::UpdateCollisionMatrix(int* collisionMatrix)
 	{
 		for (const auto& body : mRigidBodyContainer)
@@ -388,11 +383,9 @@ namespace fq::physics
 			}
 		}
 	}
-
 #pragma endregion
 
 #pragma region ExtractDebugData
-
 	void PhysicsRigidBodyManager::ExtractDebugData()
 	{
 		using namespace std;
@@ -433,7 +426,6 @@ namespace fq::physics
 			}
 		}
 	}
-
 #pragma endregion
 
 }

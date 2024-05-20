@@ -907,6 +907,9 @@ void fq::game_engine::Inspector::beginTransitionCondition(fq::game_module::Trans
 
 void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode)
 {
+	if (stateNode.GetType() != game_module::AnimationStateNode::Type::State)
+		return;
+
 	// ModelPath GUI
 	std::string modelPath = stateNode.GetModelPath();
 
