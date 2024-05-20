@@ -42,6 +42,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderSphereCollider();
 	renderCapsuleCollider();
 	renderConvexMeshCollider();
+	renderCharaterController();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -200,6 +201,56 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
+void fq::game_engine::DebugSystem::renderCharaterController(fq::game_module::Transform& transform
+	, fq::game_module::CharacterController& cotroller)
+{
+	using DirectX::SimpleMath::Color;
+
+	Color color = Color{ 0.f,1.f,0.f };
+	auto right = transform.GetWorldMatrix().Right();
+	right.Normalize();
+	auto controllerInfo = cotroller.GetControllerInfo();
+
+	// UpSphere
+	fq::graphics::debug::SphereInfo info;
+	info.Color = color;
+	info.Sphere.Center = transform.GetWorldPosition() + right * controllerInfo.height;
+	info.Sphere.Radius = controllerInfo.radius;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// DownSphere
+	info.Sphere.Center = transform.GetWorldPosition() - right * controllerInfo.height;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// BodyRay 
+	fq::graphics::debug::RayInfo ray;
+
+	ray.Direction = right * controllerInfo.height * 2.f;
+	ray.Color = color;
+	ray.Normalize = false;
+	auto orgin = info.Sphere.Center;
+	auto foward = transform.GetWorldMatrix().Forward();
+	foward.Normalize();
+	foward *= controllerInfo.radius;
+
+	auto up = transform.GetWorldMatrix().Up();
+	up.Normalize();
+	up *= controllerInfo.radius;
+
+	ray.Origin = orgin + foward;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - foward;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin + up;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - up;
+	mGameProcess->mGraphics->DrawRay(ray);
+}
+
+
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
 	using namespace fq::game_module;
@@ -209,6 +260,8 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 		{
 			RenderCapsuleCollier(transform, capsule);
 		});
+
+
 }
 
 void fq::game_engine::DebugSystem::renderConvexMeshCollider()
@@ -222,7 +275,7 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 		{
 			auto collider = static_cast<fq::game_module::MeshCollider*>(mGameProcess->mPhysicsSystem->GetCollider(id));
 			if (!collider) continue;
-	
+
 			auto count = collider->GetCollisionCount();
 			fq::graphics::debug::PolygonInfo info;
 			info.Color = (count == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
@@ -232,3 +285,15 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 	}
 
 }
+
+void fq::game_engine::DebugSystem::renderCharaterController()
+{
+	using namespace fq::game_module;
+
+	mScene->ViewComponents<Transform, CharacterController>
+		([this](GameObject& object, Transform& transform, CharacterController& cotroller)
+			{
+				renderCharaterController(transform, cotroller);
+			});
+}
+

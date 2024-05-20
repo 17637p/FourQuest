@@ -21,7 +21,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::CharacterController
 
 fq::game_module::CharacterController::CharacterController()
 	:mControllerInfo{}
-	,mMoventInfo{}
+	,mMovementInfo{}
 {}
 
 fq::game_module::CharacterController::~CharacterController()

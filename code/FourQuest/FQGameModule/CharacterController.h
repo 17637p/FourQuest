@@ -29,19 +29,19 @@ namespace fq::game_module
 		/// <summary>
 		/// 캐릭터 이동 정보를 반환합니다
 		/// </summary>
-		fq::physics::CharacterMovementInfo GetMoventInfo() const { return mMoventInfo; }
+		fq::physics::CharacterMovementInfo GetMovementInfo() const { return mMovementInfo; }
 		
 		/// <summary>
 		/// 캐릭터 이동 정보를 설정합니다 
 		/// </summary>
-		void SetMoventInfo(fq::physics::CharacterMovementInfo val) { mMoventInfo = val; }
+		void SetMovementInfo(fq::physics::CharacterMovementInfo val) { mMovementInfo = val; }
 	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		fq::physics::CharacterControllerInfo mControllerInfo;
-		fq::physics::CharacterMovementInfo mMoventInfo;
+		fq::physics::CharacterMovementInfo mMovementInfo;
 
 	};
 

@@ -327,10 +327,10 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<CharacterController>()
 		.type("CharacterController"_hs)
 		.prop(fq::reflect::prop::Name, "CharacterController")
+		.data<&CharacterController::SetMovementInfo, &CharacterController::GetMovementInfo>("MoveInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MoveInfo")
 		.data<&CharacterController::SetControllerInfo, &CharacterController::GetControllerInfo>("ControllerInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ControllerInfo")
-		.data<&CharacterController::SetMoventInfo, &CharacterController::GetMoventInfo>("MoveInfo"_hs)
-		.prop(fq::reflect::prop::Name, "MoveInfo")
 		.base<Component>();
 
 

@@ -603,8 +603,23 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 	}
 	auto valueType = view.value_type();
 
+	// POD Data 
+	if (data.prop(fq::reflect::prop::POD))
+	{
+		for (auto element : view)
+		{
+			entt::meta_any val = element.as_ref();
+			bool isChanged = beginPOD(val);
+
+			if (isChanged)
+			{
+				mEditorProcess->mCommandSystem->Push<SetMetaData>(
+					data, mSelectObject, handle, any);
+			}
+		}
+	}
 	// string 특수화 
-	if (valueType == entt::resolve<std::string>())
+	else if (valueType == entt::resolve<std::string>())
 	{
 		size_t index = 0;
 		for (auto element : view)
@@ -992,14 +1007,13 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod)
 {
-
 	bool changedData = false;
 	auto metaType = pod.type();
 
 	// POD 이름 표시 
 	std::string podName = fq::reflect::GetName(metaType);
 
-	if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border))
+	if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 	{
 		ImGui::Text(podName.c_str());
 
