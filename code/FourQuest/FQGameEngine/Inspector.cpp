@@ -238,6 +238,18 @@ void fq::game_engine::Inspector::beginMember(entt::meta_data data, fq::reflect::
 		}
 		beginIsItemHovered_Comment(data);
 	}
+	else if (metaType.prop(fq::reflect::prop::POD))
+	{
+
+		entt::meta_any val = data.get(handle->GetHandle());
+		bool isChangedData = beginPOD(val);
+
+		if (isChangedData)
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, val);
+		}
+	}
 }
 
 void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle)
@@ -976,5 +988,115 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	float duration = stateNode.GetDuration();
 	ImGui::InputFloat("Duration", &duration);
+}
+
+bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod)
+{
+
+	bool changedData = false;
+	auto metaType = pod.type();
+
+	// POD 이름 표시 
+	std::string podName = fq::reflect::GetName(metaType);
+
+	if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border))
+	{
+		ImGui::Text(podName.c_str());
+
+		for (auto [id, data] : metaType.data())
+		{
+			std::string memberName = fq::reflect::GetName(data);
+
+			if (data.type() == entt::resolve<int>())
+			{
+				int val = data.get(pod).cast<int>();
+				ImGui::InputInt(memberName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<float>())
+			{
+				float val = data.get(pod).cast<float>();
+
+				ImGui::InputFloat(memberName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<double>())
+			{
+				double val = data.get(pod).cast<double>();
+
+				ImGui::InputDouble(memberName.c_str(), &val);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (data.type() == entt::resolve<bool>())
+			{
+				bool val = data.get(pod).cast<bool>();
+
+				if (ImGui::Checkbox(memberName.c_str(), &val))
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+				beginIsItemHovered_Comment(data);
+			}
+			else if (metaType == entt::resolve<std::string>())
+			{
+				std::string val = data.get(pod).cast<std::string>();
+
+				ImGui::InputText(memberName.c_str(), &val);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					data.set(pod, val);
+					changedData = true;
+				}
+
+				// DragDrop 받기
+				if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+					if (pathPayLoad)
+					{
+						std::filesystem::path* dropPath
+							= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+						auto extensions = fq::reflect::GetDragDropExtension(data);
+
+						for (auto& extension : extensions)
+						{
+							if (dropPath->extension() == extension)
+							{
+								val = dropPath->string();
+								data.set(pod, val);
+								changedData = true;
+							}
+						}
+					}
+				}
+				beginIsItemHovered_Comment(data);
+			}
+		}
+
+	}
+	ImGui::EndChild();
+
+	return changedData;
 }
 

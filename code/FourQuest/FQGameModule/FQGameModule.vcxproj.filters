@@ -215,6 +215,9 @@
     <ClInclude Include="AnimationTransition.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -333,6 +336,9 @@
     </ClCompile>
     <ClCompile Include="AnimationTransition.cpp">
       <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
