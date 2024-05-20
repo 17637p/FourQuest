@@ -56,16 +56,16 @@ namespace fq::graphics
 
 	struct TerrainLayer
 	{
-		std::wstring BaseColor;
-		std::wstring NormalMap;
+		std::string BaseColor;
+		std::string NormalMap;
 
-		float Metalic;
-		float Roughness;
+		float Metalic = 0.f;
+		float Roughness =0.f;
 
-		float TileSizeX;
-		float TileSizeY;
-		float TileOffsetX;
-		float TileOffsetY;
+		float TileSizeX = 1.f;
+		float TileSizeY = 1.f;
+		float TileOffsetX =0.f;
+		float TileOffsetY =0.f;
 	};
 
 	struct TerrainMaterialInfo
@@ -79,7 +79,7 @@ namespace fq::graphics
 
 		std::vector<TerrainLayer> Layers; // 최대 4
 
-		std::wstring AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
+		std::string AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
 	};
 }
 

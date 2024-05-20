@@ -30,6 +30,15 @@ namespace fq::graphics
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device, 
 		const TerrainMaterialInfo& materialData,
 		std::filesystem::path basePath /*= ""*/)
+		:mBaseColors{},
+		mNormals{},
+		mTileSizeXs{},
+		mTileSizeYs{},
+		mTileOffsetXs{},
+		mTileOffsetYs{},
+		mMetalics{},
+		mRoughnesses{},
+		mAlpha{nullptr}
 	{
 		mBasePath = basePath;
 
@@ -38,10 +47,18 @@ namespace fq::graphics
 
 	void TerrainMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
-		D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::Pixelshader);
-		D3D11Texture::Bind(d3d11Device, mNormals, 12, ED3D11ShaderType::Pixelshader);
-
-		mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
+		if (mBaseColors.size() != 0)
+		{
+			D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::Pixelshader);
+		}
+		if (mNormals.size() != 0)
+		{
+			D3D11Texture::Bind(d3d11Device, mNormals, 12, ED3D11ShaderType::Pixelshader);
+		}
+		if (mAlpha != nullptr)
+		{
+			mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
+		}
 	}
 
 	void TerrainMaterial::SetMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& materialData)

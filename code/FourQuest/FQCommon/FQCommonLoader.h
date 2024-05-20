@@ -107,7 +107,7 @@ namespace fq::common
 	};
 
 	struct NodeClip
-	{
+	{ 
 		std::string NodeName;
 		std::vector<Keyframe> Keyframes;
 	};

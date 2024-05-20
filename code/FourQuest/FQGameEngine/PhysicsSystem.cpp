@@ -215,8 +215,14 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	{
 		auto controller = object->GetComponent<CharacterController>();
 
-		bool check =mPhysicsEngine->CreateCCT(controller->GetControllerInfo()
-			, controller->GetMovementInfo());
+		auto controllerInfo = controller->GetControllerInfo();
+		auto movementInfo = controller->GetMovementInfo();
+		ColliderID id = ++mLastColliderID;
+		controllerInfo.id = id;
+		controllerInfo.layerNumber = static_cast<int>(object->GetTag());
+		controllerInfo.position = transform->GetWorldPosition();
+
+		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
 	}
 

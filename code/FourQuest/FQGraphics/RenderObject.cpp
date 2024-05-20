@@ -33,7 +33,7 @@ namespace fq::graphics
 	TerrainMeshObject::TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh, 
 		DirectX::SimpleMath::Matrix transform)
 		:mStaticMesh(staticMesh),
-		mMaterial{},
+		mMaterial{nullptr},
 		mTransform(transform)
 	{
 	}

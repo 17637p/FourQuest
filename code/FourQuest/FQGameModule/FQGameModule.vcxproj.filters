@@ -217,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="CharacterController.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
+	</ClInclude>
+	<ClInclude Include="Terrain.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +342,9 @@
     </ClCompile>
     <ClCompile Include="CharacterController.cpp">
       <Filter>src</Filter>
+	</ClCompile>
+	<ClCompile Include="Terrain.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

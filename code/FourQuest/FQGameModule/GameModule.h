@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
+#include "Terrain.h"
 #include "Light.h"
 #include "BoxCollider.h"
 #include "SphereCollider.h"

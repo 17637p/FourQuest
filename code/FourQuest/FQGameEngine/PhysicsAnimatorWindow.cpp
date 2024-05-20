@@ -10,6 +10,8 @@
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQGameModule/TimeManager.h"
+#include "../FQGraphics/IFQGraphics.h"
+#include "../FQCommon/IFQRenderObject.h"
 
 namespace fq::game_engine
 {
@@ -60,6 +62,7 @@ namespace fq::game_engine
 
 	void PhysicsAnimatorWindow::UpdateAnimation(float dt)
 	{
+		// 애니메이션 데이터 추출
 		if (mbIsStartScene && mbIsOpen)
 		{
 			mDurationTime += dt;
@@ -78,6 +81,12 @@ namespace fq::game_engine
 					mCurrentKeyFrame = 0;
 					mbIsStartScene = false;
 					mAnimationClipContainer.push_back(mAnimationClip);
+
+					// 애니메이션 이름
+					std::string animationName;
+					animationName = "Animation Clip (Frame : " + std::to_string(mAnimationClip.size()) + ")";
+					mAnimationNames.push_back(animationName);
+
 					mAnimationClip.clear();
 				}
 
@@ -85,6 +94,7 @@ namespace fq::game_engine
 				mCurrentKeyFrame++;
 			}
 		}
+		// 애니메이션 실행
 		else if (mbIsPlay && !mbIsStartScene && mbIsOpen)
 		{
 			mDurationTime += dt;
@@ -158,12 +168,12 @@ namespace fq::game_engine
 
 	void PhysicsAnimatorWindow::beginTree_Animation(const int& number)
 	{
-		// 추출한 애니메이션 텍스트 ( ex. Animation00 ... Animation99 )
-		std::string animationName;
-		animationName = "Animation Clip " + std::to_string(number) + "(Frame : " + std::to_string(mAnimationClipContainer[number].find(mExtractObjectNames[0])->second.size()) + ")";
+		std::string name = "Frame : " + std::to_string(mAnimationClipContainer[mPlayAnimationClipNumber].size());
 
-		if (ImGui::TreeNode(animationName.c_str()))
+		if (ImGui::TreeNode(name.c_str()))
 		{
+			ImGui::InputText("Animation Name : ", &mAnimationNames[number]);
+
 			if (!mbIsPlay)
 				beginButton_AnimationPlay(number);
 			else
@@ -213,7 +223,9 @@ namespace fq::game_engine
 		// 추출한 애니메이션 세이브 ( 세이브 버튼 누르면 해당 애니메이션 데이터를 저장 )
 		if (ImGui::Button("Save"))
 		{
-
+			mEventManager->FireEvent<fq::event::WriteAnimation>(
+				{ mAnimationNames[number], mAnimationClipContainer[number], mRegisteredObject.get() }
+			);
 		}
 	}
 
@@ -228,6 +240,7 @@ namespace fq::game_engine
 				mRegisteredObject = nullptr;
 				mExtractObjectNames.clear();
 				mAnimationClipContainer.clear();
+				mAnimationNames.clear();
 
 				auto object = static_cast<fq::game_module::GameObject*>(PathPayLoad->Data);
 
@@ -235,7 +248,7 @@ namespace fq::game_engine
 
 				std::vector<fq::game_module::GameObject*> gameObjects = mRegisteredObject->GetChildren();
 				mExtractObjectNames.reserve(gameObjects.size());
-				mExtractObjectNames.push_back(mRegisteredObject->GetName());
+				//mExtractObjectNames.push_back(mRegisteredObject->GetName());
 
 				for (auto& object : gameObjects)
 				{

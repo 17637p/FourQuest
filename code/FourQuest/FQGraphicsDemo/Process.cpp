@@ -81,21 +81,23 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
 	mTestGraphics->WriteModel("./cocoa.model", modelData);
-	modelData= mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
+	modelData = mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
 	std::vector<fq::graphics::AnimationInfo> staticAnimInfo;
-	modelData = mTestGraphics->CreateModel(staticAnimModelPath0, textureBasePath);
-	staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
-	createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
+	//modelData = mTestGraphics->CreateModel(staticAnimModelPath0, textureBasePath);
+	//staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
+	//createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 100, 1, 100 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
-	// for (size_t i = 0; i < 10; ++i)
-	// {
-	// 	float randX = (float)(rand() % 500 - 250);
-	// 	float randY = (float)(rand() % 100);
-	// 	float randZ = (float)(rand() % 500 - 250);
-	// 	createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-	// 	createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-	// }
+
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
+	for (size_t i = 0; i < 10; ++i)
+	{
+		float randX = (float)(rand() % 500 - 250);
+		float randY = (float)(rand() % 100);
+		float randZ = (float)(rand() % 500 - 250);
+		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+	}
 
 	// 카메라 초기화
 	fq::graphics::CameraInfo cameraInfo;
@@ -103,7 +105,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 3000;
+	cameraInfo.farPlain = 300000;
 
 	mTestGraphics->SetCamera(cameraInfo);
 
@@ -367,7 +369,9 @@ void Process::Update()
 
 	if (InputManager::GetInstance().IsGetKeyDown('R'))
 	{
-		//mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0]);
+		terrainMaterial.Layers[0].TileSizeX = 100;
+		terrainMaterial.Layers[0].TileSizeY = 100;
+		mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
 	}
 
 	shadowTest();
@@ -403,6 +407,18 @@ void Process::Render()
 	s_time += mTimeManager.GetDeltaTime();
 	s_time = fmod(s_time, 3.f);
 
+	static float s_blend_time = 0.f;
+
+	if (GetAsyncKeyState('3') & 0x8000)
+	{
+		s_blend_time += mTimeManager.GetDeltaTime() ;
+		s_blend_time = fmod(s_blend_time, 3.f);
+	}
+	else
+	{
+		s_blend_time = 0.f;
+	}
+
 	for (size_t i = 0; i < mStaticMeshObjects.size(); ++i)
 	{
 		auto& obj = mStaticMeshObjects[i];
@@ -433,6 +449,7 @@ void Process::Render()
 		obj->SetAlpha(s_time * 0.33f);
 	}
 
+
 	for (auto& obj : mSkinnedMeshObjects)
 	{
 		if (GetAsyncKeyState('1') & 0x8000)
@@ -440,12 +457,21 @@ void Process::Render()
 			obj->SetAnimationKey("Kick");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
 			obj->UpdateAnimationTime(s_time);
+			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
 			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
 			obj->UpdateAnimationTime(s_time);
+			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
+		}
+		else if (GetAsyncKeyState('3') & 0x8000)
+		{
+			obj->SetBlendAnimationKey("Kick", "Idle");
+			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+			obj->UpdateAnimationTime(s_time);
+			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
 		}
 		else
 		{
@@ -772,47 +798,48 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
 		mTerrainMeshObjects.push_back(iTerrainMeshObject);
 
-		fq::graphics::TerrainMaterialInfo terrainMaterial;
+		//fq::graphics::TerrainMaterialInfo terrainMaterial;
+		terrainMaterial.Layers.clear();
 
-		fq::graphics::TerrainLayer layer1;
-		fq::graphics::TerrainLayer layer2;
-		fq::graphics::TerrainLayer layer3;
-
-		layer1.BaseColor = L"./resource/example/texture/t1.jpg";
-		layer2.BaseColor = L"./resource/example/texture/t2.jpg";
-		layer3.BaseColor = L"./resource/example/texture/t3.jpg";
-
-		layer1.NormalMap = L"./resource/example/texture/boxNormal.jpg";
-		layer2.NormalMap = L"./resource/example/texture/cerberus_N.png";
-		layer3.NormalMap = L"./resource/example/texture/character_normal.png";
-
-		layer1.TileOffsetX = 0.5;
-		layer1.TileOffsetY = 0.5;
-		layer2.TileOffsetX = 0;
-		layer2.TileOffsetY = 0;
-		layer3.TileOffsetX = 0;
-		layer3.TileOffsetY = 0;
-
-		layer1.TileSizeX = 5;
-		layer2.TileSizeX = 5;
-		layer3.TileSizeX = 5;
-		layer1.TileSizeY = 3;
-		layer2.TileSizeY = 3;
-		layer3.TileSizeY = 3;
-
-		layer1.Metalic = 0;
-		layer2.Metalic = 0;
-		layer3.Metalic = 0;
-
-		layer1.Roughness = 0;
-		layer2.Roughness = 0;
-		layer3.Roughness = 0;
-
-		terrainMaterial.AlPhaFileName = L"./resource/example/texture/TestAlpha4.png";
-
-		terrainMaterial.Layers.push_back(layer1);
-		terrainMaterial.Layers.push_back(layer2);
-		terrainMaterial.Layers.push_back(layer3);
+		//fq::graphics::TerrainLayer layer1;
+		//fq::graphics::TerrainLayer layer2;
+		//fq::graphics::TerrainLayer layer3;
+		//
+		//layer1.BaseColor = "./resource/example/texture/t1.jpg";
+		//layer2.BaseColor = "./resource/example/texture/t2.jpg";
+		//layer3.BaseColor = "./resource/example/texture/t3.jpg";
+		//
+		//layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
+		//layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
+		//layer3.NormalMap = "./resource/example/texture/character_normal.png";
+		//
+		//layer1.TileOffsetX = 0.5;
+		//layer1.TileOffsetY = 0.5;
+		//layer2.TileOffsetX = 0;
+		//layer2.TileOffsetY = 0;
+		//layer3.TileOffsetX = 0;
+		//layer3.TileOffsetY = 0;
+		//
+		//layer1.TileSizeX = 5;
+		//layer2.TileSizeX = 5;
+		//layer3.TileSizeX = 5;
+		//layer1.TileSizeY = 3;
+		//layer2.TileSizeY = 3;
+		//layer3.TileSizeY = 3;
+		//
+		//layer1.Metalic = 0;
+		//layer2.Metalic = 0;
+		//layer3.Metalic = 0;
+		//
+		//layer1.Roughness = 0;
+		//layer2.Roughness = 0;
+		//layer3.Roughness = 0;
+		//
+		//terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
+		//
+		//terrainMaterial.Layers.push_back(layer1);
+		//terrainMaterial.Layers.push_back(layer2);
+		//terrainMaterial.Layers.push_back(layer3);
 
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}

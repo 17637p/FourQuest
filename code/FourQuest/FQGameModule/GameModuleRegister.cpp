@@ -11,6 +11,7 @@
 #include "Light.h"
 
 // Physics
+#include "Terrain.h"
 #include "RigidBody.h"
 #include "BoxCollider.h"
 #include "SphereCollider.h"
@@ -168,6 +169,49 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetShadow, &Light::OnShadow>("OnShadow"_hs)
 		.prop(fq::reflect::prop::Name, "OnShadow")
 		.prop(fq::reflect::prop::Comment, u8"Directional Light 3개 제한")
+		.base<Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                               Terrain                                //
+	//////////////////////////////////////////////////////////////////////////
+	
+	// TerrainLayer
+	entt::meta<fq::graphics::TerrainLayer>()
+		.type("TerrainLayer"_hs)
+		.prop(fq::reflect::prop::Name, "TerrainLayer")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::TerrainLayer::BaseColor>("BaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BaseColor")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&fq::graphics::TerrainLayer::NormalMap>("NormalMap"_hs)
+		.prop(fq::reflect::prop::Name, "NormalMap")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&fq::graphics::TerrainLayer::Metalic>("Metalic"_hs)
+		.prop(fq::reflect::prop::Name, "Metalic")
+		.data<&fq::graphics::TerrainLayer::Roughness>("Roughness"_hs)
+		.prop(fq::reflect::prop::Name, "Roughness")
+		.data<&fq::graphics::TerrainLayer::TileSizeX>("TileSizeX"_hs)
+		.prop(fq::reflect::prop::Name, "TileSizeX")
+		.data<&fq::graphics::TerrainLayer::TileSizeY>("TileSizeY"_hs)
+		.prop(fq::reflect::prop::Name, "TileSizeY")
+		.data<&fq::graphics::TerrainLayer::TileOffsetX>("TileOffsetX"_hs)
+		.prop(fq::reflect::prop::Name, "TileOffsetX")
+		.data<&fq::graphics::TerrainLayer::TileOffsetY>("TileOffsetY"_hs)
+		.prop(fq::reflect::prop::Name, "TileOffsetY");
+	
+	// Terrain
+	entt::meta<Terrain>()
+		.type("Terrain"_hs)
+		.prop(fq::reflect::prop::Name, "Terrain")
+		.data<&Terrain::SetAlphaMap, &Terrain::GetAlphaMap>("AlphaMap"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaMap")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&Terrain::SetTerrainLayers, &Terrain::GetTerrainLayers>("Layers"_hs)
+		.prop(fq::reflect::prop::Name, "Layers")
+		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

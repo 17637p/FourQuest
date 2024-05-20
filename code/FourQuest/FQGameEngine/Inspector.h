@@ -68,6 +68,7 @@ namespace fq::game_engine
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
 		bool mbIsOpen;
+		unsigned int mUniqueID;
 
 		ViewType mViewType;
 

@@ -194,6 +194,7 @@
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="StaticMeshRenderer.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
@@ -236,6 +237,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="StaticMeshRenderer.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
