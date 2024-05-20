@@ -136,9 +136,10 @@ namespace fq::event
 
 	struct WriteAnimation
 	{
-		std::string AnimationName;
+		std::string animationName;
 		std::unordered_map<std::string, std::vector<DirectX::SimpleMath::Matrix>> animationData;
 		fq::game_module::GameObject* object;
+		unsigned int animationSize;
 	};
 
 }

@@ -139,6 +139,7 @@ namespace fq::game_engine
 		{
 			// 애니메이터 창
 			beginText_ObjectName();
+			beginInputInt_AnimationSize();
 			beginInputInt_KeyFrameSize();
 			beginButton_AnimationReset();
 
@@ -152,7 +153,16 @@ namespace fq::game_engine
 	void PhysicsAnimatorWindow::beginInputInt_KeyFrameSize()
 	{
 		// 데이터를 추출할 키 프레임 사이즈 입력
+		ImGui::SetNextItemWidth(100.f);
 		ImGui::InputInt("KeyFrameSize (1Second = 30 FPS)", &mKeyFrameSize);
+	}
+
+	void PhysicsAnimatorWindow::beginInputInt_AnimationSize()
+	{
+		// 데이터를 추출할 애니메이션 사이즈 입력
+		std::string barName = "Current Animation Size(" + std::to_string(mAnimationSize) + "/" + std::to_string(mCurrentAnimaitionNumber) + ")";
+		ImGui::SetNextItemWidth(100.f);
+		ImGui::InputInt(barName.c_str(), &mAnimationSize);
 	}
 
 	void PhysicsAnimatorWindow::beginText_ObjectName()
@@ -166,7 +176,7 @@ namespace fq::game_engine
 
 		if (ImGui::TreeNode(name.c_str()))
 		{
-			ImGui::InputText("Animation Name : ", &mAnimationNames[number]);
+			ImGui::InputText("Name", &mAnimationNames[number]);
 
 			if (!mbIsPlay)
 				beginButton_AnimationPlay(number);
@@ -217,8 +227,12 @@ namespace fq::game_engine
 		// 추출한 애니메이션 세이브 ( 세이브 버튼 누르면 해당 애니메이션 데이터를 저장 )
 		if (ImGui::Button("Save"))
 		{
+			mCurrentAnimaitionNumber++;
+			if (mCurrentAnimaitionNumber >= mAnimationSize)
+				mCurrentAnimaitionNumber = 0;
+
 			mEventManager->FireEvent<fq::event::WriteAnimation>(
-				{ mAnimationNames[number], mAnimationClipContainer[number], mRegisteredObject.get() }
+				{ mAnimationNames[number], mAnimationClipContainer[number], mRegisteredObject.get(), (unsigned int)mAnimationSize }
 			);
 		}
 	}

@@ -32,6 +32,7 @@ namespace fq::game_engine
 		void beginAnimatiorEditor();
 
 		void beginInputInt_KeyFrameSize();
+		void beginInputInt_AnimationSize();
 		void beginText_ObjectName();
 
 		void beginTree_Animation(const int& number);
@@ -57,6 +58,8 @@ namespace fq::game_engine
 		bool mbIsPlay;
 
 		int mKeyFrameSize;
+		int mAnimationSize;
+		int mCurrentAnimaitionNumber;
 		int mPlayAnimationClipNumber;
 		int mCurrentKeyFrame;
 		float mDurationTime;
