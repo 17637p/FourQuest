@@ -72,6 +72,11 @@ namespace fq::game_engine
 		/// 모델을 로드합니다 
 		/// </summary>
 		void LoadModel(const ModelPath& path);
+
+		/// <summary>
+		/// 애니메이션을 작동합니다.
+		/// </summary>
+		void WriteAnimation(const fq::event::WriteAnimation& event);
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
@@ -94,6 +99,7 @@ namespace fq::game_engine
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
+		EventHandler mWriteAnimationHandler;
 
 		bool mbIsGameLoaded;
 
