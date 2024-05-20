@@ -81,12 +81,6 @@ namespace fq::game_engine
 					mCurrentKeyFrame = 0;
 					mbIsStartScene = false;
 					mAnimationClipContainer.push_back(mAnimationClip);
-
-					// 애니메이션 이름
-					std::string animationName;
-					animationName = "Animation Clip (Frame : " + std::to_string(mAnimationClip.size()) + ")";
-					mAnimationNames.push_back(animationName);
-
 					mAnimationClip.clear();
 				}
 
@@ -168,7 +162,7 @@ namespace fq::game_engine
 
 	void PhysicsAnimatorWindow::beginTree_Animation(const int& number)
 	{
-		std::string name = "Frame : " + std::to_string(mAnimationClipContainer[mPlayAnimationClipNumber].size());
+		std::string name = "Animation" + std::to_string(number) + "(Frame : " + std::to_string(mAnimationClipContainer[mPlayAnimationClipNumber].find(mExtractObjectNames[0])->second.size()) + ")";
 
 		if (ImGui::TreeNode(name.c_str()))
 		{
@@ -249,6 +243,12 @@ namespace fq::game_engine
 				std::vector<fq::game_module::GameObject*> gameObjects = mRegisteredObject->GetChildren();
 				mExtractObjectNames.reserve(gameObjects.size());
 				//mExtractObjectNames.push_back(mRegisteredObject->GetName());
+
+				// 애니메이션 이름
+				std::string animationName;
+				animationName = "AnimationName";
+				for (int i = 0; i < 100; i++)
+					mAnimationNames.push_back(animationName);
 
 				for (auto& object : gameObjects)
 				{

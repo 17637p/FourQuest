@@ -157,7 +157,8 @@ void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnim
 	fq::common::AnimationClip animationClilp;
 	animationClilp.Name = event.AnimationName;
 	animationClilp.FrameCount = event.animationData.size();
-	animationClilp.FramePerSecond = 30.f;
+	animationClilp.FramePerSecond = (1.f / 30.f);
+	animationClilp.Duration = (1.f / 30.f);
 
 	for (const auto& data : event.animationData)
 	{
@@ -166,11 +167,10 @@ void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnim
 
 		for (int i = 0; i < data.second.size(); i++)
 		{
+			DirectX::SimpleMath::Matrix curMatrix = data.second[i];
 			fq::common::Keyframe keyFrame;
+			curMatrix.Decompose(keyFrame.Scale, keyFrame.Rotation, keyFrame.Translation);
 			keyFrame.TimePos = (1.f / 30.f) * i;
-			data.second[i].CreateFromQuaternion(keyFrame.Rotation);
-			data.second[i].CreateTranslation(keyFrame.Translation);
-			data.second[i].CreateScale(keyFrame.Scale);
 			nodeClip.Keyframes.push_back(keyFrame);
 		}
 		animationClilp.NodeClips.push_back(nodeClip);
