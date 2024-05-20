@@ -63,6 +63,7 @@ namespace fq::game_engine
 
 		std::shared_ptr<fq::game_module::GameObject> mRegisteredObject;
 		std::vector<std::string> mExtractObjectNames;
+		std::vector<std::string> mAnimationNames;
 		AnimationClipContainer mAnimationClipContainer;
 		std::unordered_map<std::string, std::vector<DirectX::SimpleMath::Matrix>> mAnimationClip;
 

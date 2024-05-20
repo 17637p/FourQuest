@@ -46,6 +46,9 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 
 	mRemoveComponentHandler = eventMgr->
 		RegisterHandle<fq::event::RemoveComponent>(this, &RenderingSystem::RemoveComponent);
+
+	mWriteAnimationHandler = eventMgr->
+		RegisterHandle<fq::event::WriteAnimation>(this, &RenderingSystem::WriteAnimation);
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)
@@ -148,6 +151,36 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	skinnedMeshRenderer->SetSkinnedMeshObject(skinnedMeshObject);
 }
 
+void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnimation& event)
+{
+	fq::common::Model model;
+	fq::common::AnimationClip animationClilp;
+	animationClilp.Name = event.AnimationName;
+	animationClilp.FrameCount = event.animationData.size();
+	animationClilp.FramePerSecond = 30.f;
+
+	for (const auto& data : event.animationData)
+	{
+		fq::common::NodeClip nodeClip;
+		nodeClip.NodeName = data.first;
+
+		for (int i = 0; i < data.second.size(); i++)
+		{
+			fq::common::Keyframe keyFrame;
+			keyFrame.TimePos = (1.f / 30.f) * i;
+			data.second[i].CreateFromQuaternion(keyFrame.Rotation);
+			data.second[i].CreateTranslation(keyFrame.Translation);
+			data.second[i].CreateScale(keyFrame.Scale);
+			nodeClip.Keyframes.push_back(keyFrame);
+		}
+		animationClilp.NodeClips.push_back(nodeClip);
+	}
+
+	model.Animations.push_back(animationClilp);
+
+	mGameProcess->mGraphics->WriteModel("./" + event.AnimationName + ".model", model);
+}
+
 void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::StaticMeshRenderer>())
@@ -202,8 +235,8 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 		info.AnimationName = state.GetAnimationName();
 		info.AnimationKey = state.GetAnimationKey();
 
-		if (info.ModelPath.empty() 
-			|| info.AnimationName.empty() 
+		if (info.ModelPath.empty()
+			|| info.AnimationName.empty()
 			|| info.AnimationKey.empty())
 			continue;
 
