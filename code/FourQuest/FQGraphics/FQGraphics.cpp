@@ -168,10 +168,10 @@ bool FQGraphics::Render()
 
 	// 컬링 추가해야 됨 
 	std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
-	
+
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
-	
+
 	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
 	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
@@ -230,6 +230,11 @@ void FQGraphics::DeleteModel(std::string path)
 	mModelManager->DeleteModel(path);
 }
 
+void FQGraphics::WriteModel(std::string path, const fq::common::Model& modelData)
+{
+	mModelManager->WriteModel(path, modelData);
+}
+
 void FQGraphics::ConvertModel(std::string fbxFile, std::string fileName)
 {
 	mModelManager->ConvertModel(fbxFile, fileName);
@@ -238,6 +243,11 @@ void FQGraphics::ConvertModel(std::string fbxFile, std::string fileName)
 IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)
 {
 	return mObjectManager->CreateStaticMeshObject(mModelManager, info);
+}
+
+void FQGraphics::AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info)
+{
+	mObjectManager->AddAnimation(mModelManager, iStaticMeshObject, info);
 }
 
 void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)

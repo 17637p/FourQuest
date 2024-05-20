@@ -7,6 +7,7 @@
 
 #include "Mesh.h"
 #include "BoneHierarchy.h"
+#include "AnimationHelper.h"
 
 #include "../FQCommon/IFQRenderObject.h"
 
@@ -32,8 +33,11 @@ namespace fq::graphics
 		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
 		inline virtual void SetAlpha(float alpha) override;
 		inline virtual void SetUseShadow(bool bUseShadow) override;
+		inline virtual void SetAnimationTime(float timePos) override;
+		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+
 		inline virtual EObjectRenderType GetObjectRenderType() const override;
 		inline virtual float GetAlpha() const override;
 		inline virtual bool GetUseShadow() const override;
@@ -42,6 +46,7 @@ namespace fq::graphics
 
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
+		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
@@ -50,13 +55,18 @@ namespace fq::graphics
 		EObjectRenderType mObjectRenderType;
 		float mAlpha;
 		bool mbUseShadow;
+
+		float mTimePos;
+		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
+		const fq::common::NodeClip* mNodeCache;
+		std::shared_ptr<fq::common::AnimationClip> mClipCache;
 	};
 
 #pragma region inlineFunc
 
 	void StaticMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
 	{
-		mTransform = transform;
+		SetTransform(transform);
 	}
 
 	inline void StaticMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
@@ -74,6 +84,42 @@ namespace fq::graphics
 	inline void StaticMeshObject::SetUseShadow(bool bUseShadow)
 	{
 		mbUseShadow = bUseShadow;
+	}
+	inline void StaticMeshObject::SetAnimationTime(float timePos)
+	{
+		mTimePos = timePos;
+
+		if (mNodeCache != nullptr && mClipCache != nullptr)
+		{
+			fq::common::Keyframe lhs;
+			fq::common::Keyframe rhs;
+			float weight;
+
+			AnimationHelper::FindKeyframe(mNodeCache->Keyframes, *mClipCache, timePos, &lhs, &rhs, &weight);
+			fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+			mTransform = AnimationHelper::CreateMatrix(keyframe);
+		}
+	}
+	inline bool StaticMeshObject::SetAnimationKey(const std::string& animationKey)
+	{
+		auto find = mAnimationMap.find(animationKey);
+
+		if (find == mAnimationMap.end())
+		{
+			return false;
+		}
+
+		const std::vector<fq::common::NodeClip>& nodeClips = find->second->NodeClips;
+		auto nodeClip = std::find_if(nodeClips.begin(), nodeClips.end(), [&](const fq::common::NodeClip& nodeClip) { return nodeClip.NodeName == mStaticMesh->GetMeshData().NodeName; });
+
+		mClipCache = find->second;
+
+		if (nodeClip != nodeClips.end())
+		{
+			mNodeCache = &(*nodeClip);
+		}
+
+		return true;
 	}
 
 	inline const std::shared_ptr<StaticMesh>& StaticMeshObject::GetStaticMesh() const
@@ -108,6 +154,10 @@ namespace fq::graphics
 	{
 		return mTransform;
 	}
+	inline void StaticMeshObject::AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip)
+	{
+		mAnimationMap.insert({ animationKey, animationClip });
+	}
 
 #pragma endregion
 
@@ -129,6 +179,7 @@ namespace fq::graphics
 		inline virtual void SetAlpha(float alpha) override;
 		inline virtual void SetUseShadow(bool bUseShadow) override;
 		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
+		inline virtual void SetBindPose() override;
 
 		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 		inline virtual float GetAnimationTime() const override;
@@ -184,6 +235,11 @@ namespace fq::graphics
 		mBoneHierarchyCache.SetAnimation(find->second);
 
 		return true;
+	}
+	inline void SkinnedMeshObject::SetBindPose()
+	{
+		mTimePos = 0.f;
+		mBoneHierarchyCache.Clear();
 	}
 	inline void SkinnedMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
 	{

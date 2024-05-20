@@ -42,6 +42,17 @@ namespace fq::graphics
 		}
 	}
 
+	void D3D11ObjectManager::AddAnimation(const std::shared_ptr<D3D11ModelManager>& modelManager, IStaticMeshObject* staticMeshObjectInterface, AnimationInfo info)
+	{
+		std::shared_ptr<fq::common::AnimationClip> animationResource = modelManager->FindAnimationOrNull(modelManager->GenerateAnimationKey(info.ModelPath, info.AnimationName));
+
+		if (animationResource != nullptr)
+		{
+			StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(staticMeshObjectInterface);
+			staticMeshObject->AddAnimation(info.AnimationKey, animationResource);
+		}
+	}
+
 	void D3D11ObjectManager::AddAnimation(const std::shared_ptr<D3D11ModelManager>& modelManager, ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info)
 	{
 		std::shared_ptr<fq::common::AnimationClip> animationResource = modelManager->FindAnimationOrNull(modelManager->GenerateAnimationKey(info.ModelPath, info.AnimationName));

@@ -27,6 +27,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
 			virtual FQ_GRAPHICS void SetAlpha(float alpha) = 0;
 			virtual FQ_GRAPHICS void SetUseShadow(bool bUseShadow) = 0;
+			virtual FQ_GRAPHICS void SetAnimationTime(float timePos) = 0;
+			virtual FQ_GRAPHICS bool SetAnimationKey(const std::string& animationKey) = 0;
 
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
 			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
@@ -47,6 +49,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void UpdateAnimationTime(float timePos) = 0;
 
 		public:
+			virtual FQ_GRAPHICS void SetBindPose() = 0;
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
 			virtual FQ_GRAPHICS void SetAnimationTime(float timePos) = 0;
 			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
@@ -62,7 +65,7 @@ extern "C" {
 			virtual FQ_GRAPHICS std::set<std::string> GetAnimationKeys() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
-			 
+
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출
 

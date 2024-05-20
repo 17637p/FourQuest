@@ -35,6 +35,14 @@ namespace fq::graphics
 		mFinalTransforms.resize(mBoneHierarchy->GetBoneCount(), DirectX::SimpleMath::Matrix::Identity);
 	}
 
+	void BoneHierarchyCache::Clear()
+	{
+		for (auto& transform : mFinalTransforms)
+		{
+			transform = DirectX::SimpleMath::Matrix::Identity;
+		}
+	}
+
 	void BoneHierarchyCache::Update(float timePos)
 	{
 		if (!checkValid())
@@ -46,11 +54,7 @@ namespace fq::graphics
 		fq::common::Keyframe rhs;
 		float weight;
 
-		// clear하는 함수 없나
-		for (auto& transform : mFinalTransforms)
-		{
-			transform = DirectX::SimpleMath::Matrix::Identity;
-		}
+		Clear();
 
 		for (const auto& [bone, nodeClip] : mBoneNodeClipCache)
 		{
