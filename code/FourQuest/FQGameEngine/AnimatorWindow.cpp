@@ -246,7 +246,7 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	else if (node.GetType() == NodeType::AnyState)	nodeColor = ImGuiColor::SPRING_GREEN;
 	else if (node.GetType() == NodeType::State)	nodeColor = ImGuiColor::ORANGE;
 	ed::PushStyleColor(ed::StyleColor_NodeBorder, nodeColor);
-	ed::PushStyleColor(ed::StyleColor_NodeBg, ImGuiColor::DARK_GREEN);
+	ed::PushStyleColor(ed::StyleColor_NodeBg, ImGuiColor::DARK_GRAY);
 
 	auto nodeID = entt::hashed_string(name.c_str()).value();
 
@@ -274,7 +274,7 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 		float timePos = mSelectController->GetTimePos();
 		float ratio = timePos / duration;
 
-		ImGui::ProgressBar(ratio, ImVec2(200.f, 20.f));
+		ImGui::ProgressBar(ratio, ImVec2(nodeWidth, 10.f), "");
 	}
 
 	// Node º±≈√
