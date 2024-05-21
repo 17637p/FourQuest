@@ -3,21 +3,26 @@
 #include <d2d1.h>
 #include <d2d1_1.h>
 #include "d2d1helper.h"		// ColorF
-#include <dwrite.h>			// writefactory
+
 #include <filesystem>
+
+#include <dwrite.h>			// writefactory
+#include <wincodec.h>
+
+#include "RenderObject.h"
 
 #include "D3D11Device.h"
 
 fq::graphics::UIManager::UIManager()
-	:mHWnd{NULL},
-	mDirect2DFactory{nullptr},
-	mRenderTarget{nullptr},
+	:mHWnd{ NULL },
+	mDirect2DFactory{ nullptr },
+	mRenderTarget{ nullptr },
 	mBrushes{},
-	mDWriteFactory{nullptr},
+	mDWriteFactory{ nullptr },
 	mFonts{},
-	mDefaultFontPath{L"Verdana"},
-	mDefaultFontSize{50},
-	mDefaultFontColor{0, 1, 1, 1},
+	mDefaultFontPath{ L"Verdana" },
+	mDefaultFontSize{ 50 },
+	mDefaultFontColor{ 0, 1, 1, 1 },
 	mDrawTextInformations{}
 {
 
@@ -25,6 +30,8 @@ fq::graphics::UIManager::UIManager()
 
 fq::graphics::UIManager::~UIManager()
 {
+	ReleaseAllImage();
+
 	for (const auto& fontPath : mFontPath)
 	{
 		RemoveFontResourceEx(fontPath.c_str(), FR_PRIVATE, NULL);
@@ -40,6 +47,7 @@ fq::graphics::UIManager::~UIManager()
 		font.second->Release();
 	}
 
+	//mWICFactory->Release();
 	mRenderTarget->Release();
 	mDirect2DFactory->Release();
 }
@@ -54,17 +62,15 @@ void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device>
 	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &mDirect2DFactory);
 
 	// 렌더 타겟 초기화 
-	createDeviceResources(device, width, height);
+	createRenderTarget(device, width, height);
 
 	initializeText();
+	initializeImage();
 }
 
-HRESULT fq::graphics::UIManager::createDeviceResources(std::shared_ptr<D3D11Device> device, const short width, const short height)
+HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device> device, const short width, const short height)
 {
 	HRESULT hr = S_OK;
-	// 2. Create a Direct2D render target.
-	//RECT rc;
-	//GetClientRect(mHWnd, &rc);
 
 	D2D1_SIZE_U size = D2D1::SizeU(width, height);
 
@@ -77,11 +83,6 @@ HRESULT fq::graphics::UIManager::createDeviceResources(std::shared_ptr<D3D11Devi
 			0,
 			0);
 
-	//hr = mDirect2DFactory->CreateHwndRenderTarget(
-	//	D2D1::RenderTargetProperties(),
-	//	D2D1::HwndRenderTargetProperties(mHWnd, size),
-	//	&mRenderTarget);
-
 	IDXGISurface* backBuffer;
 	device->GetSwapChain()->GetBuffer(0, IID_PPV_ARGS(&backBuffer));
 
@@ -91,58 +92,19 @@ HRESULT fq::graphics::UIManager::createDeviceResources(std::shared_ptr<D3D11Devi
 		&mRenderTarget);
 
 	backBuffer->Release();
-	
+
 	return hr;
 }
 
 void fq::graphics::UIManager::Render()
 {
-	if (mRenderTarget)
-	{
-		//D2D1_SIZE_F renderTargetSize = mRenderTarget->GetSize();
-		mRenderTarget->BeginDraw();
-		mRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		//mRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-		ID2D1SolidColorBrush* tempBrush = nullptr;
-		for (const auto& drawTextInformation : mDrawTextInformations)
-		{
-			auto brush = mBrushes.find(drawTextInformation.color);
-			if (brush == mBrushes.end())
-			{
-				// 브러시 제작 
-				// Create a black brush.
-				mRenderTarget->CreateSolidColorBrush(
-					D2D1::ColorF(drawTextInformation.color.R(),
-						drawTextInformation.color.G(),
-						drawTextInformation.color.B(),
-						drawTextInformation.color.A()),
-					&tempBrush);
-
-				mBrushes[drawTextInformation.color] = tempBrush;
-			}
-
-			mRenderTarget->DrawText(
-				drawTextInformation.text.c_str(),
-				//ARRAYSIZE(drawTextInformation.text.c_str()) - 1,
-				drawTextInformation.text.length(),
-				mFonts[drawTextInformation.fontPath + std::to_wstring(drawTextInformation.fontSize)],
-				D2D1::RectF(
-					drawTextInformation.drawRect.x - drawTextInformation.drawRect.width / 2,
-					drawTextInformation.drawRect.y - drawTextInformation.drawRect.height / 2,
-					drawTextInformation.drawRect.x + drawTextInformation.drawRect.width / 2,
-					drawTextInformation.drawRect.y + drawTextInformation.drawRect.height / 2),
-				mBrushes[drawTextInformation.color]);
-		}
-		mDrawTextInformations.clear();
-
-		mRenderTarget->EndDraw();
-	}
+	drawAllText();
+	drawAllImage();
 }
 
 void fq::graphics::UIManager::Finalize()
 {
-	
+
 }
 
 void fq::graphics::UIManager::AddFont(const std::wstring& path)
@@ -260,14 +222,14 @@ void fq::graphics::UIManager::DrawText(const std::wstring& text, const DirectX::
 
 void fq::graphics::UIManager::OnResize(std::shared_ptr<D3D11Device> device, const short width, const short height)
 {
-	createDeviceResources(device, width, height);
+	createRenderTarget(device, width, height);
 }
 
 void fq::graphics::UIManager::RegisterFont(const std::wstring& path)
 {
 	mFontPath.emplace_back(path);
 
-	auto a =  AddFontResourceEx(path.c_str(), FR_NOT_ENUM, NULL);
+	auto a = AddFontResourceEx(path.c_str(), FR_NOT_ENUM, NULL);
 	std::wstring filename = std::filesystem::path(path).filename();
 	AddFont(filename.substr(0, filename.find_last_of(L".")));
 }
@@ -277,5 +239,114 @@ void fq::graphics::UIManager::ReleaseRenderTarget()
 	if (mRenderTarget != nullptr)
 	{
 		mRenderTarget->Release();
+	}
+}
+
+void fq::graphics::UIManager::initializeImage()
+{
+	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&mWICFactory));
+}
+
+void fq::graphics::UIManager::loadImage(const std::wstring& path)
+{
+	IWICBitmapDecoder* p_decoder;
+	mWICFactory->CreateDecoderFromFilename(path.c_str(), NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &p_decoder);
+
+	IWICBitmapFrameDecode* p_frame;
+	p_decoder->GetFrame(0, &p_frame);
+
+	// iwicbitmap -> id2d1bitmap
+	IWICFormatConverter* p_converter;
+	mWICFactory->CreateFormatConverter(&p_converter);
+	p_converter->Initialize(p_frame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.f, WICBitmapPaletteTypeCustom);
+
+	ID2D1Bitmap* tempBitmap;
+	mRenderTarget->CreateBitmapFromWicBitmap(p_converter, NULL, &tempBitmap);
+	mBitmaps[path] = tempBitmap;
+}
+
+void fq::graphics::UIManager::ReleaseAllImage()
+{
+	for (const auto& bitmap : mBitmaps)
+	{
+		bitmap.second->Release();
+	}
+}
+
+void fq::graphics::UIManager::AddImage(IImageObject* imageObject)
+{
+	mIsSorted = false;
+	mImages.push_back(imageObject);
+}
+
+void fq::graphics::UIManager::DeleteImage(IImageObject* imageObject)
+{
+	// 여기서만 지우면 되는 게 맞지? 어차피 실제 인스턴스 해제는 밖에서 할거니까 
+	// 그래도 함수 의도대로 작동하는 지 확인할 것
+	mImages.erase(remove(mImages.begin(), mImages.end(), imageObject), mImages.end());
+}
+
+void fq::graphics::UIManager::drawAllText()
+{
+	if (mRenderTarget)
+	{
+		//D2D1_SIZE_F renderTargetSize = mRenderTarget->GetSize();
+		mRenderTarget->BeginDraw();
+		mRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+		//mRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+		ID2D1SolidColorBrush* tempBrush = nullptr;
+		for (const auto& drawTextInformation : mDrawTextInformations)
+		{
+			auto brush = mBrushes.find(drawTextInformation.color);
+			if (brush == mBrushes.end())
+			{
+				// 브러시 제작 
+				// Create a black brush.
+				mRenderTarget->CreateSolidColorBrush(
+					D2D1::ColorF(drawTextInformation.color.R(),
+						drawTextInformation.color.G(),
+						drawTextInformation.color.B(),
+						drawTextInformation.color.A()),
+					&tempBrush);
+
+				mBrushes[drawTextInformation.color] = tempBrush;
+			}
+
+			mRenderTarget->DrawText(
+				drawTextInformation.text.c_str(),
+				//ARRAYSIZE(drawTextInformation.text.c_str()) - 1,
+				drawTextInformation.text.length(),
+				mFonts[drawTextInformation.fontPath + std::to_wstring(drawTextInformation.fontSize)],
+				D2D1::RectF(
+					drawTextInformation.drawRect.x - drawTextInformation.drawRect.width / 2,
+					drawTextInformation.drawRect.y - drawTextInformation.drawRect.height / 2,
+					drawTextInformation.drawRect.x + drawTextInformation.drawRect.width / 2,
+					drawTextInformation.drawRect.y + drawTextInformation.drawRect.height / 2),
+				mBrushes[drawTextInformation.color]);
+		}
+		mDrawTextInformations.clear();
+
+		mRenderTarget->EndDraw();
+	}
+}
+
+void fq::graphics::UIManager::drawAllImage()
+{
+	if (!mIsSorted)
+	{
+		// 레이어 단위로 정렬하기
+		//mImages
+		mIsSorted = true;
+	}
+
+	for (const auto& image : mImages)
+	{
+		// 그리기
+		D2D1_SIZE_F imageSize = mBitmaps[image->GetTexturePath()]->GetSize();
+		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
+		D2D1_RECT_F screenRect = { image->GetStartX(), image->GetStartY(), image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
+
+		mRenderTarget->DrawBitmap(mBitmaps[image->GetTexturePath()], &screenRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
 	}
 }
