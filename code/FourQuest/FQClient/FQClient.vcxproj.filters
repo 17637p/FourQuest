@@ -9,18 +9,36 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="include\00.Define">
+      <UniqueIdentifier>{d6c026bc-c71c-4917-8125-9c3638abc9f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\00.Define">
+      <UniqueIdentifier>{94971c36-b1fc-45eb-9373-91e219af22de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player">
+      <UniqueIdentifier>{4cc17fe5-6a77-4aa1-a035-17dfceb38aed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player">
+      <UniqueIdentifier>{a9fd8395-d790-4773-b758-9d33d213ff26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Client.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="ClientRegistration.h">
-      <Filter>include</Filter>
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovement.h">
+      <Filter>include\01.Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
-      <Filter>src</Filter>
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovement.cpp">
+      <Filter>src\01.Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
