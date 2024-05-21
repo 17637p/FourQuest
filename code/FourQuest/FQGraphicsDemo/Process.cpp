@@ -345,7 +345,10 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
+		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
+			L"./resource/example/texture/defaultSpecularHDR.dds",
+			L"./resource/example/texture/defaultBrdf.dds");
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
