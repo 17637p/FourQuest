@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "../FQClient/Client.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
@@ -14,6 +15,7 @@
 #include "CameraSystem.h"
 #include "RenderingSystem.h"
 #include "LightSystem.h"
+#include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "SoundSystem.h"
 
@@ -33,6 +35,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
+	fq::client::RegisterMetaData();
 
 	// 윈도우 창 초기화 
 	mGameProcess->mWindowSystem->InitializeEditorType();
@@ -40,12 +43,12 @@ void fq::game_engine::EditorEngine::Initialize()
 	// GameProcess 초기화
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
-	
+
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());
-	
+
 	mGameProcess->mSoundManager->Initialize();
 
 	// 그래픽스 엔진 초기화
@@ -67,9 +70,10 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
+	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
- 	InitializeEditor();
+	InitializeEditor();
 
 	// Scene 로드 
 	mGameProcess->mSceneManager->LoadScene();
@@ -100,7 +104,7 @@ void fq::game_engine::EditorEngine::Process()
 				mGameProcess->mWindowSystem->OnResize();
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
-				unsigned short hegiht =std::max(mGameProcess->mWindowSystem->GetScreenHeight(),1u);
+				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 
@@ -113,14 +117,31 @@ void fq::game_engine::EditorEngine::Process()
 
 			if (mode == EditorMode::Play)
 			{
-				// 물리처리
-				mGameProcess->mSceneManager->FixedUpdate(deltaTime);
-				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
-				mGameProcess->mPhysics->Update(deltaTime);
-				mGameProcess->mPhysics->FinalUpdate();
-				mGameProcess->mPhysicsSystem->SinkToGameScene();
+				static float accmulator = 0.f;
+				static float fixedDeltaTime = 1.f / 60.f;
 
+				accmulator += deltaTime;
+
+				while (accmulator >= fixedDeltaTime)
+				{
+					// 물리처리
+					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
+					mGameProcess->mPhysicsSystem->Update(fixedDeltaTime);
+					mGameProcess->mPhysics->Update(fixedDeltaTime);
+					mGameProcess->mPhysics->FinalUpdate();
+					mGameProcess->mPhysicsSystem->SinkToGameScene();
+
+					accmulator -= fixedDeltaTime;
+				}
+
+				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
+
+				// Animation Update
+				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+
+				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
 
@@ -161,6 +182,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
 	mEditor->mImGuiSystem->Finalize();
+	mEditor->mAnimatorWindow->Finalize();
 
 	// SystemFinalize
 	mGameProcess->mGraphics->Finalize();
@@ -186,6 +208,9 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mFileDialog->Render();
 	mEditor->mMainMenuBar->Render();
 	mEditor->mCollisionMatrixWindow->Render();
+	mEditor->mPhysicsAnimatorWindow->Render();
+	mEditor->mSkyBoxWindow->Render();
+	mEditor->mAnimatorWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -209,6 +234,9 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mGamePlayWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLogWindow->Initialize(mGameProcess.get());
 	mEditor->mCollisionMatrixWindow->Initialize(mGameProcess.get());
+	mEditor->mPhysicsAnimatorWindow->Initialize(mGameProcess.get());
+	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
+	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)
@@ -220,5 +248,6 @@ void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 	mEditor->mMainMenuBar->ExcuteShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();
 	mEditor->mHierarchy->ExcuteShortcut();
+	mEditor->mPhysicsAnimatorWindow->UpdateAnimation(dt);
 }
 

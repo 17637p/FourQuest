@@ -12,7 +12,7 @@ namespace fq::physics
 	{
 	}
 
-	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics)
+	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
 	{
 		if (GetColliderType() == EColliderType::COLLISION)
 		{
@@ -24,17 +24,16 @@ namespace fq::physics
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
-		CollisionData* data = new CollisionData;
 		data->myId = GetID(); 
 		data->myLayerNumber = GetLayerNumber();
-		shape->userData = data;
+		shape->userData = data.get();
 		shape->setContactOffset(0.01f);
 
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 
 		mRigidStatic = physics->createRigidStatic(transform);
-		mRigidStatic->userData = data;
+		mRigidStatic->userData = data.get();
 
 		if (mRigidStatic == nullptr)
 			return false;

@@ -150,8 +150,8 @@ namespace fq::graphics
 	{
 		// 초기화
 		{
-			ID3D11ShaderResourceView* SRVs[10] = { NULL };
-			mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
+			ID3D11ShaderResourceView* SRVs[5] = { NULL };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, 5, SRVs);
 		}
 
 		std::map<size_t, std::shared_ptr<ParticleSystem>> emitters = mParticleManager->GetParticleSystems();
@@ -223,8 +223,8 @@ namespace fq::graphics
 
 		// 언바인딩
 		{
-			ID3D11ShaderResourceView* SRVs[10] = { NULL, };
-			mDevice->GetDeviceContext()->CSSetShaderResources(0, 10, SRVs);
+			ID3D11ShaderResourceView* SRVs[5] = { NULL, };
+			mDevice->GetDeviceContext()->CSSetShaderResources(0, 5, SRVs);
 		}
 
 		// 랜더링
@@ -259,8 +259,8 @@ namespace fq::graphics
 				mDevice->GetDeviceContext()->Draw(emitter->GetParticleCount(), 0);
 			}
 
-			ID3D11ShaderResourceView* SRVs[10] = { NULL };
-			mDevice->GetDeviceContext()->VSSetShaderResources(0, 10, SRVs);
+			ID3D11ShaderResourceView* SRVs[5] = { NULL };
+			mDevice->GetDeviceContext()->VSSetShaderResources(0, 5, SRVs);
 		}
 	}
 

@@ -30,17 +30,23 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// RenderObject
+		virtual void WriteModel(std::string path, const fq::common::Model& modelData) override;
 		virtual void ConvertModel(std::string fbxFile, std::string fileName) override;
 		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
 		virtual const fq::common::Model& GetModel(std::string path) override;
 		virtual void DeleteModel(std::string path) override;
 
 		virtual IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
+		virtual void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) override;
 		virtual void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
 
 		virtual ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
 		virtual void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
 		virtual void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
+
+		virtual ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) override;
+		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
+		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;
@@ -69,9 +75,16 @@ namespace fq::graphics
 		/// Bounding Volume
 
 		/// UI
+		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
+		virtual void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) override;
+		virtual void SetDefaultFont(const std::wstring& path) override;
+		virtual void AddFont(const std::wstring& path) override;
+		virtual void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) override;
+		virtual void DeleteFont(const std::wstring& path) override;
 
 		/// SkyBox
 		virtual void SetSkyBox(const std::wstring& path) override;
+		virtual void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) override;
 
 		/// Light
 		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.
@@ -111,6 +124,7 @@ namespace fq::graphics
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;
+		std::shared_ptr<class UIManager> mUIManager;
 	};
 }
 

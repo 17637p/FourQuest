@@ -157,6 +157,12 @@
     <ClInclude Include="D3D11ParticleManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -360,6 +366,12 @@
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="D3D11ParticleManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
   </ItemGroup>

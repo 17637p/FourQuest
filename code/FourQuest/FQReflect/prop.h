@@ -20,6 +20,9 @@ namespace fq::reflect::prop
 	// value를 ".mp3/.wav"로 설정하면 mp3, wav 파일을 드래그 드랍 받기 가능합니다 
 	constexpr static entt::hashed_string DragDrop = entt::hashed_string("drag_drop");
 
+	// Plain Old Data Structure 순수한 변수들의 집합
+	constexpr static entt::hashed_string POD = entt::hashed_string("POD");
+
 	// ??
 	constexpr static entt::hashed_string Label = entt::hashed_string("label"); 
 }

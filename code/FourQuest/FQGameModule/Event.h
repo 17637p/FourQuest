@@ -1,6 +1,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <unordered_map>
+#include <directxtk\SimpleMath.h>
+
 #include "../FQReflect/entt.hpp"
 
 namespace fq::game_module
@@ -9,6 +13,7 @@ namespace fq::game_module
 	class Component;
 	class Camera;
 	class Light;
+	class Animator;
 }
 
 namespace fq::event
@@ -102,7 +107,6 @@ namespace fq::event
 		fq::game_module::Component* component;
 	};
 
-
 	//////////////////////////////////////////////////////////////////////////
 	//							Sound Event									// 
 	//////////////////////////////////////////////////////////////////////////
@@ -119,4 +123,24 @@ namespace fq::event
 		unsigned int channelIndex;
 	};
 
+	//////////////////////////////////////////////////////////////////////////
+	//							Animation Event								// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct ChangeAnimationState
+	{
+		std::string exitState;
+		std::string enterState;
+		fq::game_module::GameObject* object;
+	};
+
+	struct WriteAnimation
+	{
+		std::string animationName;
+		std::unordered_map<std::string, std::vector<DirectX::SimpleMath::Matrix>> animationData;
+		fq::game_module::GameObject* object;
+		unsigned int animationSize;
+	};
+
 }
+

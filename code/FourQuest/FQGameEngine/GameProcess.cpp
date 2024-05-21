@@ -9,6 +9,7 @@
 #include "PhysicsSystem.h"
 #include "LightSystem.h"
 #include "SoundSystem.h"
+#include "AnimationSystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -23,6 +24,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mPhysicsSystem(std::make_unique<PhysicsSystem>())
 	, mLightSystem(std::make_unique<LightSystem>())
 	, mSoundSystem(std::make_unique<SoundSystem>())
+	, mAnimationSystem(std::make_unique<AnimationSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

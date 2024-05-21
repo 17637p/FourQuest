@@ -37,6 +37,7 @@ namespace fq::game_engine
 		void RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider);
 		void RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider);
 		void RenderCapsuleCollier(fq::game_module::Transform& transform, fq::game_module::CapsuleCollider& collider);
+		void renderCharaterController(fq::game_module::Transform& transform, fq::game_module::CharacterController& cotroller);
 
 	private:
 		void renderGrid();
@@ -44,6 +45,7 @@ namespace fq::game_engine
 		void renderBoxCollider();
 		void renderCapsuleCollider();
 		void renderConvexMeshCollider();
+		void renderCharaterController();
 
 	private:
 		GameProcess* mGameProcess;

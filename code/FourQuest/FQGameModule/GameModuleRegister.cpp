@@ -1,6 +1,7 @@
 #include "GameModuleRegister.h"
 
 #include "../FQReflect/FQReflect.h"
+#include "../FQCommon/FQCommonGraphics.h"
 #include "GameModuleEnum.h"
 #include "GameObject.h"
 #include "Transform.h"
@@ -8,20 +9,27 @@
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
 #include "Light.h"
+
+// Physics
+#include "Terrain.h"
 #include "RigidBody.h"
 #include "BoxCollider.h"
 #include "SphereCollider.h"
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
+#include "CharacterController.h"
+
+//
 #include "SoundClip.h"
 #include "PrefabResource.h"
 #include "PrefabTest.h"
+#include "AnimationStateNode.h"
+#include "Animator.h"
 
 void fq::game_module::RegisterMetaData()
 {
 	using namespace entt::literals;
 	using namespace fq::game_module;
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            GameObject                                //
@@ -61,12 +69,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Path")
 		.prop(fq::reflect::prop::RelativePath);
 
-		//////////////////////////////////////////////////////////////////////////
-		//                            Component                                 //
-		//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//                            Component                                 //
+	//////////////////////////////////////////////////////////////////////////
 
-		// Transform
-		entt::meta<Transform>()
+	// Transform
+	entt::meta<Transform>()
 		.type("Transform"_hs)
 		.prop(fq::reflect::prop::Name, "Transform")
 		.data<&Transform::SetLocalPosition, &Transform::GetLocalPosition>("Position"_hs)
@@ -161,6 +169,49 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetShadow, &Light::OnShadow>("OnShadow"_hs)
 		.prop(fq::reflect::prop::Name, "OnShadow")
 		.prop(fq::reflect::prop::Comment, u8"Directional Light 3개 제한")
+		.base<Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                               Terrain                                //
+	//////////////////////////////////////////////////////////////////////////
+	
+	// TerrainLayer
+	entt::meta<fq::graphics::TerrainLayer>()
+		.type("TerrainLayer"_hs)
+		.prop(fq::reflect::prop::Name, "TerrainLayer")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::TerrainLayer::BaseColor>("BaseColor"_hs)
+		.prop(fq::reflect::prop::Name, "BaseColor")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&fq::graphics::TerrainLayer::NormalMap>("NormalMap"_hs)
+		.prop(fq::reflect::prop::Name, "NormalMap")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&fq::graphics::TerrainLayer::Metalic>("Metalic"_hs)
+		.prop(fq::reflect::prop::Name, "Metalic")
+		.data<&fq::graphics::TerrainLayer::Roughness>("Roughness"_hs)
+		.prop(fq::reflect::prop::Name, "Roughness")
+		.data<&fq::graphics::TerrainLayer::TileSizeX>("TileSizeX"_hs)
+		.prop(fq::reflect::prop::Name, "TileSizeX")
+		.data<&fq::graphics::TerrainLayer::TileSizeY>("TileSizeY"_hs)
+		.prop(fq::reflect::prop::Name, "TileSizeY")
+		.data<&fq::graphics::TerrainLayer::TileOffsetX>("TileOffsetX"_hs)
+		.prop(fq::reflect::prop::Name, "TileOffsetX")
+		.data<&fq::graphics::TerrainLayer::TileOffsetY>("TileOffsetY"_hs)
+		.prop(fq::reflect::prop::Name, "TileOffsetY");
+	
+	// Terrain
+	entt::meta<Terrain>()
+		.type("Terrain"_hs)
+		.prop(fq::reflect::prop::Name, "Terrain")
+		.data<&Terrain::SetAlphaMap, &Terrain::GetAlphaMap>("AlphaMap"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaMap")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&Terrain::SetTerrainLayers, &Terrain::GetTerrainLayers>("Layers"_hs)
+		.prop(fq::reflect::prop::Name, "Layers")
+		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -265,6 +316,70 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PolygonLimit")
 		.base<Component>();
 
+
+	entt::meta<fq::physics::CharacterControllerInfo>()
+		.type("CharacterControllerInfo"_hs)
+		.prop(fq::reflect::prop::Name, "CharacterControllerInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::physics::CharacterControllerInfo::height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.prop(fq::reflect::prop::Comment, u8"캐릭터 컨트롤러(캡슐)의 높이")
+		.data<&fq::physics::CharacterControllerInfo::radius>("Radius"_hs)
+		.prop(fq::reflect::prop::Name, "Radius")
+		.prop(fq::reflect::prop::Comment, u8" 캐릭터 컨트롤러(캡슐)의 반지름")
+		.data<&fq::physics::CharacterControllerInfo::stepOffset>("StepOffset"_hs)
+		.prop(fq::reflect::prop::Name, "StepOffset")
+		.prop(fq::reflect::prop::Comment, u8" 캐릭터 컨트롤러가 지나갈 수 있는 ")
+		.data<&fq::physics::CharacterControllerInfo::slopeLimit>("SlopeLimit"_hs)
+		.prop(fq::reflect::prop::Name, "SlopeLimit")
+		.prop(fq::reflect::prop::Comment, u8" 캐릭터가 걸어 올라갈 수 있는 최대 기울기")
+		.data<&fq::physics::CharacterControllerInfo::contactOffset>("ContactOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ContactOffset")
+		.prop(fq::reflect::prop::Comment, u8" 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.");
+
+	entt::meta<fq::physics::CharacterMovementInfo>()
+		.type("CharacterMovementInfo"_hs)
+		.prop(fq::reflect::prop::Name, "CharacterMovementInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::physics::CharacterMovementInfo::maxSpeed>("MaxSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MaxSpeed")
+		.prop(fq::reflect::prop::Comment, u8"이동 최대 속도 : 캐릭터가 움직일 수 있는 최대 속도")
+		.data<&fq::physics::CharacterMovementInfo::acceleration>("Acceleration"_hs)
+		.prop(fq::reflect::prop::Name, "Acceleration")
+		.prop(fq::reflect::prop::Comment, u8"가속도 : 캐릭터가 입력 값을 받을 때 이동 가속도")
+		.data<&fq::physics::CharacterMovementInfo::staticFriction>("StaticFriction"_hs)
+		.prop(fq::reflect::prop::Name, "StaticFriction")
+		.prop(fq::reflect::prop::Comment, u8"정적 마찰 계수 : 캐릭터가 이동 중 멈췄을 때 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )")
+		.data<&fq::physics::CharacterMovementInfo::dynamicFriction>("DynamicFriction"_hs)
+		.prop(fq::reflect::prop::Name, "DynamicFriction")
+		.prop(fq::reflect::prop::Comment, u8"동적 마찰 계수 : 이동 중에 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )")
+		.data<&fq::physics::CharacterMovementInfo::jumpSpeed>("JumpSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "JumpSpeed")
+		.prop(fq::reflect::prop::Comment, u8"점프(y축) 속도")
+		.data<&fq::physics::CharacterMovementInfo::jumpXZAcceleration>("JumpXZAcceleration"_hs)
+		.prop(fq::reflect::prop::Name, "JumpXZAcceleration")
+		.prop(fq::reflect::prop::Comment, u8"점프 중에 이동(XZ축) 가속도 값")
+		.data<&fq::physics::CharacterMovementInfo::jumpXZDeceleration>("JumpXZDeceleration"_hs)
+		.prop(fq::reflect::prop::Name, "JumpXZDeceleration")
+		.prop(fq::reflect::prop::Comment, u8"점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )")
+		.data<&fq::physics::CharacterMovementInfo::gravityWeight>("GravityWeight"_hs)
+		.prop(fq::reflect::prop::Name, "GravityWeight")
+		.prop(fq::reflect::prop::Comment, u8"기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.");
+
+
+	// CharaterController
+	entt::meta<CharacterController>()
+		.type("CharacterController"_hs)
+		.prop(fq::reflect::prop::Name, "CharacterController")
+		.data<&CharacterController::SetOffset, &CharacterController::GetOffset>("Offset"_hs)
+		.prop(fq::reflect::prop::Name, "Offset")
+		.data<&CharacterController::SetMovementInfo, &CharacterController::GetMovementInfo>("MoveInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MoveInfo")
+		.data<&CharacterController::SetControllerInfo, &CharacterController::GetControllerInfo>("ControllerInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerInfo")
+		.base<Component>();
+
+
 	//////////////////////////////////////////////////////////////////////////
 	//                              Sound                                   //
 	//////////////////////////////////////////////////////////////////////////
@@ -281,10 +396,51 @@ void fq::game_module::RegisterMetaData()
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//                              Prefab                                  //
+	//                            Animation                                 //
 	//////////////////////////////////////////////////////////////////////////
 
-	entt::meta<PrefabTest>()
+	entt::meta<AnimationStateNode::Type>()
+		.type("AnimationStateNodeType"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationStateNodeType")
+		.data<AnimationStateNode::Type::Entry>("Entry"_hs)
+		.prop(fq::reflect::prop::Name, "Entry")
+		.data<AnimationStateNode::Type::AnyState>("AnyState"_hs)
+		.prop(fq::reflect::prop::Name, "AnyState")
+		.data<AnimationStateNode::Type::Exit>("Exit"_hs)
+		.prop(fq::reflect::prop::Name, "Exit")
+		.data<AnimationStateNode::Type::State>("State"_hs)
+		.prop(fq::reflect::prop::Name, "State");
+
+	entt::meta<AnimationStateNode>()
+		.type("AnimationStateNode"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationStateNode")
+		.data<&AnimationStateNode::SetType, &AnimationStateNode::GetType>("Type"_hs)
+		.prop(fq::reflect::prop::Name, "Type")
+		.data<&AnimationStateNode::SetModelPath, &AnimationStateNode::GetModelPath>("ModelPath"_hs)
+		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&AnimationStateNode::SetAnimationName, &AnimationStateNode::GetAnimationName>("AnimationName"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationName")
+		.data<&AnimationStateNode::SetAnimationKey, &AnimationStateNode::GetAnimationKey>("AnimationKey"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationKey")
+		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
+
+	entt::meta<Animator>()
+		.type("Animator"_hs)
+		.prop(fq::reflect::prop::Name, "Animator")
+		.data<&Animator::SetControllerPath, &Animator::GetControllerPath>("ControllerPath"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerPath")
+		.prop(fq::reflect::prop::DragDrop, ".controller")
+		.prop(fq::reflect::prop::RelativePath)
+		.base<Component>();
+
+
+		//////////////////////////////////////////////////////////////////////////
+		//                              Prefab                                  //
+		//////////////////////////////////////////////////////////////////////////
+
+		entt::meta<PrefabTest>()
 		.type("PrefabTest"_hs)
 		.prop(fq::reflect::prop::Name, "PrefabTest")
 		.data<&PrefabTest::SetFireObject, &PrefabTest::GetFireObject>("FireObject"_hs)
@@ -293,5 +449,4 @@ void fq::game_module::RegisterMetaData()
 		.data<&PrefabTest::SetCreateTime, &PrefabTest::GetCreateTime>("CreateTime"_hs)
 		.prop(fq::reflect::prop::Name, "CreateTime")
 		.base<Component>();
-
 }

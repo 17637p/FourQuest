@@ -46,7 +46,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDirectioanlShadowInfoCB = resourceManager->Create< D3D11ConstantBuffer<DirectionalShadowInfo>>(ED3D11ConstantBuffer::DirectionalShadowInfo);
 
 		OnResize(width, height);
 
@@ -150,7 +150,7 @@ namespace fq::graphics
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
 
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
+			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
 		}
 
 		// Init
@@ -161,8 +161,8 @@ namespace fq::graphics
 
 		// Bind
 		{
-			ID3D11ShaderResourceView* SRVs[10] = { NULL };
-			mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
+			ID3D11ShaderResourceView* SRVs[5] = { NULL };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, 5, SRVs);
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);

@@ -57,18 +57,22 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
+	const std::string planeModelPath = "./resource/example/model/Plane.model";
 
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
+	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/SkinningTest.model";
 	const std::string animModelPath1 = "./resource/example/model/kick.model";
+	const std::string staticAnimModelPath0 = "./resource/example/model/animBoxNA.model";
 	const std::string textureBasePath = "./resource/example/texture";
 
 	mTestGraphics->CreateModel(modelPath, textureBasePath);
 	mTestGraphics->CreateModel(geoModelPath, textureBasePath);
+	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
 
 	std::vector<fq::graphics::AnimationInfo> animInfo;
 	auto modelData = mTestGraphics->CreateModel(animModelPath0, textureBasePath);
@@ -76,7 +80,16 @@ bool Process::Init(HINSTANCE hInstance)
 	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
 	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
 
+	mTestGraphics->WriteModel("./cocoa.model", modelData);
+	modelData = mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
+	std::vector<fq::graphics::AnimationInfo> staticAnimInfo;
+	//modelData = mTestGraphics->CreateModel(staticAnimModelPath0, textureBasePath);
+	//staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
+	//createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
+
+	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
@@ -164,6 +177,8 @@ bool Process::Init(HINSTANCE hInstance)
 	//mTestGraphics->AddLight(5, pointLightInfo);
 
 	particleInit();
+
+	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
 	return true;
 }
@@ -333,6 +348,10 @@ void Process::Update()
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
+		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
+			L"./resource/example/texture/defaultSpecularHDR.dds",
+			L"./resource/example/texture/defaultBrdf.dds");
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
@@ -353,6 +372,13 @@ void Process::Update()
 		float randZ = (float)(rand() % 500 - 250);
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
+
+	//if (InputManager::GetInstance().IsGetKeyDown('R'))
+	//{
+	//	terrainMaterial.Layers[0].TileSizeX = 100;
+	//	terrainMaterial.Layers[0].TileSizeY = 100;
+	//	mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
+	//}
 
 	shadowTest();
 
@@ -387,7 +413,19 @@ void Process::Render()
 	s_time += mTimeManager.GetDeltaTime();
 	s_time = fmod(s_time, 3.f);
 
-	for (size_t i = 1; i < mStaticMeshObjects.size(); ++i)
+	static float s_blend_time = 0.f;
+
+	if (GetAsyncKeyState('3') & 0x8000)
+	{
+		s_blend_time += mTimeManager.GetDeltaTime() ;
+		s_blend_time = fmod(s_blend_time, 3.f);
+	}
+	else
+	{
+		s_blend_time = 0.f;
+	}
+
+	for (size_t i = 0; i < mStaticMeshObjects.size(); ++i)
 	{
 		auto& obj = mStaticMeshObjects[i];
 		if (GetAsyncKeyState('1') & 0x8000)
@@ -396,8 +434,15 @@ void Process::Render()
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
+			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+			obj->SetAnimationTime(s_time);
 		}
+		else
+		{
+			obj->SetAnimationTime(0.f);
+		}
+
 		if (GetAsyncKeyState('3') & 0x8000)
 		{
 			obj->SetUseShadow(true);
@@ -409,6 +454,7 @@ void Process::Render()
 
 		obj->SetAlpha(s_time * 0.33f);
 	}
+
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
@@ -416,11 +462,26 @@ void Process::Render()
 		{
 			obj->SetAnimationKey("Kick");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
+			obj->UpdateAnimationTime(s_time);
+			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
 			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+			obj->UpdateAnimationTime(s_time);
+			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
+		}
+		else if (GetAsyncKeyState('3') & 0x8000)
+		{
+			obj->SetBlendAnimationKey("Kick", "Idle");
+			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
+			obj->UpdateAnimationTime(s_time);
+			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
+		}
+		else
+		{
+			obj->SetBindPose();
 		}
 		if (GetAsyncKeyState('3') & 0x8000)
 		{
@@ -432,8 +493,20 @@ void Process::Render()
 		}
 
 		obj->SetAlpha(s_time * 0.33f);
-		obj->UpdateAnimationTime(s_time);
 	}
+
+	// --------------------font Test-------------------------------
+	DirectX::SimpleMath::Rectangle drawRect;
+	drawRect.x = 600;
+	drawRect.y = 600;
+	drawRect.width = 1000;
+	drawRect.height = 1000;
+	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+
+	drawRect.x = 600;
+	drawRect.y = 700;
+	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+	// ---------------------------------------------------
 
 	mTestGraphics->EndRender();
 
@@ -550,16 +623,16 @@ void Process::debugRender()
 
 void Process::shadowTest()
 {
-	if (GetAsyncKeyState('5') & 0x8000)
+	//if (GetAsyncKeyState('5') & 0x8000)
 	{
 		mTestGraphics->UseShadow(1, true);
 		mTestGraphics->UseShadow(4, true);
 	}
-	else
-	{
-		mTestGraphics->UseShadow(1, false);
-		mTestGraphics->UseShadow(4, false);
-	}
+	//else
+	//{
+	//	mTestGraphics->UseShadow(1, false);
+	//	mTestGraphics->UseShadow(4, false);
+	//}
 
 	if (GetAsyncKeyState('6') & 0x8000)
 	{
@@ -704,6 +777,12 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		if (mesh.second.BoneVertices.empty())
 		{
 			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
+			}
+
 			mStaticMeshObjects.push_back(iStaticMeshObject);
 		}
 		else
@@ -716,6 +795,72 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 			}
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
+	}
+}
+
+void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
+{
+	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
+
+	for (auto mesh : modelData.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = modelPath;
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+
+		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
+		mTerrainMeshObjects.push_back(iTerrainMeshObject);
+
+		//fq::graphics::TerrainMaterialInfo terrainMaterial;
+		terrainMaterial.Layers.clear();
+
+		fq::graphics::TerrainLayer layer1;
+		fq::graphics::TerrainLayer layer2;
+		fq::graphics::TerrainLayer layer3;
+
+		layer1.BaseColor = "./resource/example/texture/t2.jpg";
+		layer2.BaseColor = "./resource/example/texture/t1.jpg";
+		layer3.BaseColor = "./resource/example/texture/t3.jpg";
+
+		layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
+		layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
+		layer3.NormalMap = "./resource/example/texture/character_normal.png";
+
+		layer1.TileOffsetX = 0.5;
+		layer1.TileOffsetY = 0.5;
+		layer2.TileOffsetX = 0;
+		layer2.TileOffsetY = 0;
+		layer3.TileOffsetX = 0;
+		layer3.TileOffsetY = 0;
+
+		layer1.TileSizeX = 5;
+		layer2.TileSizeX = 5;
+		layer3.TileSizeX = 5;
+		layer1.TileSizeY = 3;
+		layer2.TileSizeY = 3;
+		layer3.TileSizeY = 3;
+
+		layer1.Metalic = 0;
+		layer2.Metalic = 0;
+		layer3.Metalic = 0;
+
+		layer1.Roughness = 0;
+		layer2.Roughness = 0;
+		layer3.Roughness = 0;
+
+		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
+
+		terrainMaterial.Layers.push_back(layer1);
+		terrainMaterial.Layers.push_back(layer2);
+		terrainMaterial.Layers.push_back(layer3);
+
+		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
 }
 

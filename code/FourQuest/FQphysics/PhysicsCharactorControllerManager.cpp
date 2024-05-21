@@ -21,9 +21,9 @@ namespace fq::physics
 	PhysicsCharactorControllerManager::~PhysicsCharactorControllerManager()
 	{
 		mCCTmap.clear();
+		mCollisionDataContainer.clear();
 		PX_RELEASE(mMaterial);
 		PX_RELEASE(mCCTManager);
-		mCollisionDataContainer.clear();
 	}
 
 	bool PhysicsCharactorControllerManager::initialize(physx::PxScene* scene, physx::PxPhysics* physics)
@@ -45,46 +45,24 @@ namespace fq::physics
 				return false;
 		}
 
-		// 콜리전 데이터 없애기
-		for (auto& iter : mCollisionDataContainer)
-		{
-			auto collision = mCCTmap.find(iter.first);
-			if (collision != mCCTmap.end())
-			{
-				mCollisionDataContainer.erase(mCollisionDataContainer.find(iter.first));
-			}
-		}
+		return true;
+	}
+
+	bool PhysicsCharactorControllerManager::FinalUpdate()
+	{
+		UserDataClear();
 
 		return true;
 	}
 
-	bool PhysicsCharactorControllerManager::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo, int* collisionMatrix)
+	bool PhysicsCharactorControllerManager::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
 	{
-		std::shared_ptr<PlayerCharacterController> controller = std::make_shared<PlayerCharacterController>();
-		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
-		if (!controller->Initialize(controllerInfo, movementInfo, mCCTManager, mMaterial, collisionData, collisionMatrix)) return false;
+		if (mCCTmap.find(id) == mCCTmap.end())
+			return false;
 
-		mCollisionDataContainer.insert(std::make_pair(collisionData->myId, collisionData));
-		mCCTmap.insert(std::make_pair(controller->GetID(), controller));
-		return true;
-	}
-
-	void PhysicsCharactorControllerManager::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
-	{
 		std::shared_ptr<CharacterController>& characterController = mCCTmap.find(id)->second;
 		characterController->AddMovementInput(input);
-	}
-
-	bool PhysicsCharactorControllerManager::RemoveController(const unsigned int& id)
-	{
-		auto controller = mCCTmap.find(id);
-		if (controller != mCCTmap.end())
-		{
-			mCCTmap.erase(controller);
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	void PhysicsCharactorControllerManager::UpdateCollisionMatrix(int* collisionMatrix)
@@ -101,6 +79,56 @@ namespace fq::physics
 		}
 	}
 
+#pragma region CreateAndRemoveCCT
+	bool PhysicsCharactorControllerManager::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo, int* collisionMatrix)
+	{
+		std::shared_ptr<PlayerCharacterController> controller = std::make_shared<PlayerCharacterController>();
+		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
+		if (!controller->Initialize(controllerInfo, movementInfo, mCCTManager, mMaterial, collisionData, collisionMatrix)) return false;
+
+		mCollisionDataContainer.insert(std::make_pair(collisionData->myId, collisionData));
+		mCCTmap.insert(std::make_pair(controller->GetID(), controller));
+		return true;
+	}
+
+	bool PhysicsCharactorControllerManager::RemoveController(const unsigned int& id)
+	{
+		auto collisionDataIter = mCollisionDataContainer.find(id);
+		if (collisionDataIter != mCollisionDataContainer.end())
+		{
+			collisionDataIter->second->isDead = true;
+		}
+
+		auto controller = mCCTmap.find(id);
+		if (controller != mCCTmap.end())
+		{
+			mCCTmap.erase(controller);
+			return true;
+		}
+
+		return false;
+	}
+
+	void PhysicsCharactorControllerManager::UserDataClear()
+	{
+		auto dataIter = mCollisionDataContainer.begin();
+		std::vector<std::unordered_map<unsigned int, std::shared_ptr<CollisionData>>::iterator> iterContainer;
+
+		for (; dataIter != mCollisionDataContainer.end(); dataIter++)
+		{
+			if (dataIter->second->isDead == true)
+				iterContainer.push_back(dataIter);
+		}
+
+		for (auto& deleteIter : iterContainer)
+		{
+			mCollisionDataContainer.erase(deleteIter);
+		}
+		iterContainer.clear();
+	}
+#pragma endregion
+
+#pragma region GetSetFunction
 	void PhysicsCharactorControllerManager::GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data)
 	{
 		auto& controller = mCCTmap.find(id)->second;
@@ -131,4 +159,5 @@ namespace fq::physics
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
 	}
+#pragma endregion
 }

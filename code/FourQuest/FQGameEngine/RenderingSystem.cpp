@@ -6,6 +6,7 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
+#include "AnimationSystem.h"
 
 fq::game_engine::RenderingSystem::RenderingSystem()
 	:mGameProcess(nullptr)
@@ -45,6 +46,9 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 
 	mRemoveComponentHandler = eventMgr->
 		RegisterHandle<fq::event::RemoveComponent>(this, &RenderingSystem::RemoveComponent);
+
+	mWriteAnimationHandler = eventMgr->
+		RegisterHandle<fq::event::WriteAnimation>(this, &RenderingSystem::WriteAnimation);
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)
@@ -72,6 +76,16 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					meshObject->UpdateTransform(transform.GetWorldMatrix());
 				}
 			});
+
+	scene->ViewComponents<Transform, Terrain>
+		([this](GameObject& object, Transform& transform, Terrain& mesh)
+			{
+				auto meshObject = mesh.GetTerrainMeshObject();
+				if (meshObject)
+				{
+					meshObject->SetTransform(mPlaneMatrix * transform.GetWorldMatrix());
+				}
+			});
 }
 
 void fq::game_engine::RenderingSystem::OnLoadScene()
@@ -83,6 +97,8 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	{
 		loadStaticMeshRenderer(&object);
 		loadSkinnedMeshRenderer(&object);
+		loadTerrain(&object);
+		loadAnimation(&object);
 	}
 
 	// 2. PrefabInstance를 로드
@@ -114,6 +130,12 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 2. SkinnedMesh
 	loadSkinnedMeshRenderer(gameObject);
+
+	// 3. Animation
+	loadAnimation(gameObject);
+
+	// 4. Terrain
+	loadTerrain(gameObject);
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
@@ -126,14 +148,14 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	auto skinnedMeshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
 	auto meshInfo = skinnedMeshRenderer->GetMeshObjectInfomation();
 	auto transform = object->GetComponent<fq::game_module::Transform>();
-	
+
 	if (!std::filesystem::exists(meshInfo.ModelPath))
 	{
 		SPDLOG_WARN("\"{}\" does not exist", meshInfo.ModelPath);
 	}
 	else
 	{
-		loadModel(meshInfo.ModelPath);
+		LoadModel(meshInfo.ModelPath);
 	}
 	meshInfo.Transform = transform->GetLocalMatrix();
 
@@ -141,6 +163,43 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 	auto skinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInfo);
 	skinnedMeshRenderer->SetSkinnedMeshObject(skinnedMeshObject);
+}
+
+void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnimation& event)
+{
+	static std::vector<fq::common::AnimationClip> mAnimationClips;
+
+	fq::common::AnimationClip animationClilp;
+	animationClilp.Name = event.animationName;
+	animationClilp.FrameCount = event.animationData.begin()->second.size();
+	animationClilp.FramePerSecond = (1.f / 30.f);
+	animationClilp.Duration = (1.f / 30.f);
+
+	for (const auto& data : event.animationData)
+	{
+		fq::common::NodeClip nodeClip;
+		nodeClip.NodeName = data.first;
+
+		for (int i = 0; i < data.second.size(); i++)
+		{
+			DirectX::SimpleMath::Matrix curMatrix = data.second[i];
+			fq::common::Keyframe keyFrame;
+			curMatrix.Decompose(keyFrame.Scale, keyFrame.Rotation, keyFrame.Translation);
+			keyFrame.TimePos = (1.f / 30.f) * i;
+			nodeClip.Keyframes.push_back(keyFrame);
+		}
+		animationClilp.NodeClips.push_back(nodeClip);
+	}
+
+	mAnimationClips.push_back(animationClilp);
+
+	if (mAnimationClips.size() >= event.animationSize)
+	{
+		fq::common::Model model;
+		model.Animations = mAnimationClips;
+		mGameProcess->mGraphics->WriteModel("./" + event.animationName + ".model", model);
+		mAnimationClips.clear();
+	}
 }
 
 void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::GameObject* object)
@@ -161,7 +220,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	}
 	else
 	{
-		loadModel(meshInfo.ModelPath);
+		LoadModel(meshInfo.ModelPath);
 	}
 	meshInfo.Transform = transform->GetLocalMatrix();
 
@@ -170,7 +229,45 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	staticMeshRenderer->SetStaticMeshObject(staticMeshObject);
 }
 
-void fq::game_engine::RenderingSystem::loadModel(ModelPath path)
+void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::SkinnedMeshRenderer, fq::game_module::Animator>())
+	{
+		return;
+	}
+
+	// AnimatorController 로드 요청
+	bool check = mGameProcess->mAnimationSystem->LoadAnimatorController(object);
+
+	if (!check) return;
+
+	auto animator = object->GetComponent<fq::game_module::Animator>();
+	auto meshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+	auto meshObject = meshRenderer->GetSkinnedMeshObject();
+
+	const auto& stateMap = animator->GetController().GetStateMap();
+
+
+	for (const auto& [id, state] : stateMap)
+	{
+		fq::graphics::AnimationInfo info;
+
+		info.ModelPath = state.GetModelPath();
+		info.AnimationName = state.GetAnimationName();
+		info.AnimationKey = state.GetAnimationKey();
+
+		if (info.ModelPath.empty()
+			|| info.AnimationName.empty()
+			|| info.AnimationKey.empty())
+			continue;
+
+		LoadModel(info.ModelPath);
+		mGameProcess->mGraphics->AddAnimation(meshObject, info);
+	}
+}
+
+
+void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 {
 	auto iter = mLoadModels.find(path);
 
@@ -198,6 +295,7 @@ void fq::game_engine::RenderingSystem::OnDestroyedGameObject(const fq::event::On
 {
 	unloadStaticMeshRenderer(event.object);
 	unloadSkinnedMeshRenderer(event.object);
+	unloadTerrain(event.object);
 }
 
 void fq::game_engine::RenderingSystem::unloadStaticMeshRenderer(fq::game_module::GameObject* object)
@@ -238,6 +336,11 @@ void fq::game_engine::RenderingSystem::AddComponent(const fq::event::AddComponen
 	{
 		loadSkinnedMeshRenderer(event.component->GetGameObject());
 	}
+
+	if (event.id == entt::resolve<fq::game_module::Terrain>().id())
+	{
+		loadTerrain(event.component->GetGameObject());
+	}
 }
 
 void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveComponent& event)
@@ -252,9 +355,61 @@ void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveCo
 		unloadSkinnedMeshRenderer(event.component->GetGameObject());
 	}
 
+	if (event.id == entt::resolve<fq::game_module::Terrain>().id())
+	{
+		unloadTerrain(event.component->GetGameObject());
+	}
+
 }
 
 bool fq::game_engine::RenderingSystem::IsLoadedModel(const ModelPath& path)
 {
 	return mLoadModels.find(path) != mLoadModels.end();
+}
+
+void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Terrain>())
+	{
+		return;
+	}
+
+	auto terrain = object->GetComponent<fq::game_module::Terrain>();
+	auto transform = object->GetComponent<fq::game_module::Transform>();
+
+	std::string terrainPath = "./resource/internal/terrain/Plane.model";
+
+	// Model 생성
+	LoadModel(terrainPath);
+	const fq::common::Model& modelData = mGameProcess->mGraphics->GetModel(terrainPath);
+	auto mesh = modelData.Meshes[1];
+
+	fq::graphics::MeshObjectInfo meshInfo;
+	meshInfo.ModelPath = terrainPath;
+	meshInfo.MeshName = mesh.second.Name;
+	meshInfo.Transform = mesh.first.ToParentMatrix *transform->GetWorldMatrix();
+
+	mPlaneMatrix = mesh.first.ToParentMatrix;
+
+	fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mGameProcess->mGraphics->CreateTerrainMeshObject(meshInfo);
+	terrain->SetTerrainMeshObject(iTerrainMeshObject);
+
+	fq::graphics::TerrainMaterialInfo info;
+	info.AlPhaFileName = terrain->GetAlphaMap();
+	info.Layers = terrain->GetTerrainLayers();
+
+	mGameProcess->mGraphics->SetTerrainMeshObject(iTerrainMeshObject, info);
+}
+
+void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Terrain>())
+	{
+		return;
+	}
+
+	auto terrain = object->GetComponent<fq::game_module::Terrain>();
+	auto terrainMeshObject = terrain->GetTerrainMeshObject();
+	mGameProcess->mGraphics->DeleteTerrainMeshObject(terrainMeshObject);
+	terrain->SetTerrainMeshObject(nullptr);
 }

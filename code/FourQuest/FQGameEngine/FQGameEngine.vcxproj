@@ -121,7 +121,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;FQClient.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,10 +143,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;FQClient.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationSystem.h" />
+    <ClInclude Include="AnimatorWindow.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="CollisionMatrixWindow.h" />
     <ClInclude Include="Command.h" />
@@ -171,16 +173,21 @@
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
+    <ClInclude Include="PhysicsAnimatorWindow.h" />
+    <ClInclude Include="NodeEditorStruct.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="PrefabSystem.h" />
     <ClInclude Include="ModelSystem.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="EditorEngine.h" />
+    <ClInclude Include="SkyBoxWindow.h" />
     <ClInclude Include="SoundSystem.h" />
     <ClInclude Include="WindowSystem.h" />
     <ClInclude Include="WndProc.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationSystem.cpp" />
+    <ClCompile Include="AnimatorWindow.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="CollisionMatrixWindow.cpp" />
     <ClCompile Include="Command.cpp" />
@@ -204,16 +211,22 @@
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
+    <ClCompile Include="PhysicsAnimatorWindow.cpp" />
+    <ClCompile Include="NodeEditorStruct.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PrefabSystem.cpp" />
     <ClCompile Include="ModelSystem.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />
     <ClCompile Include="EditorEngine.cpp" />
+    <ClCompile Include="SkyBoxWindow.cpp" />
     <ClCompile Include="SoundSystem.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
     <ClCompile Include="WndProc.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FQClient\FQClient.vcxproj">
+      <Project>{ce249289-8899-4b19-b2e1-f047675a5b4b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">
       <Project>{80b6857c-9c5d-4d1f-9765-01fb3bb4c720}</Project>
     </ProjectReference>

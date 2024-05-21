@@ -163,4 +163,19 @@ namespace fq::graphics
 		}
 	}
 
+	void D3D11RenderManager::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
+	{
+		switch (mPipelineType)
+		{
+		case fq::graphics::EPipelineType::Forward:
+			return mForwardPipeline->SetIBLTexture(diffuse, specular, brdfLUT);
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			return mDeferredPipeline->SetIBLTexture(diffuse, specular, brdfLUT);
+			break;
+		default:
+			assert(false);
+			break;
+		}
+	}
 }

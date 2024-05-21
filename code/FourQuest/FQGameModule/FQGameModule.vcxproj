@@ -151,6 +151,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatorControllerLoader.h" />
+    <ClInclude Include="AnimationStateNode.h" />
+    <ClInclude Include="AnimationTransition.h" />
+    <ClInclude Include="Animator.h" />
+    <ClInclude Include="AnimatorController.h" />
+    <ClInclude Include="CharacterController.h" />
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
@@ -188,10 +194,17 @@
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="StaticMeshRenderer.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatorControllerLoader.cpp" />
+    <ClCompile Include="AnimationStateNode.cpp" />
+    <ClCompile Include="AnimationTransition.cpp" />
+    <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="AnimatorController.cpp" />
+    <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
@@ -224,6 +237,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="StaticMeshRenderer.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>

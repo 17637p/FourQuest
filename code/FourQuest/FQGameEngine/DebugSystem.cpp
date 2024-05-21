@@ -27,9 +27,9 @@ void fq::game_engine::DebugSystem::Initialize(GameProcess* game)
 	//						    그리드 설정									//
 	//////////////////////////////////////////////////////////////////////////
 	mGridInfo.Color = { 0.8f,0.8f,0.8f,1.f };
-	mGridInfo.GridSize = 10000.f;
-	mGridInfo.XDivision = 100;
-	mGridInfo.YDivision = 100;
+	mGridInfo.GridSize = 1000.f;
+	mGridInfo.XDivision = 1000;
+	mGridInfo.YDivision = 1000;
 	mGridInfo.Origin = Vector3::Zero;
 	mGridInfo.XAxis = Vector3::UnitX;
 	mGridInfo.YAxis = Vector3::UnitZ;
@@ -42,6 +42,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderSphereCollider();
 	renderCapsuleCollider();
 	renderConvexMeshCollider();
+	renderCharaterController();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -74,7 +75,7 @@ void fq::game_engine::DebugSystem::RenderDirLight(fq::game_module::Light& light)
 	fq::graphics::debug::RayInfo ray;
 	ray.Color = lightinfo.color;
 	ray.Normalize = false;
-	ray.Direction = lightinfo.direction * 100.f;
+	ray.Direction = lightinfo.direction;
 	ray.Origin = lightinfo.position;
 
 	mGameProcess->mGraphics->DrawRay(ray);
@@ -83,7 +84,7 @@ void fq::game_engine::DebugSystem::RenderDirLight(fq::game_module::Light& light)
 
 	sphere.Color = lightinfo.color;
 	sphere.Sphere.Center = lightinfo.position;
-	sphere.Sphere.Radius = 5.f;
+	sphere.Sphere.Radius = 0.1f;
 
 	mGameProcess->mGraphics->DrawSphere(sphere);
 }
@@ -200,6 +201,57 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
+void fq::game_engine::DebugSystem::renderCharaterController(fq::game_module::Transform& transform
+	, fq::game_module::CharacterController& cotroller)
+{
+	using DirectX::SimpleMath::Color;
+
+	Color color = Color{ 0.f,1.f,0.f };
+	auto upDir = transform.GetWorldMatrix().Up();
+	upDir.Normalize();
+	auto controllerInfo = cotroller.GetControllerInfo();
+	auto offset = cotroller.GetOffset();
+
+	// UpSphere
+	fq::graphics::debug::SphereInfo info;
+	info.Color = color;
+	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height;
+	info.Sphere.Radius = controllerInfo.radius;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// DownSphere
+	info.Sphere.Center = transform.GetWorldPosition() + offset - upDir * controllerInfo.height;
+	mGameProcess->mGraphics->DrawSphere(info);
+
+	// BodyRay 
+	fq::graphics::debug::RayInfo ray;
+
+	ray.Direction = upDir * controllerInfo.height * 2.f;
+	ray.Color = color;
+	ray.Normalize = false;
+	auto orgin = info.Sphere.Center;
+	auto rightDir = transform.GetWorldMatrix().Right();
+	rightDir.Normalize();
+	rightDir *= controllerInfo.radius;
+
+	auto fowardDir = transform.GetWorldMatrix().Forward();
+	fowardDir.Normalize();
+	fowardDir *= controllerInfo.radius;
+
+	ray.Origin = orgin + rightDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - rightDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin + fowardDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+
+	ray.Origin = orgin - fowardDir;
+	mGameProcess->mGraphics->DrawRay(ray);
+}
+
+
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
 	using namespace fq::game_module;
@@ -209,6 +261,8 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 		{
 			RenderCapsuleCollier(transform, capsule);
 		});
+
+
 }
 
 void fq::game_engine::DebugSystem::renderConvexMeshCollider()
@@ -222,7 +276,7 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 		{
 			auto collider = static_cast<fq::game_module::MeshCollider*>(mGameProcess->mPhysicsSystem->GetCollider(id));
 			if (!collider) continue;
-	
+
 			auto count = collider->GetCollisionCount();
 			fq::graphics::debug::PolygonInfo info;
 			info.Color = (count == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
@@ -232,3 +286,15 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 	}
 
 }
+
+void fq::game_engine::DebugSystem::renderCharaterController()
+{
+	using namespace fq::game_module;
+
+	mScene->ViewComponents<Transform, CharacterController>
+		([this](GameObject& object, Transform& transform, CharacterController& cotroller)
+			{
+				renderCharaterController(transform, cotroller);
+			});
+}
+

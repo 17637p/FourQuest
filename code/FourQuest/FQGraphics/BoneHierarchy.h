@@ -43,15 +43,18 @@ namespace fq::graphics
 	class BoneHierarchyCache
 	{
 	public:
-		using BoneNodeClipCache = std::pair<const struct Bone&, const struct fq::common::NodeClip&>;
+		using BoneNodeClipCache = std::pair<const struct Bone*, const struct fq::common::NodeClip*>;
 
 	public:
 		BoneHierarchyCache(std::shared_ptr<BoneHierarchy> boneHierarchy);
 		~BoneHierarchyCache() = default;
 
+		void Clear();
 		void Update(float timePos);
+		void Update(float timePos, float blendTimePos, float weight);
 
 		inline void SetAnimation(std::shared_ptr<fq::common::AnimationClip> animationCilp);
+		inline void SetAnimation(std::shared_ptr<fq::common::AnimationClip> animationCilp, std::shared_ptr<fq::common::AnimationClip> blendAnimationClip);
 
 		inline const std::shared_ptr<BoneHierarchy>& GetBoneHierarchy() const;
 		inline const std::shared_ptr<fq::common::AnimationClip>& GetAnimationClip() const;
@@ -60,20 +63,30 @@ namespace fq::graphics
 
 	private:
 		void link();
+		void linkBlendAnim();
 
 		inline bool checkValid() const;
 
 	private:
 		std::shared_ptr<BoneHierarchy> mBoneHierarchy;
 		std::shared_ptr<fq::common::AnimationClip> mAnimationClip;
+		std::shared_ptr<fq::common::AnimationClip> mBlendAnimationClip;
 		std::vector<BoneNodeClipCache> mBoneNodeClipCache;
+		std::vector<BoneNodeClipCache> mBlendBoneNodeClipCache;
 		std::vector<DirectX::SimpleMath::Matrix> mFinalTransforms;
 	};
 
 	inline void BoneHierarchyCache::SetAnimation(std::shared_ptr<fq::common::AnimationClip> animationCilp)
 	{
 		mAnimationClip = animationCilp;
+		mBlendAnimationClip = nullptr;
 		link();
+	}
+	inline void BoneHierarchyCache::SetAnimation(std::shared_ptr<fq::common::AnimationClip> animationCilp, std::shared_ptr<fq::common::AnimationClip> blendAnimationClip)
+	{
+		mAnimationClip = animationCilp;
+		mBlendAnimationClip = blendAnimationClip;
+		linkBlendAnim();
 	}
 
 	inline const std::shared_ptr<BoneHierarchy>& BoneHierarchyCache::GetBoneHierarchy() const

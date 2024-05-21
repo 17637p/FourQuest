@@ -20,6 +20,7 @@ namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
+namespace fq::graphics { class ITerrainMeshObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -49,6 +50,7 @@ private:
 
 	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	void calculateFrameStats();
 
@@ -68,12 +70,15 @@ private:
 
 	bool mResizing;
 
+	fq::graphics::TerrainMaterialInfo terrainMaterial;
+
 	// Graphics
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
+	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
 
 	// Camera
 	fq::common::Transform cameraTransform;

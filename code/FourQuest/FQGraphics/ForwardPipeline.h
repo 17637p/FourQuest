@@ -45,6 +45,17 @@ namespace fq::graphics
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 		std::shared_ptr<class ParticlePass> mParticlePass;
+		std::shared_ptr<class TerrainPass> mTerrainPass;
+
+		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
+		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
+		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
+		std::shared_ptr<D3D11DepthStencilView> mDSV;
+
+		// IBL юс╫ц
+		std::shared_ptr<class D3D11Texture> mDiffuseCubeMap;
+		std::shared_ptr<class D3D11Texture> mSpecularCubeMap;
+		std::shared_ptr<class D3D11Texture> mBRDFLUT;
 	};
 }
 

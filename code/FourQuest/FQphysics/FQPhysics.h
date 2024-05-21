@@ -49,7 +49,6 @@ namespace fq::physics
 		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
 
 #pragma region RigidBodyManager
-
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.
 		/// </summary>
@@ -86,11 +85,9 @@ namespace fq::physics
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
-		
 #pragma endregion
 
 #pragma region CharacterControllerManager
-
 		/// <summary>
 		/// 캐릭터 컨트롤러 생성 함수
 		/// </summary>
@@ -109,7 +106,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>
 		/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
-		virtual void AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input) override;
+		virtual bool AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input) override;
 
 		/// <summary>
 		/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set합니다.
@@ -118,7 +115,6 @@ namespace fq::physics
 		virtual CharacterMovementGetSetData GetCharacterMovementData(const unsigned int& id) override;
 		virtual void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData) override;
 		virtual void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData) override;
-
 #pragma endregion
 
 		/// <summary>

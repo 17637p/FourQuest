@@ -59,17 +59,23 @@ extern "C" {
 			virtual FQ_GRAPHICS bool SetViewportSize(const unsigned short width, const unsigned short height) abstract; // 툴에서 씬을 그리는 영역
 
 			// 랜더 오브젝트
+			virtual FQ_GRAPHICS void WriteModel(std::string path, const fq::common::Model& modelData) abstract;
 			virtual FQ_GRAPHICS void ConvertModel(std::string fbxFile, std::string path) abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& GetModel(std::string path) abstract;
 			virtual FQ_GRAPHICS void DeleteModel(std::string path) abstract;
 
 			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) abstract;
+			virtual FQ_GRAPHICS void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) abstract;
 			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* meshObject) abstract;
 
 			virtual FQ_GRAPHICS ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) abstract;
 			virtual FQ_GRAPHICS void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) abstract;
 			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) abstract;
+
+			virtual FQ_GRAPHICS ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) abstract;
+			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) abstract;
+			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
 			// Debug Draw
 			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;
@@ -90,6 +96,7 @@ extern "C" {
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
+			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;
 
 			/// Primitive
 
@@ -98,6 +105,15 @@ extern "C" {
 			/// Bounding Volume
 
 			/// UI
+			// text
+			virtual FQ_GRAPHICS void SetDefaultFontSize(const unsigned short fontSize) abstract;
+			virtual FQ_GRAPHICS void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) abstract;
+			virtual FQ_GRAPHICS void SetDefaultFont(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void AddFont(const std::wstring& path) abstract; // ttf
+			virtual FQ_GRAPHICS void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) abstract;
+			virtual FQ_GRAPHICS void DeleteFont(const std::wstring& path) abstract;
+			// image
+
 
 			/// SkyBox
 			virtual void SetSkyBox(const std::wstring& path) abstract;

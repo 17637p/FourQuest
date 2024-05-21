@@ -41,9 +41,10 @@ namespace fq::physics
 		desc.reportCallback = dynamic_pointer_cast<physx::PxUserControllerHitReport>(mCCTHitCallback).get();
 		mPxController = CCTManager->createController(desc);
 
+		physx::PxRigidActor* actor = mPxController->getActor();
 		physx::PxShape* shape;
-		int ShapeSize = mPxController->getActor()->getNbShapes();
-		mPxController->getActor()->getShapes(&shape, ShapeSize);
+		int ShapeSize = actor->getNbShapes();
+		actor->getShapes(&shape, ShapeSize);
 
 		physx::PxFilterData filterData;
 		filterData.word0 = info.layerNumber;
@@ -53,6 +54,7 @@ namespace fq::physics
 		collisionData->myId = info.id;
 		collisionData->myLayerNumber = info.layerNumber;
 		shape->userData = collisionData.get();
+		actor->userData = (void*)collisionData.get();
 
 		return true;
 	}

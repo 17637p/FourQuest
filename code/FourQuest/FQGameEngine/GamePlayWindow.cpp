@@ -23,8 +23,9 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mMode(EditorMode::Edit)
 	, mbIsPauseGame(false)
 	, mbIsOpen(true)
+	, mbIsMouseHoveredWindow(false)
 	, mCameraObject(nullptr)
-	, mCameraMoveSpeed(200.f)
+	, mCameraMoveSpeed(0.5f)
 	, mCameraRotateSpeed(0.0065f)
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
@@ -46,6 +47,7 @@ void fq::game_engine::GamePlayWindow::Render()
 			resizeWindow(ImGui::GetWindowSize());
 		}
 
+		checkMouse();
 		pickObject();
 		beginMenuBar_Control();
 		beginImage_GameScreen();
@@ -63,7 +65,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	// 朝五虞 持失
 	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
 	mCameraObject->AddComponent<fq::game_module::Camera>();
-	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(10000000);
+	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(1000);
 
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
@@ -151,10 +153,7 @@ void fq::game_engine::GamePlayWindow::beginButton_Play()
 
 void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 {
-	if (mMode == mode)
-	{
-		return;
-	}
+	if (mMode == mode) return;
 
 	auto currentSceneName = mGameProcess->mSceneManager->
 		GetCurrentScene()->GetSceneName();
@@ -253,9 +252,11 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 {
-	auto& input = mEditorProcess->mInputManager;
+	auto& input = mGameProcess->mInputManager;
+
 	if (!input->IsKeyState(EKey::RMouse, EKeyState::Hold)
-		|| !input->IsKeyState(EKey::LMouse, EKeyState::None))
+		|| !input->IsKeyState(EKey::LMouse, EKeyState::None)
+		|| !mbIsMouseHoveredWindow)
 	{
 		return;
 	}
@@ -265,6 +266,11 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 	auto position = cameraT->GetLocalPosition();
 	auto rotation = cameraT->GetLocalRotation();
 	float distance = mCameraMoveSpeed * dt;
+
+	if (input->IsKeyState(EKey::LShift, EKeyState::Hold))
+	{
+		distance *= 5.f;
+	}
 
 	if (input->IsKeyState(EKey::W, EKeyState::Hold))
 	{
@@ -303,7 +309,6 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 		position.z += matrix._23 * distance;
 	}
 
-
 	float dx = mCameraRotateSpeed * static_cast<float>(input->GetDeltaMousePosition().x);
 	auto x = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0,1,0 }, dx);
 
@@ -314,7 +319,6 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 	cameraT->SetLocalRotation(rotation);
 	cameraT->SetLocalPosition(position);
-
 }
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
@@ -484,16 +488,14 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 		{
 			mEditorProcess->mDebugSystem->RenderSpotLight(*light);
 		}
-
 	}
-
 }
 
 void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 target)
 {
 	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
 	auto backward = cameraT->GetLocalMatrix().Forward();
-	auto cameraPosition = target + backward * 100.f;
+	auto cameraPosition = target + backward ;
 
 	cameraT->SetLocalPosition(cameraPosition);
 }
@@ -562,5 +564,27 @@ void fq::game_engine::GamePlayWindow::pickObject()
 					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
 				}
 			});
+	}
+}
+
+void fq::game_engine::GamePlayWindow::checkMouse()
+{
+
+	if (mGameProcess->mInputManager->IsKeyState(EKey::RMouse, EKeyState::Away))
+	{
+		mbIsMouseHoveredWindow = false;
+	}
+
+	if (mGameProcess->mInputManager->IsKeyState(EKey::RMouse, EKeyState::Tap))
+	{
+		auto pos = ImGui::GetWindowPos();
+		auto size = ImGui::GetWindowSize();
+		auto mousePos = ImGui::GetMousePos();
+
+		if (mousePos.x >= pos.x && mousePos.y >= pos.y
+			&& mousePos.x <= pos.x + size.x && mousePos.y <= pos.y + size.y)
+			mbIsMouseHoveredWindow = true;
+		else
+			mbIsMouseHoveredWindow = false;
 	}
 }

@@ -13,6 +13,7 @@ namespace fq::graphics
 		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
 		, mDebugRenderPass(std::make_shared<DebugRenderPass>())
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
+		, mTerrainPass(std::make_shared<TerrainPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
 	{
 	}
@@ -40,19 +41,21 @@ namespace fq::graphics
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
-		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
-		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
+		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
+		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
-		mPasses.push_back(mTransparentRenderPass);
-		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
+		mPasses.push_back(mTerrainPass);
+		mPasses.push_back(mTransparentRenderPass);
+		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mFullScreenPass);
 	}
 
@@ -78,11 +81,37 @@ namespace fq::graphics
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 
 		RenderPipeline::OnResize(width, height);
+		mDevice->OnResize(width, height);
+
+		mAlbedoRTV->Release();
+		mMetalnessRTV->Release();
+		mRoughnessRTV->Release();
+		mNormalRTV->Release();
+		mEmissiveRTV->Release();
+		mPositionRTV->Release();
+
+		mAlbedoRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
+		mMetalnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
+		mRoughnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
+		mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
+		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
+		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
+
+		mAlbedoSRV->Init(mDevice, mAlbedoRTV);
+		mMetalnessSRV->Init(mDevice, mMetalnessRTV);
+		mRoughnessSRV->Init(mDevice, mRoughnessRTV);
+		mNormalSRV->Init(mDevice, mNormalRTV);
+		mEmissiveSRV->Init(mDevice, mEmissiveRTV);
+		mPositionSRV->Init(mDevice, mPositionRTV);
+
+		for (std::shared_ptr<Pass> pass : mPasses)
+		{
+			pass->OnResize(width, height);
+		}
 	}
 
 	void DeferredPipeline::SetSkyBox(const std::wstring& path)
 	{
 		mSkyBoxPass->SetSkyBox(path);
 	}
-
 }

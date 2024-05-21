@@ -7,6 +7,11 @@
 
 namespace fq::graphics
 {
+	void D3D11ModelManager::WriteModel(const std::string& fileName, const fq::common::Model& modelData)
+	{
+		fq::loader::ModelLoader::Write(modelData, fileName);
+	}
+
 	void D3D11ModelManager::ConvertModel(const std::string& fbxFile, const std::string& fileName)
 	{
 		fq::loader::ModelConverter converter;

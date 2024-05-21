@@ -66,6 +66,7 @@ namespace fq::game_engine
 	private:
 		void resizeWindow(ImVec2 size);
 		void pickObject();
+		void checkMouse();
 
 		void beginMenuBar_Control();
 		void beginImage_GameScreen();
@@ -82,6 +83,7 @@ namespace fq::game_engine
 		EditorMode mMode;
 		bool mbIsOpen;
 		bool mbIsPauseGame;
+		bool mbIsMouseHoveredWindow;
 
 		ImVec2 mWindowSize;
 		ImVec2 mViewportSize;

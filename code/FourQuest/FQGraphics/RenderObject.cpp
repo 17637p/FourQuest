@@ -1,6 +1,8 @@
 #include "RenderObject.h"
 #include "BoneHierarchy.h"
 
+#include "Material.h"
+
 namespace fq::graphics
 {
 	StaticMeshObject::StaticMeshObject(std::shared_ptr<StaticMesh> staticMesh,
@@ -27,4 +29,123 @@ namespace fq::graphics
 		, mbUseShadow(true)
 	{
 	}
+
+	TerrainMeshObject::TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh, 
+		DirectX::SimpleMath::Matrix transform)
+		:mStaticMesh(staticMesh),
+		mMaterial{nullptr},
+		mTransform(transform)
+	{
+	}
+
+	void TerrainMeshObject::SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& terrainMaterial)
+	{
+		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
+	}
+
+	ImageObject::ImageObject()
+		:mStartX(0),
+		mStartY(0),
+		mWidth(0),
+		mHeight(0),
+		mTexturePath(L""),
+		mTransform{}
+	{
+	}
+
+	ImageObject::~ImageObject()
+	{
+
+	}
+
+	void ImageObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+
+	const DirectX::SimpleMath::Matrix& ImageObject::GetTransform() const
+	{
+		return mTransform;
+	}
+
+	void ImageObject::SetStartX(float startX)
+	{
+		mStartX = startX;
+	}
+
+	void ImageObject::SetStartY(float startY)
+	{
+		mStartY = startY;
+	}
+
+	float ImageObject::GetStartX()
+	{
+		return mStartX;
+	}
+
+	float ImageObject::GetStartY()
+	{
+		return mStartY;
+	}
+
+	void ImageObject::SetWidth(float width)
+	{
+		mWidth = width;
+	}
+
+	void ImageObject::SetHeight(float height)
+	{
+		mHeight = height;
+	}
+
+	float ImageObject::GetWidth()
+	{
+		return mWidth;
+	}
+
+	float ImageObject::GetHeight()
+	{
+		return mHeight;
+	}
+
+	void ImageObject::SetTexturePath(const std::wstring& texturePath)
+	{
+		mTexturePath = texturePath;
+	}
+
+	std::wstring ImageObject::GetTexturePath()
+	{
+		return mTexturePath;
+	}
+
+	void ImageObject::SetLayer(unsigned int layer)
+	{
+		mLayer = layer;
+	}
+
+	unsigned int ImageObject::GetLayer()
+	{
+		return mLayer;
+	}
+
+	void ImageObject::SetXRatio(float xRatio)
+	{
+		mXRatio = xRatio;
+	}
+
+	float ImageObject::GetXRatio()
+	{
+		return mXRatio;
+	}
+
+	void ImageObject::SetYRatio(float yRatio)
+	{
+		mYRatio = yRatio;
+	}
+
+	float ImageObject::GetYRatio()
+	{
+		return mYRatio;
+	}
+
 }

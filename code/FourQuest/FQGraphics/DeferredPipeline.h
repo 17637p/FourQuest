@@ -45,6 +45,7 @@ namespace fq::graphics
 		std::shared_ptr<class DebugRenderPass> mDebugRenderPass;
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
+		std::shared_ptr<class TerrainPass> mTerrainPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
@@ -52,6 +53,14 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
+
+		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mRoughnessSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
+
 	};
 }
 

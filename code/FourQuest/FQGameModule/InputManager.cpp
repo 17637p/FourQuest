@@ -80,6 +80,9 @@ void fq::game_module::InputManager::updateMouse()
 
 	mDeltaMousePosition.x = mCurrentMousePosition.x - mPrevMousePosition.x;
 	mDeltaMousePosition.y = mCurrentMousePosition.y - mPrevMousePosition.y;
+
+	mDeltaMouseWheel = DeltaMouseWheel;
+	DeltaMouseWheel = 0;
 }
 
 EKeyState fq::game_module::InputManager::GetKeyState(EKey key) const
@@ -153,4 +156,6 @@ void fq::game_module::InputManager::updateGamePad()
 {
 
 }
+
+short fq::game_module::InputManager::DeltaMouseWheel = 0.f;
 

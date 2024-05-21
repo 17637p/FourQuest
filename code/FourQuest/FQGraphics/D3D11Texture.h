@@ -7,6 +7,7 @@
 #include <wrl.h>
 #include <string>
 #include <d3d11.h>
+#include <vector>
 
 namespace fq::graphics
 {
@@ -20,6 +21,7 @@ namespace fq::graphics
 
 		static std::string GenerateRID(const std::wstring& texturePath);
 
+		static void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11Texture>> textures, const UINT startSlot, const ED3D11ShaderType eShaderType);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 
 	private:
