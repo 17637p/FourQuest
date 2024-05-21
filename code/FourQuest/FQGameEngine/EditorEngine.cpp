@@ -43,12 +43,12 @@ void fq::game_engine::EditorEngine::Initialize()
 	// GameProcess 초기화
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
-	
+
 	mGameProcess->mSceneManager->Initialize("example"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());
-	
+
 	mGameProcess->mSoundManager->Initialize();
 
 	// 그래픽스 엔진 초기화
@@ -73,7 +73,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
- 	InitializeEditor();
+	InitializeEditor();
 
 	// Scene 로드 
 	mGameProcess->mSceneManager->LoadScene();
@@ -104,7 +104,7 @@ void fq::game_engine::EditorEngine::Process()
 				mGameProcess->mWindowSystem->OnResize();
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
-				unsigned short hegiht =std::max(mGameProcess->mWindowSystem->GetScreenHeight(),1u);
+				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 
@@ -117,17 +117,27 @@ void fq::game_engine::EditorEngine::Process()
 
 			if (mode == EditorMode::Play)
 			{
-				// 물리처리
-				mGameProcess->mSceneManager->FixedUpdate(deltaTime);
-				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
-				mGameProcess->mPhysicsSystem->Update(deltaTime);
-				mGameProcess->mPhysics->Update(deltaTime);
-				mGameProcess->mPhysics->FinalUpdate();
-				mGameProcess->mPhysicsSystem->SinkToGameScene();
+				static float accmulator = 0.f;
+				static float fixedDeltaTime = 1.f / 60.f;
+
+				accmulator += deltaTime;
+
+				while (accmulator >= fixedDeltaTime)
+				{
+					// 물리처리
+					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
+					mGameProcess->mPhysicsSystem->Update(fixedDeltaTime);
+					mGameProcess->mPhysics->Update(fixedDeltaTime);
+					mGameProcess->mPhysics->FinalUpdate();
+					mGameProcess->mPhysicsSystem->SinkToGameScene();
+
+					accmulator -= fixedDeltaTime;
+				}
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
-				
+
 				// Animation Update
 				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
 

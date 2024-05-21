@@ -185,7 +185,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 					exitState,
 					enterState,
 					mAnimator->GetGameObject()
-				});
+					});
 
 				return;
 			}
@@ -234,4 +234,28 @@ float fq::game_module::AnimatorController::UpdateAnimation(float dt)
 
 	mTimePos = std::fmod(mTimePos + dt * playbackSpeed, duration);
 	return mTimePos;
+}
+
+void fq::game_module::AnimatorController::DeleteState(StateName state)
+{
+	auto iter = mStates.find(state);
+
+	if (iter->second.GetType() != AnimationStateNode::Type::State)
+		return;
+
+	// 스테이트 삭제
+	mStates.erase(iter);
+
+	mTransitions.erase(std::find_if(mTransitions.begin(), mTransitions.end()
+		, [state](const AnimationTransition& transition)
+		{
+			if (transition.GetEnterState() == state
+				|| transition.GetExitState() == state)
+			{
+				return true;
+			}
+
+			return false;
+		}), mTransitions.end());
+
 }

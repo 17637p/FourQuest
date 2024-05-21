@@ -17,6 +17,7 @@ namespace fq::game_engine
 	/// </summary>
 	class AnimatorWindow : public IEditorWindow
 	{
+		using NodeID = unsigned int;
 		using PinID = unsigned int;
 		using LinkID = unsigned int;
 		using LinkPair = std::pair<std::string, std::string>;
@@ -55,7 +56,7 @@ namespace fq::game_engine
 		void beginPin_AnimationStateNode(const std::string& nodeName
 			, fq::game_module::AnimationStateNode::Type type);
 		void beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition);
-	
+
 		void beginCreate();
 		void beginDelete();
 
@@ -77,6 +78,7 @@ namespace fq::game_engine
 		ax::NodeEditor::EditorContext* mContext;
 
 		bool mbIsOpen;
+		std::unordered_map<NodeID, std::string> mMatchNodeID;
 		std::unordered_map<PinID, std::string> mMatchPinID;
 		std::unordered_map<LinkID, LinkPair> mMatchLinkID;
 

@@ -75,7 +75,7 @@ void fq::game_engine::DebugSystem::RenderDirLight(fq::game_module::Light& light)
 	fq::graphics::debug::RayInfo ray;
 	ray.Color = lightinfo.color;
 	ray.Normalize = false;
-	ray.Direction = lightinfo.direction ;
+	ray.Direction = lightinfo.direction;
 	ray.Origin = lightinfo.position;
 
 	mGameProcess->mGraphics->DrawRay(ray);
@@ -207,46 +207,47 @@ void fq::game_engine::DebugSystem::renderCharaterController(fq::game_module::Tra
 	using DirectX::SimpleMath::Color;
 
 	Color color = Color{ 0.f,1.f,0.f };
-	auto right = transform.GetWorldMatrix().Right();
-	right.Normalize();
+	auto upDir = transform.GetWorldMatrix().Up();
+	upDir.Normalize();
 	auto controllerInfo = cotroller.GetControllerInfo();
+	auto offset = cotroller.GetOffset();
 
 	// UpSphere
 	fq::graphics::debug::SphereInfo info;
 	info.Color = color;
-	info.Sphere.Center = transform.GetWorldPosition() + right * controllerInfo.height;
+	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height;
 	info.Sphere.Radius = controllerInfo.radius;
 	mGameProcess->mGraphics->DrawSphere(info);
 
 	// DownSphere
-	info.Sphere.Center = transform.GetWorldPosition() - right * controllerInfo.height;
+	info.Sphere.Center = transform.GetWorldPosition() + offset - upDir * controllerInfo.height;
 	mGameProcess->mGraphics->DrawSphere(info);
 
 	// BodyRay 
 	fq::graphics::debug::RayInfo ray;
 
-	ray.Direction = right * controllerInfo.height * 2.f;
+	ray.Direction = upDir * controllerInfo.height * 2.f;
 	ray.Color = color;
 	ray.Normalize = false;
 	auto orgin = info.Sphere.Center;
-	auto foward = transform.GetWorldMatrix().Forward();
-	foward.Normalize();
-	foward *= controllerInfo.radius;
+	auto rightDir = transform.GetWorldMatrix().Right();
+	rightDir.Normalize();
+	rightDir *= controllerInfo.radius;
 
-	auto up = transform.GetWorldMatrix().Up();
-	up.Normalize();
-	up *= controllerInfo.radius;
+	auto fowardDir = transform.GetWorldMatrix().Forward();
+	fowardDir.Normalize();
+	fowardDir *= controllerInfo.radius;
 
-	ray.Origin = orgin + foward;
+	ray.Origin = orgin + rightDir;
 	mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin - foward;
+	ray.Origin = orgin - rightDir;
 	mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin + up;
+	ray.Origin = orgin + fowardDir;
 	mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin - up;
+	ray.Origin = orgin - fowardDir;
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 

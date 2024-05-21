@@ -253,6 +253,9 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 
 	auto nodeID = entt::hashed_string(name.c_str()).value();
 
+	if (mMatchNodeID.find(nodeID) == mMatchNodeID.end())
+		mMatchNodeID.insert({ nodeID, name });
+
 	ed::BeginNode(nodeID);
 
 	constexpr float nodeWidth = 150.f;
@@ -300,7 +303,7 @@ void fq::game_engine::AnimatorWindow::beginPin_AnimationStateNode(const std::str
 	if (type != game_module::AnimationStateNode::Type::AnyState
 		&& type != game_module::AnimationStateNode::Type::Entry)
 	{
-		float cursorPosX = ImGui::GetCursorPosX() + nodeWidth/2 - ImGui::CalcTextSize("->").x;
+		float cursorPosX = ImGui::GetCursorPosX() + nodeWidth / 2 - ImGui::CalcTextSize("->").x;
 		ImGui::SetCursorPosX(cursorPosX);
 		ed::BeginPin(getInputPinID(nodeName), ed::PinKind::Input);
 		ImGui::Text("->");
@@ -372,9 +375,18 @@ void fq::game_engine::AnimatorWindow::beginDelete()
 			if (ed::AcceptDeletedItem())
 			{
 				// Transition »èÁ¦ 
-				spdlog::trace("delete");
 				const auto& linkPair = mMatchLinkID.find(deleteLinkID.Get())->second;
 				mSelectController->DeleteTransition(linkPair.first, linkPair.second);
+			}
+		}
+
+		ed::NodeId nodeID;
+		while (ed::QueryDeletedNode(&nodeID))
+		{
+			if (ed::AcceptDeletedItem())
+			{
+				auto& stateName = mMatchNodeID.find(nodeID.Get())->second;
+				mSelectController->DeleteState(stateName);
 			}
 		}
 	}
@@ -393,7 +405,7 @@ void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::ga
 	if (mMatchLinkID.find(linkID) == mMatchLinkID.end())
 		mMatchLinkID.insert({ linkID, {exit, enter } });
 
-	ed::Link(linkID, exitID, enterID); 
+	ed::Link(linkID, exitID, enterID);
 }
 
 void fq::game_engine::AnimatorWindow::dragDropWindow()
@@ -458,6 +470,10 @@ void fq::game_engine::AnimatorWindow::createContext()
 
 void fq::game_engine::AnimatorWindow::destroyContext()
 {
+	mMatchNodeID.clear();
+	mMatchPinID.clear();
+	mMatchLinkID.clear();
+
 	if (mContext)
 	{
 		ed::DestroyEditor(mContext);

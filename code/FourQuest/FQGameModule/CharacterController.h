@@ -45,10 +45,22 @@ namespace fq::game_module
 		/// 현재 캐릭터가 떨어지는 상태인지 설정합니다 
 		/// </summary>
 		void SetFalling(bool val) { mbIsFalling = val; }
+
+		/// <summary>
+		/// 오프셋을 반환합니다 
+		/// </summary>
+		DirectX::SimpleMath::Vector3 GetOffset() const { return mOffset; }
+		
+		/// <summary>
+		/// 오프셋을 설정합니다 
+		/// </summary>
+		void SetOffset(DirectX::SimpleMath::Vector3 offset) { mOffset = offset; }
+	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
+		DirectX::SimpleMath::Vector3 mOffset;
 		fq::physics::CharacterControllerInfo mControllerInfo;
 		fq::physics::CharacterMovementInfo mMovementInfo;
 

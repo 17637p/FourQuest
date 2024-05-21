@@ -99,6 +99,11 @@ namespace fq::game_module
 		void DeleteTransition(StateName exit, StateName enter);
 
 		/// <summary>
+		/// 애니메이션 상태를 삭제합니다 
+		/// </summary>
+		void DeleteState(StateName state);
+
+		/// <summary>
 		/// 스테이트의 이름을 변경합니다 
 		/// </summary>
 		bool ChangeStateName(StateName orginName, StateName changeName);

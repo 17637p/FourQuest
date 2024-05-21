@@ -221,7 +221,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		ColliderID id = ++mLastColliderID;
 		controllerInfo.id = id;
 		controllerInfo.layerNumber = static_cast<int>(object->GetTag());
-		controllerInfo.position = transform->GetWorldPosition();
+		controllerInfo.position = transform->GetWorldPosition() + controller->GetOffset();
 
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
@@ -409,13 +409,13 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		if (colliderInfo.first == mCharactorControllerID)
 		{
 			auto controller = colliderInfo.second->GetComponent<fq::game_module::CharacterController>();
-
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
 			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
+			auto localPos = controll.position - controller->GetOffset();
 
 			controller->SetFalling(movement.isFall);
 			rigid->SetLinearVelocity(movement.velocity);
-			transform->SetLocalPosition(controll.position);
+			transform->SetLocalPosition(localPos);
 		}
 		else
 		{
@@ -458,7 +458,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			fq::physics::CharacterControllerGetSetData pos;
 			fq::physics::CharacterMovementGetSetData movement;
-			pos.position = transform->GetWorldPosition();
+			pos.position = transform->GetWorldPosition() + controller->GetOffset();
 			movement.isFall = controller->IsFalling();
 			movement.velocity = rigid->GetLinearVelocity();
 
@@ -517,7 +517,5 @@ void fq::game_engine::PhysicsSystem::Update(float dt)
 			mPhysicsEngine->AddInputMove(id, input);
 		}
 	}
-
-
 }
 

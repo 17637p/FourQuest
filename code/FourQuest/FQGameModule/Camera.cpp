@@ -10,7 +10,7 @@ fq::game_module::Camera::Camera()
 	,mCameraInfomation{}
 {
 	mCameraInfomation.isPerspective = true;
-	SetNearPlain(0.3f);
+	SetNearPlain(0.003f);
 	SetFarPlain(1000.f);
 	SetFieldOfView(60);
 }
