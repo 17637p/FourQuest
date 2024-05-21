@@ -32,9 +32,11 @@
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="PlayerMovement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp" />
+    <ClCompile Include="PlayerMovement.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

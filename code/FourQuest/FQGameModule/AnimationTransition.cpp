@@ -50,7 +50,15 @@ bool fq::game_module::TransitionCondition::CheckCondition(Parameter parameter)co
 		bool val = parameter.cast<bool>();
 		bool compareVal = GetCompareParameter().cast<bool>();
 
-		if (val == compareVal) return true;
+		switch (GetCheckType())
+		{
+			case fq::game_module::TransitionCondition::CheckType::Equals:
+				if (val == compareVal) return true;
+				break;
+			case fq::game_module::TransitionCondition::CheckType::NotEqual:
+				if (val != compareVal) return true;
+				break;
+		}
 	}
 	else if (compareType == entt::resolve<char>())
 	{

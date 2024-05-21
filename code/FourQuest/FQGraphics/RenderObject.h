@@ -515,5 +515,50 @@ namespace fq::graphics
 		return mTransform;
 	}
 #pragma endregion inlineFunc
+
+	class ImageObject : public IImageObject
+	{
+	public:
+		ImageObject();
+		virtual ~ImageObject();
+
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+
+		virtual void SetStartX(float startX) override;
+		virtual void SetStartY(float startY) override;
+		virtual float GetStartX() override;
+		virtual float GetStartY() override;
+
+		virtual void SetWidth(float width) override;
+		virtual void SetHeight(float height) override;
+		virtual float GetWidth() override;
+		virtual float GetHeight() override;
+
+		virtual void SetLayer(unsigned int layer) override;
+		virtual unsigned int GetLayer() override;
+
+		virtual void SetXRatio(float xRatio) override;
+		virtual float GetXRatio() override;
+		virtual void SetYRatio(float yRatio) override;
+		virtual float GetYRatio() override;
+
+		virtual void SetTexturePath(const std::wstring& texturePath) override;
+		virtual std::wstring GetTexturePath() override;
+
+	protected:
+		float mStartX;
+		float mStartY;
+		float mWidth;
+		float mHeight;
+
+		float mXRatio;
+		float mYRatio;
+
+		unsigned int mLayer;
+
+		std::wstring mTexturePath;
+		DirectX::SimpleMath::Matrix mTransform;
+	};
 }
 

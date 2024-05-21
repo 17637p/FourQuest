@@ -489,6 +489,8 @@ void fq::game_engine::PhysicsSystem::Update(float dt)
 	// 캐릭터 컨트롤러
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
+		bool isFalling = static_cast<game_module::CharacterController*>(colliderInfo.second)->IsFalling();
+
 		if (colliderInfo.first == mCharactorControllerID)
 		{
 			DirectX::SimpleMath::Vector3 input{};
@@ -509,7 +511,7 @@ void fq::game_engine::PhysicsSystem::Update(float dt)
 			{
 				input.x += 1.f;
 			}
-			if (inputManager->IsKeyState(EKey::Space, EKeyState::Tap))
+			if (inputManager->IsKeyState(EKey::Space, EKeyState::Tap) && !isFalling)
 			{
 				input.y += 1.f;
 			}
