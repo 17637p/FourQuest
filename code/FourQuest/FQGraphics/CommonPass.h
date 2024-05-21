@@ -302,16 +302,18 @@ namespace fq::graphics
 		std::shared_ptr<D3D11PixelShader> mTerrainPS;
 		std::shared_ptr<D3D11InputLayout> mTerrainLayout;
 
-		// 앞에거 다 그리고 나서 마지막에 지형ㅇ르 그려야 하나?
 		std::shared_ptr<D3D11RenderTargetView> mDrawRTV;
 		std::shared_ptr<D3D11DepthStencilView> mDrawDSV;
+		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSS;
+		std::shared_ptr<D3D11SamplerState> mShadowSS;
 		std::shared_ptr<D3D11DepthStencilState> mDefaultDS;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>> mTerrainTextureCB;
+		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 	};
 }

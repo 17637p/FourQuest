@@ -89,7 +89,7 @@ bool Process::Init(HINSTANCE hInstance)
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 
 	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
+	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
@@ -105,7 +105,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 300000;
+	cameraInfo.farPlain = 3000;
 
 	mTestGraphics->SetCamera(cameraInfo);
 
@@ -367,12 +367,12 @@ void Process::Update()
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
 
-	if (InputManager::GetInstance().IsGetKeyDown('R'))
-	{
-		terrainMaterial.Layers[0].TileSizeX = 100;
-		terrainMaterial.Layers[0].TileSizeY = 100;
-		mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
-	}
+	//if (InputManager::GetInstance().IsGetKeyDown('R'))
+	//{
+	//	terrainMaterial.Layers[0].TileSizeX = 100;
+	//	terrainMaterial.Layers[0].TileSizeY = 100;
+	//	mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
+	//}
 
 	shadowTest();
 
@@ -617,16 +617,16 @@ void Process::debugRender()
 
 void Process::shadowTest()
 {
-	if (GetAsyncKeyState('5') & 0x8000)
+	//if (GetAsyncKeyState('5') & 0x8000)
 	{
 		mTestGraphics->UseShadow(1, true);
 		mTestGraphics->UseShadow(4, true);
 	}
-	else
-	{
-		mTestGraphics->UseShadow(1, false);
-		mTestGraphics->UseShadow(4, false);
-	}
+	//else
+	//{
+	//	mTestGraphics->UseShadow(1, false);
+	//	mTestGraphics->UseShadow(4, false);
+	//}
 
 	if (GetAsyncKeyState('6') & 0x8000)
 	{
@@ -801,45 +801,45 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		//fq::graphics::TerrainMaterialInfo terrainMaterial;
 		terrainMaterial.Layers.clear();
 
-		//fq::graphics::TerrainLayer layer1;
-		//fq::graphics::TerrainLayer layer2;
-		//fq::graphics::TerrainLayer layer3;
-		//
-		//layer1.BaseColor = "./resource/example/texture/t1.jpg";
-		//layer2.BaseColor = "./resource/example/texture/t2.jpg";
-		//layer3.BaseColor = "./resource/example/texture/t3.jpg";
-		//
-		//layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
-		//layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
-		//layer3.NormalMap = "./resource/example/texture/character_normal.png";
-		//
-		//layer1.TileOffsetX = 0.5;
-		//layer1.TileOffsetY = 0.5;
-		//layer2.TileOffsetX = 0;
-		//layer2.TileOffsetY = 0;
-		//layer3.TileOffsetX = 0;
-		//layer3.TileOffsetY = 0;
-		//
-		//layer1.TileSizeX = 5;
-		//layer2.TileSizeX = 5;
-		//layer3.TileSizeX = 5;
-		//layer1.TileSizeY = 3;
-		//layer2.TileSizeY = 3;
-		//layer3.TileSizeY = 3;
-		//
-		//layer1.Metalic = 0;
-		//layer2.Metalic = 0;
-		//layer3.Metalic = 0;
-		//
-		//layer1.Roughness = 0;
-		//layer2.Roughness = 0;
-		//layer3.Roughness = 0;
-		//
-		//terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
-		//
-		//terrainMaterial.Layers.push_back(layer1);
-		//terrainMaterial.Layers.push_back(layer2);
-		//terrainMaterial.Layers.push_back(layer3);
+		fq::graphics::TerrainLayer layer1;
+		fq::graphics::TerrainLayer layer2;
+		fq::graphics::TerrainLayer layer3;
+
+		layer1.BaseColor = "./resource/example/texture/t2.jpg";
+		layer2.BaseColor = "./resource/example/texture/t1.jpg";
+		layer3.BaseColor = "./resource/example/texture/t3.jpg";
+
+		layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
+		layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
+		layer3.NormalMap = "./resource/example/texture/character_normal.png";
+
+		layer1.TileOffsetX = 0.5;
+		layer1.TileOffsetY = 0.5;
+		layer2.TileOffsetX = 0;
+		layer2.TileOffsetY = 0;
+		layer3.TileOffsetX = 0;
+		layer3.TileOffsetY = 0;
+
+		layer1.TileSizeX = 5;
+		layer2.TileSizeX = 5;
+		layer3.TileSizeX = 5;
+		layer1.TileSizeY = 3;
+		layer2.TileSizeY = 3;
+		layer3.TileSizeY = 3;
+
+		layer1.Metalic = 0;
+		layer2.Metalic = 0;
+		layer3.Metalic = 0;
+
+		layer1.Roughness = 0;
+		layer2.Roughness = 0;
+		layer3.Roughness = 0;
+
+		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
+
+		terrainMaterial.Layers.push_back(layer1);
+		terrainMaterial.Layers.push_back(layer2);
+		terrainMaterial.Layers.push_back(layer3);
 
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
