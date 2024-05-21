@@ -14,10 +14,11 @@ struct ID2D1HwndRenderTarget;
 struct IDWriteFactory;
 struct IDWriteTextFormat;
 struct ID2D1SolidColorBrush;
+struct IWICImagingFactory;
 
-struct ColorHash 
+struct ColorHash
 {
-	std::size_t operator()(const DirectX::SimpleMath::Color& color) const 
+	std::size_t operator()(const DirectX::SimpleMath::Color& color) const
 	{
 		return std::hash<float>()(color.R()) ^
 			std::hash<float>()(color.G()) ^
@@ -29,6 +30,8 @@ struct ColorHash
 namespace fq::graphics
 {
 	class D3D11Device;
+
+	class IImageObject;
 
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
@@ -68,18 +71,20 @@ namespace fq::graphics
 		void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize, const std::wstring& fontPath, const DirectX::SimpleMath::Color& color);
 
 		// Image
-		void AddImage();
-		void DeleteImage();
-		void UpdateImage();
-		void SetImage();
-		void SetLayer();
-		void SetXRatio();
-		void SetYRatio();
+		void AddImage(IImageObject* imageObject);
+		void DeleteImage(IImageObject* imageObject);
 
 	private:
-		HRESULT createDeviceResources(std::shared_ptr<D3D11Device> device, const short width, const short height);
+		void loadImage(const std::wstring& path);
+		HRESULT createRenderTarget(std::shared_ptr<D3D11Device> device, const short width, const short height);
 		void initializeText();
+		void initializeImage();
+
+		void drawAllText();
+		void drawAllImage();
+
 		void RegisterFont(const std::wstring& path);
+		void ReleaseAllImage();
 
 	private:
 		HWND mHWnd;
@@ -100,6 +105,14 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color mDefaultFontColor;
 
 		std::vector<DrawTextInformation> mDrawTextInformations;
+
+		// Image
+		// 레퍼런스 카운팅이 되게 해야함
+		std::unordered_map<std::wstring, ID2D1Bitmap*> mBitmaps;
+		IWICImagingFactory* mWICFactory;
+
+		std::vector<IImageObject*> mImages;
+		bool mIsSorted;
 	};
 }
 

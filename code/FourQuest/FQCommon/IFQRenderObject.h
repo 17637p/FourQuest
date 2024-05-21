@@ -84,7 +84,6 @@ extern "C" {
 			virtual ~ISkinnedMeshObject() = default;
 		};
 
-		// 타일 기능 같은거 추가해야겠지
 		class ITerrainMeshObject
 		{
 		public:
@@ -96,6 +95,37 @@ extern "C" {
 
 		protected:
 			virtual ~ITerrainMeshObject() = default;
+		};
+
+		class IImageObject
+		{
+		public:
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			virtual FQ_GRAPHICS void SetStartX(float startX) abstract;
+			virtual FQ_GRAPHICS void SetStartY(float startY) abstract;
+			virtual FQ_GRAPHICS float GetStartX() abstract;
+			virtual FQ_GRAPHICS float GetStartY() abstract;
+
+			virtual FQ_GRAPHICS void SetWidth(float width) abstract;
+			virtual FQ_GRAPHICS void SetHeight(float height) abstract;
+			virtual FQ_GRAPHICS float GetWidth() abstract;
+			virtual FQ_GRAPHICS float GetHeight() abstract;
+
+			virtual FQ_GRAPHICS void SetLayer(unsigned int layer) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLayer() abstract;
+
+			virtual FQ_GRAPHICS void SetXRatio(float xRatio) abstract;
+			virtual FQ_GRAPHICS float GetXRatio() abstract;
+			virtual FQ_GRAPHICS void SetYRatio(float yRatio) abstract;
+			virtual FQ_GRAPHICS float GetYRatio() abstract;
+
+			virtual FQ_GRAPHICS void SetTexturePath(const std::wstring& texturePath) abstract;
+			virtual FQ_GRAPHICS std::wstring GetTexturePath() abstract;
+
+		protected:
+			virtual ~IImageObject() = default;
 		};
 	}
 #ifdef __cplusplus

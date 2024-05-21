@@ -85,6 +85,7 @@ namespace fq::graphics
 		Transform,
 		Light,
 		ViewRotationProj,
-		TerrainTexture
+		TerrainTexture,
+		DirectionalShadowInfo
 	};
 }
