@@ -79,6 +79,7 @@ namespace fq::graphics
 
 		/// SkyBox
 		virtual void SetSkyBox(const std::wstring& path) override;
+		virtual void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) override;
 
 		/// Light
 		// Todo: 동적 라이트, static 라이트 구별을 하면 좋을 것 같다.

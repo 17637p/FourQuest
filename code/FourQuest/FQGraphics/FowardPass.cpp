@@ -160,7 +160,7 @@ namespace fq::graphics
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
 
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
+			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
 		}
 
 		// Init
@@ -171,8 +171,8 @@ namespace fq::graphics
 
 		// Bind
 		{
-			ID3D11ShaderResourceView* SRVs[10] = { NULL };
-			mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
+			ID3D11ShaderResourceView* SRVs[5] = { NULL };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, 5, SRVs);
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);

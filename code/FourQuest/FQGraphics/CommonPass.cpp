@@ -421,6 +421,7 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
+		mLinearSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mDisableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		mOITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 
@@ -459,6 +460,7 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = nullptr;
 		mShadowSampler = nullptr;
+		mLinearSampler = nullptr;
 		mOITRenderState = nullptr;
 		mDisableDepthWriteState = nullptr;
 
@@ -534,7 +536,7 @@ namespace fq::graphics
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
 
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
+			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
 		}
 
 		// init
@@ -545,8 +547,8 @@ namespace fq::graphics
 
 		// bind
 		{
-			ID3D11ShaderResourceView* SRVs[10] = { NULL };
-			mDevice->GetDeviceContext()->PSSetShaderResources(0, 10, SRVs);
+			ID3D11ShaderResourceView* SRVs[5] = { NULL };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, 5, SRVs);
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
@@ -564,6 +566,7 @@ namespace fq::graphics
 			mTransparentRenderPS->Bind(mDevice);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+			mLinearSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
 			mOITRenderState->Bind(mDevice);
 			mDisableDepthWriteState->Bind(mDevice);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
@@ -753,8 +756,8 @@ namespace fq::graphics
 	{
 	}
 
-	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, 
-		std::shared_ptr<D3D11CameraManager> cameraManager, 
+	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager)
 	{
 		mDevice = device;
@@ -835,7 +838,7 @@ namespace fq::graphics
 
 		mSkyBoxVB->Bind(mDevice);
 		mSkyboxIB->Bind(mDevice);
-		
+
 		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 		mCullFrontRS->Bind(mDevice);
 		mLessEqualDepthStencilDS->Bind(mDevice);

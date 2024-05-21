@@ -91,6 +91,7 @@ extern "C" {
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
+			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;
 
 			/// Primitive
 

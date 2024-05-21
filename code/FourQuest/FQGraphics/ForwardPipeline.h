@@ -39,6 +39,8 @@ namespace fq::graphics
 		void EndRender();
 
 		void SetSkyBox(const std::wstring& path);
+		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
+
 		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
@@ -60,6 +62,11 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
+
+		// IBL юс╫ц
+		std::shared_ptr<class D3D11Texture> mDiffuseCubeMap;
+		std::shared_ptr<class D3D11Texture> mSpecularCubeMap;
+		std::shared_ptr<class D3D11Texture> mBRDFLUT;
 	};
 }
 

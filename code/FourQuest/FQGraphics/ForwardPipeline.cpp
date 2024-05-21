@@ -41,20 +41,20 @@ namespace fq::graphics
 
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
-		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
-		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
+		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
-		mPasses.push_back(mTransparentRenderPass);
-		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
+		mPasses.push_back(mTransparentRenderPass);
+		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mFullScreenPass);
 
@@ -109,6 +109,13 @@ namespace fq::graphics
 	{
 		for (std::shared_ptr<RenderPass> pass : mPasses)
 		{
+			if (mDiffuseCubeMap != nullptr)
+			{
+				mDiffuseCubeMap->Bind(mDevice, 6, ED3D11ShaderType::Pixelshader);
+				mSpecularCubeMap->Bind(mDevice, 7, ED3D11ShaderType::Pixelshader);
+				mBRDFLUT->Bind(mDevice, 8, ED3D11ShaderType::Pixelshader);
+			}
+
 			pass->Render();
 		}
 	}
@@ -129,4 +136,15 @@ namespace fq::graphics
 		mSkyBoxPass->SetSkyBox(path);
 	}
 
+	void ForwardPipeline::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
+	{
+		if (diffuse == L"" || specular == L"" || brdfLUT == L"")
+		{
+			return;
+		}
+
+		mDiffuseCubeMap = mResourceManager->Create<D3D11Texture>(diffuse);
+		mSpecularCubeMap = mResourceManager->Create<D3D11Texture>(specular);
+		mBRDFLUT = mResourceManager->Create<D3D11Texture>(brdfLUT);
+	}
 }

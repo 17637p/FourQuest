@@ -88,8 +88,8 @@ bool Process::Init(HINSTANCE hInstance)
 	//createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
+	// createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	// createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
@@ -105,7 +105,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 300000;
+	cameraInfo.farPlain = 2000;
 
 	mTestGraphics->SetCamera(cameraInfo);
 
@@ -138,23 +138,23 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction = { 1 ,-1, 0 };
 	directionalLightInfo.direction.Normalize();
 
-	mTestGraphics->AddLight(2, directionalLightInfo);
-
-	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1, 1 ,1, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { -1, -1, 0 };
-	directionalLightInfo.direction.Normalize();
-
-	mTestGraphics->AddLight(3, directionalLightInfo);
-
-	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1, 1 ,1, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 0, -1, -1 };
-	directionalLightInfo.direction.Normalize();
-
-	mTestGraphics->AddLight(4, directionalLightInfo);
+	// mTestGraphics->AddLight(2, directionalLightInfo);
+	// 
+	// directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	// directionalLightInfo.color = { 1, 1 ,1, 1 };
+	// directionalLightInfo.intensity = 1;
+	// directionalLightInfo.direction = { -1, -1, 0 };
+	// directionalLightInfo.direction.Normalize();
+	// 
+	// mTestGraphics->AddLight(3, directionalLightInfo);
+	// 
+	// directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	// directionalLightInfo.color = { 1, 1 ,1, 1 };
+	// directionalLightInfo.intensity = 1;
+	// directionalLightInfo.direction = { 0, -1, -1 };
+	// directionalLightInfo.direction.Normalize();
+	// 
+	// mTestGraphics->AddLight(4, directionalLightInfo);
 	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	//directionalLightInfo.color = { 1,0,0, 1 };
 	//directionalLightInfo.intensity = 1000;
@@ -174,7 +174,7 @@ bool Process::Init(HINSTANCE hInstance)
 	pointLightInfo.attenuation = { 0, 1, 0 };
 	pointLightInfo.position = { 10.f, 100.f, 0.f };
 
-	mTestGraphics->AddLight(5, pointLightInfo);
+	// mTestGraphics->AddLight(5, pointLightInfo);
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
@@ -345,7 +345,10 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
+		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
+			L"./resource/example/texture/defaultSpecularHDR.dds",
+			L"./resource/example/texture/defaultBrdf.dds");
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
@@ -411,7 +414,7 @@ void Process::Render()
 
 	if (GetAsyncKeyState('3') & 0x8000)
 	{
-		s_blend_time += mTimeManager.GetDeltaTime() ;
+		s_blend_time += mTimeManager.GetDeltaTime();
 		s_blend_time = fmod(s_blend_time, 3.f);
 	}
 	else
@@ -446,7 +449,7 @@ void Process::Render()
 			obj->SetUseShadow(false);
 		}
 
-		obj->SetAlpha(s_time * 0.33f);
+		obj->SetAlpha(1.f);
 	}
 
 

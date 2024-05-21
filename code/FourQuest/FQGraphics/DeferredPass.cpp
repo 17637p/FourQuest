@@ -114,7 +114,7 @@ namespace fq::graphics
 
 		// Init
 		{
-			ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
+			ID3D11ShaderResourceView* NullSRVs[5] = { NULL, };
 			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 
 			mDSV->Clear(mDevice);
@@ -329,12 +329,12 @@ namespace fq::graphics
 			}
 
 			mDirectioanlShadowInfoCB->Update(mDevice, directionalShadowData);
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
+			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
 		}
 
 		// init
 		{
-			ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
+			ID3D11ShaderResourceView* NullSRVs[5] = { NULL, };
 			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 		}
 
