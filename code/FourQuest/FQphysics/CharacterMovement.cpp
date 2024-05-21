@@ -1,6 +1,7 @@
 #include "CharacterMovement.h"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 float square(float x)
 {
@@ -119,6 +120,7 @@ namespace fq::physics
 		mDisplacementVector.x = square(mVelocity.x) / triangleFunction * mSpeed;
 		mDisplacementVector.z = square(mVelocity.z) / triangleFunction * mSpeed;
 		mDisplacementVector.y = mVelocity.y;
+
 
 		std::cout << mDisplacementVector.x << ", " << mDisplacementVector.z << ", " << mSpeed << std::endl;
 	}

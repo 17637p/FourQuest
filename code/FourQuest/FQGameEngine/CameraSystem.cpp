@@ -67,6 +67,12 @@ void fq::game_engine::CameraSystem::Update()
 	if (mCameraType == CameraType::Game)
 	{
 		auto transform = mGameMainCamera->GetComponent<fq::game_module::Transform>()->GetTransform();
+		transform.worldScale = { 1.f,1.f,1.f };
+
+		transform.worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(transform.worldScale)
+			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(transform.worldRotation)
+			* DirectX::SimpleMath::Matrix::CreateTranslation(transform.worldPosition);
+		
 		mGameProcess->mGraphics->UpdateCamera(transform);
 	}
 	else if (mCameraType == CameraType::Editor)

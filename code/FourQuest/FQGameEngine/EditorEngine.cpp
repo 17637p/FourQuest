@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "../FQClient/Client.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
@@ -34,6 +35,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
+	fq::client::RegisterMetaData();
 
 	// 윈도우 창 초기화 
 	mGameProcess->mWindowSystem->InitializeEditorType();
@@ -118,6 +120,7 @@ void fq::game_engine::EditorEngine::Process()
 				// 물리처리
 				mGameProcess->mSceneManager->FixedUpdate(deltaTime);
 				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
+				mGameProcess->mPhysicsSystem->Update(deltaTime);
 				mGameProcess->mPhysics->Update(deltaTime);
 				mGameProcess->mPhysics->FinalUpdate();
 				mGameProcess->mPhysicsSystem->SinkToGameScene();

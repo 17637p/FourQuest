@@ -333,13 +333,15 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
+
+	// 4. CharacterController
 	if (object->HasComponent<CharacterController>())
 	{
 		auto controller = object->GetComponent<CharacterController>();
 		auto id = controller->GetControllerInfo().id;
 		assert(id != physics::unregisterID);
 
-		mPhysicsEngine->RemoveRigidBody(id);
+		mPhysicsEngine->RemoveController(id);
 		mColliderContainer.erase(mColliderContainer.find(id));
 	}
 
@@ -459,9 +461,8 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			pos.position = transform->GetWorldPosition();
 			movement.isFall = controller->IsFalling();
 			movement.velocity = rigid->GetLinearVelocity();
-                                                                                                                      
+
 			mPhysicsEngine->SetCharacterControllerData(id, pos);
-			mPhysicsEngine->SetCharacterMovementData(id, movement);
 		}
 		else
 		{
@@ -479,5 +480,44 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 	auto iter = mColliderContainer.find(id);
 
 	return iter == mColliderContainer.end() ? nullptr : iter->second.second;
+}
+
+void fq::game_engine::PhysicsSystem::Update(float dt)
+{
+	auto& inputManager = mGameProcess->mInputManager;
+
+	// 캐릭터 컨트롤러
+	for (auto& [id, colliderInfo] : mColliderContainer)
+	{
+		if (colliderInfo.first == mCharactorControllerID)
+		{
+			DirectX::SimpleMath::Vector3 input{};
+
+			if (!inputManager->IsKeyState(EKey::W, EKeyState::None))
+			{
+				input.z += 1.f;
+			}
+			if (!inputManager->IsKeyState(EKey::S, EKeyState::None))
+			{
+				input.z -= 1.f;
+			}
+			if (!inputManager->IsKeyState(EKey::A, EKeyState::None))
+			{
+				input.x -= 1.f;
+			}
+			if (!inputManager->IsKeyState(EKey::D, EKeyState::None))
+			{
+				input.x += 1.f;
+			}
+			if (inputManager->IsKeyState(EKey::Space, EKeyState::Tap))
+			{
+				input.y += 1.f;
+			}
+
+			mPhysicsEngine->AddInputMove(id, input);
+		}
+	}
+
+
 }
 

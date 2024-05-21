@@ -145,6 +145,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FQClient\FQClient.vcxproj">
+      <Project>{ce249289-8899-4b19-b2e1-f047675a5b4b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">
       <Project>{80b6857c-9c5d-4d1f-9765-01fb3bb4c720}</Project>
     </ProjectReference>

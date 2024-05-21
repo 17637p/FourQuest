@@ -26,7 +26,17 @@ namespace fq::game_engine
 		PhysicsSystem();
 		~PhysicsSystem();
 
+		/// <summary>
+		/// 물리 시스템을 초기화합니다
+		/// </summary>
+		/// <param name="game"></param>
 		void Initialize(GameProcess* game);
+
+		/// <summary>
+		/// 물리시스템을 업데이트합니다 
+		/// </summary>
+		/// <param name="dt"></param>
+		void Update(float dt);
 
 		/// <summary>
 		/// 물리엔진 시뮬레이션 이전에 물리공간과 게임공간을 연결해줍니다

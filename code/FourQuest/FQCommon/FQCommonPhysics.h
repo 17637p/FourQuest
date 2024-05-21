@@ -147,14 +147,14 @@ namespace fq::physics
 	/// </summary>
 	struct CharacterMovementInfo
 	{
-		float maxSpeed = 5.f;									// 이동 최대 속도 : 캐릭터가 움직일 수 있는 최대 속도
-		float acceleration = 100.f;								// 가속도 : 캐릭터가 입력 값을 받을 때 이동 가속도
+		float maxSpeed = 0.025f;									// 이동 최대 속도 : 캐릭터가 움직일 수 있는 최대 속도
+		float acceleration = 1.f;								// 가속도 : 캐릭터가 입력 값을 받을 때 이동 가속도
 		float staticFriction = 0.4f;							// 정적 마찰 계수 : 캐릭터가 이동 중 멈췄을 때 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
 		float dynamicFriction = 0.1f;							// 동적 마찰 계수 : 이동 중에 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
-		float jumpSpeed = 5.f;									// 점프(y축) 속도
+		float jumpSpeed = 0.05f;									// 점프(y축) 속도
 		float jumpXZAcceleration = 10.f;						// 점프 중에 이동(XZ축) 가속도 값
 		float jumpXZDeceleration = 0.1f;						// 점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )
-		float gravityWeight = 9.8f;								// 기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.
+		float gravityWeight = 0.2;								// 기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.
 	};
 
 	/// <summary>
@@ -166,11 +166,11 @@ namespace fq::physics
 		unsigned int layerNumber = 0;							// 충돌 매트릭스 레이어 넘버
 
 		DirectX::SimpleMath::Vector3 position{ 0.f, 0.f, 0.f };	// 캐릭터 컨트롤러가 위치하는 처음 생성 위치
-		float height = 30.f;									// 캐릭터 컨트롤러(캡슐)의 높이
-		float radius = 20.f;									// 캐릭터 컨트롤러(캡슐)의 반지름
+		float height = 0.1f;									// 캐릭터 컨트롤러(캡슐)의 높이
+		float radius = 0.05f;									// 캐릭터 컨트롤러(캡슐)의 반지름
 		float stepOffset = 0.0f;								// 캐릭터 컨트롤러가 지나갈 수 있는 
-		float slopeLimit = 0.7f;								// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
-		float contactOffset = 0.1f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
+		float slopeLimit = 0.3f;								// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
+		float contactOffset = 0.001f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
 	};
 #pragma endregion
 

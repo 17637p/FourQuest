@@ -105,6 +105,7 @@ DirectX::SimpleMath::Matrix fq::game_module::Camera::GetProjection(float aspectR
 DirectX::SimpleMath::Matrix fq::game_module::Camera::GetView()
 {
 	auto transform = GetComponent<Transform>();
-	return transform->GetWorldMatrix().Invert();
+	
+	return transform->GetLocalMatrix().Invert();
 }
 

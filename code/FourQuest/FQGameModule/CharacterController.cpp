@@ -1,5 +1,8 @@
 #include "CharacterController.h"
 
+#include "Scene.h"
+#include "InputManager.h"
+
 std::shared_ptr<fq::game_module::Component> fq::game_module::CharacterController::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
 	auto cloneController = std::dynamic_pointer_cast<CharacterController>(clone);
@@ -29,3 +32,4 @@ fq::game_module::CharacterController::~CharacterController()
 {
 
 }
+
