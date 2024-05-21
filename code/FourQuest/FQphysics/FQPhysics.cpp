@@ -3,6 +3,7 @@
 #include "Physics.h"
 #include "PhysicsRigidBodyManager.h"
 #include "PhysicsCharactorControllerManager.h"
+#include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 namespace fq::physics
@@ -284,7 +285,33 @@ namespace fq::physics
 	{
 		mCCTManager->SetCharacterMovementData(id, movementData);
 	}
+#pragma endregion
 
+#pragma region CharacterPhysicsManager
+	bool FQPhysics::CreateCharacterphysics(const CharacterPhysicsInfo& info)
+	{
+		return mCharacterPhysicsManager->CreateCharacterphysics(info);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
+	}
+
+	bool FQPhysics::SimulationCharacter(unsigned int id)
+	{
+		return mCharacterPhysicsManager->SimulationCharacter(id);
+	}
 #pragma endregion
 
 #pragma  region spdlog

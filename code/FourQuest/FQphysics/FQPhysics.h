@@ -12,6 +12,7 @@ namespace fq::physics
 	class PhysicsRigidBodyManager;
 	class PhysicsSimulationEventCallback;
 	class PhysicsCharactorControllerManager;
+	class PhysicsCharacterPhysicsManager;
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -117,6 +118,25 @@ namespace fq::physics
 		virtual void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData) override;
 #pragma endregion
 
+#pragma region CharacterPhysicsManager
+		/// <summary>
+		/// 캐릭터 파직스 (관절) 추가
+		/// </summary>
+		virtual bool CreateCharacterphysics(const CharacterPhysicsInfo& info) override;
+
+		/// <summary>
+		/// 가지고 있는 관절 중, 링크 및 조인트 추가
+		/// </summary>
+		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
+		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius) override;
+
+		/// <summary>
+		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
+		/// </summary>
+		virtual bool SimulationCharacter(unsigned int id) override;
+#pragma endregion
+
 		/// <summary>
 		/// spdlog를 설정합니다
 		/// </summary>
@@ -128,6 +148,7 @@ namespace fq::physics
 		std::shared_ptr<Physics> mPhysics;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
+		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
 
 		// 충돌 이벤트 클래스
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;
