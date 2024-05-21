@@ -80,7 +80,6 @@ namespace fq::physics
 	}
 
 #pragma region CreateAndRemoveCCT
-
 	bool PhysicsCharactorControllerManager::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo, int* collisionMatrix)
 	{
 		std::shared_ptr<PlayerCharacterController> controller = std::make_shared<PlayerCharacterController>();
@@ -127,11 +126,9 @@ namespace fq::physics
 		}
 		iterContainer.clear();
 	}
-
 #pragma endregion
 
 #pragma region GetSetFunction
-
 	void PhysicsCharactorControllerManager::GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data)
 	{
 		auto& controller = mCCTmap.find(id)->second;
@@ -162,6 +159,5 @@ namespace fq::physics
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
 	}
-
 #pragma endregion
 }

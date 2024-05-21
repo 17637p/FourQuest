@@ -47,23 +47,30 @@ namespace fq::physics
 		return true;
 	}
 
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
 		link->Initialize(info, mLinkContainer.find(info.parentBoneName)->second, mPxArticulation);
+		link->CreateShape(mMaterial, extent, collisionData);
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, const float& radius)
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, const float& radius, std::shared_ptr<CollisionData> collisionData)
 	{
+		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
+		link->Initialize(info, mLinkContainer.find(info.parentBoneName)->second, mPxArticulation);
+		link->CreateShape(mMaterial, radius, collisionData);
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, const float& halfHeight, const float& radius, std::shared_ptr<CollisionData> collisionData)
 	{
+		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
+		link->Initialize(info, mLinkContainer.find(info.parentBoneName)->second, mPxArticulation);
+		link->CreateShape(mMaterial, halfHeight, radius, collisionData);
 
 		return true;
 	}

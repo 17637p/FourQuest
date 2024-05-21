@@ -19,9 +19,9 @@ namespace fq::physics
 
 		bool Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics);
 
-		bool AddArticulationLink(const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent);
-		bool AddArticulationLink(const CharacterLinkInfo& info, const float& radius);
-		bool AddArticulationLink(const CharacterLinkInfo& info, const float& halfHeight, const float& radius);
+		bool AddArticulationLink(const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData);
+		bool AddArticulationLink(const CharacterLinkInfo& info, const float& radius, std::shared_ptr<CollisionData> collisionData);
+		bool AddArticulationLink(const CharacterLinkInfo& info, const float& halfHeight, const float& radius, std::shared_ptr<CollisionData> collisionData);
 
 		inline const std::string& GetModelPath();
 		inline const unsigned int GetID();

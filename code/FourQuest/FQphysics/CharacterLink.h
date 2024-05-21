@@ -21,7 +21,7 @@ namespace fq::physics
 
 		bool Initialize(const CharacterLinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
 
-		bool CreateShape(const physx::PxMaterial* material, const physx::PxVec3& extent, std::shared_ptr<CollisionData> collisionData);
+		bool CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData);
 		bool CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData);
 		bool CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData);
 

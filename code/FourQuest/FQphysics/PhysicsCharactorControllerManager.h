@@ -75,6 +75,7 @@ namespace fq::physics
 
 	private:
 		physx::PxPhysics*				mPhysics;
+		physx::PxScene* mScene;
 		physx::PxMaterial*				mMaterial;
 		physx::PxControllerManager*		mCCTManager;
 

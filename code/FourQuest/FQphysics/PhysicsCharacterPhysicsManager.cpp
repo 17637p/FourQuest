@@ -33,6 +33,7 @@ namespace fq::physics
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 		collisionData->myId = info.id;
 		collisionData->myLayerNumber = info.layerNumber;
+		mCollisionDataConttainer.insert(std::make_pair(info.id, collisionData));
 
 		return true;
 	}
@@ -43,7 +44,7 @@ namespace fq::physics
 			return false;
 
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		characterPhysics->AddArticulationLink(info, extent);
+		characterPhysics->AddArticulationLink(info, extent, mCollisionDataConttainer.find(id)->second);
 
 		return true;
 	}
@@ -54,7 +55,7 @@ namespace fq::physics
 			return false;
 
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		characterPhysics->AddArticulationLink(info, radius);
+		characterPhysics->AddArticulationLink(info, radius, mCollisionDataConttainer.find(id)->second);
 
 		return true;
 	}
@@ -65,7 +66,7 @@ namespace fq::physics
 			return false;
 
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		characterPhysics->AddArticulationLink(info, halfHeight, radius);
+		characterPhysics->AddArticulationLink(info, halfHeight, radius, mCollisionDataConttainer.find(id)->second);
 
 		return true;
 	}

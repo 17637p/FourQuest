@@ -42,9 +42,12 @@ namespace fq::physics
 		return true;
 	}
 
-	bool CharacterLink::CreateShape(const physx::PxMaterial* material, const physx::PxVec3& extent, std::shared_ptr<CollisionData> collisionData)
+	bool CharacterLink::CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData)
 	{
-		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxBoxGeometry(extent), *material);
+		physx::PxVec3 pxExtent;
+		CopyDxVec3ToPxVec3(extent, pxExtent);
+
+		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxBoxGeometry(pxExtent), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
