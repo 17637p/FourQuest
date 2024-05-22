@@ -9,7 +9,8 @@ namespace fq::graphics
 	{
 		Pixelshader,
 		VertexShader,
-		GeometryShader
+		GeometryShader,
+		ComputeShader,
 	};
 
 	/*=============================================================================
@@ -25,7 +26,15 @@ namespace fq::graphics
 		Picking,
 
 		ColorAcuumulation,
-		PixeldRevealageThreshold
+		PixeldRevealageThreshold,
+
+		// Deferred
+		Albedo,
+		Metalness,
+		Roughness,
+		Normal,
+		Emissive,
+		PositionWClipZ,
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -53,14 +62,16 @@ namespace fq::graphics
 		Default,
 		AnisotropicWrap,
 		PointClamp,
-		Shadow
+		Shadow,
+		LinearWrap,
 	};
 
 	enum class ED3D11RasterizerState
 	{
 		Default,
 		Shadow,
-		CullFront
+		CullFront,
+		CullOff,
 	};
 
 	enum class ED3D11DepthStencilState
@@ -68,13 +79,15 @@ namespace fq::graphics
 		Default,
 		DisableDepthWirte,
 		LessEqual,
+		DepthOff,
 	};
 
 	enum class ED3D11BlendState
 	{
 		Default,
 		OITRender,
-		OITComposite
+		OITComposite,
+		Additive,
 	};
 
 	/*=============================================================================

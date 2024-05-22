@@ -54,7 +54,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 	const std::string planeModelPath = "./resource/example/model/Plane.model";
@@ -174,7 +174,9 @@ bool Process::Init(HINSTANCE hInstance)
 	pointLightInfo.attenuation = { 0, 1, 0 };
 	pointLightInfo.position = { 10.f, 100.f, 0.f };
 
-	mTestGraphics->AddLight(5, pointLightInfo);
+	//mTestGraphics->AddLight(5, pointLightInfo);
+
+	particleInit();
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
@@ -345,6 +347,7 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
 		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
 			L"./resource/example/texture/defaultSpecularHDR.dds",
@@ -414,7 +417,7 @@ void Process::Render()
 
 	if (GetAsyncKeyState('3') & 0x8000)
 	{
-		s_blend_time += mTimeManager.GetDeltaTime() ;
+		s_blend_time += mTimeManager.GetDeltaTime();
 		s_blend_time = fmod(s_blend_time, 3.f);
 	}
 	else
@@ -647,6 +650,19 @@ void Process::shadowTest()
 	{
 		mTestGraphics->UseShadow(3, false);
 	}
+}
+
+void Process::particleInit()
+{
+	using namespace fq::graphics;
+
+	ParticleSystemInfo particleInfo;
+	particleInfo.WorldPosition = { 0, 500.f, 0 };
+	particleInfo.StartSize[0] = { 10, 10 };
+	particleInfo.StartColor[0] = { 1.f, 0.f, 0.f, 0.5f };
+	particleInfo.StartColor[1] = { 0.f, 1.f, 1.f, 1.f };
+	particleInfo.StartColorOption = ParticleSystemInfo::EOption::RandomBetweenTwoConstant;
+	mTestGraphics->AddParticleSystem(10, particleInfo);
 }
 
 /*=============================================================================

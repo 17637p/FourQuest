@@ -24,6 +24,7 @@ FQGraphics::FQGraphics()
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 	, mPickingManager(std::make_shared<D3D11PickingManager>())
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
+	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
 {
 }
@@ -36,10 +37,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
+	mParticleManager;
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mUIManager->Initialize(hWnd, mDevice, width, height);
 
@@ -310,10 +312,22 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
+void FQGraphics::AddDeltaTime(float deltaTime)
+{
+	mParticleManager->AddDeltaTime(deltaTime);
+}
+void FQGraphics::AddParticleSystem(size_t id, const ParticleSystemInfo& info)
+{
+	mParticleManager->AddParticleSystem(id, mDevice, info);
+}
+void FQGraphics::DeleteParticleSystem(size_t id)
+{
+	mParticleManager->DeleteParticleSystem(id);
+}
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

@@ -73,6 +73,19 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11SamplerState::LinearWrap:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+		break;
+	}
 	default:
 		break;
 	}
@@ -102,6 +115,11 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 	case ED3D11ShaderType::GeometryShader:
 	{
 		d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, mState.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::ComputeShader:
+	{
+		d3d11Device->GetDeviceContext()->CSSetSamplers(startSlot, 1, mState.GetAddressOf());
 		break;
 	}
 	default:
@@ -148,6 +166,13 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 	{
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+		break;
+	}
+	case ED3D11RasterizerState::CullOff:
+	{
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
 
 		break;
 	}
@@ -219,6 +244,13 @@ fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_p
 
 		break;
 	}
+	case ED3D11DepthStencilState::DepthOff:
+	{
+		depthStencilDesc.DepthEnable = false;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.StencilEnable = false;
+		break;
+	}
 	default:
 		break;
 	}
@@ -275,7 +307,7 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = true;
-		
+
 		auto& acuumRT = blendDesc.RenderTarget[0];
 		acuumRT.BlendEnable = true;
 		acuumRT.SrcBlend = D3D11_BLEND_ONE;
@@ -291,12 +323,27 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		revealRT.SrcBlend = D3D11_BLEND_ZERO;
 		revealRT.DestBlend = D3D11_BLEND_INV_SRC_COLOR;
 		revealRT.BlendOp = D3D11_BLEND_OP_ADD;
-		// alpha 사용 안함
-		revealRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_RED;
+		revealRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_RED; // 단색조 이미지로 처리 예정
 
 		break;
 	}
 	case ED3D11BlendState::OITComposite:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		break;
+	}
+	case ED3D11BlendState::Additive:
 	{
 		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
 		blendDesc.AlphaToCoverageEnable = FALSE;
@@ -328,4 +375,41 @@ void D3D11BlendState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 {
 	// 특별히 blend factor 값을 사용하지 않는 이상 두 번째 인자 값은 항상 null로 넘겨도 된다.
 	d3d11Device->GetDeviceContext()->OMSetBlendState(mState.Get(), nullptr, 0xFFFFFFFF);
+}
+
+PipelineState::PipelineState(std::shared_ptr<D3D11RasterizerState> rasterizerOrNull, std::shared_ptr<D3D11DepthStencilState> depthStencilOrNull, std::shared_ptr<D3D11BlendState> blendStateOrNull)
+	: mRasterizerOrNull(rasterizerOrNull)
+	, mDepthStencilOrNull(depthStencilOrNull)
+	, mBlendStateOrNull(blendStateOrNull)
+{
+}
+
+void PipelineState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	if (mRasterizerOrNull != nullptr)
+	{
+		mRasterizerOrNull->Bind(d3d11Device);
+	}
+	else
+	{
+		d3d11Device->GetDeviceContext()->RSSetState(NULL);
+	}
+
+	if (mDepthStencilOrNull != nullptr)
+	{
+		mDepthStencilOrNull->Bind(d3d11Device);
+	}
+	else
+	{
+		d3d11Device->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
+	}
+
+	if (mBlendStateOrNull != nullptr)
+	{
+		mBlendStateOrNull->Bind(d3d11Device);
+	}
+	else
+	{
+		d3d11Device->GetDeviceContext()->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+	}
 }

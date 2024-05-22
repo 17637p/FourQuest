@@ -141,7 +141,9 @@
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
-    <ClInclude Include="CommonPass.h" />
+    <ClInclude Include="D3D11ParticleManager.h" />
+    <ClInclude Include="ParticlePass.h" />
+    <ClInclude Include="PassCommon.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
     <ClInclude Include="D3D11Buffer.h" />
     <ClInclude Include="D3D11CameraManager.h" />
@@ -159,32 +161,41 @@
     <ClInclude Include="D3D11Util.h" />
     <ClInclude Include="D3D11View.h" />
     <ClInclude Include="D3D11DebugDrawManager.h" />
-    <ClInclude Include="DeferredPass.h" />
+    <ClInclude Include="DebugRenderPass.h" />
+    <ClInclude Include="DeferredGeometryPass.h" />
     <ClInclude Include="DeferredPipeline.h" />
+    <ClInclude Include="DeferredShadingPass.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="D3D11Device.h" />
     <ClInclude Include="D3D11State.h" />
     <ClInclude Include="EPipelineType.h" />
     <ClInclude Include="ForwardPipeline.h" />
-    <ClInclude Include="FowardPass.h" />
+    <ClInclude Include="FowardRenderPass.h" />
     <ClInclude Include="FQGraphics.h" />
+    <ClInclude Include="FullScreenPass.h" />
     <ClInclude Include="IFQGraphics.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="D3D11ObjectManager.h" />
     <ClInclude Include="ManagementCommon.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Pass.h" />
     <ClInclude Include="RenderJob.h" />
     <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="RenderPipeline.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
+    <ClInclude Include="ShadowPass.h" />
+    <ClInclude Include="SkyBoxPass.h" />
+    <ClInclude Include="TerrainPass.h" />
+    <ClInclude Include="TransparentCompositePass.h" />
+    <ClInclude Include="TransparentRenderPass.h" />
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationHelper.cpp" />
     <ClCompile Include="BoneHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CommonPass.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
@@ -192,6 +203,7 @@
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
+    <ClCompile Include="D3D11ParticleManager.cpp" />
     <ClCompile Include="D3D11PickingManager.cpp" />
     <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
@@ -201,20 +213,30 @@
     <ClCompile Include="D3D11Texture.cpp" />
     <ClCompile Include="D3D11Util.cpp" />
     <ClCompile Include="D3D11View.cpp" />
-    <ClCompile Include="D3D11DebugDrawManager.h.cpp" />
-    <ClCompile Include="DeferredPass.cpp" />
+    <ClCompile Include="D3D11DebugDrawManager.cpp" />
+    <ClCompile Include="DebugRenderPass.cpp" />
+    <ClCompile Include="DeferredGeometryPass.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
+    <ClCompile Include="DeferredShadingPass.cpp" />
     <ClCompile Include="ForwardPipeline.cpp" />
-    <ClCompile Include="FowardPass.cpp" />
+    <ClCompile Include="FowardRenderPass.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
+    <ClCompile Include="FullScreenPass.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="D3D11ObjectManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ParticlePass.cpp" />
     <ClCompile Include="RenderObject.cpp" />
+    <ClCompile Include="RenderPipeline.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />
+    <ClCompile Include="ShadowPass.cpp" />
+    <ClCompile Include="SkyBoxPass.cpp" />
+    <ClCompile Include="TerrainPass.cpp" />
+    <ClCompile Include="TransparentCompositePass.cpp" />
+    <ClCompile Include="TransparentRenderPass.cpp" />
     <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -277,31 +299,52 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <FileType>Document</FileType>
+    </CustomBuild>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <FxCompile Include="ComputeShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
