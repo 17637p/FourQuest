@@ -522,9 +522,6 @@ namespace fq::graphics
 		ImageObject();
 		virtual ~ImageObject();
 
-		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
-
 		virtual void SetStartX(float startX) override;
 		virtual void SetStartY(float startY) override;
 		virtual float GetStartX() override;
@@ -543,8 +540,11 @@ namespace fq::graphics
 		virtual void SetYRatio(float yRatio) override;
 		virtual float GetYRatio() override;
 
-		virtual void SetTexturePath(const std::wstring& texturePath) override;
-		virtual std::wstring GetTexturePath() override;
+		virtual void SetAlpha(float alpha) override;
+		virtual float GetAlpha() override;
+
+		virtual void SetImagePath(const std::string& texturePath) override;
+		virtual std::string GetImagePath() override;
 
 	protected:
 		float mStartX;
@@ -555,10 +555,11 @@ namespace fq::graphics
 		float mXRatio;
 		float mYRatio;
 
+		float mAlpha;
+
 		unsigned int mLayer;
 
-		std::wstring mTexturePath;
-		DirectX::SimpleMath::Matrix mTransform;
+		std::string mImagePath;
 	};
 }
 

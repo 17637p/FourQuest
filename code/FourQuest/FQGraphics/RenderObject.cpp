@@ -48,24 +48,16 @@ namespace fq::graphics
 		mStartY(0),
 		mWidth(0),
 		mHeight(0),
-		mTexturePath(L""),
-		mTransform{}
+		mXRatio(1),
+		mYRatio(1),
+		mLayer(0),
+		mImagePath("")
 	{
 	}
 
 	ImageObject::~ImageObject()
 	{
 
-	}
-
-	void ImageObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
-	{
-		mTransform = transform;
-	}
-
-	const DirectX::SimpleMath::Matrix& ImageObject::GetTransform() const
-	{
-		return mTransform;
 	}
 
 	void ImageObject::SetStartX(float startX)
@@ -108,14 +100,14 @@ namespace fq::graphics
 		return mHeight;
 	}
 
-	void ImageObject::SetTexturePath(const std::wstring& texturePath)
+	void ImageObject::SetImagePath(const std::string& texturePath)
 	{
-		mTexturePath = texturePath;
+		mImagePath = texturePath;
 	}
 
-	std::wstring ImageObject::GetTexturePath()
+	std::string ImageObject::GetImagePath()
 	{
-		return mTexturePath;
+		return mImagePath;
 	}
 
 	void ImageObject::SetLayer(unsigned int layer)
@@ -146,6 +138,16 @@ namespace fq::graphics
 	float ImageObject::GetYRatio()
 	{
 		return mYRatio;
+	}
+
+	void ImageObject::SetAlpha(float alpha)
+	{
+		mAlpha = alpha;
+	}
+
+	float ImageObject::GetAlpha()
+	{
+		return mAlpha;
 	}
 
 }

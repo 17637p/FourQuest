@@ -33,6 +33,7 @@ namespace fq::graphics
 
 	class IImageObject;
 
+	struct UIInfo;
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
 	/// 다른 게 필요하다면 그 때 만들어야지
@@ -47,6 +48,12 @@ namespace fq::graphics
 			short fontSize;
 			std::wstring fontPath;
 			DirectX::SimpleMath::Color color;
+		};
+
+		struct FQBitmap
+		{
+			unsigned short refCount;
+			ID2D1Bitmap* bitmap;
 		};
 
 	public:
@@ -71,11 +78,12 @@ namespace fq::graphics
 		void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize, const std::wstring& fontPath, const DirectX::SimpleMath::Color& color);
 
 		// Image
+		IImageObject* CreateImageObject(const UIInfo& uiInfo);
 		void AddImage(IImageObject* imageObject);
 		void DeleteImage(IImageObject* imageObject);
 
 	private:
-		void loadImage(const std::wstring& path);
+		void loadBitmap(const std::wstring& path);
 		HRESULT createRenderTarget(std::shared_ptr<D3D11Device> device, const short width, const short height);
 		void initializeText();
 		void initializeImage();
@@ -83,8 +91,7 @@ namespace fq::graphics
 		void drawAllText();
 		void drawAllImage();
 
-		void RegisterFont(const std::wstring& path);
-		void ReleaseAllImage();
+		void registerFont(const std::wstring& path);
 
 	private:
 		HWND mHWnd;
@@ -108,7 +115,7 @@ namespace fq::graphics
 
 		// Image
 		// 레퍼런스 카운팅이 되게 해야함
-		std::unordered_map<std::wstring, ID2D1Bitmap*> mBitmaps;
+		std::unordered_map<std::wstring, FQBitmap*> mBitmaps;
 		IWICImagingFactory* mWICFactory;
 
 		std::vector<IImageObject*> mImages;

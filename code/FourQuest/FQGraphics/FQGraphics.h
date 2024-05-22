@@ -29,7 +29,7 @@ namespace fq::graphics
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
-		// RenderObject
+		// RenderObject & Animation
 		virtual void WriteModel(std::string path, const fq::common::Model& modelData) override;
 		virtual void ConvertModel(std::string fbxFile, std::string fileName) override;
 		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
@@ -48,6 +48,7 @@ namespace fq::graphics
 		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
+		/// Primitive
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;
 		virtual void DrawBox(const debug::AABBInfo& aabbInfo) override;
@@ -63,16 +64,8 @@ namespace fq::graphics
 		virtual void AddParticleSystem(size_t id, const ParticleSystemInfo& info) override;
 		virtual void DeleteParticleSystem(size_t id) override;
 
-		/// Gizmo && Background
-
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
-
-		/// Primitive
-
-		/// Animation
-
-		/// Bounding Volume
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
@@ -81,6 +74,9 @@ namespace fq::graphics
 		virtual void AddFont(const std::wstring& path) override;
 		virtual void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) override;
 		virtual void DeleteFont(const std::wstring& path) override;
+		// image
+		virtual IImageObject* CreateImageObject(const UIInfo& uiInfo) override;
+		virtual void DeleteImageObject(IImageObject* imageObject) override;
 
 		/// SkyBox
 		virtual void SetSkyBox(const std::wstring& path) override;

@@ -20,6 +20,8 @@ Process::Process()
 	mResizing(false),
 	mTestGraphics(nullptr)
 {
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
 	CreateHWND(L"FQGraphicsDemo", WS_OVERLAPPEDWINDOW, mWindowPosX, mWindowPosY, mScreenWidth, mScreenHeight);
 	ShowWindow(mHwnd, SW_SHOWNORMAL);
 
@@ -28,6 +30,11 @@ Process::Process()
 
 Process::~Process()
 {
+	for (fq::graphics::IImageObject* iobj : mImageObjects)
+	{
+		mTestGraphics->DeleteImageObject(iobj);
+	}
+
 	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
@@ -44,6 +51,8 @@ Process::~Process()
 	//mTestGraphics->DeleteLight(4);
 
 	mEngineExporter->DeleteEngine(mTestGraphics);
+
+	CoUninitialize();
 }
 
 bool Process::Init(HINSTANCE hInstance)
@@ -88,7 +97,7 @@ bool Process::Init(HINSTANCE hInstance)
 	//createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
@@ -105,7 +114,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 3000;
+	cameraInfo.farPlain = 30000;
 
 	mTestGraphics->SetCamera(cameraInfo);
 
@@ -180,6 +189,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
+	createImage();
+
 	return true;
 }
 
@@ -191,7 +202,10 @@ void Process::Loop()
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			if (msg.message == WM_QUIT) break;
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
 
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -206,7 +220,7 @@ void Process::Loop()
 
 void Process::Finalize()
 {
-	//_guiManager->Finalize();
+	
 }
 
 //extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -242,7 +256,6 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EndPaint(mHwnd, &ps);
 		break;
 	}
-
 	case WM_DESTROY:
 	{
 		PostQuitMessage(0);
@@ -258,15 +271,14 @@ void Process::Update()
 	mTimeManager.Update();
 	calculateFrameStats();
 
+	if (GetAsyncKeyState(VK_F1) & 0x8000)
+	{
+		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
+	}
 	// ESC 버튼 누르면 프로그램 종료
 	if (GetAsyncKeyState(VK_ESCAPE))
 	{
 		PostQuitMessage(0);
-	}
-
-	if (GetAsyncKeyState(VK_F1) & 0x8000)
-	{
-		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
 	}
 
 	// 카메라 조작
@@ -372,13 +384,10 @@ void Process::Update()
 		float randZ = (float)(rand() % 500 - 250);
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
-
-	//if (InputManager::GetInstance().IsGetKeyDown('R'))
-	//{
-	//	terrainMaterial.Layers[0].TileSizeX = 100;
-	//	terrainMaterial.Layers[0].TileSizeY = 100;
-	//	mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
-	//}
+	if (InputManager::GetInstance().IsGetKeyDown('M'))
+	{
+		mImageObjects[0]->SetStartX(mImageObjects[0]->GetStartX() + 50);
+	}
 
 	shadowTest();
 
@@ -623,16 +632,16 @@ void Process::debugRender()
 
 void Process::shadowTest()
 {
-	//if (GetAsyncKeyState('5') & 0x8000)
+	if (GetAsyncKeyState('5') & 0x8000)
 	{
 		mTestGraphics->UseShadow(1, true);
 		mTestGraphics->UseShadow(4, true);
 	}
-	//else
-	//{
-	//	mTestGraphics->UseShadow(1, false);
-	//	mTestGraphics->UseShadow(4, false);
-	//}
+	else
+	{
+		mTestGraphics->UseShadow(1, false);
+		mTestGraphics->UseShadow(4, false);
+	}
 
 	if (GetAsyncKeyState('6') & 0x8000)
 	{
@@ -862,6 +871,36 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
+}
+
+void Process::createImage()
+{
+	fq::graphics::UIInfo uiInfo;
+	uiInfo.StartX = 500;
+	uiInfo.StartY = 500;
+	uiInfo.Width = 100;
+	uiInfo.Height = 100;
+	uiInfo.XRatio = 1;
+	uiInfo.YRatio = 1;
+	uiInfo.Alpha = 0.5;
+	uiInfo.Layer = 1;
+	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
+
+	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	mImageObjects.push_back(tempImageObject);
+
+	uiInfo.StartX = 450;
+	uiInfo.StartY = 500;
+	uiInfo.Width = 100;
+	uiInfo.Height = 50;
+	uiInfo.XRatio = 1;
+	uiInfo.YRatio = 0.5;
+	uiInfo.Alpha = 1;
+	uiInfo.Layer = 0;
+	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
+
+	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	mImageObjects.push_back(tempImageObject);
 }
 
 void Process::calculateFrameStats()

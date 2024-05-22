@@ -100,8 +100,7 @@ extern "C" {
 		class IImageObject
 		{
 		public:
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+			virtual ~IImageObject() = default;
 
 			virtual FQ_GRAPHICS void SetStartX(float startX) abstract;
 			virtual FQ_GRAPHICS void SetStartY(float startY) abstract;
@@ -121,11 +120,11 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetYRatio(float yRatio) abstract;
 			virtual FQ_GRAPHICS float GetYRatio() abstract;
 
-			virtual FQ_GRAPHICS void SetTexturePath(const std::wstring& texturePath) abstract;
-			virtual FQ_GRAPHICS std::wstring GetTexturePath() abstract;
+			virtual FQ_GRAPHICS void SetAlpha(float alpha) abstract;
+			virtual FQ_GRAPHICS float GetAlpha() abstract;
 
-		protected:
-			virtual ~IImageObject() = default;
+			virtual FQ_GRAPHICS void SetImagePath(const std::string& texturePath) abstract;
+			virtual FQ_GRAPHICS std::string GetImagePath() abstract;
 		};
 	}
 #ifdef __cplusplus

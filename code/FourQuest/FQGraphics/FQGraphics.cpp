@@ -63,6 +63,16 @@ void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffuse, const 
 	mRenderManager->SetIBLTexture(diffuse, specular, brdfLUT);
 }
 
+void FQGraphics::DeleteImageObject(IImageObject* imageObject)
+{
+	mUIManager->DeleteImage(imageObject);
+}
+
+fq::graphics::IImageObject* FQGraphics::CreateImageObject(const UIInfo& uiInfo)
+{
+	return mUIManager->CreateImageObject(uiInfo);
+}
+
 void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
 {
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);

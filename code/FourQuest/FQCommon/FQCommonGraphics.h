@@ -54,6 +54,23 @@ namespace fq::graphics
 		std::string AnimationKey; // ISkinnedMeshObject SetAnimation에서 사용할 이름
 	};
 
+	struct UIInfo
+	{
+		float StartX;
+		float StartY;
+		float Width;
+		float Height;
+
+		float Alpha;
+
+		unsigned int Layer;
+
+		float XRatio;
+		float YRatio;
+
+		std::string ImagePath;
+	};
+
 	struct TerrainLayer
 	{
 		std::string BaseColor;
@@ -70,13 +87,6 @@ namespace fq::graphics
 
 	struct TerrainMaterialInfo
 	{
-		//unsigned short NumOfTexture; // 일단 최대 4
-
-		//std::vector<std::wstring> BaseColorFileNames;
-		//std::vector<std::wstring> MetalnessFileNames;
-		//std::vector<std::wstring> RoughnessFileNames;
-		//std::vector<std::wstring> NormalFileNames;
-
 		std::vector<TerrainLayer> Layers; // 최대 4
 		std::string AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
 	};
