@@ -1,4 +1,4 @@
-#include "FQGraphics.h"
+ #include "FQGraphics.h"
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
@@ -179,8 +179,8 @@ bool FQGraphics::Render()
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 
-	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
-	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
+	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
