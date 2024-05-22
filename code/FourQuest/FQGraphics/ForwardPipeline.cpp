@@ -14,7 +14,6 @@ namespace fq::graphics
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
 		, mTerrainPass(std::make_shared<TerrainPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
-		, mParticlePass(std::make_shared<ParticlePass>())
 	{
 	}
 

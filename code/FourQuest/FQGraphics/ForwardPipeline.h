@@ -44,7 +44,6 @@ namespace fq::graphics
 		std::shared_ptr<class DebugRenderPass> mDebugRenderPass;
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
-		std::shared_ptr<class ParticlePass> mParticlePass;
 		std::shared_ptr<class TerrainPass> mTerrainPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;

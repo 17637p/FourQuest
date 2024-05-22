@@ -1,131 +1,155 @@
+#pragma once
+
 #include "CommonHeader.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
-/*
-파티클 매니저 진행 방식
-1. CPU 자원을 쓰는 방식으로 기능 구현
-2. GPU 자원을 써서 최적화하기
-3. 유니티 인터페이스 참조해서 최대한 많은 기능 지원하기
-*/
-
 namespace fq::graphics
 {
-	struct Particle
-	{
-		DirectX::SimpleMath::Vector3 Position;
-		DirectX::SimpleMath::Vector2 Size;
-		DirectX::SimpleMath::Vector4 Color;
-		float TimeToLive;
-		DirectX::SimpleMath::Vector3 Velocity;
-		float Rotation;
-		float Gravity;
-	};
-	class D3D11UnorderedAccessView;
-	class D3D11StructuredBuffer;
 	class D3D11Device;
-	class D3D11ShaderResourceView;
-	class D3D11VertexBuffer;
+	class D3D11ResourceManager;
+	class D3D11CameraManager;
 
-	class ParticleSystem
+	struct GPUParticlePartA
 	{
-	public:
-		ParticleSystem(const std::shared_ptr<D3D11Device>& device, const ParticleSystemInfo& info);
-
-		void Swap();
-
-		bool Emission()
-		{
-			if (mEmissionRemainTime > mEmissionTime)
-			{
-				mEmissionRemainTime -= mEmissionTime;
-
-				return true;
-			}
-
-			return false;
-		}
-
-		inline void AddDeltaTime(float deltaTime) {
-			mAccumulateTime += deltaTime;
-			mEmissionRemainTime += deltaTime;
-		}
-		inline void SetParticleCount(size_t count) { mParticleCount = count; }
-
-		inline  ParticleSystemInfo& GetInfo() { return mInfo; }
-		inline const ParticleSystemInfo& GetInfo() const;
-		inline size_t GetParticleCount() const { return mParticleCount; }
-		inline float GetAccumlateTime() const { return mAccumulateTime; }
-		inline const std::shared_ptr<D3D11UnorderedAccessView>& GetAppendUAV() const;
-		inline const std::shared_ptr<D3D11UnorderedAccessView>& GetConsumeUAV() const;
-		inline const std::shared_ptr<D3D11StructuredBuffer>& GetAppendBuffer() const;
-		inline const std::shared_ptr<D3D11StructuredBuffer>& GetConsumeBuffer() const;
-		inline const std::shared_ptr<D3D11ShaderResourceView>& GetAppendSRV() const;
-		inline const std::shared_ptr<D3D11ShaderResourceView>& GetConsumeSRV() const;
-
-	private:
-		ParticleSystemInfo mInfo;
-		size_t mParticleCount;
-		float mAccumulateTime;
-		float mEmissionRemainTime;
-		float mEmissionTime;
-		std::shared_ptr<D3D11UnorderedAccessView> mAppendUAV;
-		std::shared_ptr<D3D11UnorderedAccessView> mConsumeUAV;
-		std::shared_ptr<D3D11StructuredBuffer> mAppendBuffer;
-		std::shared_ptr<D3D11StructuredBuffer> mConsumeBuffer;
-		std::shared_ptr<D3D11ShaderResourceView> mAppendSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mConsumeSRV;
+		DirectX::SimpleMath::Vector4 Params[3];
 	};
 
-	inline const ParticleSystemInfo& ParticleSystem::GetInfo() const
+	struct GPUParticlePartB
 	{
-		return mInfo;
-	}
-	inline const std::shared_ptr<D3D11UnorderedAccessView>& ParticleSystem::GetAppendUAV() const
-	{
-		return mAppendUAV;
-	}
-	inline const std::shared_ptr<D3D11UnorderedAccessView>& ParticleSystem::GetConsumeUAV() const
-	{
-		return mConsumeUAV;
-	}
-	inline const std::shared_ptr<D3D11StructuredBuffer>& ParticleSystem::GetAppendBuffer() const
-	{
-		return mAppendBuffer;
-	}
-	inline const std::shared_ptr<D3D11StructuredBuffer>& ParticleSystem::GetConsumeBuffer() const
-	{
-		return mConsumeBuffer;
-	}
-	inline const std::shared_ptr<D3D11ShaderResourceView>& ParticleSystem::GetAppendSRV() const
-	{
-		return mAppendSRV;
-	}
-	inline const std::shared_ptr<D3D11ShaderResourceView>& ParticleSystem::GetConsumeSRV() const
-	{
-		return mConsumeSRV;
-	}
+		DirectX::SimpleMath::Vector4 Params[3];
+	};
 
-	class D3D11Device;
+#define NUM_EMITTERS					4
+
+	struct PER_FRAME_CONSTANT_BUFFER
+	{
+		DirectX::XMVECTOR	m_StartColor[NUM_EMITTERS];
+		DirectX::XMVECTOR	m_EndColor[NUM_EMITTERS];
+		DirectX::XMVECTOR	m_EmitterLightingCenter[NUM_EMITTERS];
+
+		DirectX::XMMATRIX	m_ViewProjection;
+		DirectX::XMMATRIX	m_ViewProjInv;
+		DirectX::XMMATRIX	m_View;
+		DirectX::XMMATRIX	m_ViewInv;
+		DirectX::XMMATRIX	m_Projection;
+		DirectX::XMMATRIX	m_ProjectionInv;
+
+		DirectX::XMVECTOR	m_EyePosition;
+		DirectX::XMVECTOR	m_SunDirection;
+		DirectX::XMVECTOR	m_SunColor;
+		DirectX::XMVECTOR	m_AmbientColor;
+
+		DirectX::XMVECTOR	m_SunDirectionVS;
+		DirectX::XMVECTOR	pads2[3];
+
+		float				m_FrameTime;
+		int					m_ScreenWidth;
+		int					m_ScreenHeight;
+		int					m_FrameIndex;
+
+		float				m_AlphaThreshold;
+		float				m_CollisionThickness;
+		float				m_ElapsedTime;
+		int					m_CollisionsEnabled;
+
+		int					m_ShowSleepingParticles;
+		int					m_EnableSleepState;
+		int					pads[2];
+	};
 
 	class D3D11ParticleManager
 	{
 	public:
 		D3D11ParticleManager() = default;
 
-		void AddDeltaTime(float deltaTime);
-		void AddParticleSystem(size_t id, const std::shared_ptr<D3D11Device>& device, ParticleSystemInfo emitter);
-		void DeleteParticleSystem(size_t id);
+		static float RandF();
+		static float RandF(float a, float b);
+		static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateRandomTexture1DSRV(ID3D11Device* device);
+		static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateRandomTexture2DSRV(ID3D11Device* device);
+		static int Align(int value, int aligment);
+		static void CalculateNumToEmit(std::shared_ptr<EmitterParams> emitter, std::shared_ptr<EmissionRate> emissionRate, float frameTime);
 
-		inline const std::map<size_t, std::shared_ptr<ParticleSystem>>& GetParticleSystems() const;
-		float GetLastDeltaTime() const { return mLastDeltaTime; }
+		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager);
+		void Reset();
+		void UpdatePerFrame();
+		void BindFrameCB();
+		void Emit();
+		void Simulate();
+		void Render();
+
+		void AddEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate);
+		void DeleteEmitter(size_t id);
+		void SetFrameTime(float frameTime);
+		float GetFrameTime() const;
 
 	private:
-		std::map<size_t, std::shared_ptr<ParticleSystem>> mParticleSystems;
-		float mLastDeltaTime;
-	};
+		int readCounter(ID3D11UnorderedAccessView* uav);
 
-	inline const std::map<size_t, std::shared_ptr<ParticleSystem>>& D3D11ParticleManager::GetParticleSystems() const
-	{
-		return mParticleSystems;
-	}
-}
+	private:
+		enum { MAX_PARTICLE = 400 * 1024 };
+
+		std::shared_ptr<D3D11Device> mDevice;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<D3D11CameraManager> mCameraManager;
+
+		std::map<size_t, std::shared_ptr<EmitterParams>> mEmitters;
+		std::map<size_t, std::shared_ptr<EmissionRate>> mEmissionRates;
+		float mFrameTime;
+		bool mbIsUdpatedFrameTime = true;
+		bool mbIsReset = true;
+		PER_FRAME_CONSTANT_BUFFER mGlobalConstantBuffer;
+
+		// debugInfo
+		int mNumDeadParticlesOnInit = 0;
+		int mNumDeadParticlesAfterEmit = 0;
+		int mNumDeadParticlesAfterSimulation = 0;
+		int mNumActiveParticlesAfterSimulation = 0;
+
+		std::shared_ptr<class D3D11RenderTargetView> mSwapChainRTV;
+		std::shared_ptr<class D3D11DepthStencilView> mDSV;
+
+		std::shared_ptr<class ShaderProgram> mRenderProgram;
+
+		std::shared_ptr<class D3D11ComputeShader> mInitDeadListCS;
+		std::shared_ptr<class D3D11ComputeShader> mInitParticlesCS;
+		std::shared_ptr<class D3D11ComputeShader> mEmitCS;
+		std::shared_ptr<class D3D11ComputeShader> mSimulateCS;
+
+		std::shared_ptr<class D3D11SamplerState> mLinearWrap;
+		std::shared_ptr<class D3D11SamplerState> mPointClamp;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBufferA;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mParticleBufferASRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferAUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBufferB;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferBUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mViewSpaceParticlePositions;;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mViewSpaceParticlePositionsSRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mViewSpaceParticlePositionsUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mMaxRadiusBuffer;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mMaxRadiusBufferSRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mMaxRadiusBufferUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mDeadListBuffer;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mDeadListUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mDebugCounterBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mDeadListCB;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mActiveListCB;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mEmitterCB;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mPerFrameCB;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mAliveIndexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mAliveIndexBufferSRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mAliveIndexBufferUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndirectDrawArgsBuffer;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mIndirectDrawArgsBufferUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mRandomTextureSRV;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDepthSRV;
+	};
+};

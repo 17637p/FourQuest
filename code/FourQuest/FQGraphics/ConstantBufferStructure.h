@@ -124,6 +124,26 @@ namespace fq::graphics
 		float unused[3];
 	};
 
+	struct EmitterConstantBuffer
+	{
+		DirectX::SimpleMath::Vector4	EmitterPosition;
+		DirectX::SimpleMath::Vector4	EmitterVelocity;
+		DirectX::SimpleMath::Vector4	PositionVariance;
+
+		int					MaxParticlesThisFrame;
+		float				ParticleLifeSpan;
+		float				StartSize;
+		float				EndSize;
+
+		float				VelocityVariance;
+		float				Mass;
+		int					Index;
+		int					Streaks;
+
+		int					TextureIndex;
+		int					pads[3];
+	};
+
 	struct ParticleMain
 	{
 		DirectX::SimpleMath::Matrix Transform;
@@ -135,7 +155,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector2 StartSpeed;
 		DirectX::SimpleMath::Vector2 StartRotation;
 		DirectX::SimpleMath::Vector2 GravityModifier;
-		
+
 		int StartLifeTimeOption;
 		int StartSpeedOption;
 		int StartSizeOption;
@@ -159,7 +179,7 @@ namespace fq::graphics
 		int ModeType;
 		float Angle;
 		float Radius;
-		
+
 		float DountRadius;
 		float Arc;
 		float Speed;

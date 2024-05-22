@@ -194,6 +194,27 @@ namespace fq::graphics
 		std::wstring TexturePath = L"";
 	};
 
+	struct EmitterParams
+	{
+		DirectX::SimpleMath::Vector4	Position;
+		DirectX::SimpleMath::Vector4	Velocity;
+		DirectX::SimpleMath::Vector4	PositionVariance;
+		int					NumToEmit;
+		float				ParticleLifeSpan;
+		float				StartSize;
+		float				EndSize;
+		float				Mass;
+		float				VelocityVariance;
+		int					TextureIndex;
+		bool				Streaks;
+	};
+
+	struct EmissionRate
+	{
+		float ParticlesPerSecond;
+		float Accumlation;
+	};
+
 	namespace debug
 	{
 		struct SphereInfo

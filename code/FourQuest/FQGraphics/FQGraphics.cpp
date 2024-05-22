@@ -37,13 +37,13 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
-	mParticleManager;
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
 	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mUIManager->Initialize(hWnd, mDevice, width, height);
+	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 
 	return true;
 }
@@ -187,6 +187,13 @@ bool FQGraphics::Render()
 	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 
 	mRenderManager->Render();
+
+	mParticleManager->UpdatePerFrame();
+	mParticleManager->BindFrameCB();
+	mParticleManager->Emit();
+	mParticleManager->Simulate();
+	mParticleManager->Render();
+
 	return true;
 }
 
@@ -312,17 +319,17 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
-void FQGraphics::AddDeltaTime(float deltaTime)
+void FQGraphics::SetFrameTime(float deltaTime)
 {
-	mParticleManager->AddDeltaTime(deltaTime);
+	mParticleManager->SetFrameTime(deltaTime);
 }
-void FQGraphics::AddParticleSystem(size_t id, const ParticleSystemInfo& info)
+void FQGraphics::AddParticleEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate)
 {
-	mParticleManager->AddParticleSystem(id, mDevice, info);
+	mParticleManager->AddEmitter(id, emitter, emissionRate);
 }
-void FQGraphics::DeleteParticleSystem(size_t id)
+void FQGraphics::DeleteParticleEmitter(size_t id)
 {
-	mParticleManager->DeleteParticleSystem(id);
+	mParticleManager->DeleteEmitter(id);
 }
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)

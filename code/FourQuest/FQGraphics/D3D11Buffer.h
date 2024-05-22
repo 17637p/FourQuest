@@ -91,6 +91,8 @@ namespace fq::graphics
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11ShaderType eShaderType, const UINT startSlot = 0);
 
+		ID3D11Buffer* GetBuffer()  { return mConstantBuffer->GetBuffer(); }
+
 	private:
 		std::shared_ptr<DirectX::ConstantBuffer<ConstantType>> mConstantBuffer;
 	};

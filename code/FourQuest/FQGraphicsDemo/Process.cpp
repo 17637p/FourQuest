@@ -257,6 +257,7 @@ void Process::Update()
 {
 	mTimeManager.Update();
 	calculateFrameStats();
+	mTestGraphics->SetFrameTime(mTimeManager.GetDeltaTime());
 
 	// ESC 버튼 누르면 프로그램 종료
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -387,6 +388,7 @@ void Process::Update()
 
 void Process::Render()
 {
+
 	mTestGraphics->BeginRender();
 	//debugRender();
 	mTestGraphics->Render();
@@ -656,13 +658,39 @@ void Process::particleInit()
 {
 	using namespace fq::graphics;
 
-	ParticleSystemInfo particleInfo;
-	particleInfo.WorldPosition = { 0, 500.f, 0 };
-	particleInfo.StartSize[0] = { 10, 10 };
-	particleInfo.StartColor[0] = { 1.f, 0.f, 0.f, 0.5f };
-	particleInfo.StartColor[1] = { 0.f, 1.f, 1.f, 1.f };
-	particleInfo.StartColorOption = ParticleSystemInfo::EOption::RandomBetweenTwoConstant;
-	mTestGraphics->AddParticleSystem(10, particleInfo);
+	DirectX::XMVECTOR spawnPosition = DirectX::XMVectorSet(2.0f, 70.0f, 26.0f, 1.0f);
+
+	EmitterParams			emiiterParams = {};
+	EmissionRate			emissionRate = {};
+	// Sparks
+	emissionRate.ParticlesPerSecond = 150000.0f;
+	emiiterParams.Position = spawnPosition;
+	emiiterParams.Velocity = DirectX::XMVectorSet(0.0f, 300.0f, 0.0f, 0.0f);
+	emiiterParams.NumToEmit = 0;
+	emiiterParams.ParticleLifeSpan = 40.0f;
+	emiiterParams.StartSize = 1.f;
+	emiiterParams.EndSize = 2.f;
+	emiiterParams.PositionVariance = DirectX::XMVectorSet(5.0f, 0.0f, 5.0f, 1.0f);
+	emiiterParams.VelocityVariance = 0.4f;
+	emiiterParams.Mass = 7.0f;
+	emiiterParams.TextureIndex = 1;
+	emiiterParams.Streaks = true;
+	mTestGraphics->AddParticleEmitter(1, emiiterParams, emissionRate);
+
+	// Smoke
+	emissionRate.ParticlesPerSecond = 1000.0f;
+	emiiterParams.Position = spawnPosition;
+	emiiterParams.Velocity = DirectX::XMVectorSet(0.0f, 5.0f, 0.0f, 0.0f);
+	emiiterParams.NumToEmit = 0;
+	emiiterParams.ParticleLifeSpan = 5.0f;
+	emiiterParams.StartSize = 1.0f;
+	emiiterParams.EndSize = 2.01f;
+	emiiterParams.PositionVariance = DirectX::XMVectorSet(20.0f, 0.0f, 20.0f, 10.0f);
+	emiiterParams.VelocityVariance = 50.6f;
+	emiiterParams.Mass = 0.0003f;
+	emiiterParams.TextureIndex = 0;
+	emiiterParams.Streaks = false;
+	//mTestGraphics->AddParticleEmitter(2, emiiterParams, emissionRate);
 }
 
 /*=============================================================================

@@ -539,9 +539,9 @@ D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11De
 	HR(d3d11Device->GetDevice()->CreateUnorderedAccessView(d3dBuffer.Get(), &uavDesc, mView.GetAddressOf()));
 }
 
-void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot)
+void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, UINT initialCount)
 {
-	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), nullptr);
+	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), &initialCount);
 }
 
 void D3D11UnorderedAccessView::Clear(const std::shared_ptr<D3D11Device>& d3d11Device)

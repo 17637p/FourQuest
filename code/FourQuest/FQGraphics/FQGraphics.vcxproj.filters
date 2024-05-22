@@ -154,13 +154,13 @@
     <ClInclude Include="ParticlePass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11ParticleManager.h">
-      <Filter>Management</Filter>
-    </ClInclude>
     <ClInclude Include="TerrainPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11ParticleManager.h">
       <Filter>Management</Filter>
     </ClInclude>
   </ItemGroup>
@@ -236,6 +236,9 @@
     </Filter>
     <Filter Include="Common\Source">
       <UniqueIdentifier>{51c71a07-0194-40f7-b0b2-3f398fe65888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Particle">
+      <UniqueIdentifier>{295600f5-72b0-4b3b-94e0-40c687c4bd5d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -365,13 +368,13 @@
     <ClCompile Include="ParticlePass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11ParticleManager.cpp">
-      <Filter>Management\Source</Filter>
-    </ClCompile>
     <ClCompile Include="TerrainPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ParticleManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -388,17 +391,32 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
       <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleDeadListInitCS.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleEmitCS.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitCS.hlsl">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleSimulateCS.hlsl">
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="ComputeShader.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Particle</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -427,9 +445,6 @@
       <Filter>Shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
-      <Filter>Shader</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
       <Filter>Shader</Filter>
     </CustomBuild>
   </ItemGroup>

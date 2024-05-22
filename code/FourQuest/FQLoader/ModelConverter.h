@@ -4,8 +4,8 @@
 
 #include "../FQCommon/FQCommonLoader.h"
 
-class aiScene;
-class aiNode;
+struct aiScene;
+struct aiNode;
 namespace Assimp { class Importer; }
 
 namespace fq::loader
