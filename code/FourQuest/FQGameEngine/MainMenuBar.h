@@ -50,6 +50,7 @@ namespace fq::game_engine
 	private:
 		void beginMenu_File();
 		void beginMenu_Window();
+		void beginMenu_DebugOption();
 
 		void beginMenuItem_CreateScene();
 		void beginMenuItem_LoadScene();

@@ -41,6 +41,9 @@ void fq::game_engine::LightSystem::Initialize(GameProcess* game)
 
 	mRemoveComponentHandler = eventMgr->
 		RegisterHandle<fq::event::RemoveComponent>(this, &LightSystem::RemoveComponent);
+
+	mSetLightShadowHandler = eventMgr->
+		RegisterHandle<fq::event::SetLightShadow>(this, &LightSystem::SetLightShadow);
 }
 
 void fq::game_engine::LightSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -158,5 +161,10 @@ void fq::game_engine::LightSystem::RemoveComponent(const fq::event::RemoveCompon
 	}
 
 	deleteLight(event.component->GetGameObject());
+}
+
+void fq::game_engine::LightSystem::SetLightShadow(const fq::event::SetLightShadow& event)
+{
+	mGameProcess->mGraphics->UseShadow(event.id, event.bUseShadow);
 }
 

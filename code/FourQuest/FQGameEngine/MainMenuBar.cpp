@@ -45,6 +45,7 @@ void fq::game_engine::MainMenuBar::Render()
 	{
 		beginMenu_File();
 		beginMenu_Window();
+		beginMenu_DebugOption();
 
 		beginText_SceneName();
 		beginText_FPS();
@@ -99,7 +100,7 @@ void fq::game_engine::MainMenuBar::beginMenu_File()
 {
 	if (ImGui::BeginMenu("File"))
 	{
-		beginMenuItem_CreateScene();	
+		beginMenuItem_CreateScene();
 		beginMenuItem_LoadScene();
 		beginMenuItem_SaveScene();
 
@@ -252,7 +253,7 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 {
 	if (ImGui::BeginMenu("Window"))
 	{
-	    bool& hierarchy = mEditorProcess->mHierarchy->IsWindowOpen();
+		bool& hierarchy = mEditorProcess->mHierarchy->IsWindowOpen();
 		ImGui::Checkbox("Hierarchy", &hierarchy);
 
 		bool& inspector = mEditorProcess->mInspector->IsWindowOpen();
@@ -274,6 +275,37 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		bool& physicsAnimator = mEditorProcess->mPhysicsAnimatorWindow->IsWindowOpen();
 		ImGui::Checkbox("PhysicsAnimator", &physicsAnimator);
+
+		bool& skyBox = mEditorProcess->mSkyBoxWindow->IsWindowOpen();
+		ImGui::Checkbox("SkyBox", &skyBox);
+
+		ImGui::EndMenu();
+	}
+}
+
+void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
+{
+	if (ImGui::BeginMenu("Debug"))
+	{
+		auto& debug = mEditorProcess->mDebugSystem;
+
+		bool& onGrid = debug->GetOnGrid();
+		ImGui::Checkbox("Grid", &onGrid);
+
+		bool& onBox = debug->GetOnBoxCollider();
+		ImGui::Checkbox("BoxCollider", &onBox);
+
+		bool& onCapsule = debug->GetOnCapsuleCollider();
+		ImGui::Checkbox("CapsuleCollider", &onCapsule);
+
+		bool& onSphere = debug->GetOnSphereCollider();
+		ImGui::Checkbox("SphereCollider", &onSphere);
+
+		bool& onConvex = debug->GetOnConvexMeshCollider();
+		ImGui::Checkbox("ConvexMeshCollider", &onConvex);
+
+		bool& onCharater = debug->GetOnCharaterController();
+		ImGui::Checkbox("CharaterController", &onCharater);
 
 		ImGui::EndMenu();
 	}

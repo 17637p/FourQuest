@@ -37,7 +37,14 @@ namespace fq::game_engine
 		void RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider);
 		void RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider);
 		void RenderCapsuleCollier(fq::game_module::Transform& transform, fq::game_module::CapsuleCollider& collider);
-		void renderCharaterController(fq::game_module::Transform& transform, fq::game_module::CharacterController& cotroller);
+		void RenderCharaterController(fq::game_module::Transform& transform, fq::game_module::CharacterController& cotroller);
+
+		bool& GetOnGrid() { return mbOnGrid; }
+		bool& GetOnBoxCollider() { return mbOnBoxCollider; }
+		bool& GetOnCapsuleCollider() { return mbOnCapsuleCollider; }
+		bool& GetOnSphereCollider() { return mbOnSphereCollider; }
+		bool& GetOnConvexMeshCollider() { return mbOnConvexMeshCollider; }
+		bool& GetOnCharaterController() { return mbOnCharaterController; }
 
 	private:
 		void renderGrid();
@@ -53,7 +60,12 @@ namespace fq::game_engine
 
 		bool mbOnLight;
 		bool mbOnGrid;
-		fq::graphics::debug::GridInfo mGridInfo;
+		bool mbOnBoxCollider;
+		bool mbOnCapsuleCollider;
+		bool mbOnSphereCollider;
+		bool mbOnConvexMeshCollider;
+		bool mbOnCharaterController;
 
+		fq::graphics::debug::GridInfo mGridInfo;
 	};
 }
