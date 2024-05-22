@@ -25,7 +25,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mbIsOpen(true)
 	, mbIsMouseHoveredWindow(false)
 	, mCameraObject(nullptr)
-	, mCameraMoveSpeed(0.5f)
+	, mCameraMoveSpeed(5.f)
 	, mCameraRotateSpeed(0.0065f)
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
@@ -65,7 +65,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	// 朝五虞 持失
 	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
 	mCameraObject->AddComponent<fq::game_module::Camera>();
-	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(1000);
+	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(100);
 
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);

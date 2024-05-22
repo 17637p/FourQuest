@@ -11,6 +11,11 @@ fq::game_engine::DebugSystem::DebugSystem()
 	, mbOnGrid(true)
 	, mbOnLight(true)
 	, mScene(nullptr)
+	, mbOnBoxCollider(true)
+	, mbOnCapsuleCollider(true)
+	, mbOnSphereCollider(true)
+	, mbOnConvexMeshCollider(true)
+	, mbOnCharaterController(true)
 {}
 
 fq::game_engine::DebugSystem::~DebugSystem()
@@ -47,7 +52,7 @@ void fq::game_engine::DebugSystem::Render()
 
 void fq::game_engine::DebugSystem::renderGrid()
 {
-	if (mbOnGrid) mGameProcess->mGraphics->DrawGrid(mGridInfo);
+	if (GetOnGrid()) mGameProcess->mGraphics->DrawGrid(mGridInfo);
 }
 
 void fq::game_engine::DebugSystem::SetGrid(fq::graphics::debug::GridInfo info)
@@ -120,6 +125,8 @@ void fq::game_engine::DebugSystem::RenderBoxCollier(fq::game_module::Transform& 
 
 void fq::game_engine::DebugSystem::renderBoxCollider()
 {
+	if (!GetOnBoxCollider()) return;
+
 	using namespace fq::game_module;
 
 	mScene->ViewComponents< Transform, BoxCollider>(
@@ -143,6 +150,8 @@ void fq::game_engine::DebugSystem::RenderSphereCollier(fq::game_module::Transfor
 
 void fq::game_engine::DebugSystem::renderSphereCollider()
 {
+	if (!GetOnSphereCollider()) return;
+
 	using namespace fq::game_module;
 
 	mScene->ViewComponents< Transform, SphereCollider>(
@@ -201,7 +210,7 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
-void fq::game_engine::DebugSystem::renderCharaterController(fq::game_module::Transform& transform
+void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Transform& transform
 	, fq::game_module::CharacterController& cotroller)
 {
 	using DirectX::SimpleMath::Color;
@@ -254,6 +263,8 @@ void fq::game_engine::DebugSystem::renderCharaterController(fq::game_module::Tra
 
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
+	if (!GetOnCapsuleCollider()) return;
+
 	using namespace fq::game_module;
 
 	mScene->ViewComponents< Transform, CapsuleCollider>(
@@ -261,12 +272,12 @@ void fq::game_engine::DebugSystem::renderCapsuleCollider()
 		{
 			RenderCapsuleCollier(transform, capsule);
 		});
-
-
 }
 
 void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 {
+	if (!GetOnConvexMeshCollider()) return;
+
 	using DirectX::SimpleMath::Color;
 	const auto& convexMeshs = mGameProcess->mPhysics->GetDebugPolygon();
 
@@ -289,12 +300,14 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 
 void fq::game_engine::DebugSystem::renderCharaterController()
 {
+	if (!GetOnCharaterController()) return;
+
 	using namespace fq::game_module;
 
 	mScene->ViewComponents<Transform, CharacterController>
 		([this](GameObject& object, Transform& transform, CharacterController& cotroller)
 			{
-				renderCharaterController(transform, cotroller);
+				RenderCharaterController(transform, cotroller);
 			});
 }
 

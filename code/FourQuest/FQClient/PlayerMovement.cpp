@@ -29,7 +29,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerMovement::Clone(st
 
 void fq::client::PlayerMovement::OnUpdate(float dt)
 {
-	constexpr const char* bIsMove = "bIsMove";
+	constexpr const char* bIsMove = "bIsMove"; 
 	auto input = GetScene()->GetInputManager();
 
 	if (input->IsKeyState(EKey::W, EKeyState::Hold)
