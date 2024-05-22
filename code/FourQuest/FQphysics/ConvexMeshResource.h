@@ -3,12 +3,14 @@
 
 #include "physx/PxPhysicsAPI.h"
 
+#include "FQCommonPhysics.h"
+
 namespace fq::physics
 {
     class ConvexMeshResource : public ResourceBase
     {
     public:
-        ConvexMeshResource();
+        ConvexMeshResource(ConvexMeshColliderInfo info);
         virtual ~ConvexMeshResource();
 
     private:

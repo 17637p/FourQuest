@@ -43,9 +43,6 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{5b9aa5bd-8e15-4218-86dd-cda0e21c807b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource\Articulation">
-      <UniqueIdentifier>{16826866-43cd-471a-9824-b4d37345e0e1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource\Material">
       <UniqueIdentifier>{96e4dc3c-4923-4b9b-ba1c-f3b5dfe95e54}</UniqueIdentifier>
     </Filter>
@@ -117,9 +114,6 @@
     <ClInclude Include="ResourceBase.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="ArticulationResource.h">
-      <Filter>Resource\Articulation</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialResource.h">
       <Filter>Resource\Material</Filter>
     </ClInclude>
@@ -190,9 +184,6 @@
     </ClCompile>
     <ClCompile Include="ResourceBase.cpp">
       <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="ArticulationResource.cpp">
-      <Filter>Resource\Articulation</Filter>
     </ClCompile>
     <ClCompile Include="MaterialResource.cpp">
       <Filter>Resource\Material</Filter>

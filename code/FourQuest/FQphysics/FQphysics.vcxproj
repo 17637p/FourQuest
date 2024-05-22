@@ -136,7 +136,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ArticulationResource.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="CharacterPhysics.h" />
@@ -162,7 +161,6 @@
     <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ArticulationResource.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="CharacterMovement.cpp" />
     <ClCompile Include="CharacterPhysics.cpp" />

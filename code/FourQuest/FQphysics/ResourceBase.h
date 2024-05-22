@@ -3,21 +3,26 @@
 
 namespace fq::physics
 {
+	// 건재 : 리소스 타입 열거형
 	enum class EResourceType
 	{
-		NONE = 0,
 		MATERIAL,
 		CONVEX_MESH,
-		ARTICULATION,
 
 		END
+	};
+
+	// 건재 : 리소스 타입의 갯수
+	enum
+	{
+		RESOURCE_TYPE_COUNT = static_cast<unsigned int>(EResourceType::END)
 	};
 
 	class ResourceBase
 	{
 	public:
 		ResourceBase(const EResourceType& type);
-		~ResourceBase();
+		virtual ~ResourceBase();
 
 		inline const EResourceType& GetResourceType();
 

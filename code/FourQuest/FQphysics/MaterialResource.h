@@ -3,6 +3,8 @@
 
 #include "physx/PxPhysicsAPI.h"
 
+#include "FQCommonPhysics.h"
+
 namespace fq::physics
 {
 	class MaterialResource : public ResourceBase

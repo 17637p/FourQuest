@@ -3,7 +3,7 @@
 
 namespace fq::physics
 {
-	ConvexMeshResource::ConvexMeshResource()
+	ConvexMeshResource::ConvexMeshResource(ConvexMeshColliderInfo info)
 		: ResourceBase(EResourceType::CONVEX_MESH)
 	{
 	}
