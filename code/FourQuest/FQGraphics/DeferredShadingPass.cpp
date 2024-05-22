@@ -60,7 +60,7 @@ namespace fq::graphics
 		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
 		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 
-		mDirectioanlShadowInfoCB = std::make_shared<D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDirectioanlShadowInfoCB = resourceManager->Create< D3D11ConstantBuffer<DirectionalShadowInfo>>(ED3D11ConstantBuffer::DirectionalShadowInfo);
 	}
 	void DeferredShadingPass::Finalize()
 	{

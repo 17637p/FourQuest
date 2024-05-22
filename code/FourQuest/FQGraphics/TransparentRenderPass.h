@@ -40,6 +40,7 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
+		std::shared_ptr<D3D11SamplerState> mDefualtSampler;
 
 		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;

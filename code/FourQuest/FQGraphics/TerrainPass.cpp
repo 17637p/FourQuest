@@ -115,5 +115,11 @@ namespace fq::graphics
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
+
+		// unbind
+		{
+			ID3D11ShaderResourceView* srv = nullptr;
+			mDevice->GetDeviceContext()->PSSetShaderResources(17, 1, &srv);
+		}
 	}
 }

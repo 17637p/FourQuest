@@ -51,6 +51,7 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
+		mDefualtSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -183,9 +184,9 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
 			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
