@@ -119,11 +119,22 @@ fq::game_module::AnimationTransition::AnimationTransition(std::string prev, std:
 	:mEnterState(next)
 	,mExitState(prev)
 	,mConditions{}
+	,mExitTime(NoExitTime)
+	,mTransitionDuration(1.f)
+	, mInterruptionSource(InterruptionSource::None)
 {}
 
 fq::game_module::AnimationTransition::AnimationTransition()
 	:mEnterState{}
 	,mExitState{}
 	,mConditions{}
+	, mExitTime(NoExitTime)
+	, mTransitionDuration(1.f)
+	, mInterruptionSource(InterruptionSource::None)
 {
+}
+
+bool fq::game_module::AnimationTransition::HasExitTime() const
+{
+	return mExitTime != NoExitTime;
 }

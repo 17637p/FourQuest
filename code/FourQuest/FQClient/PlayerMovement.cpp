@@ -57,6 +57,5 @@ void fq::client::PlayerMovement::OnStart()
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	assert(mAnimator);
 
- 	mController =  GetComponent<game_module::Transform>()->GetParentTransform()->GetComponent<fq::game_module::CharacterController>();
-
+ 	mController = GetComponent<fq::game_module::CharacterController>();
 }

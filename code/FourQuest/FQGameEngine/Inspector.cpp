@@ -803,13 +803,60 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 			auto& conditions = transition.GetConditions();
 			auto enterState = transition.GetEnterState();
 
-			// Condition GUI
 			std::string transitionName = exitState + " -> " + enterState;
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
 			if (ImGui::BeginChild(transitionName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 			{
 				ImGui::Text(transitionName.c_str());
 
+				bool hasExitTime = transition.HasExitTime();
+
+				if (ImGui::Checkbox("HasExitTime", &hasExitTime))
+				{
+					if (hasExitTime)
+						transition.SetExitTime(0.f);
+					else
+						transition.SetExitTime(game_module::AnimationTransition::NoExitTime);
+					
+					hasExitTime = transition.HasExitTime();
+				}
+
+				if (hasExitTime)
+				{
+					float exitTime = transition.GetExitTime();
+					if (ImGui::InputFloat("ExitTime", &exitTime))
+					{
+						transition.SetExitTime(exitTime);
+					}
+				}
+
+				float transitionDuration = transition.GetTransitionDuration();
+				if (ImGui::InputFloat("TransitionDuration", &transitionDuration))
+				{
+					transition.SetTransitionDuration(transitionDuration);
+				}
+
+				int source = static_cast<int>(transition.GetInterruptionSource());
+
+				constexpr const char* interruptionSourece[] = { "None", "CurrentState", "NextState"
+				, "CurrentState Then NextState", "NextState Then CurrentState" };
+
+				if (ImGui::BeginCombo("InterruptionSource", interruptionSourece[source]))
+				{
+					for (int i = 0; i < 5; ++i)
+					{
+						if(ImGui::Selectable(interruptionSourece[i]))
+						{
+							transition.SetInterruptionSource(static_cast<game_module::AnimationTransition::InterruptionSource>(i));
+						}
+					}
+					ImGui::EndCombo();
+				}
+
+				ImGui::Separator();
+				ImGui::Text("Conditions");
+
+				// Condtion GUI
 				for (auto& condition : conditions)
 				{
 					beginTransitionCondition(condition, ++index);

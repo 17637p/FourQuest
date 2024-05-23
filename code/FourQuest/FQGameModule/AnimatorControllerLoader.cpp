@@ -94,6 +94,16 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		std::string enter = value.at("enterState");
 		controller->AddTransition(exit, enter);
 
+		auto& transition = controller->GetTransitions().back();
+
+		float exitTime = value.at("exitTime");
+		float transitionDuration = value.at("transitionDuration");
+		int interruptionSource = value.at("InterruptionSource");
+
+		transition.SetExitTime(exitTime);
+		transition.SetTransitionDuration(transitionDuration);
+		transition.SetInterruptionSource(static_cast<AnimationTransition::InterruptionSource>(interruptionSource));
+
 		json conditionsJson = value.at("conditions");
 		for (auto& conditionJson : conditionsJson)
 		{
@@ -118,7 +128,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 			{
 				parameter = AnimatorController::OnTrigger;
 			}
-			controller->GetTransitions().back().PushBackCondition(checkType, id, parameter);
+			transition.PushBackCondition(checkType, id, parameter);
 		}
 	}
 
@@ -166,7 +176,7 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		if (stateNode.GetType() != AnimationStateNode::Type::State) continue;
 
 		ordered_json stateJson;
-		stateJson["modelPath"] =  fq::path::GetRelativePath(stateNode.GetModelPath()).string();
+		stateJson["modelPath"] = fq::path::GetRelativePath(stateNode.GetModelPath()).string();
 		stateJson["animationName"] = stateNode.GetAnimationName();
 		stateJson["playbackSpeed"] = stateNode.GetPlayBackSpeed();
 		stateJson["duration"] = stateNode.GetDuration();
@@ -184,6 +194,9 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 
 		transitionJson["exitState"] = transition.GetExitState();
 		transitionJson["enterState"] = transition.GetEnterState();
+		transitionJson["exitTime"] = transition.GetExitTime();
+		transitionJson["transitionDuration"] = transition.GetTransitionDuration();
+		transitionJson["InterruptionSource"] = static_cast<int>(transition.GetInterruptionSource());
 
 		ordered_json conditionsJson;
 		// 조건 저장 

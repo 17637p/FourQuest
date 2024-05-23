@@ -4,6 +4,7 @@
 namespace fq::game_module
 {
 	class AnimatorController;
+	class SkinnedMeshRenderer;
 
 	/// <summary>
 	/// 애니메이션을 관리하는 컴포넌트
@@ -62,12 +63,18 @@ namespace fq::game_module
 		void SetParameterBoolean(const std::string& id, bool val);
 		void SetParameterTrigger(const std::string& id);
 
+		/// <summary>
+		/// 애니메이터가 애니메이션을 관리하는 스키닝 메쉬들을 반환합니다.
+		/// </summary>
+		std::vector<SkinnedMeshRenderer*>& GetSkinnedMeshs() { return mSkinnedMeshs; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		ControllerPath mControllerPath;
 		std::shared_ptr<AnimatorController> mController;
+		std::vector<SkinnedMeshRenderer*> mSkinnedMeshs;
 	};
 
 }

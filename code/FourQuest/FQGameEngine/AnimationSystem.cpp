@@ -50,21 +50,28 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 {
 	using namespace fq::game_module;
 
-	mScene->ViewComponents<SkinnedMeshRenderer, Animator>(
-		[dt](GameObject& object, SkinnedMeshRenderer mesh, Animator& animator)
+	mScene->ViewComponents<Animator>(
+		[dt](GameObject& object, Animator& animator)
 		{
 			float timePos = animator.UpdateAnimation(dt);
-			mesh.GetSkinnedMeshObject()->SetAnimationTime(timePos);
+			for (auto mesh : animator.GetSkinnedMeshs())
+			{
+				mesh->GetSkinnedMeshObject()->SetAnimationTime(timePos);
+			}
 		});
 }
 
 
 void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::ChangeAnimationState& event)
 {
-	auto skinnedMesh = event.object->GetComponent<fq::game_module::SkinnedMeshRenderer>()
-		->GetSkinnedMeshObject();
+	auto animator = event.object->GetComponent<fq::game_module::Animator>();
 
-	skinnedMesh->SetAnimationKey(event.enterState);
+	const auto& meshs = animator->GetSkinnedMeshs();
+
+	for (auto& mesh : meshs)
+	{
+		mesh->GetSkinnedMeshObject()->SetAnimationKey(event.enterState);
+	}
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
