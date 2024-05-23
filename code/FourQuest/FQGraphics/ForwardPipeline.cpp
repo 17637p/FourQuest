@@ -16,6 +16,9 @@ namespace fq::graphics
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
 		, mParticlePass(std::make_shared<ParticlePass>())
 		, mSingleColorPass(std::make_shared<SingleColorPass>())
+		, mOutLinePass(std::make_shared<OutLinePass>())
+		, mOutLineBlurPass(std::make_shared<OutLineBlurPass>())
+		, mOutLineAddPass(std::make_shared<OutLineAddPass>())
 	{
 	}
 
@@ -41,6 +44,9 @@ namespace fq::graphics
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mSingleColorPass->Initialize(device, jobManager, cameraManager, resourceManager, width, height);
+		mOutLinePass->Initialize(device, cameraManager, resourceManager, width, height);
+		mOutLineBlurPass->Initialize(device, resourceManager, width, height);
+		mOutLineAddPass->Initialize(device, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
@@ -52,6 +58,9 @@ namespace fq::graphics
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mSingleColorPass);
+		mPasses.push_back(mOutLinePass);
+		mPasses.push_back(mOutLineBlurPass);
+		mPasses.push_back(mOutLineAddPass);
 		mPasses.push_back(mFullScreenPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);

@@ -65,6 +65,7 @@ namespace fq::graphics
 
 		void Init(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
+		void UnBind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 
 		inline ComPtr<ID3D11ShaderResourceView> GetSRV() const;
 
@@ -109,12 +110,16 @@ namespace fq::graphics
 		return mDSV;
 	}
 
+	/*=============================================================================
+		SRV View
+	=============================================================================*/
+
 	class D3D11StructuredBuffer;
 
 	enum class eUAVType
 	{
 		Default,
-		ComsumeAppend,
+		ComsumeAppend
 	};
 
 	class D3D11UnorderedAccessView

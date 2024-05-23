@@ -7,11 +7,6 @@
 
 #include <IFQRenderObject.h>
 
-fq::graphics::SingleColorPass::SingleColorPass()
-{
-
-}
-
 void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> device, 
 	std::shared_ptr<D3D11JobManager> jobManager,
 	std::shared_ptr<D3D11CameraManager> cameraManager, 
@@ -26,7 +21,10 @@ void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> devi
 
 	auto singleColorVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SingleColorVS.hlsl");
 	auto singleColorPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/SingleColorPS.hlsl");
-	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+
+	mLessEqualDS = resourceManager->Get<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
+
+	auto pipelieState = std::make_shared<PipelineState>(nullptr, mLessEqualDS, nullptr);
 	mSingleColorPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, singleColorVS, nullptr, singleColorPS, pipelieState);
 
 	mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -35,7 +33,7 @@ void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> devi
 	mOutlineColorCB = std::make_shared<D3D11ConstantBuffer<OutLineColor>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 	mSingleColorRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::SingleColor, width, height);
-	mDSV = mResourceManager->Get<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 }
 
 void fq::graphics::SingleColorPass::Finalize()
@@ -55,8 +53,7 @@ void fq::graphics::SingleColorPass::Render()
 
 	// Init
 	{
-		mSingleColorRTV->Clear(mDevice, { 1,1,1,1 });
-		mDSV->Clear(mDevice);
+		mSingleColorRTV->Clear(mDevice, { 0,0,0,1 });
 	}
 
 	// Bind

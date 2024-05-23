@@ -174,6 +174,13 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color color;
 	};
 
+	struct ScreenSize
+	{
+		unsigned int width;
+		unsigned int height;
+		float pad[2];
+	};
+
 	template <typename T>
 	class D3D11ConstantBuffer;
 	class D3D11Device;

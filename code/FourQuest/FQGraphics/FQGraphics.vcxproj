@@ -138,10 +138,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationHelper.h" />
+    <ClInclude Include="OutLineAddPass.h" />
+    <ClInclude Include="OutLineBlurPass.h" />
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="D3D11ParticleManager.h" />
+    <ClInclude Include="OutLinePass.h" />
     <ClInclude Include="ParticlePass.h" />
     <ClInclude Include="PassCommon.h" />
     <ClInclude Include="ConstantBufferStructure.h" />
@@ -195,6 +198,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationHelper.cpp" />
+    <ClCompile Include="OutLineAddPass.cpp" />
+    <ClCompile Include="OutLineBlurPass.cpp" />
     <ClCompile Include="BoneHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />
@@ -228,6 +233,7 @@
     <ClCompile Include="D3D11ObjectManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="OutLinePass.cpp" />
     <ClCompile Include="ParticlePass.cpp" />
     <ClCompile Include="SingleColorPass.cpp" />
     <ClCompile Include="RenderObject.cpp" />
@@ -309,6 +315,30 @@
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </CustomBuild>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLinePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>

@@ -47,6 +47,9 @@ namespace fq::graphics
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 		std::shared_ptr<class TerrainPass> mTerrainPass;
 		std::shared_ptr<class SingleColorPass> mSingleColorPass;
+		std::shared_ptr<class OutLinePass> mOutLinePass;
+		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
+		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;

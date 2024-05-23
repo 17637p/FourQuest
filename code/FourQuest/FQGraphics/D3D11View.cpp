@@ -152,6 +152,8 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11RenderTargetViewType::OutLineBlur:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::SingleColor:
 		// intentional fall through
 	case ED3D11RenderTargetViewType::Picking:
@@ -168,6 +170,32 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = 0;
+
+		ComPtr<ID3D11Texture2D> pTexture;
+		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = textureDesc.Format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+		HR(d3d11Device->GetDevice()->CreateRenderTargetView(pTexture.Get(), &rtvDesc, mRTV.GetAddressOf()));
+
+		break;
+	}
+	case ED3D11RenderTargetViewType::OutLine:
+	{
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 3;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 		ComPtr<ID3D11Texture2D> pTexture;
 		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
@@ -308,6 +336,31 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 	assert(bufferDesc.ByteWidth % bufferDesc.StructureByteStride == 0);
 
 	HR(d3d11Device->GetDevice()->CreateShaderResourceView(buffer.Get(), &shaderResourceViewDesc, &mSRV));
+}
+
+void D3D11ShaderResourceView::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType)
+{
+	ID3D11ShaderResourceView* tempShaderResource = nullptr;
+	switch (eShaderType)
+	{
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &tempShaderResource);
+			break;
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &tempShaderResource);
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, &tempShaderResource);
+			break;
+		}
+		default:
+			break;
+	}
 }
 
 std::string D3D11ShaderResourceView::GenerateRID(const ED3D11ShaderResourceViewType eViewType)
