@@ -180,6 +180,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Pass.h" />
+    <ClInclude Include="SingleColorPass.h" />
     <ClInclude Include="RenderJob.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="RenderPipeline.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ParticlePass.cpp" />
+    <ClCompile Include="SingleColorPass.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="RenderPipeline.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
@@ -333,6 +335,14 @@
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

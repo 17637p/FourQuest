@@ -798,6 +798,8 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		{
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
+			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{1, 0, 0, 1});
+
 			for (const auto& animInfo : animInfos)
 			{
 				mTestGraphics->AddAnimation(iSkinnedMeshObject, animInfo);

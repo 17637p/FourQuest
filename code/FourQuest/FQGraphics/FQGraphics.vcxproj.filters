@@ -163,6 +163,9 @@
     <ClInclude Include="UIManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="SingleColorPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -374,6 +377,9 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
+    <ClCompile Include="SingleColorPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
@@ -398,6 +404,12 @@
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="ComputeShader.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>

@@ -169,6 +169,11 @@ namespace fq::graphics
 		float unused[3];
 	};
 
+	struct OutLineColor
+	{
+		DirectX::SimpleMath::Color color;
+	};
+
 	template <typename T>
 	class D3D11ConstantBuffer;
 	class D3D11Device;

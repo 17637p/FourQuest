@@ -152,6 +152,8 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11RenderTargetViewType::SingleColor:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::Picking:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};

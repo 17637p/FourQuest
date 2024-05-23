@@ -28,6 +28,8 @@ namespace fq::graphics
 		ColorAcuumulation,
 		PixeldRevealageThreshold,
 
+		SingleColor, // OutLine Ã¹´Ü°è 
+
 		// Deferred
 		Albedo,
 		Metalness,

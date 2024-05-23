@@ -301,6 +301,10 @@ namespace fq::graphics
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
 
+		// Outline
+		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
+		virtual DirectX::SimpleMath::Color GetOutlineColor() override;
+
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
@@ -312,6 +316,8 @@ namespace fq::graphics
 		EObjectRenderType mObjectRenderType;
 		float mAlpha;
 		bool mbUseShadow;
+
+		DirectX::SimpleMath::Color mColor;
 	};
 
 #pragma region inlineFunc

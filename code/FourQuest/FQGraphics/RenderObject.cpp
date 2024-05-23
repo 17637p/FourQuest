@@ -27,7 +27,18 @@ namespace fq::graphics
 		, mObjectRenderType(EObjectRenderType::Opaque)
 		, mAlpha(1.f)
 		, mbUseShadow(true)
+		, mColor{-1, -1, -1}
 	{
+	}
+
+	void SkinnedMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
+	{
+		mColor = color;
+	}
+
+	DirectX::SimpleMath::Color SkinnedMeshObject::GetOutlineColor()
+	{
+		return mColor;
 	}
 
 	TerrainMeshObject::TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh, 

@@ -9,6 +9,7 @@
 #include "TransparentRenderPass.h"
 #include "ParticlePass.h"
 #include "TerrainPass.h"
+#include "SingleColorPass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"

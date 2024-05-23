@@ -77,6 +77,10 @@ extern "C" {
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
 
+			// Outline
+			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() abstract;
+
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출
 

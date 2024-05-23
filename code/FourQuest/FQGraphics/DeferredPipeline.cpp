@@ -46,6 +46,7 @@ namespace fq::graphics
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
+		mSingleColorPass->Initialize(device, jobManager, cameraManager, resourceManager, width, height);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 
 		mPasses.push_back(mShadowPass);
@@ -56,6 +57,7 @@ namespace fq::graphics
 		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
+		mPasses.push_back(mSingleColorPass);
 		mPasses.push_back(mFullScreenPass);
 	}
 
