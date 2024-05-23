@@ -42,44 +42,6 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent)
-	{
-		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
-		assert(mCollisionDataConttainer.find(id) != mCollisionDataConttainer.end());
-
-		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		std::shared_ptr<CollisionData> collisionData = mCollisionDataConttainer.find(id)->second;
-
-		characterPhysics->AddArticulationLink(info, collisionData, collisionMatrix, extent);
-
-		return true;
-	}
-
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, const float& radius)
-	{
-		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
-		assert(mCollisionDataConttainer.find(id) != mCollisionDataConttainer.end());
-
-		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		std::shared_ptr<CollisionData> collisionData = mCollisionDataConttainer.find(id)->second;
-
-		characterPhysics->AddArticulationLink(info, collisionData, collisionMatrix, radius);
-
-		return true;
-	}
-
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius)
-	{
-		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
-		assert(mCollisionDataConttainer.find(id) != mCollisionDataConttainer.end());
-
-		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		std::shared_ptr<CollisionData> collisionData = mCollisionDataConttainer.find(id)->second;
-
-		characterPhysics->AddArticulationLink(info, collisionData, collisionMatrix, halfHeight, radius);
-
-		return true;
-	}
 	bool PhysicsCharacterPhysicsManager::SimulationCharacter(unsigned int id)
 	{
 		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());

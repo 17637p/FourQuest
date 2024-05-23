@@ -164,12 +164,10 @@ namespace fq::physics
 
 	bool PhysicsRigidBodyManager::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		//std::weak_ptr<ConvexMeshResource> convexMesh = mResourceManager.lock()->Create<ConvexMeshResource>(info.convexMeshHash, info.vertices, info.vertexSize, info.convexPolygonLimit);
-		//physx::PxConvexMesh* pxConvexMesh = convexMesh.lock()->GetConvexMesh();
+		std::weak_ptr<ConvexMeshResource> convexMesh = mResourceManager.lock()->Create<ConvexMeshResource>(info.convexMeshHash, info.vertices, info.vertexSize, info.convexPolygonLimit);
+		physx::PxConvexMesh* pxConvexMesh = convexMesh.lock()->GetConvexMesh();
 
-		physx::PxConvexMesh* pxConvexMesh = PhysicsCookingMeshTool::CookingConvexMesh(mPhysics, info.vertices, info.vertexSize, info.convexPolygonLimit);
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
 		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
@@ -213,7 +211,6 @@ namespace fq::physics
 		physx::PxConvexMesh* pxConvexMesh = convexMesh.lock()->GetConvexMesh();
 
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
 		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
