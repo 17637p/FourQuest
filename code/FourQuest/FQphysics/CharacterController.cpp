@@ -62,6 +62,11 @@ namespace fq::physics
 
 	void CharacterController::AddMovementInput(const DirectX::SimpleMath::Vector3& input)
 	{
-		mInputMove += input;
+		if (std::abs(input.x) > 0)
+			mInputMove.x = input.x;
+		else if (std::abs(input.y) > 0)
+			mInputMove.y = input.y;
+		else if (std::abs(input.z) > 0)
+			mInputMove.z = input.z;
 	}
 }

@@ -788,7 +788,7 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 	// Animation 정보 표시
 	beginAnimationStateNode(state);
 
-	ImGui::Separator();
+	ImGui::Dummy(ImVec2{ 0.f,10.f });
 	ImGui::Text("Transition");
 
 	// Transition GUI를 표시합니다 
@@ -804,27 +804,29 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 			auto enterState = transition.GetEnterState();
 
 			// Condition GUI
-			ImGui::Separator();
-
 			std::string transitionName = exitState + " -> " + enterState;
-
-			ImGui::Text(transitionName.c_str());
-
-			// Setter
-			for (auto& condition : conditions)
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
+			if (ImGui::BeginChild(transitionName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 			{
-				beginTransitionCondition(condition, ++index);
+				ImGui::Text(transitionName.c_str());
+
+				for (auto& condition : conditions)
+				{
+					beginTransitionCondition(condition, ++index);
+				}
+
+				// Add Delete Button
+				std::string addButtonNaem = "+##PushBackCondition" + transitionName;
+				std::string deleteButtonName = "-##PopBackCondition" + transitionName;
+
+				if (ImGui::Button(addButtonNaem.c_str()))
+					transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
+				ImGui::SameLine();
+				if (ImGui::Button(deleteButtonName.c_str()))
+					transition.PopBackCondition();
 			}
-
-			// Add Delete Button
-			std::string addButtonNaem = "+##PushBackCondition" + transitionName;
-			std::string deleteButtonName = "-##PopBackCondition" + transitionName;
-
-			if (ImGui::Button(addButtonNaem.c_str()))
-				transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
-			ImGui::SameLine();
-			if (ImGui::Button(deleteButtonName.c_str()))
-				transition.PopBackCondition();
+			ImGui::EndChild();
+			ImGui::PopStyleColor(1);
 		}
 	}
 }

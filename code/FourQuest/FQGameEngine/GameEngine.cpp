@@ -3,6 +3,7 @@
 
 #include <windows.h>
 
+#include "../FQClient/Client.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQphysics/IFQPhysics.h"
@@ -15,6 +16,7 @@
 #include "PhysicsSystem.h"
 #include "LightSystem.h"
 #include "CameraSystem.h"
+#include "AnimationSystem.h"
 
 fq::game_engine::GameEngine::GameEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
@@ -29,6 +31,8 @@ void fq::game_engine::GameEngine::Initialize()
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
+	fq::client::RegisterMetaData();
+
 
 	// 윈도우 창을 초기화
 	mGameProcess->mWindowSystem->Initialize();
@@ -62,6 +66,7 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
+	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
@@ -104,19 +109,30 @@ void fq::game_engine::GameEngine::Process()
 			// 시간, 키입력 처리 
 			float deltaTime = mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update();
+			
+			static float accmulator = 0.f;
+			static float fixedDeltaTime = 1.f / 60.f;
 
-			// 물리처리
-			mGameProcess->mSceneManager->FixedUpdate(deltaTime);
-			mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
-			mGameProcess->mPhysics->Update(deltaTime);
-			mGameProcess->mPhysics->FinalUpdate();
-			mGameProcess->mPhysicsSystem->SinkToGameScene();
+			accmulator += deltaTime;
+
+			while (accmulator >= fixedDeltaTime)
+			{
+				// 물리처리
+				mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
+				mGameProcess->mPhysics->Update(fixedDeltaTime);
+				mGameProcess->mPhysics->FinalUpdate();
+				mGameProcess->mPhysicsSystem->SinkToGameScene();
+
+				accmulator -= fixedDeltaTime;
+			}
+			mGameProcess->mPhysicsSystem->Update(deltaTime);
 
 			// Scene Update
 			mGameProcess->mSceneManager->Update(deltaTime);
 
 			// Animation Update
-
+			mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
 

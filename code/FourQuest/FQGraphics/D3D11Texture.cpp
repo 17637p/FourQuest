@@ -2,14 +2,21 @@
 
 #include <directxtk/DDSTextureLoader.h>
 #include <directxtk/WiCTextureLoader.h>
+#include <filesystem>
+#include <spdlog/spdlog.h>
 
 #include "D3D11Device.h"
 #include "Define.h"
 
-fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& texturePath) 
+fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& texturePath)
 	:ResourceBase(ResourceType::Texture)
 {
 	std::wstring fileExtension = texturePath.substr(texturePath.find_last_of(L".") + 1, texturePath.length() - texturePath.find_last_of(L".") + 1);
+
+	if (!std::filesystem::exists(texturePath))
+	{
+		spdlog::warn("[D3D11Texture] \"{}\" not exist", std::filesystem::path(texturePath).string());
+	}
 
 	if (fileExtension == L"dds")
 	{
@@ -18,7 +25,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 			texturePath.c_str(),
 			nullptr, mTextureSRV.GetAddressOf()));
 	}
-	else if(fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
+	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
 		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
 			d3d11Device->GetDeviceContext().Get(),
