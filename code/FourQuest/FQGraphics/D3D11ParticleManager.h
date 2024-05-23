@@ -131,7 +131,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11ComputeShader> m_pCSSortStep;			// CS port of the VS/PS bitonic sort
 		std::shared_ptr<class D3D11ComputeShader> m_pCSSort512;			// CS implementation to sort a number of 512 element sized arrays using a single dispatch
 		std::shared_ptr<class D3D11ComputeShader> m_pCSSortInner512;		// CS implementation of the "down" pass from 512 to 1
-		std::shared_ptr<class D3D11ComputeShader> m_pCSInitArgs;			// CS to write indirect args for Dispatch calls
+		std::shared_ptr<class D3D11ComputeShader> m_pCSInitArgs;			// 간접 인수 구하기 위한 CS
 
 		std::shared_ptr<class D3D11SamplerState> mLinearWrap;
 		std::shared_ptr<class D3D11SamplerState> mPointClamp;

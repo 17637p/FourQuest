@@ -542,6 +542,7 @@ namespace fq::graphics
 		ID3D11Buffer* prevCBs[] = { nullptr, nullptr };
 		ID3D11Buffer* cbs[] = { mActiveListCB.Get(), mDispatchInfoCB.Get() };
 
+		// 간접 dispatch 하기 위한 데이터 생성
 		mDevice->GetDeviceContext()->CSGetUnorderedAccessViews(0, 1, &prevUAV);
 		mDevice->GetDeviceContext()->CSGetConstantBuffers(0, ARRAYSIZE(prevCBs), prevCBs);
 		mDevice->GetDeviceContext()->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
@@ -551,8 +552,10 @@ namespace fq::graphics
 
 		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, mAliveIndexBufferUAV.GetAddressOf(), nullptr);
 
+		// 512만큼은 미리 정렬함
 		bool bDone = sortInitial(MAX_PARTICLE);
 
+		// 이미 정렬된 부분과 정렬되지 않은 부분을 병합하며 정렬함
 		int presorted = 512;
 		while (!bDone)
 		{
@@ -683,7 +686,6 @@ namespace fq::graphics
 		bool bDone = true;
 		m_pCSSortStep->Bind(mDevice);
 
-		// prepare thread group description data
 		unsigned int numThreadGroups = 0;
 
 		if (maxSize > presorted)
@@ -699,26 +701,25 @@ namespace fq::graphics
 				pow2 *= 2;
 			}
 
-			numThreadGroups = pow2 >> 9;
+			numThreadGroups = pow2 / 512;
 		}
 
-		unsigned int nMergeSize = presorted * 2;
-		for (unsigned int nMergeSubSize = nMergeSize >> 1; nMergeSubSize > 256; nMergeSubSize = nMergeSubSize >> 1)
-			//	for( int nMergeSubSize=nMergeSize>>1; nMergeSubSize>0; nMergeSubSize=nMergeSubSize>>1 ) 
+		unsigned int mergeSize = presorted * 2;
+		for (unsigned int mergeSubSize = mergeSize / 2; mergeSubSize > 256; mergeSubSize /= 2)
 		{
 			D3D11_MAPPED_SUBRESOURCE MappedResource;
 
 			mDevice->GetDeviceContext()->Map(mDispatchInfoCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
 			SortConstants* sc = (SortConstants*)MappedResource.pData;
-			sc->x = nMergeSubSize;
-			if (nMergeSubSize == nMergeSize >> 1)
+			sc->x = mergeSubSize;
+			if (mergeSubSize == mergeSize / 2)
 			{
-				sc->y = (2 * nMergeSubSize - 1);
+				sc->y = (2 * mergeSubSize - 1);
 				sc->z = -1;
 			}
 			else
 			{
-				sc->y = nMergeSubSize;
+				sc->y = mergeSubSize;
 				sc->z = 1;
 			}
 			sc->w = 0;
