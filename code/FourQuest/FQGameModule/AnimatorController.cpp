@@ -10,8 +10,11 @@
 fq::game_module::AnimatorController::AnimatorController()
 	:mParmeters{}
 	, mStates{}
-	, mCurrentState{ "Entry" }
+	, mCurrentState{}
+	, mNextState{}
 	, mTimePos(0.f)
+	, mBlendTimePos(0.f)
+	, mBlendWeight(0.f)
 {
 	// Entry
 	AnimationStateNode entry(this);
@@ -30,12 +33,12 @@ fq::game_module::AnimatorController::AnimatorController()
 	anyState.SetType(AnimationStateNode::Type::AnyState);
 	anyState.SetAnimationKey("AnyState");
 	mStates.insert({ "AnyState", anyState });
+
+	mCurrentState = mStates.find("Entry");
 }
 
 fq::game_module::AnimatorController::~AnimatorController()
-{
-
-}
+{}
 
 void fq::game_module::AnimatorController::SetParameter(ParameterID id, Parameter parameter)
 {
@@ -167,7 +170,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 		auto exitState = transition.GetExitState();
 
 		// AnyState or 현재상태와 일치하면 확인
-		if (exitState == mCurrentState || exitState == "AnyState")
+		if (exitState == mCurrentState->first || exitState == "AnyState")
 		{
 			bool passCondition = checkConditions(transition);
 
@@ -178,7 +181,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 
 				std::string enterState = transition.GetEnterState();
 				mTimePos = 0.f;
-				mCurrentState = enterState;
+				mCurrentState = mStates.find(enterState);
 
 				// 애니메이션 상태변경 이벤트
 				eventMgr->FireEvent<fq::event::ChangeAnimationState>({
@@ -227,7 +230,7 @@ bool fq::game_module::AnimatorController::checkConditions(AnimationTransition& t
 
 float fq::game_module::AnimatorController::UpdateAnimation(float dt)
 {
-	auto& state = mStates.find(mCurrentState)->second;
+	auto& state = mCurrentState->second;
 
 	float duration = state.GetDuration();
 	float playbackSpeed = state.GetPlayBackSpeed();
@@ -258,4 +261,9 @@ void fq::game_module::AnimatorController::DeleteState(StateName state)
 			return false;
 		}), mTransitions.end());
 
+}
+
+bool fq::game_module::AnimatorController::IsInTransition() const
+{
+	return mNextState != mStates.end();
 }

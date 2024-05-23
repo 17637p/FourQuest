@@ -14,7 +14,7 @@ namespace fq::game_module
 	/// <summary>
 	/// 애니메이션의 상태를 컨트롤하는 클래스
 	/// </summary>
-	class AnimatorController 
+	class AnimatorController
 	{
 		using ParameterID = std::string;
 		using Parameter = entt::meta_any;
@@ -22,6 +22,7 @@ namespace fq::game_module
 
 		using StateName = std::string;
 		using StateMap = std::unordered_map<StateName, AnimationStateNode>;
+		using StateIterator = StateMap::iterator;
 
 	public:
 		AnimatorController();
@@ -70,7 +71,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 현재 애니메이션 이름을 반환합니다 
 		/// </summary>
-		StateName GetCurrentState() const { return mCurrentState; }
+		StateName GetCurrentState() const { return mCurrentState->first; }
+
+		/// <summary>
+		/// 다음 애니메이션 이름을 반환합니다  
+		/// </summary>
+		StateName GetNextState() const { return mNextState->first; }
 
 		/// <summary>
 		/// 새로운 스테이트를 추가합니다 
@@ -116,6 +122,16 @@ namespace fq::game_module
 		/// </summary>
 		float GetTimePos()const { return mTimePos; }
 
+		/// <summary>
+		/// 현재 블랜딩 애니메이션 재생 시간을 반환합니다 
+		/// </summary>
+		float GetBlendTimePos() const { return mBlendTimePos; }
+		
+		/// <summary>
+		/// 애니메이션이 전환중인 상태인지 반환합니다.
+		/// </summary>
+		bool IsInTransition()const;
+
 	private:
 		bool checkConditions(AnimationTransition& transition);
 
@@ -128,10 +144,15 @@ namespace fq::game_module
 
 		ParameterPack mParmeters;
 		StateMap mStates;
-		StateName mCurrentState;
 		std::vector<AnimationTransition> mTransitions;
 
+		StateIterator mCurrentState;
+		StateIterator mNextState;
+
 		float mTimePos;
+		float mBlendTimePos;
+		float mBlendWeight;
+		
 	};
 
 }
