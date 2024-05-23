@@ -75,14 +75,14 @@ extern "C" {
 			/// <summary>
 			/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성
 			/// </summary>
-			virtual FQ_PHYSICS bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
 
 			/// <summary>
 			/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -162,6 +162,11 @@ extern "C" {
 			/// </summary>
 			virtual bool SimulationCharacter(unsigned int id) abstract;
 #pragma endregion
+
+#pragma region ResourceManager
+			virtual FQ_PHYSICS bool HasConvexMeshResource(const unsigned int& hash) abstract;
+#pragma endregion
+
 
 			/// <summary>
 			/// spdlog를 설정합니다

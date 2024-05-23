@@ -11,6 +11,7 @@ namespace fq::physics
 	class Physics;
 	class PhysicsRigidBodyManager;
 	class PhysicsSimulationEventCallback;
+	class PhysicsResourceManager;
 	class PhysicsCharactorControllerManager;
 	class PhysicsCharacterPhysicsManager;
 
@@ -137,6 +138,8 @@ namespace fq::physics
 		virtual bool SimulationCharacter(unsigned int id) override;
 #pragma endregion
 
+		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
+
 		/// <summary>
 		/// spdlog를 설정합니다
 		/// </summary>
@@ -146,6 +149,7 @@ namespace fq::physics
 		// 씬
 		physx::PxScene* mScene;
 		std::shared_ptr<Physics> mPhysics;
+		std::shared_ptr<PhysicsResourceManager> mResourceManager;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;

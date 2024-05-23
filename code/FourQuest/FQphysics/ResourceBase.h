@@ -6,7 +6,6 @@ namespace fq::physics
 	// 건재 : 리소스 타입 열거형
 	enum class EResourceType
 	{
-		MATERIAL,
 		CONVEX_MESH,
 
 		END

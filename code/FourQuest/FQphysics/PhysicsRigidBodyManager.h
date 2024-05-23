@@ -10,7 +10,7 @@
 namespace fq::physics
 {
 	class RigidBody;
-	class PhysicsCookingMeshTool;
+	class PhysicsResourceManager;
 	class StaticRigidBody;
 	class DynamicRigidBody;
 
@@ -25,7 +25,7 @@ namespace fq::physics
 		/// <summary>
 		/// 리지드 바디를 생성 및 관리하는 매니저를 세팅합니다.
 		/// </summary>
-		bool Initialize(physx::PxPhysics* physics);
+		bool Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager);
 
 		/// <summary>
 		/// 생성된 리지드 바디들을 한 번에 물리 공간에 생성합니다.
@@ -92,8 +92,10 @@ namespace fq::physics
 
 	private:
 		physx::PxPhysics* mPhysics;
+		physx::PxScene* mScene;
 
-		std::shared_ptr<PhysicsCookingMeshTool> mCookingMeshTool;
+		std::weak_ptr<PhysicsResourceManager> mResourceManager;
+
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
 		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;

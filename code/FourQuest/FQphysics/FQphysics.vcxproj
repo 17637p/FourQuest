@@ -143,7 +143,6 @@
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="CharacterJoint.h" />
     <ClInclude Include="CharacterLink.h" />
-    <ClInclude Include="MaterialResource.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
@@ -168,7 +167,6 @@
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="CharacterJoint.cpp" />
     <ClCompile Include="CharacterLink.cpp" />
-    <ClCompile Include="MaterialResource.cpp" />
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />

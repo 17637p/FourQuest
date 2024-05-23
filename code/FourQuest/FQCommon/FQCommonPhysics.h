@@ -154,6 +154,7 @@ namespace fq::physics
 		DirectX::SimpleMath::Vector3* vertices;					// 모델 버텍스
 		int vertexSize;											// 모델 버텍스 사이즈
 		unsigned char convexPolygonLimit = 4;					// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
+		unsigned int convexMeshHash = 0;						// 컨벡스 메시 해쉬 값
 	};
 #pragma endregion
 

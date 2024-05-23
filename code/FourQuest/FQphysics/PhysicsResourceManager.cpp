@@ -3,6 +3,8 @@
 namespace fq::physics
 {
 	PhysicsResourceManager::PhysicsResourceManager()
+		: mPhysics(nullptr)
+		, mResourceContainer()
 	{
 	}
 
@@ -10,4 +12,9 @@ namespace fq::physics
 	{
 	}
 
+	bool PhysicsResourceManager::Initialize(physx::PxPhysics* physics)
+	{
+		mPhysics = physics;
+		return true;
+	}
 }

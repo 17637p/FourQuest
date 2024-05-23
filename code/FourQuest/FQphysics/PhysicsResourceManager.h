@@ -6,6 +6,7 @@
 #include <array>
 
 #include "ResourceBase.h"
+#include "physx\PxPhysicsAPI.h"
 #include <cassert>
 
 namespace fq::physics
@@ -19,64 +20,67 @@ namespace fq::physics
 		PhysicsResourceManager();
 		~PhysicsResourceManager();
 
-		template <typename T>
-		void* Find(const std::string& name);
+		bool Initialize(physx::PxPhysics* physics);
 
+		template <typename T>
+		std::shared_ptr<T> Find(const unsigned int& hash);
 		template <typename T, typename ...Params>
-		void* Create(const std::string& name, Params... params);
+		std::shared_ptr<T> Create(const unsigned int& hash, Params... params);
 
 	private:
 		template <typename T>
-		const EResourceType& GetResourceType();
+		const EResourceType& getResourceType();
 
 	private:
-		using KeyObjMap = std::unordered_map<std::string, std::shared_ptr<ResourceBase>>;
+		physx::PxPhysics* mPhysics;
+
+		using KeyObjMap = std::unordered_map<unsigned int, std::shared_ptr<ResourceBase>>;
 		std::array<KeyObjMap, RESOURCE_TYPE_COUNT> mResourceContainer;
 	};
 
+
 	template<typename T>
-	inline void* PhysicsResourceManager::Find(const std::string& path)
+	inline std::shared_ptr<T> PhysicsResourceManager::Find(const unsigned int& hash)
 	{
 		bool bIsBase = std::is_base_of<ResourceBase, T>::value;
 		assert(bIsBase == true);
 
-		EResourceType resourceType = GetResourceType<MaterialResource>();
-		auto resource = mResourceContainer[static_cast<int>(resourceType)].find(path);
+		EResourceType resourceType = getResourceType<MaterialResource>();
+		auto resource = mResourceContainer[static_cast<int>(resourceType)].find(hash);
 
 		if (resource != mResourceContainer[static_cast<int>(resourceType)].end())
-			return resource->second.get();
+			return std::dynamic_pointer_cast<T>(resource->second);
 		else
 			return nullptr;
 	}
+
 	template<typename T, typename ...Params>
-	inline void* PhysicsResourceManager::Create(const std::string& path, Params... params)
+	inline std::shared_ptr<T> PhysicsResourceManager::Create(const unsigned int& hash, Params... params)
 	{
 		bool bIsBase = std::is_base_of<ResourceBase, T>::value;
 		assert(bIsBase == true);
 
-		EResourceType resourceType = GetResourceType<MaterialResource>();
-		auto resoureceIter = mResourceContainer[static_cast<int>(resourceType)].find(path);
+		EResourceType resourceType = getResourceType<T>();
+		auto resoureceIter = mResourceContainer[static_cast<int>(resourceType)].find(hash);
 
 		if (resoureceIter != mResourceContainer[static_cast<int>(resourceType)].end())
 		{
-			return resoureceIter->second.get();
+			return std::dynamic_pointer_cast<T>(resoureceIter->second);
 		}
 		else
 		{
-			std::shared_ptr<T> resource = std::make_shared<T>(params...);
-			mResourceContainer[static_cast<int>(resourceType)].insert(path, resource);
-			return resource.get();
+			std::shared_ptr<T> resource = std::make_shared<T>(mPhysics, params...);
+			mResourceContainer[static_cast<int>(resourceType)].insert(std::make_pair(hash, resource));
+			return resource;
 		}
 	}
+
 	template<typename T>
-	inline const EResourceType& PhysicsResourceManager::GetResourceType()
+	inline const EResourceType& PhysicsResourceManager::getResourceType()
 	{
-		if (std::is_same_v<T, MaterialResource>)
-			return EResourceType::MATERIAL;
 		if (std::is_same_v<T, ConvexMeshResource>)
 			return EResourceType::CONVEX_MESH;
 
-		assert(false);
 		return EResourceType::END;
 	}
 }
