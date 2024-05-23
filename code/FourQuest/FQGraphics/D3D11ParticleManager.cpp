@@ -142,7 +142,9 @@ namespace fq::graphics
 		mCameraManager = cameraManager;
 
 		mSwapChainRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
+		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV)->GetSRV();
 
 		mLinearWrap = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mPointClamp = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
@@ -160,14 +162,20 @@ namespace fq::graphics
 		mEmitCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleEmitCS.hlsl");
 		mSimulateCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleSimulateCS.hlsl");
 
-		std::shared_ptr<PipelineState> pipelineState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+		m_pCSSortStep = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleBitonicSortStep.hlsl");
+		m_pCSSort512 = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleBitonicSortLDS.hlsl");
+		m_pCSSortInner512 = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleBitonicInnerSort.hlsl");
+		m_pCSInitArgs = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleInitDispatchArgs.hlsl");
+
+		auto additive = mResourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
+		std::shared_ptr<PipelineState> pipelineState = std::make_shared<PipelineState>(nullptr, nullptr, additive);
 		auto particleRenderVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ParticleVS.hlsl");
 		auto particleRednerPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ParticlePS.hlsl");
 		auto particleRednerGS = std::make_shared<D3D11GeometryShader>(mDevice, L"./resource/internal/shader/ParticleGS.hlsl");
 		mRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, pipelineState);
 
 		mRandomTextureSRV = CreateRandomTexture2DSRV(mDevice->GetDevice().Get());
-
+		mAtlasSRV = mResourceManager->Create<D3D11Texture>(L"./resource/example/texture/atlas.dds");
 		// 글로벌 파티클 풀 생성
 		// 캐시 히트를 높이기 위해 A는 랜더링 관련, B는 시뮬레이션 관련 데이터를 다룬다.
 		D3D11_BUFFER_DESC desc;
@@ -292,13 +300,35 @@ namespace fq::graphics
 		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mDeadListCB.GetAddressOf());
 		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mActiveListCB.GetAddressOf());
 
-		D3D11_BUFFER_DESC cbDesc;
-		ZeroMemory(&cbDesc, sizeof(cbDesc));
-		cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-		cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		cbDesc.ByteWidth = sizeof(PER_FRAME_CONSTANT_BUFFER);
-		mDevice->GetDevice()->CreateBuffer(&cbDesc, nullptr, mPerFrameCB.GetAddressOf());
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.ByteWidth = sizeof(int4);
+		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mDispatchInfoCB.GetAddressOf());
+
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.ByteWidth = sizeof(PER_FRAME_CONSTANT_BUFFER);
+		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mPerFrameCB.GetAddressOf());
+
+		// 정렬 자원
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+		desc.ByteWidth = 4 * sizeof(UINT);
+		desc.MiscFlags = D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS;
+		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mIndirectSortArgsBuffer.GetAddressOf());
+
+		ZeroMemory(&uav, sizeof(uav));
+		uav.Format = DXGI_FORMAT_R32_UINT;
+		uav.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		uav.Buffer.FirstElement = 0;
+		uav.Buffer.NumElements = 4;
+		uav.Buffer.Flags = 0;
+		mDevice->GetDevice()->CreateUnorderedAccessView(mIndirectSortArgsBuffer.Get(), &uav, mIndirectSortArgsBufferUAV.GetAddressOf());
 	}
 
 	void D3D11ParticleManager::Reset()
@@ -359,14 +389,19 @@ namespace fq::graphics
 		mGlobalConstantBuffer.m_EnableSleepState = 0;
 		mGlobalConstantBuffer.m_ShowSleepingParticles = 0;
 
+		mGlobalConstantBuffer.m_ScreenWidth = mDevice->GetWidth();
+		mGlobalConstantBuffer.m_ScreenHeight = mDevice->GetHeight();
+		mGlobalConstantBuffer.m_SunDirectionVS = { 0, -1, 0 };
+		mGlobalConstantBuffer.m_SunColor = { 1, 1,1, 1 };
+		mGlobalConstantBuffer.m_AmbientColor = { 0.1f, 0.1f, 0.1f };
 		// temp
 		DirectX::XMVECTOR spawnPosition = DirectX::XMVectorSet(2.0f, 70.0f, 26.0f, 1.0f);
-		mGlobalConstantBuffer.m_StartColor[0] = DirectX::XMVectorSet(10.0f, 10.0f, 0.0f, 1.0f);
-		mGlobalConstantBuffer.m_EndColor[0] = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+		mGlobalConstantBuffer.m_StartColor[0] = DirectX::XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f);
+		mGlobalConstantBuffer.m_EndColor[0] = DirectX::XMVectorSet(1.0f, 0.5f, 0.0f, 0.0f);
 		mGlobalConstantBuffer.m_EmitterLightingCenter[0] = spawnPosition;
 
-		mGlobalConstantBuffer.m_StartColor[1] = DirectX::XMVectorSet(0.5f, 0.5f, 0.5f, 1.0f);
-		mGlobalConstantBuffer.m_EndColor[1] = DirectX::XMVectorSet(0.6f, 0.6f, 0.65f, 1.0f);
+		mGlobalConstantBuffer.m_StartColor[1] = DirectX::XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f);
+		mGlobalConstantBuffer.m_EndColor[1] = DirectX::XMVectorSet(0.6f, 0.6f, 0.65f, 0.1f);
 		mGlobalConstantBuffer.m_EmitterLightingCenter[1] = spawnPosition;
 
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
@@ -406,6 +441,11 @@ namespace fq::graphics
 
 		for (const auto& [key, emissionRate] : mEmissionRates)
 		{
+			if (mActiveParticles.find(key) == mActiveParticles.end())
+			{
+				continue;
+			}
+
 			auto emitter = mEmitters.find(key);
 			assert(emitter != mEmitters.end());
 
@@ -425,6 +465,11 @@ namespace fq::graphics
 		size_t index = 0u;
 		for (const auto& [key, emitter] : mEmitters)
 		{
+			if (mActiveParticles.find(key) == mActiveParticles.end())
+			{
+				continue;
+			}
+
 			if (emitter->NumToEmit <= 0)
 			{
 				continue;
@@ -460,6 +505,8 @@ namespace fq::graphics
 
 	void D3D11ParticleManager::Simulate()
 	{
+		mDevice->GetDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
+
 		mSimulateCS->Bind(mDevice);
 
 		// depathStencil bind
@@ -489,12 +536,54 @@ namespace fq::graphics
 #endif
 	}
 
+	void D3D11ParticleManager::Sort()
+	{
+		ID3D11UnorderedAccessView* prevUAV = nullptr;
+		ID3D11Buffer* prevCBs[] = { nullptr, nullptr };
+		ID3D11Buffer* cbs[] = { mActiveListCB.Get(), mDispatchInfoCB.Get() };
+
+		mDevice->GetDeviceContext()->CSGetUnorderedAccessViews(0, 1, &prevUAV);
+		mDevice->GetDeviceContext()->CSGetConstantBuffers(0, ARRAYSIZE(prevCBs), prevCBs);
+		mDevice->GetDeviceContext()->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
+		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, mIndirectSortArgsBufferUAV.GetAddressOf(), nullptr);
+		m_pCSInitArgs->Bind(mDevice);
+		mDevice->GetDeviceContext()->Dispatch(1, 1, 1);
+
+		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, mAliveIndexBufferUAV.GetAddressOf(), nullptr);
+
+		bool bDone = sortInitial(MAX_PARTICLE);
+
+		int presorted = 512;
+		while (!bDone)
+		{
+			bDone = sortIncremental(presorted, MAX_PARTICLE);
+			presorted *= 2;
+		}
+
+		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &prevUAV, nullptr);
+		mDevice->GetDeviceContext()->CSSetConstantBuffers(0, ARRAYSIZE(prevCBs), prevCBs);
+
+		if (prevUAV)
+		{
+			prevUAV->Release();
+		}
+
+		for (size_t i = 0; i < ARRAYSIZE(prevCBs); i++)
+		{
+			if (prevCBs[i])
+			{
+				prevCBs[i]->Release();
+			}
+		}
+	}
+
 	void D3D11ParticleManager::Render()
 	{
 		// sort
+		Sort();
 
 		// renderTarget binding
-		mSwapChainRTV->Bind(mDevice, mDSV);
+		mSwapChainRTV->Bind(mDevice, mNoneDSV);
 		mRenderProgram->Bind(mDevice);
 
 		ID3D11Buffer* vb = nullptr;
@@ -508,6 +597,7 @@ namespace fq::graphics
 		ID3D11ShaderResourceView* ps_srv[] = { mDepthSRV.Get() };
 
 		mDevice->GetDeviceContext()->VSSetShaderResources(0, ARRAYSIZE(vs_srv), vs_srv);
+		mAtlasSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
 		mDevice->GetDeviceContext()->PSSetShaderResources(1, ARRAYSIZE(ps_srv), ps_srv);
 		mDevice->GetDeviceContext()->VSSetConstantBuffers(3, 1, mActiveListCB.GetAddressOf());
 
@@ -523,6 +613,18 @@ namespace fq::graphics
 	{
 		mEmitters.insert({ id, std::make_shared<EmitterParams>(emitter) });
 		mEmissionRates.insert({ id, std::make_shared<EmissionRate>(emissionRate) });
+	}
+
+	void D3D11ParticleManager::SetActive(size_t id, bool bIsActive)
+	{
+		if (bIsActive)
+		{
+			mActiveParticles.insert(id);
+		}
+		else
+		{
+			mActiveParticles.erase(id);
+		}
 	}
 
 	void D3D11ParticleManager::DeleteEmitter(size_t id)
@@ -554,5 +656,80 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->Unmap(mDebugCounterBuffer.Get(), 0);
 
 		return count;
+	}
+
+	bool D3D11ParticleManager::sortInitial(unsigned int maxSize)
+	{
+		const int MAX_NUM_TG = 1024;//128; // max 128 * 512 elements = 64k elements
+
+		bool bDone = true;
+		unsigned int numThreadGroups = Align(maxSize, 512) / 512;
+		assert(numThreadGroups == ((maxSize - 1) >> 9) + 1);
+		assert(numThreadGroups <= MAX_NUM_TG);
+
+		if (numThreadGroups > 1)
+		{
+			bDone = false;
+		}
+
+		// 512크기의 모든 버퍼를 정렬하고 더 큰 버퍼를 미리 정렬한다.?
+		m_pCSSort512->Bind(mDevice);
+		mDevice->GetDeviceContext()->DispatchIndirect(mIndirectSortArgsBuffer.Get(), 0);
+
+		return bDone;
+	}
+	bool D3D11ParticleManager::sortIncremental(unsigned int presorted, unsigned int maxSize)
+	{
+		bool bDone = true;
+		m_pCSSortStep->Bind(mDevice);
+
+		// prepare thread group description data
+		unsigned int numThreadGroups = 0;
+
+		if (maxSize > presorted)
+		{
+			if (maxSize > presorted * 2)
+			{
+				bDone = false;
+			}
+
+			unsigned int pow2 = presorted;
+			while (pow2 < maxSize)
+			{
+				pow2 *= 2;
+			}
+
+			numThreadGroups = pow2 >> 9;
+		}
+
+		unsigned int nMergeSize = presorted * 2;
+		for (unsigned int nMergeSubSize = nMergeSize >> 1; nMergeSubSize > 256; nMergeSubSize = nMergeSubSize >> 1)
+			//	for( int nMergeSubSize=nMergeSize>>1; nMergeSubSize>0; nMergeSubSize=nMergeSubSize>>1 ) 
+		{
+			D3D11_MAPPED_SUBRESOURCE MappedResource;
+
+			mDevice->GetDeviceContext()->Map(mDispatchInfoCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+			SortConstants* sc = (SortConstants*)MappedResource.pData;
+			sc->x = nMergeSubSize;
+			if (nMergeSubSize == nMergeSize >> 1)
+			{
+				sc->y = (2 * nMergeSubSize - 1);
+				sc->z = -1;
+			}
+			else
+			{
+				sc->y = nMergeSubSize;
+				sc->z = 1;
+			}
+			sc->w = 0;
+			mDevice->GetDeviceContext()->Unmap(mDispatchInfoCB.Get(), 0);
+
+			mDevice->GetDeviceContext()->Dispatch(numThreadGroups, 1, 1);
+		}
+
+		m_pCSSortInner512->Bind(mDevice);
+		mDevice->GetDeviceContext()->Dispatch(numThreadGroups, 1, 1);
+
+		return bDone;
 	}
 }

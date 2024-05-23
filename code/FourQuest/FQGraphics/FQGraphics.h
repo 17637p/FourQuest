@@ -61,6 +61,7 @@ namespace fq::graphics
 		// VFX
 		virtual void SetFrameTime(float deltaTime) override;
 		virtual void AddParticleEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate) override;
+		virtual void SetParticleActive(size_t id, bool bIsActive) override;
 		virtual void DeleteParticleEmitter(size_t id) override;
 
 		/// Gizmo && Background

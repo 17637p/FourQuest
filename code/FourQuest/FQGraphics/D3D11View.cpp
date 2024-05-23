@@ -407,12 +407,12 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 	switch (eViewType)
 	{
 	case ED3D11DepthStencilViewType::Default:
-		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-		break;
+		// depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		// depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		// 
+		// descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+		//break;
+		// intentional fall through
 	case ED3D11DepthStencilViewType::ShaderInputDepthStencil:
 		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;

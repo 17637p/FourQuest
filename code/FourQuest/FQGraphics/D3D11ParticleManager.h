@@ -57,6 +57,11 @@ namespace fq::graphics
 		int					pads[2];
 	};
 
+	typedef struct SortConstants
+	{
+		int x, y, z, w;
+	}int4;
+
 	class D3D11ParticleManager
 	{
 	public:
@@ -75,15 +80,20 @@ namespace fq::graphics
 		void BindFrameCB();
 		void Emit();
 		void Simulate();
+		void Sort();
 		void Render();
 
 		void AddEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate);
+		void SetActive(size_t id, bool bIsActive);
 		void DeleteEmitter(size_t id);
 		void SetFrameTime(float frameTime);
 		float GetFrameTime() const;
 
 	private:
 		int readCounter(ID3D11UnorderedAccessView* uav);
+
+		bool sortInitial(unsigned int maxSize);
+		bool sortIncremental(unsigned int presorted, unsigned int maxSize);
 
 	private:
 		enum { MAX_PARTICLE = 400 * 1024 };
@@ -94,6 +104,8 @@ namespace fq::graphics
 
 		std::map<size_t, std::shared_ptr<EmitterParams>> mEmitters;
 		std::map<size_t, std::shared_ptr<EmissionRate>> mEmissionRates;
+		std::set<size_t> mActiveParticles;
+
 		float mFrameTime;
 		bool mbIsUdpatedFrameTime = true;
 		bool mbIsReset = true;
@@ -106,6 +118,7 @@ namespace fq::graphics
 		int mNumActiveParticlesAfterSimulation = 0;
 
 		std::shared_ptr<class D3D11RenderTargetView> mSwapChainRTV;
+		std::shared_ptr<class D3D11DepthStencilView> mNoneDSV;
 		std::shared_ptr<class D3D11DepthStencilView> mDSV;
 
 		std::shared_ptr<class ShaderProgram> mRenderProgram;
@@ -114,6 +127,11 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11ComputeShader> mInitParticlesCS;
 		std::shared_ptr<class D3D11ComputeShader> mEmitCS;
 		std::shared_ptr<class D3D11ComputeShader> mSimulateCS;
+
+		std::shared_ptr<class D3D11ComputeShader> m_pCSSortStep;			// CS port of the VS/PS bitonic sort
+		std::shared_ptr<class D3D11ComputeShader> m_pCSSort512;			// CS implementation to sort a number of 512 element sized arrays using a single dispatch
+		std::shared_ptr<class D3D11ComputeShader> m_pCSSortInner512;		// CS implementation of the "down" pass from 512 to 1
+		std::shared_ptr<class D3D11ComputeShader> m_pCSInitArgs;			// CS to write indirect args for Dispatch calls
 
 		std::shared_ptr<class D3D11SamplerState> mLinearWrap;
 		std::shared_ptr<class D3D11SamplerState> mPointClamp;
@@ -141,6 +159,7 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mActiveListCB;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mEmitterCB;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mPerFrameCB;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mDispatchInfoCB;
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mAliveIndexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mAliveIndexBufferSRV;
@@ -149,7 +168,13 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndirectDrawArgsBuffer;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mIndirectDrawArgsBufferUAV;
 
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndirectSortArgsBuffer;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mIndirectSortArgsBufferUAV;
+
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mRandomTextureSRV;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mDepthSRV;
+		std::shared_ptr<class D3D11Texture> mAtlasSRV;
+
+
 	};
 };

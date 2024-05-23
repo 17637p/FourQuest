@@ -327,6 +327,10 @@ void FQGraphics::AddParticleEmitter(size_t id, EmitterParams emitter, EmissionRa
 {
 	mParticleManager->AddEmitter(id, emitter, emissionRate);
 }
+void FQGraphics::SetParticleActive(size_t id, bool bIsActive)
+{
+	mParticleManager->SetActive(id, bIsActive);
+}
 void FQGraphics::DeleteParticleEmitter(size_t id)
 {
 	mParticleManager->DeleteEmitter(id);

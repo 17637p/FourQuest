@@ -418,6 +418,21 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
       <Filter>Shader\Particle</Filter>
     </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleBitonicInnerSort.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleBitonicSortLDS.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleBitonicSortStep.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitDispatchArgs.hlsl">
+      <Filter>Shader\Particle</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">

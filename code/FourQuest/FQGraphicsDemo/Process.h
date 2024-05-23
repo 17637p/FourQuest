@@ -39,7 +39,6 @@ private:
 	void Render();
 	void debugRender();
 	void shadowTest();
-	void particleInit();
 
 	void strafe(fq::common::Transform& cameraTransform, float distance);
 	void walk(fq::common::Transform& cameraTransform, float distance);
@@ -55,6 +54,9 @@ private:
 	void calculateFrameStats();
 
 	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
+
+	void particleInit();
+	void particleUpdate();
 
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------

@@ -215,6 +215,13 @@ namespace fq::graphics
 		float Accumlation;
 	};
 
+	struct EmitterRender
+	{
+		DirectX::SimpleMath::Vector4 StartColor;
+		DirectX::SimpleMath::Vector4 EndColor;
+		DirectX::SimpleMath::Vector4 EmitterLightingCenter;
+	};
+
 	namespace debug
 	{
 		struct SphereInfo

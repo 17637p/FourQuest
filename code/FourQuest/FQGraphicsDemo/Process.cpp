@@ -382,6 +382,7 @@ void Process::Update()
 	//}
 
 	shadowTest();
+	particleUpdate();
 
 	InputManager::GetInstance().Update();
 }
@@ -658,39 +659,57 @@ void Process::particleInit()
 {
 	using namespace fq::graphics;
 
-	DirectX::XMVECTOR spawnPosition = DirectX::XMVectorSet(2.0f, 70.0f, 26.0f, 1.0f);
+	DirectX::XMVECTOR spawnPosition = DirectX::XMVectorSet(2.0f, 700.0f, 260.0f, 1.0f);
+
+	float size = 10.f;
 
 	EmitterParams			emiiterParams = {};
 	EmissionRate			emissionRate = {};
 	// Sparks
 	emissionRate.ParticlesPerSecond = 150000.0f;
 	emiiterParams.Position = spawnPosition;
-	emiiterParams.Velocity = DirectX::XMVectorSet(0.0f, 300.0f, 0.0f, 0.0f);
+	emiiterParams.Velocity = DirectX::XMVectorSet(0.0f, -20.0f, 0.0f, 0.0f);
 	emiiterParams.NumToEmit = 0;
-	emiiterParams.ParticleLifeSpan = 40.0f;
-	emiiterParams.StartSize = 1.f;
-	emiiterParams.EndSize = 2.f;
-	emiiterParams.PositionVariance = DirectX::XMVectorSet(5.0f, 0.0f, 5.0f, 1.0f);
-	emiiterParams.VelocityVariance = 0.4f;
-	emiiterParams.Mass = 7.0f;
+	emiiterParams.ParticleLifeSpan = 1.0f;
+	emiiterParams.StartSize = 100.f;
+	emiiterParams.EndSize = 0.0000000001f;
+	emiiterParams.PositionVariance = DirectX::XMVectorSet(50.0f, 20.0f, 50.0f, 1.0f);
+	emiiterParams.VelocityVariance = 200.2f;
+	emiiterParams.Mass = -10.0f;
 	emiiterParams.TextureIndex = 1;
-	emiiterParams.Streaks = true;
+	emiiterParams.Streaks = false;
 	mTestGraphics->AddParticleEmitter(1, emiiterParams, emissionRate);
 
 	// Smoke
-	emissionRate.ParticlesPerSecond = 1000.0f;
+	spawnPosition = DirectX::XMVectorSet(2.0f, 700.0f, -260.0f, 1.0f);
+	emissionRate.ParticlesPerSecond = 1500.0f;
 	emiiterParams.Position = spawnPosition;
-	emiiterParams.Velocity = DirectX::XMVectorSet(0.0f, 5.0f, 0.0f, 0.0f);
+	emiiterParams.Velocity = DirectX::XMVectorSet(0.0f, 30.0f, 0.0f, 0.0f);
 	emiiterParams.NumToEmit = 0;
-	emiiterParams.ParticleLifeSpan = 5.0f;
-	emiiterParams.StartSize = 1.0f;
-	emiiterParams.EndSize = 2.01f;
-	emiiterParams.PositionVariance = DirectX::XMVectorSet(20.0f, 0.0f, 20.0f, 10.0f);
-	emiiterParams.VelocityVariance = 50.6f;
-	emiiterParams.Mass = 0.0003f;
-	emiiterParams.TextureIndex = 0;
+	emiiterParams.ParticleLifeSpan = 10.0f;
+	emiiterParams.StartSize = 10.f;
+	emiiterParams.EndSize = 0.1f;
+	emiiterParams.PositionVariance = DirectX::XMVectorSet(50.0f, 20.0f, 50.0f, 1.0f);
+	emiiterParams.VelocityVariance = 0.2f;
+	emiiterParams.Mass = 0.0f;
+	emiiterParams.TextureIndex = 1;
 	emiiterParams.Streaks = false;
-	//mTestGraphics->AddParticleEmitter(2, emiiterParams, emissionRate);
+	// mTestGraphics->AddParticleEmitter(2, emiiterParams, emissionRate);
+}
+
+void Process::particleUpdate()
+{
+	mTestGraphics->SetParticleActive(2, true);
+
+	if (GetAsyncKeyState('P') & 0x8000)
+	{
+		mTestGraphics->SetParticleActive(1, true);
+	}
+	else
+	{
+		mTestGraphics->SetParticleActive(1, false);
+		//mTestGraphics->SetParticleActive(2, false);
+	}
 }
 
 /*=============================================================================
