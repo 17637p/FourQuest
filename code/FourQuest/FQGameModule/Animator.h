@@ -46,7 +46,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션의 프레임을 업데이트 합니다 
 		/// </summary>
-		float UpdateAnimation(float dt);
+		void UpdateAnimation(float dt);
 
 		/// <summary>
 		/// 로드할 컨트롤러 경로를 반환합니다
@@ -67,6 +67,12 @@ namespace fq::game_module
 		/// 애니메이터가 애니메이션을 관리하는 스키닝 메쉬들을 반환합니다.
 		/// </summary>
 		std::vector<SkinnedMeshRenderer*>& GetSkinnedMeshs() { return mSkinnedMeshs; }
+
+		/// <summary>
+		/// 현재 애니메이션 전환중인지 반환합니다.
+		/// </summary>
+		bool IsInTransition()const;
+
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
