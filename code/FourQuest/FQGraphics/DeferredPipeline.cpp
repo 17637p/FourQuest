@@ -63,10 +63,10 @@ namespace fq::graphics
 		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
-		mPasses.push_back(mSingleColorPass);
-		mPasses.push_back(mOutLinePass);
-		mPasses.push_back(mOutLineBlurPass);
-		mPasses.push_back(mOutLineAddPass);
+		//mPasses.push_back(mSingleColorPass);
+		//mPasses.push_back(mOutLinePass);
+		//mPasses.push_back(mOutLineBlurPass);
+		//mPasses.push_back(mOutLineAddPass);
 		mPasses.push_back(mFullScreenPass);
 	}
 
