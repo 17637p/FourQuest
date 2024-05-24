@@ -74,7 +74,10 @@ namespace fq::graphics
 		mXRatio(1),
 		mYRatio(1),
 		mLayer(0),
-		mImagePath("")
+		mImagePath(""),
+		mRotationAngle(0),
+		mScaleX(1),
+		mScaleY(1)
 	{
 	}
 
@@ -171,6 +174,36 @@ namespace fq::graphics
 	float ImageObject::GetAlpha()
 	{
 		return mAlpha;
+	}
+
+	void ImageObject::SetScaleX(float scaleX)
+	{
+		mScaleX = scaleX;
+	}
+
+	void ImageObject::SetScaleY(float scaleY)
+	{
+		mScaleY = scaleY;
+	}
+
+	float ImageObject::GetScaleX() const
+	{
+		return mScaleX;
+	}
+
+	float ImageObject::GetScaleY() const
+	{
+		return mScaleY;
+	}
+
+	void ImageObject::SetRotation(float angle)
+	{
+		mRotationAngle = angle;
+	}
+
+	float ImageObject::GetRotation() const
+	{
+		return mRotationAngle;
 	}
 
 }

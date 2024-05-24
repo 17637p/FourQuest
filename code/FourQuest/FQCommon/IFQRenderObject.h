@@ -131,6 +131,14 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetAlpha(float alpha) abstract;
 			virtual FQ_GRAPHICS float GetAlpha() abstract;
 
+			virtual FQ_GRAPHICS void SetRotation(float angle) abstract;
+			virtual FQ_GRAPHICS float GetRotation() const abstract;
+
+			virtual FQ_GRAPHICS void SetScaleX(float scaleX) abstract;
+			virtual FQ_GRAPHICS void SetScaleY(float scaleY) abstract;
+			virtual FQ_GRAPHICS float GetScaleX() const abstract;
+			virtual FQ_GRAPHICS float GetScaleY() const abstract;
+
 			virtual FQ_GRAPHICS void SetImagePath(const std::string& texturePath) abstract;
 			virtual FQ_GRAPHICS std::string GetImagePath() abstract;
 		};

@@ -364,6 +364,11 @@ void fq::graphics::UIManager::drawAllImage()
 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 		D2D1_RECT_F screenRect = { image->GetStartX(), image->GetStartY(), image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
 
+		mRenderTarget->SetTransform(
+			D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+			* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+		);
+
 		mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
 	}
 }
@@ -385,6 +390,10 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetAlpha(uiInfo.Alpha);
 
 	newImageObject->SetImagePath(uiInfo.ImagePath);
+
+	newImageObject->SetScaleX(uiInfo.ScaleX);
+	newImageObject->SetScaleY(uiInfo.ScaleY);
+	newImageObject->SetRotation(uiInfo.RotationAngle);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;

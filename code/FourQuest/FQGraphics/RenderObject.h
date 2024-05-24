@@ -555,6 +555,14 @@ namespace fq::graphics
 		virtual void SetAlpha(float alpha) override;
 		virtual float GetAlpha() override;
 
+		virtual void SetRotation(float angle) override;
+		virtual float GetRotation() const override;
+
+		virtual void SetScaleX(float scaleX) override;
+		virtual void SetScaleY(float scaleY) override;
+		virtual float GetScaleX() const override;
+		virtual float GetScaleY() const override;
+
 		virtual void SetImagePath(const std::string& texturePath) override;
 		virtual std::string GetImagePath() override;
 
@@ -570,6 +578,10 @@ namespace fq::graphics
 		float mAlpha;
 
 		unsigned int mLayer;
+
+		float mRotationAngle;
+		float mScaleX;
+		float mScaleY;
 
 		std::string mImagePath;
 	};

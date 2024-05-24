@@ -386,7 +386,8 @@ void Process::Update()
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('M'))
 	{
-		mImageObjects[0]->SetStartX(mImageObjects[0]->GetStartX() + 50);
+		//mImageObjects[0]->SetRotation(mImageObjects[0]->GetRotation() + 10);
+		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
 	}
 
 	shadowTest();
@@ -794,6 +795,8 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 				iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 			}
 
+			testIndex++;
+
 			for (const auto& animInfo : animInfos)
 			{
 				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
@@ -921,6 +924,9 @@ void Process::createImage()
 	uiInfo.Alpha = 0.5;
 	uiInfo.Layer = 1;
 	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
+	uiInfo.ScaleX = 1;
+	uiInfo.ScaleY = 1;
+	uiInfo.RotationAngle = 0;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
@@ -934,6 +940,9 @@ void Process::createImage()
 	uiInfo.Alpha = 1;
 	uiInfo.Layer = 0;
 	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
+	uiInfo.ScaleX = 1;
+	uiInfo.ScaleY = 1;
+	uiInfo.RotationAngle = 0;
 
 	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
