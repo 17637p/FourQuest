@@ -63,8 +63,6 @@ namespace fq::graphics
 		mDrawRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-		mDefaultSS = mResourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
-
 		mViewProjectionMatrix = mResourceManager->Create<D3D11ConstantBuffer<ViewRotationProjectionMatrix>>(ED3D11ConstantBuffer::ViewRotationProj);
 	}
 

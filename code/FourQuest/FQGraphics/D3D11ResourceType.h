@@ -29,6 +29,9 @@ namespace fq::graphics
 		PixeldRevealageThreshold,
 
 		SingleColor, // OutLine Ã¹´Ü°è 
+		OutLine,
+		OutLineBlur,
+		BlurVertical,
 
 		// Deferred
 		Albedo,

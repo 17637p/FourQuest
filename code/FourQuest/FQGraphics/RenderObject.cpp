@@ -14,8 +14,20 @@ namespace fq::graphics
 		, mObjectRenderType(EObjectRenderType::Opaque)
 		, mAlpha(1.f)
 		, mbUseShadow(true)
+		, mOutLineColor{ -1, -1, -1 }
 	{
 	}
+
+	void StaticMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
+	{
+		mOutLineColor = color;
+	}
+
+	DirectX::SimpleMath::Color StaticMeshObject::GetOutlineColor() const
+	{
+		return mOutLineColor;
+	}
+
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<Material>> materials,
 		DirectX::SimpleMath::Matrix transform,
@@ -27,18 +39,18 @@ namespace fq::graphics
 		, mObjectRenderType(EObjectRenderType::Opaque)
 		, mAlpha(1.f)
 		, mbUseShadow(true)
-		, mColor{-1, -1, -1}
+		, mOutLineColor{-1, -1, -1}
 	{
 	}
 
 	void SkinnedMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
 	{
-		mColor = color;
+		mOutLineColor = color;
 	}
 
-	DirectX::SimpleMath::Color SkinnedMeshObject::GetOutlineColor()
+	DirectX::SimpleMath::Color SkinnedMeshObject::GetOutlineColor() const
 	{
-		return mColor;
+		return mOutLineColor;
 	}
 
 	TerrainMeshObject::TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh, 

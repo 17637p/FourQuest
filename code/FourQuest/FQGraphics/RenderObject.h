@@ -54,6 +54,10 @@ namespace fq::graphics
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 
+		// Outline
+		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
+		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
+
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
@@ -70,6 +74,8 @@ namespace fq::graphics
 		const fq::common::NodeClip* mBlendNodeCache;
 		std::shared_ptr<fq::common::AnimationClip> mBlendClipCache;
 		float mBlendTimePos;
+
+		DirectX::SimpleMath::Color mOutLineColor;
 	};
 
 #pragma region inlineFunc
@@ -303,7 +309,7 @@ namespace fq::graphics
 
 		// Outline
 		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
-		virtual DirectX::SimpleMath::Color GetOutlineColor() override;
+		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
 
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
@@ -317,7 +323,7 @@ namespace fq::graphics
 		float mAlpha;
 		bool mbUseShadow;
 
-		DirectX::SimpleMath::Color mColor;
+		DirectX::SimpleMath::Color mOutLineColor;
 	};
 
 #pragma region inlineFunc

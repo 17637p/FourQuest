@@ -166,6 +166,15 @@
     <ClInclude Include="SingleColorPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
+    <ClInclude Include="OutLinePass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="OutLineBlurPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="OutLineAddPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -239,6 +248,9 @@
     </Filter>
     <Filter Include="Common\Source">
       <UniqueIdentifier>{51c71a07-0194-40f7-b0b2-3f398fe65888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PostProcessing">
+      <UniqueIdentifier>{9a188591-8b3a-4ef5-9366-0aff253d5e30}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -380,6 +392,15 @@
     <ClCompile Include="SingleColorPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
+    <ClCompile Include="OutLinePass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="OutLineBlurPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="OutLineAddPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
@@ -406,11 +427,29 @@
     <FxCompile Include="ComputeShader.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
-      <Filter>Shader</Filter>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLinePS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineVS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorPS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurVS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurPS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

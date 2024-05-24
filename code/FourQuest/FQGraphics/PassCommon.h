@@ -10,6 +10,9 @@
 #include "ParticlePass.h"
 #include "TerrainPass.h"
 #include "SingleColorPass.h"
+#include "OutLinePass.h"
+#include "OutLineBlurPass.h"
+#include "OutLineAddPass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"

@@ -8,8 +8,6 @@ namespace fq::graphics
 	class SingleColorPass : public Pass
 	{
 	public:
-		SingleColorPass();
-
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11JobManager> jobManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
@@ -29,7 +27,10 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mSingleColorRTV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
-		std::unique_ptr<class ShaderProgram> mSingleColorPassShaderProgram;
+		std::shared_ptr<D3D11DepthStencilState> mLessEqualDS;
+
+		std::unique_ptr<class ShaderProgram> mSingleColorStaticMeshPassShaderProgram;
+		std::unique_ptr<class ShaderProgram> mSingleColorSkinnedMeshPassShaderProgram;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
