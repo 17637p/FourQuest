@@ -57,6 +57,7 @@ namespace fq::game_engine
 		void beginWindow_FilePathWindow();
 		void beginDirectory(const Path& path);
 		void beginDragDrop_Directory(const Path& directoryPath);
+		void beginFavorite();
 
 		/// 파일 디랙토리안에 리소스 창
 		void beginWindow_FileList();
@@ -93,7 +94,10 @@ namespace fq::game_engine
 		std::unordered_map <std::wstring, ID3D11ShaderResourceView*> mIconTexture;
 		std::unordered_map <Path, ID3D11ShaderResourceView*> mTextures;
 
+		bool mbIsFindAllDirectory;
 		bool mbIsOpen;
+
+		std::vector<Path> mQueryExtension;
 	};
 
 

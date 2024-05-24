@@ -292,11 +292,15 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt)
 		// current 
 		float currentDuration = mCurrentState->second.GetDuration();
 		float currentPlayBackSpeed = mCurrentState->second.GetPlayBackSpeed();
+		bool currentLoof = mCurrentState->second.IsLoof();
+
 		mTimePos = std::min(mTimePos + dt * currentPlayBackSpeed, currentDuration);
 
 		// next
 		float nextDuration = mNextState->second.GetDuration();
 		float nextPlayBackSpeed = mNextState->second.GetPlayBackSpeed();
+		bool nextLoof = mNextState->second.IsLoof();
+
 		mBlendTimePos = std::min(mBlendTimePos + dt * nextPlayBackSpeed, nextDuration);
 
 		float transitionDuration = mCurrentTransition->GetTransitionDuration();
@@ -311,8 +315,12 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt)
 		auto& state = mCurrentState->second;
 		float duration = state.GetDuration();
 		float playbackSpeed = state.GetPlayBackSpeed();
+		bool isLoof = state.IsLoof();
 
-		mTimePos = std::fmod(mTimePos + dt * playbackSpeed, duration);
+		if (isLoof)
+			mTimePos = std::fmod(mTimePos + dt * playbackSpeed, duration);
+		else
+			mTimePos = std::min(mTimePos + dt * playbackSpeed, duration);
 	}
 }
 

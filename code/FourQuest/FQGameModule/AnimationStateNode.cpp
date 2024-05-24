@@ -7,6 +7,7 @@ fq::game_module::AnimationStateNode::AnimationStateNode(AnimatorController* cont
 	, mModelPath{}
 	, mAnimationName{}
 	, mAnimationKey{}
+	, mbIsLoof(true)
 {}
 
 fq::game_module::AnimationStateNode::~AnimationStateNode()
