@@ -139,9 +139,10 @@ namespace fq::event
 
 	struct ChangeAnimationState
 	{
-		std::string exitState;
-		std::string enterState;
-		fq::game_module::GameObject* object;
+		bool bIsBlend;
+		std::string currentState;
+		std::string nextState;
+		fq::game_module::Animator* animator;
 	};
 
 	struct WriteAnimation

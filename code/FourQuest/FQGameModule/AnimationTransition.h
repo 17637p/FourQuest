@@ -100,6 +100,9 @@ namespace fq::game_module
 		/// </summary>
 		std::vector<TransitionCondition>& GetConditions() { return mConditions; };
 
+		/// <summary>
+		/// 조건들을 담은 컨테이너를 반환합니다
+		/// </summary>
 		const std::vector<TransitionCondition>& GetConditions() const { return mConditions; };
 
 		/// <summary>

@@ -53,10 +53,23 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 	mScene->ViewComponents<Animator>(
 		[dt](GameObject& object, Animator& animator)
 		{
-			float timePos = animator.UpdateAnimation(dt);
+			animator.UpdateAnimation(dt);
+
+			auto& controller = animator.GetController();
+
 			for (auto mesh : animator.GetSkinnedMeshs())
 			{
-				mesh->GetSkinnedMeshObject()->SetAnimationTime(timePos);
+				float timePos = controller.GetTimePos();
+
+				if (controller.IsInTransition())
+				{
+					float blendPos = controller.GetBlendTimePos();
+					float blendWeight = controller.GetBlendWeight();
+					mesh->GetSkinnedMeshObject()
+						->SetBlendAnimationTime({ timePos, blendPos }, blendWeight);
+				}
+				else
+					mesh->GetSkinnedMeshObject()->SetAnimationTime(timePos);
 			}
 		});
 }
@@ -64,14 +77,23 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 
 void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::ChangeAnimationState& event)
 {
-	auto animator = event.object->GetComponent<fq::game_module::Animator>();
+	auto animator = event.animator;
 
 	const auto& meshs = animator->GetSkinnedMeshs();
 
 	for (auto& mesh : meshs)
 	{
-		mesh->GetSkinnedMeshObject()->SetAnimationKey(event.enterState);
+		if (event.bIsBlend)
+		{
+			mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
+		}
+		else
+		{
+			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
+		}
+
 	}
+
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)

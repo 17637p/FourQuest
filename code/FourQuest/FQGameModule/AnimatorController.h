@@ -23,6 +23,7 @@ namespace fq::game_module
 		using StateName = std::string;
 		using StateMap = std::unordered_map<StateName, AnimationStateNode>;
 		using StateIterator = StateMap::iterator;
+		using TransitionIterator = std::vector<AnimationTransition>::iterator;
 
 	public:
 		AnimatorController();
@@ -41,7 +42,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션의 프레임을 업데이트합니다
 		/// </summary>
-		float UpdateAnimation(float dt);
+		void UpdateAnimation(float dt);
 
 		/// <summary>
 		/// 파라미터 값을 설정합니다 
@@ -71,12 +72,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 현재 애니메이션 이름을 반환합니다 
 		/// </summary>
-		StateName GetCurrentState() const { return mCurrentState->first; }
+		StateName GetCurrentStateName() const { return mCurrentState->first; }
 
 		/// <summary>
 		/// 다음 애니메이션 이름을 반환합니다  
 		/// </summary>
-		StateName GetNextState() const { return mNextState->first; }
+		StateName GetNextStateName()const;
 
 		/// <summary>
 		/// 새로운 스테이트를 추가합니다 
@@ -126,18 +127,26 @@ namespace fq::game_module
 		/// 현재 블랜딩 애니메이션 재생 시간을 반환합니다 
 		/// </summary>
 		float GetBlendTimePos() const { return mBlendTimePos; }
-		
+
 		/// <summary>
 		/// 애니메이션이 전환중인 상태인지 반환합니다.
 		/// </summary>
 		bool IsInTransition()const;
 
+		/// <summary>
+		/// 블렌드 웨이트를 반환합니다.
+		/// </summary>
+		float GetBlendWeight()const;
+
+		TransitionIterator GetCurrentTransition();
+
 	private:
-		bool checkConditions(AnimationTransition& transition);
+		bool checkConditions(const AnimationTransition& transition, float timePos);
 
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);
+		static constexpr float EndTransitionWeight = 1.f;
 
 	private:
 		Animator* mAnimator;
@@ -146,13 +155,14 @@ namespace fq::game_module
 		StateMap mStates;
 		std::vector<AnimationTransition> mTransitions;
 
+		TransitionIterator mCurrentTransition;
 		StateIterator mCurrentState;
 		StateIterator mNextState;
 
 		float mTimePos;
 		float mBlendTimePos;
 		float mBlendWeight;
-		
+		float mBlendElapsedTime;
 	};
 
 }

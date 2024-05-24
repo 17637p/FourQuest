@@ -178,10 +178,20 @@ void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
 			beginNode_AnimationStateNode(stateName, state);
 		}
 
+		auto& transitions = mSelectController->GetTransitions();
+		auto currentTransition = mSelectController->GetCurrentTransition();
+
 		// Link
-		for (const auto& transition : mSelectController->GetTransitions())
+		for (auto iter = transitions.begin(); iter != transitions.end(); ++iter)
 		{
-			beginLink_AnimationTransition(transition);
+			bool onFlow = false;
+
+			if (iter == currentTransition)
+			{
+				onFlow = true;
+			}
+
+			beginLink_AnimationTransition(*iter, onFlow);
 		}
 
 		beginCreate();
@@ -274,13 +284,29 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 
 	// 애니메이션 진행상황 표시
 	if (node.GetType() == NodeType::State
-		&& mSelectController->GetCurrentState() == name)
+		&& mSelectController->GetCurrentStateName() == name
+		&& !mSelectController->IsInTransition())
 	{
 		float duration = node.GetDuration();
 		float timePos = mSelectController->GetTimePos();
 		float ratio = timePos / duration;
 
 		ImGui::ProgressBar(ratio, ImVec2(nodeWidth, 10.f), "");
+	}
+	else if (node.GetType() == NodeType::State
+		&& mSelectController->GetNextStateName() == name
+		&& mSelectController->IsInTransition())
+	{
+		const auto& state = mSelectController->GetStateMap().find(mSelectController->GetNextStateName());
+		float duration = state->second.GetDuration();
+		float blendPos = mSelectController->GetBlendTimePos();
+		float ratio = blendPos / duration;
+
+		ImGui::ProgressBar(ratio, ImVec2(nodeWidth, 10.f), "");
+	}
+	else
+	{
+		ImGui::Dummy(ImVec2(nodeWidth, 10.f));
 	}
 
 	// Node 선택
@@ -393,7 +419,7 @@ void fq::game_engine::AnimatorWindow::beginDelete()
 	ed::EndDelete();
 }
 
-void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition)
+void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition, bool onFlow)
 {
 	auto exit = transition.GetExitState(); // exit
 	auto exitID = getOutputPinID(exit);
@@ -406,6 +432,13 @@ void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::ga
 		mMatchLinkID.insert({ linkID, {exit, enter } });
 
 	ed::Link(linkID, exitID, enterID);
+
+	if (onFlow)
+	{
+		ed::PushStyleVar(ax::NodeEditor::StyleVar_FlowDuration, 0.1f);
+		ed::Flow(linkID);
+		ed::PopStyleVar(1);
+	}
 }
 
 void fq::game_engine::AnimatorWindow::dragDropWindow()

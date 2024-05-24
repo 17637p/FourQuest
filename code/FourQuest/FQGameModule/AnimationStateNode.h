@@ -37,6 +37,7 @@ namespace fq::game_module
 		void SetAnimationKey(std::string val) { mAnimationKey = val; }
 		float GetDuration() const { return mDuration; }
 		void SetDuration(float val) { mDuration = val; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -48,6 +49,8 @@ namespace fq::game_module
 		std::string mAnimationKey;
 		float mPlayBackSpeed;
 		float mDuration;
+
+
 	};
 
 }

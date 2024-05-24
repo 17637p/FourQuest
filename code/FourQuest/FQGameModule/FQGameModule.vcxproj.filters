@@ -221,6 +221,9 @@
     <ClInclude Include="Terrain.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="IStateBehaviour.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -345,6 +348,9 @@
     </ClCompile>
     <ClCompile Include="CharacterController.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="IStateBehaviour.cpp">
+      <Filter>src\09.Animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
