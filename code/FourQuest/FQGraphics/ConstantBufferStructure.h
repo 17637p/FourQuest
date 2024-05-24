@@ -126,28 +126,17 @@ namespace fq::graphics
 
 	struct EmitterConstantBuffer
 	{
-		DirectX::SimpleMath::Vector4	EmitterPosition;
-		DirectX::SimpleMath::Vector4	EmitterVelocity;
-		DirectX::SimpleMath::Vector4	PositionVariance;
-
-		int					MaxParticlesThisFrame;
-		float				ParticleLifeSpan;
-		float				StartSize;
-		float				EndSize;
-
-		float				VelocityVariance;
-		float				Mass;
-		int					Index;
-		int					Streaks;
-
-		int					TextureIndex;
-		int					pads[3];
+		DirectX::SimpleMath::Matrix Transform;
+		DirectX::SimpleMath::Vector4 StartLifeTimeStartSpeed;
+		DirectX::SimpleMath::Vector4 StartRotationStartSize;
+		DirectX::SimpleMath::Vector4 StartColor0;
+		DirectX::SimpleMath::Vector4 StartColor1;
+		DirectX::SimpleMath::Vector4 GravitySimulationSpeedMaxParticleThisFrame;
 	};
 
 	struct ParticleMain
 	{
 		DirectX::SimpleMath::Matrix Transform;
-
 		DirectX::SimpleMath::Vector4 StartSize;
 		DirectX::SimpleMath::Vector4 StartColor1;
 		DirectX::SimpleMath::Vector4 StartColor2;

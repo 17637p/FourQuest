@@ -5,12 +5,17 @@
 #include <array>
 #include <vector>
 #include <cmath>
+#include <d3d11.h>
+#include <wrl.h>
 
 #include "Mesh.h"
 #include "BoneHierarchy.h"
 #include "AnimationHelper.h"
+#include "D3D11Texture.h"
+#include "D3D11Device.h"
 
 #include "../FQCommon/IFQRenderObject.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::graphics
 {
@@ -558,6 +563,155 @@ namespace fq::graphics
 		unsigned int mLayer;
 
 		std::wstring mTexturePath;
+		DirectX::SimpleMath::Matrix mTransform;
+	};
+
+	struct GPUParticlePartA
+	{
+		DirectX::SimpleMath::Vector4 Params[3];
+	};
+
+	struct GPUParticlePartB
+	{
+		DirectX::SimpleMath::Vector4 Params[3];
+	};
+
+	class ParticleObject
+	{
+	public:
+		struct DebugInfo
+		{
+			int NumDeadParticlesOnInit = 0;
+			int NumDeadParticlesAfterEmit = 0;
+			int NumDeadParticlesAfterSimulation = 0;
+			int NumActiveParticlesAfterSimulation = 0;
+		};
+
+	public:
+		ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11Texture> texture, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
+			: mTexture(texture)
+			, mParticleInfo(particleInfo)
+			, mTimePos(0.f)
+			, mbIsReset(false)
+		{
+
+			D3D11_BUFFER_DESC desc;
+			desc.ByteWidth = sizeof(GPUParticlePartA) * ParticleInfo::MAX_PARTICLE_COUNT;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+			desc.StructureByteStride = sizeof(GPUParticlePartA);
+			device->GetDevice()->CreateBuffer(&desc, nullptr, mParticleBufferA.GetAddressOf());
+
+			desc.ByteWidth = sizeof(GPUParticlePartB) * ParticleInfo::MAX_PARTICLE_COUNT;
+			desc.StructureByteStride = sizeof(GPUParticlePartB);
+			device->GetDevice()->CreateBuffer(&desc, nullptr, mParticleBufferB.GetAddressOf());
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC srv;
+			srv.Format = DXGI_FORMAT_UNKNOWN;
+			srv.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+			srv.Buffer.ElementOffset = 0;
+			srv.Buffer.ElementWidth = ParticleInfo::MAX_PARTICLE_COUNT;
+			device->GetDevice()->CreateShaderResourceView(mParticleBufferA.Get(), &srv, mParticleBufferASRV.GetAddressOf());
+
+			D3D11_UNORDERED_ACCESS_VIEW_DESC uav;
+			uav.Format = DXGI_FORMAT_UNKNOWN;
+			uav.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+			uav.Buffer.FirstElement = 0;
+			uav.Buffer.NumElements = ParticleInfo::MAX_PARTICLE_COUNT;
+			uav.Buffer.Flags = 0;
+			device->GetDevice()->CreateUnorderedAccessView(mParticleBufferA.Get(), &uav, mParticleBufferAUAV.GetAddressOf());
+			device->GetDevice()->CreateUnorderedAccessView(mParticleBufferB.Get(), &uav, mParticleBufferBUAV.GetAddressOf());
+
+			// 파티클의 뷰 스페이스 위치는 시뮬레이션 중 캐시되므로 버퍼를 할당한다.
+			desc.ByteWidth = 16 * ParticleInfo::MAX_PARTICLE_COUNT;
+			desc.StructureByteStride = 16;
+			device->GetDevice()->CreateBuffer(&desc, 0, mViewSpaceParticlePositions.GetAddressOf());
+			device->GetDevice()->CreateShaderResourceView(mViewSpaceParticlePositions.Get(), &srv, mViewSpaceParticlePositionsSRV.GetAddressOf());
+			device->GetDevice()->CreateUnorderedAccessView(mViewSpaceParticlePositions.Get(), &uav, mViewSpaceParticlePositionsUAV.GetAddressOf());
+
+			// 죽은 파티클 인덱스 목록 생성
+			desc.ByteWidth = sizeof(UINT) * ParticleInfo::MAX_PARTICLE_COUNT;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+			desc.StructureByteStride = sizeof(UINT);
+			device->GetDevice()->CreateBuffer(&desc, nullptr, mDeadListBuffer.GetAddressOf());
+			uav.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND; // 추가 버퍼로 생성
+			device->GetDevice()->CreateUnorderedAccessView(mDeadListBuffer.Get(), &uav, mDeadListUAV.GetAddressOf());
+
+			struct IndexBufferElement
+			{
+				float		distanceSquard;	// 카메라와의 제곱 거리
+				float		index;		// 전역 파티클 인덱스
+			};
+
+			// 정렬할 살아있는 파티클의 인덱스 버퍼
+			desc.ByteWidth = sizeof(IndexBufferElement) * ParticleInfo::MAX_PARTICLE_COUNT;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+			desc.StructureByteStride = sizeof(IndexBufferElement);
+			device->GetDevice()->CreateBuffer(&desc, nullptr, mAliveIndexBuffer.GetAddressOf());
+
+			srv.Format = DXGI_FORMAT_UNKNOWN;
+			srv.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+			srv.Buffer.ElementOffset = 0;
+			srv.Buffer.ElementWidth = ParticleInfo::MAX_PARTICLE_COUNT;
+			device->GetDevice()->CreateShaderResourceView(mAliveIndexBuffer.Get(), &srv, mAliveIndexBufferSRV.GetAddressOf());
+
+			uav.Buffer.NumElements = ParticleInfo::MAX_PARTICLE_COUNT;
+			uav.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
+			uav.Format = DXGI_FORMAT_UNKNOWN;
+			device->GetDevice()->CreateUnorderedAccessView(mAliveIndexBuffer.Get(), &uav, mAliveIndexBufferUAV.GetAddressOf());
+		}
+
+		void SetIsReset(bool bIsReset) { mbIsReset = bIsReset; }
+		bool GetIsReset() const { return mbIsReset; }
+
+		void SetInfo(const ParticleInfo& info) { mParticleInfo = info; }
+		ParticleInfo& GetInfo() { return mParticleInfo; }
+		const ParticleInfo& GetInfo() const { return mParticleInfo; }
+
+		void AddTime(float deltaTime) { mTimePos += deltaTime; }
+		void SetTime(float timePos) { mTimePos = timePos; }
+		float GetTime() const { return mTimePos; }
+
+		DebugInfo& GetDebugInfo() { return mDebugInfo; }
+
+		void SetTransform(const DirectX::SimpleMath::Matrix& transform) { mTransform = transform; }
+		DirectX::SimpleMath::Matrix GetTransform() const { return mTransform; }
+
+	public:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBufferA;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mParticleBufferASRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferAUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBufferB;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferBUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mViewSpaceParticlePositions;;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mViewSpaceParticlePositionsSRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mViewSpaceParticlePositionsUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mDeadListBuffer;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mDeadListUAV;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mAliveIndexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mAliveIndexBufferSRV;
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mAliveIndexBufferUAV;
+
+		DebugInfo mDebugInfo;
+
+	private:
+		std::shared_ptr<D3D11Texture> mTexture;
+		ParticleInfo mParticleInfo;
+		float mTimePos;
+		bool mbIsReset;
+
 		DirectX::SimpleMath::Matrix mTransform;
 	};
 }

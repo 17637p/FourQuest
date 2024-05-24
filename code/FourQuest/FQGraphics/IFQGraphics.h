@@ -89,8 +89,7 @@ extern "C" {
 
 			// VFX
 			virtual FQ_GRAPHICS void SetFrameTime(float deltaTime) abstract;
-			virtual FQ_GRAPHICS void AddParticleEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate) abstract;
-			virtual FQ_GRAPHICS void SetParticleActive(size_t id, bool bIsActive) abstract;
+			virtual FQ_GRAPHICS void AddParticleEmitter(size_t id, ParticleInfo particleInfo) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleEmitter(size_t id) abstract;
 
 			/// Gizmo && Background

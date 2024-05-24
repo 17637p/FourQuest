@@ -187,13 +187,7 @@ bool FQGraphics::Render()
 	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 
 	mRenderManager->Render();
-
-	mParticleManager->UpdatePerFrame();
-	mParticleManager->BindFrameCB();
-	mParticleManager->Emit();
-	mParticleManager->Simulate();
-	mParticleManager->Render();
-
+	mParticleManager->Excute();
 	return true;
 }
 
@@ -323,13 +317,9 @@ void FQGraphics::SetFrameTime(float deltaTime)
 {
 	mParticleManager->SetFrameTime(deltaTime);
 }
-void FQGraphics::AddParticleEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate)
+void FQGraphics::AddParticleEmitter(size_t id, ParticleInfo particleInfo)
 {
-	mParticleManager->AddEmitter(id, emitter, emissionRate);
-}
-void FQGraphics::SetParticleActive(size_t id, bool bIsActive)
-{
-	mParticleManager->SetActive(id, bIsActive);
+	mParticleManager->AddEmitter(id, particleInfo);
 }
 void FQGraphics::DeleteParticleEmitter(size_t id)
 {

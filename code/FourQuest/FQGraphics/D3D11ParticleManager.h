@@ -9,37 +9,29 @@ namespace fq::graphics
 	class D3D11ResourceManager;
 	class D3D11CameraManager;
 
-	struct GPUParticlePartA
-	{
-		DirectX::SimpleMath::Vector4 Params[3];
-	};
+	
 
-	struct GPUParticlePartB
-	{
-		DirectX::SimpleMath::Vector4 Params[3];
-	};
-
-#define NUM_EMITTERS					4
+#define MAX_ACTIVE_PARTICLE	 10
 
 	struct PER_FRAME_CONSTANT_BUFFER
 	{
-		DirectX::XMVECTOR	m_StartColor[NUM_EMITTERS];
-		DirectX::XMVECTOR	m_EndColor[NUM_EMITTERS];
-		DirectX::XMVECTOR	m_EmitterLightingCenter[NUM_EMITTERS];
+		DirectX::SimpleMath::Vector4 m_StartColor[MAX_ACTIVE_PARTICLE];
+		DirectX::SimpleMath::Vector4 m_EndColor[MAX_ACTIVE_PARTICLE];
+		DirectX::SimpleMath::Vector4 m_EmitterLightingCenter[MAX_ACTIVE_PARTICLE];
 
-		DirectX::XMMATRIX	m_ViewProjection;
-		DirectX::XMMATRIX	m_ViewProjInv;
-		DirectX::XMMATRIX	m_View;
-		DirectX::XMMATRIX	m_ViewInv;
-		DirectX::XMMATRIX	m_Projection;
-		DirectX::XMMATRIX	m_ProjectionInv;
+		DirectX::SimpleMath::Matrix m_ViewProjection;
+		DirectX::SimpleMath::Matrix m_ViewProjInv;
+		DirectX::SimpleMath::Matrix m_View;
+		DirectX::SimpleMath::Matrix m_ViewInv;
+		DirectX::SimpleMath::Matrix m_Projection;
+		DirectX::SimpleMath::Matrix m_ProjectionInv;
 
 		DirectX::XMVECTOR	m_EyePosition;
 		DirectX::XMVECTOR	m_SunDirection;
 		DirectX::XMVECTOR	m_SunColor;
 		DirectX::XMVECTOR	m_AmbientColor;
 
-		DirectX::XMVECTOR	m_SunDirectionVS;
+		DirectX::XMVECTOR	m_SunDirectionView;
 		DirectX::XMVECTOR	pads2[3];
 
 		float				m_FrameTime;
@@ -60,7 +52,9 @@ namespace fq::graphics
 	typedef struct SortConstants
 	{
 		int x, y, z, w;
-	}int4;
+	} int4;
+
+	class ParticleObject;
 
 	class D3D11ParticleManager
 	{
@@ -72,19 +66,19 @@ namespace fq::graphics
 		static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateRandomTexture1DSRV(ID3D11Device* device);
 		static Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> CreateRandomTexture2DSRV(ID3D11Device* device);
 		static int Align(int value, int aligment);
-		static void CalculateNumToEmit(std::shared_ptr<EmitterParams> emitter, std::shared_ptr<EmissionRate> emissionRate, float frameTime);
+		static void CalculateNumToEmit(std::shared_ptr<ParticleObject> particleObject, float frameTime);
+
+		void Excute();
 
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager);
-		void Reset();
+		void Reset(std::shared_ptr<ParticleObject> particleObject);
 		void UpdatePerFrame();
 		void BindFrameCB();
-		void Emit();
-		void Simulate();
-		void Sort();
-		void Render();
+		void Emit(std::shared_ptr<ParticleObject> particleObject);
+		void Simulate(std::shared_ptr<ParticleObject> particleObject);
+		void Render(std::shared_ptr<ParticleObject> particleObject);
 
-		void AddEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate);
-		void SetActive(size_t id, bool bIsActive);
+		void AddEmitter(size_t id, ParticleInfo particleInfo);
 		void DeleteEmitter(size_t id);
 		void SetFrameTime(float frameTime);
 		float GetFrameTime() const;
@@ -102,9 +96,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 
-		std::map<size_t, std::shared_ptr<EmitterParams>> mEmitters;
-		std::map<size_t, std::shared_ptr<EmissionRate>> mEmissionRates;
-		std::set<size_t> mActiveParticles;
+		std::map<size_t, std::shared_ptr<ParticleObject>> mParticleObjects;
 
 		float mFrameTime;
 		bool mbIsUdpatedFrameTime = true;
@@ -128,31 +120,13 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11ComputeShader> mEmitCS;
 		std::shared_ptr<class D3D11ComputeShader> mSimulateCS;
 
-		std::shared_ptr<class D3D11ComputeShader> m_pCSSortStep;			// CS port of the VS/PS bitonic sort
-		std::shared_ptr<class D3D11ComputeShader> m_pCSSort512;			// CS implementation to sort a number of 512 element sized arrays using a single dispatch
-		std::shared_ptr<class D3D11ComputeShader> m_pCSSortInner512;		// CS implementation of the "down" pass from 512 to 1
-		std::shared_ptr<class D3D11ComputeShader> m_pCSInitArgs;			// 간접 인수 구하기 위한 CS
+		std::shared_ptr<class D3D11ComputeShader> m_pCSSortStep;
+		std::shared_ptr<class D3D11ComputeShader> m_pCSSort512;
+		std::shared_ptr<class D3D11ComputeShader> m_pCSSortInner512;
+		std::shared_ptr<class D3D11ComputeShader> m_pCSInitArgs;
 
 		std::shared_ptr<class D3D11SamplerState> mLinearWrap;
 		std::shared_ptr<class D3D11SamplerState> mPointClamp;
-
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBufferA;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mParticleBufferASRV;
-		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferAUAV;
-
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBufferB;
-		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferBUAV;
-
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mViewSpaceParticlePositions;;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mViewSpaceParticlePositionsSRV;
-		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mViewSpaceParticlePositionsUAV;
-
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mMaxRadiusBuffer;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mMaxRadiusBufferSRV;
-		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mMaxRadiusBufferUAV;
-
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mDeadListBuffer;
-		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mDeadListUAV;
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mDebugCounterBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mDeadListCB;
@@ -161,9 +135,6 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mPerFrameCB;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mDispatchInfoCB;
 
-		Microsoft::WRL::ComPtr<ID3D11Buffer> mAliveIndexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mAliveIndexBufferSRV;
-		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mAliveIndexBufferUAV;
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndirectDrawArgsBuffer;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mIndirectDrawArgsBufferUAV;

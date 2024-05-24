@@ -1,6 +1,7 @@
 #include "D3D11ParticleManager.h"
 #include "D3D11Common.h"
 #include "ManagementCommon.h"
+#include "RenderObject.h"
 
 namespace fq::graphics
 {
@@ -117,21 +118,44 @@ namespace fq::graphics
 		return (value + aligment - 1) / aligment * aligment;
 	}
 
-	void D3D11ParticleManager::CalculateNumToEmit(std::shared_ptr<EmitterParams> emitter, std::shared_ptr<EmissionRate> emissionRate, float frameTime)
+	void D3D11ParticleManager::CalculateNumToEmit(std::shared_ptr<ParticleObject> particleObject, float frameTime)
 	{
-		if (emissionRate->ParticlesPerSecond < 0.f)
+		ParticleInfo& particleInfo = particleObject->GetInfo();
+		particleInfo.MainModuleData.NumToEmit = 0;
+
+		if (particleInfo.EmissionModuleData.ParticlesPerSecond < 0.f)
 		{
 			return;
 		}
 
-		emissionRate->Accumlation += emissionRate->ParticlesPerSecond * frameTime;
+		particleInfo.EmissionModuleData.Accumlation += particleInfo.EmissionModuleData.ParticlesPerSecond * frameTime;
 
-		if (emissionRate->Accumlation > 1.f)
+		if (particleInfo.EmissionModuleData.Accumlation > 1.f)
 		{
 			double integerPart;
 
-			emissionRate->Accumlation = modf(emissionRate->Accumlation, &integerPart);
-			emitter->NumToEmit = (int)integerPart;
+			particleInfo.EmissionModuleData.Accumlation = modf(particleInfo.EmissionModuleData.Accumlation, &integerPart);
+			particleInfo.MainModuleData.NumToEmit = (int)integerPart;
+		}
+	}
+
+	void D3D11ParticleManager::Excute()
+	{
+		if (!mbIsUdpatedFrameTime)
+		{
+			return;
+		}
+
+		mbIsUdpatedFrameTime = false;
+
+		UpdatePerFrame();
+		BindFrameCB();
+
+		for (auto& [key, particleObject] : mParticleObjects)
+		{
+			Emit(particleObject);
+			Simulate(particleObject);
+			Render(particleObject);
 		}
 	}
 
@@ -176,88 +200,10 @@ namespace fq::graphics
 
 		mRandomTextureSRV = CreateRandomTexture2DSRV(mDevice->GetDevice().Get());
 		mAtlasSRV = mResourceManager->Create<D3D11Texture>(L"./resource/example/texture/atlas.dds");
-		// 글로벌 파티클 풀 생성
-		// 캐시 히트를 높이기 위해 A는 랜더링 관련, B는 시뮬레이션 관련 데이터를 다룬다.
+
 		D3D11_BUFFER_DESC desc;
-		desc.ByteWidth = sizeof(GPUParticlePartA) * D3D11ParticleManager::MAX_PARTICLE;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-		desc.StructureByteStride = sizeof(GPUParticlePartA);
-		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mParticleBufferA.GetAddressOf());
-
-		desc.ByteWidth = sizeof(GPUParticlePartB) * MAX_PARTICLE;
-		desc.StructureByteStride = sizeof(GPUParticlePartB);
-		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mParticleBufferB.GetAddressOf());
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC srv;
-		srv.Format = DXGI_FORMAT_UNKNOWN;
-		srv.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-		srv.Buffer.ElementOffset = 0;
-		srv.Buffer.ElementWidth = MAX_PARTICLE;
-		mDevice->GetDevice()->CreateShaderResourceView(mParticleBufferA.Get(), &srv, mParticleBufferASRV.GetAddressOf());
-
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uav;
-		uav.Format = DXGI_FORMAT_UNKNOWN;
-		uav.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-		uav.Buffer.FirstElement = 0;
-		uav.Buffer.NumElements = MAX_PARTICLE;
-		uav.Buffer.Flags = 0;
-		mDevice->GetDevice()->CreateUnorderedAccessView(mParticleBufferA.Get(), &uav, mParticleBufferAUAV.GetAddressOf());
-		mDevice->GetDevice()->CreateUnorderedAccessView(mParticleBufferB.Get(), &uav, mParticleBufferBUAV.GetAddressOf());
-
-		// 파티클의 뷰 스페이스 위치는 시뮬레이션 중 캐시되므로 버퍼를 할당한다.
-		desc.ByteWidth = 16 * MAX_PARTICLE;
-		desc.StructureByteStride = 16;
-		mDevice->GetDevice()->CreateBuffer(&desc, 0, mViewSpaceParticlePositions.GetAddressOf());
-		mDevice->GetDevice()->CreateShaderResourceView(mViewSpaceParticlePositions.Get(), &srv, mViewSpaceParticlePositionsSRV.GetAddressOf());
-		mDevice->GetDevice()->CreateUnorderedAccessView(mViewSpaceParticlePositions.Get(), &uav, mViewSpaceParticlePositionsUAV.GetAddressOf());
-
-		// 재계산을 방지하기 위해 파티클의 최대 반경을 캐시한다.
-		// 줄무늬 파티클에서만 처리되는 연산으로 X, Y 최대 반경을 저장한다.
-		desc.ByteWidth = 4 * MAX_PARTICLE;
-		desc.StructureByteStride = 4;
-		mDevice->GetDevice()->CreateBuffer(&desc, 0, mMaxRadiusBuffer.GetAddressOf());
-		mDevice->GetDevice()->CreateShaderResourceView(mMaxRadiusBuffer.Get(), &srv, mMaxRadiusBufferSRV.GetAddressOf());
-		mDevice->GetDevice()->CreateUnorderedAccessView(mMaxRadiusBuffer.Get(), &uav, mMaxRadiusBufferUAV.GetAddressOf());
-
-		// 죽은 파티클 인덱스 목록 생성
-		desc.ByteWidth = sizeof(UINT) * MAX_PARTICLE;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-		desc.StructureByteStride = sizeof(UINT);
-		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mDeadListBuffer.GetAddressOf());
-		uav.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND; // 추가 버퍼로 생성
-		mDevice->GetDevice()->CreateUnorderedAccessView(mDeadListBuffer.Get(), &uav, mDeadListUAV.GetAddressOf());
-
-		struct IndexBufferElement
-		{
-			float		distanceSquard;	// 카메라와의 제곱 거리
-			float		index;		// 전역 파티클 인덱스
-		};
-
-		// 정렬할 살아있는 파티클의 인덱스 버퍼
-		desc.ByteWidth = sizeof(IndexBufferElement) * MAX_PARTICLE;
-		desc.Usage = D3D11_USAGE_DEFAULT;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-		desc.CPUAccessFlags = 0;
-		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-		desc.StructureByteStride = sizeof(IndexBufferElement);
-		mDevice->GetDevice()->CreateBuffer(&desc, nullptr, mAliveIndexBuffer.GetAddressOf());
-
-		srv.Format = DXGI_FORMAT_UNKNOWN;
-		srv.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-		srv.Buffer.ElementOffset = 0;
-		srv.Buffer.ElementWidth = MAX_PARTICLE;
-		mDevice->GetDevice()->CreateShaderResourceView(mAliveIndexBuffer.Get(), &srv, mAliveIndexBufferSRV.GetAddressOf());
-
-		uav.Buffer.NumElements = MAX_PARTICLE;
-		uav.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
-		uav.Format = DXGI_FORMAT_UNKNOWN;
-		mDevice->GetDevice()->CreateUnorderedAccessView(mAliveIndexBuffer.Get(), &uav, mAliveIndexBufferUAV.GetAddressOf());
+		D3D11_SHADER_RESOURCE_VIEW_DESC srv;
 
 		// 간접 호출을 위한 상수 버퍼와 UAV
 		ZeroMemory(&desc, sizeof(desc));
@@ -331,22 +277,22 @@ namespace fq::graphics
 		mDevice->GetDevice()->CreateUnorderedAccessView(mIndirectSortArgsBuffer.Get(), &uav, mIndirectSortArgsBufferUAV.GetAddressOf());
 	}
 
-	void D3D11ParticleManager::Reset()
+	void D3D11ParticleManager::Reset(std::shared_ptr<ParticleObject> particleObject)
 	{
 		mInitDeadListCS->Bind(mDevice);
 		UINT initialCount[] = { 0 };
-		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, mDeadListUAV.GetAddressOf(), initialCount);
-		mDevice->GetDeviceContext()->Dispatch(Align(MAX_PARTICLE, 256) / 256, 1, 1);
+		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, particleObject->mDeadListUAV.GetAddressOf(), initialCount);
+		mDevice->GetDeviceContext()->Dispatch(Align(ParticleInfo::MAX_PARTICLE_COUNT, 256) / 256, 1, 1);
 
 #if _DEBUG
-		mNumDeadParticlesOnInit = readCounter(mDeadListUAV.Get());
+		particleObject->mDebugInfo.NumDeadParticlesOnInit = readCounter(particleObject->mDeadListUAV.Get());
 #endif
-		ID3D11UnorderedAccessView* uavs[] = { mParticleBufferAUAV.Get(), mParticleBufferBUAV.Get() };
+		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferAUAV.Get(), particleObject->mParticleBufferBUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1, (UINT)-1 };
 
 		mInitParticlesCS->Bind(mDevice);
 		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, initialCounts);
-		mDevice->GetDeviceContext()->Dispatch(Align(MAX_PARTICLE, 256) / 256, 1, 1);
+		mDevice->GetDeviceContext()->Dispatch(Align(ParticleInfo::MAX_PARTICLE_COUNT, 256) / 256, 1, 1);
 
 		mbIsReset = false;
 	}
@@ -376,7 +322,7 @@ namespace fq::graphics
 		DirectX::XMMATRIX projInv = DirectX::XMMatrixInverse(nullptr, mProj);
 		mGlobalConstantBuffer.m_ProjectionInv = DirectX::XMMatrixTranspose(projInv);
 
-		mGlobalConstantBuffer.m_SunDirectionVS = DirectX::XMVector4Transform(mGlobalConstantBuffer.m_SunDirection, mView);
+		mGlobalConstantBuffer.m_SunDirectionView = DirectX::XMVector4Transform(mGlobalConstantBuffer.m_SunDirection, mView);
 
 		mGlobalConstantBuffer.m_EyePosition = mCameraManager->GetPosition(ECameraType::Player);
 
@@ -391,18 +337,12 @@ namespace fq::graphics
 
 		mGlobalConstantBuffer.m_ScreenWidth = mDevice->GetWidth();
 		mGlobalConstantBuffer.m_ScreenHeight = mDevice->GetHeight();
-		mGlobalConstantBuffer.m_SunDirectionVS = { 0, -1, 0 };
+		mGlobalConstantBuffer.m_SunDirection = { 0, -1, 0 };
 		mGlobalConstantBuffer.m_SunColor = { 1, 1,1, 1 };
 		mGlobalConstantBuffer.m_AmbientColor = { 0.1f, 0.1f, 0.1f };
-		// temp
-		DirectX::XMVECTOR spawnPosition = DirectX::XMVectorSet(2.0f, 70.0f, 26.0f, 1.0f);
-		mGlobalConstantBuffer.m_StartColor[0] = DirectX::XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f);
-		mGlobalConstantBuffer.m_EndColor[0] = DirectX::XMVectorSet(1.0f, 0.5f, 0.0f, 0.0f);
-		mGlobalConstantBuffer.m_EmitterLightingCenter[0] = spawnPosition;
 
-		mGlobalConstantBuffer.m_StartColor[1] = DirectX::XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f);
-		mGlobalConstantBuffer.m_EndColor[1] = DirectX::XMVectorSet(0.6f, 0.6f, 0.65f, 0.1f);
-		mGlobalConstantBuffer.m_EmitterLightingCenter[1] = spawnPosition;
+		mGlobalConstantBuffer.m_CollisionsEnabled = true;
+		mGlobalConstantBuffer.m_CollisionThickness = 4.f;
 
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		mDevice->GetDeviceContext()->Map(mPerFrameCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
@@ -424,35 +364,26 @@ namespace fq::graphics
 		mPointClamp->Bind(mDevice, 1, ED3D11ShaderType::ComputeShader);
 	}
 
-	void D3D11ParticleManager::Emit()
+	void D3D11ParticleManager::Emit(std::shared_ptr<ParticleObject> particleObject)
 	{
-		if (mbIsReset)
+		using namespace DirectX::SimpleMath;
+
+		if (particleObject->GetIsReset())
 		{
-			Reset();
+			Reset(particleObject);
+			particleObject->SetIsReset(false);
 		}
 
-		// numToEmit update
-		if (!mbIsUdpatedFrameTime)
+		CalculateNumToEmit(particleObject, mFrameTime);
+
+		const auto& particleEmitter = particleObject->GetInfo();
+
+		if (particleEmitter.MainModuleData.NumToEmit <= 0)
 		{
 			return;
 		}
 
-		mbIsUdpatedFrameTime = false;
-
-		for (const auto& [key, emissionRate] : mEmissionRates)
-		{
-			if (mActiveParticles.find(key) == mActiveParticles.end())
-			{
-				continue;
-			}
-
-			auto emitter = mEmitters.find(key);
-			assert(emitter != mEmitters.end());
-
-			CalculateNumToEmit(emitter->second, emissionRate, mFrameTime);
-		}
-
-		ID3D11UnorderedAccessView* uavs[] = { mParticleBufferAUAV.Get(), mParticleBufferBUAV.Get(), mDeadListUAV.Get() };
+		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferAUAV.Get(), particleObject->mParticleBufferBUAV.Get(), particleObject->mDeadListUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1, (UINT)-1, (UINT)-1 };
 		ID3D11Buffer* buffers[] = { mEmitterCB.Get(), mDeadListCB.Get() };
 		ID3D11ShaderResourceView* srvs[] = { mRandomTextureSRV.Get() };
@@ -462,48 +393,37 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->CSSetConstantBuffers(1, ARRAYSIZE(buffers), buffers);
 		mDevice->GetDeviceContext()->CSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 
-		size_t index = 0u;
-		for (const auto& [key, emitter] : mEmitters)
-		{
-			if (mActiveParticles.find(key) == mActiveParticles.end())
-			{
-				continue;
-			}
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		mDevice->GetDeviceContext()->Map(mEmitterCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		EmitterConstantBuffer* data = (EmitterConstantBuffer*)mappedResource.pData;
+		data->Transform = particleObject->GetTransform();
+		data->StartLifeTimeStartSpeed.x = particleEmitter.MainModuleData.StartLifeTime[0];
+		data->StartLifeTimeStartSpeed.y = particleEmitter.MainModuleData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleEmitter.MainModuleData.StartLifeTime[0] : particleEmitter.MainModuleData.StartLifeTime[1];
+		data->StartLifeTimeStartSpeed.z = particleEmitter.MainModuleData.StartSpeed[0];
+		data->StartLifeTimeStartSpeed.w = particleEmitter.MainModuleData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleEmitter.MainModuleData.StartSpeed[0] : particleEmitter.MainModuleData.StartSpeed[1];
+		data->StartRotationStartSize.x = particleEmitter.MainModuleData.StartRotation[0];
+		data->StartRotationStartSize.y = particleEmitter.MainModuleData.StartRotationOption == ParticleInfo::EOption::Constant ? particleEmitter.MainModuleData.StartRotation[0] : particleEmitter.MainModuleData.StartRotation[1];
+		data->StartRotationStartSize.z = particleEmitter.MainModuleData.StartSize[0];
+		data->StartRotationStartSize.w = particleEmitter.MainModuleData.StartSizeOption == ParticleInfo::EOption::Constant ? particleEmitter.MainModuleData.StartSize[0] : particleEmitter.MainModuleData.StartSize[1];
+		data->StartColor0 = particleEmitter.MainModuleData.StartColor[0];
+		data->StartColor1 = particleEmitter.MainModuleData.StartColorOption == ParticleInfo::EOption::Constant ? particleEmitter.MainModuleData.StartColor[0] : particleEmitter.MainModuleData.StartColor[1];
+		data->GravitySimulationSpeedMaxParticleThisFrame.x = particleEmitter.MainModuleData.GravityModifier[0];
+		data->GravitySimulationSpeedMaxParticleThisFrame.y = particleEmitter.MainModuleData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleEmitter.MainModuleData.GravityModifier[0] : particleEmitter.MainModuleData.GravityModifier[1];
+		data->GravitySimulationSpeedMaxParticleThisFrame.z = particleEmitter.MainModuleData.SimulationSpeed;
+		data->GravitySimulationSpeedMaxParticleThisFrame.w = particleEmitter.MainModuleData.MaxParticleCount;
 
-			if (emitter->NumToEmit <= 0)
-			{
-				continue;
-			}
+		mDevice->GetDeviceContext()->Unmap(mEmitterCB.Get(), 0);
+		mDevice->GetDeviceContext()->CopyStructureCount(mDeadListCB.Get(), 0, particleObject->mDeadListUAV.Get());
 
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-			mDevice->GetDeviceContext()->Map(mEmitterCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-			EmitterConstantBuffer* data = (EmitterConstantBuffer*)mappedResource.pData;
-			data->EmitterPosition = emitter->Position;
-			data->EmitterVelocity = emitter->Velocity;
-			data->MaxParticlesThisFrame = emitter->NumToEmit;
-			data->ParticleLifeSpan = emitter->ParticleLifeSpan;
-			data->StartSize = emitter->StartSize;
-			data->EndSize = emitter->EndSize;
-			data->PositionVariance = emitter->PositionVariance;
-			data->VelocityVariance = emitter->VelocityVariance;
-			data->Mass = emitter->Mass;
-			data->Index = index++;
-			data->Streaks = emitter->Streaks ? 1 : 0;
-			data->TextureIndex = emitter->TextureIndex;
-			mDevice->GetDeviceContext()->Unmap(mEmitterCB.Get(), 0);
-
-			mDevice->GetDeviceContext()->CopyStructureCount(mDeadListCB.Get(), 0, mDeadListUAV.Get());
-
-			int numThreadGroups = Align(emitter->NumToEmit, 1024) / 1024;
-			mDevice->GetDeviceContext()->Dispatch(numThreadGroups, 1, 1);
-		}
+		int numThreadGroups = Align(particleEmitter.MainModuleData.NumToEmit, 1024) / 1024;
+		mDevice->GetDeviceContext()->Dispatch(numThreadGroups, 1, 1);
 
 #if _DEBUG
-		mNumDeadParticlesAfterEmit = readCounter(mDeadListUAV.Get());
+		particleObject->mDebugInfo.NumDeadParticlesAfterEmit = readCounter(particleObject->mDeadListUAV.Get());
 #endif
 	}
 
-	void D3D11ParticleManager::Simulate()
+	void D3D11ParticleManager::Simulate(std::shared_ptr<ParticleObject> particleObject)
 	{
 		mDevice->GetDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -511,14 +431,14 @@ namespace fq::graphics
 
 		// depathStencil bind
 
-		ID3D11UnorderedAccessView* uavs[] = { mParticleBufferAUAV.Get(), mParticleBufferBUAV.Get(), mDeadListUAV.Get(), mAliveIndexBufferUAV.Get(),
-			mViewSpaceParticlePositionsUAV.Get(), mMaxRadiusBufferUAV.Get(), mIndirectDrawArgsBufferUAV.Get() };
+		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferAUAV.Get(), particleObject->mParticleBufferBUAV.Get(), particleObject->mDeadListUAV.Get(), particleObject->mAliveIndexBufferUAV.Get(),
+			particleObject->mViewSpaceParticlePositionsUAV.Get(), mIndirectDrawArgsBufferUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1, (UINT)-1, (UINT)-1, 0, (UINT)-1, (UINT)-1, (UINT)-1 };
 		ID3D11ShaderResourceView* srvs[] = { mDepthSRV.Get() };
 
 		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, initialCounts);
 		mDevice->GetDeviceContext()->CSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
-		mDevice->GetDeviceContext()->Dispatch(Align(MAX_PARTICLE, 256) / 256, 1, 1);
+		mDevice->GetDeviceContext()->Dispatch(Align(ParticleInfo::MAX_PARTICLE_COUNT, 256) / 256, 1, 1);
 
 		// depthSRV unbind
 
@@ -527,64 +447,17 @@ namespace fq::graphics
 		ZeroMemory(uavs, sizeof(uavs));
 		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
 
-		mDevice->GetDeviceContext()->CopyStructureCount(mActiveListCB.Get(), 0, mAliveIndexBufferUAV.Get());
+		mDevice->GetDeviceContext()->CopyStructureCount(mActiveListCB.Get(), 0, particleObject->mAliveIndexBufferUAV.Get());
 
 		// 디버그일 경우 카운트 읽어오기
 #if _DEBUG
-		mNumDeadParticlesAfterSimulation = readCounter(mDeadListUAV.Get());
-		mNumActiveParticlesAfterSimulation = readCounter(mAliveIndexBufferUAV.Get());
+		particleObject->mDebugInfo.NumDeadParticlesAfterSimulation = readCounter(particleObject->mDeadListUAV.Get());
+		particleObject->mDebugInfo.NumActiveParticlesAfterSimulation = readCounter(particleObject->mAliveIndexBufferUAV.Get());
 #endif
 	}
 
-	void D3D11ParticleManager::Sort()
+	void D3D11ParticleManager::Render(std::shared_ptr<ParticleObject> particleObject)
 	{
-		ID3D11UnorderedAccessView* prevUAV = nullptr;
-		ID3D11Buffer* prevCBs[] = { nullptr, nullptr };
-		ID3D11Buffer* cbs[] = { mActiveListCB.Get(), mDispatchInfoCB.Get() };
-
-		// 간접 dispatch 하기 위한 데이터 생성
-		mDevice->GetDeviceContext()->CSGetUnorderedAccessViews(0, 1, &prevUAV);
-		mDevice->GetDeviceContext()->CSGetConstantBuffers(0, ARRAYSIZE(prevCBs), prevCBs);
-		mDevice->GetDeviceContext()->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, mIndirectSortArgsBufferUAV.GetAddressOf(), nullptr);
-		m_pCSInitArgs->Bind(mDevice);
-		mDevice->GetDeviceContext()->Dispatch(1, 1, 1);
-
-		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, mAliveIndexBufferUAV.GetAddressOf(), nullptr);
-
-		// 512만큼은 미리 정렬함
-		bool bDone = sortInitial(MAX_PARTICLE);
-
-		// 이미 정렬된 부분과 정렬되지 않은 부분을 병합하며 정렬함
-		int presorted = 512;
-		while (!bDone)
-		{
-			bDone = sortIncremental(presorted, MAX_PARTICLE);
-			presorted *= 2;
-		}
-
-		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, &prevUAV, nullptr);
-		mDevice->GetDeviceContext()->CSSetConstantBuffers(0, ARRAYSIZE(prevCBs), prevCBs);
-
-		if (prevUAV)
-		{
-			prevUAV->Release();
-		}
-
-		for (size_t i = 0; i < ARRAYSIZE(prevCBs); i++)
-		{
-			if (prevCBs[i])
-			{
-				prevCBs[i]->Release();
-			}
-		}
-	}
-
-	void D3D11ParticleManager::Render()
-	{
-		// sort
-		Sort();
-
 		// renderTarget binding
 		mSwapChainRTV->Bind(mDevice, mNoneDSV);
 		mRenderProgram->Bind(mDevice);
@@ -596,7 +469,7 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-		ID3D11ShaderResourceView* vs_srv[] = { mParticleBufferASRV.Get(), mViewSpaceParticlePositionsSRV.Get(), mAliveIndexBufferSRV.Get() };
+		ID3D11ShaderResourceView* vs_srv[] = { particleObject->mParticleBufferASRV.Get(), particleObject->mViewSpaceParticlePositionsSRV.Get(), particleObject->mAliveIndexBufferSRV.Get() };
 		ID3D11ShaderResourceView* ps_srv[] = { mDepthSRV.Get() };
 
 		mDevice->GetDeviceContext()->VSSetShaderResources(0, ARRAYSIZE(vs_srv), vs_srv);
@@ -612,28 +485,16 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->PSSetShaderResources(1, ARRAYSIZE(ps_srv), ps_srv);
 	}
 
-	void D3D11ParticleManager::AddEmitter(size_t id, EmitterParams emitter, EmissionRate emissionRate)
+	void D3D11ParticleManager::AddEmitter(size_t id, ParticleInfo particleInfo)
 	{
-		mEmitters.insert({ id, std::make_shared<EmitterParams>(emitter) });
-		mEmissionRates.insert({ id, std::make_shared<EmissionRate>(emissionRate) });
-	}
+		std::shared_ptr<D3D11Texture> texture = mResourceManager->Create<D3D11Texture>(particleInfo.RenderModuleData.TexturePath);
 
-	void D3D11ParticleManager::SetActive(size_t id, bool bIsActive)
-	{
-		if (bIsActive)
-		{
-			mActiveParticles.insert(id);
-		}
-		else
-		{
-			mActiveParticles.erase(id);
-		}
+		mParticleObjects.insert({ id, std::make_shared<ParticleObject>(mDevice, texture, particleInfo, DirectX::SimpleMath::Matrix::Identity) });
 	}
 
 	void D3D11ParticleManager::DeleteEmitter(size_t id)
 	{
-		mEmitters.erase(id);
-		mEmissionRates.erase(id);
+		mParticleObjects.erase(id);
 	}
 
 	void D3D11ParticleManager::SetFrameTime(float frameTime)
@@ -663,7 +524,7 @@ namespace fq::graphics
 
 	bool D3D11ParticleManager::sortInitial(unsigned int maxSize)
 	{
-		const int MAX_NUM_TG = 1024;//128; // max 128 * 512 elements = 64k elements
+		const int MAX_NUM_TG = 1024; //128; // max 128 * 512 elements = 64k elements
 
 		bool bDone = true;
 		unsigned int numThreadGroups = Align(maxSize, 512) / 512;
