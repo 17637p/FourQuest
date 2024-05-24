@@ -19,13 +19,21 @@ void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> devi
 	mCameraManager = cameraManager;
 	mResourceManager = resourceManager;
 
-	auto singleColorVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SingleColorVS.hlsl");
+	D3D_SHADER_MACRO macroSkinning[] =
+	{
+		{"SKINNING", ""},
+		{ NULL, NULL}
+	};
+
+	auto singleColorStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SingleColorVS.hlsl");
+	auto singleColorSkinnedVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SingleColorVS.hlsl", macroSkinning);
 	auto singleColorPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/SingleColorPS.hlsl");
 
 	mLessEqualDS = resourceManager->Get<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
 
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, mLessEqualDS, nullptr);
-	mSingleColorPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, singleColorVS, nullptr, singleColorPS, pipelieState);
+	mSingleColorStaticMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, singleColorStaticVS, nullptr, singleColorPS, pipelieState);
+	mSingleColorSkinnedMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, singleColorSkinnedVS, nullptr, singleColorPS, pipelieState);
 
 	mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 	mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -64,16 +72,44 @@ void fq::graphics::SingleColorPass::Render()
 
 		mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 		mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 		mOutlineColorCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 3);
 
-		mSingleColorPassShaderProgram->Bind(mDevice);
+		mSingleColorStaticMeshPassShaderProgram->Bind(mDevice);
+
+		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+		{
+			if (job.ObjectRenderType == EObjectRenderType::Opaque)
+			{
+				OutLineColor outlineColor;
+				outlineColor.color = job.tempObject->GetOutlineColor();
+				if (outlineColor.color.R() == -1)
+				{
+					continue;
+				}
+
+				mOutlineColorCB->Update(mDevice, outlineColor);
+
+				job.StaticMesh->Bind(mDevice);
+				job.Material->Bind(mDevice);
+
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+
+				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+			}
+		}
+
+		mSingleColorSkinnedMeshPassShaderProgram->Bind(mDevice);
+		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 
 		// Color 값 있는 친구들 (-1, -1, -1 이 아닌 object 들만 출력)
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
 			OutLineColor outlineColor;
 			outlineColor.color = job.tempObject->GetOutlineColor();
+			if (outlineColor.color.R() == -1)
+			{
+				continue;
+			}
 
 			mOutlineColorCB->Update(mDevice, outlineColor);
 

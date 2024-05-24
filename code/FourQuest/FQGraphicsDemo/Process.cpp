@@ -787,6 +787,13 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		{
 			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
 
+			static int testIndex = 0;
+
+			if (testIndex == 0)
+			{
+				iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			}
+
 			for (const auto& animInfo : animInfos)
 			{
 				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
@@ -798,7 +805,34 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		{
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
-			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{1, 0, 0, 1});
+			static int testIndex = 0;
+
+			if (testIndex == 0)
+			{
+				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			}
+			else if (testIndex == 1)
+			{
+				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
+			}
+			else if (testIndex == 2)
+			{
+				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
+			}
+			else if (testIndex == 3)
+			{
+				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
+			}
+			else if (testIndex == 4)
+			{
+				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
+			}
+			else if (testIndex == 5)
+			{
+				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
+			}
+
+			testIndex++;
 
 			for (const auto& animInfo : animInfos)
 			{

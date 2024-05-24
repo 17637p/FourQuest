@@ -43,6 +43,10 @@ extern "C" {
 			virtual FQ_GRAPHICS float GetAnimationTime() const = 0;
 			virtual FQ_GRAPHICS float GetBlendTime() const = 0;
 
+			// Outline
+			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};
@@ -79,7 +83,7 @@ extern "C" {
 
 			// Outline
 			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
-			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
 
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출

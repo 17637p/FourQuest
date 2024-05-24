@@ -29,7 +29,8 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualDS;
 
-		std::unique_ptr<class ShaderProgram> mSingleColorPassShaderProgram;
+		std::unique_ptr<class ShaderProgram> mSingleColorStaticMeshPassShaderProgram;
+		std::unique_ptr<class ShaderProgram> mSingleColorSkinnedMeshPassShaderProgram;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
