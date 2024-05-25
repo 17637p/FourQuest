@@ -29,7 +29,7 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
-		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 
 		D3D_SHADER_MACRO macroShading[] =
@@ -174,7 +174,7 @@ namespace fq::graphics
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mShaderProgram->Bind(mDevice);
-			
+
 			mFullScreenVB->Bind(mDevice);
 			mFullScreenIB->Bind(mDevice);
 

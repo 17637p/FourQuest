@@ -62,4 +62,36 @@ namespace fq::graphics
 
 		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(device, vertices);
 	}
+
+	TerrainMesh::TerrainMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData)
+		:MeshBase(device, meshData)
+	{
+		struct Vertex
+		{
+			DirectX::SimpleMath::Vector3 Pos;
+			DirectX::SimpleMath::Vector3 Normal;
+			DirectX::SimpleMath::Vector3 Tangent;
+			DirectX::SimpleMath::Vector2 Tex;
+			DirectX::SimpleMath::Vector2 BoundsY;
+		};
+
+		std::vector<Vertex> vertices;
+		vertices.reserve(meshData.Vertices.size());
+
+		for (size_t i = 0; i < meshData.Vertices.size(); ++i)
+		{
+			Vertex vertex;
+
+			vertex.Pos = meshData.Vertices[i].Pos;
+			vertex.Normal = meshData.Vertices[i].Normal;
+			vertex.Tangent = meshData.Vertices[i].Tangent;
+			vertex.Tex = meshData.Vertices[i].Tex;
+			vertex.BoundsY = meshData.BoundsYVertices[i].BoundsY;
+
+			vertices.push_back(std::move(vertex));
+		}
+
+		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(device, vertices);
+	}
+
 }

@@ -45,4 +45,11 @@ namespace fq::graphics
 		SkinnedMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~SkinnedMesh() = default;
 	};
+
+	class TerrainMesh : public MeshBase
+	{
+	public:
+		TerrainMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
+		virtual ~TerrainMesh() = default;
+	};
 }

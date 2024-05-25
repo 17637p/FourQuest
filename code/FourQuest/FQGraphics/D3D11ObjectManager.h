@@ -31,10 +31,12 @@ namespace fq::graphics
 		void AddAnimation(const std::shared_ptr<D3D11ModelManager>& modelManager, ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info);
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObjectInterface);
 
-		ITerrainMeshObject* CreateTerrainMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info);
+		ITerrainMeshObject* CreateTerrainMeshObject(
+			const std::shared_ptr<D3D11Device>& device,
+			const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info);
 		void DeleteTerrainMeshObject(ITerrainMeshObject* terrainMeshObjectInterface);
 		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device,
-			ITerrainMeshObject* iTerrainMeshObject, 
+			ITerrainMeshObject* iTerrainMeshObject,
 			const TerrainMaterialInfo& material);
 
 		inline const std::set<IStaticMeshObject*>& GetStaticMeshObjects() const;

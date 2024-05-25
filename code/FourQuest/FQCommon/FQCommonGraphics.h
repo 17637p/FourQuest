@@ -57,8 +57,8 @@ namespace fq::graphics
 	struct UIInfo
 	{
 		float StartX; // 좌상단 점 위치 
-		float StartY; 
-		float Width; 
+		float StartY;
+		float Width;
 		float Height;
 
 		float Alpha; // 1이 불투명 0이 투명 
@@ -94,6 +94,7 @@ namespace fq::graphics
 	{
 		std::vector<TerrainLayer> Layers; // 최대 4
 		std::string AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
+		std::string HeightFileName;
 	};
 
 	struct ParticleSystemInfo

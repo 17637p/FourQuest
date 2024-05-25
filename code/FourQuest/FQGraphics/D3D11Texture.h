@@ -18,6 +18,9 @@ namespace fq::graphics
 	public:
 		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const std::wstring& texturePath);
+		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
+			const std::vector<float>& rawArray,
+			const UINT width, const UINT height);
 
 		static std::string GenerateRID(const std::wstring& texturePath);
 

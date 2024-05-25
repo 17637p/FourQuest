@@ -1,4 +1,4 @@
- #include "FQGraphics.h"
+#include "FQGraphics.h"
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 
@@ -85,7 +85,7 @@ void FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
 
 fq::graphics::ITerrainMeshObject* FQGraphics::CreateTerrainMeshObject(const MeshObjectInfo& info)
 {
-	return mObjectManager->CreateTerrainMeshObject(mModelManager, info);
+	return mObjectManager->CreateTerrainMeshObject(mDevice, mModelManager, info);
 }
 
 void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)

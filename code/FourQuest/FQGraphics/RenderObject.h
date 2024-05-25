@@ -479,7 +479,9 @@ namespace fq::graphics
 	class TerrainMeshObject : public ITerrainMeshObject
 	{
 	public:
-		TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh,
+		TerrainMeshObject(
+			const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<StaticMesh> staticMesh,
 			DirectX::SimpleMath::Matrix transform);
 		~TerrainMeshObject() = default;
 
@@ -491,11 +493,27 @@ namespace fq::graphics
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
-		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
+		inline const std::shared_ptr<TerrainMesh>& GetTerrainMesh() const;
 		inline const std::shared_ptr<TerrainMaterial>& GetTerrainMaterial() const;
 
+		size_t GetNumIndices() const { return mNumIndices; }
+
 	private:
-		std::shared_ptr<StaticMesh> mStaticMesh;
+		// Terrain Vertex, Index ¼öÁ¤
+		void BuildTerrainMesh(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<StaticMesh> staticMesh);
+
+		float GetWidth() const;
+		float GetDepth() const;
+		void BuildQuadPatchVB(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY, fq::common::Mesh& mesh);
+		void BuildQuadPatchIB(fq::common::Mesh& mesh);
+
+		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY);
+		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY, UINT i, UINT j);
+
+	private:
+		size_t mNumIndices;
+		std::shared_ptr<StaticMesh> mTempStaticMesh;
+		std::shared_ptr<TerrainMesh> mTerrainMesh;
 		std::shared_ptr<TerrainMaterial> mMaterial;
 
 		DirectX::SimpleMath::Matrix mTransform;
@@ -506,17 +524,17 @@ namespace fq::graphics
 	{
 		mTransform = transform;
 	}
-	inline const std::shared_ptr<StaticMesh>& TerrainMeshObject::GetStaticMesh() const
+	inline const std::shared_ptr<TerrainMesh>& TerrainMeshObject::GetTerrainMesh() const
 	{
-		return mStaticMesh;
+		return mTerrainMesh;
 	}
 	inline DirectX::BoundingBox TerrainMeshObject::GetRenderBoundingBox() const
 	{
-		return mStaticMesh->GetMeshData().RenderBoundingBox;
+		return mTerrainMesh->GetMeshData().RenderBoundingBox;
 	}
 	inline DirectX::BoundingSphere TerrainMeshObject::GetRenderBoundingSphere() const
 	{
-		return mStaticMesh->GetMeshData().GetRenderBoundingSphere;
+		return mTerrainMesh->GetMeshData().GetRenderBoundingSphere;
 	}
 	inline const std::shared_ptr<TerrainMaterial>& TerrainMeshObject::GetTerrainMaterial() const
 	{

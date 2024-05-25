@@ -101,9 +101,9 @@ bool Process::Init(HINSTANCE hInstance)
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
-		float randX = (float)(rand() % 500 - 250);
-		float randY = (float)(rand() % 100);
-		float randZ = (float)(rand() % 500 - 250);
+		float randX = 0;//(float)(rand() % 500 - 250);
+		float randY = 0;//(float)(rand() % 100);
+		float randZ = 0;//(float)(rand() % 500 - 250);
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
@@ -220,7 +220,7 @@ void Process::Loop()
 
 void Process::Finalize()
 {
-	
+
 }
 
 //extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -235,32 +235,32 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg)
 	{
-	case WM_SIZE:
-	{
-		//if (m_pRenderer == nullptr)
-		//{
-		//	return 0;
-		//}
-		//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
+		case WM_SIZE:
+		{
+			//if (m_pRenderer == nullptr)
+			//{
+			//	return 0;
+			//}
+			//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
 
-		mScreenWidth = LOWORD(lParam);
-		mScreenHeight = HIWORD(lParam);
-		mScreenWidth = max(200, mScreenWidth);
-		mScreenHeight = max(200, mScreenHeight);
+			mScreenWidth = LOWORD(lParam);
+			mScreenHeight = HIWORD(lParam);
+			mScreenWidth = max(200, mScreenWidth);
+			mScreenHeight = max(200, mScreenHeight);
 
-		break;
-	}
-	case WM_PAINT:
-	{
-		hdc = BeginPaint(mHwnd, &ps);
-		EndPaint(mHwnd, &ps);
-		break;
-	}
-	case WM_DESTROY:
-	{
-		PostQuitMessage(0);
-		break;
-	}
+			break;
+		}
+		case WM_PAINT:
+		{
+			hdc = BeginPaint(mHwnd, &ps);
+			EndPaint(mHwnd, &ps);
+			break;
+		}
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			break;
+		}
 	}
 
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);
@@ -398,7 +398,7 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
-	//debugRender();
+	debugRender();
 	mTestGraphics->Render();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
@@ -538,7 +538,7 @@ void Process::debugRender()
 	sphereInfo.Sphere.Center = { 0, 0, 0 };
 	sphereInfo.Sphere.Radius = 500;
 	sphereInfo.Color = { 0,0,0,1 };
-	//mTestGraphics->DrawSphere(sphereInfo);
+	mTestGraphics->DrawSphere(sphereInfo);
 
 	AABBInfo aabbInfo;
 	aabbInfo.AABB.Center = { 0, 0, 0 };
@@ -563,7 +563,7 @@ void Process::debugRender()
 	frustumInfo.Frustum.TopSlope = 0.4142f;
 	frustumInfo.Frustum.BottomSlope = -0.4142;
 	frustumInfo.Color = { 0, 1, 0, 1 };
-	mTestGraphics->DrawFrustum(frustumInfo);
+	//mTestGraphics->DrawFrustum(frustumInfo);
 
 	GridInfo gridInfo;
 	gridInfo.Origin = { 0,0,0 };
@@ -614,7 +614,7 @@ void Process::debugRender()
 		fq::graphics::debug::SphereInfo sphererInfo;
 		sphererInfo.Color = { 0, 0, 1, 1 };
 		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
-		mTestGraphics->DrawSphere(sphererInfo);
+		//mTestGraphics->DrawSphere(sphererInfo);
 	}
 
 	for (auto& obj : mStaticMeshObjects)
@@ -627,7 +627,7 @@ void Process::debugRender()
 		fq::graphics::debug::SphereInfo sphererInfo;
 		sphererInfo.Color = { 1, 0, 0, 1 };
 		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
-		mTestGraphics->DrawSphere(sphererInfo);
+		//mTestGraphics->DrawSphere(sphererInfo);
 	}
 }
 
@@ -760,7 +760,7 @@ void Process::pitch(fq::common::Transform& cameraTransform, float angle)
 
 void Process::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
 {
-	createModel(modelPath, {}, transform);
+	//createModel(modelPath, {}, transform);
 }
 
 void Process::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
@@ -808,34 +808,36 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		{
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
-			static int testIndex = 0;
+			//static int testIndex = 0;
+			//
+			//if (testIndex == 0)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			//}
+			//else if (testIndex == 1)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
+			//}
+			//else if (testIndex == 2)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
+			//}
+			//else if (testIndex == 3)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
+			//}
+			//else if (testIndex == 4)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
+			//}
+			//else if (testIndex == 5)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
+			//}
+			//testIndex++;
 
-			if (testIndex == 0)
-			{
-				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-			}
-			else if (testIndex == 1)
-			{
-				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
-			}
-			else if (testIndex == 2)
-			{
-				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
-			}
-			else if (testIndex == 3)
-			{
-				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
-			}
-			else if (testIndex == 4)
-			{
-				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
-			}
-			else if (testIndex == 5)
-			{
-				iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
-			}
+			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 
-			testIndex++;
 
 			for (const auto& animInfo : animInfos)
 			{
@@ -903,6 +905,7 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		layer3.Roughness = 0;
 
 		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
+		terrainMaterial.HeightFileName = "./resource/example/texture/terrain.raw";
 
 		terrainMaterial.Layers.push_back(layer1);
 		terrainMaterial.Layers.push_back(layer2);

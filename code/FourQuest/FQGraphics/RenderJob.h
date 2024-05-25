@@ -11,6 +11,7 @@ namespace fq::graphics
 {
 	class StaticMesh;
 	class SkinnedMesh;
+	class TerrainMesh;
 	class Material;
 	class TerrainMaterial;
 
@@ -47,7 +48,7 @@ namespace fq::graphics
 	struct TerrainMeshJob
 	{
 		size_t SubsetIndex;
-		std::shared_ptr<StaticMesh> StaticMesh;
+		std::shared_ptr<TerrainMesh> TerrainMesh;
 		std::shared_ptr<TerrainMaterial> TerrainMaterial;
 		const DirectX::SimpleMath::Matrix* TransformPtr;
 		ITerrainMeshObject* tempObject;

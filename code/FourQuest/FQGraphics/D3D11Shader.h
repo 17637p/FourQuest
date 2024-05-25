@@ -134,6 +134,45 @@ namespace fq::graphics
 		return mShader;
 	}
 
+	class D3D11HullShader : public D3D11Shader
+	{
+	public:
+		D3D11HullShader(const std::shared_ptr<D3D11Device>& device,
+			const std::wstring& path,
+			const D3D_SHADER_MACRO* pDefines = nullptr,
+			const std::string& entryPoint = "main",
+			const std::string& shaderModel = "hs_5_0");
+
+		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+		inline Microsoft::WRL::ComPtr<ID3D11HullShader> GetShader() const;
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11HullShader> mShader;
+	};
+
+	class D3D11DomainShader : public D3D11Shader
+	{
+	public:
+		D3D11DomainShader(const std::shared_ptr<D3D11Device>& device,
+			const std::wstring& path,
+			const D3D_SHADER_MACRO* pDefines = nullptr,
+			const std::string& entryPoint = "main",
+			const std::string& shaderModel = "ds_5_0");
+
+		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+		inline Microsoft::WRL::ComPtr<ID3D11DomainShader> GetShader() const;
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11DomainShader> mShader;
+	};
+
+	inline Microsoft::WRL::ComPtr<ID3D11DomainShader> D3D11DomainShader::GetShader() const
+	{
+		return mShader;
+	}
+
 	class PipelineState;
 
 	class ShaderProgram

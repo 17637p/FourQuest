@@ -135,7 +135,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector2 StartSpeed;
 		DirectX::SimpleMath::Vector2 StartRotation;
 		DirectX::SimpleMath::Vector2 GravityModifier;
-		
+
 		int StartLifeTimeOption;
 		int StartSpeedOption;
 		int StartSizeOption;
@@ -159,7 +159,7 @@ namespace fq::graphics
 		int ModeType;
 		float Angle;
 		float Radius;
-		
+
 		float DountRadius;
 		float Arc;
 		float Speed;
@@ -179,6 +179,17 @@ namespace fq::graphics
 		unsigned int width;
 		unsigned int height;
 		float pad[2];
+	};
+
+	struct TerrainHull
+	{
+		float MinDist;
+		float MaxDist;
+		float MinTess;
+		float MaxTess;
+		DirectX::XMFLOAT3 gEyePosW;
+		float pad;
+		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
 	};
 
 	template <typename T>

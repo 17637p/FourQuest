@@ -38,6 +38,8 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11VertexShader> mTerrainVS;
 		std::shared_ptr<D3D11PixelShader> mTerrainPS;
+		std::shared_ptr<class D3D11DomainShader> mTerrainDS;
+		std::shared_ptr<class D3D11HullShader> mTerrainHS;
 		std::shared_ptr<D3D11InputLayout> mTerrainLayout;
 
 		std::shared_ptr<D3D11RenderTargetView> mDrawRTV;
@@ -46,11 +48,13 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSS;
+		std::shared_ptr<D3D11SamplerState> mPointClampSS;
 		std::shared_ptr<D3D11SamplerState> mShadowSS;
 		std::shared_ptr<D3D11DepthStencilState> mDefaultDS;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<TerrainHull>> mTerrainHullCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>> mTerrainTextureCB;
 		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 	};
