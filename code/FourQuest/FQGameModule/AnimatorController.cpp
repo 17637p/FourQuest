@@ -11,6 +11,7 @@
 
 fq::game_module::AnimatorController::AnimatorController()
 	:mParmeters{}
+	, mAnimator(nullptr)
 	, mStates{}
 	, mCurrentState{}
 	, mNextState{}
@@ -237,12 +238,11 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 					"",
 					mAnimator
 				});
-
 			return;
 		}
 
 		AnimationTransition::InterruptionSource::None;
-
+		auto source = mCurrentTransition->GetInterruptionSource();
 	}
 }
 

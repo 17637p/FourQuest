@@ -6,6 +6,7 @@
 #include <imgui-node-editor/imgui_node_editor.h>
 
 #include "../FQGameModule/GameModule.h"
+#include "EditorEvent.h"
 
 namespace fq::game_engine
 {
@@ -38,6 +39,8 @@ namespace fq::game_engine
 		void OnStartScene();
 
 		void OnUnloadScene();
+
+		void SelectObject(fq::editor_event::SelectObject event);
 
 		void SaveAnimatorController();
 
@@ -84,6 +87,7 @@ namespace fq::game_engine
 
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mStartSceneHandler;
+		EventHandler mSelectObjectHandler;
 	};
 
 

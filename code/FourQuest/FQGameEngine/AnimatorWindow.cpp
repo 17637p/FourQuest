@@ -23,6 +23,7 @@ fq::game_engine::AnimatorWindow::AnimatorWindow()
 	, mSelectObjectName{}
 	, mOnLoadSceneHandler{}
 	, mStartSceneHandler{}
+	, mSelectObjectHandler{}
 {}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
@@ -39,6 +40,9 @@ void fq::game_engine::AnimatorWindow::Initialize(GameProcess* game, EditorProces
 
 	mStartSceneHandler = mEventManager
 		->RegisterHandle<fq::event::StartScene>(this, &AnimatorWindow::OnStartScene);
+
+	mSelectObjectHandler = mEventManager
+		->RegisterHandle<fq::editor_event::SelectObject>(this, &AnimatorWindow::SelectObject);
 }
 
 void fq::game_engine::AnimatorWindow::Render()
@@ -541,5 +545,17 @@ void fq::game_engine::AnimatorWindow::OnUnloadScene()
 {
 	mSelectController = nullptr;
 	mSelectControllerPath.clear();
+}
+
+void fq::game_engine::AnimatorWindow::SelectObject(fq::editor_event::SelectObject event)
+{
+	if (event.object == nullptr
+		|| !event.object->HasComponent<game_module::Animator>()) return;
+
+	auto animator = event.object->GetComponent<game_module::Animator>();
+	mSelectObjectName = event.object->GetName();
+	mSelectController = animator->GetSharedController();
+	mSelectControllerPath = animator->GetControllerPath();
+	createContext();
 }
 
