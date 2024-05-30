@@ -102,28 +102,25 @@ void fq::game_module::AnimatorController::CreateStateNode()
 	mStates.insert({ name,stateNode });
 }
 
-void fq::game_module::AnimatorController::AddTransition(StateName exit, StateName enter)
+void fq::game_module::AnimatorController::AddTransition(AnimationTransition transition)
 {
-	if (exit == enter) return;
-
-	for (const auto& transition : mTransitions)
+	if (transition.GetEnterState() == transition.GetExitState()
+		|| transition.GetExitState() == "Exit"
+		|| transition.GetEnterState() == "AnyState"
+		|| transition.GetEnterState() == "Entry")
 	{
-		if (transition.GetEnterState() == enter
-			&& transition.GetExitState() == exit)
-		{
-			return;
-		}
+		return;
 	}
 
-	mTransitions.push_back({ exit,enter });
+	mTransitions.insert({ transition.GetExitState(), transition });
 }
 
 void fq::game_module::AnimatorController::DeleteTransition(StateName exit, StateName enter)
 {
 	for (auto iter = mTransitions.begin(); iter != mTransitions.end();)
 	{
-		if (iter->GetEnterState() == enter
-			&& iter->GetExitState() == exit)
+		if (iter->second.GetEnterState() == enter
+			&& iter->second.GetExitState() == exit)
 		{
 			iter = mTransitions.erase(iter);
 		}
@@ -147,7 +144,7 @@ bool fq::game_module::AnimatorController::ChangeStateName(StateName orginName, S
 	mStates.insert({ changeName, state });
 
 	// Transition 변경
-	for (auto& transition : mTransitions)
+	for (auto& [stateName, transition] : mTransitions)
 	{
 		if (transition.GetEnterState() == orginName)
 		{
@@ -176,11 +173,11 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 	{
 		for (auto iter = mTransitions.begin(); iter != mTransitions.end(); ++iter)
 		{
-			auto exitState = iter->GetExitState();
+			auto exitState = iter->second.GetExitState();
 
 			if (exitState == mCurrentState->first || exitState == "AnyState")
 			{
-				bool passCondition = checkConditions(*iter, mTimePos);
+				bool passCondition = checkConditions(iter->second, mTimePos);
 
 				// 상태를 변경합니다 
 				if (passCondition)
@@ -190,7 +187,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 					// Entry는 바로 전환합니다 
 					if (mCurrentState->first == "Entry")
 					{
-						mCurrentState = mStates.find(iter->GetEnterState());
+						mCurrentState = mStates.find(iter->second.GetEnterState());
 						eventMgr->FireEvent<fq::event::ChangeAnimationState>({
 							false,
 							mCurrentState->first,
@@ -200,7 +197,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 						return;
 					}
 
-					std::string enterState = iter->GetEnterState();
+					std::string enterState = iter->second.GetEnterState();
 					mNextState = mStates.find(enterState);
 					mCurrentTransition = iter;
 					eventMgr->FireEvent<fq::event::ChangeAnimationState>({
@@ -218,7 +215,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 	// 2. 애니메이션 전환중인 경우
 	else
 	{
-		auto interruptionSource = mCurrentTransition->GetInterruptionSource();
+		auto interruptionSource = mCurrentTransition->second.GetInterruptionSource();
 
 		// 전환 종료 
 		if (EndTransitionWeight == mBlendWeight)
@@ -242,7 +239,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 		}
 
 		AnimationTransition::InterruptionSource::None;
-		auto source = mCurrentTransition->GetInterruptionSource();
+		auto source = mCurrentTransition->second.GetInterruptionSource();
 	}
 }
 
@@ -303,7 +300,7 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt)
 
 		mBlendTimePos = std::min(mBlendTimePos + dt * nextPlayBackSpeed, nextDuration);
 
-		float transitionDuration = mCurrentTransition->GetTransitionDuration();
+		float transitionDuration = mCurrentTransition->second.GetTransitionDuration();
 		mBlendElapsedTime = std::min(mBlendElapsedTime + dt, transitionDuration);
 		mBlendWeight = mBlendElapsedTime / transitionDuration;
 
@@ -333,19 +330,7 @@ void fq::game_module::AnimatorController::DeleteState(StateName state)
 
 	// 스테이트 삭제
 	mStates.erase(iter);
-
-	mTransitions.erase(std::find_if(mTransitions.begin(), mTransitions.end()
-		, [state](const AnimationTransition& transition)
-		{
-			if (transition.GetEnterState() == state
-				|| transition.GetExitState() == state)
-			{
-				return true;
-			}
-
-			return false;
-		}), mTransitions.end());
-
+	mTransitions.erase(state);
 }
 
 bool fq::game_module::AnimatorController::IsInTransition() const

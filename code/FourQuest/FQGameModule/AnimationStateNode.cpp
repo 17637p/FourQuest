@@ -8,6 +8,7 @@ fq::game_module::AnimationStateNode::AnimationStateNode(AnimatorController* cont
 	, mAnimationName{}
 	, mAnimationKey{}
 	, mbIsLoof(true)
+	, mDuration(0.f)
 {}
 
 fq::game_module::AnimationStateNode::~AnimationStateNode()

@@ -23,7 +23,9 @@ namespace fq::game_module
 		using StateName = std::string;
 		using StateMap = std::unordered_map<StateName, AnimationStateNode>;
 		using StateIterator = StateMap::iterator;
-		using TransitionIterator = std::vector<AnimationTransition>::iterator;
+
+		using TransitionMap = std::unordered_multimap<StateName, AnimationTransition>;
+		using TransitionIterator = TransitionMap::iterator;
 
 	public:
 		AnimatorController();
@@ -95,10 +97,11 @@ namespace fq::game_module
 		StateMap& GetStateMap() { return mStates; }
 		const StateMap& GetStateMap()const { return mStates; }
 
+
 		/// <summary>
 		/// 애니메이션 전환을 추가합니다 
 		/// </summary>
-		void AddTransition(StateName exit, StateName enter);
+		void AddTransition(AnimationTransition transition);
 
 		/// <summary>
 		/// 애니메이션 전환을 삭제합니다 
@@ -115,8 +118,8 @@ namespace fq::game_module
 		/// </summary>
 		bool ChangeStateName(StateName orginName, StateName changeName);
 
-		std::vector<AnimationTransition>& GetTransitions() { return mTransitions; }
-		const std::vector<AnimationTransition>& GetTransitions() const { return mTransitions; }
+		TransitionMap& GetTransitionMap() { return mTransitions; }
+		const TransitionMap& GetTransitionMap() const { return mTransitions; }
 
 		/// <summary>
 		/// 현재 애니메이션 재생 시간을 반환합니다
@@ -153,7 +156,7 @@ namespace fq::game_module
 
 		ParameterPack mParmeters;
 		StateMap mStates;
-		std::vector<AnimationTransition> mTransitions;
+		TransitionMap mTransitions;
 
 		TransitionIterator mCurrentTransition;
 		StateIterator mCurrentState;

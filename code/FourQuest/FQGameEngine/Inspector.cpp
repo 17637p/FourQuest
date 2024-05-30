@@ -792,86 +792,89 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 	ImGui::Text("Transition");
 
 	// Transition GUI를 표시합니다 
-	int index = 0;
-	auto& transitions = controller->GetTransitions();
-	for (auto& transition : transitions)
+	int conditionIndex = 0;
+	int transitionIndex = 0;
+	auto& transitions = controller->GetTransitionMap();
+	auto range = transitions.equal_range(state.GetAnimationKey());
+
+	for (auto& iter = range.first; iter != range.second; ++iter)
 	{
-		++index;
+		auto& transition = iter->second;
+		++conditionIndex;
+		++transitionIndex;
+		auto& conditions = transition.GetConditions();
+		auto enterState = transition.GetEnterState();
 		auto exitState = transition.GetExitState();
-		if (exitState == state.GetAnimationKey())
+
+		std::string transitionName = "[" + std::to_string(transitionIndex) + "]" + exitState + " -> " + enterState;
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
+		if (ImGui::BeginChild(transitionName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 		{
-			auto& conditions = transition.GetConditions();
-			auto enterState = transition.GetEnterState();
+			ImGui::Text(transitionName.c_str());
 
-			std::string transitionName = exitState + " -> " + enterState;
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
-			if (ImGui::BeginChild(transitionName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
+			bool hasExitTime = transition.HasExitTime();
+
+			if (ImGui::Checkbox("HasExitTime", &hasExitTime))
 			{
-				ImGui::Text(transitionName.c_str());
-
-				bool hasExitTime = transition.HasExitTime();
-
-				if (ImGui::Checkbox("HasExitTime", &hasExitTime))
-				{
-					if (hasExitTime)
-						transition.SetExitTime(0.f);
-					else
-						transition.SetExitTime(game_module::AnimationTransition::NoExitTime);
-					
-					hasExitTime = transition.HasExitTime();
-				}
-
 				if (hasExitTime)
-				{
-					float exitTime = transition.GetExitTime();
-					if (ImGui::InputFloat("ExitTime", &exitTime))
-					{
-						transition.SetExitTime(exitTime);
-					}
-				}
+					transition.SetExitTime(0.f);
+				else
+					transition.SetExitTime(game_module::AnimationTransition::NoExitTime);
 
-				float transitionDuration = transition.GetTransitionDuration();
-				if (ImGui::InputFloat("TransitionDuration", &transitionDuration))
-				{
-					transition.SetTransitionDuration(transitionDuration);
-				}
-
-				int source = static_cast<int>(transition.GetInterruptionSource());
-
-				constexpr const char* interruptionSourece[] = { "None", "CurrentState", "NextState"
-				, "CurrentState Then NextState", "NextState Then CurrentState" };
-
-				if (ImGui::BeginCombo("InterruptionSource", interruptionSourece[source]))
-				{
-					for (int i = 0; i < 5; ++i)
-					{
-						if(ImGui::Selectable(interruptionSourece[i]))
-						{
-							transition.SetInterruptionSource(static_cast<game_module::AnimationTransition::InterruptionSource>(i));
-						}
-					}
-					ImGui::EndCombo();
-				}
-
-				ImGui::Separator();
-				ImGui::Text("Conditions");
-
-				// Condtion GUI
-				for (auto& condition : conditions)
-				{
-					beginTransitionCondition(condition, ++index);
-				}
-
-				// Add Delete Button
-				std::string addButtonNaem = "+##PushBackCondition" + transitionName;
-				std::string deleteButtonName = "-##PopBackCondition" + transitionName;
-
-				if (ImGui::Button(addButtonNaem.c_str()))
-					transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
-				ImGui::SameLine();
-				if (ImGui::Button(deleteButtonName.c_str()))
-					transition.PopBackCondition();
+				hasExitTime = transition.HasExitTime();
 			}
+
+			if (hasExitTime)
+			{
+				float exitTime = transition.GetExitTime();
+				if (ImGui::InputFloat("ExitTime", &exitTime))
+				{
+					transition.SetExitTime(exitTime);
+				}
+			}
+
+			float transitionDuration = transition.GetTransitionDuration();
+			if (ImGui::InputFloat("TransitionDuration", &transitionDuration))
+			{
+				transition.SetTransitionDuration(transitionDuration);
+			}
+
+			int source = static_cast<int>(transition.GetInterruptionSource());
+
+			constexpr const char* interruptionSourece[] = { "None", "CurrentState", "NextState"
+			, "CurrentState Then NextState", "NextState Then CurrentState" };
+
+			if (ImGui::BeginCombo("InterruptionSource", interruptionSourece[source]))
+			{
+				for (int i = 0; i < 5; ++i)
+				{
+					if (ImGui::Selectable(interruptionSourece[i]))
+					{
+						transition.SetInterruptionSource(static_cast<game_module::AnimationTransition::InterruptionSource>(i));
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::Separator();
+			ImGui::Text("Conditions");
+
+			// Condtion GUI
+			for (auto& condition : conditions)
+			{
+				beginTransitionCondition(condition, ++conditionIndex);
+			}
+
+			// Add Delete Button
+			std::string addButtonNaem = "+##PushBackCondition" + transitionName;
+			std::string deleteButtonName = "-##PopBackCondition" + transitionName;
+
+			if (ImGui::Button(addButtonNaem.c_str()))
+				transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
+			ImGui::SameLine();
+			if (ImGui::Button(deleteButtonName.c_str()))
+				transition.PopBackCondition();
+
 			ImGui::EndChild();
 			ImGui::PopStyleColor(1);
 		}

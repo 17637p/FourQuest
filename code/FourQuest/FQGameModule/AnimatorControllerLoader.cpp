@@ -92,14 +92,13 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 	{
 		std::string exit = value.at("exitState");
 		std::string enter = value.at("enterState");
-		controller->AddTransition(exit, enter);
-
-		auto& transition = controller->GetTransitions().back();
-
 		float exitTime = value.at("exitTime");
 		float transitionDuration = value.at("transitionDuration");
 		int interruptionSource = value.at("InterruptionSource");
+		AnimationTransition transition{};
 
+		transition.SetExitState(exit);
+		transition.SetEnterState(enter);
 		transition.SetExitTime(exitTime);
 		transition.SetTransitionDuration(transitionDuration);
 		transition.SetInterruptionSource(static_cast<AnimationTransition::InterruptionSource>(interruptionSource));
@@ -130,6 +129,8 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 			}
 			transition.PushBackCondition(checkType, id, parameter);
 		}
+
+		controller->AddTransition(transition);
 	}
 
 
@@ -186,9 +187,9 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 
 	// 3. Transition
 	ordered_json transitionsJson;
-	const auto& transitions = controller.GetTransitions();
+	const auto& transitions = controller.GetTransitionMap();
 
-	for (const auto& transition : transitions)
+	for (const auto& [name, transition] : transitions)
 	{
 		ordered_json transitionJson;
 
