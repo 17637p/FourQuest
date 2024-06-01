@@ -489,7 +489,7 @@ namespace fq::graphics
 		void SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 			const TerrainMaterialInfo& terrainMaterial);
 
-		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual DirectX::SimpleMath::Matrix GetTransform() const override;
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
@@ -509,12 +509,25 @@ namespace fq::graphics
 
 		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY);
 		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY, UINT i, UINT j);
+		void CalcNormal(fq::common::Mesh& mesh);
+		void CalcTangent(fq::common::Mesh& mesh);
 
 	private:
-		size_t mNumIndices;
-		std::shared_ptr<StaticMesh> mTempStaticMesh;
+		std::shared_ptr<StaticMesh> mTempStaticMesh; // Plane
 		std::shared_ptr<TerrainMesh> mTerrainMesh;
 		std::shared_ptr<TerrainMaterial> mMaterial;
+
+		size_t mNumIndices;
+		unsigned int mWidth;
+		unsigned int mHeight;
+
+		UINT mNumPatchVertRows;
+		UINT mNumPatchVertCols;
+
+		UINT mNumPatchVertices;
+		UINT mNumPatchQuadFaces;
+
+		unsigned int mCellsPerPatch;
 
 		DirectX::SimpleMath::Matrix mTransform;
 	};
@@ -540,9 +553,13 @@ namespace fq::graphics
 	{
 		return mMaterial;
 	}
-	inline const DirectX::SimpleMath::Matrix& TerrainMeshObject::GetTransform() const
+	inline DirectX::SimpleMath::Matrix TerrainMeshObject::GetTransform() const
 	{
-		return mTransform;
+		// 이동 성분만 뽑아서 반환
+		DirectX::SimpleMath::Vector3 translateVec(mTransform._41, mTransform._42, mTransform._43);
+		DirectX::SimpleMath::Matrix matrix = DirectX::SimpleMath::Matrix::CreateTranslation(translateVec);
+
+		return matrix;
 	}
 #pragma endregion inlineFunc
 

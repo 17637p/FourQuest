@@ -268,7 +268,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 		ModelTransform modelTransform;
 		modelTransform.color = mTerrainMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
-		modelTransform.world = (*job.TransformPtr).Transpose();
+		modelTransform.world = (job.TransformPtr).Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
 
 		mConstantBuffer->Update(device, modelTransform);

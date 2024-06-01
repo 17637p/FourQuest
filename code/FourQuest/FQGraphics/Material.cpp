@@ -42,7 +42,7 @@ namespace fq::graphics
 		mMetalics{},
 		mRoughnesses{},
 		mAlpha{ nullptr },
-		mHeightscale(1000)
+		mHeightscale(materialData.HeightScale)
 	{
 		mBasePath = basePath;
 

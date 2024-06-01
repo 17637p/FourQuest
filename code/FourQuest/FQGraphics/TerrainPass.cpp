@@ -94,15 +94,16 @@ namespace fq::graphics
 			mDefaultDS->Bind(mDevice);
 
 			TerrainHull terrainHull;
-			terrainHull.MinDist = 20;
-			terrainHull.MaxDist = 500;
+			terrainHull.MinDist = 200;
+			terrainHull.MaxDist = 5000;
 			terrainHull.MinTess = 0;
-			terrainHull.MaxTess = 6;
+			terrainHull.MaxTess = 10;
 			terrainHull.gEyePosW = mCameraManager->GetPosition(ECameraType::Player);
 			//terrainHull.WorldFrustumPlanes = ;
 			mTerrainHullCB->Update(mDevice, terrainHull);
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
+			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::DomainShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::DomainShader, 1);
 			mTerrainHullCB->Bind(mDevice, ED3D11ShaderType::HullShader, 0);
 			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
@@ -122,7 +123,7 @@ namespace fq::graphics
 			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
 			{
 				job.TerrainMesh->Bind(mDevice);
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TransformPtr);
 
 				if (job.TerrainMaterial != nullptr)
 				{

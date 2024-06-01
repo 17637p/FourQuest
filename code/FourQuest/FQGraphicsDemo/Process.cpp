@@ -96,14 +96,15 @@ bool Process::Init(HINSTANCE hInstance)
 	//staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
 	//createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
+	createModel(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 10, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 200, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
-		float randX = 0;//(float)(rand() % 500 - 250);
-		float randY = 0;//(float)(rand() % 100);
-		float randZ = 0;//(float)(rand() % 500 - 250);
+		float randX = (float)(rand() % 500 - 250);
+		float randY = (float)(rand() % 100);
+		float randZ = (float)(rand() % 500 - 250);
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
@@ -760,7 +761,7 @@ void Process::pitch(fq::common::Transform& cameraTransform, float angle)
 
 void Process::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
 {
-	//createModel(modelPath, {}, transform);
+	createModel(modelPath, {}, transform);
 }
 
 void Process::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
@@ -889,12 +890,12 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		layer3.TileOffsetX = 0;
 		layer3.TileOffsetY = 0;
 
-		layer1.TileSizeX = 5;
-		layer2.TileSizeX = 5;
-		layer3.TileSizeX = 5;
-		layer1.TileSizeY = 3;
-		layer2.TileSizeY = 3;
-		layer3.TileSizeY = 3;
+		layer1.TileSizeX = 20;
+		layer2.TileSizeX = 20;
+		layer3.TileSizeX = 20;
+		layer1.TileSizeY = 20;
+		layer2.TileSizeY = 20;
+		layer3.TileSizeY = 20;
 
 		layer1.Metalic = 0;
 		layer2.Metalic = 0;
@@ -905,7 +906,12 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		layer3.Roughness = 0;
 
 		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
+
+		// Height ¼³Á¤
 		terrainMaterial.HeightFileName = "./resource/example/texture/terrain.raw";
+		terrainMaterial.HeightScale = 1000;
+		terrainMaterial.Width = 513;
+		terrainMaterial.Height = 513;
 
 		terrainMaterial.Layers.push_back(layer1);
 		terrainMaterial.Layers.push_back(layer2);

@@ -85,7 +85,8 @@ namespace fq::graphics
 		{
 			TerrainMeshJob job;
 			job.SubsetIndex = i;
-			job.TransformPtr = &terrainMeshObject->GetTransform();
+
+			job.TransformPtr = terrainMeshObject->GetTransform();
 			job.TerrainMaterial = material;
 			job.TerrainMesh = terrainMesh;
 			job.tempObject = terrainMeshObject;
