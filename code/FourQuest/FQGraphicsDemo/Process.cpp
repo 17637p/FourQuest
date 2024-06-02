@@ -98,7 +98,7 @@ bool Process::Init(HINSTANCE hInstance)
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 	createModel(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 10, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 200, 0 }));
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
@@ -136,8 +136,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 0,-1, 1 };
+	directionalLightInfo.intensity = 2;
+	directionalLightInfo.direction = { 0,0.7, 0.7 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
@@ -283,7 +283,7 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = mTimeManager.GetDeltaTime() * 1000.f;
+	const float speed = mTimeManager.GetDeltaTime() * 100.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		walk(cameraTransform, speed);

@@ -118,11 +118,10 @@ namespace fq::graphics
 				patchVertices[i * mNumPatchVertCols + j].Tex.y = i * dv;
 
 				// Temp: normal & tangent  Y 를 기반으로 계산해서 다시 넣어 줘야 한다...
-				patchVertices[i * mNumPatchVertCols + j].Normal = DirectX::XMFLOAT3(0.f, 0.f, -1.f);
-				patchVertices[i * mNumPatchVertCols + j].Tangent = DirectX::XMFLOAT3(1.f, 0.f, 0.f);
+				//patchVertices[i * mNumPatchVertCols + j].Normal = DirectX::XMFLOAT3(0.f, 0.f, -1.f);
+				patchVertices[i * mNumPatchVertCols + j].Tangent = DirectX::XMFLOAT3(0.f, 0.f, -1.f);
 			}
 		}
-		mesh.Vertices = patchVertices;
 
 		std::vector<fq::common::Mesh::BoundsYVertex> patchBoundsYVertices(mNumPatchVertRows * mNumPatchVertCols);
 		for (UINT i = 0; i < mNumPatchVertRows - 1; i++)
@@ -130,9 +129,11 @@ namespace fq::graphics
 			for (UINT j = 0; j < mNumPatchVertCols - 1; j++)
 			{
 				UINT patchID = i * (mNumPatchVertCols - 1) + j;
+				patchVertices[i * mNumPatchVertCols + j].Pos.y = patchBoundsY[patchID].y;
 				patchBoundsYVertices[i * mNumPatchVertCols + j].BoundsY = patchBoundsY[patchID];
 			}
 		}
+		mesh.Vertices = patchVertices;
 		mesh.BoundsYVertices = patchBoundsYVertices;
 	}
 
@@ -228,142 +229,43 @@ namespace fq::graphics
 		// https://github.com/jjuiddong/Introduction-to-3D-Game-Programming-With-DirectX11
 		// https://ddidding.tistory.com/95
 		// 새벽이라 계산하기 싫다! 지금은 오전 4시
-		int index1 = 0;
-		int index2 = 0;
-		int index3 = 0;
-		int index = 0;
-		int count = 0;
-		float vertex1[3] = { 0.f, 0.f, 0.f };
-		float vertex2[3] = { 0.f, 0.f, 0.f };
-		float vertex3[3] = { 0.f, 0.f, 0.f };
-		float vector1[3] = { 0.f, 0.f, 0.f };
-		float vector2[3] = { 0.f, 0.f, 0.f };
-		float sum[3] = { 0.f, 0.f, 0.f };
-		float length = 0.0f;
-
-		// 정규화되지 않은 법선 벡터를 저장할 임시 배열을 만듭니다.
-		DirectX::SimpleMath::Vector3* normals = new DirectX::SimpleMath::Vector3[(mNumPatchVertCols - 1) * (mNumPatchVertRows - 1)];
-		if (!normals)
+		for (UINT i = 0; i < mesh.Indices.size() / 4; i++)
 		{
-			// 아무튼 할당 못했다는 경고 추가 
+			UINT index0 = mesh.Indices[i * 4 + 0];
+			UINT index1 = mesh.Indices[i * 4 + 2];
+			UINT index2 = mesh.Indices[i * 4 + 3];
+
+			DirectX::SimpleMath::Vector3 a = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
+			DirectX::SimpleMath::Vector3 b = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
+
+			DirectX::SimpleMath::Vector3 normal;
+			normal = a.Cross(b);
+
+			mesh.Vertices[index0].Normal += normal;
+			mesh.Vertices[index1].Normal += normal;
+			mesh.Vertices[index2].Normal += normal;
+
+			// 두 번째 삼각형 
+			index0 = mesh.Indices[i * 4 + 0];
+			index1 = mesh.Indices[i * 4 + 3];
+			index2 = mesh.Indices[i * 4 + 1];
+
+			a = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
+			b = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
+
+			normal = a.Cross(b);
+
+			mesh.Vertices[index0].Normal += normal;
+			mesh.Vertices[index1].Normal += normal;
+			mesh.Vertices[index2].Normal += normal;
 		}
 
-		// 메쉬의 모든면을 살펴보고 법선을 계산합니다.
-		for (int j = 0; j < (mNumPatchVertCols - 1); j++)
+		for (UINT i = 0; i < mesh.Vertices.size(); i++)
 		{
-			for (int i = 0; i < (mNumPatchVertRows - 1); i++)
-			{
-				index1 = mesh.Indices[j * (mNumPatchVertCols - 1) + i];      // 왼쪽 아래 꼭지점.
-				index2 = mesh.Indices[j * (mNumPatchVertCols - 1) + i + 1];  // 오른쪽 하단 정점.
-				index3 = mesh.Indices[j * (mNumPatchVertCols - 1) + i + 2];          // 좌상단의 정점.
-
-				// 표면에서 세 개의 꼭지점을 가져옵니다.
-				vertex1[0] = mesh.Vertices[index1].Pos.x;
-				vertex1[1] = mesh.Vertices[index1].Pos.y;
-				vertex1[2] = mesh.Vertices[index1].Pos.z;
-
-				vertex2[0] = mesh.Vertices[index2].Pos.x;
-				vertex2[1] = mesh.Vertices[index2].Pos.y;
-				vertex2[2] = mesh.Vertices[index2].Pos.z;
-
-				vertex3[0] = mesh.Vertices[index3].Pos.x;
-				vertex3[1] = mesh.Vertices[index3].Pos.y;
-				vertex3[2] = mesh.Vertices[index3].Pos.z;
-
-				// 표면의 두 벡터를 계산합니다.
-				vector1[0] = vertex1[0] - vertex3[0];
-				vector1[1] = vertex1[1] - vertex3[1];
-				vector1[2] = vertex1[2] - vertex3[2];
-				vector2[0] = vertex3[0] - vertex2[0];
-				vector2[1] = vertex3[1] - vertex2[1];
-				vector2[2] = vertex3[2] - vertex2[2];
-
-				index = mesh.Indices[j * (mNumPatchVertCols - 1) + i];
-
-				// 이 두 법선에 대한 정규화되지 않은 값을 얻기 위해 두 벡터의 외적을 계산합니다.
-				normals[index].x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
-				normals[index].y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
-				normals[index].z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
-
-				// 길이를 계산합니다.
-				length = (float)sqrt(
-					(normals[index].x * normals[index].x) +
-					(normals[index].y * normals[index].y) +
-					(normals[index].z * normals[index].z));
-
-				// 길이를 사용하여이면의 최종 값을 표준화합니다.
-				normals[index].x = (normals[index].x / length);
-				normals[index].y = (normals[index].y / length);
-				normals[index].z = (normals[index].z / length);
-			}
+			mesh.Vertices[i].Normal.Normalize();
+			int a = 3;
 		}
-
-		// 이제 모든 정점을 살펴보고 각면의 평균을 취합니다.     
-		// 정점이 닿아 그 정점에 대한 평균 평균값을 얻는다.
-		for (int j = 0; j < mNumPatchVertCols; j++)
-		{
-			for (int i = 0; i < mNumPatchVertRows; i++)
-			{
-				// 합계를 초기화합니다.
-				sum[0] = 0.0f;
-				sum[1] = 0.0f;
-				sum[2] = 0.0f;
-
-				// 왼쪽 아래면.
-				if (((i - 1) >= 0) && ((j - 1) >= 0))
-				{
-					index = mesh.Indices[j * (mNumPatchVertCols - 1) + i];
-
-					sum[0] += normals[index].x;
-					sum[1] += normals[index].y;
-					sum[2] += normals[index].z;
-				}
-
-				// 오른쪽 아래 면.
-				if ((i < (mNumPatchVertRows - 1)) && ((j - 1) >= 0))
-				{
-					index = mesh.Indices[j * (mNumPatchVertCols - 1) + i + 1];
-
-					sum[0] += normals[index].x;
-					sum[1] += normals[index].y;
-					sum[2] += normals[index].z;
-				}
-
-				// 왼쪽 위 면.
-				if (((i - 1) >= 0) && (j < (mNumPatchVertCols - 1)))
-				{
-					index = mesh.Indices[j * (mNumPatchVertCols - 1) + i + 2];
-
-					sum[0] += normals[index].x;
-					sum[1] += normals[index].y;
-					sum[2] += normals[index].z;
-				}
-
-				// 오른쪽 위 면.
-				if ((i < (mNumPatchVertRows - 1)) && (j < (mNumPatchVertCols - 1)))
-				{
-					index = mesh.Indices[j * (mNumPatchVertCols - 1) + i + 3];
-
-					sum[0] += normals[index].x;
-					sum[1] += normals[index].y;
-					sum[2] += normals[index].z;
-				}
-
-				// 이 법선의 길이를 계산합니다.
-				length = (float)sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
-
-				// 높이 맵 배열의 정점 위치에 대한 인덱스를 가져옵니다.
-				index = mesh.Indices[(j * mNumPatchVertRows) + i];
-
-				// 이 정점의 최종 공유 법선을 표준화하여 높이 맵 배열에 저장합니다.
-				mesh.Vertices[index].Normal.x = (sum[0] / length);
-				mesh.Vertices[index].Normal.y = (sum[1] / length);
-				mesh.Vertices[index].Normal.z = (sum[2] / length);
-			}
-		}
-
-		// 임시 법선을 해제합니다.
-		delete[] normals;
+		int a = 3;
 	}
 
 	ImageObject::ImageObject()
