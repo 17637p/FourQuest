@@ -104,9 +104,9 @@ namespace fq::graphics
 		mSkyBoxVB->Bind(mDevice);
 		mSkyboxIB->Bind(mDevice);
 
-		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
-		mSkyBoxTexture->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mSkyBoxTexture->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
 		ViewRotationProjectionMatrix viewProjectionMatrix;
 		DirectX::SimpleMath::Matrix view = mCameraManager->GetViewMatrix(ECameraType::Player);

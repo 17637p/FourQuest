@@ -346,7 +346,7 @@ void D3D11ShaderResourceView::Bind(const std::shared_ptr<D3D11Device>& d3d11Devi
 		d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
 		break;
 	}
-	case ED3D11ShaderType::Pixelshader:
+	case ED3D11ShaderType::PixelShader:
 	{
 		d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
 		break;

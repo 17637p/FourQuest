@@ -105,78 +105,59 @@ namespace fq::graphics
 		float pad2;
 	};
 
-	struct Emitter
+	struct ParticleFrameData
 	{
-		DirectX::SimpleMath::Vector4 InitPositionW;
-		DirectX::SimpleMath::Vector4 ReadomPositionW;
-
-		DirectX::SimpleMath::Vector4 InitVelocityW;
-		DirectX::SimpleMath::Vector4 ReadomVelocityW;
-
-		DirectX::SimpleMath::Vector4 InitSizeW;
-		DirectX::SimpleMath::Vector4 ReadomSizeW;
-
-		float InitLifeTime;
-		float ReadomLifeTime;
-		unsigned int ParticleCount;
-		float DeltaTime;
-		float TotalTime;
-		float unused[3];
-	};
-
-	struct EmitterConstantBuffer
-	{
-		DirectX::SimpleMath::Matrix Transform;
-		DirectX::SimpleMath::Vector4 StartLifeTimeStartSpeed;
-		DirectX::SimpleMath::Vector4 StartRotationStartSize;
-		DirectX::SimpleMath::Vector4 StartColor0;
-		DirectX::SimpleMath::Vector4 StartColor1;
-		DirectX::SimpleMath::Vector4 GravitySimulationSpeedMaxParticleThisFrame;
-	};
-
-	struct ParticleMain
-	{
-		DirectX::SimpleMath::Matrix Transform;
-		DirectX::SimpleMath::Vector4 StartSize;
-		DirectX::SimpleMath::Vector4 StartColor1;
-		DirectX::SimpleMath::Vector4 StartColor2;
-		DirectX::SimpleMath::Vector2 StartLifeTime;
-		DirectX::SimpleMath::Vector2 StartSpeed;
-		DirectX::SimpleMath::Vector2 StartRotation;
-		DirectX::SimpleMath::Vector2 GravityModifier;
-
-		int StartLifeTimeOption;
-		int StartSpeedOption;
-		int StartSizeOption;
-		int StartRotationOption;
-
-		int StartColorOption;
-		int GravityModifierOption;
-		int RandomSeed;
-		float DeltaTime;
-
-		float SimulationSpeed;
-		unsigned int ParticleCount;
+		DirectX::SimpleMath::Matrix ViewMatrix;
+		DirectX::SimpleMath::Matrix ProjMatrix;
+		DirectX::SimpleMath::Matrix InvProjMatrix;
+		unsigned int ScreenWidth;
+		unsigned int ScreenHeight;
 		float unused[2];
 	};
 
-	struct ParticleShape
+	struct ParticleObjectData
 	{
-		DirectX::SimpleMath::Matrix Transform;
+		struct Instance
+		{
+			DirectX::SimpleMath::Matrix Transform;
+			float TimePos;
+			float FrameTime;
+			int NumToEmit;
+			int unused[1];
+		} InstanceData;
 
-		int ShapeType;
-		int ModeType;
-		float Angle;
-		float Radius;
+		struct Main
+		{
+			DirectX::SimpleMath::Color StartColor[2]; // 32
+		
+			float StartLifeTime[2]; // 8
+			float StartSpeed[2]; // 8
 
-		float DountRadius;
-		float Arc;
-		float Speed;
-		float Spread;
+			float StartRotation[2]; // 8
+			float StartSize[2]; // 8
 
-		float RadiusThickness;
-		float unused[3];
+			float GravityModfier[2]; // 8
+			float SimulationSpeed; // 4
+			int MaxParticleSize; // 4
+		} MainData;
+
+		struct Shape
+		{
+			int ShapeType;
+			int ModeType;
+			float Angle;
+			float Radius;
+
+			float DountRadius;
+			float Arc;
+			float Speed;
+			float Spread;
+
+			float RadiusThickness;
+			float unused[3];
+		} ShapeData;
 	};
+
 
 	template <typename T>
 	class D3D11ConstantBuffer;

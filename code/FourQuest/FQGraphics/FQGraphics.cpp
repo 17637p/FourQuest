@@ -183,9 +183,6 @@ bool FQGraphics::Render()
 	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
-	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
-	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
-
 	mRenderManager->Render();
 	mParticleManager->Excute();
 	return true;
@@ -313,17 +310,15 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
-void FQGraphics::SetFrameTime(float deltaTime)
+
+IParticleObject* FQGraphics::CreateParticleObject(const ParticleInfo& particleInfo)
 {
-	mParticleManager->SetFrameTime(deltaTime);
+	return mParticleManager->CreateParticleObject(particleInfo);
 }
-void FQGraphics::AddParticleEmitter(size_t id, ParticleInfo particleInfo)
+
+void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
 {
-	mParticleManager->AddEmitter(id, particleInfo);
-}
-void FQGraphics::DeleteParticleEmitter(size_t id)
-{
-	mParticleManager->DeleteEmitter(id);
+	mParticleManager->DeleteParticleObject(particleObject);
 }
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)

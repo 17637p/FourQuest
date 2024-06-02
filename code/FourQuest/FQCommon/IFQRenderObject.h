@@ -4,6 +4,7 @@
 #include <string>
 #include <directxtk/SimpleMath.h>
 #include "EObjectRenderType.h"
+#include "FQCommonGraphics.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -126,6 +127,23 @@ extern "C" {
 
 		protected:
 			virtual ~IImageObject() = default;
+		};
+
+		class IParticleObject
+		{
+		public:
+			virtual FQ_GRAPHICS void SetInfo(const ParticleInfo& info) abstract;
+			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
+			virtual FQ_GRAPHICS void SetIsReset(bool bIsReset) abstract;
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+
+			virtual FQ_GRAPHICS const ParticleInfo& GetInfo() const abstract;
+			virtual FQ_GRAPHICS bool GetIsReset() const abstract;
+			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
+
+		protected:
+			virtual ~IParticleObject() = default;
 		};
 	}
 #ifdef __cplusplus

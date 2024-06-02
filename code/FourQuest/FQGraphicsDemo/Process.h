@@ -21,6 +21,7 @@ namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
 namespace fq::graphics { class ITerrainMeshObject; }
+namespace fq::graphics { class IParticleObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -81,6 +82,7 @@ private:
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
+	std::vector< fq::graphics::IParticleObject*> mParticleObjects;
 
 	// Camera
 	fq::common::Transform cameraTransform;

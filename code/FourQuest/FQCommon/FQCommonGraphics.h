@@ -91,12 +91,10 @@ namespace fq::graphics
 			RandomBetweenTwoConstant,
 		};
 
-		struct MainModule
+		struct Main
 		{
 			float Duration = 5; // 총 재생시간
 			bool bIsLooping = true;
-
-			int	NumToEmit;
 
 			EOption StartDelayOption = EOption::Constant;
 			float StartDelay[2] = { 0.f, }; // 방출 시작 시간
@@ -124,25 +122,23 @@ namespace fq::graphics
 			size_t MaxParticleCount = MAX_PARTICLE_COUNT;
 		} MainModuleData;
 
-		// 이 매개변수는 CPU쪽에서 다뤄주는 편이 좋게 느껴지는데
-		struct EmissionModule
+		struct Emission
 		{
 			float ParticlesPerSecond = 10.f;
-			float Accumlation = 0.f;
 
-			//struct Burst
-			//{
-			//	float TimePos = 0.f; // 처리할 시간
-			//	size_t Count = 30u; // 방출될 파티클 수
-			//	size_t Cycles = 1u; // 버스트 반복 횟수
-			//	float Interval = 0.01f; // 버스트 사이 간격
-			//	float Probability = 1.f; // 0 ~ 1 사이의 확률 값을 사용
-			//};
-			//
-			//std::vector<Burst> Bursts;
+			struct Burst
+			{
+				float TimePos = 0.f; // 처리할 시간
+				size_t Count = 30u; // 방출될 파티클 수
+				size_t Cycles = 1u; // 버스트 반복 횟수
+				float Interval = 0.01f; // 버스트 사이 간격
+				float Probability = 1.f; // 0 ~ 1 사이의 확률 값을 사용
+			};
+
+			std::vector<Burst> Bursts;
 		} EmissionModuleData;
 
-		struct ShapeModele
+		struct Shape
 		{
 			enum class EShape
 			{
@@ -171,7 +167,15 @@ namespace fq::graphics
 			float DountRadius = 0.2f; // 도넛 반지름
 			float Arc = 360.f; // 호 크기, 각도 사용
 			float RadiusThickness = 0.f; // 입방체의 어느 부분 부터 방출될 것인지 0 ~ 1f
-		};
+			float Speed;
+			float Spread;
+		} ShapeData;
+
+		struct VelocityOverLifetime {};
+		struct ColorOverLifetime {};
+		struct SizeOverLifetime {};
+		struct RotationOverLifetime {};
+		struct TextureSheetAnimation {};
 
 		struct RenderModule
 		{
@@ -191,10 +195,6 @@ namespace fq::graphics
 			std::wstring TexturePath = L"";
 		} RenderModuleData;
 	};
-
-
-
-
 
 	namespace debug
 	{

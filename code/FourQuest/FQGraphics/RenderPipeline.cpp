@@ -74,9 +74,9 @@ namespace fq::graphics
 		{
 			if (mDiffuseCubeMap != nullptr)
 			{
-				mDiffuseCubeMap->Bind(mDevice, 6, ED3D11ShaderType::Pixelshader);
-				mSpecularCubeMap->Bind(mDevice, 7, ED3D11ShaderType::Pixelshader);
-				mBRDFLUT->Bind(mDevice, 8, ED3D11ShaderType::Pixelshader);
+				mDiffuseCubeMap->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
+				mSpecularCubeMap->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
+				mBRDFLUT->Bind(mDevice, 8, ED3D11ShaderType::PixelShader);
 			}
 
 			pass->Render();

@@ -163,6 +163,9 @@
     <ClInclude Include="D3D11ParticleManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -239,6 +242,12 @@
     </Filter>
     <Filter Include="Shader\Particle">
       <UniqueIdentifier>{295600f5-72b0-4b3b-94e0-40c687c4bd5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Particle\Render">
+      <UniqueIdentifier>{8d062b40-d555-44d3-b03a-671f78558391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Particle\Simulation">
+      <UniqueIdentifier>{76577010-c364-4424-ab87-96615d60b7ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -377,6 +386,9 @@
     <ClCompile Include="D3D11ParticleManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleObject.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
@@ -397,41 +409,26 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleDeadListInitCS.hlsl">
-      <Filter>Shader\Particle</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleEmitCS.hlsl">
-      <Filter>Shader\Particle</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
-      <Filter>Shader\Particle</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitCS.hlsl">
-      <Filter>Shader\Particle</Filter>
-    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl">
-      <Filter>Shader\Particle</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleSimulateCS.hlsl">
-      <Filter>Shader\Particle</Filter>
+      <Filter>Shader\Particle\Render</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
-      <Filter>Shader\Particle</Filter>
+      <Filter>Shader\Particle\Render</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleBitonicInnerSort.hlsl">
-      <Filter>Shader\Particle</Filter>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
+      <Filter>Shader\Particle\Render</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleBitonicSortLDS.hlsl">
-      <Filter>Shader\Particle</Filter>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleDeadListInitCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleBitonicSortStep.hlsl">
-      <Filter>Shader\Particle</Filter>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleEmitCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
-      <Filter>Shader\Particle</Filter>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitDispatchArgs.hlsl">
-      <Filter>Shader\Particle</Filter>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleSimulateCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -462,5 +459,10 @@
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
       <Filter>Shader</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCommon.hlsli">
+      <Filter>Shader\Particle</Filter>
+    </None>
   </ItemGroup>
 </Project>

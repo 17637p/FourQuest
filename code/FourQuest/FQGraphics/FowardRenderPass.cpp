@@ -171,13 +171,13 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
-			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
-			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-			mShadowSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
-			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
+			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
+			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mShadowSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 		}
 
 		// Draw

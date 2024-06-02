@@ -38,6 +38,11 @@ Process::~Process()
 		mTestGraphics->DeleteSkinnedMeshObject(iobj);
 	}
 
+	for (fq::graphics::IParticleObject* iobj : mParticleObjects)
+	{
+		mTestGraphics->DeleteParticleObject(iobj);
+	}
+
 	//mTestGraphics->DeleteLight(1);
 	//mTestGraphics->DeleteLight(2);
 	//mTestGraphics->DeleteLight(3);
@@ -257,7 +262,6 @@ void Process::Update()
 {
 	mTimeManager.Update();
 	calculateFrameStats();
-	mTestGraphics->SetFrameTime(mTimeManager.GetDeltaTime());
 
 	// ESC 버튼 누르면 프로그램 종료
 	if (GetAsyncKeyState(VK_ESCAPE))
@@ -659,20 +663,29 @@ void Process::particleInit()
 {
 	using namespace fq::graphics;
 
-	DirectX::XMVECTOR spawnPosition = DirectX::XMVectorSet(2.0f, 70.0f, 260.0f, 1.0f);
-
 	ParticleInfo particleInfo = { };
 
-	// Sparks
-	mTestGraphics->AddParticleEmitter(1, particleInfo);
+	particleInfo.MainModuleData.StartColor[0] = { 1, 0, 0, 1 };
+	particleInfo.EmissionModuleData.ParticlesPerSecond = 100.f;
+	IParticleObject* obj = mTestGraphics->CreateParticleObject(particleInfo);
+	mParticleObjects.push_back(obj);
 
-	// Smoke
-	mTestGraphics->AddParticleEmitter(2, particleInfo);
+	particleInfo.MainModuleData.StartColor[0] = { 1, 1, 0, 1 };
+	particleInfo.MainModuleData.StartLifeTime[0] = 10.f;
+	obj = mTestGraphics->CreateParticleObject(particleInfo);
+	mParticleObjects.push_back(obj);
+	obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 10, 0,0 }));
+
 }
 
 void Process::particleUpdate()
 {
+	using namespace fq::graphics;
 
+	for (IParticleObject* obj : mParticleObjects)
+	{
+		obj->SetFrameTime(mTimeManager.GetDeltaTime());
+	}
 }
 
 /*=============================================================================

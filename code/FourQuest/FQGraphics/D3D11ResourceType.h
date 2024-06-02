@@ -7,7 +7,7 @@ namespace fq::graphics
 	=============================================================================*/
 	enum class ED3D11ShaderType
 	{
-		Pixelshader,
+		PixelShader,
 		VertexShader,
 		GeometryShader,
 		ComputeShader,

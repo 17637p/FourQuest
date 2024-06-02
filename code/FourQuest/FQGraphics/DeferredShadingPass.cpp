@@ -178,21 +178,21 @@ namespace fq::graphics
 			mFullScreenVB->Bind(mDevice);
 			mFullScreenIB->Bind(mDevice);
 
-			mAlbedoSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-			mMetalnessSRV->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-			mRoughnessSRV->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
-			mNormalSRV->Bind(mDevice, 3, ED3D11ShaderType::Pixelshader);
-			mEmissiveSRV->Bind(mDevice, 4, ED3D11ShaderType::Pixelshader);
-			mPositionSRV->Bind(mDevice, 5, ED3D11ShaderType::Pixelshader);
-			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
+			mAlbedoSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mMetalnessSRV->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mRoughnessSRV->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mNormalSRV->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
+			mEmissiveSRV->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
+			mPositionSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 0);
-			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
+			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 
-			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-			mPointClampSamplerState->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
-			mShadowSampler->Bind(mDevice, 3, ED3D11ShaderType::Pixelshader);
+			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mPointClampSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mShadowSampler->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
 		}
 
 		// draw

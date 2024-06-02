@@ -83,16 +83,16 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 			mDefaultRS->Bind(mDevice);
-			mAnisotropicWrapSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-			mShadowSS->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+			mAnisotropicWrapSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mShadowSS->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefaultDS->Bind(mDevice);
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
-			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
-			mShadowSRV->Bind(mDevice, 17, ED3D11ShaderType::Pixelshader);
+			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
+			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mShadowSRV->Bind(mDevice, 17, ED3D11ShaderType::PixelShader);
 
 			mTerrainVS->Bind(mDevice);
 			mTerrainPS->Bind(mDevice);

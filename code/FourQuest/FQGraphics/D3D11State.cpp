@@ -107,7 +107,7 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 		d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, mState.GetAddressOf());
 		break;
 	}
-	case ED3D11ShaderType::Pixelshader:
+	case ED3D11ShaderType::PixelShader:
 	{
 		d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, mState.GetAddressOf());
 		break;

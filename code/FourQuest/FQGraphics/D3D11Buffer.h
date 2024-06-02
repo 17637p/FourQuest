@@ -126,7 +126,7 @@ namespace fq::graphics
 			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
 			break;
 		}
-		case ED3D11ShaderType::Pixelshader:
+		case ED3D11ShaderType::PixelShader:
 		{
 			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
 			break;
