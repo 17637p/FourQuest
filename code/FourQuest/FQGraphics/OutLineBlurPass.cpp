@@ -86,3 +86,15 @@ void fq::graphics::OutLineBlurPass::Render()
 		mOffScreenSRV->UnBind(mDevice, 1, ED3D11ShaderType::Pixelshader);
 	}
 }
+
+void fq::graphics::OutLineBlurPass::OnResize(unsigned short width, unsigned short height)
+{
+	auto outLineRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::OutLine);
+	mOutLineSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, outLineRTV);
+
+	auto offScreenRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+	mOffScreenSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, offScreenRTV);
+
+	mOutLineBlurRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OutLineBlur, width, height);
+	mNoneDSV->OnResize(mDevice, ED3D11DepthStencilViewType::None, width, height);
+}

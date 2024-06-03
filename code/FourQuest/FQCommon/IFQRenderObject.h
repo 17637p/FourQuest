@@ -97,7 +97,7 @@ extern "C" {
 		public:
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const abstract;
 

@@ -123,8 +123,8 @@ namespace fq::graphics
 				for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
 				{
 					std::vector<float> cascadeEnds = ShadowPass::CalculateCascadeEnds({ 0.33, 0.66 },
-						mCameraManager->GetNearPlain(ECameraType::Player),
-						mCameraManager->GetFarPlain(ECameraType::Player));
+						mCameraManager->GetNearPlane(ECameraType::Player),
+						mCameraManager->GetFarPlane(ECameraType::Player));
 
 					std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = ShadowPass::CalculateCascadeShadowTransform(cascadeEnds,
 						mCameraManager->GetViewMatrix(ECameraType::Player),

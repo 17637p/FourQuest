@@ -11,7 +11,7 @@ namespace fq::graphics
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11ResourceManager> resourceManager);
 		void Finalize() override;
-		void OnResize(unsigned short width, unsigned short height) override {}
+		void OnResize(unsigned short width, unsigned short height) override;
 		void Render() override;
 
 	private:

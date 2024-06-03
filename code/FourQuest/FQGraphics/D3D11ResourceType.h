@@ -11,6 +11,8 @@ namespace fq::graphics
 		VertexShader,
 		GeometryShader,
 		ComputeShader,
+		DomainShader,
+		HullShader
 	};
 
 	/*=============================================================================
@@ -66,9 +68,10 @@ namespace fq::graphics
 	{
 		Default,
 		AnisotropicWrap,
-		PointClamp,
+		AnisotropicClamp,
 		Shadow,
 		LinearWrap,
+		PointClamp
 	};
 
 	enum class ED3D11RasterizerState

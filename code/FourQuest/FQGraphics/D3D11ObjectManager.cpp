@@ -166,7 +166,7 @@ namespace fq::graphics
 		delete terrainMeshObject;
 	}
 
-	graphics::ITerrainMeshObject* D3D11ObjectManager::CreateTerrainMeshObject(const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info)
+	graphics::ITerrainMeshObject* D3D11ObjectManager::CreateTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<D3D11ModelManager>& modelManager, MeshObjectInfo info)
 	{
 		std::shared_ptr<StaticMesh> staticMesh = modelManager->FindStaticMeshOrNull(modelManager->GenerateStaticMeshKey(info.ModelPath, info.MeshName));
 
@@ -175,7 +175,7 @@ namespace fq::graphics
 			return nullptr;
 		}
 
-		TerrainMeshObject* terrainMeshObject = new TerrainMeshObject(staticMesh, info.Transform);
+		TerrainMeshObject* terrainMeshObject = new TerrainMeshObject(device, staticMesh, info.Transform);
 		mTerrainMeshObjects.insert(terrainMeshObject);
 
 		return terrainMeshObject;

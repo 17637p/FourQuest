@@ -29,7 +29,7 @@ namespace fq::graphics
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
-		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 
 		D3D_SHADER_MACRO macroShading[] =
@@ -130,8 +130,8 @@ namespace fq::graphics
 				for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
 				{
 					std::vector<float> cascadeEnds = ShadowPass::CalculateCascadeEnds({ 0.33, 0.66 },
-						mCameraManager->GetNearPlain(ECameraType::Player),
-						mCameraManager->GetFarPlain(ECameraType::Player));
+						mCameraManager->GetNearPlane(ECameraType::Player),
+						mCameraManager->GetFarPlane(ECameraType::Player));
 
 					std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = ShadowPass::CalculateCascadeShadowTransform(cascadeEnds,
 						mCameraManager->GetViewMatrix(ECameraType::Player),
@@ -174,7 +174,7 @@ namespace fq::graphics
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mShaderProgram->Bind(mDevice);
-			
+
 			mFullScreenVB->Bind(mDevice);
 			mFullScreenIB->Bind(mDevice);
 

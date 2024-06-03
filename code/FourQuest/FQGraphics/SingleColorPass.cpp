@@ -123,3 +123,8 @@ void fq::graphics::SingleColorPass::Render()
 		}
 	}
 }
+
+void fq::graphics::SingleColorPass::OnResize(unsigned short width, unsigned short height)
+{
+	mSingleColorRTV->OnResize(mDevice, ED3D11RenderTargetViewType::SingleColor, width, height);
+}

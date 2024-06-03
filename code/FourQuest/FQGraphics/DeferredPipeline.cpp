@@ -15,6 +15,7 @@ namespace fq::graphics
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
 		, mTerrainPass(std::make_shared<TerrainPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
+		, mSingleColorPass(std::make_shared<SingleColorPass>())
 		, mOutLinePass(std::make_shared<OutLinePass>())
 		, mOutLineBlurPass(std::make_shared<OutLineBlurPass>())
 		, mOutLineAddPass(std::make_shared<OutLineAddPass>())
@@ -63,10 +64,10 @@ namespace fq::graphics
 		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
-		//mPasses.push_back(mSingleColorPass);
-		//mPasses.push_back(mOutLinePass);
-		//mPasses.push_back(mOutLineBlurPass);
-		//mPasses.push_back(mOutLineAddPass);
+		mPasses.push_back(mSingleColorPass);
+		mPasses.push_back(mOutLinePass);
+		mPasses.push_back(mOutLineBlurPass);
+		mPasses.push_back(mOutLineAddPass);
 		mPasses.push_back(mFullScreenPass);
 	}
 
@@ -91,9 +92,6 @@ namespace fq::graphics
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Emissive, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 
-		RenderPipeline::OnResize(width, height);
-		mDevice->OnResize(width, height);
-
 		mAlbedoRTV->Release();
 		mMetalnessRTV->Release();
 		mRoughnessRTV->Release();
@@ -108,17 +106,7 @@ namespace fq::graphics
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
 
-		mAlbedoSRV->Init(mDevice, mAlbedoRTV);
-		mMetalnessSRV->Init(mDevice, mMetalnessRTV);
-		mRoughnessSRV->Init(mDevice, mRoughnessRTV);
-		mNormalSRV->Init(mDevice, mNormalRTV);
-		mEmissiveSRV->Init(mDevice, mEmissiveRTV);
-		mPositionSRV->Init(mDevice, mPositionRTV);
-
-		for (std::shared_ptr<Pass> pass : mPasses)
-		{
-			pass->OnResize(width, height);
-		}
+		RenderPipeline::OnResize(width, height);
 	}
 
 	void DeferredPipeline::SetSkyBox(const std::wstring& path)

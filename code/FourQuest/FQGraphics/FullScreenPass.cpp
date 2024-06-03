@@ -26,7 +26,7 @@ namespace fq::graphics
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mFullScreenShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, fullScreenPS, pipelieState);
 
-		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 
 		std::vector<DirectX::SimpleMath::Vector2> positions =
 		{
