@@ -65,3 +65,43 @@ void fq::game_module::Terrain::SetTerrainMeshObject(fq::graphics::ITerrainMeshOb
 	mTerrainMeshObject = terrainMeshObject;
 }
 
+void fq::game_module::Terrain::SetHeightScale(float heightScale)
+{
+	mHeightScale = heightScale;
+}
+
+float fq::game_module::Terrain::GetHeightScale() const
+{
+	return mHeightScale;
+}
+
+void fq::game_module::Terrain::SetHeight(float height)
+{
+	mHeight = height;
+}
+
+float fq::game_module::Terrain::GetHeight() const
+{
+	return mHeight;
+}
+
+void fq::game_module::Terrain::SetWidth(float width)
+{
+	mWidth = width;
+}
+
+float fq::game_module::Terrain::GetWidth() const
+{
+	return mWidth;
+}
+
+void fq::game_module::Terrain::SetHeightMap(const std::string& heightMap)
+{
+	mHeightMapPath = heightMap;
+}
+
+std::string fq::game_module::Terrain::GetHeightMap() const
+{
+	return mHeightMapPath;
+}
+

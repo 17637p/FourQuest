@@ -411,6 +411,10 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	fq::graphics::TerrainMaterialInfo info;
 	info.AlPhaFileName = terrain->GetAlphaMap();
 	info.Layers = terrain->GetTerrainLayers();
+	info.Width = terrain->GetWidth();
+	info.Height = terrain->GetHeight();
+	info.HeightScale = terrain->GetHeightScale();
+	info.HeightFileName = terrain->GetHeightMap();
 
 	mGameProcess->mGraphics->SetTerrainMeshObject(iTerrainMeshObject, info);
 }

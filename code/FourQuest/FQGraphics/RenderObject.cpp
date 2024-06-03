@@ -242,8 +242,8 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 vertex1Pos = mesh.Vertices[index1].Pos;
 			DirectX::SimpleMath::Vector3 vertex2Pos = mesh.Vertices[index2].Pos;
 
-			DirectX::SimpleMath::Vector3 aVec = vertex1Pos - vertex0Pos;
-			DirectX::SimpleMath::Vector3 bVec = vertex2Pos - vertex0Pos;
+			DirectX::SimpleMath::Vector3 bVec = vertex1Pos - vertex0Pos;
+			DirectX::SimpleMath::Vector3 aVec = vertex2Pos - vertex0Pos;
 
 			DirectX::SimpleMath::Vector3 normal;
 			normal = aVec.Cross(bVec);
@@ -257,8 +257,8 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector2 vertex1uv = mesh.Vertices[index1].Tex;
 			DirectX::SimpleMath::Vector2 vertex2uv = mesh.Vertices[index2].Tex;
 
-			DirectX::SimpleMath::Vector2 deltaUV0 = vertex1uv - vertex0uv;
-			DirectX::SimpleMath::Vector2 deltaUV1 = vertex2uv - vertex0uv;
+			DirectX::SimpleMath::Vector2 deltaUV1 = vertex1uv - vertex0uv;
+			DirectX::SimpleMath::Vector2 deltaUV0 = vertex2uv - vertex0uv;
 
 			float d = 1.f / (deltaUV0.x * deltaUV1.y - deltaUV0.y * deltaUV1.x);
 
@@ -272,8 +272,8 @@ namespace fq::graphics
 			index1 = mesh.Indices[i * 4 + 3];
 			index2 = mesh.Indices[i * 4 + 1];
 
-			aVec = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
-			bVec = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
+			bVec = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
+			aVec = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
 
 			normal = aVec.Cross(bVec);
 
@@ -286,8 +286,8 @@ namespace fq::graphics
 			vertex1uv = mesh.Vertices[index1].Tex;
 			vertex2uv = mesh.Vertices[index2].Tex;
 
-			deltaUV0 = vertex1uv - vertex0uv;
-			deltaUV1 = vertex2uv - vertex0uv;
+			deltaUV1 = vertex1uv - vertex0uv;
+			deltaUV0 = vertex2uv - vertex0uv;
 
 			d = 1.f / (deltaUV0.x * deltaUV1.y - deltaUV0.y * deltaUV1.x);
 

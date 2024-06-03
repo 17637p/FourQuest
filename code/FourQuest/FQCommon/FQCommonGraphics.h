@@ -95,7 +95,8 @@ namespace fq::graphics
 		std::vector<TerrainLayer> Layers; // 최대 4
 		std::string AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
 
-		std::string HeightFileName;
+		std::string HeightFileName; // Raw 파일
+
 		float HeightScale; // 전체 높이 (Length)
 		float Width; // 가로 크기
 		float Height; // 세로 크기

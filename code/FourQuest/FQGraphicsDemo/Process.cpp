@@ -137,7 +137,7 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
 	directionalLightInfo.intensity = 2;
-	directionalLightInfo.direction = { 0,0.7, 0.7 };
+	directionalLightInfo.direction = { 0, -0.7, -0.7 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
@@ -165,6 +165,7 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(4, directionalLightInfo);
+	
 	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	//directionalLightInfo.color = { 1,0,0, 1 };
 	//directionalLightInfo.intensity = 1000;
