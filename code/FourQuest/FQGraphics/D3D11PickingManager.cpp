@@ -77,7 +77,7 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	mBackBufferRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
 }
 
-void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects, 
+void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
 	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
 	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
@@ -178,10 +178,10 @@ unsigned int fq::graphics::D3D11PickingManager::MakeRGBAUnsignedInt(DirectX::Sim
 }
 
 
-void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device, 
-	const std::shared_ptr<D3D11CameraManager>& cameraManager, 
-	const std::shared_ptr<D3D11JobManager>& jobManager, 
-	const std::set<IStaticMeshObject*>& staticMeshObjects, 
+void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device,
+	const std::shared_ptr<D3D11CameraManager>& cameraManager,
+	const std::shared_ptr<D3D11JobManager>& jobManager,
+	const std::set<IStaticMeshObject*>& staticMeshObjects,
 	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
 	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
@@ -264,16 +264,16 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	for (const TerrainMeshJob& job : terrainMeshJobs)
 	{
-		job.StaticMesh->Bind(device);
+		job.TerrainMesh->Bind(device);
 
 		ModelTransform modelTransform;
 		modelTransform.color = mTerrainMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
-		modelTransform.world = (*job.TransformPtr).Transpose();
+		modelTransform.world = (job.TransformPtr).Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
 
 		mConstantBuffer->Update(device, modelTransform);
 
-		job.StaticMesh->Draw(device, job.SubsetIndex);
+		job.TerrainMesh->Draw(device, job.SubsetIndex);
 	}
 
 	mSkinnedMeshLayout->Bind(device);

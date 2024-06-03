@@ -36,8 +36,8 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 GetPosition(const ECameraType& cameraType) const;
 		DirectX::SimpleMath::Quaternion GetRotation(const ECameraType& cameraType) const;
 		// 쉐도우 투영행렬 만드는데 필요함
-		float GetNearPlain(const ECameraType& cameraType) const;
-		float GetFarPlain(const ECameraType& cameraType) const;
+		float GetNearPlane(const ECameraType& cameraType) const;
+		float GetFarPlane(const ECameraType& cameraType) const;
 
 	private:
 		std::unordered_map<ECameraType, std::shared_ptr<Camera>> mCameras;

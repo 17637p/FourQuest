@@ -3,6 +3,9 @@
 
 #include "Material.h"
 #include "D3D11Texture.h"
+#include "D3D11Device.h"
+
+#include <fstream>
 
 namespace fq::graphics
 {
@@ -27,7 +30,7 @@ namespace fq::graphics
 		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::Pixelshader);
 	}
 
-	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device, 
+	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 		const TerrainMaterialInfo& materialData,
 		std::filesystem::path basePath /*= ""*/)
 		:mBaseColors{},
@@ -38,9 +41,14 @@ namespace fq::graphics
 		mTileOffsetYs{},
 		mMetalics{},
 		mRoughnesses{},
-		mAlpha{nullptr}
+		mAlpha{ nullptr },
+		mHeightscale(materialData.HeightScale)
 	{
 		mBasePath = basePath;
+
+		LoadHeight(materialData.HeightFileName);
+		SmoothHeightMap();
+		BuildHeightMapSRV(device);
 
 		SetMaterial(device, materialData);
 	}
@@ -58,6 +66,12 @@ namespace fq::graphics
 		if (mAlpha != nullptr)
 		{
 			mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
+		}
+		if (mHeightMap != nullptr)
+		{
+			mHeightMap->Bind(d3d11Device, 0, ED3D11ShaderType::VertexShader);
+			mHeightMap->Bind(d3d11Device, 17, ED3D11ShaderType::Pixelshader);
+			mHeightMap->Bind(d3d11Device, 0, ED3D11ShaderType::DomainShader);
 		}
 	}
 
@@ -98,6 +112,100 @@ namespace fq::graphics
 			//if (!materialData.RoughnessFileNames[i].empty()) mRoughness = std::make_shared<D3D11Texture>(device, basePath / materialData.RoughnessFileName);
 			//if (!materialData.NormalFileNames[i].empty()) mNormal = std::make_shared<D3D11Texture>(device, basePath / materialData.NormalFileName);
 		}
+	}
+
+	void TerrainMaterial::LoadHeight(const std::string& heightMapFilePath)
+	{
+		// temp
+		const UINT width = 513;
+		const UINT height = 513;
+
+		std::vector<unsigned char> in(width * height);
+
+		std::ifstream inFile;
+		inFile.open(heightMapFilePath.c_str(), std::ios_base::binary);
+
+		if (inFile)
+		{
+			inFile.read((char*)&in[0], (std::streamsize)in.size());
+
+			inFile.close();
+		}
+
+		mHeightMapData.resize(width * height, 0);
+		for (UINT i = 0; i < width * height; i++)
+		{
+			mHeightMapData[i] = (in[i] / 255.0f) * mHeightscale;
+		}
+	}
+
+	bool TerrainMaterial::InBounds(int i, int j)
+	{
+		// temp
+		const UINT width = 513;
+		const UINT height = 513;
+
+		return
+			j >= 0 &&
+			i < (int)height &&
+			i >= 0 &&
+			j < (int)width;
+	}
+
+	float TerrainMaterial::Average(int i, int j)
+	{
+		// temp
+		const UINT width = 513;
+		const UINT height = 513;
+
+		float average = 0.0f;
+		float num = 0.0f;
+
+		for (int m = i - 1; m <= i + 1; m++)
+		{
+			for (int n = j - 1; n <= j + 1; n++)
+			{
+				if (InBounds(m, n))
+				{
+					average += mHeightMapData[m * width + n];
+					num += 1.0f;
+				}
+			}
+		}
+
+		if (average != 0)
+		{
+			int a = 3;
+		}
+		return average / num;
+	}
+
+	void TerrainMaterial::SmoothHeightMap()
+	{
+		// temp
+		const UINT width = 513;
+		const UINT height = 513;
+
+		std::vector<float> dest(mHeightMapData.size());
+
+		for (UINT i = 0; i < height; i++)
+		{
+			for (UINT j = 0; j < width; j++)
+			{
+				dest[i * width + j] = Average(i, j);
+			}
+		}
+
+		mHeightMapData = dest;
+	}
+
+	void TerrainMaterial::BuildHeightMapSRV(const std::shared_ptr<D3D11Device>& device)
+	{
+		// temp
+		const UINT width = 513;
+		const UINT height = 513;
+
+		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, width, height);
 	}
 
 }

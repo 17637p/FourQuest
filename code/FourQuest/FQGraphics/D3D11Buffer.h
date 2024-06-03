@@ -114,28 +114,38 @@ namespace fq::graphics
 
 		switch (eShaderType)
 		{
-		case ED3D11ShaderType::VertexShader:
-		{
-			d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		case ED3D11ShaderType::GeometryShader:
-		{
-			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		case ED3D11ShaderType::Pixelshader:
-		{
-			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		case ED3D11ShaderType::ComputeShader:
-		{
-			d3d11Device->GetDeviceContext()->CSSetConstantBuffers(startSlot, 1, &constantBuffer);
-			break;
-		}
-		default:
-			break;
+			case ED3D11ShaderType::VertexShader:
+			{
+				d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
+				break;
+			}
+			case ED3D11ShaderType::GeometryShader:
+			{
+				d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
+				break;
+			}
+			case ED3D11ShaderType::Pixelshader:
+			{
+				d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
+				break;
+			}
+			case ED3D11ShaderType::ComputeShader:
+			{
+				d3d11Device->GetDeviceContext()->CSSetConstantBuffers(startSlot, 1, &constantBuffer);
+				break;
+			}
+			case ED3D11ShaderType::DomainShader:
+			{
+				d3d11Device->GetDeviceContext()->DSSetConstantBuffers(startSlot, 1, &constantBuffer);
+				break;
+			}
+			case ED3D11ShaderType::HullShader:
+			{
+				d3d11Device->GetDeviceContext()->HSSetConstantBuffers(startSlot, 1, &constantBuffer);
+				break;
+			}
+			default:
+				break;
 		}
 	}
 
@@ -179,9 +189,9 @@ namespace fq::graphics
 			return mBuffer;
 		}
 
-		Microsoft::WRL::ComPtr<ID3D11Buffer> GetDebugBuffer() const 
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetDebugBuffer() const
 		{
-			return mDebugBuffer; 
+			return mDebugBuffer;
 		}
 
 		size_t GetTypeSize() const

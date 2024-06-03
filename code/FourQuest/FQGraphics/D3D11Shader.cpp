@@ -236,5 +236,43 @@ namespace fq::graphics
 
 		mPipelineState->Bind(device);
 	}
+
+	void D3D11HullShader::Bind(const std::shared_ptr<D3D11Device>& device)
+	{
+		device->GetDeviceContext()->HSSetShader(mShader.Get(), NULL, NULL);
+	}
+
+	Microsoft::WRL::ComPtr<ID3D11HullShader> D3D11HullShader::GetShader() const
+	{
+		return mShader;
+	}
+
+	D3D11HullShader::D3D11HullShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& path, const D3D_SHADER_MACRO* pDefines /*= nullptr*/, const std::string& entryPoint /*= "main"*/, const std::string& shaderModel /*= "hs_5_0"*/)
+		:D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
+		, mShader(nullptr)
+	{
+		HR(device->GetDevice()->CreateHullShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+
+	D3D11DomainShader::D3D11DomainShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& path, const D3D_SHADER_MACRO* pDefines /*= nullptr*/, const std::string& entryPoint /*= "main"*/, const std::string& shaderModel /*= "hs_5_0"*/)
+		:D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
+		, mShader(nullptr)
+	{
+		HR(device->GetDevice()->CreateDomainShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+
+	void D3D11DomainShader::Bind(const std::shared_ptr<D3D11Device>& device)
+	{
+		device->GetDeviceContext()->DSSetShader(mShader.Get(), NULL, NULL);
+	}
+
 }
 
