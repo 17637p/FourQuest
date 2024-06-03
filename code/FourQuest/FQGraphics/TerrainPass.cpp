@@ -149,7 +149,7 @@ namespace fq::graphics
 			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
 			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
-			mShadowSRV->Bind(mDevice, 17, ED3D11ShaderType::Pixelshader);
+			mShadowSRV->Bind(mDevice, 18, ED3D11ShaderType::Pixelshader);
 
 			mTerrainVS->Bind(mDevice);
 			mTerrainPS->Bind(mDevice);
