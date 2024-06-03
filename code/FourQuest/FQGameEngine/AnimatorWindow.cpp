@@ -85,8 +85,13 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 		std::string originName;
 		std::string changedName;
 
-		for (auto& [id, parameter] : parameters)
+		auto eraseParameter = parameters.end();
+
+		for (auto iter = parameters.begin(); iter != parameters.end(); ++iter)
 		{
+			const auto& id = iter->first;
+			auto& parameter = iter->second;
+
 			// Name
 			std::string parametetName = id;
 			std::string label = "##" + parametetName;
@@ -99,6 +104,15 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 			{
 				originName = id;
 				changedName = parametetName;
+			}
+
+			// 삭제 파라미터
+			if (ImGui::BeginPopupContextItem(label.c_str()))
+			{
+				if (ImGui::MenuItem("Delete"))
+					eraseParameter = iter;
+			
+				ImGui::EndPopup();
 			}
 
 			ImGui::SameLine();
@@ -142,6 +156,7 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 				}
 			}
 			else assert(nullptr);
+
 		}
 
 		// 이름 변경 처리
@@ -152,9 +167,14 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 			mSelectController->AddParameter(changedName, parameter);
 		}
 
+		// 파라미터 삭제처리
+		if (parameters.end() != eraseParameter)
+		{
+			mSelectController->EraseParameter(eraseParameter->first);
+		}
+
 	}
 	ImGui::EndChild();
-
 }
 
 void fq::game_engine::AnimatorWindow::beginChild_NodeEditor()
@@ -314,10 +334,9 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	}
 
 	// Node 선택
-	if (ed::IsNodeSelected(nodeID)
-		&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+	if (ed::IsNodeSelected(nodeID))
 	{
-		mEventManager->FireEvent<editor_event::SelectAnimationController>(
+		mEventManager->FireEvent<editor_event::SelectAnimationState>(
 			{ mSelectController, name }
 		);
 	}
@@ -441,7 +460,7 @@ void fq::game_engine::AnimatorWindow::beginLink_AnimationTransition(const fq::ga
 	if (mMatchLinkID.find(linkID) == mMatchLinkID.end())
 		mMatchLinkID.insert({ linkID, {exit, enter } });
 
-	ed::Link(linkID, exitID, enterID, ImVec4{1,1,1,1}, 1.f);
+	ed::Link(linkID, exitID, enterID, ImVec4{ 1,1,1,1 }, 1.f);
 
 	if (onFlow)
 	{

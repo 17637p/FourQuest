@@ -46,8 +46,8 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 			mViewType = ViewType::GameObject;
 			});
 
-	mSelectAnimationController = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectAnimationController>
-		([this](editor_event::SelectAnimationController event) {
+	mSelectAnimationController = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectAnimationState>
+		([this](editor_event::SelectAnimationState event) {
 		mSelectController = event.controller;
 		mSelectAnimationStateName = event.stateName;
 
@@ -764,6 +764,15 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 {
 	auto& stateMap = controller->GetStateMap();
 	auto iter = stateMap.find(mSelectAnimationStateName);
+
+	// 삭제 예외처리
+	if (iter == stateMap.end())
+	{
+		mSelectAnimationStateName = {};
+		mSelectController = nullptr;
+		mViewType = ViewType::None;
+		return;
+	}
 
 	// State GUI를 표시합니다 
 	{

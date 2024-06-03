@@ -12,7 +12,7 @@ namespace fq::editor_event
 		 std::shared_ptr<fq::game_module::GameObject> object;
 	};
 
-	struct SelectAnimationController
+	struct SelectAnimationState
 	{
 		std::shared_ptr<fq::game_module::AnimatorController> controller;
 		std::string stateName;

@@ -52,7 +52,6 @@ namespace fq::game_module
 		float mPlayBackSpeed;
 		float mDuration;
 		bool mbIsLoof;
-
 	};
 
 }
