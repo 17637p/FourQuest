@@ -3,7 +3,8 @@
 
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
-	,mMeshInfomation{}
+	, mMeshInfomation{}
+	, mOutlineColor{0.f,0.f,0.f,0.f}
 {}
 
 fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
@@ -53,5 +54,13 @@ void fq::game_module::StaticMeshRenderer::SetMeshObjectInfomation(fq::graphics::
 void fq::game_module::StaticMeshRenderer::SetMaterials(std::vector<std::string> materials)
 {
 	mMeshInfomation.MaterialNames = std::move(materials);
+}
+
+void fq::game_module::StaticMeshRenderer::SetOutlineColor(DirectX::SimpleMath::Color color)
+{
+	mOutlineColor = color;
+
+	if (mStaticMeshObject)
+		mStaticMeshObject->SetOutlineColor(mOutlineColor);
 }
 

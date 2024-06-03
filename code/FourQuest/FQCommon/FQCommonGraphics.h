@@ -39,6 +39,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 direction;
 	};
 
+
 	struct MeshObjectInfo
 	{
 		std::string ModelPath;

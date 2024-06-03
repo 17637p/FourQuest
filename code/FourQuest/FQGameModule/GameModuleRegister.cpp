@@ -117,6 +117,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
+		.data<&StaticMeshRenderer::SetOutlineColor, &StaticMeshRenderer::GetOutlineColor>("Outline"_hs)
+		.prop(fq::reflect::prop::Name, "Outline")
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -131,6 +133,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
+		.data<&SkinnedMeshRenderer::SetOutlineColor, &SkinnedMeshRenderer::GetOutlineColor>("Outline"_hs)
+		.prop(fq::reflect::prop::Name, "Outline")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

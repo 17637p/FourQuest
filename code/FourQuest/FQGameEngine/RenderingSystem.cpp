@@ -170,6 +170,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 	auto skinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInfo);
 	skinnedMeshRenderer->SetSkinnedMeshObject(skinnedMeshObject);
+	skinnedMeshObject->SetOutlineColor(skinnedMeshRenderer->GetOutlineColor());
 }
 
 void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnimation& event)
@@ -234,6 +235,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	// StaticMesh »ý¼º
 	auto staticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInfo);
 	staticMeshRenderer->SetStaticMeshObject(staticMeshObject);
+	staticMeshObject->SetOutlineColor(staticMeshRenderer->GetOutlineColor());
 }
 
 void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject* object)
