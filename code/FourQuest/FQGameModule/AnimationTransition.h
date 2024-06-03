@@ -76,7 +76,7 @@ namespace fq::game_module
 			CurrentState,
 			NextState,
 			CurrentStateThenNextState,
-			NextStateTheCurrentState
+			NextStateThenCurrentState
 		};
 
 	public:

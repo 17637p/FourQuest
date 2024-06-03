@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include <unordered_map>
 #include <string>
@@ -97,7 +98,6 @@ namespace fq::game_module
 		StateMap& GetStateMap() { return mStates; }
 		const StateMap& GetStateMap()const { return mStates; }
 
-
 		/// <summary>
 		/// 애니메이션 전환을 추가합니다 
 		/// </summary>
@@ -144,8 +144,12 @@ namespace fq::game_module
 		TransitionIterator GetCurrentTransition();
 
 	private:
-		bool checkConditions(const AnimationTransition& transition, float timePos);
+		bool checkNextStateTransition();
+		bool checkCurrentStateTransition();
 
+		TransitionIterator checkStateTransition(const StateName& name);
+		bool checkConditions(const AnimationTransition& transition, float timePos);
+		void emitChangeState();
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);

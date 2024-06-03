@@ -29,7 +29,6 @@ namespace fq::game_engine
 		/// </summary>
 		void ChangeAnimationState(const fq::event::ChangeAnimationState& event);
 
-
 		/// <summary>
 		/// 애니메이터 컨트롤러 로드
 		/// </summary>

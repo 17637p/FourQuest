@@ -26,7 +26,6 @@ namespace fq::game_module
 
 		Type GetType() const { return mType; }
 		void SetType(Type val) { mType = val; }
-
 		float GetPlayBackSpeed() const { return mPlayBackSpeed; }
 		void SetPlayBackSpeed(float speed) { mPlayBackSpeed = speed; }
 		std::string GetModelPath() const { return mModelPath; }

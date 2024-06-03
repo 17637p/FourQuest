@@ -1066,7 +1066,16 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	float duration = stateNode.GetDuration();
-	ImGui::InputFloat("Duration", &duration);
+	if (ImGui::InputFloat("Duration", &duration))
+	{
+		stateNode.SetDuration(duration);
+	}
+
+	bool IsLoof = stateNode.IsLoof();
+	if (ImGui::Checkbox("IsLoof", &IsLoof))
+	{
+		stateNode.SetLoof(IsLoof);
+	}
 }
 
 bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int index)

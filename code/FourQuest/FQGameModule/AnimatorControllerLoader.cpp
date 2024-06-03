@@ -76,6 +76,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		std::string name = value.at("animationName");
 		float playbackSpeed = value.at("playbackSpeed").get<float>();
 		float duration = value.at("duration").get<float>();
+		bool isLoof = value.at("isLoof").get<bool>();
 
 		stateNode.SetType(AnimationStateNode::Type::State);
 		stateNode.SetAnimationKey(stateName);
@@ -83,6 +84,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		stateNode.SetModelPath(path);
 		stateNode.SetAnimationName(name);
 		stateNode.SetDuration(duration);
+		stateNode.SetLoof(isLoof);
 		controller->AddStateNode(stateNode);
 	}
 
@@ -181,6 +183,8 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		stateJson["animationName"] = stateNode.GetAnimationName();
 		stateJson["playbackSpeed"] = stateNode.GetPlayBackSpeed();
 		stateJson["duration"] = stateNode.GetDuration();
+		stateJson["isLoof"] = stateNode.IsLoof();
+
 		stateMapJson[stateName] = stateJson;
 	}
 	controllerJson["stateMap"] = stateMapJson;
