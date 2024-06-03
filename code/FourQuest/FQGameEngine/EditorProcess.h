@@ -16,6 +16,7 @@
 #include "PhysicsAnimatorWindow.h"
 #include "SkyBoxWindow.h"
 #include "AnimatorWindow.h"
+#include "Setting.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -48,6 +49,7 @@ namespace fq::game_engine
 		std::unique_ptr<AnimatorWindow> mAnimatorWindow;
 		std::unique_ptr<CollisionMatrixWindow> mCollisionMatrixWindow;
 		std::unique_ptr<SkyBoxWindow> mSkyBoxWindow;
+		std::unique_ptr<Setting> mSettingWindow;
 
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;

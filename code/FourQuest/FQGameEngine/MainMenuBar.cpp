@@ -279,6 +279,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& skyBox = mEditorProcess->mSkyBoxWindow->IsWindowOpen();
 		ImGui::Checkbox("SkyBox", &skyBox);
 
+		bool& onSetting = mEditorProcess->mSettingWindow->IsWindowOpen();
+		ImGui::Checkbox("Setting", &onSetting);
+
 		ImGui::EndMenu();
 	}
 }
@@ -306,6 +309,7 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 
 		bool& onCharater = debug->GetOnCharaterController();
 		ImGui::Checkbox("CharaterController", &onCharater);
+
 
 		ImGui::EndMenu();
 	}

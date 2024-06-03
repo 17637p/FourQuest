@@ -352,8 +352,11 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto view = camera->GetView();
 	auto proj = camera->GetProjection(mViewportSize.x / mViewportSize.y);
 
+	bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
+	float* snap = mEditorProcess->mSettingWindow->GetSnap();
+
 	if (ImGuizmo::Manipulate(&view._11, &proj._11
-		, mOperation, ImGuizmo::WORLD, &objectMatrix._11))
+		, mOperation, ImGuizmo::WORLD, &objectMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
 	{
 		if (objectT->HasParent())
 		{
