@@ -11,6 +11,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
+	struct ViewProjectionMatrix
+	{
+		DirectX::SimpleMath::Matrix ViewMatrix;
+		DirectX::SimpleMath::Matrix ViewProjMat;
+	};
+
 	struct SceneTrnasform
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;

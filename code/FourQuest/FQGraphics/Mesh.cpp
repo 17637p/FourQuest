@@ -92,6 +92,27 @@ namespace fq::graphics
 		}
 
 		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(device, vertices);
+
+		// Picking 용 인덱스 버퍼 따로 만들기 
+		std::vector<unsigned int> terrainTriIndexBuffer;
+
+		for (UINT i = 0; i < meshData.Indices.size(); i += 4)
+		{
+			terrainTriIndexBuffer.push_back(meshData.Indices[i + 0]);
+			terrainTriIndexBuffer.push_back(meshData.Indices[i + 3]);
+			terrainTriIndexBuffer.push_back(meshData.Indices[i + 2]);
+
+			terrainTriIndexBuffer.push_back(meshData.Indices[i + 0]);
+			terrainTriIndexBuffer.push_back(meshData.Indices[i + 1]);
+			terrainTriIndexBuffer.push_back(meshData.Indices[i + 3]);
+		}
+
+		mTriIndexBuffer = std::make_shared<D3D11IndexBuffer>(device, terrainTriIndexBuffer);
 	}
 
+	void TerrainMesh::BindForPicking(const std::shared_ptr<D3D11Device>& d3d11Device)
+	{
+		mVertexBuffer->Bind(d3d11Device);
+		mTriIndexBuffer->Bind(d3d11Device);
+	}
 }

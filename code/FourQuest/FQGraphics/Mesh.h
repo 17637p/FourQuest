@@ -51,5 +51,10 @@ namespace fq::graphics
 	public:
 		TerrainMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~TerrainMesh() = default;
+
+		void BindForPicking(const std::shared_ptr<D3D11Device>& d3d11Device);
+
+	private:
+		std::shared_ptr<D3D11IndexBuffer> mTriIndexBuffer;
 	};
 }

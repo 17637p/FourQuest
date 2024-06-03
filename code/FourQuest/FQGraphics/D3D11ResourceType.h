@@ -35,6 +35,8 @@ namespace fq::graphics
 		OutLineBlur,
 		BlurVertical,
 
+		SSAO,
+
 		// Deferred
 		Albedo,
 		Metalness,

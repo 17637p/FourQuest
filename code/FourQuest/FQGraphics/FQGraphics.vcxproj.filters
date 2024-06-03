@@ -175,6 +175,12 @@
     <ClInclude Include="OutLineAddPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
+    <ClInclude Include="SSAODepthPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAOPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -251,6 +257,9 @@
     </Filter>
     <Filter Include="Shader\PostProcessing">
       <UniqueIdentifier>{9a188591-8b3a-4ef5-9366-0aff253d5e30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Terrain">
+      <UniqueIdentifier>{e4d1f357-5229-4974-a357-9628bfdb2826}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -401,6 +410,12 @@
     <ClCompile Include="OutLineAddPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
+    <ClCompile Include="SSAODepthPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAOPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
@@ -451,17 +466,23 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
       <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Terrain</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainDS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Terrain</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainHS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
+      <Filter>Shader\Terrain</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAODepthVS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAODepthPS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
