@@ -68,3 +68,9 @@ void fq::graphics::OutLineAddPass::Render()
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
 	}
 }
+
+void fq::graphics::OutLineAddPass::OnResize(unsigned short width, unsigned short height)
+{
+	auto outLineBlurRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::OutLineBlur);
+	mOutLineBlurSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, outLineBlurRTV);
+}

@@ -88,4 +88,9 @@ void fq::graphics::OutLinePass::OnResize(unsigned short width, unsigned short he
 {
 	mScreenSize.width = width;
 	mScreenSize.height = height;
+
+	auto singleColorRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SingleColor);
+	mSingleColorSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, singleColorRTV);
+
+	mOutlineRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OutLine, width, height);
 }
