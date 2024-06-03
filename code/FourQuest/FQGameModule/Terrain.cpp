@@ -1,8 +1,13 @@
 #include "Terrain.h"
+#include <spdlog/spdlog.h>
 
 fq::game_module::Terrain::Terrain()
 	:mTerrainLayers{},
-	mAlPhaMapPath{}
+	mAlPhaMapPath{},
+	mHeightMapPath{ "./resource/internal/terrain.raw" },
+	mHeightScale(65),
+	mWidth(65),
+	mHeight(65)
 {
 
 }
@@ -67,6 +72,12 @@ void fq::game_module::Terrain::SetTerrainMeshObject(fq::graphics::ITerrainMeshOb
 
 void fq::game_module::Terrain::SetHeightScale(float heightScale)
 {
+	if (heightScale <= 0)
+	{
+		spdlog::error("Terrain HeightScale Must be greater than 0");
+
+		return;
+	}
 	mHeightScale = heightScale;
 }
 
@@ -77,6 +88,12 @@ float fq::game_module::Terrain::GetHeightScale() const
 
 void fq::game_module::Terrain::SetHeight(float height)
 {
+	if (height <= 0)
+	{
+		spdlog::error("Terrain Height Must be greater than 0");
+
+		return;
+	}
 	mHeight = height;
 }
 
@@ -87,6 +104,13 @@ float fq::game_module::Terrain::GetHeight() const
 
 void fq::game_module::Terrain::SetWidth(float width)
 {
+	if (width <= 0)
+	{
+		spdlog::error("Terrain Width Must be greater than 0");
+
+		return;
+	}
+
 	mWidth = width;
 }
 
@@ -97,6 +121,12 @@ float fq::game_module::Terrain::GetWidth() const
 
 void fq::game_module::Terrain::SetHeightMap(const std::string& heightMap)
 {
+	if (heightMap == "")
+	{
+		spdlog::error("Terrain HeightMap Must not be blank");
+
+		return;
+	}
 	mHeightMapPath = heightMap;
 }
 
