@@ -80,6 +80,9 @@ namespace fq::graphics
 	{
 		mWidth = terrainMaterial.Width;
 		mHeight = terrainMaterial.Height;
+
+		mCellsPerPatch = (mWidth + mHeight) / 16;
+
 		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
 		BuildTerrainMesh(device, mTempStaticMesh);
 	}
