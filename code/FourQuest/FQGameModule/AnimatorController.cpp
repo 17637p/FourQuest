@@ -102,28 +102,25 @@ void fq::game_module::AnimatorController::CreateStateNode()
 	mStates.insert({ name,stateNode });
 }
 
-void fq::game_module::AnimatorController::AddTransition(StateName exit, StateName enter)
+void fq::game_module::AnimatorController::AddTransition(AnimationTransition transition)
 {
-	if (exit == enter) return;
-
-	for (const auto& transition : mTransitions)
+	if (transition.GetEnterState() == transition.GetExitState()
+		|| transition.GetExitState() == "Exit"
+		|| transition.GetEnterState() == "AnyState"
+		|| transition.GetEnterState() == "Entry")
 	{
-		if (transition.GetEnterState() == enter
-			&& transition.GetExitState() == exit)
-		{
-			return;
-		}
+		return;
 	}
 
-	mTransitions.push_back({ exit,enter });
+	mTransitions.insert({ transition.GetExitState(), transition });
 }
 
 void fq::game_module::AnimatorController::DeleteTransition(StateName exit, StateName enter)
 {
 	for (auto iter = mTransitions.begin(); iter != mTransitions.end();)
 	{
-		if (iter->GetEnterState() == enter
-			&& iter->GetExitState() == exit)
+		if (iter->second.GetEnterState() == enter
+			&& iter->second.GetExitState() == exit)
 		{
 			iter = mTransitions.erase(iter);
 		}
@@ -147,7 +144,7 @@ bool fq::game_module::AnimatorController::ChangeStateName(StateName orginName, S
 	mStates.insert({ changeName, state });
 
 	// Transition 변경
-	for (auto& transition : mTransitions)
+	for (auto& [stateName, transition] : mTransitions)
 	{
 		if (transition.GetEnterState() == orginName)
 		{
@@ -171,78 +168,58 @@ void fq::game_module::AnimatorController::AddStateNode(AnimationStateNode node)
 
 void fq::game_module::AnimatorController::UpdateState(float dt)
 {
-	// 1. 애니메이션 재생중인 경우
 	if (!IsInTransition())
 	{
-		for (auto iter = mTransitions.begin(); iter != mTransitions.end(); ++iter)
+		auto transition = checkStateTransition(mCurrentState->first);
+
+		// 애니메이션 전환발생
+		if (transition != mTransitions.end())
 		{
-			auto exitState = iter->GetExitState();
-
-			if (exitState == mCurrentState->first || exitState == "AnyState")
-			{
-				bool passCondition = checkConditions(*iter, mTimePos);
-
-				// 상태를 변경합니다 
-				if (passCondition)
-				{
-					auto eventMgr = mAnimator->GetScene()->GetEventManager();
-
-					// Entry는 바로 전환합니다 
-					if (mCurrentState->first == "Entry")
-					{
-						mCurrentState = mStates.find(iter->GetEnterState());
-						eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-							false,
-							mCurrentState->first,
-							"",
-							mAnimator
-							});
-						return;
-					}
-
-					std::string enterState = iter->GetEnterState();
-					mNextState = mStates.find(enterState);
-					mCurrentTransition = iter;
-					eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-						true,
-						mCurrentState->first,
-						mNextState->first,
-						mAnimator
-						});
-
-					return;
-				}
-			}
+			mNextState = mStates.find(transition->second.GetEnterState());
+			mCurrentTransition = transition;
+			emitChangeState();
 		}
 	}
-	// 2. 애니메이션 전환중인 경우
-	else
+	// 애니메이션 전환 종료
+	else if (EndTransitionWeight == mBlendWeight)
 	{
-		auto interruptionSource = mCurrentTransition->GetInterruptionSource();
+		auto eventMgr = mAnimator->GetScene()->GetEventManager();
 
-		// 전환 종료 
-		if (EndTransitionWeight == mBlendWeight)
+		mCurrentState = mNextState;
+		mNextState = mStates.end();
+		mCurrentTransition = mTransitions.end();
+		mTimePos = mBlendTimePos;
+		mBlendTimePos = 0.f;
+		mBlendWeight = 0.f;
+		mBlendElapsedTime = 0.f;
+
+		emitChangeState();
+	}
+	else // 3. 애니메이션 전환중인 경우
+	{
+		using  Source = AnimationTransition::InterruptionSource;
+
+		// 애니메이션 전환중 다른 전환 처리 
+		auto source = mCurrentTransition->second.GetInterruptionSource();
+
+		if (source == Source::NextState)
+			checkNextStateTransition();
+		else if (source == Source::CurrentState)
+			checkCurrentStateTransition();
+		else if (source == Source::CurrentStateThenNextState)
 		{
-			auto eventMgr = mAnimator->GetScene()->GetEventManager();
+			bool pass = checkCurrentStateTransition();
 
-			mCurrentState = mNextState;
-			mNextState = mStates.end();
-			mCurrentTransition = mTransitions.end();
-			mTimePos = mBlendTimePos;
-			mBlendTimePos = 0.f;
-			mBlendWeight = 0.f;
-			mBlendElapsedTime = 0.f;
-			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-					false,
-					mCurrentState->first,
-					"",
-					mAnimator
-				});
-			return;
+			if (!pass)
+				checkNextStateTransition();
 		}
+		else if (source == Source::NextStateThenCurrentState)
+		{
+			bool pass = checkNextStateTransition();
 
-		AnimationTransition::InterruptionSource::None;
-		auto source = mCurrentTransition->GetInterruptionSource();
+			if (!pass)
+				checkCurrentStateTransition();
+		}
 	}
 }
 
@@ -303,7 +280,7 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt)
 
 		mBlendTimePos = std::min(mBlendTimePos + dt * nextPlayBackSpeed, nextDuration);
 
-		float transitionDuration = mCurrentTransition->GetTransitionDuration();
+		float transitionDuration = mCurrentTransition->second.GetTransitionDuration();
 		mBlendElapsedTime = std::min(mBlendElapsedTime + dt, transitionDuration);
 		mBlendWeight = mBlendElapsedTime / transitionDuration;
 
@@ -333,19 +310,7 @@ void fq::game_module::AnimatorController::DeleteState(StateName state)
 
 	// 스테이트 삭제
 	mStates.erase(iter);
-
-	mTransitions.erase(std::find_if(mTransitions.begin(), mTransitions.end()
-		, [state](const AnimationTransition& transition)
-		{
-			if (transition.GetEnterState() == state
-				|| transition.GetExitState() == state)
-			{
-				return true;
-			}
-
-			return false;
-		}), mTransitions.end());
-
+	mTransitions.erase(state);
 }
 
 bool fq::game_module::AnimatorController::IsInTransition() const
@@ -371,4 +336,113 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 	}
 
 	return mNextState->first;
+}
+
+fq::game_module::AnimatorController::TransitionIterator fq::game_module::AnimatorController::checkStateTransition(const StateName& name)
+{
+	// State 조건
+	for (auto [beginIter, endIter]
+		= mTransitions.equal_range(name);
+		beginIter != endIter; ++beginIter)
+	{
+		bool passCondition = checkConditions(beginIter->second, mTimePos);
+
+		if (passCondition)
+			return beginIter;
+	}
+
+	// AnyState 조건
+	for (auto [beginIter, endIter]
+		= mTransitions.equal_range("AnyState");
+		beginIter != endIter; ++beginIter)
+	{
+		bool passCondition = checkConditions(beginIter->second, mTimePos);
+
+		if (passCondition)
+			return beginIter;
+	}
+
+	return mTransitions.end();
+}
+
+void fq::game_module::AnimatorController::emitChangeState()
+{
+	auto eventMgr = mAnimator->GetScene()->GetEventManager();
+
+	bool isBlend = (mNextState != mStates.end());
+
+	if (isBlend)
+	{
+		// Entry는 바로 전환합니다 
+		if (mCurrentState->first == "Entry")
+		{
+			mCurrentState = mNextState;
+			mNextState = mStates.end();
+			isBlend = false;
+
+			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
+				isBlend,
+				mCurrentState->first,
+				"",
+				mAnimator
+				});
+		}
+		else
+		{
+			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
+				isBlend,
+				mCurrentState->first,
+				mNextState->first,
+				mAnimator
+				});
+		}
+	}
+	else
+	{
+		eventMgr->FireEvent<fq::event::ChangeAnimationState>({
+			isBlend,
+			mCurrentState->first,
+			{},
+			mAnimator
+			});
+	}
+}
+
+bool fq::game_module::AnimatorController::checkNextStateTransition()
+{
+	auto transition = checkStateTransition(mNextState->first);
+
+	// 다른 전환으로 이동 
+	if (transition != mTransitions.end())
+	{
+		mCurrentState = mNextState;
+		mNextState = mStates.find(transition->second.GetEnterState());
+		mTimePos = mBlendTimePos;
+		mBlendTimePos = 0.f;
+		mBlendWeight = 0.f;
+		mBlendElapsedTime = 0.f;
+		mCurrentTransition = transition;
+		emitChangeState();
+		return true;
+	}
+
+	return false;
+}
+
+bool fq::game_module::AnimatorController::checkCurrentStateTransition()
+{
+	auto transition = checkStateTransition(mNextState->first);
+
+	if (transition == mTransitions.end())
+	{
+		mNextState = mStates.find(transition->second.GetEnterState());
+		mBlendTimePos = 0.f;
+		mBlendWeight = 0.f;
+		mBlendElapsedTime = 0.f;
+		mCurrentTransition = transition;
+		emitChangeState();
+		return true;
+	}
+
+	return false;
 }

@@ -79,7 +79,7 @@ void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::Cha
 {
 	auto animator = event.animator;
 
-	const auto& meshs = animator->GetSkinnedMeshs();
+	const auto& meshs   = animator->GetSkinnedMeshs();
 
 	for (auto& mesh : meshs)
 	{
@@ -91,9 +91,7 @@ void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::Cha
 		{
 			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
 		}
-
 	}
-
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)

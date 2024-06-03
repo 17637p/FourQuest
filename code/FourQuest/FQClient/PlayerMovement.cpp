@@ -29,27 +29,16 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerMovement::Clone(st
 
 void fq::client::PlayerMovement::OnUpdate(float dt)
 {
-	constexpr const char* bIsMove = "bIsMove"; 
 	auto input = GetScene()->GetInputManager();
-
-	if (input->IsKeyState(EKey::W, EKeyState::Hold)
-		|| input->IsKeyState(EKey::S, EKeyState::Hold)
-		|| input->IsKeyState(EKey::A, EKeyState::Hold)
-		|| input->IsKeyState(EKey::D, EKeyState::Hold))
-	{
-		mAnimator->SetParameterBoolean(bIsMove, true);
-	}
-	else
-	{
-		mAnimator->SetParameterBoolean(bIsMove, false);
-	}
 
 	if (input->IsKeyState(EKey::Space, EKeyState::Tap))
 	{
-		mAnimator->SetParameterTrigger("Jump");
+		mAnimator->SetParameterTrigger("OnHit");
 	}
-
-	mAnimator->SetParameterBoolean("OnGround", !mController->IsFalling());
+	if (input->IsKeyState(EKey::T, EKeyState::Tap))
+	{
+		mAnimator->SetParameterTrigger("OnPunch");
+	}
 }
 
 void fq::client::PlayerMovement::OnStart()

@@ -23,6 +23,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
 	, mCharactorControllerID(entt::resolve<fq::game_module::CharacterController>().id())
+	, mRigidID(entt::resolve<game_module::RigidBody>().id())
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -99,7 +100,8 @@ void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObj
 void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		addCollider(event.component->GetGameObject());
 	}

@@ -45,6 +45,12 @@ void fq::game_engine::Hierarchy::Initialize(GameProcess* game, EditorProcess* ed
 		([this](editor_event::SelectObject event) {
 		mSelectObject = event.object;
 			});
+
+	mSelectAnimationState = mEventManager->RegisterHandle<editor_event::SelectAnimationState>
+		([this](editor_event::SelectAnimationState event)
+			{
+				mSelectObject = nullptr;
+			});
 }
 
 void fq::game_engine::Hierarchy::Render()
