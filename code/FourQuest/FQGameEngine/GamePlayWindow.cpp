@@ -393,7 +393,6 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 			);
 		mbIsUsingGizumo = false;
 	}
-
 }
 
 void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
