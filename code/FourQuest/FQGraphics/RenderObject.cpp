@@ -119,7 +119,9 @@ namespace fq::graphics
 
 				// Temp: normal & tangent  Y 를 기반으로 계산해서 다시 넣어 줘야 한다...
 				//patchVertices[i * mNumPatchVertCols + j].Normal = DirectX::XMFLOAT3(0.f, 0.f, -1.f);
-				patchVertices[i * mNumPatchVertCols + j].Tangent = DirectX::XMFLOAT3(0.f, 0.f, -1.f);
+				//patchVertices[i * mNumPatchVertCols + j].Tangent = DirectX::XMFLOAT3(0.f, 0.f, -1.f);
+				patchVertices[i * mNumPatchVertCols + j].Normal = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+				patchVertices[i * mNumPatchVertCols + j].Tangent = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 			}
 		}
 
@@ -172,7 +174,7 @@ namespace fq::graphics
 		BuildQuadPatchVB(mPatchBoundsY, mesh);
 		BuildQuadPatchIB(mesh);
 
-		CalcNormal(mesh);
+		CalcNormalTangent(mesh);
 		mesh.Subsets[0].IndexCount = mNumIndices;
 
 		mTerrainMesh = std::make_shared<TerrainMesh>(device, mesh);
@@ -223,7 +225,7 @@ namespace fq::graphics
 		patchBoundsY[patchID] = DirectX::XMFLOAT2(minY, maxY);
 	}
 
-	void TerrainMeshObject::CalcNormal(fq::common::Mesh& mesh)
+	void TerrainMeshObject::CalcNormalTangent(fq::common::Mesh& mesh)
 	{
 		// https://copynull.tistory.com/324
 		// https://github.com/jjuiddong/Introduction-to-3D-Game-Programming-With-DirectX11
@@ -231,41 +233,75 @@ namespace fq::graphics
 		// 새벽이라 계산하기 싫다! 지금은 오전 4시
 		for (UINT i = 0; i < mesh.Indices.size() / 4; i++)
 		{
+			// Normal 계산 
 			UINT index0 = mesh.Indices[i * 4 + 0];
 			UINT index1 = mesh.Indices[i * 4 + 2];
 			UINT index2 = mesh.Indices[i * 4 + 3];
 
-			DirectX::SimpleMath::Vector3 a = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
-			DirectX::SimpleMath::Vector3 b = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
+			DirectX::SimpleMath::Vector3 vertex0Pos = mesh.Vertices[index0].Pos;
+			DirectX::SimpleMath::Vector3 vertex1Pos = mesh.Vertices[index1].Pos;
+			DirectX::SimpleMath::Vector3 vertex2Pos = mesh.Vertices[index2].Pos;
+
+			DirectX::SimpleMath::Vector3 aVec = vertex1Pos - vertex0Pos;
+			DirectX::SimpleMath::Vector3 bVec = vertex2Pos - vertex0Pos;
 
 			DirectX::SimpleMath::Vector3 normal;
-			normal = a.Cross(b);
+			normal = aVec.Cross(bVec);
 
 			mesh.Vertices[index0].Normal += normal;
 			mesh.Vertices[index1].Normal += normal;
 			mesh.Vertices[index2].Normal += normal;
 
-			// 두 번째 삼각형 
+			// Tangent 계산
+			DirectX::SimpleMath::Vector2 vertex0uv = mesh.Vertices[index0].Tex;
+			DirectX::SimpleMath::Vector2 vertex1uv = mesh.Vertices[index1].Tex;
+			DirectX::SimpleMath::Vector2 vertex2uv = mesh.Vertices[index2].Tex;
+
+			DirectX::SimpleMath::Vector2 deltaUV0 = vertex1uv - vertex0uv;
+			DirectX::SimpleMath::Vector2 deltaUV1 = vertex2uv - vertex0uv;
+
+			float d = 1.f / (deltaUV0.x * deltaUV1.y - deltaUV0.y * deltaUV1.x);
+
+			mesh.Vertices[index0].Tangent += (aVec * deltaUV1.y - bVec * deltaUV0.y) * d;
+			mesh.Vertices[index1].Tangent += (aVec * deltaUV1.y - bVec * deltaUV0.y) * d;
+			mesh.Vertices[index2].Tangent += (aVec * deltaUV1.y - bVec * deltaUV0.y) * d;
+
+			/// 두 번째 삼각형 
+			// Normal 계산
 			index0 = mesh.Indices[i * 4 + 0];
 			index1 = mesh.Indices[i * 4 + 3];
 			index2 = mesh.Indices[i * 4 + 1];
 
-			a = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
-			b = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
+			aVec = mesh.Vertices[index1].Pos - mesh.Vertices[index0].Pos;
+			bVec = mesh.Vertices[index2].Pos - mesh.Vertices[index0].Pos;
 
-			normal = a.Cross(b);
+			normal = aVec.Cross(bVec);
 
 			mesh.Vertices[index0].Normal += normal;
 			mesh.Vertices[index1].Normal += normal;
 			mesh.Vertices[index2].Normal += normal;
+
+			// Tangent 계산
+			vertex0uv = mesh.Vertices[index0].Tex;
+			vertex1uv = mesh.Vertices[index1].Tex;
+			vertex2uv = mesh.Vertices[index2].Tex;
+
+			deltaUV0 = vertex1uv - vertex0uv;
+			deltaUV1 = vertex2uv - vertex0uv;
+
+			d = 1.f / (deltaUV0.x * deltaUV1.y - deltaUV0.y * deltaUV1.x);
+
+			mesh.Vertices[index0].Tangent += (aVec * deltaUV1.y - bVec * deltaUV0.y) * d;
+			mesh.Vertices[index1].Tangent += (aVec * deltaUV1.y - bVec * deltaUV0.y) * d;
+			mesh.Vertices[index2].Tangent += (aVec * deltaUV1.y - bVec * deltaUV0.y) * d;
 		}
 
 		for (UINT i = 0; i < mesh.Vertices.size(); i++)
 		{
 			mesh.Vertices[i].Normal.Normalize();
+			mesh.Vertices[i].Tangent.Normalize();
 			int a = 3;
 		}
-		int a = 3;
 	}
 
 	ImageObject::ImageObject()

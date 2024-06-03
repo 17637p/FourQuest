@@ -509,8 +509,7 @@ namespace fq::graphics
 
 		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY);
 		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY, UINT i, UINT j);
-		void CalcNormal(fq::common::Mesh& mesh);
-		void CalcTangent(fq::common::Mesh& mesh);
+		void CalcNormalTangent(fq::common::Mesh& mesh);
 
 	private:
 		std::shared_ptr<StaticMesh> mTempStaticMesh; // Plane

@@ -99,7 +99,47 @@ namespace fq::graphics
 			terrainHull.MinTess = 0;
 			terrainHull.MaxTess = 10;
 			terrainHull.gEyePosW = mCameraManager->GetPosition(ECameraType::Player);
-			//terrainHull.WorldFrustumPlanes = ;
+			// 절두체 면 계산 
+			DirectX::SimpleMath::Matrix viewProjMat =
+				mCameraManager->GetViewMatrix(ECameraType::Player) *
+				mCameraManager->GetProjectionMatrix(ECameraType::Player);
+			// 왼쪽 평면
+			terrainHull.WorldFrustumPlanes[0].x = viewProjMat._14 + viewProjMat._11;
+			terrainHull.WorldFrustumPlanes[0].y = viewProjMat._24 + viewProjMat._21;
+			terrainHull.WorldFrustumPlanes[0].z = viewProjMat._34 + viewProjMat._31;
+			terrainHull.WorldFrustumPlanes[0].w = viewProjMat._44 + viewProjMat._41;
+			// 오른쪽 평면
+			terrainHull.WorldFrustumPlanes[1].x = viewProjMat._14 - viewProjMat._11;
+			terrainHull.WorldFrustumPlanes[1].y = viewProjMat._24 - viewProjMat._21;
+			terrainHull.WorldFrustumPlanes[1].z = viewProjMat._34 - viewProjMat._31;
+			terrainHull.WorldFrustumPlanes[1].w = viewProjMat._44 - viewProjMat._41;
+			// 아래쪽 평면
+			terrainHull.WorldFrustumPlanes[2].x = viewProjMat._14 + viewProjMat._12;
+			terrainHull.WorldFrustumPlanes[2].y = viewProjMat._24 + viewProjMat._22;
+			terrainHull.WorldFrustumPlanes[2].z = viewProjMat._34 + viewProjMat._32;
+			terrainHull.WorldFrustumPlanes[2].w = viewProjMat._44 + viewProjMat._42;
+			// 윗쪽 평면
+			terrainHull.WorldFrustumPlanes[3].x = viewProjMat._14 - viewProjMat._12;
+			terrainHull.WorldFrustumPlanes[3].y = viewProjMat._24 - viewProjMat._22;
+			terrainHull.WorldFrustumPlanes[3].z = viewProjMat._34 - viewProjMat._32;
+			terrainHull.WorldFrustumPlanes[3].w = viewProjMat._44 - viewProjMat._42;
+			// 가까운 평면
+			terrainHull.WorldFrustumPlanes[4].x = viewProjMat._13;
+			terrainHull.WorldFrustumPlanes[4].y = viewProjMat._23;
+			terrainHull.WorldFrustumPlanes[4].z = viewProjMat._33;
+			terrainHull.WorldFrustumPlanes[4].w = viewProjMat._43;
+			// 먼 평면
+			terrainHull.WorldFrustumPlanes[5].x = viewProjMat._14 - viewProjMat._13;
+			terrainHull.WorldFrustumPlanes[5].y = viewProjMat._24 - viewProjMat._23;
+			terrainHull.WorldFrustumPlanes[5].z = viewProjMat._34 - viewProjMat._33;
+			terrainHull.WorldFrustumPlanes[5].w = viewProjMat._44 - viewProjMat._43;
+
+			for (UINT i = 0; i < 6; i++)
+			{
+				DirectX::SimpleMath::Vector4 v = DirectX::XMPlaneNormalize(DirectX::XMLoadFloat4(&terrainHull.WorldFrustumPlanes[i]));
+				DirectX::XMStoreFloat4(&terrainHull.WorldFrustumPlanes[i], v);
+			}
+
 			mTerrainHullCB->Update(mDevice, terrainHull);
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
