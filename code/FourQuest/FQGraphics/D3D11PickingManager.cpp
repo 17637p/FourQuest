@@ -210,7 +210,7 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 		}
 	}
 
-	// skinned
+	// Terrain
 	for (auto it = mTerrainMeshObjects.begin(); it != mTerrainMeshObjects.end(); ++it) {
 		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
 			object = it->first;
@@ -264,7 +264,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	for (const TerrainMeshJob& job : terrainMeshJobs)
 	{
-		job.TerrainMesh->Bind(device);
+		job.TerrainMesh->BindForPicking(device);
 
 		ModelTransform modelTransform;
 		modelTransform.color = mTerrainMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };

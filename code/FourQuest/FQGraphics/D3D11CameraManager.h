@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <functional>
 
 #include <directxtk/SimpleMath.h>
 
@@ -30,6 +31,8 @@ namespace fq::graphics
 		void SetCamera(const ECameraType& cameraType, const CameraInfo& cameraInfo);
 		void SetViewportSize(const ECameraType& cameraType, const unsigned short width, const unsigned short height);
 
+		void RegisterOnSetCamera(std::function<void()> onSetCameraEvent);
+
 		DirectX::SimpleMath::Matrix GetViewMatrix(const ECameraType& cameraType) const;
 		DirectX::SimpleMath::Matrix GetProjectionMatrix(const ECameraType& cameraType) const;
 		// Culling 할 때 필요한 것으로 추측
@@ -38,9 +41,12 @@ namespace fq::graphics
 		// 쉐도우 투영행렬 만드는데 필요함
 		float GetNearPlane(const ECameraType& cameraType) const;
 		float GetFarPlane(const ECameraType& cameraType) const;
+		// SSAO 할 떄 필요함
+		float GetFovY(const ECameraType& cameraType) const;
 
 	private:
 		std::unordered_map<ECameraType, std::shared_ptr<Camera>> mCameras;
+		std::vector<std::function<void()>> mOnSetCamera;
 	};
 }
 
