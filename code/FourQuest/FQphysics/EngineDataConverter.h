@@ -1,7 +1,7 @@
 #pragma once
 
 #include <directxtk\SimpleMath.h>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 /// <summary>
 /// 오른손 좌표계 (PhysX)를 왼손 좌표계 (DirectX)로 z축 전환을 통해 변경해줍니다.

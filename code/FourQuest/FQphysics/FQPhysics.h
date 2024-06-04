@@ -2,7 +2,7 @@
 #include "IFQPhysics.h"
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 #include <memory>
 #include <set>
 

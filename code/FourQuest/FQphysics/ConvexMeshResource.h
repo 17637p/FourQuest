@@ -1,7 +1,7 @@
 #pragma once
 #include "ResourceBase.h"
 
-#include "physx/PxPhysicsAPI.h"
+#include "PxPhysicsAPI.h"
 
 #include "FQCommonPhysics.h"
 

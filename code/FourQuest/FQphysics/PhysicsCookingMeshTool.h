@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 #include <directxtk/SimpleMath.h>
 
 namespace fq::physics

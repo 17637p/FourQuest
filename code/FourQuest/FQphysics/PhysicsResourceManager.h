@@ -6,7 +6,7 @@
 #include <array>
 
 #include "ResourceBase.h"
-#include "physx\PxPhysicsAPI.h"
+#include "PxPhysicsAPI.h"
 #include <cassert>
 
 namespace fq::physics

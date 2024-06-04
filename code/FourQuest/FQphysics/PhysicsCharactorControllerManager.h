@@ -3,7 +3,7 @@
 #include <memory>
 #include <map>
 #include <set>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 

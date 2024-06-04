@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 #include <directxtk\SimpleMath.h>
 
 #include "FQCommonPhysics.h"

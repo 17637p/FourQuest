@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 #include <unordered_map>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 #include "CharacterPhysics.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 #include "FQCommonPhysics.h"
 #include <map>
 #include <memory>

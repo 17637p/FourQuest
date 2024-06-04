@@ -5,7 +5,7 @@
 #include <string>
 
 #include <directxtk\SimpleMath.h>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 
