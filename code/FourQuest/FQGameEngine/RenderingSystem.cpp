@@ -166,11 +166,12 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	}
 	meshInfo.Transform = transform->GetLocalMatrix();
 
-	// SkinnedMeshO 持失
-
+	// SkinnedMesh 持失
 	auto skinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInfo);
 	skinnedMeshRenderer->SetSkinnedMeshObject(skinnedMeshObject);
-	skinnedMeshObject->SetOutlineColor(skinnedMeshRenderer->GetOutlineColor());
+
+	if (skinnedMeshObject)
+		skinnedMeshObject->SetOutlineColor(skinnedMeshRenderer->GetOutlineColor());
 }
 
 void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnimation& event)
@@ -260,6 +261,8 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 
 		auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
 		auto meshObject = meshRenderer->GetSkinnedMeshObject();
+		if (!meshObject) return;
+
 		animatorMeshs.push_back(meshRenderer);
 
 		const auto& stateMap = animator->GetController().GetStateMap();

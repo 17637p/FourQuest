@@ -497,7 +497,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 {
 	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
 	auto backward = cameraT->GetLocalMatrix().Forward();
-	auto cameraPosition = target + backward ;
+	auto cameraPosition = target + backward;
 
 	cameraT->SetLocalPosition(cameraPosition);
 }
@@ -561,6 +561,15 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			[this, meshPtr](fq::game_module::GameObject& object, game_module::SkinnedMeshRenderer& mesh)
 			{
 				if (mesh.GetSkinnedMeshObject() == meshPtr)
+				{
+					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+				}
+			});
+
+		scene->ViewComponents<game_module::Terrain>([this, meshPtr](fq::game_module::GameObject& object, game_module::Terrain& terrain)
+			{
+				if (terrain.GetTerrainMeshObject() == meshPtr)
 				{
 					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
 					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });

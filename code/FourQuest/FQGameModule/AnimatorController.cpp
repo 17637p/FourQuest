@@ -446,3 +446,8 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 
 	return false;
 }
+
+void fq::game_module::AnimatorController::Update(float dt)
+{
+	mCurrentState->second.Update(dt);
+}
