@@ -13,7 +13,7 @@ namespace fq::graphics
 		mResourceManager = resourceManager;
 		mCameraManager = cameraManager;
 
-		mSwapChainRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
+		mBackBufferRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV)->GetSRV();
@@ -26,12 +26,20 @@ namespace fq::graphics
 		mEmitCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleEmitCS.hlsl");
 		mSimulateCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleSimulateCS.hlsl");
 
-		auto additive = mResourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
-		std::shared_ptr<PipelineState> pipelineState = std::make_shared<PipelineState>(nullptr, nullptr, additive);
+		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
+		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
+		auto additiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
+		auto subtractiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Subtractive);
+		auto modulateState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Modulate);
+		auto additivePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, additiveState);
+		auto subtractivePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, subtractiveState);
+		auto modulatePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, modulateState);
 		auto particleRenderVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ParticleVS.hlsl");
 		auto particleRednerPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ParticlePS.hlsl");
 		auto particleRednerGS = std::make_shared<D3D11GeometryShader>(mDevice, L"./resource/internal/shader/ParticleGS.hlsl");
-		mRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, pipelineState);
+		mAdditiveRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, additivePipelieState);
+		mSubtractiveRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, subtractivePipelieState);
+		mModulateRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, modulatePipelieState);
 
 		D3D11Util::CreateRandomTexture2DSRV(mDevice->GetDevice().Get(), mRandomTextureSRV.GetAddressOf());
 
@@ -110,7 +118,7 @@ namespace fq::graphics
 
 	IParticleObject* D3D11ParticleManager::CreateParticleObject(const ParticleInfo& particleInfo)
 	{
-		std::shared_ptr<D3D11Texture> texture = mResourceManager->Create<D3D11Texture>(particleInfo.RenderModuleData.TexturePath);
+		std::shared_ptr<D3D11Texture> texture = mResourceManager->Create<D3D11Texture>(particleInfo.RenderData.TexturePath);
 
 		IParticleObject* particleObjectInferface = new ParticleObject(mDevice, texture, particleInfo, DirectX::SimpleMath::Matrix::Identity);
 		mParticleObjects.insert(particleObjectInferface);
@@ -126,6 +134,8 @@ namespace fq::graphics
 		delete particleObject;
 	}
 
+
+
 	void D3D11ParticleManager::updateParticleObjectCB(IParticleObject* particleObjectInterface)
 	{
 		const ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
@@ -138,30 +148,84 @@ namespace fq::graphics
 		particleObjectData.InstanceData.FrameTime = particleObject->mFrameTime;
 		particleObjectData.InstanceData.NumToEmit = particleObject->mNumToEmit;
 
-		particleObjectData.MainData.StartColor[0] = particleInfo.MainModuleData.StartColor[0];
-		particleObjectData.MainData.StartColor[1] = particleInfo.MainModuleData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainModuleData.StartColor[0] : particleInfo.MainModuleData.StartColor[1];;
-		particleObjectData.MainData.StartLifeTime[0] = particleInfo.MainModuleData.StartLifeTime[0];
-		particleObjectData.MainData.StartLifeTime[1] = particleInfo.MainModuleData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleInfo.MainModuleData.StartLifeTime[0] : particleInfo.MainModuleData.StartLifeTime[1];;
-		particleObjectData.MainData.StartSpeed[0] = particleInfo.MainModuleData.StartSpeed[0];
-		particleObjectData.MainData.StartSpeed[1] = particleInfo.MainModuleData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleInfo.MainModuleData.StartSpeed[0] : particleInfo.MainModuleData.StartSpeed[1];;
-		particleObjectData.MainData.StartRotation[0] = particleInfo.MainModuleData.StartRotation[0];
-		particleObjectData.MainData.StartRotation[1] = particleInfo.MainModuleData.StartRotationOption == ParticleInfo::EOption::Constant ? particleInfo.MainModuleData.StartRotation[0] : particleInfo.MainModuleData.StartRotation[1];;
-		particleObjectData.MainData.StartSize[0] = particleInfo.MainModuleData.StartSize[0];
-		particleObjectData.MainData.StartSize[1] = particleInfo.MainModuleData.StartSizeOption == ParticleInfo::EOption::Constant ? particleInfo.MainModuleData.StartSize[0] : particleInfo.MainModuleData.StartSize[1];;
-		particleObjectData.MainData.GravityModfier[0] = particleInfo.MainModuleData.GravityModifier[0];
-		particleObjectData.MainData.GravityModfier[1] = particleInfo.MainModuleData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleInfo.MainModuleData.GravityModifier[0] : particleInfo.MainModuleData.GravityModifier[1];
-		particleObjectData.MainData.SimulationSpeed = particleInfo.MainModuleData.SimulationSpeed;
-		particleObjectData.MainData.MaxParticleSize = particleInfo.MainModuleData.MaxParticleCount;
+		particleObjectData.MainData.StartColor[0] = particleInfo.MainData.StartColor[0];
+		particleObjectData.MainData.StartColor[1] = particleInfo.MainData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartColor[0] : particleInfo.MainData.StartColor[1];;
+		particleObjectData.MainData.StartLifeTime[0] = particleInfo.MainData.StartLifeTime[0];
+		particleObjectData.MainData.StartLifeTime[1] = particleInfo.MainData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartLifeTime[0] : particleInfo.MainData.StartLifeTime[1];;
+		particleObjectData.MainData.StartSpeed[0] = particleInfo.MainData.StartSpeed[0];
+		particleObjectData.MainData.StartSpeed[1] = particleInfo.MainData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSpeed[0] : particleInfo.MainData.StartSpeed[1];;
+		particleObjectData.MainData.StartRotation[0] = particleInfo.MainData.StartRotation[0];
+		particleObjectData.MainData.StartRotation[1] = particleInfo.MainData.StartRotationOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartRotation[0] : particleInfo.MainData.StartRotation[1];;
+		particleObjectData.MainData.StartSize[0] = particleInfo.MainData.StartSize[0];
+		particleObjectData.MainData.StartSize[1] = particleInfo.MainData.StartSizeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSize[0] : particleInfo.MainData.StartSize[1];;
+		particleObjectData.MainData.GravityModfier[0] = particleInfo.MainData.GravityModifier[0];
+		particleObjectData.MainData.GravityModfier[1] = particleInfo.MainData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.GravityModifier[0] : particleInfo.MainData.GravityModifier[1];
+		particleObjectData.MainData.SimulationSpeed = particleInfo.MainData.SimulationSpeed;
+		particleObjectData.MainData.MaxParticleSize = particleInfo.MainData.MaxParticleCount;
 
+		particleObjectData.ShapeData.Transform =
+			DirectX::SimpleMath::Matrix::CreateScale(particleInfo.ShapeData.Scale) *
+			DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(particleInfo.ShapeData.Rotation) *
+			DirectX::SimpleMath::Matrix::CreateTranslation(particleInfo.ShapeData.Position);
+		particleObjectData.ShapeData.Transform = particleObjectData.ShapeData.Transform.Transpose();
+
+		particleObjectData.ShapeData.Position = particleInfo.ShapeData.Position;
+		particleObjectData.ShapeData.Rotation = particleInfo.ShapeData.Rotation;
+		particleObjectData.ShapeData.Scale = particleInfo.ShapeData.Scale;
 		particleObjectData.ShapeData.ShapeType = (int)particleInfo.ShapeData.ShapeType;
 		particleObjectData.ShapeData.ModeType = (int)particleInfo.ShapeData.ModeType;
-		particleObjectData.ShapeData.Angle = particleInfo.ShapeData.Angle;
+		particleObjectData.ShapeData.AngleInRadian = particleInfo.ShapeData.AngleInDegree * 3.141592 / 180;
 		particleObjectData.ShapeData.Radius = particleInfo.ShapeData.Radius;
 		particleObjectData.ShapeData.DountRadius = particleInfo.ShapeData.DountRadius;
-		particleObjectData.ShapeData.Arc = particleInfo.ShapeData.Arc;
+		particleObjectData.ShapeData.ArcInRadian = particleInfo.ShapeData.ArcInDegree * 3.141592 / 180;
 		particleObjectData.ShapeData.Speed = particleInfo.ShapeData.Speed;
 		particleObjectData.ShapeData.Spread = particleInfo.ShapeData.Spread;
 		particleObjectData.ShapeData.RadiusThickness = particleInfo.ShapeData.RadiusThickness;
+
+		particleObjectData.VelocityOverLifetimeData.Velocity = particleInfo.VelocityOverLifetimeData.Velocity;
+		particleObjectData.VelocityOverLifetimeData.Orbital = particleInfo.VelocityOverLifetimeData.Orbital;
+		particleObjectData.VelocityOverLifetimeData.Offset = particleInfo.VelocityOverLifetimeData.Offset;
+		particleObjectData.VelocityOverLifetimeData.bIsUsed = particleInfo.VelocityOverLifetimeData.bIsUsed;
+
+		particleObjectData.LimitVelocityOverLifetimeData.Speed = particleInfo.LimitVelocityOverLifetimeData.Speed;
+		particleObjectData.LimitVelocityOverLifetimeData.Dampen = particleInfo.LimitVelocityOverLifetimeData.Dampen;
+		particleObjectData.LimitVelocityOverLifetimeData.bIsUsed = particleInfo.LimitVelocityOverLifetimeData.bIsUsed;
+
+		particleObjectData.ForceOverLifeTimeData.Force = particleInfo.ForceOverLifeTimeData.Force;
+		particleObjectData.ForceOverLifeTimeData.bIsUsed = particleInfo.ForceOverLifeTimeData.bIsUsed;
+
+		for (size_t i = 0; i < 8; ++i)
+		{
+			if (particleInfo.ColorOverLifetimeData.ColorRatioCount > i)
+			{
+				particleObjectData.ColorOverLifetimeData.ColorRatios[i] = particleInfo.ColorOverLifetimeData.ColorRatios[i];
+			}
+			else
+			{
+				particleObjectData.ColorOverLifetimeData.ColorRatios[i] = DirectX::SimpleMath::Vector4{ 0, 0, 0, 0 };
+			}
+
+			if (particleInfo.ColorOverLifetimeData.AlphaRatioCount > i)
+			{
+				particleObjectData.ColorOverLifetimeData.AlphaRatios[i] = DirectX::SimpleMath::Vector4{ particleInfo.ColorOverLifetimeData.AlphaRatios[i].x, particleInfo.ColorOverLifetimeData.AlphaRatios[i].y, 0, 0 };
+			}
+			else
+			{
+				particleObjectData.ColorOverLifetimeData.AlphaRatios[i] = DirectX::SimpleMath::Vector4{ 0, 0, 0, 0 };
+			}
+		}
+		particleObjectData.ColorOverLifetimeData.AlphaRatioCount = particleInfo.ColorOverLifetimeData.AlphaRatioCount;
+		particleObjectData.ColorOverLifetimeData.ColorRatioCount = particleInfo.ColorOverLifetimeData.ColorRatioCount;
+		particleObjectData.ColorOverLifetimeData.bIsUsed = particleInfo.ColorOverLifetimeData.bIsUsed;
+
+		particleObjectData.SizeOverLifetimeData.PointA = particleInfo.SizeOverLifetimeData.PointA;
+		particleObjectData.SizeOverLifetimeData.PointB = particleInfo.SizeOverLifetimeData.PointB;
+		particleObjectData.SizeOverLifetimeData.PointC = particleInfo.SizeOverLifetimeData.PointC;
+		particleObjectData.SizeOverLifetimeData.PointD = particleInfo.SizeOverLifetimeData.PointD;
+		particleObjectData.SizeOverLifetimeData.bIsUsed = particleInfo.SizeOverLifetimeData.bIsUsed;
+
+		particleObjectData.RotationOverLifetimeData.AngularVelocityInRadian = particleInfo.RotationOverLifetimeData.AngularVelocityInDegree * 3.141592 / 180;
+		particleObjectData.RotationOverLifetimeData.bIsUsed = particleInfo.RotationOverLifetimeData.bIsUsed;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
@@ -213,6 +277,9 @@ namespace fq::graphics
 		int numThreadGroups = align(particleObject->mNumToEmit, 1024) / 1024;
 		mDevice->GetDeviceContext()->Dispatch(numThreadGroups, 1, 1);
 
+		ZeroMemory(buffers, sizeof(buffers));
+		mDevice->GetDeviceContext()->CSSetConstantBuffers(1, ARRAYSIZE(buffers), buffers);
+
 #if _DEBUG
 		particleObject->mDebugInfo.NumDeadParticlesAfterEmit = readCounter(particleObject->mDeadListUAV.Get());
 #endif
@@ -230,9 +297,12 @@ namespace fq::graphics
 		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get(),  particleObject->mDeadListUAV.Get(), particleObject->mAliveIndexBufferUAV.Get(), mIndirectDrawArgsBufferUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1,  (UINT)-1, 0, (UINT)-1 };
 		ID3D11ShaderResourceView* srvs[] = { mDepthSRV.Get() };
+		ID3D11Buffer* buffers[] = { mParticleObjectCB->GetBuffer() };
 
 		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, initialCounts);
 		mDevice->GetDeviceContext()->CSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
+		mDevice->GetDeviceContext()->CSSetConstantBuffers(1, ARRAYSIZE(buffers), buffers);
+
 		size_t threadX = align(ParticleInfo::MAX_PARTICLE_COUNT, 256) / 256;
 		mDevice->GetDeviceContext()->Dispatch(threadX, 1, 1);
 
@@ -241,6 +311,8 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->CSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 		ZeroMemory(uavs, sizeof(uavs));
 		mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
+		ZeroMemory(buffers, sizeof(buffers));
+		mDevice->GetDeviceContext()->CSSetConstantBuffers(1, ARRAYSIZE(buffers), buffers);
 
 		mDevice->GetDeviceContext()->CopyStructureCount(mActiveListCB.Get(), 0, particleObject->mAliveIndexBufferUAV.Get());
 
@@ -255,8 +327,21 @@ namespace fq::graphics
 	{
 		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 
-		mSwapChainRTV->Bind(mDevice, mNoneDSV);
-		mRenderProgram->Bind(mDevice);
+
+		switch (particleObjectInterface->GetInfo().RenderData.BlendMode)
+		{
+		case ParticleInfo::Render::EBlendMode::Additive:
+			mAdditiveRenderProgram->Bind(mDevice);
+			break;
+			//case ParticleInfo::Render::EBlendMode::Subtractive: // 정렬 필요
+			//	mSubtractiveRenderProgram->Bind(mDevice);
+			//	break;
+			//case ParticleInfo::Render::EBlendMode::Moudulate:
+			//	mModulateRenderProgram->Bind(mDevice);
+			//	break;
+		}
+
+		mBackBufferRTV->Bind(mDevice, mNoneDSV);
 
 		ID3D11Buffer* vb = nullptr;
 		UINT stride = 0;
@@ -266,10 +351,10 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		ID3D11ShaderResourceView* vs_srv[] = { particleObject->mParticleBufferSRV.Get(), particleObject->mAliveIndexBufferSRV.Get() };
-		ID3D11ShaderResourceView* ps_srv[] = { mDepthSRV.Get() };
+		ID3D11ShaderResourceView* ps_srv[] = { particleObject->mTexture->GetSRV().Get(),mDepthSRV.Get() };
 
 		mDevice->GetDeviceContext()->VSSetShaderResources(0, ARRAYSIZE(vs_srv), vs_srv);
-		mDevice->GetDeviceContext()->PSSetShaderResources(1, ARRAYSIZE(ps_srv), ps_srv);
+		mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(ps_srv), ps_srv);
 		mDevice->GetDeviceContext()->VSSetConstantBuffers(3, 1, mActiveListCB.GetAddressOf());
 
 		mDevice->GetDeviceContext()->DrawInstancedIndirect(mIndirectDrawArgsBuffer.Get(), 0);
@@ -277,7 +362,7 @@ namespace fq::graphics
 		ZeroMemory(vs_srv, sizeof(vs_srv));
 		mDevice->GetDeviceContext()->VSSetShaderResources(0, ARRAYSIZE(vs_srv), vs_srv);
 		ZeroMemory(ps_srv, sizeof(ps_srv));
-		mDevice->GetDeviceContext()->PSSetShaderResources(1, ARRAYSIZE(ps_srv), ps_srv);
+		mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(ps_srv), ps_srv);
 	}
 
 	int D3D11ParticleManager::align(int value, int aligment)

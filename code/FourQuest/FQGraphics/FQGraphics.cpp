@@ -184,7 +184,6 @@ bool FQGraphics::Render()
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	mRenderManager->Render();
-	mParticleManager->Excute();
 	return true;
 }
 

@@ -20,11 +20,14 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 Velocity; // 12
 		float Rotation; // 4
 
+		DirectX::SimpleMath::Vector4 StartColor; // 16
 		DirectX::SimpleMath::Vector4 Color; // 16
+
+		DirectX::SimpleMath::Vector3 EmitterPosition; // 16
+		float GravityModfier; // 4
 
 		float LifeTime; // 4
 		float Age;// 4
-		float GravityModfier; // 4
 	};
 
 	class ParticleObject : public IParticleObject
@@ -70,32 +73,32 @@ namespace fq::graphics
 		{
 			mTimePos += mFrameTime;
 
-			if (mParticleInfo.EmissionModuleData.ParticlesPerSecond < 0.f)
+			if (mParticleInfo.EmissionData.ParticlesPerSecond < 0.f)
 			{
 				return;
 			}
-			if (!mParticleInfo.MainModuleData.bIsLooping && mParticleInfo.MainModuleData.Duration < mTimePos)
+			if (!mParticleInfo.MainData.bIsLooping && mParticleInfo.MainData.Duration < mTimePos)
 			{
 				return;
 			}
 
-			if (mCycleCount < mTimePos / mParticleInfo.MainModuleData.Duration)
+			if (mCycleCount < mTimePos / mParticleInfo.MainData.Duration)
 			{
-				mCycleCount = mTimePos / mParticleInfo.MainModuleData.Duration;
+				mCycleCount = mTimePos / mParticleInfo.MainData.Duration;
 				mbIsRunDuationCycle = true;
 			}
 
 			if (mbIsRunDuationCycle)
 			{
-				switch (mParticleInfo.MainModuleData.StartDelayOption)
+				switch (mParticleInfo.MainData.StartDelayOption)
 				{
 				case ParticleInfo::EOption::Constant:
-					mStartTimePos = mParticleInfo.MainModuleData.StartDelay[0];
+					mStartTimePos = mParticleInfo.MainData.StartDelay[0];
 					break;
 				case ParticleInfo::EOption::RandomBetweenTwoConstant:
 				{
 					float ratio = D3D11Util::RandF(0.f, 1.f);
-					mStartTimePos = std::lerp(mParticleInfo.MainModuleData.StartDelay[0], mParticleInfo.MainModuleData.StartDelay[1], ratio);
+					mStartTimePos = std::lerp(mParticleInfo.MainData.StartDelay[0], mParticleInfo.MainData.StartDelay[1], ratio);
 					break;
 				}
 				default:
@@ -105,7 +108,7 @@ namespace fq::graphics
 				mbIsRunDuationCycle = false;
 			}
 
-			float modTimePos = fmod(mTimePos, mParticleInfo.MainModuleData.Duration);
+			float modTimePos = fmod(mTimePos, mParticleInfo.MainData.Duration);
 			const float prevModTimePos = modTimePos - mTimePos;
 
 			if (mStartTimePos > modTimePos)
@@ -113,7 +116,7 @@ namespace fq::graphics
 				return;
 			}
 
-			mAccumlation += mParticleInfo.EmissionModuleData.ParticlesPerSecond * mFrameTime;
+			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * mFrameTime;
 
 			if (mAccumlation > 1.f)
 			{
@@ -127,7 +130,7 @@ namespace fq::graphics
 				mNumToEmit = 0;
 			}
 
-			for (const ParticleInfo::Emission::Burst& burst : mParticleInfo.EmissionModuleData.Bursts)
+			for (const ParticleInfo::Emission::Burst& burst : mParticleInfo.EmissionData.Bursts)
 			{
 				for (size_t i = 0; i < burst.Cycles; ++i)
 				{

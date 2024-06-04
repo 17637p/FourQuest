@@ -120,7 +120,7 @@ namespace fq::graphics
 			float SimulationSpeed = 1.f; // 시뮬레이션 가중치
 
 			size_t MaxParticleCount = MAX_PARTICLE_COUNT;
-		} MainModuleData;
+		} MainData;
 
 		struct Emission
 		{
@@ -136,19 +136,19 @@ namespace fq::graphics
 			};
 
 			std::vector<Burst> Bursts;
-		} EmissionModuleData;
+		} EmissionData;
 
 		struct Shape
 		{
 			enum class EShape
 			{
 				Sphere,
-				// Hemisphere,
-				// Cone,
-				// Donut,
-				// Box,
-				// Circle,
-				// Rectangle,
+				Hemisphere,
+				Cone,
+				Donut,
+				Box,
+				Circle,
+				Rectangle,
 				// Edge
 			};
 
@@ -162,22 +162,65 @@ namespace fq::graphics
 
 			EShape ShapeType = EShape::Sphere; // 방출 모양
 			EMode ModeType = EMode::Random; // 방출 방식
-			float Angle = 25; // 
+			float AngleInDegree = 25; // 방출각
 			float Radius = 1; // 반지름
 			float DountRadius = 0.2f; // 도넛 반지름
-			float Arc = 360.f; // 호 크기, 각도 사용
+			float ArcInDegree = 360.f; // 호 크기, 각도 사용
 			float RadiusThickness = 0.f; // 입방체의 어느 부분 부터 방출될 것인지 0 ~ 1f
 			float Speed;
 			float Spread;
+
+			DirectX::SimpleMath::Vector3 Position;
+			DirectX::SimpleMath::Vector3 Rotation;
+			DirectX::SimpleMath::Vector3 Scale{ 1, 1, 1 };
 		} ShapeData;
 
-		struct VelocityOverLifetime {};
-		struct ColorOverLifetime {};
-		struct SizeOverLifetime {};
-		struct RotationOverLifetime {};
-		struct TextureSheetAnimation {};
+		struct VelocityOverLifetime
+		{
+			DirectX::SimpleMath::Vector3 Velocity = { 0, 0, 0 };
+			DirectX::SimpleMath::Vector3 Orbital = { 0, 0, 0 };
+			DirectX::SimpleMath::Vector3 Offset{ 0, 0, 0 };
+			bool bIsUsed{ false };
+		} VelocityOverLifetimeData;
 
-		struct RenderModule
+		struct LimitVelocityOverLifetime
+		{
+			float Speed{ 1.f };
+			float Dampen{ 0.f }; // 제한 속도 초과 시 감소 비율
+			bool bIsUsed{ false };
+		} LimitVelocityOverLifetimeData;
+
+		struct ForceOverLifetime
+		{
+			DirectX::SimpleMath::Vector3 Force{ 0, 0, 0 };
+			bool bIsUsed{ false };
+		} ForceOverLifeTimeData;
+
+		struct ColorOverLifetime
+		{
+			DirectX::SimpleMath::Vector2 AlphaRatios[8]; // value, ratio 
+			size_t AlphaRatioCount{ 0 };
+			DirectX::SimpleMath::Vector4 ColorRatios[8]; // { value }, ratio
+			size_t ColorRatioCount{ 0 };
+			bool bIsUsed{ false };
+		} ColorOverLifetimeData;
+
+		struct SizeOverLifetime
+		{
+			DirectX::SimpleMath::Vector2 PointA; // { ratio, size }
+			DirectX::SimpleMath::Vector2 PointB;
+			DirectX::SimpleMath::Vector2 PointC;
+			DirectX::SimpleMath::Vector2 PointD;
+			bool bIsUsed{ false };
+		} SizeOverLifetimeData;
+
+		struct RotationOverLifetime
+		{
+			float AngularVelocityInDegree;
+			bool bIsUsed{ false };
+		} RotationOverLifetimeData;
+
+		struct Render
 		{
 			enum class ERenderMode
 			{
@@ -192,8 +235,8 @@ namespace fq::graphics
 
 			ERenderMode RenderMode = ERenderMode::Billboard;
 			EBlendMode BlendMode = EBlendMode::Additive;
-			std::wstring TexturePath = L"";
-		} RenderModuleData;
+			std::wstring TexturePath = L"./Particle00.png";
+		} RenderData;
 	};
 
 	namespace debug

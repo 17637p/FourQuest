@@ -10,6 +10,7 @@ namespace fq::graphics
 	class D3D11RenderTargetView;
 	class D3D11DepthStencilView;
 	class Pass;
+	class D3D11ParticleManager;
 
 	class RenderPipeline
 	{

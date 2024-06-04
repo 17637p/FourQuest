@@ -129,7 +129,7 @@ namespace fq::graphics
 		struct Main
 		{
 			DirectX::SimpleMath::Color StartColor[2]; // 32
-		
+
 			float StartLifeTime[2]; // 8
 			float StartSpeed[2]; // 8
 
@@ -143,19 +143,80 @@ namespace fq::graphics
 
 		struct Shape
 		{
+			DirectX::SimpleMath::Matrix Transform;
+			DirectX::SimpleMath::Vector3 Position;
+			float pad0; // 4
+			DirectX::SimpleMath::Vector3 Rotation;
+			float pad1; // 4
+			DirectX::SimpleMath::Vector3 Scale;
+			float pad2; // 4
+
 			int ShapeType;
 			int ModeType;
-			float Angle;
+			float AngleInRadian;
 			float Radius;
 
 			float DountRadius;
-			float Arc;
+			float ArcInRadian;
 			float Speed;
 			float Spread;
 
 			float RadiusThickness;
 			float unused[3];
 		} ShapeData;
+
+		struct VelocityOverLifetime
+		{
+			DirectX::SimpleMath::Vector3 Velocity; // 12
+			float pad0; // 4
+			DirectX::SimpleMath::Vector3 Orbital; // 12
+			float pad1; // 4
+			DirectX::SimpleMath::Vector3 Offset; // 12
+			float pad2; // 4
+			int bIsUsed; // 4
+			float unused[3]; // 12
+		} VelocityOverLifetimeData;
+
+		struct LimitVelocityOverLifetime
+		{
+			float Speed;
+			float Dampen; // 제한 속도 초과 시 감소 비율
+			int bIsUsed{ false };
+			float unused[1];
+		} LimitVelocityOverLifetimeData;
+
+		struct ForceOverLifeTime
+		{
+			DirectX::SimpleMath::Vector3 Force;
+			int bIsUsed{ false };
+		} ForceOverLifeTimeData;
+
+		struct ColorOverLifetime
+		{
+			DirectX::SimpleMath::Vector4 ColorRatios[8];
+			DirectX::SimpleMath::Vector4 AlphaRatios[8];
+			int AlphaRatioCount;
+			int ColorRatioCount;
+			int bIsUsed{ false };
+			float unused[1];
+		} ColorOverLifetimeData;
+
+		struct SizeOverLifetime
+		{
+			DirectX::SimpleMath::Vector2 PointA;
+			DirectX::SimpleMath::Vector2 PointB;
+			DirectX::SimpleMath::Vector2 PointC;
+			DirectX::SimpleMath::Vector2 PointD;
+			int bIsUsed{ false };
+			float unused[3];
+		} SizeOverLifetimeData;
+
+		struct RotationOverLifetime
+		{
+			float AngularVelocityInRadian;
+			int bIsUsed{ false };
+			float unused[2];
+		} RotationOverLifetimeData;
 	};
 
 

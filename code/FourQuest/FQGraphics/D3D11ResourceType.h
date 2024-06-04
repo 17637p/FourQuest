@@ -80,6 +80,7 @@ namespace fq::graphics
 		DisableDepthWirte,
 		LessEqual,
 		DepthOff,
+		DisableDepthTest,
 	};
 
 	enum class ED3D11BlendState
@@ -88,6 +89,8 @@ namespace fq::graphics
 		OITRender,
 		OITComposite,
 		Additive,
+		Subtractive,
+		Modulate
 	};
 
 	/*=============================================================================

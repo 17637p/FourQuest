@@ -107,6 +107,7 @@ namespace fq::graphics
 	{
 		using namespace DirectX::SimpleMath;
 
+		// Particle
 		// update
 		{
 			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
@@ -242,5 +243,6 @@ namespace fq::graphics
 				}
 			}
 		}
+
 	}
 }

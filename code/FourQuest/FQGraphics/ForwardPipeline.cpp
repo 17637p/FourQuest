@@ -14,6 +14,7 @@ namespace fq::graphics
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
 		, mTerrainPass(std::make_shared<TerrainPass>())
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
+		, mParticlePass(std::make_shared<ParticlePass>())
 	{
 	}
 
@@ -39,12 +40,14 @@ namespace fq::graphics
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
+		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
+		mPasses.push_back(mParticlePass);
 		// mPasses.push_back(mTerrainPass); // 쉐이더와 소스 버전이 안 맞아서 임시 주석
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);

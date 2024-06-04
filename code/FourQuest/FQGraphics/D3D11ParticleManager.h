@@ -46,11 +46,13 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ParticleFrameData>> mParticleFrameCB;
 		std::shared_ptr<D3D11ConstantBuffer<ParticleObjectData>> mParticleObjectCB;
 
-		std::shared_ptr<class D3D11RenderTargetView> mSwapChainRTV;
+		std::shared_ptr<class D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<class D3D11DepthStencilView> mNoneDSV;
 		std::shared_ptr<class D3D11DepthStencilView> mDSV;
 
-		std::shared_ptr<class ShaderProgram> mRenderProgram;
+		std::shared_ptr<class ShaderProgram> mAdditiveRenderProgram;
+		std::shared_ptr<class ShaderProgram> mSubtractiveRenderProgram;
+		std::shared_ptr<class ShaderProgram> mModulateRenderProgram;
 
 		std::shared_ptr<class D3D11ComputeShader> mInitDeadListCS;
 		std::shared_ptr<class D3D11ComputeShader> mInitParticlesCS;

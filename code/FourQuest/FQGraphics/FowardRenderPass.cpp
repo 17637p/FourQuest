@@ -155,7 +155,7 @@ namespace fq::graphics
 
 		// Init
 		{
-			mBackBufferRTV->Clear(mDevice, { 1,1,1,1 });
+			mBackBufferRTV->Clear(mDevice, { 0,0,0,0 });
 			mDSV->Clear(mDevice);
 		}
 
