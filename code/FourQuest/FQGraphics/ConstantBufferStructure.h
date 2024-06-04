@@ -11,6 +11,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
+	struct ViewProjectionMatrix
+	{
+		DirectX::SimpleMath::Matrix ViewMatrix;
+		DirectX::SimpleMath::Matrix ViewProjMat;
+	};
+
 	struct SceneTrnasform
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;
@@ -88,6 +94,11 @@ namespace fq::graphics
 		int pad[3]; // 16
 
 		Layer layer[4]; // 128
+	};
+
+	struct FrustumCorners
+	{
+		DirectX::SimpleMath::Vector4 FrustumFarCorners[4];
 	};
 
 	struct LightData
