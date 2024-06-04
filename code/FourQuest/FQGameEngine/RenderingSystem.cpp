@@ -281,7 +281,9 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 				continue;
 
 			LoadModel(info.ModelPath);
-			mGameProcess->mGraphics->AddAnimation(meshObject, info);
+
+			if (mLoadModels.find(info.ModelPath) != mLoadModels.end())
+				mGameProcess->mGraphics->AddAnimation(meshObject, info);
 		}
 	}
 }
@@ -289,6 +291,12 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 
 void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 {
+	if (!std::filesystem::exists(path))
+	{
+		spdlog::warn("[RenderingSystem] Load Model Failed \"{}\" ", path);
+		return;
+	}
+
 	auto iter = mLoadModels.find(path);
 
 	if (iter == mLoadModels.end())

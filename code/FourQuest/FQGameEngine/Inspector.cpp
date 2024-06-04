@@ -1013,7 +1013,19 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	// ModelPath GUI
 	std::string modelPath = stateNode.GetModelPath();
 
+	bool isModelExist = std::filesystem::exists(modelPath);
+
+	if (!isModelExist)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGuiColor::RED);
+	}
+
 	ImGui::InputText("ModelPath", &modelPath);
+
+	if (!isModelExist)
+	{
+		ImGui::PopStyleColor(1);
+	}
 
 	// DragDrop 받기
 	if (ImGui::BeginDragDropTarget())
@@ -1033,14 +1045,16 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	modelPath = stateNode.GetModelPath();
-	if (modelPath.empty()) return;
+
+	if (modelPath.empty() || !isModelExist) return;
 
 	if (!mGameProcess->mRenderingSystem->IsLoadedModel(modelPath))
 	{
 		mGameProcess->mRenderingSystem->LoadModel(modelPath);
 	}
-	const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
 
+
+	const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
 	// Animation Name 선택 
 	auto aniName = stateNode.GetAnimationName();
 
