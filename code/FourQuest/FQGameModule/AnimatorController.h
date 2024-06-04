@@ -35,7 +35,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션 스테이트 업데이트 호출
 		/// </summary>
-		void Update(float dt);
+		void Update();
 
 		/// <summary>
 		/// 애니메이터를 반환합니다

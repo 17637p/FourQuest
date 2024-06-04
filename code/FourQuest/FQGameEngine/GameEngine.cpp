@@ -33,7 +33,6 @@ void fq::game_engine::GameEngine::Initialize()
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
 
-
 	// 윈도우 창을 초기화
 	mGameProcess->mWindowSystem->Initialize();
 
@@ -126,6 +125,7 @@ void fq::game_engine::GameEngine::Process()
 
 				accmulator -= fixedDeltaTime;
 			}
+
 			mGameProcess->mPhysicsSystem->Update(deltaTime);
 
 			// Scene Update
@@ -133,6 +133,7 @@ void fq::game_engine::GameEngine::Process()
 
 			// Animation Update
 			mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
 

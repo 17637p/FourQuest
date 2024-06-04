@@ -43,7 +43,7 @@ namespace fq::game_module
 		struct Vibration
 		{
 			EVibrationMode mode;
-			unsigned int intensity = 3000.f;
+			unsigned int intensity = 3000;
 			float second = 1.f;
 		};
 

@@ -25,6 +25,7 @@
 #include "PrefabTest.h"
 #include "AnimationStateNode.h"
 #include "Animator.h"
+#include "LogStateBehaviour.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -448,6 +449,15 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::DragDrop, ".controller")
 		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
+
+	entt::meta<LogStateBehaviour>()
+		.type("LogStateBehaviour"_hs)
+		.prop(fq::reflect::prop::Name, "LogStateBehaviour")
+		.data<&LogStateBehaviour::SetExitCount, &LogStateBehaviour::GetExitCount>("ExitCount"_hs)
+		.prop(fq::reflect::prop::Name, "ExitCount")
+		.data<&LogStateBehaviour::SetEnterCount, &LogStateBehaviour::GetEnterCount>("EnterCount"_hs)
+		.prop(fq::reflect::prop::Name, "EnterCount")
+		.base<IStateBehaviour>();
 
 		//////////////////////////////////////////////////////////////////////////
 		//                              Prefab                                  //

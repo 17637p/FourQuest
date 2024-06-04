@@ -16,20 +16,24 @@ namespace fq::game_module
 	/// </summary>
 	class AnimationStateNode : public fq::reflect::IHandle
 	{
+		using StateBehaviourMap = std::unordered_map<entt::id_type, std::shared_ptr<IStateBehaviour>>;
+
 	public:
 		enum class Type
 		{
-			Entry, 
+			Entry,
 			Exit,
 			State,
-			AnyState, 
+			AnyState,
 		};
 
 	public:
 		AnimationStateNode(AnimatorController* controller);
 		~AnimationStateNode();
 
-		void Update(float dt);
+		void OnStateEnter();
+		void OnStateExit();
+		void OnStateUpdate();
 
 		Type GetType() const { return mType; }
 		void SetType(Type val) { mType = val; }
@@ -45,7 +49,10 @@ namespace fq::game_module
 		void SetDuration(float val) { mDuration = val; }
 		bool IsLoof() const { return mbIsLoof; } 
 		void SetLoof(bool val) { mbIsLoof = val; }
-	
+
+		StateBehaviourMap& GetStateBehaviourMap() { return mBehaviours; }
+		const StateBehaviourMap& GetStateBehaviourMap() const { return mBehaviours; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -59,7 +66,7 @@ namespace fq::game_module
 		float mDuration;
 		bool mbIsLoof;
 
-		std::unordered_map<entt::id_type, std::shared_ptr<IStateBehaviour>> mBehaviours;
+		StateBehaviourMap mBehaviours;
 	};
 
 }

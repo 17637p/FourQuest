@@ -7,6 +7,7 @@ fq::game_engine::AnimationSystem::AnimationSystem()
 	, mScene(nullptr)
 	, mGraphics(nullptr)
 	, mChangeAnimationStateHandler{}
+	, mStateQueue{}
 {}
 
 fq::game_engine::AnimationSystem::~AnimationSystem()
@@ -27,8 +28,8 @@ void fq::game_engine::AnimationSystem::UpdateAnimation(float dt)
 	// 1. State Update
 	updateAnimtorState(dt);
 
-	// 2. OnStateEnter/Exit CallBack
-
+	// 2. Animation 변경요청  
+	processCallBack();
 
 	// 3. Animation을 적용
 	processAnimation(dt);
@@ -77,21 +78,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 
 void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::ChangeAnimationState& event)
 {
-	auto animator = event.animator;
-
-	const auto& meshs   = animator->GetSkinnedMeshs();
-
-	for (auto& mesh : meshs)
-	{
-		if (event.bIsBlend)
-		{
-			mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
-		}
-		else
-		{
-			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
-		}
-	}
+	mStateQueue.push(event);
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
@@ -111,4 +98,28 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	animator->SetController(controller);
 
 	return true;
+}
+
+void fq::game_engine::AnimationSystem::processCallBack()
+{
+	while (!mStateQueue.empty())
+	{
+		const auto& event = mStateQueue.front();
+
+		auto animator = event.animator;
+		const auto& meshs = animator->GetSkinnedMeshs();
+		for (auto& mesh : meshs)
+		{
+			if (event.bIsBlend)
+			{
+				mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
+			}
+			else
+			{
+				mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
+			}
+		}
+
+		mStateQueue.pop();
+	}
 }

@@ -9,6 +9,7 @@
 #include "AnimatorController.h"
 #include "AnimationTransition.h"
 #include "AnimationStateNode.h"
+#include "IStateBehaviour.h"
 
 using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
@@ -85,6 +86,31 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		stateNode.SetAnimationName(name);
 		stateNode.SetDuration(duration);
 		stateNode.SetLoof(isLoof);
+
+		// StateBehaviours
+		auto& stateMap = stateNode.GetStateBehaviourMap();
+		for (const auto& element : value.at("stateBehaviours").items())
+		{
+			const std::string& stateID = element.key();
+			entt::id_type id = std::stoul(stateID);
+
+			if (!entt::resolve(id))
+				continue;
+
+			entt::meta_any anyState = mConverter.ParseClassFromJson(stateID, element.value());
+
+			entt::meta_type type = anyState.type();
+			entt::meta_type iStateType = entt::resolve<IStateBehaviour>();
+			assert(type.can_cast(iStateType));
+
+			IStateBehaviour* state = anyState.try_cast<IStateBehaviour>();
+			assert(state);
+
+			auto clone = state->Clone();
+
+			stateMap.insert({ id,clone });
+		}
+
 		controller->AddStateNode(stateNode);
 	}
 
@@ -185,6 +211,8 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		stateJson["duration"] = stateNode.GetDuration();
 		stateJson["isLoof"] = stateNode.IsLoof();
 
+		// StateBehaviour
+		stateJson["stateBehaviours"] = serializeStateBehaviours(stateNode);
 		stateMapJson[stateName] = stateJson;
 	}
 	controllerJson["stateMap"] = stateMapJson;
@@ -239,5 +267,23 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 	}
 	else
 		assert(nullptr);
+}
+
+nlohmann::json fq::game_module::AnimatorControllerLoader::serializeStateBehaviours(const AnimationStateNode& node)
+{
+	json out;
+
+	for (const auto& [id, stateBehaviour] : node.GetStateBehaviourMap())
+	{
+		entt::meta_type behaviourType = entt::resolve(id);
+		assert(behaviourType);
+
+		entt::meta_any anyBehaviour = behaviourType.from_void(stateBehaviour.get());
+		assert(anyBehaviour);
+
+		mConverter.ParseClassToJson(anyBehaviour, out);
+	}
+
+	return out;
 }
 
