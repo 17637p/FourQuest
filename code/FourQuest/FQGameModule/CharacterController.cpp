@@ -30,7 +30,5 @@ fq::game_module::CharacterController::CharacterController()
 {}
 
 fq::game_module::CharacterController::~CharacterController()
-{
-
-}
+{}
 

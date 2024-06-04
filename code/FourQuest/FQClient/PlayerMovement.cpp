@@ -31,11 +31,11 @@ void fq::client::PlayerMovement::OnUpdate(float dt)
 {
 	auto input = GetScene()->GetInputManager();
 
-	if (input->IsKeyState(EKey::Space, EKeyState::Tap))
+	if (input->IsPadKeyState(0,EPadKey::A, EKeyState::Tap))
 	{
-		mAnimator->SetParameterTrigger("OnHit");
+		mAnimator->SetParameterTrigger("OnHit");	
 	}
-	if (input->IsKeyState(EKey::T, EKeyState::Tap))
+	if (input->IsPadKeyState(0, EPadKey::X, EKeyState::Tap))
 	{
 		mAnimator->SetParameterTrigger("OnPunch");
 	}
