@@ -33,8 +33,6 @@ namespace fq::physics
 		/// </summary>
 		template <typename ...Params>
 		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, Params... params);
-		//bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, const float& radius);
-		//bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius);
 
 		/// <summary>
 		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
@@ -63,7 +61,7 @@ namespace fq::physics
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
 		std::shared_ptr<CollisionData> collisionData = mCollisionDataConttainer.find(id)->second;
 
-		characterPhysics->AddArticulationLink(info, collisionData, collisionMatrix, ...params);
+		characterPhysics->AddArticulationLink(info, collisionData, collisionMatrix, params...);
 
 		return true;
 	}

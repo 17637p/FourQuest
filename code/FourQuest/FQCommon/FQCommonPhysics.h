@@ -73,6 +73,16 @@ namespace fq::physics
 		bool isDead = false;
 	};
 
+	struct RayCastData
+	{
+		unsigned int hitSize = 0;
+		unsigned int myId;
+		unsigned int myLayerNumber;
+		std::vector<unsigned int> id;
+		std::vector<unsigned int> layerNumber;
+		std::vector<DirectX::SimpleMath::Vector3> contectPoints;
+	};
+
 #pragma region GetSetData
 	/// <summary>
 	/// 물리 엔진에서 리지드 바디 정보들을 주고 받는 GetSet 구조체
@@ -86,12 +96,12 @@ namespace fq::physics
 
 	struct CharacterControllerGetSetData
 	{
-		DirectX::SimpleMath::Vector3 position;					// 캐릭터 컨트롤러의 위치
+		DirectX::SimpleMath::Vector3 position = {};				// 캐릭터 컨트롤러의 위치
 	};
 
 	struct CharacterMovementGetSetData
 	{
-		DirectX::SimpleMath::Vector3 velocity;					// 캐릭터 컨트롤러의 x,y,z축 속도
+		DirectX::SimpleMath::Vector3 velocity = {};				// 캐릭터 컨트롤러의 x,y,z축 속도
 		bool isFall;											// 캐릭터가 떨어지고 있는지 체크 변수
 	};
 #pragma endregion
@@ -99,7 +109,7 @@ namespace fq::physics
 #pragma region Resource
 	struct ConvexMeshResoureceInfo
 	{
-		DirectX::SimpleMath::Vector3* vertices;					// 모델 버텍스
+		DirectX::SimpleMath::Vector3* vertices = {};			// 모델 버텍스
 		int vertexSize;											// 모델 버텍스 사이즈
 		unsigned char convexPolygonLimit = 4;					// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
 	};

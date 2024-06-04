@@ -8,6 +8,7 @@
 #include "PhysicsSimulationEventCallback.h"
 
 #include "ConvexMeshResource.h"
+#include "EngineDataConverter.h"
 
 namespace fq::physics
 { 
@@ -151,6 +152,44 @@ namespace fq::physics
 		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
 		mRigidBodyManager->UpdateCollisionMatrix(mCollisionMatrix);
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
+	}
+
+	RayCastData FQPhysics::RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance)
+	{
+		RayCastData raycastData;
+		raycastData.myId = myID;
+		raycastData.myLayerNumber = layerNumber;
+
+		physx::PxRaycastBuffer hitBuffer;
+
+		physx::PxVec3 pxOrigin;
+		physx::PxVec3 pxDirection;
+		CopyDxVec3ToPxVec3(origin, pxOrigin);
+		CopyDxVec3ToPxVec3(direction, pxDirection);
+
+		bool isBlock = mScene->raycast(pxOrigin, pxDirection, distance, hitBuffer);
+		if (isBlock)
+		{
+			unsigned int hitSize = hitBuffer.getNbAnyHits();
+			raycastData.hitSize = hitSize;
+
+			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
+			{
+				const physx::PxRaycastHit& hit = hitBuffer.getAnyHit(hitNumber);
+				physx::PxShape* shape = hit.shape;
+
+				DirectX::SimpleMath::Vector3 position;
+				CopyPxVec3ToDxVec3(hit.position, position);
+				unsigned int id = static_cast<CollisionData*>(shape->userData)->myId;
+				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
+
+				raycastData.contectPoints.push_back(position);
+				raycastData.id.push_back(id);
+				raycastData.layerNumber.push_back(layerNumber);
+			}
+		}
+
+		return raycastData;
 	}
 
 #pragma region RigidBodyManager

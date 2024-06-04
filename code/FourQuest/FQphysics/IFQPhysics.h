@@ -70,6 +70,11 @@ extern "C" {
 			/// <param name="info"> 물리 엔진 정보 </param>
 			virtual FQ_PHYSICS void SetPhysicsInfo(PhysicsEngineInfo& info) abstract;
 
+			/// <summary>
+			/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
+			/// </summary>
+			virtual RayCastData RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance) abstract;
+
 #pragma region RigidBodyManager
 
 			/// <summary>

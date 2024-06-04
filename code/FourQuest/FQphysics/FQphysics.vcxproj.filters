@@ -25,9 +25,6 @@
     <Filter Include="Character\CharacterController">
       <UniqueIdentifier>{8b735414-48ea-4b82-9509-7398b9e8dd9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Character\PhysicsCCTHitCallback">
-      <UniqueIdentifier>{b9f023b8-1c01-4bf5-8d6d-365c6c88543a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="RigidBody\SimulationEventCallback">
       <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,9 @@
     </Filter>
     <Filter Include="Resource\ConvexMesh">
       <UniqueIdentifier>{1a6f6cac-ce3e-418f-87aa-7d6034984655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterController\CharacterControllerCallback">
+      <UniqueIdentifier>{b9f023b8-1c01-4bf5-8d6d-365c6c88543a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -82,7 +82,7 @@
       <Filter>Manager</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsCCTHitCallback.h">
-      <Filter>Character\PhysicsCCTHitCallback</Filter>
+      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCharacterController.h">
       <Filter>Character\CharacterController\PlayerController</Filter>
@@ -113,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="ConvexMeshResource.h">
       <Filter>Resource\ConvexMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterQueryFilterCallback.h">
+      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -153,7 +156,7 @@
       <Filter>Character\CharacterController</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsCCTHitCallback.cpp">
-      <Filter>Character\PhysicsCCTHitCallback</Filter>
+      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCharacterController.cpp">
       <Filter>Character\CharacterController\PlayerController</Filter>
@@ -181,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="ConvexMeshResource.cpp">
       <Filter>Resource\ConvexMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterQueryFilterCallback.cpp">
+      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,11 @@ namespace fq::physics
 		/// <param name="info"> 물리 엔진 정보 </param>
 		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
 
+		/// <summary>
+		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
+		/// </summary>
+		virtual RayCastData RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance) override;
+
 #pragma region RigidBodyManager
 		/// <summary>
 		/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성합니다.

@@ -139,6 +139,7 @@
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="CharacterPhysics.h" />
+    <ClInclude Include="CharacterQueryFilterCallback.h" />
     <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="CharacterJoint.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="CharacterMovement.cpp" />
     <ClCompile Include="CharacterPhysics.cpp" />
+    <ClCompile Include="CharacterQueryFilterCallback.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="CharacterJoint.cpp" />
