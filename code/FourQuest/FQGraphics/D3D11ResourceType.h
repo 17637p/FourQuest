@@ -30,11 +30,12 @@ namespace fq::graphics
 		ColorAcuumulation,
 		PixeldRevealageThreshold,
 
-		SingleColor, // OutLine 첫단계 
+		SingleColor, // OutLine 첫 단계 
 		OutLine,
 		OutLineBlur,
 		BlurVertical,
 
+		SSAODepth, // SSAO 첫 단계
 		SSAO,
 
 		// Deferred

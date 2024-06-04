@@ -484,6 +484,12 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAODepthPS.hlsl">
       <Filter>Shader\PostProcessing</Filter>
     </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAOVS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAOPS.hlsl">
+      <Filter>Shader\PostProcessing</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">

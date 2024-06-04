@@ -96,6 +96,11 @@ namespace fq::graphics
 		Layer layer[4]; // 128
 	};
 
+	struct FrustumCorners
+	{
+		DirectX::SimpleMath::Vector4 FrustumFarCorners[4];
+	};
+
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];

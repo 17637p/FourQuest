@@ -99,3 +99,8 @@ void fq::graphics::Camera::makeProjectionMatrix()
 		mProjectionMatrix = DirectX::XMMatrixOrthographicLH(static_cast<float>(mWidth), static_cast<float>(mHeight), mNearPlane, mFarPlane);
 	}
 }
+
+float fq::graphics::Camera::GetFovY() const
+{
+	return mFieldOfView;
+}

@@ -96,7 +96,7 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 		// intentional fall through
 	case ED3D11RenderTargetViewType::OffscreenHDR:
 		// intentional fall through
-	case ED3D11RenderTargetViewType::SSAO:
+	case ED3D11RenderTargetViewType::SSAODepth:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
 		textureDesc.Width = width;

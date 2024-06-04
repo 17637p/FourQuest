@@ -24,16 +24,16 @@ void fq::graphics::SSAODepthPass::Initialize(std::shared_ptr<D3D11Device> device
 		{ NULL, NULL}
 	};
 
-	mViewDepthRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SSAO, width, height);
+	mViewDepthRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SSAODepth, width, height);
 	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 	auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SSAODepthVS.hlsl");
 	auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SSAODepthVS.hlsl", macroSkinning);
-	auto ssaoDepthPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/SSAODepthPS.hlsl");
+	auto SSAODepthPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/SSAODepthPS.hlsl");
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 
-	mSSAOViewDepthStaticMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, ssaoDepthPS, pipelieState);
-	mSSAOViewDepthskinnedMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, ssaoDepthPS, pipelieState);
+	mSSAOViewDepthStaticMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, SSAODepthPS, pipelieState);
+	mSSAOViewDepthskinnedMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, SSAODepthPS, pipelieState);
 
 	mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 	mViewProjectionMatrix = std::make_shared<D3D11ConstantBuffer<ViewProjectionMatrix>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -47,14 +47,14 @@ void fq::graphics::SSAODepthPass::Finalize()
 
 void fq::graphics::SSAODepthPass::OnResize(unsigned short width, unsigned short height)
 {
-	mViewDepthRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SSAO, width, height);
+	mViewDepthRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SSAODepth, width, height);
 }
 
 void fq::graphics::SSAODepthPass::Render()
 {
 	// update
 	{
-		// View Matrix 만 
+		// View Matrix를 따로 전달해줘야 함!
 		ViewProjectionMatrix viewProjectionMatrix;
 		viewProjectionMatrix.ViewMatrix = mCameraManager->GetViewMatrix(ECameraType::Player);
 		viewProjectionMatrix.ViewMatrix = viewProjectionMatrix.ViewMatrix.Transpose();
