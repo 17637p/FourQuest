@@ -34,6 +34,9 @@ namespace fq::physics
 		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics) abstract;
 
 	protected:
+		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material);
+
+	protected:
 		unsigned int mID;
 		unsigned int mLayerNumber;
 		EColliderType mColliderType;
