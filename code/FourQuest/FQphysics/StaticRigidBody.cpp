@@ -42,4 +42,44 @@ namespace fq::physics
 
 		return true;
 	}
+
+	void StaticRigidBody::SetScale(const DirectX::SimpleMath::Vector3& scale)
+	{
+		physx::PxShape* shape;
+		mRigidStatic->getShapes(&shape, 1);
+
+		if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
+		{
+			physx::PxBoxGeometry boxGeometry = static_cast<const physx::PxBoxGeometry&>(shape->getGeometry());
+			boxGeometry.halfExtents.x = mExtent.x * scale.x;
+			boxGeometry.halfExtents.y = mExtent.y * scale.y;
+			boxGeometry.halfExtents.z = mExtent.z * scale.z;
+			shape->setGeometry(boxGeometry);
+		}
+		else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
+		{
+			physx::PxSphereGeometry sphereGeometry;
+			float maxValue = std::max<float>(scale.x, std::max<float>(scale.y, scale.z));
+
+			sphereGeometry.radius = mRadius * maxValue;
+			shape->setGeometry(sphereGeometry);
+		}
+		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCAPSULE)
+		{
+			physx::PxCapsuleGeometry capsuleGeometry;
+			float maxValue = std::max<float>(scale.y, scale.z);
+
+			capsuleGeometry.radius = mRadius * maxValue;
+			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
+			shape->setGeometry(capsuleGeometry);
+		}
+		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+		{
+			physx::PxConvexMeshGeometry convexmeshGeometry = static_cast<const physx::PxConvexMeshGeometry&>(shape->getGeometry());
+			convexmeshGeometry.scale.scale.x = scale.x;
+			convexmeshGeometry.scale.scale.y = scale.y;
+			convexmeshGeometry.scale.scale.z = scale.z;
+			shape->setGeometry(convexmeshGeometry);
+		}
+	}
 }
