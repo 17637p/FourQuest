@@ -87,6 +87,8 @@ namespace fq::physics
 	struct CharacterControllerGetSetData
 	{
 		DirectX::SimpleMath::Vector3 position;					// 캐릭터 컨트롤러의 위치
+		DirectX::SimpleMath::Vector3 scale;						// 캐릭터 컨트롤러의 위치
+		DirectX::SimpleMath::Quaternion rotation;						// 캐릭터 컨트롤러의 위치
 	};
 
 	struct CharacterMovementGetSetData
@@ -180,7 +182,6 @@ namespace fq::physics
 		EArticulationMotion motion;						// 모션 제한
 		float limitsLow;								// 범위 ( Limit일 때 회전 아랫 범위 : 0.0 ~ 1.0 ) 
 		float limitsHigh;								// 범위 ( Limit일 때 회전 윗 범위 : 0.0 ~ 1.0 )
-
 	};
 
 	struct CharacterJointInfo

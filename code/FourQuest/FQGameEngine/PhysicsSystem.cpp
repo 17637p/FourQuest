@@ -24,6 +24,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
 	, mCharactorControllerID(entt::resolve<fq::game_module::CharacterController>().id())
 	, mRigidID(entt::resolve<game_module::RigidBody>().id())
+	, mAddInputMoveHandler{}
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -56,6 +57,9 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::AddComponent>(this, &PhysicsSystem::AddComponent);
 	mRemoveComponentHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::RemoveComponent>(this, &PhysicsSystem::RemoveComponent);
+	mAddInputMoveHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::AddInputMove>(this, &PhysicsSystem::AddInputMove);
+
 }
 
 
@@ -110,7 +114,8 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -130,6 +135,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	{
 		return;
 	}
+
 	auto rigid = object->GetComponent<RigidBody>();
 	auto transform = object->GetComponent<Transform>();
 	bool isStatic = rigid->IsStatic();
@@ -144,7 +150,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		ColliderID id = ++mLastColliderID;
 		boxInfo.colliderInfo.id = id;
 		boxInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
-		boxInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		boxInfo.colliderInfo.collisionTransform = transform->GetTransform();
 		boxCollider->SetBoxInfomation(boxInfo);
 
 		if (isStatic)
@@ -159,8 +165,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			assert(check);
 			mColliderContainer.insert({ id, {mBoxID, boxCollider} });
 		}
-
 	}
+
 	// 2. Sphere Collider
 	if (object->HasComponent<SphereCollider>())
 	{
@@ -171,7 +177,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		ColliderID id = ++mLastColliderID;
 		sphereInfo.colliderInfo.id = id;
 		sphereInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
-		sphereInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		sphereInfo.colliderInfo.collisionTransform = transform->GetTransform();
 		sphereCollider->SetSphereInfomation(sphereInfo);
 
 		if (isStatic)
@@ -187,6 +193,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			mColliderContainer.insert({ id, {mSphereID, sphereCollider} });
 		}
 	}
+
 	// 3. Capsule Collider
 	if (object->HasComponent<CapsuleCollider>())
 	{
@@ -197,7 +204,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		ColliderID id = ++mLastColliderID;
 		capsuleInfo.colliderInfo.id = id;
 		capsuleInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
-		capsuleInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		capsuleInfo.colliderInfo.collisionTransform = transform->GetTransform();;
 		capsuleCollider->SetCapsuleInfomation(capsuleInfo);
 
 		if (isStatic)
@@ -213,6 +220,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
 		}
 	}
+
 	// 5.CharacterController
 	if (object->HasComponent<CharacterController>())
 	{
@@ -227,6 +235,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
+
 		mColliderContainer.insert({ id, {mCharactorControllerID, controller} });
 		controller->SetControllerInfo(controllerInfo);
 	}
@@ -245,7 +254,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		ColliderID id = ++mLastColliderID;
 		convexMeshInfo.colliderInfo.id = id;
 		convexMeshInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
-		convexMeshInfo.colliderInfo.collisionTransform.worldMatrix = transform->GetWorldMatrix();
+		convexMeshInfo.colliderInfo.collisionTransform = transform->GetTransform();
 
 		if (hasStaticMesh)
 		{
@@ -458,13 +467,12 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		{
 			auto controller = colliderInfo.second->GetComponent<fq::game_module::CharacterController>();
 
-			fq::physics::CharacterControllerGetSetData pos;
-			fq::physics::CharacterMovementGetSetData movement;
-			pos.position = transform->GetWorldPosition() + controller->GetOffset();
-			movement.isFall = controller->IsFalling();
-			movement.velocity = rigid->GetLinearVelocity();
+			fq::physics::CharacterControllerGetSetData data;
+			data.position = transform->GetWorldPosition() + controller->GetOffset();
+			data.rotation = transform->GetWorldRotation();
+			data.scale = transform->GetWorldScale();
 
-			mPhysicsEngine->SetCharacterControllerData(id, pos);
+			mPhysicsEngine->SetCharacterControllerData(id, data);
 		}
 		else
 		{
@@ -484,41 +492,8 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 	return iter == mColliderContainer.end() ? nullptr : iter->second.second;
 }
 
-void fq::game_engine::PhysicsSystem::Update(float dt)
+void fq::game_engine::PhysicsSystem::AddInputMove(const fq::event::AddInputMove& event)
 {
-	auto& inputManager = mGameProcess->mInputManager;
-
-	// 캐릭터 컨트롤러
-	for (auto& [id, colliderInfo] : mColliderContainer)
-	{
-		if (colliderInfo.first == mCharactorControllerID)
-		{
-			bool isFalling = static_cast<game_module::CharacterController*>(colliderInfo.second)->IsFalling();
-			DirectX::SimpleMath::Vector3 input{};
-
-			if (!inputManager->IsKeyState(EKey::W, EKeyState::None))
-			{
-				input.z += 1.f;
-			}
-			if (!inputManager->IsKeyState(EKey::S, EKeyState::None))
-			{
-				input.z -= 1.f;
-			}
-			if (!inputManager->IsKeyState(EKey::A, EKeyState::None))
-			{
-				input.x -= 1.f;
-			}
-			if (!inputManager->IsKeyState(EKey::D, EKeyState::None))
-			{
-				input.x += 1.f;
-			}
-			if (inputManager->IsKeyState(EKey::Space, EKeyState::Tap) && !isFalling)
-			{
-				input.y += 1.f;
-			}
-
-			mPhysicsEngine->AddInputMove(id, input);
-		}
-	}
+	mPhysicsEngine->AddInputMove(event.colliderID, event.input);
 }
 

@@ -224,18 +224,18 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 	// UpSphere
 	fq::graphics::debug::SphereInfo info;
 	info.Color = color;
-	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height;
+	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height *0.5f;
 	info.Sphere.Radius = controllerInfo.radius;
 	mGameProcess->mGraphics->DrawSphere(info);
 
 	// DownSphere
-	info.Sphere.Center = transform.GetWorldPosition() + offset - upDir * controllerInfo.height;
+	info.Sphere.Center = transform.GetWorldPosition() + offset - upDir * controllerInfo.height * 0.5f;
 	mGameProcess->mGraphics->DrawSphere(info);
 
 	// BodyRay 
 	fq::graphics::debug::RayInfo ray;
 
-	ray.Direction = upDir * controllerInfo.height * 2.f;
+	ray.Direction = upDir * controllerInfo.height;
 	ray.Color = color;
 	ray.Normalize = false;
 	auto orgin = info.Sphere.Center;

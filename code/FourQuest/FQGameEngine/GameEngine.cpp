@@ -126,8 +126,6 @@ void fq::game_engine::GameEngine::Process()
 				accmulator -= fixedDeltaTime;
 			}
 
-			mGameProcess->mPhysicsSystem->Update(deltaTime);
-
 			// Scene Update
 			mGameProcess->mSceneManager->Update(deltaTime);
 

@@ -118,7 +118,7 @@ void fq::game_engine::EditorEngine::Process()
 			if (mode == EditorMode::Play)
 			{
 				static float accmulator = 0.f;
-				static float fixedDeltaTime = 1.f / 60.f;
+				constexpr float fixedDeltaTime = 1.f / 60.f;
 
 				accmulator += deltaTime;
 
@@ -133,7 +133,6 @@ void fq::game_engine::EditorEngine::Process()
 
 					accmulator -= fixedDeltaTime;
 				}
-				mGameProcess->mPhysicsSystem->Update(deltaTime);
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);

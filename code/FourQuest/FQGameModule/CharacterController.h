@@ -5,11 +5,22 @@
 
 namespace fq::game_module
 {
+	class Transform;
+	
 	class CharacterController :	public Component
 	{
+		using ControllerID = unsigned int;
+
 	public:
 		CharacterController();
 		~CharacterController();
+
+		void OnStart() override;
+
+		/// <summary>
+		/// 캐릭터 이동처리를 수행합니다 
+		/// </summary>
+		void OnUpdate(float dt) override;
 
 		/// <summary>
 		/// 복사본을 반환합니다 
@@ -24,7 +35,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 캐릭터 컨트롤러의 정보를 설정합니다 
 		/// </summary>
-		void SetControllerInfo(fq::physics::CharacterControllerInfo val) { mControllerInfo = val; }
+		void SetControllerInfo(fq::physics::CharacterControllerInfo info);
 	
 		/// <summary>
 		/// 캐릭터 이동 정보를 반환합니다
@@ -56,13 +67,26 @@ namespace fq::game_module
 		/// </summary>
 		void SetOffset(DirectX::SimpleMath::Vector3 offset) { mOffset = offset; }
 	
+		/// <summary>
+		/// 컨트롤러 ID를 반환합니다.
+		/// </summary>
+		fq::game_module::CharacterController::ControllerID GetControllerID() const { return mControllerID; }
+		
+		/// <summary>
+		/// 컨트롤러 ID를 설정합니다 ( 0 ~ 3)
+		/// </summary>
+		void SetControllerID(fq::game_module::CharacterController::ControllerID id);
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
+		Transform* mTransform;
+
 		DirectX::SimpleMath::Vector3 mOffset;
 		fq::physics::CharacterControllerInfo mControllerInfo;
 		fq::physics::CharacterMovementInfo mMovementInfo;
+
+		ControllerID mControllerID;
 
 		bool mbIsFalling;
 	};
