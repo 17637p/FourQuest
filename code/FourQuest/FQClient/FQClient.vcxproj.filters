@@ -27,6 +27,12 @@
     <Filter Include="src\02.Monster">
       <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\02.Monster\State">
+      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\State">
+      <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -41,14 +47,23 @@
     <ClInclude Include="Monster.h">
       <Filter>include\02.Monster</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterFSM.h">
-      <Filter>include\02.Monster</Filter>
+    <ClInclude Include="MonsterIdle.h">
+      <Filter>include\02.Monster\State</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterBaseState.h">
-      <Filter>include\02.Monster</Filter>
+    <ClInclude Include="MonsterFind.h">
+      <Filter>include\02.Monster\State</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterState.h">
-      <Filter>include\02.Monster</Filter>
+    <ClInclude Include="MonsterDie.h">
+      <Filter>include\02.Monster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterDamaged.h">
+      <Filter>include\02.Monster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterChase.h">
+      <Filter>include\02.Monster\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterAttack.h">
+      <Filter>include\02.Monster\State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -58,14 +73,26 @@
     <ClCompile Include="PlayerMovement.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterFSM.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
     <ClCompile Include="Monster.cpp">
       <Filter>src\02.Monster</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterState.cpp">
-      <Filter>src\02.Monster</Filter>
+    <ClCompile Include="MonsterIdle.cpp">
+      <Filter>src\02.Monster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDie.cpp">
+      <Filter>src\02.Monster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDamaged.cpp">
+      <Filter>src\02.Monster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterAttack.cpp">
+      <Filter>src\02.Monster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterChase.cpp">
+      <Filter>src\02.Monster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterFind.cpp">
+      <Filter>src\02.Monster\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

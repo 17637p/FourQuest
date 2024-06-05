@@ -1,34 +1,22 @@
 #include "Monster.h"
 
-#include "MonsterFSM.h"
-#include "MonsterState.h"
-
 //temp: 나중에 찐 플레이어로 바꿀 것
 #include "PlayerMovement.h"
 
 fq::client::Monster::Monster()
-	:mFSM(new MonsterFSM),
-	mCurState("Idle"),
-	mHP(),
+	:mHP(),
 	mAttackPower(),
 	mMoveSpeed(),
 	mIsDamaged(false),
 	mTargetAttackRange(500),
 	mChaseDistance(30)
 {
-	mFSM->RegisterState("Idle", std::make_shared<MonsterIdleState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("Find", std::make_shared<MonsterFindState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("Chase", std::make_shared<MonsterChaseState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("Damaged", std::make_shared<MonsterDamagedState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("Death", std::make_shared<MonsterDeathState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("AttatchPreparation", std::make_shared<MonsterAttatchPreparationState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("AttatchIdle", std::make_shared<MonsterAttatchIdleState>(std::enable_shared_from_this<Monster>::shared_from_this()));
-	mFSM->RegisterState("AttatchExecution", std::make_shared<MonsterAttatchExecutionState>(std::enable_shared_from_this<Monster>::shared_from_this()));
+	
 }
 
 fq::client::Monster::~Monster()
 {
-	delete mFSM;
+	
 }
 
 std::shared_ptr<fq::game_module::Component> fq::client::Monster::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -44,33 +32,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::Monster::Clone(std::shar
 		// 기본 대입 연산자 호출한다.
 		*cloneMonster = *this;
 	}
-	cloneMonster->mFSM = nullptr;
 
 	return cloneMonster;
-}
-
-void fq::client::Monster::OnStart()
-{
-	mAnimator = GetComponent<fq::game_module::Animator>();
-	assert(mAnimator);
-
-	mFSM->OnChangeState(mCurState);
-}
-
-fq::game_module::Animator* fq::client::Monster::GetAnimator() const
-{
-	return mAnimator;
-}
-
-void fq::client::Monster::OnUpdate(float dt)
-{
-	
-}
-
-void fq::client::Monster::ChangeState(const std::string& nextState)
-{
-	mCurState = nextState;
-	mFSM->OnChangeState(nextState);
 }
 
 float fq::client::Monster::CalculateDistance(fq::game_module::GameObject gameObject)
@@ -163,5 +126,10 @@ float fq::client::Monster::GetAttackPower() const
 void fq::client::Monster::SetAttackPower(float attackPower)
 {
 	mAttackPower = attackPower;
+}
+
+fq::game_module::GameObject* fq::client::Monster::GetLastAttacker() const
+{
+	return mLastAttacker;
 }
 

@@ -890,10 +890,9 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 			ImGui::SameLine();
 			if (ImGui::Button(deleteButtonName.c_str()))
 				transition.PopBackCondition();
-
-			ImGui::EndChild();
-			ImGui::PopStyleColor(1);
 		}
+		ImGui::EndChild();
+		ImGui::PopStyleColor(1);
 	}
 
 	beginStateBehaviour(state);
@@ -1261,7 +1260,7 @@ void fq::game_engine::Inspector::beginStateBehaviour(fq::game_module::AnimationS
 
 		// 이미 가지고있는지 확인
 		auto check = behaviourMap.find(id);
-	
+
 		if (check != behaviourMap.end())
 		{
 			return;

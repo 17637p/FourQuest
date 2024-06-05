@@ -14,15 +14,9 @@ namespace fq::client
 		Monster();
 		~Monster();
 
-		void OnStart() override;
-		void OnUpdate(float dt) override;
-
-		void ChangeState(const std::string& nextState);
-
 		// State ¿ë
 		float CalculateDistance(fq::game_module::GameObject gameObject);
 
-		game_module::Animator* GetAnimator() const;
 		fq::game_module::GameObject* GetTarget() const;
 		void SetTarget(fq::game_module::GameObject* target);
 		bool GetIsDamagaed() const;
@@ -57,10 +51,6 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		MonsterFSM* mFSM;
-		std::string mCurState;
-
-		game_module::Animator* mAnimator;
 		fq::game_module::GameObject* mTarget;
 
 		bool mIsDamaged;
