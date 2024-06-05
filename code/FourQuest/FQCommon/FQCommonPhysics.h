@@ -97,6 +97,8 @@ namespace fq::physics
 	struct CharacterControllerGetSetData
 	{
 		DirectX::SimpleMath::Vector3 position = {};				// 캐릭터 컨트롤러의 위치
+		DirectX::SimpleMath::Vector3 scale = {1.f,1.f,1.f};				// 캐릭터 컨트롤러의 위치
+		DirectX::SimpleMath::Quaternion rotation = {};				// 캐릭터 컨트롤러의 위치
 	};
 
 	struct CharacterMovementGetSetData

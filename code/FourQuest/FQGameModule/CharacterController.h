@@ -76,6 +76,27 @@ namespace fq::game_module
 		/// 컨트롤러 ID를 설정합니다 ( 0 ~ 3)
 		/// </summary>
 		void SetControllerID(fq::game_module::CharacterController::ControllerID id);
+	
+		/// <summary>
+		/// 이동 활성화 여부를 반환합니다
+		/// </summary>
+		bool OnMove() const { return mbOnMove; }
+		
+		/// <summary>
+		/// 이동 활성화 여부를 설정합니다
+		/// </summary>
+		void SetOnMove(bool val) { mbOnMove = val; }
+		
+		/// <summary>
+		/// 회전 활성화 여부를 반환합니다
+		/// </summary>
+		bool OnRotation() const { return mbOnRotation; }
+		
+		/// <summary>
+		/// 회전 활성화 여부를 설정합니다
+		/// </summary>
+		void SetOnRotation(bool val) { mbOnRotation = val; }
+	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -89,6 +110,8 @@ namespace fq::game_module
 		ControllerID mControllerID;
 
 		bool mbIsFalling;
+		bool mbOnMove;
+		bool mbOnRotation;
 	};
 
 }

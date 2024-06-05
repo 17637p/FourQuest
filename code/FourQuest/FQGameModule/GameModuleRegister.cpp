@@ -179,7 +179,7 @@ void fq::game_module::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                               Terrain                                //
 	//////////////////////////////////////////////////////////////////////////
-	
+
 	// TerrainLayer
 	entt::meta<fq::graphics::TerrainLayer>()
 		.type("TerrainLayer"_hs)
@@ -205,7 +205,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "TileOffsetX")
 		.data<&fq::graphics::TerrainLayer::TileOffsetY>("TileOffsetY"_hs)
 		.prop(fq::reflect::prop::Name, "TileOffsetY");
-	
+
 	// Terrain
 	entt::meta<Terrain>()
 		.type("Terrain"_hs)
@@ -386,6 +386,9 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<CharacterController>()
 		.type("CharacterController"_hs)
 		.prop(fq::reflect::prop::Name, "CharacterController")
+		.data<&CharacterController::SetControllerID, &CharacterController::GetControllerID>("ControllerID"_hs)
+		.prop(fq::reflect::prop::Name, "ControllerID")
+		.prop(fq::reflect::prop::Comment, u8" 0 ~ 3")
 		.data<&CharacterController::SetOffset, &CharacterController::GetOffset>("Offset"_hs)
 		.prop(fq::reflect::prop::Name, "Offset")
 		.data<&CharacterController::SetMovementInfo, &CharacterController::GetMovementInfo>("MoveInfo"_hs)
@@ -393,7 +396,6 @@ void fq::game_module::RegisterMetaData()
 		.data<&CharacterController::SetControllerInfo, &CharacterController::GetControllerInfo>("ControllerInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ControllerInfo")
 		.base<Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                              Sound                                   //
@@ -459,11 +461,11 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "EnterCount")
 		.base<IStateBehaviour>();
 
-		//////////////////////////////////////////////////////////////////////////
-		//                              Prefab                                  //
-		//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//                              Prefab                                  //
+	//////////////////////////////////////////////////////////////////////////
 
-		entt::meta<PrefabTest>()
+	entt::meta<PrefabTest>()
 		.type("PrefabTest"_hs)
 		.prop(fq::reflect::prop::Name, "PrefabTest")
 		.data<&PrefabTest::SetFireObject, &PrefabTest::GetFireObject>("FireObject"_hs)
