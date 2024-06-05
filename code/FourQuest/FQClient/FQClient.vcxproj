@@ -30,12 +30,26 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MonsterAttack.h" />
+    <ClInclude Include="MonsterChase.h" />
     <ClInclude Include="ClientRegistration.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Monster.h" />
+    <ClInclude Include="MonsterDamaged.h" />
+    <ClInclude Include="MonsterDie.h" />
+    <ClInclude Include="MonsterFind.h" />
+    <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="PlayerMovement.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MonsterAttack.cpp" />
+    <ClCompile Include="MonsterChase.cpp" />
     <ClCompile Include="ClientRegistration.cpp" />
+    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="MonsterDamaged.cpp" />
+    <ClCompile Include="MonsterDie.cpp" />
+    <ClCompile Include="MonsterFind.cpp" />
+    <ClCompile Include="MonsterIdle.cpp" />
     <ClCompile Include="PlayerMovement.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
