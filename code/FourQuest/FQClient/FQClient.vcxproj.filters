@@ -33,6 +33,9 @@
     <Filter Include="src\02.Monster\State">
       <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.Player\State">
+      <UniqueIdentifier>{e2c13996-e04b-41bd-9d23-c980f6326ec4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">

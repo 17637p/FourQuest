@@ -165,7 +165,6 @@ namespace fq::game_module
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);
 		static constexpr float EndTransitionWeight = 1.f;
-
 	private:
 		Animator* mAnimator;
 
