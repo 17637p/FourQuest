@@ -447,7 +447,7 @@ bool fq::game_module::AnimatorController::checkNextStateTransition()
 
 bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 {
-	auto transition = checkStateTransition(mNextState->first);
+	auto transition = checkStateTransition(mCurrentState->first);
 
 	if (transition != mTransitions.end())
 	{

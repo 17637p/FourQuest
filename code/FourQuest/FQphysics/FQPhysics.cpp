@@ -244,7 +244,7 @@ namespace fq::physics
 
 	bool FQPhysics::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData)
 	{
-		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData);
+		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData, mCollisionMatrix);
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{

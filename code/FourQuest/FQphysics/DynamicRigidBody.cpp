@@ -35,7 +35,6 @@ namespace fq::physics
 		DirectX::SimpleMath::Vector3 scale;
 		DirectX::SimpleMath::Quaternion rotation;
 		dxTransform.Decompose(scale, rotation, position);
-		mScale = scale;
 
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
@@ -50,9 +49,9 @@ namespace fq::physics
 		return true;
 	}
 
-	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics)
+	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
-		if (abs(mScale.Length()) + 0.1f >= abs(scale.Length()))
+		if (abs(mScale.Length()) == abs(scale.Length()))
 			return;
 
 		mScale = scale;
@@ -69,7 +68,7 @@ namespace fq::physics
 			boxGeometry.halfExtents.y = mExtent.y * scale.y;
 			boxGeometry.halfExtents.z = mExtent.z * scale.z;
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, boxGeometry, physics, material);
+			updateShapeGeometry(mRigidDynamic, boxGeometry, physics, material, collisionMatrix);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
 		{
@@ -78,7 +77,7 @@ namespace fq::physics
 
 			sphereGeometry.radius = mRadius * maxValue;
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, sphereGeometry, physics, material);
+			updateShapeGeometry(mRigidDynamic, sphereGeometry, physics, material, collisionMatrix);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCAPSULE)
 		{
@@ -88,7 +87,7 @@ namespace fq::physics
 			capsuleGeometry.radius = mRadius * maxValue;
 			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, capsuleGeometry, physics, material);
+			updateShapeGeometry(mRigidDynamic, capsuleGeometry, physics, material, collisionMatrix);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 		{
@@ -97,7 +96,7 @@ namespace fq::physics
 			convexmeshGeometry.scale.scale.y = scale.y;
 			convexmeshGeometry.scale.scale.z = scale.z;
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material);
+			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
 	}
 }
