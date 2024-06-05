@@ -130,8 +130,10 @@ namespace fq::graphics
 		D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type);
 		~D3D11UnorderedAccessView() = default;
 
-		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot);
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, UINT startSlot, UINT initialCount = (UINT)-1);
 		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device);
+
+		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetView() const { return mView; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mView;

@@ -39,7 +39,7 @@ namespace fq::graphics
 			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, width, height);
+			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, width, height);
 			break;
 		default:
 			assert(false);

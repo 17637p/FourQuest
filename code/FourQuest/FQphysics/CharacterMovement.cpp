@@ -64,6 +64,7 @@ namespace fq::physics
 			else
 				mVelocity.z = std::lerp(mVelocity.z, 0.f, mDynamicFriction);
 
+
 			mVelocity.x += (input.x * mAcceleration * deltaTime);
 			mVelocity.z += (input.z * mAcceleration * deltaTime);
 		}
@@ -120,9 +121,6 @@ namespace fq::physics
 		if (abs(mVelocity.z) >= 0.001f)
 			mDisplacementVector.z = (mVelocity.z) / triangleFunction * mSpeed;
 		mDisplacementVector.y = mVelocity.y;
-
-
-		std::cout << mDisplacementVector.x << ", " << mDisplacementVector.z << ", " << mSpeed << std::endl;
 	}
 
 	void CharacterMovement::CopyDirectionToPxVec3(physx::PxVec3& direction)

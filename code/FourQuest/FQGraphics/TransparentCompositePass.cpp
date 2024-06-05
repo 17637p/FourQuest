@@ -99,9 +99,9 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
 		mBackBufferRTV->Bind(mDevice, mNullDSV);
-		mColoraccumulationSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-		mPixelRevealageThresholdSRV->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-		mPointClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mColoraccumulationSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+		mPixelRevealageThresholdSRV->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+		mPointClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
 		mShaderProgram->Bind(mDevice);
 		mFullScreenVB->Bind(mDevice);

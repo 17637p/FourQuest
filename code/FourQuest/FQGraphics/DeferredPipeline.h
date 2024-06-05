@@ -29,6 +29,7 @@ namespace fq::graphics
 			std::shared_ptr< D3D11LightManager>& lightManager,
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
+			std::shared_ptr<D3D11ParticleManager> particleManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize();
@@ -50,6 +51,7 @@ namespace fq::graphics
 		std::shared_ptr<class OutLinePass> mOutLinePass;
 		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
 		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
+		std::shared_ptr<class ParticlePass> mParticlePass;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;

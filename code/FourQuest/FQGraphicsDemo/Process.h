@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include "BaseWindow.h"
 #include "TimeManager.h"
@@ -22,6 +23,7 @@ namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
 namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IImageObject; }
+namespace fq::graphics { class IParticleObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -40,7 +42,6 @@ private:
 	void Render();
 	void debugRender();
 	void shadowTest();
-	void particleInit();
 
 	void strafe(fq::common::Transform& cameraTransform, float distance);
 	void walk(fq::common::Transform& cameraTransform, float distance);
@@ -57,6 +58,9 @@ private:
 	void calculateFrameStats();
 
 	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
+
+	void particleInit();
+	void particleUpdate();
 
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
@@ -82,6 +86,7 @@ private:
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
+	std::vector< fq::graphics::IParticleObject*> mParticleObjects;
 
 	// Camera
 	fq::common::Transform cameraTransform;

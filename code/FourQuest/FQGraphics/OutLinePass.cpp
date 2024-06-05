@@ -72,10 +72,10 @@ void fq::graphics::OutLinePass::Render()
 		mFullScreenVB->Bind(mDevice);
 		mFullScreenIB->Bind(mDevice);
 
-		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-		mSingleColorSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+		mSingleColorSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
-		mScreenSizeCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 0);
+		mScreenSizeCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);
 	}
 
 	// draw

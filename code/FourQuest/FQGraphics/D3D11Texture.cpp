@@ -95,7 +95,7 @@ void fq::graphics::D3D11Texture::Bind(const std::shared_ptr<D3D11Device>& d3d11D
 			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, mTextureSRV.GetAddressOf());
 			break;
 		}
-		case ED3D11ShaderType::Pixelshader:
+		case ED3D11ShaderType::PixelShader:
 		{
 			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, mTextureSRV.GetAddressOf());
 			break;
@@ -132,7 +132,7 @@ void fq::graphics::D3D11Texture::Bind(const std::shared_ptr<D3D11Device>& d3d11D
 			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, numOfTexture, textureSRVs.data());
 			break;
 		}
-		case ED3D11ShaderType::Pixelshader:
+		case ED3D11ShaderType::PixelShader:
 		{
 			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, numOfTexture, textureSRVs.data());
 			break;
