@@ -116,68 +116,118 @@ namespace fq::graphics
 		float pad2;
 	};
 
-	struct Emitter
+	struct ParticleFrameData
 	{
-		DirectX::SimpleMath::Vector4 InitPositionW;
-		DirectX::SimpleMath::Vector4 ReadomPositionW;
-
-		DirectX::SimpleMath::Vector4 InitVelocityW;
-		DirectX::SimpleMath::Vector4 ReadomVelocityW;
-
-		DirectX::SimpleMath::Vector4 InitSizeW;
-		DirectX::SimpleMath::Vector4 ReadomSizeW;
-
-		float InitLifeTime;
-		float ReadomLifeTime;
-		unsigned int ParticleCount;
-		float DeltaTime;
-		float TotalTime;
-		float unused[3];
-	};
-
-	struct ParticleMain
-	{
-		DirectX::SimpleMath::Matrix Transform;
-
-		DirectX::SimpleMath::Vector4 StartSize;
-		DirectX::SimpleMath::Vector4 StartColor1;
-		DirectX::SimpleMath::Vector4 StartColor2;
-		DirectX::SimpleMath::Vector2 StartLifeTime;
-		DirectX::SimpleMath::Vector2 StartSpeed;
-		DirectX::SimpleMath::Vector2 StartRotation;
-		DirectX::SimpleMath::Vector2 GravityModifier;
-
-		int StartLifeTimeOption;
-		int StartSpeedOption;
-		int StartSizeOption;
-		int StartRotationOption;
-
-		int StartColorOption;
-		int GravityModifierOption;
-		int RandomSeed;
-		float DeltaTime;
-
-		float SimulationSpeed;
-		unsigned int ParticleCount;
+		DirectX::SimpleMath::Matrix ViewMatrix;
+		DirectX::SimpleMath::Matrix ProjMatrix;
+		DirectX::SimpleMath::Matrix InvProjMatrix;
+		unsigned int ScreenWidth;
+		unsigned int ScreenHeight;
 		float unused[2];
 	};
 
-	struct ParticleShape
+	struct ParticleObjectData
 	{
-		DirectX::SimpleMath::Matrix Transform;
+		struct Instance
+		{
+			DirectX::SimpleMath::Matrix Transform;
+			float TimePos;
+			float FrameTime;
+			int NumToEmit;
+			float RandomSeed;
+		} InstanceData;
 
-		int ShapeType;
-		int ModeType;
-		float Angle;
-		float Radius;
+		struct Main
+		{
+			DirectX::SimpleMath::Color StartColor[2]; // 32
 
-		float DountRadius;
-		float Arc;
-		float Speed;
-		float Spread;
+			float StartLifeTime[2]; // 8
+			float StartSpeed[2]; // 8
 
-		float RadiusThickness;
-		float unused[3];
+			float StartRotation[2]; // 8
+			float StartSize[2]; // 8
+
+			float GravityModfier[2]; // 8
+			float SimulationSpeed; // 4
+			int MaxParticleSize; // 4
+		} MainData;
+
+		struct Shape
+		{
+			DirectX::SimpleMath::Matrix Transform;
+			DirectX::SimpleMath::Vector3 Position;
+			float pad0; // 4
+			DirectX::SimpleMath::Vector3 Rotation;
+			float pad1; // 4
+			DirectX::SimpleMath::Vector3 Scale;
+			float pad2; // 4
+
+			int ShapeType;
+			int ModeType;
+			float AngleInRadian;
+			float Radius;
+
+			float DountRadius;
+			float ArcInRadian;
+			float Speed;
+			float Spread;
+
+			float RadiusThickness;
+			float unused[3];
+		} ShapeData;
+
+		struct VelocityOverLifetime
+		{
+			DirectX::SimpleMath::Vector3 Velocity; // 12
+			float pad0; // 4
+			DirectX::SimpleMath::Vector3 Orbital; // 12
+			float pad1; // 4
+			DirectX::SimpleMath::Vector3 Offset; // 12
+			float pad2; // 4
+			int bIsUsed; // 4
+			float unused[3]; // 12
+		} VelocityOverLifetimeData;
+
+		struct LimitVelocityOverLifetime
+		{
+			float Speed;
+			float Dampen; // 제한 속도 초과 시 감소 비율
+			int bIsUsed{ false };
+			float unused[1];
+		} LimitVelocityOverLifetimeData;
+
+		struct ForceOverLifeTime
+		{
+			DirectX::SimpleMath::Vector3 Force;
+			int bIsUsed{ false };
+		} ForceOverLifeTimeData;
+
+		struct ColorOverLifetime
+		{
+			DirectX::SimpleMath::Vector4 ColorRatios[8];
+			DirectX::SimpleMath::Vector4 AlphaRatios[8];
+			int AlphaRatioCount;
+			int ColorRatioCount;
+			int bIsUsed{ false };
+			float unused[1];
+		} ColorOverLifetimeData;
+
+		struct SizeOverLifetime
+		{
+			DirectX::SimpleMath::Vector2 PointA;
+			DirectX::SimpleMath::Vector2 PointB;
+			DirectX::SimpleMath::Vector2 PointC;
+			DirectX::SimpleMath::Vector2 PointD;
+			int bIsUsed{ false };
+			float unused[3];
+		} SizeOverLifetimeData;
+
+		struct RotationOverLifetime
+		{
+			float AngularVelocityInRadian;
+			int bIsUsed{ false };
+			float unused[2];
+		} RotationOverLifetimeData;
 	};
 
 	struct OutLineColor

@@ -154,33 +154,24 @@
     <ClInclude Include="ParticlePass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11ParticleManager.h">
-      <Filter>Management</Filter>
-    </ClInclude>
     <ClInclude Include="TerrainPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>Management</Filter>
     </ClInclude>
-    <ClInclude Include="SingleColorPass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+    <ClInclude Include="D3D11ParticleManager.h">
+      <Filter>Management</Filter>
     </ClInclude>
-    <ClInclude Include="OutLinePass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
+    <ClInclude Include="ParticleObject.h">
+      <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="OutLineBlurPass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
-    </ClInclude>
-    <ClInclude Include="OutLineAddPass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
-    </ClInclude>
-    <ClInclude Include="SSAODepthPass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
-    </ClInclude>
-    <ClInclude Include="SSAOPass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
-    </ClInclude>
+    <ClInclude Include="OutLineAddPass.h" />
+    <ClInclude Include="OutLineBlurPass.h" />
+    <ClInclude Include="OutLinePass.h" />
+    <ClInclude Include="SingleColorPass.h" />
+    <ClInclude Include="SSAODepthPass.h" />
+    <ClInclude Include="SSAOPass.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -255,11 +246,14 @@
     <Filter Include="Common\Source">
       <UniqueIdentifier>{51c71a07-0194-40f7-b0b2-3f398fe65888}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\PostProcessing">
-      <UniqueIdentifier>{9a188591-8b3a-4ef5-9366-0aff253d5e30}</UniqueIdentifier>
+    <Filter Include="Shader\Particle">
+      <UniqueIdentifier>{295600f5-72b0-4b3b-94e0-40c687c4bd5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\Terrain">
-      <UniqueIdentifier>{e4d1f357-5229-4974-a357-9628bfdb2826}</UniqueIdentifier>
+    <Filter Include="Shader\Particle\Render">
+      <UniqueIdentifier>{8d062b40-d555-44d3-b03a-671f78558391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Particle\Simulation">
+      <UniqueIdentifier>{76577010-c364-4424-ab87-96615d60b7ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -389,33 +383,24 @@
     <ClCompile Include="ParticlePass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11ParticleManager.cpp">
-      <Filter>Management\Source</Filter>
-    </ClCompile>
     <ClCompile Include="TerrainPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
-    <ClCompile Include="SingleColorPass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    <ClCompile Include="D3D11ParticleManager.cpp">
+      <Filter>Management\Source</Filter>
     </ClCompile>
-    <ClCompile Include="OutLinePass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    <ClCompile Include="ParticleObject.cpp">
+      <Filter>Object</Filter>
     </ClCompile>
-    <ClCompile Include="OutLineBlurPass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="OutLineAddPass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="SSAODepthPass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="SSAOPass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
-    </ClCompile>
+    <ClCompile Include="OutLineAddPass.cpp" />
+    <ClCompile Include="OutLineBlurPass.cpp" />
+    <ClCompile Include="OutLinePass.cpp" />
+    <ClCompile Include="SingleColorPass.cpp" />
+    <ClCompile Include="SSAODepthPass.cpp" />
+    <ClCompile Include="SSAOPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
@@ -430,65 +415,62 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Particle\Render</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
+      <Filter>Shader\Particle\Render</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
+      <Filter>Shader\Particle\Render</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleDeadListInitCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleEmitCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleSimulateCS.hlsl">
+      <Filter>Shader\Particle\Simulation</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="ComputeShader.hlsl">
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurPS.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurVS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLinePS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineVS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorPS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurVS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurPS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
-      <Filter>Shader\Terrain</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainDS.hlsl">
-      <Filter>Shader\Terrain</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainHS.hlsl">
-      <Filter>Shader\Terrain</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
-      <Filter>Shader\Terrain</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAODepthVS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAODepthPS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAOVS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SSAOPS.hlsl">
-      <Filter>Shader\PostProcessing</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -519,8 +501,10 @@
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
       <Filter>Shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCS.hlsl">
-      <Filter>Shader</Filter>
-    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCommon.hlsli">
+      <Filter>Shader\Particle</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -84,12 +84,12 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
 		mSwapChainRTV->Bind(mDevice, mNoneDSV);
-		mBackBufferSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		mBackBufferSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
 		mFullScreenShaderProgram->Bind(mDevice);
 		mFullScreenVB->Bind(mDevice);
 		mFullScreenIB->Bind(mDevice);
-		mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+		mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
 		mSwapChainRTV->Bind(mDevice, mDSV);

@@ -22,12 +22,12 @@ namespace fq::graphics
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
-		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::Pixelshader);
-		if (GetHasMetalness()) mMetalness->Bind(d3d11Device, 1, ED3D11ShaderType::Pixelshader);
-		if (GetHasRoughness()) mRoughness->Bind(d3d11Device, 2, ED3D11ShaderType::Pixelshader);
-		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::Pixelshader);
-		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::Pixelshader);
-		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::Pixelshader);
+		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::PixelShader);
+		if (GetHasMetalness()) mMetalness->Bind(d3d11Device, 1, ED3D11ShaderType::PixelShader);
+		if (GetHasRoughness()) mRoughness->Bind(d3d11Device, 2, ED3D11ShaderType::PixelShader);
+		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
+		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
+		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
@@ -57,20 +57,20 @@ namespace fq::graphics
 	{
 		if (mBaseColors.size() != 0)
 		{
-			D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::Pixelshader);
+			D3D11Texture::Bind(d3d11Device, mBaseColors, 0, ED3D11ShaderType::PixelShader);
 		}
 		if (mNormals.size() != 0)
 		{
-			D3D11Texture::Bind(d3d11Device, mNormals, 12, ED3D11ShaderType::Pixelshader);
+			D3D11Texture::Bind(d3d11Device, mNormals, 12, ED3D11ShaderType::PixelShader);
 		}
 		if (mAlpha != nullptr)
 		{
-			mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::Pixelshader);
+			mAlpha->Bind(d3d11Device, 16, ED3D11ShaderType::PixelShader);
 		}
 		if (mHeightMap != nullptr)
 		{
 			mHeightMap->Bind(d3d11Device, 0, ED3D11ShaderType::VertexShader);
-			mHeightMap->Bind(d3d11Device, 17, ED3D11ShaderType::Pixelshader);
+			mHeightMap->Bind(d3d11Device, 17, ED3D11ShaderType::PixelShader);
 			mHeightMap->Bind(d3d11Device, 0, ED3D11ShaderType::DomainShader);
 		}
 	}

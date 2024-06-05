@@ -7,7 +7,7 @@ namespace fq::graphics
 	=============================================================================*/
 	enum class ED3D11ShaderType
 	{
-		Pixelshader,
+		PixelShader,
 		VertexShader,
 		GeometryShader,
 		ComputeShader,
@@ -91,6 +91,7 @@ namespace fq::graphics
 		DisableDepthWirte,
 		LessEqual,
 		DepthOff,
+		DisableDepthTest,
 	};
 
 	enum class ED3D11BlendState
@@ -99,6 +100,8 @@ namespace fq::graphics
 		OITRender,
 		OITComposite,
 		Additive,
+		Subtractive,
+		Modulate
 	};
 
 	/*=============================================================================

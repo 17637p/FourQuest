@@ -19,6 +19,7 @@ namespace fq::graphics
 		, mOutLinePass(std::make_shared<OutLinePass>())
 		, mOutLineBlurPass(std::make_shared<OutLineBlurPass>())
 		, mOutLineAddPass(std::make_shared<OutLineAddPass>())
+		, mParticlePass(std::make_shared<ParticlePass>())
 	{
 	}
 
@@ -28,6 +29,7 @@ namespace fq::graphics
 		std::shared_ptr< D3D11LightManager>& lightManager,
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
+		std::shared_ptr<D3D11ParticleManager> particleManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -55,12 +57,14 @@ namespace fq::graphics
 		mOutLineBlurPass->Initialize(device, resourceManager, width, height);
 		mOutLineAddPass->Initialize(device, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
+		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager, width, height);
 
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
 		mPasses.push_back(mShadingPass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
+		mPasses.push_back(mParticlePass);
 		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);

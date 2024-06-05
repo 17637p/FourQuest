@@ -69,9 +69,9 @@ void fq::graphics::OutLineBlurPass::Render()
 		mFullScreenVB->Bind(mDevice);
 		mFullScreenIB->Bind(mDevice);
 
-		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-		mOutLineSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-		mOffScreenSRV->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+		mOutLineSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+		mOffScreenSRV->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 
 		mDevice->GetDeviceContext().Get()->GenerateMips(mOutLineSRV->GetSRV().Get()); //mip에 아무것도 안 그려져 있음 
 	}
@@ -83,7 +83,7 @@ void fq::graphics::OutLineBlurPass::Render()
 
 	// UnBind
 	{
-		mOffScreenSRV->UnBind(mDevice, 1, ED3D11ShaderType::Pixelshader);
+		mOffScreenSRV->UnBind(mDevice, 1, ED3D11ShaderType::PixelShader);
 	}
 }
 

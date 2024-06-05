@@ -107,6 +107,7 @@ namespace fq::graphics
 	{
 		using namespace DirectX::SimpleMath;
 
+		// Particle
 		// update
 		{
 			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
@@ -184,14 +185,14 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
-			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::Pixelshader);
-			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::Pixelshader);
-			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::Pixelshader);
-			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::Pixelshader);
-			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::Pixelshader, 1);
-			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 2);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::Pixelshader, 3);
+			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
+			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
+			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 		}
 
 		// Draw
@@ -242,5 +243,6 @@ namespace fq::graphics
 				}
 			}
 		}
+
 	}
 }

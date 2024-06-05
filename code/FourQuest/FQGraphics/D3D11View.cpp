@@ -350,7 +350,7 @@ void D3D11ShaderResourceView::UnBind(const std::shared_ptr<D3D11Device>& d3d11De
 			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &tempShaderResource);
 			break;
 		}
-		case ED3D11ShaderType::Pixelshader:
+		case ED3D11ShaderType::PixelShader:
 		{
 			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &tempShaderResource);
 			break;
@@ -403,7 +403,7 @@ void D3D11ShaderResourceView::Bind(const std::shared_ptr<D3D11Device>& d3d11Devi
 		d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
 		break;
 	}
-	case ED3D11ShaderType::Pixelshader:
+	case ED3D11ShaderType::PixelShader:
 	{
 		d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
 		break;
@@ -464,12 +464,12 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 	switch (eViewType)
 	{
 	case ED3D11DepthStencilViewType::Default:
-		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-		break;
+		// depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		// depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		// 
+		// descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+		//break;
+		// intentional fall through
 	case ED3D11DepthStencilViewType::ShaderInputDepthStencil:
 		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
@@ -596,9 +596,9 @@ D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11De
 	HR(d3d11Device->GetDevice()->CreateUnorderedAccessView(d3dBuffer.Get(), &uavDesc, mView.GetAddressOf()));
 }
 
-void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot)
+void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, UINT initialCount)
 {
-	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), nullptr);
+	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), &initialCount);
 }
 
 void D3D11UnorderedAccessView::Clear(const std::shared_ptr<D3D11Device>& d3d11Device)

@@ -5,12 +5,17 @@
 #include <array>
 #include <vector>
 #include <cmath>
+#include <d3d11.h>
+#include <wrl.h>
 
 #include "Mesh.h"
 #include "BoneHierarchy.h"
 #include "AnimationHelper.h"
+#include "D3D11Texture.h"
+#include "D3D11Device.h"
 
 #include "../FQCommon/IFQRenderObject.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::graphics
 {

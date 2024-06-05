@@ -37,13 +37,13 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
-	mParticleManager;
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
 	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mUIManager->Initialize(hWnd, mDevice, width, height);
+	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 
 	return true;
 }
@@ -193,9 +193,6 @@ bool FQGraphics::Render()
 	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
-	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
-	//mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
-
 	mRenderManager->Render();
 	return true;
 }
@@ -322,17 +319,15 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
-void FQGraphics::AddDeltaTime(float deltaTime)
+
+IParticleObject* FQGraphics::CreateParticleObject(const ParticleInfo& particleInfo)
 {
-	mParticleManager->AddDeltaTime(deltaTime);
+	return mParticleManager->CreateParticleObject(particleInfo);
 }
-void FQGraphics::AddParticleSystem(size_t id, const ParticleSystemInfo& info)
+
+void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
 {
-	mParticleManager->AddParticleSystem(id, mDevice, info);
-}
-void FQGraphics::DeleteParticleSystem(size_t id)
-{
-	mParticleManager->DeleteParticleSystem(id);
+	mParticleManager->DeleteParticleObject(particleObject);
 }
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)

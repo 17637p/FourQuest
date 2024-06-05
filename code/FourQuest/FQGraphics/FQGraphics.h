@@ -60,9 +60,8 @@ namespace fq::graphics
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
 
 		// VFX
-		virtual void AddDeltaTime(float deltaTime) override;
-		virtual void AddParticleSystem(size_t id, const ParticleSystemInfo& info) override;
-		virtual void DeleteParticleSystem(size_t id) override;
+		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
+		void DeleteParticleObject(IParticleObject* particleObject);
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;

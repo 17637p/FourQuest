@@ -20,87 +20,87 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 
 	switch (eStateType)
 	{
-		case ED3D11SamplerState::Default:
-		{
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.MinLOD = -FLT_MAX;
-			samplerDesc.MaxLOD = FLT_MAX;
-			samplerDesc.MipLODBias = 0.f;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	case ED3D11SamplerState::Default:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-			break;
-		}
-		case ED3D11SamplerState::AnisotropicWrap:
-		{
-			samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.MinLOD = -FLT_MAX;
-			samplerDesc.MaxLOD = FLT_MAX;
-			samplerDesc.MipLODBias = 0.f;
-			samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		break;
+	}
+	case ED3D11SamplerState::AnisotropicWrap:
+	{
+		samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-			break;
-		}
-		case ED3D11SamplerState::AnisotropicClamp:
-		{
-			samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.MinLOD = -FLT_MAX;
-			samplerDesc.MaxLOD = FLT_MAX;
-			samplerDesc.MipLODBias = 0.f;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		break;
+	}
+	case ED3D11SamplerState::AnisotropicClamp:
+	{
+		samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-			break;
-		}
-		case ED3D11SamplerState::PointClamp:
-		{
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-			samplerDesc.MinLOD = -FLT_MAX;
-			samplerDesc.MaxLOD = FLT_MAX;
-			samplerDesc.MipLODBias = 0.f;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		break;
+	}
+	case ED3D11SamplerState::PointClamp:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-			break;
-		}
-		case ED3D11SamplerState::Shadow:
-		{
-			samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-			samplerDesc.MaxAnisotropy = 1u;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		break;
+	}
+	case ED3D11SamplerState::Shadow:
+	{
+		samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.MaxAnisotropy = 1u;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-			break;
-		}
-		case ED3D11SamplerState::LinearWrap:
-		{
-			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			samplerDesc.MinLOD = 0;
-			samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-			samplerDesc.MipLODBias = 0.f;
-			samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		break;
+	}
+	case ED3D11SamplerState::LinearWrap:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-			break;
-		}
-		default:
-			break;
+		break;
+	}
+	default:
+		break;
 	}
 
 	HR(device->CreateSamplerState(&samplerDesc, mState.GetAddressOf()));
@@ -115,33 +115,33 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 {
 	switch (eShaderType)
 	{
-		case ED3D11ShaderType::VertexShader:
+	case ED3D11ShaderType::VertexShader:
 		{
 			d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, mState.GetAddressOf());
 			break;
 		}
-		case ED3D11ShaderType::Pixelshader:
-		{
-			d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, mState.GetAddressOf());
-			break;
-		}
-		case ED3D11ShaderType::GeometryShader:
-		{
-			d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, mState.GetAddressOf());
-			break;
-		}
-		case ED3D11ShaderType::ComputeShader:
-		{
-			d3d11Device->GetDeviceContext()->CSSetSamplers(startSlot, 1, mState.GetAddressOf());
-			break;
-		}
-		case ED3D11ShaderType::DomainShader:
-		{
-			d3d11Device->GetDeviceContext()->DSSetSamplers(startSlot, 1, mState.GetAddressOf());
-			break;
-		}
-		default:
-			break;
+	case ED3D11ShaderType::PixelShader:
+	{
+		d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, mState.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::GeometryShader:
+	{
+		d3d11Device->GetDeviceContext()->GSSetSamplers(startSlot, 1, mState.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::ComputeShader:
+	{
+		d3d11Device->GetDeviceContext()->CSSetSamplers(startSlot, 1, mState.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::DomainShader:
+	{
+		d3d11Device->GetDeviceContext()->DSSetSamplers(startSlot, 1, mState.GetAddressOf());
+		break;
+	}
+	default:
+		break;
 	}
 }
 
@@ -159,43 +159,43 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 
 	switch (eStateType)
 	{
-		case ED3D11RasterizerState::Default:
-		{
-			rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-			rasterizerDesc.CullMode = D3D11_CULL_BACK;
-			rasterizerDesc.FrontCounterClockwise = false;
-			rasterizerDesc.DepthClipEnable = true;
+	case ED3D11RasterizerState::Default:
+	{
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.FrontCounterClockwise = false;
+		rasterizerDesc.DepthClipEnable = true;
 
-			break;
-		}
-		case ED3D11RasterizerState::Shadow:
-		{
-			// 물방울 책 참고
-			// 광원 기준으로 기울기에 따라 더 큰 편향치를 적용할 수 있다고 함
-			// bias = (float)depthBias * r + slopeScaledDepthBias * maxDepthSlope
-			// 24비트 깊이 버퍼의 경우 1 / 2^24
-			rasterizerDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
-			rasterizerDesc.DepthBias = 100000; // 고정된 편향치
-			rasterizerDesc.SlopeScaledDepthBias = 1.f; // 기울기 편형치 비례계수
-			rasterizerDesc.DepthBiasClamp = 0.0f; // 허용되는 최대 깊이 편향치
-			break;
-		}
-		case ED3D11RasterizerState::CullFront:
-		{
-			rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-			rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+		break;
+	}
+	case ED3D11RasterizerState::Shadow:
+	{
+		// 물방울 책 참고
+		// 광원 기준으로 기울기에 따라 더 큰 편향치를 적용할 수 있다고 함
+		// bias = (float)depthBias * r + slopeScaledDepthBias * maxDepthSlope
+		// 24비트 깊이 버퍼의 경우 1 / 2^24
+		rasterizerDesc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
+		rasterizerDesc.DepthBias = 100000; // 고정된 편향치
+		rasterizerDesc.SlopeScaledDepthBias = 1.f; // 기울기 편형치 비례계수
+		rasterizerDesc.DepthBiasClamp = 0.0f; // 허용되는 최대 깊이 편향치
+		break;
+	}
+	case ED3D11RasterizerState::CullFront:
+	{
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
 
-			break;
-		}
-		case ED3D11RasterizerState::CullOff:
-		{
-			rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-			rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		break;
+	}
+	case ED3D11RasterizerState::CullOff:
+	{
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
 
-			break;
-		}
-		default:
-			break;
+		break;
+	}
+	default:
+		break;
 	}
 
 	HR(device->CreateRasterizerState(&rasterizerDesc, mState.GetAddressOf()));
@@ -231,49 +231,58 @@ fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_p
 
 	switch (eStateType)
 	{
-		case ED3D11DepthStencilState::Default:
-		{
-			depthStencilDesc.DepthEnable = true;
-			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-			depthStencilDesc.StencilEnable = false;
-			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-			depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
+	case ED3D11DepthStencilState::Default:
+	{
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+		depthStencilDesc.StencilEnable = false;
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
 
-			break;
-		}
-		case ED3D11DepthStencilState::DisableDepthWirte:
-		{
-			depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC{ D3D11_DEFAULT };
-			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-
-			break;
-		}
-		case ED3D11DepthStencilState::LessEqual:
-		{
-			depthStencilDesc.DepthEnable = true;
-			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			depthStencilDesc.StencilEnable = false;
-			depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-			depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-			depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
-
-			break;
-		}
-		case ED3D11DepthStencilState::DepthOff:
-		{
-			depthStencilDesc.DepthEnable = false;
-			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-			depthStencilDesc.StencilEnable = false;
-			break;
-		}
-		default:
-			break;
+		break;
 	}
+	case ED3D11DepthStencilState::DisableDepthWirte:
+	{
+		depthStencilDesc = CD3D11_DEPTH_STENCIL_DESC{ D3D11_DEFAULT };
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
-	HR(device->CreateDepthStencilState(&depthStencilDesc, mState.GetAddressOf()));
+		break;
+	}
+	case ED3D11DepthStencilState::LessEqual:
+	{
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		depthStencilDesc.StencilEnable = false;
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
+		break;
+	}
+	case ED3D11DepthStencilState::DepthOff:
+	{
+		depthStencilDesc.DepthEnable = false;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.StencilEnable = false;
+		break;
+	}
+	case ED3D11DepthStencilState::DisableDepthTest:
+	{
+		depthStencilDesc.DepthEnable = false;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		depthStencilDesc.StencilEnable = false;
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
+	}
+	default:
+		break;
+}
+
+HR(device->CreateDepthStencilState(&depthStencilDesc, mState.GetAddressOf()));
 }
 
 void D3D11DepthStencilState::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -306,79 +315,107 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 
 	switch (eStateType)
 	{
-		case ED3D11BlendState::Default:
-		{
-			blendDesc.AlphaToCoverageEnable = false;
-			blendDesc.RenderTarget[0].BlendEnable = false;
-			blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-			blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
-			blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-			blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-			blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	case ED3D11BlendState::Default:
+	{
+		blendDesc.AlphaToCoverageEnable = false;
+		blendDesc.RenderTarget[0].BlendEnable = false;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-			break;
-		}
-		case ED3D11BlendState::OITRender:
-		{
-			blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
-			blendDesc.AlphaToCoverageEnable = FALSE;
-			blendDesc.IndependentBlendEnable = true;
+		break;
+	}
+	case ED3D11BlendState::OITRender:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = true;
 
-			auto& acuumRT = blendDesc.RenderTarget[0];
-			acuumRT.BlendEnable = true;
-			acuumRT.SrcBlend = D3D11_BLEND_ONE;
-			acuumRT.DestBlend = D3D11_BLEND_ONE;
-			acuumRT.BlendOp = D3D11_BLEND_OP_ADD;
-			acuumRT.SrcBlendAlpha = D3D11_BLEND_ONE;
-			acuumRT.DestBlendAlpha = D3D11_BLEND_ONE;
-			acuumRT.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-			acuumRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		auto& acuumRT = blendDesc.RenderTarget[0];
+		acuumRT.BlendEnable = true;
+		acuumRT.SrcBlend = D3D11_BLEND_ONE;
+		acuumRT.DestBlend = D3D11_BLEND_ONE;
+		acuumRT.BlendOp = D3D11_BLEND_OP_ADD;
+		acuumRT.SrcBlendAlpha = D3D11_BLEND_ONE;
+		acuumRT.DestBlendAlpha = D3D11_BLEND_ONE;
+		acuumRT.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		acuumRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-			auto& revealRT = blendDesc.RenderTarget[1];
-			revealRT.BlendEnable = true;
-			revealRT.SrcBlend = D3D11_BLEND_ZERO;
-			revealRT.DestBlend = D3D11_BLEND_INV_SRC_COLOR;
-			revealRT.BlendOp = D3D11_BLEND_OP_ADD;
-			revealRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_RED; // 단색조 이미지로 처리 예정
+		auto& revealRT = blendDesc.RenderTarget[1];
+		revealRT.BlendEnable = true;
+		revealRT.SrcBlend = D3D11_BLEND_ZERO;
+		revealRT.DestBlend = D3D11_BLEND_INV_SRC_COLOR;
+		revealRT.BlendOp = D3D11_BLEND_OP_ADD;
+		revealRT.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_RED; // 단색조 이미지로 처리 예정
 
-			break;
-		}
-		case ED3D11BlendState::OITComposite:
-		{
-			blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
-			blendDesc.AlphaToCoverageEnable = FALSE;
-			blendDesc.IndependentBlendEnable = FALSE;
-			blendDesc.RenderTarget[0].BlendEnable = TRUE;
-			blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-			blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-			blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-			blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-			blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+	case ED3D11BlendState::OITComposite:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
-			break;
-		}
-		case ED3D11BlendState::Additive:
-		{
-			blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
-			blendDesc.AlphaToCoverageEnable = FALSE;
-			blendDesc.IndependentBlendEnable = FALSE;
-			blendDesc.RenderTarget[0].BlendEnable = TRUE;
-			blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-			blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-			blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-			blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
-			blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-			blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-			break;
-		}
-		default:
-			break;
+	}
+	case ED3D11BlendState::Additive:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+	case ED3D11BlendState::Subtractive:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+	case ED3D11BlendState::Modulate:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_SRC_COLOR;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+	default:
+		break;
 	}
 
 	HR(device->CreateBlendState(&blendDesc, mState.GetAddressOf()));

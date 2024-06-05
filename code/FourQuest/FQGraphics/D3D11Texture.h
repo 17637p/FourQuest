@@ -27,6 +27,8 @@ namespace fq::graphics
 		static void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11Texture>> textures, const UINT startSlot, const ED3D11ShaderType eShaderType);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const { return mTextureSRV; }
+
 	private:
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mTextureSRV;
 	};

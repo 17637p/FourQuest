@@ -91,7 +91,7 @@ void fq::graphics::SSAOPass::Render()
 		mFullScreenVB->Bind(mDevice);
 		mFullScreenIB->Bind(mDevice);
 
-		//mSingleColorSRV->Bind(mDevice, 0, ED3D11ShaderType::Pixelshader);
+		//mSingleColorSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 		//mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 		//mViewProjectionMatrix->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 	}
