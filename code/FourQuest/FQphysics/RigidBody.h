@@ -25,17 +25,20 @@ namespace fq::physics
 		inline const float& GetRadius() const;
 		inline const float& GetHalfHeight() const;
 		inline const physx::PxVec3& GetExtent() const;
+		inline const DirectX::SimpleMath::Vector3& GetScale() const;
 		inline void SetRadius(const float& radius);
 		inline void SetHalfHeight(const float& halfHeight);
 		inline void SetExtent(const float& x, const float& y, const float& z);
+		inline void SetScale(const DirectX::SimpleMath::Vector3& scale);
 
-		virtual void SetScale(const DirectX::SimpleMath::Vector3& scale) abstract;
+		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics) abstract;
 
 	protected:
 		unsigned int mID;
 		unsigned int mLayerNumber;
 		EColliderType mColliderType;
 
+		DirectX::SimpleMath::Vector3 mScale;
 		float mRadius;
 		float mHalfHeight;
 		physx::PxVec3 mExtent;
@@ -65,6 +68,10 @@ namespace fq::physics
 	{
 		return mExtent;
 	}
+	const DirectX::SimpleMath::Vector3& RigidBody::GetScale() const
+	{
+		return mScale;
+	}
 	void RigidBody::SetRadius(const float& radius)
 	{
 		mRadius = radius;
@@ -78,5 +85,9 @@ namespace fq::physics
 		mExtent.x = x;
 		mExtent.y = y;
 		mExtent.z = z;
+	}
+	void RigidBody::SetScale(const DirectX::SimpleMath::Vector3& scale)
+	{
+		mScale = scale;
 	}
 }

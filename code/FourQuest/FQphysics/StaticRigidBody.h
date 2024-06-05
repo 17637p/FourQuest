@@ -30,7 +30,7 @@ namespace fq::physics
 		/// </summary>
 		inline physx::PxRigidStatic* GetPxRigidStatic();
 
-		virtual void SetScale(const DirectX::SimpleMath::Vector3& scale) override;
+		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics) override;
 
 	private:
 		physx::PxRigidStatic* mRigidStatic;

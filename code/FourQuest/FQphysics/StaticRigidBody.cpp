@@ -29,6 +29,13 @@ namespace fq::physics
 		shape->userData = data.get();
 		shape->setContactOffset(0.01f);
 
+		DirectX::SimpleMath::Matrix dxTransform = colliderInfo.collisionTransform.worldMatrix;
+		DirectX::SimpleMath::Vector3 position;
+		DirectX::SimpleMath::Vector3 scale;
+		DirectX::SimpleMath::Quaternion rotation;
+		dxTransform.Decompose(scale, rotation, position);
+		mScale = scale;
+
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 
@@ -43,10 +50,29 @@ namespace fq::physics
 		return true;
 	}
 
-	void StaticRigidBody::SetScale(const DirectX::SimpleMath::Vector3& scale)
+	void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material) 
 	{
+		// 货肺款 shape 积己
+		physx::PxShape* newShape = physics->createShape(newGeometry, *material);
+
+		// 货肺款 shape甫 actor俊 眠啊
+		actor->attachShape(*newShape);
+
+		// 货肺款 shape 秦力
+		newShape->release();
+	}
+
+	void StaticRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics)
+	{
+		if (abs(mScale.Length()) + 0.1f >= abs(scale.Length()))
+			return;
+
+		mScale = scale;
+
 		physx::PxShape* shape;
+		physx::PxMaterial* material;
 		mRigidStatic->getShapes(&shape, 1);
+		shape->getMaterials(&material, 1);
 
 		if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
 		{
@@ -54,24 +80,27 @@ namespace fq::physics
 			boxGeometry.halfExtents.x = mExtent.x * scale.x;
 			boxGeometry.halfExtents.y = mExtent.y * scale.y;
 			boxGeometry.halfExtents.z = mExtent.z * scale.z;
-			shape->setGeometry(boxGeometry);
+			mRigidStatic->detachShape(*shape);
+			updateShapeGeometry(mRigidStatic, boxGeometry, physics, material);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
 		{
-			physx::PxSphereGeometry sphereGeometry;
+			physx::PxSphereGeometry sphereGeometry = static_cast<const physx::PxSphereGeometry&>(shape->getGeometry());
 			float maxValue = std::max<float>(scale.x, std::max<float>(scale.y, scale.z));
 
 			sphereGeometry.radius = mRadius * maxValue;
-			shape->setGeometry(sphereGeometry);
+			mRigidStatic->detachShape(*shape);
+			updateShapeGeometry(mRigidStatic, sphereGeometry, physics, material);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCAPSULE)
 		{
-			physx::PxCapsuleGeometry capsuleGeometry;
+			physx::PxCapsuleGeometry capsuleGeometry = static_cast<const physx::PxCapsuleGeometry&>(shape->getGeometry());
 			float maxValue = std::max<float>(scale.y, scale.z);
 
 			capsuleGeometry.radius = mRadius * maxValue;
 			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
-			shape->setGeometry(capsuleGeometry);
+			mRigidStatic->detachShape(*shape);
+			updateShapeGeometry(mRigidStatic, capsuleGeometry, physics, material);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 		{
@@ -79,7 +108,8 @@ namespace fq::physics
 			convexmeshGeometry.scale.scale.x = scale.x;
 			convexmeshGeometry.scale.scale.y = scale.y;
 			convexmeshGeometry.scale.scale.z = scale.z;
-			shape->setGeometry(convexmeshGeometry);
+			mRigidStatic->detachShape(*shape);
+			updateShapeGeometry(mRigidStatic, convexmeshGeometry, physics, material);
 		}
 	}
 }
