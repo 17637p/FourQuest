@@ -18,12 +18,12 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mGravity{ 0.f,-10.f,0.f }
 	, mPhysicsEngine(nullptr)
 	, mLastColliderID(physics::unregisterID)
-	, mBoxID(entt::resolve<fq::game_module::BoxCollider>().id())
-	, mSphereID(entt::resolve<fq::game_module::SphereCollider>().id())
-	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
-	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
-	, mCharactorControllerID(entt::resolve<fq::game_module::CharacterController>().id())
-	, mRigidID(entt::resolve<game_module::RigidBody>().id())
+	, mBoxID(0)
+	, mSphereID()
+	, mCapsuleID(0)
+	, mMeshID(0)
+	, mCharactorControllerID(0)
+	, mRigidID(0)
 	, mAddInputMoveHandler{}
 {}
 
@@ -60,6 +60,12 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 	mAddInputMoveHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::AddInputMove>(this, &PhysicsSystem::AddInputMove);
 
+	mBoxID = entt::resolve<fq::game_module::BoxCollider>().id();
+	mSphereID = entt::resolve<fq::game_module::SphereCollider>().id();
+	mCapsuleID = entt::resolve<fq::game_module::CapsuleCollider>().id();
+	mMeshID = entt::resolve<fq::game_module::MeshCollider>().id();
+	mCharactorControllerID = entt::resolve<fq::game_module::CharacterController>().id();
+	mRigidID = entt::resolve<game_module::RigidBody>().id();
 }
 
 
@@ -206,6 +212,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		capsuleInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		capsuleInfo.colliderInfo.collisionTransform = transform->GetTransform();;
 		capsuleCollider->SetCapsuleInfomation(capsuleInfo);
+
+		spdlog::info("capsul");
 
 		if (isStatic)
 		{

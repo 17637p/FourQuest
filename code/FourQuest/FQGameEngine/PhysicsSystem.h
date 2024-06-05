@@ -110,12 +110,12 @@ namespace fq::game_engine
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddInputMoveHandler;
 
-		const entt::id_type mBoxID;
-		const entt::id_type mSphereID;
-		const entt::id_type mCapsuleID;
-		const entt::id_type mMeshID;
-		const entt::id_type mCharactorControllerID;
-		const entt::id_type mRigidID;
+		entt::id_type mBoxID;
+		entt::id_type mSphereID;
+		entt::id_type mCapsuleID;
+		entt::id_type mMeshID;
+		entt::id_type mCharactorControllerID;
+		entt::id_type mRigidID;
 
 		bool mbIsGameLoaded;
 		ColliderContainer mColliderContainer;
