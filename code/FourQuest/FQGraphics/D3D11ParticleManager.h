@@ -27,6 +27,8 @@ namespace fq::graphics
 		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
 		void DeleteParticleObject(IParticleObject* particleObjectInterface);
 
+		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
+
 	private:
 		void updateParticleObjectCB(IParticleObject* particleObjectInterface);
 		void emit(IParticleObject* particleObjectInterface);

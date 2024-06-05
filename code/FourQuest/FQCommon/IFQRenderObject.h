@@ -152,12 +152,14 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetIsReset(bool bIsReset) abstract;
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS void SetIsEmit(bool bIsEmit) abstract;
+			virtual FQ_GRAPHICS void SetIsRenderDebug(bool bIsRenderDebug) abstract;
 
 			virtual FQ_GRAPHICS const ParticleInfo& GetInfo() const abstract;
 			virtual FQ_GRAPHICS bool GetIsReset() const abstract;
 			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
 			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
 			virtual FQ_GRAPHICS bool GetIsEmit() const abstract;
+			virtual FQ_GRAPHICS bool GetIsRenderDebug() const abstract;
 
 		protected:
 			virtual ~IParticleObject() = default;
