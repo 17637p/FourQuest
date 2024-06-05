@@ -64,6 +64,7 @@ namespace fq::physics
 			else
 				mVelocity.z = std::lerp(mVelocity.z, 0.f, mDynamicFriction);
 
+
 			mVelocity.x += (input.x * mAcceleration * deltaTime);
 			mVelocity.z += (input.z * mAcceleration * deltaTime);
 		}
@@ -107,22 +108,19 @@ namespace fq::physics
 			mVelocity.y -= mGravityWeight * deltaTime;
 
 		// 현재 속도 계산
-		mSpeed = abs(mVelocity.x) + abs(mVelocity.z);
+		mSpeed = sqrt(abs(mVelocity.x * mVelocity.x) + abs(mVelocity.z * mVelocity.z));
 
 		// 최대 속도 제한
 		if (mSpeed > mMaxSpeed)
 			mSpeed = mMaxSpeed;
 
 		// 변위 벡터 계산
-		float triangleFunction = (mVelocity.x * mVelocity.x) + (mVelocity.z * mVelocity.z);
+		float triangleFunction = sqrt((mVelocity.x * mVelocity.x) + (mVelocity.z * mVelocity.z));
 		if (abs(mVelocity.x) >= 0.001f)
-			mDisplacementVector.x = square(mVelocity.x) / triangleFunction * mSpeed;
+			mDisplacementVector.x = (mVelocity.x) / triangleFunction * mSpeed;
 		if (abs(mVelocity.z) >= 0.001f)
-			mDisplacementVector.z = square(mVelocity.z) / triangleFunction * mSpeed;
+			mDisplacementVector.z = (mVelocity.z) / triangleFunction * mSpeed;
 		mDisplacementVector.y = mVelocity.y;
-
-
-		std::cout << mDisplacementVector.x << ", " << mDisplacementVector.z << ", " << mSpeed << std::endl;
 	}
 
 	void CharacterMovement::CopyDirectionToPxVec3(physx::PxVec3& direction)

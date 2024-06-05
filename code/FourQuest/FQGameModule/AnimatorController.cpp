@@ -313,6 +313,17 @@ void fq::game_module::AnimatorController::DeleteState(StateName state)
 	// 스테이트 삭제
 	mStates.erase(iter);
 	mTransitions.erase(state);
+
+	for (auto iter = mTransitions.begin(); iter != mTransitions.end();)
+	{
+		if (iter->second.GetEnterState() == state)
+		{
+			iter = mTransitions.erase(iter);
+		}
+		else
+			++iter;
+	}
+
 }
 
 bool fq::game_module::AnimatorController::IsInTransition() const
@@ -421,7 +432,7 @@ bool fq::game_module::AnimatorController::checkNextStateTransition()
 		mCurrentState = mNextState;
 		mNextState = mStates.find(transition->second.GetEnterState());
 		mNextState->second.OnStateEnter();
-		
+
 		mTimePos = mBlendTimePos;
 		mBlendTimePos = 0.f;
 		mBlendWeight = 0.f;
@@ -443,7 +454,7 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 		mNextState->second.OnStateExit();
 		mNextState = mStates.find(transition->second.GetEnterState());
 		mNextState->second.OnStateEnter();
-		
+
 		mBlendTimePos = 0.f;
 		mBlendWeight = 0.f;
 		mBlendElapsedTime = 0.f;
