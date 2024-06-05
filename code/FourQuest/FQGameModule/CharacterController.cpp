@@ -52,12 +52,10 @@ void fq::game_module::CharacterController::SetControllerInfo(fq::physics::Charac
 
 void fq::game_module::CharacterController::OnUpdate(float dt)
 {
-	if (!mbOnMove) return;
-
 	using namespace DirectX::SimpleMath;
 
 	auto inputMgr = GetScene()->GetInputManager();
-	Vector3 input{ 0.f,0.f,0.f };
+	Vector3 input = Vector3::Zero;
 
 	// Å°º¸µå
 
@@ -65,6 +63,13 @@ void fq::game_module::CharacterController::OnUpdate(float dt)
 	input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
 	input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
 
+	if (input == Vector3::Zero)
+	{
+		mbOnMove = false;
+		return;
+	}
+
+	mbOnMove = true;
 	GetScene()->GetEventManager()
 		->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input });
 
