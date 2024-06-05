@@ -116,8 +116,8 @@ namespace fq::physics
 			DirectX::SimpleMath::Vector3 position;
 			DirectX::SimpleMath::Vector3 scale;
 			DirectX::SimpleMath::Quaternion rotation;
-			dxTransform.Decompose(position, rotation, scale);
-			dynamicBody->SetScale(scale);
+			dxTransform.Decompose(scale, rotation, position);
+			dynamicBody->SetConvertScale(scale, mPhysics);
 
 			return true;
 		}
@@ -135,7 +135,7 @@ namespace fq::physics
 			DirectX::SimpleMath::Vector3 scale;
 			DirectX::SimpleMath::Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
-			staticBody->SetScale(scale);
+			staticBody->SetConvertScale(scale, mPhysics);
 
 			return true;
 		}
@@ -458,7 +458,7 @@ namespace fq::physics
 			{
 				physx::PxShape* shape;
 				physx::PxRigidActor* actor = dynamicBody->GetPxRigidDynamic();
-				actor->getShapes(&shape, sizeof(physx::PxShape));
+				actor->getShapes(&shape, 1);
 
 				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
@@ -473,7 +473,7 @@ namespace fq::physics
 			{
 				physx::PxShape* shape;
 				physx::PxRigidActor* actor = staticBody->GetPxRigidStatic();
-				actor->getShapes(&shape, sizeof(physx::PxShape));
+				actor->getShapes(&shape, 1);
 
 				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
