@@ -166,12 +166,24 @@
     <ClInclude Include="ParticleObject.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="OutLineAddPass.h" />
-    <ClInclude Include="OutLineBlurPass.h" />
-    <ClInclude Include="OutLinePass.h" />
-    <ClInclude Include="SingleColorPass.h" />
-    <ClInclude Include="SSAODepthPass.h" />
-    <ClInclude Include="SSAOPass.h" />
+    <ClInclude Include="OutLineAddPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="OutLineBlurPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="OutLinePass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleColorPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAODepthPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAOPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -395,12 +407,24 @@
     <ClCompile Include="ParticleObject.cpp">
       <Filter>Object</Filter>
     </ClCompile>
-    <ClCompile Include="OutLineAddPass.cpp" />
-    <ClCompile Include="OutLineBlurPass.cpp" />
-    <ClCompile Include="OutLinePass.cpp" />
-    <ClCompile Include="SingleColorPass.cpp" />
-    <ClCompile Include="SSAODepthPass.cpp" />
-    <ClCompile Include="SSAOPass.cpp" />
+    <ClCompile Include="SSAOPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAODepthPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleColorPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="OutLinePass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="OutLineBlurPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="OutLineAddPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
