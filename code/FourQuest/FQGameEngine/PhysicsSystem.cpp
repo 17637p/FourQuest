@@ -23,6 +23,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mCapsuleID(entt::resolve<fq::game_module::CapsuleCollider>().id())
 	, mMeshID(entt::resolve<fq::game_module::MeshCollider>().id())
 	, mCharactorControllerID(entt::resolve<fq::game_module::CharacterController>().id())
+	, mRigidID(entt::resolve<game_module::RigidBody>().id())
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -99,7 +100,8 @@ void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObj
 void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
 {
 	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID)
+		|| event.id == mCapsuleID || event.id == mMeshID
+		|| event.id == mRigidID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -489,10 +491,9 @@ void fq::game_engine::PhysicsSystem::Update(float dt)
 	// 캐릭터 컨트롤러
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-		bool isFalling = static_cast<game_module::CharacterController*>(colliderInfo.second)->IsFalling();
-
 		if (colliderInfo.first == mCharactorControllerID)
 		{
+			bool isFalling = static_cast<game_module::CharacterController*>(colliderInfo.second)->IsFalling();
 			DirectX::SimpleMath::Vector3 input{};
 
 			if (!inputManager->IsKeyState(EKey::W, EKeyState::None))

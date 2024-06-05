@@ -11,7 +11,7 @@ namespace fq::game_module
 	class GameObject;
 
 	/// <summary>
-	/// GameObject의 메모리를 관리하는 풀
+	/// 메모리 관리 풀링을 담당합니다 
 	/// </summary>
 	class ObjectPool
 	{

@@ -77,19 +77,24 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	mBackBufferRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
 }
 
-void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects, const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
+void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
 	for (const auto& meshObject : staticMeshObjects)
 	{
-		//unsigned int objectColor = MakeRGBAUnsignedInt();
 		NextColor();
 		mStaticMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
 	}
 	for (const auto& meshObject : skinnedMeshObjects)
 	{
-		//unsigned int objectColor = MakeRGBAUnsignedInt();
 		NextColor();
 		mSkinnedMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
+	}
+	for (const auto& meshObject : terrainMeshObjects)
+	{
+		NextColor();
+		mTerrainMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
 	}
 }
 
@@ -173,14 +178,19 @@ unsigned int fq::graphics::D3D11PickingManager::MakeRGBAUnsignedInt(DirectX::Sim
 }
 
 
-void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<D3D11CameraManager>& cameraManager, const std::shared_ptr<D3D11JobManager>& jobManager, const std::set<IStaticMeshObject*>& staticMeshObjects, const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
+void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device,
+	const std::shared_ptr<D3D11CameraManager>& cameraManager,
+	const std::shared_ptr<D3D11JobManager>& jobManager,
+	const std::set<IStaticMeshObject*>& staticMeshObjects,
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
 	mR = 0;
 	mG = 0;
 	mB = 0;
 
-	MakeObjectsHashColor(staticMeshObjects, skinnedMeshObjects);
-	DrawObject(device, cameraManager, jobManager, staticMeshObjects, skinnedMeshObjects);
+	MakeObjectsHashColor(staticMeshObjects, skinnedMeshObjects, terrainMeshObjects);
+	DrawObject(device, cameraManager, jobManager, staticMeshObjects, skinnedMeshObjects, terrainMeshObjects);
 
 	unsigned int pickedhashColor = GetHashColor(device, x, y);
 
@@ -200,6 +210,13 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 		}
 	}
 
+	// Terrain
+	for (auto it = mTerrainMeshObjects.begin(); it != mTerrainMeshObjects.end(); ++it) {
+		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
+			object = it->first;
+		}
+	}
+
 	EndRender(device);
 
 	return object;
@@ -209,7 +226,8 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	const std::shared_ptr<D3D11CameraManager>& cameraManager,
 	const std::shared_ptr<D3D11JobManager>& jobManager,
 	const std::set<IStaticMeshObject*>& staticMeshObjects,
-	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
 	mPickingDrawRTV->Clear(device, { 0.f, 0.f, 0.f, 1.f });
 	mDSV->Clear(device);
@@ -218,9 +236,11 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	// 나중에는 position 만 있는 걸로 수정해야함
 	jobManager->CreateStaticMeshJobs(staticMeshObjects);
 	jobManager->CreateSkinnedMeshJobs(skinnedMeshObjects);
+	jobManager->CreateTerrainMeshJobs(terrainMeshObjects);
 
 	std::vector<StaticMeshJob> staticMeshJobs = jobManager->GetStaticMeshJobs();
 	std::vector<SkinnedMeshJob> skinnedMeshJobs = jobManager->GetSkinnedMeshJobs();
+	std::vector<TerrainMeshJob> terrainMeshJobs = jobManager->GetTerrainMeshJobs();
 
 	device->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mStaticMeshLayout->Bind(device);
@@ -240,6 +260,20 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 		mConstantBuffer->Update(device, modelTransform);
 
 		job.StaticMesh->Draw(device, job.SubsetIndex);
+	}
+
+	for (const TerrainMeshJob& job : terrainMeshJobs)
+	{
+		job.TerrainMesh->BindForPicking(device);
+
+		ModelTransform modelTransform;
+		modelTransform.color = mTerrainMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = (job.TransformPtr).Transpose();
+		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
+
+		mConstantBuffer->Update(device, modelTransform);
+
+		job.TerrainMesh->Draw(device, job.SubsetIndex);
 	}
 
 	mSkinnedMeshLayout->Bind(device);
@@ -263,10 +297,6 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	}
 
 	jobManager->ClearAll();
-
-	/// 상수버퍼
-	// 카메라 데이터랑 모델 Trasform은 올려줘야 함 
-	// 상수 버퍼로 컬러 값 넘기기
 }
 
 void fq::graphics::D3D11PickingManager::OnResize(const short width, const short height, const std::shared_ptr<D3D11Device>& device)

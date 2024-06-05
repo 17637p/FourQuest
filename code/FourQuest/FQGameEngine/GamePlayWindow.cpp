@@ -25,7 +25,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mbIsOpen(true)
 	, mbIsMouseHoveredWindow(false)
 	, mCameraObject(nullptr)
-	, mCameraMoveSpeed(0.5f)
+	, mCameraMoveSpeed(5.f)
 	, mCameraRotateSpeed(0.0065f)
 	, mOperation(ImGuizmo::OPERATION::TRANSLATE)
 	, mSelectObjectHandler{}
@@ -65,7 +65,7 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 	// 朝五虞 持失
 	mCameraObject = std::make_shared<fq::game_module::GameObject>();;
 	mCameraObject->AddComponent<fq::game_module::Camera>();
-	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(1000);
+	mCameraObject->GetComponent<fq::game_module::Camera>()->SetFarPlain(100);
 
 	mGameProcess->mCameraSystem->SetEditorCamera(mCameraObject->GetComponent<fq::game_module::Camera>());
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
@@ -352,8 +352,11 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto view = camera->GetView();
 	auto proj = camera->GetProjection(mViewportSize.x / mViewportSize.y);
 
+	bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
+	float* snap = mEditorProcess->mSettingWindow->GetSnap();
+
 	if (ImGuizmo::Manipulate(&view._11, &proj._11
-		, mOperation, ImGuizmo::WORLD, &objectMatrix._11))
+		, mOperation, ImGuizmo::WORLD, &objectMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
 	{
 		if (objectT->HasParent())
 		{
@@ -390,7 +393,6 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 			);
 		mbIsUsingGizumo = false;
 	}
-
 }
 
 void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
@@ -495,7 +497,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 {
 	auto cameraT = mCameraObject->GetComponent<fq::game_module::Transform>();
 	auto backward = cameraT->GetLocalMatrix().Forward();
-	auto cameraPosition = target + backward ;
+	auto cameraPosition = target + backward;
 
 	cameraT->SetLocalPosition(cameraPosition);
 }
@@ -559,6 +561,15 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			[this, meshPtr](fq::game_module::GameObject& object, game_module::SkinnedMeshRenderer& mesh)
 			{
 				if (mesh.GetSkinnedMeshObject() == meshPtr)
+				{
+					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+				}
+			});
+
+		scene->ViewComponents<game_module::Terrain>([this, meshPtr](fq::game_module::GameObject& object, game_module::Terrain& terrain)
+			{
+				if (terrain.GetTerrainMeshObject() == meshPtr)
 				{
 					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
 					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });

@@ -58,6 +58,11 @@ namespace fq::game_engine
 		/// </summary>
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
+		/// <summary>
+		/// SetLightShadow Event
+		/// </summary>
+		void SetLightShadow(const fq::event::SetLightShadow& event);
+
 	private:
 		void addLight(fq::game_module::GameObject* object);
 		void updateLight(fq::game_module::Light& light, fq::game_module::Transform& transform);
@@ -74,6 +79,7 @@ namespace fq::game_engine
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
+		EventHandler mSetLightShadowHandler;
 
 		bool mbIsGameLoaded;
 	};

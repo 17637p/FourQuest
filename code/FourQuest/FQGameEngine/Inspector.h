@@ -37,7 +37,7 @@ namespace fq::game_engine
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
-		void getComponentTypes();
+		void getScriptTypes();
 
 		void beginGameObject(std::shared_ptr<fq::game_module::GameObject> object);
 		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent =false);
@@ -49,6 +49,7 @@ namespace fq::game_engine
 		void beginAnimationController(const std::shared_ptr<fq::game_module::AnimatorController>& controller);
 		void beginTransitionCondition(fq::game_module::TransitionCondition& condition, int index);
 		void beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode);
+		void beginStateBehaviour(fq::game_module::AnimationStateNode& stateNode);
 
 		// ¸â¹öº¯¼ö ÀÎ½ºÆåÅÍ Ã¢
 		void beginCombo_EnumClass(entt::meta_data data, fq::reflect::IHandle* handle);
@@ -73,7 +74,9 @@ namespace fq::game_engine
 
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		UINT mCurrentAddComponentIndex;
+		UINT mCurrentAddBehaviourIndex;
 		std::vector<entt::meta_type> mComponentTypes;
+		std::vector<entt::meta_type> mStateBehaviourTypes;
 		DirectX::SimpleMath::Color mPrevColor;
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;

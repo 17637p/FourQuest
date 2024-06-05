@@ -127,13 +127,13 @@ void fq::game_engine::EditorEngine::Process()
 					// 물리처리
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
-					mGameProcess->mPhysicsSystem->Update(fixedDeltaTime);
 					mGameProcess->mPhysics->Update(fixedDeltaTime);
 					mGameProcess->mPhysics->FinalUpdate();
 					mGameProcess->mPhysicsSystem->SinkToGameScene();
 
 					accmulator -= fixedDeltaTime;
 				}
+				mGameProcess->mPhysicsSystem->Update(deltaTime);
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
@@ -211,6 +211,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mPhysicsAnimatorWindow->Render();
 	mEditor->mSkyBoxWindow->Render();
 	mEditor->mAnimatorWindow->Render();
+	mEditor->mSettingWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -237,6 +238,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mPhysicsAnimatorWindow->Initialize(mGameProcess.get());
 	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
 	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mSettingWindow->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

@@ -7,6 +7,7 @@
 
 fq::game_engine::SkyBoxWindow::SkyBoxWindow()
 	:mGraphicsEngine(nullptr)
+	,mbIsOpen(false)
 {}
 
 fq::game_engine::SkyBoxWindow::~SkyBoxWindow()
@@ -45,6 +46,9 @@ void fq::game_engine::SkyBoxWindow::dragDropTarget_SkyBox()
 			if (path->extension() == ".dds") // ¸ðµ¨ »ý¼º
 			{
 				mGraphicsEngine->SetSkyBox(*path);
+				mGraphicsEngine->SetIBLTexture(L"./resource/example/texture/default01DiffuseHDR.dds",
+					L"./resource/example/texture/default01SpecularHDR.dds",
+					L"./resource/example/texture/default01Brdf.dds");
 			}
 		}
 	}

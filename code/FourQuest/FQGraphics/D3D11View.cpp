@@ -1,10 +1,9 @@
-#include "D3D11View.h"
-
 #include <assert.h>
-
+#include "D3D11View.h"
 #include "Define.h"
 #include "D3D11Device.h"
 #include "D3D11ResourceManager.h"
+#include "D3D11Buffer.h"
 
 using namespace fq::graphics;
 
@@ -59,6 +58,10 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		return;
 	}
+	case ED3D11RenderTargetViewType::Albedo:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::Emissive:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::Offscreen:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -87,7 +90,13 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 	}
 	case ED3D11RenderTargetViewType::ColorAcuumulation:
 		// intentional fall through
+	case ED3D11RenderTargetViewType::Normal:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::PositionWClipZ:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::OffscreenHDR:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::SSAODepth:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
 		textureDesc.Width = width;
@@ -115,7 +124,10 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 	}
 	case ED3D11RenderTargetViewType::PixeldRevealageThreshold:
 		// intentional fall through
-		// 식별을 위한 enum과 생성을 위한 enum을 분리하면 더 깔끔할 거 같네
+	case ED3D11RenderTargetViewType::Metalness:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::Roughness:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::OffscreenGrayscale:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -142,6 +154,10 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11RenderTargetViewType::OutLineBlur:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::SingleColor:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::Picking:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -156,6 +172,32 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = 0;
+
+		ComPtr<ID3D11Texture2D> pTexture;
+		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.Format = textureDesc.Format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D = D3D11_TEX2D_RTV{ 0 };
+		HR(d3d11Device->GetDevice()->CreateRenderTargetView(pTexture.Get(), &rtvDesc, mRTV.GetAddressOf()));
+
+		break;
+	}
+	case ED3D11RenderTargetViewType::OutLine:
+	{
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 4;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 		ComPtr<ID3D11Texture2D> pTexture;
 		HR(d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &pTexture));
@@ -275,6 +317,52 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 		&mSRV));
 
 	ReleaseCOM(texture);
+}
+
+fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11UnorderedAccessView>& unorderedAccessView)
+	: ResourceBase(ResourceType::ShaderResourceView)
+	, mSRV(nullptr)
+{
+	ComPtr<ID3D11Buffer> buffer;
+	unorderedAccessView->mView->GetResource(reinterpret_cast<ID3D11Resource**>(buffer.GetAddressOf()));
+
+	D3D11_BUFFER_DESC bufferDesc;
+	buffer->GetDesc(&bufferDesc);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
+	shaderResourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	shaderResourceViewDesc.Buffer.ElementWidth = bufferDesc.StructureByteStride;
+	shaderResourceViewDesc.Buffer.FirstElement = 0;
+	shaderResourceViewDesc.Buffer.NumElements = bufferDesc.ByteWidth / bufferDesc.StructureByteStride;
+	assert(bufferDesc.ByteWidth % bufferDesc.StructureByteStride == 0);
+
+	HR(d3d11Device->GetDevice()->CreateShaderResourceView(buffer.Get(), &shaderResourceViewDesc, &mSRV));
+}
+
+void D3D11ShaderResourceView::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType)
+{
+	ID3D11ShaderResourceView* tempShaderResource = nullptr;
+	switch (eShaderType)
+	{
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &tempShaderResource);
+			break;
+		}
+		case ED3D11ShaderType::Pixelshader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &tempShaderResource);
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, &tempShaderResource);
+			break;
+		}
+		default:
+			break;
+	}
 }
 
 std::string D3D11ShaderResourceView::GenerateRID(const ED3D11ShaderResourceViewType eViewType)
@@ -475,4 +563,46 @@ void D3D11DepthStencilView::Release()
 std::string D3D11DepthStencilView::GenerateRID(const ED3D11DepthStencilViewType eViewType)
 {
 	return typeid(D3D11DepthStencilView).name() + std::to_string(static_cast<int>(eViewType));
+}
+
+D3D11UnorderedAccessView::D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type)
+{
+	Microsoft::WRL::ComPtr<ID3D11Buffer> d3dBuffer = buffer->GetBuffer();
+
+	D3D11_BUFFER_DESC bufferDesc;
+	d3dBuffer->GetDesc(&bufferDesc);
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.NumElements = bufferDesc.ByteWidth / bufferDesc.StructureByteStride;
+	assert(bufferDesc.ByteWidth % bufferDesc.StructureByteStride == 0);
+
+	switch (type)
+	{
+	case fq::graphics::eUAVType::Default:
+		uavDesc.Buffer.Flags = 0;
+		break;
+	case fq::graphics::eUAVType::ComsumeAppend:
+		uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
+		break;
+	default:
+		break;
+	}
+
+	uavDesc.Buffer.NumElements = buffer->GetMaxCount();
+
+	HR(d3d11Device->GetDevice()->CreateUnorderedAccessView(d3dBuffer.Get(), &uavDesc, mView.GetAddressOf()));
+}
+
+void D3D11UnorderedAccessView::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot)
+{
+	d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(startSlot, 1, mView.GetAddressOf(), nullptr);
+}
+
+void D3D11UnorderedAccessView::Clear(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	UINT initValue = 0;
+	d3d11Device->GetDeviceContext()->ClearUnorderedAccessViewUint(mView.Get(), &initValue);
 }

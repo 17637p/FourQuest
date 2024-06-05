@@ -63,11 +63,23 @@ std::vector<std::filesystem::path> fq::path::GetFileList(const std::filesystem::
 
 	for (const auto& entry : std::filesystem::directory_iterator(directory))
 	{
-		auto fileName = entry.path().filename();
 		directoryList.push_back(entry.path());
 	}
 
 	return directoryList;
+}
+
+std::vector<std::filesystem::path> fq::path::GetFileListRecursive(const std::filesystem::path& directory)
+{
+	assert(std::filesystem::is_directory(directory));
+	std::vector<std::filesystem::path> fileList;
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(directory))
+	{
+		fileList.push_back(entry.path());
+	}
+
+	return fileList;
 }
 
 std::filesystem::path fq::path::GetRelativePath(const std::filesystem::path& filePath)

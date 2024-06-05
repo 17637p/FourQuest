@@ -43,6 +43,10 @@ extern "C" {
 			virtual FQ_GRAPHICS float GetAnimationTime() const = 0;
 			virtual FQ_GRAPHICS float GetBlendTime() const = 0;
 
+			// Outline
+			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};
@@ -77,6 +81,10 @@ extern "C" {
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
 
+			// Outline
+			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
+
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출
 
@@ -89,7 +97,7 @@ extern "C" {
 		public:
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const abstract;
 
@@ -100,8 +108,7 @@ extern "C" {
 		class IImageObject
 		{
 		public:
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+			virtual ~IImageObject() = default;
 
 			virtual FQ_GRAPHICS void SetStartX(float startX) abstract;
 			virtual FQ_GRAPHICS void SetStartY(float startY) abstract;
@@ -121,11 +128,19 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetYRatio(float yRatio) abstract;
 			virtual FQ_GRAPHICS float GetYRatio() abstract;
 
-			virtual FQ_GRAPHICS void SetTexturePath(const std::wstring& texturePath) abstract;
-			virtual FQ_GRAPHICS std::wstring GetTexturePath() abstract;
+			virtual FQ_GRAPHICS void SetAlpha(float alpha) abstract;
+			virtual FQ_GRAPHICS float GetAlpha() abstract;
 
-		protected:
-			virtual ~IImageObject() = default;
+			virtual FQ_GRAPHICS void SetRotation(float angle) abstract;
+			virtual FQ_GRAPHICS float GetRotation() const abstract;
+
+			virtual FQ_GRAPHICS void SetScaleX(float scaleX) abstract;
+			virtual FQ_GRAPHICS void SetScaleY(float scaleY) abstract;
+			virtual FQ_GRAPHICS float GetScaleX() const abstract;
+			virtual FQ_GRAPHICS float GetScaleY() const abstract;
+
+			virtual FQ_GRAPHICS void SetImagePath(const std::string& texturePath) abstract;
+			virtual FQ_GRAPHICS std::string GetImagePath() abstract;
 		};
 	}
 #ifdef __cplusplus

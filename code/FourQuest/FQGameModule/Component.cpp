@@ -15,6 +15,8 @@ fq::game_module::Component::~Component()
 
 fq::game_module::Scene* fq::game_module::Component::GetScene() const
 {
+	if (!mGameObject) return nullptr;
+
 	return mGameObject->GetScene();
 }
 

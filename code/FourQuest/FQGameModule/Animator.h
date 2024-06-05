@@ -4,6 +4,7 @@
 namespace fq::game_module
 {
 	class AnimatorController;
+	class SkinnedMeshRenderer;
 
 	/// <summary>
 	/// 애니메이션을 관리하는 컴포넌트
@@ -16,7 +17,12 @@ namespace fq::game_module
 	public:
 		Animator();
 		~Animator();
-	
+
+		/// <summary>
+		/// 애니메이터 상태를 업데이트 합니다.
+		/// </summary>
+		void OnUpdate(float dt) override;
+
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
@@ -45,7 +51,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션의 프레임을 업데이트 합니다 
 		/// </summary>
-		float UpdateAnimation(float dt);
+		void UpdateAnimation(float dt);
 
 		/// <summary>
 		/// 로드할 컨트롤러 경로를 반환합니다
@@ -62,12 +68,24 @@ namespace fq::game_module
 		void SetParameterBoolean(const std::string& id, bool val);
 		void SetParameterTrigger(const std::string& id);
 
+		/// <summary>
+		/// 애니메이터가 애니메이션을 관리하는 스키닝 메쉬들을 반환합니다.
+		/// </summary>
+		std::vector<SkinnedMeshRenderer*>& GetSkinnedMeshs() { return mSkinnedMeshs; }
+
+		/// <summary>
+		/// 현재 애니메이션 전환중인지 반환합니다.
+		/// </summary>
+		bool IsInTransition()const;
+
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		ControllerPath mControllerPath;
 		std::shared_ptr<AnimatorController> mController;
+		std::vector<SkinnedMeshRenderer*> mSkinnedMeshs;
 	};
 
 }

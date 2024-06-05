@@ -24,6 +24,7 @@ FQGraphics::FQGraphics()
 	, mDebugDrawManager(std::make_shared<D3D11DebugDrawManager>())
 	, mPickingManager(std::make_shared<D3D11PickingManager>())
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
+	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
 {
 }
@@ -36,10 +37,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
+	mParticleManager;
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mUIManager->Initialize(hWnd, mDevice, width, height);
 
@@ -61,6 +63,16 @@ void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffuse, const 
 	mRenderManager->SetIBLTexture(diffuse, specular, brdfLUT);
 }
 
+void FQGraphics::DeleteImageObject(IImageObject* imageObject)
+{
+	mUIManager->DeleteImage(imageObject);
+}
+
+fq::graphics::IImageObject* FQGraphics::CreateImageObject(const UIInfo& uiInfo)
+{
+	return mUIManager->CreateImageObject(uiInfo);
+}
+
 void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
 {
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
@@ -73,7 +85,7 @@ void FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
 
 fq::graphics::ITerrainMeshObject* FQGraphics::CreateTerrainMeshObject(const MeshObjectInfo& info)
 {
-	return mObjectManager->CreateTerrainMeshObject(mModelManager, info);
+	return mObjectManager->CreateTerrainMeshObject(mDevice, mModelManager, info);
 }
 
 void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)
@@ -113,7 +125,7 @@ void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
 
 void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
-	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, mObjectManager->GetStaticMeshObjects(), mObjectManager->GetSkinnedMeshObjects());
+	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, mObjectManager->GetStaticMeshObjects(), mObjectManager->GetSkinnedMeshObjects(), mObjectManager->GetTerrainMeshObjects());
 }
 
 std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)
@@ -177,8 +189,8 @@ bool FQGraphics::Render()
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 
-	mJobManager->CreateStaticMeshJobs(staticMeshesToRender);
-	mJobManager->CreateSkinnedMeshJobs(skinnedMeshesToRender);
+	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	//mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
@@ -310,10 +322,22 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
+void FQGraphics::AddDeltaTime(float deltaTime)
+{
+	mParticleManager->AddDeltaTime(deltaTime);
+}
+void FQGraphics::AddParticleSystem(size_t id, const ParticleSystemInfo& info)
+{
+	mParticleManager->AddParticleSystem(id, mDevice, info);
+}
+void FQGraphics::DeleteParticleSystem(size_t id)
+{
+	mParticleManager->DeleteParticleSystem(id);
+}
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

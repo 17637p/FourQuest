@@ -58,7 +58,7 @@ extern "C" {
 			virtual FQ_GRAPHICS bool SetWindowSize(const unsigned short width, const unsigned short height) abstract; // 툴의 에디터를 포함한 전체 윈도우 영역
 			virtual FQ_GRAPHICS bool SetViewportSize(const unsigned short width, const unsigned short height) abstract; // 툴에서 씬을 그리는 영역
 
-			// 랜더 오브젝트
+			// 랜더 오브젝트 & Animation
 			virtual FQ_GRAPHICS void WriteModel(std::string path, const fq::common::Model& modelData) abstract;
 			virtual FQ_GRAPHICS void ConvertModel(std::string fbxFile, std::string path) abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") abstract;
@@ -77,6 +77,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) abstract;
 			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
+			/// Primitive
 			// Debug Draw
 			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;
 			virtual FQ_GRAPHICS void DrawBox(const debug::AABBInfo& aabbInfo) abstract;
@@ -87,17 +88,13 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
 
-			/// Gizmo && Background
+			// VFX
+			virtual FQ_GRAPHICS void AddDeltaTime(float deltaTime) abstract;
+			virtual FQ_GRAPHICS void AddParticleSystem(size_t id, const ParticleSystemInfo& info) abstract;
+			virtual FQ_GRAPHICS void DeleteParticleSystem(size_t id) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
-			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;
-
-			/// Primitive
-
-			/// Animation
-
-			/// Bounding Volume
 
 			/// UI
 			// text
@@ -108,10 +105,12 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) abstract;
 			virtual FQ_GRAPHICS void DeleteFont(const std::wstring& path) abstract;
 			// image
-
+			virtual FQ_GRAPHICS IImageObject* CreateImageObject(const UIInfo& uiInfo) abstract;
+			virtual FQ_GRAPHICS void DeleteImageObject(IImageObject* imageObject) abstract;
 
 			/// SkyBox
-			virtual void SetSkyBox(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;
 
 			/// Light
 			virtual FQ_GRAPHICS void AddLight(const unsigned int id, const LightInfo& lightInfo) abstract;

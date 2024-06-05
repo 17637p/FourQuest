@@ -90,18 +90,25 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 void fq::game_engine::RenderingSystem::OnLoadScene()
 {
-	// 1. Scene에 배치한 리소르를 로드 
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	// 1. Scene에 배치한 리소르를 로드 
 	for (auto& object : scene->GetObjectView(true))
 	{
 		loadStaticMeshRenderer(&object);
 		loadSkinnedMeshRenderer(&object);
 		loadTerrain(&object);
+	}
+
+	// 2. 애니메이션을 연결
+	for (auto& object : scene->GetObjectView(true))
+	{
 		loadAnimation(&object);
 	}
 
 	// 2. PrefabInstance를 로드
+
+
 
 	mbIsGameLoaded = true;
 }
@@ -159,10 +166,12 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	}
 	meshInfo.Transform = transform->GetLocalMatrix();
 
-	// SkinnedMeshO 생성
-
+	// SkinnedMesh 생성
 	auto skinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInfo);
 	skinnedMeshRenderer->SetSkinnedMeshObject(skinnedMeshObject);
+
+	if (skinnedMeshObject)
+		skinnedMeshObject->SetOutlineColor(skinnedMeshRenderer->GetOutlineColor());
 }
 
 void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnimation& event)
@@ -227,11 +236,12 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	// StaticMesh 생성
 	auto staticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInfo);
 	staticMeshRenderer->SetStaticMeshObject(staticMeshObject);
+	staticMeshObject->SetOutlineColor(staticMeshRenderer->GetOutlineColor());
 }
 
 void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject* object)
 {
-	if (!object->HasComponent<fq::game_module::SkinnedMeshRenderer, fq::game_module::Animator>())
+	if (!object->HasComponent<game_module::Animator>())
 	{
 		return;
 	}
@@ -242,33 +252,51 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 	if (!check) return;
 
 	auto animator = object->GetComponent<fq::game_module::Animator>();
-	auto meshRenderer = object->GetComponent<fq::game_module::SkinnedMeshRenderer>();
-	auto meshObject = meshRenderer->GetSkinnedMeshObject();
+	auto& animatorMeshs = animator->GetSkinnedMeshs();
 
-	const auto& stateMap = animator->GetController().GetStateMap();
-
-
-	for (const auto& [id, state] : stateMap)
+	// 자식 계층의 메쉬들을 연결합니다.
+	for (auto& child : object->GetChildren())
 	{
-		fq::graphics::AnimationInfo info;
+		if (!child->HasComponent<game_module::SkinnedMeshRenderer>()) continue;
 
-		info.ModelPath = state.GetModelPath();
-		info.AnimationName = state.GetAnimationName();
-		info.AnimationKey = state.GetAnimationKey();
+		auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+		auto meshObject = meshRenderer->GetSkinnedMeshObject();
+		if (!meshObject) return;
 
-		if (info.ModelPath.empty()
-			|| info.AnimationName.empty()
-			|| info.AnimationKey.empty())
-			continue;
+		animatorMeshs.push_back(meshRenderer);
 
-		LoadModel(info.ModelPath);
-		mGameProcess->mGraphics->AddAnimation(meshObject, info);
+		const auto& stateMap = animator->GetController().GetStateMap();
+
+		for (const auto& [id, state] : stateMap)
+		{
+			fq::graphics::AnimationInfo info;
+
+			info.ModelPath = state.GetModelPath();
+			info.AnimationName = state.GetAnimationName();
+			info.AnimationKey = state.GetAnimationKey();
+
+			if (info.ModelPath.empty()
+				|| info.AnimationName.empty()
+				|| info.AnimationKey.empty())
+				continue;
+
+			LoadModel(info.ModelPath);
+
+			if (mLoadModels.find(info.ModelPath) != mLoadModels.end())
+				mGameProcess->mGraphics->AddAnimation(meshObject, info);
+		}
 	}
 }
 
 
 void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 {
+	if (!std::filesystem::exists(path))
+	{
+		spdlog::warn("[RenderingSystem] Load Model Failed \"{}\" ", path);
+		return;
+	}
+
 	auto iter = mLoadModels.find(path);
 
 	if (iter == mLoadModels.end())
@@ -359,7 +387,6 @@ void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveCo
 	{
 		unloadTerrain(event.component->GetGameObject());
 	}
-
 }
 
 bool fq::game_engine::RenderingSystem::IsLoadedModel(const ModelPath& path)
@@ -387,7 +414,7 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	fq::graphics::MeshObjectInfo meshInfo;
 	meshInfo.ModelPath = terrainPath;
 	meshInfo.MeshName = mesh.second.Name;
-	meshInfo.Transform = mesh.first.ToParentMatrix *transform->GetWorldMatrix();
+	meshInfo.Transform = mesh.first.ToParentMatrix * transform->GetWorldMatrix();
 
 	mPlaneMatrix = mesh.first.ToParentMatrix;
 
@@ -397,6 +424,10 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	fq::graphics::TerrainMaterialInfo info;
 	info.AlPhaFileName = terrain->GetAlphaMap();
 	info.Layers = terrain->GetTerrainLayers();
+	info.Width = terrain->GetWidth();
+	info.Height = terrain->GetHeight();
+	info.HeightScale = terrain->GetHeightScale();
+	info.HeightFileName = terrain->GetHeightMap();
 
 	mGameProcess->mGraphics->SetTerrainMeshObject(iTerrainMeshObject, info);
 }

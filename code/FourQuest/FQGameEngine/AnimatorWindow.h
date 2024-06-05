@@ -6,6 +6,7 @@
 #include <imgui-node-editor/imgui_node_editor.h>
 
 #include "../FQGameModule/GameModule.h"
+#include "EditorEvent.h"
 
 namespace fq::game_engine
 {
@@ -39,6 +40,8 @@ namespace fq::game_engine
 
 		void OnUnloadScene();
 
+		void SelectObject(fq::editor_event::SelectObject event);
+
 		void SaveAnimatorController();
 
 	private:
@@ -55,7 +58,7 @@ namespace fq::game_engine
 			, const fq::game_module::AnimationStateNode& node);
 		void beginPin_AnimationStateNode(const std::string& nodeName
 			, fq::game_module::AnimationStateNode::Type type);
-		void beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition);
+		void beginLink_AnimationTransition(const fq::game_module::AnimationTransition& transition, bool onFlow);
 
 		void beginCreate();
 		void beginDelete();
@@ -84,6 +87,7 @@ namespace fq::game_engine
 
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mStartSceneHandler;
+		EventHandler mSelectObjectHandler;
 	};
 
 

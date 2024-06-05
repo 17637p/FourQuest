@@ -26,8 +26,10 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 GetPosition() const;
 		DirectX::SimpleMath::Quaternion GetRotation() const;
 
-		float GetNearPlain() const;
-		float GetFarPlain() const;
+		float GetNearPlane() const;
+		float GetFarPlane() const;
+
+		float GetFovY() const;
 
 	private:
 		void makeProjectionMatrix();
@@ -37,8 +39,8 @@ namespace fq::graphics
 
 		bool mIsPerspective;
 		float mFieldOfView;
-		float mNearPlain;
-		float mFarPlain;
+		float mNearPlane;
+		float mFarPlane;
 
 		DirectX::SimpleMath::Matrix mViewMatrix;
 		DirectX::SimpleMath::Matrix mProjectionMatrix;

@@ -120,6 +120,7 @@ namespace fq::game_engine
 
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectObjectHandle;
+		fq::game_module::EventHandler mSelectAnimationState;
 	};
 
 

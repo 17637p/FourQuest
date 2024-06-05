@@ -7,6 +7,7 @@ fq::game_engine::AnimationSystem::AnimationSystem()
 	, mScene(nullptr)
 	, mGraphics(nullptr)
 	, mChangeAnimationStateHandler{}
+	, mStateQueue{}
 {}
 
 fq::game_engine::AnimationSystem::~AnimationSystem()
@@ -27,8 +28,8 @@ void fq::game_engine::AnimationSystem::UpdateAnimation(float dt)
 	// 1. State Update
 	updateAnimtorState(dt);
 
-	// 2. OnStateEnter/Exit CallBack
-
+	// 2. Animation 변경요청  
+	processCallBack();
 
 	// 3. Animation을 적용
 	processAnimation(dt);
@@ -50,21 +51,34 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 {
 	using namespace fq::game_module;
 
-	mScene->ViewComponents<SkinnedMeshRenderer, Animator>(
-		[dt](GameObject& object, SkinnedMeshRenderer mesh, Animator& animator)
+	mScene->ViewComponents<Animator>(
+		[dt](GameObject& object, Animator& animator)
 		{
-			float timePos = animator.UpdateAnimation(dt);
-			mesh.GetSkinnedMeshObject()->SetAnimationTime(timePos);
+			animator.UpdateAnimation(dt);
+
+			auto& controller = animator.GetController();
+
+			for (auto mesh : animator.GetSkinnedMeshs())
+			{
+				float timePos = controller.GetTimePos();
+
+				if (controller.IsInTransition())
+				{
+					float blendPos = controller.GetBlendTimePos();
+					float blendWeight = controller.GetBlendWeight();
+					mesh->GetSkinnedMeshObject()
+						->SetBlendAnimationTime({ timePos, blendPos }, blendWeight);
+				}
+				else
+					mesh->GetSkinnedMeshObject()->SetAnimationTime(timePos);
+			}
 		});
 }
 
 
 void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::ChangeAnimationState& event)
 {
-	auto skinnedMesh = event.object->GetComponent<fq::game_module::SkinnedMeshRenderer>()
-		->GetSkinnedMeshObject();
-
-	skinnedMesh->SetAnimationKey(event.enterState);
+	mStateQueue.push(event);
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
@@ -84,4 +98,28 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	animator->SetController(controller);
 
 	return true;
+}
+
+void fq::game_engine::AnimationSystem::processCallBack()
+{
+	while (!mStateQueue.empty())
+	{
+		const auto& event = mStateQueue.front();
+
+		auto animator = event.animator;
+		const auto& meshs = animator->GetSkinnedMeshs();
+		for (auto& mesh : meshs)
+		{
+			if (event.bIsBlend)
+			{
+				mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
+			}
+			else
+			{
+				mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
+			}
+		}
+
+		mStateQueue.pop();
+	}
 }

@@ -28,6 +28,7 @@ fq::game_engine::FileDialog::FileDialog()
 	, mIconSize{ 100.f,100.f }
 	, mEditorProcess(nullptr)
 	, mGameProcess(nullptr)
+	,mbIsFindAllDirectory(false)
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -71,6 +72,7 @@ void fq::game_engine::FileDialog::beginWindow_FilePathWindow()
 {
 	if (ImGui::BeginChild("FilePathWinodw", ImVec2(200, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX))
 	{
+		beginFavorite();
 		beginDirectory(mResourcePath);
 	}
 	ImGui::EndChild();
@@ -96,6 +98,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 	if (ImGui::Button(fileName.c_str()))
 	{
 		selectPath(path);
+		mbIsFindAllDirectory = false;
 	}
 
 	beginDragDrop_Directory(path);
@@ -131,7 +134,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 		if (ImGui::TreeNode(treeName.c_str()))
 		{
-			for (const auto& directory : directoryList)
+			for (const auto& directory : directoryList )
 			{
 				// ignore
 				if (directory.filename() == ".svn"
@@ -157,7 +160,6 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		, ImVec2(0, -ImGui::GetFrameHeightWithSpacing())))
 	{
 		setIconSize();
-
 		beginPopupContextWindow_FileList();
 
 		// 현재 폴더 경로 
@@ -165,29 +167,64 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		ImGui::Separator();
 
 		// ignore 파일 제거
-		auto directoryList = fq::path::GetFileList(mSelectPath.string().c_str());
-		directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
-			[](const auto path)
-			{
-				if (path.filename() == ".svn" || path.filename() == "internal")
+
+		std::vector<std::filesystem::path> directoryList;
+
+		if (mbIsFindAllDirectory)
+		{
+			directoryList = fq::path::GetFileListRecursive(mResourcePath);
+		
+			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+				[](const std::filesystem::path& path)
 				{
-					return true;
-				}
-				return false;
-			}), directoryList.end());
+					std::string pathString = path.string();
+					// Check if the path contains ".svn" or "internal"
+					if (pathString.find(".svn") == std::string::npos && pathString.find("internal") == std::string::npos)
+					{
+						return false;
+					}
 
-		// 디렉토리가 파일보다 우선순위가 높음
-		std::sort(directoryList.begin(), directoryList.end()
-			, [](const Path& lfm, const Path& rfm)
-			{
-				if (fs::is_directory(lfm) && !fs::is_directory(rfm))
+					return true;
+				}), directoryList.end());
+
+			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+				[this](const auto path)
 				{
+					for (auto& extension : mQueryExtension)
+					{
+						if (path.extension() == extension)
+						{
+							return false;
+						}
+					}
 					return true;
-				}
+				}), directoryList.end());
+		}
+		else // 폴더 
+		{
+			directoryList = fq::path::GetFileList(mSelectPath.string().c_str());
+			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+				[](const auto path)
+				{
+					if (path.filename() == ".svn" || path.filename() == "internal")
+					{
+						return true;
+					}
+					return false;
+				}), directoryList.end());
 
-				return false;
-			});
+			// 디렉토리가 파일보다 우선순위가 높음
+			std::sort(directoryList.begin(), directoryList.end()
+				, [](const Path& lfm, const Path& rfm)
+				{
+					if (fs::is_directory(lfm) && !fs::is_directory(rfm))
+					{
+						return true;
+					}
 
+					return false;
+				});
+		}
 
 		float fileSpaceX = mIconSize.x * 1.25f;
 		float fileSpaceY = mIconSize.x * 1.25f + ImGui::GetFontSize();
@@ -297,11 +334,11 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 
 	ImGui::SetCursorPos({ cursorPos.x, cursorPos.y + mIconSize.y });
 
-	ImGui::PushItemWidth(100);
+	ImGui::PushItemWidth(mIconSize.x);
 
 	// 파일 이름 
 	std::string fileName = path.filename().string();
-	std::string textName = "##" + fileName;
+	std::string textName = "##" + path.string();
 
 	if (ImGui::InputText(textName.c_str(), &fileName)
 		&& mEditorProcess->mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
@@ -441,7 +478,6 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 			controllerPath /= "NewController.controller";
 
 			fq::game_module::AnimatorController controller;
-
 			fq::game_module::AnimatorControllerLoader loader;
 
 			int index = 0;
@@ -608,16 +644,47 @@ void fq::game_engine::FileDialog::setIconSize()
 		if (deltaWheel > 0)
 		{
 			constexpr float maxSize = 150.f;
-			mIconSize.x = std::min(mIconSize.x + 1.f, maxSize);
-			mIconSize.y = std::min(mIconSize.y + 1.f, maxSize);
+			mIconSize.x = std::min(mIconSize.x + 2.f, maxSize);
+			mIconSize.y = std::min(mIconSize.y + 2.f, maxSize);
 		}
 		else if (deltaWheel < 0)
 		{
 			constexpr float minSize = 50.f;
-			mIconSize.x = std::max(mIconSize.x - 1.f, minSize);
-			mIconSize.y = std::max(mIconSize.y - 1.f, minSize);
+			mIconSize.x = std::max(mIconSize.x - 2.f, minSize);
+			mIconSize.y = std::max(mIconSize.y - 2.f, minSize);
 		}
 
 	}
+}
+
+void fq::game_engine::FileDialog::beginFavorite()
+{
+	if (ImGui::TreeNode("Favorite"))
+	{
+		if (ImGui::Button("All Model"))
+		{
+			mbIsFindAllDirectory = true;
+			mQueryExtension.clear();
+			mQueryExtension.push_back(".model");
+			mQueryExtension.push_back(".fbx");
+		}
+		if (ImGui::Button("All Texture"))
+		{
+			mbIsFindAllDirectory = true;
+			mQueryExtension.clear();
+			mQueryExtension.push_back(".png");
+			mQueryExtension.push_back(".jpg");
+			mQueryExtension.push_back(".dds");
+		}
+		if (ImGui::Button("All Prefab"))
+		{
+			mbIsFindAllDirectory = true;
+			mQueryExtension.clear();
+			mQueryExtension.push_back(".prefab");
+		}
+
+		ImGui::TreePop();
+	}
+
 }
 

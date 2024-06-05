@@ -11,9 +11,21 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
+	struct ViewProjectionMatrix
+	{
+		DirectX::SimpleMath::Matrix ViewMatrix;
+		DirectX::SimpleMath::Matrix ViewProjMat;
+	};
+
 	struct SceneTrnasform
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;
+	};
+
+	struct SceneInfomation
+	{
+		DirectX::SimpleMath::Matrix ViewProjMat;
+		DirectX::SimpleMath::Vector4 EyePosition;
 	};
 
 	struct BoneTransform
@@ -84,6 +96,11 @@ namespace fq::graphics
 		Layer layer[4]; // 128
 	};
 
+	struct FrustumCorners
+	{
+		DirectX::SimpleMath::Vector4 FrustumFarCorners[4];
+	};
+
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];
@@ -97,6 +114,93 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector3 eyePosition;
 		float pad2;
+	};
+
+	struct Emitter
+	{
+		DirectX::SimpleMath::Vector4 InitPositionW;
+		DirectX::SimpleMath::Vector4 ReadomPositionW;
+
+		DirectX::SimpleMath::Vector4 InitVelocityW;
+		DirectX::SimpleMath::Vector4 ReadomVelocityW;
+
+		DirectX::SimpleMath::Vector4 InitSizeW;
+		DirectX::SimpleMath::Vector4 ReadomSizeW;
+
+		float InitLifeTime;
+		float ReadomLifeTime;
+		unsigned int ParticleCount;
+		float DeltaTime;
+		float TotalTime;
+		float unused[3];
+	};
+
+	struct ParticleMain
+	{
+		DirectX::SimpleMath::Matrix Transform;
+
+		DirectX::SimpleMath::Vector4 StartSize;
+		DirectX::SimpleMath::Vector4 StartColor1;
+		DirectX::SimpleMath::Vector4 StartColor2;
+		DirectX::SimpleMath::Vector2 StartLifeTime;
+		DirectX::SimpleMath::Vector2 StartSpeed;
+		DirectX::SimpleMath::Vector2 StartRotation;
+		DirectX::SimpleMath::Vector2 GravityModifier;
+
+		int StartLifeTimeOption;
+		int StartSpeedOption;
+		int StartSizeOption;
+		int StartRotationOption;
+
+		int StartColorOption;
+		int GravityModifierOption;
+		int RandomSeed;
+		float DeltaTime;
+
+		float SimulationSpeed;
+		unsigned int ParticleCount;
+		float unused[2];
+	};
+
+	struct ParticleShape
+	{
+		DirectX::SimpleMath::Matrix Transform;
+
+		int ShapeType;
+		int ModeType;
+		float Angle;
+		float Radius;
+
+		float DountRadius;
+		float Arc;
+		float Speed;
+		float Spread;
+
+		float RadiusThickness;
+		float unused[3];
+	};
+
+	struct OutLineColor
+	{
+		DirectX::SimpleMath::Color color;
+	};
+
+	struct ScreenSize
+	{
+		unsigned int width;
+		unsigned int height;
+		float pad[2];
+	};
+
+	struct TerrainHull
+	{
+		float MinDist;
+		float MaxDist;
+		float MinTess;
+		float MaxTess;
+		DirectX::XMFLOAT3 gEyePosW;
+		float pad;
+		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
 	};
 
 	template <typename T>

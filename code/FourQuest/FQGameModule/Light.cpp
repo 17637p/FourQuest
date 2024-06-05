@@ -85,6 +85,12 @@ void fq::game_module::Light::SetShadow(bool bUseShadow)
 	if (mInfomation.type != LightType::Directional) mbOnShadow = false;
 
 	mbOnShadow = bUseShadow;
+
+	auto scene = GetScene();
+
+	if (scene)
+		scene->GetEventManager()->FireEvent<event::SetLightShadow>(
+			{ mbOnShadow, GetGameObject()->GetID() });
 }
 
 bool fq::game_module::Light::OnShadow() const

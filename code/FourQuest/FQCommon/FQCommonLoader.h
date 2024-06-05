@@ -38,6 +38,11 @@ namespace fq::common
 			float BoneWeights[MAX_BONE_COUNT] = { 0.f, 0.f, 0.f, 0.f };
 		};
 
+		struct BoundsYVertex
+		{
+			DirectX::SimpleMath::Vector2 BoundsY;
+		};
+
 		struct Bone
 		{
 			std::string Name;
@@ -68,6 +73,7 @@ namespace fq::common
 		std::string Name;
 		std::vector<Vertex> Vertices;
 		std::vector<BoneVertex> BoneVertices;
+		std::vector<BoundsYVertex> BoundsYVertices;
 		std::vector<unsigned int> Indices;
 
 		std::string NodeName;
@@ -107,7 +113,7 @@ namespace fq::common
 	};
 
 	struct NodeClip
-	{ 
+	{
 		std::string NodeName;
 		std::vector<Keyframe> Keyframes;
 	};

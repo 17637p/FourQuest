@@ -1,30 +1,13 @@
 #pragma once
 
-#include "CommonHeader.h"
-#include "CommonPass.h"
+#include <memory>
+#include <d3d11.h>
+#include "Pass.h"
+#include "ConstantBufferStructure.h"
 
 namespace fq::graphics
 {
-	template <typename T>
-	class D3D11ConstantBuffer;
-	class D3D11InputLayout;
-	class D3D11VertexShader;
-	class D3D11PixelShader;
-	class D3D11Device;
-	class D3D11SamplerState;
-	class D3D11ResourceManager;
-	class D3D11RenderTargetView;
-	class D3D11ShaderResourceView;
-	class D3D11DepthStencilView;
-	class D3D11VertexBuffer;
-	class D3D11IndexBuffer;
-	class D3D11CameraManager;
-	class D3D11LightManager;
-	class D3D11JobManager;
-	class D3D11RasterizerState;
-	class D3D11DebugDrawManager;
-
-	class ForwardRenderPass : public RenderPass
+	class TransparentRenderPass : public Pass
 	{
 	public:
 		void Initialize(std::shared_ptr<D3D11Device> device,
@@ -47,27 +30,25 @@ namespace fq::graphics
 
 		D3D11_VIEWPORT mViewport;
 
-		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11DepthStencilView> mDSV;
+		std::shared_ptr<D3D11RenderTargetView> mColoraccumulationRTV;
+		std::shared_ptr<D3D11RenderTargetView> mPixelRevealageThresholdRTV;
+		std::shared_ptr<D3D11DepthStencilView> mDefaultDSV;
 		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mPointLightShadowSRV;
 
-		std::shared_ptr<D3D11InputLayout> mStaticMeshLayout;
-		std::shared_ptr<D3D11InputLayout> mSkinnedMeshLayout;
-		std::shared_ptr<D3D11VertexShader> mStaticMeshVS;
-		std::shared_ptr<D3D11VertexShader> mSkinnedMeshVS;
-		std::shared_ptr<D3D11PixelShader> mMeshPS;
+		std::unique_ptr<class ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<class ShaderProgram> mSkinnedMeshShaderProgram;
 
-		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
-		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
-		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
+		std::shared_ptr<D3D11SamplerState> mDefualtSampler;
 
+		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>> mModelTexutreCB;
 		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
+		std::shared_ptr<D3D11ConstantBuffer<AlphaData>> mAlphaDataCB;
 	};
+
 }

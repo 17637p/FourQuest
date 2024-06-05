@@ -13,6 +13,8 @@
 
 #include "D3D11Device.h"
 
+#include <FQCommonGraphics.h>
+
 fq::graphics::UIManager::UIManager()
 	:mHWnd{ NULL },
 	mDirect2DFactory{ nullptr },
@@ -30,8 +32,6 @@ fq::graphics::UIManager::UIManager()
 
 fq::graphics::UIManager::~UIManager()
 {
-	ReleaseAllImage();
-
 	for (const auto& fontPath : mFontPath)
 	{
 		RemoveFontResourceEx(fontPath.c_str(), FR_PRIVATE, NULL);
@@ -98,8 +98,12 @@ HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device>
 
 void fq::graphics::UIManager::Render()
 {
+	mRenderTarget->BeginDraw();
+
 	drawAllText();
 	drawAllImage();
+
+	mRenderTarget->EndDraw();
 }
 
 void fq::graphics::UIManager::Finalize()
@@ -116,7 +120,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 	//Todo: Path 일 경우 regist 아니면 그냥 
 	if (path.find(L".") != std::string::npos) // .가 하나라도 있으면 
 	{
-		RegisterFont(path);
+		registerFont(path);
 		return;
 	}
 
@@ -225,7 +229,7 @@ void fq::graphics::UIManager::OnResize(std::shared_ptr<D3D11Device> device, cons
 	createRenderTarget(device, width, height);
 }
 
-void fq::graphics::UIManager::RegisterFont(const std::wstring& path)
+void fq::graphics::UIManager::registerFont(const std::wstring& path)
 {
 	mFontPath.emplace_back(path);
 
@@ -247,10 +251,10 @@ void fq::graphics::UIManager::initializeImage()
 	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&mWICFactory));
 }
 
-void fq::graphics::UIManager::loadImage(const std::wstring& path)
+void fq::graphics::UIManager::loadBitmap(const std::wstring& path)
 {
-	IWICBitmapDecoder* p_decoder;
-	mWICFactory->CreateDecoderFromFilename(path.c_str(), NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &p_decoder);
+	IWICBitmapDecoder* p_decoder = nullptr;
+	HRESULT hr = mWICFactory->CreateDecoderFromFilename(path.c_str(), NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &p_decoder);
 
 	IWICBitmapFrameDecode* p_frame;
 	p_decoder->GetFrame(0, &p_frame);
@@ -260,17 +264,17 @@ void fq::graphics::UIManager::loadImage(const std::wstring& path)
 	mWICFactory->CreateFormatConverter(&p_converter);
 	p_converter->Initialize(p_frame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.f, WICBitmapPaletteTypeCustom);
 
-	ID2D1Bitmap* tempBitmap;
-	mRenderTarget->CreateBitmapFromWicBitmap(p_converter, NULL, &tempBitmap);
-	mBitmaps[path] = tempBitmap;
-}
+	ID2D1Bitmap* tempBitmap = nullptr;
+	hr = mRenderTarget->CreateBitmapFromWicBitmap(p_converter, NULL, &tempBitmap);
 
-void fq::graphics::UIManager::ReleaseAllImage()
-{
-	for (const auto& bitmap : mBitmaps)
-	{
-		bitmap.second->Release();
-	}
+	FQBitmap* fqBitmap = new FQBitmap;
+	fqBitmap->bitmap = tempBitmap;
+	fqBitmap->refCount = 1;
+	mBitmaps[path] = fqBitmap;
+
+	p_converter->Release();
+	p_frame->Release();
+	p_decoder->Release();
 }
 
 void fq::graphics::UIManager::AddImage(IImageObject* imageObject)
@@ -281,19 +285,26 @@ void fq::graphics::UIManager::AddImage(IImageObject* imageObject)
 
 void fq::graphics::UIManager::DeleteImage(IImageObject* imageObject)
 {
-	// 여기서만 지우면 되는 게 맞지? 어차피 실제 인스턴스 해제는 밖에서 할거니까 
-	// 그래도 함수 의도대로 작동하는 지 확인할 것
+	std::filesystem::path stringToWstringPath = imageObject->GetImagePath();
+	std::wstring imagePath = stringToWstringPath.wstring();
+
+	mBitmaps[imagePath]->refCount--;
+	if (mBitmaps[imagePath]->refCount == 0)
+	{
+		mBitmaps[imagePath]->bitmap->Release();
+		delete mBitmaps[imagePath];
+	}
+
 	mImages.erase(remove(mImages.begin(), mImages.end(), imageObject), mImages.end());
+
+	delete imageObject;
 }
 
 void fq::graphics::UIManager::drawAllText()
 {
 	if (mRenderTarget)
 	{
-		//D2D1_SIZE_F renderTargetSize = mRenderTarget->GetSize();
-		mRenderTarget->BeginDraw();
 		mRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		//mRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
 		ID2D1SolidColorBrush* tempBrush = nullptr;
 		for (const auto& drawTextInformation : mDrawTextInformations)
@@ -315,7 +326,6 @@ void fq::graphics::UIManager::drawAllText()
 
 			mRenderTarget->DrawText(
 				drawTextInformation.text.c_str(),
-				//ARRAYSIZE(drawTextInformation.text.c_str()) - 1,
 				drawTextInformation.text.length(),
 				mFonts[drawTextInformation.fontPath + std::to_wstring(drawTextInformation.fontSize)],
 				D2D1::RectF(
@@ -326,9 +336,12 @@ void fq::graphics::UIManager::drawAllText()
 				mBrushes[drawTextInformation.color]);
 		}
 		mDrawTextInformations.clear();
-
-		mRenderTarget->EndDraw();
 	}
+}
+
+bool IImageObjectCmpLayer(fq::graphics::IImageObject* a, fq::graphics::IImageObject* b)
+{
+	return a->GetLayer() > b->GetLayer();
 }
 
 void fq::graphics::UIManager::drawAllImage()
@@ -336,6 +349,7 @@ void fq::graphics::UIManager::drawAllImage()
 	if (!mIsSorted)
 	{
 		// 레이어 단위로 정렬하기
+		std::sort(mImages.begin(), mImages.end(), IImageObjectCmpLayer);
 		//mImages
 		mIsSorted = true;
 	}
@@ -343,10 +357,59 @@ void fq::graphics::UIManager::drawAllImage()
 	for (const auto& image : mImages)
 	{
 		// 그리기
-		D2D1_SIZE_F imageSize = mBitmaps[image->GetTexturePath()]->GetSize();
+		std::filesystem::path stringToWstringPath = image->GetImagePath();
+		std::wstring imagePath = stringToWstringPath.wstring();
+
+		D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 		D2D1_RECT_F screenRect = { image->GetStartX(), image->GetStartY(), image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
 
-		mRenderTarget->DrawBitmap(mBitmaps[image->GetTexturePath()], &screenRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+		mRenderTarget->SetTransform(
+			D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+			* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+		);
+
+		mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
 	}
+}
+
+fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UIInfo& uiInfo)
+{
+	IImageObject* newImageObject = new ImageObject;
+	newImageObject->SetStartX(uiInfo.StartX);
+	newImageObject->SetStartY(uiInfo.StartY);
+
+	newImageObject->SetWidth(uiInfo.Width);
+	newImageObject->SetHeight(uiInfo.Height);
+
+	newImageObject->SetLayer(uiInfo.Layer);
+
+	newImageObject->SetXRatio(uiInfo.XRatio);
+	newImageObject->SetYRatio(uiInfo.YRatio);
+
+	newImageObject->SetAlpha(uiInfo.Alpha);
+
+	newImageObject->SetImagePath(uiInfo.ImagePath);
+
+	newImageObject->SetScaleX(uiInfo.ScaleX);
+	newImageObject->SetScaleY(uiInfo.ScaleY);
+	newImageObject->SetRotation(uiInfo.RotationAngle);
+
+	// bitmap에서 찾은 다음에 없으면 만들 것
+	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;
+	std::wstring imagePath = stringToWstringPath.wstring();
+
+	auto bitmap = mBitmaps.find(imagePath);
+	if (bitmap == mBitmaps.end())
+	{
+		loadBitmap(imagePath);
+	}
+	else
+	{
+		mBitmaps[imagePath]->refCount++;
+	}
+
+	AddImage(newImageObject);
+
+	return newImageObject;
 }

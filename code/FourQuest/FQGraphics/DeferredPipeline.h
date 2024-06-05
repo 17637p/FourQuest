@@ -3,6 +3,7 @@
 #include "CommonHeader.h"
 #include "ConstantBufferStructure.h"
 #include "RenderJob.h"
+#include "RenderPipeline.h"
 
 namespace fq::graphics
 {
@@ -16,7 +17,7 @@ namespace fq::graphics
 	class D3D11DebugDrawManager;
 	class D3D11DepthStencilView;
 
-	class DeferredPipeline
+	class DeferredPipeline : public RenderPipeline
 	{
 	public:
 		DeferredPipeline();
@@ -31,23 +32,11 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		void Finalize();
-
-		void OnResize(unsigned short width, unsigned short height);
-
-		void BeginRender();
-		void Render();
-		void EndRender();
+		virtual void OnResize(unsigned short width, unsigned short height);
 
 		void SetSkyBox(const std::wstring& path);
-		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
-		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
-		std::shared_ptr<D3D11Device> mDevice;
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-
-		std::vector<std::shared_ptr<class RenderPass>> mPasses;
-
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class DeferredGeometryPass> mGeometryPass;
 		std::shared_ptr<class DeferredShadingPass> mShadingPass;
@@ -57,11 +46,10 @@ namespace fq::graphics
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
 		std::shared_ptr<class TerrainPass> mTerrainPass;
-
-		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
-		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
-		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
-		std::shared_ptr<D3D11DepthStencilView> mDSV;
+		std::shared_ptr<class SingleColorPass> mSingleColorPass;
+		std::shared_ptr<class OutLinePass> mOutLinePass;
+		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
+		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
@@ -77,10 +65,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
 
-		// IBL юс╫ц
-		std::shared_ptr<class D3D11Texture> mDiffuseCubeMap;
-		std::shared_ptr<class D3D11Texture> mSpecularCubeMap;
-		std::shared_ptr<class D3D11Texture> mBRDFLUT;
 	};
 }
 

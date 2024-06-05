@@ -81,12 +81,23 @@ namespace fq::game_module
 		/// <returns>메쉬 정보</returns>
 		fq::graphics::MeshObjectInfo GetMeshObjectInfomation()const { return mMeshInfomation; }
 
+		/// <summary>
+		/// 아웃라인 색깔을 반환합니다.
+		/// </summary>
+		DirectX::SimpleMath::Color GetOutlineColor() const { return mOutlineColor; }
+		
+		/// <summary>
+		/// 아웃라인 색깔을 설정합니다.
+		/// </summary>
+		void SetOutlineColor(DirectX::SimpleMath::Color color);
+
 	private:
 		entt::meta_handle GetHandle() override;
 
 	private:
 		StaticMeshObject* mStaticMeshObject;
 		fq::graphics::MeshObjectInfo mMeshInfomation;
+		DirectX::SimpleMath::Color mOutlineColor;
 	};
 
 }

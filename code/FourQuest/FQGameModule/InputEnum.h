@@ -81,7 +81,7 @@ enum class EKey
 	Last, // enum¿« ≥°
 };
 
-enum class PadKey
+enum class EPadKey
 {
 	DpadUp,
 	DpadDown,
@@ -108,7 +108,7 @@ enum class PadKey
 	Last
 };
 
-enum class PadStick
+enum class EPadStick
 {
 	leftX,
 	leftY,
@@ -116,7 +116,7 @@ enum class PadStick
 	rightY
 };
 
-enum class VibrationMode
+enum class EVibrationMode
 {
 	Left,
 	Right,

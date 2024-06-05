@@ -21,6 +21,7 @@ namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
 namespace fq::graphics { class ITerrainMeshObject; }
+namespace fq::graphics { class IImageObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -39,6 +40,7 @@ private:
 	void Render();
 	void debugRender();
 	void shadowTest();
+	void particleInit();
 
 	void strafe(fq::common::Transform& cameraTransform, float distance);
 	void walk(fq::common::Transform& cameraTransform, float distance);
@@ -50,6 +52,7 @@ private:
 	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createImage();
 
 	void calculateFrameStats();
 
@@ -78,6 +81,7 @@ private:
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
+	std::vector<fq::graphics::IImageObject*> mImageObjects;
 
 	// Camera
 	fq::common::Transform cameraTransform;

@@ -5,7 +5,8 @@
 #include "Camera.h"
 
 fq::graphics::D3D11CameraManager::D3D11CameraManager()
-	:mCameras{}
+	:mCameras{},
+	mOnSetCamera{}
 {
 	// Todo: 일단 수동으로 해주고 나중에 바꾸자
 	std::shared_ptr<Camera> tempCamera = std::make_shared<Camera>();
@@ -20,6 +21,11 @@ void fq::graphics::D3D11CameraManager::Update(const ECameraType& cameraType, con
 void fq::graphics::D3D11CameraManager::SetCamera(const ECameraType& cameraType, const CameraInfo& cameraInfo)
 {
 	mCameras[ECameraType::Player]->SetCamera(cameraInfo);
+
+	for (const auto& event : mOnSetCamera)
+	{
+		event();
+	}
 }
 
 void fq::graphics::D3D11CameraManager::SetViewportSize(const ECameraType& cameraType, const unsigned short width, const unsigned short height)
@@ -47,14 +53,14 @@ DirectX::SimpleMath::Quaternion fq::graphics::D3D11CameraManager::GetRotation(co
 	return mCameras.at(ECameraType::Player)->GetRotation();
 }
 
-float fq::graphics::D3D11CameraManager::GetNearPlain(const ECameraType& cameraType) const
+float fq::graphics::D3D11CameraManager::GetNearPlane(const ECameraType& cameraType) const
 {
-	return mCameras.at(ECameraType::Player)->GetNearPlain();
+	return mCameras.at(ECameraType::Player)->GetNearPlane();
 }
 
-float fq::graphics::D3D11CameraManager::GetFarPlain(const ECameraType& cameraType) const
+float fq::graphics::D3D11CameraManager::GetFarPlane(const ECameraType& cameraType) const
 {
-	return mCameras.at(ECameraType::Player)->GetFarPlain();
+	return mCameras.at(ECameraType::Player)->GetFarPlane();
 }
 
 void fq::graphics::D3D11CameraManager::Initialize(const unsigned short width, const unsigned short height)
@@ -68,5 +74,15 @@ void fq::graphics::D3D11CameraManager::OnResize(const unsigned short width, cons
 	{
 		camera.second->SetViewportSize(width, height);
 	}
+}
+
+float fq::graphics::D3D11CameraManager::GetFovY(const ECameraType& cameraType) const
+{
+	return mCameras.at(ECameraType::Player)->GetFovY();
+}
+
+void fq::graphics::D3D11CameraManager::RegisterOnSetCamera(std::function<void()> onSetCameraEvent)
+{
+	mOnSetCamera.push_back(onSetCameraEvent);
 }
 

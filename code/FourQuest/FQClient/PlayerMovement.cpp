@@ -29,27 +29,16 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerMovement::Clone(st
 
 void fq::client::PlayerMovement::OnUpdate(float dt)
 {
-	constexpr const char* bIsMove = "bIsMove";
 	auto input = GetScene()->GetInputManager();
 
-	if (input->IsKeyState(EKey::W, EKeyState::Hold)
-		|| input->IsKeyState(EKey::S, EKeyState::Hold)
-		|| input->IsKeyState(EKey::A, EKeyState::Hold)
-		|| input->IsKeyState(EKey::D, EKeyState::Hold))
+	if (input->IsPadKeyState(0,EPadKey::A, EKeyState::Tap))
 	{
-		mAnimator->SetParameterBoolean(bIsMove, true);
+		mAnimator->SetParameterTrigger("OnHit");	
 	}
-	else
+	if (input->IsPadKeyState(0, EPadKey::X, EKeyState::Tap))
 	{
-		mAnimator->SetParameterBoolean(bIsMove, false);
+		mAnimator->SetParameterTrigger("OnPunch");
 	}
-
-	if (input->IsKeyState(EKey::Space, EKeyState::Tap))
-	{
-		mAnimator->SetParameterTrigger("Jump");
-	}
-
-	mAnimator->SetParameterBoolean("OnGround", !mController->IsFalling());
 }
 
 void fq::client::PlayerMovement::OnStart()
@@ -57,6 +46,5 @@ void fq::client::PlayerMovement::OnStart()
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	assert(mAnimator);
 
- 	mController =  GetComponent<game_module::Transform>()->GetParentTransform()->GetComponent<fq::game_module::CharacterController>();
-
+ 	mController = GetComponent<fq::game_module::CharacterController>();
 }

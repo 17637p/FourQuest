@@ -54,6 +54,10 @@ namespace fq::graphics
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 
+		// Outline
+		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
+		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
+
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
@@ -70,6 +74,8 @@ namespace fq::graphics
 		const fq::common::NodeClip* mBlendNodeCache;
 		std::shared_ptr<fq::common::AnimationClip> mBlendClipCache;
 		float mBlendTimePos;
+
+		DirectX::SimpleMath::Color mOutLineColor;
 	};
 
 #pragma region inlineFunc
@@ -301,6 +307,10 @@ namespace fq::graphics
 		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
 
+		// Outline
+		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
+		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
+
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
 		std::vector<std::shared_ptr<Material>> mMaterials;
@@ -312,6 +322,8 @@ namespace fq::graphics
 		EObjectRenderType mObjectRenderType;
 		float mAlpha;
 		bool mbUseShadow;
+
+		DirectX::SimpleMath::Color mOutLineColor;
 	};
 
 #pragma region inlineFunc
@@ -467,7 +479,9 @@ namespace fq::graphics
 	class TerrainMeshObject : public ITerrainMeshObject
 	{
 	public:
-		TerrainMeshObject(std::shared_ptr<StaticMesh> staticMesh,
+		TerrainMeshObject(
+			const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<StaticMesh> staticMesh,
 			DirectX::SimpleMath::Matrix transform);
 		~TerrainMeshObject() = default;
 
@@ -475,16 +489,44 @@ namespace fq::graphics
 		void SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 			const TerrainMaterialInfo& terrainMaterial);
 
-		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+		inline virtual DirectX::SimpleMath::Matrix GetTransform() const override;
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
-		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
+		inline const std::shared_ptr<TerrainMesh>& GetTerrainMesh() const;
 		inline const std::shared_ptr<TerrainMaterial>& GetTerrainMaterial() const;
 
+		size_t GetNumIndices() const { return mNumIndices; }
+
 	private:
-		std::shared_ptr<StaticMesh> mStaticMesh;
+		// Terrain Vertex, Index 수정
+		void BuildTerrainMesh(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<StaticMesh> staticMesh);
+
+		float GetWidth() const;
+		float GetDepth() const;
+		void BuildQuadPatchVB(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY, fq::common::Mesh& mesh);
+		void BuildQuadPatchIB(fq::common::Mesh& mesh);
+
+		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY);
+		void CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY, UINT i, UINT j);
+		void CalcNormalTangent(fq::common::Mesh& mesh);
+
+	private:
+		std::shared_ptr<StaticMesh> mTempStaticMesh; // Plane
+		std::shared_ptr<TerrainMesh> mTerrainMesh;
 		std::shared_ptr<TerrainMaterial> mMaterial;
+
+		size_t mNumIndices;
+		unsigned int mWidth;
+		unsigned int mHeight;
+
+		UINT mNumPatchVertRows;
+		UINT mNumPatchVertCols;
+
+		UINT mNumPatchVertices;
+		UINT mNumPatchQuadFaces;
+
+		unsigned int mCellsPerPatch;
 
 		DirectX::SimpleMath::Matrix mTransform;
 	};
@@ -494,25 +536,29 @@ namespace fq::graphics
 	{
 		mTransform = transform;
 	}
-	inline const std::shared_ptr<StaticMesh>& TerrainMeshObject::GetStaticMesh() const
+	inline const std::shared_ptr<TerrainMesh>& TerrainMeshObject::GetTerrainMesh() const
 	{
-		return mStaticMesh;
+		return mTerrainMesh;
 	}
 	inline DirectX::BoundingBox TerrainMeshObject::GetRenderBoundingBox() const
 	{
-		return mStaticMesh->GetMeshData().RenderBoundingBox;
+		return mTerrainMesh->GetMeshData().RenderBoundingBox;
 	}
 	inline DirectX::BoundingSphere TerrainMeshObject::GetRenderBoundingSphere() const
 	{
-		return mStaticMesh->GetMeshData().GetRenderBoundingSphere;
+		return mTerrainMesh->GetMeshData().GetRenderBoundingSphere;
 	}
 	inline const std::shared_ptr<TerrainMaterial>& TerrainMeshObject::GetTerrainMaterial() const
 	{
 		return mMaterial;
 	}
-	inline const DirectX::SimpleMath::Matrix& TerrainMeshObject::GetTransform() const
+	inline DirectX::SimpleMath::Matrix TerrainMeshObject::GetTransform() const
 	{
-		return mTransform;
+		// 이동 성분만 뽑아서 반환
+		DirectX::SimpleMath::Vector3 translateVec(mTransform._41, mTransform._42, mTransform._43);
+		DirectX::SimpleMath::Matrix matrix = DirectX::SimpleMath::Matrix::CreateTranslation(translateVec);
+
+		return matrix;
 	}
 #pragma endregion inlineFunc
 
@@ -521,9 +567,6 @@ namespace fq::graphics
 	public:
 		ImageObject();
 		virtual ~ImageObject();
-
-		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
 
 		virtual void SetStartX(float startX) override;
 		virtual void SetStartY(float startY) override;
@@ -543,8 +586,19 @@ namespace fq::graphics
 		virtual void SetYRatio(float yRatio) override;
 		virtual float GetYRatio() override;
 
-		virtual void SetTexturePath(const std::wstring& texturePath) override;
-		virtual std::wstring GetTexturePath() override;
+		virtual void SetAlpha(float alpha) override;
+		virtual float GetAlpha() override;
+
+		virtual void SetRotation(float angle) override;
+		virtual float GetRotation() const override;
+
+		virtual void SetScaleX(float scaleX) override;
+		virtual void SetScaleY(float scaleY) override;
+		virtual float GetScaleX() const override;
+		virtual float GetScaleY() const override;
+
+		virtual void SetImagePath(const std::string& texturePath) override;
+		virtual std::string GetImagePath() override;
 
 	protected:
 		float mStartX;
@@ -555,10 +609,15 @@ namespace fq::graphics
 		float mXRatio;
 		float mYRatio;
 
+		float mAlpha;
+
 		unsigned int mLayer;
 
-		std::wstring mTexturePath;
-		DirectX::SimpleMath::Matrix mTransform;
+		float mRotationAngle;
+		float mScaleX;
+		float mScaleY;
+
+		std::string mImagePath;
 	};
 }
 

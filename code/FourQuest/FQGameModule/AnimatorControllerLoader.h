@@ -2,12 +2,12 @@
 
 #include <filesystem>
 #include <memory>
-
 #include "../FQReflect/FQReflect.h"
 
 namespace fq::game_module
 {
 	class AnimatorController;
+	class AnimationStateNode;
 
 	/// <summary>
 	/// Animation Controller를 저장, 로드하는 클래스
@@ -25,5 +25,11 @@ namespace fq::game_module
 		/// Controller를 로드합니다 
 		/// </summary>
 		std::shared_ptr<AnimatorController> Load(const Path& path);
+
+	private:
+		nlohmann::json serializeStateBehaviours(const AnimationStateNode& node);
+
+	private:
+		fq::reflect::Converter mConverter;
 	};
 }

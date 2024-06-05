@@ -3,6 +3,7 @@
 #include "CommonHeader.h"
 #include "ConstantBufferStructure.h"
 #include "RenderJob.h"
+#include "RenderPipeline.h"
 
 namespace fq::graphics
 {
@@ -15,40 +16,27 @@ namespace fq::graphics
 	class D3D11RenderTargetView;
 	class D3D11DepthStencilView;
 	class D3D11DebugDrawManager;
+	class D3D11ParticleManager;
 
-	class ForwardPipeline
+	class ForwardPipeline : public RenderPipeline
 	{
 	public:
 		ForwardPipeline();
-		~ForwardPipeline() = default;
+		virtual ~ForwardPipeline() override = default;
 
 		void Initialize(std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11JobManager>& jobManager,
 			std::shared_ptr<D3D11CameraManager>& cameraManager,
 			std::shared_ptr< D3D11LightManager>& lightManager,
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
-			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
+			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
+			std::shared_ptr<D3D11ParticleManager> particleManager,
 			unsigned short width,
 			unsigned short height);
-		void Finalize();
-
-		void OnResize(unsigned short width, unsigned short height);
-
-		void BeginRender();
-		void Render();
-		void EndRender();
 
 		void SetSkyBox(const std::wstring& path);
-		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
-
-		std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
 
 	private:
-		std::shared_ptr<D3D11Device> mDevice;
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-
-		std::vector<std::shared_ptr<class RenderPass>> mPasses;
-
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class ForwardRenderPass> mRenderPass;
 		std::shared_ptr<class TransparentRenderPass> mTransparentRenderPass;
@@ -56,7 +44,12 @@ namespace fq::graphics
 		std::shared_ptr<class DebugRenderPass> mDebugRenderPass;
 		std::shared_ptr<class SkyBoxPass> mSkyBoxPass;
 		std::shared_ptr<class FullScreenPass> mFullScreenPass;
+		std::shared_ptr<class ParticlePass> mParticlePass;
 		std::shared_ptr<class TerrainPass> mTerrainPass;
+		std::shared_ptr<class SingleColorPass> mSingleColorPass;
+		std::shared_ptr<class OutLinePass> mOutLinePass;
+		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
+		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;

@@ -25,6 +25,7 @@
 #include "PrefabTest.h"
 #include "AnimationStateNode.h"
 #include "Animator.h"
+#include "LogStateBehaviour.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -117,6 +118,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
+		.data<&StaticMeshRenderer::SetOutlineColor, &StaticMeshRenderer::GetOutlineColor>("Outline"_hs)
+		.prop(fq::reflect::prop::Name, "Outline")
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -131,6 +134,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
+		.data<&SkinnedMeshRenderer::SetOutlineColor, &SkinnedMeshRenderer::GetOutlineColor>("Outline"_hs)
+		.prop(fq::reflect::prop::Name, "Outline")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -205,6 +210,16 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<Terrain>()
 		.type("Terrain"_hs)
 		.prop(fq::reflect::prop::Name, "Terrain")
+		.data<&Terrain::SetWidth, &Terrain::GetWidth>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&Terrain::SetHeight, &Terrain::GetHeight>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&Terrain::SetHeightScale, &Terrain::GetHeightScale>("HeightScale"_hs)
+		.prop(fq::reflect::prop::Name, "HeightScale")
+		.data<&Terrain::SetHeightMap, &Terrain::GetHeightMap>("HeightMap"_hs)
+		.prop(fq::reflect::prop::Name, "HeightMap")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".raw")
 		.data<&Terrain::SetAlphaMap, &Terrain::GetAlphaMap>("AlphaMap"_hs)
 		.prop(fq::reflect::prop::Name, "AlphaMap")
 		.prop(fq::reflect::prop::RelativePath)
@@ -435,6 +450,14 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 
+	entt::meta<LogStateBehaviour>()
+		.type("LogStateBehaviour"_hs)
+		.prop(fq::reflect::prop::Name, "LogStateBehaviour")
+		.data<&LogStateBehaviour::SetExitCount, &LogStateBehaviour::GetExitCount>("ExitCount"_hs)
+		.prop(fq::reflect::prop::Name, "ExitCount")
+		.data<&LogStateBehaviour::SetEnterCount, &LogStateBehaviour::GetEnterCount>("EnterCount"_hs)
+		.prop(fq::reflect::prop::Name, "EnterCount")
+		.base<IStateBehaviour>();
 
 		//////////////////////////////////////////////////////////////////////////
 		//                              Prefab                                  //

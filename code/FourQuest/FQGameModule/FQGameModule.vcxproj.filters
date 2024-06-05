@@ -81,6 +81,12 @@
     <Filter Include="src\09.Animation">
       <UniqueIdentifier>{fd4953c8-86f8-4c50-a374-0eea1dfb28bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\09.Animation\StateBehaviour">
+      <UniqueIdentifier>{1fdb9d54-076c-40b6-88f6-d93790f3191a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\09.Animation\StateBehaviour">
+      <UniqueIdentifier>{6c282c41-2e6f-4caf-ba77-2b153b9ab3fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -221,6 +227,12 @@
     <ClInclude Include="Terrain.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="IStateBehaviour.h">
+      <Filter>include\09.Animation\StateBehaviour</Filter>
+    </ClInclude>
+    <ClInclude Include="LogStateBehaviour.h">
+      <Filter>include\09.Animation\StateBehaviour</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -345,6 +357,12 @@
     </ClCompile>
     <ClCompile Include="CharacterController.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="IStateBehaviour.cpp">
+      <Filter>src\09.Animation\StateBehaviour</Filter>
+    </ClCompile>
+    <ClCompile Include="LogStateBehaviour.cpp">
+      <Filter>src\09.Animation\StateBehaviour</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

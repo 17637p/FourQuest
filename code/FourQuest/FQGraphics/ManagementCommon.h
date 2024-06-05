@@ -10,4 +10,5 @@
 #include "D3D11DebugDrawManager.h"
 #include "D3D11PickingManager.h"
 #include "D3D11CullingManager.h"
+#include "D3D11ParticleManager.h"
 #include "UIManager.h"

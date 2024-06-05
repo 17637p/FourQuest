@@ -44,4 +44,5 @@
 #include "AnimatorController.h"
 #include "AnimationStateNode.h"
 #include "AnimationTransition.h"
+#include "LogStateBehaviour.h"
 #endif 

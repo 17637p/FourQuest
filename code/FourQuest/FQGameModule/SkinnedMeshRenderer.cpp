@@ -3,8 +3,8 @@
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
 	,mSkinnedMeshObject(nullptr)
+	,mOutlineColor{0.f,0.f,0.f,0.f}
 {
-
 }
 
 fq::game_module::SkinnedMeshRenderer::~SkinnedMeshRenderer()
@@ -56,4 +56,12 @@ void fq::game_module::SkinnedMeshRenderer::SetModelPath(std::string path)
 {
 	mMeshInfomation.ModelPath = path;
 
+}
+
+void fq::game_module::SkinnedMeshRenderer::SetOutlineColor(DirectX::SimpleMath::Color color)
+{
+	mOutlineColor = color;
+
+	if (mSkinnedMeshObject)
+		mSkinnedMeshObject->SetOutlineColor(mOutlineColor);
 }

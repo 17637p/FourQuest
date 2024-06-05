@@ -20,6 +20,8 @@ Process::Process()
 	mResizing(false),
 	mTestGraphics(nullptr)
 {
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
 	CreateHWND(L"FQGraphicsDemo", WS_OVERLAPPEDWINDOW, mWindowPosX, mWindowPosY, mScreenWidth, mScreenHeight);
 	ShowWindow(mHwnd, SW_SHOWNORMAL);
 
@@ -28,6 +30,11 @@ Process::Process()
 
 Process::~Process()
 {
+	for (fq::graphics::IImageObject* iobj : mImageObjects)
+	{
+		mTestGraphics->DeleteImageObject(iobj);
+	}
+
 	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
@@ -44,6 +51,8 @@ Process::~Process()
 	//mTestGraphics->DeleteLight(4);
 
 	mEngineExporter->DeleteEngine(mTestGraphics);
+
+	CoUninitialize();
 }
 
 bool Process::Init(HINSTANCE hInstance)
@@ -54,7 +63,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 	const std::string planeModelPath = "./resource/example/model/Plane.model";
@@ -87,8 +96,9 @@ bool Process::Init(HINSTANCE hInstance)
 	//staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
 	//createModel(staticAnimModelPath0, staticAnimInfo, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
+	createModel(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 10, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10000, 1, 10000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100, 0 }));
+	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
@@ -105,7 +115,7 @@ bool Process::Init(HINSTANCE hInstance)
 	cameraInfo.isPerspective = true;
 	cameraInfo.filedOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 3000;
+	cameraInfo.farPlain = 30000;
 
 	mTestGraphics->SetCamera(cameraInfo);
 
@@ -126,8 +136,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 1;
-	directionalLightInfo.direction = { 0,-1, 1 };
+	directionalLightInfo.intensity = 2;
+	directionalLightInfo.direction = { 0, -0.7, -0.7 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
@@ -155,6 +165,7 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(4, directionalLightInfo);
+	
 	//directionalLightInfo.type = fq::graphics::ELightType::Spot;
 	//directionalLightInfo.color = { 1,0,0, 1 };
 	//directionalLightInfo.intensity = 1000;
@@ -174,9 +185,13 @@ bool Process::Init(HINSTANCE hInstance)
 	pointLightInfo.attenuation = { 0, 1, 0 };
 	pointLightInfo.position = { 10.f, 100.f, 0.f };
 
-	mTestGraphics->AddLight(5, pointLightInfo);
+	//mTestGraphics->AddLight(5, pointLightInfo);
+
+	particleInit();
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+
+	createImage();
 
 	return true;
 }
@@ -189,7 +204,10 @@ void Process::Loop()
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			if (msg.message == WM_QUIT) break;
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
 
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -204,7 +222,7 @@ void Process::Loop()
 
 void Process::Finalize()
 {
-	//_guiManager->Finalize();
+
 }
 
 //extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -219,33 +237,32 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg)
 	{
-	case WM_SIZE:
-	{
-		//if (m_pRenderer == nullptr)
-		//{
-		//	return 0;
-		//}
-		//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
+		case WM_SIZE:
+		{
+			//if (m_pRenderer == nullptr)
+			//{
+			//	return 0;
+			//}
+			//m_pRenderer->SetClientSize(LOWORD(lParam), HIWORD(lParam));
 
-		mScreenWidth = LOWORD(lParam);
-		mScreenHeight = HIWORD(lParam);
-		mScreenWidth = max(200, mScreenWidth);
-		mScreenHeight = max(200, mScreenHeight);
+			mScreenWidth = LOWORD(lParam);
+			mScreenHeight = HIWORD(lParam);
+			mScreenWidth = max(200, mScreenWidth);
+			mScreenHeight = max(200, mScreenHeight);
 
-		break;
-	}
-	case WM_PAINT:
-	{
-		hdc = BeginPaint(mHwnd, &ps);
-		EndPaint(mHwnd, &ps);
-		break;
-	}
-
-	case WM_DESTROY:
-	{
-		PostQuitMessage(0);
-		break;
-	}
+			break;
+		}
+		case WM_PAINT:
+		{
+			hdc = BeginPaint(mHwnd, &ps);
+			EndPaint(mHwnd, &ps);
+			break;
+		}
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			break;
+		}
 	}
 
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);
@@ -256,19 +273,18 @@ void Process::Update()
 	mTimeManager.Update();
 	calculateFrameStats();
 
+	if (GetAsyncKeyState(VK_F1) & 0x8000)
+	{
+		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
+	}
 	// ESC 버튼 누르면 프로그램 종료
 	if (GetAsyncKeyState(VK_ESCAPE))
 	{
 		PostQuitMessage(0);
 	}
 
-	if (GetAsyncKeyState(VK_F1) & 0x8000)
-	{
-		mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
-	}
-
 	// 카메라 조작
-	const float speed = mTimeManager.GetDeltaTime() * 1000.f;
+	const float speed = mTimeManager.GetDeltaTime() * 100.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		walk(cameraTransform, speed);
@@ -345,6 +361,7 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
 		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
 			L"./resource/example/texture/defaultSpecularHDR.dds",
@@ -369,13 +386,11 @@ void Process::Update()
 		float randZ = (float)(rand() % 500 - 250);
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 	}
-
-	//if (InputManager::GetInstance().IsGetKeyDown('R'))
-	//{
-	//	terrainMaterial.Layers[0].TileSizeX = 100;
-	//	terrainMaterial.Layers[0].TileSizeY = 100;
-	//	mTestGraphics->SetTerrainMeshObject(mTerrainMeshObjects[0], terrainMaterial);
-	//}
+	if (InputManager::GetInstance().IsGetKeyDown('M'))
+	{
+		//mImageObjects[0]->SetRotation(mImageObjects[0]->GetRotation() + 10);
+		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
+	}
 
 	shadowTest();
 
@@ -385,7 +400,7 @@ void Process::Update()
 void Process::Render()
 {
 	mTestGraphics->BeginRender();
-	//debugRender();
+	debugRender();
 	mTestGraphics->Render();
 	/// 그리기를 준비한다.
 	//m_pRenderer->BeginRender();
@@ -414,7 +429,7 @@ void Process::Render()
 
 	if (GetAsyncKeyState('3') & 0x8000)
 	{
-		s_blend_time += mTimeManager.GetDeltaTime() ;
+		s_blend_time += mTimeManager.GetDeltaTime();
 		s_blend_time = fmod(s_blend_time, 3.f);
 	}
 	else
@@ -525,7 +540,7 @@ void Process::debugRender()
 	sphereInfo.Sphere.Center = { 0, 0, 0 };
 	sphereInfo.Sphere.Radius = 500;
 	sphereInfo.Color = { 0,0,0,1 };
-	//mTestGraphics->DrawSphere(sphereInfo);
+	mTestGraphics->DrawSphere(sphereInfo);
 
 	AABBInfo aabbInfo;
 	aabbInfo.AABB.Center = { 0, 0, 0 };
@@ -550,7 +565,7 @@ void Process::debugRender()
 	frustumInfo.Frustum.TopSlope = 0.4142f;
 	frustumInfo.Frustum.BottomSlope = -0.4142;
 	frustumInfo.Color = { 0, 1, 0, 1 };
-	mTestGraphics->DrawFrustum(frustumInfo);
+	//mTestGraphics->DrawFrustum(frustumInfo);
 
 	GridInfo gridInfo;
 	gridInfo.Origin = { 0,0,0 };
@@ -601,7 +616,7 @@ void Process::debugRender()
 		fq::graphics::debug::SphereInfo sphererInfo;
 		sphererInfo.Color = { 0, 0, 1, 1 };
 		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
-		mTestGraphics->DrawSphere(sphererInfo);
+		//mTestGraphics->DrawSphere(sphererInfo);
 	}
 
 	for (auto& obj : mStaticMeshObjects)
@@ -614,22 +629,22 @@ void Process::debugRender()
 		fq::graphics::debug::SphereInfo sphererInfo;
 		sphererInfo.Color = { 1, 0, 0, 1 };
 		obj->GetRenderBoundingSphere().Transform(sphererInfo.Sphere, obj->GetTransform());
-		mTestGraphics->DrawSphere(sphererInfo);
+		//mTestGraphics->DrawSphere(sphererInfo);
 	}
 }
 
 void Process::shadowTest()
 {
-	//if (GetAsyncKeyState('5') & 0x8000)
+	if (GetAsyncKeyState('5') & 0x8000)
 	{
 		mTestGraphics->UseShadow(1, true);
 		mTestGraphics->UseShadow(4, true);
 	}
-	//else
-	//{
-	//	mTestGraphics->UseShadow(1, false);
-	//	mTestGraphics->UseShadow(4, false);
-	//}
+	else
+	{
+		mTestGraphics->UseShadow(1, false);
+		mTestGraphics->UseShadow(4, false);
+	}
 
 	if (GetAsyncKeyState('6') & 0x8000)
 	{
@@ -647,6 +662,19 @@ void Process::shadowTest()
 	{
 		mTestGraphics->UseShadow(3, false);
 	}
+}
+
+void Process::particleInit()
+{
+	using namespace fq::graphics;
+
+	ParticleSystemInfo particleInfo;
+	particleInfo.WorldPosition = { 0, 500.f, 0 };
+	particleInfo.StartSize[0] = { 10, 10 };
+	particleInfo.StartColor[0] = { 1.f, 0.f, 0.f, 0.5f };
+	particleInfo.StartColor[1] = { 0.f, 1.f, 1.f, 1.f };
+	particleInfo.StartColorOption = ParticleSystemInfo::EOption::RandomBetweenTwoConstant;
+	mTestGraphics->AddParticleSystem(10, particleInfo);
 }
 
 /*=============================================================================
@@ -762,6 +790,15 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		{
 			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
 
+			static int testIndex = 0;
+
+			if (testIndex == 0)
+			{
+				iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			}
+
+			testIndex++;
+
 			for (const auto& animInfo : animInfos)
 			{
 				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
@@ -772,6 +809,37 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		else
 		{
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+
+			//static int testIndex = 0;
+			//
+			//if (testIndex == 0)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			//}
+			//else if (testIndex == 1)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
+			//}
+			//else if (testIndex == 2)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
+			//}
+			//else if (testIndex == 3)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
+			//}
+			//else if (testIndex == 4)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
+			//}
+			//else if (testIndex == 5)
+			//{
+			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
+			//}
+			//testIndex++;
+
+			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+
 
 			for (const auto& animInfo : animInfos)
 			{
@@ -823,12 +891,12 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 		layer3.TileOffsetX = 0;
 		layer3.TileOffsetY = 0;
 
-		layer1.TileSizeX = 5;
-		layer2.TileSizeX = 5;
-		layer3.TileSizeX = 5;
-		layer1.TileSizeY = 3;
-		layer2.TileSizeY = 3;
-		layer3.TileSizeY = 3;
+		layer1.TileSizeX = 20;
+		layer2.TileSizeX = 20;
+		layer3.TileSizeX = 20;
+		layer1.TileSizeY = 20;
+		layer2.TileSizeY = 20;
+		layer3.TileSizeY = 20;
 
 		layer1.Metalic = 0;
 		layer2.Metalic = 0;
@@ -840,12 +908,54 @@ void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix t
 
 		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
 
+		// Height 설정
+		terrainMaterial.HeightFileName = "./resource/example/texture/terrain.raw";
+		terrainMaterial.HeightScale = 1000;
+		terrainMaterial.Width = 513;
+		terrainMaterial.Height = 513;
+
 		terrainMaterial.Layers.push_back(layer1);
 		terrainMaterial.Layers.push_back(layer2);
 		terrainMaterial.Layers.push_back(layer3);
 
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
+}
+
+void Process::createImage()
+{
+	fq::graphics::UIInfo uiInfo;
+	uiInfo.StartX = 500;
+	uiInfo.StartY = 500;
+	uiInfo.Width = 100;
+	uiInfo.Height = 100;
+	uiInfo.XRatio = 1;
+	uiInfo.YRatio = 1;
+	uiInfo.Alpha = 0.5;
+	uiInfo.Layer = 1;
+	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
+	uiInfo.ScaleX = 1;
+	uiInfo.ScaleY = 1;
+	uiInfo.RotationAngle = 0;
+
+	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	mImageObjects.push_back(tempImageObject);
+
+	uiInfo.StartX = 450;
+	uiInfo.StartY = 500;
+	uiInfo.Width = 100;
+	uiInfo.Height = 50;
+	uiInfo.XRatio = 1;
+	uiInfo.YRatio = 0.5;
+	uiInfo.Alpha = 1;
+	uiInfo.Layer = 0;
+	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
+	uiInfo.ScaleX = 1;
+	uiInfo.ScaleY = 1;
+	uiInfo.RotationAngle = 0;
+
+	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	mImageObjects.push_back(tempImageObject);
 }
 
 void Process::calculateFrameStats()

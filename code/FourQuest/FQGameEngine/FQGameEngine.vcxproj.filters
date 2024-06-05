@@ -162,9 +162,9 @@
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsAnimatorWindow.h">
-		<Filter>include\11.EditorWindow</Filter>
-	</ClInclude>
-	<ClInclude Include="AnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatorWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="AnimationSystem.h">
@@ -177,6 +177,9 @@
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsAnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Setting.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
   </ItemGroup>
@@ -275,7 +278,7 @@
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsAnimatorWindow.cpp">
-		<Filter>src\11.Window</Filter>
+      <Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="AnimatorWindow.cpp">
       <Filter>src\11.Window</Filter>
@@ -287,6 +290,9 @@
       <Filter>src\11.Window\Define</Filter>
     </ClCompile>
     <ClCompile Include="SkyBoxWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Setting.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
   </ItemGroup>

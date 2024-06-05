@@ -61,8 +61,18 @@ void fq::game_module::Animator::UpdateState(float dt)
 	mController->UpdateState(dt);
 }
 
-float fq::game_module::Animator::UpdateAnimation(float dt)
+void fq::game_module::Animator::UpdateAnimation(float dt)
 {
-	 return mController->UpdateAnimation(dt);
+	mController->UpdateAnimation(dt);
+}
+
+bool fq::game_module::Animator::IsInTransition() const
+{
+	return mController->IsInTransition();
+}
+
+void fq::game_module::Animator::OnUpdate(float dt)
+{
+	mController->Update();
 }
 
