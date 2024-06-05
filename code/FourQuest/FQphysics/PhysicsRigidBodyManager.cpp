@@ -80,7 +80,9 @@ namespace fq::physics
 		if (dynamicBody)
 		{
 			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
-			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), rigidBodyData.transform);
+			DirectX::SimpleMath::Matrix dxMatrix;
+			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), dxMatrix);
+			rigidBodyData.transform = DirectX::SimpleMath::Matrix::CreateScale(dynamicBody->GetScale()) * dxMatrix;
 			CopyPxVec3ToDxVec3(pxBody->getLinearVelocity(), rigidBodyData.linearVelocity);
 			CopyPxVec3ToDxVec3(pxBody->getAngularVelocity(), rigidBodyData.angularVelocity);
 
@@ -89,11 +91,13 @@ namespace fq::physics
 		if (staticBody)
 		{
 			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
-			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), rigidBodyData.transform);
+			DirectX::SimpleMath::Matrix dxMatrix;
+			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), dxMatrix);
+			rigidBodyData.transform = DirectX::SimpleMath::Matrix::CreateScale(staticBody->GetScale()) * dxMatrix;
 		}
 	}
 
-	bool PhysicsRigidBodyManager::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData)
+	bool PhysicsRigidBodyManager::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData, int* collisionMatrix)
 	{
 		auto body = mRigidBodyContainer.find(id)->second;
 
@@ -117,7 +121,7 @@ namespace fq::physics
 			DirectX::SimpleMath::Vector3 scale;
 			DirectX::SimpleMath::Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
-			dynamicBody->SetConvertScale(scale, mPhysics);
+			dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 
 			return true;
 		}
@@ -135,7 +139,7 @@ namespace fq::physics
 			DirectX::SimpleMath::Vector3 scale;
 			DirectX::SimpleMath::Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
-			staticBody->SetConvertScale(scale, mPhysics);
+			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 
 			return true;
 		}

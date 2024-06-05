@@ -31,10 +31,10 @@ namespace fq::physics
 		inline void SetExtent(const float& x, const float& y, const float& z);
 		inline void SetScale(const DirectX::SimpleMath::Vector3& scale);
 
-		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics) abstract;
+		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix) abstract;
 
 	protected:
-		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material);
+		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix);
 
 	protected:
 		unsigned int mID;

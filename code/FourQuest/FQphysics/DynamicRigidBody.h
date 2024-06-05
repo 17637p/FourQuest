@@ -30,7 +30,7 @@ namespace fq::physics
 		/// </summary>
 		inline physx::PxRigidDynamic* GetPxRigidDynamic();
 
-		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics) override;
+		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix) override;
 
 	private:
 		physx::PxRigidDynamic* mRigidDynamic;

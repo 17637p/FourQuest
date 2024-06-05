@@ -59,7 +59,7 @@ namespace fq::physics
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디에게 지정한 트랜스폼으로 이동 ( 순간이동 )
 		/// </summary>
-		bool SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData);
+		bool SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData, int* collisionMatrix);
 
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
