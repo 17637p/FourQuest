@@ -3,7 +3,12 @@
 #include "Physics.h"
 #include "PhysicsRigidBodyManager.h"
 #include "PhysicsCharactorControllerManager.h"
+#include "PhysicsCharacterPhysicsManager.h"
+#include "PhysicsResourceManager.h"
 #include "PhysicsSimulationEventCallback.h"
+
+#include "ConvexMeshResource.h"
+#include "EngineDataConverter.h"
 
 namespace fq::physics
 { 
@@ -57,6 +62,7 @@ namespace fq::physics
 		: mPhysics(std::make_shared<Physics>())
 		, mRigidBodyManager(std::make_shared<PhysicsRigidBodyManager>())
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
+		, mResourceManager(std::make_shared<PhysicsResourceManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
 		, mCollisionMatrix{}
@@ -97,14 +103,15 @@ namespace fq::physics
 		mScene = physics->createScene(sceneDesc);
 		assert(mScene);
 
-		// 매니저 초기화
-		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics())) return false;
-		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics())) return false;
-
 		// PVD 클라이언트에 PhysX Scene 연결 ( Debug )
 #ifdef _DEBUG
 		mPhysics->SettingPVDClient(mScene);
 #endif
+
+		// 매니저 초기화
+		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
+		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager)) return false;
+		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics())) return false;
 
 		return true;
 	}
@@ -147,79 +154,84 @@ namespace fq::physics
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 
-#pragma region RigidBodyManager
+	RayCastData FQPhysics::RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance)
+	{
+		RayCastData raycastData;
+		raycastData.myId = myID;
+		raycastData.myLayerNumber = layerNumber;
 
+		physx::PxRaycastBuffer hitBuffer;
+
+		physx::PxVec3 pxOrigin;
+		physx::PxVec3 pxDirection;
+		CopyDxVec3ToPxVec3(origin, pxOrigin);
+		CopyDxVec3ToPxVec3(direction, pxDirection);
+
+		bool isBlock = mScene->raycast(pxOrigin, pxDirection, distance, hitBuffer);
+		if (isBlock)
+		{
+			unsigned int hitSize = hitBuffer.getNbAnyHits();
+			raycastData.hitSize = hitSize;
+
+			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
+			{
+				const physx::PxRaycastHit& hit = hitBuffer.getAnyHit(hitNumber);
+				physx::PxShape* shape = hit.shape;
+
+				DirectX::SimpleMath::Vector3 position;
+				CopyPxVec3ToDxVec3(hit.position, position);
+				unsigned int id = static_cast<CollisionData*>(shape->userData)->myId;
+				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
+
+				raycastData.contectPoints.push_back(position);
+				raycastData.id.push_back(id);
+				raycastData.layerNumber.push_back(layerNumber);
+			}
+		}
+
+		return raycastData;
+	}
+
+#pragma region RigidBodyManager
 	bool FQPhysics::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
 	}
 	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
 	{
-		if (!mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix))
-			return false;
-
-		return true;
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
 	}
-
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
-		if (!mRigidBodyManager->RemoveRigidBody(id, mScene))
-			return false;
-
-		return true;
+		return mRigidBodyManager->RemoveRigidBody(id, mScene);
 	}
-
 	bool FQPhysics::RemoveAllRigidBody()
 	{
-		if (!mRigidBodyManager->RemoveAllRigidBody(mScene))
-			return false;
-
-		return true;
+		return mRigidBodyManager->RemoveAllRigidBody(mScene);
 	}
 
 	RigidBodyGetSetData FQPhysics::GetRigidBodyData(const unsigned int& id)
@@ -234,16 +246,13 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData);
 	}
-
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
 	}
-
 #pragma endregion
 
 #pragma region CCTManager
-
 	bool FQPhysics::CreateCCT(const CharacterControllerInfo& controllerInfo, const CharacterMovementInfo& movementInfo)
 	{
 		return mCCTManager->CreateCCT(controllerInfo, movementInfo, mCollisionMatrix);
@@ -284,8 +293,42 @@ namespace fq::physics
 	{
 		mCCTManager->SetCharacterMovementData(id, movementData);
 	}
-
 #pragma endregion
+
+#pragma region CharacterPhysicsManager
+	bool FQPhysics::CreateCharacterphysics(const CharacterPhysicsInfo& info)
+	{
+		return mCharacterPhysicsManager->CreateCharacterphysics(info);
+	}
+
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
+	}
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
+	}
+	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
+	}
+
+	bool FQPhysics::SimulationCharacter(unsigned int id)
+	{
+		return mCharacterPhysicsManager->SimulationCharacter(id);
+	}
+#pragma endregion
+
+	bool FQPhysics::HasConvexMeshResource(const unsigned int& hash)
+	{
+		auto resource = mResourceManager->Find<ConvexMeshResource>(hash);
+
+		if (resource)
+			return true;
+		else
+			return false;
+	}
 
 #pragma  region spdlog
 

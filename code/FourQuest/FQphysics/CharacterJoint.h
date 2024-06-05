@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <directxtk\SimpleMath.h>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 
@@ -16,8 +16,10 @@ namespace fq::physics
 		CharacterJoint();
 		~CharacterJoint();
 
+		/// <summary>
+		/// 캐릭터 조인트 초기화 함수
+		/// </summary>
 		bool Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const CharacterJointInfo& info);
-		
 		
 		inline const std::shared_ptr<CharacterLink> GetOwnerLink();
 		inline const std::shared_ptr<CharacterLink> GetParentLink();

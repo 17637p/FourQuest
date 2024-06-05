@@ -20,7 +20,7 @@
 #pragma comment(lib, "PhysXTask_static_64.lib")
 #pragma comment(lib, "PhysXVehicle_static_64.lib")
 #pragma comment(lib, "PhysXVehicle2_static_64.lib")
-//#pragma comment(lib, "PVDRuntime_64.lib")
+#pragma comment(lib, "PVDRuntime_64.lib")
 #pragma comment(lib, "SceneQuery_static_64.lib")
 #pragma comment(lib, "SimulationController_static_64.lib")
 
@@ -70,19 +70,24 @@ extern "C" {
 			/// <param name="info"> 물리 엔진 정보 </param>
 			virtual FQ_PHYSICS void SetPhysicsInfo(PhysicsEngineInfo& info) abstract;
 
+			/// <summary>
+			/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
+			/// </summary>
+			virtual RayCastData RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance) abstract;
+
 #pragma region RigidBodyManager
 
 			/// <summary>
 			/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성
 			/// </summary>
-			virtual FQ_PHYSICS bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual FQ_PHYSICS bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
 
 			/// <summary>
 			/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -143,6 +148,30 @@ extern "C" {
 			virtual FQ_PHYSICS void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData) abstract;
 
 #pragma endregion
+
+#pragma region CharacterPhysicsManager
+			/// <summary>
+			/// 캐릭터 파직스 (관절) 추가
+			/// </summary>
+			virtual bool CreateCharacterphysics(const CharacterPhysicsInfo& info) abstract;
+
+			/// <summary>
+			/// 가지고 있는 관절 중, 링크 및 조인트 추가
+			/// </summary>
+			virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
+			virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius) abstract;
+			virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius) abstract;
+
+			/// <summary>
+			/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
+			/// </summary>
+			virtual bool SimulationCharacter(unsigned int id) abstract;
+#pragma endregion
+
+#pragma region ResourceManager
+			virtual FQ_PHYSICS bool HasConvexMeshResource(const unsigned int& hash) abstract;
+#pragma endregion
+
 
 			/// <summary>
 			/// spdlog를 설정합니다

@@ -2,7 +2,7 @@
 #include "IFQPhysics.h"
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 #include <memory>
 #include <set>
 
@@ -11,7 +11,9 @@ namespace fq::physics
 	class Physics;
 	class PhysicsRigidBodyManager;
 	class PhysicsSimulationEventCallback;
+	class PhysicsResourceManager;
 	class PhysicsCharactorControllerManager;
+	class PhysicsCharacterPhysicsManager;
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -47,6 +49,11 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="info"> 물리 엔진 정보 </param>
 		virtual void SetPhysicsInfo(PhysicsEngineInfo& info) override;
+
+		/// <summary>
+		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
+		/// </summary>
+		virtual RayCastData RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance) override;
 
 #pragma region RigidBodyManager
 		/// <summary>
@@ -117,6 +124,27 @@ namespace fq::physics
 		virtual void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData) override;
 #pragma endregion
 
+#pragma region CharacterPhysicsManager
+		/// <summary>
+		/// 캐릭터 파직스 (관절) 추가
+		/// </summary>
+		virtual bool CreateCharacterphysics(const CharacterPhysicsInfo& info) override;
+
+		/// <summary>
+		/// 가지고 있는 관절 중, 링크 및 조인트 추가
+		/// </summary>
+		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
+		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius) override;
+
+		/// <summary>
+		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
+		/// </summary>
+		virtual bool SimulationCharacter(unsigned int id) override;
+#pragma endregion
+
+		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
+
 		/// <summary>
 		/// spdlog를 설정합니다
 		/// </summary>
@@ -126,8 +154,10 @@ namespace fq::physics
 		// 씬
 		physx::PxScene* mScene;
 		std::shared_ptr<Physics> mPhysics;
+		std::shared_ptr<PhysicsResourceManager> mResourceManager;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
+		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
 
 		// 충돌 이벤트 클래스
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;

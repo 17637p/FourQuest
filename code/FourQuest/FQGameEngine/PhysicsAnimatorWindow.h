@@ -33,6 +33,7 @@ namespace fq::game_engine
 
 		void beginInputInt_KeyFrameSize();
 		void beginInputInt_AnimationSize();
+		void beginInputText_AnimationName();
 		void beginText_ObjectName();
 
 		void beginTree_Animation(const int& number);
@@ -66,8 +67,9 @@ namespace fq::game_engine
 
 		std::shared_ptr<fq::game_module::GameObject> mRegisteredObject;
 		std::vector<std::string> mExtractObjectNames;
-		std::vector<std::string> mAnimationNames;
+		std::vector<std::string> mAnimationClipNames;
 		AnimationClipContainer mAnimationClipContainer;
+		std::string mAnimationName;
 		std::unordered_map<std::string, std::vector<DirectX::SimpleMath::Matrix>> mAnimationClip;
 
 		fq::game_module::EventManager* mEventManager;

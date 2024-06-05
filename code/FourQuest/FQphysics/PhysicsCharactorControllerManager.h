@@ -3,7 +3,7 @@
 #include <memory>
 #include <map>
 #include <set>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 
@@ -75,7 +75,6 @@ namespace fq::physics
 
 	private:
 		physx::PxPhysics*				mPhysics;
-		physx::PxScene* mScene;
 		physx::PxMaterial*				mMaterial;
 		physx::PxControllerManager*		mCCTManager;
 

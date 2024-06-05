@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FQCommonPhysics.h"
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 
@@ -19,25 +19,26 @@ namespace fq::physics
 		RigidBody(fq::physics::EColliderType colliderType, unsigned int id, unsigned int layerNumber);
 		virtual ~RigidBody();
 
-		/// <summary>
-		/// 게임 엔진에서 할당받은 아이디를 반환합니다.
-		/// </summary>
 		inline const unsigned int GetID() const;
-
-		/// <summary>
-		/// 게임 엔진에서 할당 받은 레이어 넘버를 반환합니다.
-		/// </summary>
 		inline const unsigned int GetLayerNumber() const;
-
-		/// <summary>
-		/// 리지드 바디의 콜라이더 타입을 반환합니다.
-		/// </summary>
 		inline const EColliderType& GetColliderType() const;
+		inline const float& GetRadius() const;
+		inline const float& GetHalfHeight() const;
+		inline const physx::PxVec3& GetExtent() const;
+		inline void SetRadius(const float& radius);
+		inline void SetHalfHeight(const float& halfHeight);
+		inline void SetExtent(const float& x, const float& y, const float& z);
+
+		virtual void SetScale(const DirectX::SimpleMath::Vector3& scale) abstract;
 
 	protected:
 		unsigned int mID;
 		unsigned int mLayerNumber;
-		fq::physics::EColliderType	mColliderType;
+		EColliderType mColliderType;
+
+		float mRadius;
+		float mHalfHeight;
+		physx::PxVec3 mExtent;
 	};
 
 	const unsigned int RigidBody::GetID() const
@@ -51,5 +52,31 @@ namespace fq::physics
 	const EColliderType& RigidBody::GetColliderType() const
 	{
 		return mColliderType;
+	}
+	const float& RigidBody::GetRadius() const
+	{
+		return mRadius;
+	}
+	const float& RigidBody::GetHalfHeight() const
+	{
+		return mHalfHeight;
+	}
+	const physx::PxVec3& RigidBody::GetExtent() const
+	{
+		return mExtent;
+	}
+	void RigidBody::SetRadius(const float& radius)
+	{
+		mRadius = radius;
+	}
+	void RigidBody::SetHalfHeight(const float& halfHeight)
+	{
+		mHalfHeight = halfHeight;
+	}
+	void RigidBody::SetExtent(const float& x, const float& y, const float& z)
+	{
+		mExtent.x = x;
+		mExtent.y = y;
+		mExtent.z = z;
 	}
 }

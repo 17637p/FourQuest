@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 #include <directxtk\SimpleMath.h>
 
 #include "FQCommonPhysics.h"
@@ -17,11 +17,17 @@ namespace fq::physics
 		CharacterPhysics();
 		~CharacterPhysics();
 
+		/// <summary>
+		/// 캐릭터 파직스(관절) 초기화 함수
+		/// </summary>
 		bool Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics);
 
-		bool AddArticulationLink(const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData);
-		bool AddArticulationLink(const CharacterLinkInfo& info, const float& radius, std::shared_ptr<CollisionData> collisionData);
-		bool AddArticulationLink(const CharacterLinkInfo& info, const float& halfHeight, const float& radius, std::shared_ptr<CollisionData> collisionData);
+		/// <summary>
+		/// 캐릭터 파직스(관절) 링크 추가 함수
+		/// </summary>
+		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
+		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& radius);
+		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& halfHeight, const float& radius);
 
 		inline const std::string& GetModelPath();
 		inline const unsigned int GetID();
@@ -29,7 +35,7 @@ namespace fq::physics
 		inline const std::shared_ptr<CharacterLink> GetRootLink();
 		inline const std::shared_ptr<CharacterLink> FindLink(std::string name);
 		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
-		inline const physx::PxArticulationReducedCoordinate* GetPxArticulation();
+		inline physx::PxArticulationReducedCoordinate* GetPxArticulation();
 		inline const physx::PxMaterial* GetMaterial();
 
 	private:
@@ -72,7 +78,7 @@ namespace fq::physics
 	{
 		return mWorldTransform;
 	}
-	const physx::PxArticulationReducedCoordinate* CharacterPhysics::GetPxArticulation()
+	physx::PxArticulationReducedCoordinate* CharacterPhysics::GetPxArticulation()
 	{
 		return mPxArticulation;
 	}

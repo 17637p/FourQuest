@@ -5,6 +5,10 @@
 namespace fq::physics
 {
 	PhysicsCharacterPhysicsManager::PhysicsCharacterPhysicsManager()
+		: mPhysics(nullptr)
+		, mScene(nullptr)
+		, mCharacterPhysicsContainer()
+		, mCollisionDataConttainer()
 	{
 	}
 
@@ -38,36 +42,11 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	bool PhysicsCharacterPhysicsManager::SimulationCharacter(unsigned int id)
 	{
-		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
-			return false;
+		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
 
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		characterPhysics->AddArticulationLink(info, extent, mCollisionDataConttainer.find(id)->second);
-
-		return true;
-	}
-
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
-	{
-		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
-			return false;
-
-		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		characterPhysics->AddArticulationLink(info, radius, mCollisionDataConttainer.find(id)->second);
-
-		return true;
-	}
-
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
-	{
-		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
-			return false;
-
-		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		characterPhysics->AddArticulationLink(info, halfHeight, radius, mCollisionDataConttainer.find(id)->second);
-
-		return true;
+		return mScene->addArticulation(*characterPhysics->GetPxArticulation());
 	}
 }

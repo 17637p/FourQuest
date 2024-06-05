@@ -1,6 +1,7 @@
 #include "CharacterController.h"
 
 #include "CharacterMovement.h"
+#include "CharacterQueryFilterCallback.h"
 
 namespace fq::physics
 {
@@ -30,6 +31,15 @@ namespace fq::physics
 		mLayerNumber = info.layerNumber;
 		mMaterial = material;
 
+		mFilterData = std::make_shared<physx::PxFilterData>();
+		mFilterData->word0 = 0;
+
+		std::shared_ptr<physx::PxFilterData> data = std::make_shared<physx::PxFilterData>();
+		data->word0 = mLayerNumber;
+		data->word1 = collisionMatrix[mLayerNumber];
+		mCharacterQueryFilterCallback = std::make_shared<CharacterQueryFilterCallback>(data);
+		mFilters = std::make_shared<physx::PxControllerFilters>(mFilterData.get(), mCharacterQueryFilterCallback.get());
+
 		mCharacterMovement = std::make_shared<CharacterMovement>();
 		mCharacterMovement->initialize(movementInfo);
 
@@ -46,7 +56,7 @@ namespace fq::physics
 		mCharacterMovement->CopyDirectionToPxVec3(dispVector);
 
 		// physx CCT 이동
-		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, NULL);
+		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, *mFilters.get());
 
 		// 바닥과 충돌을 안한다면 떨어짐 상태로 체크
 		if (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
