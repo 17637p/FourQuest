@@ -66,7 +66,6 @@ namespace fq
 		/// <returns>폴더 경로 내부의 모든 파일</returns>
 		std::vector<std::filesystem::path> GetFileList(const std::filesystem::path& directory);
 
-
 		/// <summary>
 		/// 폴더 경로 내부에 있는 모든 파일과 재귀적으로 폴더를 탐색해서 vector에 담아서 반환합니다
 		/// </summary>

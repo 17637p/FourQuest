@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include "../FQGameModule/GameModule.h"
 #include "../FQGraphics/IFQGraphics.h"
 
@@ -9,6 +11,7 @@ namespace fq::game_engine
 
 	class AnimationSystem
 	{
+		using ChangeStateQueue = std::queue<fq::event::ChangeAnimationState>;
 		using EventHandler = fq::game_module::EventHandler;
 	public:
 		AnimationSystem();
@@ -38,13 +41,14 @@ namespace fq::game_engine
 	private:
 		void updateAnimtorState(float dt);
 		void processAnimation(float dt);
-
+		void processCallBack();
 
 	public:
 		GameProcess* mGameProcess;
 		fq::game_module::Scene* mScene; 
 		fq::graphics::IFQGraphics* mGraphics;
 		fq::game_module::AnimatorControllerLoader mLoader;
+		ChangeStateQueue mStateQueue;
 
 		EventHandler mChangeAnimationStateHandler;
 	};

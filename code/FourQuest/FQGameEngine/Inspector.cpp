@@ -18,7 +18,9 @@ fq::game_engine::Inspector::Inspector()
 	, mEditorProcess(nullptr)
 	, mSelectObject(nullptr)
 	, mComponentTypes{}
+	, mStateBehaviourTypes{}
 	, mCurrentAddComponentIndex(0)
+	, mCurrentAddBehaviourIndex(0)
 	, mPrevColor{}
 	, mSelectObjectHandler{}
 	, mbIsOpen(true)
@@ -33,7 +35,7 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 	mGameProcess = game;
 	mEditorProcess = editor;
 
-	getComponentTypes();
+	getScriptTypes();
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandler = mGameProcess->mEventManager->RegisterHandle<editor_event::SelectObject>
@@ -423,7 +425,7 @@ void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq:
 }
 
 
-void fq::game_engine::Inspector::getComponentTypes()
+void fq::game_engine::Inspector::getScriptTypes()
 {
 	for (const auto& [id, type] : entt::resolve())
 	{
@@ -432,6 +434,11 @@ void fq::game_engine::Inspector::getComponentTypes()
 			if (baseType == entt::resolve<fq::game_module::Component>())
 			{
 				mComponentTypes.push_back(type);
+			}
+
+			if (baseType == entt::resolve<fq::game_module::IStateBehaviour>())
+			{
+				mStateBehaviourTypes.push_back(type);
 			}
 		}
 	}
@@ -888,6 +895,8 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 			ImGui::PopStyleColor(1);
 		}
 	}
+
+	beginStateBehaviour(state);
 }
 
 
@@ -1004,7 +1013,19 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	// ModelPath GUI
 	std::string modelPath = stateNode.GetModelPath();
 
+	bool isModelExist = std::filesystem::exists(modelPath);
+
+	if (!isModelExist)
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImGuiColor::RED);
+	}
+
 	ImGui::InputText("ModelPath", &modelPath);
+
+	if (!isModelExist)
+	{
+		ImGui::PopStyleColor(1);
+	}
 
 	// DragDrop 받기
 	if (ImGui::BeginDragDropTarget())
@@ -1024,14 +1045,16 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	modelPath = stateNode.GetModelPath();
-	if (modelPath.empty()) return;
+
+	if (modelPath.empty() || !isModelExist) return;
 
 	if (!mGameProcess->mRenderingSystem->IsLoadedModel(modelPath))
 	{
 		mGameProcess->mRenderingSystem->LoadModel(modelPath);
 	}
-	const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
 
+
+	const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
 	// Animation Name 선택 
 	auto aniName = stateNode.GetAnimationName();
 
@@ -1194,5 +1217,64 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 	ImGui::PopStyleColor(1);
 
 	return changedData;
+}
+
+void fq::game_engine::Inspector::beginStateBehaviour(fq::game_module::AnimationStateNode& stateNode)
+{
+	ImGui::Dummy({ 0,10 });
+	auto& behaviourMap = stateNode.GetStateBehaviourMap();
+
+	for (auto& [id, behaviour] : behaviourMap)
+	{
+		beginClass(behaviour.get(), false);
+	}
+
+	ImGui::Dummy({ 0,10 });
+
+	// AddScript
+	auto currentName = fq::reflect::GetName(mStateBehaviourTypes[mCurrentAddBehaviourIndex]);
+
+	// 선택 버튼
+	if (ImGui::BeginCombo("##add_behaviour_combo", currentName.c_str()))
+	{
+		for (int i = 0; i < mStateBehaviourTypes.size(); ++i)
+		{
+			auto componentName = fq::reflect::GetName(mStateBehaviourTypes[i]);
+
+			bool bIsSelected = mCurrentAddBehaviourIndex == i;
+
+			if (ImGui::Selectable(componentName.c_str(), bIsSelected))
+			{
+				mCurrentAddBehaviourIndex = i;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	ImGui::SameLine();
+
+	// 추가 버튼
+	if (ImGui::Button("+##add_behaviour_button"))
+	{
+		auto& type = mStateBehaviourTypes[mCurrentAddBehaviourIndex];
+		auto id = type.id();
+
+		// 이미 가지고있는지 확인
+		auto check = behaviourMap.find(id);
+	
+		if (check != behaviourMap.end())
+		{
+			return;
+		}
+
+		auto anyComponent = type.construct();
+
+		fq::game_module::IStateBehaviour* stateBehaviour =
+			anyComponent.try_cast<fq::game_module::IStateBehaviour>();
+
+		auto clone = std::shared_ptr<fq::game_module::IStateBehaviour>(stateBehaviour->Clone());
+
+		behaviourMap.insert({ id, clone });
+	}
 }
 

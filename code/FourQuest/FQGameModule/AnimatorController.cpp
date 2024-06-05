@@ -8,7 +8,6 @@
 #include "EventManager.h"
 #include "Event.h"
 
-
 fq::game_module::AnimatorController::AnimatorController()
 	:mParmeters{}
 	, mAnimator(nullptr)
@@ -176,15 +175,18 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 		if (transition != mTransitions.end())
 		{
 			mNextState = mStates.find(transition->second.GetEnterState());
+			mNextState->second.OnStateEnter();
 			mCurrentTransition = transition;
 			emitChangeState();
 		}
 	}
+
 	// 애니메이션 전환 종료
 	else if (EndTransitionWeight == mBlendWeight)
 	{
 		auto eventMgr = mAnimator->GetScene()->GetEventManager();
 
+		mCurrentState->second.OnStateExit();
 		mCurrentState = mNextState;
 		mNextState = mStates.end();
 		mCurrentTransition = mTransitions.end();
@@ -412,11 +414,14 @@ bool fq::game_module::AnimatorController::checkNextStateTransition()
 {
 	auto transition = checkStateTransition(mNextState->first);
 
-	// 다른 전환으로 이동 
+	// Interrupt 발생 
 	if (transition != mTransitions.end())
 	{
+		mCurrentState->second.OnStateExit();
 		mCurrentState = mNextState;
 		mNextState = mStates.find(transition->second.GetEnterState());
+		mNextState->second.OnStateEnter();
+		
 		mTimePos = mBlendTimePos;
 		mBlendTimePos = 0.f;
 		mBlendWeight = 0.f;
@@ -433,9 +438,12 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 {
 	auto transition = checkStateTransition(mNextState->first);
 
-	if (transition == mTransitions.end())
+	if (transition != mTransitions.end())
 	{
+		mNextState->second.OnStateExit();
 		mNextState = mStates.find(transition->second.GetEnterState());
+		mNextState->second.OnStateEnter();
+		
 		mBlendTimePos = 0.f;
 		mBlendWeight = 0.f;
 		mBlendElapsedTime = 0.f;
@@ -445,4 +453,9 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 	}
 
 	return false;
+}
+
+void fq::game_module::AnimatorController::Update()
+{
+	mCurrentState->second.OnStateUpdate();
 }

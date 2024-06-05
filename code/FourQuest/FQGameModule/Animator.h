@@ -17,7 +17,12 @@ namespace fq::game_module
 	public:
 		Animator();
 		~Animator();
-	
+
+		/// <summary>
+		/// 애니메이터 상태를 업데이트 합니다.
+		/// </summary>
+		void OnUpdate(float dt) override;
+
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>

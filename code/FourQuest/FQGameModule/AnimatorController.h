@@ -33,6 +33,16 @@ namespace fq::game_module
 		~AnimatorController();
 
 		/// <summary>
+		/// 애니메이션 스테이트 업데이트 호출
+		/// </summary>
+		void Update();
+
+		/// <summary>
+		/// 애니메이터를 반환합니다
+		/// </summary>
+		Animator* GetAnimator()const { return mAnimator; }
+
+		/// <summary>
 		/// 애니메이터를 연결합니다 
 		/// </summary>
 		void SetAnimator(Animator* animator) { mAnimator = animator; }
@@ -150,6 +160,7 @@ namespace fq::game_module
 		TransitionIterator checkStateTransition(const StateName& name);
 		bool checkConditions(const AnimationTransition& transition, float timePos);
 		void emitChangeState();
+
 	public:
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);

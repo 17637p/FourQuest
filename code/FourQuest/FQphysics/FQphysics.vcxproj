@@ -72,9 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(Solutiondir)FQCommon;$(IncludePath)</IncludePath>
+    <LibraryPath>$(Solutiondir)FQphysics\Libraries\Lib\deb;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(Solutiondir)FQCommon;$(IncludePath)</IncludePath>
+    <LibraryPath>$(Solutiondir)FQphysics\Libraries\Lib\rel;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,6 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(Solutiondir)FQphysics\Libraries\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +130,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(Solutiondir)FQphysics\Libraries\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,15 +140,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ArticulationResource.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="CharacterPhysics.h" />
+    <ClInclude Include="CharacterQueryFilterCallback.h" />
     <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="CharacterJoint.h" />
     <ClInclude Include="CharacterLink.h" />
-    <ClInclude Include="MaterialResource.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
@@ -162,15 +165,14 @@
     <ClInclude Include="StaticRigidBody.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ArticulationResource.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="CharacterMovement.cpp" />
     <ClCompile Include="CharacterPhysics.cpp" />
+    <ClCompile Include="CharacterQueryFilterCallback.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="CharacterJoint.cpp" />
     <ClCompile Include="CharacterLink.cpp" />
-    <ClCompile Include="MaterialResource.cpp" />
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />

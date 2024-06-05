@@ -30,6 +30,8 @@ namespace fq::physics
 		/// </summary>
 		inline physx::PxRigidDynamic* GetPxRigidDynamic();
 
+		virtual void SetScale(const DirectX::SimpleMath::Vector3& scale) override;
+
 	private:
 		physx::PxRigidDynamic* mRigidDynamic;
 	};
@@ -38,4 +40,5 @@ namespace fq::physics
 	{
 		return mRigidDynamic;
 	}
+
 }

@@ -6,6 +6,9 @@ namespace fq::physics
 		: mColliderType(colliderType)
 		, mID(id)
 		, mLayerNumber(layerNumber)
+		, mRadius()
+		, mHalfHeight()
+		, mExtent()
 	{
 	}
 

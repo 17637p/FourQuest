@@ -139,6 +139,7 @@ namespace fq::game_engine
 		{
 			// 애니메이터 창
 			beginText_ObjectName();
+			beginInputText_AnimationName();
 			beginInputInt_AnimationSize();
 			beginInputInt_KeyFrameSize();
 			beginButton_AnimationReset();
@@ -165,6 +166,11 @@ namespace fq::game_engine
 		ImGui::InputInt(barName.c_str(), &mAnimationSize);
 	}
 
+	void PhysicsAnimatorWindow::beginInputText_AnimationName()
+	{
+		ImGui::InputText("Animation Name", &mAnimationName);
+	}
+
 	void PhysicsAnimatorWindow::beginText_ObjectName()
 	{
 		ImGui::Text(mRegisteredObject->GetName().c_str());
@@ -176,7 +182,7 @@ namespace fq::game_engine
 
 		if (ImGui::TreeNode(name.c_str()))
 		{
-			ImGui::InputText("Name", &mAnimationNames[number]);
+			ImGui::InputText("Name", &mAnimationClipNames[number]);
 
 			if (!mbIsPlay)
 				beginButton_AnimationPlay(number);
@@ -232,7 +238,7 @@ namespace fq::game_engine
 				mCurrentAnimaitionNumber = 0;
 
 			mEventManager->FireEvent<fq::event::WriteAnimation>(
-				{ mAnimationNames[number], mAnimationClipContainer[number], mRegisteredObject.get(), (unsigned int)mAnimationSize }
+				{ mAnimationName, mAnimationClipContainer[number], mRegisteredObject.get(), (unsigned int)mAnimationSize }
 			);
 		}
 	}
@@ -248,7 +254,7 @@ namespace fq::game_engine
 				mRegisteredObject = nullptr;
 				mExtractObjectNames.clear();
 				mAnimationClipContainer.clear();
-				mAnimationNames.clear();
+				mAnimationClipNames.clear();
 
 				auto object = static_cast<fq::game_module::GameObject*>(PathPayLoad->Data);
 
@@ -262,7 +268,7 @@ namespace fq::game_engine
 				std::string animationName;
 				animationName = "AnimationName";
 				for (int i = 0; i < 100; i++)
-					mAnimationNames.push_back(animationName);
+					mAnimationClipNames.push_back(animationName);
 
 				for (auto& object : gameObjects)
 				{

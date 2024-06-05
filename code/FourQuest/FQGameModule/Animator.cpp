@@ -71,3 +71,8 @@ bool fq::game_module::Animator::IsInTransition() const
 	return mController->IsInTransition();
 }
 
+void fq::game_module::Animator::OnUpdate(float dt)
+{
+	mController->Update();
+}
+

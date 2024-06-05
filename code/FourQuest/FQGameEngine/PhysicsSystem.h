@@ -33,12 +33,6 @@ namespace fq::game_engine
 		void Initialize(GameProcess* game);
 
 		/// <summary>
-		/// 물리시스템을 업데이트합니다 
-		/// </summary>
-		/// <param name="dt"></param>
-		void Update(float dt);
-
-		/// <summary>
 		/// 물리엔진 시뮬레이션 이전에 물리공간과 게임공간을 연결해줍니다
 		/// </summary>
 		void SinkToPhysicsScene();
@@ -86,6 +80,12 @@ namespace fq::game_engine
 		/// </summary>
 		fq::game_module::Component* GetCollider(ColliderID id)const;
 
+
+		/// <summary>
+		/// 캐릭터 컨트롤러 입력처리 이벤트
+		/// </summary>
+		void AddInputMove(const fq::event::AddInputMove& event);
+
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
@@ -108,6 +108,7 @@ namespace fq::game_engine
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
+		EventHandler mAddInputMoveHandler;
 
 		const entt::id_type mBoxID;
 		const entt::id_type mSphereID;

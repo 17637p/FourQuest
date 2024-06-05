@@ -1,16 +1,23 @@
 #include "PhysicsRigidBodyManager.h"
 
-#include "PhysicsCookingMeshTool.h"
+#include "PhysicsResourceManager.h"
 #include "RigidBody.h"
 #include "DynamicRigidBody.h"
 #include "StaticRigidBody.h"
 #include "EngineDataConverter.h"
+#include "ConvexMeshResource.h"
+
+#include "PhysicsCookingMeshTool.h"
 
 namespace fq::physics
 {
 	PhysicsRigidBodyManager::PhysicsRigidBodyManager()
-		: mCookingMeshTool(std::make_shared<PhysicsCookingMeshTool>())
-		, mPhysics(nullptr)
+		: mPhysics(nullptr)
+		, mResourceManager()
+		, mRigidBodyContainer()
+		, mCollisionDataContainer()
+		, mUpcomingActors()
+		, mDebugPolygon()
 	{
 	}
 
@@ -22,13 +29,11 @@ namespace fq::physics
 		mCollisionDataContainer.clear();
 	}
 
-	bool PhysicsRigidBodyManager::Initialize(physx::PxPhysics* physics)
+	bool PhysicsRigidBodyManager::Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager)
 	{
 		mPhysics = physics;
-
-		if (!mCookingMeshTool->Initialize(physics)) 
-			return false;
-
+		mResourceManager = resourceManager;
+		
 		return true;
 	}
 
@@ -95,10 +100,11 @@ namespace fq::physics
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 		if (dynamicBody)
 		{
+			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
 			physx::PxTransform pxTransform;
 			physx::PxVec3 pxLinearVelocity;
 			physx::PxVec3 pxangularVelocity;
-			CopyDirectXMatrixToPxTransform(rigidBodyData.transform, pxTransform);
+			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 			CopyDxVec3ToPxVec3(rigidBodyData.linearVelocity, pxLinearVelocity);
 			CopyDxVec3ToPxVec3(rigidBodyData.angularVelocity, pxangularVelocity);
 
@@ -107,16 +113,29 @@ namespace fq::physics
 			pxBody->setLinearVelocity(pxLinearVelocity);
 			pxBody->setAngularVelocity(pxangularVelocity);
 
+			DirectX::SimpleMath::Vector3 position;
+			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Quaternion rotation;
+			dxTransform.Decompose(position, rotation, scale);
+			dynamicBody->SetScale(scale);
+
 			return true;
 		}
 		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 		if (staticBody)
 		{
+			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
 			physx::PxTransform pxTransform;
-			CopyDirectXMatrixToPxTransform(rigidBodyData.transform, pxTransform);
+			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 
 			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
 			pxBody->setGlobalPose(pxTransform);
+
+			DirectX::SimpleMath::Vector3 position;
+			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Quaternion rotation;
+			dxTransform.Decompose(scale, rotation, position);
+			staticBody->SetScale(scale);
 
 			return true;
 		}
@@ -129,106 +148,146 @@ namespace fq::physics
 #pragma region CreateDynamicAndStaticBody
 	bool PhysicsRigidBodyManager::CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *material);
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *pxMaterial);
 
-		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+		{
+			rigidBody->SetExtent(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *material);
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *pxMaterial);
 
-		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+		{
+			rigidBody->SetRadius(info.raidus);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *material);
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *pxMaterial);
 
-		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+		{
+			rigidBody->SetRadius(info.raidus);
+			rigidBody->SetHalfHeight(info.halfHeight);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, info.convexPolygonLimit);
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(mesh), *material);
+		std::weak_ptr<ConvexMeshResource> convexMesh = mResourceManager.lock()->Create<ConvexMeshResource>(info.convexMeshHash, info.vertices, info.vertexSize, info.convexPolygonLimit);
+		physx::PxConvexMesh* pxConvexMesh = convexMesh.lock()->GetConvexMesh();
 
-		if (!SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
-		return true;
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+			return true;
+
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *material);
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *pxMaterial);
 
-		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+		{
+			rigidBody->SetExtent(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *material);
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *pxMaterial);
 
-		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+		{
+			rigidBody->SetRadius(info.raidus);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *material);
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *pxMaterial);
 
-		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+		{
+			rigidBody->SetRadius(info.raidus);
+			rigidBody->SetHalfHeight(info.halfHeight);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
-		physx::PxConvexMesh* mesh = mCookingMeshTool->CookingConvexMesh(info.vertices, info.vertexSize, 255);
-		physx::PxMaterial* material = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(mesh), *material);
+		std::weak_ptr<ConvexMeshResource> convexMesh = mResourceManager.lock()->Create<ConvexMeshResource>(info.convexMeshHash, info.vertices, info.vertexSize, info.convexPolygonLimit);
+		physx::PxConvexMesh* pxConvexMesh = convexMesh.lock()->GetConvexMesh();
 
-		if (!SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix)) return false;
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
-		return true;
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		if (rigidBody != nullptr)
+			return true;
+
+		return false;
 	}
 
-	bool PhysicsRigidBodyManager::SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
+	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxFilterData filterdata;
 		filterdata.word0 = info.layerNumber;
 		filterdata.word1 = collisionMatrix[info.layerNumber];
 		shape->setSimulationFilterData(filterdata);
 
-		std::shared_ptr<StaticRigidBody> dynamicBody = std::make_shared<StaticRigidBody>(colliderType, info.id, info.layerNumber);
+		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisiondata = std::make_shared<CollisionData>();
 
-		if (!dynamicBody->Initialize(info, shape, mPhysics, collisiondata)) return false;
+		if (!staticBody->Initialize(info, shape, mPhysics, collisiondata)) return nullptr;
 
 		mCollisionDataContainer.insert(std::make_pair(info.id, collisiondata));
-		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
-		mUpcomingActors.push_back(dynamicBody);
+		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
+		mUpcomingActors.push_back(staticBody);
 
-		return true;
+		return staticBody.get();
 	}
 
-	bool PhysicsRigidBodyManager::SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
+	DynamicRigidBody* PhysicsRigidBodyManager::SettingDynamicBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
 	{
 		physx::PxFilterData filterdata;
 		filterdata.word0 = info.layerNumber;
@@ -238,13 +297,13 @@ namespace fq::physics
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::make_shared<DynamicRigidBody>(colliderType, info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisiondata = std::make_shared<CollisionData>();
 
-		if (!dynamicBody->Initialize(info, shape, mPhysics, collisiondata)) return false;
+		if (!dynamicBody->Initialize(info, shape, mPhysics, collisiondata)) return nullptr;
 
 		mCollisionDataContainer.insert(std::make_pair(info.id, collisiondata));
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
 
-		return true;
+		return dynamicBody.get();
 	}
 #pragma endregion
 

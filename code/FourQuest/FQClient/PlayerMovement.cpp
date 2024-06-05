@@ -31,14 +31,25 @@ void fq::client::PlayerMovement::OnUpdate(float dt)
 {
 	auto input = GetScene()->GetInputManager();
 
-	if (input->IsKeyState(EKey::Space, EKeyState::Tap))
+	if (input->IsPadKeyState(0, EPadKey::A, EKeyState::Tap))
 	{
 		mAnimator->SetParameterTrigger("OnHit");
 	}
-	if (input->IsKeyState(EKey::T, EKeyState::Tap))
+	if (input->IsPadKeyState(0, EPadKey::X, EKeyState::Tap))
 	{
 		mAnimator->SetParameterTrigger("OnPunch");
 	}
+
+	float leftX = input->GetStickInfomation(0, EPadStick::leftX);
+	float leftY = input->GetStickInfomation(0, EPadStick::leftY);
+	float rightX = input->GetStickInfomation(0, EPadStick::rightX);
+	float rightY = input->GetStickInfomation(0, EPadStick::rightY);
+
+	spdlog::trace("left X : {}", leftX);
+	spdlog::trace("left Y : {}", leftY);
+	spdlog::trace("right X : {}", rightX);
+	spdlog::trace("right Y : {}", rightY);
+
 }
 
 void fq::client::PlayerMovement::OnStart()
@@ -46,5 +57,5 @@ void fq::client::PlayerMovement::OnStart()
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	assert(mAnimator);
 
- 	mController = GetComponent<fq::game_module::CharacterController>();
+	mController = GetComponent<fq::game_module::CharacterController>();
 }

@@ -1,28 +1,39 @@
 #pragma once
 
+#include <memory>
+#include <unordered_map>
+
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQReflect/FQReflect.h"
 
 namespace fq::game_module
 {
 	class AnimatorController;
+	class IStateBehaviour;
 
 	/// <summary>
 	/// 애니메이션의 상태를 나타내는 노드
 	/// </summary>
 	class AnimationStateNode : public fq::reflect::IHandle
 	{
+		using StateBehaviourMap = std::unordered_map<entt::id_type, std::shared_ptr<IStateBehaviour>>;
+
 	public:
 		enum class Type
 		{
-			Entry, 
+			Entry,
 			Exit,
 			State,
-			AnyState, 
+			AnyState,
 		};
 
+	public:
 		AnimationStateNode(AnimatorController* controller);
 		~AnimationStateNode();
+
+		void OnStateEnter();
+		void OnStateExit();
+		void OnStateUpdate();
 
 		Type GetType() const { return mType; }
 		void SetType(Type val) { mType = val; }
@@ -36,9 +47,12 @@ namespace fq::game_module
 		void SetAnimationKey(std::string val) { mAnimationKey = val; }
 		float GetDuration() const { return mDuration; }
 		void SetDuration(float val) { mDuration = val; }
-		bool IsLoof() const { return mbIsLoof; }
+		bool IsLoof() const { return mbIsLoof; } 
 		void SetLoof(bool val) { mbIsLoof = val; }
-	
+
+		StateBehaviourMap& GetStateBehaviourMap() { return mBehaviours; }
+		const StateBehaviourMap& GetStateBehaviourMap() const { return mBehaviours; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -51,6 +65,8 @@ namespace fq::game_module
 		float mPlayBackSpeed;
 		float mDuration;
 		bool mbIsLoof;
+
+		StateBehaviourMap mBehaviours;
 	};
 
 }

@@ -5,7 +5,7 @@
 #include <string>
 
 #include <directxtk\SimpleMath.h>
-#include <physx\PxPhysicsAPI.h>
+#include <PxPhysicsAPI.h>
 
 #include "FQCommonPhysics.h"
 
@@ -19,11 +19,17 @@ namespace fq::physics
 		CharacterLink();
 		~CharacterLink();
 
+		/// <summary>
+		/// 캐릭터 링크 초기화 함수
+		/// </summary>
 		bool Initialize(const CharacterLinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
 
-		bool CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData);
-		bool CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData);
-		bool CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData);
+		/// <summary>
+		/// 캐릭터 링크 지오메트리 추가 함수
+		/// </summary>
+		physx::PxShape* CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData);
+		physx::PxShape* CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData);
+		physx::PxShape* CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData);
 
 		inline physx::PxArticulationLink* GetPxLink();
 		inline const std::string& GetName();
