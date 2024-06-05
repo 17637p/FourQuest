@@ -10,6 +10,7 @@
 #include "MonsterDamaged.h"
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
+#include "Attack.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -35,8 +36,18 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackWaitTime")
 		.data<&Monster::SetTargetAttackRange, &Monster::GetTargetAttackRange>("TargetAttackRange"_hs)
 		.prop(fq::reflect::prop::Name, "TargetAttackRange")
+		.data<&Monster::SetAttack, &Monster::GetAttack>("Attack"_hs)
+		.prop(fq::reflect::prop::Name, "Attack")
 		.base<fq::game_module::Component>();
 
+	entt::meta<Attack>()
+		.type("Attack"_hs)
+		.prop(fq::reflect::prop::Name, "Attack")
+		.base<fq::game_module::Component>();
+
+	// -------------------------------------------------------------------------
+	// 몬스터 상태 
+	// -----------------------------------------------------------------------------
 	entt::meta<MonsterIdle>()
 		.type("MonsterIdle"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterIdle")

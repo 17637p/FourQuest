@@ -19,7 +19,6 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterChase::Clon
 void fq::client::MonsterChase::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
 	mMoveDistance = 0;
-	rotateTowards(animator);
 }
 
 void fq::client::MonsterChase::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
@@ -28,6 +27,7 @@ void fq::client::MonsterChase::OnStateUpdate(fq::game_module::Animator& animator
 
 	// Todo: dt로 바꾸기 
 	float moveDist = 0.166666f * monster->GetMoveSpeed();
+	rotateTowards(animator);
 	MoveToTarget(animator, moveDist);
 	mMoveDistance += moveDist;
 

@@ -42,11 +42,13 @@ namespace fq::client
 		float GetTargetAttackRange() const;
 		void SetTargetAttackRange(float targetAttackRange);
 
+		fq::game_module::PrefabResource GetAttack() const { return mAttack; }
+		void SetAttack(fq::game_module::PrefabResource val) { mAttack = val; }
+
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
-
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -65,6 +67,8 @@ namespace fq::client
 		float mTargetAttackRange;
 		float mChaseDistance;
 		float mAttackWaitTime;
+
+		fq::game_module::PrefabResource mAttack;
 	};
 }
 

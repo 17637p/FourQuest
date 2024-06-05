@@ -25,5 +25,6 @@ namespace fq::client
 	private:
 		float mWaitTime;
 		bool mIsStartAttack;
+		bool mIsTransition;
 	};
 }
