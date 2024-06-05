@@ -235,7 +235,7 @@ namespace fq::graphics
 
 			ERenderMode RenderMode = ERenderMode::Billboard;
 			EBlendMode BlendMode = EBlendMode::Additive;
-			std::wstring TexturePath = L"./Particle00.png";
+			std::wstring TexturePath = L"./resource/example/texture/Particle00.png";
 		} RenderData;
 	};
 

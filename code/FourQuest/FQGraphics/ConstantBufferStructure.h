@@ -123,7 +123,7 @@ namespace fq::graphics
 			float TimePos;
 			float FrameTime;
 			int NumToEmit;
-			int unused[1];
+			float RandomSeed;
 		} InstanceData;
 
 		struct Main

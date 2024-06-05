@@ -1,10 +1,13 @@
 #include "ParticleObject.h"
 #include "D3D11Device.h"
+#include "D3D11ResourceManager.h"
+#include "D3D11Texture.h"
 
 namespace fq::graphics
 {
-	ParticleObject::ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11Texture> texture, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
-		: mTexture(texture)
+	ParticleObject::ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
+		: mTexture(nullptr)
+		, mResourceManager(resourceManager)
 		, mParticleInfo(particleInfo)
 		, mbIsReset(true)
 		, mTimePos(0.f)
@@ -12,7 +15,11 @@ namespace fq::graphics
 		, mAccumlation(0.f)
 		, mNumToEmit(0)
 		, mDebugInfo{ 0, }
+		, mbIsEmit(false)
+		, mRandomSeed(rand() / (float)(rand()))
 	{
+		mTexture = mResourceManager->Create<D3D11Texture>(particleInfo.RenderData.TexturePath);
+
 		D3D11_BUFFER_DESC desc;
 		desc.ByteWidth = sizeof(Particle) * ParticleInfo::MAX_PARTICLE_COUNT;
 		desc.Usage = D3D11_USAGE_DEFAULT;
@@ -67,5 +74,11 @@ namespace fq::graphics
 		uav.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
 		uav.Format = DXGI_FORMAT_UNKNOWN;
 		device->GetDevice()->CreateUnorderedAccessView(mAliveIndexBuffer.Get(), &uav, mAliveIndexBufferUAV.GetAddressOf());
+	}
+
+	void ParticleObject::SetInfo(const ParticleInfo& info)
+	{
+		mParticleInfo = info;
+		mTexture = mResourceManager->Create<D3D11Texture>(info.RenderData.TexturePath);
 	}
 }

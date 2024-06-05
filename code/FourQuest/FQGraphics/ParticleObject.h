@@ -11,6 +11,7 @@ namespace fq::graphics
 {
 	class D3D11Device;
 	class D3D11Texture;
+	class D3D11ResourceManager;
 
 	struct Particle
 	{
@@ -44,18 +45,20 @@ namespace fq::graphics
 		};
 
 	public:
-		ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11Texture> texture, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
+		ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
 		virtual ~ParticleObject() = default;
 
-		void SetInfo(const ParticleInfo& info) { mParticleInfo = info; }
+		void SetInfo(const ParticleInfo& info);
 		void SetIsReset(bool bIsReset) { mbIsReset = bIsReset; }
 		void SetFrameTime(float frameTime) { mFrameTime = frameTime; }
 		void SetTransform(const DirectX::SimpleMath::Matrix& transform) { mTransform = transform; }
+		void SetIsEmit(bool bIsEmit) { mbIsEmit = bIsEmit; }
 
 		const ParticleInfo& GetInfo() const { return mParticleInfo; }
 		bool GetIsReset() const { return mbIsReset; }
 		float GetFrameTIme() const { return mFrameTime; }
 		DirectX::SimpleMath::Matrix GetTransform() const { return mTransform; }
+		bool GetIsEmit() const { return mbIsEmit; }
 
 		DebugInfo& GetDebugInfo() { return mDebugInfo; }
 
@@ -116,7 +119,10 @@ namespace fq::graphics
 				return;
 			}
 
-			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * mFrameTime;
+			if (mbIsEmit)
+			{
+				mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * mFrameTime;
+			}
 
 			if (mAccumlation > 1.f)
 			{
@@ -150,6 +156,8 @@ namespace fq::graphics
 		}
 
 	private:
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBuffer;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mParticleBufferSRV;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferUAV;
@@ -171,10 +179,13 @@ namespace fq::graphics
 		float mAccumlation = 0.f;
 		int	mNumToEmit;
 		DebugInfo mDebugInfo;
+		bool mbIsEmit;
 
 		bool mbIsRunDuationCycle;
 		float mStartTimePos;
 		size_t mCycleCount;
+
+		float mRandomSeed;
 	};
 }
 

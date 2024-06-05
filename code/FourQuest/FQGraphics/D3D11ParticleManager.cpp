@@ -118,9 +118,8 @@ namespace fq::graphics
 
 	IParticleObject* D3D11ParticleManager::CreateParticleObject(const ParticleInfo& particleInfo)
 	{
-		std::shared_ptr<D3D11Texture> texture = mResourceManager->Create<D3D11Texture>(particleInfo.RenderData.TexturePath);
 
-		IParticleObject* particleObjectInferface = new ParticleObject(mDevice, texture, particleInfo, DirectX::SimpleMath::Matrix::Identity);
+		IParticleObject* particleObjectInferface = new ParticleObject(mDevice, mResourceManager, particleInfo, DirectX::SimpleMath::Matrix::Identity);
 		mParticleObjects.insert(particleObjectInferface);
 
 		return particleObjectInferface;
@@ -147,6 +146,7 @@ namespace fq::graphics
 		particleObjectData.InstanceData.TimePos = particleObject->mTimePos;
 		particleObjectData.InstanceData.FrameTime = particleObject->mFrameTime;
 		particleObjectData.InstanceData.NumToEmit = particleObject->mNumToEmit;
+		particleObjectData.InstanceData.RandomSeed = particleObject->mRandomSeed;
 
 		particleObjectData.MainData.StartColor[0] = particleInfo.MainData.StartColor[0];
 		particleObjectData.MainData.StartColor[1] = particleInfo.MainData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartColor[0] : particleInfo.MainData.StartColor[1];;

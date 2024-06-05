@@ -670,9 +670,9 @@ void Process::particleInit()
 
 		particleInfo.MainData.StartSize[0] = 10.f;
 		particleInfo.MainData.StartSpeed[0] = 50.f;
-		//particleInfo.MainData.StartColor[0] = { 1, 0, 0, 1 };
-		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Additive;
+		particleInfo.MainData.StartColor[0] = { 1, 0, 0, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Sphere;
+		particleInfo.ShapeData.Scale = { 5, 5, 5 };
 
 		particleInfo.LimitVelocityOverLifetimeData.bIsUsed = true;
 		particleInfo.LimitVelocityOverLifetimeData.Speed = 5.f;
@@ -681,6 +681,7 @@ void Process::particleInit()
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
 		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 300,0 }));
 		mParticleObjects.push_back(obj);
+
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
@@ -694,8 +695,9 @@ void Process::particleInit()
 
 		particleInfo.MainData.StartSize[0] = 10.f;
 		particleInfo.MainData.StartSpeed[0] = 50.f;
-		//particleInfo.MainData.StartColor[0] = { 0, 1, 0, 1 };
+		particleInfo.MainData.StartColor[0] = { 0, 1, 0, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Hemisphere;
+		particleInfo.ShapeData.Scale = { 2, 2, 2 };
 
 		particleInfo.ForceOverLifeTimeData.bIsUsed = true;
 		particleInfo.ForceOverLifeTimeData.Force = { 5, -50, 0 };
@@ -717,9 +719,10 @@ void Process::particleInit()
 
 		particleInfo.MainData.StartSize[0] = 10.f;
 		particleInfo.MainData.StartSpeed[0] = 50.f;
-		// particleInfo.MainData.StartColor[0] = { 0, 0, 1, 1 };
+		particleInfo.MainData.StartColor[0] = { 0, 0, 1, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Cone;
-		particleInfo.ShapeData.AngleInDegree = 10;
+		particleInfo.ShapeData.AngleInDegree = 45;
+		particleInfo.ShapeData.Scale = { 10,10,10 };
 
 		particleInfo.VelocityOverLifetimeData.bIsUsed = true;
 		particleInfo.VelocityOverLifetimeData.Velocity = { 0, 0, 0 };
@@ -728,7 +731,7 @@ void Process::particleInit()
 
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
 		mParticleObjects.push_back(obj);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -100, 300,0 }));
+		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -100, 300, 0 }));
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
@@ -744,6 +747,7 @@ void Process::particleInit()
 		particleInfo.MainData.StartSpeed[0] = 50.f;
 		particleInfo.ShapeData.Radius = 50.f;
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Donut;
+		particleInfo.ShapeData.Scale = { 5, 5, 5 };
 
 		particleInfo.ColorOverLifetimeData.bIsUsed = true;
 		particleInfo.ColorOverLifetimeData.AlphaRatios[0] = { 1.f, 0 };
@@ -775,19 +779,34 @@ void Process::particleInit()
 		particleInfo.MainData.StartSpeed[0] = 50.f;
 		// particleInfo.MainData.StartColor[0] = { 1, 0, 1, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Box;
-		particleInfo.ShapeData.Scale = { 50, 50, 50 };
+		particleInfo.ShapeData.Scale = { 20, 20, 20 };
 
 		particleInfo.SizeOverLifetimeData.bIsUsed = true;
 		particleInfo.SizeOverLifetimeData.PointA = { 50, 0.f };
-		particleInfo.SizeOverLifetimeData.PointB = { 4, 0.5f };
-		particleInfo.SizeOverLifetimeData.PointC = { 3, 0.75f };
-		particleInfo.SizeOverLifetimeData.PointD = { 1, 1.f };
+		particleInfo.SizeOverLifetimeData.PointB = { 1, 0.5f };
+		particleInfo.SizeOverLifetimeData.PointC = { 1, 0.9f };
+		particleInfo.SizeOverLifetimeData.PointD = { 20, 1.f };
+
+		particleInfo.VelocityOverLifetimeData.bIsUsed = true;
+		particleInfo.VelocityOverLifetimeData.Velocity = { 0, 10, 0 };
+		particleInfo.VelocityOverLifetimeData.Orbital = { 0, 1, 0 };
+		particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
+
+		particleInfo.ColorOverLifetimeData.bIsUsed = true;
+		particleInfo.ColorOverLifetimeData.AlphaRatios[0] = { 1.f, 0 };
+		particleInfo.ColorOverLifetimeData.AlphaRatios[1] = { 1.f, 1 };
+		particleInfo.ColorOverLifetimeData.AlphaRatioCount = 2;
+		particleInfo.ColorOverLifetimeData.ColorRatios[0] = { 1, 0.7, 0.6, 0 };
+		particleInfo.ColorOverLifetimeData.ColorRatios[1] = { 1, 0.2, 0.2, 0.05 };
+		particleInfo.ColorOverLifetimeData.ColorRatios[2] = { 1, 0.2, 0.2, 0.9f };
+		particleInfo.ColorOverLifetimeData.ColorRatios[3] = { 0.1, 0.1, 0.1, 1 };
+		particleInfo.ColorOverLifetimeData.ColorRatioCount = 4;
 
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
 		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 300, 0 }));
 		mParticleObjects.push_back(obj);
 
-		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
+		particleInfo.EmissionData.ParticlesPerSecond = 100.f;
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
 		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 100,0 }));
 		mParticleObjects.push_back(obj);
@@ -802,6 +821,7 @@ void Process::particleInit()
 		// particleInfo.MainData.StartColor[0] = { 0, 1, 1, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Circle;
 		particleInfo.ShapeData.ArcInDegree = 120;
+		particleInfo.ShapeData.Scale = { 50, 50, 50 };
 
 		particleInfo.RotationOverLifetimeData.bIsUsed = true;
 		particleInfo.RotationOverLifetimeData.AngularVelocityInDegree = 360;
@@ -823,15 +843,15 @@ void Process::particleInit()
 		particleInfo.MainData.StartSize[0] = 10.f;
 		particleInfo.MainData.StartSpeed[0] = 50.f;
 		// particleInfo.MainData.StartColor[0] = { 1, 1, 1, 1 };
-		particleInfo.ShapeData.Scale = { 50, 0, 50 };
-		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Box;
+		particleInfo.ShapeData.Scale = { 50, 50, 50 };
+		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Rectangle;
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
 		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 300, 0 }));
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 0,0 }));
+		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 100,0 }));
 		mParticleObjects.push_back(obj);
 	}
 }
@@ -840,9 +860,51 @@ void Process::particleUpdate()
 {
 	using namespace fq::graphics;
 
+	static float s_particlesPerSecond = 10.f;
+	static bool s_bUsedX = true;
+	s_particlesPerSecond += 0.01f;
+	s_bUsedX ^= true;
+
 	for (IParticleObject* obj : mParticleObjects)
 	{
+		ParticleInfo particleInfo = { };
+		particleInfo.MainData.StartSpeedOption = ParticleInfo::EOption::RandomBetweenTwoConstant;
+		particleInfo.MainData.StartSpeed[0] = 1.f;
+		particleInfo.MainData.StartSpeed[1] = s_particlesPerSecond;
+
+		particleInfo.MainData.StartSizeOption = ParticleInfo::EOption::RandomBetweenTwoConstant;
+		particleInfo.MainData.StartSize[0] = 1.f;
+		particleInfo.MainData.StartSize[1] = s_particlesPerSecond;
+
+		particleInfo.EmissionData.ParticlesPerSecond = s_particlesPerSecond;
+		//	particleInfo.VelocityOverLifetimeData.Velocity.y = s_particlesPerSecond;
+		particleInfo.VelocityOverLifetimeData.bIsUsed = true;
+
+		if (GetAsyncKeyState('P') & 0x8000)
+		{
+			particleInfo.RenderData.TexturePath = L"./resource/example/texture/Particle00.png";
+		}
+		else
+		{
+			particleInfo.RenderData.TexturePath = L"./resource/example/texture/Particle01.png";
+		}
+
+		obj->SetInfo(particleInfo);
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
+
+		if (GetAsyncKeyState('O') & 0x8000)
+		{
+			obj->SetIsEmit(true);
+		}
+		else
+		{
+			obj->SetIsEmit(false);
+		}
+
+		if (GetAsyncKeyState('I') & 0x8000)
+		{
+			obj->SetIsReset(true);
+		}
 	}
 }
 

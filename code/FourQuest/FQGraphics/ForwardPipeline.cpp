@@ -48,7 +48,7 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mParticlePass);
-		// mPasses.push_back(mTerrainPass); // 쉐이더와 소스 버전이 안 맞아서 임시 주석
+		mPasses.push_back(mTerrainPass); // 쉐이더와 소스 버전이 안 맞아서 임시 주석
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mFullScreenPass);
