@@ -32,11 +32,18 @@
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Monster.h" />
+    <ClInclude Include="MonsterFSM.h" />
+    <ClInclude Include="MonsterBaseState.h" />
     <ClInclude Include="PlayerMovement.h" />
+    <ClInclude Include="MonsterState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp" />
+    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="MonsterFSM.cpp" />
     <ClCompile Include="PlayerMovement.cpp" />
+    <ClCompile Include="MonsterState.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
