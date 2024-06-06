@@ -20,11 +20,11 @@ fq::game_module::AnimationStateNode::AnimationStateNode(AnimatorController* cont
 fq::game_module::AnimationStateNode::~AnimationStateNode()
 {}
 
-void fq::game_module::AnimationStateNode::OnStateUpdate()
+void fq::game_module::AnimationStateNode::OnStateUpdate(float dt)
 {
 	for (auto& [id, behaviour] : mBehaviours)
 	{
-		behaviour->OnStateUpdate(*mController->GetAnimator(), *this);
+		behaviour->OnStateUpdate(*mController->GetAnimator(), *this, dt);
 	}
 }
 

@@ -1,6 +1,6 @@
 #include "MonsterFind.h"
 #include "Monster.h"
-#include "PlayerMovement.h"
+#include "Player.h"
 
 fq::client::MonsterFind::MonsterFind()
 {
@@ -21,7 +21,7 @@ void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, 
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
-	auto componentView = monster->GetScene()->GetComponentView<PlayerMovement>();
+	auto componentView = monster->GetScene()->GetComponentView<Player>();
 
 	float distMin = FLT_MAX;
 
@@ -39,7 +39,7 @@ void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, 
 	animator.SetParameterTrigger("OnIdle");
 }
 
-void fq::client::MonsterFind::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
+void fq::client::MonsterFind::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
 
 }

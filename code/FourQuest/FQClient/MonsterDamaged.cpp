@@ -32,7 +32,7 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 	}
 }
 
-void fq::client::MonsterDamaged::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
+void fq::client::MonsterDamaged::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
 
 }

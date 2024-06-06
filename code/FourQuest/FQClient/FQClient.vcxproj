@@ -40,7 +40,10 @@
     <ClInclude Include="MonsterDie.h" />
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterIdle.h" />
-    <ClInclude Include="PlayerMovement.h" />
+    <ClInclude Include="PlayerDashState.h" />
+    <ClInclude Include="PlayerInputState.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerMovementState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Attack.cpp" />
@@ -52,7 +55,10 @@
     <ClCompile Include="MonsterDie.cpp" />
     <ClCompile Include="MonsterFind.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
-    <ClCompile Include="PlayerMovement.cpp" />
+    <ClCompile Include="PlayerDashState.cpp" />
+    <ClCompile Include="PlayerInputState.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerMovementState.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

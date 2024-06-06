@@ -2,7 +2,11 @@
 #include "ClientRegistration.h"
 
 #include "../FQReflect/FQReflect.h"
-#include "PlayerMovement.h"
+#include "Player.h"
+#include "PlayerInputState.h"
+#include "PlayerMovementState.h"
+#include "PlayerDashState.h"
+
 #include "Monster.h"
 #include "MonsterIdle.h"
 #include "MonsterFind.h"
@@ -16,10 +20,39 @@ void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
 
-	entt::meta<PlayerMovement>()
-		.type("PlayerMovement"_hs)
-		.prop(reflect::prop::Name, "PlayerMovement")
+	//////////////////////////////////////////////////////////////////////////
+	//                             플레이어									//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Player>()
+		.type("Player"_hs)
+		.prop(reflect::prop::Name, "Player")
+		.data<&Player::SetHp, &Player::GetHp>("HP"_hs)
+		.prop(reflect::prop::Name, "Hp")
 		.base<game_module::Component>();
+
+	entt::meta<PlayerInputState>()
+		.type("PlayerInputState"_hs)
+		.prop(reflect::prop::Name, "PlayerInputState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerMovementState>()
+		.type("PlayerMovementState"_hs)
+		.prop(reflect::prop::Name, "PlayerMovementState")
+		.data<&PlayerMovementState::SetMovePlayer, &PlayerMovementState::CanMovePlayer>("CanMovePlayer"_hs)
+		.prop(reflect::prop::Name, "CanMovePlayer")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerDashState>()
+		.type("PlayerDashState"_hs)
+		.prop(reflect::prop::Name, "PlayerDashState")
+		.data<&PlayerDashState::SetDashPower, &PlayerDashState::GetDashPower>("DashPower"_hs)
+		.prop(reflect::prop::Name, "DashPower")
+		.base<game_module::IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             몬스터									//
+	//////////////////////////////////////////////////////////////////////////
 
 	entt::meta<Monster>()
 		.type("Monster"_hs)
@@ -77,5 +110,7 @@ void fq::client::RegisterMetaData()
 		.type("MonsterDie"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterDie")
 		.base<fq::game_module::IStateBehaviour>();
+
+
 }
 

@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "AnimatorController.h"
 
+#include <limits>
 #include <spdlog/spdlog.h>
 
 #include "Animator.h"
@@ -174,10 +175,23 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 		// 애니메이션 전환발생
 		if (transition != mTransitions.end())
 		{
-			mNextState = mStates.find(transition->second.GetEnterState());
-			mNextState->second.OnStateEnter();
-			mCurrentTransition = transition;
-			emitChangeState();
+			// 바로 전환
+			if (transition->second.GetTransitionDuration() <= std::numeric_limits<float>::epsilon())
+			{
+				mCurrentState->second.OnStateExit();
+				mCurrentState = mStates.find(transition->second.GetEnterState());
+				mCurrentState->second.OnStateEnter();
+				mCurrentTransition = mTransitions.end();
+				mTimePos = 0.f;
+				emitChangeState();
+			}
+			else
+			{
+				mNextState = mStates.find(transition->second.GetEnterState());
+				mNextState->second.OnStateEnter();
+				mCurrentTransition = transition;
+				emitChangeState();
+			}
 		}
 	}
 
@@ -428,16 +442,34 @@ bool fq::game_module::AnimatorController::checkNextStateTransition()
 	// Interrupt 발생 
 	if (transition != mTransitions.end())
 	{
-		mCurrentState->second.OnStateExit();
-		mCurrentState = mNextState;
-		mNextState = mStates.find(transition->second.GetEnterState());
-		mNextState->second.OnStateEnter();
+		// 애니메이션 블렌딩없이 전환
+		if (transition->second.GetTransitionDuration() <= std::numeric_limits<float>::epsilon())
+		{
+			mCurrentState->second.OnStateExit();
+			mNextState->second.OnStateExit();
+			mNextState = mStates.end();
+			mCurrentState = mStates.find(transition->second.GetEnterState());
+			mCurrentState->second.OnStateEnter();
 
-		mTimePos = mBlendTimePos;
-		mBlendTimePos = 0.f;
-		mBlendWeight = 0.f;
-		mBlendElapsedTime = 0.f;
-		mCurrentTransition = transition;
+			mTimePos = 0.f;
+			mBlendTimePos = 0.f;
+			mBlendWeight = 0.f;
+			mBlendElapsedTime = 0.f;
+			mCurrentTransition = mTransitions.end();
+		}
+		else
+		{
+			mCurrentState->second.OnStateExit();
+			mCurrentState = mNextState;
+			mNextState = mStates.find(transition->second.GetEnterState());
+			mNextState->second.OnStateEnter();
+
+			mTimePos = mBlendTimePos;
+			mBlendTimePos = 0.f;
+			mBlendWeight = 0.f;
+			mBlendElapsedTime = 0.f;
+			mCurrentTransition = transition;
+		}
 		emitChangeState();
 		return true;
 	}
@@ -449,16 +481,34 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 {
 	auto transition = checkStateTransition(mCurrentState->first);
 
+	// Interrupt 발생 
 	if (transition != mTransitions.end())
 	{
-		mNextState->second.OnStateExit();
-		mNextState = mStates.find(transition->second.GetEnterState());
-		mNextState->second.OnStateEnter();
+		// 애니메이션 블렌딩없이 전환
+		if (transition->second.GetTransitionDuration() <= std::numeric_limits<float>::epsilon())
+		{
+			mNextState->second.OnStateExit();
+			mNextState = mStates.end();
+			mCurrentState->second.OnStateExit();
+			mCurrentState = mStates.find(transition->second.GetEnterState());
 
-		mBlendTimePos = 0.f;
-		mBlendWeight = 0.f;
-		mBlendElapsedTime = 0.f;
-		mCurrentTransition = transition;
+			mTimePos = 0.f;
+			mBlendTimePos = 0.f;
+			mBlendWeight = 0.f;
+			mBlendElapsedTime = 0.f;
+			mCurrentTransition = mTransitions.end();
+		}
+		else
+		{
+			mNextState->second.OnStateExit();
+			mNextState = mStates.find(transition->second.GetEnterState());
+			mNextState->second.OnStateEnter();
+
+			mBlendTimePos = 0.f;
+			mBlendWeight = 0.f;
+			mBlendElapsedTime = 0.f;
+			mCurrentTransition = transition;
+		}
 		emitChangeState();
 		return true;
 	}
@@ -466,7 +516,7 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 	return false;
 }
 
-void fq::game_module::AnimatorController::Update()
+void fq::game_module::AnimatorController::Update(float dt)
 {
-	mCurrentState->second.OnStateUpdate();
+	mCurrentState->second.OnStateUpdate(dt);
 }

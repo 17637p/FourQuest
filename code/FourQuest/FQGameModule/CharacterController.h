@@ -97,7 +97,18 @@ namespace fq::game_module
 		/// </summary>
 		void SetOnRotation(bool val) { mbOnRotation = val; }
 	
+		/// <summary>
+		/// 현재 캐릭터를 움직일수 있는지 반환합니다
+		/// </summary>
+		bool CanMoveCharater() const { return mbCanMoveCharater; }
+		
+		/// <summary>
+		/// 현재 캐릭터를 움직일 수 있는지 설정합니다.
+		/// </summary>
+		void SetCanMoveCharater(bool val) { mbCanMoveCharater = val; }
 	private:
+		void getKeyInput(DirectX::SimpleMath::Vector3& input);
+
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
@@ -110,6 +121,7 @@ namespace fq::game_module
 		ControllerID mControllerID;
 
 		bool mbIsFalling;
+		bool mbCanMoveCharater;
 		bool mbOnMove;
 		bool mbOnRotation;
 	};

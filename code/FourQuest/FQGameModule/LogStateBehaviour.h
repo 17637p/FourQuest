@@ -12,7 +12,7 @@ namespace fq::game_module
 
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		void OnStateEnter(Animator& animator, AnimationStateNode& state) override;
-		void OnStateUpdate(Animator& animator, AnimationStateNode& state) override;
+		void OnStateUpdate(Animator& animator, AnimationStateNode& state, float dt) override;
 		void OnStateExit(Animator& animator, AnimationStateNode& state) override;
 
 		unsigned int GetEnterCount() const { return mEnterCount; }

@@ -35,7 +35,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션 스테이트 업데이트 호출
 		/// </summary>
-		void Update();
+		void Update(float dt);
 
 		/// <summary>
 		/// 애니메이터를 반환합니다
@@ -165,7 +165,6 @@ namespace fq::game_module
 		static constexpr char OnTrigger = static_cast<char>(true);
 		static constexpr char OffTrigger = static_cast<char>(false);
 		static constexpr float EndTransitionWeight = 1.f;
-
 	private:
 		Animator* mAnimator;
 

@@ -33,7 +33,7 @@ namespace fq::game_module
 
 		void OnStateEnter();
 		void OnStateExit();
-		void OnStateUpdate();
+		void OnStateUpdate(float dt);
 
 		Type GetType() const { return mType; }
 		void SetType(Type val) { mType = val; }

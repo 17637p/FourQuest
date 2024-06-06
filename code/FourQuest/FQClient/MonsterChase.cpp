@@ -21,7 +21,7 @@ void fq::client::MonsterChase::OnStateEnter(fq::game_module::Animator& animator,
 	mMoveDistance = 0;
 }
 
-void fq::client::MonsterChase::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
+void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
