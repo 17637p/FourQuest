@@ -1,7 +1,7 @@
 #include "Monster.h"
 
 //temp: 나중에 찐 플레이어로 바꿀 것
-#include "PlayerMovement.h"
+#include "Player.h"
 
 fq::client::Monster::Monster()
 	:mHP(),

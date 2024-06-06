@@ -4,11 +4,11 @@
 
 namespace fq::client
 {
-	class PlayerMovement :	public fq::game_module::Component
+	class Player :	public fq::game_module::Component
 	{
 	public:
-		PlayerMovement();
-		~PlayerMovement();
+		Player();
+		~Player();
 		
 		void OnStart() override;
 
@@ -19,13 +19,19 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		float GetHp() const { return mHp; }
+		void SetHp(float hp) { mHp = hp; }
+
 	private:
+		void processDash();
+
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
 
+		float mHp;
 	};
 
 

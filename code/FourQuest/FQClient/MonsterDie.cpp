@@ -21,7 +21,7 @@ void fq::client::MonsterDie::OnStateEnter(fq::game_module::Animator& animator, f
 
 }
 
-void fq::client::MonsterDie::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
+void fq::client::MonsterDie::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
 	
 }

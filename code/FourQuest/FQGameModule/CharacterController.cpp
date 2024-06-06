@@ -38,6 +38,7 @@ fq::game_module::CharacterController::CharacterController()
 	, mTransform(nullptr)
 	, mbOnMove(true)
 	, mbOnRotation(true)
+	, mbCanMoveCharater(true)
 {}
 
 fq::game_module::CharacterController::~CharacterController()
@@ -52,20 +53,28 @@ void fq::game_module::CharacterController::SetControllerInfo(fq::physics::Charac
 
 void fq::game_module::CharacterController::OnUpdate(float dt)
 {
+	if (!mbCanMoveCharater)
+	{
+		mbOnMove = false;
+		return;
+	}
+
 	using namespace DirectX::SimpleMath;
 
 	auto inputMgr = GetScene()->GetInputManager();
 	Vector3 input = Vector3::Zero;
 
-	// 키보드
-
 	// 컨트롤러
 	input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
 	input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
 
+	getKeyInput(input);
+
 	if (input == Vector3::Zero)
 	{
 		mbOnMove = false;
+		GetScene()->GetEventManager()
+			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input });
 		return;
 	}
 
@@ -101,5 +110,38 @@ void fq::game_module::CharacterController::SetControllerID(ControllerID id)
 void fq::game_module::CharacterController::OnStart()
 {
 	mTransform = GetComponent<Transform>();
+}
+
+void fq::game_module::CharacterController::getKeyInput(DirectX::SimpleMath::Vector3& input)
+{
+	auto inputMgr = GetScene()->GetInputManager();
+
+	// 키보드 1 Player
+	if (mControllerID == 0)
+	{
+		if (inputMgr->IsKeyState(EKey::A, EKeyState::Hold))
+			input.x = -1.f;
+		if (inputMgr->IsKeyState(EKey::D, EKeyState::Hold))
+			input.x = 1.f;
+		if (inputMgr->IsKeyState(EKey::W, EKeyState::Hold))
+			input.z = 1.f;
+		if (inputMgr->IsKeyState(EKey::S, EKeyState::Hold))
+			input.z = -1.f;
+	}
+
+	// 키보드 2 Player
+	if (mControllerID == 1)
+	{
+		if (inputMgr->IsKeyState(EKey::Left, EKeyState::Hold))
+			input.x = -1.f;
+		if (inputMgr->IsKeyState(EKey::Right, EKeyState::Hold))
+			input.x = 1.f;
+		if (inputMgr->IsKeyState(EKey::Up, EKeyState::Hold))
+			input.z = 1.f;
+		if (inputMgr->IsKeyState(EKey::Down, EKeyState::Hold))
+			input.z = -1.f;
+	}
+
+	input.Normalize();
 }
 

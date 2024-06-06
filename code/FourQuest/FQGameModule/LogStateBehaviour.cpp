@@ -11,7 +11,7 @@ void fq::game_module::LogStateBehaviour::OnStateEnter(Animator& animator, Animat
 	spdlog::info("{} enter {}", animator.GetGameObject()->GetName(),state.GetAnimationKey());
 }
 
-void fq::game_module::LogStateBehaviour::OnStateUpdate(Animator& animator, AnimationStateNode& state)
+void fq::game_module::LogStateBehaviour::OnStateUpdate(Animator& animator, AnimationStateNode& state, float dt)
 {
 	animator.IsInTransition();
 

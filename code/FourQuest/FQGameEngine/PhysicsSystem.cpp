@@ -396,24 +396,24 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 
 	switch (type)
 	{
-		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-			lhsObject->OnTriggerEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_OVERLAP:
-			lhsObject->OnTriggerStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_OVERLAP:
-			lhsObject->OnTriggerExit(collision);
-			break;
-		case fq::physics::ECollisionEventType::ENTER_COLLISION:
-			lhsObject->OnCollisionEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_COLLISION:
-			lhsObject->OnCollisionStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_COLLISION:
-			lhsObject->OnCollisionExit(collision);
-			break;
+	case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+		lhsObject->OnTriggerEnter(collision);
+		break;
+	case fq::physics::ECollisionEventType::ON_OVERLAP:
+		lhsObject->OnTriggerStay(collision);
+		break;
+	case fq::physics::ECollisionEventType::END_OVERLAP:
+		lhsObject->OnTriggerExit(collision);
+		break;
+	case fq::physics::ECollisionEventType::ENTER_COLLISION:
+		lhsObject->OnCollisionEnter(collision);
+		break;
+	case fq::physics::ECollisionEventType::ON_COLLISION:
+		lhsObject->OnCollisionStay(collision);
+		break;
+	case fq::physics::ECollisionEventType::END_COLLISION:
+		lhsObject->OnCollisionExit(collision);
+		break;
 	}
 
 }
@@ -467,7 +467,6 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-
 		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
 
@@ -481,6 +480,12 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.scale = transform->GetWorldScale();
 
 			mPhysicsEngine->SetCharacterControllerData(id, data);
+
+			fq::physics::CharacterMovementGetSetData moveData;
+			
+			moveData.velocity = rigid->GetLinearVelocity();
+			moveData.isFall = controller->IsFalling();
+			mPhysicsEngine->SetCharacterMovementData(id, moveData);
 		}
 		else
 		{

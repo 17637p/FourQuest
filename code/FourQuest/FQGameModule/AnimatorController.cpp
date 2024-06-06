@@ -175,12 +175,14 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 		// 애니메이션 전환발생
 		if (transition != mTransitions.end())
 		{
+			// 바로 전환
 			if (transition->second.GetTransitionDuration() <= std::numeric_limits<float>::epsilon())
 			{
 				mCurrentState->second.OnStateExit();
 				mCurrentState = mStates.find(transition->second.GetEnterState());
 				mCurrentState->second.OnStateEnter();
 				mCurrentTransition = mTransitions.end();
+				mTimePos = 0.f;
 				emitChangeState();
 			}
 			else
@@ -514,7 +516,7 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 	return false;
 }
 
-void fq::game_module::AnimatorController::Update()
+void fq::game_module::AnimatorController::Update(float dt)
 {
-	mCurrentState->second.OnStateUpdate();
+	mCurrentState->second.OnStateUpdate(dt);
 }

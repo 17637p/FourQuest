@@ -1223,9 +1223,29 @@ void fq::game_engine::Inspector::beginStateBehaviour(fq::game_module::AnimationS
 	ImGui::Dummy({ 0,10 });
 	auto& behaviourMap = stateNode.GetStateBehaviourMap();
 
+	entt::id_type removeBehavour = 0;
+
 	for (auto& [id, behaviour] : behaviourMap)
 	{
+		std::string number = " " + std::string{"##"} + std::to_string(id);
+		ImGui::Button(number.c_str());
+
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::MenuItem("Remove Behaviour"))
+			{
+				removeBehavour = id;
+			}
+			ImGui::EndPopup();
+		}
+
+		ImGui::SameLine();
 		beginClass(behaviour.get(), false);
+	}
+
+	if (removeBehavour != 0)
+	{
+		behaviourMap.erase(removeBehavour);
 	}
 
 	ImGui::Dummy({ 0,10 });

@@ -14,7 +14,7 @@ void fq::client::MonsterIdle::OnStateEnter(fq::game_module::Animator& animator, 
 
 }
 
-void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
+void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
 	Monster* monster = animator.GetComponent<Monster>();
 

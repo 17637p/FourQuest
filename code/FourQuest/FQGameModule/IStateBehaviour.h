@@ -30,7 +30,7 @@ namespace fq::game_module
 		/// <summary>
 		/// OnStateEnter 와 OnStateExit 콜백 사이의 각 업데이트 프레임에서 호출합니다
 		/// </summary>
-		virtual void OnStateUpdate(Animator& animator, AnimationStateNode& state) {};
+		virtual void OnStateUpdate(Animator& animator, AnimationStateNode& state, float dt) {};
 		
 		/// <summary>
 		/// 트랜지션이 종료되고 상태 머신이 함수를 호출합니다. 

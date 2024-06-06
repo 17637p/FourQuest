@@ -36,6 +36,9 @@
     <Filter Include="include\01.Player\State">
       <UniqueIdentifier>{e2c13996-e04b-41bd-9d23-c980f6326ec4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\01.Player\State">
+      <UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -43,9 +46,6 @@
     </ClInclude>
     <ClInclude Include="Client.h">
       <Filter>include\00.Define</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMovement.h">
-      <Filter>include\01.Player</Filter>
     </ClInclude>
     <ClInclude Include="Monster.h">
       <Filter>include\02.Monster</Filter>
@@ -68,13 +68,22 @@
     <ClInclude Include="MonsterAttack.h">
       <Filter>include\02.Monster\State</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerInputState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovementState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDashState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
       <Filter>src\00.Define</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerMovement.cpp">
-      <Filter>src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="Monster.cpp">
       <Filter>src\02.Monster</Filter>
@@ -96,6 +105,18 @@
     </ClCompile>
     <ClCompile Include="MonsterFind.cpp">
       <Filter>src\02.Monster\State</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInputState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDashState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
