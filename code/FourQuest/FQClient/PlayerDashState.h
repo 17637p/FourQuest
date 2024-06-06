@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Users\PC\Desktop\Project\code\FourQuest\FQGameModule\IStateBehaviour.h"
+#include "../FQGameModule/IStateBehaviour.h"
 
 namespace fq::client
 {
