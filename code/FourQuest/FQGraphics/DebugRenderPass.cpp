@@ -121,7 +121,6 @@ namespace fq::graphics
 			case ParticleInfo::Shape::EShape::Box:
 			{
 				debug::OBBInfo obbInfo;
-				obbInfo.OBB.Extents = { 1, 1, 1 };
 				obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
 				mDebugDrawManager->Submit(obbInfo);
 				break;
@@ -130,8 +129,8 @@ namespace fq::graphics
 			{
 				debug::RingInfoEx ringInfo;
 				ringInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
-				ringInfo.XAxis = Vector3::TransformNormal(ringInfo.XAxis * shapeData.Radius, finalTransform);
-				ringInfo.ZAxis = Vector3::TransformNormal(ringInfo.ZAxis * shapeData.Radius, finalTransform);
+				ringInfo.MajorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX * shapeData.Radius, finalTransform);
+				ringInfo.MinorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ * shapeData.Radius, finalTransform);
 				ringInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592 / 180.f;
 				mDebugDrawManager->Submit(ringInfo);
 				break;
