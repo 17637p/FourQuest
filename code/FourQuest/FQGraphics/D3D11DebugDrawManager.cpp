@@ -58,6 +58,11 @@ namespace fq::graphics
 			while (!mRingInfos.empty()) { DrawRing(device, mRingInfos.front()); mRingInfos.pop(); }
 			while (!mRayInfos.empty()) { DrawRay(device, mRayInfos.front()); mRayInfos.pop(); }
 			while (!mPolygonInfos.empty()) { DrawLineStrip(device, mPolygonInfos.front()); mPolygonInfos.pop(); }
+			while (!mHemisphereInfos.empty()) { Draw(device, mHemisphereInfos.front()); mHemisphereInfos.pop(); }
+			while (!mConeInfos.empty()) { Draw(device, mConeInfos.front()); mConeInfos.pop(); }
+			while (!mDountInfos.empty()) { Draw(device, mDountInfos.front()); mDountInfos.pop(); }
+			while (!mSphereInfoExInfos.empty()) { Draw(device, mSphereInfoExInfos.front()); mSphereInfoExInfos.pop(); }
+			while (!mRingInfoExInfos.empty()) { Draw(device, mRingInfoExInfos.front()); mRingInfoExInfos.pop(); }
 		}
 
 		mBatch->End();
@@ -99,27 +104,30 @@ namespace fq::graphics
 	{
 		mPolygonInfos.push(info);
 	}
+	void D3D11DebugDrawManager::Submit(const debug::HemisphereInfo& info)
+	{
+		mHemisphereInfos.push(info);
+	}
+	void D3D11DebugDrawManager::Submit(const debug::ConeInfo& info)
+	{
+		mConeInfos.push(info);
+	}
+	void D3D11DebugDrawManager::Submit(const debug::DountInfo& info)
+	{
+		mDountInfos.push(info);
+	}
+	void D3D11DebugDrawManager::Submit(const debug::SphereInfoEx& info)
+	{
+		mSphereInfoExInfos.push(info);
+	}
+	void D3D11DebugDrawManager::Submit(const debug::RingInfoEx& info)
+	{
+		mRingInfoExInfos.push(info);
+	}
 
 	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfo& info)
 	{
-		mBatchEffect->Apply(device->GetDeviceContext().Get());
-		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
 
-		DirectX::SimpleMath::Vector3 origin = info.Sphere.Center;
-
-		DirectX::SimpleMath::Vector3 xAxis = DirectX::SimpleMath::Vector3::UnitX * info.Sphere.Radius;
-		DirectX::SimpleMath::Vector3 yAxis = DirectX::SimpleMath::Vector3::UnitY * info.Sphere.Radius;
-		DirectX::SimpleMath::Vector3 zAxis = DirectX::SimpleMath::Vector3::UnitZ * info.Sphere.Radius;
-
-		debug::RingInfo ringInfo;
-		ringInfo.Color = info.Color;
-		ringInfo.Origin = origin;
-		ringInfo.MajorAxis = xAxis; ringInfo.MinorAxis = zAxis;
-		DrawRing(device, ringInfo);
-		ringInfo.MajorAxis = xAxis; ringInfo.MinorAxis = yAxis;
-		DrawRing(device, ringInfo);
-		ringInfo.MajorAxis = yAxis; ringInfo.MinorAxis = zAxis;
-		DrawRing(device, ringInfo);
 	}
 	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::AABBInfo& info)
 	{
@@ -220,9 +228,9 @@ namespace fq::graphics
 
 		mBatchEffect->Apply(device->GetDeviceContext().Get());
 		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
-		static const size_t c_ringSegments = 32;
+		static const size_t c_ringSegments = 16;
 
-		VertexPositionColor verts[c_ringSegments + 1];
+		VertexPositionColor verts[c_ringSegments + 2];
 
 		FLOAT fAngleDelta = XM_2PI / float(c_ringSegments);
 		// Instead of calling cos/sin for each segment we calculate
@@ -236,7 +244,7 @@ namespace fq::graphics
 			1.f, 1.f, 1.f, 1.f
 		};
 		XMVECTOR incrementalCos = s_initialCos.v;
-		for (size_t i = 0; i < c_ringSegments; i++)
+		for (size_t i = 0; i < c_ringSegments + 1; i++)
 		{
 			XMVECTOR pos = XMVectorMultiplyAdd(info.MajorAxis, incrementalCos, info.Origin);
 			pos = XMVectorMultiplyAdd(info.MinorAxis, incrementalSin, pos);
@@ -248,7 +256,7 @@ namespace fq::graphics
 			incrementalCos = newCos;
 			incrementalSin = newSin;
 		}
-		verts[c_ringSegments] = verts[0];
+		verts[c_ringSegments + 1] = verts[0];
 
 		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, verts, c_ringSegments + 1);
 	}
@@ -300,6 +308,436 @@ namespace fq::graphics
 		XMStoreFloat4(&vertices.back().color, info.Color);
 
 		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, vertices.data(), vertices.size());
+	}
+
+	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::HemisphereInfo& info)
+	{
+		mBatchEffect->Apply(device->GetDeviceContext().Get());
+		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
+
+		debug::RingInfoEx ringInfo;
+		ringInfo.Color = info.Color;
+		ringInfo.Origin = info.Origin;
+		ringInfo.ArcInRadian = DirectX::XM_PIDIV2;
+
+		if (info.ArcInRadian < DirectX::XM_PI * 0.5f)
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.f)
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.ZAxis;
+			Draw(device, ringInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.5f)
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.ZAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = -info.XAxis;
+			Draw(device, ringInfo);
+		}
+		else
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.ZAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = -info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = -info.ZAxis;
+			Draw(device, ringInfo);
+		}
+
+		using namespace DirectX;
+		using namespace DirectX::SimpleMath;
+		XMVECTOR incrementalSin = XMVectorZero();
+		XMVECTORF32 s_initialCos =
+		{
+			1.f, 1.f, 1.f, 1.f
+		};
+		XMVECTOR cosTheta = XMVectorReplicate(cosf(info.ArcInRadian));
+		XMVECTOR sinTheta = XMVectorReplicate(sinf(info.ArcInRadian));
+		XMVECTOR newCos = s_initialCos * cosTheta - incrementalSin * sinTheta;
+		XMVECTOR newSin = s_initialCos * sinTheta + incrementalSin * cosTheta;
+		XMVECTOR pos = XMVectorMultiplyAdd(info.XAxis, newCos, info.Origin);
+		pos = XMVectorMultiplyAdd(info.ZAxis, newSin, pos);
+
+		DirectX::SimpleMath::Vector3 axis = (Vector3)pos - info.Origin;
+		ringInfo.MajorAxis = info.YAxis;
+		ringInfo.MinorAxis = axis;
+		Draw(device, ringInfo);
+
+		ringInfo.MajorAxis = info.XAxis;
+		ringInfo.MinorAxis = info.ZAxis;
+		ringInfo.ArcInRadian = info.ArcInRadian;
+		Draw(device, ringInfo);
+	}
+	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::ConeInfo& info)
+	{
+		using namespace DirectX::SimpleMath;
+
+		debug::RingInfoEx ringInfo;
+		ringInfo.Origin = info.Origin;
+		ringInfo.MajorAxis = info.XAxis;
+		ringInfo.MinorAxis = info.ZAxis;
+		ringInfo.ArcInRadian = info.ArcInRadian;
+		ringInfo.Color = info.Color;
+		Draw(device, ringInfo);
+
+		Vector3 normalizedXAxis;
+		info.XAxis.Normalize(normalizedXAxis);
+		Vector3 normalizedYAxis;
+		info.YAxis.Normalize(normalizedYAxis);
+		Vector3 normalizedZAxis;
+		info.ZAxis.Normalize(normalizedZAxis);
+
+		debug::RingInfoEx extendRingInfo = ringInfo;
+		extendRingInfo.Origin += normalizedYAxis * info.Height;
+		float extend = tan(info.AngleInRadian) * info.Height;
+		extendRingInfo.MajorAxis = info.XAxis + normalizedXAxis * extend; //
+		extendRingInfo.MinorAxis = info.ZAxis + normalizedZAxis * extend;
+		Draw(device, extendRingInfo);
+
+		debug::PolygonInfo polygonInfo;
+		polygonInfo.Points.resize(2);
+
+		if (info.ArcInRadian < DirectX::XM_PI * 0.5f)
+		{
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MajorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MajorAxis;
+			DrawLineStrip(device, polygonInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.f)
+		{
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MajorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MajorAxis;
+			DrawLineStrip(device, polygonInfo);
+
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MinorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MinorAxis;
+			DrawLineStrip(device, polygonInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.5f)
+		{
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MajorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MajorAxis;
+			DrawLineStrip(device, polygonInfo);
+
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MinorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MinorAxis;
+			DrawLineStrip(device, polygonInfo);
+
+			polygonInfo.Points[0] = ringInfo.Origin - ringInfo.MajorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin - extendRingInfo.MajorAxis;
+			DrawLineStrip(device, polygonInfo);
+		}
+		else
+		{
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MajorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MajorAxis;
+			DrawLineStrip(device, polygonInfo);
+
+			polygonInfo.Points[0] = ringInfo.Origin + ringInfo.MinorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin + extendRingInfo.MinorAxis;
+			DrawLineStrip(device, polygonInfo);
+
+			polygonInfo.Points[0] = ringInfo.Origin - ringInfo.MajorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin - extendRingInfo.MajorAxis;
+			DrawLineStrip(device, polygonInfo);
+
+			polygonInfo.Points[0] = ringInfo.Origin - ringInfo.MinorAxis;
+			polygonInfo.Points[1] = extendRingInfo.Origin - extendRingInfo.MinorAxis;
+			DrawLineStrip(device, polygonInfo);
+		}
+
+		using namespace DirectX;
+		using namespace DirectX::SimpleMath;
+		XMVECTOR incrementalSin = XMVectorZero();
+		XMVECTORF32 s_initialCos =
+		{
+			1.f, 1.f, 1.f, 1.f
+		};
+		XMVECTOR cosTheta = XMVectorReplicate(cosf(info.ArcInRadian));
+		XMVECTOR sinTheta = XMVectorReplicate(sinf(info.ArcInRadian));
+		XMVECTOR newCos = s_initialCos * cosTheta - incrementalSin * sinTheta;
+		XMVECTOR newSin = s_initialCos * sinTheta + incrementalSin * cosTheta;
+		XMVECTOR pos = XMVectorMultiplyAdd(ringInfo.MajorAxis, newCos, ringInfo.Origin);
+		pos = XMVectorMultiplyAdd(ringInfo.MinorAxis, newSin, pos);
+		XMVECTOR extendedPos = XMVectorMultiplyAdd(extendRingInfo.MajorAxis, newCos, extendRingInfo.Origin);
+		extendedPos = XMVectorMultiplyAdd(extendRingInfo.MinorAxis, newSin, extendedPos);
+
+		polygonInfo.Points[0] = pos;
+		polygonInfo.Points[1] = extendedPos;
+		DrawLineStrip(device, polygonInfo);
+	}
+	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::DountInfo& info)
+	{
+		using namespace DirectX::SimpleMath;
+
+		Vector3 normalizedZAxis;
+		info.ZAxis.Normalize(normalizedZAxis);
+		Vector3 normalizedYAxis;
+		info.YAxis.Normalize(normalizedYAxis);
+		Vector3 normalizedXAxis;
+		info.XAxis.Normalize(normalizedXAxis);
+
+		debug::RingInfoEx ringInfo;
+		ringInfo.ArcInRadian = info.ArcInRadian;
+		ringInfo.MajorAxis = info.XAxis;
+		ringInfo.MinorAxis = info.ZAxis;
+		ringInfo.Color = info.Color;
+
+		ringInfo.Origin = info.Origin + normalizedYAxis * info.DountRadius;
+		Draw(device, ringInfo);
+
+		ringInfo.Origin = info.Origin - normalizedYAxis * info.DountRadius;
+		Draw(device, ringInfo);
+
+		ringInfo.Origin = info.Origin;
+		ringInfo.MajorAxis = info.XAxis + normalizedXAxis * info.DountRadius;
+		ringInfo.MinorAxis = info.ZAxis + normalizedZAxis * info.DountRadius;
+		Draw(device, ringInfo);
+
+		ringInfo.Origin = info.Origin;
+		ringInfo.MajorAxis = info.XAxis - normalizedXAxis * info.DountRadius;
+		ringInfo.MinorAxis = info.ZAxis - normalizedZAxis * info.DountRadius;
+		Draw(device, ringInfo);
+
+		if (info.ArcInRadian < DirectX::XM_PI * 0.5f)
+		{
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedXAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.XAxis + info.Origin;
+			Draw(device, ringInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.f)
+		{
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedXAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.XAxis + info.Origin;
+			Draw(device, ringInfo);
+
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedZAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.ZAxis + info.Origin;
+			Draw(device, ringInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.5f)
+		{
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedXAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.XAxis + info.Origin;
+			Draw(device, ringInfo);
+
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedZAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.ZAxis + info.Origin;
+			Draw(device, ringInfo);
+
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedXAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = -info.XAxis + info.Origin;
+			Draw(device, ringInfo);
+		}
+		else
+		{
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedXAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.XAxis + info.Origin;
+			Draw(device, ringInfo);
+
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedZAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = info.ZAxis + info.Origin;
+			Draw(device, ringInfo);
+
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedXAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = -info.XAxis + info.Origin;
+			Draw(device, ringInfo);
+
+			ringInfo.ArcInRadian = DirectX::XM_2PI;
+			ringInfo.MajorAxis = normalizedZAxis * info.DountRadius;
+			ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+			ringInfo.Origin = -info.ZAxis + info.Origin;
+			Draw(device, ringInfo);
+		}
+
+		using namespace DirectX;
+		using namespace DirectX::SimpleMath;
+		XMVECTOR incrementalSin = XMVectorZero();
+		XMVECTORF32 s_initialCos =
+		{
+			1.f, 1.f, 1.f, 1.f
+		};
+		XMVECTOR cosTheta = XMVectorReplicate(cosf(info.ArcInRadian));
+		XMVECTOR sinTheta = XMVectorReplicate(sinf(info.ArcInRadian));
+		XMVECTOR newCos = s_initialCos * cosTheta - incrementalSin * sinTheta;
+		XMVECTOR newSin = s_initialCos * sinTheta + incrementalSin * cosTheta;
+		XMVECTOR pos = XMVectorMultiplyAdd(info.XAxis, newCos, info.Origin);
+		pos = XMVectorMultiplyAdd(info.ZAxis, newSin, pos);
+
+		DirectX::SimpleMath::Vector3 axis = (Vector3)pos - info.Origin;
+		DirectX::SimpleMath::Vector3 normalizedAxis;
+		axis.Normalize(normalizedAxis);
+		ringInfo.Origin = info.Origin + axis;
+		ringInfo.MajorAxis = normalizedAxis * info.DountRadius;
+		ringInfo.MinorAxis = normalizedYAxis * info.DountRadius;
+		Draw(device, ringInfo);
+	}
+
+	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfoEx& info)
+	{
+		mBatchEffect->Apply(device->GetDeviceContext().Get());
+		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
+
+		debug::RingInfoEx ringInfo;
+		ringInfo.Color = info.Color;
+		ringInfo.Origin = info.Origin;
+		ringInfo.ArcInRadian = DirectX::XM_PI;
+
+		if (info.ArcInRadian < DirectX::XM_PI * 0.5f)
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.f)
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.ZAxis;
+			Draw(device, ringInfo);
+		}
+		else if (info.ArcInRadian < DirectX::XM_PI * 1.5f)
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.ZAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = -info.XAxis;
+			Draw(device, ringInfo);
+		}
+		else
+		{
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = info.ZAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = -info.XAxis;
+			Draw(device, ringInfo);
+
+			ringInfo.MajorAxis = info.YAxis;
+			ringInfo.MinorAxis = -info.ZAxis;
+			Draw(device, ringInfo);
+		}
+
+		using namespace DirectX;
+		using namespace DirectX::SimpleMath;
+		XMVECTOR incrementalSin = XMVectorZero();
+		XMVECTORF32 s_initialCos =
+		{
+			1.f, 1.f, 1.f, 1.f
+		};
+		XMVECTOR cosTheta = XMVectorReplicate(cosf(info.ArcInRadian));
+		XMVECTOR sinTheta = XMVectorReplicate(sinf(info.ArcInRadian));
+		XMVECTOR newCos = s_initialCos * cosTheta - incrementalSin * sinTheta;
+		XMVECTOR newSin = s_initialCos * sinTheta + incrementalSin * cosTheta;
+		XMVECTOR pos = XMVectorMultiplyAdd(info.XAxis, newCos, info.Origin);
+		pos = XMVectorMultiplyAdd(info.ZAxis, newSin, pos);
+
+		DirectX::SimpleMath::Vector3 axis = (Vector3)pos - info.Origin;
+		ringInfo.MajorAxis = info.YAxis;
+		ringInfo.MinorAxis = axis;
+		ringInfo.Color = { 1, 0, 0,1 };
+		Draw(device, ringInfo);
+
+		ringInfo.MajorAxis = info.XAxis;
+		ringInfo.MinorAxis = info.ZAxis;
+		ringInfo.ArcInRadian = info.ArcInRadian;
+		Draw(device, ringInfo);
+	}
+
+	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::RingInfoEx& info)
+	{
+		using namespace DirectX;
+
+		mBatchEffect->Apply(device->GetDeviceContext().Get());
+		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
+		static const size_t c_ringSegments = 16;
+
+		VertexPositionColor verts[c_ringSegments + 2];
+
+		FLOAT fAngleDelta = info.ArcInRadian / float(c_ringSegments);
+		// Instead of calling cos/sin for each segment we calculate
+		// the sign of the angle delta and then incrementally calculate sin
+		// and cosine from then on.
+		XMVECTOR cosDelta = XMVectorReplicate(cosf(fAngleDelta));
+		XMVECTOR sinDelta = XMVectorReplicate(sinf(fAngleDelta));
+		XMVECTOR incrementalSin = XMVectorZero();
+		static const XMVECTORF32 s_initialCos =
+		{
+			1.f, 1.f, 1.f, 1.f
+		};
+		XMVECTOR incrementalCos = s_initialCos.v;
+		for (size_t i = 0; i < c_ringSegments + 1; i++)
+		{
+			XMVECTOR pos = XMVectorMultiplyAdd(info.MajorAxis, incrementalCos, info.Origin);
+			pos = XMVectorMultiplyAdd(info.MinorAxis, incrementalSin, pos);
+			XMStoreFloat3(&verts[i].position, pos);
+			XMStoreFloat4(&verts[i].color, info.Color);
+			// Standard formula to rotate a vector.
+			XMVECTOR newCos = incrementalCos * cosDelta - incrementalSin * sinDelta;
+			XMVECTOR newSin = incrementalCos * sinDelta + incrementalSin * cosDelta;
+			incrementalCos = newCos;
+			incrementalSin = newSin;
+		}
+		verts[c_ringSegments + 1] = verts[0];
+
+		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, verts, c_ringSegments + 1);
 	}
 
 	void D3D11DebugDrawManager::drawCube(const std::shared_ptr<D3D11Device>& device,

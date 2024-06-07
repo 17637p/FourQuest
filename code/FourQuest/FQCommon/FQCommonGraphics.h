@@ -269,6 +269,49 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
 		};
 
+		struct SphereInfoEx
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 XAxis = DirectX::SimpleMath::Vector3::UnitX;
+			DirectX::SimpleMath::Vector3 YAxis = DirectX::SimpleMath::Vector3::UnitY;
+			DirectX::SimpleMath::Vector3 ZAxis = DirectX::SimpleMath::Vector3::UnitZ;
+			float ArcInRadian = DirectX::XM_2PI;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct HemisphereInfo
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 XAxis = DirectX::SimpleMath::Vector3::UnitX;
+			DirectX::SimpleMath::Vector3 YAxis = DirectX::SimpleMath::Vector3::UnitY;
+			DirectX::SimpleMath::Vector3 ZAxis = DirectX::SimpleMath::Vector3::UnitZ;
+			float ArcInRadian = DirectX::XM_2PI;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct ConeInfo
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 XAxis = DirectX::SimpleMath::Vector3::UnitX;
+			DirectX::SimpleMath::Vector3 YAxis = DirectX::SimpleMath::Vector3::UnitY;
+			DirectX::SimpleMath::Vector3 ZAxis = DirectX::SimpleMath::Vector3::UnitZ;
+			float AngleInRadian = 25;
+			float ArcInRadian = DirectX::XM_2PI;
+			float Height;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct DountInfo
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 XAxis = DirectX::SimpleMath::Vector3::UnitX;
+			DirectX::SimpleMath::Vector3 YAxis = DirectX::SimpleMath::Vector3::UnitY;
+			DirectX::SimpleMath::Vector3 ZAxis = DirectX::SimpleMath::Vector3::UnitZ;
+			float ArcInRadian = DirectX::XM_2PI;
+			float DountRadius;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
 		struct AABBInfo
 		{
 			DirectX::BoundingBox AABB;
@@ -303,6 +346,15 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 Origin;
 			DirectX::SimpleMath::Vector3 MajorAxis;
 			DirectX::SimpleMath::Vector3 MinorAxis;
+			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		};
+
+		struct RingInfoEx
+		{
+			DirectX::SimpleMath::Vector3 Origin;
+			DirectX::SimpleMath::Vector3 MajorAxis;
+			DirectX::SimpleMath::Vector3 MinorAxis;
+			float ArcInRadian = DirectX::XM_2PI;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
 		};
 
