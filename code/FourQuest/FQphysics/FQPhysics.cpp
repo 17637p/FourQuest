@@ -331,7 +331,6 @@ namespace fq::physics
 	}
 
 #pragma  region spdlog
-
 	std::shared_ptr<spdlog::logger> FQPhysics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)
 	{
 		auto logger = std::make_shared<spdlog::logger>("Physics",

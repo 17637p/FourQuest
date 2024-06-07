@@ -64,7 +64,6 @@ namespace fq::physics
 			else
 				mVelocity.z = std::lerp(mVelocity.z, 0.f, mDynamicFriction);
 
-
 			mVelocity.x += (input.x * mAcceleration * deltaTime);
 			mVelocity.z += (input.z * mAcceleration * deltaTime);
 		}
@@ -99,6 +98,7 @@ namespace fq::physics
 	{
 		mVelocity.x = std::clamp(mVelocity.x, -mMaxSpeed, mMaxSpeed);
 		mVelocity.z = std::clamp(mVelocity.z, -mMaxSpeed, mMaxSpeed);
+
 	}
 
 	void CharacterMovement::Compute(float deltaTime)
@@ -115,11 +115,18 @@ namespace fq::physics
 			mSpeed = mMaxSpeed;
 
 		// 변위 벡터 계산
-		float triangleFunction = sqrt((mVelocity.x * mVelocity.x) + (mVelocity.z * mVelocity.z));
-		if (abs(mVelocity.x) >= 0.001f)
-			mDisplacementVector.x = (mVelocity.x) / triangleFunction * mSpeed;
-		if (abs(mVelocity.z) >= 0.001f)
-			mDisplacementVector.z = (mVelocity.z) / triangleFunction * mSpeed;
+		float triangleFunction = sqrt(mVelocity.x * mVelocity.x + mVelocity.z * mVelocity.z);
+		if (triangleFunction >= 0.001f)
+		{
+			mDisplacementVector.x = (mVelocity.x / triangleFunction) * mSpeed;
+			mDisplacementVector.z = (mVelocity.z / triangleFunction) * mSpeed;
+		}
+		else
+		{
+			mDisplacementVector.x = 0;
+			mDisplacementVector.z = 0;
+		}
+
 		mDisplacementVector.y = mVelocity.y;
 	}
 
@@ -129,6 +136,5 @@ namespace fq::physics
 		direction.y = mDisplacementVector.y;
 		direction.z = -mDisplacementVector.z;
 	}
-
 }
 
