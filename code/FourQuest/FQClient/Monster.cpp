@@ -1,15 +1,19 @@
 #include "Monster.h"
 
-//temp: 나중에 찐 플레이어로 바꿀 것
 #include "Player.h"
 
 fq::client::Monster::Monster()
-	:mHP(),
-	mAttackPower(),
-	mMoveSpeed(),
+	:mTarget(nullptr),
 	mIsDamaged(false),
-	mTargetAttackRange(500),
-	mChaseDistance(30)
+	mDamaged(0),
+	mLastAttacker(nullptr),
+	mHP(0),
+	mAttackPower(0),
+	mMoveSpeed(0),
+	mTargetAttackRange(1),
+	mChaseDistance(5),
+	mAttackWaitTime(1),
+	mAttack()
 {
 	
 }
@@ -32,6 +36,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::Monster::Clone(std::shar
 		// 기본 대입 연산자 호출한다.
 		*cloneMonster = *this;
 	}
+	cloneMonster->mTarget = nullptr;
+	cloneMonster->mLastAttacker = nullptr;
 
 	return cloneMonster;
 }
