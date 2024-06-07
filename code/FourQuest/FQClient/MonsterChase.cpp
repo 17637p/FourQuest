@@ -74,15 +74,22 @@ void fq::client::MonsterChase::rotateTowards(fq::game_module::Animator& animator
 	auto myTransform = monster->GetComponent<fq::game_module::Transform>();
 	DirectX::SimpleMath::Vector3 myPosition = myTransform->GetWorldPosition();
 	// »©±â
-	DirectX::SimpleMath::Vector3 directionVector = myPosition - playerPosition;
-	DirectX::SimpleMath::Vector3 curVector = getDirectionVectorFromQuaternion(myTransform->GetLocalRotation());
+	DirectX::SimpleMath::Vector3 directionVector = playerPosition - myPosition;
+	directionVector.y = 0;
 
 	directionVector.Normalize();
-	curVector.Normalize();
 
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::FromToRotation(curVector, directionVector);
+	DirectX::SimpleMath::Quaternion directionQuaternion;
+	if (directionVector == DirectX::SimpleMath::Vector3::Backward)
+	{
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directionVector, { 0, -1, 0 });
+	}
+	else
+	{
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directionVector, { 0, 1, 0 });
+	}
 
-	myTransform->SetLocalRotation(myTransform->GetLocalRotation() * directionQuaternion);
+	myTransform->SetLocalRotation(directionQuaternion);
 }
 
 DirectX::SimpleMath::Vector3 fq::client::MonsterChase::getDirectionVectorFromQuaternion(const DirectX::SimpleMath::Quaternion& quaternion)
