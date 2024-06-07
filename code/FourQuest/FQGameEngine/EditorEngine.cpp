@@ -45,7 +45,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mGameProcess->mSceneManager->Initialize("PlayerTest2"
+	mGameProcess->mSceneManager->Initialize("Particle"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());

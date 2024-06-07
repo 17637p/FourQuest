@@ -1204,6 +1204,27 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					beginIsItemHovered_Comment(data);
 
 				}
+				else if (data.type() == entt::resolve<DirectX::SimpleMath::Vector3>())
+				{
+					DirectX::SimpleMath::Vector3 v = data.get(pod).cast<DirectX::SimpleMath::Vector3>();
+					std::string memberName = fq::reflect::GetName(data);
+
+					float f[3]{ v.x,v.y, v.z };
+
+					ImGui::InputFloat3(memberName.c_str(), f);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						v.x = f[0];
+						v.y = f[1];
+						v.z = f[2];
+						data.set(pod, v);
+						changedData = true;
+					}
+
+					beginIsItemHovered_Comment(data);
+
+				}
 				else if (data.type() == entt::resolve<DirectX::SimpleMath::Color>())
 				{
 					using namespace DirectX::SimpleMath;

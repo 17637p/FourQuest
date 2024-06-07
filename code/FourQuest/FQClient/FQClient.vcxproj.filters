@@ -89,17 +89,17 @@
     <ClInclude Include="PlayerMovementState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>include\01.Player</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="PlayerAttackState.h">
       <Filter>include\01.Player\State</Filter>
-	</ClInclude>
-	<ClInclude Include="CameraMoving.h">
+    </ClInclude>
+    <ClInclude Include="CameraMoving.h">
       <Filter>include\04.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>include\01.Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -144,8 +144,8 @@
     </ClCompile>
     <ClCompile Include="PlayerAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
-	</ClCompile>
-	<ClCompile Include="CameraMoving.cpp">
+    </ClCompile>
+    <ClCompile Include="CameraMoving.cpp">
       <Filter>src\04.Camera</Filter>
     </ClCompile>
   </ItemGroup>

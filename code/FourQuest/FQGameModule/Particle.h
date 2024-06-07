@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 
+#include <vector>
 #include "../FQCommon/IFQRenderObject.h"
 
 namespace fq::game_module
@@ -53,6 +54,12 @@ namespace fq::game_module
 
 		ParticleInfo::Render GetRenderData()const { return mParticleInfo.RenderData; }
 		void SetRenderData(ParticleInfo::Render data);
+
+		std::vector<ParticleInfo::Emission::Burst> GetEmissionBursts()const { return mParticleInfo.EmissionData.Bursts; }
+		void SetEmissionBursts(std::vector<ParticleInfo::Emission::Burst> bursts) { mParticleInfo.EmissionData.Bursts = bursts; }
+
+		float GetParticlesPerSecond()const { return mParticleInfo.EmissionData.ParticlesPerSecond; }
+		void SetParticlesPerSecond(float data);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

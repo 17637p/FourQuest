@@ -7,6 +7,7 @@
 
 fq::game_engine::ParticleSystem::ParticleSystem()
 	:mGameProcess(nullptr)
+	,mbIsGameLoaded(false)
 {}
 
 fq::game_engine::ParticleSystem::~ParticleSystem()
@@ -59,22 +60,24 @@ void fq::game_engine::ParticleSystem::Update(float dt)
 
 void fq::game_engine::ParticleSystem::OnUnLoadScene()
 {
-
+	mbIsGameLoaded = false;
 }
 
 void fq::game_engine::ParticleSystem::OnAddGameObject(const fq::event::AddGameObject& event)
 {
+	if (!mbIsGameLoaded) return;
 
+	loadParticle(event.object);
 }
 
 void fq::game_engine::ParticleSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
-
+	unloadParticle(event.object);
 }
 
 void fq::game_engine::ParticleSystem::AddComponent(const fq::event::AddComponent& event)
 {
-
+	
 }
 
 void fq::game_engine::ParticleSystem::RemoveComponent(const fq::event::RemoveComponent& event)
@@ -90,6 +93,8 @@ void fq::game_engine::ParticleSystem::OnLoadScene()
 	{
 		loadParticle(&object);
 	}
+
+	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* object)
@@ -107,5 +112,19 @@ void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* 
 
 	particleObject->SetIsRenderDebug(true);
 	particleObject->SetIsEmit(true);
+}
+
+void fq::game_engine::ParticleSystem::unloadParticle(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Particle>())
+	{
+		return;
+	}
+
+	auto particle = object->GetComponent<fq::game_module::Particle>();
+	auto particleObject = particle->GetParticleObject();
+
+	if (particleObject != nullptr)
+		mGameProcess->mGraphics->DeleteParticleObject(particleObject);
 }
 

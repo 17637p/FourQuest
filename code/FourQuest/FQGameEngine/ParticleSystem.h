@@ -56,6 +56,7 @@ namespace fq::game_engine
 
 	private:
 		void loadParticle(fq::game_module::GameObject* object);
+		void unloadParticle(fq::game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;

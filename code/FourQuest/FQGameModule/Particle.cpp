@@ -79,3 +79,10 @@ void fq::game_module::Particle::SetRenderData(ParticleInfo::Render data)
 {
 	mParticleInfo.RenderData = data;
 }
+
+
+void fq::game_module::Particle::SetParticlesPerSecond(float data)
+{
+	mParticleInfo.EmissionData.ParticlesPerSecond = data;
+
+}
