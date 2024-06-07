@@ -803,6 +803,12 @@ void Process::particleInit()
 		particleInfo.ShapeData.Radius = 10.f;
 		particleInfo.ShapeData.DountRadius = 5.f;
 
+		particleInfo.SizeOverLifetimeData.bIsUsed = true;
+		particleInfo.SizeOverLifetimeData.PointA = { 50, 0.f };
+		particleInfo.SizeOverLifetimeData.PointB = { 1, 0.5f };
+		particleInfo.SizeOverLifetimeData.PointC = { 1, 0.9f };
+		particleInfo.SizeOverLifetimeData.PointD = { 20, 1.f };
+
 		//particleInfo.ColorOverLifetimeData.bIsUsed = true;
 		//particleInfo.ColorOverLifetimeData.AlphaRatios[0] = { 1.f, 0 };
 		//particleInfo.ColorOverLifetimeData.AlphaRatios[1] = { 0.5f, 0.25f };
@@ -882,8 +888,17 @@ void Process::particleInit()
 		particleInfo.ShapeData.Scale = { 10, 10, 10 };
 		particleInfo.ShapeData.Radius = 10.f;
 
-		particleInfo.RotationOverLifetimeData.bIsUsed = true;
-		particleInfo.RotationOverLifetimeData.AngularVelocityInDegree = 360;
+		particleInfo.SizeOverLifetimeData.bIsUsed = true;
+		particleInfo.SizeOverLifetimeData.PointA = { 50, 0.f };
+		particleInfo.SizeOverLifetimeData.PointB = { 1, 0.5f };
+		particleInfo.SizeOverLifetimeData.PointC = { 1, 0.9f };
+		particleInfo.SizeOverLifetimeData.PointD = { 20, 1.f };
+
+		// particleInfo.VelocityOverLifetimeData.bIsUsed = true;
+		// particleInfo.VelocityOverLifetimeData.Velocity = { 0, 10, 0 };
+		// particleInfo.VelocityOverLifetimeData.Orbital = { 0, 1, 0 };
+		// particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
+
 
 		obj = mTestGraphics->CreateParticleObject(particleInfo);
 		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 200, 300,0 }));
