@@ -267,13 +267,13 @@
     <Filter Include="Shader\Particle\Simulation">
       <UniqueIdentifier>{76577010-c364-4424-ab87-96615d60b7ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Source">
+      <UniqueIdentifier>{77b3181f-8aea-4aff-a2a9-046ad29cb9dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderObject.cpp">
-      <Filter>Object</Filter>
     </ClCompile>
     <ClCompile Include="FowardRenderPass.cpp">
       <Filter>Pass\ForwardPipelinePass</Filter>
@@ -404,9 +404,6 @@
     <ClCompile Include="D3D11ParticleManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleObject.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
     <ClCompile Include="SSAOPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
@@ -424,6 +421,12 @@
     </ClCompile>
     <ClCompile Include="OutLineAddPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleObject.cpp">
+      <Filter>Object\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>Object\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -36,7 +36,13 @@ namespace fq::graphics
 		void Submit(const debug::RingInfo& info);
 		void Submit(const debug::RayInfo& info);
 		void Submit(const debug::PolygonInfo& info);
+		void Submit(const debug::HemisphereInfo& info);
+		void Submit(const debug::ConeInfo& info);
+		void Submit(const debug::DountInfo& info);
+		void Submit(const debug::SphereInfoEx& info);
+		void Submit(const debug::RingInfoEx& info);
 
+	private:
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfo& info);
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::AABBInfo& info);
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::OBBInfo& info);
@@ -45,6 +51,11 @@ namespace fq::graphics
 		void DrawRing(const std::shared_ptr<D3D11Device>& device, const debug::RingInfo& info);
 		void DrawRay(const std::shared_ptr<D3D11Device>& device, const debug::RayInfo& info);
 		void DrawLineStrip(const std::shared_ptr<D3D11Device>& device, const debug::PolygonInfo& info);
+		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::HemisphereInfo& info);
+		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::ConeInfo& info);
+		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::DountInfo& info);
+		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfoEx& info);
+		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::RingInfoEx& info);
 
 	private:
 		void drawCube(const std::shared_ptr<D3D11Device>& device,
@@ -65,5 +76,10 @@ namespace fq::graphics
 		std::queue<debug::RingInfo> mRingInfos;
 		std::queue<debug::RayInfo> mRayInfos;
 		std::queue<debug::PolygonInfo> mPolygonInfos;
+		std::queue<debug::HemisphereInfo> mHemisphereInfos;
+		std::queue<debug::ConeInfo> mConeInfos;
+		std::queue<debug::DountInfo> mDountInfos;
+		std::queue<debug::SphereInfoEx> mSphereInfoExInfos;
+		std::queue<debug::RingInfoEx> mRingInfoExInfos;
 	};
 }

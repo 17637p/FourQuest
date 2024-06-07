@@ -81,4 +81,96 @@ namespace fq::graphics
 		mParticleInfo = info;
 		mTexture = mResourceManager->Create<D3D11Texture>(info.RenderData.TexturePath);
 	}
+
+	void ParticleObject::reset()
+	{
+		mbIsReset = false;
+		mTimePos = 0.f;
+		mFrameTime = 0.f;
+		mAccumlation = 0.f;
+		mNumToEmit = 0;
+	}
+
+	void ParticleObject::caculateNumToEmit()
+	{
+		mTimePos += mFrameTime;
+
+		if (mParticleInfo.EmissionData.ParticlesPerSecond < 0.f)
+		{
+			return;
+		}
+		if (!mParticleInfo.MainData.bIsLooping && mParticleInfo.MainData.Duration < mTimePos)
+		{
+			return;
+		}
+
+		if (mCycleCount < mTimePos / mParticleInfo.MainData.Duration)
+		{
+			mCycleCount = mTimePos / mParticleInfo.MainData.Duration;
+			mbIsRunDuationCycle = true;
+		}
+
+		if (mbIsRunDuationCycle)
+		{
+			switch (mParticleInfo.MainData.StartDelayOption)
+			{
+			case ParticleInfo::EOption::Constant:
+				mStartTimePos = mParticleInfo.MainData.StartDelay[0];
+				break;
+			case ParticleInfo::EOption::RandomBetweenTwoConstant:
+			{
+				float ratio = D3D11Util::RandF(0.f, 1.f);
+				mStartTimePos = std::lerp(mParticleInfo.MainData.StartDelay[0], mParticleInfo.MainData.StartDelay[1], ratio);
+				break;
+			}
+			default:
+				break;
+			}
+
+			mbIsRunDuationCycle = false;
+		}
+
+		float modTimePos = fmod(mTimePos, mParticleInfo.MainData.Duration);
+		const float prevModTimePos = modTimePos - mTimePos;
+
+		if (mStartTimePos > modTimePos)
+		{
+			return;
+		}
+
+		if (mbIsEmit)
+		{
+			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * mFrameTime;
+		}
+
+		if (mAccumlation > 1.f)
+		{
+			double integerPart;
+
+			mAccumlation = modf(mAccumlation, &integerPart);
+			mNumToEmit = (int)integerPart;
+		}
+		else
+		{
+			mNumToEmit = 0;
+		}
+
+		for (const ParticleInfo::Emission::Burst& burst : mParticleInfo.EmissionData.Bursts)
+		{
+			for (size_t i = 0; i < burst.Cycles; ++i)
+			{
+				float checkedTimePos = burst.TimePos + burst.Interval * i;
+
+				if (prevModTimePos < checkedTimePos && checkedTimePos < mTimePos)
+				{
+					float ratio = D3D11Util::RandF(0.f, 1.f);
+
+					if (burst.Probability >= ratio)
+					{
+						mNumToEmit += burst.Count;
+					}
+				}
+			}
+		}
+	}
 }
