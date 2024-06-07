@@ -921,7 +921,7 @@ void Process::particleInit()
 void Process::particleUpdate()
 {
 	using namespace fq::graphics;
-	return;
+//	return;
 
 	static float s_particlesPerSecond = 10.f;
 	static bool s_bUsedX = true;

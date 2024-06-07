@@ -9,6 +9,7 @@
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
 #include "Light.h"
+#include "Particle.h"
 
 // Physics
 #include "Terrain.h"
@@ -495,12 +496,85 @@ void fq::game_module::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 
 	{
-		//using namespace graphics;
+		using namespace graphics;
 
-		//entt::meta<ParticleInfo::EOption>()
-		//	.prop(fq::reflect::prop::Name, "ParticleOption")
-		//	.conv<std::underlying_type_t<ETag>>()
-		//	.data<ETag::Untagged>("Untagged"_hs);
+		entt::meta<ParticleInfo::EOption>()
+			.prop(fq::reflect::prop::Name, "ParticleOption")
+			.conv<std::underlying_type_t<ParticleInfo::EOption>>()
+			.data<ParticleInfo::EOption::Constant>("Contant"_hs)
+			.prop(fq::reflect::prop::Name, "Constant")
+			.data<ParticleInfo::EOption::RandomBetweenTwoConstant>("RandomBetweenTwoConstant"_hs)
+			.prop(fq::reflect::prop::Name, "RandomBetweenTwoConstant");
+
+
+		entt::meta<ParticleInfo::Main>()
+			.type("ParticleMainInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleMainInfo")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Main::Duration>("Duration"_hs)
+			.prop(fq::reflect::prop::Name, "Duration")
+			.prop(fq::reflect::prop::Comment, u8"총 재생시간")
+			.data<&ParticleInfo::Main::bIsLooping>("IsLooping"_hs)
+			.prop(fq::reflect::prop::Name, "IsLooping")
+
+			.data<&ParticleInfo::Main::StartDelayOption>("StartDelayOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartDelayOption")
+			.data<&ParticleInfo::Main::StartDelay>("StartDelay"_hs)
+			.prop(fq::reflect::prop::Name, "StartDelay")
+			.prop(fq::reflect::prop::Comment, u8"방출 시작 시간")
+
+			.data<&ParticleInfo::Main::StartLifeTimeOption>("StartLifeTimeOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartLifeTimeOption")
+			.data<&ParticleInfo::Main::StartLifeTime>("StartLifeTime"_hs)
+			.prop(fq::reflect::prop::Name, "StartLifeTime")
+			.prop(fq::reflect::prop::Comment, u8"파티클 생존 시간")
+
+			.data<&ParticleInfo::Main::StartSpeedOption>("StartSpeedOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartSpeedOption")
+			.data<&ParticleInfo::Main::StartSpeed>("StartSpeed"_hs)
+			.prop(fq::reflect::prop::Name, "StartSpeed")
+			.prop(fq::reflect::prop::Comment, u8"방출 속도")
+
+			.data<&ParticleInfo::Main::StartSizeOption>("StartSizeOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartSizeOption")
+			.data<&ParticleInfo::Main::StartSize>("StartSize"_hs)
+			.prop(fq::reflect::prop::Name, "StartSize")
+			.prop(fq::reflect::prop::Comment, u8"파티클 크기")
+
+			.data<&ParticleInfo::Main::StartRotationOption>("StartRotationOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartRotationOption")
+			.data<&ParticleInfo::Main::StartRotation>("StartRotation"_hs)
+			.prop(fq::reflect::prop::Name, "StartRotation")
+			.prop(fq::reflect::prop::Comment, u8"파티클 회전")
+
+			.data<&ParticleInfo::Main::StartColorOption>("StartColorOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartColorOption")
+			.data<&ParticleInfo::Main::StartColor0>("StartColor0"_hs)
+			.prop(fq::reflect::prop::Name, "StartColor0")
+			.prop(fq::reflect::prop::Comment, u8"파티클 색상")
+			.data<&ParticleInfo::Main::StartColor1>("StartColor1"_hs)
+			.prop(fq::reflect::prop::Name, "StartColor1")
+			.prop(fq::reflect::prop::Comment, u8"파티클 색상")
+
+			.data<&ParticleInfo::Main::GravityModifierOption>("GravityModifierOption"_hs)
+			.prop(fq::reflect::prop::Name, "GravityModifierOption")
+			.data<&ParticleInfo::Main::GravityModifier>("GravityModifier"_hs)
+			.prop(fq::reflect::prop::Name, "GravityModifier")
+			.prop(fq::reflect::prop::Comment, u8"파티클 중력")
+
+			.data<&ParticleInfo::Main::SimulationSpeed>("SimulationSpeed"_hs)
+			.prop(fq::reflect::prop::Name, "SimulationSpeed")
+
+			.data<&ParticleInfo::Main::MaxParticleCount>("MaxParticleCount"_hs)
+			.prop(fq::reflect::prop::Name, "MaxParticleCount")
+			.prop(fq::reflect::prop::Comment, u8"최대 1024");
+		
+		entt::meta<Particle>()
+			.type("Particle"_hs)
+			.prop(fq::reflect::prop::Name, "Particle")
+			.data<&Particle::SetMainParticleInfo, &Particle::GetMainParticleInfo>("ParticleMainInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleMainInfo")
+			.base<Component>();
 
 	}
 

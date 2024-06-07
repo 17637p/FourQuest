@@ -17,7 +17,7 @@ fq::game_engine::ParticleSystem::~ParticleSystem()
 void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 {
 	mGameProcess = gameProcess;
-	
+
 	// EventHandle µî·Ï
 	auto& eventMgr = mGameProcess->mEventManager;
 
@@ -38,13 +38,23 @@ void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 
 	mRemoveComponentHandler = eventMgr->
 		RegisterHandle<fq::event::RemoveComponent>(this, &ParticleSystem::RemoveComponent);
-
-
 }
 
 void fq::game_engine::ParticleSystem::Update(float dt)
 {
+	using namespace fq::game_module;
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	scene->ViewComponents<Transform, Particle>
+		([dt](GameObject& object, Transform& transform, Particle& particle)
+			{
+				auto particleObject = particle.GetParticleObject();
+				if (particleObject)
+				{
+					particleObject->SetTransform(transform.GetWorldMatrix());
+					particleObject->SetFrameTime(dt);
+				}
+			});
 }
 
 void fq::game_engine::ParticleSystem::OnUnLoadScene()
@@ -74,5 +84,28 @@ void fq::game_engine::ParticleSystem::RemoveComponent(const fq::event::RemoveCom
 
 void fq::game_engine::ParticleSystem::OnLoadScene()
 {
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	for (auto& object : scene->GetObjectView(true))
+	{
+		loadParticle(&object);
+	}
 }
+
+void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Particle>())
+	{
+		return;
+	}
+
+	auto particle = object->GetComponent<fq::game_module::Particle>();
+	auto particleInfo = particle->GetParticleInfomation();
+
+	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleInfo);
+	particle->SetParticleObject(particleObject);
+
+	particleObject->SetIsRenderDebug(true);
+	particleObject->SetIsEmit(true);
+}
+

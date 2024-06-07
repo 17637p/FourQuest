@@ -26,6 +26,7 @@
 #include "RigidBody.h"
 #include "CharacterController.h"
 #include "SoundClip.h"
+#include "Particle.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"
