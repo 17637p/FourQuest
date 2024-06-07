@@ -122,23 +122,23 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector2 StartDelay{ 0.f, 0.f }; // 방출 시작 시간
 
 			EOption StartLifeTimeOption = EOption::Constant;
-			DirectX::SimpleMath::Vector2  StartLifeTime{ 5.f, }; // 파티클 생존 시간
+			DirectX::SimpleMath::Vector2  StartLifeTime{ 5.f, 5.f }; // 파티클 생존 시간
 
 			EOption StartSpeedOption = EOption::Constant;
-			DirectX::SimpleMath::Vector2  StartSpeed{ 5.f, }; // 방출 속도
+			DirectX::SimpleMath::Vector2  StartSpeed{ 5.f, 5.f }; // 방출 속도
 
 			EOption StartSizeOption = EOption::Constant;
-			DirectX::SimpleMath::Vector2  StartSize{ 1.f, }; // 파티클 크기
+			DirectX::SimpleMath::Vector2  StartSize{ 1.f, 1.f }; // 파티클 크기
 
 			EOption StartRotationOption = EOption::Constant;
-			DirectX::SimpleMath::Vector2  StartRotation{ 0.f, }; // 파티클 회전
+			DirectX::SimpleMath::Vector2  StartRotation{ 0.f, 0.f }; // 파티클 회전
 
 			EOption StartColorOption = EOption::Constant;
 			DirectX::SimpleMath::Color StartColor0{ 1.f, 1.f, 1.f, 1.f }; // 파티클 색상
 			DirectX::SimpleMath::Color StartColor1{ 1.f, 1.f, 1.f, 1.f }; // 파티클 색상
 
 			EOption GravityModifierOption = EOption::Constant;
-			DirectX::SimpleMath::Vector2 GravityModifier{ 0.f, }; // 파티클 중력
+			DirectX::SimpleMath::Vector2 GravityModifier{ 0.f, 0.f }; // 파티클 중력
 
 			float SimulationSpeed = 1.f; // 시뮬레이션 가중치
 
@@ -223,7 +223,7 @@ namespace fq::graphics
 		{
 			enum { RATIO_SIZE = 8 };
 
-			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ RATIO_SIZE } ; // value, ratio 
+			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ RATIO_SIZE }; // value, ratio 
 			size_t AlphaRatioCount{ 0 };
 			std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ RATIO_SIZE }; // { value }, ratio
 			size_t ColorRatioCount{ 0 };
