@@ -57,6 +57,35 @@ namespace fq::graphics
 		return mOutLineColor;
 	}
 
+	const std::vector<fq::common::Bone>& SkinnedMeshObject::GetBones() const
+	{
+		return mBoneHierarchyCache.GetBoneHierarchy()->GetBones();
+	}
+	unsigned int SkinnedMeshObject::GetBoneIndex(const std::string& boneName) const
+	{
+		return mBoneHierarchyCache.GetBoneHierarchy()->GetBoneIndex(boneName);
+	}
+	bool SkinnedMeshObject::TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex)
+	{
+		return mBoneHierarchyCache.GetBoneHierarchy()->TryGetBoneIndex(boneName, outBoneIndex);
+	}
+	const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetRootTransform(const std::string& boneName) const
+	{
+		return mBoneHierarchyCache.GetRootTransform(boneName);
+	}
+	bool SkinnedMeshObject::TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform)
+	{
+		return mBoneHierarchyCache.TryGetRootTransform(boneName, outRootTransform);
+	}
+	const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetRootTransform(size_t index) const
+	{
+		return mBoneHierarchyCache.GetRootTransform(index);
+	}
+	const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetRootTransforms() const
+	{
+		return mBoneHierarchyCache.GetRootTransforms();
+	}
+
 	TerrainMeshObject::TerrainMeshObject(
 		const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<StaticMesh> staticMesh,

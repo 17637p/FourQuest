@@ -110,8 +110,12 @@ bool Process::Init(HINSTANCE hInstance)
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
 		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		createModel(modelPath);// , DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+
+		mSocketStaticMeshObject = mStaticMeshObjects.back();
+		mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
+		mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
 	}
 
 	// 카메라 초기화
@@ -423,6 +427,7 @@ void Process::Update()
 	shadowTest();
 	particleUpdate();
 	materialUpdate();
+	socketUpdate();
 
 	InputManager::GetInstance().Update();
 }
@@ -524,7 +529,7 @@ void Process::Render()
 		}
 		else
 		{
-			obj->SetBindPose();
+			// obj->SetBindPose();
 		}
 		if (GetAsyncKeyState('3') & 0x8000)
 		{
@@ -704,9 +709,9 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 50.f;
-		particleInfo.MainData.StartColor[0] = { 1, 0, 0, 1 };
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
+		particleInfo.MainData.StartColor0 = { 1, 0.3, 0.3, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Sphere;
 		particleInfo.ShapeData.Scale = { 50, 50, 50 };
 		particleInfo.ShapeData.ArcInDegree = 242;
@@ -733,9 +738,9 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 50.f;
-		particleInfo.MainData.StartColor[0] = { 1, 0, 0, 1 };
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
+		particleInfo.MainData.StartColor0 = { 1, 0.3, 0.3, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Hemisphere;
 		particleInfo.ShapeData.Scale = { 50, 50, 50 };
 		particleInfo.ShapeData.ArcInDegree = 242;
@@ -761,9 +766,9 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 10.f;
-		particleInfo.MainData.StartColor[0] = { 0, 0, 1, 1 };
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
+		particleInfo.MainData.StartColor0 = { 0.3, 0.3, 1, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Cone;
 		particleInfo.ShapeData.AngleInDegree = 45;
 		particleInfo.ShapeData.ArcInDegree = 242;
@@ -789,8 +794,8 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 50.f;
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
 		particleInfo.ShapeData.Radius = 100.f;
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Donut;
 		particleInfo.ShapeData.ArcInDegree = 92;
@@ -825,9 +830,9 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 50.f;
-		particleInfo.MainData.StartLifeTime[0] = 1.f;
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
+		particleInfo.MainData.StartLifeTime.x = 1.f;
 		// particleInfo.MainData.StartColor[0] = { 1, 0, 1, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Box;
 		particleInfo.ShapeData.Scale = { 20, 20, 20 };
@@ -870,8 +875,8 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 50.f;
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
 		// particleInfo.MainData.StartColor[0] = { 0, 1, 1, 1 };
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Circle;
 		particleInfo.ShapeData.ArcInDegree = 242;
@@ -895,8 +900,8 @@ void Process::particleInit()
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
 
-		particleInfo.MainData.StartSize[0] = 10.f;
-		particleInfo.MainData.StartSpeed[0] = 50.f;
+		particleInfo.MainData.StartSize.x = 10.f;
+		particleInfo.MainData.StartSpeed.x = 50.f;
 		// particleInfo.MainData.StartColor[0] = { 1, 1, 1, 1 };
 		particleInfo.ShapeData.ArcInDegree = 242;
 		particleInfo.ShapeData.Rotation = { 10, 10, 10 };
@@ -927,12 +932,12 @@ void Process::particleUpdate()
 	{
 		ParticleInfo particleInfo = { };
 		particleInfo.MainData.StartSpeedOption = ParticleInfo::EOption::RandomBetweenTwoConstant;
-		particleInfo.MainData.StartSpeed[0] = 1.f;
-		particleInfo.MainData.StartSpeed[1] = s_particlesPerSecond;
+		particleInfo.MainData.StartSpeed.x = 1.f;
+		particleInfo.MainData.StartSpeed.y = s_particlesPerSecond;
 
 		particleInfo.MainData.StartSizeOption = ParticleInfo::EOption::RandomBetweenTwoConstant;
-		particleInfo.MainData.StartSize[0] = 1.f;
-		particleInfo.MainData.StartSize[1] = s_particlesPerSecond;
+		particleInfo.MainData.StartSize.x = 1.f;
+		particleInfo.MainData.StartSize.y = s_particlesPerSecond;
 
 		particleInfo.EmissionData.ParticlesPerSecond = s_particlesPerSecond;
 		//	particleInfo.VelocityOverLifetimeData.Velocity.y = s_particlesPerSecond;
@@ -1056,6 +1061,14 @@ void Process::materialUpdate()
 			matrialInterface->SetTextureUseFlag(textureUseFlag);
 		}
 	}
+}
+
+void Process::socketUpdate()
+{
+	const auto& bones = mSoketSkinnedMeshObject->GetBones();
+
+	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(13) * mSoketSkinnedMeshObject->GetTransform();
+	mSocketStaticMeshObject->SetTransform(socketTransform);
 }
 
 /*=============================================================================

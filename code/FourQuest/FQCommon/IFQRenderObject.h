@@ -5,6 +5,7 @@
 #include <directxtk/SimpleMath.h>
 #include "EObjectRenderType.h"
 #include "FQCommonGraphics.h"
+#include "FQCommonLoader.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -95,7 +96,15 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materialInterfaces) abstract;
 
 			// to do : 본 계층 구조 노출
+			virtual FQ_GRAPHICS const std::vector<fq::common::Bone>& GetBones() const abstract;
+
 			// to do : 특정 본의 toRoot 노출
+			virtual FQ_GRAPHICS unsigned int GetBoneIndex(const std::string& boneName) const abstract;
+			virtual FQ_GRAPHICS bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;
+			virtual FQ_GRAPHICS bool TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;
+			virtual FQ_GRAPHICS const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const abstract;
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;

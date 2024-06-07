@@ -46,7 +46,7 @@ namespace fq::graphics
 		const std::shared_ptr<SkinnedMesh>& skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
 		const std::vector<std::shared_ptr<IMaterial>> materials = skinnedMeshObject->GetMaterialInterfaces();
 		const fq::common::Mesh& meshData = skinnedMesh->GetMeshData();
-		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms = skinnedMeshObject->GetFinalTransforms();
+		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms = skinnedMeshObject->GetTransposedFinalTransforms();
 
 		assert(meshData.Subsets.size() <= materials.size());
 

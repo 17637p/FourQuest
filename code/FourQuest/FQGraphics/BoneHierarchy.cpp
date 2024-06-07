@@ -11,7 +11,7 @@ namespace fq::graphics
 		{
 			const auto& node = nodeMeshPair.first;
 
-			Bone bone;
+			fq::common::Bone bone;
 			bone.Name = node.Name;
 			bone.Index = node.Index;
 			bone.ParentIndex = node.ParentIndex;
@@ -29,17 +29,48 @@ namespace fq::graphics
 		}
 	}
 
+	unsigned int BoneHierarchy::GetBoneIndex(const std::string& boneName) const
+	{
+		for (const auto& bone : mBones)
+		{
+			if (bone.Name == boneName)
+			{
+				return bone.Index;
+			}
+		}
+
+		assert(false);
+	}
+
+	bool BoneHierarchy::TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex)
+	{
+		for (const auto& bone : mBones)
+		{
+			if (bone.Name == boneName)
+			{
+				*outBoneIndex = bone.Index;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	BoneHierarchyCache::BoneHierarchyCache(std::shared_ptr<BoneHierarchy> boneHierarchy)
 		: mBoneHierarchy(boneHierarchy)
 	{
-		mFinalTransforms.resize(mBoneHierarchy->GetBoneCount(), DirectX::SimpleMath::Matrix::Identity);
+		mRootTransforms.resize(mBoneHierarchy->GetBoneCount(), DirectX::SimpleMath::Matrix::Identity);
+		mTransposedFinalTransforms.resize(mBoneHierarchy->GetBoneCount(), DirectX::SimpleMath::Matrix::Identity);
 	}
 
 	void BoneHierarchyCache::Clear()
 	{
-		for (auto& transform : mFinalTransforms)
+		assert(mRootTransforms.size() == mTransposedFinalTransforms.size());
+
+		for (size_t i = 0; i < mRootTransforms.size(); ++i)
 		{
-			transform = DirectX::SimpleMath::Matrix::Identity;
+			mRootTransforms[i] = DirectX::SimpleMath::Matrix::Identity;
+			mTransposedFinalTransforms[i] = DirectX::SimpleMath::Matrix::Identity;
 		}
 	}
 
@@ -64,22 +95,22 @@ namespace fq::graphics
 			{
 				AnimationHelper::FindKeyframe(nodeClip->Keyframes, *mAnimationClip, timePos, &lhs, &rhs, &weight);
 				fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
-				mFinalTransforms[bone->Index] = AnimationHelper::CreateMatrix(keyframe);
+				mRootTransforms[bone->Index] = AnimationHelper::CreateMatrix(keyframe);
 			}
 		}
 
-		const std::vector<Bone>& bones = mBoneHierarchy->GetBones();
+		const std::vector<fq::common::Bone>& bones = mBoneHierarchy->GetBones();
 		for (size_t i = 1; i < mBoneHierarchy->GetBoneCount(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mFinalTransforms[i] = mFinalTransforms[i] * mFinalTransforms[bones[i].ParentIndex];
+			mRootTransforms[i] = mRootTransforms[i] * mRootTransforms[bones[i].ParentIndex];
 		}
 
 		for (size_t i = 0; i < mBoneHierarchy->GetBoneCount(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mFinalTransforms[i] = bones[i].OffsetMatrix * mFinalTransforms[i];
-			mFinalTransforms[i] = mFinalTransforms[i].Transpose();
+			mTransposedFinalTransforms[i] = bones[i].OffsetMatrix * mRootTransforms[i];
+			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i].Transpose();
 		}
 	}
 
@@ -123,21 +154,21 @@ namespace fq::graphics
 			}
 
 			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(keyframe, blendKeyframe, blendWeight);
-			mFinalTransforms[bone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
+			mTransposedFinalTransforms[bone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 
-		const std::vector<Bone>& bones = mBoneHierarchy->GetBones();
+		const std::vector<fq::common::Bone>& bones = mBoneHierarchy->GetBones();
 		for (size_t i = 1; i < mBoneHierarchy->GetBoneCount(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mFinalTransforms[i] = mFinalTransforms[i] * mFinalTransforms[bones[i].ParentIndex];
+			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i] * mTransposedFinalTransforms[bones[i].ParentIndex];
 		}
 
 		for (size_t i = 0; i < mBoneHierarchy->GetBoneCount(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mFinalTransforms[i] = bones[i].OffsetMatrix * mFinalTransforms[i];
-			mFinalTransforms[i] = mFinalTransforms[i].Transpose();
+			mTransposedFinalTransforms[i] = bones[i].OffsetMatrix * mTransposedFinalTransforms[i];
+			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i].Transpose();
 		}
 	}
 
@@ -151,10 +182,10 @@ namespace fq::graphics
 		mBoneNodeClipCache.clear();
 		mBoneNodeClipCache.reserve(mBoneHierarchy->GetBoneCount());
 
-		std::map<std::string, const struct Bone&> boneMap;
+		std::map<std::string, const struct fq::common::Bone&> boneMap;
 		std::map<std::string, const struct fq::common::NodeClip&> nodeClipMap;
 
-		for (const Bone& bone : mBoneHierarchy->GetBones())
+		for (const fq::common::Bone& bone : mBoneHierarchy->GetBones())
 		{
 			boneMap.insert({ bone.Name, bone });
 		}
@@ -192,9 +223,9 @@ namespace fq::graphics
 		mBoneNodeClipCache.clear();
 		mBoneNodeClipCache.reserve(mBoneHierarchy->GetBoneCount());
 
-		std::map<std::string, const struct Bone&> boneMap;
+		std::map<std::string, const struct fq::common::Bone&> boneMap;
 
-		for (const Bone& bone : mBoneHierarchy->GetBones())
+		for (const fq::common::Bone& bone : mBoneHierarchy->GetBones())
 		{
 			boneMap.insert({ bone.Name, bone });
 		}
