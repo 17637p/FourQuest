@@ -61,6 +61,17 @@ namespace fq::physics
 		physx::PxShape* shape;
 		physx::PxMaterial* material;
 		mRigidDynamic->getShapes(&shape, 1);
+
+		if (mColliderType == EColliderType::COLLISION)
+		{
+			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		}
+		else
+		{
+			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		}
+
 		shape->getMaterials(&material, 1);
 		shape->setContactOffset(0.02f);
 		shape->setRestOffset(0.01f);
