@@ -45,6 +45,8 @@ namespace fq::physics
 		physx::PxShape* shape;
 		int ShapeSize = actor->getNbShapes();
 		actor->getShapes(&shape, ShapeSize);
+		shape->setContactOffset(0.02f);
+		shape->setRestOffset(0.01f);
 
 		physx::PxFilterData filterData;
 		filterData.word0 = info.layerNumber;

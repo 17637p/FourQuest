@@ -28,7 +28,8 @@ namespace fq::physics
 		data->myId = GetID();
 		data->myLayerNumber = GetLayerNumber();
 		shape->userData = data.get();
-		shape->setContactOffset(0.01f);
+		shape->setContactOffset(0.02f);
+		shape->setRestOffset(0.01f);
 
 		DirectX::SimpleMath::Matrix dxTransform = colliderInfo.collisionTransform.worldMatrix;
 		DirectX::SimpleMath::Vector3 position;
@@ -40,6 +41,7 @@ namespace fq::physics
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 
 		mRigidDynamic = physics->createRigidDynamic(transform);
+		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		mRigidDynamic->userData = data.get();
 
 		if (!mRigidDynamic->attachShape(*shape))
@@ -51,7 +53,7 @@ namespace fq::physics
 
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
-		if (abs(mScale.Length()) == abs(scale.Length()))
+		if (abs(mScale.Length()) + 0.1f >= abs(scale.Length()))
 			return;
 
 		mScale = scale;
@@ -60,6 +62,8 @@ namespace fq::physics
 		physx::PxMaterial* material;
 		mRigidDynamic->getShapes(&shape, 1);
 		shape->getMaterials(&material, 1);
+		shape->setContactOffset(0.02f);
+		shape->setRestOffset(0.01f);
 
 		if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
 		{
