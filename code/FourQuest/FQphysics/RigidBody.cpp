@@ -26,6 +26,16 @@ namespace fq::physics
 		filterdata.word1 = collisionMatrix[mLayerNumber];
 		newShape->setSimulationFilterData(filterdata);
 
+		if (mColliderType == EColliderType::COLLISION)
+		{
+			newShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		}
+		else
+		{
+			newShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			newShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		}
+
 		// 새로운 shape를 actor에 추가
 		actor->attachShape(*newShape);
 
