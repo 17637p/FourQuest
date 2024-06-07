@@ -35,6 +35,7 @@ namespace fq::graphics
 		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
 		virtual const fq::common::Model& GetModel(std::string path) override;
 		virtual void DeleteModel(std::string path) override;
+		virtual std::vector<std::shared_ptr<IMaterial>> GetMaterials() const override;
 
 		virtual IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
 		virtual void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) override;

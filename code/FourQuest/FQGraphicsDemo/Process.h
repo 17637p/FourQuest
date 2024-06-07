@@ -62,6 +62,8 @@ private:
 	void particleInit();
 	void particleUpdate();
 
+	void materialUpdate();
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치

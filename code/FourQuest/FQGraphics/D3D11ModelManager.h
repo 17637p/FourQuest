@@ -11,12 +11,16 @@ namespace fq::graphics
 	class SkinnedMesh;
 	class Material;
 	class BoneHierarchy;
+	class D3D11ResourceManager;
+	class IMaterial;
 
 	class D3D11ModelManager
 	{
 	public:
 		D3D11ModelManager() = default;
 		~D3D11ModelManager() = default;
+
+		void Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
 		void WriteModel(const std::string& fileName, const fq::common::Model& modelData);
 		void ConvertModel(const std::string& fbxFile, const std::string& fileName);
@@ -52,7 +56,12 @@ namespace fq::graphics
 		std::string GenerateBoneHierarachyKey(const std::string& fileName);
 		std::string GenerateAnimationKey(const std::string& fileName, const std::string& animationName);
 
+		std::vector<std::shared_ptr<IMaterial>> GetMaterials() const;
+
 	private:
+		std::shared_ptr<D3D11Device> mDevice;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+
 		std::map<std::string, fq::common::Model> mModels;
 		std::map<std::string, std::shared_ptr<StaticMesh>> mStaticMeshes;
 		std::map<std::string, std::shared_ptr<SkinnedMesh>> mSkinnedMeshes;

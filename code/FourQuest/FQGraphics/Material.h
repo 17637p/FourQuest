@@ -5,22 +5,29 @@
 
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQCommon/FQCommonGraphics.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::graphics
 {
 	class D3D11Device;
 	class D3D11Texture;
-
+	class D3D11ResourceManager;
 	// 1. 쉐이더 종류가 많지 않으면 그에 대응되는 재질이랑 1대1로 늘린다.
 	// 2. 쉐이더 리플렉션 처리를 해서 재질도 범용적으로 다룬다.?
 
-	class Material
+	class Material : public IMaterial
 	{
 	public:
-		Material(const std::shared_ptr<D3D11Device>& device, const fq::common::Material& materialData, std::filesystem::path basePath = "");
+
+	public:
+		Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const fq::common::Material& materialData, std::filesystem::path textureBasePath = "");
 		~Material() = default;
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+
+		inline void SetTextureUseFlag(const MaterialTextureUseFlag& materialTextureUseFlag)  override { mMaterialTextureUseFlag = materialTextureUseFlag; }
+		void SetMaterialData(const fq::common::Material& materialData) override;
+		void SetTextureBasePath(const std::filesystem::path& basePath) override { mTextureBasePath = basePath; }
 
 		inline bool GetHasBaseColor() const;
 		inline bool GetHasMetalness() const;
@@ -28,9 +35,16 @@ namespace fq::graphics
 		inline bool GetHasNormal() const;
 		inline bool GetHasEmissive() const;
 		inline bool GetHasOpacity() const;
+		inline const MaterialTextureUseFlag& GetTextureUseFlag() const override { return mMaterialTextureUseFlag; }
+		const fq::common::Material& GetMaterialData() const override { return mMaterialData; }
+		const std::filesystem::path& GetTextureBasePath() const override { return mTextureBasePath; }
 
 	private:
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+
+		std::filesystem::path mTextureBasePath;
 		fq::common::Material mMaterialData;
+		MaterialTextureUseFlag mMaterialTextureUseFlag;
 
 		std::shared_ptr<D3D11Texture> mBaseColor;
 		std::shared_ptr<D3D11Texture> mMetalness;

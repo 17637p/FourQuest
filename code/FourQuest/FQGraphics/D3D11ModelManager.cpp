@@ -7,6 +7,12 @@
 
 namespace fq::graphics
 {
+	void D3D11ModelManager::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager)
+	{
+		mDevice = device;
+		mResourceManager = resourceManager;
+	}
+
 	void D3D11ModelManager::WriteModel(const std::string& fileName, const fq::common::Model& modelData)
 	{
 		fq::loader::ModelLoader::Write(modelData, fileName);
@@ -141,7 +147,7 @@ namespace fq::graphics
 	}
 	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath)
 	{
-		return CreateResource(mMaterials, key, device, matrialData, basePath);
+		return CreateResource(mMaterials, key, mResourceManager, matrialData, basePath);
 	}
 	bool D3D11ModelManager::CreateBoneHierarchy(std::string key, const fq::common::Model modelData)
 	{
@@ -220,5 +226,17 @@ namespace fq::graphics
 	std::string D3D11ModelManager::GenerateAnimationKey(const std::string& fileName, const std::string& animationName)
 	{
 		return fileName + animationName;
+	}
+
+	 std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials() const
+	{
+		std::vector<std::shared_ptr<IMaterial>> materials;
+
+		for (auto& [key, material] : mMaterials)
+		{
+			materials.push_back(material);
+		}
+
+		return materials;
 	}
 }

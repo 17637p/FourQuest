@@ -55,7 +55,7 @@ namespace fq::graphics
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mAlphaDataCB = std::make_shared<D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
 
@@ -89,7 +89,7 @@ namespace fq::graphics
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
-		mModelTexutreCB = nullptr;
+		mMaterialCB = nullptr;
 	}
 	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -189,7 +189,7 @@ namespace fq::graphics
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
-			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
 			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
@@ -207,7 +207,7 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
 					AlphaData alphaData;
 					alphaData.bUseAlphaConstant = true;
@@ -230,7 +230,7 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
 					AlphaData alphaData;

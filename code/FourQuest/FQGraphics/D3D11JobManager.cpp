@@ -14,7 +14,7 @@ namespace fq::graphics
 	{
 		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
 		const std::shared_ptr<StaticMesh>& staticMesh = staticMeshObject->GetStaticMesh();
-		const std::vector<std::shared_ptr<Material>> materials = staticMeshObject->GetMaterials();
+		const std::vector<std::shared_ptr<IMaterial>> materials = staticMeshObject->GetMaterialInterfaces();
 		const fq::common::Mesh& meshData = staticMesh->GetMeshData();
 
 		assert(meshData.Subsets.size() <= materials.size());
@@ -23,7 +23,7 @@ namespace fq::graphics
 			StaticMeshJob job;
 			job.SubsetIndex = i;
 			job.TransformPtr = &staticMeshObject->GetTransform();
-			job.Material = materials[i];
+			job.Material = std::static_pointer_cast<Material>(materials[i]);
 			job.StaticMesh = staticMesh;
 			job.ObjectRenderType = staticMeshObject->GetObjectRenderType();
 			job.Alpha = staticMeshObject->GetAlpha();
@@ -44,7 +44,7 @@ namespace fq::graphics
 	{
 		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
 		const std::shared_ptr<SkinnedMesh>& skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
-		const std::vector<std::shared_ptr<Material>> materials = skinnedMeshObject->GetMaterials();
+		const std::vector<std::shared_ptr<IMaterial>> materials = skinnedMeshObject->GetMaterialInterfaces();
 		const fq::common::Mesh& meshData = skinnedMesh->GetMeshData();
 		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms = skinnedMeshObject->GetFinalTransforms();
 
@@ -55,7 +55,7 @@ namespace fq::graphics
 			SkinnedMeshJob job;
 			job.SubsetIndex = i;
 			job.TransformPtr = &skinnedMeshObject->GetTransform();
-			job.Material = materials[i];
+			job.Material = std::static_pointer_cast<Material>(materials[i]);
 			job.SkinnedMesh = skinnedMesh;
 			job.BoneMatricesPtr = &finalTransforms;
 			job.ObjectRenderType = skinnedMeshObject->GetObjectRenderType();

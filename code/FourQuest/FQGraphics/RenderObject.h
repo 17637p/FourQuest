@@ -29,7 +29,7 @@ namespace fq::graphics
 	{
 	public:
 		StaticMeshObject(std::shared_ptr<StaticMesh> staticMesh,
-			std::vector<std::shared_ptr<Material>> materials,
+			std::vector<std::shared_ptr<IMaterial>> materials,
 			DirectX::SimpleMath::Matrix transform);
 		~StaticMeshObject() = default;
 
@@ -56,16 +56,18 @@ namespace fq::graphics
 		inline virtual float GetBlendTime() const override;
 
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
-		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 
 		// Outline
 		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
 		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
 
+		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
+		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materialInterfaces) { mMaterials = materialInterfaces; }
+
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
-		std::vector<std::shared_ptr<Material>> mMaterials;
+		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		DirectX::SimpleMath::Matrix mTransform;
 		EObjectRenderType mObjectRenderType;
 		float mAlpha;
@@ -258,10 +260,6 @@ namespace fq::graphics
 	{
 		return mBlendTimePos;
 	}
-	inline const std::vector<std::shared_ptr<Material>>& StaticMeshObject::GetMaterials() const
-	{
-		return mMaterials;
-	}
 	inline const DirectX::SimpleMath::Matrix& StaticMeshObject::GetTransform() const
 	{
 		return mTransform;
@@ -277,7 +275,7 @@ namespace fq::graphics
 	{
 	public:
 		SkinnedMeshObject(std::shared_ptr<SkinnedMesh> SkinnedMesh,
-			std::vector<std::shared_ptr<Material>> materials,
+			std::vector<std::shared_ptr<IMaterial>> materials,
 			DirectX::SimpleMath::Matrix transform,
 			BoneHierarchyCache boneHierarchyCache);
 		~SkinnedMeshObject() = default;
@@ -309,16 +307,18 @@ namespace fq::graphics
 
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
-		inline const std::vector<std::shared_ptr<Material>>& GetMaterials() const;
 		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
 
 		// Outline
 		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
 		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
+		
+		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
+		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) { mMaterials = materials; }
 
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
-		std::vector<std::shared_ptr<Material>> mMaterials;
+		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		DirectX::SimpleMath::Matrix mTransform;
 		float mTimePos;
 		float mBlendTimePos;
@@ -461,10 +461,6 @@ namespace fq::graphics
 	inline const std::shared_ptr<SkinnedMesh>& SkinnedMeshObject::GetSkinnedMesh() const
 	{
 		return mSkinnedMesh;
-	}
-	inline const std::vector<std::shared_ptr<Material>>& SkinnedMeshObject::GetMaterials() const
-	{
-		return mMaterials;
 	}
 	inline const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetFinalTransforms() const
 	{

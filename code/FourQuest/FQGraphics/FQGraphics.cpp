@@ -37,6 +37,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);
 	mObjectManager;
 	mJobManager;
+	mModelManager->Initialize(mDevice, mResourceManager);
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
@@ -242,6 +243,11 @@ const fq::common::Model& FQGraphics::GetModel(std::string path)
 void FQGraphics::DeleteModel(std::string path)
 {
 	mModelManager->DeleteModel(path);
+}
+
+std::vector<std::shared_ptr<IMaterial>> FQGraphics::GetMaterials() const
+{
+	return mModelManager->GetMaterials();
 }
 
 void FQGraphics::WriteModel(std::string path, const fq::common::Model& modelData)

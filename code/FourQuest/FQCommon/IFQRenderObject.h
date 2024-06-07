@@ -17,6 +17,8 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
+		class IMaterial;
+
 		class IStaticMeshObject
 		{
 		public:
@@ -47,6 +49,9 @@ extern "C" {
 			// Outline
 			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
 			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
+
+			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const abstract;
+			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
@@ -85,6 +90,9 @@ extern "C" {
 			// Outline
 			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
 			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
+
+			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const abstract;
+			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materialInterfaces) abstract;
 
 			// to do : 본 계층 구조 노출
 			// to do : 특정 본의 toRoot 노출

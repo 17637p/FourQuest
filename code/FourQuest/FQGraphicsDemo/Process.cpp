@@ -422,6 +422,7 @@ void Process::Update()
 
 	shadowTest();
 	particleUpdate();
+	materialUpdate();
 
 	InputManager::GetInstance().Update();
 }
@@ -966,6 +967,39 @@ void Process::particleUpdate()
 		{
 			obj->SetIsReset(true);
 		}
+	}
+}
+
+void Process::materialUpdate()
+{
+	static float tempColor = 0.0f;
+
+	tempColor += mTimeManager.GetDeltaTime();
+	tempColor = fmod(tempColor, 1.f);
+
+	for (auto matrialInterface : mTestGraphics->GetMaterials())
+	{
+		fq::graphics::MaterialTextureUseFlag textureUseFlag;
+		auto materialData = matrialInterface->GetMaterialData();
+		if (GetAsyncKeyState('U') & 0x8000)
+		{
+			textureUseFlag.bUseBaseColor = false;
+			textureUseFlag.bUseMetalness = false;
+			textureUseFlag.bUseRoughness = false;
+			materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+			materialData.MaterialDesc.Metalness = tempColor;
+			materialData.MaterialDesc.Roughness = tempColor;
+			materialData.BaseColorFileName = L"Particle02.png";
+			matrialInterface->SetMaterialData(materialData);
+		}
+		else
+		{
+			textureUseFlag.bUseMetalness = true;
+			textureUseFlag.bUseRoughness = true;
+			textureUseFlag.bUseBaseColor = true;
+		}
+
+		matrialInterface->SetTextureUseFlag(textureUseFlag);
 	}
 }
 

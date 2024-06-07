@@ -19,18 +19,22 @@ namespace fq::graphics
 		cbuffer->Update(device, modelTransform);
 	}
 	void ConstantBufferHelper::UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
-		std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>>& cbuffer,
+		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
 		const std::shared_ptr<Material>& material)
 	{
-		ModelTexutre modelTexture;
-		modelTexture.bUseAlbedoMap = material->GetHasBaseColor();
-		modelTexture.bUseMetalnessMap = material->GetHasMetalness();
-		modelTexture.bUseNormalMap = material->GetHasNormal();
-		modelTexture.bUseRoughnessMap = material->GetHasRoughness();
-		modelTexture.bUseEmissiveMap = material->GetHasEmissive();
-		modelTexture.bUseOpacityMap = material->GetHasOpacity();
+		CBMaterial CBMaterialData;
+		CBMaterialData.BaseColor = material->GetMaterialData().MaterialDesc.BaseColor;
+		CBMaterialData.Metalness = material->GetMaterialData().MaterialDesc.Metalness;
+		CBMaterialData.Roughness = material->GetMaterialData().MaterialDesc.Roughness;
 
-		cbuffer->Update(device, modelTexture);
+		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && material->GetTextureUseFlag().bUseBaseColor;
+		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && material->GetTextureUseFlag().bUseMetalness;
+		CBMaterialData.bUseNormalMap = material->GetHasNormal() && material->GetTextureUseFlag().bUseNormalness;
+		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && material->GetTextureUseFlag().bUseRoughness;
+		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive();
+		CBMaterialData.bUseOpacityMap = material->GetHasOpacity();
+
+		cbuffer->Update(device, CBMaterialData);
 	}
 	void ConstantBufferHelper::UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
@@ -44,21 +48,21 @@ namespace fq::graphics
 		cbuffer->Update(device, boneTransform);
 	}
 
-	void ConstantBufferHelper::UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device, 
-		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer, 
-		const std::shared_ptr<TerrainMaterial>& material, 
+	void ConstantBufferHelper::UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
+		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
+		const std::shared_ptr<TerrainMaterial>& material,
 		const ITerrainMeshObject* iTerrainObject)
 	{
 		TerrainTexture terrainTexture;
 		terrainTexture.NumOfTexture = material->GetNumOfTexture();
-		
+
 		for (unsigned short i = 0; i < terrainTexture.NumOfTexture; i++)
 		{
 			terrainTexture.layer[i].TileSizeX = material->GetTileSizeX(i);
 			terrainTexture.layer[i].TileSizeY = material->GetTileSizeY(i);
 			terrainTexture.layer[i].TileOffsetX = material->GetTileOffsetX(i);
 			terrainTexture.layer[i].TileOffsetY = material->GetTileOffsetY(i);
-		
+
 			terrainTexture.layer[i].Metalic = material->GetMetalic(i);
 			terrainTexture.layer[i].Roughness = material->GetRoughness(i);
 		}
