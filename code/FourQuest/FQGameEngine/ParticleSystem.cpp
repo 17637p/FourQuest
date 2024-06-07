@@ -17,7 +17,7 @@ fq::game_engine::ParticleSystem::~ParticleSystem()
 void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 {
 	mGameProcess = gameProcess;
-
+	
 	// EventHandle µî·Ï
 	auto& eventMgr = mGameProcess->mEventManager;
 
@@ -68,6 +68,11 @@ void fq::game_engine::ParticleSystem::AddComponent(const fq::event::AddComponent
 }
 
 void fq::game_engine::ParticleSystem::RemoveComponent(const fq::event::RemoveComponent& event)
+{
+
+}
+
+void fq::game_engine::ParticleSystem::OnLoadScene()
 {
 
 }

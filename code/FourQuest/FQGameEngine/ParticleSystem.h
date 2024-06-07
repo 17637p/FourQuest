@@ -27,6 +27,8 @@ namespace fq::game_engine
 		void Initialize(GameProcess* gameProcess);
 		void Update(float dt);
 
+		void OnLoadScene();
+
 		/// <summary>
 		/// 씬을 언로드할때 랜더링에 관련된 리소스를 언로드합니다.
 		/// </summary>
