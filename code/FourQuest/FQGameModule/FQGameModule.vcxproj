@@ -157,6 +157,7 @@
     <ClInclude Include="Animator.h" />
     <ClInclude Include="AnimatorController.h" />
     <ClInclude Include="CharacterController.h" />
+    <ClInclude Include="ICollider.h" />
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="IStateBehaviour.h" />
     <ClInclude Include="Pool.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="AnimatorController.cpp" />
     <ClCompile Include="CharacterController.cpp" />
+    <ClCompile Include="ICollider.cpp" />
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />
     <ClCompile Include="ObjectPool.cpp" />

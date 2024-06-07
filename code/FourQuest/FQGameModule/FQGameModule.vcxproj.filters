@@ -233,6 +233,9 @@
     <ClInclude Include="LogStateBehaviour.h">
       <Filter>include\09.Animation\StateBehaviour</Filter>
     </ClInclude>
+    <ClInclude Include="ICollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -363,6 +366,9 @@
     </ClCompile>
     <ClCompile Include="LogStateBehaviour.cpp">
       <Filter>src\09.Animation\StateBehaviour</Filter>
+    </ClCompile>
+    <ClCompile Include="ICollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "ICollider.h"
 
 #include "../FQCommon/FQCommonPhysics.h"
 
@@ -7,7 +8,7 @@ namespace fq::game_module
 {
 	class Transform;
 	
-	class CharacterController :	public Component
+	class CharacterController :	public Component, public ICollider
 	{
 		using ControllerID = unsigned int;
 
@@ -60,12 +61,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 오프셋을 반환합니다 
 		/// </summary>
-		DirectX::SimpleMath::Vector3 GetOffset() const { return mOffset; }
+		DirectX::SimpleMath::Vector3 GetOffset() const override { return mOffset; }
 		
 		/// <summary>
 		/// 오프셋을 설정합니다 
 		/// </summary>
-		void SetOffset(DirectX::SimpleMath::Vector3 offset) { mOffset = offset; }
+		void SetOffset(DirectX::SimpleMath::Vector3 offset) override { mOffset = offset; }
 	
 		/// <summary>
 		/// 컨트롤러 ID를 반환합니다.
@@ -106,11 +107,20 @@ namespace fq::game_module
 		/// 현재 캐릭터를 움직일 수 있는지 설정합니다.
 		/// </summary>
 		void SetCanMoveCharater(bool val) { mbCanMoveCharater = val; }
+
+		/// <summary>
+		/// 현재 충돌중인 콜라이더 갯수를 반환합니다 
+		/// </summary>
+		unsigned int GetCollisionCount() const { return mCollisionCount; }
+
 	private:
 		void getKeyInput(DirectX::SimpleMath::Vector3& input);
 
 		entt::meta_handle GetHandle() override { return *this; }
-
+		void OnCollisionEnter(const Collision& collision) override;
+		void OnCollisionExit(const Collision& collision) override;
+		void OnTriggerEnter(const Collision& collision) override;
+		void OnTriggerExit(const Collision& collision) override;
 	private:
 		Transform* mTransform;
 
@@ -119,6 +129,7 @@ namespace fq::game_module
 		fq::physics::CharacterMovementInfo mMovementInfo;
 
 		ControllerID mControllerID;
+		unsigned int mCollisionCount;
 
 		bool mbIsFalling;
 		bool mbCanMoveCharater;

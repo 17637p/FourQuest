@@ -1,11 +1,12 @@
 #pragma once
 #include "Component.h"
+#include "ICollider.h"
 
 #include "../FQCommon/FQCommonPhysics.h"
 
 namespace fq::game_module
 {
-	class BoxCollider : public Component
+	class BoxCollider : public Component, public ICollider
 	{
 		using BoxInfo = fq::physics::BoxColliderInfo;
 	public:
@@ -92,6 +93,16 @@ namespace fq::game_module
 		/// </summary>
 		unsigned int GetCollisionCount() const { return mCollisionCount; }
 
+		/// <summary>
+		/// 콜라이더의 오프셋을 반환합니다.
+		/// </summary>
+		DirectX::SimpleMath::Vector3 GetOffset() const override { return mOffset; }
+		
+		/// <summary>
+		/// 콜라이더의 오프셋을 설정합니다.
+		/// </summary>
+		void SetOffset(DirectX::SimpleMath::Vector3 offset)override { mOffset = offset; }
+	
 	private:
 		void OnCollisionEnter(const Collision& collision) override;
 		void OnCollisionExit(const Collision& collision) override;
@@ -102,6 +113,7 @@ namespace fq::game_module
 
 	private:
 		fq::physics::EColliderType mType;
+		DirectX::SimpleMath::Vector3 mOffset;
 		BoxInfo mBoxinfomation;
 		unsigned int mCollisionCount;
 	};

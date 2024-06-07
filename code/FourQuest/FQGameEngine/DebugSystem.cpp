@@ -1,5 +1,8 @@
 #include "DebugSystem.h"
 
+#define NOMINMAX
+#include <algorithm>
+
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "GameProcess.h"
@@ -110,14 +113,25 @@ void fq::game_engine::DebugSystem::RenderSpotLight(fq::game_module::Light& light
 
 void fq::game_engine::DebugSystem::RenderBoxCollier(fq::game_module::Transform& transform, fq::game_module::BoxCollider& collider)
 {
-	using DirectX::SimpleMath::Color;
+	using namespace DirectX::SimpleMath;
 
 	fq::graphics::debug::OBBInfo obb;
 
 	obb.Color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
 
-	obb.OBB.Center = transform.GetWorldPosition();
+	auto worldM = transform.GetWorldMatrix();
+	worldM._41 = 0.f;
+	worldM._42 = 0.f;
+	worldM._43 = 0.f;
+	auto offset = collider.GetOffset();
+	obb.OBB.Center = transform.GetWorldPosition() + Vector3::Transform(offset, worldM);
+	
+	auto scale = transform.GetWorldScale();
 	obb.OBB.Extents = collider.GetExtent();
+	obb.OBB.Extents.x *= scale.x;
+	obb.OBB.Extents.y *= scale.y;
+	obb.OBB.Extents.z *= scale.z;
+
 	obb.OBB.Orientation = transform.GetWorldRotation();
 
 	mGameProcess->mGraphics->DrawOBB(obb);
@@ -138,13 +152,22 @@ void fq::game_engine::DebugSystem::renderBoxCollider()
 
 void fq::game_engine::DebugSystem::RenderSphereCollier(fq::game_module::Transform& transform, fq::game_module::SphereCollider& collider)
 {
-	using DirectX::SimpleMath::Color;
+	using namespace DirectX::SimpleMath;
 
 	fq::graphics::debug::SphereInfo info;
 	info.Color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
 
-	info.Sphere.Center = transform.GetWorldPosition();
-	info.Sphere.Radius = collider.GetRadius();
+	auto worldM = transform.GetWorldMatrix();
+	worldM._41 = 0.f;
+	worldM._42 = 0.f;
+	worldM._43 = 0.f;
+	auto offset = collider.GetOffset();
+
+	info.Sphere.Center = transform.GetWorldPosition() + Vector3::Transform(offset, worldM);
+	
+	auto scale = transform.GetWorldScale();
+	float max = std::max(scale.x, std::max(scale.y, scale.z));
+	info.Sphere.Radius = collider.GetRadius() * max;
 	mGameProcess->mGraphics->DrawSphere(info);
 }
 
@@ -215,7 +238,8 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 {
 	using DirectX::SimpleMath::Color;
 
-	Color color = Color{ 0.f,1.f,0.f };
+	Color color = (cotroller.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
+
 	auto upDir = transform.GetWorldMatrix().Up();
 	upDir.Normalize();
 	auto controllerInfo = cotroller.GetControllerInfo();
@@ -224,7 +248,7 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 	// UpSphere
 	fq::graphics::debug::SphereInfo info;
 	info.Color = color;
-	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height *0.5f;
+	info.Sphere.Center = transform.GetWorldPosition() + offset + upDir * controllerInfo.height * 0.5f;
 	info.Sphere.Radius = controllerInfo.radius;
 	mGameProcess->mGraphics->DrawSphere(info);
 

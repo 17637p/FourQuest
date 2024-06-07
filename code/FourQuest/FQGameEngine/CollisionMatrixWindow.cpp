@@ -55,7 +55,6 @@ void fq::game_engine::CollisionMatrixWindow::beginCollisionMatrix()
 	}
 
 
-
 	auto matrix = mPhysicsSystem->GetCollisionMatrix();
 
 	auto type = entt::resolve<fq::game_module::ETag>();
