@@ -51,7 +51,11 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Obstacle>("Obstacle"_hs) // 4
 		.prop(fq::reflect::prop::Name, "Obstacle")
 		.data<ETag::Wall>("Wall"_hs) // 5
-		.prop(fq::reflect::prop::Name, "Wall");
+		.prop(fq::reflect::prop::Name, "Wall")
+		.data<ETag::PlayerAttack>("PlayerAttack"_hs) // 6
+		.prop(fq::reflect::prop::Name, "PlayerAttack")
+		.data<ETag::MonsterAttack>("MonsterAttack"_hs) // 7
+		.prop(fq::reflect::prop::Name, "MonsterAttack");
 
 	// GameObject
 	entt::meta<GameObject>()

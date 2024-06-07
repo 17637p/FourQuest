@@ -1,7 +1,7 @@
 #include "Particle.h"
 
 fq::game_module::Particle::Particle()
-	: mParticleInfomation{}
+	: mParticleInfo{}
 	, mParticleObject(nullptr)
 {}
 
@@ -27,4 +27,50 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Particle::Clone(std
 	cloneParticle->mParticleObject = nullptr;
 
 	return cloneParticle;
+}
+
+void fq::game_module::Particle::SetMainParticleInfo(ParticleInfo::Main mainInfo)
+{
+	mParticleInfo.MainData = mainInfo;
+}
+
+void fq::game_module::Particle::SetEmissionInfo(ParticleInfo::Emission data)
+{
+	mParticleInfo.EmissionData = data;
+
+}
+
+void fq::game_module::Particle::SetShapeInfo(ParticleInfo::Shape data)
+{
+	mParticleInfo.ShapeData = data;
+}
+
+void fq::game_module::Particle::SetVelocityOverLifetimeData(ParticleInfo::VelocityOverLifetime data)
+{
+	mParticleInfo.VelocityOverLifetimeData = data;
+}
+
+void fq::game_module::Particle::SetLimitVelocityOverLifeTimeData(ParticleInfo::LimitVelocityOverLifetime data)
+{
+	mParticleInfo.LimitVelocityOverLifetimeData = data;
+}
+
+void fq::game_module::Particle::SetForceOverLifetimeData(ParticleInfo::ForceOverLifetime data)
+{
+	mParticleInfo.ForceOverLifeTimeData = data;
+}
+
+void fq::game_module::Particle::SetColorOverLifeTime(ParticleInfo::ColorOverLifetime data)
+{
+	mParticleInfo.ColorOverLifetimeData = data;
+}
+
+void fq::game_module::Particle::SetRotationOverLifetimeData(ParticleInfo::RotationOverLifetime data)
+{
+	mParticleInfo.RotationOverLifetimeData = data;
+}
+
+void fq::game_module::Particle::SetRenderData(ParticleInfo::Render data)
+{
+	mParticleInfo.RenderData = data;
 }

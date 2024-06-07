@@ -6,6 +6,7 @@
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerDashState.h"
+#include "PlayerAttackState.h"
 
 #include "Monster.h"
 #include "MonsterIdle.h"
@@ -29,6 +30,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "Player")
 		.data<&Player::SetHp, &Player::GetHp>("HP"_hs)
 		.prop(reflect::prop::Name, "Hp")
+		.data<&Player::SetAttackPrefab, &Player::GetAttackPrefab>("AttakPrefab"_hs)
+		.prop(reflect::prop::Name, "AttakPrefab")
 		.base<game_module::Component>();
 
 	entt::meta<PlayerInputState>()
@@ -48,6 +51,11 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "PlayerDashState")
 		.data<&PlayerDashState::SetDashPower, &PlayerDashState::GetDashPower>("DashPower"_hs)
 		.prop(reflect::prop::Name, "DashPower")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerAttackState>()
+		.type("PlayerAttackState"_hs)
+		.prop(reflect::prop::Name, "PlayerAttackState")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

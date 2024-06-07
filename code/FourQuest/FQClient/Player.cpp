@@ -51,8 +51,6 @@ void fq::client::Player::processDash()
 	{
 		mAnimator->SetParameterTrigger("OnDash");
 	}
-
-
 }
 
 void fq::client::Player::OnCollisionEnter(const game_module::Collision& collision)
@@ -73,4 +71,23 @@ void fq::client::Player::OnTriggerExit(const game_module::Collision& collision)
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
 	spdlog::trace("trigger enter : {}", collision.other->GetName());
+}
+
+void fq::client::Player::Attack()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(GetAttackPrefab());
+	auto& attack = *(instance.begin());
+
+	auto attackT = attack->GetComponent<game_module::Transform>();
+	auto transform = GetComponent<game_module::Transform>();
+
+	auto forward = transform->GetWorldMatrix().Forward();
+	forward.Normalize();
+
+	attack->SetTag(game_module::ETag::PlayerAttack);
+
+	attackT->SetLocalRotation(transform->GetWorldRotation());
+	attackT->SetLocalPosition(transform->GetWorldPosition() + forward);
+
+	GetScene()->AddGameObject(attack);
 }

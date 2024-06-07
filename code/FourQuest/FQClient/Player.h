@@ -10,7 +10,6 @@ namespace fq::client
 		Player();
 		~Player();
 
-
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
@@ -19,7 +18,10 @@ namespace fq::client
 		float GetHp() const { return mHp; }
 		void SetHp(float hp) { mHp = hp; }
 
+		void Attack();
 
+		fq::game_module::PrefabResource GetAttackPrefab() const { return mAttack; }
+		void SetAttackPrefab(fq::game_module::PrefabResource val) { mAttack = val; }
 	private:
 		void processDash();
 
@@ -36,6 +38,8 @@ namespace fq::client
 		game_module::CharacterController* mController;
 
 		float mHp;
+
+		game_module::PrefabResource mAttack;
 	};
 
 
