@@ -35,6 +35,7 @@
 #include "PrefabManager.h"
 #include "SoundManager.h"
 
+#include "ICollider.h"
 #include "Collision.h"
 #include "CollisionMatrix.h"
 

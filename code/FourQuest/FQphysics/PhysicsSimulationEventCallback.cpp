@@ -104,6 +104,7 @@ namespace fq::physics
 		ActorData1.otherId = otherData->myId;
 		ActorData1.myLayerNumber = myData->myLayerNumber;
 		ActorData1.otherLayerNumber = otherData->myLayerNumber;
+		
 		ActorData2.myId = otherData->myId;
 		ActorData2.otherId = myData->myId;
 		ActorData2.myLayerNumber = otherData->myLayerNumber;
@@ -121,7 +122,7 @@ namespace fq::physics
 		CollisionData Mydata;
 		CollisionData Otherdata;
 		CollisionData* TriggerActorData = (CollisionData*)pairs->triggerActor->userData;
-		CollisionData* OtherActordata = (CollisionData*)pairs->triggerActor->userData;
+		CollisionData* OtherActordata = (CollisionData*)pairs->otherActor->userData;
 
 		if (TriggerActorData == nullptr || OtherActordata == nullptr)
 			return;

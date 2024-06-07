@@ -18,7 +18,13 @@ namespace fq::game_engine
 	class PhysicsSystem
 	{
 		using ColliderID = unsigned int;
-		using ColliderInfo = std::pair<entt::id_type, fq::game_module::Component*>;
+
+		struct ColliderInfo
+		{
+			entt::id_type id;
+			std::shared_ptr<game_module::Component> component;
+			game_module::ICollider* collider;
+		};
 		using ColliderContainer = std::unordered_map<ColliderID, ColliderInfo>;
 
 		using EventHandler = fq::game_module::EventHandler;
@@ -80,7 +86,6 @@ namespace fq::game_engine
 		/// </summary>
 		fq::game_module::Component* GetCollider(ColliderID id)const;
 
-
 		/// <summary>
 		/// 캐릭터 컨트롤러 입력처리 이벤트
 		/// </summary>
@@ -90,7 +95,7 @@ namespace fq::game_engine
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
 		void setPhysicsEngineinfo();
-
+		void calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset);
 		void callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type);
 
 	private:
