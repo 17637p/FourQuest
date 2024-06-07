@@ -221,9 +221,11 @@ namespace fq::graphics
 
 		struct ColorOverLifetime
 		{
-			DirectX::SimpleMath::Vector2 AlphaRatios[8]; // value, ratio 
+			enum { RATIO_SIZE = 8 };
+
+			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ RATIO_SIZE } ; // value, ratio 
 			size_t AlphaRatioCount{ 0 };
-			DirectX::SimpleMath::Vector4 ColorRatios[8]; // { value }, ratio
+			std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ RATIO_SIZE }; // { value }, ratio
 			size_t ColorRatioCount{ 0 };
 			bool bIsUsed{ false };
 		} ColorOverLifetimeData;

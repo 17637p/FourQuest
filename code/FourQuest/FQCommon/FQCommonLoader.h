@@ -24,6 +24,7 @@ namespace fq::common
 		std::string Name;
 		unsigned int Index;
 		unsigned int ParentIndex;
+		DirectX::SimpleMath::Matrix BindposeMatrix;
 		DirectX::SimpleMath::Matrix OffsetMatrix;
 	};
 

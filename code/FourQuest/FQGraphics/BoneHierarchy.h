@@ -44,6 +44,7 @@ namespace fq::graphics
 		~BoneHierarchyCache() = default;
 
 		void Clear();
+		void SetBindPose();
 		void Update(float timePos);
 		void Update(float timePos, float blendTimePos, float weight);
 

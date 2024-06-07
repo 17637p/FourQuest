@@ -397,7 +397,7 @@ namespace fq::graphics
 	inline void SkinnedMeshObject::SetBindPose()
 	{
 		mTimePos = 0.f;
-		mBoneHierarchyCache.Clear();
+		mBoneHierarchyCache.SetBindPose();
 	}
 	inline void SkinnedMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
 	{

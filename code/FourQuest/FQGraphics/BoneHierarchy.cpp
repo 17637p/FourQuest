@@ -15,6 +15,7 @@ namespace fq::graphics
 			bone.Name = node.Name;
 			bone.Index = node.Index;
 			bone.ParentIndex = node.ParentIndex;
+			bone.BindposeMatrix = node.ToParentMatrix;
 
 			toRoot.push_back(node.ToParentMatrix);
 
@@ -61,6 +62,7 @@ namespace fq::graphics
 	{
 		mRootTransforms.resize(mBoneHierarchy->GetBoneCount(), DirectX::SimpleMath::Matrix::Identity);
 		mTransposedFinalTransforms.resize(mBoneHierarchy->GetBoneCount(), DirectX::SimpleMath::Matrix::Identity);
+		SetBindPose();
 	}
 
 	void BoneHierarchyCache::Clear()
@@ -71,6 +73,28 @@ namespace fq::graphics
 		{
 			mRootTransforms[i] = DirectX::SimpleMath::Matrix::Identity;
 			mTransposedFinalTransforms[i] = DirectX::SimpleMath::Matrix::Identity;
+		}
+	}
+
+	void BoneHierarchyCache::SetBindPose()
+	{
+		for (size_t i = 0; i < mBoneHierarchy->GetBoneCount(); ++i)
+		{
+			mRootTransforms[i] = mBoneHierarchy->GetBones()[i].BindposeMatrix;
+		}
+
+		const std::vector<fq::common::Bone>& bones = mBoneHierarchy->GetBones();
+		for (size_t i = 1; i < mBoneHierarchy->GetBoneCount(); ++i)
+		{
+			assert(bones[i].Index == i);
+			mRootTransforms[i] = mRootTransforms[i] * mRootTransforms[bones[i].ParentIndex];
+		}
+
+		for (size_t i = 0; i < mBoneHierarchy->GetBoneCount(); ++i)
+		{
+			assert(bones[i].Index == i);
+			mTransposedFinalTransforms[i] = bones[i].OffsetMatrix * mRootTransforms[i];
+			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i].Transpose();
 		}
 	}
 
@@ -154,20 +178,20 @@ namespace fq::graphics
 			}
 
 			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(keyframe, blendKeyframe, blendWeight);
-			mTransposedFinalTransforms[bone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
+			mRootTransforms[bone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 
 		const std::vector<fq::common::Bone>& bones = mBoneHierarchy->GetBones();
 		for (size_t i = 1; i < mBoneHierarchy->GetBoneCount(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i] * mTransposedFinalTransforms[bones[i].ParentIndex];
+			mRootTransforms[i] = mRootTransforms[i] * mRootTransforms[bones[i].ParentIndex];
 		}
 
 		for (size_t i = 0; i < mBoneHierarchy->GetBoneCount(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mTransposedFinalTransforms[i] = bones[i].OffsetMatrix * mTransposedFinalTransforms[i];
+			mTransposedFinalTransforms[i] = bones[i].OffsetMatrix * mRootTransforms[i];
 			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i].Transpose();
 		}
 	}

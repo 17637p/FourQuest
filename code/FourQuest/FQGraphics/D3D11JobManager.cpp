@@ -17,8 +17,7 @@ namespace fq::graphics
 		const std::vector<std::shared_ptr<IMaterial>> materials = staticMeshObject->GetMaterialInterfaces();
 		const fq::common::Mesh& meshData = staticMesh->GetMeshData();
 
-		assert(meshData.Subsets.size() <= materials.size());
-		for (size_t i = 0; i < meshData.Subsets.size(); ++i)
+		for (size_t i = 0; i < materials.size(); ++i)
 		{
 			StaticMeshJob job;
 			job.SubsetIndex = i;
@@ -50,7 +49,7 @@ namespace fq::graphics
 
 		assert(meshData.Subsets.size() <= materials.size());
 
-		for (size_t i = 0; i < meshData.Subsets.size(); ++i)
+		for (size_t i = 0; i < materials.size(); ++i)
 		{
 			SkinnedMeshJob job;
 			job.SubsetIndex = i;

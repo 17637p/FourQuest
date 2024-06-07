@@ -264,6 +264,7 @@ namespace fq::graphics
 			return;
 		}
 
+
 		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get(), particleObject->mDeadListUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1,  (UINT)-1 };
 		ID3D11Buffer* buffers[] = { mParticleObjectCB->GetBuffer(), mDeadListCB.Get() };

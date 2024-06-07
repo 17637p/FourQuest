@@ -510,27 +510,25 @@ void Process::Render()
 		{
 			obj->SetAnimationKey("Kick");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Transparent);
-			obj->UpdateAnimationTime(s_time);
 			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
 		}
 		else if (GetAsyncKeyState('2') & 0x8000)
 		{
 			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
-			obj->UpdateAnimationTime(s_time);
 			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
 		}
 		else if (GetAsyncKeyState('3') & 0x8000)
 		{
 			obj->SetBlendAnimationKey("Kick", "Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
-			obj->UpdateAnimationTime(s_time);
 			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
 		}
-		else
+		else if (GetAsyncKeyState('4') & 0x8000)
 		{
-			// obj->SetBindPose();
+			obj->SetBindPose();
 		}
+
 		if (GetAsyncKeyState('3') & 0x8000)
 		{
 			obj->SetUseShadow(true);
@@ -540,6 +538,7 @@ void Process::Render()
 			obj->SetUseShadow(false);
 		}
 
+		obj->UpdateAnimationTime(s_time);
 		obj->SetAlpha(0.3f);
 	}
 
@@ -1069,6 +1068,21 @@ void Process::socketUpdate()
 
 	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(13) * mSoketSkinnedMeshObject->GetTransform();
 	mSocketStaticMeshObject->SetTransform(socketTransform);
+
+	assert(bones[13].Index == mSoketSkinnedMeshObject->GetBoneIndex(bones[13].Name));
+
+	unsigned int boneIndex;
+	assert(mSoketSkinnedMeshObject->TryGetBoneIndex(bones[13].Name, &boneIndex));
+	assert(!mSoketSkinnedMeshObject->TryGetBoneIndex("123123332211ss", &boneIndex));
+
+	DirectX::SimpleMath::Matrix rootTransform;
+	assert(mSoketSkinnedMeshObject->TryGetRootTransform(bones[13].Name, &rootTransform));
+	assert(rootTransform == mSoketSkinnedMeshObject->GetRootTransform(bones[13].Index));
+	assert(!mSoketSkinnedMeshObject->TryGetRootTransform("123123332211ss", &rootTransform));
+	mSoketSkinnedMeshObject->GetRootTransform(bones[13].Name);
+
+
+
 }
 
 /*=============================================================================
