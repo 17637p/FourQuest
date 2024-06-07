@@ -39,6 +39,7 @@ fq::game_module::CharacterController::CharacterController()
 	, mbOnMove(true)
 	, mbOnRotation(true)
 	, mbCanMoveCharater(true)
+	, mCollisionCount(0)
 {}
 
 fq::game_module::CharacterController::~CharacterController()
@@ -143,5 +144,25 @@ void fq::game_module::CharacterController::getKeyInput(DirectX::SimpleMath::Vect
 	}
 
 	input.Normalize();
+}
+
+void fq::game_module::CharacterController::OnCollisionEnter(const Collision& collision)
+{
+	++mCollisionCount;
+}
+
+void fq::game_module::CharacterController::OnCollisionExit(const Collision& collision)
+{
+	--mCollisionCount;
+}
+
+void fq::game_module::CharacterController::OnTriggerEnter(const Collision& collision)
+{
+	++mCollisionCount;
+}
+
+void fq::game_module::CharacterController::OnTriggerExit(const Collision& collision)
+{
+	--mCollisionCount;
 }
 

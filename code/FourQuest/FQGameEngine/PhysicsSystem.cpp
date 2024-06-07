@@ -72,6 +72,7 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
+	mPhysicsEngine->RemoveAllRigidBody();
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -152,24 +153,27 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto boxCollider = object->GetComponent<BoxCollider>();
 		auto type = boxCollider->GetType();
 		auto boxInfo = boxCollider->GetBoxInfomation();
+		auto offset = boxCollider->GetOffset();
 
 		ColliderID id = ++mLastColliderID;
 		boxInfo.colliderInfo.id = id;
 		boxInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		boxInfo.colliderInfo.collisionTransform = transform->GetTransform();
+		calculateOffset(boxInfo.colliderInfo.collisionTransform, offset);
+
 		boxCollider->SetBoxInfomation(boxInfo);
 
 		if (isStatic)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(boxInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, boxCollider} });
+			mColliderContainer.insert({ id, {mBoxID, boxCollider->shared_from_this(), boxCollider} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, boxCollider} });
+			mColliderContainer.insert({ id, {mBoxID, boxCollider->shared_from_this(), boxCollider} });
 		}
 	}
 
@@ -179,24 +183,26 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto sphereCollider = object->GetComponent<SphereCollider>();
 		auto type = sphereCollider->GetType();
 		auto sphereInfo = sphereCollider->GetSphereInfomation();
+		auto offset = sphereCollider->GetOffset();
 
 		ColliderID id = ++mLastColliderID;
 		sphereInfo.colliderInfo.id = id;
 		sphereInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		sphereInfo.colliderInfo.collisionTransform = transform->GetTransform();
+		calculateOffset(sphereInfo.colliderInfo.collisionTransform, offset);
 		sphereCollider->SetSphereInfomation(sphereInfo);
 
 		if (isStatic)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(sphereInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mSphereID, sphereCollider} });
+			mColliderContainer.insert({ id, {mSphereID, sphereCollider->shared_from_this(),sphereCollider} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mSphereID, sphereCollider} });
+			mColliderContainer.insert({ id, {mSphereID, sphereCollider->shared_from_this(),sphereCollider} });
 		}
 	}
 
@@ -206,26 +212,26 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto capsuleCollider = object->GetComponent<CapsuleCollider>();
 		auto type = capsuleCollider->GetType();
 		auto capsuleInfo = capsuleCollider->GetCapsuleInfomation();
+		auto offset = capsuleCollider->GetOffset();
 
 		ColliderID id = ++mLastColliderID;
 		capsuleInfo.colliderInfo.id = id;
 		capsuleInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		capsuleInfo.colliderInfo.collisionTransform = transform->GetTransform();;
 		capsuleCollider->SetCapsuleInfomation(capsuleInfo);
-
-		spdlog::info("capsul");
+		calculateOffset(capsuleInfo.colliderInfo.collisionTransform, offset);
 
 		if (isStatic)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
+			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider->shared_from_this(),capsuleCollider} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider} });
+			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider->shared_from_this(),capsuleCollider} });
 		}
 	}
 
@@ -233,9 +239,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	if (object->HasComponent<CharacterController>())
 	{
 		auto controller = object->GetComponent<CharacterController>();
-
 		auto controllerInfo = controller->GetControllerInfo();
 		auto movementInfo = controller->GetMovementInfo();
+		auto offset = controller->GetOffset();
+		auto charaterTransform = transform->GetTransform();
+
 		ColliderID id = ++mLastColliderID;
 		controllerInfo.id = id;
 		controllerInfo.layerNumber = static_cast<int>(object->GetTag());
@@ -244,7 +252,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
 
-		mColliderContainer.insert({ id, {mCharactorControllerID, controller} });
+		mColliderContainer.insert({ id, {mCharactorControllerID, controller->shared_from_this(),controller} });
 		controller->SetControllerInfo(controllerInfo);
 	}
 
@@ -258,11 +266,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto meshCollider = object->GetComponent<MeshCollider>();
 		auto type = meshCollider->GetType();
 		auto convexMeshInfo = meshCollider->GetConvexMeshInfomation();
+		auto offset = meshCollider->GetOffset();
 
 		ColliderID id = ++mLastColliderID;
 		convexMeshInfo.colliderInfo.id = id;
 		convexMeshInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		convexMeshInfo.colliderInfo.collisionTransform = transform->GetTransform();
+		calculateOffset(convexMeshInfo.colliderInfo.collisionTransform, offset);
 
 		if (hasStaticMesh)
 		{
@@ -303,13 +313,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(convexMeshInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, meshCollider} });
+			mColliderContainer.insert({ id, {mCapsuleID, meshCollider->shared_from_this(),meshCollider} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, meshCollider} });
+			mColliderContainer.insert({ id, {mCapsuleID, meshCollider->shared_from_this(),meshCollider} });
 		}
 	}
 }
@@ -384,50 +394,54 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	bool isLfsVaild = lfs != mColliderContainer.end();
 	bool isRfsVaild = rhs != mColliderContainer.end();
 
+	assert(data.myId != data.otherId);
+
 	if (!isLfsVaild)
 	{
 		return;
 	}
 
-	auto lhsObject = lfs->second.second->GetGameObject();
-	auto rhsObject = isRfsVaild ? rhs->second.second->GetGameObject() : nullptr;
+	auto lhsObject = lfs->second.component->GetGameObject();
+	auto rhsObject = isRfsVaild ? rhs->second.component->GetGameObject() : nullptr;
 
 	fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints };
 
 	switch (type)
 	{
-	case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-		lhsObject->OnTriggerEnter(collision);
-		break;
-	case fq::physics::ECollisionEventType::ON_OVERLAP:
-		lhsObject->OnTriggerStay(collision);
-		break;
-	case fq::physics::ECollisionEventType::END_OVERLAP:
-		lhsObject->OnTriggerExit(collision);
-		break;
-	case fq::physics::ECollisionEventType::ENTER_COLLISION:
-		lhsObject->OnCollisionEnter(collision);
-		break;
-	case fq::physics::ECollisionEventType::ON_COLLISION:
-		lhsObject->OnCollisionStay(collision);
-		break;
-	case fq::physics::ECollisionEventType::END_COLLISION:
-		lhsObject->OnCollisionExit(collision);
-		break;
+		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+			lhsObject->OnTriggerEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_OVERLAP:
+			lhsObject->OnTriggerStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_OVERLAP:
+			lhsObject->OnTriggerExit(collision);
+			break;
+		case fq::physics::ECollisionEventType::ENTER_COLLISION:
+			lhsObject->OnCollisionEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_COLLISION:
+			lhsObject->OnCollisionStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_COLLISION:
+			lhsObject->OnCollisionExit(collision);
+			break;
 	}
-
 }
 
 void fq::game_engine::PhysicsSystem::SinkToGameScene()
 {
+	using namespace  DirectX::SimpleMath;
+
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
+		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
+		auto offset = colliderInfo.collider->GetOffset();
 
-		if (colliderInfo.first == mCharactorControllerID)
+		if (colliderInfo.id == mCharactorControllerID)
 		{
-			auto controller = colliderInfo.second->GetComponent<fq::game_module::CharacterController>();
+			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
 			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
 			auto localPos = controll.position - controller->GetOffset();
@@ -439,12 +453,27 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		else
 		{
 			auto data = mPhysicsEngine->GetRigidBodyData(id);
-			// 선속도
 			rigid->SetLinearVelocity(data.linearVelocity);
-			// 각속도
 			rigid->SetAngularVelocity(data.angularVelocity);
-			// 위치 
+
 			auto matrix = data.transform;
+
+			if (offset != Vector3::Zero)
+			{
+				Vector3 pos, scale;
+				Quaternion rotation;
+				matrix.Decompose(scale, rotation, pos);
+				matrix._41 = 0.f;
+				matrix._42 = 0.f;
+				matrix._43 = 0.f;
+				offset = Vector3::Transform(offset, matrix);
+				pos -= offset;
+
+				matrix._41 = pos.x;
+				matrix._42 = pos.y;
+				matrix._43 = pos.z;
+			}
+
 			transform->SetWorldMatrix(matrix);
 		}
 	}
@@ -465,14 +494,17 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 {
+	using namespace DirectX::SimpleMath;
+
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-		auto transform = colliderInfo.second->GetComponent<fq::game_module::Transform>();
-		auto rigid = colliderInfo.second->GetComponent<fq::game_module::RigidBody>();
+		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
+		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
+		auto offset = colliderInfo.collider->GetOffset();
 
-		if (colliderInfo.first == mCharactorControllerID)
+		if (colliderInfo.id == mCharactorControllerID)
 		{
-			auto controller = colliderInfo.second->GetComponent<fq::game_module::CharacterController>();
+			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 
 			fq::physics::CharacterControllerGetSetData data;
 			data.position = transform->GetWorldPosition() + controller->GetOffset();
@@ -482,7 +514,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			mPhysicsEngine->SetCharacterControllerData(id, data);
 
 			fq::physics::CharacterMovementGetSetData moveData;
-			
+
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
@@ -493,6 +525,21 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.transform = transform->GetWorldMatrix();
 			data.angularVelocity = rigid->GetAngularVelocity();
 			data.linearVelocity = rigid->GetLinearVelocity();
+
+			if (offset != Vector3::Zero)
+			{
+				data.transform._41 = 0.f;
+				data.transform._42 = 0.f;
+				data.transform._43 = 0.f;
+
+				auto pos = transform->GetWorldPosition();
+				offset = Vector3::Transform(offset, data.transform);
+
+				data.transform._41 = pos.x + offset.x;
+				data.transform._42 = pos.y + offset.y;
+				data.transform._43 = pos.z + offset.z;
+			}
+
 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 	}
@@ -502,11 +549,31 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 {
 	auto iter = mColliderContainer.find(id);
 
-	return iter == mColliderContainer.end() ? nullptr : iter->second.second;
+	return iter == mColliderContainer.end() ? nullptr : iter->second.component.get();
 }
 
 void fq::game_engine::PhysicsSystem::AddInputMove(const fq::event::AddInputMove& event)
 {
 	mPhysicsEngine->AddInputMove(event.colliderID, event.input);
+}
+
+void fq::game_engine::PhysicsSystem::calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset)
+{
+	using namespace DirectX::SimpleMath;
+
+	if (offset == Vector3::Zero) return;
+
+	// 이동성분 제거
+	t.worldMatrix._41 = 0.f;
+	t.worldMatrix._42 = 0.f;
+	t.worldMatrix._43 = 0.f;
+
+	offset = Vector3::Transform(offset, t.worldMatrix);
+
+	t.worldPosition += offset;
+
+	t.worldMatrix._41 = t.worldPosition.x;
+	t.worldMatrix._42 = t.worldPosition.y;
+	t.worldMatrix._43 = t.worldPosition.z;
 }
 

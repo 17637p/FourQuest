@@ -25,8 +25,6 @@ namespace fq::game_engine
 		/// <summary>
 		/// 창을 초기화합니다
 		/// </summary>
-		/// <param name="game"></param>
-		/// <param name="editor"></param>
 		void Initialize(GameProcess* game, EditorProcess* editor);
 
 		/// <summary>

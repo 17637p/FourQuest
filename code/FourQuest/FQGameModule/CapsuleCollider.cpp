@@ -106,7 +106,6 @@ void fq::game_module::CapsuleCollider::OnCollisionExit(const Collision& collisio
 void fq::game_module::CapsuleCollider::OnTriggerEnter(const Collision& collision)
 {
 	++mCollisionCount;
-
 }
 
 void fq::game_module::CapsuleCollider::OnTriggerExit(const Collision& collision)
