@@ -4,20 +4,17 @@
 #include "Material.h"
 #include "D3D11Texture.h"
 #include "D3D11Device.h"
+#include "D3D11ResourceManager.h"
 
 #include <fstream>
 
 namespace fq::graphics
 {
-	Material::Material(const std::shared_ptr<D3D11Device>& device, const fq::common::Material& materialData, std::filesystem::path basePath)
-		: mMaterialData(materialData)
+	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const fq::common::Material& materialData, std::filesystem::path textureBasePath)
+		: mResourceManager(resourceManager)
+		, mTextureBasePath(textureBasePath)
 	{
-		if (!materialData.BaseColorFileName.empty()) mBaseColor = std::make_shared<D3D11Texture>(device, basePath / materialData.BaseColorFileName);
-		if (!materialData.MetalnessFileName.empty()) mMetalness = std::make_shared<D3D11Texture>(device, basePath / materialData.MetalnessFileName);
-		if (!materialData.RoughnessFileName.empty()) mRoughness = std::make_shared<D3D11Texture>(device, basePath / materialData.RoughnessFileName);
-		if (!materialData.NormalFileName.empty()) mNormal = std::make_shared<D3D11Texture>(device, basePath / materialData.NormalFileName);
-		if (!materialData.EmissiveFileName.empty()) mEmissive = std::make_shared<D3D11Texture>(device, basePath / materialData.EmissiveFileName);
-		if (!materialData.OpacityFileName.empty()) mOpacity = std::make_shared<D3D11Texture>(device, basePath / materialData.OpacityFileName);
+		SetMaterialData(materialData);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -28,6 +25,18 @@ namespace fq::graphics
 		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
 		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
+	}
+
+	void Material::SetMaterialData(const fq::common::Material& materialData)
+	{
+		mMaterialData = materialData;
+
+		if (!materialData.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.BaseColorFileName);
+		if (!materialData.MetalnessFileName.empty()) mMetalness = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.MetalnessFileName);
+		if (!materialData.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.RoughnessFileName);
+		if (!materialData.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.NormalFileName);
+		if (!materialData.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.EmissiveFileName);
+		if (!materialData.OpacityFileName.empty()) mOpacity = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.OpacityFileName);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,

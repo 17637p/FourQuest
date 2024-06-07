@@ -89,7 +89,7 @@ namespace fq::common
 	{
 		struct Desc
 		{
-			DirectX::SimpleMath::Color BaseColor = { 0.f, 0.f, 0.f, 1.f };
+			DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 			float Metalness = 0.f;
 			float Roughness = 0.f;
 		} MaterialDesc;

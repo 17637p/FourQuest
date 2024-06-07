@@ -73,12 +73,12 @@ namespace fq::graphics
 			return nullptr;
 		}
 
-		std::vector<std::shared_ptr<Material>> materials;
+		std::vector<std::shared_ptr<IMaterial>> materials;
 		materials.reserve(info.MaterialNames.size());
 
 		for (const std::string& materialName : info.MaterialNames)
 		{
-			std::shared_ptr<Material> material = modelManager->FindMaterialOrNull(modelManager->GenerateMaterialKey(info.ModelPath, materialName));
+			std::shared_ptr<IMaterial> material = modelManager->FindMaterialOrNull(modelManager->GenerateMaterialKey(info.ModelPath, materialName));
 			materials.push_back(material);
 		}
 
@@ -111,12 +111,12 @@ namespace fq::graphics
 
 		BoneHierarchyCache boneHierarchyCache(boneHierarchy);
 
-		std::vector<std::shared_ptr<Material>> materials;
+		std::vector<std::shared_ptr<IMaterial>> materials;
 		materials.reserve(info.MaterialNames.size());
 
 		for (const std::string& materialName : info.MaterialNames)
 		{
-			std::shared_ptr<Material> material = modelManager->FindMaterialOrNull(modelManager->GenerateMaterialKey(info.ModelPath, materialName));
+			std::shared_ptr<IMaterial> material = modelManager->FindMaterialOrNull(modelManager->GenerateMaterialKey(info.ModelPath, materialName));
 			materials.push_back(material);
 		}
 

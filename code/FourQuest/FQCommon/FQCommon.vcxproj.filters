@@ -36,6 +36,9 @@
     <ClInclude Include="..\FQGraphics\EObjectRenderType.h">
       <Filter>Grphiacs</Filter>
     </ClInclude>
+    <ClInclude Include="IFQRenderResource.h">
+      <Filter>Grphiacs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp">

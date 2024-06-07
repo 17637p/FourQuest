@@ -45,7 +45,7 @@ namespace fq::graphics
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mModelTexutreCB = std::make_shared< D3D11ConstantBuffer<ModelTexutre>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mDirectioanlShadowInfoCB = resourceManager->Create< D3D11ConstantBuffer<DirectionalShadowInfo>>(ED3D11ConstantBuffer::DirectionalShadowInfo);
 
 		OnResize(width, height);
@@ -84,7 +84,7 @@ namespace fq::graphics
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
-		mModelTexutreCB = nullptr;
+		mMaterialCB = nullptr;
 		mDirectioanlShadowInfoCB = nullptr;
 	}
 
@@ -171,7 +171,7 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
-			mModelTexutreCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
@@ -192,7 +192,7 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -210,7 +210,7 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mModelTexutreCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);

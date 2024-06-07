@@ -422,6 +422,7 @@ void Process::Update()
 
 	shadowTest();
 	particleUpdate();
+	materialUpdate();
 
 	InputManager::GetInstance().Update();
 }
@@ -576,14 +577,14 @@ void Process::debugRender()
 	aabbInfo.AABB.Center = { 0, 0, 0 };
 	aabbInfo.AABB.Extents = { 500, 500, 500 };
 	aabbInfo.Color = { 1, 0, 0, 1 };
-	//mTestGraphics->DrawBox(aabbInfo);
+	mTestGraphics->DrawBox(aabbInfo);
 
 	OBBInfo obbInfo;
 	obbInfo.OBB.Center = { 0,0,0 };
 	obbInfo.OBB.Extents = { 500, 500, 500 };
 	obbInfo.OBB.Orientation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll({ 3.14 * 0.25f, 3.14 * 0.25f, 0 });
 	obbInfo.Color = { 0, 1, 0, 1 };
-	//mTestGraphics->DrawOBB(obbInfo);
+	mTestGraphics->DrawOBB(obbInfo);
 
 	FrustumInfo frustumInfo;
 	frustumInfo.Frustum.Origin = cameraTransform2.worldPosition;
@@ -595,7 +596,7 @@ void Process::debugRender()
 	frustumInfo.Frustum.TopSlope = 0.4142f;
 	frustumInfo.Frustum.BottomSlope = -0.4142;
 	frustumInfo.Color = { 0, 1, 0, 1 };
-	//mTestGraphics->DrawFrustum(frustumInfo);
+	mTestGraphics->DrawFrustum(frustumInfo);
 
 	GridInfo gridInfo;
 	gridInfo.Origin = { 0,0,0 };
@@ -612,21 +613,21 @@ void Process::debugRender()
 	ringInfo.MajorAxis = { 300, 0, 0 };
 	ringInfo.MinorAxis = { 0, 300, 0 };
 	ringInfo.Color = { 1, 1, 0, 1 };
-	//mTestGraphics->DrawRing(ringInfo);
+	mTestGraphics->DrawRing(ringInfo);
 
 	RayInfo rayInfo;
 	rayInfo.Origin = { 0,0,-100 };
 	rayInfo.Direction = { 0, 100, 100 };
 	rayInfo.Normalize = false;
 	rayInfo.Color = { 0.5f, 0.5f, 0.5f, 1 };
-	//mTestGraphics->DrawRay(rayInfo);
+	mTestGraphics->DrawRay(rayInfo);
 
 	PolygonInfo polygonInfo;
 	polygonInfo.Points.push_back({ 200, 200, 0 });
 	polygonInfo.Points.push_back({ 400, 200, 0 });
 	polygonInfo.Points.push_back({ 400, 400, 0 });
 	polygonInfo.Color = { 0.1f, 0.2f, 0.3f, 1.f };
-	//mTestGraphics->DrawPolygon(polygonInfo);
+	mTestGraphics->DrawPolygon(polygonInfo);
 
 	polygonInfo.Points.clear();
 	polygonInfo.Points.push_back({ -200, 200, 0 });
@@ -634,7 +635,7 @@ void Process::debugRender()
 	polygonInfo.Points.push_back({ -400, 400, 0 });
 	polygonInfo.Points.push_back({ -300, 500, 0 });
 	polygonInfo.Points.push_back({ -200, 400, 0 });
-	//mTestGraphics->DrawPolygon(polygonInfo);
+	mTestGraphics->DrawPolygon(polygonInfo);
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
@@ -965,6 +966,94 @@ void Process::particleUpdate()
 		if (GetAsyncKeyState('I') & 0x8000)
 		{
 			obj->SetIsReset(true);
+		}
+	}
+}
+
+void Process::materialUpdate()
+{
+	static float tempColor = 0.0f;
+
+	tempColor += mTimeManager.GetDeltaTime();
+	tempColor = fmod(tempColor, 1.f);
+
+	for (auto matrialInterface : mTestGraphics->GetMaterials())
+	{
+		fq::graphics::MaterialTextureUseFlag textureUseFlag;
+		auto materialData = matrialInterface->GetMaterialData();
+		if (GetAsyncKeyState('U') & 0x8000)
+		{
+			textureUseFlag.bUseBaseColor = false;
+			textureUseFlag.bUseMetalness = false;
+			textureUseFlag.bUseRoughness = false;
+			materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+			materialData.MaterialDesc.Metalness = tempColor;
+			materialData.MaterialDesc.Roughness = tempColor;
+			materialData.BaseColorFileName = L"Particle02.png";
+			matrialInterface->SetMaterialData(materialData);
+		}
+		else
+		{
+			textureUseFlag.bUseMetalness = true;
+			textureUseFlag.bUseRoughness = true;
+			textureUseFlag.bUseBaseColor = true;
+		}
+
+		matrialInterface->SetTextureUseFlag(textureUseFlag);
+	}
+
+	for (auto meshInterface : mSkinnedMeshObjects)
+	{
+		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
+		{
+			fq::graphics::MaterialTextureUseFlag textureUseFlag;
+			auto materialData = matrialInterface->GetMaterialData();
+			if (GetAsyncKeyState('Y') & 0x8000)
+			{
+				textureUseFlag.bUseBaseColor = false;
+				textureUseFlag.bUseMetalness = false;
+				textureUseFlag.bUseRoughness = false;
+				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.MaterialDesc.Metalness = tempColor;
+				materialData.MaterialDesc.Roughness = tempColor;
+				materialData.BaseColorFileName = L"Particle02.png";
+				matrialInterface->SetMaterialData(materialData);
+			}
+			else
+			{
+				textureUseFlag.bUseMetalness = true;
+				textureUseFlag.bUseRoughness = true;
+				textureUseFlag.bUseBaseColor = true;
+			}
+
+			matrialInterface->SetTextureUseFlag(textureUseFlag);
+		}
+	}
+	for (auto meshInterface : mStaticMeshObjects)
+	{
+		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
+		{
+			fq::graphics::MaterialTextureUseFlag textureUseFlag;
+			auto materialData = matrialInterface->GetMaterialData();
+			if (GetAsyncKeyState('T') & 0x8000)
+			{
+				textureUseFlag.bUseBaseColor = false;
+				textureUseFlag.bUseMetalness = false;
+				textureUseFlag.bUseRoughness = false;
+				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.MaterialDesc.Metalness = tempColor;
+				materialData.MaterialDesc.Roughness = tempColor;
+				materialData.BaseColorFileName = L"Particle02.png";
+				matrialInterface->SetMaterialData(materialData);
+			}
+			else
+			{
+				textureUseFlag.bUseMetalness = true;
+				textureUseFlag.bUseRoughness = true;
+				textureUseFlag.bUseBaseColor = true;
+			}
+
+			matrialInterface->SetTextureUseFlag(textureUseFlag);
 		}
 	}
 }

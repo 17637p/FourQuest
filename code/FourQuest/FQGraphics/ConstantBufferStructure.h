@@ -64,15 +64,19 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix ViewProjMat;
 	};
 
-	struct ModelTexutre
+	struct CBMaterial
 	{
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		
+		float Metalness = 0.f;
+		float Roughness = 0.f;
 		int bUseAlbedoMap;
 		int bUseMetalnessMap;
+		
 		int bUseRoughnessMap;
 		int bUseNormalMap;
 		int bUseEmissiveMap;
 		int bUseOpacityMap;
-		int unused[2];
 	};
 
 	struct Layer
@@ -267,7 +271,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ConstantBuffer<ModelTransform>>& cbuffer,
 			const DirectX::SimpleMath::Matrix& transform);
 		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<ModelTexutre>>& cbuffer,
+			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
 			const std::shared_ptr<Material>& material);
 		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,

@@ -137,6 +137,7 @@
     <ClInclude Include="FQCommonPhysics.h" />
     <ClInclude Include="FQPath.h" />
     <ClInclude Include="IFQRenderObject.h" />
+    <ClInclude Include="IFQRenderResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FQPath.cpp" />

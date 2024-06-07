@@ -127,7 +127,24 @@ namespace fq::graphics
 
 	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfo& info)
 	{
+		mBatchEffect->Apply(device->GetDeviceContext().Get());
+		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
 
+		DirectX::SimpleMath::Vector3 origin = info.Sphere.Center;
+
+		DirectX::SimpleMath::Vector3 xAxis = DirectX::SimpleMath::Vector3::UnitX * info.Sphere.Radius;
+		DirectX::SimpleMath::Vector3 yAxis = DirectX::SimpleMath::Vector3::UnitY * info.Sphere.Radius;
+		DirectX::SimpleMath::Vector3 zAxis = DirectX::SimpleMath::Vector3::UnitZ * info.Sphere.Radius;
+
+		debug::RingInfo ringInfo;
+		ringInfo.Color = info.Color;
+		ringInfo.Origin = origin;
+		ringInfo.MajorAxis = xAxis; ringInfo.MinorAxis = zAxis;
+		DrawRing(device, ringInfo);
+		ringInfo.MajorAxis = xAxis; ringInfo.MinorAxis = yAxis;
+		DrawRing(device, ringInfo);
+		ringInfo.MajorAxis = yAxis; ringInfo.MinorAxis = zAxis;
+		DrawRing(device, ringInfo);
 	}
 	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::AABBInfo& info)
 	{
