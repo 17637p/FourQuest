@@ -150,18 +150,18 @@ namespace fq::graphics
 		particleObjectData.InstanceData.NumToEmit = particleObject->mNumToEmit;
 		particleObjectData.InstanceData.RandomSeed = particleObject->mRandomSeed;
 
-		particleObjectData.MainData.StartColor[0] = particleInfo.MainData.StartColor[0];
-		particleObjectData.MainData.StartColor[1] = particleInfo.MainData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartColor[0] : particleInfo.MainData.StartColor[1];;
-		particleObjectData.MainData.StartLifeTime[0] = particleInfo.MainData.StartLifeTime[0];
-		particleObjectData.MainData.StartLifeTime[1] = particleInfo.MainData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartLifeTime[0] : particleInfo.MainData.StartLifeTime[1];;
-		particleObjectData.MainData.StartSpeed[0] = particleInfo.MainData.StartSpeed[0];
-		particleObjectData.MainData.StartSpeed[1] = particleInfo.MainData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSpeed[0] : particleInfo.MainData.StartSpeed[1];;
-		particleObjectData.MainData.StartRotation[0] = particleInfo.MainData.StartRotation[0];
-		particleObjectData.MainData.StartRotation[1] = particleInfo.MainData.StartRotationOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartRotation[0] : particleInfo.MainData.StartRotation[1];;
-		particleObjectData.MainData.StartSize[0] = particleInfo.MainData.StartSize[0];
-		particleObjectData.MainData.StartSize[1] = particleInfo.MainData.StartSizeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSize[0] : particleInfo.MainData.StartSize[1];;
-		particleObjectData.MainData.GravityModfier[0] = particleInfo.MainData.GravityModifier[0];
-		particleObjectData.MainData.GravityModfier[1] = particleInfo.MainData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.GravityModifier[0] : particleInfo.MainData.GravityModifier[1];
+		particleObjectData.MainData.StartColor[0] = particleInfo.MainData.StartColor0;
+		particleObjectData.MainData.StartColor[1] = particleInfo.MainData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartColor0 : particleInfo.MainData.StartColor1;
+		particleObjectData.MainData.StartLifeTime[0] = particleInfo.MainData.StartLifeTime.x;
+		particleObjectData.MainData.StartLifeTime[1] = particleInfo.MainData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartLifeTime.x : particleInfo.MainData.StartLifeTime.y;
+		particleObjectData.MainData.StartSpeed[0] = particleInfo.MainData.StartSpeed.x;
+		particleObjectData.MainData.StartSpeed[1] = particleInfo.MainData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSpeed.x : particleInfo.MainData.StartSpeed.y;;
+		particleObjectData.MainData.StartRotation[0] = particleInfo.MainData.StartRotation.x;
+		particleObjectData.MainData.StartRotation[1] = particleInfo.MainData.StartRotationOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartRotation.x : particleInfo.MainData.StartRotation.y;;
+		particleObjectData.MainData.StartSize[0] = particleInfo.MainData.StartSize.x;
+		particleObjectData.MainData.StartSize[1] = particleInfo.MainData.StartSizeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSize.x : particleInfo.MainData.StartSize.y;;
+		particleObjectData.MainData.GravityModfier[0] = particleInfo.MainData.GravityModifier.x;
+		particleObjectData.MainData.GravityModfier[1] = particleInfo.MainData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.GravityModifier.x : particleInfo.MainData.GravityModifier.y;
 		particleObjectData.MainData.SimulationSpeed = particleInfo.MainData.SimulationSpeed;
 		particleObjectData.MainData.MaxParticleSize = particleInfo.MainData.MaxParticleCount;
 
@@ -263,6 +263,7 @@ namespace fq::graphics
 		{
 			return;
 		}
+
 
 		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get(), particleObject->mDeadListUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1,  (UINT)-1 };
