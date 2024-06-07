@@ -160,6 +160,7 @@
     <ClInclude Include="ICollider.h" />
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="IStateBehaviour.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="PrefabResource.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />
     <ClCompile Include="SoundClip.cpp" />
