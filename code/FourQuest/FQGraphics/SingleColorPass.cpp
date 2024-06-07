@@ -82,7 +82,10 @@ void fq::graphics::SingleColorPass::Render()
 			{
 				OutLineColor outlineColor;
 				outlineColor.color = job.tempObject->GetOutlineColor();
-				if (outlineColor.color.R() == -1)
+				if (outlineColor.color.R() < 0 ||
+					outlineColor.color.G() < 0 ||
+					outlineColor.color.B() < 0 ||
+					(outlineColor.color.R() == 0 && outlineColor.color.G() == 0 || outlineColor.color.B() == 0))
 				{
 					continue;
 				}
