@@ -18,6 +18,7 @@
 #include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "SoundSystem.h"
+#include "ParticleSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -71,6 +72,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
+	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
@@ -145,6 +147,7 @@ void fq::game_engine::EditorEngine::Process()
 			}
 
 			// 시스템 업데이트
+			mGameProcess->mParticleSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();

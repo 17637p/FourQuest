@@ -182,6 +182,9 @@
     <ClInclude Include="Setting.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -294,6 +297,9 @@
     </ClCompile>
     <ClCompile Include="Setting.cpp">
       <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

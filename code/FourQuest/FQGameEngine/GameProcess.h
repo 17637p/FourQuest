@@ -31,6 +31,7 @@ namespace fq::game_engine
 	class LightSystem;
 	class SoundSystem;
 	class AnimationSystem;
+	class ParticleSystem;
 }
 
 namespace fq::game_engine
@@ -66,5 +67,6 @@ namespace fq::game_engine
 		std::unique_ptr<LightSystem> mLightSystem;
 		std::unique_ptr<SoundSystem> mSoundSystem;
 		std::unique_ptr<AnimationSystem> mAnimationSystem;
+		std::unique_ptr<ParticleSystem> mParticleSystem;
 	};
 }
