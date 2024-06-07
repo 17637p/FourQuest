@@ -1001,6 +1001,61 @@ void Process::materialUpdate()
 
 		matrialInterface->SetTextureUseFlag(textureUseFlag);
 	}
+
+	for (auto meshInterface : mSkinnedMeshObjects)
+	{
+		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
+		{
+			fq::graphics::MaterialTextureUseFlag textureUseFlag;
+			auto materialData = matrialInterface->GetMaterialData();
+			if (GetAsyncKeyState('Y') & 0x8000)
+			{
+				textureUseFlag.bUseBaseColor = false;
+				textureUseFlag.bUseMetalness = false;
+				textureUseFlag.bUseRoughness = false;
+				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.MaterialDesc.Metalness = tempColor;
+				materialData.MaterialDesc.Roughness = tempColor;
+				materialData.BaseColorFileName = L"Particle02.png";
+				matrialInterface->SetMaterialData(materialData);
+			}
+			else
+			{
+				textureUseFlag.bUseMetalness = true;
+				textureUseFlag.bUseRoughness = true;
+				textureUseFlag.bUseBaseColor = true;
+			}
+
+			matrialInterface->SetTextureUseFlag(textureUseFlag);
+		}
+	}
+	for (auto meshInterface : mStaticMeshObjects)
+	{
+		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
+		{
+			fq::graphics::MaterialTextureUseFlag textureUseFlag;
+			auto materialData = matrialInterface->GetMaterialData();
+			if (GetAsyncKeyState('T') & 0x8000)
+			{
+				textureUseFlag.bUseBaseColor = false;
+				textureUseFlag.bUseMetalness = false;
+				textureUseFlag.bUseRoughness = false;
+				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.MaterialDesc.Metalness = tempColor;
+				materialData.MaterialDesc.Roughness = tempColor;
+				materialData.BaseColorFileName = L"Particle02.png";
+				matrialInterface->SetMaterialData(materialData);
+			}
+			else
+			{
+				textureUseFlag.bUseMetalness = true;
+				textureUseFlag.bUseRoughness = true;
+				textureUseFlag.bUseBaseColor = true;
+			}
+
+			matrialInterface->SetTextureUseFlag(textureUseFlag);
+		}
+	}
 }
 
 /*=============================================================================
