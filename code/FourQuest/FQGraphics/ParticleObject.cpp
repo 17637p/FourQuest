@@ -115,12 +115,12 @@ namespace fq::graphics
 			switch (mParticleInfo.MainData.StartDelayOption)
 			{
 			case ParticleInfo::EOption::Constant:
-				mStartTimePos = mParticleInfo.MainData.StartDelay[0];
+				mStartTimePos = mParticleInfo.MainData.StartDelay.x;
 				break;
 			case ParticleInfo::EOption::RandomBetweenTwoConstant:
 			{
 				float ratio = D3D11Util::RandF(0.f, 1.f);
-				mStartTimePos = std::lerp(mParticleInfo.MainData.StartDelay[0], mParticleInfo.MainData.StartDelay[1], ratio);
+				mStartTimePos = std::lerp(mParticleInfo.MainData.StartDelay.x, mParticleInfo.MainData.StartDelay.y, ratio);
 				break;
 			}
 			default:

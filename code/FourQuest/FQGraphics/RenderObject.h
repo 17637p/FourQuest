@@ -307,14 +307,23 @@ namespace fq::graphics
 
 		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
 		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
-		inline const std::vector<DirectX::SimpleMath::Matrix>& GetFinalTransforms() const;
+		inline const std::vector<DirectX::SimpleMath::Matrix>& GetTransposedFinalTransforms() const;
 
 		// Outline
 		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
 		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
-		
+
 		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
 		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) { mMaterials = materials; }
+
+		virtual const std::vector<fq::common::Bone>& GetBones() const override;
+
+		virtual unsigned int GetBoneIndex(const std::string& boneName) const;
+		virtual bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex);
+		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const;
+		virtual bool TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform);
+		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const;
+		virtual const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const;
 
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
@@ -388,7 +397,7 @@ namespace fq::graphics
 	inline void SkinnedMeshObject::SetBindPose()
 	{
 		mTimePos = 0.f;
-		mBoneHierarchyCache.Clear();
+		mBoneHierarchyCache.SetBindPose();
 	}
 	inline void SkinnedMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
 	{
@@ -462,9 +471,9 @@ namespace fq::graphics
 	{
 		return mSkinnedMesh;
 	}
-	inline const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetFinalTransforms() const
+	inline const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetTransposedFinalTransforms() const
 	{
-		return mBoneHierarchyCache.GetFinalTransforms();
+		return mBoneHierarchyCache.GetTransposedFinalTransforms();
 	}
 	inline void SkinnedMeshObject::SetAlpha(float alpha)
 	{

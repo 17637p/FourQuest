@@ -18,6 +18,15 @@ namespace fq::common
 		unsigned int ParentIndex = INVALID_INDEX;
 		DirectX::SimpleMath::Matrix ToParentMatrix;
 	};
+	
+	struct Bone
+	{
+		std::string Name;
+		unsigned int Index;
+		unsigned int ParentIndex;
+		DirectX::SimpleMath::Matrix BindposeMatrix;
+		DirectX::SimpleMath::Matrix OffsetMatrix;
+	};
 
 	struct Mesh
 	{
