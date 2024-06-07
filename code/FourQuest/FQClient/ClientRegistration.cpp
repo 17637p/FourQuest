@@ -17,6 +17,8 @@
 #include "MonsterDie.h"
 #include "Attack.h"
 
+#include "CameraMoving.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -86,9 +88,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Attack")
 		.base<fq::game_module::Component>();
 
-	// -------------------------------------------------------------------------
-	// 몬스터 상태 
-	// -----------------------------------------------------------------------------
+	//////////////////////////////////////////////////////////////////////////
+	//                             몬스터 상태								//
+	//////////////////////////////////////////////////////////////////////////
 	entt::meta<MonsterIdle>()
 		.type("MonsterIdle"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterIdle")
@@ -119,6 +121,29 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MonsterDie")
 		.base<fq::game_module::IStateBehaviour>();
 
+	//////////////////////////////////////////////////////////////////////////
+	//                             카메라									//
+	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<CameraMoving>()
+		.type("CameraMoving"_hs)
+		.prop(fq::reflect::prop::Name, "CameraMoving")
+		.data<&CameraMoving::SetMoveSpeed, &CameraMoving::GetMoveSpeed>("MoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.data<&CameraMoving::SetZoomSpeed, &CameraMoving::GetZoomSpeed>("ZoomSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomSpeed")
+		.data<&CameraMoving::SetZoomMin, &CameraMoving::GetZoomMin>("ZoomMin"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomMin")
+		.data<&CameraMoving::SetZoomMax, &CameraMoving::GetZoomMax>("ZoomMax"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomMax")
+		.data<&CameraMoving::SetZoomOutPadX, &CameraMoving::GetZoomOutPadX>("ZoomOutPadX"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomOutPadX")
+		.data<&CameraMoving::SetZoomOutPadY, &CameraMoving::GetZoomOutPadY>("ZoomOutPadY"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomOutPadY")
+		.data<&CameraMoving::SetZoomInPadX, &CameraMoving::GetZoomInPadX>("ZoomInPadX"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomInPadX")
+		.data<&CameraMoving::SetZoomInPadY, &CameraMoving::GetZoomInPadY>("ZoomInPadY"_hs)
+		.prop(fq::reflect::prop::Name, "ZoomInPadY")
+		.base<fq::game_module::Component>();
 }
 

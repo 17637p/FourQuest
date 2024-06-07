@@ -45,6 +45,12 @@
     <Filter Include="src\01.Player\State">
       <UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\04.Camera">
+      <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\04.Camera">
+      <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="PlayerAttackState.h">
       <Filter>include\01.Player\State</Filter>
+	</ClInclude>
+	<ClInclude Include="CameraMoving.h">
+      <Filter>include\04.Camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="PlayerAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
+	</ClCompile>
+	<ClCompile Include="CameraMoving.cpp">
+      <Filter>src\04.Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

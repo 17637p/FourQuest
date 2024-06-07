@@ -145,6 +145,7 @@ namespace fq::graphics
 				}
 			}
 		}
+
 		mDebugDrawManager->Excute(mDevice, mCameraManager);
 	}
 }

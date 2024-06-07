@@ -599,11 +599,11 @@ void Process::debugRender()
 	mTestGraphics->DrawFrustum(frustumInfo);
 
 	GridInfo gridInfo;
-	gridInfo.Origin = { 0,0,0 };
+	gridInfo.Origin = { 0, 300,0 };
 	gridInfo.XAxis = { 1, 0, 0 };
 	gridInfo.YAxis = { 0, 0, 1 };
-	gridInfo.XDivision = 1;
-	gridInfo.YDivision = 1;
+	gridInfo.XDivision = 10;
+	gridInfo.YDivision = 10;
 	gridInfo.GridSize = 1000.f;
 	gridInfo.Color = { 1, 0, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
@@ -917,6 +917,7 @@ void Process::particleInit()
 void Process::particleUpdate()
 {
 	using namespace fq::graphics;
+	return;
 
 	static float s_particlesPerSecond = 10.f;
 	static bool s_bUsedX = true;
