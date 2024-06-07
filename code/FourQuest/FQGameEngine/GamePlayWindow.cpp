@@ -462,7 +462,7 @@ void fq::game_engine::GamePlayWindow::drawSelectObjectDebugInfomation()
 		auto cameraT = mSelectObject->GetComponent<Transform>();
 
 		fq::graphics::debug::FrustumInfo frustum;
-		frustum.Color = { 0.f,0.f,0.f,1.f };
+		frustum.Color = { 1.f, 1.f, 0.f, 1.f };
 
 		float ratio = ImGui::GetWindowSize().x / ImGui::GetWindowSize().y;
 
