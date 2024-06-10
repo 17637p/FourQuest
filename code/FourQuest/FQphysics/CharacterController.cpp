@@ -17,7 +17,7 @@ namespace fq::physics
 
 	CharacterController::~CharacterController()
 	{
-		mPxController->release();
+		PX_RELEASE(mPxController);
 	}
 
 	bool CharacterController::Initialize(const CharacterControllerInfo& info

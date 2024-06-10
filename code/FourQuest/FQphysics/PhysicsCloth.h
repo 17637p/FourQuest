@@ -12,16 +12,19 @@ namespace fq::physics
 		PhysicsCloth(unsigned int id, unsigned int layerNumber);
 		~PhysicsCloth();
 
-		bool Initialize(const PhysicsClothInfo& info, const physx::PxCudaContextManager* cudaContextManager, physx::PxPhysics* physics);
+		bool Initialize(const PhysicsClothInfo& info, physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
+
+		void GetPhysicsCloth(physx::PxCudaContext* cudaContext, PhysicsClothGetData& data);
+		void SetPhysicsCloth(physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data);
 
 		inline void SetParticleNumberX(const unsigned int& particleNumberX);
 		inline void SetParticleNumberZ(const unsigned int& particleNumberZ);
-		inline void SetPosition(const physx::PxVec3& position);
+		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& position);
 		inline void SetParticleSpacing(const float& particleSpacing);
 		inline void SetTotalClothMass(const float& toTalClothMass);
 		inline const unsigned int& GetParticleNumberX() const;
 		inline const unsigned int& GetParticleNumberZ() const;
-		inline const physx::PxVec3& GetPosition() const;
+		inline const DirectX::SimpleMath::Matrix& GetWorldTransform() const;
 		inline const float& GetParticleSpacing() const;
 		inline const float& GetTotalClothMass() const;
 
@@ -31,15 +34,26 @@ namespace fq::physics
 	private:
 		physx::PxU32 id(const physx::PxU32& x, const physx::PxU32& y, const physx::PxU32& numY);
 
+		bool createClothBuffer(
+			physx::PxU32* phase,
+			physx::PxVec4* positionInvMass,
+			physx::PxVec4* velocity,
+			const physx::PxU32& particlePhase,
+			const physx::PxReal& particleMass,
+			physx::PxArray<physx::PxParticleSpring>& springs,
+			physx::PxArray<physx::PxU32>& triangles);
+
 	private:
 		unsigned int	mID;
 		unsigned int	mLayNumber;
 
 		unsigned int	mParticleNumberX;
 		unsigned int	mParticleNumberZ;
-		physx::PxVec3	mPosition;
 		float			mParticleSpacing;
 		float			mTotalClothMass;
+
+		DirectX::SimpleMath::Matrix mWorldTransform;
+		std::vector<DirectX::SimpleMath::Vector4> mVertices;
 
 		physx::PxPBDParticleSystem* mParticleSystem;
 		physx::PxParticleClothBuffer* mClothBuffer;
@@ -54,9 +68,9 @@ namespace fq::physics
 	{
 		mParticleNumberZ = particleNumberZ;
 	}
-	void PhysicsCloth::SetPosition(const physx::PxVec3& position)
+	void PhysicsCloth::SetWorldTransform(const DirectX::SimpleMath::Matrix& position)
 	{
-		mPosition = position;
+		mWorldTransform = position;
 	}
 	void PhysicsCloth::SetParticleSpacing(const float& particleSpacing)
 	{
@@ -74,9 +88,9 @@ namespace fq::physics
 	{
 		return mParticleNumberZ;
 	}
-	const physx::PxVec3& PhysicsCloth::GetPosition() const
+	const DirectX::SimpleMath::Matrix& PhysicsCloth::GetWorldTransform() const
 	{
-		return mPosition;
+		return mWorldTransform;
 	}
 	const float& PhysicsCloth::GetParticleSpacing() const
 	{
