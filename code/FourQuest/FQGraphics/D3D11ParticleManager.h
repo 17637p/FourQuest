@@ -21,6 +21,7 @@ namespace fq::graphics
 		~D3D11ParticleManager() = default;
 
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager);
+		void OnResize(unsigned short width, unsigned short height);
 
 		void Excute();
 
