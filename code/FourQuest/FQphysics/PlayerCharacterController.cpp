@@ -41,10 +41,12 @@ namespace fq::physics
 		desc.reportCallback = dynamic_pointer_cast<physx::PxUserControllerHitReport>(mCCTHitCallback).get();
 		mPxController = CCTManager->createController(desc);
 
-		physx::PxRigidActor* actor = mPxController->getActor();
+		physx::PxRigidDynamic* body = mPxController->getActor();
 		physx::PxShape* shape;
-		int ShapeSize = actor->getNbShapes();
-		actor->getShapes(&shape, ShapeSize);
+		int ShapeSize = body->getNbShapes();
+		body->getShapes(&shape, ShapeSize);
+		body->setSolverIterationCounts(8, 4);
+		body->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		shape->setContactOffset(0.02f);
 		shape->setRestOffset(0.01f);
 
@@ -56,7 +58,7 @@ namespace fq::physics
 		collisionData->myId = info.id;
 		collisionData->myLayerNumber = info.layerNumber;
 		shape->userData = collisionData.get();
-		actor->userData = (void*)collisionData.get();
+		body->userData = (void*)collisionData.get();
 
 		return true;
 	}

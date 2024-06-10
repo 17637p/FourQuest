@@ -105,6 +105,7 @@ namespace fq::physics
 		sceneDesc.solverType = physx::PxSolverType::eTGS;
 
 
+
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
 		assert(mScene);

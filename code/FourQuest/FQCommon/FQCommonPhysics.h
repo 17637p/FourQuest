@@ -243,4 +243,32 @@ namespace fq::physics
 		float density = 1.f;							// ¹Ðµµ ( 0.f ~ 1.f )
 	};
 #pragma endregion
+
+#pragma region PhysicsCloth
+	struct PhysicsClothMaterialInfo
+	{
+		float friction = 0.8f;
+		float damping = 0.001f;
+		float adhesion = 1e+7f;
+		float viscosity = 0.001f;
+		float vorticityConfinement = 0.5f;
+		float surfaceTension = 0.005f;
+		float cohesion = 0.05f;
+		float lift = 0.f;
+		float drag = 0.f;
+		float cflCoefficient = 1.f;
+		float gravityScale = 2.f;
+	};
+
+	struct PhysicsClothInfo
+	{
+		unsigned int id = unregisterID;
+		unsigned int layerNumber = 0;
+		unsigned int particleNumberX = 5;
+		unsigned int particleNumberZ = 5;
+		DirectX::SimpleMath::Vector3 position = {};
+		float particleSpacing = 2.f;
+		float totalClothMass = 10.f;
+	};
+#pragma endregion
 }
