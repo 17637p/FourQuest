@@ -84,6 +84,14 @@ namespace fq::graphics
 		mParticleObjectCB = std::make_shared<D3D11ConstantBuffer<ParticleObjectData>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 
+	void D3D11ParticleManager::OnResize(unsigned short width, unsigned short height)
+	{
+		mBackBufferRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
+		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV)->GetSRV();
+	}
+
 	void D3D11ParticleManager::Excute()
 	{
 		// update frameCB
@@ -229,6 +237,8 @@ namespace fq::graphics
 		particleObjectData.RotationOverLifetimeData.AngularVelocityInRadian = particleInfo.RotationOverLifetimeData.AngularVelocityInDegree * 3.141592 / 180;
 		particleObjectData.RotationOverLifetimeData.bIsUsed = particleInfo.RotationOverLifetimeData.bIsUsed;
 
+		particleObjectData.RenderData.bHasTexture = particleObject->mTexture->GetSRV() == nullptr ? false : true;
+
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
 
@@ -330,7 +340,6 @@ namespace fq::graphics
 	{
 		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 
-
 		switch (particleObjectInterface->GetInfo().RenderData.BlendMode)
 		{
 		case ParticleInfo::Render::EBlendMode::Additive:
@@ -355,6 +364,9 @@ namespace fq::graphics
 
 		ID3D11ShaderResourceView* vs_srv[] = { particleObject->mParticleBufferSRV.Get(), particleObject->mAliveIndexBufferSRV.Get() };
 		ID3D11ShaderResourceView* ps_srv[] = { particleObject->mTexture->GetSRV().Get(),mDepthSRV.Get() };
+
+		mParticleFrameCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);
+		mParticleObjectCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 
 		mDevice->GetDeviceContext()->VSSetShaderResources(0, ARRAYSIZE(vs_srv), vs_srv);
 		mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(ps_srv), ps_srv);

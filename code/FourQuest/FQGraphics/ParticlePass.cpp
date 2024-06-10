@@ -19,7 +19,15 @@ namespace fq::graphics
 		mCameraManager = cameraManager;
 		mLightManager = lightManager;
 		mResourceManager = resourceManager;
-		OnResize(width, height);
+
+		mViewport.Width = (float)width;
+		mViewport.Height = (float)height;
+		mViewport.MinDepth = 0.f;
+		mViewport.MaxDepth = 1.f;
+		mViewport.TopLeftX = 0.f;
+		mViewport.TopLeftY = 0.f;
+
+		//OnResize(width, height);
 		// rendering shader
 	}
 	void ParticlePass::Finalize()
@@ -39,6 +47,8 @@ namespace fq::graphics
 		mViewport.MaxDepth = 1.f;
 		mViewport.TopLeftX = 0.f;
 		mViewport.TopLeftY = 0.f;
+
+		mParticleManager->OnResize(width, height);
 	}
 
 	void ParticlePass::Render()
