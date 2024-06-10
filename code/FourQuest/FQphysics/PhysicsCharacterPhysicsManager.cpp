@@ -49,4 +49,11 @@ namespace fq::physics
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
 		return mScene->addArticulation(*characterPhysics->GetPxArticulation());
 	}
+
+	bool PhysicsCharacterPhysicsManager::ChangeScene()
+	{
+
+
+		return true;
+	}
 }

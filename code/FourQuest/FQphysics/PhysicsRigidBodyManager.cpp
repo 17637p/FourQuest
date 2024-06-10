@@ -323,16 +323,22 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 			if (dynamicBody)
 			{
-				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
-				mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
-				mCollisionDataContainer.find(id)->second->isDead = true;
+				if (dynamicBody->GetPxRigidDynamic()->getScene() == scene)
+				{
+					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
+					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
+					mCollisionDataContainer.find(id)->second->isDead = true;
+				}
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
-				scene->removeActor(*staticBody->GetPxRigidStatic());
-				mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
-				mCollisionDataContainer.find(id)->second->isDead = true;
+				if (staticBody->GetPxRigidStatic()->getScene() == scene)
+				{
+					scene->removeActor(*staticBody->GetPxRigidStatic());
+					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
+					mCollisionDataContainer.find(id)->second->isDead = true;
+				}
 			}
 		}
 
@@ -356,14 +362,20 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body.second);
 			if (dynamicBody)
 			{
-				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
-				continue;
+				if (dynamicBody->GetPxRigidDynamic()->getScene() == scene)
+				{
+					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
+					continue;
+				}
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body.second);
 			if (staticBody)
 			{
-				scene->removeActor(*staticBody->GetPxRigidStatic());
-				continue;
+				if (staticBody->GetPxRigidStatic()->getScene() == scene)
+				{
+					scene->removeActor(*staticBody->GetPxRigidStatic());
+					continue;
+				}
 			}
 		}
 		mRigidBodyContainer.clear();
@@ -373,14 +385,20 @@ namespace fq::physics
 			std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 			if (dynamicBody)
 			{
-				scene->removeActor(*dynamicBody->GetPxRigidDynamic());
-				continue;
+				if (dynamicBody->GetPxRigidDynamic()->getScene() == scene)
+				{
+					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
+					continue;
+				}
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 			if (staticBody)
 			{
-				scene->removeActor(*staticBody->GetPxRigidStatic());
-				continue;
+				if (staticBody->GetPxRigidStatic()->getScene() == scene)
+				{
+					scene->removeActor(*staticBody->GetPxRigidStatic());
+					continue;
+				}
 			}
 		}
 		mUpcomingActors.clear();

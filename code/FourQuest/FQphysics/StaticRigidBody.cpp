@@ -63,9 +63,6 @@ namespace fq::physics
 		mRigidStatic->getShapes(&shape, 1);
 		shape->getMaterials(&material, 1);
 
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
-
 		if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
 		{
 			physx::PxBoxGeometry boxGeometry = static_cast<const physx::PxBoxGeometry&>(shape->getGeometry());

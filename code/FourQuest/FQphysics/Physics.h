@@ -24,14 +24,11 @@ namespace fq::physics
 		void SettingPVDClient(physx::PxScene* scene);
 
 		/// <summary>
-		/// Physics를 반환합니다.
+		/// Get함수 입니다.
 		/// </summary>
 		inline physx::PxPhysics* GetPhysics();
-		
-		/// <summary>
-		/// CpuDispatcher를 반환합니다.
-		/// </summary>
 		inline physx::PxDefaultCpuDispatcher* GetDispatcher();
+		inline physx::PxFoundation* GetFoundation();
 
 	private:
 		physx::PxDefaultAllocator		mDefaultAllocatorCallback;
@@ -55,6 +52,10 @@ namespace fq::physics
 	physx::PxDefaultCpuDispatcher* Physics::GetDispatcher()
 	{
 		return mDispatcher;
+	}
+	physx::PxFoundation* Physics::GetFoundation()
+	{
+		return mFoundation;
 	}
 }
 

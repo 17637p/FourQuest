@@ -40,6 +40,11 @@ namespace fq::physics
 		bool SimulationCharacter(unsigned int id);
 
 		/// <summary>
+		/// 씬을 변경할 때 호출하는 함수
+		/// </summary>
+		bool ChangeScene();
+
+		/// <summary>
 		/// 캐릭터 파직스를 반환하는 함수
 		/// </summary>
 		inline std::shared_ptr<CharacterPhysics> GetCharacterPhysics(unsigned int id);
