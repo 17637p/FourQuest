@@ -235,8 +235,6 @@ void fq::game_module::RegisterMetaData()
 		.base<Component>();
 
 
-	
-
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
 	//////////////////////////////////////////////////////////////////////////
@@ -532,7 +530,6 @@ void fq::game_module::RegisterMetaData()
 			.data<ParticleInfo::Shape::EMode::Random>("Random"_hs)
 			.prop(fq::reflect::prop::Name, "Random");
 
-
 		entt::meta<ParticleInfo::Main>()
 			.type("ParticleMainInfo"_hs)
 			.prop(fq::reflect::prop::Name, "ParticleMainInfo")
@@ -652,6 +649,88 @@ void fq::game_module::RegisterMetaData()
 			.prop(fq::reflect::prop::Name, "Probability")
 			.prop(fq::reflect::prop::Comment, u8"0 ~ 1 사이의 확률 값을 사용");
 
+		entt::meta<ParticleInfo::VelocityOverLifetime>()
+			.type("VelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "VelocityOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::VelocityOverLifetime::Velocity>("Velocity"_hs)
+			.prop(fq::reflect::prop::Name, "Velocity")
+			.data<&ParticleInfo::VelocityOverLifetime::Orbital>("Orbital"_hs)
+			.prop(fq::reflect::prop::Name, "Orbital")
+			.data<&ParticleInfo::VelocityOverLifetime::Offset>("Offset"_hs)
+			.prop(fq::reflect::prop::Name, "Offset")
+			.data<&ParticleInfo::VelocityOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::LimitVelocityOverLifetime>()
+			.type("LimitVelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "LimitVelocityOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::LimitVelocityOverLifetime::Speed>("Speed"_hs)
+			.prop(fq::reflect::prop::Name, "Speed")
+			.data<&ParticleInfo::LimitVelocityOverLifetime::Dampen>("Dampen"_hs)
+			.prop(fq::reflect::prop::Name, "Dampen")
+			.prop(fq::reflect::prop::Comment, u8"제한 속도 초과 시 감소 비율")
+			.data<&ParticleInfo::LimitVelocityOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::ForceOverLifetime>()
+			.type("ForceOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "ForceOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::ForceOverLifetime::Force>("Force"_hs)
+			.prop(fq::reflect::prop::Name, "Force")
+			.data<&ParticleInfo::ForceOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::SizeOverLifetime>()
+			.type("SizeOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "SizeOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointA"_hs)
+			.prop(fq::reflect::prop::Name, "PointA")
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointB"_hs)
+			.prop(fq::reflect::prop::Name, "PointB")
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointC"_hs)
+			.prop(fq::reflect::prop::Name, "PointC")
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointD"_hs)
+			.prop(fq::reflect::prop::Name, "PointD")
+			.data<&ParticleInfo::SizeOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::RotationOverLifetime>()
+			.type("RotationOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "RotationOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::RotationOverLifetime::AngularVelocityInDegree>("AngularVelocityInDegree"_hs)
+			.prop(fq::reflect::prop::Name, "AngularVelocityInDegree")
+			.data<&ParticleInfo::RotationOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed"); 
+
+		entt::meta<ParticleInfo::Render::ERenderMode>()
+			.prop(fq::reflect::prop::Name, "ParticleRenderMode")
+			.conv<std::underlying_type_t<ParticleInfo::Render::ERenderMode>>()
+			.data<ParticleInfo::Render::ERenderMode::Billboard>("Billboard"_hs)
+			.prop(fq::reflect::prop::Name, "Billboard");
+
+		entt::meta<ParticleInfo::Render::EBlendMode>()
+			.prop(fq::reflect::prop::Name, "ParticleBlendMode")
+			.conv<std::underlying_type_t<ParticleInfo::Render::EBlendMode>>()
+			.data<ParticleInfo::Render::EBlendMode::Additive>("Additive"_hs)
+			.prop(fq::reflect::prop::Name, "Additive");
+
+		entt::meta<ParticleInfo::Render>()
+			.type("ParticleRenderData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleRenderData")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Render::RenderMode>("RenderMode"_hs)
+			.prop(fq::reflect::prop::Name, "RenderMode")
+			.data<&ParticleInfo::Render::BlendMode>("BlendMode"_hs)
+			.prop(fq::reflect::prop::Name, "BlendMode")
+			.data<&ParticleInfo::Render::TexturePath>("TexturePath"_hs)
+			.prop(fq::reflect::prop::Name, "TexturePath")
+			.prop(fq::reflect::prop::RelativePath)
+			.prop(fq::reflect::prop::DragDrop, ".png/.jpg");
 
 		entt::meta<Particle>()
 			.type("Particle"_hs)
@@ -664,6 +743,18 @@ void fq::game_module::RegisterMetaData()
 			.prop(fq::reflect::prop::Name, "ParticlesPerSecond")
 			.data<&Particle::SetEmissionBursts, &Particle::GetEmissionBursts>("EmissionBursts"_hs)
 			.prop(fq::reflect::prop::Name, "EmissionBursts")
+			.data<&Particle::SetVelocityOverLifetimeData, &Particle::GetVelocityOverLifetimeData>("VelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "VelocityOverLifetime")
+			.data<&Particle::SetLimitVelocityOverLifeTimeData, &Particle::GetLimitVelocityOverLifeTimeData>("LimitVelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "LimitVelocityOverLifetime")
+			.data<&Particle::SetForceOverLifetimeData, &Particle::GetForceOverLifetimeData>("ForceOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "ForceOverLifetime")
+			.data<&Particle::SetSizeOverLifetime, &Particle::GetSizeOverLifetime>("SizeOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "SizeOverLifetime")
+			.data<&Particle::SetRotationOverLifetimeData, &Particle::GetRotationOverLifetimeData>("RotationOverLifetimeData"_hs)
+			.prop(fq::reflect::prop::Name, "RotationOverLifetimeData")
+			.data<&Particle::SetRenderData, &Particle::GetRenderData>("ParticleRenderData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleRenderData")
 			.base<Component>();
 
 	}
