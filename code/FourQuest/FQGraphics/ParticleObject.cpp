@@ -94,7 +94,11 @@ namespace fq::graphics
 
 	void ParticleObject::caculateNumToEmit()
 	{
-		mTimePos += mFrameTime;
+		float frameTime = mFrameTime * mParticleInfo.MainData.SimulationSpeed;
+
+		float prevModTimePos = fmod(mTimePos, mParticleInfo.MainData.Duration);
+		mTimePos += frameTime;
+		float modTimePos = fmod(mTimePos, mParticleInfo.MainData.Duration);
 
 		if (mParticleInfo.EmissionData.ParticlesPerSecond < 0.f)
 		{
@@ -131,9 +135,6 @@ namespace fq::graphics
 			mbIsRunDuationCycle = false;
 		}
 
-		float modTimePos = fmod(mTimePos, mParticleInfo.MainData.Duration);
-		const float prevModTimePos = modTimePos - mTimePos;
-
 		if (mStartTimePos > modTimePos)
 		{
 			return;
@@ -141,7 +142,7 @@ namespace fq::graphics
 
 		if (mbIsEmit)
 		{
-			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * mFrameTime;
+			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * frameTime;
 		}
 
 		if (mAccumlation > 1.f)
@@ -162,7 +163,7 @@ namespace fq::graphics
 			{
 				float checkedTimePos = burst.TimePos + burst.Interval * i;
 
-				if (prevModTimePos < checkedTimePos && checkedTimePos < mTimePos)
+				if (prevModTimePos < checkedTimePos && checkedTimePos < modTimePos)
 				{
 					float ratio = D3D11Util::RandF(0.f, 1.f);
 

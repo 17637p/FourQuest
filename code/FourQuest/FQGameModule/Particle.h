@@ -23,7 +23,7 @@ namespace fq::game_module
 		void SetParticleObject(fq::graphics::IParticleObject* val) { mParticleObject = val; }
 
 		fq::graphics::ParticleInfo GetParticleInfomation() const { return mParticleInfo; }
-		void SetParticleInfomation(fq::graphics::ParticleInfo val) { mParticleInfo = val; }
+		void SetParticleInfomation(fq::graphics::ParticleInfo val);
 
 		ParticleInfo::Main GetMainParticleInfo()const { return mParticleInfo.MainData; }
 		void SetMainParticleInfo(ParticleInfo::Main mainInfo);
@@ -47,7 +47,7 @@ namespace fq::game_module
 		void SetColorOverLifeTime(ParticleInfo::ColorOverLifetime data);
  
 		ParticleInfo::SizeOverLifetime GetSizeOverLifetime()const { return mParticleInfo.SizeOverLifetimeData; }
-		void SetSizeOverLifetime(ParticleInfo::SizeOverLifetime data) { mParticleInfo.SizeOverLifetimeData; }
+		void SetSizeOverLifetime(ParticleInfo::SizeOverLifetime data);
 
 		ParticleInfo::RotationOverLifetime GetRotationOverLifetimeData()const { return mParticleInfo.RotationOverLifetimeData; }
 		void SetRotationOverLifetimeData(ParticleInfo::RotationOverLifetime data);
@@ -56,7 +56,7 @@ namespace fq::game_module
 		void SetRenderData(ParticleInfo::Render data);
 
 		std::vector<ParticleInfo::Emission::Burst> GetEmissionBursts()const { return mParticleInfo.EmissionData.Bursts; }
-		void SetEmissionBursts(std::vector<ParticleInfo::Emission::Burst> bursts) { mParticleInfo.EmissionData.Bursts = bursts; }
+		void SetEmissionBursts(std::vector<ParticleInfo::Emission::Burst> bursts);
 
 		float GetParticlesPerSecond()const { return mParticleInfo.EmissionData.ParticlesPerSecond; }
 		void SetParticlesPerSecond(float data);

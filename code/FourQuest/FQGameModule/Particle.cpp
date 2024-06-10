@@ -32,6 +32,14 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Particle::Clone(std
 	return cloneParticle;
 }
 
+void fq::game_module::Particle::SetParticleInfomation(fq::graphics::ParticleInfo val)
+{
+	mParticleInfo = val;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
+}
+
 void fq::game_module::Particle::SetMainParticleInfo(ParticleInfo::Main mainInfo)
 {
 	mParticleInfo.MainData = mainInfo;
@@ -90,6 +98,14 @@ void fq::game_module::Particle::SetColorOverLifeTime(ParticleInfo::ColorOverLife
 		mParticleObject->SetInfo(mParticleInfo);
 }
 
+void fq::game_module::Particle::SetSizeOverLifetime(ParticleInfo::SizeOverLifetime data)
+{
+	mParticleInfo.SizeOverLifetimeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
+}
+
 void fq::game_module::Particle::SetRotationOverLifetimeData(ParticleInfo::RotationOverLifetime data)
 {
 	mParticleInfo.RotationOverLifetimeData = data;
@@ -101,6 +117,14 @@ void fq::game_module::Particle::SetRotationOverLifetimeData(ParticleInfo::Rotati
 void fq::game_module::Particle::SetRenderData(ParticleInfo::Render data)
 {
 	mParticleInfo.RenderData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
+}
+
+void fq::game_module::Particle::SetEmissionBursts(std::vector<ParticleInfo::Emission::Burst> bursts)
+{
+	mParticleInfo.EmissionData.Bursts = bursts;
 
 	if (mParticleObject)
 		mParticleObject->SetInfo(mParticleInfo);
