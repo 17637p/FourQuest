@@ -40,7 +40,7 @@ namespace fq::physics
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 		mRigidDynamic = physics->createRigidDynamic(transform);
-		//mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
+		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		mRigidDynamic->userData = data.get();
 
 		if (!mRigidDynamic->attachShape(*shape))
@@ -63,6 +63,7 @@ namespace fq::physics
 		physx::PxShape* shape;
 		physx::PxMaterial* material;
 		mRigidDynamic->getShapes(&shape, 1);
+		shape->getMaterials(&material, 1);
 
 		if (mColliderType == EColliderType::COLLISION)
 		{
@@ -70,13 +71,9 @@ namespace fq::physics
 		}
 		else
 		{
-			//shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
-
-		shape->getMaterials(&material, 1);
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
 
 		if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
 		{

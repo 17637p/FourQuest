@@ -31,37 +31,42 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
 	{
-		/// ENTER_COLLISION 충돌 이벤트 실행
-		if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+		for (int i = 0; i < nbPairs; i++)
 		{
-			SettingCollisionData(pairHeader, pairs, ECollisionEventType::ENTER_COLLISION);
-		}
+			if (pairs[i].events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+			{
+				SettingCollisionData(pairHeader, &pairs[i], ECollisionEventType::ENTER_COLLISION);
+			}
 
-		/// END_COLLISION 충돌 이벤트 실행
-		else if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
-		{
-			SettingCollisionData(pairHeader, pairs, ECollisionEventType::END_COLLISION);
-		}
+			/// END_COLLISION 충돌 이벤트 실행
+			else if (pairs[i].events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+			{
+				SettingCollisionData(pairHeader, &pairs[i], ECollisionEventType::END_COLLISION);
+			}
 
-		/// ON_COLLSION 충돌 이벤트 실행
-		else if (pairs[0].events & (physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
-		{
-			SettingCollisionData(pairHeader, pairs, ECollisionEventType::ON_COLLISION);
+			/// ON_COLLSION 충돌 이벤트 실행
+			else if (pairs[i].events & (physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+			{
+				SettingCollisionData(pairHeader, &pairs[i], ECollisionEventType::ON_COLLISION);
+			}
 		}
 	}
 
 	void PhysicsSimulationEventCallback::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 	{
-		/// ENTER_OVERLAP 충돌 이벤트 실행
-		if (pairs->status == physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		for (int i = 0; i < count; i++)
 		{
-			SettingTriggerData(pairs, ECollisionEventType::ENTER_OVERLAP);
-		}
+			/// ENTER_OVERLAP 충돌 이벤트 실행
+			if (pairs[i].status == physx::PxPairFlag::eNOTIFY_TOUCH_FOUND)
+			{
+				SettingTriggerData(&pairs[i], ECollisionEventType::ENTER_OVERLAP);
+			}
 
-		/// END_OVERLAP 충돌 이벤트 실행
-		if (pairs->status == physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		{
-			SettingTriggerData(pairs, ECollisionEventType::END_OVERLAP);
+			/// END_OVERLAP 충돌 이벤트 실행
+			if (pairs[i].status == physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+			{
+				SettingTriggerData(&pairs[i], ECollisionEventType::END_OVERLAP);
+			}
 		}
 	}
 
