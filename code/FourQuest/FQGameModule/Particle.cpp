@@ -37,47 +37,73 @@ void fq::game_module::Particle::SetMainParticleInfo(ParticleInfo::Main mainInfo)
 	mParticleInfo.MainData = mainInfo;
 
 	mParticleInfo.MainData.MaxParticleCount = std::min(mainInfo.MaxParticleCount,  static_cast<size_t>(ParticleInfo::MAX_PARTICLE_COUNT));
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetEmissionInfo(ParticleInfo::Emission data)
 {
 	mParticleInfo.EmissionData = data;
 
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetShapeInfo(ParticleInfo::Shape data)
 {
 	mParticleInfo.ShapeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetVelocityOverLifetimeData(ParticleInfo::VelocityOverLifetime data)
 {
 	mParticleInfo.VelocityOverLifetimeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetLimitVelocityOverLifeTimeData(ParticleInfo::LimitVelocityOverLifetime data)
 {
 	mParticleInfo.LimitVelocityOverLifetimeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetForceOverLifetimeData(ParticleInfo::ForceOverLifetime data)
 {
 	mParticleInfo.ForceOverLifeTimeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetColorOverLifeTime(ParticleInfo::ColorOverLifetime data)
 {
 	mParticleInfo.ColorOverLifetimeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetRotationOverLifetimeData(ParticleInfo::RotationOverLifetime data)
 {
 	mParticleInfo.RotationOverLifetimeData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 void fq::game_module::Particle::SetRenderData(ParticleInfo::Render data)
 {
 	mParticleInfo.RenderData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
 
 
@@ -85,4 +111,6 @@ void fq::game_module::Particle::SetParticlesPerSecond(float data)
 {
 	mParticleInfo.EmissionData.ParticlesPerSecond = data;
 
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
 }
