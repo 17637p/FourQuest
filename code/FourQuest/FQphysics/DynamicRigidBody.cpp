@@ -25,8 +25,6 @@ namespace fq::physics
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
-		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
-
 		data->myId = GetID();
 		data->myLayerNumber = GetLayerNumber();
 		shape->userData = data.get();
