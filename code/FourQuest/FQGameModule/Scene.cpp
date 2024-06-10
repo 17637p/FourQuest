@@ -78,10 +78,17 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 
 void fq::game_module::Scene::CleanUp()
 {
+	mEventManager->FireEvent<fq::event::OnCleanUp>({});
+
 	// 삭제 예정인 오브젝트 제거합니다
 	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
 		, [](const std::shared_ptr<GameObject>& object)
 		{
+			if (object->IsDestroyed())
+			{
+				object->RemoveAllComponent();
+			}
+
 			return object->IsDestroyed();
 		}), mObjects.end());
 

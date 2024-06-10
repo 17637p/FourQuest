@@ -59,6 +59,8 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::RemoveComponent>(this, &PhysicsSystem::RemoveComponent);
 	mAddInputMoveHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::AddInputMove>(this, &PhysicsSystem::AddInputMove);
+	mOnCleanUpSceneHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::OnCleanUp>(this, &PhysicsSystem::CleanUp);
 
 	mBoxID = entt::resolve<fq::game_module::BoxCollider>().id();
 	mSphereID = entt::resolve<fq::game_module::SphereCollider>().id();
@@ -182,7 +184,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	// 2. Sphere Collider
 	if (object->HasComponent<SphereCollider>())
 	{
- 		auto sphereCollider = object->GetComponent<SphereCollider>();
+		auto sphereCollider = object->GetComponent<SphereCollider>();
 		auto type = sphereCollider->GetType();
 		auto sphereInfo = sphereCollider->GetSphereInfomation();
 		auto offset = sphereCollider->GetOffset();
@@ -342,7 +344,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		assert(id != physics::unregisterID);
 
 		mPhysicsEngine->RemoveRigidBody(id);
-		mColliderContainer.erase(mColliderContainer.find(id));
+		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 	// 2. Sphere Collider
 	if (object->HasComponent<SphereCollider>())
@@ -352,7 +354,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		assert(id != physics::unregisterID);
 
 		mPhysicsEngine->RemoveRigidBody(id);
-		mColliderContainer.erase(mColliderContainer.find(id));
+		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 	// 3. Capsule Collider
 	if (object->HasComponent<CapsuleCollider>())
@@ -362,7 +364,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		assert(id != physics::unregisterID);
 
 		mPhysicsEngine->RemoveRigidBody(id);
-		mColliderContainer.erase(mColliderContainer.find(id));
+		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
 	// 4. CharacterController
@@ -373,7 +375,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		assert(id != physics::unregisterID);
 
 		mPhysicsEngine->RemoveController(id);
-		mColliderContainer.erase(mColliderContainer.find(id));
+		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
 	// 4. Mesh Collider
@@ -384,7 +386,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		assert(id != physics::unregisterID);
 
 		mPhysicsEngine->RemoveRigidBody(id);
-		mColliderContainer.erase(mColliderContainer.find(id));
+		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 }
 
@@ -434,6 +436,9 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
+		if (colliderInfo.bIsDestroyed)
+			continue;
+
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
 		auto offset = colliderInfo.collider->GetOffset();
@@ -497,6 +502,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
+		if (colliderInfo.bIsDestroyed) 
+			continue;
+
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
 		auto offset = colliderInfo.collider->GetOffset();
@@ -574,5 +582,18 @@ void fq::game_engine::PhysicsSystem::calculateOffset(common::Transform& t, Direc
 	t.worldMatrix._41 = t.worldPosition.x;
 	t.worldMatrix._42 = t.worldPosition.y;
 	t.worldMatrix._43 = t.worldPosition.z;
+}
+
+void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
+{
+	for (auto iter = mColliderContainer.begin(); iter != mColliderContainer.end(); )
+	{
+		if (iter->second.bIsDestroyed)
+		{
+			iter = mColliderContainer.erase(iter);
+		}
+		else
+			++iter;
+	}
 }
 

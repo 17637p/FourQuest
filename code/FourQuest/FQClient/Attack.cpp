@@ -19,6 +19,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::Attack::Clone(std::share
 
 fq::client::Attack::Attack()
 	:mAttackPower(-1)
+	,mElapsedTime(0.f)
+	,mAttackTime(1.f)
 {
 
 }
@@ -26,4 +28,14 @@ fq::client::Attack::Attack()
 fq::client::Attack::~Attack()
 {
 
+}
+
+void fq::client::Attack::OnUpdate(float dt)
+{
+	mElapsedTime += dt;
+
+	if (mElapsedTime >= mAttackTime)
+	{
+		GetScene()->DestroyGameObject(GetGameObject());
+	}
 }

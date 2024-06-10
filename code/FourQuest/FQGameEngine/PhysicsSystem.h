@@ -24,7 +24,9 @@ namespace fq::game_engine
 			entt::id_type id;
 			std::shared_ptr<game_module::Component> component;
 			game_module::ICollider* collider;
+			bool bIsDestroyed = false;
 		};
+
 		using ColliderContainer = std::unordered_map<ColliderID, ColliderInfo>;
 
 		using EventHandler = fq::game_module::EventHandler;
@@ -78,8 +80,11 @@ namespace fq::game_engine
 		/// </summary>
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
+		void CleanUp(const fq::event::OnCleanUp& event);
+		
 		fq::physics::CollisionMatrix GetCollisionMatrix() const { return mCollisionMatrix; }
 		void SetCollisionMatrix(fq::physics::CollisionMatrix matrix);
+
 
 		/// <summary>
 		/// 콜라이더를 반환합니다 
@@ -110,6 +115,7 @@ namespace fq::game_engine
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
 		EventHandler mOnLoadSceneHandler;
+		EventHandler mOnCleanUpSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;

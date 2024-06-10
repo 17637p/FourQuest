@@ -14,20 +14,26 @@ namespace fq::client
 		Attack();
 		~Attack();
 
-		float GetAttackPower() const { return mAttackPower; }
-		void SetAttackPower(float val) { mAttackPower = val; }
-
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		void OnUpdate(float dt) override;
+
+		float GetAttackPower() const { return mAttackPower; }
+		void SetAttackPower(float val) { mAttackPower = val; }
+
+		float GetAttackTime() const { return mAttackTime; }
+		void SetAttackTime(float val) { mAttackTime = val; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		// 공격력
 		float mAttackPower;
+		float mAttackTime;
+		float mElapsedTime;
 	};
 }
 

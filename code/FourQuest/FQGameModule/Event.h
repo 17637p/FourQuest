@@ -50,6 +50,13 @@ namespace fq::event
 	};
 
 	/// <summary>
+	/// 씬 CleanUp 함수 호출
+	/// </summary>
+	struct OnCleanUp
+	{
+	};
+
+	/// <summary>
  	/// 씬 변경 요청 이벤트
 	/// </summary>
 	struct RequestChangeScene
