@@ -63,10 +63,10 @@ namespace fq::physics
 		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
-		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType) override;
-		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType) override;
-		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) override;
-		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -87,6 +87,12 @@ namespace fq::physics
 		/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
 		/// </summary>
 		virtual bool RemoveAllRigidBody() override;
+
+		/// <summary>
+		/// 씬 체인지할 시에 모든 리지드 바디를 삭제하고 이벤트 콜백을 씬이 넘어가기 전에 처리합니다.
+		/// </summary>
+		/// <returns></returns>
+		virtual bool ChangeScene() override;
 
 		/// <summary>
 		/// 폴리곤의 디버그 데이터 

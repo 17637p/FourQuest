@@ -13,7 +13,7 @@ namespace fq::physics
 	DynamicRigidBody::~DynamicRigidBody()
 	{
 	}
-	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
+	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data, bool isKinematic)
 	{
 		if (GetColliderType() == EColliderType::COLLISION)
 		{
@@ -24,6 +24,8 @@ namespace fq::physics
 			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
+
+		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 
 		data->myId = GetID();
 		data->myLayerNumber = GetLayerNumber();
@@ -39,7 +41,6 @@ namespace fq::physics
 
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
-
 		mRigidDynamic = physics->createRigidDynamic(transform);
 		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		mRigidDynamic->userData = data.get();
@@ -47,6 +48,9 @@ namespace fq::physics
 		if (!mRigidDynamic->attachShape(*shape))
 			return false;
 		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, 1.f);
+
+		if (isKinematic)
+			mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 
 		return true;
 	}
@@ -68,7 +72,7 @@ namespace fq::physics
 		}
 		else
 		{
-			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			//shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 

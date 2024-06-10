@@ -20,7 +20,7 @@ namespace fq::physics
 		}
 		else
 		{
-			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			//shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
