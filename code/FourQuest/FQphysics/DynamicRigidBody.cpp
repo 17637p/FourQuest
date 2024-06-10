@@ -40,7 +40,7 @@ namespace fq::physics
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
 		mRigidDynamic = physics->createRigidDynamic(transform);
-		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
+		//mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		mRigidDynamic->userData = data.get();
 
 		if (!mRigidDynamic->attachShape(*shape))
@@ -55,7 +55,7 @@ namespace fq::physics
 
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
-		if (abs(mScale.Length()) + 0.001f <= abs(scale.Length()) || abs(mScale.Length()) - 0.001f <= abs(scale.Length()))
+		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
 			return;
 
 		mScale = scale;
@@ -115,5 +115,7 @@ namespace fq::physics
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
+
+		shape->release();
 	}
 }
