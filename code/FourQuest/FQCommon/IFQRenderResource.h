@@ -16,10 +16,10 @@ extern "C" {
 	{
 		struct MaterialTextureUseFlag
 		{
-			bool bUseBaseColor;
-			bool bUseMetalness;
-			bool bUseRoughness;
-			bool bUseNormalness;
+			bool bUseBaseColor = true;
+			bool bUseMetalness = true;
+			bool bUseRoughness = true;
+			bool bUseNormalness = true;
 		};
 
 		class IMaterial

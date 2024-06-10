@@ -74,6 +74,7 @@ namespace fq::physics
 		mCCTManager = nullptr;
 		mRigidBodyManager = nullptr;
 		PX_RELEASE(mScene);
+		PX_RELEASE(mCudaContextManager);
 	}
 
 	bool FQPhysics::Initialize(PhysicsEngineInfo& info)
@@ -85,19 +86,33 @@ namespace fq::physics
 		// PhysX 시뮬레이션을 위한 Scene을 설정합니다.
 		physx::PxSceneDesc sceneDesc(physics->getTolerancesScale()); // Scene을 생성할 때 물리적인 허용 오차 스케일을 설정합니다.
 
+		if (PxGetSuggestedCudaDeviceOrdinal(mPhysics->GetFoundation()->getErrorCallback()) >= 0)
+		{
+			// initialize CUDA
+			physx::PxCudaContextManagerDesc cudaContextManagerDesc;
+			mCudaContextManager = PxCreateCudaContextManager(*mPhysics->GetFoundation(), cudaContextManagerDesc, PxGetProfilerCallback());
+			if (mCudaContextManager && !mCudaContextManager->contextIsValid())
+			{
+				mCudaContextManager->release();
+				mCudaContextManager = NULL;
+			}
+		}
+		if (mCudaContextManager == NULL)
+		{
+			PxGetFoundation().error(physx::PxErrorCode::eINVALID_OPERATION, PX_FL, "Failed to initialize CUDA!\n");
+		}
+
 		// 중력을 설정합니다.
 		sceneDesc.gravity.x = info.gravity.x;
 		sceneDesc.gravity.y = info.gravity.y;
 		sceneDesc.gravity.z = -info.gravity.z;
 		memcpy(mCollisionMatrix, info.collisionMatrix, sizeof(int) * 16);
 
-		// 충돌 쌍 플래그입니다.
-		physx::PxPairFlags pairFlags = physx::PxPairFlags();
-
 		// Scene 설명자에 CPU 디스패처와 필터 셰이더를 설정합니다.
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
+		sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;

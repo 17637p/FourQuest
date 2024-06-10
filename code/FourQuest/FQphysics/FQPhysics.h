@@ -2,6 +2,7 @@
 #include "IFQPhysics.h"
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
+#include <PxPhysics.h>
 #include <PxPhysicsAPI.h>
 #include <memory>
 #include <set>
@@ -159,6 +160,8 @@ namespace fq::physics
 	private:
 		// ¾À
 		physx::PxScene* mScene;
+		physx::PxCudaContextManager* mCudaContextManager;
+
 		std::shared_ptr<Physics> mPhysics;
 		std::shared_ptr<PhysicsResourceManager> mResourceManager;
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;

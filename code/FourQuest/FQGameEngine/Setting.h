@@ -22,6 +22,7 @@ namespace fq::game_engine
 
 	private:
 		void beginChild_SnapSetting();
+		void beginChild_GraphicsSetting();
 
 	private:
 		GameProcess* mGameProcess;
@@ -31,6 +32,7 @@ namespace fq::game_engine
 		float mSnap[3];
 
 		bool mbIsOpen;
+		bool mbUseGrayScale;
 	};
 
 

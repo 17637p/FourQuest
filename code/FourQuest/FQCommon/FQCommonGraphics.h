@@ -254,8 +254,8 @@ namespace fq::graphics
 			enum class EBlendMode
 			{
 				Additive,
-				//Subtractive,
-				//Moudulate
+				Subtractive,
+				Moudulate
 			};
 
 			ERenderMode RenderMode = ERenderMode::Billboard;

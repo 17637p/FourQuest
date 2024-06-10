@@ -149,8 +149,8 @@ void fq::game_module::SceneManager::UnloadScene()
 {
 	mEventManager->FireEvent<fq::event::OnUnloadScene>({});
 	mPrefabManager->UnloadPrefabResource();
-	mCurrentScene->CleanUp();
 	mCurrentScene->DestroyAll();
+	mCurrentScene->CleanUp();
 }
 
 void fq::game_module::SceneManager::RequestChangeScene(fq::event::RequestChangeScene event)

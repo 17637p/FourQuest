@@ -45,7 +45,6 @@ namespace fq::physics
 		physx::PxParticleClothBuffer* mClothBuffer;
 	};
 
-
 #pragma region GetSet
 	void PhysicsCloth::SetParticleNumberX(const unsigned int& particleNumberX)
 	{

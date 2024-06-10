@@ -124,8 +124,11 @@ void fq::game_engine::EditorEngine::Process()
 
 				accmulator += deltaTime;
 
+				bool onFixedUpdtae = false;
 				while (accmulator >= fixedDeltaTime)
 				{
+					onFixedUpdtae = true;
+
 					// 물리처리
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
@@ -136,7 +139,8 @@ void fq::game_engine::EditorEngine::Process()
 					accmulator -= fixedDeltaTime;
 				}
 
-				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+				if (onFixedUpdtae)
+					mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);

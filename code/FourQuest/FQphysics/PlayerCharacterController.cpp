@@ -46,7 +46,6 @@ namespace fq::physics
 		int ShapeSize = body->getNbShapes();
 		body->getShapes(&shape, ShapeSize);
 		body->setSolverIterationCounts(8, 4);
-		body->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		shape->setContactOffset(0.02f);
 		shape->setRestOffset(0.01f);
 
