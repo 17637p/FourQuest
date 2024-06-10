@@ -375,7 +375,7 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = FALSE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
@@ -390,7 +390,7 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = FALSE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
@@ -399,17 +399,17 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		break;
 	}
-	case ED3D11BlendState::Modulate:
+	case ED3D11BlendState::Modulate: // ÈìÈì..
 	{
 		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = FALSE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ZERO;
-		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_SRC_COLOR;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_DEST_COLOR;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		break;
