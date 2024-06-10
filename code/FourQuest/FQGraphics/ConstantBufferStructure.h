@@ -232,6 +232,12 @@ namespace fq::graphics
 			int bIsUsed{ false };
 			float unused[2];
 		} RotationOverLifetimeData;
+
+		struct Render
+		{
+			int bHasTexture;
+			float unused[3];
+		} RenderData;
 	};
 
 	struct OutLineColor

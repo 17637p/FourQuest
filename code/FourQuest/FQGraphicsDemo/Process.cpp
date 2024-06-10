@@ -963,11 +963,11 @@ void Process::particleUpdate()
 
 		if (GetAsyncKeyState('P') & 0x8000)
 		{
-			particleInfo.RenderData.TexturePath = L"./resource/example/texture/Particle00.png";
+			particleInfo.RenderData.TexturePath = "./resource/example/texture/Particle00.png";
 		}
 		else
 		{
-			particleInfo.RenderData.TexturePath = L"./resource/example/texture/Particle01.png";
+			particleInfo.RenderData.TexturePath = "./resource/example/texture/Particle01.png";
 		}
 
 		// obj->SetInfo(particleInfo);

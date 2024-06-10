@@ -77,12 +77,18 @@ void fq::game_engine::ParticleSystem::OnDestroyedGameObject(const fq::event::OnD
 
 void fq::game_engine::ParticleSystem::AddComponent(const fq::event::AddComponent& event)
 {
-	
+	if (event.id == entt::resolve<fq::game_module::Particle>().id())
+	{
+		loadParticle(event.component->GetGameObject());
+	}
 }
 
 void fq::game_engine::ParticleSystem::RemoveComponent(const fq::event::RemoveComponent& event)
 {
-
+	if (event.id == entt::resolve<fq::game_module::Particle>().id())
+	{
+		unloadParticle(event.component->GetGameObject());
+	}
 }
 
 void fq::game_engine::ParticleSystem::OnLoadScene()
