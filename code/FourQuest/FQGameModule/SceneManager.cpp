@@ -104,9 +104,6 @@ void fq::game_module::SceneManager::StartScene()
 
 void fq::game_module::SceneManager::PostUpdate()
 {
-	// 삭제 예정인 오브젝트 삭제처리 
-	mCurrentScene->CleanUp();
-
 	// 씬변경 처리 
 	if (!mNextSceneName.empty())
 	{

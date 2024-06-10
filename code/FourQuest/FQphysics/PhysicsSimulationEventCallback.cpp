@@ -114,7 +114,7 @@ namespace fq::physics
 		ActorData2.ContectPoints = points;
 
 		mFunction(ActorData1, eventType);
-		mFunction(ActorData2, eventType);
+ 		mFunction(ActorData2, eventType);
 	}
 
 	void PhysicsSimulationEventCallback::SettingTriggerData(const physx::PxTriggerPair* pairs, const ECollisionEventType& eventType)

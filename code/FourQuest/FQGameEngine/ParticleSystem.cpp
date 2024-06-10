@@ -7,6 +7,7 @@
 
 fq::game_engine::ParticleSystem::ParticleSystem()
 	:mGameProcess(nullptr)
+	,mbIsGameLoaded(false)
 {}
 
 fq::game_engine::ParticleSystem::~ParticleSystem()
@@ -17,7 +18,7 @@ fq::game_engine::ParticleSystem::~ParticleSystem()
 void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 {
 	mGameProcess = gameProcess;
-	
+
 	// EventHandle µî·Ï
 	auto& eventMgr = mGameProcess->mEventManager;
 
@@ -38,33 +39,45 @@ void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 
 	mRemoveComponentHandler = eventMgr->
 		RegisterHandle<fq::event::RemoveComponent>(this, &ParticleSystem::RemoveComponent);
-
-
 }
 
 void fq::game_engine::ParticleSystem::Update(float dt)
 {
+	using namespace fq::game_module;
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	scene->ViewComponents<Transform, Particle>
+		([dt](GameObject& object, Transform& transform, Particle& particle)
+			{
+				auto particleObject = particle.GetParticleObject();
+				if (particleObject)
+				{
+					particleObject->SetTransform(transform.GetWorldMatrix());
+					particleObject->SetFrameTime(dt);
+				}
+			});
 }
 
 void fq::game_engine::ParticleSystem::OnUnLoadScene()
 {
-
+	mbIsGameLoaded = false;
 }
 
 void fq::game_engine::ParticleSystem::OnAddGameObject(const fq::event::AddGameObject& event)
 {
+	if (!mbIsGameLoaded) return;
 
+	loadParticle(event.object);
 }
 
 void fq::game_engine::ParticleSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
-
+	unloadParticle(event.object);
 }
 
 void fq::game_engine::ParticleSystem::AddComponent(const fq::event::AddComponent& event)
 {
-
+	
 }
 
 void fq::game_engine::ParticleSystem::RemoveComponent(const fq::event::RemoveComponent& event)
@@ -74,5 +87,44 @@ void fq::game_engine::ParticleSystem::RemoveComponent(const fq::event::RemoveCom
 
 void fq::game_engine::ParticleSystem::OnLoadScene()
 {
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	for (auto& object : scene->GetObjectView(true))
+	{
+		loadParticle(&object);
+	}
+
+	mbIsGameLoaded = true;
 }
+
+void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Particle>())
+	{
+		return;
+	}
+
+	auto particle = object->GetComponent<fq::game_module::Particle>();
+	auto particleInfo = particle->GetParticleInfomation();
+
+	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleInfo);
+	particle->SetParticleObject(particleObject);
+
+	particleObject->SetIsRenderDebug(true);
+	particleObject->SetIsEmit(true);
+}
+
+void fq::game_engine::ParticleSystem::unloadParticle(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::Particle>())
+	{
+		return;
+	}
+
+	auto particle = object->GetComponent<fq::game_module::Particle>();
+	auto particleObject = particle->GetParticleObject();
+
+	if (particleObject != nullptr)
+		mGameProcess->mGraphics->DeleteParticleObject(particleObject);
+}
+

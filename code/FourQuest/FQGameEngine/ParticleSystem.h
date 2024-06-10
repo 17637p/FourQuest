@@ -55,6 +55,10 @@ namespace fq::game_engine
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
 	private:
+		void loadParticle(fq::game_module::GameObject* object);
+		void unloadParticle(fq::game_module::GameObject* object);
+
+	private:
 		GameProcess* mGameProcess;
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;

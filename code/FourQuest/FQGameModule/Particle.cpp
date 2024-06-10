@@ -1,4 +1,7 @@
+#define NOMINMAX
 #include "Particle.h"
+
+#include <algorithm>
 
 fq::game_module::Particle::Particle()
 	: mParticleInfo{}
@@ -32,6 +35,8 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Particle::Clone(std
 void fq::game_module::Particle::SetMainParticleInfo(ParticleInfo::Main mainInfo)
 {
 	mParticleInfo.MainData = mainInfo;
+
+	mParticleInfo.MainData.MaxParticleCount = std::min(mainInfo.MaxParticleCount,  static_cast<size_t>(ParticleInfo::MAX_PARTICLE_COUNT));
 }
 
 void fq::game_module::Particle::SetEmissionInfo(ParticleInfo::Emission data)
@@ -73,4 +78,11 @@ void fq::game_module::Particle::SetRotationOverLifetimeData(ParticleInfo::Rotati
 void fq::game_module::Particle::SetRenderData(ParticleInfo::Render data)
 {
 	mParticleInfo.RenderData = data;
+}
+
+
+void fq::game_module::Particle::SetParticlesPerSecond(float data)
+{
+	mParticleInfo.EmissionData.ParticlesPerSecond = data;
+
 }

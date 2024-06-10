@@ -53,7 +53,7 @@ namespace fq::physics
 
 	void StaticRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
-		if (abs(mScale.Length()) + 0.1f >= abs(scale.Length()))
+		if (abs(mScale.Length()) + 0.001f <= abs(scale.Length()) || abs(mScale.Length()) - 0.001f <= abs(scale.Length()))
 			return;
 
 		mScale = scale;

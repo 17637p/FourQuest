@@ -2,6 +2,7 @@
 #include "D3D11Device.h"
 #include "D3D11ResourceManager.h"
 #include "D3D11Texture.h"
+#include "../FQLoader/Util.h"
 
 namespace fq::graphics
 {
@@ -18,7 +19,7 @@ namespace fq::graphics
 		, mbIsEmit(false)
 		, mRandomSeed(rand() / (float)(rand()))
 	{
-		mTexture = mResourceManager->Create<D3D11Texture>(particleInfo.RenderData.TexturePath);
+		mTexture = mResourceManager->Create<D3D11Texture>(fq::loader::Util::ToWide(particleInfo.RenderData.TexturePath));
 
 		D3D11_BUFFER_DESC desc;
 		desc.ByteWidth = sizeof(Particle) * ParticleInfo::MAX_PARTICLE_COUNT;
@@ -79,7 +80,7 @@ namespace fq::graphics
 	void ParticleObject::SetInfo(const ParticleInfo& info)
 	{
 		mParticleInfo = info;
-		mTexture = mResourceManager->Create<D3D11Texture>(info.RenderData.TexturePath);
+		mTexture = mResourceManager->Create<D3D11Texture>(fq::loader::Util::ToWide(info.RenderData.TexturePath));
 	}
 
 	void ParticleObject::reset()

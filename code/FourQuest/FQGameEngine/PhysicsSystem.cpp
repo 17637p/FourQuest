@@ -73,6 +73,8 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
 	mPhysicsEngine->RemoveAllRigidBody();
+	mPhysicsEngine->Update(0.1f);
+	mPhysicsEngine->FinalUpdate();
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -180,7 +182,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	// 2. Sphere Collider
 	if (object->HasComponent<SphereCollider>())
 	{
-		auto sphereCollider = object->GetComponent<SphereCollider>();
+ 		auto sphereCollider = object->GetComponent<SphereCollider>();
 		auto type = sphereCollider->GetType();
 		auto sphereInfo = sphereCollider->GetSphereInfomation();
 		auto offset = sphereCollider->GetOffset();
@@ -395,11 +397,8 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	bool isRfsVaild = rhs != mColliderContainer.end();
 
 	assert(data.myId != data.otherId);
-
-	if (!isLfsVaild)
-	{
-		return;
-	}
+	assert(isLfsVaild);
+	assert(isRfsVaild);
 
 	auto lhsObject = lfs->second.component->GetGameObject();
 	auto rhsObject = isRfsVaild ? rhs->second.component->GetGameObject() : nullptr;

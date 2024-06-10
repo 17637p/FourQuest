@@ -79,6 +79,7 @@ namespace fq::game_engine
 		std::vector<entt::meta_type> mStateBehaviourTypes;
 		DirectX::SimpleMath::Color mPrevColor;
 
+
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSelectAnimationStateName;
 

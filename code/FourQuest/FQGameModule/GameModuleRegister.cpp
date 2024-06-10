@@ -9,6 +9,7 @@
 #include "StaticMeshRenderer.h"
 #include "SkinnedMeshRenderer.h"
 #include "Light.h"
+#include "Particle.h"
 
 // Physics
 #include "Terrain.h"
@@ -233,8 +234,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
 		.base<Component>();
 
-
-	
 
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
@@ -495,12 +494,268 @@ void fq::game_module::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 
 	{
-		//using namespace graphics;
+		using namespace graphics;
 
-		//entt::meta<ParticleInfo::EOption>()
-		//	.prop(fq::reflect::prop::Name, "ParticleOption")
-		//	.conv<std::underlying_type_t<ETag>>()
-		//	.data<ETag::Untagged>("Untagged"_hs);
+		entt::meta<ParticleInfo::EOption>()
+			.prop(fq::reflect::prop::Name, "ParticleOption")
+			.conv<std::underlying_type_t<ParticleInfo::EOption>>()
+			.data<ParticleInfo::EOption::Constant>("Contant"_hs)
+			.prop(fq::reflect::prop::Name, "Constant")
+			.data<ParticleInfo::EOption::RandomBetweenTwoConstant>("RandomBetweenTwoConstant"_hs)
+			.prop(fq::reflect::prop::Name, "RandomBetweenTwoConstant");
+
+		entt::meta<ParticleInfo::Shape::EShape>()
+			.prop(fq::reflect::prop::Name, "ParticleShapeType")
+			.conv<std::underlying_type_t<ParticleInfo::Shape::EShape>>()
+			.data<ParticleInfo::Shape::EShape::Sphere>("Sphere"_hs)
+			.prop(fq::reflect::prop::Name, "Sphere")
+			.data<ParticleInfo::Shape::EShape::Hemisphere>("Hemisphere"_hs)
+			.prop(fq::reflect::prop::Name, "Hemisphere")
+			.data<ParticleInfo::Shape::EShape::Cone>("Cone"_hs)
+			.prop(fq::reflect::prop::Name, "Cone")
+			.data<ParticleInfo::Shape::EShape::Donut>("Donut"_hs)
+			.prop(fq::reflect::prop::Name, "Donut")
+			.data<ParticleInfo::Shape::EShape::Donut>("Donut"_hs)
+			.prop(fq::reflect::prop::Name, "Donut")
+			.data<ParticleInfo::Shape::EShape::Box>("Box"_hs)
+			.prop(fq::reflect::prop::Name, "Box")
+			.data<ParticleInfo::Shape::EShape::Circle>("Circle"_hs)
+			.prop(fq::reflect::prop::Name, "Circle")
+			.data<ParticleInfo::Shape::EShape::Rectangle>("Rectangle"_hs)
+			.prop(fq::reflect::prop::Name, "Rectangle");
+
+		entt::meta<ParticleInfo::Shape::EMode>()
+			.prop(fq::reflect::prop::Name, "ParticleShapeMode")
+			.conv<std::underlying_type_t<ParticleInfo::Shape::EMode>>()
+			.data<ParticleInfo::Shape::EMode::Random>("Random"_hs)
+			.prop(fq::reflect::prop::Name, "Random");
+
+		entt::meta<ParticleInfo::Main>()
+			.type("ParticleMainInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleMainInfo")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Main::Duration>("Duration"_hs)
+			.prop(fq::reflect::prop::Name, "Duration")
+			.prop(fq::reflect::prop::Comment, u8"총 재생시간")
+			.data<&ParticleInfo::Main::bIsLooping>("IsLooping"_hs)
+			.prop(fq::reflect::prop::Name, "IsLooping")
+
+			.data<&ParticleInfo::Main::StartDelayOption>("StartDelayOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartDelayOption")
+			.data<&ParticleInfo::Main::StartDelay>("StartDelay"_hs)
+			.prop(fq::reflect::prop::Name, "StartDelay")
+			.prop(fq::reflect::prop::Comment, u8"방출 시작 시간")
+
+			.data<&ParticleInfo::Main::StartLifeTimeOption>("StartLifeTimeOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartLifeTimeOption")
+			.data<&ParticleInfo::Main::StartLifeTime>("StartLifeTime"_hs)
+			.prop(fq::reflect::prop::Name, "StartLifeTime")
+			.prop(fq::reflect::prop::Comment, u8"파티클 생존 시간")
+
+			.data<&ParticleInfo::Main::StartSpeedOption>("StartSpeedOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartSpeedOption")
+			.data<&ParticleInfo::Main::StartSpeed>("StartSpeed"_hs)
+			.prop(fq::reflect::prop::Name, "StartSpeed")
+			.prop(fq::reflect::prop::Comment, u8"방출 속도")
+
+			.data<&ParticleInfo::Main::StartSizeOption>("StartSizeOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartSizeOption")
+			.data<&ParticleInfo::Main::StartSize>("StartSize"_hs)
+			.prop(fq::reflect::prop::Name, "StartSize")
+			.prop(fq::reflect::prop::Comment, u8"파티클 크기")
+
+			.data<&ParticleInfo::Main::StartRotationOption>("StartRotationOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartRotationOption")
+			.data<&ParticleInfo::Main::StartRotation>("StartRotation"_hs)
+			.prop(fq::reflect::prop::Name, "StartRotation")
+			.prop(fq::reflect::prop::Comment, u8"파티클 회전")
+
+			.data<&ParticleInfo::Main::StartColorOption>("StartColorOption"_hs)
+			.prop(fq::reflect::prop::Name, "StartColorOption")
+			.data<&ParticleInfo::Main::StartColor0>("StartColor0"_hs)
+			.prop(fq::reflect::prop::Name, "StartColor0")
+			.prop(fq::reflect::prop::Comment, u8"파티클 색상")
+			.data<&ParticleInfo::Main::StartColor1>("StartColor1"_hs)
+			.prop(fq::reflect::prop::Name, "StartColor1")
+			.prop(fq::reflect::prop::Comment, u8"파티클 색상")
+
+			.data<&ParticleInfo::Main::GravityModifierOption>("GravityModifierOption"_hs)
+			.prop(fq::reflect::prop::Name, "GravityModifierOption")
+			.data<&ParticleInfo::Main::GravityModifier>("GravityModifier"_hs)
+			.prop(fq::reflect::prop::Name, "GravityModifier")
+			.prop(fq::reflect::prop::Comment, u8"파티클 중력")
+
+			.data<&ParticleInfo::Main::SimulationSpeed>("SimulationSpeed"_hs)
+			.prop(fq::reflect::prop::Name, "SimulationSpeed")
+
+			.data<&ParticleInfo::Main::MaxParticleCount>("MaxParticleCount"_hs)
+			.prop(fq::reflect::prop::Name, "MaxParticleCount")
+			.prop(fq::reflect::prop::Comment, u8"최대 1024");
+
+
+		entt::meta<ParticleInfo::Shape>()
+			.type("ShapeInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ShapeInfo")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Shape::ShapeType>("ShapeType"_hs)
+			.prop(fq::reflect::prop::Name, "ShapeType")
+			.prop(fq::reflect::prop::Comment, u8"방출 모양")
+			.data<&ParticleInfo::Shape::ModeType>("ModeType"_hs)
+			.prop(fq::reflect::prop::Name, "ModeType")
+			.prop(fq::reflect::prop::Comment, u8"방출 방식")
+			.data<&ParticleInfo::Shape::AngleInDegree>("AngleInDegree"_hs)
+			.prop(fq::reflect::prop::Name, "AngleInDegree")
+			.prop(fq::reflect::prop::Comment, u8"방출 각도")
+			.data<&ParticleInfo::Shape::Radius>("Radius"_hs)
+			.prop(fq::reflect::prop::Name, "Radius")
+			.prop(fq::reflect::prop::Comment, u8"반지름")
+			.data<&ParticleInfo::Shape::DountRadius>("DountRadius"_hs)
+			.prop(fq::reflect::prop::Name, "DountRadius")
+			.prop(fq::reflect::prop::Comment, u8"도넛 반지름")
+			.data<&ParticleInfo::Shape::DountRadius>("ArcInDegree"_hs)
+			.prop(fq::reflect::prop::Name, "ArcInDegree")
+			.prop(fq::reflect::prop::Comment, u8"호 크기")
+			.data<&ParticleInfo::Shape::DountRadius>("RadiusThickness"_hs)
+			.prop(fq::reflect::prop::Name, "RadiusThickness")
+			.prop(fq::reflect::prop::Comment, u8" 입방체의 어느 부분 부터 방출될 것인지 0 ~ 1f")
+			.data<&ParticleInfo::Shape::DountRadius>("Speed"_hs)
+			.prop(fq::reflect::prop::Name, "Speed")
+			.data<&ParticleInfo::Shape::DountRadius>("Spread"_hs)
+			.prop(fq::reflect::prop::Name, "Spread")
+			.data<&ParticleInfo::Shape::Position>("Position"_hs)
+			.prop(fq::reflect::prop::Name, "Position")
+			.data<&ParticleInfo::Shape::Rotation>("Rotation"_hs)
+			.prop(fq::reflect::prop::Name, "Rotation")
+			.data<&ParticleInfo::Shape::Scale>("Scale"_hs)
+			.prop(fq::reflect::prop::Name, "Scale");
+
+		entt::meta<ParticleInfo::Emission::Burst>()
+			.type("EmissionBurst"_hs)
+			.prop(fq::reflect::prop::Name, "EmissionBurst")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Emission::Burst::TimePos>("TimePos"_hs)
+			.prop(fq::reflect::prop::Name, "TimePos")
+			.prop(fq::reflect::prop::Comment, u8" 처리할 시간")
+			.data<&ParticleInfo::Emission::Burst::Count>("Count"_hs)
+			.prop(fq::reflect::prop::Name, "Count")
+			.prop(fq::reflect::prop::Comment, u8" 방출될 파티클 수")
+			.data<&ParticleInfo::Emission::Burst::Cycles>("Cycles"_hs)
+			.prop(fq::reflect::prop::Name, "Cycles")
+			.prop(fq::reflect::prop::Comment, u8"  버스트 반복 횟수")
+			.data<&ParticleInfo::Emission::Burst::Interval>("Interval"_hs)
+			.prop(fq::reflect::prop::Name, "Interval")
+			.prop(fq::reflect::prop::Comment, u8"버스트 사이 간격")
+			.data<&ParticleInfo::Emission::Burst::Probability>("Probability"_hs)
+			.prop(fq::reflect::prop::Name, "Probability")
+			.prop(fq::reflect::prop::Comment, u8"0 ~ 1 사이의 확률 값을 사용");
+
+		entt::meta<ParticleInfo::VelocityOverLifetime>()
+			.type("VelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "VelocityOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::VelocityOverLifetime::Velocity>("Velocity"_hs)
+			.prop(fq::reflect::prop::Name, "Velocity")
+			.data<&ParticleInfo::VelocityOverLifetime::Orbital>("Orbital"_hs)
+			.prop(fq::reflect::prop::Name, "Orbital")
+			.data<&ParticleInfo::VelocityOverLifetime::Offset>("Offset"_hs)
+			.prop(fq::reflect::prop::Name, "Offset")
+			.data<&ParticleInfo::VelocityOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::LimitVelocityOverLifetime>()
+			.type("LimitVelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "LimitVelocityOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::LimitVelocityOverLifetime::Speed>("Speed"_hs)
+			.prop(fq::reflect::prop::Name, "Speed")
+			.data<&ParticleInfo::LimitVelocityOverLifetime::Dampen>("Dampen"_hs)
+			.prop(fq::reflect::prop::Name, "Dampen")
+			.prop(fq::reflect::prop::Comment, u8"제한 속도 초과 시 감소 비율")
+			.data<&ParticleInfo::LimitVelocityOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::ForceOverLifetime>()
+			.type("ForceOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "ForceOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::ForceOverLifetime::Force>("Force"_hs)
+			.prop(fq::reflect::prop::Name, "Force")
+			.data<&ParticleInfo::ForceOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::SizeOverLifetime>()
+			.type("SizeOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "SizeOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointA"_hs)
+			.prop(fq::reflect::prop::Name, "PointA")
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointB"_hs)
+			.prop(fq::reflect::prop::Name, "PointB")
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointC"_hs)
+			.prop(fq::reflect::prop::Name, "PointC")
+			.data<&ParticleInfo::SizeOverLifetime::PointA>("PointD"_hs)
+			.prop(fq::reflect::prop::Name, "PointD")
+			.data<&ParticleInfo::SizeOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed");
+
+		entt::meta<ParticleInfo::RotationOverLifetime>()
+			.type("RotationOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "RotationOverLifetime")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::RotationOverLifetime::AngularVelocityInDegree>("AngularVelocityInDegree"_hs)
+			.prop(fq::reflect::prop::Name, "AngularVelocityInDegree")
+			.data<&ParticleInfo::RotationOverLifetime::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed"); 
+
+		entt::meta<ParticleInfo::Render::ERenderMode>()
+			.prop(fq::reflect::prop::Name, "ParticleRenderMode")
+			.conv<std::underlying_type_t<ParticleInfo::Render::ERenderMode>>()
+			.data<ParticleInfo::Render::ERenderMode::Billboard>("Billboard"_hs)
+			.prop(fq::reflect::prop::Name, "Billboard");
+
+		entt::meta<ParticleInfo::Render::EBlendMode>()
+			.prop(fq::reflect::prop::Name, "ParticleBlendMode")
+			.conv<std::underlying_type_t<ParticleInfo::Render::EBlendMode>>()
+			.data<ParticleInfo::Render::EBlendMode::Additive>("Additive"_hs)
+			.prop(fq::reflect::prop::Name, "Additive");
+
+		entt::meta<ParticleInfo::Render>()
+			.type("ParticleRenderData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleRenderData")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Render::RenderMode>("RenderMode"_hs)
+			.prop(fq::reflect::prop::Name, "RenderMode")
+			.data<&ParticleInfo::Render::BlendMode>("BlendMode"_hs)
+			.prop(fq::reflect::prop::Name, "BlendMode")
+			.data<&ParticleInfo::Render::TexturePath>("TexturePath"_hs)
+			.prop(fq::reflect::prop::Name, "TexturePath")
+			.prop(fq::reflect::prop::RelativePath)
+			.prop(fq::reflect::prop::DragDrop, ".png/.jpg");
+
+		entt::meta<Particle>()
+			.type("Particle"_hs)
+			.prop(fq::reflect::prop::Name, "Particle")
+			.data<&Particle::SetMainParticleInfo, &Particle::GetMainParticleInfo>("ParticleMainInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleMainInfo")
+			.data<&Particle::SetShapeInfo, &Particle::GetShapeInfo>("ShapeInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ShapeInfo")
+			.data<&Particle::SetParticlesPerSecond, &Particle::GetParticlesPerSecond>("ParticlesPerSecond"_hs)
+			.prop(fq::reflect::prop::Name, "ParticlesPerSecond")
+			.data<&Particle::SetEmissionBursts, &Particle::GetEmissionBursts>("EmissionBursts"_hs)
+			.prop(fq::reflect::prop::Name, "EmissionBursts")
+			.data<&Particle::SetVelocityOverLifetimeData, &Particle::GetVelocityOverLifetimeData>("VelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "VelocityOverLifetime")
+			.data<&Particle::SetLimitVelocityOverLifeTimeData, &Particle::GetLimitVelocityOverLifeTimeData>("LimitVelocityOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "LimitVelocityOverLifetime")
+			.data<&Particle::SetForceOverLifetimeData, &Particle::GetForceOverLifetimeData>("ForceOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "ForceOverLifetime")
+			.data<&Particle::SetSizeOverLifetime, &Particle::GetSizeOverLifetime>("SizeOverLifetime"_hs)
+			.prop(fq::reflect::prop::Name, "SizeOverLifetime")
+			.data<&Particle::SetRotationOverLifetimeData, &Particle::GetRotationOverLifetimeData>("RotationOverLifetimeData"_hs)
+			.prop(fq::reflect::prop::Name, "RotationOverLifetimeData")
+			.data<&Particle::SetRenderData, &Particle::GetRenderData>("ParticleRenderData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleRenderData")
+			.base<Component>();
 
 	}
 

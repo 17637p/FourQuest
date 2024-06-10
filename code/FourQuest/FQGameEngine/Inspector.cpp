@@ -1115,103 +1115,227 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 		podName += "[" + std::to_string(index) + "]";
 	}
 
-	if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
+	if (ImGui::CollapsingHeader(podName.c_str()))
 	{
-		ImGui::Text(podName.c_str());
-
-		for (auto [id, data] : metaType.data())
+		if (ImGui::BeginChild(podName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 		{
-			std::string memberName = fq::reflect::GetName(data);
-
-			if (data.type() == entt::resolve<int>())
+			for (auto [id, data] : metaType.data())
 			{
-				int val = data.get(pod).cast<int>();
-				ImGui::InputInt(memberName.c_str(), &val);
+				std::string memberName = fq::reflect::GetName(data);
 
-				if (ImGui::IsItemDeactivatedAfterEdit())
+				if (data.type() == entt::resolve<int>())
 				{
-					data.set(pod, val);
-					changedData = true;
-				}
-				beginIsItemHovered_Comment(data);
-			}
-			else if (data.type() == entt::resolve<float>())
-			{
-				float val = data.get(pod).cast<float>();
+					int val = data.get(pod).cast<int>();
+					ImGui::InputInt(memberName.c_str(), &val);
 
-				ImGui::InputFloat(memberName.c_str(), &val);
-
-				if (ImGui::IsItemDeactivatedAfterEdit())
-				{
-					data.set(pod, val);
-					changedData = true;
-				}
-				beginIsItemHovered_Comment(data);
-			}
-			else if (data.type() == entt::resolve<double>())
-			{
-				double val = data.get(pod).cast<double>();
-
-				ImGui::InputDouble(memberName.c_str(), &val);
-
-				if (ImGui::IsItemDeactivatedAfterEdit())
-				{
-					data.set(pod, val);
-					changedData = true;
-				}
-				beginIsItemHovered_Comment(data);
-			}
-			else if (data.type() == entt::resolve<bool>())
-			{
-				bool val = data.get(pod).cast<bool>();
-
-				if (ImGui::Checkbox(memberName.c_str(), &val))
-				{
-					data.set(pod, val);
-					changedData = true;
-				}
-				beginIsItemHovered_Comment(data);
-			}
-			else if (data.type() == entt::resolve<std::string>())
-			{
-				std::string val = data.get(pod).cast<std::string>();
-
-				ImGui::InputText(memberName.c_str(), &val);
-				if (ImGui::IsItemDeactivatedAfterEdit())
-				{
-					data.set(pod, val);
-					changedData = true;
-				}
-
-				// DragDrop 받기
-				if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
-				{
-					const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-					if (pathPayLoad)
+					if (ImGui::IsItemDeactivatedAfterEdit())
 					{
-						std::filesystem::path* dropPath
-							= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+						data.set(pod, val);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				if (data.type() == entt::resolve<size_t>())
+				{
+					size_t val = data.get(pod).cast<size_t>();
+					ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U64, &val);
 
-						auto extensions = fq::reflect::GetDragDropExtension(data);
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						data.set(pod, val);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				else if (data.type() == entt::resolve<float>())
+				{
+					float val = data.get(pod).cast<float>();
 
-						for (auto& extension : extensions)
+					ImGui::InputFloat(memberName.c_str(), &val);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						data.set(pod, val);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				else if (data.type() == entt::resolve<double>())
+				{
+					double val = data.get(pod).cast<double>();
+
+					ImGui::InputDouble(memberName.c_str(), &val);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						data.set(pod, val);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				else if (data.type() == entt::resolve<bool>())
+				{
+					bool val = data.get(pod).cast<bool>();
+
+					if (ImGui::Checkbox(memberName.c_str(), &val))
+					{
+						data.set(pod, val);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				else if (data.type() == entt::resolve<DirectX::SimpleMath::Vector2>())
+				{
+					DirectX::SimpleMath::Vector2 v = data.get(pod).cast<DirectX::SimpleMath::Vector2>();
+					std::string memberName = fq::reflect::GetName(data);
+
+					float f[2]{ v.x,v.y };
+
+					ImGui::InputFloat2(memberName.c_str(), f);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						v.x = f[0];
+						v.y = f[1];
+						data.set(pod, v);
+						changedData = true;
+					}
+
+					beginIsItemHovered_Comment(data);
+
+				}
+				else if (data.type() == entt::resolve<DirectX::SimpleMath::Vector3>())
+				{
+					DirectX::SimpleMath::Vector3 v = data.get(pod).cast<DirectX::SimpleMath::Vector3>();
+					std::string memberName = fq::reflect::GetName(data);
+
+					float f[3]{ v.x,v.y, v.z };
+
+					ImGui::InputFloat3(memberName.c_str(), f);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						v.x = f[0];
+						v.y = f[1];
+						v.z = f[2];
+						data.set(pod, v);
+						changedData = true;
+					}
+
+					beginIsItemHovered_Comment(data);
+
+				}
+				else if (data.type() == entt::resolve<DirectX::SimpleMath::Color>())
+				{
+					using namespace DirectX::SimpleMath;
+
+					Color color = data.get(pod).cast<DirectX::SimpleMath::Color>();
+					std::string memberName = fq::reflect::GetName(data);
+
+					float f[4] = { color.x, color.y ,color.z, color.w };
+
+					if (ImGui::ColorEdit4(memberName.c_str(), f))
+					{
+						color.x = f[0];
+						color.y = f[1];
+						color.z = f[2];
+						color.w = f[3];
+
+						data.set(pod, color);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				else if (data.type().is_enum())
+				{
+					std::map<int, entt::meta_data> enumMembers;
+
+					// eunmMember string table 생성
+					for (auto [id, metaData] : data.type().data())
+					{
+						entt::meta_any any = metaData.get({});
+						if (any.allow_cast<int>())
 						{
-							if (dropPath->extension() == extension)
+							int val = any.cast<int>();
+							enumMembers.insert({ val,metaData });
+						}
+					}
+					assert(!enumMembers.empty());
+
+					// 현재 enum 값 int로 가져오기
+					auto currentValue = data.get(pod);
+					int iCurrentValue = 0;
+
+					if (currentValue.allow_cast<int>())
+					{
+						iCurrentValue = currentValue.cast<int>();
+					}
+
+					std::string memberName = fq::reflect::GetName(data);
+					auto iter = enumMembers.find(iCurrentValue);
+					assert(iter != enumMembers.end());
+					std::string currentEnumName = fq::reflect::GetName(iter->second);
+
+					// Combo 창
+					if (ImGui::BeginCombo(memberName.c_str(), currentEnumName.c_str()))
+					{
+						for (const auto& [val, metaData] : enumMembers)
+						{
+							std::string memberName = fq::reflect::GetName(metaData);
+
+							const bool bIsSelected = val == iCurrentValue;
+
+							if (ImGui::Selectable(memberName.c_str(), bIsSelected))
 							{
-								val = dropPath->string();
 								data.set(pod, val);
 								changedData = true;
 							}
 						}
+						ImGui::EndCombo();
 					}
+					beginIsItemHovered_Comment(data);
 				}
-				beginIsItemHovered_Comment(data);
-			}
-		}
+				else if (data.type() == entt::resolve<std::string>())
+				{
+					std::string val = data.get(pod).cast<std::string>();
 
+					ImGui::InputText(memberName.c_str(), &val);
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						data.set(pod, val);
+						changedData = true;
+					}
+
+					// DragDrop 받기
+					if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+						if (pathPayLoad)
+						{
+							std::filesystem::path* dropPath
+								= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+							auto extensions = fq::reflect::GetDragDropExtension(data);
+
+							for (auto& extension : extensions)
+							{
+								if (dropPath->extension() == extension)
+								{
+									val = dropPath->string();
+									data.set(pod, val);
+									changedData = true;
+								}
+							}
+						}
+					}
+					beginIsItemHovered_Comment(data);
+				}
+			}
+
+		}
+		ImGui::EndChild();
 	}
-	ImGui::EndChild();
 
 	ImGui::PopStyleColor(1);
 
@@ -1227,7 +1351,7 @@ void fq::game_engine::Inspector::beginStateBehaviour(fq::game_module::AnimationS
 
 	for (auto& [id, behaviour] : behaviourMap)
 	{
-		std::string number = " " + std::string{"##"} + std::to_string(id);
+		std::string number = " " + std::string{ "##" } + std::to_string(id);
 		ImGui::Button(number.c_str());
 
 		if (ImGui::BeginPopupContextItem())

@@ -16,17 +16,11 @@
     <Filter Include="Tool">
       <UniqueIdentifier>{b44d4da7-2419-4b10-93d2-155e5d2d13d7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RigidBody">
-      <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Character">
       <UniqueIdentifier>{25a9dc98-8c40-4f55-8d6b-789cb7bffea0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Character\CharacterController">
       <UniqueIdentifier>{8b735414-48ea-4b82-9509-7398b9e8dd9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RigidBody\SimulationEventCallback">
-      <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Character\CharacterController\PlayerController">
       <UniqueIdentifier>{411263d7-70ef-4d83-9fa5-c7d7c49189e7}</UniqueIdentifier>
@@ -46,6 +40,18 @@
     <Filter Include="Character\CharacterController\CharacterControllerCallback">
       <UniqueIdentifier>{b9f023b8-1c01-4bf5-8d6d-365c6c88543a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PhysicsActor">
+      <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysicsActor\SimulationEventCallback">
+      <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysicsActor\RigidBody">
+      <UniqueIdentifier>{4cb61038-71a3-4f8a-9f18-fb7e7c16062e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PhysicsActor\Cloth">
+      <UniqueIdentifier>{e4ed119a-f108-4fa2-8f1f-bf2c5159bdde}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IFQPhysics.h">
@@ -57,20 +63,11 @@
     <ClInclude Include="PhysicsRigidBodyManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="StaticRigidBody.h">
-      <Filter>RigidBody</Filter>
-    </ClInclude>
-    <ClInclude Include="DynamicRigidBody.h">
-      <Filter>RigidBody</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>RigidBody</Filter>
-    </ClInclude>
     <ClInclude Include="Physics.h">
       <Filter>physx</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsSimulationEventCallback.h">
-      <Filter>RigidBody\SimulationEventCallback</Filter>
+      <Filter>PhysicsActor\SimulationEventCallback</Filter>
     </ClInclude>
     <ClInclude Include="EngineDataConverter.h">
       <Filter>EngineDataConverter</Filter>
@@ -117,6 +114,21 @@
     <ClInclude Include="CharacterQueryFilterCallback.h">
       <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicRigidBody.h">
+      <Filter>PhysicsActor\RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>PhysicsActor\RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticRigidBody.h">
+      <Filter>PhysicsActor\RigidBody</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCloth.h">
+      <Filter>PhysicsActor\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsClothManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -128,20 +140,11 @@
     <ClCompile Include="PhysicsRigidBodyManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicRigidBody.cpp">
-      <Filter>RigidBody</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>RigidBody</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticRigidBody.cpp">
-      <Filter>RigidBody</Filter>
-    </ClCompile>
     <ClCompile Include="Physics.cpp">
       <Filter>physx</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsSimulationEventCallback.cpp">
-      <Filter>RigidBody\SimulationEventCallback</Filter>
+      <Filter>PhysicsActor\SimulationEventCallback</Filter>
     </ClCompile>
     <ClCompile Include="EngineDataConverter.cpp">
       <Filter>EngineDataConverter</Filter>
@@ -187,6 +190,21 @@
     </ClCompile>
     <ClCompile Include="CharacterQueryFilterCallback.cpp">
       <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicRigidBody.cpp">
+      <Filter>PhysicsActor\RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>PhysicsActor\RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticRigidBody.cpp">
+      <Filter>PhysicsActor\RigidBody</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCloth.cpp">
+      <Filter>PhysicsActor\Cloth</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsClothManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -151,6 +151,8 @@
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
+    <ClInclude Include="PhysicsCloth.h" />
+    <ClInclude Include="PhysicsClothManager.h" />
     <ClInclude Include="PhysicsCookingMeshTool.h" />
     <ClInclude Include="DynamicRigidBody.h" />
     <ClInclude Include="FQPhysics.h" />
@@ -176,6 +178,8 @@
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
+    <ClCompile Include="PhysicsCloth.cpp" />
+    <ClCompile Include="PhysicsClothManager.cpp" />
     <ClCompile Include="PhysicsCookingMeshTool.cpp" />
     <ClCompile Include="DynamicRigidBody.cpp" />
     <ClCompile Include="FQPhysics.cpp" />

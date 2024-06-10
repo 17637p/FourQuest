@@ -87,7 +87,7 @@ void fq::game_module::SphereCollider::OnCollisionEnter(const Collision& collisio
 
 void fq::game_module::SphereCollider::OnCollisionExit(const Collision& collision)
 {
-	//assert(mCollisionCount != 0);
+	assert(mCollisionCount != 0);
 	--mCollisionCount;
 }
 
@@ -99,6 +99,6 @@ void fq::game_module::SphereCollider::OnTriggerEnter(const Collision& collision)
 
 void fq::game_module::SphereCollider::OnTriggerExit(const Collision& collision)
 {
-	//assert(mCollisionCount != 0);
+	assert(mCollisionCount != 0);
 	--mCollisionCount;
 }
