@@ -136,6 +136,8 @@ void fq::game_engine::EditorEngine::Process()
 					accmulator -= fixedDeltaTime;
 				}
 
+				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
 
@@ -145,6 +147,8 @@ void fq::game_engine::EditorEngine::Process()
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
+			else
+				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
 
 			// 시스템 업데이트
 			mGameProcess->mParticleSystem->Update(deltaTime);
