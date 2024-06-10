@@ -774,6 +774,8 @@ void Process::particleInit()
 		particleInfo.ShapeData.Rotation = { 10, 10, 10 };
 		particleInfo.ShapeData.Scale = { 2, 4, 3 };
 		particleInfo.ShapeData.Radius = 10.f;
+
+		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Subtractive;
 		//particleInfo.VelocityOverLifetimeData.bIsUsed = true;
 		//particleInfo.VelocityOverLifetimeData.Velocity = { 0, 0, 0 };
 		//particleInfo.VelocityOverLifetimeData.Orbital = { 0, 10, 0 };
@@ -893,6 +895,7 @@ void Process::particleInit()
 		particleInfo.SizeOverLifetimeData.PointB = { 1, 0.5f };
 		particleInfo.SizeOverLifetimeData.PointC = { 1, 0.9f };
 		particleInfo.SizeOverLifetimeData.PointD = { 20, 1.f };
+		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Moudulate;
 
 		// particleInfo.VelocityOverLifetimeData.bIsUsed = true;
 		// particleInfo.VelocityOverLifetimeData.Velocity = { 0, 10, 0 };
@@ -936,7 +939,7 @@ void Process::particleInit()
 void Process::particleUpdate()
 {
 	using namespace fq::graphics;
-//	return;
+	//	return;
 
 	static float s_particlesPerSecond = 10.f;
 	static bool s_bUsedX = true;
