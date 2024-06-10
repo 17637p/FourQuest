@@ -235,8 +235,6 @@ void fq::game_module::RegisterMetaData()
 		.base<Component>();
 
 
-
-
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
 	//////////////////////////////////////////////////////////////////////////
@@ -532,7 +530,6 @@ void fq::game_module::RegisterMetaData()
 			.data<ParticleInfo::Shape::EMode::Random>("Random"_hs)
 			.prop(fq::reflect::prop::Name, "Random");
 
-
 		entt::meta<ParticleInfo::Main>()
 			.type("ParticleMainInfo"_hs)
 			.prop(fq::reflect::prop::Name, "ParticleMainInfo")
@@ -710,6 +707,31 @@ void fq::game_module::RegisterMetaData()
 			.data<&ParticleInfo::RotationOverLifetime::bIsUsed>("IsUsed"_hs)
 			.prop(fq::reflect::prop::Name, "IsUsed"); 
 
+		entt::meta<ParticleInfo::Render::ERenderMode>()
+			.prop(fq::reflect::prop::Name, "ParticleRenderMode")
+			.conv<std::underlying_type_t<ParticleInfo::Render::ERenderMode>>()
+			.data<ParticleInfo::Render::ERenderMode::Billboard>("Billboard"_hs)
+			.prop(fq::reflect::prop::Name, "Billboard");
+
+		entt::meta<ParticleInfo::Render::EBlendMode>()
+			.prop(fq::reflect::prop::Name, "ParticleBlendMode")
+			.conv<std::underlying_type_t<ParticleInfo::Render::EBlendMode>>()
+			.data<ParticleInfo::Render::EBlendMode::Additive>("Additive"_hs)
+			.prop(fq::reflect::prop::Name, "Additive");
+
+		entt::meta<ParticleInfo::Render>()
+			.type("ParticleRenderData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleRenderData")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Render::RenderMode>("RenderMode"_hs)
+			.prop(fq::reflect::prop::Name, "RenderMode")
+			.data<&ParticleInfo::Render::BlendMode>("BlendMode"_hs)
+			.prop(fq::reflect::prop::Name, "BlendMode")
+			.data<&ParticleInfo::Render::TexturePath>("TexturePath"_hs)
+			.prop(fq::reflect::prop::Name, "TexturePath")
+			.prop(fq::reflect::prop::RelativePath)
+			.prop(fq::reflect::prop::DragDrop, ".png/.jpg");
+
 		entt::meta<Particle>()
 			.type("Particle"_hs)
 			.prop(fq::reflect::prop::Name, "Particle")
@@ -731,9 +753,9 @@ void fq::game_module::RegisterMetaData()
 			.prop(fq::reflect::prop::Name, "SizeOverLifetime")
 			.data<&Particle::SetRotationOverLifetimeData, &Particle::GetRotationOverLifetimeData>("RotationOverLifetimeData"_hs)
 			.prop(fq::reflect::prop::Name, "RotationOverLifetimeData")
+			.data<&Particle::SetRenderData, &Particle::GetRenderData>("ParticleRenderData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleRenderData")
 			.base<Component>();
-
-
 
 	}
 

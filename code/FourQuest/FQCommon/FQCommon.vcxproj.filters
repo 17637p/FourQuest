@@ -33,10 +33,10 @@
     <ClInclude Include="FQCommonPhysics.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\FQGraphics\EObjectRenderType.h">
+    <ClInclude Include="IFQRenderResource.h">
       <Filter>Grphiacs</Filter>
     </ClInclude>
-    <ClInclude Include="IFQRenderResource.h">
+    <ClInclude Include="EObjectRenderType.h">
       <Filter>Grphiacs</Filter>
     </ClInclude>
   </ItemGroup>
