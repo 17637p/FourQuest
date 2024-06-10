@@ -84,10 +84,10 @@ extern "C" {
 			virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
 			virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
 			virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
 
 			/// <summary>
 			/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -114,6 +114,12 @@ extern "C" {
 			/// </summary>
 			/// <returns></returns>
 			virtual FQ_PHYSICS const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() abstract;
+
+			/// <summary>
+			/// 씬 체인지할 시에 모든 리지드 바디를 삭제하고 이벤트 콜백을 씬이 넘어가기 전에 처리합니다.
+			/// </summary>
+			/// <returns></returns>
+			virtual FQ_PHYSICS bool ChangeScene() abstract;
 
 #pragma endregion
 

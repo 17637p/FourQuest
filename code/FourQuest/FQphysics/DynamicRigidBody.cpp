@@ -13,7 +13,7 @@ namespace fq::physics
 	DynamicRigidBody::~DynamicRigidBody()
 	{
 	}
-	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
+	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data, bool isKinematic)
 	{
 		if (GetColliderType() == EColliderType::COLLISION)
 		{
@@ -39,21 +39,23 @@ namespace fq::physics
 
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
-
 		mRigidDynamic = physics->createRigidDynamic(transform);
-		mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
+		//mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eENABLE_CCD, true);
 		mRigidDynamic->userData = data.get();
 
 		if (!mRigidDynamic->attachShape(*shape))
 			return false;
 		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, 1.f);
 
+		if (isKinematic)
+			mRigidDynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
+
 		return true;
 	}
 
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
-		if (abs(mScale.Length()) + 0.001f <= abs(scale.Length()) || abs(mScale.Length()) - 0.001f <= abs(scale.Length()))
+		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
 			return;
 
 		mScale = scale;
@@ -68,7 +70,7 @@ namespace fq::physics
 		}
 		else
 		{
-			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+			//shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
@@ -113,5 +115,7 @@ namespace fq::physics
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
+
+		shape->release();
 	}
 }

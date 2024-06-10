@@ -25,6 +25,8 @@ namespace fq::physics
 		filterdata.word0 = mLayerNumber;
 		filterdata.word1 = collisionMatrix[mLayerNumber];
 		newShape->setSimulationFilterData(filterdata);
+		newShape->setContactOffset(0.02f);
+		newShape->setRestOffset(0.01f);
 
 		if (mColliderType == EColliderType::COLLISION)
 		{

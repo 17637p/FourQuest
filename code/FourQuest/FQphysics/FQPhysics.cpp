@@ -104,8 +104,6 @@ namespace fq::physics
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 		sceneDesc.solverType = physx::PxSolverType::eTGS;
 
-
-
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
 		assert(mScene);
@@ -216,21 +214,21 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
-	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
-	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
-	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
-	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType)
+	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
-		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix);
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
@@ -253,6 +251,13 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData, mCollisionMatrix);
 	}
+
+	bool FQPhysics::ChangeScene()
+	{
+
+		return false;
+	}
+
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();

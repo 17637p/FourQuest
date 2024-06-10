@@ -23,7 +23,7 @@ namespace fq::physics
 		/// <param name="colliderInfo"> 콜라이더 타입 </param>
 		/// <param name="shape"> 도형 </param>
 		/// <param name="physics"> physx물리 </param>
-		bool Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data);
+		bool Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data, bool isKinematic);
 
 		/// <summary>
 		/// 다이나믹 리지드 바디를 반환합니다.
