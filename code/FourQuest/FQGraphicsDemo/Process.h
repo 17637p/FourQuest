@@ -64,6 +64,8 @@ private:
 
 	void materialUpdate();
 
+	void socketUpdate();
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
@@ -90,6 +92,9 @@ private:
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
 	std::vector< fq::graphics::IParticleObject*> mParticleObjects;
 
+	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
+	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;
+	DirectX::SimpleMath::Matrix mSocketInitTransform;
 	// Camera
 	fq::common::Transform cameraTransform;
 	fq::common::Transform cameraTransform2;

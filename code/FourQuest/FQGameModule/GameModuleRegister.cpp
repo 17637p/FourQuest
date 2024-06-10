@@ -233,6 +233,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
 		.base<Component>();
 
+
+	
+
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
 	//////////////////////////////////////////////////////////////////////////
@@ -486,4 +489,20 @@ void fq::game_module::RegisterMetaData()
 		.data<&PrefabTest::SetCreateTime, &PrefabTest::GetCreateTime>("CreateTime"_hs)
 		.prop(fq::reflect::prop::Name, "CreateTime")
 		.base<Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             Particle                                 //
+	//////////////////////////////////////////////////////////////////////////
+
+	{
+		//using namespace graphics;
+
+		//entt::meta<ParticleInfo::EOption>()
+		//	.prop(fq::reflect::prop::Name, "ParticleOption")
+		//	.conv<std::underlying_type_t<ETag>>()
+		//	.data<ETag::Untagged>("Untagged"_hs);
+
+	}
+
+
 }

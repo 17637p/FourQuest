@@ -102,7 +102,7 @@ namespace fq::graphics
 					coneInfo.ZAxis = Vector3::TransformNormal(coneInfo.ZAxis * shapeData.Radius, finalTransform);
 					coneInfo.AngleInRadian = shapeData.AngleInDegree * 3.141592f / 180.f;
 					coneInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-					coneInfo.Height = particleObject->GetInfo().MainData.StartSpeed[0];
+					coneInfo.Height = particleObject->GetInfo().MainData.StartSpeed.x;
 					mDebugDrawManager->Submit(coneInfo);
 					break;
 				}
@@ -144,8 +144,8 @@ namespace fq::graphics
 					break;
 				}
 			}
-		}
 
+		}
 		mDebugDrawManager->Excute(mDevice, mCameraManager);
 	}
 }

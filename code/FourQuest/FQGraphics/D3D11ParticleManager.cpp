@@ -64,7 +64,7 @@ namespace fq::graphics
 		mDevice->GetDevice()->CreateUnorderedAccessView(mIndirectDrawArgsBuffer.Get(), &uav, mIndirectDrawArgsBufferUAV.GetAddressOf());
 
 		// GPU 파티클 카운터를 읽어올 디버깅용 스테이징 버퍼
-#if _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
 		ZeroMemory(&desc, sizeof(desc));
 		desc.Usage = D3D11_USAGE_STAGING;
 		desc.BindFlags = 0;
@@ -150,18 +150,18 @@ namespace fq::graphics
 		particleObjectData.InstanceData.NumToEmit = particleObject->mNumToEmit;
 		particleObjectData.InstanceData.RandomSeed = particleObject->mRandomSeed;
 
-		particleObjectData.MainData.StartColor[0] = particleInfo.MainData.StartColor[0];
-		particleObjectData.MainData.StartColor[1] = particleInfo.MainData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartColor[0] : particleInfo.MainData.StartColor[1];;
-		particleObjectData.MainData.StartLifeTime[0] = particleInfo.MainData.StartLifeTime[0];
-		particleObjectData.MainData.StartLifeTime[1] = particleInfo.MainData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartLifeTime[0] : particleInfo.MainData.StartLifeTime[1];;
-		particleObjectData.MainData.StartSpeed[0] = particleInfo.MainData.StartSpeed[0];
-		particleObjectData.MainData.StartSpeed[1] = particleInfo.MainData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSpeed[0] : particleInfo.MainData.StartSpeed[1];;
-		particleObjectData.MainData.StartRotation[0] = particleInfo.MainData.StartRotation[0];
-		particleObjectData.MainData.StartRotation[1] = particleInfo.MainData.StartRotationOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartRotation[0] : particleInfo.MainData.StartRotation[1];;
-		particleObjectData.MainData.StartSize[0] = particleInfo.MainData.StartSize[0];
-		particleObjectData.MainData.StartSize[1] = particleInfo.MainData.StartSizeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSize[0] : particleInfo.MainData.StartSize[1];;
-		particleObjectData.MainData.GravityModfier[0] = particleInfo.MainData.GravityModifier[0];
-		particleObjectData.MainData.GravityModfier[1] = particleInfo.MainData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.GravityModifier[0] : particleInfo.MainData.GravityModifier[1];
+		particleObjectData.MainData.StartColor[0] = particleInfo.MainData.StartColor0;
+		particleObjectData.MainData.StartColor[1] = particleInfo.MainData.StartColorOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartColor0 : particleInfo.MainData.StartColor1;
+		particleObjectData.MainData.StartLifeTime[0] = particleInfo.MainData.StartLifeTime.x;
+		particleObjectData.MainData.StartLifeTime[1] = particleInfo.MainData.StartLifeTimeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartLifeTime.x : particleInfo.MainData.StartLifeTime.y;
+		particleObjectData.MainData.StartSpeed[0] = particleInfo.MainData.StartSpeed.x;
+		particleObjectData.MainData.StartSpeed[1] = particleInfo.MainData.StartSpeedOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSpeed.x : particleInfo.MainData.StartSpeed.y;
+		particleObjectData.MainData.StartRotation[0] = particleInfo.MainData.StartRotation.x;
+		particleObjectData.MainData.StartRotation[1] = particleInfo.MainData.StartRotationOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartRotation.x : particleInfo.MainData.StartRotation.y;;
+		particleObjectData.MainData.StartSize[0] = particleInfo.MainData.StartSize.x;
+		particleObjectData.MainData.StartSize[1] = particleInfo.MainData.StartSizeOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.StartSize.x : particleInfo.MainData.StartSize.y;;
+		particleObjectData.MainData.GravityModfier[0] = particleInfo.MainData.GravityModifier.x;
+		particleObjectData.MainData.GravityModfier[1] = particleInfo.MainData.GravityModifierOption == ParticleInfo::EOption::Constant ? particleInfo.MainData.GravityModifier.x : particleInfo.MainData.GravityModifier.y;
 		particleObjectData.MainData.SimulationSpeed = particleInfo.MainData.SimulationSpeed;
 		particleObjectData.MainData.MaxParticleSize = particleInfo.MainData.MaxParticleCount;
 
@@ -243,7 +243,7 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, particleObject->mDeadListUAV.GetAddressOf(), initialCount);
 			mDevice->GetDeviceContext()->Dispatch(align(ParticleInfo::MAX_PARTICLE_COUNT, 256) / 256, 1, 1);
 
-#if _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
 			particleObject->mDebugInfo.NumDeadParticlesOnInit = readCounter(particleObject->mDeadListUAV.Get());
 #endif
 			ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get() };
@@ -264,6 +264,7 @@ namespace fq::graphics
 			return;
 		}
 
+
 		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get(), particleObject->mDeadListUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1,  (UINT)-1 };
 		ID3D11Buffer* buffers[] = { mParticleObjectCB->GetBuffer(), mDeadListCB.Get() };
@@ -282,7 +283,7 @@ namespace fq::graphics
 		ZeroMemory(buffers, sizeof(buffers));
 		mDevice->GetDeviceContext()->CSSetConstantBuffers(1, ARRAYSIZE(buffers), buffers);
 
-#if _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
 		particleObject->mDebugInfo.NumDeadParticlesAfterEmit = readCounter(particleObject->mDeadListUAV.Get());
 #endif
 	}
@@ -319,7 +320,7 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->CopyStructureCount(mActiveListCB.Get(), 0, particleObject->mAliveIndexBufferUAV.Get());
 
 		// 디버그일 경우 카운트 읽어오기
-#if _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
 		particleObject->mDebugInfo.NumDeadParticlesAfterSimulation = readCounter(particleObject->mDeadListUAV.Get());
 		particleObject->mDebugInfo.NumActiveParticlesAfterSimulation = readCounter(particleObject->mAliveIndexBufferUAV.Get());
 #endif

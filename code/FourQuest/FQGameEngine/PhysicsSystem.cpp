@@ -394,7 +394,7 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	bool isLfsVaild = lfs != mColliderContainer.end();
 	bool isRfsVaild = rhs != mColliderContainer.end();
 
-	//assert(data.myId != data.otherId);
+	assert(data.myId != data.otherId);
 
 	if (!isLfsVaild)
 	{

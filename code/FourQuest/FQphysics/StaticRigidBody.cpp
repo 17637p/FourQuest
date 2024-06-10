@@ -14,7 +14,7 @@ namespace fq::physics
 
 	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
 	{
-		if (GetColliderType() == EColliderType::COLLISION)
+		if (mColliderType == EColliderType::COLLISION)
 		{
 			shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 		}
@@ -53,7 +53,7 @@ namespace fq::physics
 
 	void StaticRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
-		if (abs(mScale.Length()) == abs(scale.Length()))
+		if (abs(mScale.Length()) + 0.1f >= abs(scale.Length()))
 			return;
 
 		mScale = scale;
@@ -62,6 +62,8 @@ namespace fq::physics
 		physx::PxMaterial* material;
 		mRigidStatic->getShapes(&shape, 1);
 		shape->getMaterials(&material, 1);
+
+
 		shape->setContactOffset(0.02f);
 		shape->setRestOffset(0.01f);
 
