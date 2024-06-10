@@ -180,7 +180,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	// 2. Sphere Collider
 	if (object->HasComponent<SphereCollider>())
 	{
-		auto sphereCollider = object->GetComponent<SphereCollider>();
+ 		auto sphereCollider = object->GetComponent<SphereCollider>();
 		auto type = sphereCollider->GetType();
 		auto sphereInfo = sphereCollider->GetSphereInfomation();
 		auto offset = sphereCollider->GetOffset();
