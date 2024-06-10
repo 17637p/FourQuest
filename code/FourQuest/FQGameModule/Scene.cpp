@@ -84,11 +84,6 @@ void fq::game_module::Scene::CleanUp()
 	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
 		, [](const std::shared_ptr<GameObject>& object)
 		{
-			if (object->IsDestroyed())
-			{
-				object->RemoveAllComponent();
-			}
-
 			return object->IsDestroyed();
 		}), mObjects.end());
 

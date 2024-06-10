@@ -98,6 +98,7 @@ namespace fq::game_engine
 		ImGuizmo::OPERATION mOperation;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 
+
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;
 	};
