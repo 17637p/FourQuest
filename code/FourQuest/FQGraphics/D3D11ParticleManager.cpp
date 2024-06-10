@@ -345,12 +345,12 @@ namespace fq::graphics
 		case ParticleInfo::Render::EBlendMode::Additive:
 			mAdditiveRenderProgram->Bind(mDevice);
 			break;
-			//case ParticleInfo::Render::EBlendMode::Subtractive: // 정렬 필요
-			//	mSubtractiveRenderProgram->Bind(mDevice);
-			//	break;
-			//case ParticleInfo::Render::EBlendMode::Moudulate:
-			//	mModulateRenderProgram->Bind(mDevice);
-			//	break;
+		case ParticleInfo::Render::EBlendMode::Subtractive: // 정렬 필요
+			mSubtractiveRenderProgram->Bind(mDevice);
+			break;
+		case ParticleInfo::Render::EBlendMode::Moudulate:
+			mModulateRenderProgram->Bind(mDevice);
+			break;
 		}
 
 		mBackBufferRTV->Bind(mDevice, mNoneDSV);
