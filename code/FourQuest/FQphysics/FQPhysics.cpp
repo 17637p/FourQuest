@@ -143,7 +143,13 @@ namespace fq::physics
 
 	bool FQPhysics::Update(float deltaTime)
 	{
-		if (!mRigidBodyManager->Update(mScene))
+		for (auto removeActor : mActorsToRemove)
+		{
+			mScene->removeActor(*removeActor);
+		}
+		mActorsToRemove.clear();
+
+		if (!mRigidBodyManager->Update(mScene, mCollisionMatrix))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
@@ -163,8 +169,6 @@ namespace fq::physics
 			return false;
 		if (!mCCTManager->FinalUpdate())
 			return false;
-
-		RemoveActors();
 
 		return true;
 	}

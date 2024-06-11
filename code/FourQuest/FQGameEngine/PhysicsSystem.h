@@ -40,6 +40,8 @@ namespace fq::game_engine
 		/// <param name="game"></param>
 		void Initialize(GameProcess* game);
 
+		void PostUpdate();
+
 		/// <summary>
 		/// 물리엔진 시뮬레이션 이전에 물리공간과 게임공간을 연결해줍니다
 		/// </summary>
