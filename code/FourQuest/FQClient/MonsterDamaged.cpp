@@ -28,7 +28,6 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 	else
 	{
 		monster->SetTarget(monster->GetLastAttacker());
-		animator.SetParameterTrigger("OnIdle");
 	}
 }
 

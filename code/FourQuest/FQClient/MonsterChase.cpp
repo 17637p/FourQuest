@@ -25,6 +25,12 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
+	if (monster->GetIsDamagaed())
+	{
+		animator.SetParameterTrigger("OnDamaged");
+		return;
+	}
+
 	// Todo: dt로 바꾸기 
 	float moveDist = 0.166666f * monster->GetMoveSpeed();
 	rotateTowards(animator);

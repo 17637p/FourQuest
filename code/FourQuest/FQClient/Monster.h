@@ -14,6 +14,8 @@ namespace fq::client
 		Monster();
 		~Monster();
 
+		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
+
 		// State ¿ë
 		float CalculateDistance(fq::game_module::GameObject gameObject);
 
