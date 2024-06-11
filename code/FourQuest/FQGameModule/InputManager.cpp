@@ -483,17 +483,17 @@ void fq::game_module::InputManager::updateKeyGamePad()
 	}
 
 	// X 
-	if (!IsKeyState(EKey::B, EKeyState::None))
+	if (!IsKeyState(EKey::R, EKeyState::None))
 	{
 		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::X)].state = GetKeyState(EKey::B);
 	}
 	// Y
-	if (!IsKeyState(EKey::N, EKeyState::None))
+	if (!IsKeyState(EKey::T, EKeyState::None))
 	{
 		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::Y)].state = GetKeyState(EKey::N);
 	}
 	// A
-	if (!IsKeyState(EKey::M, EKeyState::None))
+	if (!IsKeyState(EKey::Y, EKeyState::None))
 	{
 		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::M);
 	}
