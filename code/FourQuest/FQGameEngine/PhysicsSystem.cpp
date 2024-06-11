@@ -478,7 +478,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				matrix._43 = pos.z;
 			}
 
-			transform->SetWorldMatrix(matrix);
+			//transform->SetWorldMatrix(matrix);
 		}
 	}
 }

@@ -133,8 +133,8 @@ void fq::game_engine::EditorEngine::Process()
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 					mGameProcess->mPhysics->Update(fixedDeltaTime);
-					mGameProcess->mPhysics->FinalUpdate();
 					mGameProcess->mPhysicsSystem->SinkToGameScene();
+					mGameProcess->mPhysics->FinalUpdate();
 
 					accmulator -= fixedDeltaTime;
 				}

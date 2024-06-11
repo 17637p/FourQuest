@@ -55,22 +55,18 @@ void fq::client::Player::processDash()
 
 void fq::client::Player::OnCollisionEnter(const game_module::Collision& collision)
 {
-	spdlog::trace("enter : {}", collision.other->GetName());
 }
 
 void fq::client::Player::OnCollisionExit(const game_module::Collision& collision)
 {
-	spdlog::trace("exit : {}", collision.other->GetName());
 }
 
 void fq::client::Player::OnTriggerExit(const game_module::Collision& collision)
 {
-	spdlog::trace("trigger exit : {}", collision.other->GetName());
 }
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-	spdlog::trace("trigger enter : {}", collision.other->GetName());
 }
 
 void fq::client::Player::Attack()
