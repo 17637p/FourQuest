@@ -140,7 +140,9 @@ void fq::game_engine::EditorEngine::Process()
 				}
 
 				if (onFixedUpdtae)
+				{
 					mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+				}
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
@@ -172,6 +174,7 @@ void fq::game_engine::EditorEngine::Process()
 
 			mGameProcess->mGraphics->EndRender();
 
+			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
 			if (mGameProcess->mSceneManager->IsEnd())
 			{

@@ -343,7 +343,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		auto id = boxCollider->GetBoxInfomation().colliderInfo.id;
 		assert(id != physics::unregisterID);
 
-		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 	// 2. Sphere Collider
@@ -353,7 +352,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		auto id = sphereCollider->GetSphereInfomation().colliderInfo.id;
 		assert(id != physics::unregisterID);
 
-		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 	// 3. Capsule Collider
@@ -363,7 +361,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		auto id = sphereCollider->GetCapsuleInfomation().colliderInfo.id;
 		assert(id != physics::unregisterID);
 
-		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
@@ -374,7 +371,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		auto id = controller->GetControllerInfo().id;
 		assert(id != physics::unregisterID);
 
-		mPhysicsEngine->RemoveController(id);
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
@@ -385,7 +381,6 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		auto id = meshCollider->GetConvexMeshInfomation().colliderInfo.id;
 		assert(id != physics::unregisterID);
 
-		mPhysicsEngine->RemoveRigidBody(id);
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 }
@@ -494,7 +489,7 @@ void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
 }
 
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
-{
+{ 
 	using namespace DirectX::SimpleMath;
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
@@ -591,6 +586,20 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 		}
 		else
 			++iter;
+	}
+}
+
+void fq::game_engine::PhysicsSystem::PostUpdate()
+{
+	for (auto& [id, info] : mColliderContainer)
+	{
+		if (info.bIsDestroyed)
+		{
+			if (id == mCharactorControllerID)
+				mPhysicsEngine->RemoveController(id);
+			else
+				mPhysicsEngine->RemoveRigidBody(id);
+		}
 	}
 }
 
