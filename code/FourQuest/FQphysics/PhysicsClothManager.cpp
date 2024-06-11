@@ -16,35 +16,20 @@ namespace fq::physics
 	{
 	}
 
-	bool PhysicsClothManager::Initialize(physx::PxFoundation* foundation, physx::PxPhysics* physics, physx::PxScene* scene)
+	bool PhysicsClothManager::Initialize(physx::PxFoundation* foundation, physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager)
 	{
 		mPhysics = physics;
 		mScene = scene;
-
-		if (PxGetSuggestedCudaDeviceOrdinal(foundation->getErrorCallback()) >= 0)
-		{
-			// initialize CUDA
-			physx::PxCudaContextManagerDesc cudaContextManagerDesc;
-			mCudaContextManager = PxCreateCudaContextManager(*foundation, cudaContextManagerDesc, PxGetProfilerCallback());
-			if (mCudaContextManager && !mCudaContextManager->contextIsValid())
-			{
-				mCudaContextManager->release();
-				mCudaContextManager = NULL;
-			}
-		}
-		if (mCudaContextManager == NULL)
-		{
-			PxGetFoundation().error(physx::PxErrorCode::eINVALID_OPERATION, PX_FL, "Failed to initialize CUDA!\n");
-			return false;
-		}
+		mCudaContextManager = cudaContextManager;
 
 		return true;
 	}
+
 	bool PhysicsClothManager::CreateCloth(const PhysicsClothInfo& info)
 	{
 		std::shared_ptr<PhysicsCloth> cloth = std::make_shared<PhysicsCloth>(info.id, info.layerNumber);
 
-		if (!cloth->Initialize(info, mCudaContextManager, mPhysics))
+		if (!cloth->Initialize(info, mPhysics, mScene, mCudaContextManager))
 			return false;
 
 		mPhysicsClothContainer.insert(std::make_pair(info.id, cloth));

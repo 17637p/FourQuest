@@ -57,7 +57,7 @@ namespace fq::physics
 		collisionData->myId = info.id;
 		collisionData->myLayerNumber = info.layerNumber;
 		shape->userData = collisionData.get();
-		body->userData = (void*)collisionData.get();
+		body->userData = collisionData.get();
 
 		return true;
 	}

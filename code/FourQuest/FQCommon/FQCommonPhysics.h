@@ -106,6 +106,21 @@ namespace fq::physics
 		DirectX::SimpleMath::Vector3 velocity = {};				// 캐릭터 컨트롤러의 x,y,z축 속도
 		bool isFall;											// 캐릭터가 떨어지고 있는지 체크 변수
 	};
+
+	struct PhysicsClothGetData
+	{
+		DirectX::SimpleMath::Matrix worldTransform;
+		DirectX::SimpleMath::Vector3* vertices;
+		DirectX::SimpleMath::Vector3* nomals;
+		DirectX::SimpleMath::Vector2* uv;
+		unsigned int vertexSize;
+		unsigned int* indics;
+		unsigned int indexSize;
+	};
+	struct PhysicsClothSetData
+	{
+		DirectX::SimpleMath::Matrix worldTransform;
+	};
 #pragma endregion
 
 #pragma region Resource
@@ -264,9 +279,10 @@ namespace fq::physics
 	{
 		unsigned int id = unregisterID;
 		unsigned int layerNumber = 0;
+		PhysicsClothMaterialInfo materialInfo;
 		unsigned int particleNumberX = 5;
 		unsigned int particleNumberZ = 5;
-		DirectX::SimpleMath::Vector3 position = {};
+		DirectX::SimpleMath::Matrix worldTransform = {};
 		float particleSpacing = 2.f;
 		float totalClothMass = 10.f;
 	};

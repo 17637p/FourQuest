@@ -8,8 +8,11 @@ namespace fq::physics
 		, mRigidStatic(nullptr)
 	{
 	}
+
 	StaticRigidBody::~StaticRigidBody()
 	{
+		CollisionData* data = (CollisionData*)mRigidStatic->userData;
+		data->isDead = true;
 	}
 
 	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
@@ -53,6 +56,9 @@ namespace fq::physics
 
 	void StaticRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
+		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))
+			return;
+
 		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
 			return;
 

@@ -9,10 +9,15 @@ namespace fq::physics
 		: RigidBody(colliderType, id, layerNumber)
 		, mRigidDynamic(nullptr)
 	{
+
 	}
+
 	DynamicRigidBody::~DynamicRigidBody()
 	{
+		CollisionData* data = (CollisionData*)mRigidDynamic->userData;
+		data->isDead = true;
 	}
+
 	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data, bool isKinematic)
 	{
 		if (GetColliderType() == EColliderType::COLLISION)
@@ -62,6 +67,9 @@ namespace fq::physics
 
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
+		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))
+			return;
+
 		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
 			return;
 

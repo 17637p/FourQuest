@@ -10,6 +10,7 @@
 namespace fq::physics
 {
 	class CharacterController;
+	class PhysicsCollisionDataManager;
 
 	class PhysicsCharactorControllerManager
 	{
@@ -20,7 +21,7 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 컨트롤러 매니저 생성 및 초기화 함수
 		/// </summary>
-		bool initialize(physx::PxScene* scene, physx::PxPhysics* physics);
+		bool initialize(physx::PxScene* scene, physx::PxPhysics* physics, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
 		/// 캐릭터 컨트롤러 매니저가 소유하고 있는 캐릭터 컨트롤러 업데이트 함수
@@ -61,11 +62,6 @@ namespace fq::physics
 		void UpdateCollisionMatrix(int* collisionMatrix);
 
 		/// <summary>
-		/// 
-		/// </summary>
-		void UserDataClear();
-
-		/// <summary>
 		/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set합니다.
 		/// </summary>
 		void GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data);
@@ -74,11 +70,11 @@ namespace fq::physics
 		void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData);
 
 	private:
+		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
+		std::unordered_map<unsigned int, std::shared_ptr<CharacterController>>	mCCTmap;
+
 		physx::PxPhysics*				mPhysics;
 		physx::PxMaterial*				mMaterial;
 		physx::PxControllerManager*		mCCTManager;
-
-		std::unordered_map<unsigned int, std::shared_ptr<CharacterController>>	mCCTmap;
-		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>>		mCollisionDataContainer;
 	};
 }

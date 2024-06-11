@@ -20,7 +20,7 @@ namespace fq::physics
 		/// <summary>
 		/// 천 시뮬레이션 매니저 초기화입니다.
 		/// </summary>
-		bool Initialize(physx::PxFoundation* foundation, physx::PxPhysics* physics, physx::PxScene* scene);
+		bool Initialize(physx::PxFoundation* foundation, physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
 
 		bool CreateCloth(const PhysicsClothInfo& info);
 
@@ -30,5 +30,6 @@ namespace fq::physics
 		physx::PxPhysics* mPhysics;
 		physx::PxScene* mScene;
 		physx::PxCudaContextManager* mCudaContextManager;
+		physx::PxPBDParticleSystem* mParticleSystem;
 	};
 }

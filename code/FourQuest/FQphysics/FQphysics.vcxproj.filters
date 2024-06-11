@@ -84,12 +84,6 @@
     <ClInclude Include="PlayerCharacterController.h">
       <Filter>Character\CharacterController\PlayerController</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterController.h">
-      <Filter>Character\CharacterController</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterMovement.h">
-      <Filter>Character\CharacterController</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsCharacterPhysicsManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -129,6 +123,15 @@
     <ClInclude Include="PhysicsClothManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="CharacterMovement.h">
+      <Filter>Character\CharacterController</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Character\CharacterController</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCollisionDataManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -155,17 +158,11 @@
     <ClCompile Include="PhysicsCharactorControllerManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterController.cpp">
-      <Filter>Character\CharacterController</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsCCTHitCallback.cpp">
       <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
     </ClCompile>
     <ClCompile Include="PlayerCharacterController.cpp">
       <Filter>Character\CharacterController\PlayerController</Filter>
-    </ClCompile>
-    <ClCompile Include="CharacterMovement.cpp">
-      <Filter>Character\CharacterController</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp">
       <Filter>Manager</Filter>
@@ -204,6 +201,15 @@
       <Filter>PhysicsActor\Cloth</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsClothManager.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterMovement.cpp">
+      <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCollisionDataManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>

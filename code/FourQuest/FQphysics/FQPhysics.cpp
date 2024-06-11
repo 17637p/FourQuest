@@ -5,6 +5,7 @@
 #include "PhysicsCharactorControllerManager.h"
 #include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsResourceManager.h"
+#include "PhysicsCollisionDataManager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 #include "ConvexMeshResource.h"
@@ -63,8 +64,11 @@ namespace fq::physics
 		, mRigidBodyManager(std::make_shared<PhysicsRigidBodyManager>())
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mResourceManager(std::make_shared<PhysicsResourceManager>())
+		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
+		, mCollisionDataManager(std::make_shared<PhysicsCollisionDataManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
+		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 	{
 	}
@@ -130,8 +134,9 @@ namespace fq::physics
 
 		// 매니저 초기화
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
-		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager)) return false;
-		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics())) return false;
+		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
+		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
 	}
@@ -142,10 +147,10 @@ namespace fq::physics
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
-
+		if (!mCollisionDataManager->Update())
+			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
-
 
 		return true;
 	}
