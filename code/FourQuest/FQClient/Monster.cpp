@@ -141,15 +141,13 @@ fq::game_module::GameObject* fq::client::Monster::GetLastAttacker() const
 
 void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& collision)
 {
-	int a = 3;
-
-	if (collision.object->GetTag() == game_module::ETag::PlayerAttack)
+	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
 		mIsDamaged = true;
 		// Todo: 실제 공격력으로 바꿔야 함
 		mDamaged = 100;
-		mLastAttacker = collision.object;
+		mLastAttacker = collision.other;
+		GetScene()->DestroyGameObject(collision.other);
 	}
-	GetScene()->DestroyGameObject(collision.object);
 }
 
