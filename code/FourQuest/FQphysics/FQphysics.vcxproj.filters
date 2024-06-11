@@ -129,6 +129,9 @@
     <ClInclude Include="CharacterController.h">
       <Filter>Character\CharacterController</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsCollisionDataManager.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -205,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="CharacterMovement.cpp">
       <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCollisionDataManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

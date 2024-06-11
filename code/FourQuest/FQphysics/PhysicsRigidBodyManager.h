@@ -13,6 +13,7 @@ namespace fq::physics
 	class PhysicsResourceManager;
 	class StaticRigidBody;
 	class DynamicRigidBody;
+	class PhysicsCollisionDataManager;
 
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
 
@@ -25,7 +26,7 @@ namespace fq::physics
 		/// <summary>
 		/// 리지드 바디를 생성 및 관리하는 매니저를 세팅합니다.
 		/// </summary>
-		bool Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager);
+		bool Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
 		/// 생성된 리지드 바디들을 한 번에 물리 공간에 생성합니다.
@@ -82,11 +83,6 @@ namespace fq::physics
 		/// </summary>
 		void ExtractDebugData();
 
-		/// <summary>
-		/// 현재 유저 데이터를 클리어 합니다.
-		/// </summary>
-		void UserDataClear();
-
 		inline std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
 		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodyContainer();
 
@@ -94,11 +90,10 @@ namespace fq::physics
 		physx::PxPhysics* mPhysics;
 
 		std::weak_ptr<PhysicsResourceManager> mResourceManager;
+		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
-		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
-		std::vector<unsigned int> mRemoveActorID;
 
 		std::unordered_map<unsigned int, PolygonMesh> mDebugPolygon;
 	};

@@ -7,10 +7,11 @@
 
 #include "FQCommonPhysics.h"
 #include "CharacterPhysics.h"
+#include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
 {
-	class CharacterPhysics;
+	class PhysicsCollisionDataManager;
 
 	class PhysicsCharacterPhysicsManager
 	{
@@ -21,7 +22,7 @@ namespace fq::physics
 		/// <summary>
 		/// 파직스 매니저 초기화
 		/// </summary>
-		bool initialize(physx::PxPhysics* physics, physx::PxScene* scene);
+		bool initialize(physx::PxPhysics* physics, physx::PxScene* scene, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
 		/// 캐릭터 파직스 (관절) 추가
@@ -50,24 +51,21 @@ namespace fq::physics
 		inline std::shared_ptr<CharacterPhysics> GetCharacterPhysics(unsigned int id);
 
 	private:
+		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
+
 		physx::PxPhysics* mPhysics;
 		physx::PxScene* mScene;
 
 		std::unordered_map<unsigned int, std::shared_ptr<CharacterPhysics>> mCharacterPhysicsContainer;
-		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>>	mCollisionDataConttainer;
 	};
 
 	template<typename ...Params>
 	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, Params ...params)
 	{
 		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
-		assert(mCollisionDataConttainer.find(id) != mCollisionDataConttainer.end());
-
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		std::shared_ptr<CollisionData> collisionData = mCollisionDataConttainer.find(id)->second;
 
-		characterPhysics->AddArticulationLink(info, collisionData, collisionMatrix, params...);
-
+		characterPhysics->AddArticulationLink(info, collisionMatrix, params...);
 		return true;
 	}
 

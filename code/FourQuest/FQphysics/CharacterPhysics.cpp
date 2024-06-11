@@ -19,10 +19,12 @@ namespace fq::physics
 
 	CharacterPhysics::~CharacterPhysics()
 	{
+		mCollisionData->isDead = true;
 	}
 
-	bool CharacterPhysics::Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics)
+	bool CharacterPhysics::Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData)
 	{
+		mCollisionData = collisionData;
 		mPxArticulation = physics->createArticulationReducedCoordinate();
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
@@ -47,7 +49,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent)
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
@@ -62,7 +64,7 @@ namespace fq::physics
 		}
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
-		physx::PxShape* shape = link->CreateShape(mMaterial, extent, collisionData);
+		physx::PxShape* shape = link->CreateShape(mMaterial, extent, mCollisionData);
 		assert(shape);
 
 		physx::PxFilterData filterdata;
@@ -72,7 +74,7 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& radius)
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const float& radius)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
@@ -87,7 +89,7 @@ namespace fq::physics
 		}
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
-		physx::PxShape* shape = link->CreateShape(mMaterial, radius, collisionData);
+		physx::PxShape* shape = link->CreateShape(mMaterial, radius, mCollisionData);
 		assert(shape);
 
 		physx::PxFilterData filterdata;
@@ -97,7 +99,7 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& halfHeight, const float& radius)
+	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
@@ -112,7 +114,7 @@ namespace fq::physics
 		}
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
-		physx::PxShape* shape = link->CreateShape(mMaterial, radius, halfHeight, collisionData);
+		physx::PxShape* shape = link->CreateShape(mMaterial, radius, halfHeight, mCollisionData);
 		assert(shape);
 
 		physx::PxFilterData filterdata;

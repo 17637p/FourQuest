@@ -4,6 +4,8 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 
+#include "PhysicsCollisionDataManager.h"
+
 namespace fq::physics
 {
 	PhysicsSimulationEventCallback::PhysicsSimulationEventCallback()
@@ -12,6 +14,11 @@ namespace fq::physics
 
 	PhysicsSimulationEventCallback::~PhysicsSimulationEventCallback()
 	{
+	}
+
+	void PhysicsSimulationEventCallback::Initialize(std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	{
+		mCollisionDataManager = collisionDataManager;
 	}
 
 	void PhysicsSimulationEventCallback::onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count)
@@ -120,6 +127,15 @@ namespace fq::physics
 
 		mFunction(ActorData1, eventType);
  		mFunction(ActorData2, eventType);
+
+		if (ECollisionEventType::END_COLLISION == eventType && ActorData1.isDead)
+		{
+			mCollisionDataManager->Remove(ActorData1.myId);
+		}
+		if (ECollisionEventType::END_COLLISION == eventType && ActorData2.isDead)
+		{
+			mCollisionDataManager->Remove(ActorData2.myId);
+		}
 	}
 
 	void PhysicsSimulationEventCallback::SettingTriggerData(const physx::PxTriggerPair* pairs, const ECollisionEventType& eventType)
@@ -144,6 +160,15 @@ namespace fq::physics
 		// 콜백 함수 실행
 		mFunction(Mydata, eventType);
 		mFunction(Otherdata, eventType);
+
+		if (ECollisionEventType::END_OVERLAP == eventType && Mydata.isDead)
+		{
+			mCollisionDataManager->Remove(Mydata.myId);
+		}
+		if (ECollisionEventType::END_OVERLAP == eventType && Otherdata.isDead)
+		{
+			mCollisionDataManager->Remove(Otherdata.myId);
+		}
 	}
 
 #pragma endregion

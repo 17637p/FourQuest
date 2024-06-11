@@ -8,12 +8,18 @@
 namespace fq::physics
 {
 	class RigidBody;
+	class PhysicsCollisionDataManager;
 
 	class PhysicsSimulationEventCallback : public physx::PxSimulationEventCallback
 	{
 	public:
 		PhysicsSimulationEventCallback();
 		~PhysicsSimulationEventCallback();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void Initialize(std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
 		/// PhysX에서 충돌하면 발생되는 실행되는 함수들입니다.
@@ -46,8 +52,11 @@ namespace fq::physics
 		/// <param name="func"> 등록할 콜백 함수 </param>
 		inline void SetCallbackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func);
 
+		
+
 	private:
 		std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> mFunction;
+		std::shared_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 	};
 
 	void PhysicsSimulationEventCallback::SetCallbackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func)

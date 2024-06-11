@@ -8,8 +8,11 @@ namespace fq::physics
 		, mRigidStatic(nullptr)
 	{
 	}
+
 	StaticRigidBody::~StaticRigidBody()
 	{
+		CollisionData* data = (CollisionData*)mRigidStatic->userData;
+		data->isDead = true;
 	}
 
 	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)

@@ -20,14 +20,14 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 파직스(관절) 초기화 함수
 		/// </summary>
-		bool Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics);
+		bool Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData);
 
 		/// <summary>
 		/// 캐릭터 파직스(관절) 링크 추가 함수
 		/// </summary>
-		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
-		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& radius);
-		bool AddArticulationLink(const CharacterLinkInfo& info, std::shared_ptr<CollisionData> collisionData, int* collisionMatrix, const float& halfHeight, const float& radius);
+		bool AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
+		bool AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const float& radius);
+		bool AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius);
 
 		inline const std::string& GetModelPath();
 		inline const unsigned int GetID();
@@ -44,6 +44,7 @@ namespace fq::physics
 		unsigned int mLayerNumber;
 
 		std::shared_ptr<CharacterLink> mRootLink;
+		std::shared_ptr<CollisionData> mCollisionData;
 		std::unordered_map<std::string, std::shared_ptr<CharacterLink>> mLinkContainer;
 		DirectX::SimpleMath::Matrix mWorldTransform;
 

@@ -9,10 +9,15 @@ namespace fq::physics
 		: RigidBody(colliderType, id, layerNumber)
 		, mRigidDynamic(nullptr)
 	{
+
 	}
+
 	DynamicRigidBody::~DynamicRigidBody()
 	{
+		CollisionData* data = (CollisionData*)mRigidDynamic->userData;
+		data->isDead = true;
 	}
+
 	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data, bool isKinematic)
 	{
 		if (GetColliderType() == EColliderType::COLLISION)

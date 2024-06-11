@@ -17,6 +17,9 @@ namespace fq::physics
 
 	CharacterController::~CharacterController()
 	{
+		CollisionData* data = (CollisionData*)mPxController->getActor()->userData;
+		data->isDead = true;
+
 		PX_RELEASE(mPxController);
 	}
 

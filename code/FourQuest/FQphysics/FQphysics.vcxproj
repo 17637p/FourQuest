@@ -152,6 +152,7 @@
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
     <ClInclude Include="PhysicsCloth.h" />
     <ClInclude Include="PhysicsClothManager.h" />
+    <ClInclude Include="PhysicsCollisionDataManager.h" />
     <ClInclude Include="PhysicsCookingMeshTool.h" />
     <ClInclude Include="DynamicRigidBody.h" />
     <ClInclude Include="FQPhysics.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
     <ClCompile Include="PhysicsCloth.cpp" />
     <ClCompile Include="PhysicsClothManager.cpp" />
+    <ClCompile Include="PhysicsCollisionDataManager.cpp" />
     <ClCompile Include="PhysicsCookingMeshTool.cpp" />
     <ClCompile Include="DynamicRigidBody.cpp" />
     <ClCompile Include="FQPhysics.cpp" />

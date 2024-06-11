@@ -15,6 +15,7 @@ namespace fq::physics
 	class PhysicsResourceManager;
 	class PhysicsCharactorControllerManager;
 	class PhysicsCharacterPhysicsManager;
+	class PhysicsCollisionDataManager;
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -167,6 +168,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
+		std::shared_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 
 		// 충돌 이벤트 클래스
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;

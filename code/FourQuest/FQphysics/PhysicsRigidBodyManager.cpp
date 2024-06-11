@@ -1,6 +1,7 @@
 #include "PhysicsRigidBodyManager.h"
 
 #include "PhysicsResourceManager.h"
+#include "PhysicsCollisionDataManager.h"
 #include "RigidBody.h"
 #include "DynamicRigidBody.h"
 #include "StaticRigidBody.h"
@@ -14,8 +15,8 @@ namespace fq::physics
 	PhysicsRigidBodyManager::PhysicsRigidBodyManager()
 		: mPhysics(nullptr)
 		, mResourceManager()
+		, mCollisionDataManager()
 		, mRigidBodyContainer()
-		, mCollisionDataContainer()
 		, mUpcomingActors()
 		, mDebugPolygon()
 	{
@@ -26,13 +27,13 @@ namespace fq::physics
 		mRigidBodyContainer.clear();
 		mUpcomingActors.clear();
 		mDebugPolygon.clear();
-		mCollisionDataContainer.clear();
 	}
 
-	bool PhysicsRigidBodyManager::Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager)
+	bool PhysicsRigidBodyManager::Initialize(physx::PxPhysics* physics, std::shared_ptr<PhysicsResourceManager> resourceManager, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager)
 	{
 		mPhysics = physics;
 		mResourceManager = resourceManager;
+		mCollisionDataManager = collisionDataManager;
 		
 		return true;
 	}
@@ -65,7 +66,6 @@ namespace fq::physics
 #ifdef _DEBUG
 		ExtractDebugData();
 #endif
-		UserDataClear();
 
 		return true;
 	}
@@ -283,7 +283,7 @@ namespace fq::physics
 
 		if (!staticBody->Initialize(info, shape, mPhysics, collisiondata)) return nullptr;
 
-		mCollisionDataContainer.insert(std::make_pair(info.id, collisiondata));
+		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
 		mUpcomingActors.push_back(staticBody);
 
@@ -302,7 +302,7 @@ namespace fq::physics
 
 		if (!dynamicBody->Initialize(info, shape, mPhysics, collisiondata, isKinematic)) return nullptr;
 
-		mCollisionDataContainer.insert(std::make_pair(info.id, collisiondata));
+		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(dynamicBody->GetID(), dynamicBody));
 		mUpcomingActors.push_back(dynamicBody);
 
@@ -327,7 +327,6 @@ namespace fq::physics
 				{
 					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
 					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
-					mRemoveActorID.push_back(id);
 				}
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
@@ -337,7 +336,6 @@ namespace fq::physics
 				{
 					scene->removeActor(*staticBody->GetPxRigidStatic());
 					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
-					mRemoveActorID.push_back(id);
 				}
 			}
 		}
@@ -403,40 +401,7 @@ namespace fq::physics
 		}
 		mUpcomingActors.clear();
 
-		for (auto& data : mCollisionDataContainer)
-		{
-			data.second->isDead = true;
-		}
-
 		return true;
-	}
-
-	void PhysicsRigidBodyManager::UserDataClear()
-	{
-		auto dataIter = mCollisionDataContainer.begin();
-		std::vector<std::unordered_map<unsigned int, std::shared_ptr<CollisionData>>::iterator> iterContainer;
-
-		for (; dataIter != mCollisionDataContainer.end(); dataIter++)
-		{
-			if (dataIter->second->isDead == true)
-				iterContainer.push_back(dataIter);
-		}
-
-		for (auto& deleteIter : iterContainer)
-		{
-			mCollisionDataContainer.erase(deleteIter);
-		}
-		iterContainer.clear();
-
-		for (unsigned int id : mRemoveActorID)
-		{
-			auto iter = mCollisionDataContainer.find(id);
-
-			if (iter != mCollisionDataContainer.end())
-			{
-				iter->second->isDead = true;
-			}
-		}
 	}
 #pragma endregion
 

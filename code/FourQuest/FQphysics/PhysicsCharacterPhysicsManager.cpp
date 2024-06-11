@@ -8,7 +8,7 @@ namespace fq::physics
 		: mPhysics(nullptr)
 		, mScene(nullptr)
 		, mCharacterPhysicsContainer()
-		, mCollisionDataConttainer()
+		, mCollisionDataManager()
 	{
 	}
 
@@ -16,8 +16,9 @@ namespace fq::physics
 	{
 	}
 
-	bool PhysicsCharacterPhysicsManager::initialize(physx::PxPhysics* physics, physx::PxScene* scene)
+	bool PhysicsCharacterPhysicsManager::initialize(physx::PxPhysics* physics, physx::PxScene* scene, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager)
 	{
+		mCollisionDataManager = collisionDataManager;
 		mPhysics = physics;
 		mScene = scene;
 
@@ -31,13 +32,13 @@ namespace fq::physics
 
 		std::shared_ptr<CharacterPhysics> characterPhysics = std::make_shared<CharacterPhysics>();
 
-		characterPhysics->Initialize(info, mPhysics);
-		mCharacterPhysicsContainer.insert(std::make_pair(info.id, characterPhysics));
-
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 		collisionData->myId = info.id;
 		collisionData->myLayerNumber = info.layerNumber;
-		mCollisionDataConttainer.insert(std::make_pair(info.id, collisionData));
+		mCollisionDataManager.lock()->Create(info.id, collisionData);
+
+		characterPhysics->Initialize(info, mPhysics, collisionData);
+		mCharacterPhysicsContainer.insert(std::make_pair(info.id, characterPhysics));
 
 		return true;
 	}
