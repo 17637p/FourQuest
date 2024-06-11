@@ -74,8 +74,15 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
+
+	for (auto& [id, info] : mColliderContainer)
+	{
+		info.bIsDestroyed = true;
+	}
+
+	PostUpdate();
 	mPhysicsEngine->RemoveAllRigidBody();
-	mPhysicsEngine->Update(0.1f);
+	mPhysicsEngine->Update(1.f);
 	mPhysicsEngine->FinalUpdate();
 }
 
@@ -91,7 +98,6 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
-	mGameProcess->mPhysics->FinalUpdate();
 
 	mbIsGameLoaded = true;
 }
@@ -595,7 +601,7 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 	{
 		if (info.bIsDestroyed)
 		{
-			if (id == mCharactorControllerID)
+			if (info.id == mCharactorControllerID)
 				mPhysicsEngine->RemoveController(id);
 			else
 				mPhysicsEngine->RemoveRigidBody(id);
