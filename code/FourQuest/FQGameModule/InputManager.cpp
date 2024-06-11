@@ -89,6 +89,7 @@ void fq::game_module::InputManager::Update()
 	updateMouse();
 	updateKeybord();
 	updateGamePad(dt);
+	updateKeyGamePad();
 }
 
 void fq::game_module::InputManager::Initialize(HWND hwnd)
@@ -423,4 +424,78 @@ float fq::game_module::InputManager::GetStickInfomation(PadID id, EPadStick padS
 	}
 
 	return value;
+}
+
+void fq::game_module::InputManager::updateKeyGamePad()
+{
+	// 게임패드를 키보로 입력가능하게 설정
+
+	// Player 0 
+	if (!IsKeyState(EKey::W, EKeyState::None))
+	{
+		mPadStickInfomations[0].leftY = 1.f;
+	}
+	if (!IsKeyState(EKey::S, EKeyState::None))
+	{
+		mPadStickInfomations[0].leftY = -1.f;
+	}
+	if (!IsKeyState(EKey::A, EKeyState::None))
+	{
+		mPadStickInfomations[0].leftX = -1.f;
+	}
+	if (!IsKeyState(EKey::D, EKeyState::None))
+	{
+		mPadStickInfomations[0].leftX = 1.f;
+	}
+
+	// X 
+	if (!IsKeyState(EKey::R, EKeyState::None))
+	{
+		mPadKeyInfomations[0][static_cast<size_t>(EPadKey::X)].state = GetKeyState(EKey::R);
+	}
+	// Y
+	if (!IsKeyState(EKey::T, EKeyState::None))
+	{
+		mPadKeyInfomations[0][static_cast<size_t>(EPadKey::Y)].state = GetKeyState(EKey::T);
+	}
+	// A
+	if (!IsKeyState(EKey::Y, EKeyState::None))
+	{
+		mPadKeyInfomations[0][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::Y);
+	}
+
+	// Player 1
+	if (!IsKeyState(EKey::Up, EKeyState::None))
+	{
+		mPadStickInfomations[1].leftY = 1.f;
+	}
+	if (!IsKeyState(EKey::Down, EKeyState::None))
+	{
+		mPadStickInfomations[1].leftY = -1.f;
+	}
+	if (!IsKeyState(EKey::Left, EKeyState::None))
+	{
+		mPadStickInfomations[1].leftX = -1.f;
+	}
+	if (!IsKeyState(EKey::Right, EKeyState::None))
+	{
+		mPadStickInfomations[1].leftX = 1.f;
+	}
+
+	// X 
+	if (!IsKeyState(EKey::R, EKeyState::None))
+	{
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::X)].state = GetKeyState(EKey::B);
+	}
+	// Y
+	if (!IsKeyState(EKey::T, EKeyState::None))
+	{
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::Y)].state = GetKeyState(EKey::N);
+	}
+	// A
+	if (!IsKeyState(EKey::Y, EKeyState::None))
+	{
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::M);
+	}
+
 }

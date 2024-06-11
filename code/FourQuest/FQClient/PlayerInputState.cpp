@@ -20,8 +20,7 @@ void fq::client::PlayerInputState::OnStateUpdate(game_module::Animator& animator
 
 	auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 
-	if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::Tap)
-		 || input->IsKeyState(EKey::J, EKeyState::Tap))
+	if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::Tap))
 	{
 		animator.SetParameterTrigger("PushX");
 	}

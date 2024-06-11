@@ -31,7 +31,7 @@ void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
 {
 	assert(id <= 3);
 
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmour);
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(GetLivingArmour());
 
 	auto& livingArmour = *(instance.begin());
 

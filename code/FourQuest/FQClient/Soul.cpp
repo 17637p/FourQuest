@@ -1,9 +1,10 @@
 #include "Soul.h"
 
-fq::client::Soul::Soul()
-{
+#include "DeadArmour.h"
 
-}
+fq::client::Soul::Soul()
+	:mController(nullptr)
+{}
 
 fq::client::Soul::~Soul()
 {
@@ -14,7 +15,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 {
 	auto cloneSoul = std::dynamic_pointer_cast<Soul>(clone);
 
-	if (cloneSoul == nullptr) // 새로 생성해서 복사본을 준다
+	if (cloneSoul == nullptr) // 새로 생성해서 복사본을 준다소울라이크
 	{
 		cloneSoul = game_module::ObjectPool::GetInstance()->Assign<Soul>(*this);
 	}
@@ -25,4 +26,46 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 	}
 
 	return cloneSoul;
+}
+
+void fq::client::Soul::OnTriggerStay(const fq::game_module::Collision& collision)
+{
+	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
+
+	if (deadArmour == nullptr)
+		return;
+	
+	auto input = GetScene()->GetInputManager();
+
+	// Controller 
+	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	{
+		deadArmour->SummonLivingArmour(mController->GetControllerID());
+		DestorySoul();
+	}
+}
+
+void fq::client::Soul::OnStart()
+{
+	mController = GetComponent<game_module::CharacterController>();
+}
+
+void fq::client::Soul::DestorySoul()
+{
+	GetScene()->DestroyGameObject(GetGameObject());
+}
+
+void fq::client::Soul::OnCollisionStay(const fq::game_module::Collision& collision)
+{
+	spdlog::debug("OnCollisionStay");
+}
+
+void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collision)
+{
+	spdlog::debug("OnTriggerEnter");
+}
+
+void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)
+{
+	spdlog::debug("OnTriggerExit");
 }

@@ -132,6 +132,7 @@ namespace fq::game_module
 		void updateMouse();
 		void updateKeybord();
 		void updateGamePad(float dt);
+		void updateKeyGamePad();
 		float adjustStickBias(short value);
 
 	public:
@@ -156,7 +157,6 @@ namespace fq::game_module
 		KeyInfo mPadKeyInfomations[XUSER_MAX_COUNT][static_cast<size_t>(EPadKey::Last)];
 		PadStickInfo mPadStickInfomations[XUSER_MAX_COUNT];
 		VibrationInfo mPadVibrationInfomations[XUSER_MAX_COUNT];
-
 
 	};
 }

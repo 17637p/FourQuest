@@ -13,6 +13,8 @@ namespace fq::client
 		~DeadArmour();
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		fq::game_module::PrefabResource GetLivingArmour() const { return mLivingArmour; }
+		void SetLivingArmour(fq::game_module::PrefabResource val) { mLivingArmour = val; }
 	public:
 		void SummonLivingArmour(ControllerID id);
 

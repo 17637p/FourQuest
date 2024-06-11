@@ -114,7 +114,6 @@ namespace fq::game_module
 		unsigned int GetCollisionCount() const { return mCollisionCount; }
 
 	private:
-		void getKeyInput(DirectX::SimpleMath::Vector3& input);
 
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnCollisionEnter(const Collision& collision) override;

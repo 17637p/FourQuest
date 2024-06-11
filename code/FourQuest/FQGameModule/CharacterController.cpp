@@ -69,8 +69,6 @@ void fq::game_module::CharacterController::OnUpdate(float dt)
 	input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
 	input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
 
-	getKeyInput(input);
-
 	if (input == Vector3::Zero)
 	{
 		mbOnMove = false;
@@ -113,38 +111,6 @@ void fq::game_module::CharacterController::OnStart()
 	mTransform = GetComponent<Transform>();
 }
 
-void fq::game_module::CharacterController::getKeyInput(DirectX::SimpleMath::Vector3& input)
-{
-	auto inputMgr = GetScene()->GetInputManager();
-
-	// 키보드 1 Player
-	if (mControllerID == 0)
-	{
-		if (inputMgr->IsKeyState(EKey::A, EKeyState::Hold))
-			input.x = -1.f;
-		if (inputMgr->IsKeyState(EKey::D, EKeyState::Hold))
-			input.x = 1.f;
-		if (inputMgr->IsKeyState(EKey::W, EKeyState::Hold))
-			input.z = 1.f;
-		if (inputMgr->IsKeyState(EKey::S, EKeyState::Hold))
-			input.z = -1.f;
-	}
-
-	// 키보드 2 Player
-	if (mControllerID == 1)
-	{
-		if (inputMgr->IsKeyState(EKey::Left, EKeyState::Hold))
-			input.x = -1.f;
-		if (inputMgr->IsKeyState(EKey::Right, EKeyState::Hold))
-			input.x = 1.f;
-		if (inputMgr->IsKeyState(EKey::Up, EKeyState::Hold))
-			input.z = 1.f;
-		if (inputMgr->IsKeyState(EKey::Down, EKeyState::Hold))
-			input.z = -1.f;
-	}
-
-	input.Normalize();
-}
 
 void fq::game_module::CharacterController::OnCollisionEnter(const Collision& collision)
 {

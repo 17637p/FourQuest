@@ -32,6 +32,7 @@ void fq::client::RegisterMetaData()
 	entt::meta<Player>()
 		.type("Player"_hs)
 		.prop(reflect::prop::Name, "Player")
+		.prop(reflect::prop::Label, "Player")
 		.data<&Player::SetHp, &Player::GetHp>("HP"_hs)
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::SetAttackPrefab, &Player::GetAttackPrefab>("AttakPrefab"_hs)
@@ -41,12 +42,15 @@ void fq::client::RegisterMetaData()
 	entt::meta<DeadArmour>()
 		.type("DeadArmour"_hs)
 		.prop(reflect::prop::Name, "DeadArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&DeadArmour::SetLivingArmour, &DeadArmour::GetLivingArmour>("LivingArmour"_hs)
+		.prop(reflect::prop::Name, "LivingArmour")
 		.base<game_module::Component>();
-
 
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
+		.prop(reflect::prop::Label, "Player")
 		.base<game_module::Component>();
 
 	entt::meta<PlayerInputState>()

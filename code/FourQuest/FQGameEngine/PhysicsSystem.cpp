@@ -399,11 +399,6 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	assert(lfs != mColliderContainer.end());
 	assert(rhs != mColliderContainer.end());
 
-	if (lfs->second.bIsDestroyed)
-	{
-		spdlog::trace("dd");
-	}
-
 	auto lhsObject = lfs->second.component->GetGameObject();
 	auto rhsObject = rhs->second.component->GetGameObject();
 
