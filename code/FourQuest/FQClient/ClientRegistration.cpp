@@ -8,6 +8,7 @@
 #include "PlayerMovementState.h"
 #include "PlayerDashState.h"
 #include "PlayerAttackState.h"
+#include "DeadArmour.h"
 
 #include "Monster.h"
 #include "MonsterIdle.h"
@@ -25,7 +26,7 @@ void fq::client::RegisterMetaData()
 	using namespace entt::literals;
 
 	//////////////////////////////////////////////////////////////////////////
-	//                             플레이어									//
+	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////
 
 	entt::meta<Player>()
@@ -37,6 +38,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AttakPrefab")
 		.base<game_module::Component>();
 	
+	entt::meta<DeadArmour>()
+		.type("DeadArmour"_hs)
+		.prop(reflect::prop::Name, "DeadArmour")
+		.base<game_module::Component>();
+
+
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")

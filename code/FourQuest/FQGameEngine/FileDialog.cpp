@@ -666,7 +666,6 @@ void fq::game_engine::FileDialog::beginFavorite()
 			mbIsFindAllDirectory = true;
 			mQueryExtension.clear();
 			mQueryExtension.push_back(".model");
-			mQueryExtension.push_back(".fbx");
 		}
 		if (ImGui::Button("All Texture"))
 		{

@@ -23,6 +23,6 @@ namespace fq::reflect::prop
 	// Plain Old Data Structure 순수한 변수들의 집합
 	constexpr static entt::hashed_string POD = entt::hashed_string("POD");
 
-	// ??
+	// 컴포넌트 라벨 설정 
 	constexpr static entt::hashed_string Label = entt::hashed_string("label"); 
 }

@@ -501,6 +501,8 @@ void Process::Render()
 		}
 
 		obj->SetAlpha(s_time * 0.33f);
+
+		auto data = obj->GetMeshData();
 	}
 
 
@@ -540,6 +542,7 @@ void Process::Render()
 
 		obj->UpdateAnimationTime(s_time);
 		obj->SetAlpha(0.3f);
+		auto data = obj->GetMeshData();
 	}
 
 	// --------------------font Test-------------------------------

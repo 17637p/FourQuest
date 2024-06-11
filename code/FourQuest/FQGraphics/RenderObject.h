@@ -65,6 +65,9 @@ namespace fq::graphics
 		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
 		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materialInterfaces) { mMaterials = materialInterfaces; }
 
+		// Mesh
+		virtual const fq::common::Mesh& GetMeshData() const override { return mStaticMesh->GetMeshData(); }
+
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
@@ -324,6 +327,9 @@ namespace fq::graphics
 		virtual bool TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform);
 		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const;
 		virtual const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const;
+
+		// Mesh
+		virtual const fq::common::Mesh& GetMeshData() const override { return mSkinnedMesh->GetMeshData(); }
 
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;

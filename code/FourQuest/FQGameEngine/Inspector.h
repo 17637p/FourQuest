@@ -20,7 +20,7 @@ namespace fq::game_engine
 	/// </summary>
 	class Inspector : public IEditorWindow
 	{
-		enum class ViewType 
+		enum class ViewType
 		{
 			GameObject,
 			AnimationController,
@@ -40,7 +40,7 @@ namespace fq::game_engine
 		void getScriptTypes();
 
 		void beginGameObject(std::shared_ptr<fq::game_module::GameObject> object);
-		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent =false);
+		void beginClass(fq::reflect::IHandle* handle, bool bIsComponent = false);
 		void beginMember(entt::meta_data data, fq::reflect::IHandle* handle);
 		bool beginPOD(entt::meta_any& pod, unsigned int index = -1);
 		void beginAddComponent();
@@ -75,10 +75,9 @@ namespace fq::game_engine
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		UINT mCurrentAddComponentIndex;
 		UINT mCurrentAddBehaviourIndex;
-		std::vector<entt::meta_type> mComponentTypes;
+		std::multimap< std::string, entt::meta_type> mComponentTypes;
 		std::vector<entt::meta_type> mStateBehaviourTypes;
 		DirectX::SimpleMath::Color mPrevColor;
-
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSelectAnimationStateName;
