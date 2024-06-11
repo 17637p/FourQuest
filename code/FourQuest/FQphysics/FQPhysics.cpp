@@ -147,14 +147,15 @@ namespace fq::physics
 
 		if (!mScene->simulate(deltaTime))
 			return false;
-		if (!mScene->fetchResults(true))
-			return false;
 
 		return true;
 	}
 
 	bool FQPhysics::FinalUpdate()
 	{
+		if (!mScene->fetchResults(true))
+			return false;
+
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())

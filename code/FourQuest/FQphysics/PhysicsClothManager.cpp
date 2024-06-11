@@ -24,6 +24,7 @@ namespace fq::physics
 
 		return true;
 	}
+
 	bool PhysicsClothManager::CreateCloth(const PhysicsClothInfo& info)
 	{
 		std::shared_ptr<PhysicsCloth> cloth = std::make_shared<PhysicsCloth>(info.id, info.layerNumber);

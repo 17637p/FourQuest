@@ -92,13 +92,13 @@ namespace fq::physics
 
 	private:
 		physx::PxPhysics* mPhysics;
-		physx::PxScene* mScene;
 
 		std::weak_ptr<PhysicsResourceManager> mResourceManager;
 
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
 		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
+		std::vector<unsigned int> mRemoveActorID;
 
 		std::unordered_map<unsigned int, PolygonMesh> mDebugPolygon;
 	};

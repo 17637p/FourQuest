@@ -3,6 +3,8 @@
 #include <extensions/PxParticleExt.h>
 #include <cudamanager\PxCudaContext.h>
 
+#include "EngineDataConverter.h"
+
 namespace fq::physics
 {
 	PhysicsCloth::PhysicsCloth(unsigned int id, unsigned int layerNumber)
@@ -44,7 +46,7 @@ namespace fq::physics
 		const physx::PxReal restOffset = mParticleSpacing;
 
 		// 재료(Material) 설정
-		physx::PxPBDMaterial* defaultMat = physics->createPBDMaterial(
+		mPBDMaterial = physics->createPBDMaterial(
 			info.materialInfo.friction, 
 			info.materialInfo.damping, 
 			info.materialInfo.adhesion, 
@@ -72,7 +74,7 @@ namespace fq::physics
 		scene->addActor(*mParticleSystem);
 
 		// 입자 상태를 저장하는 버퍼 생성
-		const physx::PxU32 particlePhase = mParticleSystem->createPhase(defaultMat, 
+		const physx::PxU32 particlePhase = mParticleSystem->createPhase(mPBDMaterial,
 			physx::PxParticlePhaseFlags(physx::PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | physx::PxParticlePhaseFlag::eParticlePhaseSelfCollide));
 
 		physx::ExtGpu::PxParticleClothBufferHelper* clothBuffers = physx::ExtGpu::PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, cudaContextManager);
@@ -202,7 +204,7 @@ namespace fq::physics
 		return true;
 	}
 
-	void PhysicsCloth::GetPhysicsCloth(physx::PxCudaContext* cudaContext, PhysicsClothGetData& data)
+	void PhysicsCloth::GetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, PhysicsClothGetData& data)
 	{
 		data.worldTransform = mWorldTransform;
 		unsigned int paticleSize = mClothBuffer->getNbActiveParticles();
@@ -211,6 +213,7 @@ namespace fq::physics
 		std::vector<physx::PxVec4> pxVertex;
 		pxVertex.resize(paticleSize);
 
+		cudaContextManager->acquireContext();
 		cudaContext->memcpyDtoH(pxVertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
 		
 		for (int i = 0; i < paticleSize; i++)
@@ -219,10 +222,46 @@ namespace fq::physics
 			mVertices[i].y = pxVertex[i].y;
 			mVertices[i].z = -pxVertex[i].z;
 		}
+
+		data.vertices = mVertices.data();
+		data.vertexSize = mVertices.size();
 	}
 
-	void PhysicsCloth::SetPhysicsCloth(physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data)
+	physx::PxVec4 multiply(const physx::PxMat44& mat, const physx::PxVec4& vec)  // 4x4 행렬과 PxVec4를 곱하는 함수
 	{
+		physx::PxVec4 result;
+		result.x = mat(0, 0) * vec.x + mat(0, 1) * vec.y + mat(0, 2) * vec.z + mat(0, 3) * vec.w;
+		result.y = mat(1, 0) * vec.x + mat(1, 1) * vec.y + mat(1, 2) * vec.z + mat(1, 3) * vec.w;
+		result.z = mat(2, 0) * vec.x + mat(2, 1) * vec.y + mat(2, 2) * vec.z + mat(2, 3) * vec.w;
+		result.w = mat(3, 0) * vec.x + mat(3, 1) * vec.y + mat(3, 2) * vec.z + mat(3, 3) * vec.w;
+		return result;
+	}
 
+	void PhysicsCloth::SetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data)
+	{
+		if (mWorldTransform == data.worldTransform)
+			return;
+
+		unsigned int paticleSize = mClothBuffer->getNbActiveParticles();
+		physx::PxVec4* particle = mClothBuffer->getPositionInvMasses();
+
+		physx::PxTransform pxPrevTrnasformInvert;
+		physx::PxTransform pxCurrentTrnasform;
+		CopyDirectXMatrixToPxTransform(mWorldTransform.Invert(), pxPrevTrnasformInvert);
+		CopyDirectXMatrixToPxTransform(data.worldTransform, pxCurrentTrnasform);
+
+		std::vector<physx::PxVec4> pxVertex;
+		pxVertex.resize(paticleSize);
+
+		cudaContextManager->acquireContext();
+		cudaContext->memcpyDtoH(pxVertex.data(), CUdeviceptr(particle), sizeof(physx::PxVec4) * paticleSize);
+
+		for (int i = 0; i < paticleSize; i++)
+		{
+			pxVertex[i] = multiply(pxPrevTrnasformInvert, pxVertex[i]);		// 이전 월드 트랜스폼의 위치를 반환하고
+			pxVertex[i] = multiply(pxCurrentTrnasform, pxVertex[i]);		// 최신 월드 트랜스폼의 위치를 등록한다.
+		}
+
+		cudaContext->memcpyHtoD(CUdeviceptr(particle), pxVertex.data(), sizeof(physx::PxVec4) * paticleSize);
 	}
 }

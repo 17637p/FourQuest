@@ -14,8 +14,8 @@ namespace fq::physics
 
 		bool Initialize(const PhysicsClothInfo& info, physx::PxPhysics* physics, physx::PxScene* scene, physx::PxCudaContextManager* cudaContextManager);
 
-		void GetPhysicsCloth(physx::PxCudaContext* cudaContext, PhysicsClothGetData& data);
-		void SetPhysicsCloth(physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data);
+		void GetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, PhysicsClothGetData& data);
+		void SetPhysicsCloth(physx::PxCudaContextManager* cudaContextManager, physx::PxCudaContext* cudaContext, const PhysicsClothSetData& data);
 
 		inline void SetParticleNumberX(const unsigned int& particleNumberX);
 		inline void SetParticleNumberZ(const unsigned int& particleNumberZ);
@@ -53,8 +53,9 @@ namespace fq::physics
 		float			mTotalClothMass;
 
 		DirectX::SimpleMath::Matrix mWorldTransform;
-		std::vector<DirectX::SimpleMath::Vector4> mVertices;
+		std::vector<DirectX::SimpleMath::Vector3> mVertices;
 
+		physx::PxPBDMaterial* mPBDMaterial;
 		physx::PxPBDParticleSystem* mParticleSystem;
 		physx::PxParticleClothBuffer* mClothBuffer;
 	};
