@@ -3,6 +3,7 @@
 
 #include "../FQReflect/FQReflect.h"
 #include "Player.h"
+#include "Soul.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerDashState.h"
@@ -34,6 +35,11 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::SetAttackPrefab, &Player::GetAttackPrefab>("AttakPrefab"_hs)
 		.prop(reflect::prop::Name, "AttakPrefab")
+		.base<game_module::Component>();
+	
+	entt::meta<Soul>()
+		.type("Soul"_hs)
+		.prop(reflect::prop::Name, "Soul")
 		.base<game_module::Component>();
 
 	entt::meta<PlayerInputState>()

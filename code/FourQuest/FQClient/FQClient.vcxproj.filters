@@ -101,6 +101,12 @@
     <ClInclude Include="Player.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
+    <ClInclude Include="Soul.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Armour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -147,6 +153,12 @@
     </ClCompile>
     <ClCompile Include="CameraMoving.cpp">
       <Filter>src\04.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Soul.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Armour.cpp">
+      <Filter>src\01.Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

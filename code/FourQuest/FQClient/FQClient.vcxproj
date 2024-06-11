@@ -30,6 +30,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Armour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="MonsterAttack.h" />
@@ -46,8 +47,10 @@
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMovementState.h" />
+    <ClInclude Include="Soul.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Armour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="MonsterAttack.cpp" />
@@ -63,6 +66,7 @@
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />
+    <ClCompile Include="Soul.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
