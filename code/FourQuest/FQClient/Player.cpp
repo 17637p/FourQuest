@@ -1,9 +1,11 @@
 #include "Player.h"
 
+
+
 fq::client::Player::Player()
-	:mController(nullptr)
-	, mAnimator(nullptr)
-{}
+{
+
+}
 
 fq::client::Player::~Player()
 {

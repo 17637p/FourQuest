@@ -433,7 +433,13 @@ void fq::game_engine::Inspector::getScriptTypes()
 		{
 			if (baseType == entt::resolve<fq::game_module::Component>())
 			{
-				mComponentTypes.push_back(type);
+				std::string label = "Scripts"; // Default
+				if (type.prop(fq::reflect::prop::Label))
+				{
+					label = type.prop(fq::reflect::prop::Label).value().cast<const char*>();
+				}
+
+				mComponentTypes.insert({ label, type });
 			}
 
 			if (baseType == entt::resolve<fq::game_module::IStateBehaviour>())
@@ -446,62 +452,75 @@ void fq::game_engine::Inspector::getScriptTypes()
 
 void fq::game_engine::Inspector::beginAddComponent()
 {
-	auto currentName = fq::reflect::GetName(mComponentTypes[mCurrentAddComponentIndex]);
+	auto addComponentiter = mComponentTypes.end();
 
 	// 선택 버튼
-	if (ImGui::BeginCombo("##add_comnpoent_combo", currentName.c_str()))
+	if (ImGui::BeginCombo("##add_comnpoent_combo", "AddComponent"))
 	{
-		for (int i = 0; i < mComponentTypes.size(); ++i)
+		std::set<std::string> checkKey{};
+
+		for (auto& [key, value] : mComponentTypes)
 		{
-			auto componentName = fq::reflect::GetName(mComponentTypes[i]);
+			checkKey.insert(key);
+		}
 
-			bool bIsSelected = mCurrentAddComponentIndex == i;
-
-			if (ImGui::Selectable(componentName.c_str(), bIsSelected))
+		for (auto& key : checkKey)
+		{
+			if (ImGui::CollapsingHeader(key.c_str()))
 			{
-				mCurrentAddComponentIndex = i;
+				for (auto [beginIter, endIter] = mComponentTypes.equal_range(key);
+					beginIter != endIter; ++beginIter)
+				{
+					auto typeName = fq::reflect::GetName(beginIter->second);
+
+					if (ImGui::Selectable(typeName.c_str()))
+					{
+						addComponentiter = beginIter;
+					}
+				}
 			}
 		}
+
 		ImGui::EndCombo();
 	}
 
 	ImGui::SameLine();
 
+	if (mComponentTypes.end() == addComponentiter)
+		return;
+
 	// 추가 버튼
-	if (ImGui::Button("+##add_component_button"))
+	auto& type = addComponentiter->second;
+	auto id = type.id();
+
+	// 이미 가지고있는지 확인
+	auto check = mSelectObject->GetComponent(id);
+	if (check != nullptr)
 	{
-		auto& type = mComponentTypes[mCurrentAddComponentIndex];
-		auto id = type.id();
-
-		// 이미 가지고있는지 확인
-		auto check = mSelectObject->GetComponent(id);
-		if (check != nullptr)
-		{
-			return;
-		}
-
-		auto anyComponent = type.construct();
-
-		fq::game_module::Component* component =
-			anyComponent.try_cast<fq::game_module::Component>();
-
-		auto clone = std::shared_ptr<fq::game_module::Component>(component->Clone(nullptr));
-
-		auto remove = [selectObject = mSelectObject, id]()
-			{
-				selectObject->RemoveComponent(id);
-			};
-
-		auto add = [selectObject = mSelectObject, id, clone]
-			{
-				selectObject->AddComponent(id, clone);
-			};
-
-		mEditorProcess->mCommandSystem->Push<BindFunctionCommand>(
-			BindFunctionCommand{
-				add, remove
-			});
+		return;
 	}
+
+	auto anyComponent = type.construct();
+
+	fq::game_module::Component* component =
+		anyComponent.try_cast<fq::game_module::Component>();
+
+	auto clone = std::shared_ptr<fq::game_module::Component>(component->Clone(nullptr));
+
+	auto remove = [selectObject = mSelectObject, id]()
+		{
+			selectObject->RemoveComponent(id);
+		};
+
+	auto add = [selectObject = mSelectObject, id, clone]
+		{
+			selectObject->AddComponent(id, clone);
+		};
+
+	mEditorProcess->mCommandSystem->Push<BindFunctionCommand>(
+		BindFunctionCommand{
+			add, remove
+		});
 }
 
 void fq::game_engine::Inspector::beginInputFloat2_Vector2(entt::meta_data data, fq::reflect::IHandle* handle)

@@ -395,15 +395,17 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	auto lfs = mColliderContainer.find(data.myId);
 	auto rhs = mColliderContainer.find(data.otherId);
 
-	bool isLfsVaild = lfs != mColliderContainer.end();
-	bool isRfsVaild = rhs != mColliderContainer.end();
-
 	assert(data.myId != data.otherId);
-	assert(isLfsVaild);
-	assert(isRfsVaild);
+	assert(lfs != mColliderContainer.end());
+	assert(rhs != mColliderContainer.end());
+
+	if (lfs->second.bIsDestroyed)
+	{
+		spdlog::trace("dd");
+	}
 
 	auto lhsObject = lfs->second.component->GetGameObject();
-	auto rhsObject = isRfsVaild ? rhs->second.component->GetGameObject() : nullptr;
+	auto rhsObject = rhs->second.component->GetGameObject();
 
 	fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints };
 
@@ -478,7 +480,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				matrix._43 = pos.z;
 			}
 
-			//transform->SetWorldMatrix(matrix);
+			transform->SetWorldMatrix(matrix);
 		}
 	}
 }

@@ -104,7 +104,7 @@
     <ClInclude Include="Soul.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="Armour.h">
+    <ClInclude Include="DeadArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
   </ItemGroup>
@@ -157,7 +157,7 @@
     <ClCompile Include="Soul.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="Armour.cpp">
+    <ClCompile Include="DeadArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
   </ItemGroup>
