@@ -104,7 +104,7 @@ namespace fq::physics
 		if (dynamicBody)
 		{
 			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
-			physx::PxTransform pxTransform;
+			physx::PxTransform pxTransform; 
 			physx::PxVec3 pxLinearVelocity;
 			physx::PxVec3 pxangularVelocity;
 			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
@@ -327,7 +327,7 @@ namespace fq::physics
 				{
 					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
 					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
-					mCollisionDataContainer.find(id)->second->isDead = true;
+					mRemoveActorID.push_back(id);
 				}
 			}
 			std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
@@ -337,7 +337,7 @@ namespace fq::physics
 				{
 					scene->removeActor(*staticBody->GetPxRigidStatic());
 					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
-					mCollisionDataContainer.find(id)->second->isDead = true;
+					mRemoveActorID.push_back(id);
 				}
 			}
 		}
@@ -427,6 +427,16 @@ namespace fq::physics
 			mCollisionDataContainer.erase(deleteIter);
 		}
 		iterContainer.clear();
+
+		for (unsigned int id : mRemoveActorID)
+		{
+			auto iter = mCollisionDataContainer.find(id);
+
+			if (iter != mCollisionDataContainer.end())
+			{
+				iter->second->isDead = true;
+			}
+		}
 	}
 #pragma endregion
 

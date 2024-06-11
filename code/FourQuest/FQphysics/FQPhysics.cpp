@@ -64,7 +64,9 @@ namespace fq::physics
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mResourceManager(std::make_shared<PhysicsResourceManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
+		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
 		, mScene(nullptr)
+		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 	{
 	}
@@ -145,7 +147,6 @@ namespace fq::physics
 
 		if (!mScene->simulate(deltaTime))
 			return false;
-
 
 		return true;
 	}
