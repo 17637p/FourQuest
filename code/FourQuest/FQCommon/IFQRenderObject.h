@@ -57,6 +57,9 @@ extern "C" {
 			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const abstract;
 			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
 
+			// Mesh
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};
@@ -109,6 +112,9 @@ extern "C" {
 			virtual FQ_GRAPHICS bool TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform) abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;
 			virtual FQ_GRAPHICS const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const abstract;
+
+			// Mesh
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;
