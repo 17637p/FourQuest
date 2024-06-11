@@ -24,5 +24,4 @@ namespace fq::physics
 		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;
 		std::vector<unsigned int> mRemoveID;
 	};
-
 }

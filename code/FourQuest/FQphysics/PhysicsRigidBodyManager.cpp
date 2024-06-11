@@ -38,7 +38,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::Update(physx::PxScene* scene, int* collisionMatrix)
+	bool PhysicsRigidBodyManager::Update(physx::PxScene* scene)
 	{
 		/// <summary>
 		/// 물리 공간 씬에 바디 액터 추가하기

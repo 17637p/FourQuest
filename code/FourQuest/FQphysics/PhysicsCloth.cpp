@@ -17,6 +17,7 @@ namespace fq::physics
 		, mTotalClothMass()
 		, mParticleSystem(nullptr)
 		, mClothBuffer(nullptr)
+		, mPBDMaterial(nullptr)
 	{
 	}
 

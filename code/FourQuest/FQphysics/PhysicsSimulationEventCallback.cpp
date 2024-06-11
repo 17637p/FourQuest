@@ -82,7 +82,6 @@ namespace fq::physics
 	}
 
 #pragma region SettingCollisionData
-
 	void PhysicsSimulationEventCallback::SettingCollisionData(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, const ECollisionEventType& eventType)
 	{
 		std::vector<physx::PxContactPairPoint> contactPoints;
@@ -170,6 +169,5 @@ namespace fq::physics
 			mCollisionDataManager->Remove(OtherActordata->myId);
 		}
 	}
-
 #pragma endregion
 }

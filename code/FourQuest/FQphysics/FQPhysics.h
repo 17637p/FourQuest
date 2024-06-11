@@ -158,6 +158,11 @@ namespace fq::physics
 		/// </summary>
 		virtual FQ_PHYSICS std::shared_ptr<spdlog::logger> SetUpLogger(std::vector<spdlog::sink_ptr> sinks) override;
 
+		/// <summary>
+		/// 삭제 예정인 액터 삭제하는 함수입니다.
+		/// </summary>
+		void RemoveActors();
+
 	private:
 		// 씬
 		physx::PxScene* mScene;

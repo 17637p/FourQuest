@@ -30,6 +30,5 @@ namespace fq::physics
 		physx::PxPhysics* mPhysics;
 		physx::PxScene* mScene;
 		physx::PxCudaContextManager* mCudaContextManager;
-		physx::PxPBDParticleSystem* mParticleSystem;
 	};
 }
