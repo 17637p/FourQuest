@@ -18,8 +18,12 @@ namespace fq::physics
 	{
 		for (unsigned int& removeID : mRemoveID)
 		{
-			mCollisionDataContainer.erase(mCollisionDataContainer.find(removeID));
+			auto iter = mCollisionDataContainer.find(removeID);
+
+			if (iter != mCollisionDataContainer.end())
+				mCollisionDataContainer.erase(iter);
 		}
+		mRemoveID.clear();
 
 		return true;
 	}
