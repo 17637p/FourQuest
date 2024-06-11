@@ -128,11 +128,11 @@ namespace fq::physics
 		mFunction(ActorData1, eventType);
  		mFunction(ActorData2, eventType);
 
-		if (myData->isDead)
+		if (eventType == ECollisionEventType::END_COLLISION && myData->isDead)
 		{
 			mCollisionDataManager->Remove(myData->myId);
 		}
-		if (otherData->isDead)
+		if (eventType == ECollisionEventType::END_COLLISION && otherData->isDead)
 		{
 			mCollisionDataManager->Remove(otherData->myId);
 		}
@@ -161,11 +161,11 @@ namespace fq::physics
 		mFunction(Mydata, eventType);
 		mFunction(Otherdata, eventType);
 
-		if (TriggerActorData->isDead)
+		if (eventType == ECollisionEventType::END_OVERLAP && TriggerActorData->isDead)
 		{
 			mCollisionDataManager->Remove(TriggerActorData->myId);
 		}
-		if (OtherActordata->isDead)
+		if (eventType == ECollisionEventType::END_OVERLAP && OtherActordata->isDead)
 		{
 			mCollisionDataManager->Remove(OtherActordata->myId);
 		}

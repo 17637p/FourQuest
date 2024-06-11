@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <vector>
 
 namespace fq::physics
 {
@@ -65,12 +66,12 @@ namespace fq::physics
 		/// <summary>
 		/// 아이디 값을 받은 리지드 바디를 삭제합니다.
 		/// </summary>
-		bool RemoveRigidBody(const unsigned int& id, physx::PxScene* scene);
+		bool RemoveRigidBody(const unsigned int& id, physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList);
 
 		/// <summary>
 		/// 물리 공간에 있는 모든 리지드 바디들을 삭제합니다.
 		/// </summary>
-		bool RemoveAllRigidBody(physx::PxScene* scene);
+		bool RemoveAllRigidBody(physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList);
 
 		/// <summary>
 		/// 충돌 매트릭스가 수정이 된다면 모든 리지드 바디들의 충돌 매트릭스를 업데이트합니다.

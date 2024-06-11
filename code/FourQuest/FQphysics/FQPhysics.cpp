@@ -165,6 +165,12 @@ namespace fq::physics
 		if (!mCCTManager->FinalUpdate())
 			return false;
 
+		for (auto removeActor : mActorsToRemove)
+		{
+			mScene->removeActor(*removeActor);
+		}
+		mActorsToRemove.clear();
+
 		return true;
 	}
 
@@ -254,11 +260,11 @@ namespace fq::physics
 	}
 	bool FQPhysics::RemoveRigidBody(const unsigned int& id)
 	{
-		return mRigidBodyManager->RemoveRigidBody(id, mScene);
+		return mRigidBodyManager->RemoveRigidBody(id, mScene, mActorsToRemove);
 	}
 	bool FQPhysics::RemoveAllRigidBody()
 	{
-		return mRigidBodyManager->RemoveAllRigidBody(mScene);
+		return mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove);
 	}
 
 	RigidBodyGetSetData FQPhysics::GetRigidBodyData(const unsigned int& id)

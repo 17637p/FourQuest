@@ -311,7 +311,7 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region RemoveRigidBody
-	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene)
+	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList)
 	{
 		if (mRigidBodyContainer.find(id) == mRigidBodyContainer.end())
 			return false;
@@ -325,7 +325,7 @@ namespace fq::physics
 			{
 				if (dynamicBody->GetPxRigidDynamic()->getScene() == scene)
 				{
-					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
+					removeActorList.push_back(dynamicBody->GetPxRigidDynamic());
 					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
 				}
 			}
@@ -334,7 +334,7 @@ namespace fq::physics
 			{
 				if (staticBody->GetPxRigidStatic()->getScene() == scene)
 				{
-					scene->removeActor(*staticBody->GetPxRigidStatic());
+					removeActorList.push_back(staticBody->GetPxRigidStatic());
 					mRigidBodyContainer.erase(mRigidBodyContainer.find(id));
 				}
 			}
@@ -353,7 +353,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsRigidBodyManager::RemoveAllRigidBody(physx::PxScene* scene)
+	bool PhysicsRigidBodyManager::RemoveAllRigidBody(physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList)
 	{
 		for (const auto& body : mRigidBodyContainer)
 		{
@@ -362,7 +362,7 @@ namespace fq::physics
 			{
 				if (dynamicBody->GetPxRigidDynamic()->getScene() == scene)
 				{
-					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
+					removeActorList.push_back(dynamicBody->GetPxRigidDynamic());
 					continue;
 				}
 			}
@@ -371,7 +371,7 @@ namespace fq::physics
 			{
 				if (staticBody->GetPxRigidStatic()->getScene() == scene)
 				{
-					scene->removeActor(*staticBody->GetPxRigidStatic());
+					removeActorList.push_back(staticBody->GetPxRigidStatic());
 					continue;
 				}
 			}
@@ -385,7 +385,7 @@ namespace fq::physics
 			{
 				if (dynamicBody->GetPxRigidDynamic()->getScene() == scene)
 				{
-					scene->removeActor(*dynamicBody->GetPxRigidDynamic());
+					removeActorList.push_back(dynamicBody->GetPxRigidDynamic());
 					continue;
 				}
 			}
@@ -394,7 +394,7 @@ namespace fq::physics
 			{
 				if (staticBody->GetPxRigidStatic()->getScene() == scene)
 				{
-					scene->removeActor(*staticBody->GetPxRigidStatic());
+					removeActorList.push_back(staticBody->GetPxRigidStatic());
 					continue;
 				}
 			}
@@ -456,9 +456,9 @@ namespace fq::physics
 				physx::PxRigidActor* actor = dynamicBody->GetPxRigidDynamic();
 				actor->getShapes(&shape, 1);
 
-				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+				if (shape != nullptr && shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
-					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
+					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<	vector<DirectX::SimpleMath::Vector3>>>();
 					ExtractDebugConvexMesh(actor, shape, *polygon.get());
 
 					mDebugPolygon.insert(std::make_pair(dynamicBody->GetID(), polygon));
@@ -470,8 +470,8 @@ namespace fq::physics
 				physx::PxShape* shape;
 				physx::PxRigidActor* actor = staticBody->GetPxRigidStatic();
 				actor->getShapes(&shape, 1);
-
-				if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
+				
+				if (shape != nullptr && shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
 					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();
 					ExtractDebugConvexMesh(actor, shape, *polygon.get());

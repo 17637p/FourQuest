@@ -175,6 +175,8 @@ namespace fq::physics
 
 		// 충돌 매트릭스
 		int mCollisionMatrix[16];
+
+		std::vector<physx::PxActor*> mActorsToRemove;
 	};
 }
 
