@@ -421,6 +421,10 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			rigid->SetLinearVelocity(movement.velocity);
 			transform->SetLocalPosition(localPos);
 		}
+		else if (colliderInfo.enttID == mCapsuleID)
+		{
+
+		}
 		else
 		{
 			auto data = mPhysicsEngine->GetRigidBodyData(id);
@@ -492,6 +496,32 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
+		}
+		else if (colliderInfo.enttID == mCapsuleID)
+		{
+			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
+			auto direct = capsule->GetDirection();
+
+			fq::physics::RigidBodyGetSetData data;
+			data.transform = transform->GetWorldMatrix();
+			data.angularVelocity = rigid->GetAngularVelocity();
+			data.linearVelocity = rigid->GetLinearVelocity();
+
+			if (offset != Vector3::Zero)
+			{
+				data.transform._41 = 0.f;
+				data.transform._42 = 0.f;
+				data.transform._43 = 0.f;
+
+				auto pos = transform->GetWorldPosition();
+				offset = Vector3::Transform(offset, data.transform);
+
+				data.transform._41 = pos.x + offset.x;
+				data.transform._42 = pos.y + offset.y;
+				data.transform._43 = pos.z + offset.z;
+			}
+
+			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 		else
 		{

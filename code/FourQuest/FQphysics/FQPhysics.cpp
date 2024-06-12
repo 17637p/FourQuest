@@ -159,6 +159,7 @@ namespace fq::physics
 			return false;
 		if (!mScene->fetchResults(true))
 			return false;
+		mMyEventCallback->OnTrigger();
 
 		return true;
 	}

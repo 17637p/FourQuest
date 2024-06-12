@@ -133,6 +133,10 @@ namespace fq::game_module
 		/// </summary>
 		void SetDirection(fq::game_module::CapsuleCollider::EDirection dir) { mDirection = dir; }
 
+		/// <summary>
+		///  캡슐콜라이더의 방향을 보정하기위한 회전행렬을 반환합니다.
+		/// </summary>
+		DirectX::SimpleMath::Matrix GetDirectionMatrix()const;
 
 	private:
 		void OnCollisionEnter(const Collision& collision) override;

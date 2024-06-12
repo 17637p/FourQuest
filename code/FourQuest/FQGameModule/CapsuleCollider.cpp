@@ -11,7 +11,6 @@ fq::game_module::CapsuleCollider::CapsuleCollider()
 
 fq::game_module::CapsuleCollider::~CapsuleCollider()
 {
-
 }
 
 std::shared_ptr<fq::game_module::Component> fq::game_module::CapsuleCollider::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -113,4 +112,26 @@ void fq::game_module::CapsuleCollider::OnTriggerExit(const Collision& collision)
 {
 	assert(mCollisionCount != 0);
 	--mCollisionCount;
+}
+
+DirectX::SimpleMath::Matrix fq::game_module::CapsuleCollider::GetDirectionMatrix() const
+{
+	using namespace DirectX::SimpleMath;
+
+	Matrix m = Matrix::Identity;
+
+	switch (mDirection)
+	{
+		case EDirection::XAxis: // ±âº» m
+			break;
+		case EDirection::YAxis:
+		{
+
+		}
+			break;
+		case EDirection::ZAxis:
+			break;
+	}
+
+	return m;
 }

@@ -18,7 +18,7 @@ namespace fq::physics
 		void Create(unsigned int id, std::shared_ptr<CollisionData> collisionData);
 		void Remove(unsigned int id);
 
-		std::shared_ptr<CollisionData> FindCollisionData(unsigned int id);
+		std::shared_ptr<CollisionData> FindCollisionData(const unsigned int& id);
 
 	public:
 		std::unordered_map<unsigned int, std::shared_ptr<CollisionData>> mCollisionDataContainer;

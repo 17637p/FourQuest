@@ -103,7 +103,7 @@ void fq::game_module::PrefabManager::SavePrefab(GameObject* object, const std::f
 		GameObject* parent = tmp->GetParent();
 
 		std::string name;
-		std::string sTag = "-" + std::to_string(static_cast<int>(object->GetTag()));
+		std::string sTag = "-" + std::to_string(static_cast<int>(tmp->GetTag()));
 
 		// 자신은 부모가 있어도 저장할때는 제거합니다
 		if (parent == nullptr || tmp == object)
