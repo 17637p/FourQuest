@@ -397,6 +397,20 @@ void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData da
 	mCallbacks.push_back({ data,type });
 }
 
+
+void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
+{
+	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
+
+	for (int i = 0; i < 16; ++i)
+	{
+		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
+	}
+	mPhysicsEngineInfomation.gravity = mGravity;
+
+	mGameProcess->mPhysics->SetPhysicsInfo(mPhysicsEngineInfomation);
+}
+
 void fq::game_engine::PhysicsSystem::SinkToGameScene()
 {
 	using namespace  DirectX::SimpleMath;
@@ -423,7 +437,45 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 		else if (colliderInfo.enttID == mCapsuleID)
 		{
+			auto data = mPhysicsEngine->GetRigidBodyData(id);
+			rigid->SetLinearVelocity(data.linearVelocity);
+			rigid->SetAngularVelocity(data.angularVelocity);
 
+			auto matrix = data.transform;
+
+			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
+			auto direct = capsule->GetDirection();
+
+			// 캡슐콜라이더 Y방향으로 수정 
+			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
+			{
+				Vector3 pos, scale;
+				Quaternion rotation;
+				matrix.Decompose(scale, rotation, pos);
+				rotation = game_module::CapsuleCollider::YtoXRoation * rotation;
+
+				matrix = Matrix::CreateScale(scale)
+					* Matrix::CreateFromQuaternion(rotation)
+					* Matrix::CreateTranslation(pos);
+			}
+
+			if (offset != Vector3::Zero)
+			{
+				Vector3 pos, scale;
+				Quaternion rotation;
+				matrix.Decompose(scale, rotation, pos);
+				matrix._41 = 0.f;
+				matrix._42 = 0.f;
+				matrix._43 = 0.f;
+				offset = Vector3::Transform(offset, matrix);
+				pos -= offset;
+
+				matrix._41 = pos.x;
+				matrix._42 = pos.y;
+				matrix._43 = pos.z;
+			}
+
+			transform->SetWorldMatrix(matrix);
 		}
 		else
 		{
@@ -454,26 +506,14 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	}
 }
 
-void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
-{
-	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
-
-	for (int i = 0; i < 16; ++i)
-	{
-		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
-	}
-	mPhysicsEngineInfomation.gravity = mGravity;
-
-	mGameProcess->mPhysics->SetPhysicsInfo(mPhysicsEngineInfomation);
-}
 
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
-{ 
+{
 	using namespace DirectX::SimpleMath;
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-		if (colliderInfo.bIsDestroyed) 
+		if (colliderInfo.bIsDestroyed)
 			continue;
 
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
@@ -501,20 +541,33 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		{
 			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
 			auto direct = capsule->GetDirection();
-
 			fq::physics::RigidBodyGetSetData data;
 			data.transform = transform->GetWorldMatrix();
 			data.angularVelocity = rigid->GetAngularVelocity();
 			data.linearVelocity = rigid->GetLinearVelocity();
 
+			// 캡슐콜라이더 Y방향으로 수정 
+			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
+			{
+				Quaternion rotation = game_module::CapsuleCollider::XtoYRoation
+					* transform->GetWorldRotation();
+				Vector3 pos = transform->GetWorldPosition();
+				Vector3 scale = transform->GetWorldScale();
+
+				data.transform = Matrix::CreateScale(scale)
+					* Matrix::CreateFromQuaternion(rotation)
+					* Matrix::CreateTranslation(pos);
+			}
+
 			if (offset != Vector3::Zero)
 			{
-				data.transform._41 = 0.f;
-				data.transform._42 = 0.f;
-				data.transform._43 = 0.f;
+				auto worldMat = transform->GetWorldMatrix();
+				worldMat._41 = 0.f;
+				worldMat._42 = 0.f;
+				worldMat._43 = 0.f;
 
 				auto pos = transform->GetWorldPosition();
-				offset = Vector3::Transform(offset, data.transform);
+				offset = Vector3::Transform(offset, worldMat);
 
 				data.transform._41 = pos.x + offset.x;
 				data.transform._42 = pos.y + offset.y;
@@ -548,7 +601,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 	}
 }
- 
+
 fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(ColliderID id) const
 {
 	auto iter = mColliderContainer.find(id);

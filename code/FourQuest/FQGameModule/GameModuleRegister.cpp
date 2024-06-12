@@ -318,9 +318,7 @@ void fq::game_module::RegisterMetaData()
 		.data<CapsuleCollider::EDirection::XAxis>("XAxis"_hs)
 		.prop(fq::reflect::prop::Name, "XAxis")
 		.data<CapsuleCollider::EDirection::YAxis>("YAxis"_hs)
-		.prop(fq::reflect::prop::Name, "YAxis")
-		.data<CapsuleCollider::EDirection::ZAxis>("ZAxis"_hs)
-		.prop(fq::reflect::prop::Name, "ZAxis");
+		.prop(fq::reflect::prop::Name, "YAxis");
 
 	// CapsuleCollider
 	entt::meta<CapsuleCollider>()

@@ -30,6 +30,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 
 void fq::client::Soul::OnTriggerStay(const fq::game_module::Collision& collision)
 {
+	spdlog::debug("OnTriggerStay");
+
 	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
 
 	if (deadArmour == nullptr)

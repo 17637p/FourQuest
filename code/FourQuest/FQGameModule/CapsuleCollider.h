@@ -15,7 +15,6 @@ namespace fq::game_module
 		{
 			XAxis,
 			YAxis,
-			ZAxis,
 		};
 
 	public:
@@ -102,7 +101,7 @@ namespace fq::game_module
 		/// 콜라이더 타입을 반환합니다
 		/// </summary>
 		fq::physics::EColliderType GetType() const { return mType; }
-		
+
 		/// <summary>
 		/// 콜라이더 타입을 설정합니다
 		/// </summary>
@@ -127,16 +126,11 @@ namespace fq::game_module
 		/// 캡슐콜라이더 방향을 반환합니다.
 		/// </summary>
 		fq::game_module::CapsuleCollider::EDirection GetDirection() const { return mDirection; }
-		
+
 		/// <summary>
 		/// 캡슐콜라이더 방향을 설정합니다.
 		/// </summary>
 		void SetDirection(fq::game_module::CapsuleCollider::EDirection dir) { mDirection = dir; }
-
-		/// <summary>
-		///  캡슐콜라이더의 방향을 보정하기위한 회전행렬을 반환합니다.
-		/// </summary>
-		DirectX::SimpleMath::Matrix GetDirectionMatrix()const;
 
 	private:
 		void OnCollisionEnter(const Collision& collision) override;
@@ -145,6 +139,10 @@ namespace fq::game_module
 		void OnTriggerExit(const Collision& collision) override;
 
 		entt::meta_handle GetHandle() override;
+
+	public:
+		static const DirectX::SimpleMath::Quaternion XtoYRoation;
+		static const DirectX::SimpleMath::Quaternion YtoXRoation;
 
 	private:
 		physics::EColliderType mType;
