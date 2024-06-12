@@ -180,6 +180,7 @@
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="PathFindingSystem.h" />
     <ClInclude Include="PhysicsAnimatorWindow.h" />
     <ClInclude Include="NodeEditorStruct.h" />
     <ClInclude Include="PhysicsSystem.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="PathFindingSystem.cpp" />
     <ClCompile Include="PhysicsAnimatorWindow.cpp" />
     <ClCompile Include="NodeEditorStruct.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />

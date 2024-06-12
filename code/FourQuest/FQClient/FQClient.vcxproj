@@ -43,6 +43,7 @@
     <ClInclude Include="MonsterDie.h" />
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterIdle.h" />
+    <ClInclude Include="NavigationMeshData.h" />
     <ClInclude Include="PlayerAttackState.h" />
     <ClInclude Include="PlayerDashState.h" />
     <ClInclude Include="PlayerInputState.h" />
@@ -63,6 +64,7 @@
     <ClCompile Include="MonsterDie.cpp" />
     <ClCompile Include="MonsterFind.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
+    <ClCompile Include="NavigationMeshData.cpp" />
     <ClCompile Include="PlayerAttackState.cpp" />
     <ClCompile Include="PlayerDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />

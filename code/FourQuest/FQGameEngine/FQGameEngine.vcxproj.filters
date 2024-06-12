@@ -185,6 +185,9 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="PathFindingSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -299,6 +302,9 @@
       <Filter>src\11.Window</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFindingSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>

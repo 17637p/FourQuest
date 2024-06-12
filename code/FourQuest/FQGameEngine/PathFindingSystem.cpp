@@ -1,12 +1,16 @@
-#include "CreateNavigationMesh.h"
+#include "PathFindingSystem.h"
 
-#include "NavigationMeshData.h"
+#include "../FQGameModule/Scene.h"
 
-void CreateNavigationMesh::OnStart()
+// temp
+#include "GameProcess.h"
+#include "../FQGraphics/IFQGraphics.h"
+
+void fq::game_engine::CreateNavigationMesh::OnStart(fq::game_module::Scene* scene)
 {
-	if (mIsBuildMesh)
+	//if (mIsBuildMesh)
 	{
-		UINT obejctCount = GetScene()->GetObjectSize();
+		UINT obejctCount = scene->GetObjectSize();
 
 		std::vector<DirectX::SimpleMath::Vector3> fieldVertices;
 		std::vector<int> fieldIndices;
@@ -15,25 +19,32 @@ void CreateNavigationMesh::OnStart()
 		// 장애물 가져오기
 		for (UINT i = 0; i < obejctCount; i++)
 		{
-			fq::game_module::GameObject* object = GetScene()->GetObjectByIndex(i);
+			fq::game_module::GameObject* object = scene->GetObjectByIndex(i);
 			if (object->GetTag() == fq::game_module::ETag::Floor || object->GetTag() == fq::game_module::ETag::Obstacle)
 			{
 				// 다 합치기 (버텍스, 인덱스)
-				auto staticMesh = object->GetChildren()[0]->GetComponent<fq::game_module::StaticMeshRenderer>();
-				auto vertices = staticMesh->GetStaticMeshObject()->GetMeshData().Vertices;
-				auto indices = staticMesh->GetStaticMeshObject()->GetMeshData().Indices;
-
-				UINT preVerticesSize = fieldVertices.size();
-				fieldVertices.reserve(preVerticesSize + vertices.size());
-				fieldIndices.reserve(fieldIndices.size() + indices.size());
-
-				for (UINT i = 0; i < vertices.size(); i++)
+				auto staticMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
+				if (staticMesh != nullptr)
 				{
-					fieldVertices.push_back(vertices[i].Pos);
-				}
-				for (UINT i = 0; i < indices.size(); i++)
-				{
-					fieldIndices.push_back(indices[i] + preVerticesSize);
+					auto vertices = staticMesh->GetStaticMeshObject()->GetMeshData().Vertices;
+					auto indices = staticMesh->GetStaticMeshObject()->GetMeshData().Indices;
+
+					UINT preVerticesSize = fieldVertices.size();
+					fieldVertices.reserve(preVerticesSize + vertices.size());
+					fieldIndices.reserve(fieldIndices.size() + indices.size());
+
+					DirectX::SimpleMath::Matrix worldMatrix = object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix();
+
+					for (UINT i = 0; i < vertices.size(); i++)
+					{
+						DirectX::SimpleMath::Vector3 pos = vertices[i].Pos;
+						pos = DirectX::SimpleMath::Vector3::Transform(pos, worldMatrix);
+						fieldVertices.push_back(pos);
+					}
+					for (UINT i = 0; i < indices.size(); i++)
+					{
+						fieldIndices.push_back(indices[i] + preVerticesSize);
+					}
 				}
 			}
 		}
@@ -43,10 +54,10 @@ void CreateNavigationMesh::OnStart()
 	}
 }
 
-void CreateNavigationMesh::BuildField(
-	std::vector<DirectX::SimpleMath::Vector3> worldVertices, 
-	std::vector<int> faces, 
-	const BuildSettings& buildSettings /* = Default */ )
+void fq::game_engine::CreateNavigationMesh::BuildField(
+	std::vector<DirectX::SimpleMath::Vector3> worldVertices,
+	std::vector<int> faces,
+	const BuildSettings& buildSettings /* = Default */)
 {
 	static_assert(sizeof(DirectX::SimpleMath::Vector3) == sizeof(float) * 3);
 	assert(!worldVertices.empty() && !faces.empty());
@@ -64,13 +75,21 @@ unsigned int duRGBA(int r, int g, int b, int a)
 	return ((unsigned int)r) | ((unsigned int)g << 8) | ((unsigned int)b << 16) | ((unsigned int)a << 24);
 }
 
-void DrawPolygon(const float* pos, unsigned int color)
+void DrawPolygon(const float* pos, unsigned int color, fq::game_engine::GameProcess* tempProcess)
 {
+	// 생각해보니 버텍스가 아니라 폴리곤이여야 되는데... 
 	//vertex(pos[0], pos[1], pos[2], color);
+	fq::graphics::debug::SphereInfo info;
 
+	info.Sphere.Center = {pos[0], pos[1], pos[2]};
+	info.Sphere.Radius = 0.1f;
+
+	info.Color = { 0, 1, 1, 1 };
+
+	tempProcess->mGraphics->DrawSphere(info);
 }
 
-void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, const unsigned int col)
+void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, const unsigned int col, fq::game_engine::GameProcess* tempProcess)
 {
 	const dtMeshTile* tile = 0;
 	const dtPoly* poly = 0;
@@ -89,17 +108,17 @@ void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, const unsigned
 		{
 			if (t[j] < poly->vertCount)
 			{
-				DrawPolygon(&tile->verts[poly->verts[t[j]] * 3], c);
+				DrawPolygon(&tile->verts[poly->verts[t[j]] * 3], c, tempProcess);
 			}
 			else
 			{
-				DrawPolygon(&tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3], c);
+				DrawPolygon(&tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3], c, tempProcess);
 			}
 		}
 	}
 }
 
-void CreateNavigationMesh::DebugDraw()
+void fq::game_engine::CreateNavigationMesh::DebugDraw()
 {
 	const auto* mesh = impl->navMesh;
 	for (int i = 0; i < mesh->getMaxTiles(); ++i)
@@ -112,12 +131,12 @@ void CreateNavigationMesh::DebugDraw()
 		{
 			const dtPoly* p = &tile->polys[j];
 			//if ((p->flags & polyFlags) == 0) continue;
-			duDebugDrawNavMeshPoly(*mesh, base | (dtPolyRef)j, duRGBA(1, 0, 0, 1));
+			duDebugDrawNavMeshPoly(*mesh, base | (dtPolyRef)j, duRGBA(1, 0, 0, 1), mTempProcess);
 		}
 	}
 }
 
-void CreateNavigationMesh::buildField(
+void fq::game_engine::CreateNavigationMesh::buildField(
 	const float* worldVertices, size_t verticesNum,
 	const int* faces, size_t facesNum,
 	const BuildSettings& buildSettings /* = Default */)
@@ -289,4 +308,29 @@ void CreateNavigationMesh::buildField(
 	assert(dtStatusFailed(status) == false);
 
 	impl->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
+}
+
+fq::game_engine::CreateNavigationMesh::CreateNavigationMesh(GameProcess* tempProcess)
+{
+	mTempProcess = tempProcess;
+	impl = new NavigationMeshData(this);
+}
+
+fq::game_engine::CreateNavigationMesh::~CreateNavigationMesh()
+{
+	delete impl;
+}
+
+fq::game_engine::CreateNavigationMesh::NavigationMeshData::NavigationMeshData(CreateNavigationMesh* navFieldComponent)
+	:navFieldComponent(navFieldComponent)
+{
+	navQuery = dtAllocNavMeshQuery();
+	crowd = dtAllocCrowd();
+	context = std::make_unique<rcContext>(rcContext());
+}
+
+fq::game_engine::CreateNavigationMesh::NavigationMeshData::~NavigationMeshData()
+{
+	dtFreeCrowd(crowd);
+	dtFreeNavMeshQuery(navQuery);
 }

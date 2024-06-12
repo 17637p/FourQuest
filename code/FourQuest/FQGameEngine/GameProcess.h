@@ -32,6 +32,7 @@ namespace fq::game_engine
 	class SoundSystem;
 	class AnimationSystem;
 	class ParticleSystem;
+	class CreateNavigationMesh;
 }
 
 namespace fq::game_engine
@@ -68,5 +69,6 @@ namespace fq::game_engine
 		std::unique_ptr<SoundSystem> mSoundSystem;
 		std::unique_ptr<AnimationSystem> mAnimationSystem;
 		std::unique_ptr<ParticleSystem> mParticleSystem;
+		std::unique_ptr<CreateNavigationMesh> mPathFindgingSystem;
 	};
 }

@@ -4,6 +4,7 @@
 
 class CreateNavigationMesh : public fq::game_module::Component
 {
+	class NavigationMeshData;
 public:
 	struct BuildSettings
 	{
@@ -28,13 +29,14 @@ public:
 	CreateNavigationMesh();
 	virtual ~CreateNavigationMesh();
 
-	void BuildField(std::vector<DirectX::SimpleMath::Vector3> worldVertices, std::vector<int> faces, const BuildSettings& buildSettings = BuildSettings{})
-	{
-		static_assert(sizeof(DirectX::SimpleMath::Vector3) == sizeof(float) * 3);
-		assert(!worldVertices.empty() && !faces.empty());
-		assert(faces.size() % 3 == 0);
-		buildField(reinterpret_cast<float*>(&worldVertices[0]), worldVertices.size(), &faces[0], faces.size() / 3, buildSettings);
-	}
+	virtual void OnStart() override;
+
+	void BuildField(std::vector<DirectX::SimpleMath::Vector3> worldVertices, std::vector<int> faces, const BuildSettings& buildSettings = BuildSettings{});
+
+	bool GetIsBuildMesh() const { return mIsBuildMesh; }
+	void SetIsBuildMesh(bool val) { mIsBuildMesh = val; }
+
+	void DebugDraw();
 
 private:
 	void buildField(
@@ -43,6 +45,7 @@ private:
 		const BuildSettings& buildSettings = BuildSettings{});
 
 private:
-	//Impl* impl{ nullptr };
+	bool mIsBuildMesh;
+	NavigationMeshData* impl{ nullptr };
 	//friend NavigationAgent;
 };

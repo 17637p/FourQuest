@@ -19,6 +19,7 @@
 #include "PhysicsSystem.h"
 #include "SoundSystem.h"
 #include "ParticleSystem.h"
+#include "PathFindingSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -45,7 +46,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mGameProcess->mSceneManager->Initialize("PlayerTest2"
+	mGameProcess->mSceneManager->Initialize("PathFinding"
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());
@@ -85,6 +86,8 @@ void fq::game_engine::EditorEngine::Process()
 {
 	MSG msg;
 	bool bIsDone = false;
+
+	mGameProcess->mPathFindgingSystem->OnStart(mGameProcess->mSceneManager->GetCurrentScene());
 
 	while (!bIsDone)
 	{
@@ -159,6 +162,8 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+
+			mGameProcess->mPathFindgingSystem->DebugDraw();
 
 			// ·£´õ¸µ 
 			mGameProcess->mGraphics->BeginRender();
