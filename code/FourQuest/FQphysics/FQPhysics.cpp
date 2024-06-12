@@ -149,7 +149,7 @@ namespace fq::physics
 		}
 		mActorsToRemove.clear();
 
-		if (!mRigidBodyManager->Update(mScene, mCollisionMatrix))
+		if (!mRigidBodyManager->Update(mScene))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
@@ -169,6 +169,7 @@ namespace fq::physics
 			return false;
 		if (!mCCTManager->FinalUpdate())
 			return false;
+
 
 		return true;
 	}
@@ -265,7 +266,6 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->RemoveAllRigidBody(mScene, mActorsToRemove);
 	}
-
 	RigidBodyGetSetData FQPhysics::GetRigidBodyData(const unsigned int& id)
 	{
 		RigidBodyGetSetData rigidBodyData;
@@ -273,18 +273,15 @@ namespace fq::physics
 
 		return rigidBodyData;
 	}
-
 	bool FQPhysics::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData)
 	{
 		return mRigidBodyManager->SetRigidBodyData(id, rigidBodyData, mCollisionMatrix);
 	}
-
 	bool FQPhysics::ChangeScene()
 	{
 
 		return false;
 	}
-
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
@@ -296,38 +293,30 @@ namespace fq::physics
 	{
 		return mCCTManager->CreateCCT(controllerInfo, movementInfo, mCollisionMatrix);
 	}
-
 	bool FQPhysics::RemoveController(const unsigned int& id)
 	{
 		return mCCTManager->RemoveController(id);
 	}
-
 	bool FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
 	{
 		return mCCTManager->AddInputMove(id, input);
 	}
-
 	CharacterControllerGetSetData FQPhysics::GetCharacterControllerData(const unsigned int& id)
 	{
 		CharacterControllerGetSetData data;
 		mCCTManager->GetCharacterControllerData(id, data);
-
 		return data;
 	}
-
 	CharacterMovementGetSetData FQPhysics::GetCharacterMovementData(const unsigned int& id)
 	{
 		CharacterMovementGetSetData data;
 		mCCTManager->GetCharacterMovementData(id, data);
-
 		return data;
 	}
-
 	void FQPhysics::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
 		mCCTManager->SetCharacterControllerData(id, controllerData);
 	}
-
 	void FQPhysics::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
 	{
 		mCCTManager->SetCharacterMovementData(id, movementData);
@@ -378,6 +367,15 @@ namespace fq::physics
 
 		spdlog::set_default_logger(logger);
 		return logger;
+	}
+
+	void FQPhysics::RemoveActors()
+	{
+		for (auto removeActor : mActorsToRemove)
+		{
+			mScene->removeActor(*removeActor);
+		}
+		mActorsToRemove.clear();
 	}
 #pragma endregion
 

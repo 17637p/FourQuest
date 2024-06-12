@@ -32,7 +32,7 @@ namespace fq::physics
 		/// <summary>
 		/// 생성된 리지드 바디들을 한 번에 물리 공간에 생성합니다.
 		/// </summary>
-		bool Update(physx::PxScene* scene, int* collisionMatrix);
+		bool Update(physx::PxScene* scene);
 
 		/// <summary>
 		/// 디버그 데이터 등 물리 엔진 데이터 클리어용 업데이트

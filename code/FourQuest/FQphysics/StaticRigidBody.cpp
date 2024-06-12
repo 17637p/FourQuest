@@ -38,7 +38,6 @@ namespace fq::physics
 		DirectX::SimpleMath::Vector3 scale;
 		DirectX::SimpleMath::Quaternion rotation;
 		dxTransform.Decompose(scale, rotation, position);
-		//mScale = scale;
 
 		physx::PxTransform transform;
 		CopyDirectXMatrixToPxTransform(colliderInfo.collisionTransform.worldMatrix, transform);
