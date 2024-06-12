@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <unordered_map>
+#include <spdlog/spdlog.h>
 
+#include "../FQReflect/FQReflect.h"
 #include "../FQReflect/entt.hpp"
 #include "Pool.h"
 
@@ -29,7 +31,7 @@ namespace fq::game_module
 		/// 오브젝트풀을 종료합니다 
 		/// </summary>
 		static void Finalize();
-		
+
 		/// <summary>
 		/// T 타입에 해당하는 컴포넌트를 반환합니다 
 		/// </summary>
@@ -63,6 +65,7 @@ namespace fq::game_module
 		Pool<T>* pool = static_cast<Pool<T>*>(iter->second.get());
 		auto component = pool->Assign(std::forward<Args>(args)...);
 
+		//spdlog::trace("type name {}  size {}", fq::reflect::GetName(entt::resolve<T>()), pool->GetSize());
 		return component;
 	}
 }

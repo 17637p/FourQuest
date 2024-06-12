@@ -23,8 +23,10 @@ namespace fq::game_engine
 		{
 			entt::id_type enttID;
 			std::shared_ptr<game_module::Component> component;
+			std::shared_ptr<game_module::GameObject> gameObject;
 			game_module::ICollider* collider;
 			bool bIsDestroyed = false;
+			bool bIsRemoveBody = false;
 		};
 
 		struct CollisionCallBackInfo
@@ -111,8 +113,6 @@ namespace fq::game_engine
 		/// </summary>
 		void AddInputMove(const fq::event::AddInputMove& event);
 
-
-
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
@@ -138,12 +138,12 @@ namespace fq::game_engine
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddInputMoveHandler;
 
-		entt::id_type mBoxID;
-		entt::id_type mSphereID;
-		entt::id_type mCapsuleID;
-		entt::id_type mMeshID;
-		entt::id_type mCharactorControllerID;
-		entt::id_type mRigidID;
+		entt::id_type mBoxTypeID;
+		entt::id_type mSphereTypeID;
+		entt::id_type mCapsuleTypeID;
+		entt::id_type mMeshTypeID;
+		entt::id_type mCharactorControllerTypeID;
+		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;
 		ColliderContainer mColliderContainer;

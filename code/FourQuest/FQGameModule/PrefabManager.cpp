@@ -164,7 +164,7 @@ nlohmann::json fq::game_module::PrefabManager::saveGameObject(GameObject* object
 
 std::shared_ptr<fq::game_module::GameObject> fq::game_module::PrefabManager::loadGameObject(const nlohmann::json& objectData)
 {
-	auto  object = ObjectPool::GetInstance()->Assign<GameObject>();
+	auto object = ObjectPool::GetInstance()->Assign<GameObject>();
 
 	// 컴포넌트 불러오기
 	for (const auto& element : objectData.items())
