@@ -28,7 +28,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mSoundSystem(std::make_unique<SoundSystem>())
 	, mAnimationSystem(std::make_unique<AnimationSystem>())
 	, mParticleSystem(std::make_unique<ParticleSystem>())
-	, mPathFindgingSystem(std::make_unique<CreateNavigationMesh>(this))
+	, mPathFindgingSystem(std::make_unique<NavigationMeshBuilder>(this))
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

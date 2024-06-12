@@ -87,7 +87,7 @@ void fq::game_engine::EditorEngine::Process()
 	MSG msg;
 	bool bIsDone = false;
 
-	mGameProcess->mPathFindgingSystem->OnStart(mGameProcess->mSceneManager->GetCurrentScene());
+	mGameProcess->mPathFindgingSystem->BuildNavigationMesh(mGameProcess->mSceneManager->GetCurrentScene());
 
 	while (!bIsDone)
 	{

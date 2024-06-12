@@ -1,60 +1,63 @@
 #include "PathFindingSystem.h"
 
 #include "../FQGameModule/Scene.h"
+#include "../FQGameModule/AddNavigationMeshObject.h"
 
 // temp
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 
-void fq::game_engine::CreateNavigationMesh::OnStart(fq::game_module::Scene* scene)
+void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module::Scene* scene)
 {
-	//if (mIsBuildMesh)
+	std::vector<DirectX::SimpleMath::Vector3> fieldVertices;
+	std::vector<int> fieldIndices;
+
+	// Mesh 하나로 통합하기 (하나의 Vertex Buffer, Index Buffer)
+	auto componentView = scene->GetComponentView<fq::game_module::AddNavigationMeshObject>();
+	for (auto& navObject : componentView)
 	{
-		UINT obejctCount = scene->GetObjectSize();
-
-		std::vector<DirectX::SimpleMath::Vector3> fieldVertices;
-		std::vector<int> fieldIndices;
-
-		// 바닥 가져오기
-		// 장애물 가져오기
-		for (UINT i = 0; i < obejctCount; i++)
+		// NavMesh 추가는 해뒀지만 디버그 등의 이유로 사용하지 않기로 했다면
+		bool isUsed = navObject.GetComponent<fq::game_module::AddNavigationMeshObject>()->GetIsUsed();
+		if (!isUsed)
 		{
-			fq::game_module::GameObject* object = scene->GetObjectByIndex(i);
-			if (object->GetTag() == fq::game_module::ETag::Floor || object->GetTag() == fq::game_module::ETag::Obstacle)
+			continue;
+		}
+
+		auto staticMesh = navObject.GetComponent<fq::game_module::StaticMeshRenderer>();
+		if (staticMesh != nullptr)
+		{
+			auto vertices = staticMesh->GetStaticMeshObject()->GetMeshData().Vertices;
+			auto indices = staticMesh->GetStaticMeshObject()->GetMeshData().Indices;
+
+			UINT preVerticesSize = fieldVertices.size();
+			fieldVertices.reserve(preVerticesSize + vertices.size());
+			fieldIndices.reserve(fieldIndices.size() + indices.size());
+
+			DirectX::SimpleMath::Matrix worldMatrix = navObject.GetComponent<fq::game_module::Transform>()->GetWorldMatrix();
+
+			for (UINT i = 0; i < vertices.size(); i++)
 			{
-				// 다 합치기 (버텍스, 인덱스)
-				auto staticMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
-				if (staticMesh != nullptr)
-				{
-					auto vertices = staticMesh->GetStaticMeshObject()->GetMeshData().Vertices;
-					auto indices = staticMesh->GetStaticMeshObject()->GetMeshData().Indices;
-
-					UINT preVerticesSize = fieldVertices.size();
-					fieldVertices.reserve(preVerticesSize + vertices.size());
-					fieldIndices.reserve(fieldIndices.size() + indices.size());
-
-					DirectX::SimpleMath::Matrix worldMatrix = object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix();
-
-					for (UINT i = 0; i < vertices.size(); i++)
-					{
-						DirectX::SimpleMath::Vector3 pos = vertices[i].Pos;
-						pos = DirectX::SimpleMath::Vector3::Transform(pos, worldMatrix);
-						fieldVertices.push_back(pos);
-					}
-					for (UINT i = 0; i < indices.size(); i++)
-					{
-						fieldIndices.push_back(indices[i] + preVerticesSize);
-					}
-				}
+				DirectX::SimpleMath::Vector3 pos = vertices[i].Pos;
+				pos = DirectX::SimpleMath::Vector3::Transform(pos, worldMatrix);
+				fieldVertices.push_back(pos);
+			}
+			for (UINT i = 0; i < indices.size(); i++)
+			{
+				fieldIndices.push_back(indices[i] + preVerticesSize);
 			}
 		}
-		// 합친 거를 BuildField로 보내기 
-		BuildField(fieldVertices, fieldIndices);
-		// BuildField로 보내서 만든거 화면에 띄우기  (polygoninfo drawpolygon이 있음)
 	}
+
+	if (fieldVertices.size() == 0)
+	{
+		spdlog::error("There are no navObjects registered.");
+		return;
+	}
+
+	build(fieldVertices, fieldIndices);
 }
 
-void fq::game_engine::CreateNavigationMesh::BuildField(
+void fq::game_engine::NavigationMeshBuilder::build(
 	std::vector<DirectX::SimpleMath::Vector3> worldVertices,
 	std::vector<int> faces,
 	const BuildSettings& buildSettings /* = Default */)
@@ -62,23 +65,11 @@ void fq::game_engine::CreateNavigationMesh::BuildField(
 	static_assert(sizeof(DirectX::SimpleMath::Vector3) == sizeof(float) * 3);
 	assert(!worldVertices.empty() && !faces.empty());
 	assert(faces.size() % 3 == 0);
-	buildField(reinterpret_cast<float*>(&worldVertices[0]), worldVertices.size(), &faces[0], faces.size() / 3, buildSettings);
+	buildNavigationMesh(reinterpret_cast<float*>(&worldVertices[0]), worldVertices.size(), &faces[0], faces.size() / 3, buildSettings);
 }
 
-unsigned int duTransCol(unsigned int c, unsigned int a)
+void DrawVertex(const float* pos, fq::game_engine::GameProcess* tempProcess)
 {
-	return (a << 24) | (c & 0x00ffffff);
-}
-
-unsigned int duRGBA(int r, int g, int b, int a)
-{
-	return ((unsigned int)r) | ((unsigned int)g << 8) | ((unsigned int)b << 16) | ((unsigned int)a << 24);
-}
-
-void DrawPolygon(const float* pos, unsigned int color, fq::game_engine::GameProcess* tempProcess)
-{
-	// 생각해보니 버텍스가 아니라 폴리곤이여야 되는데... 
-	//vertex(pos[0], pos[1], pos[2], color);
 	fq::graphics::debug::SphereInfo info;
 
 	info.Sphere.Center = {pos[0], pos[1], pos[2]};
@@ -89,14 +80,26 @@ void DrawPolygon(const float* pos, unsigned int color, fq::game_engine::GameProc
 	tempProcess->mGraphics->DrawSphere(info);
 }
 
-void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, const unsigned int col, fq::game_engine::GameProcess* tempProcess)
+void DrawVertex(const float* pos0, const float* pos1, const float* pos2, fq::game_engine::GameProcess* tempProcess)
+{
+	fq::graphics::debug::PolygonInfo info;
+
+	info.Points.push_back({ pos0[0], pos0[1], pos0[2] });
+	info.Points.push_back({ pos1[0], pos1[1], pos1[2] });
+	info.Points.push_back({ pos2[0], pos2[1], pos2[2] });
+
+	info.Color = { 1, 1, 0, 1 };
+
+	tempProcess->mGraphics->DrawPolygon(info);
+}
+
+void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, fq::game_engine::GameProcess* tempProcess)
 {
 	const dtMeshTile* tile = 0;
 	const dtPoly* poly = 0;
 	if (dtStatusFailed(mesh.getTileAndPolyByRef(ref, &tile, &poly)))
 		return;
 
-	const unsigned int c = duTransCol(col, 64);
 	const unsigned int ip = (unsigned int)(poly - tile->polys);
 
 	const dtPolyDetail* pd = &tile->detailMeshes[ip];
@@ -108,18 +111,25 @@ void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, const unsigned
 		{
 			if (t[j] < poly->vertCount)
 			{
-				DrawPolygon(&tile->verts[poly->verts[t[j]] * 3], c, tempProcess);
+				DrawVertex(&tile->verts[poly->verts[t[j]] * 3], tempProcess);
 			}
 			else
 			{
-				DrawPolygon(&tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3], c, tempProcess);
+				DrawVertex(&tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3], tempProcess);
 			}
 		}
+		DrawVertex(&tile->verts[poly->verts[t[0]] * 3], &tile->verts[poly->verts[t[1]] * 3], &tile->verts[poly->verts[t[2]] * 3], tempProcess);
 	}
 }
 
-void fq::game_engine::CreateNavigationMesh::DebugDraw()
+void fq::game_engine::NavigationMeshBuilder::DebugDraw()
 {
+	if (!mHasNavigationMesh)
+	{
+		spdlog::error("No navgationMesh was created");
+		return;
+	}
+
 	const auto* mesh = impl->navMesh;
 	for (int i = 0; i < mesh->getMaxTiles(); ++i)
 	{
@@ -131,12 +141,12 @@ void fq::game_engine::CreateNavigationMesh::DebugDraw()
 		{
 			const dtPoly* p = &tile->polys[j];
 			//if ((p->flags & polyFlags) == 0) continue;
-			duDebugDrawNavMeshPoly(*mesh, base | (dtPolyRef)j, duRGBA(1, 0, 0, 1), mTempProcess);
+			duDebugDrawNavMeshPoly(*mesh, base | (dtPolyRef)j, mTempProcess);
 		}
 	}
 }
 
-void fq::game_engine::CreateNavigationMesh::buildField(
+void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	const float* worldVertices, size_t verticesNum,
 	const int* faces, size_t facesNum,
 	const BuildSettings& buildSettings /* = Default */)
@@ -308,20 +318,23 @@ void fq::game_engine::CreateNavigationMesh::buildField(
 	assert(dtStatusFailed(status) == false);
 
 	impl->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
+
+	mHasNavigationMesh = true;
 }
 
-fq::game_engine::CreateNavigationMesh::CreateNavigationMesh(GameProcess* tempProcess)
+fq::game_engine::NavigationMeshBuilder::NavigationMeshBuilder(GameProcess* tempProcess)
+	:mTempProcess(tempProcess),
+	impl(new NavigationMeshData(this)),
+	mHasNavigationMesh(false)
 {
-	mTempProcess = tempProcess;
-	impl = new NavigationMeshData(this);
 }
 
-fq::game_engine::CreateNavigationMesh::~CreateNavigationMesh()
+fq::game_engine::NavigationMeshBuilder::~NavigationMeshBuilder()
 {
 	delete impl;
 }
 
-fq::game_engine::CreateNavigationMesh::NavigationMeshData::NavigationMeshData(CreateNavigationMesh* navFieldComponent)
+fq::game_engine::NavigationMeshBuilder::NavigationMeshData::NavigationMeshData(NavigationMeshBuilder* navFieldComponent)
 	:navFieldComponent(navFieldComponent)
 {
 	navQuery = dtAllocNavMeshQuery();
@@ -329,7 +342,7 @@ fq::game_engine::CreateNavigationMesh::NavigationMeshData::NavigationMeshData(Cr
 	context = std::make_unique<rcContext>(rcContext());
 }
 
-fq::game_engine::CreateNavigationMesh::NavigationMeshData::~NavigationMeshData()
+fq::game_engine::NavigationMeshBuilder::NavigationMeshData::~NavigationMeshData()
 {
 	dtFreeCrowd(crowd);
 	dtFreeNavMeshQuery(navQuery);

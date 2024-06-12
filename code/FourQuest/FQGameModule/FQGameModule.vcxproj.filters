@@ -87,6 +87,12 @@
     <Filter Include="src\09.Animation\StateBehaviour">
       <UniqueIdentifier>{6c282c41-2e6f-4caf-ba77-2b153b9ab3fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\10.PathFinding">
+      <UniqueIdentifier>{91bec4ff-da06-4cb9-b146-4d193dbcb34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\10.PathFinding">
+      <UniqueIdentifier>{1bcfb876-d582-4468-97e0-906710d30f9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -239,6 +245,9 @@
     <ClInclude Include="Particle.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="AddNavigationMeshObject.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -375,6 +384,9 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="AddNavigationMeshObject.cpp">
+      <Filter>src\10.PathFinding</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

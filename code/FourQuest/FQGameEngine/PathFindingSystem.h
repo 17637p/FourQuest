@@ -13,17 +13,14 @@
 #include <recastnavigation/DetourNavMeshQuery.h>
 #include <recastnavigation/DetourCrowd.h>
 
-//#include "CreateNavigationMesh.h"
-namespace fq::game_module
-{
-	class Scene;
-}
+namespace fq::game_module{ class Scene; }
 
 namespace fq::game_engine
 {
 	class GameProcess;
 
-	class CreateNavigationMesh
+	// NavigationMeshBuilder로 이름 바꾸기 Creater?
+	class NavigationMeshBuilder
 	{
 		class NavigationMeshData;
 	public:
@@ -47,39 +44,36 @@ namespace fq::game_engine
 			// xz축으로 743* 989개 정도 분할이 되도 큰 부하는 없다.
 		};
 
-		CreateNavigationMesh(GameProcess* tempProcess);
-		virtual ~CreateNavigationMesh();
+		NavigationMeshBuilder(GameProcess* tempProcess);
+		virtual ~NavigationMeshBuilder();
 
-		void OnStart(fq::game_module::Scene* scene);
-
-		void BuildField(std::vector<DirectX::SimpleMath::Vector3> worldVertices, std::vector<int> faces, const BuildSettings& buildSettings = BuildSettings{});
-
-		bool GetIsBuildMesh() const { return mIsBuildMesh; }
-		void SetIsBuildMesh(bool val) { mIsBuildMesh = val; }
-
+		void BuildNavigationMesh(fq::game_module::Scene* scene);
 		void DebugDraw();
 
 	private:
-		void buildField(
+		void build(std::vector<DirectX::SimpleMath::Vector3> worldVertices, 
+			std::vector<int> faces, 
+			const BuildSettings& buildSettings = BuildSettings{});
+		void buildNavigationMesh(
 			const float* worldVertices, size_t verticesNum,
 			const int* faces, size_t facesNum,
 			const BuildSettings& buildSettings = BuildSettings{});
 
 	private:
 		GameProcess* mTempProcess;
-		bool mIsBuildMesh;
+		bool mHasNavigationMesh;
 		NavigationMeshData* impl{ nullptr };
 		//friend NavigationAgent;
 	};
 
-	class CreateNavigationMesh::NavigationMeshData
+	class NavigationMeshBuilder::NavigationMeshData
 	{
 	public:
-		NavigationMeshData(CreateNavigationMesh* navFieldComponent);
+		NavigationMeshData(NavigationMeshBuilder* navFieldComponent);
 		virtual ~NavigationMeshData();
 
 	public:
-		CreateNavigationMesh* navFieldComponent;
+		NavigationMeshBuilder* navFieldComponent;
 
 		std::unique_ptr<rcContext> context;
 		rcPolyMesh* polyMesh;

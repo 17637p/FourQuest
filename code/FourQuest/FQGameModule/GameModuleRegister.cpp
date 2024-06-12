@@ -28,6 +28,9 @@
 #include "Animator.h"
 #include "LogStateBehaviour.h"
 
+// PathFinding
+#include "AddNavigationMeshObject.h"
+
 void fq::game_module::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -780,5 +783,13 @@ void fq::game_module::RegisterMetaData()
 
 	}
 
-
+	//////////////////////////////////////////////////////////////////////////
+	//                             ±Ê√£±‚									//
+	//////////////////////////////////////////////////////////////////////////
+	entt::meta<AddNavigationMeshObject>()
+		.type("AddNavigationMeshObject"_hs)
+		.prop(fq::reflect::prop::Name, "AddNavigationMeshObject")
+		.data<&AddNavigationMeshObject::SetIsUsed, &AddNavigationMeshObject::GetIsUsed>("IsUsed"_hs)
+		.prop(fq::reflect::prop::Name, "IsUsed")
+		.base<fq::game_module::Component>();
 }

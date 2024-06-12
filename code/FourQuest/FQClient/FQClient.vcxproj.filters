@@ -113,12 +113,6 @@
     <ClInclude Include="DeadArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="CreateNavigationMesh.h">
-      <Filter>include\05.PathFinding</Filter>
-    </ClInclude>
-    <ClInclude Include="NavigationMeshData.h">
-      <Filter>include\05.PathFinding</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -171,12 +165,6 @@
     </ClCompile>
     <ClCompile Include="DeadArmour.cpp">
       <Filter>src\01.Player</Filter>
-    </ClCompile>
-    <ClCompile Include="CreateNavigationMesh.cpp">
-      <Filter>src\05.PathFinding</Filter>
-    </ClCompile>
-    <ClCompile Include="NavigationMeshData.cpp">
-      <Filter>src\05.PathFinding</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

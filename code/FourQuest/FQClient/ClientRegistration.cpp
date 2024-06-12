@@ -10,6 +10,7 @@
 #include "PlayerAttackState.h"
 #include "DeadArmour.h"
 
+// Monster
 #include "Monster.h"
 #include "MonsterIdle.h"
 #include "MonsterFind.h"
@@ -17,6 +18,7 @@
 #include "MonsterDamaged.h"
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
+
 #include "Attack.h"
 
 #include "CameraMoving.h"
