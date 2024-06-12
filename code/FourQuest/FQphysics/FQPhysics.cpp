@@ -165,6 +165,7 @@ namespace fq::physics
 	{
 		if (!mScene->fetchResults(true))
 			return false;
+		mMyEventCallback->OnTrigger();
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())

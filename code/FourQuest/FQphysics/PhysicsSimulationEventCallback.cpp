@@ -81,6 +81,34 @@ namespace fq::physics
 	{
 	}
 
+	void PhysicsSimulationEventCallback::OnTrigger()
+	{
+		for (auto trigger : mTriggerContainer)
+		{
+			std::shared_ptr<CollisionData> TriggerActorData = mCollisionDataManager->FindCollisionData(trigger.first);
+
+			for (auto other : trigger.second)
+			{
+				std::shared_ptr<CollisionData> OtherActordata = mCollisionDataManager->FindCollisionData(other);
+				CollisionData Mydata;
+				CollisionData Otherdata;
+
+				Mydata.myId = TriggerActorData->myId;
+				Mydata.otherId = OtherActordata->myId;
+				Mydata.myLayerNumber = TriggerActorData->myLayerNumber;
+				Mydata.otherLayerNumber = OtherActordata->myLayerNumber;
+				Otherdata.myId = OtherActordata->myId;
+				Otherdata.otherId = TriggerActorData->myId;
+				Otherdata.myLayerNumber = OtherActordata->myLayerNumber;
+				Otherdata.otherLayerNumber = TriggerActorData->myLayerNumber;
+
+				// 콜백 함수 실행
+				mFunction(Mydata, ECollisionEventType::ON_OVERLAP);
+				mFunction(Otherdata, ECollisionEventType::ON_OVERLAP);
+			}
+		}
+	}
+
 #pragma region SettingCollisionData
 	void PhysicsSimulationEventCallback::SettingCollisionData(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, const ECollisionEventType& eventType)
 	{
@@ -160,6 +188,8 @@ namespace fq::physics
 		mFunction(Mydata, eventType);
 		mFunction(Otherdata, eventType);
 
+		CountTrigger(TriggerActorData->myId, OtherActordata->myId, eventType);
+
 		if (eventType == ECollisionEventType::END_OVERLAP && TriggerActorData->isDead)
 		{
 			mCollisionDataManager->Remove(TriggerActorData->myId);
@@ -167,6 +197,39 @@ namespace fq::physics
 		if (eventType == ECollisionEventType::END_OVERLAP && OtherActordata->isDead)
 		{
 			mCollisionDataManager->Remove(OtherActordata->myId);
+		}
+	}
+
+	void PhysicsSimulationEventCallback::CountTrigger(unsigned int triggerID, unsigned int otherID, const ECollisionEventType& eventType)
+	{
+		if (eventType == ECollisionEventType::ENTER_OVERLAP)
+		{
+			auto iter = mTriggerContainer.find(triggerID);
+
+			// 해당 트리거 아이디가 이미 다른 오브젝트와 충돌하고 있고 또 다른 오브젝트와 충돌했을 때 기존 값에 접근해서 충돌 오브젝트의 아이디 추가
+			if (iter != mTriggerContainer.end())
+			{
+				iter->second.insert(otherID);
+			}
+			else // 해당 트리거 아이디가 아무와도 충돌하고 있지 않을 때 충돌되었다면 트리거 컨테이너에 추가
+			{
+				std::set<unsigned int> otherIDContainer;
+				otherIDContainer.insert(otherID);
+				mTriggerContainer.insert(std::make_pair(triggerID, otherIDContainer));
+			}
+		}
+		else if (eventType == ECollisionEventType::END_OVERLAP)
+		{
+			auto triggerIter = mTriggerContainer.find(triggerID);
+			auto otherIDIter = triggerIter->second.find(otherID);
+
+			// 트리거 아이디와 부딪히고 있는 otherActorID 삭제
+			if (otherIDIter != triggerIter->second.end())
+				triggerIter->second.erase(otherIDIter);
+
+			// 만약 해당 트리거 아이디가 부딪히고 있는 otherActorID가 없을 때 트리거 컨테이너에서 삭제
+			if (triggerIter->second.empty())
+				mTriggerContainer.erase(triggerIter);
 		}
 	}
 #pragma endregion

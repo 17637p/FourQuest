@@ -45,7 +45,7 @@ namespace fq::physics
 
 		mRemoveID.push_back(id);
 	}
-	std::shared_ptr<CollisionData> PhysicsCollisionDataManager::FindCollisionData(unsigned int id)
+	std::shared_ptr<CollisionData> PhysicsCollisionDataManager::FindCollisionData(const unsigned int& id)
 	{
 		if (mCollisionDataContainer.find(id) == mCollisionDataContainer.end())
 			return nullptr;
