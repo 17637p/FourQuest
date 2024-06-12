@@ -51,12 +51,6 @@
     <Filter Include="src\04.Camera">
       <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\05.PathFinding">
-      <UniqueIdentifier>{03e379ff-71f1-40f1-953b-83d995548493}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\05.PathFinding">
-      <UniqueIdentifier>{77a80481-831d-4794-bd87-c4c03de5f460}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">

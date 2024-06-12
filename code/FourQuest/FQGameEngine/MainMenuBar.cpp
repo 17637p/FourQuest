@@ -310,6 +310,8 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 		bool& onCharater = debug->GetOnCharaterController();
 		ImGui::Checkbox("CharaterController", &onCharater);
 
+		bool& onNavMesh = debug->GetOnNavigationMesh();
+		ImGui::Checkbox("NavigationMesh", &onNavMesh);
 
 		ImGui::EndMenu();
 	}

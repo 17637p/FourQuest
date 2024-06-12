@@ -163,8 +163,6 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 
-			mGameProcess->mPathFindgingSystem->DebugDraw();
-
 			// ·£´õ¸µ 
 			mGameProcess->mGraphics->BeginRender();
 			mEditor->mDebugSystem->Render();

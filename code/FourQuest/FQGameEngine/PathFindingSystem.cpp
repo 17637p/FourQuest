@@ -68,84 +68,6 @@ void fq::game_engine::NavigationMeshBuilder::build(
 	buildNavigationMesh(reinterpret_cast<float*>(&worldVertices[0]), worldVertices.size(), &faces[0], faces.size() / 3, buildSettings);
 }
 
-void DrawVertex(const float* pos, fq::game_engine::GameProcess* tempProcess)
-{
-	fq::graphics::debug::SphereInfo info;
-
-	info.Sphere.Center = {pos[0], pos[1], pos[2]};
-	info.Sphere.Radius = 0.1f;
-
-	info.Color = { 0, 1, 1, 1 };
-
-	tempProcess->mGraphics->DrawSphere(info);
-}
-
-void DrawVertex(const float* pos0, const float* pos1, const float* pos2, fq::game_engine::GameProcess* tempProcess)
-{
-	fq::graphics::debug::PolygonInfo info;
-
-	info.Points.push_back({ pos0[0], pos0[1], pos0[2] });
-	info.Points.push_back({ pos1[0], pos1[1], pos1[2] });
-	info.Points.push_back({ pos2[0], pos2[1], pos2[2] });
-
-	info.Color = { 1, 1, 0, 1 };
-
-	tempProcess->mGraphics->DrawPolygon(info);
-}
-
-void duDebugDrawNavMeshPoly(const dtNavMesh& mesh, dtPolyRef ref, fq::game_engine::GameProcess* tempProcess)
-{
-	const dtMeshTile* tile = 0;
-	const dtPoly* poly = 0;
-	if (dtStatusFailed(mesh.getTileAndPolyByRef(ref, &tile, &poly)))
-		return;
-
-	const unsigned int ip = (unsigned int)(poly - tile->polys);
-
-	const dtPolyDetail* pd = &tile->detailMeshes[ip];
-
-	for (int i = 0; i < pd->triCount; ++i)
-	{
-		const unsigned char* t = &tile->detailTris[(pd->triBase + i) * 4];
-		for (int j = 0; j < 3; ++j)
-		{
-			if (t[j] < poly->vertCount)
-			{
-				DrawVertex(&tile->verts[poly->verts[t[j]] * 3], tempProcess);
-			}
-			else
-			{
-				DrawVertex(&tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3], tempProcess);
-			}
-		}
-		DrawVertex(&tile->verts[poly->verts[t[0]] * 3], &tile->verts[poly->verts[t[1]] * 3], &tile->verts[poly->verts[t[2]] * 3], tempProcess);
-	}
-}
-
-void fq::game_engine::NavigationMeshBuilder::DebugDraw()
-{
-	if (!mHasNavigationMesh)
-	{
-		spdlog::error("No navgationMesh was created");
-		return;
-	}
-
-	const auto* mesh = impl->navMesh;
-	for (int i = 0; i < mesh->getMaxTiles(); ++i)
-	{
-		const dtMeshTile* tile = mesh->getTile(i);
-		if (!tile->header) continue;
-		dtPolyRef base = mesh->getPolyRefBase(tile);
-
-		for (int j = 0; j < tile->header->polyCount; ++j)
-		{
-			const dtPoly* p = &tile->polys[j];
-			//if ((p->flags & polyFlags) == 0) continue;
-			duDebugDrawNavMeshPoly(*mesh, base | (dtPolyRef)j, mTempProcess);
-		}
-	}
-}
-
 void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	const float* worldVertices, size_t verticesNum,
 	const int* faces, size_t facesNum,
@@ -153,7 +75,7 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 {
 	float bmin[3]{ FLT_MAX, FLT_MAX, FLT_MAX };
 	float bmax[3]{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
+	
 	// 바운더리 정보부터 설정
 	for (auto i = 0; i < verticesNum; i++)
 	{
@@ -201,29 +123,29 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 
 	processResult = rcCreateHeightfield(context, *heightField, config.width, config.height, config.bmin, config.bmax, config.cs, config.ch);
 	assert(processResult == true);
-
+	
 	std::vector<unsigned char> triareas;
 	triareas.resize(facesNum);
 	//unsigned char * triareas = new unsigned char[facesNum];
 	//memset(triareas, 0, facesNum*sizeof(unsigned char));
-
+	
 	rcMarkWalkableTriangles(context, config.walkableSlopeAngle, worldVertices, verticesNum, faces, facesNum, triareas.data());
 	processResult = rcRasterizeTriangles(context, worldVertices, verticesNum, faces, triareas.data(), facesNum, *heightField, config.walkableClimb);
 	assert(processResult == true);
-
+	
 	// 필요없는 부분 필터링
 	rcFilterLowHangingWalkableObstacles(context, config.walkableClimb, *heightField);
 	rcFilterLedgeSpans(context, config.walkableHeight, config.walkableClimb, *heightField);
 	rcFilterWalkableLowHeightSpans(context, config.walkableHeight, *heightField);
-
+	
 	// 밀집 높이 필드 만들기
 	rcCompactHeightfield* compactHeightField{ rcAllocCompactHeightfield() };
 	assert(compactHeightField != nullptr);
-
+	
 	processResult = rcBuildCompactHeightfield(context, config.walkableHeight, config.walkableClimb, *heightField, *compactHeightField);
-	//rcFreeHeightField(heightField);
+	rcFreeHeightField(heightField);
 	assert(processResult == true);
-
+	
 	//processResult = rcErodeWalkableArea(context, config.walkableRadius, *compactHeightField);
 	//assert(processResult == true);
 
@@ -250,12 +172,12 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	// 디테일 메시 생성
 	auto& detailMesh{ impl->polyMeshDetail = rcAllocPolyMeshDetail() };
 	assert(detailMesh != nullptr);
-
+	
 	processResult = rcBuildPolyMeshDetail(context, *polyMesh, *compactHeightField, config.detailSampleDist, config.detailSampleMaxError, *detailMesh);
 	assert(processResult == true);
-
-	//rcFreeCompactHeightfield(compactHeightField);
-	//rcFreeContourSet(contourSet);
+	
+	rcFreeCompactHeightfield(compactHeightField);
+	rcFreeContourSet(contourSet);
 
 	// detour 데이터 생성
 	unsigned char* navData{ nullptr };
@@ -301,24 +223,23 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	params.cs = config.cs;
 	params.ch = config.ch;
 	params.buildBvTree = true;
-
+	
 	processResult = dtCreateNavMeshData(&params, &navData, &navDataSize);
 	assert(processResult == true);
-
+	
 	dtNavMesh* navMesh{ impl->navMesh = dtAllocNavMesh() };
 	assert(navMesh != nullptr);
-
+	
 	dtStatus status;
 	status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
-	//dtFree(navData);
 	assert(dtStatusFailed(status) == false);
-
+	
 	dtNavMeshQuery* navQuery{ impl->navQuery };
 	status = navQuery->init(navMesh, 2048);
 	assert(dtStatusFailed(status) == false);
-
+	
 	impl->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
-
+	
 	mHasNavigationMesh = true;
 }
 
@@ -334,6 +255,66 @@ fq::game_engine::NavigationMeshBuilder::~NavigationMeshBuilder()
 	delete impl;
 }
 
+void duDebugDrawNavMeshPoly(std::vector<DirectX::SimpleMath::Vector3>& navMeshVertices, const dtNavMesh& mesh, dtPolyRef ref)
+{
+	const dtMeshTile* tile = 0;
+	const dtPoly* poly = 0;
+	if (dtStatusFailed(mesh.getTileAndPolyByRef(ref, &tile, &poly)))
+		return;
+
+	const unsigned int ip = (unsigned int)(poly - tile->polys);
+
+	const dtPolyDetail* pd = &tile->detailMeshes[ip];
+
+	for (int i = 0; i < pd->triCount; ++i)
+	{
+		const unsigned char* t = &tile->detailTris[(pd->triBase + i) * 4];
+		for (int j = 0; j < 3; ++j)
+		{
+			const float* pos;
+			if (t[j] < poly->vertCount)
+			{
+				 pos = &tile->verts[poly->verts[t[j]] * 3];
+				//DrawVertex(&tile->verts[poly->verts[t[j]] * 3], tempProcess);
+			}
+			else
+			{
+				pos = &tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3];
+				//DrawVertex(&tile->detailVerts[(pd->vertBase + t[j] - poly->vertCount) * 3], tempProcess);
+			}
+			navMeshVertices.push_back({ pos[0], pos[1], pos[2] });
+		}
+	}
+}
+
+std::vector<DirectX::SimpleMath::Vector3> fq::game_engine::NavigationMeshBuilder::GetNavMeshVertices()
+{
+	std::vector<DirectX::SimpleMath::Vector3> navMeshVertices;
+
+	if (!mHasNavigationMesh)
+	{
+		spdlog::error("No navgationMesh was created");
+		return navMeshVertices;
+	}
+
+	const auto* mesh = impl->navMesh;
+	for (int i = 0; i < mesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = mesh->getTile(i);
+		if (!tile->header) continue;
+		dtPolyRef base = mesh->getPolyRefBase(tile);
+
+		for (int j = 0; j < tile->header->polyCount; ++j)
+		{
+			const dtPoly* p = &tile->polys[j];
+			//if ((p->flags & polyFlags) == 0) continue;
+			duDebugDrawNavMeshPoly(navMeshVertices, *mesh, base | (dtPolyRef)j);
+		}
+	}
+
+	return navMeshVertices;
+}
+
 fq::game_engine::NavigationMeshBuilder::NavigationMeshData::NavigationMeshData(NavigationMeshBuilder* navFieldComponent)
 	:navFieldComponent(navFieldComponent)
 {
@@ -344,6 +325,10 @@ fq::game_engine::NavigationMeshBuilder::NavigationMeshData::NavigationMeshData(N
 
 fq::game_engine::NavigationMeshBuilder::NavigationMeshData::~NavigationMeshData()
 {
+	rcFreePolyMesh(polyMesh);
+	rcFreePolyMeshDetail(polyMeshDetail);
+
 	dtFreeCrowd(crowd);
 	dtFreeNavMeshQuery(navQuery);
+	dtFreeNavMesh(navMesh);
 }
