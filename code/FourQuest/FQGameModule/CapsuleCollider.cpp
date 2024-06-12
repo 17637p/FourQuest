@@ -3,6 +3,7 @@
 fq::game_module::CapsuleCollider::CapsuleCollider()
 	:mCapsuleInfomation{}
 	,mCollisionCount(0)
+	,mDirection(EDirection::YAxis)
 {
 	mCapsuleInfomation.halfHeight = 1.f;
 	mCapsuleInfomation.raidus = 1.f;

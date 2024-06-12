@@ -312,6 +312,16 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Density")
 		.base<Component>();
 
+	entt::meta<CapsuleCollider::EDirection>()
+		.type("CapsuleDirection"_hs)
+		.prop(fq::reflect::prop::Name, "CapsuleDirection")
+		.data<CapsuleCollider::EDirection::XAxis>("XAxis"_hs)
+		.prop(fq::reflect::prop::Name, "XAxis")
+		.data<CapsuleCollider::EDirection::YAxis>("YAxis"_hs)
+		.prop(fq::reflect::prop::Name, "YAxis")
+		.data<CapsuleCollider::EDirection::ZAxis>("ZAxis"_hs)
+		.prop(fq::reflect::prop::Name, "ZAxis");
+
 	// CapsuleCollider
 	entt::meta<CapsuleCollider>()
 		.type("CapsuleCollider"_hs)
@@ -333,6 +343,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Restitution")
 		.data<&CapsuleCollider::SetDensity, &CapsuleCollider::GetDensity>("Density"_hs)
 		.prop(fq::reflect::prop::Name, "Density")
+		.data<&CapsuleCollider::SetDirection, &CapsuleCollider::GetDirection>("Direction"_hs)
+		.prop(fq::reflect::prop::Name, "Direction")
 		.base<Component>();
 
 

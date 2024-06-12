@@ -84,6 +84,7 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 	mPhysicsEngine->RemoveAllRigidBody();
 	mPhysicsEngine->Update(1.f);
 	mPhysicsEngine->FinalUpdate();
+	mCallbacks.clear();
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -393,39 +394,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
 {
-	auto lfs = mColliderContainer.find(data.myId);
-	auto rhs = mColliderContainer.find(data.otherId);
-
-	assert(data.myId != data.otherId);
-	assert(lfs != mColliderContainer.end());
-	assert(rhs != mColliderContainer.end());
-
-	auto lhsObject = lfs->second.component->GetGameObject();
-	auto rhsObject = rhs->second.component->GetGameObject();
-
-	fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints };
-
-	switch (type)
-	{
-		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-			lhsObject->OnTriggerEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_OVERLAP:
-			lhsObject->OnTriggerStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_OVERLAP:
-			lhsObject->OnTriggerExit(collision);
-			break;
-		case fq::physics::ECollisionEventType::ENTER_COLLISION:
-			lhsObject->OnCollisionEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_COLLISION:
-			lhsObject->OnCollisionStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_COLLISION:
-			lhsObject->OnCollisionExit(collision);
-			break;
-	}
+	mCallbacks.push_back({ data,type });
 }
 
 void fq::game_engine::PhysicsSystem::SinkToGameScene()
@@ -441,7 +410,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (colliderInfo.id == mCharactorControllerID)
+		if (colliderInfo.enttID == mCharactorControllerID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
@@ -507,7 +476,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (colliderInfo.id == mCharactorControllerID)
+		if (colliderInfo.enttID == mCharactorControllerID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 
@@ -601,11 +570,52 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 	{
 		if (info.bIsDestroyed)
 		{
-			if (info.id == mCharactorControllerID)
+			if (info.enttID == mCharactorControllerID)
 				mPhysicsEngine->RemoveController(id);
 			else
 				mPhysicsEngine->RemoveRigidBody(id);
 		}
 	}
+}
+
+void fq::game_engine::PhysicsSystem::ProcessCallBack()
+{
+	for (auto& [data, type] : mCallbacks)
+	{
+		auto lfs = mColliderContainer.find(data.myId);
+		auto rhs = mColliderContainer.find(data.otherId);
+
+		assert(data.myId != data.otherId);
+		assert(lfs != mColliderContainer.end());
+		assert(rhs != mColliderContainer.end());
+
+		auto lhsObject = lfs->second.component->GetGameObject();
+		auto rhsObject = rhs->second.component->GetGameObject();
+
+		fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints };
+
+		switch (type)
+		{
+			case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+				lhsObject->OnTriggerEnter(collision);
+				break;
+			case fq::physics::ECollisionEventType::ON_OVERLAP:
+				lhsObject->OnTriggerStay(collision);
+				break;
+			case fq::physics::ECollisionEventType::END_OVERLAP:
+				lhsObject->OnTriggerExit(collision);
+				break;
+			case fq::physics::ECollisionEventType::ENTER_COLLISION:
+				lhsObject->OnCollisionEnter(collision);
+				break;
+			case fq::physics::ECollisionEventType::ON_COLLISION:
+				lhsObject->OnCollisionStay(collision);
+				break;
+			case fq::physics::ECollisionEventType::END_COLLISION:
+				lhsObject->OnCollisionExit(collision);
+				break;
+		}
+	}
+	mCallbacks.clear();
 }
 
