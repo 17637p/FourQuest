@@ -15,8 +15,8 @@ namespace fq::physics
 		~PhysicsCollisionDataManager();
 
 		bool Update();
-		void Create(unsigned int id, std::shared_ptr<CollisionData> collisionData);
-		void Remove(unsigned int id);
+		void Create(const unsigned int& id, std::shared_ptr<CollisionData> collisionData);
+		void Remove(const unsigned int& id);
 
 		std::shared_ptr<CollisionData> FindCollisionData(const unsigned int& id);
 

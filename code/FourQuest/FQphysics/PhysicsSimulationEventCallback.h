@@ -33,7 +33,7 @@ namespace fq::physics
 		virtual void onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count) override;
 
 		/// <summary>
-		/// 
+		/// OnTrigger¸¦ 
 		/// </summary>
 		void OnTrigger();
 

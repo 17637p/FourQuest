@@ -71,7 +71,6 @@ namespace fq::physics
 	}
 
 #pragma region GetSetRigidBodyData
-
 	void PhysicsRigidBodyManager::GetRigidBodyData(unsigned int id, RigidBodyGetSetData& rigidBodyData)
 	{
 		auto body = mRigidBodyContainer.find(id)->second;
@@ -151,7 +150,6 @@ namespace fq::physics
 
 		return false;
 	}
-
 #pragma endregion
 
 #pragma region CreateDynamicAndStaticBody

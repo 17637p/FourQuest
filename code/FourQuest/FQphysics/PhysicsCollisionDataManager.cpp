@@ -28,12 +28,12 @@ namespace fq::physics
 		return true;
 	}
 
-	void PhysicsCollisionDataManager::Create(unsigned int id, std::shared_ptr<CollisionData> collisionData)
+	void PhysicsCollisionDataManager::Create(const unsigned int& id, std::shared_ptr<CollisionData> collisionData)
 	{
 		mCollisionDataContainer.insert(std::make_pair(id, collisionData));
 	}
 
-	void PhysicsCollisionDataManager::Remove(unsigned int id)
+	void PhysicsCollisionDataManager::Remove(const unsigned int& id)
 	{
 		for (unsigned int& removeID : mRemoveID)
 		{

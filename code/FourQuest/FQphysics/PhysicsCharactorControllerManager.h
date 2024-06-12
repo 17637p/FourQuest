@@ -56,6 +56,11 @@ namespace fq::physics
 		bool RemoveController(const unsigned int& id);
 
 		/// <summary>
+		/// 캐릭터 컨트롤러 삭제 함수
+		/// </summary>
+		bool RemoveAllController();
+
+		/// <summary>
 		/// 충돌 매트릭스가 수정이 된다면 모든 리지드 바디들의 충돌 매트릭스를 업데이트합니다.
 		/// </summary>
 		/// <param name="collisionMatrix"></param>

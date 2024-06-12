@@ -117,6 +117,11 @@ namespace fq::physics
 		virtual bool RemoveController(const unsigned int& id) override;
 
 		/// <summary>
+		/// 캐릭터 컨트롤러 삭제 함수
+		/// </summary>
+		virtual bool RemoveAllController() override;
+
+		/// <summary>
 		/// 특정 캐릭터 컨트롤러의 입력 값 추가 함수
 		/// </summary>
 		/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>

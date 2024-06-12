@@ -143,11 +143,7 @@ namespace fq::physics
 
 	bool FQPhysics::Update(float deltaTime)
 	{
-		for (auto removeActor : mActorsToRemove)
-		{
-			mScene->removeActor(*removeActor);
-		}
-		mActorsToRemove.clear();
+		RemoveActors();
 
 		if (!mRigidBodyManager->Update(mScene))
 			return false;
@@ -157,21 +153,19 @@ namespace fq::physics
 			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
+		if (!mScene->fetchResults(true))
+			return false;
+		mMyEventCallback->OnTrigger();
 
 		return true;
 	}
 
 	bool FQPhysics::FinalUpdate()
 	{
-		if (!mScene->fetchResults(true))
-			return false;
-		mMyEventCallback->OnTrigger();
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())
 			return false;
-
-
 
 		return true;
 	}
@@ -298,6 +292,10 @@ namespace fq::physics
 	bool FQPhysics::RemoveController(const unsigned int& id)
 	{
 		return mCCTManager->RemoveController(id);
+	}
+	bool FQPhysics::RemoveAllController()
+	{
+		return mCCTManager->RemoveAllController();
 	}
 	bool FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
 	{

@@ -99,6 +99,11 @@ namespace fq::physics
 
 		return false;
 	}
+	bool PhysicsCharactorControllerManager::RemoveAllController()
+	{
+		mCCTmap.clear();
+		return true;
+	}
 #pragma endregion
 
 #pragma region GetSetFunction
