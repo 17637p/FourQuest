@@ -149,7 +149,7 @@ namespace fq::physics
 		}
 		mActorsToRemove.clear();
 
-		if (!mRigidBodyManager->Update(mScene, mCollisionMatrix))
+		if (!mRigidBodyManager->Update(mScene))
 			return false;
 		if (!mCCTManager->Update(deltaTime))
 			return false;
@@ -169,6 +169,8 @@ namespace fq::physics
 			return false;
 		if (!mCCTManager->FinalUpdate())
 			return false;
+
+
 
 		return true;
 	}

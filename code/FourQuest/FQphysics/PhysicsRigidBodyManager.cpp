@@ -98,28 +98,32 @@ namespace fq::physics
 
 	bool PhysicsRigidBodyManager::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData, int* collisionMatrix)
 	{
+		using namespace DirectX::SimpleMath;
+
 		auto body = mRigidBodyContainer.find(id)->second;
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 		if (dynamicBody)
 		{
-			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
+			Matrix dxTransform = rigidBodyData.transform;
 			physx::PxTransform pxTransform; 
 			physx::PxVec3 pxLinearVelocity;
 			physx::PxVec3 pxangularVelocity;
-			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 			CopyDxVec3ToPxVec3(rigidBodyData.linearVelocity, pxLinearVelocity);
 			CopyDxVec3ToPxVec3(rigidBodyData.angularVelocity, pxangularVelocity);
 
 			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
-			pxBody->setGlobalPose(pxTransform);
 			pxBody->setLinearVelocity(pxLinearVelocity);
 			pxBody->setAngularVelocity(pxangularVelocity);
 
-			DirectX::SimpleMath::Vector3 position;
-			DirectX::SimpleMath::Vector3 scale;
-			DirectX::SimpleMath::Quaternion rotation;
+			Vector3 position;
+			Vector3 scale;
+			Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
+			dxTransform = Matrix::CreateScale(1.f) * Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
+			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
+
+			pxBody->setGlobalPose(pxTransform);
 			dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 
 			return true;
@@ -129,15 +133,17 @@ namespace fq::physics
 		{
 			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
 			physx::PxTransform pxTransform;
-			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
-
 			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
-			pxBody->setGlobalPose(pxTransform);
 
 			DirectX::SimpleMath::Vector3 position;
 			DirectX::SimpleMath::Vector3 scale;
 			DirectX::SimpleMath::Quaternion rotation;
+
 			dxTransform.Decompose(scale, rotation, position);
+			dxTransform = Matrix::CreateScale(1.f) * Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position);
+			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
+
+			pxBody->setGlobalPose(pxTransform);
 			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 
 			return true;
