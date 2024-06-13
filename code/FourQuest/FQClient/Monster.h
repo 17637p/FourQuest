@@ -7,8 +7,7 @@ namespace fq::client
 	class MonsterFSM;
 	class fq::game_module::GameObject;
 
-	class Monster : public fq::game_module::Component, 
-		public std::enable_shared_from_this<Monster>
+	class Monster : public fq::game_module::Component
 	{
 	public:
 		Monster();

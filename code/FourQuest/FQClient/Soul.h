@@ -17,12 +17,9 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		void OnStart()override;
-		void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 
 		void OnTriggerStay(const fq::game_module::Collision& collision) override;
-		void OnTriggerExit(const fq::game_module::Collision& collision) override;
-		void OnCollisionStay(const fq::game_module::Collision& collision) override;
-
+		
 		void DestorySoul();
 
 	private:

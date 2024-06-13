@@ -34,7 +34,6 @@ void fq::client::Player::OnUpdate(float dt)
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
 	processDash();
-
 }
 
 void fq::client::Player::OnStart()

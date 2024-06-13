@@ -30,8 +30,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 
 void fq::client::Soul::OnTriggerStay(const fq::game_module::Collision& collision)
 {
-	spdlog::debug("OnTriggerStay");
-
 	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
 
 	if (deadArmour == nullptr)
@@ -57,17 +55,3 @@ void fq::client::Soul::DestorySoul()
 	GetScene()->DestroyGameObject(GetGameObject());
 }
 
-void fq::client::Soul::OnCollisionStay(const fq::game_module::Collision& collision)
-{
-	spdlog::debug("OnCollisionStay");
-}
-
-void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collision)
-{
-	spdlog::debug("OnTriggerEnter");
-}
-
-void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)
-{
-	spdlog::debug("OnTriggerExit");
-}
