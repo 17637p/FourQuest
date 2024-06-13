@@ -1,6 +1,7 @@
 #include "Monster.h"
 
 #include "Player.h"
+#include "Attack.h"
 
 fq::client::Monster::Monster()
 	:mTarget(nullptr),
@@ -143,11 +144,12 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 {
 	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
+		fq::game_module::GameObject* playerAttack = collision.other;
+		Attack* pAttack = playerAttack->GetComponent<Attack>();
 		mIsDamaged = true;
-		// Todo: 실제 공격력으로 바꿔야 함
-		mDamaged = 100;
-		mLastAttacker = collision.other;
-		GetScene()->DestroyGameObject(collision.other);
+
+		mDamaged = pAttack->GetAttackPower();
+		mLastAttacker = pAttack->GetAttacker();
 	}
 }
 
