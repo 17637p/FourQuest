@@ -4,7 +4,8 @@
 
 namespace fq::client
 {
-	class Player : public fq::game_module::Component
+	class Player
+		: public fq::game_module::Component
 	{
 	public:
 		Player();
@@ -21,6 +22,8 @@ namespace fq::client
 		void SetHp(float hp) { mHp = hp; }
 		fq::game_module::PrefabResource GetAttackPrefab() const { return mAttack; }
 		void SetAttackPrefab(fq::game_module::PrefabResource val) { mAttack = val; }
+
+		void OnTriggerEnter(const game_module::Collision& collision) override;
 
 	private:
 		void processDash();

@@ -17,19 +17,19 @@ namespace fq::client
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
-
-		void OnStart()override;
-		void OnTriggerStay(const fq::game_module::Collision& collision) override;
-		void OnTriggerEnter(const fq::game_module::Collision& collision) override;
-		
 		void DestorySoul();
 
 	private:
+		void OnStart()override;
+		void OnTriggerEnter(const fq::game_module::Collision& collision) override;
+		void OnTriggerExit(const fq::game_module::Collision& collision) override;
+		void OnUpdate(float dt) override;
+
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		game_module::CharacterController* mController;
-		DeadArmour* mSelectArmour;
+		std::vector<DeadArmour*> mSelectArmours;
 	};
 
 }

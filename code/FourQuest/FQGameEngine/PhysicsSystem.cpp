@@ -680,6 +680,7 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 		if (iter->second.bIsDestroyed
 			&& iter->second.bIsRemoveBody)
 		{
+			mDebug.insert({ iter->first, iter->second.component->GetGameObject()->GetName() });
 			iter = mColliderContainer.erase(iter);
 		}
 		else

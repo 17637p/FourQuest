@@ -27,5 +27,7 @@ namespace fq::client
 
 	private:
 		game_module::PrefabResource mLivingArmour;
+
+		unsigned int mPlayerCount;
 	};
 }

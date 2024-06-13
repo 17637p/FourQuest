@@ -203,6 +203,8 @@ void fq::game_module::Scene::processPedingObject()
 	{
 		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
 		object->OnStart();
+
+		mObjects.push_back(object);
 	}
 
 	mPedingObjects.clear();

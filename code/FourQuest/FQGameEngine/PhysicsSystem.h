@@ -149,6 +149,8 @@ namespace fq::game_engine
 		ColliderContainer mColliderContainer;
 		ColliderID mLastColliderID;
 		CallbackContainer mCallbacks;
+
+		std::map<unsigned int, std::string> mDebug;
 	};
 
 

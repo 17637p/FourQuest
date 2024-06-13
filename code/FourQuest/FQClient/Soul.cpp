@@ -5,6 +5,7 @@
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
+	, mSelectArmours{}
 {}
 
 fq::client::Soul::~Soul()
@@ -29,32 +30,13 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 	return cloneSoul;
 }
 
-void fq::client::Soul::OnTriggerStay(const fq::game_module::Collision& collision)
-{
-	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
-
-	if (deadArmour == nullptr)
-		return;
-	
-	mSelectArmour = deadArmour;
-
-	auto input = GetScene()->GetInputManager();
-
-	// Controller 
-	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
-	{
-		deadArmour->SummonLivingArmour(mController->GetControllerID());
-		DestorySoul();
-	}
-}
-
 void fq::client::Soul::OnStart()
 {
 	mController = GetComponent<game_module::CharacterController>();
 
 
 	// 카메라에 플레이어 등록 
-	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera) 
+	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
 		{
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
@@ -63,7 +45,7 @@ void fq::client::Soul::OnStart()
 void fq::client::Soul::DestorySoul()
 {
 	GetScene()->DestroyGameObject(GetGameObject());
-	
+
 	// 카메라에 플레이어 해제 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
 		{
@@ -74,6 +56,59 @@ void fq::client::Soul::DestorySoul()
 
 void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collision)
 {
+	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
+
+	if (deadArmour == nullptr)
+		return;
+
+	mSelectArmours.push_back(deadArmour);
+}
+
+void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision)
+{
+	auto deadArmour = collision.other->GetComponent<fq::client::DeadArmour>();
+
+	if (deadArmour == nullptr)
+		return;
+
+	mSelectArmours.erase(std::remove(mSelectArmours.begin(), mSelectArmours.end(), deadArmour)
+		, mSelectArmours.end()
+	);
+}
+
+void fq::client::Soul::OnUpdate(float dt)
+{
+	auto input = GetScene()->GetInputManager();
+
+	// 갑옷과 상호작용합니다.
+	if (!mSelectArmours.empty()
+		&& input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
+	{
+		// 가장 가까운 갑옷 쿼리
+		auto soulPos = GetComponent<game_module::Transform>()->GetWorldPosition();
+		float minDistance = 100000.f;
+		DeadArmour* closestArmour = nullptr;
+
+		for (auto& armour : mSelectArmours)
+		{
+			if(armour->GetGameObject()->IsDestroyed())
+				continue;
+
+			auto pos = armour->GetComponent<game_module::Transform>()->GetWorldPosition();
+			float distance = (soulPos - pos).Length();
+
+			if (minDistance > distance)
+			{
+				minDistance = distance;
+				closestArmour = armour;
+			}
+		}
+
+		// 가장 가까운 갑옷으로 영혼화
+		assert(closestArmour);
+		closestArmour->SummonLivingArmour(mController->GetControllerID());
+		DestorySoul();
+	}
 
 }
 

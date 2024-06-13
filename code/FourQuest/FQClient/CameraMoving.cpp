@@ -122,7 +122,7 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	DirectX::SimpleMath::Vector3 center = getCenterPointInView(dt); // 방향 벡터로 사용
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
-	spdlog::trace("{}, {}, {}", center.x, center.y, center.z);
+	//spdlog::trace("{}, {}, {}", center.x, center.y, center.z);
 	// 0,0 밖에 있따면 움직이기 
 	float epsilon = 0.001f;
 	if (abs(center.x) > epsilon || abs(center.y) > epsilon)

@@ -95,3 +95,9 @@ void fq::client::Player::OnDestroy()
 			camera.DeletePlayerTransform(GetComponent<game_module::Transform>());
 		});
 }
+
+void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
+{
+	spdlog::trace("dd");
+}
+
