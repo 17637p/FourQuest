@@ -18,7 +18,7 @@ namespace fq::common
 		unsigned int ParentIndex = INVALID_INDEX;
 		DirectX::SimpleMath::Matrix ToParentMatrix;
 	};
-	
+
 	struct Bone
 	{
 		std::string Name;
@@ -96,12 +96,9 @@ namespace fq::common
 
 	struct Material
 	{
-		struct Desc
-		{
-			DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
-			float Metalness = 0.f;
-			float Roughness = 0.f;
-		} MaterialDesc;
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		float Metalness = 0.f;
+		float Roughness = 0.f;
 
 		std::string Name;
 

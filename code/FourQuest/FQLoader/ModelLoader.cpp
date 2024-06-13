@@ -136,9 +136,9 @@ namespace fq::loader
 		{
 			Material material;
 
-			fileUtil.Read<DirectX::SimpleMath::Color>(&material.MaterialDesc.BaseColor);
-			fileUtil.Read<float>(&material.MaterialDesc.Metalness);
-			fileUtil.Read<float>(&material.MaterialDesc.Roughness);
+			fileUtil.Read<DirectX::SimpleMath::Color>(&material.BaseColor);
+			fileUtil.Read<float>(&material.Metalness);
+			fileUtil.Read<float>(&material.Roughness);
 
 			fileUtil.Read<string>(&material.Name);
 			fileUtil.Read<wstring>(&material.BaseColorFileName);
@@ -267,9 +267,9 @@ namespace fq::loader
 
 		for (const Material& material : materialData)
 		{
-			fileUtil.Write<DirectX::SimpleMath::Color>(material.MaterialDesc.BaseColor);
-			fileUtil.Write<float>(material.MaterialDesc.Metalness);
-			fileUtil.Write<float>(material.MaterialDesc.Roughness);
+			fileUtil.Write<DirectX::SimpleMath::Color>(material.BaseColor);
+			fileUtil.Write<float>(material.Metalness);
+			fileUtil.Write<float>(material.Roughness);
 
 			fileUtil.Write<string>(material.Name);
 			fileUtil.Write<wstring>(material.BaseColorFileName);

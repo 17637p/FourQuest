@@ -267,7 +267,7 @@ namespace fq::graphics
 			float AlphaClipThreshold = 0.1f;
 		} RenderData;
 	};
-
+	
 	struct DecalInfo
 	{
 		std::filesystem::path TextureBasePath = "";

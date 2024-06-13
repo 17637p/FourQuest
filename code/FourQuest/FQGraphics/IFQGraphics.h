@@ -46,7 +46,7 @@ extern "C" {
 			virtual ~IFQGraphics() {};
 
 			/// Framework
-			virtual FQ_GRAPHICS bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType = EPipelineType::Forward) abstract;
+			virtual FQ_GRAPHICS bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType = EPipelineType::Deferred) abstract;
 			virtual FQ_GRAPHICS bool Update(float deltaTime) abstract;
 
 			virtual FQ_GRAPHICS bool BeginRender() abstract;

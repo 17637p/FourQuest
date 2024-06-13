@@ -160,6 +160,7 @@
     <ClInclude Include="Command.h" />
     <ClInclude Include="CommandSystem.h" />
     <ClInclude Include="DebugSystem.h" />
+    <ClInclude Include="DecalSystem.h" />
     <ClInclude Include="EditorEnum.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="DebugSystem.cpp" />
+    <ClCompile Include="DecalSystem.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
     <ClCompile Include="LightSystem.cpp" />
