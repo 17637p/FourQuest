@@ -206,6 +206,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetDecalInfo(const DecalInfo& decalInfo) abstract;
 			virtual FQ_GRAPHICS const DecalInfo& GetDecalInfo() const abstract;
 
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
 		protected:
 			virtual ~IDecalObject() = default;
 		};

@@ -239,6 +239,9 @@
     <ClInclude Include="Particle.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Decal.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -375,6 +378,9 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Decal.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

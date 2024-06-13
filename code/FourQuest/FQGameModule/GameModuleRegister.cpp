@@ -10,6 +10,7 @@
 #include "SkinnedMeshRenderer.h"
 #include "Light.h"
 #include "Particle.h"
+#include "Decal.h"
 
 // Physics
 #include "Terrain.h"
@@ -788,6 +789,44 @@ void fq::game_module::RegisterMetaData()
 			.prop(fq::reflect::prop::Name, "ParticleRenderData")
 			.base<Component>();
 
+		entt::meta<fq::common::Material>()
+			.type("Material"_hs)
+			.prop(fq::reflect::prop::Name, "Material")
+			.prop(fq::reflect::prop::POD)
+			.data<&fq::common::Material::BaseColor>("BaseColor"_hs)
+			.prop(fq::reflect::prop::Name, "BaseColor")
+			.data<&fq::common::Material::Metalness>("Metalness"_hs)
+			.prop(fq::reflect::prop::Name, "Metalness")
+			.data<&fq::common::Material::Roughness>("Roughness"_hs)
+			.prop(fq::reflect::prop::Name, "Roughness");
+			//.data<&fq::common::Material::BaseColorFileName>("BaseColorFileName"_hs)
+			//.prop(fq::reflect::prop::Name, "BaseColorFileName")
+			//.prop(fq::reflect::prop::RelativePath)
+			//.prop(fq::reflect::prop::DragDrop, ".png/.jpg");
+
+		entt::meta<DecalInfo>()
+			.type("DecalInfo"_hs)
+			.prop(fq::reflect::prop::Name, "DecalInfo")
+			.prop(fq::reflect::prop::POD)
+			.data<&DecalInfo::MatrialData>("MaterialData"_hs)
+			.prop(fq::reflect::prop::Name, "MaterialData")
+			.data<&DecalInfo::TexTransform>("TexTransform"_hs)
+			.prop(fq::reflect::prop::Name, "TexTransform")
+			.data<&DecalInfo::NormalThresholdInRadian>("NormalThresholdInRadian"_hs)
+			.prop(fq::reflect::prop::Name, "NormalThresholdInRadian")
+			.data<&DecalInfo::bUseMultiplyAlpha>("bUseMultiplyAlpha"_hs)
+			.prop(fq::reflect::prop::Name, "bUseMultiplyAlpha")
+			.data<&DecalInfo::bUseAlphaClip>("bUseAlphaClip"_hs)
+			.prop(fq::reflect::prop::Name, "bUseAlphaClip")
+			.data<&DecalInfo::AlphaClipThreshold>("AlphaClipThreshold"_hs)
+			.prop(fq::reflect::prop::Name, "AlphaClipThreshold");
+
+		entt::meta<Decal>()
+			.type("Decal"_hs)
+			.prop(fq::reflect::prop::Name, "Decal")
+			.prop(fq::reflect::prop::Label, "Miscellaneous")
+			.data<&Decal::SetDecalInfo, &Decal::GetDecalInfo>("DecalInfo"_hs)
+			.base<Component>();
 	}
 
 

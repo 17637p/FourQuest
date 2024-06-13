@@ -100,12 +100,12 @@ namespace fq::loader
 			material.Name = aiMaterialPtr->GetName().C_Str();
 
 			// to do : 기본으로 설정된 값 데이터 가져오기
-			if (aiMaterialPtr->Get(AI_MATKEY_BASE_COLOR, material.MaterialDesc.BaseColor) != AI_SUCCESS);
+			if (aiMaterialPtr->Get(AI_MATKEY_BASE_COLOR, material.BaseColor) != AI_SUCCESS);
 			{
-				aiMaterialPtr->Get(AI_MATKEY_COLOR_DIFFUSE, material.MaterialDesc.BaseColor);
+				aiMaterialPtr->Get(AI_MATKEY_COLOR_DIFFUSE, material.BaseColor);
 			}
-			aiMaterialPtr->Get(AI_MATKEY_METALLIC_FACTOR, material.MaterialDesc.Metalness);
-			aiMaterialPtr->Get(AI_MATKEY_ROUGHNESS_FACTOR, material.MaterialDesc.Roughness);
+			aiMaterialPtr->Get(AI_MATKEY_METALLIC_FACTOR, material.Metalness);
+			aiMaterialPtr->Get(AI_MATKEY_ROUGHNESS_FACTOR, material.Roughness);
 
 			aiString filePath;
 			if (aiMaterialPtr->GetTexture(aiTextureType_BASE_COLOR, 0, &filePath) == AI_SUCCESS)

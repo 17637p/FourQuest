@@ -71,7 +71,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					if (mbUseGrayScale)
 					{
 						fq::common::Material mat;
-						mat.MaterialDesc.BaseColor = { 1.f,1.f,1.f,1.f };
+						mat.BaseColor = { 1.f,1.f,1.f,1.f };
 						material->SetMaterialData(mat);
 					}
 				}
