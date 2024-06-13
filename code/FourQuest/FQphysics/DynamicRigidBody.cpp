@@ -64,7 +64,7 @@ namespace fq::physics
 
 		return true;
 	}
-
+	
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
 		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))

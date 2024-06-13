@@ -87,6 +87,12 @@ namespace fq::physics
 		{
 			std::shared_ptr<CollisionData> TriggerActorData = mCollisionDataManager->FindCollisionData(trigger.first);
 
+			if (TriggerActorData.get() == nullptr)
+			{
+				mTriggerContainer.erase(mTriggerContainer.find(trigger.first));
+				return;
+			}
+
 			for (auto other : trigger.second)
 			{
 				std::shared_ptr<CollisionData> OtherActordata = mCollisionDataManager->FindCollisionData(other);
