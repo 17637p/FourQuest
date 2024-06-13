@@ -5,9 +5,9 @@
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
-	,mAttack{}
-	,mController(nullptr)
-	,mHp(0.f)
+	, mAttack{}
+	, mController(nullptr)
+	, mHp(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -104,8 +104,17 @@ void fq::client::Player::OnDestroy()
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-}
+	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	{
+		auto monsterAtk = collision.other->GetComponent<client::Attack>();
 
+		float attackPower = monsterAtk->GetAttackPower();
+
+		mHp -= attackPower;
+
+		spdlog::trace("player hp {}", mHp);
+	}
+}
 
 void fq::client::Player::SummonSoul()
 {

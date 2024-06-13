@@ -23,9 +23,9 @@ namespace fq::graphics
 		const std::shared_ptr<Material>& material)
 	{
 		CBMaterial CBMaterialData;
-		CBMaterialData.BaseColor = material->GetMaterialData().MaterialDesc.BaseColor;
-		CBMaterialData.Metalness = material->GetMaterialData().MaterialDesc.Metalness;
-		CBMaterialData.Roughness = material->GetMaterialData().MaterialDesc.Roughness;
+		CBMaterialData.BaseColor = material->GetMaterialData().BaseColor;
+		CBMaterialData.Metalness = material->GetMaterialData().Metalness;
+		CBMaterialData.Roughness = material->GetMaterialData().Roughness;
 
 		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && material->GetTextureUseFlag().bUseBaseColor;
 		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && material->GetTextureUseFlag().bUseMetalness;

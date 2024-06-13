@@ -23,6 +23,9 @@ namespace fq::graphics
 		virtual void SetDecalInfo(const DecalInfo& decalInfo) override;
 		virtual const DecalInfo& GetDecalInfo() const override { return mDecalInfo; }
 
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mDecalInfo.Transform = transform; }
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mDecalInfo.Transform; }
+
 		std::shared_ptr<Material> GetMaterial() const { return mMaterial; }
 
 	private:

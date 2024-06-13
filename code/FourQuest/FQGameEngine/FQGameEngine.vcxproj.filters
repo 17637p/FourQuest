@@ -185,6 +185,9 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="DecalSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -300,6 +303,9 @@
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalSystem.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
