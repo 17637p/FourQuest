@@ -11,6 +11,13 @@ namespace fq::game_module
 		using CapsuleInfo = fq::physics::CapsuleColliderInfo;
 
 	public:
+		enum class EDirection
+		{
+			XAxis,
+			YAxis,
+		};
+
+	public:
 		CapsuleCollider();
 		~CapsuleCollider();
 
@@ -94,7 +101,7 @@ namespace fq::game_module
 		/// 콜라이더 타입을 반환합니다
 		/// </summary>
 		fq::physics::EColliderType GetType() const { return mType; }
-		
+
 		/// <summary>
 		/// 콜라이더 타입을 설정합니다
 		/// </summary>
@@ -115,6 +122,16 @@ namespace fq::game_module
 		/// </summary>
 		void SetOffset(DirectX::SimpleMath::Vector3 offset)override { mOffset = offset; }
 
+		/// <summary>
+		/// 캡슐콜라이더 방향을 반환합니다.
+		/// </summary>
+		fq::game_module::CapsuleCollider::EDirection GetDirection() const { return mDirection; }
+
+		/// <summary>
+		/// 캡슐콜라이더 방향을 설정합니다.
+		/// </summary>
+		void SetDirection(fq::game_module::CapsuleCollider::EDirection dir) { mDirection = dir; }
+
 	private:
 		void OnCollisionEnter(const Collision& collision) override;
 		void OnCollisionExit(const Collision& collision) override;
@@ -123,10 +140,15 @@ namespace fq::game_module
 
 		entt::meta_handle GetHandle() override;
 
+	public:
+		static const DirectX::SimpleMath::Quaternion XtoYRoation;
+		static const DirectX::SimpleMath::Quaternion YtoXRoation;
+
 	private:
 		physics::EColliderType mType;
 		DirectX::SimpleMath::Vector3 mOffset;
 		CapsuleInfo mCapsuleInfomation;
+		EDirection mDirection;
 		unsigned int mCollisionCount;
 	};
 

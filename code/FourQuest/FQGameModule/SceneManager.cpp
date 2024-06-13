@@ -93,6 +93,8 @@ void fq::game_module::SceneManager::FixedUpdate(float dt)
 
 void fq::game_module::SceneManager::StartScene()
 {
+	mCurrentScene->mIsStartScene = true;
+
 	for (auto& object : mCurrentScene->GetObjectView())
 	{
 		object.OnStart();
@@ -104,6 +106,9 @@ void fq::game_module::SceneManager::StartScene()
 
 void fq::game_module::SceneManager::PostUpdate()
 {
+	// 게임오브젝트 추가 처리 
+	mCurrentScene->processPedingObject();
+
 	// 씬변경 처리 
 	if (!mNextSceneName.empty())
 	{
@@ -151,6 +156,7 @@ void fq::game_module::SceneManager::UnloadScene()
 	mPrefabManager->UnloadPrefabResource();
 	mCurrentScene->DestroyAll();
 	mCurrentScene->CleanUp();
+	mCurrentScene->mIsStartScene = false;
 }
 
 void fq::game_module::SceneManager::RequestChangeScene(fq::event::RequestChangeScene event)

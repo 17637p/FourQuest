@@ -463,6 +463,11 @@ void fq::game_module::InputManager::updateKeyGamePad()
 	{
 		mPadKeyInfomations[0][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::Y);
 	}
+	// B
+	if (!IsKeyState(EKey::U, EKeyState::None))
+	{
+		mPadKeyInfomations[0][static_cast<size_t>(EPadKey::B)].state = GetKeyState(EKey::U);
+	}
 
 	// Player 1
 	if (!IsKeyState(EKey::Up, EKeyState::None))
@@ -483,19 +488,24 @@ void fq::game_module::InputManager::updateKeyGamePad()
 	}
 
 	// X 
-	if (!IsKeyState(EKey::B, EKeyState::None))
+	if (!IsKeyState(EKey::Del, EKeyState::None))
 	{
-		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::X)].state = GetKeyState(EKey::B);
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::X)].state = GetKeyState(EKey::Del);
 	}
 	// Y
-	if (!IsKeyState(EKey::N, EKeyState::None))
+	if (!IsKeyState(EKey::Home, EKeyState::None))
 	{
-		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::Y)].state = GetKeyState(EKey::N);
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::Y)].state = GetKeyState(EKey::Home);
 	}
 	// A
-	if (!IsKeyState(EKey::M, EKeyState::None))
+	if (!IsKeyState(EKey::End, EKeyState::None))
 	{
-		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::M);
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::End);
+	}
+	// B
+	if (!IsKeyState(EKey::PgDn, EKeyState::None))
+	{
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::PgDn);
 	}
 
 }

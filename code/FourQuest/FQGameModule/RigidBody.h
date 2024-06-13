@@ -7,6 +7,14 @@ namespace fq::game_module
 	{
 		using Vector3 = DirectX::SimpleMath::Vector3;
 	public:
+		enum class EBodyType
+		{
+			Static,
+			Dynamic,
+			Kinematic,
+		};
+
+	public:
 		RigidBody();
 		~RigidBody();
 

@@ -1,6 +1,7 @@
 #include "Monster.h"
 
 #include "Player.h"
+#include "Attack.h"
 
 fq::client::Monster::Monster()
 	:mTarget(nullptr),
@@ -42,7 +43,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::Monster::Clone(std::shar
 	return cloneMonster;
 }
 
-float fq::client::Monster::CalculateDistance(fq::game_module::GameObject gameObject)
+float fq::client::Monster::CalculateDistance(fq::game_module::GameObject& gameObject)
 {
 	DirectX::SimpleMath::Vector3 playerPosition =
 		gameObject.GetComponent<fq::game_module::Transform>()->GetWorldPosition();
@@ -84,7 +85,7 @@ void fq::client::Monster::SetTarget(fq::game_module::GameObject* target)
 	mTarget = target;
 }
 
-bool fq::client::Monster::GetIsDamagaed() const
+bool fq::client::Monster::GetIsDamaged() const
 {
 	return mIsDamaged;
 }
@@ -143,11 +144,17 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 {
 	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
+		fq::game_module::GameObject* playerAttack = collision.other;
+		Attack* pAttack = playerAttack->GetComponent<Attack>();
 		mIsDamaged = true;
-		// Todo: 실제 공격력으로 바꿔야 함
-		mDamaged = 100;
-		mLastAttacker = collision.other;
-		GetScene()->DestroyGameObject(collision.other);
+
+		mDamaged = pAttack->GetAttackPower();
+		mLastAttacker = pAttack->GetAttacker();
 	}
+}
+
+void fq::client::Monster::SetIsDamaged(bool isDamaged)
+{
+	mIsDamaged = isDamaged;
 }
 

@@ -43,8 +43,32 @@ void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
 	livingArmour->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
 
 	GetScene()->AddGameObject(livingArmour);
-	
+
 	// DeadArmour »èÁ¦ 
 	GetScene()->DestroyGameObject(GetGameObject());
+}
+
+void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collision)
+{
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		{
+			child->GetComponent<game_module::SkinnedMeshRenderer>()
+				->SetOutlineColor({ 0.8f, 0.6f, 0.2f, 1.0f });
+		}
+	}
+}
+
+void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collision)
+{
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		{
+			child->GetComponent<game_module::SkinnedMeshRenderer>()
+				->SetOutlineColor({ 0.f, 0.f, 0.f, 1.0f });
+		}
+	}
 }
 

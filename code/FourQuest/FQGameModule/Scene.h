@@ -134,16 +134,29 @@ namespace fq::game_module
 		void ViewComponents(typename std::common_type_t<std::function<void(GameObject&, Types& ...)>> viewFunction,
 			bool bIsIncludeToBeDestroyed = false);
 
+		/// <summary>
+		/// 씬이 시작되었는지 반환합니다
+		/// </summary>
+		bool IsStartScene() const { return mIsStartScene; }
+
 	private:
 		void destroyChild(GameObject* object);
+
+		/// <summary>
+		/// 추가한 오브젝트에 대한 처리를합니다
+		/// </summary>
+		void processPedingObject();
 
 	private:
 		std::string mSceneName;
 		std::vector<std::shared_ptr<GameObject>> mObjects;
+		std::vector <std::shared_ptr<GameObject>> mPedingObjects;
 
 		InputManager* mInputManager;
 		EventManager* mEventManager;
 		PrefabManager* mPrefabManager;
+
+		bool mIsStartScene;
 
 		friend class SceneManager;
 	};

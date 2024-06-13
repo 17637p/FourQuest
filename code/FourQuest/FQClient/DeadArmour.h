@@ -15,6 +15,10 @@ namespace fq::client
 
 		fq::game_module::PrefabResource GetLivingArmour() const { return mLivingArmour; }
 		void SetLivingArmour(fq::game_module::PrefabResource val) { mLivingArmour = val; }
+
+		void OnTriggerEnter(const game_module::Collision& collision) override;
+		void OnTriggerExit(const game_module::Collision& collision) override;
+
 	public:
 		void SummonLivingArmour(ControllerID id);
 
@@ -24,6 +28,4 @@ namespace fq::client
 	private:
 		game_module::PrefabResource mLivingArmour;
 	};
-
-
 }

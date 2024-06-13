@@ -125,7 +125,7 @@ void fq::game_engine::DebugSystem::RenderBoxCollier(fq::game_module::Transform& 
 	worldM._43 = 0.f;
 	auto offset = collider.GetOffset();
 	obb.OBB.Center = transform.GetWorldPosition() + Vector3::Transform(offset, worldM);
-	
+
 	auto scale = transform.GetWorldScale();
 	obb.OBB.Extents = collider.GetExtent();
 	obb.OBB.Extents.x *= scale.x;
@@ -164,7 +164,7 @@ void fq::game_engine::DebugSystem::RenderSphereCollier(fq::game_module::Transfor
 	auto offset = collider.GetOffset();
 
 	info.Sphere.Center = transform.GetWorldPosition() + Vector3::Transform(offset, worldM);
-	
+
 	auto scale = transform.GetWorldScale();
 	float max = std::max(scale.x, std::max(scale.y, scale.z));
 	info.Sphere.Radius = collider.GetRadius() * max;
@@ -186,51 +186,111 @@ void fq::game_engine::DebugSystem::renderSphereCollider()
 
 void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transform& transform, fq::game_module::CapsuleCollider& collider)
 {
-	using DirectX::SimpleMath::Color;
+	using  namespace DirectX::SimpleMath;
 
 	Color color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
 
-	auto right = transform.GetWorldMatrix().Right();
-	right.Normalize();
+
 	auto calpsuleInfo = collider.GetCapsuleInfomation();
+	auto offset = collider.GetOffset();
+	auto eDirection = collider.GetDirection();
 
-	// UpSphere
-	fq::graphics::debug::SphereInfo info;
-	info.Color = color;
-	info.Sphere.Center = transform.GetWorldPosition() + right * calpsuleInfo.halfHeight;
-	info.Sphere.Radius = calpsuleInfo.raidus;
-	mGameProcess->mGraphics->DrawSphere(info);
+	if (eDirection == game_module::CapsuleCollider::EDirection::XAxis)
+	{
+		auto right = transform.GetWorldMatrix().Right();
+		right.Normalize();
+		auto worldM = transform.GetWorldMatrix();
+		worldM._41 = 0.f;
+		worldM._42 = 0.f;
+		worldM._43 = 0.f;
+		auto offset = Vector3::Transform(collider.GetOffset(), worldM);
 
-	// DownSphere
-	info.Sphere.Center = transform.GetWorldPosition() - right * calpsuleInfo.halfHeight;
-	mGameProcess->mGraphics->DrawSphere(info);
+		// UpSphere
+		fq::graphics::debug::SphereInfo info;
+		info.Color = color;
+		info.Sphere.Center = transform.GetWorldPosition() + right * calpsuleInfo.halfHeight + offset;
+		info.Sphere.Radius = calpsuleInfo.raidus;
+		mGameProcess->mGraphics->DrawSphere(info);
 
-	// BodyRay 
-	fq::graphics::debug::RayInfo ray;
+		// DownSphere
+		info.Sphere.Center = transform.GetWorldPosition() - right * calpsuleInfo.halfHeight + offset;
+		mGameProcess->mGraphics->DrawSphere(info);
 
-	ray.Direction = right * calpsuleInfo.halfHeight * 2.f;
-	ray.Color = color;
-	ray.Normalize = false;
-	auto orgin = info.Sphere.Center;
-	auto foward = transform.GetWorldMatrix().Forward();
-	foward.Normalize();
-	foward *= calpsuleInfo.raidus;
+		// BodyRay 
+		fq::graphics::debug::RayInfo ray;
 
-	auto up = transform.GetWorldMatrix().Up();
-	up.Normalize();
-	up *= calpsuleInfo.raidus;
+		ray.Direction = right * calpsuleInfo.halfHeight * 2.f;
+		ray.Color = color;
+		ray.Normalize = false;
+		auto orgin = info.Sphere.Center;
+		auto foward = transform.GetWorldMatrix().Forward();
+		foward.Normalize();
+		foward *= calpsuleInfo.raidus;
 
-	ray.Origin = orgin + foward;
-	mGameProcess->mGraphics->DrawRay(ray);
+		auto up = transform.GetWorldMatrix().Up();
+		up.Normalize();
+		up *= calpsuleInfo.raidus;
 
-	ray.Origin = orgin - foward;
-	mGameProcess->mGraphics->DrawRay(ray);
+		ray.Origin = orgin + foward;
+		mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin + up;
-	mGameProcess->mGraphics->DrawRay(ray);
+		ray.Origin = orgin - foward;
+		mGameProcess->mGraphics->DrawRay(ray);
 
-	ray.Origin = orgin - up;
-	mGameProcess->mGraphics->DrawRay(ray);
+		ray.Origin = orgin + up;
+		mGameProcess->mGraphics->DrawRay(ray);
+
+		ray.Origin = orgin - up;
+		mGameProcess->mGraphics->DrawRay(ray);
+	}
+	else if (eDirection == game_module::CapsuleCollider::EDirection::YAxis)
+	{
+		auto right = transform.GetWorldMatrix().Up();
+		right.Normalize();
+		auto worldM = transform.GetWorldMatrix();
+		worldM._41 = 0.f;
+		worldM._42 = 0.f;
+		worldM._43 = 0.f;
+		auto offset = Vector3::Transform(collider.GetOffset(), worldM);
+
+		// UpSphere
+		fq::graphics::debug::SphereInfo info;
+		info.Color = color;
+		info.Sphere.Center = transform.GetWorldPosition() + right * calpsuleInfo.halfHeight + offset;
+		info.Sphere.Radius = calpsuleInfo.raidus;
+		mGameProcess->mGraphics->DrawSphere(info);
+
+		// DownSphere
+		info.Sphere.Center = transform.GetWorldPosition() - right * calpsuleInfo.halfHeight + offset;
+		mGameProcess->mGraphics->DrawSphere(info);
+
+		// BodyRay 
+		fq::graphics::debug::RayInfo ray;
+
+		ray.Direction = right * calpsuleInfo.halfHeight * 2.f;
+		ray.Color = color;
+		ray.Normalize = false;
+		auto orgin = info.Sphere.Center;
+		auto foward = transform.GetWorldMatrix().Forward();
+		foward.Normalize();
+		foward *= calpsuleInfo.raidus;
+
+		auto up = transform.GetWorldMatrix().Right();
+		up.Normalize();
+		up *= calpsuleInfo.raidus;
+
+		ray.Origin = orgin + foward;
+		mGameProcess->mGraphics->DrawRay(ray);
+
+		ray.Origin = orgin - foward;
+		mGameProcess->mGraphics->DrawRay(ray);
+
+		ray.Origin = orgin + up;
+		mGameProcess->mGraphics->DrawRay(ray);
+
+		ray.Origin = orgin - up;
+		mGameProcess->mGraphics->DrawRay(ray);
+	}
 }
 
 void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Transform& transform

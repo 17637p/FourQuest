@@ -13,7 +13,7 @@ namespace fq::game_module
 		Wall = 5,
 		PlayerAttack = 6,
 		MonsterAttack = 7,
-		Tag8 = 8,
+		Armour = 8,
 		Tag9 = 9,
 		Tag10 = 10,
 		Tag11 = 11,

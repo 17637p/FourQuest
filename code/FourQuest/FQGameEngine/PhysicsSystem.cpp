@@ -18,12 +18,12 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mGravity{ 0.f,-10.f,0.f }
 	, mPhysicsEngine(nullptr)
 	, mLastColliderID(physics::unregisterID)
-	, mBoxID(0)
-	, mSphereID()
-	, mCapsuleID(0)
-	, mMeshID(0)
-	, mCharactorControllerID(0)
-	, mRigidID(0)
+	, mBoxTypeID(0)
+	, mSphereTypeID()
+	, mCapsuleTypeID(0)
+	, mMeshTypeID(0)
+	, mCharactorControllerTypeID(0)
+	, mRigidTypeID(0)
 	, mAddInputMoveHandler{}
 {}
 
@@ -62,21 +62,29 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 	mOnCleanUpSceneHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnCleanUp>(this, &PhysicsSystem::CleanUp);
 
-	mBoxID = entt::resolve<fq::game_module::BoxCollider>().id();
-	mSphereID = entt::resolve<fq::game_module::SphereCollider>().id();
-	mCapsuleID = entt::resolve<fq::game_module::CapsuleCollider>().id();
-	mMeshID = entt::resolve<fq::game_module::MeshCollider>().id();
-	mCharactorControllerID = entt::resolve<fq::game_module::CharacterController>().id();
-	mRigidID = entt::resolve<game_module::RigidBody>().id();
+	mBoxTypeID = entt::resolve<fq::game_module::BoxCollider>().id();
+	mSphereTypeID = entt::resolve<fq::game_module::SphereCollider>().id();
+	mCapsuleTypeID = entt::resolve<fq::game_module::CapsuleCollider>().id();
+	mMeshTypeID = entt::resolve<fq::game_module::MeshCollider>().id();
+	mCharactorControllerTypeID = entt::resolve<fq::game_module::CharacterController>().id();
+	mRigidTypeID = entt::resolve<game_module::RigidBody>().id();
 }
 
 
 void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
+
+	for (auto& [id, info] : mColliderContainer)
+	{
+		info.bIsDestroyed = true;
+	}
+
+	PostUpdate();
 	mPhysicsEngine->RemoveAllRigidBody();
-	mPhysicsEngine->Update(0.1f);
+	mPhysicsEngine->Update(1.f);
 	mPhysicsEngine->FinalUpdate();
+	mCallbacks.clear();
 }
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
@@ -91,7 +99,6 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
-	mGameProcess->mPhysics->FinalUpdate();
 
 	mbIsGameLoaded = true;
 }
@@ -114,9 +121,9 @@ void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObj
 
 void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent& event)
 {
-	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID
-		|| event.id == mRigidID)
+	if (event.id == mBoxTypeID || event.id == mSphereTypeID
+		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
+		|| event.id == mRigidTypeID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -124,9 +131,9 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 
 void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComponent& event)
 {
-	if (event.id == mBoxID || event.id == mSphereID
-		|| event.id == mCapsuleID || event.id == mMeshID
-		|| event.id == mRigidID)
+	if (event.id == mBoxTypeID || event.id == mSphereTypeID
+		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
+		|| event.id == mRigidTypeID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -159,8 +166,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto boxInfo = boxCollider->GetBoxInfomation();
 		auto offset = boxCollider->GetOffset();
 
-		ColliderID id = ++mLastColliderID;
-		boxInfo.colliderInfo.id = id;
+		ColliderID colliderID = ++mLastColliderID;
+		boxInfo.colliderInfo.id = colliderID;
 		boxInfo.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 		boxInfo.colliderInfo.collisionTransform = transform->GetTransform();
 		calculateOffset(boxInfo.colliderInfo.collisionTransform, offset);
@@ -171,13 +178,22 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(boxInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, boxCollider->shared_from_this(), boxCollider} });
+			mColliderContainer.insert({ colliderID, 
+				{mBoxTypeID
+				, boxCollider->shared_from_this()
+				,  boxCollider->GetGameObject()->shared_from_this()
+				, boxCollider,false} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mBoxID, boxCollider->shared_from_this(), boxCollider} });
+			mColliderContainer.insert({ colliderID, 
+				{mBoxTypeID
+				, boxCollider->shared_from_this()
+				, boxCollider->GetGameObject()->shared_from_this()
+				, boxCollider
+				,false} });
 		}
 	}
 
@@ -200,13 +216,22 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(sphereInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mSphereID, sphereCollider->shared_from_this(),sphereCollider} });
+			mColliderContainer.insert({ id,
+				{mSphereTypeID
+				, sphereCollider->shared_from_this()
+				, sphereCollider->GetGameObject()->shared_from_this()
+				,sphereCollider, false} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mSphereID, sphereCollider->shared_from_this(),sphereCollider} });
+			mColliderContainer.insert({ id, 
+				{mSphereTypeID
+				, sphereCollider->shared_from_this()
+				, sphereCollider->GetGameObject()->shared_from_this()
+				,sphereCollider
+				, false} });
 		}
 	}
 
@@ -229,13 +254,22 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider->shared_from_this(),capsuleCollider} });
+			mColliderContainer.insert({ id, 
+				{mCapsuleTypeID
+				, capsuleCollider->shared_from_this()
+				, object->shared_from_this()
+				,capsuleCollider
+				,false} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, capsuleCollider->shared_from_this(),capsuleCollider} });
+			mColliderContainer.insert({ id, 
+				{mCapsuleTypeID
+				, capsuleCollider->shared_from_this()
+				,object->shared_from_this()
+				,capsuleCollider,false} });
 		}
 	}
 
@@ -256,7 +290,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
 
-		mColliderContainer.insert({ id, {mCharactorControllerID, controller->shared_from_this(),controller} });
+		mColliderContainer.insert({ id, 
+			{mCharactorControllerTypeID
+			, controller->shared_from_this()
+			,object->shared_from_this()
+			,controller,false} });
 		controller->SetControllerInfo(controllerInfo);
 	}
 
@@ -317,13 +355,21 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(convexMeshInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, meshCollider->shared_from_this(),meshCollider} });
+			mColliderContainer.insert({ id, 
+				{mCapsuleTypeID
+				, meshCollider->shared_from_this()
+				,object->shared_from_this()
+				,meshCollider,false} });
 		}
 		else
 		{
 			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, {mCapsuleID, meshCollider->shared_from_this(),meshCollider} });
+			mColliderContainer.insert({ id, 
+				{mCapsuleTypeID
+				, meshCollider->shared_from_this()
+				,object->shared_from_this()
+				,meshCollider,false} });
 		}
 	}
 }
@@ -387,39 +433,21 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
 {
-	auto lfs = mColliderContainer.find(data.myId);
-	auto rhs = mColliderContainer.find(data.otherId);
+	mCallbacks.push_back({ data,type });
+}
 
-	assert(data.myId != data.otherId);
-	assert(lfs != mColliderContainer.end());
-	assert(rhs != mColliderContainer.end());
 
-	auto lhsObject = lfs->second.component->GetGameObject();
-	auto rhsObject = rhs->second.component->GetGameObject();
+void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
+{
+	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
 
-	fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints };
-
-	switch (type)
+	for (int i = 0; i < 16; ++i)
 	{
-		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-			lhsObject->OnTriggerEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_OVERLAP:
-			lhsObject->OnTriggerStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_OVERLAP:
-			lhsObject->OnTriggerExit(collision);
-			break;
-		case fq::physics::ECollisionEventType::ENTER_COLLISION:
-			lhsObject->OnCollisionEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_COLLISION:
-			lhsObject->OnCollisionStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_COLLISION:
-			lhsObject->OnCollisionExit(collision);
-			break;
+		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
 	}
+	mPhysicsEngineInfomation.gravity = mGravity;
+
+	mGameProcess->mPhysics->SetPhysicsInfo(mPhysicsEngineInfomation);
 }
 
 void fq::game_engine::PhysicsSystem::SinkToGameScene()
@@ -435,7 +463,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (colliderInfo.id == mCharactorControllerID)
+		if (colliderInfo.enttID == mCharactorControllerTypeID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
@@ -445,6 +473,48 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			controller->SetFalling(movement.isFall);
 			rigid->SetLinearVelocity(movement.velocity);
 			transform->SetLocalPosition(localPos);
+		}
+		else if (colliderInfo.enttID == mCapsuleTypeID)
+		{
+			auto data = mPhysicsEngine->GetRigidBodyData(id);
+			rigid->SetLinearVelocity(data.linearVelocity);
+			rigid->SetAngularVelocity(data.angularVelocity);
+
+			auto matrix = data.transform;
+
+			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
+			auto direct = capsule->GetDirection();
+
+			// 캡슐콜라이더 Y방향으로 수정 
+			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
+			{
+				Vector3 pos, scale;
+				Quaternion rotation;
+				matrix.Decompose(scale, rotation, pos);
+				rotation = game_module::CapsuleCollider::YtoXRoation * rotation;
+
+				matrix = Matrix::CreateScale(scale)
+					* Matrix::CreateFromQuaternion(rotation)
+					* Matrix::CreateTranslation(pos);
+			}
+
+			if (offset != Vector3::Zero)
+			{
+				Vector3 pos, scale;
+				Quaternion rotation;
+				matrix.Decompose(scale, rotation, pos);
+				matrix._41 = 0.f;
+				matrix._42 = 0.f;
+				matrix._43 = 0.f;
+				offset = Vector3::Transform(offset, matrix);
+				pos -= offset;
+
+				matrix._41 = pos.x;
+				matrix._42 = pos.y;
+				matrix._43 = pos.z;
+			}
+
+			transform->SetWorldMatrix(matrix);
 		}
 		else
 		{
@@ -475,33 +545,21 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 	}
 }
 
-void fq::game_engine::PhysicsSystem::setPhysicsEngineinfo()
-{
-	fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
-
-	for (int i = 0; i < 16; ++i)
-	{
-		mPhysicsEngineInfomation.collisionMatrix[i] = static_cast<int>(mCollisionMatrix.data[i].to_ulong());
-	}
-	mPhysicsEngineInfomation.gravity = mGravity;
-
-	mGameProcess->mPhysics->SetPhysicsInfo(mPhysicsEngineInfomation);
-}
 
 void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
-{ 
+{
 	using namespace DirectX::SimpleMath;
 
 	for (auto& [id, colliderInfo] : mColliderContainer)
 	{
-		if (colliderInfo.bIsDestroyed) 
+		if (colliderInfo.bIsDestroyed)
 			continue;
 
 		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
 		auto offset = colliderInfo.collider->GetOffset();
 
-		if (colliderInfo.id == mCharactorControllerID)
+		if (colliderInfo.enttID == mCharactorControllerTypeID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 
@@ -517,6 +575,45 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
+		}
+		else if (colliderInfo.enttID == mCapsuleTypeID)
+		{
+			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
+			auto direct = capsule->GetDirection();
+			fq::physics::RigidBodyGetSetData data;
+			data.transform = transform->GetWorldMatrix();
+			data.angularVelocity = rigid->GetAngularVelocity();
+			data.linearVelocity = rigid->GetLinearVelocity();
+
+			// 캡슐콜라이더 Y방향으로 수정 
+			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
+			{
+				Quaternion rotation = game_module::CapsuleCollider::XtoYRoation
+					* transform->GetWorldRotation();
+				Vector3 pos = transform->GetWorldPosition();
+				Vector3 scale = transform->GetWorldScale();
+
+				data.transform = Matrix::CreateScale(scale)
+					* Matrix::CreateFromQuaternion(rotation)
+					* Matrix::CreateTranslation(pos);
+			}
+
+			if (offset != Vector3::Zero)
+			{
+				auto worldMat = transform->GetWorldMatrix();
+				worldMat._41 = 0.f;
+				worldMat._42 = 0.f;
+				worldMat._43 = 0.f;
+
+				auto pos = transform->GetWorldPosition();
+				offset = Vector3::Transform(offset, worldMat);
+
+				data.transform._41 = pos.x + offset.x;
+				data.transform._42 = pos.y + offset.y;
+				data.transform._43 = pos.z + offset.z;
+			}
+
+			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 		else
 		{
@@ -543,7 +640,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 	}
 }
- 
+
 fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(ColliderID id) const
 {
 	auto iter = mColliderContainer.find(id);
@@ -580,7 +677,8 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 {
 	for (auto iter = mColliderContainer.begin(); iter != mColliderContainer.end(); )
 	{
-		if (iter->second.bIsDestroyed)
+		if (iter->second.bIsDestroyed
+			&& iter->second.bIsRemoveBody)
 		{
 			iter = mColliderContainer.erase(iter);
 		}
@@ -591,15 +689,59 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 
 void fq::game_engine::PhysicsSystem::PostUpdate()
 {
-	for (auto& [id, info] : mColliderContainer)
+	for (auto& [colliderID, info] : mColliderContainer)
 	{
 		if (info.bIsDestroyed)
 		{
-			if (id == mCharactorControllerID)
-				mPhysicsEngine->RemoveController(id);
+			if (info.enttID == mCharactorControllerTypeID)
+				mPhysicsEngine->RemoveController(colliderID);
 			else
-				mPhysicsEngine->RemoveRigidBody(id);
+				mPhysicsEngine->RemoveRigidBody(colliderID);
+
+			info.bIsRemoveBody = true;
 		}
 	}
+}
+
+void fq::game_engine::PhysicsSystem::ProcessCallBack()
+{
+	for (auto& [data, type] : mCallbacks)
+	{
+		auto lfs = mColliderContainer.find(data.myId);
+		auto rhs = mColliderContainer.find(data.otherId);
+
+		assert(data.myId != data.otherId);
+		assert(lfs != mColliderContainer.end());
+		assert(rhs != mColliderContainer.end());
+
+		auto lhsObject = lfs->second.component->GetGameObject();
+		auto rhsObject = rhs->second.component->GetGameObject();
+
+		fq::game_module::Collision collision{ lhsObject,rhsObject, data.ContectPoints };
+
+		switch (type)
+		{
+			case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+				lhsObject->OnTriggerEnter(collision);
+				break;
+			case fq::physics::ECollisionEventType::ON_OVERLAP:
+				lhsObject->OnTriggerStay(collision);
+				break;
+			case fq::physics::ECollisionEventType::END_OVERLAP:
+				lhsObject->OnTriggerExit(collision);
+				break;
+			case fq::physics::ECollisionEventType::ENTER_COLLISION:
+				lhsObject->OnCollisionEnter(collision);
+				break;
+			case fq::physics::ECollisionEventType::ON_COLLISION:
+				lhsObject->OnCollisionStay(collision);
+				break;
+			case fq::physics::ECollisionEventType::END_COLLISION:
+				lhsObject->OnCollisionExit(collision);
+				break;
+		}
+	}
+
+	mCallbacks.clear();
 }
 

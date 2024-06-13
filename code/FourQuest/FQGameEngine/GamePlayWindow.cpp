@@ -75,7 +75,6 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 		{
 			this->mSelectObject = event.object;
 		});
-
 }
 
 void fq::game_engine::GamePlayWindow::Finalize()

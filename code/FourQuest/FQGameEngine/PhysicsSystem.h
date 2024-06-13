@@ -21,14 +21,22 @@ namespace fq::game_engine
 
 		struct ColliderInfo
 		{
-			entt::id_type id;
+			entt::id_type enttID;
 			std::shared_ptr<game_module::Component> component;
+			std::shared_ptr<game_module::GameObject> gameObject;
 			game_module::ICollider* collider;
 			bool bIsDestroyed = false;
+			bool bIsRemoveBody = false;
+		};
+
+		struct CollisionCallBackInfo
+		{
+			fq::physics::CollisionData data;
+			fq::physics::ECollisionEventType type;
 		};
 
 		using ColliderContainer = std::unordered_map<ColliderID, ColliderInfo>;
-
+		using CallbackContainer = std::vector<CollisionCallBackInfo>;
 		using EventHandler = fq::game_module::EventHandler;
 	public:
 		PhysicsSystem();
@@ -40,6 +48,14 @@ namespace fq::game_engine
 		/// <param name="game"></param>
 		void Initialize(GameProcess* game);
 
+		/// <summary>
+		/// 콜리전 콜백을 처리합니다.
+		/// </summary>
+		void ProcessCallBack();
+
+		/// <summary>
+		/// 콜라이더 삭제관련 처리를 합니다 
+		/// </summary>
 		void PostUpdate();
 
 		/// <summary>
@@ -87,7 +103,6 @@ namespace fq::game_engine
 		fq::physics::CollisionMatrix GetCollisionMatrix() const { return mCollisionMatrix; }
 		void SetCollisionMatrix(fq::physics::CollisionMatrix matrix);
 
-
 		/// <summary>
 		/// 콜라이더를 반환합니다 
 		/// </summary>
@@ -123,16 +138,17 @@ namespace fq::game_engine
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddInputMoveHandler;
 
-		entt::id_type mBoxID;
-		entt::id_type mSphereID;
-		entt::id_type mCapsuleID;
-		entt::id_type mMeshID;
-		entt::id_type mCharactorControllerID;
-		entt::id_type mRigidID;
+		entt::id_type mBoxTypeID;
+		entt::id_type mSphereTypeID;
+		entt::id_type mCapsuleTypeID;
+		entt::id_type mMeshTypeID;
+		entt::id_type mCharactorControllerTypeID;
+		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;
 		ColliderContainer mColliderContainer;
 		ColliderID mLastColliderID;
+		CallbackContainer mCallbacks;
 	};
 
 

@@ -13,7 +13,7 @@
 fq::game_engine::LogWindow::LogWindow()
 	:mEditorLogger{}
 	, mLogList{}
-	, mMaxLogListSize(50)
+	, mMaxLogListSize(100)
 	, mbIsShowTime(false)
 	, mbIsOpen(true)
 	, mLevel(spdlog::level::level_enum::trace)

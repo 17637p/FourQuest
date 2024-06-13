@@ -1,8 +1,15 @@
 #include "CapsuleCollider.h"
 
+const DirectX::SimpleMath::Quaternion fq::game_module::CapsuleCollider::YtoXRoation
+= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Forward, -DirectX::XM_PIDIV2);
+
+const DirectX::SimpleMath::Quaternion fq::game_module::CapsuleCollider::XtoYRoation
+= DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Forward, DirectX::XM_PIDIV2);
+
 fq::game_module::CapsuleCollider::CapsuleCollider()
 	:mCapsuleInfomation{}
-	,mCollisionCount(0)
+	, mCollisionCount(0)
+	, mDirection(EDirection::YAxis)
 {
 	mCapsuleInfomation.halfHeight = 1.f;
 	mCapsuleInfomation.raidus = 1.f;
@@ -10,7 +17,6 @@ fq::game_module::CapsuleCollider::CapsuleCollider()
 
 fq::game_module::CapsuleCollider::~CapsuleCollider()
 {
-
 }
 
 std::shared_ptr<fq::game_module::Component> fq::game_module::CapsuleCollider::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -44,12 +50,12 @@ float fq::game_module::CapsuleCollider::GetRadius() const
 
 void fq::game_module::CapsuleCollider::SetRadius(float radius)
 {
-	mCapsuleInfomation.raidus = max(0.0001f,radius);
+	mCapsuleInfomation.raidus = max(0.0001f, radius);
 }
 
 void fq::game_module::CapsuleCollider::SetHalfHegiht(float halfHegiht)
 {
-	mCapsuleInfomation.halfHeight= halfHegiht;
+	mCapsuleInfomation.halfHeight = halfHegiht;
 }
 
 void fq::game_module::CapsuleCollider::SetDensity(float density)
@@ -113,3 +119,4 @@ void fq::game_module::CapsuleCollider::OnTriggerExit(const Collision& collision)
 	assert(mCollisionCount != 0);
 	--mCollisionCount;
 }
+
