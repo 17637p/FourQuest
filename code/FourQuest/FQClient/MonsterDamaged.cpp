@@ -2,6 +2,7 @@
 #include "Monster.h"
 
 fq::client::MonsterDamaged::MonsterDamaged()
+	:mDamagedDelay(100)
 {
 
 }
@@ -19,7 +20,11 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterDamaged::Cl
 void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
 	Monster* monster = animator.GetComponent<Monster>();
-	monster->SetHP(monster->GetHP() - monster->GetDamaged());
+	if (mDamagedDelay > monster->GetDamagedDelay())
+	{
+		mDamagedDelay = 0;
+		monster->SetHP(monster->GetHP() - monster->GetDamaged());
+	}
 
 	if (monster->GetHP() <= 0)
 	{
@@ -33,16 +38,17 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 		animator.SetParameterTrigger("OnIdle");
 		monster->SetTarget(monster->GetLastAttacker());
 	}
-
-	if (monster->GetIsDamaged())
-	{
-		animator.SetParameterTrigger("OnDamaged");
-	}
 }
 
 void fq::client::MonsterDamaged::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
-
+	Monster* monster = animator.GetComponent<Monster>();
+	mDamagedDelay += dt;
+	if (monster->GetIsDamaged() && mDamagedDelay > monster->GetDamagedDelay() && monster->GetLastAttackTime() < 0.1f)
+	{
+		animator.SetParameterTrigger("OnDamaged");
+		return;
+	}
 }
 
 void fq::client::MonsterDamaged::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)

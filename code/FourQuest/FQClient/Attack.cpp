@@ -20,7 +20,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::Attack::Clone(std::share
 fq::client::Attack::Attack()
 	:mAttackPower(-1)
 	,mElapsedTime(0.f)
-	,mAttackTime(1.f)
+	,mAttackTime(0.1f)
 {
 
 }

@@ -33,11 +33,12 @@ void fq::client::MonsterAttack::OnStateUpdate(fq::game_module::Animator& animato
 	if (monster->GetIsDamaged())
 	{
 		animator.SetParameterTrigger("OnDamaged");
+		mIsTransition = true;
 		return;
 	}
 
 	// Todo: deltaTimeÀ¸·Î ¹Ù²Ü°Í
-	mWaitTime += 0.0166666f;
+	mWaitTime += dt;
 	if (mWaitTime > monster->GetAttackWaitTime())
 	{
 		animator.SetParameterTrigger("OnIdle");

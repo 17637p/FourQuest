@@ -13,6 +13,7 @@ namespace fq::client
 		Monster();
 		~Monster();
 
+		virtual void OnUpdate(float dt) override;
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 
 		// State 용
@@ -23,6 +24,7 @@ namespace fq::client
 		bool GetIsDamaged() const;
 		void SetIsDamaged(bool isDamaged);
 		float GetDamaged() const;
+		float GetLastAttackTime() const { return mLastAttackTime; }
 		fq::game_module::GameObject* GetLastAttacker() const;
 
 		// 수정 가능한 변수
@@ -44,6 +46,9 @@ namespace fq::client
 		float GetTargetAttackRange() const;
 		void SetTargetAttackRange(float targetAttackRange);
 
+		float GetDamagedDelay() const { return mDamagedDelay; }
+		void SetDamagedDelay(float val) { mDamagedDelay = val; }
+
 		fq::game_module::PrefabResource GetAttack() const { return mAttack; }
 		void SetAttack(fq::game_module::PrefabResource val) { mAttack = val; }
 
@@ -60,6 +65,7 @@ namespace fq::client
 		bool mIsDamaged;
 		float mDamaged; // 실제 받은 데미지 값 
 		fq::game_module::GameObject* mLastAttacker; // 마지막으로 공격한 플레이어
+		float mLastAttackTime;
 
 		// Stat
 		float mHP;
@@ -69,6 +75,7 @@ namespace fq::client
 		float mTargetAttackRange;
 		float mChaseDistance;
 		float mAttackWaitTime;
+		float mDamagedDelay;
 
 		fq::game_module::PrefabResource mAttack;
 	};

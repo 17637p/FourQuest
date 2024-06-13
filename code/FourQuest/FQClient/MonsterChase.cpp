@@ -32,7 +32,7 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 	}
 
 	// Todo: dt로 바꾸기 
-	float moveDist = 0.166666f * monster->GetMoveSpeed();
+	float moveDist = dt * monster->GetMoveSpeed();
 	rotateTowards(animator);
 	MoveToTarget(animator, moveDist);
 	mMoveDistance += moveDist;

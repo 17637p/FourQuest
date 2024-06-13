@@ -14,7 +14,8 @@ fq::client::Monster::Monster()
 	mTargetAttackRange(1),
 	mChaseDistance(5),
 	mAttackWaitTime(1),
-	mAttack()
+	mAttack(),
+	mDamagedDelay(0.3f)
 {
 	
 }
@@ -147,6 +148,7 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 		fq::game_module::GameObject* playerAttack = collision.other;
 		Attack* pAttack = playerAttack->GetComponent<Attack>();
 		mIsDamaged = true;
+		mLastAttackTime = 0;
 
 		mDamaged = pAttack->GetAttackPower();
 		mLastAttacker = pAttack->GetAttacker();
@@ -156,5 +158,10 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 void fq::client::Monster::SetIsDamaged(bool isDamaged)
 {
 	mIsDamaged = isDamaged;
+}
+
+void fq::client::Monster::OnUpdate(float dt)
+{
+	mLastAttackTime += dt;
 }
 

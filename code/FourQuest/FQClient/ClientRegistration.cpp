@@ -98,6 +98,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackWaitTime")
 		.data<&Monster::SetTargetAttackRange, &Monster::GetTargetAttackRange>("TargetAttackRange"_hs)
 		.prop(fq::reflect::prop::Name, "TargetAttackRange")
+		.data<&Monster::SetDamagedDelay, &Monster::GetDamagedDelay>("DamagedDelay"_hs)
+		.prop(fq::reflect::prop::Name, "DamagedDelay")
 		.data<&Monster::SetAttack, &Monster::GetAttack>("Attack"_hs)
 		.prop(fq::reflect::prop::Name, "Attack")
 		.base<fq::game_module::Component>();

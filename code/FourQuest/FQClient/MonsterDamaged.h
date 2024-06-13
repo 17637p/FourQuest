@@ -17,5 +17,6 @@ namespace fq::client
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
+		float mDamagedDelay;
 	};
 }
