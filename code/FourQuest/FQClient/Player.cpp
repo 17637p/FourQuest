@@ -7,6 +7,7 @@ fq::client::Player::Player()
 	:mAttackPower(1.f)
 	,mAttack{}
 	,mController(nullptr)
+	,mHp(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -35,7 +36,7 @@ void fq::client::Player::OnUpdate(float dt)
 {
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
-	processDash();
+	processInput();
 }
 
 void fq::client::Player::OnStart()
@@ -52,13 +53,18 @@ void fq::client::Player::OnStart()
 		});
 }
 
-void fq::client::Player::processDash()
+void fq::client::Player::processInput()
 {
 	auto input = GetScene()->GetInputManager();
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
 	{
 		mAnimator->SetParameterTrigger("OnDash");
+	}
+
+	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
+	{
+		SummonSoul();
 	}
 }
 
@@ -98,6 +104,24 @@ void fq::client::Player::OnDestroy()
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-	spdlog::trace("dd");
+}
+
+
+void fq::client::Player::SummonSoul()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoul);
+	auto& soul = *(instance.begin());
+
+	// 컨트롤러 연결
+	soul->GetComponent<game_module::CharacterController>()
+		->SetControllerID(mController->GetControllerID());
+
+	// 위치 설정
+	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
+	localMat._42 += 1.f;
+	soul->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
+
+	GetScene()->AddGameObject(soul);
+	GetScene()->DestroyGameObject(GetGameObject());
 }
 

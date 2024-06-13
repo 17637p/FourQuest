@@ -1,9 +1,10 @@
 #include "DeadArmour.h"
 
-fq::client::DeadArmour::DeadArmour()
-{
+#include "Soul.h"
 
-}
+fq::client::DeadArmour::DeadArmour()
+	:mPlayerCount(0)
+{}
 
 fq::client::DeadArmour::~DeadArmour()
 {
@@ -50,6 +51,11 @@ void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
 
 void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collision)
 {
+	if (collision.object->HasComponent<Soul>())
+	{
+		++mPlayerCount;
+	}
+
 	for (auto& child : GetGameObject()->GetChildren())
 	{
 		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
@@ -62,12 +68,20 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 
 void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collision)
 {
-	for (auto& child : GetGameObject()->GetChildren())
+	if (collision.object->HasComponent<Soul>())
 	{
-		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		--mPlayerCount;
+	}
+
+	if (mPlayerCount == 0)
+	{
+		for (auto& child : GetGameObject()->GetChildren())
 		{
-			child->GetComponent<game_module::SkinnedMeshRenderer>()
-				->SetOutlineColor({ 0.f, 0.f, 0.f, 1.0f });
+			if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+			{
+				child->GetComponent<game_module::SkinnedMeshRenderer>()
+					->SetOutlineColor({ 0.f, 0.f, 0.f, 1.0f });
+			}
 		}
 	}
 }

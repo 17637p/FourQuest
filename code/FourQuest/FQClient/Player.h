@@ -17,21 +17,22 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		void Attack();
-		
+		void SummonSoul();
+
 		float GetHp() const { return mHp; }
 		void SetHp(float hp) { mHp = hp; }
+
 		fq::game_module::PrefabResource GetAttackPrefab() const { return mAttack; }
 		void SetAttackPrefab(fq::game_module::PrefabResource val) { mAttack = val; }
-
-		void OnTriggerEnter(const game_module::Collision& collision) override;
-
+		fq::game_module::PrefabResource GetSoulPrefab() const { return mSoul; }
+		void SetSoulPrefab(fq::game_module::PrefabResource val) { mSoul = val; }
 	private:
-		void processDash();
+		void processInput();
 
 		void OnStart() override;
 		void OnDestroy() override;
-		
 		void OnUpdate(float dt) override;
+		void OnTriggerEnter(const game_module::Collision& collision) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 	private:
@@ -42,6 +43,7 @@ namespace fq::client
 		float mAttackPower;
 
 		game_module::PrefabResource mAttack;
+		game_module::PrefabResource mSoul;
 	};
 
 

@@ -20,12 +20,12 @@ namespace fq::client
 		void DestorySoul();
 
 	private:
+		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart()override;
 		void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		void OnTriggerExit(const fq::game_module::Collision& collision) override;
 		void OnUpdate(float dt) override;
 
-		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		game_module::CharacterController* mController;

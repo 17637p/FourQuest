@@ -15,7 +15,7 @@ namespace fq::client
 		void OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
 
 		float GetDashPower() const { return mDashPower; }
-		void SetDashPower(float power) { mDashPower = power; }
+		void SetDashPower(float power	) { mDashPower = power; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

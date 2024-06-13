@@ -505,7 +505,7 @@ void fq::game_module::InputManager::updateKeyGamePad()
 	// B
 	if (!IsKeyState(EKey::PgDn, EKeyState::None))
 	{
-		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::A)].state = GetKeyState(EKey::PgDn);
+		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::B)].state = GetKeyState(EKey::PgDn);
 	}
 
 }

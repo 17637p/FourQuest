@@ -37,6 +37,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::SetAttackPrefab, &Player::GetAttackPrefab>("AttakPrefab"_hs)
 		.prop(reflect::prop::Name, "AttakPrefab")
+		.data<&Player::SetSoulPrefab, &Player::GetSoulPrefab>("SoulPrefab"_hs)
+		.prop(reflect::prop::Name, "SoulPrefab")
 		.base<game_module::Component>();
 	
 	entt::meta<DeadArmour>()
