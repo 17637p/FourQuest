@@ -835,6 +835,7 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 	int transitionIndex = 0;
 	auto& transitions = controller->GetTransitionMap();
 	auto range = transitions.equal_range(state.GetAnimationKey());
+	auto eraseTransition = transitions.end();
 
 	for (auto& iter = range.first; iter != range.second; ++iter)
 	{
@@ -847,75 +848,94 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 
 		std::string transitionName = "[" + std::to_string(transitionIndex) + "]" + exitState + " -> " + enterState;
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
-		if (ImGui::BeginChild(transitionName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
+
+		if (ImGui::CollapsingHeader(transitionName.c_str()))
 		{
-			ImGui::Text(transitionName.c_str());
-
-			bool hasExitTime = transition.HasExitTime();
-
-			if (ImGui::Checkbox("HasExitTime", &hasExitTime))
+			if (ImGui::BeginPopupContextItem())
 			{
-				if (hasExitTime)
-					transition.SetExitTime(0.f);
-				else
-					transition.SetExitTime(game_module::AnimationTransition::NoExitTime);
-
-				hasExitTime = transition.HasExitTime();
-			}
-
-			if (hasExitTime)
-			{
-				float exitTime = transition.GetExitTime();
-				if (ImGui::InputFloat("ExitTime", &exitTime))
+				if (ImGui::MenuItem("Remove Transition"))
 				{
-					transition.SetExitTime(exitTime);
+					eraseTransition = iter;
 				}
+				ImGui::EndPopup();
 			}
 
-			float transitionDuration = transition.GetTransitionDuration();
-			if (ImGui::InputFloat("TransitionDuration", &transitionDuration))
+			if (ImGui::BeginChild(transitionName.c_str(), ImVec2(0, 0), ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
 			{
-				transition.SetTransitionDuration(transitionDuration);
-			}
+				bool hasExitTime = transition.HasExitTime();
 
-			int source = static_cast<int>(transition.GetInterruptionSource());
-
-			constexpr const char* interruptionSourece[] = { "None", "CurrentState", "NextState"
-			, "CurrentState Then NextState", "NextState Then CurrentState" };
-
-			if (ImGui::BeginCombo("InterruptionSource", interruptionSourece[source]))
-			{
-				for (int i = 0; i < 5; ++i)
+				if (ImGui::Checkbox("HasExitTime", &hasExitTime))
 				{
-					if (ImGui::Selectable(interruptionSourece[i]))
+					if (hasExitTime)
+						transition.SetExitTime(0.f);
+					else
+						transition.SetExitTime(game_module::AnimationTransition::NoExitTime);
+
+					hasExitTime = transition.HasExitTime();
+				}
+
+				if (hasExitTime)
+				{
+					float exitTime = transition.GetExitTime();
+					if (ImGui::InputFloat("ExitTime", &exitTime))
 					{
-						transition.SetInterruptionSource(static_cast<game_module::AnimationTransition::InterruptionSource>(i));
+						transition.SetExitTime(exitTime);
 					}
 				}
-				ImGui::EndCombo();
+
+				float transitionDuration = transition.GetTransitionDuration();
+				if (ImGui::InputFloat("TransitionDuration", &transitionDuration))
+				{
+					transition.SetTransitionDuration(transitionDuration);
+				}
+
+				int source = static_cast<int>(transition.GetInterruptionSource());
+
+				constexpr const char* interruptionSourece[] = { "None", "CurrentState", "NextState"
+				, "CurrentState Then NextState", "NextState Then CurrentState" };
+
+				if (ImGui::BeginCombo("InterruptionSource", interruptionSourece[source]))
+				{
+					for (int i = 0; i < 5; ++i)
+					{
+						if (ImGui::Selectable(interruptionSourece[i]))
+						{
+							transition.SetInterruptionSource(static_cast<game_module::AnimationTransition::InterruptionSource>(i));
+						}
+					}
+					ImGui::EndCombo();
+				}
+
+				ImGui::Separator();
+				ImGui::Text("Conditions");
+
+				// Condtion GUI
+				for (auto& condition : conditions)
+				{
+					beginTransitionCondition(condition, ++conditionIndex);
+				}
+
+				// Add Delete Button
+				std::string addButtonNaem = "+##PushBackCondition" + transitionName;
+				std::string deleteButtonName = "-##PopBackCondition" + transitionName;
+
+				if (ImGui::Button(addButtonNaem.c_str()))
+					transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
+				ImGui::SameLine();
+				if (ImGui::Button(deleteButtonName.c_str()))
+					transition.PopBackCondition();
 			}
+			ImGui::EndChild();
 
-			ImGui::Separator();
-			ImGui::Text("Conditions");
 
-			// Condtion GUI
-			for (auto& condition : conditions)
-			{
-				beginTransitionCondition(condition, ++conditionIndex);
-			}
-
-			// Add Delete Button
-			std::string addButtonNaem = "+##PushBackCondition" + transitionName;
-			std::string deleteButtonName = "-##PopBackCondition" + transitionName;
-
-			if (ImGui::Button(addButtonNaem.c_str()))
-				transition.PushBackCondition(game_module::TransitionCondition::CheckType::Equals, "", 0);
-			ImGui::SameLine();
-			if (ImGui::Button(deleteButtonName.c_str()))
-				transition.PopBackCondition();
 		}
-		ImGui::EndChild();
 		ImGui::PopStyleColor(1);
+	}
+
+	// 트랜지션 삭제처리 
+	if (eraseTransition != transitions.end())
+	{
+		transitions.erase(eraseTransition);
 	}
 
 	beginStateBehaviour(state);
@@ -1354,12 +1374,64 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					}
 					beginIsItemHovered_Comment(data);
 				}
+				else if (data.type().prop(fq::reflect::prop::POD))
+				{
+					entt::meta_any val = data.get(pod);
+					bool isChangedData = beginPOD(val);
+
+					if (isChangedData)
+					{
+						changedData = isChangedData;
+						data.set(pod, val);
+					}
+				}
+				else if (data.type() == entt::resolve<std::wstring>())
+				{
+					std::wstring val = data.get(pod).cast<std::wstring>();
+
+					std::string sVal = std::filesystem::path(val).string();
+
+					ImGui::InputText(memberName.c_str(), &sVal);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						val = std::filesystem::path(sVal).wstring();
+						data.set(pod, val);
+						changedData = true;
+					}
+
+					// DragDrop 받기
+					if (data.prop(fq::reflect::prop::DragDrop) && ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+						if (pathPayLoad)
+						{
+							std::filesystem::path* dropPath
+								= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+							auto extensions = fq::reflect::GetDragDropExtension(data);
+
+							for (auto& extension : extensions)
+							{
+								if (dropPath->extension() == extension)
+								{
+									val = dropPath->wstring();
+									data.set(pod, val);
+									changedData = true;
+								}
+							}
+						}
+					}
+					beginIsItemHovered_Comment(data);
+				}
+
 			}
-
+			ImGui::EndChild();
 		}
-		ImGui::EndChild();
-	}
 
+
+	}
 	ImGui::PopStyleColor(1);
 
 	return changedData;

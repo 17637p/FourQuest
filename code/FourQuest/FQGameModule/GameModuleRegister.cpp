@@ -798,11 +798,11 @@ void fq::game_module::RegisterMetaData()
 			.data<&fq::common::Material::Metalness>("Metalness"_hs)
 			.prop(fq::reflect::prop::Name, "Metalness")
 			.data<&fq::common::Material::Roughness>("Roughness"_hs)
-			.prop(fq::reflect::prop::Name, "Roughness");
-			//.data<&fq::common::Material::BaseColorFileName>("BaseColorFileName"_hs)
-			//.prop(fq::reflect::prop::Name, "BaseColorFileName")
-			//.prop(fq::reflect::prop::RelativePath)
-			//.prop(fq::reflect::prop::DragDrop, ".png/.jpg");
+			.prop(fq::reflect::prop::Name, "Roughness")
+			.data<&fq::common::Material::BaseColorFileName>("BaseColorFileName"_hs)
+			.prop(fq::reflect::prop::Name, "BaseColorFileName")
+			.prop(fq::reflect::prop::RelativePath)
+			.prop(fq::reflect::prop::DragDrop, ".png/.jpg");
 
 		entt::meta<DecalInfo>()
 			.type("DecalInfo"_hs)
