@@ -104,22 +104,28 @@ void fq::game_engine::AnimationSystem::processCallBack()
 {
 	while (!mStateQueue.empty())
 	{
-		const auto& event = mStateQueue.front();
+		auto event = mStateQueue.front();
+		mStateQueue.pop();
 
 		auto animator = event.animator;
+
+		if (animator->GetGameObject()->IsDestroyed())
+		{
+			continue;
+		}
+
 		const auto& meshs = animator->GetSkinnedMeshs();
 		for (auto& mesh : meshs)
 		{
+
 			if (event.bIsBlend)
 			{
 				mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
 			}
 			else
 			{
-				mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
+			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
 			}
 		}
-
-		mStateQueue.pop();
 	}
 }

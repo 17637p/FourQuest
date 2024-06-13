@@ -24,6 +24,7 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 	if (monster->GetHP() <= 0)
 	{
 		animator.SetParameterTrigger("OnDie");
+		return;
 	}
 	else
 	{
@@ -31,6 +32,11 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 
 		animator.SetParameterTrigger("OnIdle");
 		monster->SetTarget(monster->GetLastAttacker());
+	}
+
+	if (monster->GetIsDamaged())
+	{
+		animator.SetParameterTrigger("OnDamaged");
 	}
 }
 

@@ -3,6 +3,8 @@
 #include "Attack.h"
 
 fq::client::MonsterAttack::MonsterAttack()
+	:mWaitTime(0),
+	mIsTransition(false)
 {
 
 }
@@ -21,18 +23,33 @@ void fq::client::MonsterAttack::OnStateEnter(fq::game_module::Animator& animator
 {
 	rotateTowards(animator);
 	makeAttackRangeCollider();
-	mIsStartAttack = false;
 	mIsTransition = false;
 }
 
 void fq::client::MonsterAttack::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
 	Monster* monster = animator.GetComponent<Monster>();
-	auto monsterTransform = monster->GetComponent<fq::game_module::Transform>();
 
-	/// 공격 실행
-	if (mIsStartAttack && !mIsTransition)
+	if (monster->GetIsDamaged())
 	{
+		animator.SetParameterTrigger("OnDamaged");
+		return;
+	}
+
+	// Todo: deltaTime으로 바꿀것
+	mWaitTime += 0.0166666f;
+	if (mWaitTime > monster->GetAttackWaitTime())
+	{
+		animator.SetParameterTrigger("OnIdle");
+
+		if (mIsTransition)
+		{
+			return;
+		}
+
+		Monster* monster = animator.GetComponent<Monster>();
+		auto monsterTransform = monster->GetComponent<fq::game_module::Transform>();
+
 		// 처리하고
 		auto instance = monster->GetScene()->GetPrefabManager()->InstantiatePrefabResoure(monster->GetAttack());
 		auto& object = *(instance.begin());
@@ -45,7 +62,7 @@ void fq::client::MonsterAttack::OnStateUpdate(fq::game_module::Animator& animato
 		attack->SetAttacker(monster->GetGameObject());
 		collider->SetExtent({ 0.4f, 0.2f, 0.2f });
 		object->SetTag(fq::game_module::ETag::MonsterAttack);
-		
+
 		/// 위치 설정 
 		// 몬스터 회전 값 가져와서 회전 
 		DirectX::SimpleMath::Quaternion monsterRoatation = monsterTransform->GetWorldRotation();
@@ -58,7 +75,7 @@ void fq::client::MonsterAttack::OnStateUpdate(fq::game_module::Animator& animato
 		DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(monsterRoatation);
 		createVector = DirectX::SimpleMath::Vector3::Transform(createVector, rotationMatrix);
 
-		object->GetComponent<fq::game_module::Transform>()->SetLocalPosition({ 
+		object->GetComponent<fq::game_module::Transform>()->SetLocalPosition({
 			monsterTransform->GetWorldPosition().x + createVector.x,
 			monsterTransform->GetWorldPosition().y + createVector.y,
 			monsterTransform->GetWorldPosition().z + createVector.z });
@@ -68,23 +85,12 @@ void fq::client::MonsterAttack::OnStateUpdate(fq::game_module::Animator& animato
 
 		// 공격 이후 설정 
 		monster->SetTarget(nullptr);
-		animator.SetParameterTrigger("OnIdle");
-
 		mIsTransition = true;
-		return;
-	}
-
-	// Todo: deltaTime으로 바꿀것
-	mWaitTime += 0.0166666f;
-	if (mWaitTime > monster->GetAttackWaitTime())
-	{
-		mIsStartAttack = true;
 	}
 }
 
 void fq::client::MonsterAttack::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }
 
 void fq::client::MonsterAttack::rotateTowards(fq::game_module::Animator& animator)
