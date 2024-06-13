@@ -84,7 +84,7 @@ void fq::client::Monster::SetTarget(fq::game_module::GameObject* target)
 	mTarget = target;
 }
 
-bool fq::client::Monster::GetIsDamagaed() const
+bool fq::client::Monster::GetIsDamaged() const
 {
 	return mIsDamaged;
 }
@@ -149,5 +149,10 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 		mLastAttacker = collision.other;
 		GetScene()->DestroyGameObject(collision.other);
 	}
+}
+
+void fq::client::Monster::SetIsDamaged(bool isDamaged)
+{
+	mIsDamaged = isDamaged;
 }
 

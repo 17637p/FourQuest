@@ -25,7 +25,7 @@ void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator,
 	else
 	{
 		// Todo: 데미지 받았을 때 변수 설정 
-		if (monster->GetIsDamagaed())
+		if (monster->GetIsDamaged())
 		{
 			animator.SetParameterTrigger("OnDamaged");
 		}
