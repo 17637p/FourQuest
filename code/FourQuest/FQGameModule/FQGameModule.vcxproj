@@ -161,6 +161,8 @@
     <ClInclude Include="ICollider.h" />
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="IStateBehaviour.h" />
+    <ClInclude Include="NavigationAgent.h" />
+    <ClInclude Include="NavigationAgentImpl.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
@@ -214,6 +216,8 @@
     <ClCompile Include="ICollider.cpp" />
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />
+    <ClCompile Include="NavigationAgent.cpp" />
+    <ClCompile Include="NavigationAgentImpl.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PrefabResource.cpp" />

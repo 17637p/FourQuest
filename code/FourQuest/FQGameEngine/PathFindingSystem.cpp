@@ -317,6 +317,14 @@ std::vector<DirectX::SimpleMath::Vector3> fq::game_engine::NavigationMeshBuilder
 	return navMeshVertices;
 }
 
+void fq::game_engine::NavigationMeshBuilder::Update(float dt)
+{
+	if (impl->crowd == nullptr)
+		return;
+
+	impl->crowd->update(dt, nullptr);
+}
+
 fq::game_engine::NavigationMeshBuilder::NavigationMeshData::NavigationMeshData(NavigationMeshBuilder* navFieldComponent)
 	:navFieldComponent(navFieldComponent)
 {
@@ -359,4 +367,9 @@ fq::game_engine::PathFindingSystem::~PathFindingSystem()
 fq::game_engine::NavigationMeshBuilder::BuildSettings& fq::game_engine::PathFindingSystem::GetBuildingSettrings()
 {
 	return mBuildSettings;
+}
+
+void fq::game_engine::PathFindingSystem::Update(float dt)
+{
+	mBuilder->Update(dt);
 }

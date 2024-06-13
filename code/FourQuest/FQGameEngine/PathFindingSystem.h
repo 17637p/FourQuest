@@ -40,6 +40,8 @@ namespace fq::game_engine
 		NavigationMeshBuilder(GameProcess* tempProcess);
 		virtual ~NavigationMeshBuilder();
 
+		void Update(float dt);
+
 		void BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings);
 		// Debug Draw ¿ë
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
@@ -86,7 +88,16 @@ namespace fq::game_engine
 
 		NavigationMeshBuilder::BuildSettings& GetBuildingSettrings();
 		void BuildNavigationMesh(fq::game_module::Scene* scene);
+
+		void Update(float dt);
+
+		// Debug
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
+
+	private:
+		// Save
+		//bool duDumpPolyMeshToObj(struct rcPolyMesh& pmesh, duFileIO* io);
+		//bool duDumpPolyMeshDetailToObj(struct rcPolyMeshDetail& dmesh, duFileIO* io);
 
 	private:
 		NavigationMeshBuilder::BuildSettings mBuildSettings;

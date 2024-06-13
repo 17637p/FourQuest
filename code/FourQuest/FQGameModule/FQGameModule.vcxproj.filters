@@ -248,6 +248,12 @@
     <ClInclude Include="AddNavigationMeshObject.h">
       <Filter>include\10.PathFinding</Filter>
     </ClInclude>
+    <ClInclude Include="NavigationAgent.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationAgentImpl.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -386,6 +392,12 @@
       <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="AddNavigationMeshObject.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationAgent.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationAgentImpl.cpp">
       <Filter>src\10.PathFinding</Filter>
     </ClCompile>
   </ItemGroup>
