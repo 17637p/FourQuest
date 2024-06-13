@@ -46,32 +46,30 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 	chaseCenter(dt);
 }
 
-DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPoint(float dt)
+DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(float dt)
 {
-	// 플레이어 트랜스폼 가져오기
-	std::vector<fq::game_module::Transform*> playersTransform;
-
-	auto componentView = GetScene()->GetComponentView<Player>();
-	for (auto& player : componentView)
+	// 등록된 플레이어가 없으면 
+	if (mPlayerTransforms.size() == 0)
 	{
-		playersTransform.push_back(player.GetComponent<fq::game_module::Transform>());
+		spdlog::error("There are no players registered on the camera");
+		return { 0, 0, mCurZoom };
 	}
 
 	// width height 어떻게 가져옴 
 	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();// * mMainCamera->GetProjection(2068.f/898.f);
 
-	// 센터 점 계산 
+	// 플레이어 트랜스폼 돌면서 센터 점 계산 
 	DirectX::SimpleMath::Vector3 playersCenterPoint = { 0, 0, 0 };
 	mIsZoomIn = true;
 	mIsZoomOut = false;
-	for (const auto& playerTransform : playersTransform)
+	for (const auto& playerTransform : mPlayerTransforms)
 	{
 		DirectX::SimpleMath::Vector3 playerWorldPosition = playerTransform->GetWorldPosition();
 		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, viewMatrix);
 		playersCenterPoint += playerWorldPosition;
 
 		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
-		spdlog::trace("{}, {}, {}", playerWorldPosition.x, playerWorldPosition.y, playerWorldPosition.z);
+		//spdlog::trace("{}, {}, {}", playerWorldPosition.x, playerWorldPosition.y, playerWorldPosition.z);
 
 		if (playerWorldPosition.x > mZoomOutPadX.y || playerWorldPosition.x < mZoomOutPadX.x)
 		{
@@ -100,8 +98,8 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPoint(float dt)
 		zoomOut(dt);
 	}
 
-	playersCenterPoint /= playersTransform.size();
-	spdlog::trace("{}, {}, {}", playersCenterPoint.x, playersCenterPoint.y, playersCenterPoint.z);
+	playersCenterPoint /= mPlayerTransforms.size();
+	//spdlog::trace("{}, {}, {}", playersCenterPoint.x, playersCenterPoint.y, playersCenterPoint.z);
 
 	return playersCenterPoint;
 }
@@ -113,9 +111,12 @@ void fq::client::CameraMoving::OnStart()
 
 void fq::client::CameraMoving::chaseCenter(float dt)
 {
-	DirectX::SimpleMath::Vector3 center = getCenterPoint(dt); // 방향 벡터로 사용
+	fq::game_module::Transform* myTransform = this->GetGameObject()->GetComponent<fq::game_module::Transform>();
+
+	DirectX::SimpleMath::Vector3 center = getCenterPointInView(dt); // 방향 벡터로 사용
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
+	spdlog::trace("{}, {}, {}", center.x, center.y, center.z);
 	// 0,0 밖에 있따면 움직이기 
 	float epsilon = 0.001f;
 	if (abs(center.x) > epsilon || abs(center.y) > epsilon)
@@ -157,7 +158,7 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 
 	// z 방향 이동 값
 	DirectX::SimpleMath::Vector3 forwardMove{};
-	if (abs(centerCopy.z) - mCurZoom < mMoveSpeed * dt)
+	if (abs(centerCopy.z) - mCurZoom < center.z * mMoveSpeed * dt)
 	{
 		forwardMove = -cameraForward * (centerCopy.z - mCurZoom);
 	}
@@ -188,4 +189,14 @@ void fq::client::CameraMoving::zoomOut(float dt)
 	{
 		mCurZoom += mZoomSpeed * dt;
 	}
+}
+
+void fq::client::CameraMoving::AddPlayerTransform(fq::game_module::Transform* player)
+{
+	mPlayerTransforms.push_back(player);
+}
+
+void fq::client::CameraMoving::DeletePlayerTransform(fq::game_module::Transform* player)
+{
+	mPlayerTransforms.erase(std::remove(mPlayerTransforms.begin(), mPlayerTransforms.end(), player));
 }

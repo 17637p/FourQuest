@@ -41,16 +41,21 @@ namespace fq::client
 		DirectX::SimpleMath::Vector2 GetZoomInPadY() const { return mZoomInPadY; }
 		void SetZoomInPadY(const DirectX::SimpleMath::Vector2& val) { mZoomInPadY = val; }
 
+		void AddPlayerTransform(fq::game_module::Transform* player);
+		void DeletePlayerTransform(fq::game_module::Transform* player);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
-		DirectX::SimpleMath::Vector3 getCenterPoint(float dt);
+		DirectX::SimpleMath::Vector3 getCenterPointInView(float dt);
 		void chaseCenter(float dt);
 		void zoomIn(float dt);
 		void zoomOut(float dt);
 
 	private:
 		fq::game_module::Camera* mMainCamera;
+
+		std::vector<fq::game_module::Transform*> mPlayerTransforms;
 
 		float mCurZoom;
 		bool mIsZoomIn;
