@@ -57,6 +57,9 @@ namespace fq::client
 
 		std::vector<fq::game_module::Transform*> mPlayerTransforms;
 
+		bool mIsFixed;
+		//
+
 		float mCurZoom;
 		bool mIsZoomIn;
 		bool mIsZoomOut;

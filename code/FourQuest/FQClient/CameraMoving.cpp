@@ -4,6 +4,8 @@
 
 fq::client::CameraMoving::CameraMoving()
 	:mMainCamera(nullptr),
+	mPlayerTransforms{},
+	mIsFixed{false},
 	mCurZoom(10),
 	mIsZoomIn(false),
 	mIsZoomOut(false),
@@ -44,12 +46,16 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 {
 	// 플레이어 중앙 추적
 	chaseCenter(dt);
+	if (GetAsyncKeyState('O') & 0x8000)
+	{
+		mIsFixed = !mIsFixed;
+	}
 }
 
 DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(float dt)
 {
 	// 등록된 플레이어가 없으면 
-	if (mPlayerTransforms.size() == 0)
+	if (mPlayerTransforms.size() == 0 || mIsFixed)
 	{
 		spdlog::error("There are no players registered on the camera");
 		return { 0, 0, mCurZoom };
