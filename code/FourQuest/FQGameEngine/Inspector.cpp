@@ -713,7 +713,11 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 		if (ImGui::MenuItem("Remove Component")
 			&& type != entt::resolve<fq::game_module::Transform>())
 		{
+
+			assert(mSelectObject->GetComponent(id));
+
 			auto component = mSelectObject->GetComponent(id)->shared_from_this();
+
 
 			auto remove = [selectObject = mSelectObject, id]()
 				{
