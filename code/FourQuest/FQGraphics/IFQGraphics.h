@@ -94,6 +94,9 @@ extern "C" {
 			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
 
+			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DecalInfo& decalInfo) abstract;
+			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObjectInterface) abstract;
+
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
 

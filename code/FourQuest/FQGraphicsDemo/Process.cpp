@@ -50,6 +50,11 @@ Process::~Process()
 		mTestGraphics->DeleteParticleObject(iobj);
 	}
 
+	for (fq::graphics::IDecalObject* iobj : mDecalObjects)
+	{
+		mTestGraphics->DeleteDecalObject(iobj);
+	}
+
 	//mTestGraphics->DeleteLight(1);
 	//mTestGraphics->DeleteLight(2);
 	//mTestGraphics->DeleteLight(3);
@@ -68,7 +73,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 	const std::string planeModelPath = "./resource/example/model/Plane.model";
@@ -150,29 +155,29 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-
+	
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1,1,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 1 ,-1, 0 };
 	directionalLightInfo.direction.Normalize();
-
+	
 	mTestGraphics->AddLight(2, directionalLightInfo);
-
+	
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1 ,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { -1, -1, 0 };
 	directionalLightInfo.direction.Normalize();
-
+	
 	mTestGraphics->AddLight(3, directionalLightInfo);
-
+	
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1 ,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0, -1, -1 };
 	directionalLightInfo.direction.Normalize();
-
+	
 	mTestGraphics->AddLight(4, directionalLightInfo);
 
 	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
@@ -213,13 +218,14 @@ bool Process::Init(HINSTANCE hInstance)
 	pointLightInfo.type = fq::graphics::ELightType::Point;
 	pointLightInfo.color = { 1, 0, 0, 1 };
 	pointLightInfo.intensity = 500;
-	pointLightInfo.range = 10000;
+	pointLightInfo.range = 100;
 	pointLightInfo.attenuation = { 0, 1, 0 };
-	pointLightInfo.position = { 10.f, 100.f, 0.f };
+	pointLightInfo.position = { 10.f, 10.f, 0.f };
 
-	//mTestGraphics->AddLight(5, pointLightInfo);
+	// mTestGraphics->AddLight(5, pointLightInfo);
 
 	particleInit();
+	decalInit();
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
@@ -428,6 +434,7 @@ void Process::Update()
 	particleUpdate();
 	materialUpdate();
 	socketUpdate();
+	decalUpdate();
 
 	InputManager::GetInstance().Update();
 }
@@ -502,7 +509,7 @@ void Process::Render()
 
 		obj->SetAlpha(s_time * 0.33f);
 
-		auto data = obj->GetMeshData();
+		const auto& data = obj->GetMeshData();
 	}
 
 
@@ -542,7 +549,7 @@ void Process::Render()
 
 		obj->UpdateAnimationTime(s_time);
 		obj->SetAlpha(0.3f);
-		auto data = obj->GetMeshData();
+		const auto& data = obj->GetMeshData();
 	}
 
 	// --------------------font Test-------------------------------
@@ -1015,7 +1022,8 @@ void Process::materialUpdate()
 			materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 			materialData.MaterialDesc.Metalness = tempColor;
 			materialData.MaterialDesc.Roughness = tempColor;
-			materialData.BaseColorFileName = L"Particle02.png";
+			materialData.BaseColorFileName = L"boxBaseColor.jpg";
+			materialData.NormalFileName = L"boxNormal.jpg";
 			matrialInterface->SetMaterialData(materialData);
 		}
 		else
@@ -1042,7 +1050,8 @@ void Process::materialUpdate()
 				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 				materialData.MaterialDesc.Metalness = tempColor;
 				materialData.MaterialDesc.Roughness = tempColor;
-				materialData.BaseColorFileName = L"Particle02.png";
+				materialData.BaseColorFileName = L"boxBaseColor.jpg";
+				materialData.NormalFileName = L"boxNormal.jpg";
 				matrialInterface->SetMaterialData(materialData);
 			}
 			else
@@ -1069,7 +1078,8 @@ void Process::materialUpdate()
 				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 				materialData.MaterialDesc.Metalness = tempColor;
 				materialData.MaterialDesc.Roughness = tempColor;
-				materialData.BaseColorFileName = L"Particle02.png";
+				materialData.BaseColorFileName = L"boxBaseColor.jpg";
+				materialData.NormalFileName = L"boxNormal.jpg";
 				matrialInterface->SetMaterialData(materialData);
 			}
 			else
@@ -1102,9 +1112,60 @@ void Process::socketUpdate()
 	assert(rootTransform == mSoketSkinnedMeshObject->GetRootTransform(bones[13].Index));
 	assert(!mSoketSkinnedMeshObject->TryGetRootTransform("123123332211ss", &rootTransform));
 	mSoketSkinnedMeshObject->GetRootTransform(bones[13].Name);
+}
 
+void Process::decalInit()
+{
+	using namespace fq::graphics;
+	using namespace DirectX::SimpleMath;
+	{
+		DecalInfo decalInfo;
+		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
+		decalInfo.MatrialData.NormalFileName = L"boxNormal.jpg";
+		decalInfo.TextureBasePath = "./resource/example/texture";
+		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		mDecalObjects.push_back(decalObject);
+	}
+	{
+		DecalInfo decalInfo;
+		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
+		decalInfo.TextureBasePath = "./resource/example/texture";
+		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		mDecalObjects.push_back(decalObject);
+	}
+	{
+		DecalInfo decalInfo;
+		decalInfo.MatrialData.BaseColorFileName = L"cerberus_A.png";
+		decalInfo.MatrialData.NormalFileName = L"cerberus_N.png";
+		decalInfo.MatrialData.MetalnessFileName = L"cerberus_M.png";
+		decalInfo.MatrialData.RoughnessFileName = L"cerberus_R.png";
+		decalInfo.TextureBasePath = "./resource/example/texture";
+		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		mDecalObjects.push_back(decalObject);
+	}
+}
 
+void Process::decalUpdate()
+{
+	using namespace fq::graphics;
+	using namespace DirectX::SimpleMath;
 
+	static float s_rotate = 100;
+	s_rotate += mTimeManager.GetDeltaTime();
+
+	int i = -(int)mDecalObjects.size() + mDecalObjects.size() / 2;
+	for (IDecalObject* decalObject : mDecalObjects)
+	{
+		DecalInfo decalInfo = decalObject->GetDecalInfo();
+		decalInfo.Transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
+		decalInfo.NormalThresholdInRadian = 3.14 * 0.9f;
+		decalObject->SetDecalInfo(decalInfo);
+
+		++i;
+	}
 }
 
 /*=============================================================================

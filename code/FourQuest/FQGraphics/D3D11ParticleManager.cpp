@@ -16,7 +16,7 @@ namespace fq::graphics
 		mBackBufferRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
-		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV)->GetSRV();
+		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS)->GetSRV();
 
 		mLinearWrap = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mPointClamp = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
@@ -89,7 +89,7 @@ namespace fq::graphics
 		mBackBufferRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
-		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV)->GetSRV();
+		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS)->GetSRV();
 	}
 
 	void D3D11ParticleManager::Excute()
@@ -238,6 +238,9 @@ namespace fq::graphics
 		particleObjectData.RotationOverLifetimeData.bIsUsed = particleInfo.RotationOverLifetimeData.bIsUsed;
 
 		particleObjectData.RenderData.bHasTexture = particleObject->mTexture->GetSRV() == nullptr ? false : true;
+		particleObjectData.RenderData.bUseMultiplyAlpha = particleInfo.RenderData.bUseMultiplyAlpha;
+		particleObjectData.RenderData.bUseAlphaClip = particleInfo.RenderData.bUseAlphaClip;
+		particleObjectData.RenderData.AlphaClipThreshold = particleInfo.RenderData.AlphaClipThreshold;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}

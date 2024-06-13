@@ -94,6 +94,10 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 		// intentional fall through
 	case ED3D11RenderTargetViewType::PositionWClipZ:
 		// intentional fall through
+	case ED3D11RenderTargetViewType::SourceNormal:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::SourceTangent:
+		// intentional fall through
 	case ED3D11RenderTargetViewType::OffscreenHDR:
 		// intentional fall through
 	case ED3D11RenderTargetViewType::SSAODepth:
@@ -240,7 +244,14 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 
 	for (std::shared_ptr<D3D11RenderTargetView>& rtv : renderTargetViews)
 	{
-		RTVs.push_back(rtv->mRTV.Get());
+		if (rtv != nullptr)
+		{
+			RTVs.push_back(rtv->mRTV.Get());
+		}
+		else
+		{
+			RTVs.push_back(nullptr);
+		}
 	}
 
 	if (depthStencilView->mDSV != nullptr)
@@ -298,6 +309,7 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 	{
 	case DXGI_FORMAT_R32_TYPELESS:
 		shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+
 		break;
 	default:
 		assert(false);
@@ -318,6 +330,30 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 	}
+
+	HR(d3d11Device->GetDevice()->CreateShaderResourceView(texture,
+		&shaderResourceViewDesc,
+		&mSRV));
+
+	ReleaseCOM(texture);
+}
+
+D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11DepthStencilView>& depthStencilView, DXGI_FORMAT format)
+	:ResourceBase(ResourceType::ShaderResourceView),
+	mSRV(nullptr)
+{
+	ID3D11Texture2D* texture = nullptr;
+	depthStencilView->mDSV->GetResource(reinterpret_cast<ID3D11Resource**>(&texture));
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	texture->GetDesc(&textureDesc);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	shaderResourceViewDesc.Format = format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 
 	HR(d3d11Device->GetDevice()->CreateShaderResourceView(texture,
 		&shaderResourceViewDesc,
@@ -352,23 +388,23 @@ void D3D11ShaderResourceView::UnBind(const std::shared_ptr<D3D11Device>& d3d11De
 	ID3D11ShaderResourceView* tempShaderResource = nullptr;
 	switch (eShaderType)
 	{
-		case ED3D11ShaderType::VertexShader:
-		{
-			d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &tempShaderResource);
-			break;
-		}
-		case ED3D11ShaderType::PixelShader:
-		{
-			d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &tempShaderResource);
-			break;
-		}
-		case ED3D11ShaderType::GeometryShader:
-		{
-			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, &tempShaderResource);
-			break;
-		}
-		default:
-			break;
+	case ED3D11ShaderType::VertexShader:
+	{
+		d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, &tempShaderResource);
+		break;
+	}
+	case ED3D11ShaderType::PixelShader:
+	{
+		d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, &tempShaderResource);
+		break;
+	}
+	case ED3D11ShaderType::GeometryShader:
+	{
+		d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, &tempShaderResource);
+		break;
+	}
+	default:
+		break;
 	}
 }
 
@@ -471,12 +507,11 @@ void D3D11DepthStencilView::OnResize(const std::shared_ptr<D3D11Device>& d3d11De
 	switch (eViewType)
 	{
 	case ED3D11DepthStencilViewType::Default:
-		// depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		// depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-		// 
-		// descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
-		//break;
-		// intentional fall through
+		depthStencilDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+
+		descView.Format = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+		break;
 	case ED3D11DepthStencilViewType::ShaderInputDepthStencil:
 		depthStencilDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32_TYPELESS;
 		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;

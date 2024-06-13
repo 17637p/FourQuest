@@ -20,6 +20,7 @@ namespace fq::graphics
 		, mOutLineBlurPass(std::make_shared<OutLineBlurPass>())
 		, mOutLineAddPass(std::make_shared<OutLineAddPass>())
 		, mParticlePass(std::make_shared<ParticlePass>())
+		, mDecalPass(std::make_shared<DeferredDecalPass>())
 	{
 	}
 
@@ -30,6 +31,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
+		std::shared_ptr<D3D11DecalManager> decalManager,
+
 		unsigned short width,
 		unsigned short height)
 	{
@@ -43,6 +46,8 @@ namespace fq::graphics
 		mNormalRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal, width, height);
 		mEmissiveRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive, width, height);
 		mPositionRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ, width, height);
+		mSourceNormalRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal, width, height);
+		mSourceTangentRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent, width, height);
 
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
@@ -58,9 +63,11 @@ namespace fq::graphics
 		mOutLineAddPass->Initialize(device, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager, width, height);
+		mDecalPass->Initialize(device, resourceManager, cameraManager, decalManager, debugDrawManager, width, height);
 
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
+		mPasses.push_back(mDecalPass);
 		mPasses.push_back(mShadingPass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
@@ -85,6 +92,8 @@ namespace fq::graphics
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
+		mSourceNormalRTV = nullptr;
+		mSourceTangentRTV = nullptr;
 	}
 
 	void DeferredPipeline::OnResize(unsigned short width, unsigned short height)
@@ -95,20 +104,8 @@ namespace fq::graphics
 		mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Normal, width, height);
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Emissive, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
-
-		//mAlbedoRTV->Release();
-		//mMetalnessRTV->Release();
-		//mRoughnessRTV->Release();
-		//mNormalRTV->Release();
-		//mEmissiveRTV->Release();
-		//mPositionRTV->Release();
-		//
-		//mAlbedoRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
-		//mMetalnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
-		//mRoughnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenGrayscale, width, height);
-		//mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
-		//mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
-		//mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OffscreenHDR, width, height);
+		mSourceNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
+		mSourceTangentRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 
 		RenderPipeline::OnResize(width, height);
 	}

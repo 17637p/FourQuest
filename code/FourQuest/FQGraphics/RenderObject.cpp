@@ -19,6 +19,7 @@ namespace fq::graphics
 		, mAlpha(1.f)
 		, mbUseShadow(true)
 		, mOutLineColor{ -1, -1, -1 }
+		, mbIsAppliedDecal(true)
 	{
 	}
 
@@ -44,6 +45,7 @@ namespace fq::graphics
 		, mAlpha(1.f)
 		, mbUseShadow(true)
 		, mOutLineColor{ -1, -1, -1 }
+		, mbIsAppliedDecal(false)
 	{
 	}
 

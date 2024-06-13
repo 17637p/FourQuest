@@ -29,6 +29,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
+		std::shared_ptr<D3D11DecalManager> decalManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -55,7 +56,7 @@ namespace fq::graphics
 		mPasses.push_back(mRenderPass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
-		mPasses.push_back(mTerrainPass); // 쉐이더와 소스 버전이 안 맞아서 임시 주석
+		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mParticlePass);

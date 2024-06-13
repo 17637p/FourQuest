@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -141,7 +141,9 @@
     <ClInclude Include="BoneHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="D3D11DecalManager.h" />
     <ClInclude Include="D3D11ParticleManager.h" />
+    <ClInclude Include="DeferredDecalPass.h" />
     <ClInclude Include="OutLineAddPass.h" />
     <ClInclude Include="OutLineBlurPass.h" />
     <ClInclude Include="OutLinePass.h" />
@@ -207,6 +209,7 @@
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
     <ClCompile Include="D3D11CullingManager.cpp" />
+    <ClCompile Include="D3D11DecalManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
@@ -222,6 +225,7 @@
     <ClCompile Include="D3D11View.cpp" />
     <ClCompile Include="D3D11DebugDrawManager.cpp" />
     <ClCompile Include="DebugRenderPass.cpp" />
+    <ClCompile Include="DeferredDecalPass.cpp" />
     <ClCompile Include="DeferredGeometryPass.cpp" />
     <ClCompile Include="DeferredPipeline.cpp" />
     <ClCompile Include="DeferredShadingPass.cpp" />
@@ -313,6 +317,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </CustomBuild>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalPS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
@@ -435,6 +445,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\FQGraphicsDemo\resource\internal\shader\DecalCommon.hlsli">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCommon.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>

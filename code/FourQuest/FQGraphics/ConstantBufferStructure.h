@@ -19,6 +19,7 @@ namespace fq::graphics
 
 	struct SceneTrnasform
 	{
+		DirectX::SimpleMath::Matrix ViewMat;
 		DirectX::SimpleMath::Matrix ViewProjMat;
 	};
 
@@ -236,7 +237,9 @@ namespace fq::graphics
 		struct Render
 		{
 			int bHasTexture;
-			float unused[3];
+			int bUseMultiplyAlpha;
+			int bUseAlphaClip;
+			float AlphaClipThreshold;
 		} RenderData;
 	};
 

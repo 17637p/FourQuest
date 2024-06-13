@@ -184,6 +184,12 @@
     <ClInclude Include="SSAOPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredDecalPass.h">
+      <Filter>Pass\DeferredPipelinePass</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11DecalManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -269,6 +275,9 @@
     </Filter>
     <Filter Include="Object\Source">
       <UniqueIdentifier>{77b3181f-8aea-4aff-a2a9-046ad29cb9dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Decal">
+      <UniqueIdentifier>{15831a07-acf8-41d1-867c-d5210118d054}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -428,6 +437,12 @@
     <ClCompile Include="RenderObject.cpp">
       <Filter>Object\Source</Filter>
     </ClCompile>
+    <ClCompile Include="DeferredDecalPass.cpp">
+      <Filter>Pass\DeferredPipelinePass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11DecalManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
@@ -499,11 +514,14 @@
     <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainHS.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalPS.hlsl">
+      <Filter>Shader\Decal</Filter>
+    </FxCompile>
+    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalVS.hlsl">
+      <Filter>Shader\Decal</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
-      <Filter>Shader</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
       <Filter>Shader</Filter>
     </CustomBuild>
@@ -528,10 +546,16 @@
     <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
       <Filter>Shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+      <Filter>Shader</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCommon.hlsli">
       <Filter>Shader\Particle</Filter>
+    </None>
+    <None Include="..\FQGraphicsDemo\resource\internal\shader\DecalCommon.hlsli">
+      <Filter>Shader\Decal</Filter>
     </None>
   </ItemGroup>
 </Project>
