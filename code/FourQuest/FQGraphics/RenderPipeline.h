@@ -11,6 +11,7 @@ namespace fq::graphics
 	class D3D11DepthStencilView;
 	class Pass;
 	class D3D11ParticleManager;
+	class D3D11DecalManager;
 
 	class RenderPipeline
 	{

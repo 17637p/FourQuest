@@ -30,6 +30,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
+			std::shared_ptr<D3D11DecalManager> decalManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize();
@@ -52,6 +53,7 @@ namespace fq::graphics
 		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
 		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 		std::shared_ptr<class ParticlePass> mParticlePass;
+		std::shared_ptr<class DeferredDecalPass> mDecalPass;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
@@ -59,14 +61,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
-
-		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mRoughnessSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
-
+		std::shared_ptr<D3D11RenderTargetView> mSourceNormalRTV;
+		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
 	};
 }
 

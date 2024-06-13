@@ -116,10 +116,10 @@ void D3D11SamplerState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, co
 	switch (eShaderType)
 	{
 	case ED3D11ShaderType::VertexShader:
-		{
-			d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, mState.GetAddressOf());
-			break;
-		}
+	{
+		d3d11Device->GetDeviceContext()->VSSetSamplers(startSlot, 1, mState.GetAddressOf());
+		break;
+	}
 	case ED3D11ShaderType::PixelShader:
 	{
 		d3d11Device->GetDeviceContext()->PSSetSamplers(startSlot, 1, mState.GetAddressOf());
@@ -250,8 +250,29 @@ fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_p
 
 		break;
 	}
+	case ED3D11DepthStencilState::LessEqualStencilWriteReplace:
+	{
+		depthStencilDesc.DepthEnable = true;
+		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		depthStencilDesc.StencilEnable = true; // 스텐실 판정 활성화
+		depthStencilDesc.StencilReadMask = 0xff; // 비교 함수 시 모두 활성화
+		depthStencilDesc.StencilWriteMask = 0xff; // 스텐실에 쓰기 시 모두 활성화
+		depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP; // 실패했을 경우 변경하지 않음
+		depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP; // 스텐실 판정만 성공시 변경하지 않는다.
+		depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE; // 성공 시 스텐실 기준 값으로 덮어쓴다.
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS; // 스텐실 판정은 항상 참을 반환
+		depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+		break;
+	}
 	case ED3D11DepthStencilState::LessEqual:
 	{
+	LessEqual:
 		depthStencilDesc.DepthEnable = true;
 		depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -277,12 +298,30 @@ fq::graphics::D3D11DepthStencilState::D3D11DepthStencilState(const std::shared_p
 		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 		depthStencilDesc.FrontFace.StencilFailOp = depthStencilDesc.FrontFace.StencilDepthFailOp = depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 		depthStencilDesc.BackFace = depthStencilDesc.FrontFace;
+		break;
+	}
+	case ED3D11DepthStencilState::StencilComparisonEqual:
+	{
+		depthStencilDesc.DepthEnable = false;
+
+		depthStencilDesc.StencilEnable = true; // 스텐실 판정 활성화
+		depthStencilDesc.StencilReadMask = 0xff; // 비교 함수 시 모두 활성화
+		depthStencilDesc.StencilWriteMask = 0xff; // 스텐실에 쓰기 시 모두 활성화
+		depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP; // 실패했을 경우 변경하지 않음
+		depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP; // 스텐실 판정만 성공시 변경하지 않는다.
+		depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP; // 성공 시 스텐실 기준 값으로 덮어쓴다.
+		depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+		depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+		depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+		break;
 	}
 	default:
 		break;
-}
+	}
 
-HR(device->CreateDepthStencilState(&depthStencilDesc, mState.GetAddressOf()));
+	HR(device->CreateDepthStencilState(&depthStencilDesc, mState.GetAddressOf()));
 }
 
 void D3D11DepthStencilState::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -299,7 +338,10 @@ void D3D11DepthStencilState::Bind(const std::shared_ptr<D3D11Device>& d3d11Devic
 {
 	d3d11Device->GetDeviceContext()->OMSetDepthStencilState(mState.Get(), 0);
 }
-
+void D3D11DepthStencilState::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, UINT stencilRef)
+{
+	d3d11Device->GetDeviceContext()->OMSetDepthStencilState(mState.Get(), stencilRef);
+}
 /*=============================================================================
 		BlendState
 =============================================================================*/
@@ -367,7 +409,7 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
+		break;
 	}
 	case ED3D11BlendState::Additive:
 	{
@@ -375,6 +417,7 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = FALSE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+
 		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
@@ -390,8 +433,8 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = FALSE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
@@ -403,15 +446,51 @@ fq::graphics::D3D11BlendState::D3D11BlendState(const std::shared_ptr<D3D11Device
 	{
 		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
 		blendDesc.AlphaToCoverageEnable = FALSE;
-		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.IndependentBlendEnable = TRUE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
 		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_DEST_COLOR;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+	case ED3D11BlendState::AlphaBlend:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = FALSE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		break;
+	}
+	case ED3D11BlendState::DecalBlend:
+	{
+		blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = TRUE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		blendDesc.RenderTarget[1].BlendEnable = FALSE;
+		blendDesc.RenderTarget[2].BlendEnable = FALSE;
+		blendDesc.RenderTarget[3].BlendEnable = FALSE;
+		blendDesc.RenderTarget[4] = blendDesc.RenderTarget[0];
+
 		break;
 	}
 	default:

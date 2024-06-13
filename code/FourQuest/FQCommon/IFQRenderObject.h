@@ -52,13 +52,17 @@ extern "C" {
 			// Outline
 			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
 			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
-			
+
 			// Material
 			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const abstract;
 			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
 
 			// Mesh
 			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
+			// Decal 
+			virtual FQ_GRAPHICS void SetIsAppliedDecal(bool bIsAppiedDecal) abstract;
+			virtual FQ_GRAPHICS const bool GetIsAppliedDecal() const abstract;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
@@ -115,6 +119,10 @@ extern "C" {
 
 			// Mesh
 			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
+			// Decal 
+			virtual FQ_GRAPHICS void SetIsAppliedDecal(bool bIsAppiedDecal) abstract;
+			virtual FQ_GRAPHICS const bool GetIsAppliedDecal() const abstract;
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;
@@ -190,6 +198,16 @@ extern "C" {
 
 		protected:
 			virtual ~IParticleObject() = default;
+		};
+
+		class IDecalObject
+		{
+		public:
+			virtual FQ_GRAPHICS void SetDecalInfo(const DecalInfo& decalInfo) abstract;
+			virtual FQ_GRAPHICS const DecalInfo& GetDecalInfo() const abstract;
+
+		protected:
+			virtual ~IDecalObject() = default;
 		};
 	}
 #ifdef __cplusplus

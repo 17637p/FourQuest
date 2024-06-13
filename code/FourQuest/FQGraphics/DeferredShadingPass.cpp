@@ -71,6 +71,7 @@ namespace fq::graphics
 
 		mShadowSRV = nullptr;
 		mNullDSV = nullptr;
+		mBackBufferRTV = nullptr;
 
 		mAlbedoSRV = nullptr;
 		mMetalnessSRV = nullptr;
@@ -90,6 +91,8 @@ namespace fq::graphics
 
 		mFullScreenVB = nullptr;
 		mFullScreenIB = nullptr;
+
+		mDirectioanlShadowInfoCB = nullptr;
 	}
 	void DeferredShadingPass::OnResize(unsigned short width, unsigned short height)
 	{

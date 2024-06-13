@@ -39,6 +39,13 @@ namespace fq::graphics
 		const fq::common::Material& GetMaterialData() const override { return mMaterialData; }
 		const std::filesystem::path& GetTextureBasePath() const override { return mTextureBasePath; }
 
+		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
+		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
+		std::shared_ptr<D3D11Texture> GetRoughness() const { return mRoughness; }
+		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
+		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
+		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
+
 	private:
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 

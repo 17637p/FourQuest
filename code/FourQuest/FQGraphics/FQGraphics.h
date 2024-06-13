@@ -64,6 +64,9 @@ namespace fq::graphics
 		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
 		void DeleteParticleObject(IParticleObject* particleObject);
 
+		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
+		void DeleteDecalObject(IDecalObject* decalObjectInterface);
+
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
 
@@ -117,6 +120,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11LightManager> mLightManager;
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 		std::shared_ptr<class D3D11ParticleManager> mParticleManager;
+		std::shared_ptr<class D3D11DecalManager> mDecalManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;

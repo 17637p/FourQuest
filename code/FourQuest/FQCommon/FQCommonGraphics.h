@@ -1,7 +1,9 @@
 #pragma once
 
-#include <directxtk/SimpleMath.h>
+#include <filesystem>
 #include <string>
+#include <directxtk/SimpleMath.h>
+#include "../FQCommon/FQCommonLoader.h"
 
 namespace fq::graphics
 {
@@ -38,7 +40,6 @@ namespace fq::graphics
 		// Directional, Spot
 		DirectX::SimpleMath::Vector3 direction;
 	};
-
 
 	struct MeshObjectInfo
 	{
@@ -261,7 +262,23 @@ namespace fq::graphics
 			ERenderMode RenderMode = ERenderMode::Billboard;
 			EBlendMode BlendMode = EBlendMode::Additive;
 			std::string TexturePath = "./resource/example/texture/Particle00.png";
+			bool bUseMultiplyAlpha = true;
+			bool bUseAlphaClip = true;
+			float AlphaClipThreshold = 0.1f;
 		} RenderData;
+	};
+
+	struct DecalInfo
+	{
+		std::filesystem::path TextureBasePath = "";
+		fq::common::Material MatrialData;
+		DirectX::SimpleMath::Matrix Transform;
+		DirectX::SimpleMath::Matrix TexTransform;
+		unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
+		float NormalThresholdInRadian = 3.14f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
+		bool bUseMultiplyAlpha = true;
+		bool bUseAlphaClip = true;
+		float AlphaClipThreshold = 0.1f;
 	};
 
 	namespace debug

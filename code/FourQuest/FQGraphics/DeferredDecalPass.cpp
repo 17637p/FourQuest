@@ -1,0 +1,250 @@
+#include "DeferredDecalPass.h"
+#include "ManagementCommon.h"
+#include "D3D11Common.h"
+#include "Material.h"
+
+namespace fq::graphics
+{
+	void DeferredDecalPass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
+		std::shared_ptr<D3D11DecalManager> decalManager,
+		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
+		unsigned short width,
+		unsigned short height)
+	{
+		mDevice = device;
+		mResourceManager = resourceManager;
+		mCameraManager = cameraManager;
+		mDecalManager = decalManager;
+		mDebugDrawManager = debugDrawManager;
+
+		mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
+		mMetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
+		mRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);
+		mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
+		mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
+
+		auto blendState = mResourceManager->Create<D3D11BlendState>(ED3D11BlendState::DecalBlend);
+		mDefualtDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+
+		mStencilComparisionEqual = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::StencilComparisonEqual);
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, mStencilComparisionEqual, blendState);
+		auto DeferredDecalVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/DeferredDecalVS.hlsl");
+		auto decalPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/DeferredDecalPS.hlsl");
+		mDecalProgram = std::make_shared<ShaderProgram>(mDevice, DeferredDecalVS, nullptr, decalPS, pipelieState);
+		mPerFrameCB = std::make_shared< D3D11ConstantBuffer<decal::PerFrame>>(mDevice, ED3D11ConstantBuffer::Transform);
+
+		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
+		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
+		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
+
+		OnResize(width, height);
+
+		struct Vertex
+		{
+			DirectX::SimpleMath::Vector3 Pos;
+			DirectX::SimpleMath::Vector2 UV;
+		};
+
+		std::vector<Vertex> positions =
+		{
+			{ { -0.5f, -0.5f, -0.5f}, { 0.0f, 1.0f }},
+			{ { 0.5f, -0.5f, -0.5f}, { 1.0f, 1.0f }},
+			{ { 0.5f,  0.5f, -0.5f}, { 1.0f, 0.0f }},
+			{ { -0.5f,  0.5f, -0.5f}, { 0.0f, 0.0f }},
+			{ { -0.5f, -0.5f,  0.5f}, { 1.0f, 1.0f }},
+			{ { 0.5f, -0.5f,  0.5f}, { 0.0f, 1.0f }},
+			{ { 0.5f,  0.5f,  0.5f}, { 0.0f, 0.0f }},
+			{ { -0.5f,  0.5f,  0.5f}, { 1.0f, 0.0f }},
+		};
+
+		std::vector<unsigned int> indices =
+		{
+			0, 1, 2, 0, 2, 3,
+			4, 6, 5, 4, 7, 6,
+			4, 5, 1, 4, 1, 0,
+			3, 2, 6, 3, 6, 7,
+			1, 5, 6, 1, 6, 2,
+			4, 0, 3, 4, 3, 7,
+		};
+
+		mBoxVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+		mBoxIB = std::make_shared<D3D11IndexBuffer>(device, indices);
+
+		InitBlendState();
+	}
+	void DeferredDecalPass::Finalize()
+	{
+		mDevice = nullptr;
+		mResourceManager = nullptr;
+		mCameraManager = nullptr;
+		mDecalManager = nullptr;
+		mDebugDrawManager = nullptr;
+
+		mAlbedoRTV = nullptr;
+		mMetalnessRTV = nullptr;
+		mRoughnessRTV = nullptr;
+		mNormalRTV = nullptr;
+		mEmissiveRTV = nullptr;
+
+		mDefualtDSV = nullptr;
+
+		mPositionWSRV = nullptr;
+		mNormalSRV = nullptr;
+		mSourceNormalSRV = nullptr;
+		mSourceTangentSRV = nullptr;
+
+		mStencilComparisionEqual = nullptr;
+		mDecalProgram = nullptr;
+		mAnisotropicWrapSamplerState = nullptr;
+		mLinearClampSamplerState = nullptr;
+		mPointClampSamplerState = nullptr;
+
+		mPerFrameCB = nullptr;
+
+		mBoxVB = nullptr;
+		mBoxIB = nullptr;
+
+		memset(mBlendStates, NULL, sizeof(mBlendStates));
+	}
+	void DeferredDecalPass::OnResize(unsigned short width, unsigned short height)
+	{
+		mViewport.Width = (float)width;
+		mViewport.Height = (float)height;
+		mViewport.MinDepth = 0.f;
+		mViewport.MaxDepth = 1.f;
+		mViewport.TopLeftX = 0.f;
+		mViewport.TopLeftY = 0.f;
+
+		auto positionWRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
+		mPositionWSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, positionWRTV);
+		auto normalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
+		mNormalSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, normalRTV);
+		auto sourceNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal);
+		mSourceNormalSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, sourceNormalRTV);
+		auto sourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
+		mSourceTangentSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, sourceTangentRTV);
+	}
+	void DeferredDecalPass::Render()
+	{
+		// bind
+		{
+			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
+			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			mDecalProgram->Bind(mDevice);
+
+			mPerFrameCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
+			mPerFrameCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mLinearClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mAnisotropicWrapSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+
+			mBoxVB->Bind(mDevice);
+			mBoxIB->Bind(mDevice);
+
+			std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
+			renderTargetViews.reserve(5u);
+			renderTargetViews.push_back(mAlbedoRTV);
+			renderTargetViews.push_back(mMetalnessRTV);
+			renderTargetViews.push_back(mRoughnessRTV);
+			renderTargetViews.push_back(mNormalRTV);
+			renderTargetViews.push_back(mEmissiveRTV);
+			D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDefualtDSV);
+
+			mPositionWSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			// mNormalSRV->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
+			mSourceNormalSRV->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
+			mSourceTangentSRV->Bind(mDevice, 8, ED3D11ShaderType::PixelShader);
+		}
+
+		// cb update
+		decal::PerFrame perFrameData;
+		perFrameData.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
+		perFrameData.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
+
+		const std::set<IDecalObject*>& decalObjects = mDecalManager->GetDecalObjects();
+
+		for (IDecalObject* decalObjectInterface : decalObjects)
+		{
+			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
+			auto material = decalObject->GetMaterial();
+			material->Bind(mDevice);
+
+			int index = material->GetHasEmissive() << 4 | material->GetHasNormal() << 3 | material->GetHasRoughness() << 2 | material->GetHasMetalness() << 1 | material->GetHasBaseColor() << 0;
+			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
+
+			const auto& decalInfo = decalObject->GetDecalInfo();
+
+			perFrameData.TexTransform = decalInfo.TexTransform.Transpose();
+			perFrameData.World = decalInfo.Transform.Transpose();
+			perFrameData.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
+			perFrameData.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
+			perFrameData.InvWV = (decalInfo.Transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+
+			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInRadian;
+			perFrameData.AlphaClipThreshold = decalInfo.AlphaClipThreshold;
+
+			perFrameData.bUseMultiplyAlpha = decalInfo.bUseMultiplyAlpha;
+			perFrameData.bUseAlphaClip = decalInfo.bUseAlphaClip;
+			perFrameData.bUseAlbedoMap = material->GetHasBaseColor();
+			perFrameData.bUseMetalnessMap = material->GetHasMetalness();
+
+			perFrameData.bUseRoughnessMap = material->GetHasRoughness();
+			perFrameData.bUseNormalMap = material->GetHasNormal();
+			perFrameData.bUseEmissiveMap = material->GetHasEmissive();
+
+			mPerFrameCB->Update(mDevice, perFrameData);
+
+			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
+
+			debug::OBBInfo obbInfo;
+			obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
+			obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+			mDebugDrawManager->Submit(obbInfo);
+		}
+	}
+
+	void DeferredDecalPass::InitBlendState()
+	{
+		D3D11_BLEND_DESC blendDesc = CD3D11_BLEND_DESC{ CD3D11_DEFAULT{} };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = TRUE;
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[1].BlendEnable = FALSE;
+		blendDesc.RenderTarget[2].BlendEnable = FALSE;
+		blendDesc.RenderTarget[3].BlendEnable = FALSE;
+		blendDesc.RenderTarget[4] = blendDesc.RenderTarget[0];
+
+		for (int i = 0; i < 2; ++i)
+		{
+			for (int j = 0; j < 2; ++j)
+			{
+				for (int k = 0; k < 2; ++k)
+				{
+					for (int l = 0; l < 2; ++l)
+					{
+						for (int m = 0; m < 2; ++m)
+						{
+							blendDesc.RenderTarget[0].RenderTargetWriteMask = i == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+							blendDesc.RenderTarget[1].RenderTargetWriteMask = j == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+							blendDesc.RenderTarget[2].RenderTargetWriteMask = k == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+							blendDesc.RenderTarget[3].RenderTargetWriteMask = l == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+							blendDesc.RenderTarget[4].RenderTargetWriteMask = m == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+
+							size_t index = m << 4 | l << 3 | k << 2 | j << 1 | i << 0;
+							HR(mDevice->GetDevice()->CreateBlendState(&blendDesc, mBlendStates[index].GetAddressOf()));
+						}
+					}
+				}
+			}
+		}
+	}
+}

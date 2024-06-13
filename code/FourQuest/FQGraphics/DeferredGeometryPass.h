@@ -40,7 +40,10 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
+		std::shared_ptr<D3D11RenderTargetView> mSourceNormalRTV;
+		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
 
+		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 

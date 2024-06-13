@@ -46,7 +46,7 @@ extern "C" {
 			virtual ~IFQGraphics() {};
 
 			/// Framework
-			virtual FQ_GRAPHICS bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType = EPipelineType::Forward) abstract;
+			virtual FQ_GRAPHICS bool Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType = EPipelineType::Deferred) abstract;
 			virtual FQ_GRAPHICS bool Update(float deltaTime) abstract;
 
 			virtual FQ_GRAPHICS bool BeginRender() abstract;
@@ -93,6 +93,9 @@ extern "C" {
 			// VFX
 			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
+
+			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DecalInfo& decalInfo) abstract;
+			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObjectInterface) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;

@@ -68,6 +68,10 @@ namespace fq::graphics
 		// Mesh
 		virtual const fq::common::Mesh& GetMeshData() const override { return mStaticMesh->GetMeshData(); }
 
+		// Decal
+		virtual void SetIsAppliedDecal(bool bIsAppiedDecal) override { mbIsAppliedDecal = bIsAppiedDecal; }
+		virtual const bool GetIsAppliedDecal() const override { return mbIsAppliedDecal; }
+
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
@@ -86,6 +90,8 @@ namespace fq::graphics
 		float mBlendTimePos;
 
 		DirectX::SimpleMath::Color mOutLineColor;
+
+		bool mbIsAppliedDecal;
 	};
 
 #pragma region inlineFunc
@@ -319,8 +325,8 @@ namespace fq::graphics
 		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
 		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) { mMaterials = materials; }
 
+		// Bone
 		virtual const std::vector<fq::common::Bone>& GetBones() const override;
-
 		virtual unsigned int GetBoneIndex(const std::string& boneName) const;
 		virtual bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex);
 		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const;
@@ -330,6 +336,11 @@ namespace fq::graphics
 
 		// Mesh
 		virtual const fq::common::Mesh& GetMeshData() const override { return mSkinnedMesh->GetMeshData(); }
+
+		// Decal
+		virtual void SetIsAppliedDecal(bool bIsAppiedDecal) override { mbIsAppliedDecal = bIsAppiedDecal; }
+		virtual const bool GetIsAppliedDecal() const override { return mbIsAppliedDecal; }
+
 
 	private:
 		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
@@ -342,8 +353,8 @@ namespace fq::graphics
 		EObjectRenderType mObjectRenderType;
 		float mAlpha;
 		bool mbUseShadow;
-
 		DirectX::SimpleMath::Color mOutLineColor;
+		bool mbIsAppliedDecal;
 	};
 
 #pragma region inlineFunc

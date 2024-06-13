@@ -26,6 +26,7 @@ FQGraphics::FQGraphics()
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
 	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
+	, mDecalManager(std::make_shared<D3D11DecalManager>())
 {
 }
 
@@ -41,10 +42,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mUIManager->Initialize(hWnd, mDevice, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
+	mDecalManager->Initialize(mDevice, mResourceManager);
 
 	return true;
 }
@@ -336,9 +338,18 @@ void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
 	mParticleManager->DeleteParticleObject(particleObject);
 }
 
+IDecalObject* FQGraphics::CreateDecalObject(const DecalInfo& decalInfo)
+{
+	return mDecalManager->CreateDecalObject(decalInfo);
+}
+void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
+{
+	mDecalManager->DeleteDecalObject(decalObjectInterface);
+}
+
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()
