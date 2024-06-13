@@ -25,6 +25,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
+		std::shared_ptr<D3D11DecalManager> decalManager,
 		unsigned short width,
 		unsigned short height,
 		EPipelineType pipelineType)
@@ -36,10 +37,10 @@ namespace fq::graphics
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, width, height);
+			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, decalManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, width, height);
+			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, decalManager, width, height);
 			break;
 		default:
 			assert(false);

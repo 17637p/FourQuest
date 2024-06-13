@@ -45,6 +45,8 @@ namespace fq::graphics
 		Normal,
 		Emissive,
 		PositionWClipZ,
+		SourceNormal,
+		SourceTangent,
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -92,6 +94,8 @@ namespace fq::graphics
 		LessEqual,
 		DepthOff,
 		DisableDepthTest,
+		LessEqualStencilWriteReplace,
+		StencilComparisonEqual
 	};
 
 	enum class ED3D11BlendState
@@ -101,7 +105,9 @@ namespace fq::graphics
 		OITComposite,
 		Additive,
 		Subtractive,
-		Modulate
+		Modulate,
+		AlphaBlend,
+		DecalBlend,
 	};
 
 	/*=============================================================================

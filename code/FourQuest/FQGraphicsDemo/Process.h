@@ -24,6 +24,7 @@ namespace fq::graphics { class ISkinnedMeshObject; }
 namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class IParticleObject; }
+namespace fq::graphics { class IDecalObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -66,6 +67,9 @@ private:
 
 	void socketUpdate();
 
+	void decalInit();
+	void decalUpdate();
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
@@ -90,7 +94,8 @@ private:
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
-	std::vector< fq::graphics::IParticleObject*> mParticleObjects;
+	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
+	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
 
 	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
 	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;

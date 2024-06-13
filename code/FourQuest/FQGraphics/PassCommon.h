@@ -13,6 +13,7 @@
 #include "OutLinePass.h"
 #include "OutLineBlurPass.h"
 #include "OutLineAddPass.h"
+#include "DeferredDecalPass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"

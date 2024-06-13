@@ -44,11 +44,15 @@ namespace fq::graphics
 		mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
 		mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
 		mPositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
+		mSourceNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal);
+		mSourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
 		auto geometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroGeometry);
+		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
+		auto skinningPipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, geometryPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
@@ -76,7 +80,10 @@ namespace fq::graphics
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
+		mSourceNormalRTV = nullptr;
+		mSourceTangentRTV = nullptr;
 
+		mLessEqualStencilReplaceState = nullptr;
 		mStaticMeshShaderProgram = nullptr;
 		mSkinnedMeshShaderProgram = nullptr;
 
@@ -104,6 +111,7 @@ namespace fq::graphics
 		// update
 		{
 			SceneTrnasform sceneTransform;
+			sceneTransform.ViewMat = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
 			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
@@ -121,20 +129,22 @@ namespace fq::graphics
 			mNormalRTV->Clear(mDevice, { 1000, 0, 0, 0 });
 			mEmissiveRTV->Clear(mDevice);
 			mPositionRTV->Clear(mDevice);
+			mSourceNormalRTV->Clear(mDevice, { 1000,0,0,0 });
+			mSourceTangentRTV->Clear(mDevice, { 1000,0,0,0 });
 		}
 
 		// Bind
 		{
 			std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
-			renderTargetViews.reserve(6u);
-
+			renderTargetViews.reserve(8u);
 			renderTargetViews.push_back(mAlbedoRTV);
 			renderTargetViews.push_back(mMetalnessRTV);
 			renderTargetViews.push_back(mRoughnessRTV);
 			renderTargetViews.push_back(mNormalRTV);
 			renderTargetViews.push_back(mEmissiveRTV);
 			renderTargetViews.push_back(mPositionRTV);
-
+			renderTargetViews.push_back(mSourceNormalRTV);
+			renderTargetViews.push_back(mSourceTangentRTV);
 			D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDSV);
 
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
@@ -157,6 +167,15 @@ namespace fq::graphics
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
+					if (job.tempObject->GetIsAppliedDecal())
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					}
+					else
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					}
+
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
@@ -173,6 +192,15 @@ namespace fq::graphics
 				{
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
+
+					if (job.tempObject->GetIsAppliedDecal())
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					}
+					else
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					}
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);

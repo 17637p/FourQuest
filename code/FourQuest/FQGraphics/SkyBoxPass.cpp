@@ -84,6 +84,8 @@ namespace fq::graphics
 		mDefaultSS = nullptr;
 
 		mViewProjectionMatrix = nullptr;
+
+		isSetSkyBox = false;
 	}
 
 	void SkyBoxPass::Render()
