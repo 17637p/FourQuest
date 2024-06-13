@@ -42,6 +42,7 @@ void fq::client::MonsterAttack::OnStateUpdate(fq::game_module::Animator& animato
 
 		// 공격 위한 세팅 
 		attack->SetAttackPower(20);
+		attack->SetAttacker(monster->GetGameObject());
 		collider->SetExtent({ 0.4f, 0.2f, 0.2f });
 		object->SetTag(fq::game_module::ETag::MonsterAttack);
 		

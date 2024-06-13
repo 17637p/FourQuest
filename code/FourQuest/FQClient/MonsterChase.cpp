@@ -25,7 +25,7 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
-	if (monster->GetIsDamagaed())
+	if (monster->GetIsDamaged())
 	{
 		animator.SetParameterTrigger("OnDamaged");
 		return;

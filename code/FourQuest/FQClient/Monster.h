@@ -20,7 +20,8 @@ namespace fq::client
 
 		fq::game_module::GameObject* GetTarget() const;
 		void SetTarget(fq::game_module::GameObject* target);
-		bool GetIsDamagaed() const;
+		bool GetIsDamaged() const;
+		void SetIsDamaged(bool isDamaged);
 		float GetDamaged() const;
 		fq::game_module::GameObject* GetLastAttacker() const;
 
