@@ -86,7 +86,6 @@ namespace fq::physics
 		for (auto trigger : mTriggerContainer)
 		{
 			std::shared_ptr<CollisionData> TriggerActorData = mCollisionDataManager->FindCollisionData(trigger.first);
-
 			if (TriggerActorData.get() == nullptr)
 			{
 				mTriggerContainer.erase(mTriggerContainer.find(trigger.first));
@@ -96,9 +95,14 @@ namespace fq::physics
 			for (auto other : trigger.second)
 			{
 				std::shared_ptr<CollisionData> OtherActordata = mCollisionDataManager->FindCollisionData(other);
+				if (OtherActordata.get() == nullptr)
+				{
+					trigger.second.erase(trigger.second.find(other));
+					return;
+				}
+
 				CollisionData Mydata;
 				CollisionData Otherdata;
-
 				Mydata.myId = TriggerActorData->myId;
 				Mydata.otherId = OtherActordata->myId;
 				Mydata.myLayerNumber = TriggerActorData->myLayerNumber;

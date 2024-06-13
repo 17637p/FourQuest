@@ -25,6 +25,14 @@ namespace fq::physics
 		}
 		mRemoveID.clear();
 
+		for (auto& iter : mCollisionDataContainer)
+		{
+			if (iter.second->isDead == true)
+			{
+				mRemoveID.push_back(iter.first);
+			}
+		}
+
 		return true;
 	}
 
