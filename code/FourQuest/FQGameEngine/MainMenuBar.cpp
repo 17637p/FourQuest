@@ -282,6 +282,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onSetting = mEditorProcess->mSettingWindow->IsWindowOpen();
 		ImGui::Checkbox("Setting", &onSetting);
 
+		bool& onNavMesh = mEditorProcess->mNavMeshWindow->IsWindowOpen();
+		ImGui::Checkbox("NavigationMesh", &onNavMesh);
+
 		ImGui::EndMenu();
 	}
 }

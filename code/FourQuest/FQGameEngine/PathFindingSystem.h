@@ -19,14 +19,13 @@ namespace fq::game_engine
 {
 	class GameProcess;
 
-	// NavigationMeshBuilder로 이름 바꾸기 Creater?
 	class NavigationMeshBuilder
 	{
 		class NavigationMeshData;
 	public:
 		struct BuildSettings
 		{
-			int maxCrowdNumber{ 1024 }; // 길찾기 주체들의 최대 개체수
+			int maxCrowdNumber{ 256 }; // 길찾기 주체들의 최대 개체수
 			float maxAgentRadius{ 0.6 }; // 길찾기 주체들의 최대 충돌반경
 			float walkableSlopeAngle{ 30 }; // 오를수 있는 경사
 			float walkableClimb{ 0.2 }; // 오를 수 있는 단차

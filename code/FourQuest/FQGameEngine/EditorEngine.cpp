@@ -225,6 +225,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mSkyBoxWindow->Render();
 	mEditor->mAnimatorWindow->Render();
 	mEditor->mSettingWindow->Render();
+	mEditor->mNavMeshWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()

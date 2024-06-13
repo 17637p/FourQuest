@@ -188,6 +188,9 @@
     <ClInclude Include="PathFindingSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="NavigationMeshWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -306,6 +309,9 @@
     </ClCompile>
     <ClCompile Include="PathFindingSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMeshWindow.cpp">
+      <Filter>src\11.Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

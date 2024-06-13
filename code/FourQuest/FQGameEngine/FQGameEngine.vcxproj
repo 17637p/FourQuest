@@ -179,6 +179,7 @@
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
+    <ClInclude Include="NavigationMeshWindow.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PathFindingSystem.h" />
     <ClInclude Include="PhysicsAnimatorWindow.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
+    <ClCompile Include="NavigationMeshWindow.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PathFindingSystem.cpp" />
     <ClCompile Include="PhysicsAnimatorWindow.cpp" />
