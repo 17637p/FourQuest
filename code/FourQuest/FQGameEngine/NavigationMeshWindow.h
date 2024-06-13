@@ -4,7 +4,7 @@
 namespace fq::game_engine
 {
 	class GameProcess;
-	class NavigationMeshBuilder;
+	class PathFindingSystem;
 
 	class NavigationMeshWindow : public IEditorWindow
 	{
@@ -12,6 +12,7 @@ namespace fq::game_engine
 		NavigationMeshWindow();
 		virtual ~NavigationMeshWindow();
 
+		void Initialize(GameProcess* game);
 		virtual void Render() override;
 
 		bool& IsWindowOpen() { return mbIsOpen; }
@@ -24,7 +25,7 @@ namespace fq::game_engine
 		bool mbIsOpen;
 
 		GameProcess* mGameProcess;
-		NavigationMeshBuilder* mNavigationMeshBuilder;
+		PathFindingSystem* mPathFindingSystem;
 	};
 }
 

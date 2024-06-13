@@ -7,7 +7,7 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 
-void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module::Scene* scene)
+void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings)
 {
 	std::vector<DirectX::SimpleMath::Vector3> fieldVertices;
 	std::vector<int> fieldIndices;
@@ -54,7 +54,7 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 		return;
 	}
 
-	build(fieldVertices, fieldIndices);
+	build(fieldVertices, fieldIndices, buildSettrings);
 }
 
 void fq::game_engine::NavigationMeshBuilder::build(
@@ -241,6 +241,8 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	impl->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
 	
 	mHasNavigationMesh = true;
+
+	spdlog::info("Navigation Mesh Build Success");
 }
 
 fq::game_engine::NavigationMeshBuilder::NavigationMeshBuilder(GameProcess* tempProcess)
@@ -331,4 +333,30 @@ fq::game_engine::NavigationMeshBuilder::NavigationMeshData::~NavigationMeshData(
 	dtFreeCrowd(crowd);
 	dtFreeNavMeshQuery(navQuery);
 	dtFreeNavMesh(navMesh);
+}
+
+void fq::game_engine::PathFindingSystem::BuildNavigationMesh(fq::game_module::Scene* scene)
+{
+	mBuilder->BuildNavigationMesh(scene, mBuildSettings);
+}
+
+std::vector<DirectX::SimpleMath::Vector3> fq::game_engine::PathFindingSystem::GetNavMeshVertices()
+{
+	return mBuilder->GetNavMeshVertices();
+}
+
+fq::game_engine::PathFindingSystem::PathFindingSystem(GameProcess* tempProcess)
+	:mBuildSettings{},
+	mBuilder{new NavigationMeshBuilder(tempProcess)}
+{
+}
+
+fq::game_engine::PathFindingSystem::~PathFindingSystem()
+{
+	delete mBuilder;
+}
+
+fq::game_engine::NavigationMeshBuilder::BuildSettings& fq::game_engine::PathFindingSystem::GetBuildingSettrings()
+{
+	return mBuildSettings;
 }

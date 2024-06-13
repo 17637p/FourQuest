@@ -40,7 +40,7 @@ namespace fq::game_engine
 		NavigationMeshBuilder(GameProcess* tempProcess);
 		virtual ~NavigationMeshBuilder();
 
-		void BuildNavigationMesh(fq::game_module::Scene* scene);
+		void BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings);
 		// Debug Draw ¿ë
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
 
@@ -80,6 +80,17 @@ namespace fq::game_engine
 
 	class PathFindingSystem
 	{
+	public:
+		PathFindingSystem(GameProcess* tempProcess);
+		~PathFindingSystem();
+
+		NavigationMeshBuilder::BuildSettings& GetBuildingSettrings();
+		void BuildNavigationMesh(fq::game_module::Scene* scene);
+		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
+
+	private:
+		NavigationMeshBuilder::BuildSettings mBuildSettings;
+		NavigationMeshBuilder* mBuilder;
 	};
 }
 

@@ -30,9 +30,8 @@ void fq::game_engine::NavigationMeshWindow::beginButtonBuild()
 {
 	if (ImGui::Button("Build", ImVec2{ 133,25 }))
 	{
-		//auto matrix = mPhysicsSystem->GetCollisionMatrix();
-		//matrix.Reset();
-		//mPhysicsSystem->SetCollisionMatrix(matrix);
+		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
+		mPathFindingSystem->BuildNavigationMesh(scene);
 	}
 }
 
@@ -47,22 +46,35 @@ float divisionSizeY{ 0.2 }; // y축 공간 분할의 단위, 단위가 작을수록 판정이 더 �
 
 void fq::game_engine::NavigationMeshWindow::beginNavigationMeshDataInput()
 {
-	NavigationMeshBuilder::BuildSettings buildSettings;
-
-	buildSettings.maxCrowdNumber;
-	buildSettings.maxAgentRadius;
-	buildSettings.walkableSlopeAngle;
-	buildSettings.walkableClimb;
-	buildSettings.walkableHeight;
-	buildSettings.divisionSizeXZ;
-	buildSettings.divisionSizeY;
+	NavigationMeshBuilder::BuildSettings& buildSettings = mPathFindingSystem->GetBuildingSettrings();
 
 	//if (ImGui::InputFloat())
-	ImGui::SetNextItemWidth(100.f);
-	int val = buildSettings.maxCrowdNumber;
-	if (ImGui::InputInt(std::to_string(buildSettings.maxCrowdNumber).c_str(),
-		&buildSettings.maxCrowdNumber))
+	//ImGui::SetNextItemWidth(100.f);
+	if (ImGui::InputInt("MaxMonster", &buildSettings.maxCrowdNumber))
 	{
-		//mSelectController->SetParameter(id, val);
 	}
+	if (ImGui::InputFloat("MaxCollisionRadius", &buildSettings.maxAgentRadius))
+	{
+	}
+	if (ImGui::InputFloat("WalkableSlopeAngle", &buildSettings.walkableSlopeAngle))
+	{
+	}
+	if (ImGui::InputFloat("WalkableClimb", &buildSettings.walkableClimb))
+	{
+	}
+	if (ImGui::InputFloat("WalkableMinHeight", &buildSettings.walkableHeight))
+	{
+	}
+	if (ImGui::InputFloat("DivisionSizeXZ", &buildSettings.divisionSizeXZ))
+	{
+	}
+	if (ImGui::InputFloat("DivisionSizeY", &buildSettings.divisionSizeY))
+	{
+	}
+}
+
+void fq::game_engine::NavigationMeshWindow::Initialize(GameProcess* game)
+{
+	mGameProcess = game;
+	mPathFindingSystem = game->mPathFindgingSystem.get();
 }

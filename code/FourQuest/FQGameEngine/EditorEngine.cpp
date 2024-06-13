@@ -87,8 +87,6 @@ void fq::game_engine::EditorEngine::Process()
 	MSG msg;
 	bool bIsDone = false;
 
-	mGameProcess->mPathFindgingSystem->BuildNavigationMesh(mGameProcess->mSceneManager->GetCurrentScene());
-
 	while (!bIsDone)
 	{
 		// 윈도우 메세지를 처리합니다
@@ -253,6 +251,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
 	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mSettingWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mNavMeshWindow->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)
