@@ -204,5 +204,5 @@ void fq::client::CameraMoving::AddPlayerTransform(fq::game_module::Transform* pl
 
 void fq::client::CameraMoving::DeletePlayerTransform(fq::game_module::Transform* player)
 {
-	mPlayerTransforms.erase(std::remove(mPlayerTransforms.begin(), mPlayerTransforms.end(), player));
+	mPlayerTransforms.erase(std::remove(mPlayerTransforms.begin(), mPlayerTransforms.end(), player), mPlayerTransforms.end());
 }

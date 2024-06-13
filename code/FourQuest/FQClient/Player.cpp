@@ -1,11 +1,13 @@
 #include "Player.h"
 
-
+#include "Attack.h"
+#include "CameraMoving.h"
 
 fq::client::Player::Player()
-{
-
-}
+	:mAttackPower(1.f)
+	,mAttack{}
+	,mController(nullptr)
+{}
 
 fq::client::Player::~Player()
 {
@@ -42,6 +44,12 @@ void fq::client::Player::OnStart()
 	assert(mAnimator);
 
 	mController = GetComponent<fq::game_module::CharacterController>();
+
+	// 카메라에 플레이어 등록 
+	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
+		{
+			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
+		});
 }
 
 void fq::client::Player::processDash()
@@ -54,37 +62,36 @@ void fq::client::Player::processDash()
 	}
 }
 
-void fq::client::Player::OnCollisionEnter(const game_module::Collision& collision)
-{
-}
-
-void fq::client::Player::OnCollisionExit(const game_module::Collision& collision)
-{
-}
-
-void fq::client::Player::OnTriggerExit(const game_module::Collision& collision)
-{
-}
-
-void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
-{
-}
 
 void fq::client::Player::Attack()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(GetAttackPrefab());
-	auto& attack = *(instance.begin());
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttack);
+	auto& attackObj = *(instance.begin());
 
-	auto attackT = attack->GetComponent<game_module::Transform>();
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	auto transform = GetComponent<game_module::Transform>();
+
+	// 공격 설정
+	auto attackComponent = attackObj->GetComponent<client::Attack>();
+	attackComponent->SetAttacker(GetGameObject());
+	attackComponent->SetAttackPower(1.f);
 
 	auto forward = transform->GetWorldMatrix().Forward();
 	forward.Normalize();
 
-	attack->SetTag(game_module::ETag::PlayerAttack);
+	attackObj->SetTag(game_module::ETag::PlayerAttack);
 
 	attackT->SetLocalRotation(transform->GetWorldRotation());
 	attackT->SetLocalPosition(transform->GetWorldPosition() + forward);
 
-	GetScene()->AddGameObject(attack);
+	GetScene()->AddGameObject(attackObj);
+}
+
+void fq::client::Player::OnDestroy()
+{
+	// 카메라에 플레이어 해제 
+	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
+		{
+			camera.DeletePlayerTransform(GetComponent<game_module::Transform>());
+		});
 }

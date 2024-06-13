@@ -16,6 +16,8 @@ fq::game_module::Scene::Scene()
 	, mInputManager(nullptr)
 	, mEventManager(nullptr)
 	, mPrefabManager(nullptr)
+	, mIsStartScene(false)
+	, mPedingObjects{}
 {}
 
 fq::game_module::Scene::~Scene()
@@ -107,14 +109,27 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 	object->SetScene(this);
 	SceneHeleper::CheckNameDuplication(*this, *object);
 	object->mbIsDestroyed = false;
-	mObjects.push_back(object);
 
-	for (auto child : object->GetChildren())
+	if (mIsStartScene) // 씬이 시작된경우 프레임 마지막에 추가합니다
 	{
-		AddGameObject(child->shared_from_this());
-	}
+		for (auto child : object->GetChildren())
+		{
+			AddGameObject(child->shared_from_this());
+		}
 
-	mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
+		mPedingObjects.push_back(object);
+	}
+	else // 씬이 시작하지 않은경우 즉시 추가합니다
+	{
+		mObjects.push_back(object);
+
+		for (auto child : object->GetChildren())
+		{
+			AddGameObject(child->shared_from_this());
+		}
+
+		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
+	}
 }
 
 void fq::game_module::Scene::DestroyGameObject(GameObject* object)
@@ -161,9 +176,10 @@ void fq::game_module::Scene::DestroyAll()
 	{
 		object->mbIsDestroyed = true;
 		object->OnDestroy();
-		mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object.get()});
+		mEventManager->FireEvent<fq::event::OnDestoryedGameObject>({ object.get() });
 	}
 
+	mPedingObjects.clear();
 	mObjects.clear();
 }
 
@@ -179,5 +195,16 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 	}
 
 	return  nullptr;
+}
+
+void fq::game_module::Scene::processPedingObject()
+{
+	for (auto& object : mPedingObjects)
+	{
+		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
+		object->OnStart();
+	}
+
+	mPedingObjects.clear();
 }
 

@@ -1,6 +1,7 @@
 #include "Soul.h"
 
 #include "DeadArmour.h"
+#include "CameraMoving.h"
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
@@ -35,10 +36,12 @@ void fq::client::Soul::OnTriggerStay(const fq::game_module::Collision& collision
 	if (deadArmour == nullptr)
 		return;
 	
+	mSelectArmour = deadArmour;
+
 	auto input = GetScene()->GetInputManager();
 
 	// Controller 
-	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
 		deadArmour->SummonLivingArmour(mController->GetControllerID());
 		DestorySoul();
@@ -48,10 +51,29 @@ void fq::client::Soul::OnTriggerStay(const fq::game_module::Collision& collision
 void fq::client::Soul::OnStart()
 {
 	mController = GetComponent<game_module::CharacterController>();
+
+
+	// 카메라에 플레이어 등록 
+	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera) 
+		{
+			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
+		});
 }
 
 void fq::client::Soul::DestorySoul()
 {
 	GetScene()->DestroyGameObject(GetGameObject());
+	
+	// 카메라에 플레이어 해제 
+	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
+		{
+			camera.DeletePlayerTransform(GetComponent<game_module::Transform>());
+		});
+
+}
+
+void fq::client::Soul::OnTriggerEnter(const fq::game_module::Collision& collision)
+{
+
 }
 
