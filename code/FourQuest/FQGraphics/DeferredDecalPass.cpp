@@ -30,8 +30,8 @@ namespace fq::graphics
 
 		mStencilComparisionEqual = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::StencilComparisonEqual);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, mStencilComparisionEqual, blendState);
-		auto DeferredDecalVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/DeferredDecalVS.hlsl");
-		auto decalPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/DeferredDecalPS.hlsl");
+		auto DeferredDecalVS = std::make_shared<D3D11VertexShader>(mDevice, L"DeferredDecalVS.cso");
+		auto decalPS = std::make_shared<D3D11PixelShader>(mDevice, L"DeferredDecalPS.cso");
 		mDecalProgram = std::make_shared<ShaderProgram>(mDevice, DeferredDecalVS, nullptr, decalPS, pipelieState);
 		mPerFrameCB = std::make_shared< D3D11ConstantBuffer<decal::PerFrame>>(mDevice, ED3D11ConstantBuffer::Transform);
 
@@ -199,10 +199,19 @@ namespace fq::graphics
 
 			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
 
-			debug::OBBInfo obbInfo;
-			obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
-			obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
-			mDebugDrawManager->Submit(obbInfo);
+			if (decalInfo.bUseDebugRender)
+			{
+				debug::OBBInfo obbInfo;
+				obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
+				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+				obbInfo.Color = decalInfo.DebugRenderColor;
+				mDebugDrawManager->Submit(obbInfo);
+				obbInfo = {};
+				obbInfo.OBB.Center = { 0.f, 0.25f, 0.f };
+				obbInfo.OBB.Extents = { 0.25f, 0.25f, 0.25f };
+				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+				obbInfo.Color = decalInfo.DebugRenderColor;
+			}
 		}
 	}
 

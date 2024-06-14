@@ -21,8 +21,8 @@ namespace fq::graphics
 		mNoneDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
-		auto fullScreenPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/FullScreenPS.hlsl");
+		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
+		auto fullScreenPS = std::make_shared<D3D11PixelShader>(device, L"FullScreenPS.cso");
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mFullScreenShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, fullScreenPS, pipelieState);
 

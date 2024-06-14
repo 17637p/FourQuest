@@ -40,9 +40,9 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
-		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
-		auto transparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroRender);
+		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
+		auto transparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER.cso");
 		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, disableDepthWriteState, OITRenderState);

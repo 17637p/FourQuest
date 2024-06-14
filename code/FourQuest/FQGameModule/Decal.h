@@ -16,8 +16,8 @@ namespace fq::game_module
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		const DecalInfo& GetDecalInfo() const { return mDecalInfo; }
 		void SetDecalInfo(const DecalInfo& decalInfo) { mDecalInfo = decalInfo; if (mDecalObjectInterface) { mDecalObjectInterface->SetDecalInfo(mDecalInfo); } }
+		const DecalInfo& GetDecalInfo() const { return mDecalInfo; }
 
 		void SetDecalObjectInterface(graphics::IDecalObject* decalObjectInterface) { mDecalObjectInterface = decalObjectInterface; }
 		graphics::IDecalObject* GetDecalObjectInterface() const { return mDecalObjectInterface; }

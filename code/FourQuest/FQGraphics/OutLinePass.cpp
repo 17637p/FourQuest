@@ -9,8 +9,8 @@ void fq::graphics::OutLinePass::Initialize(std::shared_ptr<D3D11Device> device, 
 	mCameraManager = cameraManager;
 	mResourceManager = resourceManager;
 
-	auto outLineVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/OutLineVS.hlsl");
-	auto outLinePS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/OutLinePS.hlsl");
+	auto outLineVS = std::make_shared<D3D11VertexShader>(device, L"OutLineVS.cso");
+	auto outLinePS = std::make_shared<D3D11PixelShader>(device, L"OutLinePS.cso");
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 	mOutLinePassShaderProgram = std::make_unique<ShaderProgram>(mDevice, outLineVS, nullptr, outLinePS, pipelieState);
 

@@ -267,7 +267,7 @@ namespace fq::graphics
 			float AlphaClipThreshold = 0.1f;
 		} RenderData;
 	};
-	
+
 	struct DecalInfo
 	{
 		std::filesystem::path TextureBasePath = "";
@@ -279,6 +279,8 @@ namespace fq::graphics
 		bool bUseMultiplyAlpha = true;
 		bool bUseAlphaClip = true;
 		float AlphaClipThreshold = 0.1f;
+		bool bUseDebugRender = true;
+		DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };
 	};
 
 	namespace debug

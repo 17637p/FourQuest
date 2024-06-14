@@ -16,8 +16,8 @@ void fq::graphics::SSAOPass::Initialize(std::shared_ptr<D3D11Device> device,
 
 	OnResize(width, height);
 
-	auto SSAOVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SSAOVS.hlsl");
-	auto SSAOPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/SSAOPS.hlsl");
+	auto SSAOVS = std::make_shared<D3D11VertexShader>(mDevice, L"SSAOVS.cso");
+	auto SSAOPS = std::make_shared<D3D11PixelShader>(mDevice, L"SSAOPS.cso");
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 
 	mSSAOPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, SSAOVS, nullptr, SSAOPS, pipelieState);

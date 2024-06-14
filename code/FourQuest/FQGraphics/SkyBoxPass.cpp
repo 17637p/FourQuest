@@ -15,8 +15,8 @@ namespace fq::graphics
 		mCameraManager = cameraManager;
 		mResourceManager = resourceManager;
 
-		auto skyBoxVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SkyBoxVS.hlsl");
-		auto skyboxPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/SkyBoxPS.hlsl");
+		auto skyBoxVS = std::make_shared<D3D11VertexShader>(device, L"SkyBoxVS.cso");
+		auto skyboxPS = std::make_shared<D3D11PixelShader>(device, L"SkyBoxPS.cso");
 		auto cullFrontRS = mResourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullFront);
 		auto lessEqualDepthStencilDS = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
 		auto pipelieState = std::make_shared<PipelineState>(cullFrontRS, lessEqualDepthStencilDS, nullptr);

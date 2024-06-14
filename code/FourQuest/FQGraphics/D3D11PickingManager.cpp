@@ -61,9 +61,9 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 		{ NULL, NULL}
 	};
 
-	mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/PickingVS.hlsl");
-	mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/PickingVS.hlsl", macroSkinning);
-	mMeshPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/PickingPS.hlsl");
+	mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"PickingVS.cso");
+	mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"PickingVS_SKINNING.cso" );
+	mMeshPS = std::make_shared<D3D11PixelShader>(device, L"PickingPS.cso");
 
 	mStaticMeshLayout = std::make_shared<D3D11InputLayout>(device, mStaticMeshVS->GetBlob().Get());
 	mSkinnedMeshLayout = std::make_shared<D3D11InputLayout>(device, mSkinnedMeshVS->GetBlob().Get());

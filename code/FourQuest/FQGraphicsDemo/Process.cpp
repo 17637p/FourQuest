@@ -73,7 +73,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
 	const std::string geoModelPath = "./resource/example/model/geoBox.model";
 	const std::string planeModelPath = "./resource/example/model/Plane.model";
@@ -1019,9 +1019,9 @@ void Process::materialUpdate()
 			textureUseFlag.bUseBaseColor = false;
 			textureUseFlag.bUseMetalness = false;
 			textureUseFlag.bUseRoughness = false;
-			materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-			materialData.MaterialDesc.Metalness = tempColor;
-			materialData.MaterialDesc.Roughness = tempColor;
+			materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+			materialData.Metalness = tempColor;
+			materialData.Roughness = tempColor;
 			materialData.BaseColorFileName = L"boxBaseColor.jpg";
 			materialData.NormalFileName = L"boxNormal.jpg";
 			matrialInterface->SetMaterialData(materialData);
@@ -1047,9 +1047,9 @@ void Process::materialUpdate()
 				textureUseFlag.bUseBaseColor = false;
 				textureUseFlag.bUseMetalness = false;
 				textureUseFlag.bUseRoughness = false;
-				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-				materialData.MaterialDesc.Metalness = tempColor;
-				materialData.MaterialDesc.Roughness = tempColor;
+				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.Metalness = tempColor;
+				materialData.Roughness = tempColor;
 				materialData.BaseColorFileName = L"boxBaseColor.jpg";
 				materialData.NormalFileName = L"boxNormal.jpg";
 				matrialInterface->SetMaterialData(materialData);
@@ -1075,9 +1075,9 @@ void Process::materialUpdate()
 				textureUseFlag.bUseBaseColor = false;
 				textureUseFlag.bUseMetalness = false;
 				textureUseFlag.bUseRoughness = false;
-				materialData.MaterialDesc.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-				materialData.MaterialDesc.Metalness = tempColor;
-				materialData.MaterialDesc.Roughness = tempColor;
+				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.Metalness = tempColor;
+				materialData.Roughness = tempColor;
 				materialData.BaseColorFileName = L"boxBaseColor.jpg";
 				materialData.NormalFileName = L"boxNormal.jpg";
 				matrialInterface->SetMaterialData(materialData);

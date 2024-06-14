@@ -1,4 +1,5 @@
 #include <d3dcompiler.h>
+#include <fstream>
 #include "D3D11Shader.h"
 #include "D3D11Util.h"
 #include "D3D11Device.h"
@@ -7,6 +8,8 @@
 
 namespace fq::graphics
 {
+	std::wstring D3D11Shader::mBasePath;
+
 	D3D11InputLayout::D3D11InputLayout(const std::shared_ptr<D3D11Device>& device, ID3DBlob* VSBytecode)
 	{
 		ID3D11ShaderReflection* pReflector = nullptr;
@@ -72,6 +75,7 @@ namespace fq::graphics
 		device->GetDeviceContext()->IASetInputLayout(mInputLayout.Get());
 	}
 
+
 	D3D11Shader::D3D11Shader(const std::shared_ptr<D3D11Device>& device,
 		const std::wstring& path,
 		const D3D_SHADER_MACRO* pDefines,
@@ -80,11 +84,27 @@ namespace fq::graphics
 		: mPath(path)
 		, mBlob(nullptr)
 	{
-		HRESULT hr = D3D11Util::CompileShaderFromFile(path.c_str(),
+		HRESULT hr = D3D11Util::CompileShaderFromFile((mBasePath + path).c_str(),
 			pDefines,
 			entryPoint.c_str(),
 			shaderModel.c_str(),
 			mBlob.GetAddressOf());
+	}
+	D3D11Shader::D3D11Shader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		: mPath(binaryFilePath)
+		, mBlob(nullptr)
+	{
+		std::ifstream fin(mBasePath + binaryFilePath, std::ios::binary);
+		fin.seekg(0, std::ios_base::end);
+		int size = (int)fin.tellg();
+		fin.seekg(0, std::ios_base::beg);
+		std::vector<char> fileData(size);
+		fin.read(&fileData[0], size);
+		fin.close();
+
+		D3DCreateBlob(size, mBlob.GetAddressOf());
+
+		memcpy(mBlob->GetBufferPointer(), fileData.data(), size);
 	}
 
 	D3D11VertexShader::D3D11VertexShader(const std::shared_ptr<D3D11Device>& device,
@@ -93,6 +113,16 @@ namespace fq::graphics
 		const std::string& entryPoint,
 		const std::string& shaderModel)
 		: D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
+		, mShader(nullptr)
+	{
+		HR(device->GetDevice()->CreateVertexShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+	D3D11VertexShader::D3D11VertexShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		:D3D11Shader(device, binaryFilePath)
 		, mShader(nullptr)
 	{
 		HR(device->GetDevice()->CreateVertexShader(
@@ -121,6 +151,16 @@ namespace fq::graphics
 			mShader.GetAddressOf()));
 	}
 
+	D3D11GeometryShader::D3D11GeometryShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		: D3D11Shader(device, binaryFilePath)
+	{
+		HR(device->GetDevice()->CreateGeometryShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+
 	void D3D11GeometryShader::Bind(const std::shared_ptr<D3D11Device>& device)
 	{
 		device->GetDeviceContext()->GSSetShader(mShader.Get(), NULL, NULL);
@@ -133,6 +173,15 @@ namespace fq::graphics
 		const std::string& shaderModel)
 		: D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
 		, mShader(nullptr)
+	{
+		HR(device->GetDevice()->CreatePixelShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+	D3D11PixelShader::D3D11PixelShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		: D3D11Shader(device, binaryFilePath)
 	{
 		HR(device->GetDevice()->CreatePixelShader(
 			mBlob->GetBufferPointer(),
@@ -159,7 +208,15 @@ namespace fq::graphics
 			nullptr,
 			mShader.GetAddressOf()));
 	}
-
+	D3D11ComputeShader::D3D11ComputeShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		:D3D11Shader(device, binaryFilePath)
+	{
+		HR(device->GetDevice()->CreateComputeShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
 	void D3D11ComputeShader::Bind(const std::shared_ptr<D3D11Device>& device)
 	{
 		device->GetDeviceContext()->CSSetShader(mShader.Get(), NULL, NULL);
@@ -258,9 +315,29 @@ namespace fq::graphics
 			mShader.GetAddressOf()));
 	}
 
+	D3D11HullShader::D3D11HullShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		: D3D11Shader(device, binaryFilePath)
+	{
+		HR(device->GetDevice()->CreateHullShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+
 	D3D11DomainShader::D3D11DomainShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& path, const D3D_SHADER_MACRO* pDefines /*= nullptr*/, const std::string& entryPoint /*= "main"*/, const std::string& shaderModel /*= "hs_5_0"*/)
 		:D3D11Shader(device, path, pDefines, entryPoint, shaderModel)
 		, mShader(nullptr)
+	{
+		HR(device->GetDevice()->CreateDomainShader(
+			mBlob->GetBufferPointer(),
+			mBlob->GetBufferSize(),
+			nullptr,
+			mShader.GetAddressOf()));
+	}
+
+	D3D11DomainShader::D3D11DomainShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath)
+		:D3D11Shader(device, binaryFilePath)
 	{
 		HR(device->GetDevice()->CreateDomainShader(
 			mBlob->GetBufferPointer(),

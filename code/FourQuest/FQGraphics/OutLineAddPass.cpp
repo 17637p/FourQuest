@@ -9,8 +9,8 @@ void fq::graphics::OutLineAddPass::Initialize(std::shared_ptr<D3D11Device> devic
 	mDevice = device;
 	mResourceManager = resourceManager;
 
-	auto outLineAddVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/OutLineAddVS.hlsl");
-	auto outLineAddPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/OutLineAddPS.hlsl");
+	auto outLineAddVS = std::make_shared<D3D11VertexShader>(device, L"OutLineAddVS.cso");
+	auto outLineAddPS = std::make_shared<D3D11PixelShader>(device, L"OutLineAddPS.cso");
 
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 	mOutLineAddShaderProgram = std::make_unique<ShaderProgram>(mDevice, outLineAddVS, nullptr, outLineAddPS, pipelieState);
