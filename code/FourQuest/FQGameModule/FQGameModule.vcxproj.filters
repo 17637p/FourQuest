@@ -87,6 +87,12 @@
     <Filter Include="src\09.Animation\StateBehaviour">
       <UniqueIdentifier>{6c282c41-2e6f-4caf-ba77-2b153b9ab3fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.EntityComponent\UI">
+      <UniqueIdentifier>{2a93baec-6e18-4d1b-99ef-c5917a4b338e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\UI">
+      <UniqueIdentifier>{e2c736a9-6d4d-475a-9f0b-35788b19c52f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -242,6 +248,9 @@
     <ClInclude Include="Decal.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="ImageUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -381,6 +390,9 @@
     </ClCompile>
     <ClCompile Include="Decal.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

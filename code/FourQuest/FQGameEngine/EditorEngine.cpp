@@ -20,6 +20,7 @@
 #include "SoundSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "UISystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -75,6 +76,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
 	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
+	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 
 	// Editor √ ±‚»≠
 	InitializeEditor();

@@ -12,6 +12,7 @@
 #include "AnimationSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "UISystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -29,6 +30,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mAnimationSystem(std::make_unique<AnimationSystem>())
 	, mParticleSystem(std::make_unique<ParticleSystem>())
 	, mDecalSystem(std::make_unique<DecalSystem>())
+	, mUISystem(std::make_unique<UISystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

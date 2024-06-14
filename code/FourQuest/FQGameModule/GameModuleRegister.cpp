@@ -11,6 +11,7 @@
 #include "Light.h"
 #include "Particle.h"
 #include "Decal.h"
+#include "ImageUI.h"
 
 // Physics
 #include "Terrain.h"
@@ -148,6 +149,49 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::ReadOnly)
 		.data<&SkinnedMeshRenderer::SetOutlineColor, &SkinnedMeshRenderer::GetOutlineColor>("Outline"_hs)
 		.prop(fq::reflect::prop::Name, "Outline")
+		.base<Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//						         UI		                                //
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<graphics::UIInfo>()
+		.type("UIInfomation"_hs)
+		.prop(fq::reflect::prop::Name, "UIInfomation")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::UIInfo::StartX>("StartX"_hs)
+		.prop(fq::reflect::prop::Name, "StartX")
+		.data<&graphics::UIInfo::StartY>("StartY"_hs)
+		.prop(fq::reflect::prop::Name, "StartY")
+		.data<&graphics::UIInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::UIInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::UIInfo::Alpha>("Alpha"_hs)
+		.prop(fq::reflect::prop::Name, "Alpha")
+		.data<&graphics::UIInfo::Layer>("Layer"_hs)
+		.prop(fq::reflect::prop::Name, "Layer")
+		.data<&graphics::UIInfo::XRatio>("XRatio"_hs)
+		.prop(fq::reflect::prop::Name, "XRatio")
+		.data<&graphics::UIInfo::YRatio>("YRatio"_hs)
+		.prop(fq::reflect::prop::Name, "YRatio")
+		.data<&graphics::UIInfo::ImagePath>("ImagePath"_hs)
+		.prop(fq::reflect::prop::Name, "ImagePath")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&graphics::UIInfo::RotationAngle>("RotationAngle"_hs)
+		.prop(fq::reflect::prop::Name, "RotationAngle")
+		.data<&graphics::UIInfo::ScaleX>("ScaleX"_hs)
+		.prop(fq::reflect::prop::Name, "ScaleX")
+		.data<&graphics::UIInfo::RotationAngle>("ScaleY"_hs)
+		.prop(fq::reflect::prop::Name, "ScaleY");
+
+	entt::meta<ImageUI>()
+		.type("ImageUI"_hs)
+		.prop(fq::reflect::prop::Name, "ImageUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&ImageUI::SetUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
+		.prop(fq::reflect::prop::Name, "UIInfomations")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

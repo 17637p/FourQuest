@@ -5,6 +5,17 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 
+fq::game_engine::Setting::Setting()
+	:mbUseSnap(false)
+	, mbIsOpen(false)
+	, mbUseGrayScale(false)
+	, mSnap{}
+	, mMode(ImGuizmo::WORLD)
+{
+
+}
+
+
 void fq::game_engine::Setting::Initialize(GameProcess* game, EditorProcess* editor)
 {
 	mGameProcess = game;
@@ -16,37 +27,43 @@ void fq::game_engine::Setting::Render()
 
 	if (ImGui::Begin("Setting", &mbIsOpen))
 	{
-		beginChild_SnapSetting();
+		beginChild_GizumoSetting();
 		beginChild_GraphicsSetting();
 	}
 
 	ImGui::End();
 }
 
-void fq::game_engine::Setting::beginChild_SnapSetting()
+void fq::game_engine::Setting::beginChild_GizumoSetting()
 {
 
-	if (ImGui::CollapsingHeader("Snap"))
+	if (ImGui::CollapsingHeader("Gizumo"))
 	{
-
-		if (ImGui::BeginChild("Snap"), ImVec2(0, 0), ImGuiChildFlags_AutoResizeY)
+		if (ImGui::BeginChild("Gizumo"), ImVec2(0, 0), ImGuiChildFlags_AutoResizeY)
 		{
 			ImGui::Checkbox("UseSnap", &mbUseSnap);
 			ImGui::InputFloat3("Snap", mSnap);
+
+			std::string currentMode = (mMode == ImGuizmo::WORLD) ? "World" : "Local";
+
+			if (ImGui::BeginCombo("Mode", currentMode.c_str()))
+			{
+				if (ImGui::Selectable("World"))
+				{
+					mMode = ImGuizmo::WORLD;
+				}
+				if (ImGui::Selectable("Local"))
+				{
+					mMode = ImGuizmo::LOCAL;
+				}
+
+				ImGui::EndCombo();
+			}
 		}
 		ImGui::EndChild();
 	}
-
 }
 
-fq::game_engine::Setting::Setting()
-	:mbUseSnap(false)
-	, mbIsOpen(false)
-	, mbUseGrayScale(false)
-	, mSnap{}
-{
-
-}
 
 void fq::game_engine::Setting::beginChild_GraphicsSetting()
 {
@@ -83,5 +100,10 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 
 
+}
+
+ImGuizmo::MODE fq::game_engine::Setting::GetMode()
+{
+	return mMode;
 }
 
