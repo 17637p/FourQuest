@@ -33,8 +33,10 @@ namespace fq::game_engine
 
 		// agent
 		dtNavMeshQuery* GetNavQuery() const;
-		int AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams);
+		int AddAgentToCrowd(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams);
 		dtCrowd* GetCrowd();
+
+		bool HasNavigationMesh();
 
 		// Debug
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
@@ -42,8 +44,10 @@ namespace fq::game_engine
 		// Event Process
 		void OnLoadScene(const fq::event::OnLoadScene event);
 		void OnUnloadScene();
-		void OnCleanUpScene();
 		void OnAddComponent(const fq::event::AddComponent& event);
+		void OnRemoveComponent(const fq::event::RemoveComponent& event);
+		void OnAddGameObject(const fq::event::AddGameObject& event);
+		void OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event);
 
 	private:
 		// Save
@@ -55,6 +59,8 @@ namespace fq::game_engine
 		std::vector<fq::game_module::NavigationAgent*> mAgents;
 
 		// Navigation 
+		bool mIsLoadedScene;
+		bool mHasNavigationMesh;
 		BuildSettings* mBuildSettings;
 		NavigationMeshBuilder* mBuilder;
 
@@ -64,14 +70,13 @@ namespace fq::game_engine
 
 		fq::game_module::EventHandler mOnLoadSceneHandler;
 		fq::game_module::EventHandler mOnUnloadSceneHandler;
-		fq::game_module::EventHandler mOnCleanUpSceneHandler;
-
-		entt::id_type mAgentID;
-
 		fq::game_module::EventHandler mAddComponentHandler;
 		fq::game_module::EventHandler mRemoveComponentHandler;
 		fq::game_module::EventHandler mOnAddGameObjectHandler;
 		fq::game_module::EventHandler mDestroyedGameObjectHandler;
+
+		entt::id_type mAgentID;
+
 	};
 }
 

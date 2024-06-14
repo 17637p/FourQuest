@@ -7,7 +7,9 @@
 #include "GameProcess.h"
 
 fq::game_engine::PathFindingSystem::PathFindingSystem(GameProcess* tempProcess)
-	:mBuildSettings{ new BuildSettings },
+	:mHasNavigationMesh(false),
+	mIsLoadedScene(false),
+	mBuildSettings{ new BuildSettings },
 	mBuilder{ new NavigationMeshBuilder(tempProcess) },
 	mGameProcess(tempProcess)
 {
@@ -15,12 +17,19 @@ fq::game_engine::PathFindingSystem::PathFindingSystem(GameProcess* tempProcess)
 
 fq::game_engine::PathFindingSystem::~PathFindingSystem()
 {
+	delete mBuildSettings;
 	delete mBuilder;
 }
 
 void fq::game_engine::PathFindingSystem::BuildNavigationMesh(fq::game_module::Scene* scene)
 {
 	mBuilder->BuildNavigationMesh(scene, *mBuildSettings);
+	mHasNavigationMesh = true;
+
+	for (const auto& agent : mAgents)
+	{
+		agent->RegisterNavigationField(this);
+	}
 }
 
 std::vector<DirectX::SimpleMath::Vector3> fq::game_engine::PathFindingSystem::GetNavMeshVertices()
@@ -35,29 +44,32 @@ fq::game_engine::BuildSettings* fq::game_engine::PathFindingSystem::GetBuildingS
 
 void fq::game_engine::PathFindingSystem::Update(float dt)
 {
-	//if (mGameProcess->mInputManager->GetKeyState(EKey::T) == EKeyState::Tap)
-	//{
-	//	for (auto& agent : mAgents)
-	//	{
-	//		agent->MoveTo({-1.631, 0.884, -14.869});
-	//	}
-	//}
+	if (mHasNavigationMesh)
+	{
+		//if (mGameProcess->mInputManager->GetKeyState(EKey::T) == EKeyState::Tap)
+		//{
+		//	for (auto& agent : mAgents)
+		//	{
+		//		agent->MoveTo({ -1.631, 0.884, -14.869 });
+		//	}
+		//}
 
-	//mBuilder->Update(dt);
+		mBuilder->Update(dt);
 
-	//for (auto& agent : mAgents)
-	//{
-	//	fq::game_module::Transform* agentT = agent->GetGameObject()->GetComponent<fq::game_module::Transform>();
-	//	
-	//	// 등록 안된 Agent
-	//	if (agent->GetAgentIndex() == -1)
-	//	{
-	//		continue;
-	//	}
-	//
-	//	auto npos = mBuilder->GetCrowd()->getAgent(agent->GetAgentIndex())->npos;
-	//	agentT->SetLocalPosition({ npos[0], npos[1], npos[2] });
-	//}
+		for (auto& agent : mAgents)
+		{
+			fq::game_module::Transform* agentT = agent->GetGameObject()->GetComponent<fq::game_module::Transform>();
+
+			// 등록 안된 Agent
+			if (agent->GetAgentIndex() == -1)
+			{
+				continue;
+			}
+
+			auto npos = mBuilder->GetCrowd()->getAgent(agent->GetAgentIndex())->npos;
+			agentT->SetLocalPosition({ npos[0], npos[1], npos[2] });
+		}
+	}
 }
 
 dtNavMeshQuery* fq::game_engine::PathFindingSystem::GetNavQuery() const
@@ -65,7 +77,7 @@ dtNavMeshQuery* fq::game_engine::PathFindingSystem::GetNavQuery() const
 	return mBuilder->GetNavQuery();
 }
 
-int fq::game_engine::PathFindingSystem::AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams)
+int fq::game_engine::PathFindingSystem::AddAgentToCrowd(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams)
 {
 	return mBuilder->AddAgent(pos, agentParams);
 }
@@ -79,18 +91,14 @@ void fq::game_engine::PathFindingSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::OnLoadScene>(this, &PathFindingSystem::OnLoadScene);
 	mOnUnloadSceneHandler = eventMgr->
 		RegisterHandle<fq::event::OnUnloadScene>(this, &PathFindingSystem::OnUnloadScene);
-	mOnCleanUpSceneHandler = mGameProcess->mEventManager->
-		RegisterHandle<fq::event::OnCleanUp>(this, &PathFindingSystem::OnCleanUpScene);
-	//mOnAddGameObjectHandler = mGameProcess->mEventManager->
-	//	RegisterHandle<fq::event::AddGameObject>(this, &PhysicsSystem::OnAddGameObject);
-	//mDestroyedGameObjectHandler = mGameProcess->mEventManager->
-	//	RegisterHandle<fq::event::OnDestoryedGameObject>(this, &PhysicsSystem::OnDestroyedGameObject);
-	//mAddComponentHandler = mGameProcess->mEventManager->
-	//	RegisterHandle<fq::event::AddComponent>(this, &PhysicsSystem::AddComponent);
-	//mRemoveComponentHandler = mGameProcess->mEventManager->
-	//	RegisterHandle<fq::event::RemoveComponent>(this, &PhysicsSystem::RemoveComponent);
-	//mAddInputMoveHandler = mGameProcess->mEventManager->
-	//	RegisterHandle<fq::event::AddInputMove>(this, &PhysicsSystem::AddInputMove);
+	mAddComponentHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::AddComponent>(this, &PathFindingSystem::OnAddComponent);
+	mRemoveComponentHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::RemoveComponent>(this, &PathFindingSystem::OnRemoveComponent);
+	mOnAddGameObjectHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::AddGameObject>(this, &PathFindingSystem::OnAddGameObject);
+	mDestroyedGameObjectHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::OnDestoryedGameObject>(this, &PathFindingSystem::OnDestroyedGameObject);
 
 	mAgentID = entt::resolve<fq::game_module::NavigationAgent>().id();
 }
@@ -108,26 +116,79 @@ void fq::game_engine::PathFindingSystem::OnLoadScene(const fq::event::OnLoadScen
 		if (navMeshAgent != nullptr)
 		{
 			mAgents.push_back(navMeshAgent);
-			//navMeshAgent->RegisterNavigationField(this);
+			navMeshAgent->CreateAgentData();
+			if (mHasNavigationMesh)
+			{
+				navMeshAgent->RegisterNavigationField(this);
+			}
 		}
 	}
+	mIsLoadedScene = true;
 }
 
 void fq::game_engine::PathFindingSystem::OnUnloadScene()
 {
-	mAgents.clear();
-}
-
-void fq::game_engine::PathFindingSystem::OnCleanUpScene()
-{
-	mAgents.clear();
+	mIsLoadedScene = false;
+	//mAgents.clear();
 }
 
 void fq::game_engine::PathFindingSystem::OnAddComponent(const fq::event::AddComponent& event)
 {
+	if (!mIsLoadedScene)
+	{
+		return;
+	}
+
 	if (event.id == mAgentID)
 	{
 		fq::game_module::NavigationAgent* agent = static_cast<fq::game_module::NavigationAgent*>(event.component);
 		mAgents.push_back(agent);
+		agent->CreateAgentData();
+		if (mHasNavigationMesh)
+		{
+			agent->RegisterNavigationField(this);
+		}
 	}
+}
+
+void fq::game_engine::PathFindingSystem::OnRemoveComponent(const fq::event::RemoveComponent& event)
+{
+	if (event.id == mAgentID)
+	{
+		fq::game_module::NavigationAgent* agent = static_cast<fq::game_module::NavigationAgent*>(event.component);
+		mAgents.erase(std::remove(mAgents.begin(), mAgents.end(), agent));
+	}
+}
+
+void fq::game_engine::PathFindingSystem::OnAddGameObject(const fq::event::AddGameObject& event)
+{
+	if (!mIsLoadedScene)
+	{
+		return;
+	}
+
+	fq::game_module::NavigationAgent* agent = event.object->GetComponent<fq::game_module::NavigationAgent>();
+	if (agent != nullptr)
+	{
+		mAgents.push_back(agent);
+		agent->CreateAgentData();
+		if (mHasNavigationMesh)
+		{
+			agent->RegisterNavigationField(this);
+		}
+	}
+}
+
+void fq::game_engine::PathFindingSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
+{
+	fq::game_module::NavigationAgent* agent = event.object->GetComponent<fq::game_module::NavigationAgent>();
+	if (agent != nullptr)
+	{
+		mAgents.erase(std::remove(mAgents.begin(), mAgents.end(), agent));
+	}
+}
+
+bool fq::game_engine::PathFindingSystem::HasNavigationMesh()
+{
+	return mHasNavigationMesh;
 }

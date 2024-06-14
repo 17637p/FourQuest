@@ -13,10 +13,10 @@ namespace fq::game_module
 		NavigationAgent();
 		virtual ~NavigationAgent();
 
-		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
-		void RegisterNavigationField(fq::game_engine::PathFindingSystem* navField);
+		void CreateAgentData();
+		void RegisterNavigationField(fq::game_engine::PathFindingSystem* pathFindingSystem);
 		
 		float GetSpeed();
 		void SetSpeed(float speed);

@@ -61,8 +61,7 @@ namespace fq::game_engine
 	private:
 		GameProcess* mTempProcess;
 		bool mHasNavigationMesh;
-		NavigationMeshData* impl{ nullptr };
-		//friend NavigationAgent;
+		NavigationMeshData* mNavigationMeshData{ nullptr };
 	};
 
 	class NavigationMeshBuilder::NavigationMeshData

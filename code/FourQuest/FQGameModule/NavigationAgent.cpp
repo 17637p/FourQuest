@@ -6,7 +6,7 @@
 #include "../FQGameModule/Transform.h"
 
 fq::game_module::NavigationAgent::NavigationAgent()
-	:mImpl(nullptr),
+	:mImpl(),
 	mPathFindingSystem(nullptr)
 {
 
@@ -28,7 +28,7 @@ void fq::game_module::NavigationAgent::RegisterNavigationField(fq::game_engine::
 	mPathFindingSystem = pathFindingSystem;
 
 	Transform* agentTransform =  GetGameObject()->GetComponent<Transform>();
-	mImpl->agentIdx = pathFindingSystem->AddAgent(agentTransform->GetWorldPosition(), &mImpl->agentParams);
+	mImpl->agentIdx = pathFindingSystem->AddAgentToCrowd(agentTransform->GetWorldPosition(), &mImpl->agentParams);
 
 	mImpl->crowd = mPathFindingSystem->GetCrowd();
 	// µî·Ï 
@@ -78,7 +78,14 @@ DirectX::SimpleMath::Vector3 fq::game_module::NavigationAgent::GetTargetPosition
 void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 destination)
 {
 	if (mPathFindingSystem == nullptr)
+	{
 		return;
+	}
+
+	if (!mPathFindingSystem->HasNavigationMesh())
+	{
+		return;
+	}
 
 	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
 	const dtCrowdAgent* agent = mImpl->crowd->getAgent(mImpl->agentIdx);
@@ -113,7 +120,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::NavigationAgent::Cl
 	return cloneAgent;
 }
 
-void fq::game_module::NavigationAgent::OnStart()
+void fq::game_module::NavigationAgent::CreateAgentData()
 {
-	mImpl = new Impl{ this };
+	mImpl = new Impl(this);
 }

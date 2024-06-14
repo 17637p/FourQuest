@@ -3,8 +3,27 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/AddNavigationMeshObject.h"
 
+fq::game_engine::NavigationMeshBuilder::NavigationMeshBuilder(GameProcess* tempProcess)
+	:mTempProcess(tempProcess),
+	mNavigationMeshData(nullptr),
+	mHasNavigationMesh(false)
+{
+}
+
+fq::game_engine::NavigationMeshBuilder::~NavigationMeshBuilder()
+{
+	delete mNavigationMeshData;
+}
+
 void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings)
 {
+	if (mNavigationMeshData != nullptr)
+	{
+		delete mNavigationMeshData;
+	}
+
+	mNavigationMeshData = new NavigationMeshData(this);
+
 	std::vector<DirectX::SimpleMath::Vector3> fieldVertices;
 	std::vector<int> fieldIndices;
 
@@ -89,7 +108,7 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 		if (bmax[2] < worldVertices[i * 3 + 2])
 			bmax[2] = worldVertices[i * 3 + 2];
 	}
-	auto& config{ impl->config };
+	auto& config{ mNavigationMeshData->config };
 	memset(&config, 0, sizeof(rcConfig));
 
 	config.cs = buildSettings.divisionSizeXZ;
@@ -111,7 +130,7 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	rcCalcGridSize(config.bmin, config.bmax, config.cs, &config.width, &config.height);
 
 	// 작업 맥락을 저장할 context 객체 생성, 작업의 성패여부를 저장할 processResult 선언
-	auto* context = impl->context.get();
+	auto* context = mNavigationMeshData->context.get();
 	bool processResult{ false };
 	// 복셀 높이필드 공간 할당
 	rcHeightfield* heightField{ rcAllocHeightfield() };
@@ -159,14 +178,14 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	assert(processResult == true);
 
 	// 윤곽선으로부터 폴리곤 생성
-	rcPolyMesh*& polyMesh{ impl->polyMesh = rcAllocPolyMesh() };
+	rcPolyMesh*& polyMesh{ mNavigationMeshData->polyMesh = rcAllocPolyMesh() };
 	assert(polyMesh != nullptr);
 
 	processResult = rcBuildPolyMesh(context, *contourSet, config.maxVertsPerPoly, *polyMesh);
 	assert(processResult == true);
 
 	// 디테일 메시 생성
-	auto& detailMesh{ impl->polyMeshDetail = rcAllocPolyMeshDetail() };
+	auto& detailMesh{ mNavigationMeshData->polyMeshDetail = rcAllocPolyMeshDetail() };
 	assert(detailMesh != nullptr);
 
 	processResult = rcBuildPolyMeshDetail(context, *polyMesh, *compactHeightField, config.detailSampleDist, config.detailSampleMaxError, *detailMesh);
@@ -223,34 +242,22 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	processResult = dtCreateNavMeshData(&params, &navData, &navDataSize);
 	assert(processResult == true);
 
-	dtNavMesh* navMesh{ impl->navMesh = dtAllocNavMesh() };
+	dtNavMesh* navMesh{ mNavigationMeshData->navMesh = dtAllocNavMesh() };
 	assert(navMesh != nullptr);
 
 	dtStatus status;
 	status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
 	assert(dtStatusFailed(status) == false);
 
-	dtNavMeshQuery* navQuery{ impl->navQuery };
+	dtNavMeshQuery* navQuery{ mNavigationMeshData->navQuery };
 	status = navQuery->init(navMesh, 2048);
 	assert(dtStatusFailed(status) == false);
 
-	impl->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
+	mNavigationMeshData->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
 
 	mHasNavigationMesh = true;
 
 	spdlog::info("Navigation Mesh Build Success");
-}
-
-fq::game_engine::NavigationMeshBuilder::NavigationMeshBuilder(GameProcess* tempProcess)
-	:mTempProcess(tempProcess),
-	impl(new NavigationMeshData(this)),
-	mHasNavigationMesh(false)
-{
-}
-
-fq::game_engine::NavigationMeshBuilder::~NavigationMeshBuilder()
-{
-	delete impl;
 }
 
 void duDebugDrawNavMeshPoly(std::vector<DirectX::SimpleMath::Vector3>& navMeshVertices, const dtNavMesh& mesh, dtPolyRef ref)
@@ -295,7 +302,7 @@ std::vector<DirectX::SimpleMath::Vector3> fq::game_engine::NavigationMeshBuilder
 		return navMeshVertices;
 	}
 
-	const auto* mesh = impl->navMesh;
+	const auto* mesh = mNavigationMeshData->navMesh;
 	for (int i = 0; i < mesh->getMaxTiles(); ++i)
 	{
 		const dtMeshTile* tile = mesh->getTile(i);
@@ -315,29 +322,29 @@ std::vector<DirectX::SimpleMath::Vector3> fq::game_engine::NavigationMeshBuilder
 
 void fq::game_engine::NavigationMeshBuilder::Update(float dt)
 {
-	if (impl->crowd == nullptr)
+	if (mNavigationMeshData->crowd == nullptr)
 		return;
 
-	if (impl->crowd->getAgentCount() != 0)
+	if (mNavigationMeshData->crowd->getAgentCount() != 0)
 	{
-		impl->crowd->update(dt, nullptr);
+		mNavigationMeshData->crowd->update(dt, nullptr);
 	}
 }
 
 dtNavMeshQuery* fq::game_engine::NavigationMeshBuilder::GetNavQuery() const
 {
-	return impl->navQuery;
+	return mNavigationMeshData->navQuery;
 }
 
 int fq::game_engine::NavigationMeshBuilder::AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams)
 {
 	const float posf[3] = { pos.x, pos.y, pos.z };
-	return impl->crowd->addAgent(posf, agentParams);
+	return mNavigationMeshData->crowd->addAgent(posf, agentParams);
 }
 
 dtCrowd* fq::game_engine::NavigationMeshBuilder::GetCrowd()
 {
-	return impl->crowd;
+	return mNavigationMeshData->crowd;
 }
 
 #pragma region NavigationData
