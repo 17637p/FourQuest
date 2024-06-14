@@ -11,12 +11,19 @@
 
 #include "GameProcess.h"
 #include "WindowSystem.h"
-#include "SoundSystem.h"
-#include "RenderingSystem.h"
-#include "PhysicsSystem.h"
-#include "LightSystem.h"
+#include "ModelSystem.h"
 #include "CameraSystem.h"
+#include "RenderingSystem.h"
+#include "LightSystem.h"
 #include "AnimationSystem.h"
+#include "PhysicsSystem.h"
+#include "SoundSystem.h"
+#include "ParticleSystem.h"
+#include "DecalSystem.h"
+#include "UISystem.h"
+
+#include "FQGameEngineRegister.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::GameEngine::GameEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
@@ -39,7 +46,9 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess 초기화
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mGameProcess->mSceneManager->Initialize("example"
+	constexpr const char* StartSceneName = "example";
+
+	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());
@@ -62,10 +71,13 @@ void fq::game_engine::GameEngine::Initialize()
 	// 시스템 초기화
 	mGameProcess->mRenderingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mCameraSystem->Initialize(mGameProcess.get());
-	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mPhysicsSystem->Initialize(mGameProcess.get());
+	mGameProcess->mLightSystem->Initialize(mGameProcess.get());
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
+	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
+	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
+	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
@@ -83,6 +95,10 @@ void fq::game_engine::GameEngine::Process()
 	bool bIsDone = false;
 	while (!bIsDone)
 	{
+		//////////////////////////////////////////////////////////////////////////
+		//							Window Message								//
+		//////////////////////////////////////////////////////////////////////////
+
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
@@ -95,7 +111,10 @@ void fq::game_engine::GameEngine::Process()
 		}
 		else
 		{
-			// 화면 크기 조정
+			//////////////////////////////////////////////////////////////////////////
+			//							Resize Window								//
+			//////////////////////////////////////////////////////////////////////////
+
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
 				mGameProcess->mWindowSystem->OnResize();
@@ -105,26 +124,44 @@ void fq::game_engine::GameEngine::Process()
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
 
-			// 시간, 키입력 처리 
+			//////////////////////////////////////////////////////////////////////////
+			//							시간 입력 처리								//
+			//////////////////////////////////////////////////////////////////////////
+
 			float deltaTime = mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update();
+			mGameProcess->mSoundManager->Update();
+
+			//////////////////////////////////////////////////////////////////////////
+			//							Physics Process								//
+			//////////////////////////////////////////////////////////////////////////
 			
 			static float accmulator = 0.f;
-			static float fixedDeltaTime = 1.f / 60.f;
-
+			constexpr float fixedDeltaTime = 1.f / 60.f;
 			accmulator += deltaTime;
 
+			bool onFixedUpdtae = false;
 			while (accmulator >= fixedDeltaTime)
 			{
-				// 물리처리
-				mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+				accmulator -= fixedDeltaTime;
+				onFixedUpdtae = true;
+
 				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
+				mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 				mGameProcess->mPhysics->Update(fixedDeltaTime);
 				mGameProcess->mPhysics->FinalUpdate();
 				mGameProcess->mPhysicsSystem->SinkToGameScene();
-
-				accmulator -= fixedDeltaTime;
+				mGameProcess->mPhysicsSystem->ProcessCallBack();
 			}
+
+			if (onFixedUpdtae)
+			{
+				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+			}
+
+			//////////////////////////////////////////////////////////////////////////
+			//							Scene Process								//
+			//////////////////////////////////////////////////////////////////////////
 
 			// Scene Update
 			mGameProcess->mSceneManager->Update(deltaTime);
@@ -134,17 +171,30 @@ void fq::game_engine::GameEngine::Process()
 
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
-
-			// 시스템 업데이트
+		
+			//////////////////////////////////////////////////////////////////////////
+			//							System Process								//
+			//////////////////////////////////////////////////////////////////////////
+			
+			mGameProcess->mParticleSystem->Update(deltaTime);
+			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 
-			// 랜더링
+			//////////////////////////////////////////////////////////////////////////
+			//							Rendering Process							//
+			//////////////////////////////////////////////////////////////////////////
+
 			mGameProcess->mGraphics->BeginRender();
 			mGameProcess->mGraphics->Render();
 			mGameProcess->mGraphics->EndRender();
 
+			//////////////////////////////////////////////////////////////////////////
+			//							Post Scene Process							//
+			//////////////////////////////////////////////////////////////////////////
+
+			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
 			if (mGameProcess->mSceneManager->IsEnd())
 			{

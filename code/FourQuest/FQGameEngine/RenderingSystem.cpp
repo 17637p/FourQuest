@@ -236,7 +236,9 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	// StaticMesh »ý¼º
 	auto staticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInfo);
 	staticMeshRenderer->SetStaticMeshObject(staticMeshObject);
-	staticMeshObject->SetOutlineColor(staticMeshRenderer->GetOutlineColor());
+
+	if (staticMeshObject)
+		staticMeshObject->SetOutlineColor(staticMeshRenderer->GetOutlineColor());
 }
 
 void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject* object)

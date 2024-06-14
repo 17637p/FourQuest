@@ -16,9 +16,6 @@
     <ClCompile Include="winMaincpp.cpp">
       <Filter>entry</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>entry</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">

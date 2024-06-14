@@ -38,7 +38,7 @@ void fq::game_module::Animator::SetController(std::shared_ptr<AnimatorController
 
 void fq::game_module::Animator::SetParameterInt(const std::string& id, int val)
 {
-   mController->SetParameter(id, val);
+	mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterFloat(const std::string& id, float val)
@@ -58,12 +58,14 @@ void fq::game_module::Animator::SetParameterTrigger(const std::string& id)
 
 void fq::game_module::Animator::UpdateState(float dt)
 {
-	mController->UpdateState(dt);
+	if (mController)
+		mController->UpdateState(dt);
 }
 
 void fq::game_module::Animator::UpdateAnimation(float dt)
 {
-	mController->UpdateAnimation(dt);
+	if (mController)
+		mController->UpdateAnimation(dt);
 }
 
 bool fq::game_module::Animator::IsInTransition() const
@@ -73,6 +75,7 @@ bool fq::game_module::Animator::IsInTransition() const
 
 void fq::game_module::Animator::OnUpdate(float dt)
 {
-	mController->Update(dt);
+	if (mController)
+		mController->Update(dt);
 }
 

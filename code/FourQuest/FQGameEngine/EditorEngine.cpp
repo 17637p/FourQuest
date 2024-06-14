@@ -47,7 +47,9 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	mGameProcess->mSceneManager->Initialize("PlayerTest2"
+	constexpr const char* startSceneName = "PlayerTest2";
+
+	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get());
@@ -91,8 +93,11 @@ void fq::game_engine::EditorEngine::Process()
 	bool bIsDone = false;
 
 	while (!bIsDone)
-	{
-		// 윈도우 메세지를 처리합니다
+	{		
+		//////////////////////////////////////////////////////////////////////////
+		//							Window Message								//
+		//////////////////////////////////////////////////////////////////////////
+
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
@@ -104,7 +109,10 @@ void fq::game_engine::EditorEngine::Process()
 		}
 		else
 		{
-			// 화면 크기 조정
+			//////////////////////////////////////////////////////////////////////////
+			//							Resize Window								//
+			//////////////////////////////////////////////////////////////////////////
+
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
 				mGameProcess->mWindowSystem->OnResize();
@@ -113,19 +121,25 @@ void fq::game_engine::EditorEngine::Process()
 				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
 			}
-
 			auto mode = mEditor->mGamePlayWindow->GetMode();
 
-			// 시간,입력 처리
+			//////////////////////////////////////////////////////////////////////////
+			//							시간 입력 처리								//
+			//////////////////////////////////////////////////////////////////////////
+
 			float deltaTime = mGameProcess->mTimeManager->Update();
 			mGameProcess->mInputManager->Update();
 			mGameProcess->mSoundManager->Update();
 
 			if (mode == EditorMode::Play)
 			{
+			
+			//////////////////////////////////////////////////////////////////////////
+			//							Physics Process								//
+			//////////////////////////////////////////////////////////////////////////
+
 				static float accmulator = 0.f;
 				constexpr float fixedDeltaTime = 1.f / 60.f;
-
 				accmulator += deltaTime;
 
 				bool onFixedUpdtae = false;
@@ -134,7 +148,6 @@ void fq::game_engine::EditorEngine::Process()
 					accmulator -= fixedDeltaTime;
 					onFixedUpdtae = true;
 
-					// 물리처리
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysics->Update(fixedDeltaTime);
@@ -148,6 +161,10 @@ void fq::game_engine::EditorEngine::Process()
 					mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
 				}
 
+			//////////////////////////////////////////////////////////////////////////
+			//							Scene Process								//
+			//////////////////////////////////////////////////////////////////////////
+
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
 
@@ -160,14 +177,21 @@ void fq::game_engine::EditorEngine::Process()
 			else
 				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
 
-			// 시스템 업데이트
+			//////////////////////////////////////////////////////////////////////////
+			//							System Process								//
+			//////////////////////////////////////////////////////////////////////////
+
 			mGameProcess->mParticleSystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 
-			// 랜더링 
+
+			//////////////////////////////////////////////////////////////////////////
+			//							Rendering Process							//
+			//////////////////////////////////////////////////////////////////////////
+
 			mGameProcess->mGraphics->BeginRender();
 			mEditor->mDebugSystem->Render();
 			mGameProcess->mGraphics->Render();
@@ -178,6 +202,10 @@ void fq::game_engine::EditorEngine::Process()
 			mEditor->mImGuiSystem->RenderImGui();
 
 			mGameProcess->mGraphics->EndRender();
+
+			//////////////////////////////////////////////////////////////////////////
+			//							Post Scene Proeces							//
+			//////////////////////////////////////////////////////////////////////////
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
