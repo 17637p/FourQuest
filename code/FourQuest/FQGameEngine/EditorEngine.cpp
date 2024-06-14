@@ -74,6 +74,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mSoundSystem->Initialize(mGameProcess.get());
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
+	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
@@ -160,6 +161,8 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();

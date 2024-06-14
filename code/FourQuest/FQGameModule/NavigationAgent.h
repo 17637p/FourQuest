@@ -1,9 +1,10 @@
 #pragma once
 #include "Component.h"
 
+namespace fq::game_engine { class PathFindingSystem; }
+
 namespace fq::game_module
 {
-	class NavigationField;
 	class NavigationAgent : public Component
 	{
 	public:
@@ -14,7 +15,7 @@ namespace fq::game_module
 
 		virtual void OnUpdate(float dt) override;
 
-		void AssignToNavigationField(NavigationField* navField);
+		void RegisterNavigationField(fq::game_engine::PathFindingSystem* navField);
 		
 		float GetSpeed();
 		void SetSpeed(float speed);
@@ -25,12 +26,21 @@ namespace fq::game_module
 		float GetRadius();
 		void SetRadius(float radius);
 
+		int GetAgentIndex();
+
 		DirectX::SimpleMath::Vector3 GetTargetPosition();
 		void MoveTo(DirectX::SimpleMath::Vector3 destination);
 
+		/// <summary>
+		/// 복사본을 반환합니다 
+		/// </summary>
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+
+	private:
+		entt::meta_handle GetHandle() override { return *this; }
+
 	private:
 		Impl* impl;
-		NavigationField* navField;
-		friend NavigationField;
+		fq::game_engine::PathFindingSystem* mPathFindingSystem;
 	};
 }

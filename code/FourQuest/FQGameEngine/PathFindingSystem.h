@@ -13,7 +13,15 @@
 #include <recastnavigation/DetourNavMeshQuery.h>
 #include <recastnavigation/DetourCrowd.h>
 
-namespace fq::game_module{ class Scene; }
+namespace fq::game_module
+{ 
+	class Scene; 
+	class NavigationAgent;
+}
+
+class dtNavMeshQuery;
+class dtCrowdAgentParams;
+class dtCrowd;
 
 namespace fq::game_engine
 {
@@ -41,8 +49,13 @@ namespace fq::game_engine
 		virtual ~NavigationMeshBuilder();
 
 		void Update(float dt);
-
 		void BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings);
+
+		// agent
+		dtNavMeshQuery* GetNavQuery() const;
+		int AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams);
+		dtCrowd* GetCrowd();
+
 		// Debug Draw ¿ë
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
 
@@ -89,10 +102,19 @@ namespace fq::game_engine
 		NavigationMeshBuilder::BuildSettings& GetBuildingSettrings();
 		void BuildNavigationMesh(fq::game_module::Scene* scene);
 
+		void Initialize(GameProcess* game);
 		void Update(float dt);
+
+		// agent
+		dtNavMeshQuery* GetNavQuery() const;
+		int AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams);
+		dtCrowd* GetCrowd();
 
 		// Debug
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
+
+		// Event Handler
+		void OnLoadScene();
 
 	private:
 		// Save
@@ -100,8 +122,20 @@ namespace fq::game_engine
 		//bool duDumpPolyMeshDetailToObj(struct rcPolyMeshDetail& dmesh, duFileIO* io);
 
 	private:
+		std::vector<fq::game_module::NavigationAgent*> mAgents;
 		NavigationMeshBuilder::BuildSettings mBuildSettings;
 		NavigationMeshBuilder* mBuilder;
+
+		fq::game_engine::GameProcess* mGameProcess;
+		fq::game_module::Scene* mScene;
+
+		fq::game_module::EventHandler mOnLoadSceneHandler;
+		fq::game_module::EventHandler mAddComponentHandler;
+		fq::game_module::EventHandler mRemoveComponentHandler;
+		fq::game_module::EventHandler mOnCleanUpSceneHandler;
+		fq::game_module::EventHandler mOnUnloadSceneHandler;
+		fq::game_module::EventHandler mOnAddGameObjectHandler;
+		fq::game_module::EventHandler mDestroyedGameObjectHandler;
 	};
 }
 

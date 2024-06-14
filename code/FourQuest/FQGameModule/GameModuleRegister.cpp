@@ -30,6 +30,7 @@
 
 // PathFinding
 #include "AddNavigationMeshObject.h"
+#include "NavigationAgent.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -791,5 +792,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AddNavigationMeshObject")
 		.data<&AddNavigationMeshObject::SetIsUsed, &AddNavigationMeshObject::GetIsUsed>("IsUsed"_hs)
 		.prop(fq::reflect::prop::Name, "IsUsed")
+		.base<fq::game_module::Component>();
+
+	entt::meta<NavigationAgent>()
+		.type("NavigationAgent"_hs)
+		.prop(fq::reflect::prop::Name, "NavigationAgent")
 		.base<fq::game_module::Component>();
 }

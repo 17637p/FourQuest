@@ -16,7 +16,7 @@ namespace fq::game_module
         {
             .radius = 1,
             .height = 0.3,
-            .maxAcceleration = std::numeric_limits<float>::max(),
+            .maxAcceleration = FLT_MAX,
             .maxSpeed = 5,
             .collisionQueryRange = 12,
             .pathOptimizationRange = 30,
