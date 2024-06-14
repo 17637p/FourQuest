@@ -63,6 +63,12 @@
     <Filter Include="include\11.EditorWindow\Define">
       <UniqueIdentifier>{d0631955-d9a8-444b-a5e5-d8f56c94c845}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\03.GameSystem\PathFindingSystem">
+      <UniqueIdentifier>{c1fc7586-087c-4ae0-8b6d-2955b931dc44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem\PathFindingSystem">
+      <UniqueIdentifier>{3728426b-3c6b-40e6-bcfb-65d184a34d79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorEngine.h">
@@ -185,11 +191,14 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="PathFindingSystem.h">
-      <Filter>include\03.GameSystem</Filter>
-    </ClInclude>
     <ClInclude Include="NavigationMeshWindow.h">
       <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFindingSystem.h">
+      <Filter>include\03.GameSystem\PathFindingSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMesh.h">
+      <Filter>include\03.GameSystem\PathFindingSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -307,11 +316,14 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
-    <ClCompile Include="PathFindingSystem.cpp">
-      <Filter>src\03.GameSystem</Filter>
-    </ClCompile>
     <ClCompile Include="NavigationMeshWindow.cpp">
       <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFindingSystem.cpp">
+      <Filter>src\03.GameSystem\PathFindingSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMesh.cpp">
+      <Filter>src\03.GameSystem\PathFindingSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

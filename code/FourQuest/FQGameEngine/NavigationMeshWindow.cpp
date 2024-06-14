@@ -4,6 +4,9 @@
 
 #include "PathFindingSystem.h"
 #include "GameProcess.h"
+#include "../FQGameModule/SceneManager.h"
+#include "NavigationMesh.h"
+
 
 fq::game_engine::NavigationMeshWindow::NavigationMeshWindow()
 	:mbIsOpen(false)
@@ -46,29 +49,29 @@ float divisionSizeY{ 0.2 }; // y축 공간 분할의 단위, 단위가 작을수록 판정이 더 �
 
 void fq::game_engine::NavigationMeshWindow::beginNavigationMeshDataInput()
 {
-	NavigationMeshBuilder::BuildSettings& buildSettings = mPathFindingSystem->GetBuildingSettrings();
+	BuildSettings* buildSettings = mPathFindingSystem->GetBuildingSettrings();
 
 	//if (ImGui::InputFloat())
 	//ImGui::SetNextItemWidth(100.f);
-	if (ImGui::InputInt("MaxMonster", &buildSettings.maxCrowdNumber))
+	if (ImGui::InputInt("MaxMonster", &buildSettings->maxCrowdNumber))
 	{
 	}
-	if (ImGui::InputFloat("MaxCollisionRadius", &buildSettings.maxAgentRadius))
+	if (ImGui::InputFloat("MaxCollisionRadius", &buildSettings->maxAgentRadius))
 	{
 	}
-	if (ImGui::InputFloat("WalkableSlopeAngle", &buildSettings.walkableSlopeAngle))
+	if (ImGui::InputFloat("WalkableSlopeAngle", &buildSettings->walkableSlopeAngle))
 	{
 	}
-	if (ImGui::InputFloat("WalkableClimb", &buildSettings.walkableClimb))
+	if (ImGui::InputFloat("WalkableClimb", &buildSettings->walkableClimb))
 	{
 	}
-	if (ImGui::InputFloat("WalkableMinHeight", &buildSettings.walkableHeight))
+	if (ImGui::InputFloat("WalkableMinHeight", &buildSettings->walkableHeight))
 	{
 	}
-	if (ImGui::InputFloat("DivisionSizeXZ", &buildSettings.divisionSizeXZ))
+	if (ImGui::InputFloat("DivisionSizeXZ", &buildSettings->divisionSizeXZ))
 	{
 	}
-	if (ImGui::InputFloat("DivisionSizeY", &buildSettings.divisionSizeY))
+	if (ImGui::InputFloat("DivisionSizeY", &buildSettings->divisionSizeY))
 	{
 	}
 }

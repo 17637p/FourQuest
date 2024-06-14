@@ -13,6 +13,7 @@ namespace fq::game_module
 		NavigationAgent();
 		virtual ~NavigationAgent();
 
+		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
 		void RegisterNavigationField(fq::game_engine::PathFindingSystem* navField);
@@ -40,7 +41,7 @@ namespace fq::game_module
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		Impl* impl;
+		Impl* mImpl;
 		fq::game_engine::PathFindingSystem* mPathFindingSystem;
 	};
 }

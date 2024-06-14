@@ -3,8 +3,10 @@
 #include "NavigationAgentImpl.h"
 #include "../FQGameEngine/PathFindingSystem.h"
 
+#include "../FQGameModule/Transform.h"
+
 fq::game_module::NavigationAgent::NavigationAgent()
-	:impl(new Impl{this}),
+	:mImpl(nullptr),
 	mPathFindingSystem(nullptr)
 {
 
@@ -12,7 +14,7 @@ fq::game_module::NavigationAgent::NavigationAgent()
 
 fq::game_module::NavigationAgent::~NavigationAgent()
 {
-
+	delete mImpl;
 }
 
 void fq::game_module::NavigationAgent::OnUpdate(float dt)
@@ -22,54 +24,55 @@ void fq::game_module::NavigationAgent::OnUpdate(float dt)
 
 void fq::game_module::NavigationAgent::RegisterNavigationField(fq::game_engine::PathFindingSystem* pathFindingSystem)
 {
-	//m_crowd = dtAllocCrowd();
 	// addagent
 	mPathFindingSystem = pathFindingSystem;
 
 	Transform* agentTransform =  GetGameObject()->GetComponent<Transform>();
-	impl->agentIdx = pathFindingSystem->AddAgent(agentTransform->GetWorldPosition(), &impl->agentParams);
+	mImpl->agentIdx = pathFindingSystem->AddAgent(agentTransform->GetWorldPosition(), &mImpl->agentParams);
+
+	mImpl->crowd = mPathFindingSystem->GetCrowd();
 	// µî·Ï 
 }
 
 float fq::game_module::NavigationAgent::GetSpeed()
 {
-	return impl->agentParams.maxSpeed;
+	return mImpl->agentParams.maxSpeed;
 }
 
 void fq::game_module::NavigationAgent::SetSpeed(float speed)
 {
-	impl->agentParams.maxSpeed = speed;
-	if (impl->crowd != nullptr)
-		impl->crowd->updateAgentParameters(impl->agentIdx, &impl->agentParams);
+	mImpl->agentParams.maxSpeed = speed;
+	if (mImpl->crowd != nullptr)
+		mImpl->crowd->updateAgentParameters(mImpl->agentIdx, &mImpl->agentParams);
 }
 
 float fq::game_module::NavigationAgent::GetAcceleration()
 {
-	return impl->agentParams.maxAcceleration;
+	return mImpl->agentParams.maxAcceleration;
 }
 
 void fq::game_module::NavigationAgent::SetAcceleration(float accel)
 {
-	impl->agentParams.maxAcceleration = accel;
-	if (impl->crowd != nullptr)
-		impl->crowd->updateAgentParameters(impl->agentIdx, &impl->agentParams);
+	mImpl->agentParams.maxAcceleration = accel;
+	if (mImpl->crowd != nullptr)
+		mImpl->crowd->updateAgentParameters(mImpl->agentIdx, &mImpl->agentParams);
 }
 
 float fq::game_module::NavigationAgent::GetRadius()
 {
-	return impl->agentParams.radius;
+	return mImpl->agentParams.radius;
 }
 
 void fq::game_module::NavigationAgent::SetRadius(float radius)
 {
-	impl->agentParams.radius = radius;
-	if (impl->crowd != nullptr)
-		impl->crowd->updateAgentParameters(impl->agentIdx, &impl->agentParams);
+	mImpl->agentParams.radius = radius;
+	if (mImpl->crowd != nullptr)
+		mImpl->crowd->updateAgentParameters(mImpl->agentIdx, &mImpl->agentParams);
 }
 
 DirectX::SimpleMath::Vector3 fq::game_module::NavigationAgent::GetTargetPosition()
 {
-	return { impl->targetPos[0], impl->targetPos[1], impl->targetPos[2] };
+	return { mImpl->targetPos[0], mImpl->targetPos[1], mImpl->targetPos[2] };
 }
 
 void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 destination)
@@ -77,20 +80,17 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 	if (mPathFindingSystem == nullptr)
 		return;
 
-	impl->crowd = mPathFindingSystem->GetCrowd();
+	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
+	const dtCrowdAgent* agent = mImpl->crowd->getAgent(mImpl->agentIdx);
+	const float* halfExtents = mImpl->crowd->getQueryExtents();
 
-	const dtQueryFilter* filter{ impl->crowd->getFilter(0) };
-	const dtCrowdAgent* agent = impl->crowd->getAgent(impl->agentIdx);
-	const float* halfExtents = impl->crowd->getQueryExtents();
-
-
-	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &impl->targetRef, impl->targetPos);
-	impl->crowd->requestMoveTarget(impl->agentIdx, impl->targetRef, impl->targetPos);
+	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
+	mImpl->crowd->requestMoveTarget(mImpl->agentIdx, mImpl->targetRef, mImpl->targetPos);
 }
 
 int fq::game_module::NavigationAgent::GetAgentIndex()
 {
-	return impl->agentIdx;
+	return mImpl->agentIdx;
 }
 
 std::shared_ptr<fq::game_module::Component> fq::game_module::NavigationAgent::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
@@ -107,5 +107,13 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::NavigationAgent::Cl
 		*cloneAgent = *this;
 	}
 
+	cloneAgent->mImpl = nullptr;
+	cloneAgent->mPathFindingSystem = nullptr;
+
 	return cloneAgent;
+}
+
+void fq::game_module::NavigationAgent::OnStart()
+{
+	mImpl = new Impl{ this };
 }
