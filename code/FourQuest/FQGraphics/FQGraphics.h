@@ -49,6 +49,9 @@ namespace fq::graphics
 		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
+		virtual std::shared_ptr<IMaterial> CreateMaterial(const StandardMaterialInfo& standardMaterialInfo) override;
+		virtual std::shared_ptr<IMaterial> CreateMaterial(const DecalMaterialInfo& standardMaterialInfo) override;
+
 		/// Primitive
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;
@@ -66,6 +69,7 @@ namespace fq::graphics
 
 		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
 		void DeleteDecalObject(IDecalObject* decalObjectInterface);
+		void DrawDecalObject(IDecalObject* decalObject, IMaterial* material, const DirectX::SimpleMath::Matrix& transform) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;

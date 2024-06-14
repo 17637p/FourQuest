@@ -25,6 +25,14 @@ namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class IParticleObject; }
 namespace fq::graphics { class IDecalObject; }
+namespace fq::graphics { class IMaterial; }
+
+struct DecalObject
+{
+	fq::graphics::IDecalObject* DecalObject;
+	std::shared_ptr<fq::graphics::IMaterial> Material;
+	DirectX::SimpleMath::Matrix Transform;
+};
 
 class Process : public BaseWindow<Process>
 {
@@ -95,7 +103,7 @@ private:
 	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
-	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
+	std::vector<DecalObject> mDecalObjects;
 
 	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
 	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;

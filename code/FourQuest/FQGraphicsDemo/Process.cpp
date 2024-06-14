@@ -50,9 +50,9 @@ Process::~Process()
 		mTestGraphics->DeleteParticleObject(iobj);
 	}
 
-	for (fq::graphics::IDecalObject* iobj : mDecalObjects)
+	for (auto decal : mDecalObjects)
 	{
-		mTestGraphics->DeleteDecalObject(iobj);
+		mTestGraphics->DeleteDecalObject(decal.DecalObject);
 	}
 
 	//mTestGraphics->DeleteLight(1);
@@ -155,29 +155,29 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-	
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1,1,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 1 ,-1, 0 };
 	directionalLightInfo.direction.Normalize();
-	
+
 	mTestGraphics->AddLight(2, directionalLightInfo);
-	
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1 ,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { -1, -1, 0 };
 	directionalLightInfo.direction.Normalize();
-	
+
 	mTestGraphics->AddLight(3, directionalLightInfo);
-	
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1 ,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0, -1, -1 };
 	directionalLightInfo.direction.Normalize();
-	
+
 	mTestGraphics->AddLight(4, directionalLightInfo);
 
 	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
@@ -1005,6 +1005,8 @@ void Process::particleUpdate()
 
 void Process::materialUpdate()
 {
+	using namespace fq::graphics;
+
 	static float tempColor = 0.0f;
 
 	tempColor += mTimeManager.GetDeltaTime();
@@ -1012,84 +1014,93 @@ void Process::materialUpdate()
 
 	for (auto matrialInterface : mTestGraphics->GetMaterials())
 	{
-		fq::graphics::MaterialTextureUseFlag textureUseFlag;
-		auto materialData = matrialInterface->GetMaterialData();
+		if (matrialInterface->GetMaterialType() != EMaterialType::Standard)
+		{
+			continue;
+		}
+
 		if (GetAsyncKeyState('U') & 0x8000)
 		{
-			textureUseFlag.bUseBaseColor = false;
-			textureUseFlag.bUseMetalness = false;
-			textureUseFlag.bUseRoughness = false;
-			materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-			materialData.Metalness = tempColor;
-			materialData.Roughness = tempColor;
-			materialData.BaseColorFileName = L"boxBaseColor.jpg";
-			materialData.NormalFileName = L"boxNormal.jpg";
-			matrialInterface->SetMaterialData(materialData);
+			auto& materialInfo = matrialInterface->GetStandardMaterialInfo();
+			materialInfo.bUseBaseColor = false;
+			materialInfo.bUseMetalness = false;
+			materialInfo.bUseRoughness = false;
+			materialInfo.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+			materialInfo.Metalness = tempColor;
+			materialInfo.Roughness = tempColor;
+			materialInfo.BaseColorFileName = L"boxBaseColor.jpg";
+			materialInfo.NormalFileName = L"boxNormal.jpg";
+
+			MaterialControllInfo materialControllInfo;
+			materialControllInfo.bTryLoadTexture = true;
+			matrialInterface->SetMaterialControllInfo(materialControllInfo);
 		}
 		else
 		{
-			textureUseFlag.bUseMetalness = true;
-			textureUseFlag.bUseRoughness = true;
-			textureUseFlag.bUseBaseColor = true;
+			auto& materialInfo = matrialInterface->GetStandardMaterialInfo();
+			materialInfo.bUseBaseColor = true;
+			materialInfo.bUseMetalness = true;
+			materialInfo.bUseRoughness = true;
 		}
-
-		matrialInterface->SetTextureUseFlag(textureUseFlag);
 	}
 
 	for (auto meshInterface : mSkinnedMeshObjects)
 	{
 		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
 		{
-			fq::graphics::MaterialTextureUseFlag textureUseFlag;
-			auto materialData = matrialInterface->GetMaterialData();
 			if (GetAsyncKeyState('Y') & 0x8000)
 			{
-				textureUseFlag.bUseBaseColor = false;
-				textureUseFlag.bUseMetalness = false;
-				textureUseFlag.bUseRoughness = false;
-				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-				materialData.Metalness = tempColor;
-				materialData.Roughness = tempColor;
-				materialData.BaseColorFileName = L"boxBaseColor.jpg";
-				materialData.NormalFileName = L"boxNormal.jpg";
-				matrialInterface->SetMaterialData(materialData);
+				auto& materialInfo = matrialInterface->GetStandardMaterialInfo();
+				materialInfo.bUseBaseColor = false;
+				materialInfo.bUseMetalness = false;
+				materialInfo.bUseRoughness = false;
+				materialInfo.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialInfo.Metalness = tempColor;
+				materialInfo.Roughness = tempColor;
+				materialInfo.BaseColorFileName = L"boxBaseColor.jpg";
+				materialInfo.NormalFileName = L"boxNormal.jpg";
+
+				MaterialControllInfo materialControllInfo;
+				materialControllInfo.bTryLoadTexture = true;
+				matrialInterface->SetMaterialControllInfo(materialControllInfo);
 			}
 			else
 			{
-				textureUseFlag.bUseMetalness = true;
-				textureUseFlag.bUseRoughness = true;
-				textureUseFlag.bUseBaseColor = true;
+				auto& materialInfo = matrialInterface->GetStandardMaterialInfo();
+				materialInfo.bUseBaseColor = true;
+				materialInfo.bUseMetalness = true;
+				materialInfo.bUseRoughness = true;
 			}
-
-			matrialInterface->SetTextureUseFlag(textureUseFlag);
 		}
 	}
 	for (auto meshInterface : mStaticMeshObjects)
 	{
 		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
 		{
-			fq::graphics::MaterialTextureUseFlag textureUseFlag;
-			auto materialData = matrialInterface->GetMaterialData();
 			if (GetAsyncKeyState('T') & 0x8000)
 			{
-				textureUseFlag.bUseBaseColor = false;
-				textureUseFlag.bUseMetalness = false;
-				textureUseFlag.bUseRoughness = false;
-				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-				materialData.Metalness = tempColor;
-				materialData.Roughness = tempColor;
-				materialData.BaseColorFileName = L"boxBaseColor.jpg";
-				materialData.NormalFileName = L"boxNormal.jpg";
-				matrialInterface->SetMaterialData(materialData);
+
+				auto& materialInfo = matrialInterface->GetStandardMaterialInfo();
+				materialInfo.bUseBaseColor = false;
+				materialInfo.bUseMetalness = false;
+				materialInfo.bUseRoughness = false;
+				materialInfo.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialInfo.Metalness = tempColor;
+				materialInfo.Roughness = tempColor;
+				materialInfo.BaseColorFileName = L"boxBaseColor.jpg";
+				materialInfo.NormalFileName = L"boxNormal.jpg";
+
+				MaterialControllInfo materialControllInfo;
+				materialControllInfo.bTryLoadTexture = true;
+				matrialInterface->SetMaterialControllInfo(materialControllInfo);
 			}
 			else
 			{
-				textureUseFlag.bUseMetalness = true;
-				textureUseFlag.bUseRoughness = true;
-				textureUseFlag.bUseBaseColor = true;
+				auto& materialInfo = matrialInterface->GetStandardMaterialInfo();
+				materialInfo.bUseBaseColor = true;
+				materialInfo.bUseMetalness = true;
+				materialInfo.bUseRoughness = true;
 			}
-
-			matrialInterface->SetTextureUseFlag(textureUseFlag);
 		}
 	}
 }
@@ -1118,32 +1129,38 @@ void Process::decalInit()
 {
 	using namespace fq::graphics;
 	using namespace DirectX::SimpleMath;
+
+	DecalMaterialInfo materialInfo;
+	materialInfo.TextureBasePath = L"./resource/example/texture";
+	materialInfo.BaseColorFileName = L"boxBaseColor.jpg";;
+	materialInfo.NormalFileName = L"boxNormal.jpg";
+	auto materialInterface = mTestGraphics->CreateMaterial(materialInfo);
+
 	{
+		DecalObject decalObject;
+
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
-		decalInfo.MatrialData.NormalFileName = L"boxNormal.jpg";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		decalObject.DecalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		decalObject.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
+		decalObject.Material = materialInterface;
 		mDecalObjects.push_back(decalObject);
 	}
 	{
+		DecalObject decalObject;
+
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		decalObject.DecalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		decalObject.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
+		decalObject.Material = materialInterface;
 		mDecalObjects.push_back(decalObject);
 	}
 	{
+		DecalObject decalObject;
+
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"cerberus_A.png";
-		decalInfo.MatrialData.NormalFileName = L"cerberus_N.png";
-		decalInfo.MatrialData.MetalnessFileName = L"cerberus_M.png";
-		decalInfo.MatrialData.RoughnessFileName = L"cerberus_R.png";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		decalObject.DecalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		decalObject.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
+		decalObject.Material = materialInterface;
 		mDecalObjects.push_back(decalObject);
 	}
 }
@@ -1155,15 +1172,11 @@ void Process::decalUpdate()
 
 	static float s_rotate = 100;
 	s_rotate += mTimeManager.GetDeltaTime();
-
 	int i = -(int)mDecalObjects.size() + mDecalObjects.size() / 2;
-	for (IDecalObject* decalObject : mDecalObjects)
+	for (auto& decalObject : mDecalObjects)
 	{
-		DecalInfo decalInfo = decalObject->GetDecalInfo();
-		decalInfo.Transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
-		decalInfo.NormalThresholdInRadian = 3.14 * 0.5f;
-		decalObject->SetDecalInfo(decalInfo);
-
+		decalObject.Transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
+		mTestGraphics->DrawDecalObject(decalObject.DecalObject, decalObject.Material.get(), decalObject.Transform);
 		++i;
 	}
 }

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <filesystem>
-#include "FQCommonLoader.h"
+#include "FQCommonGraphics.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -14,27 +13,30 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
-		struct MaterialTextureUseFlag
-		{
-			bool bUseBaseColor = true;
-			bool bUseMetalness = true;
-			bool bUseRoughness = true;
-			bool bUseNormalness = true;
-		};
 
 		class IMaterial
 		{
-		public:
-			virtual FQ_GRAPHICS void SetTextureUseFlag(const MaterialTextureUseFlag& materialTextureUseFlag) abstract;
-			virtual FQ_GRAPHICS void SetMaterialData(const fq::common::Material& materialData) abstract;
-			virtual FQ_GRAPHICS void SetTextureBasePath(const std::filesystem::path& basePath) abstract;
+			friend class D3D11ModelManager;
 
-			virtual FQ_GRAPHICS const MaterialTextureUseFlag& GetTextureUseFlag() const abstract;
-			virtual FQ_GRAPHICS const fq::common::Material& GetMaterialData() const abstract;
-			virtual FQ_GRAPHICS const std::filesystem::path& GetTextureBasePath() const abstract;
+		public:
+			virtual FQ_GRAPHICS EMaterialType GetMaterialType() const abstract;
+
+			virtual FQ_GRAPHICS void SetStandardMaterialInfo(const StandardMaterialInfo& materialInfo) { assert(false); throw; }
+			virtual FQ_GRAPHICS const StandardMaterialInfo& GetStandardMaterialInfo() const { assert(false); throw; }
+			virtual FQ_GRAPHICS StandardMaterialInfo& GetStandardMaterialInfo() { assert(false); throw; }
+
+			virtual FQ_GRAPHICS void SetDecalMaterialInfo(const DecalMaterialInfo& materialInfo) { assert(false); throw; }
+			virtual FQ_GRAPHICS const DecalMaterialInfo& GetDecalMaterialInfo() const { assert(false); throw; }
+			virtual FQ_GRAPHICS DecalMaterialInfo& GetDecalMaterialInfo() { assert(false); throw; }
+
+			virtual FQ_GRAPHICS void SetMaterialControllInfo(const MaterialControllInfo& materialControllInfo) abstract;
+			virtual FQ_GRAPHICS const MaterialControllInfo& GetMaterialControllInfo() const abstract;
 
 		protected:
 			virtual ~IMaterial() = default;
+
+		private:
+			virtual void loadTexture(std::shared_ptr<class D3D11ResourceManager> resourceManager) abstract;
 		};
 	}
 #ifdef __cplusplus

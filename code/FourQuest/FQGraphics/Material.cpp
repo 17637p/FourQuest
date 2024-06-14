@@ -11,10 +11,38 @@
 namespace fq::graphics
 {
 	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const fq::common::Material& materialData, std::filesystem::path textureBasePath)
-		: mResourceManager(resourceManager)
-		, mTextureBasePath(textureBasePath)
 	{
-		SetMaterialData(materialData);
+		mMaterialInfo.BaseColor = materialData.BaseColor;
+		mMaterialInfo.TextureBasePath = textureBasePath;
+		mMaterialInfo.BaseColor = materialData.BaseColor;
+		mMaterialInfo.Metalness = materialData.Metalness;
+		mMaterialInfo.Roughness = materialData.Roughness;
+		mMaterialInfo.Name = materialData.Name;
+		mMaterialInfo.BaseColorFileName = materialData.BaseColorFileName;
+		mMaterialInfo.MetalnessFileName = materialData.MetalnessFileName;
+		mMaterialInfo.RoughnessFileName = materialData.RoughnessFileName;
+		mMaterialInfo.NormalFileName = materialData.NormalFileName;
+		mMaterialInfo.EmissiveFileName = materialData.EmissiveFileName;
+	}
+	Material::Material(const StandardMaterialInfo& materialData)
+		: mMaterialInfo(materialData)
+	{
+	}
+	void Material::loadTexture(std::shared_ptr<D3D11ResourceManager> resourceManager)
+	{
+		if (!mMaterialControllInfo.bTryLoadTexture)
+		{
+			return;
+		}
+
+		std::filesystem::path basePath = mMaterialInfo.TextureBasePath;
+		mMaterialControllInfo.bTryLoadTexture = false;
+
+		if (mMaterialInfo.BaseColorFileName != L"") mBaseColor = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.BaseColorFileName);
+		if (mMaterialInfo.MetalnessFileName != L"") mMetalness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.MetalnessFileName);
+		if (mMaterialInfo.RoughnessFileName != L"") mRoughness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.RoughnessFileName);
+		if (mMaterialInfo.NormalFileName != L"") mNormal = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.NormalFileName);
+		if (mMaterialInfo.EmissiveFileName != L"") mEmissive = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.EmissiveFileName);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -24,19 +52,23 @@ namespace fq::graphics
 		if (GetHasRoughness()) mRoughness->Bind(d3d11Device, 2, ED3D11ShaderType::PixelShader);
 		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
-		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
 	}
 
-	void Material::SetMaterialData(const fq::common::Material& materialData)
+	void DecalMaterial::loadTexture(std::shared_ptr<D3D11ResourceManager> resourceManager)
 	{
-		mMaterialData = materialData;
+		if (!mMaterialControllInfo.bTryLoadTexture)
+		{
+			return;
+		}
 
-		if (!materialData.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.BaseColorFileName);
-		if (!materialData.MetalnessFileName.empty()) mMetalness = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.MetalnessFileName);
-		if (!materialData.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.RoughnessFileName);
-		if (!materialData.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.NormalFileName);
-		if (!materialData.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.EmissiveFileName);
-		if (!materialData.OpacityFileName.empty()) mOpacity = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.OpacityFileName);
+		std::filesystem::path basePath = mMaterialInfo.TextureBasePath;
+		mMaterialControllInfo.bTryLoadTexture = false;
+
+		if (mMaterialInfo.BaseColorFileName != L"") mBaseColor = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.BaseColorFileName);
+		if (mMaterialInfo.MetalnessFileName != L"") mMetalness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.MetalnessFileName);
+		if (mMaterialInfo.RoughnessFileName != L"") mRoughness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.RoughnessFileName);
+		if (mMaterialInfo.NormalFileName != L"") mNormal = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.NormalFileName);
+		if (mMaterialInfo.EmissiveFileName != L"") mEmissive = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.EmissiveFileName);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,

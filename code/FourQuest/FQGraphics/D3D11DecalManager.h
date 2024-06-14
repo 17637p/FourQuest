@@ -17,21 +17,21 @@ namespace fq::graphics
 	class DecalObject : public IDecalObject
 	{
 	public:
-		DecalObject(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalInfo& decalInfo);
+		DecalObject(const DecalInfo& decalInfo);
 		virtual ~DecalObject() = default;
 
 		virtual void SetDecalInfo(const DecalInfo& decalInfo) override;
 		virtual const DecalInfo& GetDecalInfo() const override { return mDecalInfo; }
 
-		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mDecalInfo.Transform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mDecalInfo.Transform; }
-
-		std::shared_ptr<Material> GetMaterial() const { return mMaterial; }
-
 	private:
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		DecalInfo mDecalInfo;
-		std::shared_ptr<Material> mMaterial;
+	};
+
+	struct DecalJob
+	{
+		IDecalObject* DecalObjectInterface;
+		IMaterial* MaterialInterface;
+		const DirectX::SimpleMath::Matrix* Transform;
 	};
 
 	class D3D11DecalManager
@@ -39,14 +39,27 @@ namespace fq::graphics
 	public:
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
+		void PushJob(const DecalJob& job)
+		{
+			mDecalJobs.push_back(job);
+		}
+		void ClearJob()
+		{
+			mDecalJobs.clear();
+		}
+
 		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
 		void DeleteDecalObject(IDecalObject* decalObject);
 
 		const std::set<IDecalObject*> GetDecalObjects();
 
+		const auto& GetJobs() { return mDecalJobs; }
+
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::set<IDecalObject*> mDecalObjects;
+
+		std::vector<DecalJob> mDecalJobs;
 	};
 }

@@ -13,6 +13,19 @@ namespace fq::graphics
 		mResourceManager = resourceManager;
 	}
 
+	void D3D11ModelManager::CheckUpdate()
+	{
+		for (auto& [key, materialInterface] : mMaterials)
+		{
+			if (!materialInterface->GetMaterialControllInfo().bTryLoadTexture)
+			{
+				continue;
+			}
+
+			materialInterface->loadTexture(mResourceManager);
+		}
+	}
+
 	void D3D11ModelManager::WriteModel(const std::string& fileName, const fq::common::Model& modelData)
 	{
 		fq::loader::ModelLoader::Write(modelData, fileName);
@@ -139,23 +152,31 @@ namespace fq::graphics
 
 	bool D3D11ModelManager::CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData)
 	{
-		return CreateResource(mStaticMeshes, key, device, meshData);
+		return CreateResource<StaticMesh, StaticMesh>(mStaticMeshes, key, device, meshData);
 	}
 	bool D3D11ModelManager::CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData)
 	{
-		return CreateResource(mSkinnedMeshes, key, device, meshData);
+		return CreateResource<SkinnedMesh, SkinnedMesh>(mSkinnedMeshes, key, device, meshData);
 	}
 	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath)
 	{
-		return CreateResource(mMaterials, key, mResourceManager, matrialData, basePath);
+		return CreateResource<IMaterial, Material>(mMaterials, key, mResourceManager, matrialData, basePath);
+	}
+	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, const StandardMaterialInfo& matrialData)
+	{
+		return CreateResource<IMaterial, Material>(mMaterials, matrialData.Name, matrialData);
+	}
+	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, const DecalMaterialInfo& matrialData)
+	{
+		return CreateResource<IMaterial, DecalMaterial>(mMaterials, matrialData.Name, matrialData);
 	}
 	bool D3D11ModelManager::CreateBoneHierarchy(std::string key, const fq::common::Model modelData)
 	{
-		return CreateResource(mBoneHierarchies, key, modelData);
+		return CreateResource<BoneHierarchy, BoneHierarchy>(mBoneHierarchies, key, modelData);
 	}
 	bool D3D11ModelManager::CreateAnimation(std::string key, const fq::common::AnimationClip& animationData)
 	{
-		return CreateResource(mAnimationClips, key, animationData);
+		return CreateResource<fq::common::AnimationClip, fq::common::AnimationClip>(mAnimationClips, key, animationData);
 	}
 
 	void D3D11ModelManager::DeleteStaticMesh(const std::string& key)
@@ -194,7 +215,7 @@ namespace fq::graphics
 	{
 		return FindResourceOrNull(mSkinnedMeshes, key);
 	}
-	std::shared_ptr<Material> D3D11ModelManager::FindMaterialOrNull(const std::string& key)
+	std::shared_ptr<IMaterial> D3D11ModelManager::FindMaterialOrNull(const std::string& key)
 	{
 		return FindResourceOrNull(mMaterials, key);
 	}
@@ -228,7 +249,7 @@ namespace fq::graphics
 		return fileName + animationName;
 	}
 
-	 std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials() const
+	std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials() const
 	{
 		std::vector<std::shared_ptr<IMaterial>> materials;
 

@@ -270,12 +270,8 @@ namespace fq::graphics
 
 	struct DecalInfo
 	{
-		std::filesystem::path TextureBasePath = "";
-		fq::common::Material MatrialData;
-		DirectX::SimpleMath::Matrix Transform;
-		DirectX::SimpleMath::Matrix TexTransform;
 		unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
-		float NormalThresholdInRadian = 3.14f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
+		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 		bool bUseMultiplyAlpha = true;
 		bool bUseAlphaClip = true;
 		float AlphaClipThreshold = 0.1f;
@@ -393,5 +389,58 @@ namespace fq::graphics
 			std::vector<DirectX::SimpleMath::Vector3> Points;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
 		};
+	};
+
+	struct StandardMaterialInfo
+	{
+		bool bUseBaseColor = true;
+		bool bUseMetalness = true;
+		bool bUseRoughness = true;
+		bool bUseNormalness = true;
+		bool bUseEmissive = true;
+
+		std::wstring TextureBasePath;
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		float Metalness = 0.f;
+		float Roughness = 0.f;
+		DirectX::SimpleMath::Color Emissive = { 0.f, 0.f, 0.f, 0.f };
+
+		std::string Name;
+
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+	};
+
+	struct DecalMaterialInfo
+	{
+		bool bUseBaseColor = true;
+		bool bUseMetalness = true;
+		bool bUseRoughness = true;
+		bool bUseNormalness = true;
+		bool bUseEmissive = true;
+
+		std::wstring TextureBasePath;
+
+		std::string Name;
+
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+	};
+
+	struct MaterialControllInfo
+	{
+		bool bTryLoadTexture = true;
+	};
+
+	enum class EMaterialType
+	{
+		Standard,
+		Decal,
 	};
 };

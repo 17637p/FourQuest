@@ -88,6 +88,26 @@ void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const Terr
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
 }
 
+std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const StandardMaterialInfo& standardMaterialInfo)
+{
+	if (mModelManager->CreateMaterial(mDevice, standardMaterialInfo))
+	{
+		return mModelManager->FindMaterialOrNull(standardMaterialInfo.Name);
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const DecalMaterialInfo& decalMaterialInfo)
+{
+	if (mModelManager->CreateMaterial(mDevice, decalMaterialInfo))
+	{
+		return mModelManager->FindMaterialOrNull(decalMaterialInfo.Name);
+	}
+
+	return nullptr;
+}
+
 void FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
 {
 	mObjectManager->DeleteTerrainMeshObject(meshObject);
@@ -183,6 +203,7 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
+	mModelManager->CheckUpdate();
 	mRenderManager->BeginRender();
 
 	return true;
@@ -352,6 +373,14 @@ IDecalObject* FQGraphics::CreateDecalObject(const DecalInfo& decalInfo)
 void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
 {
 	mDecalManager->DeleteDecalObject(decalObjectInterface);
+}
+void FQGraphics::DrawDecalObject(IDecalObject* decalObject, IMaterial* material, const DirectX::SimpleMath::Matrix& transform)
+{
+	DecalJob decalJob;
+	decalJob.DecalObjectInterface = decalObject;
+	decalJob.MaterialInterface = material;
+	decalJob.Transform = &transform;
+	mDecalManager->PushJob(decalJob);
 }
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)

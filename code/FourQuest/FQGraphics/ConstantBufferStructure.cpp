@@ -23,16 +23,15 @@ namespace fq::graphics
 		const std::shared_ptr<Material>& material)
 	{
 		CBMaterial CBMaterialData;
-		CBMaterialData.BaseColor = material->GetMaterialData().BaseColor;
-		CBMaterialData.Metalness = material->GetMaterialData().Metalness;
-		CBMaterialData.Roughness = material->GetMaterialData().Roughness;
+		CBMaterialData.BaseColor = material->GetStandardMaterialInfo().BaseColor;
+		CBMaterialData.Metalness = material->GetStandardMaterialInfo().Metalness;
+		CBMaterialData.Roughness = material->GetStandardMaterialInfo().Roughness;
 
-		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && material->GetTextureUseFlag().bUseBaseColor;
-		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && material->GetTextureUseFlag().bUseMetalness;
-		CBMaterialData.bUseNormalMap = material->GetHasNormal() && material->GetTextureUseFlag().bUseNormalness;
-		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && material->GetTextureUseFlag().bUseRoughness;
+		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && material->GetStandardMaterialInfo().bUseBaseColor;
+		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && material->GetStandardMaterialInfo().bUseMetalness;
+		CBMaterialData.bUseNormalMap = material->GetHasNormal() && material->GetStandardMaterialInfo().bUseNormalness;
+		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && material->GetStandardMaterialInfo().bUseRoughness;
 		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive();
-		CBMaterialData.bUseOpacityMap = material->GetHasOpacity();
 
 		cbuffer->Update(device, CBMaterialData);
 	}

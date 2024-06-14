@@ -168,24 +168,22 @@ namespace fq::graphics
 		perFrameData.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
 		perFrameData.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
 
-		const std::set<IDecalObject*>& decalObjects = mDecalManager->GetDecalObjects();
+		const auto& jobs = mDecalManager->GetJobs();
 
-		for (IDecalObject* decalObjectInterface : decalObjects)
+		for (const auto& job : jobs)
 		{
-			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
-			auto material = decalObject->GetMaterial();
-			material->Bind(mDevice);
+			DecalObject* decalObject = static_cast<DecalObject*>(job.DecalObjectInterface);
+			DecalMaterial* material = static_cast<DecalMaterial*>(job.MaterialInterface);
 
 			int index = material->GetHasEmissive() << 4 | material->GetHasNormal() << 3 | material->GetHasRoughness() << 2 | material->GetHasMetalness() << 1 | material->GetHasBaseColor() << 0;
 			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
 
-			const auto& decalInfo = decalObject->GetDecalInfo();
-
-			perFrameData.TexTransform = decalInfo.TexTransform.Transpose();
-			perFrameData.World = decalInfo.Transform.Transpose();
+			perFrameData.World = (*job.Transform).Transpose();
 			perFrameData.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
 			perFrameData.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
-			perFrameData.InvWV = (decalInfo.Transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+			perFrameData.InvWV = ((*job.Transform) * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+			
+			const auto& decalInfo = decalObject->GetDecalInfo();
 
 			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInRadian;
 			perFrameData.AlphaClipThreshold = decalInfo.AlphaClipThreshold;
@@ -207,18 +205,19 @@ namespace fq::graphics
 			{
 				debug::OBBInfo obbInfo;
 				obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
-				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+				obbInfo.OBB.Transform(obbInfo.OBB, *job.Transform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 				obbInfo = {};
 				obbInfo.OBB.Center = { 0.f, -0.25f, 0.f };
 				obbInfo.OBB.Extents = { 0.1f, 0.25f, 0.1f };
-				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+				obbInfo.OBB.Transform(obbInfo.OBB, *job.Transform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
-
 			}
 		}
+
+		mDecalManager->ClearJob();
 	}
 
 	void DeferredDecalPass::InitBlendState()
