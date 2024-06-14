@@ -113,6 +113,10 @@ namespace fq::game_module
 		/// </summary>
 		unsigned int GetCollisionCount() const { return mCollisionCount; }
 
+		/// <summary>
+		/// 컨트롤러 입력방향을 바라봅니다
+		/// </summary>
+		void SetPadInputRotation();
 	private:
 
 		entt::meta_handle GetHandle() override { return *this; }

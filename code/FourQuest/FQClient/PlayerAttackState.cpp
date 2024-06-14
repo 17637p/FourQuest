@@ -20,5 +20,10 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlayerAttackState:
 
 void fq::client::PlayerAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	// 컨트롤러 입력방향을 바라봅니다
+	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
+
 	animator.GetComponent<Player>()->Attack();
+
+
 }

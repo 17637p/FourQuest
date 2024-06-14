@@ -65,7 +65,6 @@ namespace fq::game_module
 		Pool<T>* pool = static_cast<Pool<T>*>(iter->second.get());
 		auto component = pool->Assign(std::forward<Args>(args)...);
 
-		//spdlog::trace("type name {}  size {}", fq::reflect::GetName(entt::resolve<T>()), pool->GetSize());
 		return component;
 	}
 }

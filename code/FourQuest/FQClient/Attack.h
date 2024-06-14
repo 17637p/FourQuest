@@ -21,7 +21,7 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		void OnUpdate(float dt) override;
-
+	
 		float GetAttackPower() const { return mAttackPower; }
 		void SetAttackPower(float val) { mAttackPower = val; }
 
