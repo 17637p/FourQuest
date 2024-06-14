@@ -90,8 +90,6 @@ namespace fq::graphics
 
 	void RenderPipeline::EndRender()
 	{
-		mFullScreenLastPass->Render();
-
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
 		HR(swapChain->Present(0, 0));
 	}
@@ -106,5 +104,10 @@ namespace fq::graphics
 		mDiffuseCubeMap = mResourceManager->Create<D3D11Texture>(diffuse);
 		mSpecularCubeMap = mResourceManager->Create<D3D11Texture>(specular);
 		mBRDFLUT = mResourceManager->Create<D3D11Texture>(brdfLUT);
+	}
+
+	void RenderPipeline::RenderFullScreen()
+	{
+		mFullScreenLastPass->Render();
 	}
 }

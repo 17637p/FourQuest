@@ -179,4 +179,20 @@ namespace fq::graphics
 			break;
 		}
 	}
+
+	void D3D11RenderManager::RenderFullScreen()
+	{
+		switch (mPipelineType)
+		{
+			case fq::graphics::EPipelineType::Forward:
+				return mForwardPipeline->RenderFullScreen();
+				break;
+			case fq::graphics::EPipelineType::Deferred:
+				return mDeferredPipeline->RenderFullScreen();
+				break;
+			default:
+				assert(false);
+				break;
+		}
+	}
 }

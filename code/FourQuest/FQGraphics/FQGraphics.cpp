@@ -205,12 +205,13 @@ bool FQGraphics::Render()
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	mRenderManager->Render();
+	mUIManager->Render();
+	mRenderManager->RenderFullScreen();
 	return true;
 }
 
 bool FQGraphics::EndRender()
 {
-	mUIManager->Render();
 	mRenderManager->EndRender();
 	mJobManager->ClearAll();
 

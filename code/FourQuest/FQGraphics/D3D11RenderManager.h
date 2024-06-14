@@ -53,6 +53,7 @@ namespace fq::graphics
 
 		void BeginRender();
 		void Render();
+		void RenderFullScreen();
 		void EndRender();
 
 		void SetSkyBox(const std::wstring& path);
