@@ -33,6 +33,7 @@
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
+    <ClInclude Include="HpBarUI.h" />
     <ClInclude Include="MonsterAttack.h" />
     <ClInclude Include="MonsterChase.h" />
     <ClInclude Include="ClientRegistration.h" />
@@ -53,6 +54,7 @@
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
+    <ClCompile Include="HpBarUI.cpp" />
     <ClCompile Include="MonsterAttack.cpp" />
     <ClCompile Include="MonsterChase.cpp" />
     <ClCompile Include="ClientRegistration.cpp" />

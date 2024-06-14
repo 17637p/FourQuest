@@ -51,6 +51,12 @@
     <Filter Include="src\04.Camera">
       <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\05.UI">
+      <UniqueIdentifier>{63b46a7a-3b24-41bb-b7e2-836cac641d28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\05.UI">
+      <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -107,6 +113,9 @@
     <ClInclude Include="DeadArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
+    <ClInclude Include="HpBarUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -159,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="DeadArmour.cpp">
       <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="HpBarUI.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
