@@ -20,6 +20,9 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlayerDashState::C
 
 void fq::client::PlayerDashState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	// 컨트롤러 입력방향을 바라봅니다
+	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
+
 	auto transform = animator.GetComponent<game_module::Transform>();
 	auto rigid = animator.GetComponent<game_module::RigidBody>();
 

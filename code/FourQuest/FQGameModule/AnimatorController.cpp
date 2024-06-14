@@ -519,4 +519,9 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 void fq::game_module::AnimatorController::Update(float dt)
 {
 	mCurrentState->second.OnStateUpdate(dt);
+
+	if (mNextState != mStates.end())
+	{
+		mNextState->second.OnStateUpdate(dt);
+	}
 }

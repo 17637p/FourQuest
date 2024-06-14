@@ -132,3 +132,27 @@ void fq::game_module::CharacterController::OnTriggerExit(const Collision& collis
 	--mCollisionCount;
 }
 
+void fq::game_module::CharacterController::SetPadInputRotation()
+{
+	using namespace DirectX::SimpleMath;
+
+	auto inputMgr = GetScene()->GetInputManager();
+	Vector3 input = Vector3::Zero;
+
+	// 컨트롤러
+	input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
+	input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
+
+	input.Normalize();
+
+	if (input == Vector3::Backward)
+	{
+		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+	}
+	else if (input != Vector3::Zero)
+	{
+		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+	}
+
+}
+

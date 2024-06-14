@@ -8,6 +8,43 @@
 void fq::game_engine::RegisterMetaData()
 {
 	using namespace entt::literals;
+
+	entt::meta<DirectX::SimpleMath::Matrix>()
+		.type(entt::hashed_string("Matrix"))
+		.data<&DirectX::SimpleMath::Matrix::_11>(entt::hashed_string("_11"))
+		.prop(fq::reflect::prop::Name, "_11")
+		.data<&DirectX::SimpleMath::Matrix::_12>(entt::hashed_string("_12"))
+		.prop(fq::reflect::prop::Name, "_12")
+		.data<&DirectX::SimpleMath::Matrix::_13>(entt::hashed_string("_13"))
+		.prop(fq::reflect::prop::Name, "_13")
+		.data<&DirectX::SimpleMath::Matrix::_14>(entt::hashed_string("_14"))
+		.prop(fq::reflect::prop::Name, "_14")
+		.data<&DirectX::SimpleMath::Matrix::_21>(entt::hashed_string("_21"))
+		.prop(fq::reflect::prop::Name, "_21")
+		.data<&DirectX::SimpleMath::Matrix::_22>(entt::hashed_string("_22"))
+		.prop(fq::reflect::prop::Name, "_22")
+		.data<&DirectX::SimpleMath::Matrix::_23>(entt::hashed_string("_23"))
+		.prop(fq::reflect::prop::Name, "_23")
+		.data<&DirectX::SimpleMath::Matrix::_24>(entt::hashed_string("_24"))
+		.prop(fq::reflect::prop::Name, "_24")
+		.data<&DirectX::SimpleMath::Matrix::_31>(entt::hashed_string("_31"))
+		.prop(fq::reflect::prop::Name, "_31")
+		.data<&DirectX::SimpleMath::Matrix::_32>(entt::hashed_string("_32"))
+		.prop(fq::reflect::prop::Name, "_32")
+		.data<&DirectX::SimpleMath::Matrix::_33>(entt::hashed_string("_33"))
+		.prop(fq::reflect::prop::Name, "_33")
+		.data<&DirectX::SimpleMath::Matrix::_34>(entt::hashed_string("_34"))
+		.prop(fq::reflect::prop::Name, "_34")
+		.data<&DirectX::SimpleMath::Matrix::_41>(entt::hashed_string("_41"))
+		.prop(fq::reflect::prop::Name, "_41")
+		.data<&DirectX::SimpleMath::Matrix::_42>(entt::hashed_string("_42"))
+		.prop(fq::reflect::prop::Name, "_42")
+		.data<&DirectX::SimpleMath::Matrix::_43>(entt::hashed_string("_43"))
+		.prop(fq::reflect::prop::Name, "_43")
+		.data<&DirectX::SimpleMath::Matrix::_44>(entt::hashed_string("_44"))
+		.prop(fq::reflect::prop::Name, "_44");
+
+
 	// Vector2
 	entt::meta<DirectX::SimpleMath::Vector2>()
 		.type(entt::hashed_string("Vector2"))
