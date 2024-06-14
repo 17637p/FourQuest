@@ -54,6 +54,7 @@ namespace fq::graphics
 		void SetTransform(const DirectX::SimpleMath::Matrix& transform) { mTransform = transform; }
 		void SetIsEmit(bool bIsEmit) { mbIsEmit = bIsEmit; }
 		void SetIsRenderDebug(bool bIsRenderDebug) { mbIsRenderDebug = bIsRenderDebug; }
+		void SetDebugRenderColor(const DirectX::SimpleMath::Color& debugRenderColor) { mDebugRenderColor = debugRenderColor; }
 
 		const ParticleInfo& GetInfo() const { return mParticleInfo; }
 		bool GetIsReset() const { return mbIsReset; }
@@ -61,6 +62,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix GetTransform() const { return mTransform; }
 		bool GetIsEmit() const { return mbIsEmit; }
 		bool GetIsRenderDebug() const { return mbIsRenderDebug; }
+		const DirectX::SimpleMath::Color& GetDebugRenderColor() const { return mDebugRenderColor; }
 
 		DebugInfo& GetDebugInfo() { return mDebugInfo; }
 
@@ -100,6 +102,7 @@ namespace fq::graphics
 
 		float mRandomSeed;
 		bool mbIsRenderDebug;
+		DirectX::SimpleMath::Color mDebugRenderColor = { 1, 0, 0, 1 };
 	};
 }
 

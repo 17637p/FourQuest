@@ -54,6 +54,7 @@ namespace fq::graphics
 		mResourceManager = nullptr;
 
 		mSwapChainRTV = nullptr;
+		mBackBufferRTV = nullptr;
 		mBackBufferSRV = nullptr;
 		mNoneDSV = nullptr;
 		mDSV = nullptr;

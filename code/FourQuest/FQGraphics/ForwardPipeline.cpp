@@ -65,11 +65,6 @@ namespace fq::graphics
 		mPasses.push_back(mOutLineBlurPass);
 		mPasses.push_back(mOutLineAddPass);
 		mPasses.push_back(mFullScreenPass);
-
-		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
-		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);
-		mDSV = mResourceManager->Create<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default, width, height);
-		mBackBufferSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mBackBufferRTV);
 	}
 
 	void ForwardPipeline::SetSkyBox(const std::wstring& path)

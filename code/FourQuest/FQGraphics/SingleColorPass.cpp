@@ -7,26 +7,22 @@
 
 #include <IFQRenderObject.h>
 
-void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> device, 
+void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> device,
 	std::shared_ptr<D3D11JobManager> jobManager,
-	std::shared_ptr<D3D11CameraManager> cameraManager, 
-	std::shared_ptr<D3D11ResourceManager> resourceManager, 
-	unsigned short width, 
+	std::shared_ptr<D3D11CameraManager> cameraManager,
+	std::shared_ptr<D3D11ResourceManager> resourceManager,
+	unsigned short width,
 	unsigned short height)
 {
+	Finalize();
+
 	mDevice = device;
 	mJobManager = jobManager;
 	mCameraManager = cameraManager;
 	mResourceManager = resourceManager;
 
-	D3D_SHADER_MACRO macroSkinning[] =
-	{
-		{"SKINNING", ""},
-		{ NULL, NULL}
-	};
-
 	auto singleColorStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"SingleColorVS.cso");
-	auto singleColorSkinnedVS = std::make_shared<D3D11VertexShader>(device, L"SingleColorVS_SKINNING.cso" );
+	auto singleColorSkinnedVS = std::make_shared<D3D11VertexShader>(device, L"SingleColorVS_SKINNING.cso");
 	auto singleColorPS = std::make_shared<D3D11PixelShader>(device, L"SingleColorPS.cso");
 
 	mLessEqualDS = resourceManager->Get<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
@@ -46,7 +42,23 @@ void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> devi
 
 void fq::graphics::SingleColorPass::Finalize()
 {
+	mDevice = nullptr;
+	mJobManager = nullptr;
+	mCameraManager = nullptr;
+	mResourceManager = nullptr;
 
+	mSingleColorRTV = nullptr;
+	mDSV = nullptr;
+
+	mLessEqualDS = nullptr;
+
+	mSingleColorStaticMeshPassShaderProgram = nullptr;
+	mSingleColorSkinnedMeshPassShaderProgram = nullptr;
+
+	mModelTransformCB = nullptr;
+	mSceneTransformCB = nullptr;
+	mBoneTransformCB = nullptr;
+	mOutlineColorCB = nullptr;
 }
 
 void fq::graphics::SingleColorPass::Render()

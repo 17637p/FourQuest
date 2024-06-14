@@ -9,6 +9,8 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
+		Finalize();
+
 		mDevice = device;
 		mResourceManager = resourceManager;
 
@@ -18,12 +20,6 @@ namespace fq::graphics
 		auto pixelRevealageThresholdRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PixeldRevealageThreshold);
 		mColoraccumulationSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, coloraccumulationRTV);
 		mPixelRevealageThresholdSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pixelRevealageThresholdRTV);
-
-		D3D_SHADER_MACRO macroComposite[] =
-		{
-			{"COMPOSITE", ""},
-			{ NULL, NULL}
-		};
 
 		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
 		auto transparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_COMPOSITE.cso" );
@@ -69,7 +65,6 @@ namespace fq::graphics
 		mPixelRevealageThresholdSRV = nullptr;
 
 		mShaderProgram = nullptr;
-
 		mFullScreenVB = nullptr;
 		mFullScreenIB = nullptr;
 		mPointClampSamplerState = nullptr;

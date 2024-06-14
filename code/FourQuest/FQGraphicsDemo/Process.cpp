@@ -1161,7 +1161,7 @@ void Process::decalUpdate()
 	{
 		DecalInfo decalInfo = decalObject->GetDecalInfo();
 		decalInfo.Transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
-		decalInfo.NormalThresholdInRadian = 3.14 * 0.9f;
+		decalInfo.NormalThresholdInRadian = 3.14 * 0.5f;
 		decalObject->SetDecalInfo(decalInfo);
 
 		++i;

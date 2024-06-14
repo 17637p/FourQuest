@@ -3,12 +3,14 @@
 #include "ManagementCommon.h"
 #include "D3D11Common.h"
 
-void fq::graphics::SSAOPass::Initialize(std::shared_ptr<D3D11Device> device, 
-	std::shared_ptr<D3D11JobManager> jobManager, 
-	std::shared_ptr<D3D11CameraManager> cameraManager, 
-	std::shared_ptr<D3D11ResourceManager> resourceManager, 
+void fq::graphics::SSAOPass::Initialize(std::shared_ptr<D3D11Device> device,
+	std::shared_ptr<D3D11JobManager> jobManager,
+	std::shared_ptr<D3D11CameraManager> cameraManager,
+	std::shared_ptr<D3D11ResourceManager> resourceManager,
 	unsigned short width, unsigned short height)
 {
+	Finalize();
+
 	mDevice = device;
 	mJobManager = jobManager;
 	mCameraManager = cameraManager;
@@ -48,7 +50,7 @@ void fq::graphics::SSAOPass::Initialize(std::shared_ptr<D3D11Device> device,
 	mFrustumCornersCB = std::make_shared<D3D11ConstantBuffer<FrustumCorners>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 	mCameraManager->RegisterOnSetCamera(
-		[this]() 
+		[this]()
 		{
 			float fovY = mCameraManager->GetFovY(ECameraType::Player);
 			float farZ = mCameraManager->GetFarPlane(ECameraType::Player);
@@ -58,7 +60,21 @@ void fq::graphics::SSAOPass::Initialize(std::shared_ptr<D3D11Device> device,
 
 void fq::graphics::SSAOPass::Finalize()
 {
+	mDevice = nullptr;
+	mJobManager = nullptr;
+	mCameraManager = nullptr;
+	mResourceManager = nullptr;
 
+	mSSAODepthSRV = nullptr;
+	mSSAORTV = nullptr;
+	mNoneDSV = nullptr;
+
+	mSSAOPassShaderProgram = nullptr;
+
+	mFullScreenVB = nullptr;
+	mFullScreenIB = nullptr;
+
+	mFrustumCornersCB = nullptr;
 }
 
 void fq::graphics::SSAOPass::Render()

@@ -38,7 +38,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::vector<std::shared_ptr<Pass>> mPasses;
 
-	private:
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;

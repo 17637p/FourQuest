@@ -32,14 +32,8 @@ namespace fq::graphics
 		mViewport.TopLeftX = 0.f;
 		mViewport.TopLeftY = 0.f;
 
-		D3D_SHADER_MACRO macroSkinning[] =
-		{
-			{"SKINNING", ""},
-			{ NULL, NULL}
-		};
-
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelShadowVS.cso");
-		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelShadowVS.cso");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelShadowVS_SKINNING.cso");
 		auto shadowGS = std::make_shared<D3D11GeometryShader>(mDevice, L"ModelShadowGS.cso");
 		auto shadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
 		auto pipelieState = std::make_shared<PipelineState>(shadowRS, nullptr, nullptr);
@@ -62,6 +56,9 @@ namespace fq::graphics
 
 		mCascadeShadowDSV = nullptr;
 		mPointLightShadowDSV = nullptr;
+
+		mStaticMeshShaderProgram = nullptr;
+		mSkinnedMeshShaderProgram = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;

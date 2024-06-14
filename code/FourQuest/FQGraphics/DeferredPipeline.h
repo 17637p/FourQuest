@@ -33,7 +33,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DecalManager> decalManager,
 			unsigned short width,
 			unsigned short height);
-		void Finalize();
+		void Finalize() override;
 		virtual void OnResize(unsigned short width, unsigned short height);
 
 		void SetSkyBox(const std::wstring& path);
