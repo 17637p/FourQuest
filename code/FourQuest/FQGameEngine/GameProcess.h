@@ -33,6 +33,7 @@ namespace fq::game_engine
 	class AnimationSystem;
 	class ParticleSystem;
 	class DecalSystem;
+	class UISystem;
 }
 
 namespace fq::game_engine
@@ -70,5 +71,6 @@ namespace fq::game_engine
 		std::unique_ptr<AnimationSystem> mAnimationSystem;
 		std::unique_ptr<ParticleSystem> mParticleSystem;
 		std::unique_ptr<DecalSystem> mDecalSystem;
+		std::unique_ptr<UISystem> mUISystem;
 	};
 }

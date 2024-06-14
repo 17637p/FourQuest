@@ -13,19 +13,21 @@ namespace fq::game_engine
 	class GameProcess;
 
 	/// <summary>
-	/// 파티클 관련 바인딩 처리를 담당합니다.
+	/// UI 관련 바인딩 처리를 담당합니다.
 	/// </summary>
-	class ParticleSystem
+	class UISystem
 	{
 		using EventHandler = fq::game_module::EventHandler;
 
 	public:
-		ParticleSystem();
-		~ParticleSystem();
+		UISystem();
+		~UISystem();
 
 		void Initialize(GameProcess* gameProcess);
-		void Update(float dt);
 
+		/// <summary>
+		/// 씬을 로드할때 랜더링에 관련된 리소스를 로드합니다
+		/// </summary>
 		void OnLoadScene();
 
 		/// <summary>
@@ -53,19 +55,29 @@ namespace fq::game_engine
 		/// </summary>
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
+		/// <summary>
+		/// UI정보 변경 이벤트
+		/// </summary>
+		void SetUIInfomations(const fq::event::SetUIInfomations& event);
+
 	private:
-		void loadParticle(fq::game_module::GameObject* object);
-		void unloadParticle(fq::game_module::GameObject* object);
+		void loadImageUI(game_module::GameObject* object);
+		void unloadImageUI(game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;
+
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
+		EventHandler mSetUIInfomationsHandler;
 
 		bool mbIsGameLoaded;
 	};
+
+
+
 }

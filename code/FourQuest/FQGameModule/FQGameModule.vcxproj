@@ -159,6 +159,7 @@
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="Decal.h" />
     <ClInclude Include="ICollider.h" />
+    <ClInclude Include="ImageUI.h" />
     <ClInclude Include="InstantiatePrefab.h" />
     <ClInclude Include="IStateBehaviour.h" />
     <ClInclude Include="Particle.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="Decal.cpp" />
     <ClCompile Include="ICollider.cpp" />
+    <ClCompile Include="ImageUI.cpp" />
     <ClCompile Include="InstantiatePrefab.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
