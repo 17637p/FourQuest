@@ -27,9 +27,9 @@ void fq::graphics::SSAODepthPass::Initialize(std::shared_ptr<D3D11Device> device
 	mViewDepthRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SSAODepth, width, height);
 	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
-	auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SSAODepthVS.hlsl");
-	auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SSAODepthVS.hlsl", macroSkinning);
-	auto SSAODepthPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/SSAODepthPS.hlsl");
+	auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"SSAODepthVS.cso");
+	auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"SSAODepthVS_SKINNING.cso" );
+	auto SSAODepthPS = std::make_shared<D3D11PixelShader>(mDevice, L"SSAODepthPS.cso");
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 
 	mSSAOViewDepthStaticMeshPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, SSAODepthPS, pipelieState);

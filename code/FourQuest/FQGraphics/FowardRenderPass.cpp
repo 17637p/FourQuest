@@ -31,9 +31,9 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl");
-		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelVS.hlsl", macroSkinning);
-		auto meshPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPS.hlsl");
+		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso" );
+		auto meshPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPS.cso");
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, meshPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, meshPS, pipelieState);

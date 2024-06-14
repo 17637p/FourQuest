@@ -263,194 +263,280 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-    </CustomBuild>
+    <None Include="Common.hlsli" />
+    <None Include="DecalCommon.hlsli" />
+    <None Include="ParticleCommon.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="DeferredDecalPS.hlsl">
       <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="DeferredDecalVS.hlsl">
       <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="FullScreenPS.hlsl">
       <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
+    <CustomBuild Include="FullScreenVS.hlsl">
       <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="ModelPS.hlsl">
       <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="ModelPSDeferred.hlsl">
       <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SHADING.cso /D SHADING=1
+fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_GEOMETRY.cso /D GEOMETRY=1</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SHADING.cso /D SHADING=1
+fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_GEOMETRY.cso /D GEOMETRY=1</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="ModelShadowGS.hlsl">
       <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T gs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T gs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    <CustomBuild Include="ModelShadowVS.hlsl">
       <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
     </CustomBuild>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalVS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalPS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLinePS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleDeadListInitCS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleEmitCS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitCS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleSimulateCS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingVS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxVS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainDS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainHS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\FQGraphicsDemo\resource\internal\shader\DecalCommon.hlsli">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCommon.hlsli">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
+    <CustomBuild Include="ModelTransparentPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_RENDER.cso /D RENDER=1
+fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_COMPOSITE.cso /D COMPOSITE=1</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_RENDER.cso /D RENDER=1
+fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_COMPOSITE.cso /D COMPOSITE=1</Command>
+    </CustomBuild>
+    <CustomBuild Include="ModelVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+    </CustomBuild>
+    <CustomBuild Include="OutLineAddPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="OutLineAddVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="OutLineBlurPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="OutLineBlurVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="OutLinePS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="OutLineVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticleDeadListInitCS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticleEmitCS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticleGS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T gs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T gs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticleInitCS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticlePS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticleSimulateCS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="ParticleVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="PickingPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="PickingVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+    </CustomBuild>
+    <CustomBuild Include="SingleColorPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="SingleColorVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+    </CustomBuild>
+    <CustomBuild Include="SkyBoxPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="SkyBoxVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="SSAODepthPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="SSAODepthVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="SSAOPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="SSAOVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="TerrainDS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ds_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ds_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="TerrainHS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T hs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T hs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="TerrainPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
+    <CustomBuild Include="TerrainVS.hlsl">
+      <FileType>Document</FileType>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

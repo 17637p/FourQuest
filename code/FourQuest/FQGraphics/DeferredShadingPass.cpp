@@ -38,8 +38,8 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
-		auto shadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelPSDeferred.hlsl", macroShading);
+		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
+		auto shadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_SHADING.cso" );
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, shadingPS, pipelieState);
 

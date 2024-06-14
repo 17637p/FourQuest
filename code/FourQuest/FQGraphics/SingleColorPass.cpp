@@ -25,9 +25,9 @@ void fq::graphics::SingleColorPass::Initialize(std::shared_ptr<D3D11Device> devi
 		{ NULL, NULL}
 	};
 
-	auto singleColorStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/SingleColorVS.hlsl");
-	auto singleColorSkinnedVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/SingleColorVS.hlsl", macroSkinning);
-	auto singleColorPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/SingleColorPS.hlsl");
+	auto singleColorStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"SingleColorVS.cso");
+	auto singleColorSkinnedVS = std::make_shared<D3D11VertexShader>(device, L"SingleColorVS_SKINNING.cso" );
+	auto singleColorPS = std::make_shared<D3D11PixelShader>(device, L"SingleColorPS.cso");
 
 	mLessEqualDS = resourceManager->Get<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
 

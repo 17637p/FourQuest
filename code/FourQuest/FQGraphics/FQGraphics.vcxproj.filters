@@ -264,20 +264,29 @@
     <Filter Include="Common\Source">
       <UniqueIdentifier>{51c71a07-0194-40f7-b0b2-3f398fe65888}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\Particle">
-      <UniqueIdentifier>{295600f5-72b0-4b3b-94e0-40c687c4bd5d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Particle\Render">
-      <UniqueIdentifier>{8d062b40-d555-44d3-b03a-671f78558391}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Particle\Simulation">
-      <UniqueIdentifier>{76577010-c364-4424-ab87-96615d60b7ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Source">
       <UniqueIdentifier>{77b3181f-8aea-4aff-a2a9-046ad29cb9dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader\Decal">
-      <UniqueIdentifier>{15831a07-acf8-41d1-867c-d5210118d054}</UniqueIdentifier>
+    <Filter Include="Shader\VS">
+      <UniqueIdentifier>{a6d904d9-8a89-4a6a-976e-cced5b776496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\PS">
+      <UniqueIdentifier>{4db707a4-3174-4686-b467-2925be280b6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Common">
+      <UniqueIdentifier>{58505774-0253-4e7f-ab90-1c3e7c1454c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\GS">
+      <UniqueIdentifier>{58ef2730-721d-4f15-aa74-cfde634218f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\CS">
+      <UniqueIdentifier>{67e8f569-c48a-4c5e-a68d-284803aac6df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\HS">
+      <UniqueIdentifier>{c334c3eb-7ebe-49b6-9db9-20caf67234af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\DS">
+      <UniqueIdentifier>{36bcf3c2-5b0d-4a7e-9f26-df6390ca562b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -445,117 +454,127 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\PickingVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SkyBoxPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticlePS.hlsl">
-      <Filter>Shader\Particle\Render</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleVS.hlsl">
-      <Filter>Shader\Particle\Render</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleGS.hlsl">
-      <Filter>Shader\Particle\Render</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleDeadListInitCS.hlsl">
-      <Filter>Shader\Particle\Simulation</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleEmitCS.hlsl">
-      <Filter>Shader\Particle\Simulation</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleInitCS.hlsl">
-      <Filter>Shader\Particle\Simulation</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\ParticleSimulateCS.hlsl">
-      <Filter>Shader\Particle\Simulation</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineAddVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineBlurVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLinePS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\OutLineVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorPS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\SingleColorVS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainDS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\TerrainHS.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalPS.hlsl">
-      <Filter>Shader\Decal</Filter>
-    </FxCompile>
-    <FxCompile Include="..\FQGraphicsDemo\resource\internal\shader\DeferredDecalVS.hlsl">
-      <Filter>Shader\Decal</Filter>
-    </FxCompile>
+    <None Include="DecalCommon.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="Common.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="ParticleCommon.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\Common.hlsli">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="DeferredDecalPS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenPS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="FullScreenPS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\FullScreenVS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="ModelPS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="ModelPSDeferred.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowGS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="ModelTransparentPS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelShadowVS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="OutLineAddPS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelTransparentPS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="OutLineBlurPS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelVS.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="OutLinePS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\FQGraphicsDemo\resource\internal\shader\ModelPSDeferred.hlsl">
-      <Filter>Shader</Filter>
+    <CustomBuild Include="ParticlePS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\FQGraphicsDemo\resource\internal\shader\ParticleCommon.hlsli">
-      <Filter>Shader\Particle</Filter>
-    </None>
-    <None Include="..\FQGraphicsDemo\resource\internal\shader\DecalCommon.hlsli">
-      <Filter>Shader\Decal</Filter>
-    </None>
+    <CustomBuild Include="PickingPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SingleColorPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyBoxPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SSAODepthPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SSAOPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TerrainPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DeferredDecalVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FullScreenVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ModelShadowVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ModelVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OutLineAddVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OutLineBlurVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="OutLineVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ParticleVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PickingVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SingleColorVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SkyBoxVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SSAODepthVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SSAOVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TerrainVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TerrainDS.hlsl">
+      <Filter>Shader\DS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TerrainHS.hlsl">
+      <Filter>Shader\HS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ParticleSimulateCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ParticleInitCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ParticleEmitCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ParticleDeadListInitCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ParticleGS.hlsl">
+      <Filter>Shader\GS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ModelShadowGS.hlsl">
+      <Filter>Shader\GS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

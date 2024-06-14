@@ -839,7 +839,11 @@ void fq::game_module::RegisterMetaData()
 			.data<&DecalInfo::bUseAlphaClip>("bUseAlphaClip"_hs)
 			.prop(fq::reflect::prop::Name, "bUseAlphaClip")
 			.data<&DecalInfo::AlphaClipThreshold>("AlphaClipThreshold"_hs)
-			.prop(fq::reflect::prop::Name, "AlphaClipThreshold");
+			.prop(fq::reflect::prop::Name, "AlphaClipThreshold")
+			.data<&DecalInfo::bUseDebugRender>("IsbUsedDebugRender"_hs)
+			.prop(fq::reflect::prop::Name, "IsbUsedDebugRender")
+			.data<&DecalInfo::DebugRenderColor>("DebugRenderColor"_hs)
+			.prop(fq::reflect::prop::Name, "DebugRenderColor");
 
 		entt::meta<Decal>()
 			.type("Decal"_hs)

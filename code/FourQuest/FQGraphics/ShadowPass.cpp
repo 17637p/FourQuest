@@ -38,9 +38,9 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelShadowVS.hlsl");
-		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ModelShadowVS.hlsl", macroSkinning);
-		auto shadowGS = std::make_shared<D3D11GeometryShader>(mDevice, L"./resource/internal/shader/ModelShadowGS.hlsl");
+		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelShadowVS.cso");
+		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelShadowVS.cso");
+		auto shadowGS = std::make_shared<D3D11GeometryShader>(mDevice, L"ModelShadowGS.cso");
 		auto shadowRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Shadow);
 		auto pipelieState = std::make_shared<PipelineState>(shadowRS, nullptr, nullptr);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, shadowGS, nullptr, pipelieState);

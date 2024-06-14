@@ -1,6 +1,7 @@
 #include "FQGraphics.h"
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
+#include "D3D11Shader.h"
 
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
@@ -33,6 +34,12 @@ FQGraphics::FQGraphics()
 bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short width, const unsigned short height, EPipelineType pipelineType)
 {
 	Finalize();
+
+#ifdef _DEBUG
+	D3D11Shader::SetBasePath(L"../CompiledShader/Debug/");
+#else
+	D3D11Shader::SetBasePath(L"../CompiledShader/Release/");
+#endif // _DEBUG
 
 	mDevice->Initialize(hWnd, width, height);
 	mResourceManager = std::make_shared<D3D11ResourceManager>(mDevice);

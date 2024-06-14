@@ -21,10 +21,10 @@ namespace fq::graphics
 		mLinearWrap = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mPointClamp = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
 
-		mInitDeadListCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleDeadListInitCS.hlsl");
-		mInitParticlesCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleInitCS.hlsl");
-		mEmitCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleEmitCS.hlsl");
-		mSimulateCS = std::make_shared<D3D11ComputeShader>(mDevice, L"./resource/internal/shader/ParticleSimulateCS.hlsl");
+		mInitDeadListCS = std::make_shared<D3D11ComputeShader>(mDevice, L"ParticleDeadListInitCS.cso");
+		mInitParticlesCS = std::make_shared<D3D11ComputeShader>(mDevice, L"ParticleInitCS.cso");
+		mEmitCS = std::make_shared<D3D11ComputeShader>(mDevice, L"ParticleEmitCS.cso");
+		mSimulateCS = std::make_shared<D3D11ComputeShader>(mDevice, L"ParticleSimulateCS.cso");
 
 		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
@@ -34,9 +34,9 @@ namespace fq::graphics
 		auto additivePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, additiveState);
 		auto subtractivePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, subtractiveState);
 		auto modulatePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, modulateState);
-		auto particleRenderVS = std::make_shared<D3D11VertexShader>(mDevice, L"./resource/internal/shader/ParticleVS.hlsl");
-		auto particleRednerPS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ParticlePS.hlsl");
-		auto particleRednerGS = std::make_shared<D3D11GeometryShader>(mDevice, L"./resource/internal/shader/ParticleGS.hlsl");
+		auto particleRenderVS = std::make_shared<D3D11VertexShader>(mDevice, L"ParticleVS.cso");
+		auto particleRednerPS = std::make_shared<D3D11PixelShader>(mDevice, L"ParticlePS.cso");
+		auto particleRednerGS = std::make_shared<D3D11GeometryShader>(mDevice, L"ParticleGS.cso");
 		mAdditiveRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, additivePipelieState);
 		mSubtractiveRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, subtractivePipelieState);
 		mModulateRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, modulatePipelieState);

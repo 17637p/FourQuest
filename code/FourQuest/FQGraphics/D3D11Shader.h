@@ -28,11 +28,17 @@ namespace fq::graphics
 			const D3D_SHADER_MACRO* pDefines,
 			const std::string& entryPoint,
 			const std::string& shaderModel);
+		D3D11Shader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
+
+		static void SetBasePath(const std::wstring& basePath) { mBasePath = basePath; }
+		static const std::wstring& GetBasePath() { return mBasePath; }
 
 		inline const std::wstring& GetPath() const;
 		inline Microsoft::WRL::ComPtr<ID3D10Blob> GetBlob() const;
 
 	protected:
+		static std::wstring mBasePath;
+
 		std::wstring mPath;
 		Microsoft::WRL::ComPtr<ID3D10Blob> mBlob;
 	};
@@ -51,9 +57,10 @@ namespace fq::graphics
 	public:
 		D3D11VertexShader(const std::shared_ptr<D3D11Device>& device,
 			const std::wstring& path,
-			const D3D_SHADER_MACRO* pDefines = nullptr,
-			const std::string& entryPoint = "main",
-			const std::string& shaderModel = "vs_5_0");
+			const D3D_SHADER_MACRO* pDefines,
+			const std::string& entryPoint,
+			const std::string& shaderModel);
+		D3D11VertexShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 
@@ -73,9 +80,10 @@ namespace fq::graphics
 	public:
 		D3D11GeometryShader(const std::shared_ptr<D3D11Device>& device,
 			const std::wstring& path,
-			const D3D_SHADER_MACRO* pDefines = nullptr,
-			const std::string& entryPoint = "main",
-			const std::string& shaderModel = "gs_5_0");
+			const D3D_SHADER_MACRO* pDefines,
+			const std::string& entryPoint,
+			const std::string& shaderModel);
+		D3D11GeometryShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 
@@ -95,9 +103,10 @@ namespace fq::graphics
 	public:
 		D3D11PixelShader(const std::shared_ptr<D3D11Device>& device,
 			const std::wstring& path,
-			const D3D_SHADER_MACRO* pDefines = nullptr,
-			const std::string& entryPoint = "main",
-			const std::string& shaderModel = "ps_5_0");
+			const D3D_SHADER_MACRO* pDefines,
+			const std::string& entryPoint,
+			const std::string& shaderModel);
+		D3D11PixelShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 
@@ -117,9 +126,10 @@ namespace fq::graphics
 	public:
 		D3D11ComputeShader(const std::shared_ptr<D3D11Device>& device,
 			const std::wstring& path,
-			const D3D_SHADER_MACRO* pDefines = nullptr,
-			const std::string& entryPoint = "main",
-			const std::string& shaderModel = "cs_5_0");
+			const D3D_SHADER_MACRO* pDefines,
+			const std::string& entryPoint,
+			const std::string& shaderModel);
+		D3D11ComputeShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 
@@ -139,9 +149,10 @@ namespace fq::graphics
 	public:
 		D3D11HullShader(const std::shared_ptr<D3D11Device>& device,
 			const std::wstring& path,
-			const D3D_SHADER_MACRO* pDefines = nullptr,
-			const std::string& entryPoint = "main",
-			const std::string& shaderModel = "hs_5_0");
+			const D3D_SHADER_MACRO* pDefines,
+			const std::string& entryPoint,
+			const std::string& shaderModel);
+		D3D11HullShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 
@@ -156,9 +167,10 @@ namespace fq::graphics
 	public:
 		D3D11DomainShader(const std::shared_ptr<D3D11Device>& device,
 			const std::wstring& path,
-			const D3D_SHADER_MACRO* pDefines = nullptr,
-			const std::string& entryPoint = "main",
-			const std::string& shaderModel = "ds_5_0");
+			const D3D_SHADER_MACRO* pDefines,
+			const std::string& entryPoint,
+			const std::string& shaderModel);
+		D3D11DomainShader(const std::shared_ptr<D3D11Device>& device, const std::wstring& binaryFilePath);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
 

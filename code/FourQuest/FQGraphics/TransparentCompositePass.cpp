@@ -25,8 +25,8 @@ namespace fq::graphics
 			{ NULL, NULL}
 		};
 
-		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/FullScreenVS.hlsl");
-		auto transparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"./resource/internal/shader/ModelTransparentPS.hlsl", macroComposite);
+		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
+		auto transparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_COMPOSITE.cso" );
 		auto OITCompositeState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITComposite);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, OITCompositeState);
 		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, transparentCompositePS, pipelieState);

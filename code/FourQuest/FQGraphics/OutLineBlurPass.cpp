@@ -8,8 +8,8 @@ void fq::graphics::OutLineBlurPass::Initialize(std::shared_ptr<D3D11Device> devi
 	mDevice = device;
 	mResourceManager = resourceManager;
 
-	auto outLineBlurVS = std::make_shared<D3D11VertexShader>(device, L"./resource/internal/shader/OutLineBlurVS.hlsl");
-	auto outLineBlurPS = std::make_shared<D3D11PixelShader>(device, L"./resource/internal/shader/OutLineBlurPS.hlsl");
+	auto outLineBlurVS = std::make_shared<D3D11VertexShader>(device, L"OutLineBlurVS.cso");
+	auto outLineBlurPS = std::make_shared<D3D11PixelShader>(device, L"OutLineBlurPS.cso");
 
 	mLessEqualDS = resourceManager->Get<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
 
