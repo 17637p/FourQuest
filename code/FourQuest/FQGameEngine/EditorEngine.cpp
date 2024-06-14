@@ -21,6 +21,7 @@
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
 #include "UISystem.h"
+#include "PathFindingSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -79,6 +80,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
 	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
+	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
@@ -187,11 +189,12 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 
-
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
+			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
 			mEditor->mDebugSystem->Render();
 			mGameProcess->mGraphics->Render();
@@ -258,6 +261,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mSkyBoxWindow->Render();
 	mEditor->mAnimatorWindow->Render();
 	mEditor->mSettingWindow->Render();
+	mEditor->mNavMeshWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -285,6 +289,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mSkyBoxWindow->Initialize(mGameProcess.get());
 	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mSettingWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mNavMeshWindow->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

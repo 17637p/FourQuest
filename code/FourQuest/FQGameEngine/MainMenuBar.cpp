@@ -282,6 +282,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onSetting = mEditorProcess->mSettingWindow->IsWindowOpen();
 		ImGui::Checkbox("Setting", &onSetting);
 
+		bool& onNavMesh = mEditorProcess->mNavMeshWindow->IsWindowOpen();
+		ImGui::Checkbox("NavigationMesh", &onNavMesh);
+
 		ImGui::EndMenu();
 	}
 }
@@ -310,6 +313,8 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 		bool& onCharater = debug->GetOnCharaterController();
 		ImGui::Checkbox("CharaterController", &onCharater);
 
+		bool& onNavMesh = debug->GetOnNavigationMesh();
+		ImGui::Checkbox("NavigationMesh", &onNavMesh);
 
 		ImGui::EndMenu();
 	}

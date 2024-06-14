@@ -34,6 +34,7 @@ namespace fq::game_engine
 	class ParticleSystem;
 	class DecalSystem;
 	class UISystem;
+	class PathFindingSystem;
 }
 
 namespace fq::game_engine
@@ -72,5 +73,6 @@ namespace fq::game_engine
 		std::unique_ptr<ParticleSystem> mParticleSystem;
 		std::unique_ptr<DecalSystem> mDecalSystem;
 		std::unique_ptr<UISystem> mUISystem;
+		std::unique_ptr<PathFindingSystem> mPathFindgingSystem;
 	};
 }

@@ -8,6 +8,7 @@
 #include "GameProcess.h"
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
+#include "PathFindingSystem.h"
 
 fq::game_engine::DebugSystem::DebugSystem()
 	:mGameProcess(nullptr)
@@ -19,6 +20,7 @@ fq::game_engine::DebugSystem::DebugSystem()
 	, mbOnSphereCollider(true)
 	, mbOnConvexMeshCollider(true)
 	, mbOnCharaterController(true)
+	, mbOnNavigationMesh(false)
 {}
 
 fq::game_engine::DebugSystem::~DebugSystem()
@@ -51,6 +53,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderCapsuleCollider();
 	renderConvexMeshCollider();
 	renderCharaterController();
+	renderNavigationMesh();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -379,7 +382,6 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 			mGameProcess->mGraphics->DrawPolygon(info);
 		}
 	}
-
 }
 
 void fq::game_engine::DebugSystem::renderCharaterController()
@@ -393,5 +395,47 @@ void fq::game_engine::DebugSystem::renderCharaterController()
 			{
 				RenderCharaterController(transform, cotroller);
 			});
+}
+
+void fq::game_engine::DebugSystem::renderNavigationMesh()
+{
+	if (!mbOnNavigationMesh)
+	{
+		return;
+	}
+
+	std::vector<DirectX::SimpleMath::Vector3> navMeshVertices = 
+		mGameProcess->mPathFindgingSystem->GetNavMeshVertices();
+
+	if (navMeshVertices.size() == 0)
+	{
+		spdlog::error("Can't Draw NavMesh, No NavgationMesh was created");
+		return;
+	}
+
+	for (UINT i = 0; i < navMeshVertices.size(); i++)
+	{
+		if (i % 3 == 0)
+		{
+			fq::graphics::debug::PolygonInfo info;
+
+			info.Points.push_back(navMeshVertices[i + 0]);
+			info.Points.push_back(navMeshVertices[i + 1]);
+			info.Points.push_back(navMeshVertices[i + 2]);
+
+			info.Color = { 1, 1, 0, 1 };
+
+			mGameProcess->mGraphics->DrawPolygon(info);
+		}
+
+		fq::graphics::debug::SphereInfo info;
+
+		info.Sphere.Center = navMeshVertices[i];
+		info.Sphere.Radius = 0.05f;
+
+		info.Color = { 0, 1, 1, 1 };
+
+		mGameProcess->mGraphics->DrawSphere(info);
+	}
 }
 

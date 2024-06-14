@@ -30,6 +30,10 @@
 #include "Animator.h"
 #include "LogStateBehaviour.h"
 
+// PathFinding
+#include "AddNavigationMeshObject.h"
+#include "NavigationAgent.h"
+
 void fq::game_module::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -60,7 +64,9 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::MonsterAttack>("MonsterAttack"_hs) // 7
 		.prop(fq::reflect::prop::Name, "MonsterAttack")
 		.data<ETag::Armour>("Armour"_hs) // 8
-		.prop(fq::reflect::prop::Name, "Armour");
+		.prop(fq::reflect::prop::Name, "Armour")
+		.data<ETag::Floor>("Floor"_hs) // 9
+		.prop(fq::reflect::prop::Name, "Floor");
 
 	// GameObject
 	entt::meta<GameObject>()
@@ -898,5 +904,18 @@ void fq::game_module::RegisterMetaData()
 			.base<Component>();
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	//                             ±Ê√£±‚									//
+	//////////////////////////////////////////////////////////////////////////
+	entt::meta<AddNavigationMeshObject>()
+		.type("AddNavigationMeshObject"_hs)
+		.prop(fq::reflect::prop::Name, "AddNavigationMeshObject")
+		.data<&AddNavigationMeshObject::SetIsUsed, &AddNavigationMeshObject::GetIsUsed>("IsUsed"_hs)
+		.prop(fq::reflect::prop::Name, "IsUsed")
+		.base<fq::game_module::Component>();
 
+	entt::meta<NavigationAgent>()
+		.type("NavigationAgent"_hs)
+		.prop(fq::reflect::prop::Name, "NavigationAgent")
+		.base<fq::game_module::Component>();
 }
