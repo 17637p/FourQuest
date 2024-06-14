@@ -5,6 +5,8 @@
 
 void fq::graphics::OutLineBlurPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, unsigned short width, unsigned short height)
 {
+	Finalize();
+	
 	mDevice = device;
 	mResourceManager = resourceManager;
 
@@ -14,7 +16,7 @@ void fq::graphics::OutLineBlurPass::Initialize(std::shared_ptr<D3D11Device> devi
 	mLessEqualDS = resourceManager->Get<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqual);
 
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, mLessEqualDS, nullptr);
-	
+
 	mOutLineBlurPassShaderProgram = std::make_unique<ShaderProgram>(mDevice, outLineBlurVS, nullptr, outLineBlurPS, pipelieState);
 
 	auto outLineRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::OutLine);
@@ -27,7 +29,7 @@ void fq::graphics::OutLineBlurPass::Initialize(std::shared_ptr<D3D11Device> devi
 	mNoneDSV = mResourceManager->Create<fq::graphics::D3D11DepthStencilView>(ED3D11DepthStencilViewType::None, width, height);
 
 	mDefaultSS = resourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
-	
+
 	std::vector<DirectX::SimpleMath::Vector2> positions =
 	{
 		{ -1, 1 },
@@ -48,7 +50,22 @@ void fq::graphics::OutLineBlurPass::Initialize(std::shared_ptr<D3D11Device> devi
 
 void fq::graphics::OutLineBlurPass::Finalize()
 {
+	mDevice = nullptr;
+	mResourceManager = nullptr;
 
+	mOutLineSRV = nullptr;
+	mOffScreenSRV = nullptr;
+	mOutLineBlurRTV = nullptr;
+	mNoneDSV = nullptr;
+
+	mLessEqualDS = nullptr;
+
+	mOutLineBlurPassShaderProgram = nullptr;
+
+	mFullScreenVB = nullptr;
+	mFullScreenIB = nullptr;
+
+	mDefaultSS = nullptr;
 }
 
 void fq::graphics::OutLineBlurPass::Render()

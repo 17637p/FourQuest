@@ -80,8 +80,6 @@ namespace fq::graphics
 		mEmissiveSRV = nullptr;
 		mPositionSRV = nullptr;
 
-		mBackBufferRTV = nullptr;
-
 		mShaderProgram = nullptr;
 
 		mAnisotropicWrapSamplerState = nullptr;

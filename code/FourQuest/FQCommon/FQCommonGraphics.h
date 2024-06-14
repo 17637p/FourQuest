@@ -58,24 +58,24 @@ namespace fq::graphics
 
 	struct UIInfo
 	{
-		float StartX; // 좌상단 점 위치 
-		float StartY;
-		float Width;
-		float Height;
+		float StartX = 0.f; // 좌상단 점 위치 
+		float StartY = 0.f;
+		float Width = 100.f;
+		float Height = 100.f;
 
-		float Alpha; // 1이 불투명 0이 투명 
+		float Alpha = 1.f; // 1이 불투명 0이 투명 
 
-		unsigned int Layer; // 작을 수록 위에 클 수록 아래에 출력
+		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
 
-		float XRatio; // 1이 전부다 출력
-		float YRatio; // 1이 전부다 출력
+		float XRatio= 1.f; // 1이 전부다 출력
+		float YRatio= 1.f; // 1이 전부다 출력
 
 		std::string ImagePath;
 
 		// 선택 사항
-		float RotationAngle;
-		float ScaleX;
-		float ScaleY;
+		float RotationAngle = 0.f;
+		float ScaleX = 1.f;
+		float ScaleY = 1.f;
 	};
 
 	struct TerrainLayer

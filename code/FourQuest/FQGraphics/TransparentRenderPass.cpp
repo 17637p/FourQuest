@@ -16,6 +16,8 @@ namespace fq::graphics
 		unsigned short width,
 		unsigned short height)
 	{
+		Finalize();
+
 		mDevice = device;
 		mJobManager = jobManager;
 		mCameraManager = cameraManager;
@@ -28,17 +30,6 @@ namespace fq::graphics
 		mDefaultDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 		auto shadowDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3);
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
-
-		D3D_SHADER_MACRO macroSkinning[] =
-		{
-			{"SKINNING", ""},
-			{ NULL, NULL}
-		};
-		D3D_SHADER_MACRO macroRender[] =
-		{
-			{"RENDER", ""},
-			{ NULL, NULL}
-		};
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
@@ -74,22 +65,24 @@ namespace fq::graphics
 		mLightManager = nullptr;
 		mResourceManager = nullptr;
 
-		mStaticMeshShaderProgram = nullptr;
-		mSkinnedMeshShaderProgram = nullptr;
-
 		mColoraccumulationRTV = nullptr;
 		mPixelRevealageThresholdRTV = nullptr;
 		mDefaultDSV = nullptr;
 		mShadowSRV = nullptr;
 
+		mStaticMeshShaderProgram = nullptr;
+		mSkinnedMeshShaderProgram = nullptr;
 
 		mAnisotropicWrapSamplerState = nullptr;
 		mShadowSampler = nullptr;
+		mDefualtSampler = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
+		mDirectioanlShadowInfoCB = nullptr;
+		mAlphaDataCB = nullptr;
 	}
 	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
 	{

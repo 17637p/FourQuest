@@ -106,7 +106,11 @@ namespace fq::graphics
 		mBoxVB = nullptr;
 		mBoxIB = nullptr;
 
-		memset(mBlendStates, NULL, sizeof(mBlendStates));
+		for (auto& blendState : mBlendStates)
+		{
+			unsigned long refCount = blendState.Reset();
+			assert(refCount == 0);
+		}
 	}
 	void DeferredDecalPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -207,10 +211,12 @@ namespace fq::graphics
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 				obbInfo = {};
-				obbInfo.OBB.Center = { 0.f, 0.25f, 0.f };
-				obbInfo.OBB.Extents = { 0.25f, 0.25f, 0.25f };
+				obbInfo.OBB.Center = { 0.f, -0.25f, 0.f };
+				obbInfo.OBB.Extents = { 0.1f, 0.25f, 0.1f };
 				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
+				mDebugDrawManager->Submit(obbInfo);
+
 			}
 		}
 	}

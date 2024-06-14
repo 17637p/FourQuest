@@ -35,6 +35,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
 		std::shared_ptr< D3D11LightManager> lightManager)
 	{
+		Finalize();
+
 		mDevice = device;
 		mJobManager = jobManager;
 		mCameraManager = cameraManager;
@@ -68,6 +70,33 @@ namespace fq::graphics
 
 	void TerrainPass::Finalize()
 	{
+		mDevice = nullptr;
+		mJobManager = nullptr;
+		mCameraManager = nullptr;
+		mResourceManager = nullptr;
+		mLightManager = nullptr;
+
+		mTerrainVS = nullptr;
+		mTerrainPS = nullptr;
+		mTerrainDS = nullptr;
+		mTerrainHS = nullptr;
+		mTerrainLayout = nullptr;
+
+		mDrawRTV = nullptr;
+		mDrawDSV = nullptr;
+		mShadowSRV = nullptr;
+
+		mDefaultRS = nullptr;
+		mAnisotropicWrapSS = nullptr;
+		mPointClampSS = nullptr;
+		mShadowSS = nullptr;
+		mDefaultDS = nullptr;
+
+		mModelTransformCB = nullptr;
+		mSceneTransformCB = nullptr;
+		mTerrainHullCB = nullptr;
+		mTerrainTextureCB = nullptr;
+		mDirectioanlShadowInfoCB = nullptr;
 	}
 
 	void TerrainPass::Render()

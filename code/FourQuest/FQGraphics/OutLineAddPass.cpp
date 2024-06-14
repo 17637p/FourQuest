@@ -6,6 +6,8 @@
 
 void fq::graphics::OutLineAddPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager)
 {
+	Finalize();
+
 	mDevice = device;
 	mResourceManager = resourceManager;
 
@@ -43,7 +45,20 @@ void fq::graphics::OutLineAddPass::Initialize(std::shared_ptr<D3D11Device> devic
 
 void fq::graphics::OutLineAddPass::Finalize()
 {
+	mDevice = nullptr;
+	mResourceManager = nullptr;
 
+	mOutLineBlurSRV = nullptr;
+
+	mOffScreenRTV = nullptr;
+	mDSV = nullptr;
+
+	mOutLineAddShaderProgram = nullptr;
+
+	mFullScreenVB = nullptr;
+	mFullScreenIB = nullptr;
+
+	mDefaultSS = nullptr;
 }
 
 void fq::graphics::OutLineAddPass::Render()

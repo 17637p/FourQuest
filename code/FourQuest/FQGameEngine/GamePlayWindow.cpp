@@ -354,9 +354,10 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 
 	bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
 	float* snap = mEditorProcess->mSettingWindow->GetSnap();
+	auto mode = mEditorProcess->mSettingWindow->GetMode();
 
 	if (ImGuizmo::Manipulate(&view._11, &proj._11
-		, mOperation, ImGuizmo::WORLD, &objectMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
+		, mOperation, mode, &objectMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
 	{
 		if (objectT->HasParent())
 		{

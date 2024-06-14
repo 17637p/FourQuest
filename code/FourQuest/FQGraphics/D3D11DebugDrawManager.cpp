@@ -709,7 +709,6 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 axis = (Vector3)pos - info.Origin;
 		ringInfo.MajorAxis = info.YAxis;
 		ringInfo.MinorAxis = axis;
-		ringInfo.Color = { 1, 0, 0,1 };
 		Draw(device, ringInfo);
 
 		ringInfo.MajorAxis = info.XAxis;

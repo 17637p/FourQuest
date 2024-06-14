@@ -7,28 +7,24 @@
 #include "Material.h"
 #include "BoneHierarchy.h"
 
-void fq::graphics::SSAODepthPass::Initialize(std::shared_ptr<D3D11Device> device, 
-	std::shared_ptr<D3D11JobManager> jobManager, 
-	std::shared_ptr<D3D11CameraManager> cameraManager, 
-	std::shared_ptr<D3D11ResourceManager> resourceManager, 
+void fq::graphics::SSAODepthPass::Initialize(std::shared_ptr<D3D11Device> device,
+	std::shared_ptr<D3D11JobManager> jobManager,
+	std::shared_ptr<D3D11CameraManager> cameraManager,
+	std::shared_ptr<D3D11ResourceManager> resourceManager,
 	unsigned short width, unsigned short height)
 {
+	Finalize();
+
 	mDevice = device;
 	mJobManager = jobManager;
 	mCameraManager = cameraManager;
 	mResourceManager = resourceManager;
 
-	D3D_SHADER_MACRO macroSkinning[] =
-	{
-		{"SKINNING", ""},
-		{ NULL, NULL}
-	};
-
 	mViewDepthRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SSAODepth, width, height);
 	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 	auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"SSAODepthVS.cso");
-	auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"SSAODepthVS_SKINNING.cso" );
+	auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"SSAODepthVS_SKINNING.cso");
 	auto SSAODepthPS = std::make_shared<D3D11PixelShader>(mDevice, L"SSAODepthPS.cso");
 	auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 
@@ -42,7 +38,20 @@ void fq::graphics::SSAODepthPass::Initialize(std::shared_ptr<D3D11Device> device
 
 void fq::graphics::SSAODepthPass::Finalize()
 {
+	mDevice = nullptr;
+	mJobManager = nullptr;
+	mCameraManager = nullptr;
+	mResourceManager = nullptr;
 
+	mViewDepthRTV = nullptr;
+	mDSV = nullptr;
+
+	mSSAOViewDepthStaticMeshPassShaderProgram = nullptr;
+	mSSAOViewDepthskinnedMeshPassShaderProgram = nullptr;
+
+	mModelTransformCB = nullptr;
+	mViewProjectionMatrix = nullptr;
+	mBoneTransformCB = nullptr;
 }
 
 void fq::graphics::SSAODepthPass::OnResize(unsigned short width, unsigned short height)

@@ -143,8 +143,6 @@ namespace fq::graphics
 		delete particleObject;
 	}
 
-
-
 	void D3D11ParticleManager::updateParticleObjectCB(IParticleObject* particleObjectInterface)
 	{
 		const ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);

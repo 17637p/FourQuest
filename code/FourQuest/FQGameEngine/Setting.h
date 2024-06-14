@@ -1,6 +1,9 @@
 #pragma once
 #include "IEditorWindow.h"
 
+#include <imgui.h>
+#include <ImGuizmo.h>
+
 namespace fq::game_engine
 {
 	class GameProcess;
@@ -20,8 +23,10 @@ namespace fq::game_engine
 
 		float* GetSnap() { return &mSnap[0]; }
 
+		ImGuizmo::MODE GetMode();
+
 	private:
-		void beginChild_SnapSetting();
+		void beginChild_GizumoSetting();
 		void beginChild_GraphicsSetting();
 
 	private:
@@ -30,6 +35,7 @@ namespace fq::game_engine
 
 		bool mbUseSnap;
 		float mSnap[3];
+		ImGuizmo::MODE mMode;
 
 		bool mbIsOpen;
 		bool mbUseGrayScale;

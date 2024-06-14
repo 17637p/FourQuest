@@ -5,6 +5,8 @@
 
 void fq::graphics::OutLinePass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11CameraManager> cameraManager, std::shared_ptr<D3D11ResourceManager> resourceManager, unsigned short width, unsigned short height)
 {
+	Finalize();
+
 	mDevice = device;
 	mCameraManager = cameraManager;
 	mResourceManager = resourceManager;
@@ -46,7 +48,22 @@ void fq::graphics::OutLinePass::Initialize(std::shared_ptr<D3D11Device> device, 
 
 void fq::graphics::OutLinePass::Finalize()
 {
+	mDevice = nullptr;
+	mCameraManager = nullptr;
+	mResourceManager = nullptr;
 
+	mSingleColorSRV = nullptr;
+	mOutlineRTV = nullptr;
+
+	mOutLinePassShaderProgram = nullptr;
+	mNoneDSV = nullptr;
+
+	mFullScreenVB = nullptr;
+	mFullScreenIB = nullptr;
+
+	mDefaultSS = nullptr;
+
+	mScreenSizeCB = nullptr;
 }
 
 void fq::graphics::OutLinePass::Render()
