@@ -64,7 +64,9 @@ namespace fq::graphics
 		mPasses.push_back(mOutLinePass);
 		mPasses.push_back(mOutLineBlurPass);
 		mPasses.push_back(mOutLineAddPass);
-		mPasses.push_back(mFullScreenPass);
+
+		mFullScreenLastPass = mFullScreenPass;
+		//mPasses.push_back(mFullScreenPass);
 
 		mSwapChainRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default, width, height);
 		mBackBufferRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen, width, height);

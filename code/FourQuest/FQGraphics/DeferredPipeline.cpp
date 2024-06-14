@@ -79,7 +79,9 @@ namespace fq::graphics
 		mPasses.push_back(mOutLinePass);
 		mPasses.push_back(mOutLineBlurPass);
 		mPasses.push_back(mOutLineAddPass);
-		mPasses.push_back(mFullScreenPass);
+
+		mFullScreenLastPass = mFullScreenPass;
+		//mPasses.push_back(mFullScreenPass);
 	}
 
 	void DeferredPipeline::Finalize()

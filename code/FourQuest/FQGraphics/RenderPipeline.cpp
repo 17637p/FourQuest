@@ -30,6 +30,10 @@ namespace fq::graphics
 			pass->Finalize();
 		}
 		mPasses.clear();
+		if (mFullScreenLastPass != nullptr)
+		{
+			mFullScreenLastPass->Finalize();
+		}
 
 		mDevice = nullptr;
 		mResourceManager = nullptr;
@@ -61,6 +65,7 @@ namespace fq::graphics
 		{
 			pass->OnResize(width, height);
 		}
+		mFullScreenLastPass->OnResize(width, height);
 	}
 
 	void RenderPipeline::BeginRender()
@@ -85,6 +90,8 @@ namespace fq::graphics
 
 	void RenderPipeline::EndRender()
 	{
+		mFullScreenLastPass->Render();
+
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
 		HR(swapChain->Present(0, 0));
 	}

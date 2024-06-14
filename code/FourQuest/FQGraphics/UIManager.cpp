@@ -15,6 +15,9 @@
 
 #include <FQCommonGraphics.h>
 
+#include "D3D11ResourceManager.h"
+#include "D3D11View.h"
+
 fq::graphics::UIManager::UIManager()
 	:mHWnd{ NULL },
 	mDirect2DFactory{ nullptr },
@@ -25,7 +28,8 @@ fq::graphics::UIManager::UIManager()
 	mDefaultFontPath{ L"Verdana" },
 	mDefaultFontSize{ 50 },
 	mDefaultFontColor{ 0, 1, 1, 1 },
-	mDrawTextInformations{}
+	mDrawTextInformations{},
+	mResourceManager(nullptr)
 {
 
 }
@@ -52,9 +56,12 @@ fq::graphics::UIManager::~UIManager()
 	mDirect2DFactory->Release();
 }
 
-void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device, const short width, const short height)
+void fq::graphics::UIManager::Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device, 
+	std::shared_ptr<D3D11ResourceManager> resourceManager,
+	const short width, const short height)
 {
 	mHWnd = hWnd;
+	mResourceManager = resourceManager;
 
 	HRESULT hr = S_OK;
 
@@ -83,15 +90,26 @@ HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device>
 			0,
 			0);
 
-	IDXGISurface* backBuffer;
-	device->GetSwapChain()->GetBuffer(0, IID_PPV_ARGS(&backBuffer));
+	//IDXGISurface* backBuffer;
+	//device->GetSwapChain()->GetBuffer(0, IID_PPV_ARGS(&backBuffer));
+
+	IDXGISurface1* pDXGISurface = nullptr;
+	auto renderTarget = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+	
+	ID3D11Texture2D* texture = nullptr;
+	renderTarget->GetRTV().Get()->GetResource(reinterpret_cast<ID3D11Resource**>(&texture));
+
+	texture->QueryInterface<IDXGISurface1>(&pDXGISurface);
+
+	//hr = renderTarget->GetRTV().Get()->
+		//->QueryInterface(__uuidof(IDXGISurface), (void**)&pDXGISurface);
 
 	hr = mDirect2DFactory->CreateDxgiSurfaceRenderTarget(
-		backBuffer,
+		pDXGISurface,
 		&props,
 		&mRenderTarget);
 
-	backBuffer->Release();
+	//backBuffer->Release();
 
 	return hr;
 }
@@ -293,6 +311,7 @@ void fq::graphics::UIManager::DeleteImage(IImageObject* imageObject)
 	{
 		mBitmaps[imagePath]->bitmap->Release();
 		delete mBitmaps[imagePath];
+		mBitmaps.erase(imagePath);
 	}
 
 	mImages.erase(remove(mImages.begin(), mImages.end(), imageObject), mImages.end());

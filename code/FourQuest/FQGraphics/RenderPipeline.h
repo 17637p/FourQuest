@@ -36,6 +36,7 @@ namespace fq::graphics
 	protected:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<Pass> mFullScreenLastPass;
 		std::vector<std::shared_ptr<Pass>> mPasses;
 
 	private:

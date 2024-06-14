@@ -30,6 +30,7 @@ struct ColorHash
 namespace fq::graphics
 {
 	class D3D11Device;
+	class D3D11ResourceManager;
 
 	class IImageObject;
 
@@ -60,7 +61,9 @@ namespace fq::graphics
 		UIManager();
 		~UIManager();
 
-		void Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device, const short width, const short height);
+		void Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device,
+			std::shared_ptr<D3D11ResourceManager> resourceManager, 
+			const short width, const short height);
 		void Render();
 		void Finalize();
 
@@ -98,6 +101,8 @@ namespace fq::graphics
 
 		ID2D1Factory* mDirect2DFactory;
 		ID2D1RenderTarget* mRenderTarget;
+
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
 		// 컬러를 키로 브러시를 밸류로 키 - 밸류 쌍으로 없으면 만들고 있으면 꺼내쓰는 방식으로 색을 입력할 수 있게 해둘 것
 		std::unordered_map<DirectX::SimpleMath::Color, ID2D1SolidColorBrush*, ColorHash> mBrushes;

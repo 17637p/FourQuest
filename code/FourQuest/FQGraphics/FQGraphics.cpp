@@ -51,9 +51,10 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mDebugDrawManager->Initialize(mDevice);
 	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
-	mUIManager->Initialize(hWnd, mDevice, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mDecalManager->Initialize(mDevice, mResourceManager);
+
+	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
 
 	return true;
 }
