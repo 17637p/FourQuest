@@ -32,7 +32,7 @@ namespace fq::graphics
 	struct BoneTransform
 	{
 		enum { MAX_BOND_COUNT = 128 };
-		DirectX::SimpleMath::Matrix FinalTransforms[128];
+		DirectX::SimpleMath::Matrix FinalTransforms[MAX_BOND_COUNT];
 	};
 
 	struct DirectionalShadowTransform

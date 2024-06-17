@@ -4,8 +4,8 @@ namespace fq::graphics
 {
 	BoneHierarchy::BoneHierarchy(fq::common::Model model)
 	{
-		std::vector<DirectX::SimpleMath::Matrix> toRoot;
-		toRoot.reserve(model.Meshes.size());
+		// std::vector<DirectX::SimpleMath::Matrix> toRoot;
+		// toRoot.reserve(model.Meshes.size());
 
 		for (const auto& nodeMeshPair : model.Meshes)
 		{
@@ -17,14 +17,14 @@ namespace fq::graphics
 			bone.ParentIndex = node.ParentIndex;
 			bone.BindposeMatrix = node.ToParentMatrix;
 
-			toRoot.push_back(node.ToParentMatrix);
+			//toRoot.push_back(node.ToParentMatrix);
 
-			if (node.ParentIndex != fq::common::Node::INVALID_INDEX)
-			{
-				toRoot[node.Index] = toRoot[node.Index] * toRoot[node.ParentIndex];
-			}
+			//if (node.ParentIndex != fq::common::Node::INVALID_INDEX)
+			//{
+			//	toRoot[node.Index] = toRoot[node.Index] * toRoot[node.ParentIndex];
+			//}
 
-			bone.OffsetMatrix = toRoot[node.Index].Invert();
+			bone.OffsetMatrix = node.OffsetMatrix;//  toRoot[node.Index].Invert(); 축이 다를 경우 invert가 항상 보장되지 않아 결과가 이상한듯보인다.
 
 			mBones.push_back(std::move(bone));
 		}

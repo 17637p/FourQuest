@@ -61,6 +61,7 @@ namespace fq::loader
 			fileUtil.Read<unsigned int>(&node.Index);
 			fileUtil.Read<unsigned int>(&node.ParentIndex);
 			fileUtil.Read<DirectX::SimpleMath::Matrix>(&node.ToParentMatrix);
+			fileUtil.Read<DirectX::SimpleMath::Matrix>(&node.OffsetMatrix);
 
 			Mesh mesh;
 			fileUtil.Read<string>(&mesh.Name);
@@ -223,6 +224,7 @@ namespace fq::loader
 			fileUtil.Write<unsigned int>(node.Index);
 			fileUtil.Write<unsigned int>(node.ParentIndex);
 			fileUtil.Write<DirectX::SimpleMath::Matrix>(node.ToParentMatrix);
+			fileUtil.Write<DirectX::SimpleMath::Matrix>(node.OffsetMatrix);
 
 			fileUtil.Write<string>(mesh.Name);
 			fileUtil.Write<unsigned int>(mesh.Vertices.size());

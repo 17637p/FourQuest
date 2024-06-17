@@ -577,4 +577,7 @@
       <Filter>Shader\GS</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexShader.hlsl" />
+  </ItemGroup>
 </Project>

@@ -84,8 +84,8 @@ bool Process::Init(HINSTANCE hInstance)
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
-	const std::string animModelPath0 = "./resource/example/model/SkinningTest.model";
-	const std::string animModelPath1 = "./resource/example/model/kick.model";
+	const std::string animModelPath0 = "./resource/example/model/temp123.model";
+	const std::string animModelPath1 = "./resource/example/model/Meleemob_Animation.model";
 	const std::string staticAnimModelPath0 = "./resource/example/model/animBoxNA.model";
 	const std::string textureBasePath = "./resource/example/texture";
 
@@ -94,10 +94,11 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
 
 	std::vector<fq::graphics::AnimationInfo> animInfo;
-	auto modelData = mTestGraphics->CreateModel(animModelPath0, textureBasePath);
-	animInfo.push_back({ animModelPath0, modelData.Animations.front().Name, "Idle" });
-	modelData = mTestGraphics->CreateModel(animModelPath1, textureBasePath);
-	animInfo.push_back({ animModelPath1, modelData.Animations.front().Name, "Kick" });
+	auto modelData = mTestGraphics->CreateModel(animModelPath0, "./resource/example/temp");
+	//animInfo.push_back({ animModelPath0, modelData.Animations.front().Name, "Idle" });
+	// modelData = mTestGraphics->CreateModel(animModelPath1, "./resource/example/temp");
+	animInfo.push_back({ animModelPath0, modelData.Animations[0].Name, "Idle" });
+	// animInfo.push_back({ animModelPath0, modelData.Animations[1].Name, "Kick" });
 
 	mTestGraphics->WriteModel("./cocoa.model", modelData);
 	modelData = mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
@@ -116,11 +117,11 @@ bool Process::Init(HINSTANCE hInstance)
 		float randY = (float)(rand() % 100);
 		float randZ = (float)(rand() % 500 - 250);
 		createModel(modelPath);// , DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateScale(100) * DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 
-		mSocketStaticMeshObject = mStaticMeshObjects.back();
-		mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
-		mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
+		// mSocketStaticMeshObject = mStaticMeshObjects.back();
+		// mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
+		// mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
 	}
 
 	// 카메라 초기화
@@ -155,29 +156,29 @@ bool Process::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-	
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1,1,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 1 ,-1, 0 };
 	directionalLightInfo.direction.Normalize();
-	
+
 	mTestGraphics->AddLight(2, directionalLightInfo);
-	
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1 ,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { -1, -1, 0 };
 	directionalLightInfo.direction.Normalize();
-	
+
 	mTestGraphics->AddLight(3, directionalLightInfo);
-	
+
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1 ,1, 1 };
 	directionalLightInfo.intensity = 1;
 	directionalLightInfo.direction = { 0, -1, -1 };
 	directionalLightInfo.direction.Normalize();
-	
+
 	mTestGraphics->AddLight(4, directionalLightInfo);
 
 	//directionalLightInfo.type = fq::graphics::ELightType::Directional;
@@ -441,7 +442,6 @@ void Process::Update()
 
 void Process::Render()
 {
-
 	mTestGraphics->BeginRender();
 	debugRender();
 	mTestGraphics->Render();
@@ -526,6 +526,7 @@ void Process::Render()
 			obj->SetAnimationKey("Idle");
 			obj->SetObjectRenderType(fq::graphics::EObjectRenderType::Opaque);
 			obj->SetBlendAnimationTime(s_time, s_blend_time, s_blend_time);
+
 		}
 		else if (GetAsyncKeyState('3') & 0x8000)
 		{
@@ -1096,6 +1097,8 @@ void Process::materialUpdate()
 
 void Process::socketUpdate()
 {
+	return;
+
 	const auto& bones = mSoketSkinnedMeshObject->GetBones();
 
 	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(13) * mSoketSkinnedMeshObject->GetTransform();
@@ -1299,6 +1302,8 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		}
 		else
 		{
+			meshInfo.Transform = transform;
+
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
 			//static int testIndex = 0;
