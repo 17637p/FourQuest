@@ -99,7 +99,7 @@ extern "C" {
 
 			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DecalInfo& decalInfo) abstract;
 			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObjectInterface) abstract;
-			virtual FQ_GRAPHICS void DrawDecalObject(IDecalObject* decalObject, IMaterial* material, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS void DrawDecalObject(IDecalObject* decalObject, std::shared_ptr<IMaterial> material, const DirectX::SimpleMath::Matrix& transform) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;

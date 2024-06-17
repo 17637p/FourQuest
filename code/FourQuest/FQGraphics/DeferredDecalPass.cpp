@@ -173,7 +173,7 @@ namespace fq::graphics
 		for (const auto& job : jobs)
 		{
 			DecalObject* decalObject = static_cast<DecalObject*>(job.DecalObjectInterface);
-			DecalMaterial* material = static_cast<DecalMaterial*>(job.MaterialInterface);
+			std::shared_ptr<DecalMaterial> material = std::static_pointer_cast<DecalMaterial>(job.MaterialInterface);
 
 			int index = material->GetHasEmissive() << 4 | material->GetHasNormal() << 3 | material->GetHasRoughness() << 2 | material->GetHasMetalness() << 1 | material->GetHasBaseColor() << 0;
 			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
@@ -185,7 +185,7 @@ namespace fq::graphics
 			
 			const auto& decalInfo = decalObject->GetDecalInfo();
 
-			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInRadian;
+			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
 			perFrameData.AlphaClipThreshold = decalInfo.AlphaClipThreshold;
 
 			perFrameData.bUseMultiplyAlpha = decalInfo.bUseMultiplyAlpha;

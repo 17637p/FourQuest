@@ -77,22 +77,17 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 				for (auto& material : materials)
 				{
-					fq::graphics::MaterialTextureUseFlag flag{};
-					flag.bUseBaseColor = !mbUseGrayScale;
-					flag.bUseMetalness = !mbUseGrayScale;
-					flag.bUseNormalness = !mbUseGrayScale;
-					flag.bUseRoughness = !mbUseGrayScale;
-
-					material->SetTextureUseFlag(flag);
-				
-					if (mbUseGrayScale)
+					if (material->GetMaterialType() == fq::graphics::EMaterialType::Standard)
 					{
-						fq::common::Material mat;
-						mat.BaseColor = { 1.f,1.f,1.f,1.f };
-						material->SetMaterialData(mat);
+						auto& materialInfo = material->GetStandardMaterialInfo();
+						materialInfo.bUseBaseColor = !mbUseGrayScale;
+						materialInfo.bUseMetalness = !mbUseGrayScale;
+						materialInfo.bUseNormalness = !mbUseGrayScale;
+						materialInfo.bUseRoughness = !mbUseGrayScale;
+
+						materialInfo.BaseColor = { 1.f, 1.f, 1.f, 1.f };
 					}
 				}
-
 			}
 		}
 		ImGui::EndChild();

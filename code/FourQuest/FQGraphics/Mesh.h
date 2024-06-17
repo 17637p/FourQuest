@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "../FQCommon/FQCommonLoader.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::graphics
 {
@@ -32,14 +33,14 @@ namespace fq::graphics
 		return mMeshData;
 	}
 
-	class StaticMesh : public MeshBase
+	class StaticMesh : public MeshBase, public IStaticMesh
 	{
 	public:
 		StaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~StaticMesh() = default;
 	};
 
-	class SkinnedMesh : public MeshBase
+	class SkinnedMesh : public MeshBase, public ISkinnedMesh
 	{
 	public:
 		SkinnedMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);

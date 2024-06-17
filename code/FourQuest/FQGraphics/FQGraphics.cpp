@@ -374,7 +374,7 @@ void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
 {
 	mDecalManager->DeleteDecalObject(decalObjectInterface);
 }
-void FQGraphics::DrawDecalObject(IDecalObject* decalObject, IMaterial* material, const DirectX::SimpleMath::Matrix& transform)
+void FQGraphics::DrawDecalObject(IDecalObject* decalObject, std::shared_ptr<IMaterial> material, const DirectX::SimpleMath::Matrix& transform)
 {
 	DecalJob decalJob;
 	decalJob.DecalObjectInterface = decalObject;

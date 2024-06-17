@@ -40,20 +40,14 @@
     <ClInclude Include="D3D11TextManager.h">
       <Filter>D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
     <ClInclude Include="RenderObject.h">
-      <Filter>Object</Filter>
+      <Filter>RenderObject</Filter>
     </ClInclude>
     <ClInclude Include="D3D11ObjectManager.h">
       <Filter>Management</Filter>
     </ClInclude>
     <ClInclude Include="RenderJob.h">
-      <Filter>Object</Filter>
+      <Filter>RenderObject</Filter>
     </ClInclude>
     <ClInclude Include="D3D11Shader.h">
       <Filter>D3D11</Filter>
@@ -75,9 +69,6 @@
     </ClInclude>
     <ClInclude Include="AnimationHelper.h">
       <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="BoneHierarchy.h">
-      <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="D3D11Util.h">
       <Filter>Common</Filter>
@@ -164,7 +155,7 @@
       <Filter>Management</Filter>
     </ClInclude>
     <ClInclude Include="ParticleObject.h">
-      <Filter>Object</Filter>
+      <Filter>RenderObject</Filter>
     </ClInclude>
     <ClInclude Include="OutLineAddPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
@@ -190,6 +181,15 @@
     <ClInclude Include="D3D11DecalManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="BoneHierarchy.h">
+      <Filter>RenderObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>RenderObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>RenderObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -207,17 +207,11 @@
     <Filter Include="Light">
       <UniqueIdentifier>{f2f075a3-92ff-486f-bac4-9af69ba1926c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object">
-      <UniqueIdentifier>{1fd9c50e-f004-44e8-99a8-b1ae104857f1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{5bd1b6bc-5961-4bd8-be6b-3055d44ba8e9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{fc331d0b-bd4c-4ad2-be02-28bcf5dc3dfd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{1f33f771-493f-48fd-b2e3-1ac0c55eefaa}</UniqueIdentifier>
     </Filter>
     <Filter Include="Pipeline">
       <UniqueIdentifier>{e7ab995b-e03c-49e3-835f-46bef3e6745f}</UniqueIdentifier>
@@ -240,9 +234,6 @@
     <Filter Include="Pass\Common">
       <UniqueIdentifier>{889ed25c-ef20-4220-888b-b52dee6d08d8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource\Source">
-      <UniqueIdentifier>{d745c4c7-c2a3-4639-8d5f-08e06ea7bd0b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Pipeline\Source">
       <UniqueIdentifier>{e690574b-9134-46e4-98e3-2db65ea3b2af}</UniqueIdentifier>
     </Filter>
@@ -263,9 +254,6 @@
     </Filter>
     <Filter Include="Common\Source">
       <UniqueIdentifier>{51c71a07-0194-40f7-b0b2-3f398fe65888}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Object\Source">
-      <UniqueIdentifier>{77b3181f-8aea-4aff-a2a9-046ad29cb9dd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader\VS">
       <UniqueIdentifier>{a6d904d9-8a89-4a6a-976e-cced5b776496}</UniqueIdentifier>
@@ -288,6 +276,12 @@
     <Filter Include="Shader\DS">
       <UniqueIdentifier>{36bcf3c2-5b0d-4a7e-9f26-df6390ca562b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RenderObject">
+      <UniqueIdentifier>{1fd9c50e-f004-44e8-99a8-b1ae104857f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderObject\Source">
+      <UniqueIdentifier>{77b3181f-8aea-4aff-a2a9-046ad29cb9dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -295,15 +289,6 @@
     </ClCompile>
     <ClCompile Include="FowardRenderPass.cpp">
       <Filter>Pass\ForwardPipelinePass</Filter>
-    </ClCompile>
-    <ClCompile Include="BoneHierarchy.cpp">
-      <Filter>Resource\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Resource\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Resource\Source</Filter>
     </ClCompile>
     <ClCompile Include="DeferredPipeline.cpp">
       <Filter>Pipeline\Source</Filter>
@@ -441,16 +426,25 @@
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="ParticleObject.cpp">
-      <Filter>Object\Source</Filter>
+      <Filter>RenderObject\Source</Filter>
     </ClCompile>
     <ClCompile Include="RenderObject.cpp">
-      <Filter>Object\Source</Filter>
+      <Filter>RenderObject\Source</Filter>
     </ClCompile>
     <ClCompile Include="DeferredDecalPass.cpp">
       <Filter>Pass\DeferredPipelinePass\Source</Filter>
     </ClCompile>
     <ClCompile Include="D3D11DecalManager.cpp">
       <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneHierarchy.cpp">
+      <Filter>RenderObject\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>RenderObject\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>RenderObject\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

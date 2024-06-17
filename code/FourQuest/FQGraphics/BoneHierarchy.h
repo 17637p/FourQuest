@@ -6,11 +6,12 @@
 #include <map>
 #include <directxtk/SimpleMath.h>
 #include "../FQCommon/FQCommonLoader.h"
+#include "../FQCommon/IFQRenderResource.h"
 #include "AnimationHelper.h"
 
 namespace fq::graphics
 {
-	class BoneHierarchy
+	class BoneHierarchy : public IBoneHierarchy
 	{
 	public:
 		BoneHierarchy(fq::common::Model model);
@@ -34,7 +35,7 @@ namespace fq::graphics
 		return mBones.size();
 	}
 
-	class BoneHierarchyCache
+	class BoneHierarchyCache : public IBoneHierarchyCache
 	{
 	public:
 		using BoneNodeClipCache = std::pair<const struct fq::common::Bone*, const struct fq::common::NodeClip*>;

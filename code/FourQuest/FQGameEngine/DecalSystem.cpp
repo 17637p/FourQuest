@@ -1,6 +1,5 @@
 #include "DecalSystem.h"
 
-
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
@@ -45,15 +44,17 @@ void fq::game_engine::DecalSystem::Update(float dt)
 {
 	using namespace fq::game_module;
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+	auto graphics = mGameProcess->mGraphics; // 이 문법 유효한지 기태님한테 체크
 
 	scene->ViewComponents<Transform, Decal>
-		([dt](GameObject& object, Transform& transform, Decal& decal)
+		([dt, graphics](GameObject& object, Transform& transform, Decal& decal)
 			{
 				graphics::IDecalObject* decalObjectInterface = decal.GetDecalObjectInterface();
+				std::shared_ptr<graphics::IMaterial> material = decal.GetIMaterial();
 
-				if (decalObjectInterface != nullptr)
+				if (decalObjectInterface != nullptr && material != nullptr)
 				{
-					decalObjectInterface->SetTransform(transform.GetWorldMatrix());
+					graphics->DrawDecalObject(decalObjectInterface, material, transform.GetWorldMatrix());
 				}
 			});
 }

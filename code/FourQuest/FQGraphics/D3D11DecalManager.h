@@ -30,7 +30,7 @@ namespace fq::graphics
 	struct DecalJob
 	{
 		IDecalObject* DecalObjectInterface;
-		IMaterial* MaterialInterface;
+		std::shared_ptr<IMaterial> MaterialInterface;
 		const DirectX::SimpleMath::Matrix* Transform;
 	};
 

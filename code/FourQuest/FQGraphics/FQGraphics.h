@@ -49,8 +49,31 @@ namespace fq::graphics
 		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
-		virtual std::shared_ptr<IMaterial> CreateMaterial(const StandardMaterialInfo& standardMaterialInfo) override;
-		virtual std::shared_ptr<IMaterial> CreateMaterial(const DecalMaterialInfo& standardMaterialInfo) override;
+		// Render Object Resource Interface version
+
+		// render resource class, resource class들은 구체적인 맴버를 가져야 하므로 그래픽스에서만 생성 가능하게 해야함
+		virtual std::shared_ptr<IModel> CreateModel(ModelInfo); // 매쉬와 애니메이션 본 구조 메테리얼에 대한 컴포지션 클래스 인터페이스
+		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(StaticMeshInfo);
+		virtual std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(SkinnedMeshInfo);
+		virtual std::shared_ptr<IStaticAnimation> CreateStaticAnimation(StaticAnimationInfo);
+		virtual std::shared_ptr<ISkinnedAnimation> CreateSkinnedAnimation(SkinnedAnimationInfo);
+		virtual std::shared_ptr<IBoneHierarchy> CreateBoneHierarchy(BoneHierarchyInfo);
+		virtual std::shared_ptr<IStandardMaterial> CreateStandardMaterial(const StandardMaterialInfo& standardMaterialInfo) override;
+		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& standardMaterialInfo) override;
+		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& standardMaterialInfo) override;
+
+		// draw resource class, 굳이 랜더 오브젝트를 구성하지 않고도 그리기 호출이 가능하도록 열어둔 인터페이스, 제한적인 기능과 최적화가 지원되지 않음
+		virtual void DrawModel(std::shared_ptr<IModel>, DirectX::SimpleMath::Matrix transform); // 단순 그리기 용도.?
+		virtual void DrawStaticMesh(std::shared_ptr<IStaticMesh>, std::vector<std::vector<IMaterial>>, DirectX::SimpleMath::Matrix transform);
+		virtual void DrawStaticMesh(std::shared_ptr<IStaticMesh>, std::vector<std::vector<IMaterial>>, std::shared_ptr<IStaticAnimation>, DirectX::SimpleMath::Matrix transform, float timePos);
+		virtual void DrawSkinnedMesh(std::shared_ptr<ISkinnedMesh>, std::vector<std::vector<IMaterial>>, DirectX::SimpleMath::Matrix transform);
+		virtual void DrawSkinnedMesh(std::shared_ptr<ISkinnedMesh>, std::vector<std::vector<IMaterial>>, std::shared_ptr<ISkinnedAnimation>, std::shared_ptr<IBoneHierarchy>, DirectX::SimpleMath::Matrix transform, float timePos);
+
+		// render object class, 랜더 오브젝트는 인터페이스 클래스로부터 생성될 예정이라 생성 삭제를 그래픽스 내부에서 할 필요가 없음
+		virtual void DrawStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject);
+		virtual void DrawSKinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> staticMeshObject);
+		virtual void DrawParticleObject(std::shared_ptr<IParticleObject> decalObject);
+		virtual void DrawDecalObject(std::shared_ptr<IDecalObject> decalObject);
 
 		/// Primitive
 		// Debug Draw
@@ -69,7 +92,7 @@ namespace fq::graphics
 
 		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
 		void DeleteDecalObject(IDecalObject* decalObjectInterface);
-		void DrawDecalObject(IDecalObject* decalObject, IMaterial* material, const DirectX::SimpleMath::Matrix& transform) override;
+		void DrawDecalObject(IDecalObject* decalObject, std::shared_ptr<IMaterial> material, const DirectX::SimpleMath::Matrix& transform) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
