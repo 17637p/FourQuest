@@ -19,8 +19,7 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 		void MoveToTarget(fq::game_module::Animator& animator, float dist);
-		void rotateTowards(fq::game_module::Animator& animator);
-		DirectX::SimpleMath::Vector3 getDirectionVectorFromQuaternion(const DirectX::SimpleMath::Quaternion& quaternion);
+		void rotateToTarget(fq::game_module::Animator& animator);
 
 	private:
 		float mMoveDistance;

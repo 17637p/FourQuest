@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include "../FQGameModule/GameModule.h"
 
@@ -67,6 +68,7 @@ namespace fq::game_engine
 
 		fq::game_module::EventHandler mSetMainCameraHandler;
 		fq::game_module::EventHandler mOnLoadedSceneHandler;
+		fq::game_module::EventHandler mSetViewportSizeHandler;
 		fq::game_module::Camera* mGameMainCamera;
 		fq::game_module::Camera* mEditorCamera;
 	};

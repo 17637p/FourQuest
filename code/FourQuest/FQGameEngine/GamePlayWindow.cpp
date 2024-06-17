@@ -233,12 +233,18 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
 		{
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
-			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x), static_cast<unsigned short>(mViewportSize.y) });
 		}
 		if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
 		{
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
-			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x - mViewPortOffset.x, mViewportSize.y - mViewPortOffset.y);
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+					{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+					, static_cast<unsigned short>(mViewportSize.y - mViewPortOffset.y) });
 		}
 	}
 }
@@ -440,10 +446,18 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 		}
 
 		if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Editor)
-			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+		{
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x), static_cast<unsigned short>(mViewportSize.y) });
+		}
 		else
-			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x - mViewPortOffset.x, mViewportSize.y - mViewPortOffset.y);
-
+		{
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+					, static_cast<unsigned short>(mViewportSize.y - mViewportSize.y) });
+		}
 	}
 }
 

@@ -53,9 +53,11 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
-		, mGameProcess->mPrefabManager.get());
+		, mGameProcess->mPrefabManager.get()
+		, mGameProcess->mScreenManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
+	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
 
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
@@ -95,7 +97,7 @@ void fq::game_engine::EditorEngine::Process()
 	bool bIsDone = false;
 
 	while (!bIsDone)
-	{		
+	{
 		//////////////////////////////////////////////////////////////////////////
 		//							Window Message								//
 		//////////////////////////////////////////////////////////////////////////
@@ -122,6 +124,7 @@ void fq::game_engine::EditorEngine::Process()
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
 				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
+				mGameProcess->mEventManager->FireEvent<fq::event::SetScreenSize>({ width,hegiht });
 			}
 			auto mode = mEditor->mGamePlayWindow->GetMode();
 
@@ -135,10 +138,10 @@ void fq::game_engine::EditorEngine::Process()
 
 			if (mode == EditorMode::Play)
 			{
-			
-			//////////////////////////////////////////////////////////////////////////
-			//							Physics Process								//
-			//////////////////////////////////////////////////////////////////////////
+
+				//////////////////////////////////////////////////////////////////////////
+				//							Physics Process								//
+				//////////////////////////////////////////////////////////////////////////
 
 				static float accmulator = 0.f;
 				constexpr float fixedDeltaTime = 1.f / 60.f;
@@ -160,12 +163,12 @@ void fq::game_engine::EditorEngine::Process()
 
 				if (onFixedUpdtae)
 				{
-					mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+					mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(true);
 				}
 
-			//////////////////////////////////////////////////////////////////////////
-			//							Scene Process								//
-			//////////////////////////////////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////////////
+				//							Scene Process								//
+				//////////////////////////////////////////////////////////////////////////
 
 				// Scene Update
 				mGameProcess->mSceneManager->Update(deltaTime);
@@ -176,8 +179,7 @@ void fq::game_engine::EditorEngine::Process()
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
-			else
-				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp();
+			else mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							System Process								//

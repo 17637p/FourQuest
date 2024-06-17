@@ -61,20 +61,22 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 		return { 0, 0, mCurZoom };
 	}
 
-	// width height 어떻게 가져옴 
-	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();// * mMainCamera->GetProjection(2068.f/898.f);
+	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();
 
 	// 플레이어 트랜스폼 돌면서 센터 점 계산 
 	DirectX::SimpleMath::Vector3 playersCenterPoint = { 0, 0, 0 };
 	mIsZoomIn = true;
 	mIsZoomOut = false;
+
 	for (const auto& playerTransform : mPlayerTransforms)
 	{
 		DirectX::SimpleMath::Vector3 playerWorldPosition = playerTransform->GetWorldPosition();
 		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, viewMatrix);
 		playersCenterPoint += playerWorldPosition;
 
-		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
+		//playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
+		float aspectRatio = mMainCamera->GetAspectRatio();
+		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(aspectRatio));
 		//spdlog::trace("{}, {}, {}", playerWorldPosition.x, playerWorldPosition.y, playerWorldPosition.z);
 
 		if (playerWorldPosition.x > mZoomOutPadX.y || playerWorldPosition.x < mZoomOutPadX.x)
@@ -95,6 +97,7 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 		}
 	}
 
+	// 플레이어 위치 반영해서 Zoom 처리
 	if (mIsZoomIn)
 	{
 		zoomIn(dt);

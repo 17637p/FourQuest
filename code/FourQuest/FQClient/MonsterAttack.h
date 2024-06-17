@@ -18,9 +18,8 @@ namespace fq::client
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
-		void makeAttackRangeCollider();
-		void rotateTowards(fq::game_module::Animator& animator);
-		DirectX::SimpleMath::Vector3 getDirectionVectorFromQuaternion(const DirectX::SimpleMath::Quaternion& quaternion);
+		void rotateToTarget(fq::game_module::Animator& animator);
+		void attack(fq::game_module::Animator& animator);
 
 	private:
 		float mWaitTime;

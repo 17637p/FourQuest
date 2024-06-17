@@ -51,9 +51,11 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
-		, mGameProcess->mPrefabManager.get());
+		, mGameProcess->mPrefabManager.get()
+		, mGameProcess->mScreenManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
+	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
 
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();

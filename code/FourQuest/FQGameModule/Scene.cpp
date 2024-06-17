@@ -9,6 +9,7 @@
 #include "EventManager.h"
 #include "Event.h"
 #include "Transform.h"
+#include "ScreenManager.h"
 
 fq::game_module::Scene::Scene()
 	:mObjects{}
@@ -16,6 +17,7 @@ fq::game_module::Scene::Scene()
 	, mInputManager(nullptr)
 	, mEventManager(nullptr)
 	, mPrefabManager(nullptr)
+	, mScreenManager(nullptr)
 	, mIsStartScene(false)
 	, mPedingObjects{}
 {}
@@ -28,12 +30,14 @@ fq::game_module::Scene::~Scene()
 void fq::game_module::Scene::Initialize(std::string sceneName
 	, EventManager* eventMgr
 	, InputManager* inputMgr
-	, PrefabManager* prefabMgr)
+	, PrefabManager* prefabMgr
+	, ScreenManager* screenMgr)
 {
 	mSceneName = std::move(sceneName);
 	mEventManager = eventMgr;
 	mInputManager = inputMgr;
 	mPrefabManager = prefabMgr;
+	mScreenManager = screenMgr;
 }
 
 
@@ -78,14 +82,19 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 	return nullptr;
 }
 
-void fq::game_module::Scene::CleanUp()
+void fq::game_module::Scene::CleanUp(bool isRemoveComponents)
 {
 	mEventManager->FireEvent<fq::event::OnCleanUp>({});
 
 	// 삭제 예정인 오브젝트 제거합니다
 	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
-		, [](const std::shared_ptr<GameObject>& object)
+		, [isRemoveComponents](const std::shared_ptr<GameObject>& object)
 		{
+			if (object->IsDestroyed() && isRemoveComponents)
+			{
+				object->RemoveAllComponent();
+			}
+
 			return object->IsDestroyed();
 		}), mObjects.end());
 

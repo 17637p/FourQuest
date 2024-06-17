@@ -4,7 +4,6 @@
 
 namespace fq::client
 {
-
 	class PlayerInputState :public game_module::IStateBehaviour
 	{
 	public:
