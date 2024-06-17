@@ -22,6 +22,4 @@ namespace fq::client
 	private:
 		bool mbCanMovePlayer;
 	};
-
-
 }

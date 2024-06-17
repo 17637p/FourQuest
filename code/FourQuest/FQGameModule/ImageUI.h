@@ -30,6 +30,4 @@ namespace fq::game_module
 		std::vector<graphics::UIInfo> mUIInfomations;
 		std::vector<graphics::IImageObject*> mImageObjects;
 	};
-
-
 }

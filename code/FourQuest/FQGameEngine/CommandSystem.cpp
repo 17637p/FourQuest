@@ -71,6 +71,12 @@ void fq::game_engine::CommandSystem::undo()
 
 void fq::game_engine::CommandSystem::ExcuteShortcut()
 {
+	// 게임 플레이중에서 커맨드 입력을 받지 않는다
+	if (mEditorProcess->mGamePlayWindow->GetMode() != EditorMode::Edit)
+	{
+		return;
+	}
+
 	if (!mInputManager->IsKeyState(EKey::LMouse, EKeyState::None))
 	{
 		return;
