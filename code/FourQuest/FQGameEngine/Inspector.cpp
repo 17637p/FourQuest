@@ -311,7 +311,8 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 
 	ImGui::InputText(memberName.c_str(), &name);
 
-	if (ImGui::IsItemDeactivatedAfterEdit())
+	if (ImGui::IsItemDeactivatedAfterEdit()
+		&& !data.prop(fq::reflect::prop::DragDrop))
 	{
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, name);
@@ -1343,7 +1344,8 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					std::string val = data.get(pod).cast<std::string>();
 
 					ImGui::InputText(memberName.c_str(), &val);
-					if (ImGui::IsItemDeactivatedAfterEdit())
+					if (ImGui::IsItemDeactivatedAfterEdit()
+						&& !data.prop(fq::reflect::prop::DragDrop))
 					{
 						data.set(pod, val);
 						changedData = true;
@@ -1393,7 +1395,8 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 
 					ImGui::InputText(memberName.c_str(), &sVal);
 
-					if (ImGui::IsItemDeactivatedAfterEdit())
+					if (ImGui::IsItemDeactivatedAfterEdit()
+						&& !data.prop(fq::reflect::prop::DragDrop))
 					{
 						val = std::filesystem::path(sVal).wstring();
 						data.set(pod, val);

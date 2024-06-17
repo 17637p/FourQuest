@@ -30,3 +30,11 @@ void fq::client::HpBarUI::OnUpdate(float dt)
 {
 
 }
+
+void fq::client::HpBarUI::SetVisible(bool isVisible)
+{
+	mIsVisible = isVisible;
+
+
+
+}

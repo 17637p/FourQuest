@@ -13,7 +13,7 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		bool IsVisible() const { return mIsVisible; }
-		void SetVisible(bool val) { mIsVisible = val; }
+		void SetVisible(bool isVisible);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
