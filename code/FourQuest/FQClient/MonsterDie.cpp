@@ -3,12 +3,10 @@
 
 fq::client::MonsterDie::MonsterDie()
 {
-
 }
 
 fq::client::MonsterDie::~MonsterDie()
 {
-
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterDie::Clone()
@@ -18,12 +16,10 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterDie::Clone(
 
 void fq::client::MonsterDie::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }
 
 void fq::client::MonsterDie::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
-	
 }
 
 void fq::client::MonsterDie::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)

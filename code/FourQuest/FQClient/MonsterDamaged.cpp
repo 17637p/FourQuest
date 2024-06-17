@@ -4,12 +4,10 @@
 fq::client::MonsterDamaged::MonsterDamaged()
 	:mDamagedDelay(100)
 {
-
 }
 
 fq::client::MonsterDamaged::~MonsterDamaged()
 {
-
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterDamaged::Clone()
@@ -53,5 +51,4 @@ void fq::client::MonsterDamaged::OnStateUpdate(fq::game_module::Animator& animat
 
 void fq::client::MonsterDamaged::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }
