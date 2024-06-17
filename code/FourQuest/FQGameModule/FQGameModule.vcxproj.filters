@@ -267,7 +267,7 @@
       <Filter>include\10.PathFinding</Filter>
     </ClInclude>
     <ClInclude Include="ScreenManager.h">
-      <Filter>include</Filter>
+      <Filter>include\05.Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,7 +422,7 @@
       <Filter>src\10.PathFinding</Filter>
     </ClCompile>
     <ClCompile Include="ScreenManager.cpp">
-      <Filter>src</Filter>
+      <Filter>src\05.Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

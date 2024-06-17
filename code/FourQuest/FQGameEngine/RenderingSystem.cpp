@@ -53,7 +53,7 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 	mSetViewportSizeHandler = eventMgr->
 		RegisterHandle<fq::event::SetViewportSize>([this](fq::event::SetViewportSize event)
 			{
-				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);
+				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);		
 			});
 }
 

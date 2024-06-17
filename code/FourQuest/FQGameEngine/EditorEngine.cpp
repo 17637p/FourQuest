@@ -87,6 +87,9 @@ void fq::game_engine::EditorEngine::Initialize()
 	// Editor 초기화
 	InitializeEditor();
 
+	// 모델 데이터 수정이 생긴경우
+	//mEditor->mModelSystem->ConvertAllModel();
+
 	// Scene 로드 
 	mGameProcess->mSceneManager->LoadScene();
 }

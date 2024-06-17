@@ -86,9 +86,10 @@ namespace fq::game_module
 		/// </summary>
 		float GetAspectRatio() const { return mAspectRatio; }
 	
-		void SetViewportSize(UINT width, UINT height);
-		UINT GetViewportWidth()const { return mViewportWidth; }
-		UINT GetViewportHeight()const { return mViewportHeight; }
+		/// <summary>
+		/// 화면비를 설정합니다.
+		/// </summary>
+		void SetAspectRatio(float aspectRatio);
 
 	private:
 		entt::meta_handle GetHandle() override;
@@ -96,8 +97,6 @@ namespace fq::game_module
 	private:
 		fq::graphics::CameraInfo mCameraInfomation;
 		float mAspectRatio;
-		UINT mViewportWidth;
-		UINT mViewportHeight;
 		bool mbIsMain;
 	};
 
