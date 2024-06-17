@@ -23,7 +23,8 @@
 // cbuffer cbSceneTransform
 // {
 //
-//   float4x4 cViewProj;                // Offset:    0 Size:    64
+//   float4x4 cView;                    // Offset:    0 Size:    64 [unused]
+//   float4x4 cViewProj;                // Offset:   64 Size:    64
 //
 // }
 //
@@ -85,7 +86,7 @@ dcl_tessellator_domain domain_quad
 dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB2[1], immediateIndexed
 dcl_constantbuffer CB0[2], immediateIndexed
-dcl_constantbuffer CB1[4], immediateIndexed
+dcl_constantbuffer CB1[8], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_input vDomain.xy
@@ -116,10 +117,10 @@ mad r1.xy, vDomain.yyyy, r1.xyxx, r1.zwzz
 sample_l_indexable(texture2d)(float,float,float,float) r1.z, r1.xyxx, t0.yzxw, s0, l(0.000000)
 add r0.y, r1.z, cb0[1].w
 mov r0.w, l(1.000000)
-dp4 o0.x, r0.xyzw, cb1[0].xyzw
-dp4 o0.y, r0.xyzw, cb1[1].xyzw
-dp4 o0.z, r0.xyzw, cb1[2].xyzw
-dp4 r0.w, r0.xyzw, cb1[3].xyzw
+dp4 o0.x, r0.xyzw, cb1[4].xyzw
+dp4 o0.y, r0.xyzw, cb1[5].xyzw
+dp4 o0.z, r0.xyzw, cb1[6].xyzw
+dp4 r0.w, r0.xyzw, cb1[7].xyzw
 mov o0.w, r0.w
 mov o1.xyzw, r0.xyzw
 add r0.xyz, -vicp[2][1].xyzx, vicp[3][1].xyzx

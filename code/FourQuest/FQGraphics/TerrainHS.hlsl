@@ -103,12 +103,19 @@ PatchTess ConstantHS(InputPatch<VertexOut, 4> patch, uint patchID : SV_Primitive
         float e3 = 0.5f * (patch[2].PositionW + patch[3].PositionW);
         float c = 0.25f * (patch[0].PositionW + patch[1].PositionW + patch[2].PositionW + patch[3].PositionW);
 
-        pt.EdgeTess[0] = CalcTessFactor(e0);
-        pt.EdgeTess[1] = CalcTessFactor(e1);
-        pt.EdgeTess[2] = CalcTessFactor(e2);
-        pt.EdgeTess[3] = CalcTessFactor(e3);
+        //pt.EdgeTess[0] = CalcTessFactor(e0);
+        //pt.EdgeTess[1] = CalcTessFactor(e1);
+        //pt.EdgeTess[2] = CalcTessFactor(e2);
+        //pt.EdgeTess[3] = CalcTessFactor(e3);
+        //
+        //pt.InsideTess[0] = CalcTessFactor(c);
 
-        pt.InsideTess[0] = CalcTessFactor(c);
+        pt.EdgeTess[0] = 50;
+        pt.EdgeTess[1] = 50;
+        pt.EdgeTess[2] = 50;
+        pt.EdgeTess[3] = 50;
+
+        pt.InsideTess[0] = 50;
         pt.InsideTess[1] = pt.InsideTess[0];
 
         return pt;
