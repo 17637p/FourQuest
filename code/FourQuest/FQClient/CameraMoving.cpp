@@ -74,7 +74,9 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, viewMatrix);
 		playersCenterPoint += playerWorldPosition;
 
-		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
+		//playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
+		float aspectRatio = mMainCamera->GetAspectRatio();
+		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(aspectRatio));
 		//spdlog::trace("{}, {}, {}", playerWorldPosition.x, playerWorldPosition.y, playerWorldPosition.z);
 
 		if (playerWorldPosition.x > mZoomOutPadX.y || playerWorldPosition.x < mZoomOutPadX.x)
