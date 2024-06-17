@@ -13,6 +13,7 @@ namespace fq::game_module
 	class PrefabManager;
 	class InputManager;
 	class EventManager;
+	class ScreenManager;
 
 	/// <summary>
 	/// 씬을 관리하는 클래스 
@@ -31,7 +32,8 @@ namespace fq::game_module
 		void Initialize(const std::string& startSceneName
 			, EventManager* eventMgr
 			, InputManager* inputMgr
-			, PrefabManager* prefabMgr);
+			, PrefabManager* prefabMgr
+			, ScreenManager* screenMgr);
 
 		/// <summary>
 		/// 씬 매니져를 종료합니다

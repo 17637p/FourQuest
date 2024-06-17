@@ -170,6 +170,7 @@
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="PrefabResource.h" />
     <ClInclude Include="PrefabTest.h" />
+    <ClInclude Include="ScreenManager.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
@@ -226,6 +227,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />
+    <ClCompile Include="ScreenManager.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />

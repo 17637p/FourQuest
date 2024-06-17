@@ -89,6 +89,8 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
 {
+	CleanUp({});
+
 	auto scenePath = fq::path::GetScenePath() / event.sceneName / "collision_matrix.txt";
 	mCollisionMatrix.Load(scenePath);
 
@@ -98,7 +100,6 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 	{
 		addCollider(&object);
 	}
-
 
 	mbIsGameLoaded = true;
 }
@@ -680,7 +681,6 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 		if (iter->second.bIsDestroyed
 			&& iter->second.bIsRemoveBody)
 		{
-			mDebug.insert({ iter->first, iter->second.component->GetGameObject()->GetName() });
 			iter = mColliderContainer.erase(iter);
 		}
 		else

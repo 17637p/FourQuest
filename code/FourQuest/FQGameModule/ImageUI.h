@@ -29,5 +29,6 @@ namespace fq::game_module
 	private:
 		std::vector<graphics::UIInfo> mUIInfomations;
 		std::vector<graphics::IImageObject*> mImageObjects;
+
 	};
 }

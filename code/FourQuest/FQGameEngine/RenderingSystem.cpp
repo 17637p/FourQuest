@@ -49,6 +49,12 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 
 	mWriteAnimationHandler = eventMgr->
 		RegisterHandle<fq::event::WriteAnimation>(this, &RenderingSystem::WriteAnimation);
+
+	mSetViewportSizeHandler = eventMgr->
+		RegisterHandle<fq::event::SetViewportSize>([this](fq::event::SetViewportSize event)
+			{
+				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);
+			});
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)

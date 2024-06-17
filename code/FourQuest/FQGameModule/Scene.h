@@ -13,6 +13,7 @@ namespace fq::game_module
 	class EventManager;
 	class InputManager;
 	class PrefabManager;
+	class ScreenManager;
 
 	class Scene
 	{
@@ -26,7 +27,8 @@ namespace fq::game_module
 		void Initialize(std::string sceneName
 			, EventManager* eventMgr
 			, InputManager* inputMgr
-			, PrefabManager* prefabMgr);
+			, PrefabManager* prefabMgr
+			, ScreenManager* screenMgr);
 
 		/// <summary>
 		/// EventManager를 반환합니다 
@@ -43,10 +45,13 @@ namespace fq::game_module
 		/// </summary>
 		PrefabManager* GetPrefabManager()const { return mPrefabManager; }
 
+		ScreenManager* GetScreenManager()const { return mScreenManager; }
+
 		/// <summary>
 		/// 삭제 예정인 오브젝트 제거합니다
+		/// 
 		/// </summary>
-		void CleanUp();
+		void CleanUp(bool isRemoveComponents = true);
 
 		/// <summary>
 		/// Scene 게임오브젝트를 추가합니다
@@ -155,6 +160,7 @@ namespace fq::game_module
 		InputManager* mInputManager;
 		EventManager* mEventManager;
 		PrefabManager* mPrefabManager;
+		ScreenManager* mScreenManager;
 
 		bool mIsStartScene;
 
