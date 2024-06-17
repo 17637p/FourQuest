@@ -111,7 +111,7 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 			{
 				if (ImGui::MenuItem("Delete"))
 					eraseParameter = iter;
-			
+
 				ImGui::EndPopup();
 			}
 
@@ -553,8 +553,12 @@ void fq::game_engine::AnimatorWindow::OnStartScene()
 		if (object)
 		{
 			auto animator = object->GetComponent<fq::game_module::Animator>();
-			mSelectController = animator->GetSharedController();
-			mSelectControllerPath = animator->GetControllerPath();
+
+			if (animator)
+			{
+				mSelectController = animator->GetSharedController();
+				mSelectControllerPath = animator->GetControllerPath();
+			}
 		}
 	}
 }

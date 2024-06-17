@@ -1,14 +1,15 @@
 #include "MonsterChase.h"
 #include "Monster.h"
 
-fq::client::MonsterChase::MonsterChase()
-{
+#include "../FQGameModule/NavigationAgent.h"
 
+fq::client::MonsterChase::MonsterChase()
+	:mMoveDistance(0)
+{
 }
 
 fq::client::MonsterChase::~MonsterChase()
 {
-
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterChase::Clone()
@@ -33,12 +34,12 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 
 	// Todo: dt로 바꾸기 
 	float moveDist = dt * monster->GetMoveSpeed();
-	rotateTowards(animator);
+	rotateToTarget(animator);
 	MoveToTarget(animator, moveDist);
 	mMoveDistance += moveDist;
 
 	// 타겟과의 거리가 가까울 때
-	float targetDist = monster->CalculateDistance(*monster->GetTarget());
+	float targetDist = monster->CalculateDistanceTarget(*monster->GetTarget());
 
 	if (targetDist < monster->GetTargetAttackRange())
 	{
@@ -60,27 +61,43 @@ void fq::client::MonsterChase::MoveToTarget(fq::game_module::Animator& animator,
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
-	DirectX::SimpleMath::Vector3 playerPosition = monster->GetTarget()->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
-	auto myTransform = monster->GetComponent<fq::game_module::Transform>();
-	DirectX::SimpleMath::Vector3 myPosition = myTransform->GetWorldPosition();
+	fq::game_module::GameObject* target = monster->GetTarget();
+	if (target->IsDestroyed())
+	{
+		animator.SetParameterTrigger("OnIdle");
+	}
+	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 
-	DirectX::SimpleMath::Vector3 directionVector = playerPosition - myPosition;
-	directionVector.Normalize();
+	//fq::game_module::Transform* myTransform = monster->GetComponent<fq::game_module::Transform>();
+	//DirectX::SimpleMath::Vector3 myPosition = myTransform->GetWorldPosition();
 
-	myTransform->SetLocalPosition(directionVector * dist + myPosition);
+	fq::game_module::NavigationAgent* agent = animator.GetComponent<fq::game_module::NavigationAgent>();
+
+	agent->MoveTo(targetPosition);
+	//DirectX::SimpleMath::Vector3 directionVector = playerPosition - myPosition;
+	//directionVector.Normalize();
+	//
+	//myTransform->SetLocalPosition(directionVector * dist + myPosition);
 }
 
-void fq::client::MonsterChase::rotateTowards(fq::game_module::Animator& animator)
+void fq::client::MonsterChase::rotateToTarget(fq::game_module::Animator& animator)
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
 	// 플레이어 위치
-	DirectX::SimpleMath::Vector3 playerPosition = monster->GetTarget()->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
+	fq::game_module::GameObject* target = monster->GetTarget();
+	if (target->IsDestroyed())
+	{
+		animator.SetParameterTrigger("OnIdle");
+	}
+	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
+	
 	// 내위치
-	auto myTransform = monster->GetComponent<fq::game_module::Transform>();
+	fq::game_module::Transform* myTransform = monster->GetComponent<fq::game_module::Transform>();
 	DirectX::SimpleMath::Vector3 myPosition = myTransform->GetWorldPosition();
+	
 	// 빼기
-	DirectX::SimpleMath::Vector3 directionVector = playerPosition - myPosition;
+	DirectX::SimpleMath::Vector3 directionVector = targetPosition - myPosition;
 	directionVector.y = 0;
 
 	directionVector.Normalize();
@@ -96,14 +113,4 @@ void fq::client::MonsterChase::rotateTowards(fq::game_module::Animator& animator
 	}
 
 	myTransform->SetLocalRotation(directionQuaternion);
-}
-
-DirectX::SimpleMath::Vector3 fq::client::MonsterChase::getDirectionVectorFromQuaternion(const DirectX::SimpleMath::Quaternion& quaternion)
-{
-	DirectX::SimpleMath::Vector3 baseDirection{ 0, 0, 1 };
-
-	DirectX::SimpleMath::Vector3 directionVector =
-		DirectX::SimpleMath::Vector3::Transform(baseDirection, quaternion);
-
-	return directionVector;
 }

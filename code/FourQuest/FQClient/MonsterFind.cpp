@@ -27,7 +27,7 @@ void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, 
 
 	for (auto& player : componentView)
 	{
-		float dist = monster->CalculateDistance(player);
+		float dist = monster->CalculateDistanceTarget(player);
 
 		if (distMin > dist)
 		{
