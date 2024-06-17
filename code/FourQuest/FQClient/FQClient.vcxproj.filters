@@ -113,7 +113,7 @@
     <ClInclude Include="DeadArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="HpBarUI.h">
+    <ClInclude Include="HpBar.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -169,7 +169,7 @@
     <ClCompile Include="DeadArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="HpBarUI.cpp">
+    <ClCompile Include="HpBar.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>

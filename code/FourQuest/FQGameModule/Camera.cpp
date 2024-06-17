@@ -9,6 +9,8 @@ fq::game_module::Camera::Camera()
 	:mbIsMain(false)
 	,mCameraInfomation{}
 	,mAspectRatio(16.f/9.f)
+	,mViewportHeight(0)
+	,mViewportWidth(0)
 {
 	mCameraInfomation.isPerspective = true;
 	SetNearPlain(0.003f);
@@ -107,5 +109,17 @@ DirectX::SimpleMath::Matrix fq::game_module::Camera::GetView()
 	auto transform = GetComponent<Transform>();
 	
 	return transform->GetLocalMatrix().Invert();
+}
+
+DirectX::SimpleMath::Matrix fq::game_module::Camera::GetViewProjection()
+{
+	return  GetView()* GetProjection(mAspectRatio) ;
+}
+
+void fq::game_module::Camera::SetViewportSize(UINT width, UINT height)
+{
+	mViewportWidth = width;
+	mViewportHeight = height;
+	mAspectRatio = static_cast<float>(mViewportWidth) / mViewportHeight;
 }
 

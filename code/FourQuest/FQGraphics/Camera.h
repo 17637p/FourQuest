@@ -28,7 +28,6 @@ namespace fq::graphics
 
 		float GetNearPlane() const;
 		float GetFarPlane() const;
-
 		float GetFovY() const;
 
 	private:

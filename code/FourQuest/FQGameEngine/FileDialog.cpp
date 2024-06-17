@@ -167,7 +167,6 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		ImGui::Separator();
 
 		// ignore 파일 제거
-
 		std::vector<std::filesystem::path> directoryList;
 
 		if (mbIsFindAllDirectory)

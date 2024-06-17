@@ -77,14 +77,18 @@ namespace fq::game_module
 		DirectX::SimpleMath::Matrix GetProjection(float aspectRatio)const;
 
 		/// <summary>
+		/// viewprojection 행렬을 반환합니다
+		/// </summary>
+		DirectX::SimpleMath::Matrix GetViewProjection();
+
+		/// <summary>
 		/// 화면 비를 반환합니다
 		/// </summary>
 		float GetAspectRatio() const { return mAspectRatio; }
 	
-		/// <summary>
-		/// 화면비를 설정합니다.
-		/// </summary>
-		void SetAspectRatio(float aspectRatio) { mAspectRatio = aspectRatio; }
+		void SetViewportSize(UINT width, UINT height);
+		UINT GetViewportWidth()const { return mViewportWidth; }
+		UINT GetViewportHeight()const { return mViewportHeight; }
 
 	private:
 		entt::meta_handle GetHandle() override;
@@ -92,8 +96,9 @@ namespace fq::game_module
 	private:
 		fq::graphics::CameraInfo mCameraInfomation;
 		float mAspectRatio;
+		UINT mViewportWidth;
+		UINT mViewportHeight;
 		bool mbIsMain;
-
 	};
 
 }

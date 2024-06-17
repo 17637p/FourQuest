@@ -107,7 +107,7 @@ void fq::game_engine::Hierarchy::beginHierarchy()
 	for (auto& object : mScene->GetObjectView(true))
 	{
 		// Root들만 정보를 표시합니다
-		if (object.GetParent() != nullptr)
+		if (object.GetParent() != nullptr || object.IsDestroyed())
 		{
 			continue;
 		}
@@ -124,7 +124,8 @@ void fq::game_engine::Hierarchy::beginHierarchyOfSearch()
 	{
 		std::string objectName = object.GetName();
 
-		if (objectName.find(mSearchString) == std::string::npos)
+		if (objectName.find(mSearchString) == std::string::npos 
+			|| object.IsDestroyed())
 		{
 			continue;
 		}
@@ -206,7 +207,8 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 		{
 			for (auto& child : children)
 			{
-				beginGameObjectBar(*child);
+				if (!child->IsDestroyed())
+					beginGameObjectBar(*child);
 			}
 
 			ImGui::TreePop();
@@ -378,7 +380,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 					{
 						childSP->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
 					};
-				auto undo = [childSP, parentSP]() 
+				auto undo = [childSP, parentSP]()
 					{
 						childSP->GetComponent<fq::game_module::Transform>()
 							->SetParent(parentSP->GetComponent<fq::game_module::Transform>());

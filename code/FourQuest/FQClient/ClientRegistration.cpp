@@ -21,6 +21,9 @@
 
 #include "Attack.h"
 
+// UI
+#include "HpBar.h"
+
 #include "CameraMoving.h"
 
 void fq::client::RegisterMetaData()
@@ -168,5 +171,17 @@ void fq::client::RegisterMetaData()
 		.data<&CameraMoving::SetZoomInPadY, &CameraMoving::GetZoomInPadY>("ZoomInPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadY")
 		.base<fq::game_module::Component>();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             UI										//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<HpBar>()
+		.type("HpBar"_hs)
+		.prop(fq::reflect::prop::Name, "HpBar")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
 }
+
 

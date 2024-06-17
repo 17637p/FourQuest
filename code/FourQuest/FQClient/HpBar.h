@@ -4,13 +4,15 @@
 
 namespace fq::client
 {
-	class HpBarUI : public game_module::Component
+	class HpBar : public game_module::Component
 	{
 	public:
-		HpBarUI();
-		~HpBarUI();
+		HpBar();
+		~HpBar();
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+
+		void OnStart() override;
 
 		bool IsVisible() const { return mIsVisible; }
 		void SetVisible(bool isVisible);
@@ -21,6 +23,12 @@ namespace fq::client
 
 	private:
 		bool mIsVisible;
+		float mBarLength; // 0.f ~ 1.f
+		float mDecreaseSpeed;
+
+		game_module::Transform* mTransform;
+		game_module::ImageUI* mImageUI;
+		game_module::Camera* mMainCamera;
 	};
 
 

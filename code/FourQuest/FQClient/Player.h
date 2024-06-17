@@ -4,8 +4,7 @@
 
 namespace fq::client
 {
-	class Player
-		: public fq::game_module::Component
+	class Player : public fq::game_module::Component
 	{
 	public:
 		Player();

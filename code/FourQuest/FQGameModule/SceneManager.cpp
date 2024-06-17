@@ -31,13 +31,14 @@ fq::game_module::SceneManager::~SceneManager()
 void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	, EventManager* eventMgr
 	, InputManager* inputMgr
-	, PrefabManager* prefabMgr)
+	, PrefabManager* prefabMgr
+	, ScreenManager* screenMgr)
 {
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
 	mPrefabManager = prefabMgr;
 
-	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr);
+	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr, screenMgr);
 
 	mRequestExitGameHadler =
 		mEventManager->RegisterHandle<fq::event::RequestExitGame>(this, &SceneManager::RequestExitGame);

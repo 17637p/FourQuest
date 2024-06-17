@@ -37,6 +37,7 @@
 #include "SceneManager.h"
 #include "PrefabManager.h"
 #include "SoundManager.h"
+#include "ScreenManager.h"
 
 #include "ICollider.h"
 #include "Collision.h"
