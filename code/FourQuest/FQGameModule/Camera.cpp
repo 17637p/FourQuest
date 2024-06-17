@@ -8,6 +8,7 @@
 fq::game_module::Camera::Camera()
 	:mbIsMain(false)
 	,mCameraInfomation{}
+	,mAspectRatio(16.f/9.f)
 {
 	mCameraInfomation.isPerspective = true;
 	SetNearPlain(0.003f);

@@ -32,6 +32,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mSelectObject(nullptr)
 	, mbIsUsingGizumo(false)
 	, mViewportSize{ 1.f,1.f }
+	, mViewPortOffset{ 0.f,0.f }
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -232,10 +233,12 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
 		{
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
 		}
 		if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
 		{
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x - mViewPortOffset.x, mViewportSize.y - mViewPortOffset.y);
 		}
 	}
 }
@@ -244,10 +247,22 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 {
 	auto windowPos = ImGui::GetWindowPos();
 	auto cursorPos = ImGui::GetCursorPos();
+	auto viewportSize = mViewportSize;
+
+	if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
+	{
+		cursorPos.x += mViewPortOffset.x * 0.5f;
+		cursorPos.y += mViewPortOffset.y * 0.5f;
+
+		ImGui::SetCursorPos(cursorPos);
+		viewportSize.x -= mViewPortOffset.x;
+		viewportSize.y -= mViewPortOffset.y;
+	}
+
 	mImagePos.x = windowPos.x + cursorPos.x;
 	mImagePos.y = windowPos.y + cursorPos.y;
 
-	ImGui::Image(mGameProcess->mGraphics->GetSRV(), mViewportSize);
+	ImGui::Image(mGameProcess->mGraphics->GetSRV(), viewportSize);
 }
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
@@ -423,6 +438,12 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 		{
 			cameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 		}
+
+		if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Editor)
+			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+		else
+			mGameProcess->mGraphics->SetViewportSize(mViewportSize.x - mViewPortOffset.x, mViewportSize.y - mViewPortOffset.y);
+
 	}
 }
 
@@ -431,12 +452,35 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 	mWindowSize = size;
 
 	constexpr float offsetY = 70.f;
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	float cameraAspectRatio = camera->GetAspectRatio();
 
 	mViewportSize.x = size.x;
 	mViewportSize.y = size.y - offsetY;
 
-	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+	// 게임 카메라 화면 비율 조절 
+	float windowAspectRatio = mViewportSize.x / mViewportSize.y;
+
+	// 가로가 길이 조절
+	if (cameraAspectRatio < windowAspectRatio)
+	{
+		float resizeX = mViewportSize.y * cameraAspectRatio;
+		mViewPortOffset.x = mViewportSize.x - resizeX;
+		mViewPortOffset.y = 0.f;
+	}
+	// 세로 길이 조절
+	else
+	{
+		float resizeY = mViewportSize.x / cameraAspectRatio;
+		mViewPortOffset.y = mViewportSize.y - resizeY;
+		mViewPortOffset.x = 0.f;
+	}
+
+	if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Editor)
+		mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+	else
+		mGameProcess->mGraphics->SetViewportSize(mViewportSize.x - mViewPortOffset.x, mViewportSize.y - mViewPortOffset.y);
+
 	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());
 }
 

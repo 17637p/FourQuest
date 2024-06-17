@@ -110,6 +110,8 @@ HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device>
 		&mRenderTarget);
 
 	//backBuffer->Release();
+	pDXGISurface->Release();
+	texture->Release();
 
 	return hr;
 }

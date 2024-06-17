@@ -85,6 +85,7 @@ namespace fq::game_engine
 
 		ImVec2 mWindowSize;
 		ImVec2 mViewportSize;
+		ImVec2 mViewPortOffset;
 		ImVec2 mImagePos;
 	
 		// 에디터 카메라
@@ -97,7 +98,6 @@ namespace fq::game_engine
 		bool mbIsUsingGizumo;
 		ImGuizmo::OPERATION mOperation;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
-
 
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;

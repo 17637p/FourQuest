@@ -26,7 +26,6 @@ namespace fq::client
 		void OnTriggerExit(const fq::game_module::Collision& collision) override;
 		void OnUpdate(float dt) override;
 
-
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;
