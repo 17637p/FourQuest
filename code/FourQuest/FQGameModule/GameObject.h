@@ -141,6 +141,12 @@ namespace fq::game_module
 		GameObject* GetParent();
 
 		/// <summary>
+		/// 계층구조 최상단의 부모를 반환합니다
+		/// 자기자신이 최상단이면 자기 자신을 반환합니다
+		/// </summary>
+		GameObject* GetRootObject();
+
+		/// <summary>
 		/// 부모 계층이 있는지 확인합니다
 		/// </summary>
 		/// <returns>부모가있으면 true, 그렇지않으면 false</returns>

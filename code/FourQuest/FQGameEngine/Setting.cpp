@@ -9,6 +9,7 @@ fq::game_engine::Setting::Setting()
 	:mbUseSnap(false)
 	, mbIsOpen(false)
 	, mbUseGrayScale(false)
+	, mbUseRootPicking(false)
 	, mSnap{}
 	, mMode(ImGuizmo::WORLD)
 {
@@ -36,12 +37,22 @@ void fq::game_engine::Setting::Render()
 
 void fq::game_engine::Setting::beginChild_GizumoSetting()
 {
-
 	if (ImGui::CollapsingHeader("Gizumo"))
 	{
 		if (ImGui::BeginChild("Gizumo"), ImVec2(0, 0), ImGuiChildFlags_AutoResizeY)
 		{
+			ImGui::Checkbox("UseRootPicking", &mbUseRootPicking);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip(reinterpret_cast<const char*>(u8"오브젝트를 피킹할때 가장 최상위 부모를 선택합니다"));
+			}
+
 			ImGui::Checkbox("UseSnap", &mbUseSnap);
+			if (ImGui::IsItemHovered())
+			{
+				//ImGui::SetTooltip(reinterpret_cast<const char*>(u8"기즈모의 이동을 "));
+			}
+
 			ImGui::InputFloat3("Snap", mSnap);
 
 			std::string currentMode = (mMode == ImGuizmo::WORLD) ? "World" : "Local";
@@ -97,9 +108,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 		}
 		ImGui::EndChild();
 	}
-
-
-
 }
 
 ImGuizmo::MODE fq::game_engine::Setting::GetMode()

@@ -29,10 +29,12 @@ namespace fq::client
 	private:
 		bool mIsVisible;
 		float mDecreaseRatio;
+		float mDeceraseTime;
 		float mHpRatio;
 
 		DirectX::SimpleMath::Vector2 mBarSize;
 		float mDecreaseSpeed;
+		float mDecreaseOffset;
 		float mWorldOffset;
 		float mScreenOffset;
 		float mInnerOffset;

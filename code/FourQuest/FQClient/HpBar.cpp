@@ -15,7 +15,8 @@ fq::client::HpBar::HpBar()
 	, mImageUI(nullptr)
 	, mHpRatio(1.f)
 	, mDecreaseRatio(0.f)
-	, mDecreaseSpeed(0.1f)
+	, mDecreaseOffset(0.5f)
+	, mDecreaseSpeed(1.f)
 	, mWorldOffset(0.f)
 	, mScreenOffset(0.f)
 	, mInnerOffset(5.f)
@@ -40,7 +41,16 @@ std::shared_ptr<fq::game_module::Component> fq::client::HpBar::Clone(std::shared
 
 void fq::client::HpBar::OnUpdate(float dt)
 {
-	mDecreaseRatio = std::max(mDecreaseRatio - mDecreaseSpeed * dt, 0.f);
+	mDeceraseTime += dt;
+
+	if (mDeceraseTime >= mDecreaseOffset)
+		mDecreaseRatio = std::max(mDecreaseRatio - mDecreaseSpeed * dt, 0.f);
+
+	if (GetScene()->GetInputManager()->IsKeyState(EKey::Space, EKeyState::Tap))
+	{
+		DecreaseHp(0.2f);
+	}
+
 
 	if (!mIsVisible) return;
 
@@ -114,8 +124,20 @@ void fq::client::HpBar::DecreaseHp(float ratio)
 {
 	if (mHpRatio == 0.f) return;
 
-	mDecreaseRatio += ratio;
-	mHpRatio = std::max(0.f, mHpRatio - ratio);
+	float decreaseHpRatio = mHpRatio - ratio;
+
+	if (decreaseHpRatio >= 0.f)
+	{
+		mDecreaseRatio += ratio;
+		mHpRatio = decreaseHpRatio;
+	}
+	else
+	{
+		mDecreaseRatio += mHpRatio;
+		mHpRatio = 0.f;
+	}
+
+	mDeceraseTime = 0.f;
 }
 
 

@@ -317,3 +317,20 @@ void fq::game_module::GameObject::OnTriggerExit(const Collision& collision)
 	}
 }
 
+fq::game_module::GameObject* fq::game_module::GameObject::GetRootObject()
+{
+	if (!HasParent())
+		return this;
+
+	GameObject* mRoot = nullptr;
+
+	GameObject* child = this;
+	do 
+	{
+		mRoot = child;
+		child = child->GetParent();
+	} while (child != nullptr);
+
+	return mRoot;
+}
+
