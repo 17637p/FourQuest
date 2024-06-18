@@ -17,6 +17,7 @@ namespace fq::common
 		unsigned int Index = INVALID_INDEX;
 		unsigned int ParentIndex = INVALID_INDEX;
 		DirectX::SimpleMath::Matrix ToParentMatrix;
+		DirectX::SimpleMath::Matrix OffsetMatrix;
 	};
 
 	struct Bone

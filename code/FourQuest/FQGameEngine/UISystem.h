@@ -74,6 +74,13 @@ namespace fq::game_engine
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
 		EventHandler mSetUIInfomationsHandler;
+		EventHandler mSetScreenSizeHandler;
+		EventHandler mSetViewportSizeHandler;
+
+		UINT mScreenWidth;
+		UINT mScreenHeight;
+		UINT mViewporWidth;
+		UINT mViewportHeight;
 
 		bool mbIsGameLoaded;
 	};

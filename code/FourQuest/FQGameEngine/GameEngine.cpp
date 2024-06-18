@@ -46,7 +46,7 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess ÃÊ±âÈ­
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* StartSceneName = "example";
+	constexpr const char* StartSceneName = "PlayerTest2";
 
 	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()
@@ -124,6 +124,7 @@ void fq::game_engine::GameEngine::Process()
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
 				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
 				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
+				mGameProcess->mEventManager->FireEvent<fq::event::SetScreenSize>({ width,hegiht });
 			}
 
 			//////////////////////////////////////////////////////////////////////////

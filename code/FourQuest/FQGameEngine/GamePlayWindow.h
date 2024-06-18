@@ -86,7 +86,7 @@ namespace fq::game_engine
 		ImVec2 mWindowSize;
 		ImVec2 mViewportSize;
 		ImVec2 mViewPortOffset;
-		ImVec2 mImagePos;
+		ImVec2 mImagePos; 
 	
 		// 에디터 카메라
 		std::shared_ptr<fq::game_module::GameObject> mCameraObject;
@@ -101,6 +101,7 @@ namespace fq::game_engine
 
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;
+		fq::game_module::EventHandler mSetScreenSizeHandler;
 	};
 
 

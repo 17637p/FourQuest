@@ -38,15 +38,15 @@ void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 			if (!mGameMainCamera) SPDLOG_WARN("Can't Find MainCamera");
 		});
 
-	mSetViewportSizeHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::SetViewportSize>(
-		[this](fq::event::SetViewportSize event)
+	mSetViewportSizeHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::SetScreenSize>(
+		[this](fq::event::SetScreenSize event)
 		{
-			float aspectRatio = event.width / event.height;
+			float aspectRatio = static_cast<float>( event.width) / event.height;
 			auto view = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::Camera>();
 
 			for (auto& object : view)
 			{
-				object.GetComponent<game_module::Camera>()->SetViewportSize(event.width, event.height);
+				object.GetComponent<game_module::Camera>()->SetAspectRatio(aspectRatio);
 			}
 		});
 }

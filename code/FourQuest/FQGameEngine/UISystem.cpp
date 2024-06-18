@@ -7,9 +7,11 @@
 fq::game_engine::UISystem::UISystem()
 	:mGameProcess(nullptr)
 	, mbIsGameLoaded(false)
-{
-
-}
+	, mViewporWidth(0)
+	, mViewportHeight(0)
+	, mScreenHeight(0)
+	, mScreenWidth(0)
+{}
 
 fq::game_engine::UISystem::~UISystem()
 {
@@ -43,6 +45,20 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 
 	mSetUIInfomationsHandler = eventMgr->
 		RegisterHandle<fq::event::SetUIInfomations>(this, &UISystem::SetUIInfomations);
+
+	mSetScreenSizeHandler = eventMgr->
+		RegisterHandle<fq::event::SetScreenSize>([this](fq::event::SetScreenSize event)
+			{
+				mScreenWidth = event.width;
+				mScreenHeight = event.height;
+			});
+
+	mSetScreenSizeHandler = eventMgr->
+		RegisterHandle<fq::event::SetViewportSize>([this](fq::event::SetViewportSize event)
+			{
+				mViewporWidth = event.width;
+				mViewportHeight = event.height;
+			});
 }
 
 void fq::game_engine::UISystem::OnLoadScene()

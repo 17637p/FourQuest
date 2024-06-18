@@ -76,6 +76,13 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 		{
 			this->mSelectObject = event.object;
 		});
+
+	mSetScreenSizeHandler = mGameProcess->mEventManager->RegisterHandle<event::SetScreenSize>(
+		[this](event::SetScreenSize event)
+		{
+			float aspectRatio = static_cast<float>(event.width) / event.height;
+			mCameraObject->GetComponent<game_module::Camera>()->SetAspectRatio(aspectRatio);
+		});
 }
 
 void fq::game_engine::GamePlayWindow::Finalize()
@@ -168,6 +175,11 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, true });
+
+		mGameProcess->mEventManager
+			->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+		{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+				, static_cast<unsigned short>(mViewportSize.y - mViewPortOffset.y) });
 	}
 	// Play -> Edit
 	else if (mode == EditorMode::Edit)
@@ -175,6 +187,10 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
+
+		mGameProcess->mEventManager
+			->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+		{ static_cast<unsigned short>(mViewportSize.x), static_cast<unsigned short>(mViewportSize.y) });
 	}
 
 	mGameProcess->mEventManager->FireEvent<editor_event::SelectObject>({ nullptr });

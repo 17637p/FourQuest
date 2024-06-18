@@ -9,8 +9,6 @@ fq::game_module::Camera::Camera()
 	:mbIsMain(false)
 	,mCameraInfomation{}
 	,mAspectRatio(16.f/9.f)
-	,mViewportHeight(0)
-	,mViewportWidth(0)
 {
 	mCameraInfomation.isPerspective = true;
 	SetNearPlain(0.003f);
@@ -38,6 +36,11 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Camera::Clone(std::
 	}
 
 	return cloneCamera;
+}
+
+void fq::game_module::Camera::SetAspectRatio(float aspectRatio)
+{
+	mAspectRatio = aspectRatio;
 }
 
 entt::meta_handle fq::game_module::Camera::GetHandle()
@@ -115,11 +118,3 @@ DirectX::SimpleMath::Matrix fq::game_module::Camera::GetViewProjection()
 {
 	return  GetView()* GetProjection(mAspectRatio) ;
 }
-
-void fq::game_module::Camera::SetViewportSize(UINT width, UINT height)
-{
-	mViewportWidth = width;
-	mViewportHeight = height;
-	mAspectRatio = static_cast<float>(mViewportWidth) / mViewportHeight;
-}
-

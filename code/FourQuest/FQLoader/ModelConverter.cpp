@@ -408,9 +408,8 @@ namespace fq::loader
 					Mesh::Bone bone;
 					bone.Name = bonePtr->mName.C_Str();
 					bone.NodeIndex = nodeIndex;
-
+					(*inoutMeshes)[nodeIndex].first.OffsetMatrix = DirectX::SimpleMath::Matrix(bonePtr->mOffsetMatrix[0]).Transpose();
 					bones.insert(bone);
-
 
 					for (unsigned int j = 0; j < bonePtr->mNumWeights; ++j)
 					{

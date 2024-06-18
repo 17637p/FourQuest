@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "../FQCommon/FQPath.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/IFQRenderObject.h"
 #include "../FQGameModule/GameModule.h"
@@ -21,6 +22,7 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* 
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
+
 }
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
@@ -114,4 +116,23 @@ const fq::common::Mesh& fq::game_engine::ModelSystem::GetMesh(const fq::common::
 	}
 
 	return fq::common::Mesh{};
+}
+
+void fq::game_engine::ModelSystem::ConvertAllModel()
+{
+	auto resPath = fq::path::GetResourcePath();
+
+	auto fileList=  fq::path::GetFileListRecursive(resPath);
+
+	for (auto& file : fileList)
+	{
+		if (file.extension() == ".fbx")
+		{
+			std::wstring fileName = file.filename();
+			fileName = fileName.substr(0, fileName.size() - 4);
+
+			auto directory = file.parent_path() / fileName;
+			mGameProcess->mGraphics->ConvertModel(file.string(), directory.string());
+		}
+	}
 }
