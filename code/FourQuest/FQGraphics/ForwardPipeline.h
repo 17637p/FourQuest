@@ -32,6 +32,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
 			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11TrailManager> trailManager,
 			unsigned short width,
 			unsigned short height);
 
@@ -51,6 +52,7 @@ namespace fq::graphics
 		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
 		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 		std::shared_ptr<class ParticlePass> mParticlePass;
+		std::shared_ptr<class TrailRenderPass> mTrailRenderPass;
 	};
 }
 

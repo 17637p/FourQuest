@@ -2,6 +2,7 @@
 #include "ManagementCommon.h"
 #include "D3D11Common.h"
 #include "Material.h"
+#include "DecalObject.h"
 
 namespace fq::graphics
 {

@@ -32,12 +32,6 @@ namespace fq::graphics
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 
-		D3D_SHADER_MACRO macroShading[] =
-		{
-			{"SHADING", ""},
-			{ NULL, NULL}
-		};
-
 		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
 		auto shadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_SHADING.cso" );
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);

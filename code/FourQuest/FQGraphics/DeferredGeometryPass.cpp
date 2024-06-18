@@ -26,18 +26,6 @@ namespace fq::graphics
 
 		OnResize(width, height);
 
-		D3D_SHADER_MACRO macroSkinning[] =
-		{
-			{"SKINNING", ""},
-			{ NULL, NULL}
-		};
-
-		D3D_SHADER_MACRO macroGeometry[] =
-		{
-			{"GEOMETRY", ""},
-			{ NULL, NULL}
-		};
-
 		mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
 		mMetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
 		mRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);

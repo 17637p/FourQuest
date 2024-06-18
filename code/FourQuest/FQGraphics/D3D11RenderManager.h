@@ -44,6 +44,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
 			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11TrailManager> trailManager,
 			unsigned short width,
 			unsigned short height,
 			EPipelineType pipelineType);

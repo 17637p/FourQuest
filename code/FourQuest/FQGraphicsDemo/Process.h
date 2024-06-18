@@ -25,6 +25,7 @@ namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class IParticleObject; }
 namespace fq::graphics { class IDecalObject; }
+namespace fq::graphics { class ITrailObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -71,6 +72,9 @@ private:
 	void decalInit();
 	void decalUpdate();
 
+	void trailInit();
+	void trailUpdate();
+
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
 	// 윈도우 초기 위치
@@ -97,6 +101,7 @@ private:
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
 	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
+	std::vector<fq::graphics::ITrailObject*> mTrailObjects;
 
 	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
 	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;

@@ -28,6 +28,7 @@ FQGraphics::FQGraphics()
 	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
 	, mDecalManager(std::make_shared<D3D11DecalManager>())
+	, mTrailManager(std::make_shared<D3D11TrailManager>())
 {
 }
 
@@ -49,10 +50,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mTrailManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mDecalManager->Initialize(mDevice, mResourceManager);
+	mTrailManager->Initialize(mDevice, mResourceManager);
 
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
 
@@ -356,9 +358,18 @@ void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
 	mDecalManager->DeleteDecalObject(decalObjectInterface);
 }
 
+ITrailObject* FQGraphics::CreateTrailObject(const TrailInfo& trailInfo)
+{
+	return mTrailManager->CreateTrailObject(trailInfo);
+}
+void FQGraphics::DeleteTrailObject(ITrailObject* trailObjectInterface)
+{
+	mTrailManager->DeleteTrailObject(trailObjectInterface);
+}
+
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mTrailManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

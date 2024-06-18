@@ -3,28 +3,27 @@
 #include <set>
 #include <memory>
 #include <directxtk\SimpleMath.h>
-#include <filesystem>
-#include "../FQCommon/FQCommonLoader.h"
-#include "../FQCommon/IFQRenderObject.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::graphics
 {
 	class D3D11Device;
 	class D3D11ResourceManager;
+	class ITrailObject;
 
-	class D3D11DecalManager
+	class D3D11TrailManager
 	{
 	public:
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
-		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
-		void DeleteDecalObject(IDecalObject* decalObject);
+		ITrailObject* CreateTrailObject(const TrailInfo& trailInfo);
+		void DeleteTrailObject(ITrailObject* trailObject);
 
-		const std::set<IDecalObject*> GetDecalObjects();
+		const std::set<ITrailObject*> GetTrailObjects();
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-		std::set<IDecalObject*> mDecalObjects;
+		std::set<ITrailObject*> mTrailObjects;
 	};
 }

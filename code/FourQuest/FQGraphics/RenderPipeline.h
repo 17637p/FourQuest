@@ -12,6 +12,7 @@ namespace fq::graphics
 	class Pass;
 	class D3D11ParticleManager;
 	class D3D11DecalManager;
+	class D3D11TrailManager;
 
 	class RenderPipeline
 	{

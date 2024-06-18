@@ -67,8 +67,8 @@ namespace fq::graphics
 
 		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
 
-		float XRatio= 1.f; // 1이 전부다 출력
-		float YRatio= 1.f; // 1이 전부다 출력
+		float XRatio = 1.f; // 1이 전부다 출력
+		float YRatio = 1.f; // 1이 전부다 출력
 
 		std::string ImagePath;
 
@@ -281,6 +281,36 @@ namespace fq::graphics
 		float AlphaClipThreshold = 0.1f;
 		bool bUseDebugRender = true;
 		DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };
+	};
+
+	struct TrailInfo
+	{
+		enum { MAX_VERTEX_SIZE = 128 };
+
+		enum class EAlignment
+		{
+			View,
+			TransformZ,
+		};
+
+		enum class ETextureMode
+		{
+			Stretch, // 트레일 전체 길이를 한 번에 매핑
+			Tile, // 월드 공간의 단위를 기반하여 텍스처 반복
+			DistributePerSegment,// 버텍스 간격이 균등하다고 가정한 후 트레일의 전체 길이를 한 번에 매핑
+			RepeatPerSegment, // 트레일 세그먼트당 한 번 트레일 텍스처 반복
+		};
+
+		float Time = 5.f;
+		float Width = 1000.f;
+		float MinVertexDistance = 1.f; // 월드 공간에 정의된 트레일 간 최소 거리
+		bool bIsEmit = true;
+		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		EAlignment AlignmentType = EAlignment::TransformZ;
+		ETextureMode TextureMode = ETextureMode::DistributePerSegment;
+
+		float FrameTime = 0.f;
+		DirectX::SimpleMath::Matrix Transform;
 	};
 
 	namespace debug

@@ -213,6 +213,18 @@ extern "C" {
 		protected:
 			virtual ~IDecalObject() = default;
 		};
+
+		class ITrailObject
+		{
+		public:
+			virtual FQ_GRAPHICS void SetTrailInfo(const TrailInfo& trailInfo) abstract;
+			virtual FQ_GRAPHICS const TrailInfo& GetTrailInfo() const abstract;
+
+			virtual FQ_GRAPHICS void SetTexturePath(const std::wstring& texturePath) abstract;
+
+		protected:
+			virtual ~ITrailObject() = default;
+		};
 	}
 #ifdef __cplusplus
 }

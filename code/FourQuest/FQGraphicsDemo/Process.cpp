@@ -55,6 +55,11 @@ Process::~Process()
 		mTestGraphics->DeleteDecalObject(iobj);
 	}
 
+	for (fq::graphics::ITrailObject* iobj : mTrailObjects)
+	{
+		mTestGraphics->DeleteTrailObject(iobj);
+	}
+
 	//mTestGraphics->DeleteLight(1);
 	//mTestGraphics->DeleteLight(2);
 	//mTestGraphics->DeleteLight(3);
@@ -82,7 +87,7 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
-	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
+	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource123123");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/temp123.model";
@@ -117,12 +122,12 @@ bool Process::Init(HINSTANCE hInstance)
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
 		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath);// , DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateScale(0.01f));// , DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateScale(100) * DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 
-		// mSocketStaticMeshObject = mStaticMeshObjects.back();
-		// mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
-		// mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
+		mSocketStaticMeshObject = mStaticMeshObjects.back();
+		mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
+		mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
 	}
 
 	// 카메라 초기화
@@ -228,6 +233,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	particleInit();
 	decalInit();
+	trailInit();
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
@@ -437,6 +443,7 @@ void Process::Update()
 	materialUpdate();
 	socketUpdate();
 	decalUpdate();
+	trailUpdate();
 
 	InputManager::GetInstance().Update();
 }
@@ -1098,11 +1105,9 @@ void Process::materialUpdate()
 
 void Process::socketUpdate()
 {
-	return;
-
 	const auto& bones = mSoketSkinnedMeshObject->GetBones();
 
-	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(13) * mSoketSkinnedMeshObject->GetTransform();
+	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(54)* mSoketSkinnedMeshObject->GetTransform();
 	mSocketStaticMeshObject->SetTransform(socketTransform);
 
 	assert(bones[13].Index == mSoketSkinnedMeshObject->GetBoneIndex(bones[13].Name));
@@ -1169,6 +1174,36 @@ void Process::decalUpdate()
 		decalObject->SetDecalInfo(decalInfo);
 
 		++i;
+	}
+}
+
+void Process::trailInit()
+{
+	using namespace fq::graphics;
+	{
+		TrailInfo trailInfo;
+
+		auto* interfaceClass = mTestGraphics->CreateTrailObject(trailInfo);
+		interfaceClass->SetTexturePath(L"./resource/example/texture/Particle05.png");
+		mTrailObjects.push_back(interfaceClass);
+	}
+}
+void Process::trailUpdate()
+{
+	using namespace fq::graphics;
+
+	for (auto* trailObject : mTrailObjects)
+	{
+		TrailInfo trailInfo = trailObject->GetTrailInfo();
+
+		trailInfo.FrameTime = mTimeManager.GetDeltaTime();
+		trailInfo.Transform = mSocketStaticMeshObject->GetTransform();
+		trailInfo.Time = 0.5f;
+		trailInfo.Width = 10;
+		trailInfo.AlignmentType = TrailInfo::EAlignment::View;
+		trailInfo.TextureMode = TrailInfo::ETextureMode::RepeatPerSegment;
+
+		trailObject->SetTrailInfo(trailInfo);
 	}
 }
 
@@ -1469,18 +1504,31 @@ void Process::calculateFrameStats()
 
 void Process::convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath)
 {
+	if (!std::filesystem::exists(readFolderPath))
+	{
+		return;
+	}
+
 	for (const auto& iter : std::filesystem::directory_iterator{ readFolderPath })
 	{
-		auto outPath = iter.path();
-		outPath.replace_extension(".model");
-		outPath = outFolderPath / outPath.filename();
+		if (iter.path().extension() == ".fbx")
+		{
+			auto outPath = iter.path();
+			outPath.replace_extension(".model");
+			outPath = outFolderPath / outPath.filename();
 
-		mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+			mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+		}
 	}
 }
 
 void Process::convertFBXModelAll(std::filesystem::path folderPath)
 {
+	if (!std::filesystem::exists(folderPath))
+	{
+		return;
+	}
+
 	for (const auto& iter : std::filesystem::recursive_directory_iterator{ folderPath })
 	{
 		if (iter.path().extension() == ".fbx")
