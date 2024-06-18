@@ -44,6 +44,7 @@ namespace fq::game_engine
 		// Event Process
 		void OnLoadScene(const fq::event::OnLoadScene event);
 		void OnUnloadScene();
+		void OnStartScene();
 		void OnAddComponent(const fq::event::AddComponent& event);
 		void OnRemoveComponent(const fq::event::RemoveComponent& event);
 		void OnAddGameObject(const fq::event::AddGameObject& event);
@@ -61,6 +62,7 @@ namespace fq::game_engine
 		// Navigation 
 		bool mIsLoadedScene;
 		bool mHasNavigationMesh;
+		bool mIsStartScene;
 		BuildSettings* mBuildSettings;
 		NavigationMeshBuilder* mBuilder;
 
@@ -74,9 +76,9 @@ namespace fq::game_engine
 		fq::game_module::EventHandler mRemoveComponentHandler;
 		fq::game_module::EventHandler mOnAddGameObjectHandler;
 		fq::game_module::EventHandler mDestroyedGameObjectHandler;
+		fq::game_module::EventHandler mStartSceneHandler;
 
 		entt::id_type mAgentID;
-
 	};
 }
 

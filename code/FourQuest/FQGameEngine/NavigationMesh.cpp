@@ -62,6 +62,7 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 			}
 		}
 	}
+	// Terrain 처리 추가
 
 	if (fieldVertices.size() == 0)
 	{
