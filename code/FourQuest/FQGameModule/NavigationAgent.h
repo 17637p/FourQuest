@@ -31,6 +31,7 @@ namespace fq::game_module
 
 		DirectX::SimpleMath::Vector3 GetTargetPosition();
 		void MoveTo(DirectX::SimpleMath::Vector3 destination);
+		void Stop();
 
 		/// <summary>
 		/// 복사본을 반환합니다 

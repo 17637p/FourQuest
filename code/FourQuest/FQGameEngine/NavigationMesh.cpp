@@ -253,7 +253,7 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	status = navQuery->init(navMesh, 2048);
 	assert(dtStatusFailed(status) == false);
 
-	mNavigationMeshData->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
+	mNavigationMeshData->crowd->init(buildSettings.maxCrowdNumber, buildSettings.maxAgentRadius, navMesh);
 
 	mHasNavigationMesh = true;
 
