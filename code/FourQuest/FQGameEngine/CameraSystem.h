@@ -71,5 +71,7 @@ namespace fq::game_engine
 		fq::game_module::EventHandler mSetViewportSizeHandler;
 		fq::game_module::Camera* mGameMainCamera;
 		fq::game_module::Camera* mEditorCamera;
+
+		float mAspectRatio;
 	};
 }

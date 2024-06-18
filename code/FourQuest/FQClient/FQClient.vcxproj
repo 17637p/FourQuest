@@ -49,6 +49,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMovementState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DeadArmour.cpp" />

@@ -116,6 +116,9 @@
     <ClInclude Include="HpBar.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="UILayerDefine.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">

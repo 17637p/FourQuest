@@ -76,6 +76,8 @@ namespace fq::game_module
 		/// </summary>
 		DirectX::SimpleMath::Matrix GetProjection(float aspectRatio)const;
 
+		DirectX::SimpleMath::Matrix GetOrthographic(float width, float height)const;
+		
 		/// <summary>
 		/// viewprojection 행렬을 반환합니다
 		/// </summary>
