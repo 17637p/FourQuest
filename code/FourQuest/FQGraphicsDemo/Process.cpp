@@ -82,6 +82,7 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/temp123.model";
@@ -100,8 +101,8 @@ bool Process::Init(HINSTANCE hInstance)
 	animInfo.push_back({ animModelPath0, modelData.Animations[0].Name, "Idle" });
 	// animInfo.push_back({ animModelPath0, modelData.Animations[1].Name, "Kick" });
 
-	mTestGraphics->WriteModel("./cocoa.model", modelData);
-	modelData = mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
+	// mTestGraphics->WriteModel("./cocoa.model", modelData);
+	// modelData = mTestGraphics->CreateModel("./cocoa.model", textureBasePath);
 	std::vector<fq::graphics::AnimationInfo> staticAnimInfo;
 	//modelData = mTestGraphics->CreateModel(staticAnimModelPath0, textureBasePath);
 	//staticAnimInfo.push_back({ staticAnimModelPath0 , modelData.Animations.front().Name, "Idle" });
@@ -1475,5 +1476,18 @@ void Process::convertFBXModelAll(std::filesystem::path readFolderPath, std::file
 		outPath = outFolderPath / outPath.filename();
 
 		mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+	}
+}
+
+void Process::convertFBXModelAll(std::filesystem::path folderPath)
+{
+	for (const auto& iter : std::filesystem::recursive_directory_iterator{ folderPath })
+	{
+		if (iter.path().extension() == ".fbx")
+		{
+			auto outPath = iter.path();
+			outPath.replace_extension(".model");
+			mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+		}
 	}
 }

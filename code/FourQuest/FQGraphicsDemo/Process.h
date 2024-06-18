@@ -59,6 +59,7 @@ private:
 	void calculateFrameStats();
 
 	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
+	void convertFBXModelAll(std::filesystem::path folderPath);
 
 	void particleInit();
 	void particleUpdate();
