@@ -24,6 +24,7 @@ namespace fq::graphics
 				break;
 			}
 
+
 			iter->Age -= mTrailInfo.FrameTime;
 		}
 		mVertices.erase(iter, mVertices.end());
@@ -31,7 +32,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 position = Vector3::Transform(Vector3::Zero, mTrailInfo.Transform);
 
 		float distance = DirectX::SimpleMath::Vector3::Distance(position, mLastPosition);
-		if (distance > mTrailInfo.MinVertexDistance)
+		if (distance > mTrailInfo.MinVertexDistance && mTrailInfo.bIsEmit)
 		{
 			size_t frameMaxDivideCount = std::min<size_t>(distance / mTrailInfo.MinVertexDistance, TrailInfo::MAX_VERTEX_SIZE / 60.f);
 
@@ -98,11 +99,49 @@ namespace fq::graphics
 			switch (mTrailInfo.TextureMode)
 			{
 			case TrailInfo::ETextureMode::Stretch:
+			{
+				float totalSquaredDistance = 1.f;
 
-				break;
+				// 엄밀하게 하려면 포지션 값을 저장해야 할듯하네
+				for (size_t i = 0; i < mVertices.size() - 2; i += 2)
+				{
+					totalSquaredDistance += Vector3::Distance(mVertices[i].Position, mVertices[i + 2].Position);
+				}
+				float remainder = 0.f;
+
+				for (size_t i = 0; i < mVertices.size() - 2; i += 2)
+				{
+					float texcoordX = Vector3::Distance(mVertices[i].Position, mVertices[i + 2].Position) / totalSquaredDistance;
+
+					mVertices[i].UV = { remainder, 0 };
+					mVertices[i + 1].UV = { remainder, 1 };
+				
+					remainder += texcoordX;
+				}
+
+				mVertices[mVertices.size() - 2].UV = { 1, 0 };
+				mVertices[mVertices.size() - 1].UV = { 1, 1 };
+			}
+			break;
 			case TrailInfo::ETextureMode::Tile:
+			{
+				// 현재에서 다음 프레임 누적해가면서 10으로 나눠주는 형태?
+				float remainder = 0.f;
 
-				break;
+				for (size_t i = 0; i < mVertices.size() - 2; i += 2)
+				{
+					float texcoordX = Vector3::Distance(mVertices[i].Position, mVertices[i + 2].Position) / 10.f;
+
+					mVertices[i].UV = { remainder, 0 };
+					mVertices[i + 1].UV = { remainder, 1 };
+
+					remainder += texcoordX;
+				}
+
+				mVertices[mVertices.size() - 2].UV = { remainder, 0 };
+				mVertices[mVertices.size() - 1].UV = { remainder, 1 };
+			}
+			break;
 			case TrailInfo::ETextureMode::DistributePerSegment:
 			{
 				float deltaX = 1.f / (mVertices.size() / 2);

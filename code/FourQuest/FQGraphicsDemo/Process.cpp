@@ -1192,6 +1192,10 @@ void Process::trailUpdate()
 {
 	using namespace fq::graphics;
 
+	static float s_time = 0.f;
+
+	s_time += mTimeManager.GetDeltaTime();
+
 	for (auto* trailObject : mTrailObjects)
 	{
 		TrailInfo trailInfo = trailObject->GetTrailInfo();
@@ -1200,8 +1204,15 @@ void Process::trailUpdate()
 		trailInfo.Transform = mSocketStaticMeshObject->GetTransform();
 		trailInfo.Time = 0.5f;
 		trailInfo.Width = 10;
+		trailInfo.MinVertexDistance = 1;
 		trailInfo.AlignmentType = TrailInfo::EAlignment::View;
-		trailInfo.TextureMode = TrailInfo::ETextureMode::RepeatPerSegment;
+		trailInfo.TextureMode = TrailInfo::ETextureMode::Stretch;
+
+		if (s_time > 1.f)
+		{
+			trailInfo.bIsEmit ^= true;
+			s_time -= 1.f;
+		}
 
 		trailObject->SetTrailInfo(trailInfo);
 	}
