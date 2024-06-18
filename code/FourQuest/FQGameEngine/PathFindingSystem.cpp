@@ -44,15 +44,20 @@ fq::game_engine::BuildSettings* fq::game_engine::PathFindingSystem::GetBuildingS
 
 void fq::game_engine::PathFindingSystem::Update(float dt)
 {
+	if (!mIsStartScene)
+	{
+		return;
+	}
+
 	if (mHasNavigationMesh)
 	{
-		if (mGameProcess->mInputManager->GetKeyState(EKey::T) == EKeyState::Tap)
-		{
-			for (auto& agent : mAgents)
-			{
-				agent->MoveTo({ -1.631, 0.884, -14.869 });
-			}
-		}
+		//if (mGameProcess->mInputManager->GetKeyState(EKey::T) == EKeyState::Tap)
+		//{
+		//	for (auto& agent : mAgents)
+		//	{
+		//		agent->MoveTo({ -1.631, 0.884, -14.869 });
+		//	}
+		//}
 
 		mBuilder->Update(dt);
 
@@ -99,6 +104,8 @@ void fq::game_engine::PathFindingSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::AddGameObject>(this, &PathFindingSystem::OnAddGameObject);
 	mDestroyedGameObjectHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnDestoryedGameObject>(this, &PathFindingSystem::OnDestroyedGameObject);
+	mDestroyedGameObjectHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::StartScene>(this, &PathFindingSystem::OnStartScene);
 
 	mAgentID = entt::resolve<fq::game_module::NavigationAgent>().id();
 }
@@ -129,6 +136,7 @@ void fq::game_engine::PathFindingSystem::OnLoadScene(const fq::event::OnLoadScen
 void fq::game_engine::PathFindingSystem::OnUnloadScene()
 {
 	mIsLoadedScene = false;
+	mIsStartScene = false;
 	//mAgents.clear();
 }
 
@@ -191,4 +199,9 @@ void fq::game_engine::PathFindingSystem::OnDestroyedGameObject(const fq::event::
 bool fq::game_engine::PathFindingSystem::HasNavigationMesh()
 {
 	return mHasNavigationMesh;
+}
+
+void fq::game_engine::PathFindingSystem::OnStartScene()
+{
+	mIsStartScene = true;
 }

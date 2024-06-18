@@ -13,6 +13,7 @@ namespace fq::client
 		Monster();
 		~Monster();
 
+		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 
@@ -36,6 +37,9 @@ namespace fq::client
 
 		float GetMoveSpeed() const;
 		void SetMoveSpeed(float moveSpeed);
+
+		float GetAcceleration() const { return mAcceleration; }
+		void SetAcceleration(float val) { mAcceleration = val; }
 
 		float GetChaseDistance() const;
 		void SetChaseDistance(float chaseDistance);
@@ -71,6 +75,7 @@ namespace fq::client
 		float mHP;
 		float mAttackPower;
 		float mMoveSpeed;
+		float mAcceleration;
 
 		float mTargetAttackRange;
 		float mChaseDistance;

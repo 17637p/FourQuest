@@ -62,6 +62,7 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 			}
 		}
 	}
+	// Terrain 처리 추가
 
 	if (fieldVertices.size() == 0)
 	{
@@ -253,7 +254,7 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	status = navQuery->init(navMesh, 2048);
 	assert(dtStatusFailed(status) == false);
 
-	mNavigationMeshData->crowd->init(1024, buildSettings.maxAgentRadius, navMesh);
+	mNavigationMeshData->crowd->init(buildSettings.maxCrowdNumber, buildSettings.maxAgentRadius, navMesh);
 
 	mHasNavigationMesh = true;
 

@@ -1,7 +1,8 @@
 #include "Monster.h"
 
-#include "Player.h"
 #include "Attack.h"
+
+#include "../FQGameModule/NavigationAgent.h"
 
 fq::client::Monster::Monster()
 	:mTarget(nullptr),
@@ -11,6 +12,7 @@ fq::client::Monster::Monster()
 	mHP(0),
 	mAttackPower(0),
 	mMoveSpeed(0),
+	mAcceleration(0.5),
 	mTargetAttackRange(1),
 	mChaseDistance(5),
 	mAttackWaitTime(1),
@@ -163,5 +165,14 @@ void fq::client::Monster::SetIsDamaged(bool isDamaged)
 void fq::client::Monster::OnUpdate(float dt)
 {
 	mLastAttackTime += dt;
+}
+
+void fq::client::Monster::OnStart()
+{
+	fq::game_module::NavigationAgent* agent = GetGameObject()->GetComponent<fq::game_module::NavigationAgent>();
+
+	agent->SetSpeed(mMoveSpeed);
+	agent->SetAcceleration(mAcceleration);
+	agent->SetRadius(0.3);
 }
 
