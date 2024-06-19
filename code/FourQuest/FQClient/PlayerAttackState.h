@@ -17,6 +17,9 @@ namespace fq::client
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
+		float mAttackRebound; 
+
+		friend void RegisterMetaData();
 	};
 }
 

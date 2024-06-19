@@ -189,14 +189,14 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "RotationAngle")
 		.data<&graphics::UIInfo::ScaleX>("ScaleX"_hs)
 		.prop(fq::reflect::prop::Name, "ScaleX")
-		.data<&graphics::UIInfo::RotationAngle>("ScaleY"_hs)
+		.data<&graphics::UIInfo::ScaleY>("ScaleY"_hs)
 		.prop(fq::reflect::prop::Name, "ScaleY");
 
 	entt::meta<ImageUI>()
 		.type("ImageUI"_hs)
 		.prop(fq::reflect::prop::Name, "ImageUI")
 		.prop(fq::reflect::prop::Label, "UI")
-		.data<&ImageUI::SetUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
+		.data<&ImageUI::setUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
 		.prop(fq::reflect::prop::Name, "UIInfomations")
 		.base<Component>();
 
@@ -302,20 +302,29 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<fq::physics::EColliderType>()
 		.type("ColliderType"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderType")
-		.prop(fq::reflect::prop::Label, "Physcis")
 		.data<fq::physics::EColliderType::COLLISION>("Collision"_hs)
 		.prop(fq::reflect::prop::Name, "Collision")
 		.data<fq::physics::EColliderType::TRIGGER>("Trigger"_hs)
 		.prop(fq::reflect::prop::Name, "Trigger");
+
+	// BodyType
+	entt::meta<RigidBody::EBodyType>()
+		.type("ColliderBodyType"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderBodyType")
+		.data<RigidBody::EBodyType::Static>("Static"_hs)
+		.prop(fq::reflect::prop::Name, "Static")
+		.data<RigidBody::EBodyType::Dynamic>("Dynamic"_hs)
+		.prop(fq::reflect::prop::Name, "Dynamic")
+		.data<RigidBody::EBodyType::Kinematic>("Kinematic"_hs)
+		.prop(fq::reflect::prop::Name, "Kinematic");
 
 	// Rigid Body
 	entt::meta<RigidBody>()
 		.type("RigidBody"_hs)
 		.prop(fq::reflect::prop::Name, "RigidBody")
 		.prop(fq::reflect::prop::Label, "Physcis")
-		.data<&RigidBody::SetStatic, &RigidBody::IsStatic>("IsStatic"_hs)
-		.prop(fq::reflect::prop::Name, "IsStatic")
-		.prop(fq::reflect::prop::Comment, "static or dynamic")
+		.data<&RigidBody::SetBodyType, &RigidBody::GetBodyType>("BodyType"_hs)
+		.prop(fq::reflect::prop::Name, "BodyType")
 		.data<&RigidBody::SetLinearVelocity, &RigidBody::GetLinearVelocity>("LinearVelocity"_hs)
 		.prop(fq::reflect::prop::Name, "LinearVelocity")
 		.data<&RigidBody::SetAngularVelocity, &RigidBody::GetAngularVelocity>("AgularVelocity"_hs)

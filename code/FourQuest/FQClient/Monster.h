@@ -29,6 +29,8 @@ namespace fq::client
 		fq::game_module::GameObject* GetLastAttacker() const;
 
 		// 수정 가능한 변수
+		float GetMaxHP() const { return mMaxHP; }
+
 		float GetHP() const;
 		void SetHP(float hp);
 
@@ -72,6 +74,7 @@ namespace fq::client
 		float mLastAttackTime;
 
 		// Stat
+		float mMaxHP;
 		float mHP;
 		float mAttackPower;
 		float mMoveSpeed;

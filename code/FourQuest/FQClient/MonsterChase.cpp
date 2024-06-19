@@ -47,12 +47,18 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 	{
 		animator.SetParameterTrigger("OnIdle");
 		agent->Stop();
+		monster->SetTarget(nullptr);
+
+		return;
 	}
 
 	if (mMoveDistance > monster->GetChaseDistance())
 	{
 		animator.SetParameterTrigger("OnIdle");
 		agent->Stop();
+		monster->SetTarget(nullptr);
+
+		return;
 	}
 }
 
@@ -71,6 +77,9 @@ void fq::client::MonsterChase::MoveToTarget(fq::game_module::Animator& animator,
 	{
 		animator.SetParameterTrigger("OnIdle");
 		agent->Stop();
+		monster->SetTarget(nullptr);
+
+		return;
 	}
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 
@@ -96,6 +105,9 @@ void fq::client::MonsterChase::rotateToTarget(fq::game_module::Animator& animato
 	{
 		animator.SetParameterTrigger("OnIdle");
 		agent->Stop();
+		monster->SetTarget(nullptr);
+
+		return;
 	}
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 	

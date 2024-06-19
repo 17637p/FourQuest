@@ -67,6 +67,7 @@ namespace fq::game_engine
 		CameraType mCameraType;
 
 		fq::game_module::EventHandler mSetMainCameraHandler;
+		fq::game_module::EventHandler mGetMainCameraHandler;
 		fq::game_module::EventHandler mOnLoadedSceneHandler;
 		fq::game_module::EventHandler mSetViewportSizeHandler;
 		fq::game_module::Camera* mGameMainCamera;

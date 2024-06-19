@@ -1,5 +1,6 @@
 #include "MonsterDamaged.h"
 #include "Monster.h"
+#include "HpBar.h"
 
 fq::client::MonsterDamaged::MonsterDamaged()
 	:mDamagedDelay(100)
@@ -21,7 +22,13 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 	if (mDamagedDelay > monster->GetDamagedDelay())
 	{
 		mDamagedDelay = 0;
+
 		monster->SetHP(monster->GetHP() - monster->GetDamaged());
+
+		// 6.19 기태 : HP UI 로직 추가
+	 	float maxHp = monster->GetMaxHP();
+		float decreaseHpRatio = monster->GetDamaged() / maxHp;
+		monster->GetComponent<HpBar>()->DecreaseHp(decreaseHpRatio);
 	}
 
 	if (monster->GetHP() <= 0)

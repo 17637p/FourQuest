@@ -46,12 +46,6 @@ void fq::client::HpBar::OnUpdate(float dt)
 	if (mDeceraseTime >= mDecreaseOffset)
 		mDecreaseRatio = std::max(mDecreaseRatio - mDecreaseSpeed * dt, 0.f);
 
-	if (GetScene()->GetInputManager()->IsKeyState(EKey::Space, EKeyState::Tap))
-	{
-		DecreaseHp(0.2f);
-	}
-
-
 	if (!mIsVisible) return;
 
 	// UI 정도 전달 
@@ -145,7 +139,6 @@ void fq::client::HpBar::setUIInfo()
 {
 	using namespace DirectX::SimpleMath;
 
-	auto viewProj = mMainCamera->GetViewProjection();
 
 	Vector3 pos = mTransform->GetWorldPosition();
 	pos.y += mWorldOffset;
@@ -153,7 +146,8 @@ void fq::client::HpBar::setUIInfo()
 	float height = GetScene()->GetScreenManager()->GetScreenHeight();
 	float width = GetScene()->GetScreenManager()->GetScreenWidth();
 
-	Vector3 screenPos = Vector3::Transform(pos, mMainCamera->GetViewProjection());
+	auto viewProj = mMainCamera->GetViewProjection();
+	Vector3 screenPos = Vector3::Transform(pos, viewProj);
 	auto infomations = mImageUI->GetUIInfomations();
 
 	// OutBar 
@@ -178,7 +172,6 @@ void fq::client::HpBar::setUIInfo()
 
 	decreaseBar.StartX = width * 0.5f + (screenPos.x * width * 0.5f) - mBarSize.x * 0.5f + halfInnerOffset;
 	decreaseBar.StartY = height * 0.5f - (screenPos.y * height * 0.5f) + mScreenOffset + halfInnerOffset;
-
 
 	mImageUI->SetUIInfomations(infomations);
 }

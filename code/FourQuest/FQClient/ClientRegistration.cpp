@@ -40,9 +40,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Player::SetHp, &Player::GetHp>("HP"_hs)
 		.prop(reflect::prop::Name, "Hp")
-		.data<&Player::SetAttackPrefab, &Player::GetAttackPrefab>("AttakPrefab"_hs)
+		.data<&Player::mDashCoolTime>("DashCoolTime"_hs)
+		.prop(reflect::prop::Name, "DashCoolTime")
+		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
+		.prop(reflect::prop::Name, "InvincibleTime")
+		.prop(reflect::prop::Comment, u8"무적시간")
+		.data<&Player::mAttackPrafab>("AttakPrefab"_hs)
 		.prop(reflect::prop::Name, "AttakPrefab")
-		.data<&Player::SetSoulPrefab, &Player::GetSoulPrefab>("SoulPrefab"_hs)
+		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
 		.base<game_module::Component>();
 	
@@ -50,7 +55,7 @@ void fq::client::RegisterMetaData()
 		.type("DeadArmour"_hs)
 		.prop(reflect::prop::Name, "DeadArmour")
 		.prop(reflect::prop::Label, "Player")
-		.data<&DeadArmour::SetLivingArmour, &DeadArmour::GetLivingArmour>("LivingArmour"_hs)
+		.data<&DeadArmour::mLivingArmourPrefab>("LivingArmour"_hs)
 		.prop(reflect::prop::Name, "LivingArmour")
 		.base<game_module::Component>();
 
@@ -82,6 +87,9 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlayerAttackState>()
 		.type("PlayerAttackState"_hs)
 		.prop(reflect::prop::Name, "PlayerAttackState")
+		.data<&PlayerAttackState::mAttackRebound>("AttackRebound"_hs)
+		.prop(reflect::prop::Name, "AttackRebound")
+		.prop(reflect::prop::Comment, u8"공격 반동")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

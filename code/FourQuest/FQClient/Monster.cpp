@@ -9,6 +9,7 @@ fq::client::Monster::Monster()
 	mIsDamaged(false),
 	mDamaged(0),
 	mLastAttacker(nullptr),
+	mMaxHP(0),
 	mHP(0),
 	mAttackPower(0),
 	mMoveSpeed(0),
@@ -174,5 +175,7 @@ void fq::client::Monster::OnStart()
 	agent->SetSpeed(mMoveSpeed);
 	agent->SetAcceleration(mAcceleration);
 	agent->SetRadius(0.3);
+
+	mMaxHP = mHP;
 }
 
