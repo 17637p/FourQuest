@@ -21,6 +21,8 @@ namespace fq::game_engine
 
 		bool UseSnap() const { return mbUseSnap; }
 
+		bool UseRootPicking()const { return mbUseRootPicking; }
+
 		float* GetSnap() { return &mSnap[0]; }
 
 		ImGuizmo::MODE GetMode();
@@ -39,6 +41,9 @@ namespace fq::game_engine
 
 		bool mbIsOpen;
 		bool mbUseGrayScale;
+
+		//  피킹 옵션
+		bool mbUseRootPicking;
 	};
 
 

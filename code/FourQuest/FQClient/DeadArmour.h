@@ -13,21 +13,22 @@ namespace fq::client
 		~DeadArmour();
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		fq::game_module::PrefabResource GetLivingArmour() const { return mLivingArmour; }
-		void SetLivingArmour(fq::game_module::PrefabResource val) { mLivingArmour = val; }
-
-		void OnTriggerEnter(const game_module::Collision& collision) override;
-		void OnTriggerExit(const game_module::Collision& collision) override;
-
 	public:
 		void SummonLivingArmour(ControllerID id);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
+		void OnStart() override;
+		void OnUpdate(float dt) override;
+		void OnTriggerEnter(const game_module::Collision& collision) override;
+		void OnTriggerExit(const game_module::Collision& collision) override;
 
+		void setUI(bool isVisible);
 	private:
-		game_module::PrefabResource mLivingArmour;
+		game_module::PrefabResource mLivingArmourPrefab;
 
 		unsigned short mPlayerCount;
+
+		friend void RegisterMetaData();
 	};
 }

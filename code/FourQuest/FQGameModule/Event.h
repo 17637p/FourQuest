@@ -89,6 +89,14 @@ namespace fq::event
 	};
 
 	/// <summary>
+	/// 메인카메라를 반환합니다
+	/// </summary>
+	struct GetMainCamera
+	{
+		fq::game_module::Camera** mainCamera;
+	};
+
+	/// <summary>
 	/// 라이트 타입 변경
 	/// </summary>
 	struct SetLightType

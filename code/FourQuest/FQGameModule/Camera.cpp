@@ -4,11 +4,12 @@
 #include "EventManager.h"
 #include "Event.h"
 #include "Transform.h"
+#include "ScreenManager.h"
 
 fq::game_module::Camera::Camera()
 	:mbIsMain(false)
-	,mCameraInfomation{}
-	,mAspectRatio(16.f/9.f)
+	, mCameraInfomation{}
+	, mAspectRatio(16.f / 9.f)
 {
 	mCameraInfomation.isPerspective = true;
 	SetNearPlain(0.003f);
@@ -59,7 +60,7 @@ void fq::game_module::Camera::SetMainCamera(bool bIsMain)
 				camera.SetMainCamera(false);
 			});
 
-		GetScene()->GetEventManager()->FireEvent<fq::event::SetMainCamera>({this});
+		GetScene()->GetEventManager()->FireEvent<fq::event::SetMainCamera>({ this });
 	}
 
 	mbIsMain = bIsMain;
@@ -70,7 +71,7 @@ void fq::game_module::Camera::SetFieldOfView(float degree)
 	constexpr float min = DirectX::XMConvertToRadians(0.00001f);
 	constexpr float max = DirectX::XMConvertToRadians(180.f);
 
-	mCameraInfomation.filedOfView = 
+	mCameraInfomation.filedOfView =
 		std::clamp(DirectX::XMConvertToRadians(degree), min, max);
 }
 
@@ -90,7 +91,7 @@ float fq::game_module::Camera::GetFarPlain() const
 	return mCameraInfomation.farPlain;
 }
 
-void fq::game_module::Camera::SetNearPlain(float distance) 
+void fq::game_module::Camera::SetNearPlain(float distance)
 {
 	mCameraInfomation.nearPlain = distance;
 }
@@ -107,14 +108,25 @@ DirectX::SimpleMath::Matrix fq::game_module::Camera::GetProjection(float aspectR
 		, mCameraInfomation.nearPlain
 		, mCameraInfomation.farPlain);
 }
+
 DirectX::SimpleMath::Matrix fq::game_module::Camera::GetView()
 {
 	auto transform = GetComponent<Transform>();
-	
+
 	return transform->GetLocalMatrix().Invert();
 }
 
 DirectX::SimpleMath::Matrix fq::game_module::Camera::GetViewProjection()
 {
-	return  GetView()* GetProjection(mAspectRatio) ;
+	return  GetView() * GetProjection(mAspectRatio);
 }
+
+
+DirectX::SimpleMath::Matrix fq::game_module::Camera::GetOrthographic(float width, float height) const
+{
+	return DirectX::XMMatrixOrthographicLH(width
+		, height
+		, mCameraInfomation.nearPlain
+		, mCameraInfomation.farPlain);
+}
+

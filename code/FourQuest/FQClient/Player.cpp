@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "Player.h"
 
 #include "Attack.h"
@@ -5,9 +6,13 @@
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
-	, mAttack{}
+	, mAttackPrafab{}
 	, mController(nullptr)
 	, mHp(0.f)
+	, mDashCoolTime(1.f)
+	, mDashElapsedTime(0.f)
+	, mInvincibleTime(1.f)
+	, mInvincibleElapsedTime(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -33,10 +38,11 @@ std::shared_ptr<fq::game_module::Component> fq::client::Player::Clone(std::share
 }
 
 void fq::client::Player::OnUpdate(float dt)
-{
+{ 
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
 	processInput();
+	processCoolTime(dt);
 }
 
 void fq::client::Player::OnStart()
@@ -57,9 +63,11 @@ void fq::client::Player::processInput()
 {
 	auto input = GetScene()->GetInputManager();
 
-	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	bool isDashAble = mDashElapsedTime == 0.f;
+	if (isDashAble && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
 	{
 		mAnimator->SetParameterTrigger("OnDash");
+		mDashElapsedTime = mDashCoolTime;
 	}
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
@@ -71,7 +79,7 @@ void fq::client::Player::processInput()
 
 void fq::client::Player::Attack()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttack);
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackPrafab);
 	auto& attackObj = *(instance.begin());
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
@@ -80,7 +88,7 @@ void fq::client::Player::Attack()
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 	attackComponent->SetAttacker(GetGameObject());
-	attackComponent->SetAttackPower(1.f);
+	attackComponent->SetAttackPower(100.f);
 
 	auto forward = transform->GetWorldMatrix().Forward();
 	forward.Normalize();
@@ -104,21 +112,23 @@ void fq::client::Player::OnDestroy()
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	bool isHitAble = mInvincibleElapsedTime == 0.f;
+
+	// 플레이어 피격
+	if (isHitAble && collision.other->GetTag() == game_module::ETag::MonsterAttack)
 	{
 		mAnimator->SetParameterTrigger("OnHit");
-
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
-
 		float attackPower = monsterAtk->GetAttackPower();
-
 		mHp -= attackPower;
+
+		mInvincibleElapsedTime = mInvincibleTime;
 	}
 }
 
 void fq::client::Player::SummonSoul()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoul);
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoulPrefab);
 	auto& soul = *(instance.begin());
 
 	// 컨트롤러 연결
@@ -132,5 +142,11 @@ void fq::client::Player::SummonSoul()
 
 	GetScene()->AddGameObject(soul);
 	GetScene()->DestroyGameObject(GetGameObject());
+}
+
+void fq::client::Player::processCoolTime(float dt)
+{
+	mDashElapsedTime = std::max(mDashElapsedTime - dt, 0.f);
+	mInvincibleElapsedTime = std::max(mInvincibleElapsedTime - dt, 0.f);
 }
 

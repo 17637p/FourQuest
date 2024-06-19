@@ -32,7 +32,7 @@ void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
 {
 	assert(id <= 3);
 
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(GetLivingArmour());
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
 
 	auto& livingArmour = *(instance.begin());
 
@@ -63,6 +63,9 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 			child->GetComponent<game_module::SkinnedMeshRenderer>()
 				->SetOutlineColor({ 0.8f, 0.6f, 0.2f, 1.0f });
 		}
+
+		// 상호작용 UI 
+		setUI(true);
 	}
 }
 
@@ -77,12 +80,64 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 	{
 		for (auto& child : GetGameObject()->GetChildren())
 		{
+			// OutLine
 			if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 			{
 				child->GetComponent<game_module::SkinnedMeshRenderer>()
 					->SetOutlineColor({ 0.f, 0.f, 0.f, 1.0f });
 			}
+			// 상호작용 UI 
+			setUI(false);
 		}
 	}
+}
+
+void fq::client::DeadArmour::OnStart()
+{
+	assert(GetComponent<game_module::ImageUI>() != nullptr);
+
+	setUI(false);
+}
+
+void fq::client::DeadArmour::setUI(bool isVisible)
+{
+	using namespace DirectX::SimpleMath;
+
+	auto imageUI = GetComponent<game_module::ImageUI>();
+
+	auto uiInfo = imageUI->GetUIInfomations();
+	if (isVisible)
+	{
+		// UI 보이게 설정 
+		uiInfo[0].ScaleX = 1.f;
+		uiInfo[0].ScaleY = 1.f;
+		fq::game_module::Camera* mainCamera = nullptr;
+
+		GetScene()->GetEventManager()->FireEvent < fq::event::GetMainCamera>(
+			{
+				&mainCamera
+			});
+		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
+		
+		float height = GetScene()->GetScreenManager()->GetScreenHeight();
+		float width = GetScene()->GetScreenManager()->GetScreenWidth();
+
+		auto viewProj = mainCamera->GetViewProjection();
+		Vector3 screenPos = Vector3::Transform(pos, viewProj);
+	}
+	else
+	{
+		uiInfo[0].ScaleX = 0.f;
+		uiInfo[0].ScaleY = 0.f;
+	}
+
+	imageUI->SetUIInfomations(uiInfo);
+}
+
+void fq::client::DeadArmour::OnUpdate(float dt)
+{
+	// UI 위치 갱신 
+
+
 }
 

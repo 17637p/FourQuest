@@ -14,7 +14,8 @@ fq::game_module::NavigationAgent::NavigationAgent()
 
 fq::game_module::NavigationAgent::~NavigationAgent()
 {
-	delete mImpl;
+	if (mImpl)
+		delete mImpl;
 }
 
 void fq::game_module::NavigationAgent::OnUpdate(float dt)

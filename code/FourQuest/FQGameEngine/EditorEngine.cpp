@@ -48,7 +48,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* startSceneName = "PlayerTest2";
+	constexpr const char* startSceneName = "GitaeTest";
 
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
@@ -193,11 +193,11 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
-			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			// ·£´õ¸µ 
 			mGameProcess->mGraphics->BeginRender();
