@@ -37,6 +37,7 @@ namespace fq::client
 
 		float mHp;
 		float mAttackPower;
+		float mSoulStack;
 
 		float mDashElapsedTime;
 		float mInvincibleElapsedTime;

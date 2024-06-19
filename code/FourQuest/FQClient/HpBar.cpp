@@ -139,7 +139,6 @@ void fq::client::HpBar::setUIInfo()
 {
 	using namespace DirectX::SimpleMath;
 
-
 	Vector3 pos = mTransform->GetWorldPosition();
 	pos.y += mWorldOffset;
 
