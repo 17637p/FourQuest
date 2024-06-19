@@ -13,6 +13,7 @@ namespace fq::graphics
 {
 	class D3D11ResourceManager;
 	class D3D11Texture;
+	class IParticleMaterial;
 
 	class TrailObject : public ITrailObject
 	{
@@ -25,28 +26,31 @@ namespace fq::graphics
 		};
 
 	public:
-		TrailObject(const TrailInfo& trailInfo, std::shared_ptr<D3D11ResourceManager> resourceManager);
+		TrailObject(const DirectX::SimpleMath::Matrix& transform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial);
 		virtual ~TrailObject() = default;
 
 		void Simulate(DirectX::SimpleMath::Vector3 cameraPos);
 
+		// Info
 		void SetTrailInfo(const TrailInfo& trailInfo) override { mTrailInfo = trailInfo; }
 		const TrailInfo& GetTrailInfo() const override { return mTrailInfo; }
 
-		void SetTexturePath(const std::wstring& texturePath) override;
+		// Transform
+		void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
+		const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
+
+		// Material
+		void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) override { mIParticleMaterial = iParticleMaterial; }
+		std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const override { return mIParticleMaterial; }
 
 		const std::deque<Vertex>& GetVertices() const { return mVertices; }
-		std::shared_ptr<D3D11Texture> GetTexture() const { return mTexture; }
 
 	private:
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		DirectX::SimpleMath::Matrix mTransform;
 		TrailInfo mTrailInfo;
-
-		// instance data
+		std::shared_ptr<IParticleMaterial> mIParticleMaterial;
 		std::deque<Vertex> mVertices;
 		DirectX::SimpleMath::Vector3 mLastPosition;
-
-		std::shared_ptr<D3D11Texture> mTexture;
 	};
 }
 

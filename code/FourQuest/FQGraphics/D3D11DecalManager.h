@@ -17,7 +17,7 @@ namespace fq::graphics
 	public:
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
-		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
+		IDecalObject* CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial);
 		void DeleteDecalObject(IDecalObject* decalObject);
 
 		const std::set<IDecalObject*> GetDecalObjects();

@@ -10,9 +10,9 @@ namespace fq::graphics
 		mDevice = device;
 		mResourceManager = resourceManager;
 	}
-	ITrailObject* D3D11TrailManager::CreateTrailObject(const TrailInfo& trailInfo)
+	ITrailObject* D3D11TrailManager::CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
 	{
-		ITrailObject* trailObjectInterface = new TrailObject(trailInfo, mResourceManager);
+		ITrailObject* trailObjectInterface = new TrailObject(trasform, trailInfo, iParticleMaterial);
 
 		mTrailObjects.insert(trailObjectInterface);
 

@@ -723,6 +723,10 @@ void Process::particleInit()
 	using namespace fq::graphics;
 	using namespace DirectX::SimpleMath;
 
+	ParticleMaterialInfo particleMaterialInfo;
+	particleMaterialInfo.BaseColorFileName = L"./resource/example/texture/Particle02.png";
+	std::shared_ptr<IParticleMaterial> particleMaterial = mTestGraphics->CreateMaterial(particleMaterialInfo);
+
 	{
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
@@ -741,14 +745,13 @@ void Process::particleInit()
 		particleInfo.LimitVelocityOverLifetimeData.Speed = 5.f;
 		particleInfo.LimitVelocityOverLifetimeData.Dampen = 0.5f;
 
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 300,0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
-
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -769,13 +772,13 @@ void Process::particleInit()
 		//particleInfo.ForceOverLifeTimeData.bIsUsed = true;
 		//particleInfo.ForceOverLifeTimeData.Force = { 5, -50, 0 };
 
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -794,19 +797,13 @@ void Process::particleInit()
 		particleInfo.ShapeData.Scale = { 2, 4, 3 };
 		particleInfo.ShapeData.Radius = 10.f;
 
-		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Subtractive;
-		//particleInfo.VelocityOverLifetimeData.bIsUsed = true;
-		//particleInfo.VelocityOverLifetimeData.Velocity = { 0, 0, 0 };
-		//particleInfo.VelocityOverLifetimeData.Orbital = { 0, 10, 0 };
-		//particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
-		//
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -100, 300, 0 }));
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -100, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -842,13 +839,13 @@ void Process::particleInit()
 		//particleInfo.ColorOverLifetimeData.ColorRatios[3] = { 1, 1, 1, 1 };
 		//particleInfo.ColorOverLifetimeData.ColorRatioCount = 4;
 		//
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 300, 0 }));
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -886,14 +883,13 @@ void Process::particleInit()
 		particleInfo.ColorOverLifetimeData.ColorRatios[2] = { 1, 0.2, 0.2, 0.9f };
 		particleInfo.ColorOverLifetimeData.ColorRatios[3] = { 0.1, 0.1, 0.1, 1 };
 		particleInfo.ColorOverLifetimeData.ColorRatioCount = 4;
-
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(3.14, 0, 0) * DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 300, 0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
-		particleInfo.EmissionData.ParticlesPerSecond = 100.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 100,0 }));
+		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -914,21 +910,13 @@ void Process::particleInit()
 		particleInfo.SizeOverLifetimeData.PointB = { 1, 0.5f };
 		particleInfo.SizeOverLifetimeData.PointC = { 1, 0.9f };
 		particleInfo.SizeOverLifetimeData.PointD = { 20, 1.f };
-		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Moudulate;
-
-		// particleInfo.VelocityOverLifetimeData.bIsUsed = true;
-		// particleInfo.VelocityOverLifetimeData.Velocity = { 0, 10, 0 };
-		// particleInfo.VelocityOverLifetimeData.Orbital = { 0, 1, 0 };
-		// particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
-
-
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 200, 300,0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 200, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -944,13 +932,13 @@ void Process::particleInit()
 		particleInfo.ShapeData.Scale = { 10, 10, 10 };
 		particleInfo.ShapeData.Radius = 10.f;
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Rectangle;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 300, 0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 }
@@ -985,30 +973,17 @@ void Process::particleUpdate()
 
 		if (GetAsyncKeyState('P') & 0x8000)
 		{
-			particleInfo.RenderData.TexturePath = "./resource/example/texture/Particle00.png";
 		}
 		else
 		{
-			particleInfo.RenderData.TexturePath = "./resource/example/texture/Particle01.png";
 		}
 
-		// obj->SetInfo(particleInfo);
+		particleInfo.Instance.bIsRenderDebug = true;
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
-		obj->SetIsRenderDebug(true);
+		particleInfo.Instance.bIsEmit = GetAsyncKeyState('O') & 0x8000;
+		particleInfo.Instance.bIsReset = GetAsyncKeyState('I') & 0x8000;
 
-		if (GetAsyncKeyState('O') & 0x8000)
-		{
-			obj->SetIsEmit(true);
-		}
-		else
-		{
-			obj->SetIsEmit(false);
-		}
-
-		if (GetAsyncKeyState('I') & 0x8000)
-		{
-			obj->SetIsReset(true);
-		}
+		obj->SetInfo(particleInfo);
 	}
 }
 
@@ -1021,84 +996,81 @@ void Process::materialUpdate()
 
 	for (auto matrialInterface : mTestGraphics->GetMaterials())
 	{
-		fq::graphics::MaterialTextureUseFlag textureUseFlag;
-		auto materialData = matrialInterface->GetMaterialData();
+		auto materialData = matrialInterface->GetInfo();
+
 		if (GetAsyncKeyState('U') & 0x8000)
 		{
-			textureUseFlag.bUseBaseColor = false;
-			textureUseFlag.bUseMetalness = false;
-			textureUseFlag.bUseRoughness = false;
+			materialData.bUseBaseColor = false;
+			materialData.bUseMetalness = false;
+			materialData.bUseRoughness = false;
 			materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 			materialData.Metalness = tempColor;
 			materialData.Roughness = tempColor;
-			materialData.BaseColorFileName = L"boxBaseColor.jpg";
-			materialData.NormalFileName = L"boxNormal.jpg";
-			matrialInterface->SetMaterialData(materialData);
+			materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+			materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
 		}
 		else
 		{
-			textureUseFlag.bUseMetalness = true;
-			textureUseFlag.bUseRoughness = true;
-			textureUseFlag.bUseBaseColor = true;
+			materialData.bUseMetalness = true;
+			materialData.bUseRoughness = true;
+			materialData.bUseBaseColor = true;
 		}
 
-		matrialInterface->SetTextureUseFlag(textureUseFlag);
+		matrialInterface->SetInfo(materialData);
 	}
 
 	for (auto meshInterface : mSkinnedMeshObjects)
 	{
 		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
 		{
-			fq::graphics::MaterialTextureUseFlag textureUseFlag;
-			auto materialData = matrialInterface->GetMaterialData();
+			auto materialData = matrialInterface->GetInfo();
+
 			if (GetAsyncKeyState('Y') & 0x8000)
 			{
-				textureUseFlag.bUseBaseColor = false;
-				textureUseFlag.bUseMetalness = false;
-				textureUseFlag.bUseRoughness = false;
+				materialData.bUseBaseColor = false;
+				materialData.bUseMetalness = false;
+				materialData.bUseRoughness = false;
 				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 				materialData.Metalness = tempColor;
 				materialData.Roughness = tempColor;
-				materialData.BaseColorFileName = L"boxBaseColor.jpg";
-				materialData.NormalFileName = L"boxNormal.jpg";
-				matrialInterface->SetMaterialData(materialData);
+				materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+				materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
 			}
 			else
 			{
-				textureUseFlag.bUseMetalness = true;
-				textureUseFlag.bUseRoughness = true;
-				textureUseFlag.bUseBaseColor = true;
+				materialData.bUseMetalness = true;
+				materialData.bUseRoughness = true;
+				materialData.bUseBaseColor = true;
 			}
 
-			matrialInterface->SetTextureUseFlag(textureUseFlag);
+			matrialInterface->SetInfo(materialData);
 		}
 	}
 	for (auto meshInterface : mStaticMeshObjects)
 	{
 		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
 		{
-			fq::graphics::MaterialTextureUseFlag textureUseFlag;
-			auto materialData = matrialInterface->GetMaterialData();
+			auto materialData = matrialInterface->GetInfo();
+
 			if (GetAsyncKeyState('T') & 0x8000)
 			{
-				textureUseFlag.bUseBaseColor = false;
-				textureUseFlag.bUseMetalness = false;
-				textureUseFlag.bUseRoughness = false;
+				materialData.bUseBaseColor = false;
+				materialData.bUseMetalness = false;
+				materialData.bUseRoughness = false;
 				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 				materialData.Metalness = tempColor;
 				materialData.Roughness = tempColor;
-				materialData.BaseColorFileName = L"boxBaseColor.jpg";
-				materialData.NormalFileName = L"boxNormal.jpg";
-				matrialInterface->SetMaterialData(materialData);
+				materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+				materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
 			}
 			else
 			{
-				textureUseFlag.bUseMetalness = true;
-				textureUseFlag.bUseRoughness = true;
-				textureUseFlag.bUseBaseColor = true;
+				materialData.bUseMetalness = true;
+				materialData.bUseRoughness = true;
+				materialData.bUseBaseColor = true;
 			}
 
-			matrialInterface->SetTextureUseFlag(textureUseFlag);
+			matrialInterface->SetInfo(materialData);
 		}
 	}
 }
@@ -1107,7 +1079,7 @@ void Process::socketUpdate()
 {
 	const auto& bones = mSoketSkinnedMeshObject->GetBones();
 
-	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(54)* mSoketSkinnedMeshObject->GetTransform();
+	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(54) * mSoketSkinnedMeshObject->GetTransform();
 	mSocketStaticMeshObject->SetTransform(socketTransform);
 
 	assert(bones[13].Index == mSoketSkinnedMeshObject->GetBoneIndex(bones[13].Name));
@@ -1127,32 +1099,28 @@ void Process::decalInit()
 {
 	using namespace fq::graphics;
 	using namespace DirectX::SimpleMath;
+
+	DecalMaterialInfo decalMaterialInfo;
+	decalMaterialInfo.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+	decalMaterialInfo.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+	std::shared_ptr<IDecalMaterial> decalMaterial = mTestGraphics->CreateMaterial(decalMaterialInfo);
+
 	{
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
-		decalInfo.MatrialData.NormalFileName = L"boxNormal.jpg";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 	{
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 	{
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"cerberus_A.png";
-		decalInfo.MatrialData.NormalFileName = L"cerberus_N.png";
-		decalInfo.MatrialData.MetalnessFileName = L"cerberus_M.png";
-		decalInfo.MatrialData.RoughnessFileName = L"cerberus_R.png";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 }
@@ -1169,9 +1137,10 @@ void Process::decalUpdate()
 	for (IDecalObject* decalObject : mDecalObjects)
 	{
 		DecalInfo decalInfo = decalObject->GetDecalInfo();
-		decalInfo.Transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
-		decalInfo.NormalThresholdInRadian = 3.14 * 0.5f;
+		auto transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
+		decalInfo.NormalThresholdInDegree = 90;
 		decalObject->SetDecalInfo(decalInfo);
+		decalObject->SetTransform(transform);
 
 		++i;
 	}
@@ -1180,11 +1149,14 @@ void Process::decalUpdate()
 void Process::trailInit()
 {
 	using namespace fq::graphics;
+
+	ParticleMaterialInfo particleMaterialInfo;
+	particleMaterialInfo.BaseColorFileName = L"./resource/example/texture/trail01.png";
+	std::shared_ptr<IParticleMaterial> particleMaterial = mTestGraphics->CreateMaterial(particleMaterialInfo);
+
 	{
 		TrailInfo trailInfo;
-
-		auto* interfaceClass = mTestGraphics->CreateTrailObject(trailInfo);
-		interfaceClass->SetTexturePath(L"./resource/example/texture/Particle05.png");
+		auto* interfaceClass = mTestGraphics->CreateTrailObject(DirectX::SimpleMath::Matrix::Identity, trailInfo, particleMaterial);
 		mTrailObjects.push_back(interfaceClass);
 	}
 }
@@ -1201,20 +1173,19 @@ void Process::trailUpdate()
 		TrailInfo trailInfo = trailObject->GetTrailInfo();
 
 		trailInfo.FrameTime = mTimeManager.GetDeltaTime();
-		trailInfo.Transform = mSocketStaticMeshObject->GetTransform();
-		trailInfo.Time = 0.5f;
-		trailInfo.Width = 10;
-		trailInfo.MinVertexDistance = 1;
+		trailInfo.Time = 5.f;
+		trailInfo.Width = 30;
+		trailInfo.MinVertexDistance = 10;
 		trailInfo.AlignmentType = TrailInfo::EAlignment::View;
 		trailInfo.TextureMode = TrailInfo::ETextureMode::Stretch;
-
-		if (s_time > 1.f)
-		{
-			trailInfo.bIsEmit ^= true;
-			s_time -= 1.f;
-		}
+		//if (s_time > 1.f)
+		//{
+		//	trailInfo.bIsEmit ^= true;
+		//	s_time -= 1.f;
+		//}
 
 		trailObject->SetTrailInfo(trailInfo);
+		trailObject->SetTransform(mSocketStaticMeshObject->GetTransform());
 	}
 }
 

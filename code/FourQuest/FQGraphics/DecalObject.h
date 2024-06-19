@@ -6,24 +6,29 @@ namespace fq::graphics
 {
 	class Material;
 	class D3D11ResourceManager;
-	
+	class IDecalMaterial;
+
 	class DecalObject : public IDecalObject
 	{
 	public:
-		DecalObject(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalInfo& decalInfo);
+		DecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial);
 		virtual ~DecalObject() = default;
 
-		virtual void SetDecalInfo(const DecalInfo& decalInfo) override;
+		// Info
+		virtual void SetDecalInfo(const DecalInfo& decalInfo) override { mDecalInfo = decalInfo; }
 		virtual const DecalInfo& GetDecalInfo() const override { return mDecalInfo; }
 
-		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mDecalInfo.Transform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mDecalInfo.Transform; }
+		// Transform
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
-		std::shared_ptr<Material> GetMaterial() const { return mMaterial; }
+		// Material
+		virtual void SetIDecalMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) override { mIDecalMaterial = iDecalMaterial; }
+		virtual std::shared_ptr<IDecalMaterial> GetDecalMaterial() const override { return mIDecalMaterial; }
 
 	private:
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		DirectX::SimpleMath::Matrix mTransform;
 		DecalInfo mDecalInfo;
-		std::shared_ptr<Material> mMaterial;
+		std::shared_ptr<IDecalMaterial> mIDecalMaterial;
 	};
 }

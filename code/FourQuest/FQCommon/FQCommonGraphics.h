@@ -251,36 +251,42 @@ namespace fq::graphics
 			enum class ERenderMode
 			{
 				Billboard,
-			};
-			enum class EBlendMode
-			{
-				Additive,
-				Subtractive,
-				Moudulate
+				// StretchedBillboard,
+				// HorizontalBillboard,
+				// VerticalBillboard,
+				// Mesh,
+				// None 
 			};
 
 			ERenderMode RenderMode = ERenderMode::Billboard;
-			EBlendMode BlendMode = EBlendMode::Additive;
-			std::string TexturePath = "./resource/example/texture/Particle00.png";
-			bool bUseMultiplyAlpha = true;
-			bool bUseAlphaClip = true;
-			float AlphaClipThreshold = 0.1f;
 		} RenderData;
+
+		struct Instance
+		{
+			bool bIsEmit{ true };
+			bool bIsReset{ true };
+			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
+			bool bIsRenderDebug{ true };
+		} Instance;
 	};
 
 	struct DecalInfo
 	{
-		std::filesystem::path TextureBasePath = "";
-		fq::common::Material MatrialData;
-		DirectX::SimpleMath::Matrix Transform;
-		DirectX::SimpleMath::Matrix TexTransform;
+		float Width = 1.f;
+		float Height = 1.f;
+		float Depth = 1.f;
+		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
+
 		unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
-		float NormalThresholdInRadian = 3.14f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
-		bool bUseMultiplyAlpha = true;
-		bool bUseAlphaClip = true;
-		float AlphaClipThreshold = 0.1f;
-		bool bUseDebugRender = true;
+		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
+
+		float Opacity; // base color에 곱해짐
+
+		DirectX::SimpleMath::Vector2 Tiling;
+		DirectX::SimpleMath::Vector2 Offset;
+
 		DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };
+		bool bIsRenderDebug = true;
 	};
 
 	struct TrailInfo
@@ -311,7 +317,6 @@ namespace fq::graphics
 		ETextureMode TextureMode = ETextureMode::DistributePerSegment;
 
 		float FrameTime = 0.f;
-		DirectX::SimpleMath::Matrix Transform;
 	};
 
 	namespace debug
@@ -424,5 +429,85 @@ namespace fq::graphics
 			std::vector<DirectX::SimpleMath::Vector3> Points;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
 		};
+	};
+
+	// material
+	struct MaterialInfo
+	{
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		float Metalness = 0.f;
+		float Roughness = 0.f;
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+
+		bool bUseBaseColor = true;
+		bool bUseMetalness = true;
+		bool bUseRoughness = true;
+		bool bUseNormalness = true;
+		bool bIsUsedEmissive = true;
+
+		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+	};
+
+	struct ParticleMaterialInfo
+	{
+		enum class ERenderMode
+		{
+			Additive,
+			Subtractive,
+			Modulate,
+		} RenderModeType = ERenderMode::Additive;
+
+		enum class EColorMode
+		{
+			Multiply,
+			Additive,
+			Subtractive,
+			Overlay, // 
+			Color, // 입자 텍스처 알파와 입자의 알베도 색상
+			Difference // 
+		} ColorModeType = EColorMode::Multiply;
+
+		bool bIsTwoSide;
+
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		std::wstring BaseColorFileName;
+		std::wstring EmissiveFileName;
+
+		bool bIsUsedBaseColor = true;
+		bool bIsUsedEmissive = true;
+
+		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+	};
+
+	struct DecalMaterialInfo
+	{
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		float Metalness = 0.f;
+		float Roughness = 0.f;
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+
+		bool bUseBaseColor = true;
+		bool bUseMetalness = true;
+		bool bUseRoughness = true;
+		bool bUseNormalness = true;
+		bool bIsUsedEmissive = true;
+
+		// float NormalBlend = 0.5f; // 추가예정
 	};
 };

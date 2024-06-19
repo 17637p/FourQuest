@@ -147,7 +147,19 @@ namespace fq::graphics
 	}
 	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath)
 	{
-		return CreateResource(mMaterials, key, mResourceManager, matrialData, basePath);
+		MaterialInfo materialInfo;
+
+		materialInfo.BaseColor = matrialData.BaseColor;
+		materialInfo.Metalness = matrialData.Metalness;
+		materialInfo.Roughness = matrialData.Roughness;
+
+		if (matrialData.BaseColorFileName != L"")materialInfo.BaseColorFileName = basePath / matrialData.BaseColorFileName;
+		if (matrialData.MetalnessFileName != L"")materialInfo.MetalnessFileName = basePath / matrialData.MetalnessFileName;
+		if (matrialData.RoughnessFileName != L"")materialInfo.RoughnessFileName = basePath / matrialData.RoughnessFileName;
+		if (matrialData.NormalFileName != L"")materialInfo.NormalFileName = basePath / matrialData.NormalFileName;
+		if (matrialData.EmissiveFileName != L"")materialInfo.EmissiveFileName = basePath / matrialData.EmissiveFileName;
+
+		return CreateResource(mMaterials, key, mResourceManager, materialInfo);
 	}
 	bool D3D11ModelManager::CreateBoneHierarchy(std::string key, const fq::common::Model modelData)
 	{
@@ -177,6 +189,30 @@ namespace fq::graphics
 	void D3D11ModelManager::DeleteAnimation(const std::string& key)
 	{
 		mAnimationClips.erase(key);
+	}
+
+	std::shared_ptr<IParticleMaterial> D3D11ModelManager::CreateMaterial(const ParticleMaterialInfo& materialInfo)
+	{
+		std::shared_ptr<IParticleMaterial> material = std::make_shared<ParticleMaterial>(mResourceManager, materialInfo);
+		mParticleMaterials.insert(material);
+
+		return material;
+	}
+	void  D3D11ModelManager::DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial)
+	{
+		mParticleMaterials.erase(iParticleMaterial);
+	}
+
+	std::shared_ptr<IDecalMaterial> D3D11ModelManager::CreateMaterial(const DecalMaterialInfo& materialInfo)
+	{
+		std::shared_ptr<IDecalMaterial> material = std::make_shared<DecalMaterial>(mResourceManager, materialInfo);
+		mDecalMaterials.insert(material);
+
+		return material;
+	}
+	void  D3D11ModelManager::DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial)
+	{
+		mDecalMaterials.erase(iDecalMaterial);
 	}
 
 	const fq::common::Model& D3D11ModelManager::FindModel(const std::string& path)
@@ -228,7 +264,7 @@ namespace fq::graphics
 		return fileName + animationName;
 	}
 
-	 std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials() const
+	std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials() const
 	{
 		std::vector<std::shared_ptr<IMaterial>> materials;
 

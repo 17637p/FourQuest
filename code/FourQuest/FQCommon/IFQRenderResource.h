@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include "FQCommonLoader.h"
+#include "FQCommonGraphics.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -14,27 +15,34 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
-		struct MaterialTextureUseFlag
-		{
-			bool bUseBaseColor = true;
-			bool bUseMetalness = true;
-			bool bUseRoughness = true;
-			bool bUseNormalness = true;
-		};
-
 		class IMaterial
 		{
 		public:
-			virtual FQ_GRAPHICS void SetTextureUseFlag(const MaterialTextureUseFlag& materialTextureUseFlag) abstract;
-			virtual FQ_GRAPHICS void SetMaterialData(const fq::common::Material& materialData) abstract;
-			virtual FQ_GRAPHICS void SetTextureBasePath(const std::filesystem::path& basePath) abstract;
-
-			virtual FQ_GRAPHICS const MaterialTextureUseFlag& GetTextureUseFlag() const abstract;
-			virtual FQ_GRAPHICS const fq::common::Material& GetMaterialData() const abstract;
-			virtual FQ_GRAPHICS const std::filesystem::path& GetTextureBasePath() const abstract;
+			virtual FQ_GRAPHICS void SetInfo(const MaterialInfo& info) abstract;
+			virtual FQ_GRAPHICS const MaterialInfo& GetInfo() const abstract;
 
 		protected:
 			virtual ~IMaterial() = default;
+		};
+
+		class IParticleMaterial
+		{
+		public:
+			virtual FQ_GRAPHICS void SetInfo(const ParticleMaterialInfo& info) abstract;
+			virtual FQ_GRAPHICS const ParticleMaterialInfo& GetInfo() const abstract;
+
+		protected:
+			virtual ~IParticleMaterial() = default;
+		};
+
+		class IDecalMaterial
+		{
+		public:
+			virtual FQ_GRAPHICS void SetInfo(const DecalMaterialInfo& info) abstract;
+			virtual FQ_GRAPHICS const DecalMaterialInfo& GetInfo() const abstract;
+
+		protected:
+			virtual ~IDecalMaterial() = default;
 		};
 	}
 #ifdef __cplusplus

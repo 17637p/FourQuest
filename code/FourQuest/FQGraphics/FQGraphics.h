@@ -61,13 +61,19 @@ namespace fq::graphics
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
 
 		// VFX
-		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo) override;
+		std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo);
+		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial);
+
+		std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& materialInfo);
+		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial);
+
+		IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) override;
 		void DeleteParticleObject(IParticleObject* particleObject) override;
 
-		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo) override;
+		IDecalObject* CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial) override;
 		void DeleteDecalObject(IDecalObject* decalObjectInterface) override;
 
-		ITrailObject* CreateTrailObject(const TrailInfo& trailInfo) override;
+		ITrailObject* CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) override;
 		void DeleteTrailObject(ITrailObject* trailObjectInterface) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)

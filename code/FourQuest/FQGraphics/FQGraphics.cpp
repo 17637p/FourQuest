@@ -339,9 +339,27 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 	}
 }
 
-IParticleObject* FQGraphics::CreateParticleObject(const ParticleInfo& particleInfo)
+std::shared_ptr<IParticleMaterial> FQGraphics::CreateMaterial(const ParticleMaterialInfo& materialInfo)
 {
-	return mParticleManager->CreateParticleObject(particleInfo);
+	return mModelManager->CreateMaterial(materialInfo);
+}
+void FQGraphics::DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateMaterial(const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+void FQGraphics::DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+
+IParticleObject* FQGraphics::CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+{
+	return mParticleManager->CreateParticleObject(transform, particleInfo, iParticleMaterial);
 }
 
 void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
@@ -349,18 +367,18 @@ void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
 	mParticleManager->DeleteParticleObject(particleObject);
 }
 
-IDecalObject* FQGraphics::CreateDecalObject(const DecalInfo& decalInfo)
+IDecalObject* FQGraphics::CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial)
 {
-	return mDecalManager->CreateDecalObject(decalInfo);
+	return mDecalManager->CreateDecalObject(transform, decalInfo, iDecalMaterial);
 }
 void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
 {
 	mDecalManager->DeleteDecalObject(decalObjectInterface);
 }
 
-ITrailObject* FQGraphics::CreateTrailObject(const TrailInfo& trailInfo)
+ITrailObject* FQGraphics::CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
 {
-	return mTrailManager->CreateTrailObject(trailInfo);
+	return mTrailManager->CreateTrailObject(trasform, trailInfo, iParticleMaterial);
 }
 void FQGraphics::DeleteTrailObject(ITrailObject* trailObjectInterface)
 {

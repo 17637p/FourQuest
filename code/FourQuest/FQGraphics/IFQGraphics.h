@@ -91,13 +91,19 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
 
 			// VFX
-			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
+
+			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
 
-			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DecalInfo& decalInfo) abstract;
+			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
 			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObjectInterface) abstract;
 
-			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(const TrailInfo& trailInfo) abstract;
+			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
 			virtual FQ_GRAPHICS void DeleteTrailObject(ITrailObject* trailObjectInterface) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)

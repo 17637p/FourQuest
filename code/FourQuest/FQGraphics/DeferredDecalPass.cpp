@@ -174,25 +174,26 @@ namespace fq::graphics
 		for (IDecalObject* decalObjectInterface : decalObjects)
 		{
 			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
-			auto material = decalObject->GetMaterial();
+			std::shared_ptr<DecalMaterial> material = std::static_pointer_cast<DecalMaterial>(decalObjectInterface->GetDecalMaterial());
+			const auto& transform = decalObject->GetTransform();
+			const auto& decalInfo = decalObject->GetDecalInfo();
+
 			material->Bind(mDevice);
 
 			int index = material->GetHasEmissive() << 4 | material->GetHasNormal() << 3 | material->GetHasRoughness() << 2 | material->GetHasMetalness() << 1 | material->GetHasBaseColor() << 0;
 			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
 
-			const auto& decalInfo = decalObject->GetDecalInfo();
-
-			perFrameData.TexTransform = decalInfo.TexTransform.Transpose();
-			perFrameData.World = decalInfo.Transform.Transpose();
+			perFrameData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0);
+			perFrameData.World = transform.Transpose();
 			perFrameData.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
 			perFrameData.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
-			perFrameData.InvWV = (decalInfo.Transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+			perFrameData.InvWV = (transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
 
-			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInRadian;
-			perFrameData.AlphaClipThreshold = decalInfo.AlphaClipThreshold;
+			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
+			perFrameData.AlphaClipThreshold = 0.1f;
 
-			perFrameData.bUseMultiplyAlpha = decalInfo.bUseMultiplyAlpha;
-			perFrameData.bUseAlphaClip = decalInfo.bUseAlphaClip;
+			perFrameData.bUseMultiplyAlpha = true;
+			perFrameData.bUseAlphaClip = true;
 			perFrameData.bUseAlbedoMap = material->GetHasBaseColor();
 			perFrameData.bUseMetalnessMap = material->GetHasMetalness();
 
@@ -204,17 +205,17 @@ namespace fq::graphics
 
 			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
 
-			if (decalInfo.bUseDebugRender)
+			if (decalInfo.bIsRenderDebug)
 			{
 				debug::OBBInfo obbInfo;
 				obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
-				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+				obbInfo.OBB.Transform(obbInfo.OBB, transform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 				obbInfo = {};
 				obbInfo.OBB.Center = { 0.f, -0.25f, 0.f };
 				obbInfo.OBB.Extents = { 0.1f, 0.25f, 0.1f };
-				obbInfo.OBB.Transform(obbInfo.OBB, decalInfo.Transform);
+				obbInfo.OBB.Transform(obbInfo.OBB, transform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 

@@ -1,6 +1,7 @@
 #include "TrailRenderPass.h"
 #include "ManagementCommon.h"
 #include "TrailObject.h"
+#include "Material.h"
 
 namespace fq::graphics
 {
@@ -75,8 +76,6 @@ namespace fq::graphics
 			perFrame.ViewProj = perFrame.ViewProj.Transpose();
 
 			mPerFrameCB->Update(mDevice, perFrame);
-
-
 		}
 
 		// bind
@@ -96,19 +95,14 @@ namespace fq::graphics
 			for (ITrailObject* trailObjectInterface : trailObjects)
 			{
 				TrailObject* trailObject = static_cast<TrailObject*>(trailObjectInterface);
+				std::shared_ptr<ParticleMaterial> material = std::static_pointer_cast<ParticleMaterial>(trailObject->GetIParticleMaterial());
 
-				// get material;
-				// material binding;
+				material->Bind(mDevice);
 
 				// dynamic vertex update
 				trailObject->Simulate(mCameraManager->GetPosition(ECameraType::Player));
 				const auto& vertices = trailObject->GetVertices();
 				mDynamicVB->Update(mDevice, vertices);
-
-				if (trailObject->GetTexture() != nullptr)
-				{
-					trailObject->GetTexture()->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
-				}
 
 				// draw
 				mDevice->GetDeviceContext()->Draw(vertices.size(), 0);

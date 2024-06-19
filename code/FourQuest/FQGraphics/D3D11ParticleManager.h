@@ -13,6 +13,7 @@ namespace fq::graphics
 	class IParticleObject;
 	template <typename T>
 	class D3D11ConstantBuffer;
+	class IParticleMaterial;
 
 	class D3D11ParticleManager
 	{
@@ -25,7 +26,7 @@ namespace fq::graphics
 
 		void Excute();
 
-		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
+		IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial);
 		void DeleteParticleObject(IParticleObject* particleObjectInterface);
 
 		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }

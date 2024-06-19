@@ -1,18 +1,11 @@
 #include "DecalObject.h"
-#include "Material.h"
 
 namespace fq::graphics
 {
-	DecalObject::DecalObject(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalInfo& decalInfo)
-		: mResourceManager(resourceManager)
+	DecalObject::DecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial)
+		: mTransform(transform)
 		, mDecalInfo(decalInfo)
+		, mIDecalMaterial(iDecalMaterial)
 	{
-		mMaterial = std::make_shared<Material>(mResourceManager, decalInfo.MatrialData, decalInfo.TextureBasePath);
-	}
-	void DecalObject::SetDecalInfo(const DecalInfo& decalInfo)
-	{
-		mDecalInfo = decalInfo;
-		mMaterial->SetMaterialData(decalInfo.MatrialData);
-		mMaterial->SetTextureBasePath(decalInfo.TextureBasePath);
 	}
 }

@@ -3,13 +3,13 @@
 
 namespace fq::graphics
 {
-	TrailObject::TrailObject(const TrailInfo& trailInfo, std::shared_ptr<D3D11ResourceManager> resourceManager)
-		: mTrailInfo(trailInfo)
-		, mResourceManager(resourceManager)
-		, mTexture(nullptr)
+	TrailObject::TrailObject(const DirectX::SimpleMath::Matrix& transform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+		: mTransform(transform)
+		, mTrailInfo(trailInfo)
+		, mIParticleMaterial(iParticleMaterial)
 	{
 		using namespace DirectX::SimpleMath;
-		mLastPosition = Vector3::Transform(Vector3::Zero, mTrailInfo.Transform);
+		mLastPosition = Vector3::Transform(Vector3::Zero, mTransform);
 	}
 
 	void TrailObject::Simulate(DirectX::SimpleMath::Vector3 cameraPos)
@@ -29,7 +29,7 @@ namespace fq::graphics
 		}
 		mVertices.erase(iter, mVertices.end());
 
-		DirectX::SimpleMath::Vector3 position = Vector3::Transform(Vector3::Zero, mTrailInfo.Transform);
+		DirectX::SimpleMath::Vector3 position = Vector3::Transform(Vector3::Zero, mTransform);
 
 		float distance = DirectX::SimpleMath::Vector3::Distance(position, mLastPosition);
 		if (distance > mTrailInfo.MinVertexDistance && mTrailInfo.bIsEmit)
@@ -60,8 +60,8 @@ namespace fq::graphics
 				break;
 				case TrailInfo::EAlignment::TransformZ:
 				{
-					topVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) + mTrailInfo.Transform.Up() * mTrailInfo.Width;
-					bottomVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) - mTrailInfo.Transform.Up() * mTrailInfo.Width;
+					topVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) + mTransform.Up() * mTrailInfo.Width;
+					bottomVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) - mTransform.Up() * mTrailInfo.Width;
 				}
 				break;
 				default:
@@ -173,10 +173,5 @@ namespace fq::graphics
 				break;
 			}
 		}
-	}
-
-	void TrailObject::SetTexturePath(const std::wstring& texturePath)
-	{
-		mTexture = mResourceManager->Create<D3D11Texture>(texturePath);
 	}
 }

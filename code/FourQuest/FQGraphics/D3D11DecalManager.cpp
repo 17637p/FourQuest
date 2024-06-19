@@ -10,9 +10,9 @@ namespace fq::graphics
 		mDevice = device;
 		mResourceManager = resourceManager;
 	}
-	IDecalObject* D3D11DecalManager::CreateDecalObject(const DecalInfo& decalInfo)
+	IDecalObject* D3D11DecalManager::CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial)
 	{
-		IDecalObject* decalObjectInterface = new DecalObject(mResourceManager, decalInfo);
+		IDecalObject* decalObjectInterface = new DecalObject(transform, decalInfo, iDecalMaterial);
 
 		mDecalObjects.insert(decalObjectInterface);
 

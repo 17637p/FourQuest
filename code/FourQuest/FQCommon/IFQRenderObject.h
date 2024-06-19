@@ -19,6 +19,8 @@ extern "C" {
 	namespace fq::graphics
 	{
 		class IMaterial;
+		class IDecalMaterial;
+		class IParticleMaterial;
 
 		class IStaticMeshObject
 		{
@@ -182,19 +184,21 @@ extern "C" {
 		class IParticleObject
 		{
 		public:
+			// Info
 			virtual FQ_GRAPHICS void SetInfo(const ParticleInfo& info) abstract;
-			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
-			virtual FQ_GRAPHICS void SetIsReset(bool bIsReset) abstract;
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS void SetIsEmit(bool bIsEmit) abstract;
-			virtual FQ_GRAPHICS void SetIsRenderDebug(bool bIsRenderDebug) abstract;
-
 			virtual FQ_GRAPHICS const ParticleInfo& GetInfo() const abstract;
-			virtual FQ_GRAPHICS bool GetIsReset() const abstract;
-			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
+
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
-			virtual FQ_GRAPHICS bool GetIsEmit() const abstract;
-			virtual FQ_GRAPHICS bool GetIsRenderDebug() const abstract;
+
+			// Material
+			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const abstract;
+
+			// FrameTime
+			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
+			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
 
 		protected:
 			virtual ~IParticleObject() = default;
@@ -203,12 +207,17 @@ extern "C" {
 		class IDecalObject
 		{
 		public:
+			// Info
 			virtual FQ_GRAPHICS void SetDecalInfo(const DecalInfo& decalInfo) abstract;
 			virtual FQ_GRAPHICS const DecalInfo& GetDecalInfo() const abstract;
 
 			// Transform
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Material
+			virtual FQ_GRAPHICS void SetIDecalMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetDecalMaterial() const abstract;
 
 		protected:
 			virtual ~IDecalObject() = default;
@@ -217,10 +226,17 @@ extern "C" {
 		class ITrailObject
 		{
 		public:
+			// Info
 			virtual FQ_GRAPHICS void SetTrailInfo(const TrailInfo& trailInfo) abstract;
 			virtual FQ_GRAPHICS const TrailInfo& GetTrailInfo() const abstract;
 
-			virtual FQ_GRAPHICS void SetTexturePath(const std::wstring& texturePath) abstract;
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Material
+			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const abstract;
 
 		protected:
 			virtual ~ITrailObject() = default;

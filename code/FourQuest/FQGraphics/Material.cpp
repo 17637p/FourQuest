@@ -10,11 +10,20 @@
 
 namespace fq::graphics
 {
-	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const fq::common::Material& materialData, std::filesystem::path textureBasePath)
+	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo)
 		: mResourceManager(resourceManager)
-		, mTextureBasePath(textureBasePath)
+		, mInfo(materialInfo)
 	{
-		SetMaterialData(materialData);
+		loadTexture();
+	}
+
+	void Material::loadTexture()
+	{
+		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
+		if (!mInfo.MetalnessFileName.empty()) mMetalness = mResourceManager->Create<D3D11Texture>(mInfo.MetalnessFileName);
+		if (!mInfo.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mInfo.RoughnessFileName);
+		if (!mInfo.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mInfo.NormalFileName);
+		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -25,18 +34,6 @@ namespace fq::graphics
 		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
 		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
-	}
-
-	void Material::SetMaterialData(const fq::common::Material& materialData)
-	{
-		mMaterialData = materialData;
-
-		if (!materialData.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.BaseColorFileName);
-		if (!materialData.MetalnessFileName.empty()) mMetalness = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.MetalnessFileName);
-		if (!materialData.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.RoughnessFileName);
-		if (!materialData.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.NormalFileName);
-		if (!materialData.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.EmissiveFileName);
-		if (!materialData.OpacityFileName.empty()) mOpacity = mResourceManager->Create<D3D11Texture>(mTextureBasePath / materialData.OpacityFileName);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
@@ -217,5 +214,44 @@ namespace fq::graphics
 		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, width, height);
 	}
 
+	ParticleMaterial::ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo)
+		: mResourceManager(resourceManager)
+		, mInfo(materialInfo)
+	{
+		loadTexture();
+	}
+	void ParticleMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device) 
+	{
+		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::PixelShader);
+		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 1, ED3D11ShaderType::PixelShader);
+	}
+	void ParticleMaterial::loadTexture() 
+	{
+		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
+		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
+	}
+
+	DecalMaterial::DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo)
+		: mResourceManager(resourceManager)
+		, mInfo(materialInfo)
+	{
+		loadTexture();
+	}
+	void DecalMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+	{
+		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::PixelShader);
+		if (GetHasMetalness()) mMetalness->Bind(d3d11Device, 1, ED3D11ShaderType::PixelShader);
+		if (GetHasRoughness()) mRoughness->Bind(d3d11Device, 2, ED3D11ShaderType::PixelShader);
+		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
+		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
+	}
+	void DecalMaterial::loadTexture()
+	{
+		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
+		if (!mInfo.MetalnessFileName.empty()) mMetalness = mResourceManager->Create<D3D11Texture>(mInfo.MetalnessFileName);
+		if (!mInfo.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mInfo.RoughnessFileName);
+		if (!mInfo.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mInfo.NormalFileName);
+		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
+	}
 }
 

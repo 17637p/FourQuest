@@ -3,6 +3,7 @@
 #include "CommonHeader.h"
 
 #include "../FQCommon/FQCommonLoader.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::graphics
 {
@@ -13,6 +14,8 @@ namespace fq::graphics
 	class BoneHierarchy;
 	class D3D11ResourceManager;
 	class IMaterial;
+	class IParticleMaterial;
+	class IDecalMaterial;
 
 	class D3D11ModelManager
 	{
@@ -41,6 +44,12 @@ namespace fq::graphics
 		void DeleteBoneHierarchy(const std::string& key);
 		void DeleteAnimation(const std::string& key);
 
+		std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo);
+		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial);
+
+		std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& decalMaterialInfo);
+		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial);
+
 		template <typename Resource>
 		std::shared_ptr<Resource> FindResourceOrNull(std::map<std::string, std::shared_ptr<Resource>>& storage, std::string key);
 		const fq::common::Model& FindModel(const std::string& path);
@@ -68,6 +77,9 @@ namespace fq::graphics
 		std::map<std::string, std::shared_ptr<Material>> mMaterials;
 		std::map<std::string, std::shared_ptr<BoneHierarchy>> mBoneHierarchies;
 		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationClips;
+
+		std::set<std::shared_ptr<IParticleMaterial>> mParticleMaterials;
+		std::set<std::shared_ptr<IDecalMaterial>> mDecalMaterials;
 	};
 
 	template <typename Resource, typename... Args>

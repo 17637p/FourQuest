@@ -4,6 +4,7 @@
 #include "RenderObject.h"
 #include "ParticleObject.h"
 #include "D3D11Util.h"
+#include "Material.h"
 
 namespace fq::graphics
 {
@@ -126,10 +127,10 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->GSSetShader(NULL, NULL, NULL);
 	}
 
-	IParticleObject* D3D11ParticleManager::CreateParticleObject(const ParticleInfo& particleInfo)
+	IParticleObject* D3D11ParticleManager::CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
 	{
 
-		IParticleObject* particleObjectInferface = new ParticleObject(mDevice, mResourceManager, particleInfo, DirectX::SimpleMath::Matrix::Identity);
+		IParticleObject* particleObjectInferface = new ParticleObject(mDevice, transform, particleInfo, iParticleMaterial);
 		mParticleObjects.insert(particleObjectInferface);
 
 		return particleObjectInferface;
@@ -146,7 +147,9 @@ namespace fq::graphics
 	void D3D11ParticleManager::updateParticleObjectCB(IParticleObject* particleObjectInterface)
 	{
 		const ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		const std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 		const ParticleInfo& particleInfo = particleObject->GetInfo();
+		const ParticleMaterialInfo& materialInfo = particleMaterial->GetInfo();
 
 		ParticleObjectData particleObjectData;
 
@@ -235,10 +238,10 @@ namespace fq::graphics
 		particleObjectData.RotationOverLifetimeData.AngularVelocityInRadian = particleInfo.RotationOverLifetimeData.AngularVelocityInDegree * 3.141592 / 180;
 		particleObjectData.RotationOverLifetimeData.bIsUsed = particleInfo.RotationOverLifetimeData.bIsUsed;
 
-		particleObjectData.RenderData.bHasTexture = particleObject->mTexture->GetSRV() == nullptr ? false : true;
-		particleObjectData.RenderData.bUseMultiplyAlpha = particleInfo.RenderData.bUseMultiplyAlpha;
-		particleObjectData.RenderData.bUseAlphaClip = particleInfo.RenderData.bUseAlphaClip;
-		particleObjectData.RenderData.AlphaClipThreshold = particleInfo.RenderData.AlphaClipThreshold;
+		particleObjectData.RenderData.bHasTexture = particleMaterial->GetHasBaseColor();
+		particleObjectData.RenderData.bUseMultiplyAlpha = true;
+		particleObjectData.RenderData.bUseAlphaClip = true;
+		particleObjectData.RenderData.AlphaClipThreshold = 0.1f;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
@@ -246,8 +249,9 @@ namespace fq::graphics
 	void D3D11ParticleManager::emit(IParticleObject* particleObjectInterface)
 	{
 		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		const auto& info = particleObject->GetInfo();
 
-		if (particleObject->mbIsReset)
+		if (info.Instance.bIsReset)
 		{
 			mInitDeadListCS->Bind(mDevice);
 			UINT initialCount[] = { 0 };
@@ -340,17 +344,23 @@ namespace fq::graphics
 	void D3D11ParticleManager::render(IParticleObject* particleObjectInterface)
 	{
 		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 
-		switch (particleObjectInterface->GetInfo().RenderData.BlendMode)
+		const auto& materialInfo = particleMaterial->GetInfo();
+
+		switch (materialInfo.RenderModeType)
 		{
-		case ParticleInfo::Render::EBlendMode::Additive:
+		case ParticleMaterialInfo::ERenderMode::Additive:
 			mAdditiveRenderProgram->Bind(mDevice);
 			break;
-		case ParticleInfo::Render::EBlendMode::Subtractive: // 정렬 필요
+		case ParticleMaterialInfo::ERenderMode::Subtractive: // 정렬 필요
 			mSubtractiveRenderProgram->Bind(mDevice);
 			break;
-		case ParticleInfo::Render::EBlendMode::Moudulate:
+		case ParticleMaterialInfo::ERenderMode::Modulate:
 			mModulateRenderProgram->Bind(mDevice);
+			break;
+		default:
+			assert(false);
 			break;
 		}
 
@@ -364,7 +374,7 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		ID3D11ShaderResourceView* vs_srv[] = { particleObject->mParticleBufferSRV.Get(), particleObject->mAliveIndexBufferSRV.Get() };
-		ID3D11ShaderResourceView* ps_srv[] = { particleObject->mTexture->GetSRV().Get(),mDepthSRV.Get() };
+		ID3D11ShaderResourceView* ps_srv[] = { !particleMaterial->GetHasBaseColor() ? nullptr : particleMaterial->GetBaseColor()->GetSRV().Get(),mDepthSRV.Get() };
 
 		mParticleFrameCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);
 		mParticleObjectCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
