@@ -63,6 +63,40 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 		}
 	}
 	// Terrain 처리 추가
+	auto terrainComponentView = scene->GetComponentView<fq::game_module::Terrain>();
+	for (auto& navObject : terrainComponentView)
+	{
+		// NavMesh 추가는 해뒀지만 디버그 등의 이유로 사용하지 않기로 했다면
+		bool isUsed = navObject.GetComponent<fq::game_module::Terrain>()->GetIsUseNavMesh();
+		if (!isUsed)
+		{
+			continue;
+		}
+
+		auto terrainMesh = navObject.GetComponent<fq::game_module::Terrain>();
+		if (terrainMesh != nullptr)
+		{
+			auto vertices = terrainMesh->GetTerrainMeshObject()->GetMeshData().Vertices;
+			auto indices = terrainMesh->GetTerrainMeshObject()->GetMeshData().Indices;
+
+			UINT preVerticesSize = fieldVertices.size();
+			fieldVertices.reserve(preVerticesSize + vertices.size());
+			fieldIndices.reserve(fieldIndices.size() + indices.size());
+
+			DirectX::SimpleMath::Matrix worldMatrix = navObject.GetComponent<fq::game_module::Transform>()->GetWorldMatrix();
+
+			for (UINT i = 0; i < vertices.size(); i++)
+			{
+				DirectX::SimpleMath::Vector3 pos = vertices[i].Pos;
+				pos = DirectX::SimpleMath::Vector3::Transform(pos, worldMatrix);
+				fieldVertices.push_back(pos);
+			}
+			for (UINT i = 0; i < indices.size(); i++)
+			{
+				fieldIndices.push_back(indices[i] + preVerticesSize);
+			}
+		}
+	}
 
 	if (fieldVertices.size() == 0)
 	{

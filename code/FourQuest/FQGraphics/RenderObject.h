@@ -520,7 +520,10 @@ namespace fq::graphics
 		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
+		virtual const fq::common::Mesh& GetMeshData() const override;
+
 		inline const std::shared_ptr<TerrainMesh>& GetTerrainMesh() const;
+		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
 		inline const std::shared_ptr<TerrainMaterial>& GetTerrainMaterial() const;
 
 		size_t GetNumIndices() const { return mNumIndices; }
@@ -528,6 +531,9 @@ namespace fq::graphics
 	private:
 		// Terrain Vertex, Index 수정
 		void BuildTerrainMesh(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<StaticMesh> staticMesh);
+
+		// 네비 메쉬, 픽킹을 위한 것
+		void BuildStaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& terrainMesh);
 
 		float GetWidth() const;
 		float GetDepth() const;
@@ -539,13 +545,16 @@ namespace fq::graphics
 		void CalcNormalTangent(fq::common::Mesh& mesh);
 
 	private:
-		std::shared_ptr<StaticMesh> mTempStaticMesh; // Plane
+		std::shared_ptr<StaticMesh> mTempStaticMesh; 
 		std::shared_ptr<TerrainMesh> mTerrainMesh;
 		std::shared_ptr<TerrainMaterial> mMaterial;
 
 		size_t mNumIndices;
 		unsigned int mWidth;
 		unsigned int mHeight;
+
+		unsigned int mTextureWidth;
+		unsigned int mTextureHeight;
 
 		UINT mNumPatchVertRows;
 		UINT mNumPatchVertCols;
@@ -554,6 +563,9 @@ namespace fq::graphics
 		UINT mNumPatchQuadFaces;
 
 		unsigned int mCellsPerPatch;
+
+		// Geometry Shader 로 메시를 저장 해서 버퍼로 불러왔는가 
+		bool mIsBakeMesh;
 
 		DirectX::SimpleMath::Matrix mTransform;
 	};
@@ -566,6 +578,10 @@ namespace fq::graphics
 	inline const std::shared_ptr<TerrainMesh>& TerrainMeshObject::GetTerrainMesh() const
 	{
 		return mTerrainMesh;
+	}
+	inline const std::shared_ptr<StaticMesh>& TerrainMeshObject::GetStaticMesh() const
+	{
+		return mTempStaticMesh;
 	}
 	inline DirectX::BoundingBox TerrainMeshObject::GetRenderBoundingBox() const
 	{

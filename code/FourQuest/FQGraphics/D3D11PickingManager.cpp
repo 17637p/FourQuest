@@ -15,19 +15,6 @@
 #include "d3d11Shader.h"
 #include "ConstantBufferStructure.h"
 
-//윤서 코의 흔적
-///Dear 유진Kim
-/// 언리얼 수업 듣고 올라왔더니 너 왜 없냐
-/// 이렇게 칼퇴해도 되는겁니까 예???
-/// 근데 유진아 너 키보드 타건감 좋다
-/// 키보드 정보 디코로 보내둬라.
-/// 아닌가 조금 많이 무거운거 같기도 하고
-/// 여튼 자리에 없는 우리 유진이
-/// 코딩 화이팅 하고
-/// 유진이가 좋아하는 그룹은 유진스
-/// 깔깔깔 아이고 부장님
-///  
-
 fq::graphics::D3D11PickingManager::D3D11PickingManager()
 	:mR(0),
 	mG(0),
