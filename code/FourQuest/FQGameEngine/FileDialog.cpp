@@ -397,8 +397,7 @@ void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 				// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
 				fs::path newPath = path / dropPath->filename();
 
-				if (!fs::exists(newPath))
-					changeDirectoryPath(*dropPath, newPath);
+				changeDirectoryPath(*dropPath, newPath);
 			}
 		}
 		ImGui::EndDragDropTarget();
@@ -758,7 +757,7 @@ void fq::game_engine::FileDialog::changeDirectoryPath(Path prev, Path current)
 		outFile.close();
 	}
 
-	auto currentSceneName =  mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
+	auto currentSceneName = mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
 	mGameProcess->mEventManager->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
 }
 

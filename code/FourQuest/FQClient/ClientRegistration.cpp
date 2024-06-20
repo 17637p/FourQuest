@@ -19,6 +19,9 @@
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
 
+// MonsterSpawner
+#include "MonsterSpawner.h"
+
 #include "Attack.h"
 
 // UI
@@ -156,6 +159,19 @@ void fq::client::RegisterMetaData()
 		.type("MonsterDie"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterDie")
 		.base<fq::game_module::IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             몬스터 스포너	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MonsterSpawner>()
+		.type("MonsterSpawner"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawner")
+		.data<&MonsterSpawner::mMonster>("MonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterPrefab")
+		.data<&MonsterSpawner::mSpawnCoolTime>("SpwanCoolTime"_hs)
+		.prop(fq::reflect::prop::Name, "SpwanCoolTime")
+		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             카메라									//
