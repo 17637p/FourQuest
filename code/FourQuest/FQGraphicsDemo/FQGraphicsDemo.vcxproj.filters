@@ -13,6 +13,9 @@
     <Filter Include="Control">
       <UniqueIdentifier>{e141f691-b399-4604-8990-2a4e9aab5b97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{62fd0d3f-f4a5-4920-8b98-53ea8704293f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseWindow.h">
@@ -30,6 +33,12 @@
     <ClInclude Include="Singleton.h">
       <Filter>Control</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -43,6 +52,12 @@
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainDemo.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoUtils.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

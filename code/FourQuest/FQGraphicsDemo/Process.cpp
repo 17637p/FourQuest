@@ -2,6 +2,7 @@
 
 //#include "GUIManager.h"
 #include "InputManager.h"
+#include "DemoUtils.h"
 
 //temp
 #include "../FQGraphics/IFQGraphics.h"
@@ -10,6 +11,8 @@
 #include "../FQLoader/ModelLoader.h"
 
 #include <FQCommonGraphics.h>
+
+using namespace fq::utils;
 
 Process::Process()
 	:
@@ -110,8 +113,6 @@ bool Process::Init(HINSTANCE hInstance)
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 	createModel(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 10, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
-	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
@@ -311,6 +312,8 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 void Process::Update()
 {
 	mTimeManager.Update();
+	InputManager::GetInstance().Update();
+
 	calculateFrameStats();
 
 	if (GetAsyncKeyState(VK_F1) & 0x8000)
@@ -327,54 +330,54 @@ void Process::Update()
 	const float speed = mTimeManager.GetDeltaTime() * 100.f;
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
-		walk(cameraTransform, speed);
+		Walk(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('S'))
 	{
-		walk(cameraTransform, -speed);
+		Walk(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('D'))
 	{
-		strafe(cameraTransform, speed);
+		Strafe(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('A'))
 	{
-		strafe(cameraTransform, -speed);
+		Strafe(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('E'))
 	{
-		worldUpdown(cameraTransform, speed);
+		WorldUpdown(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
-		worldUpdown(cameraTransform, -speed);
+		WorldUpdown(cameraTransform, -speed);
 	}
 
-	// Test용 두 번째 카메라
-	if (InputManager::GetInstance().IsGetKey('I'))
-	{
-		walk(cameraTransform2, speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('K'))
-	{
-		walk(cameraTransform2, -speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('L'))
-	{
-		strafe(cameraTransform2, speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('J'))
-	{
-		strafe(cameraTransform2, -speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('O'))
-	{
-		worldUpdown(cameraTransform2, speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('U'))
-	{
-		worldUpdown(cameraTransform2, -speed);
-	}
+	//// Test용 두 번째 카메라
+	//if (InputManager::GetInstance().IsGetKey('I'))
+	//{
+	//	Walk(cameraTransform2, speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('K'))
+	//{
+	//	Walk(cameraTransform2, -speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('L'))
+	//{
+	//	strafe(cameraTransform2, speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('J'))
+	//{
+	//	strafe(cameraTransform2, -speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('O'))
+	//{
+	//	worldUpdown(cameraTransform2, speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('U'))
+	//{
+	//	worldUpdown(cameraTransform2, -speed);
+	//}
 
 	mTestGraphics->UpdateCamera(cameraTransform);
 	//mTestGraphics->UpdateColCamera(cameraTransform2); 이거 키면 두 번째 카메라로 컬링 테스트 가능
@@ -384,8 +387,8 @@ void Process::Update()
 		float dx = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().x) * (3.141592f / 180.0f));
 		float dy = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().y) * (3.141592f / 180.0f));
 
-		pitch(cameraTransform, dy);
-		yaw(cameraTransform, dx);
+		Pitch(cameraTransform, dy);
+		Yaw(cameraTransform, dx);
 	}
 
 	//picking 테스트
@@ -437,8 +440,6 @@ void Process::Update()
 	materialUpdate();
 	socketUpdate();
 	decalUpdate();
-
-	InputManager::GetInstance().Update();
 }
 
 void Process::Render()
@@ -446,24 +447,6 @@ void Process::Render()
 	mTestGraphics->BeginRender();
 	debugRender();
 	mTestGraphics->Render();
-	/// 그리기를 준비한다.
-	//m_pRenderer->BeginRender();
-	//
-	///// 엔진만의 그리기를 한다.
-	//m_pRenderer->Render(IImpGraphicsEngine::RendererType::Forward);
-	//
-	//if (_has2ndCamera)
-	//{
-	//	m_pRenderer->UpdateRight(m_timer->DeltaTime());
-	//
-	//	m_pRenderer->BeginRenderRight();
-	//	m_pRenderer->RenderRight(IImpGraphicsEngine::RendererType::Forward);
-	//}
-	//
-	//m_pRenderer->RenderUI();
-	//_guiManager->Render();
-	///// 그리기를 끝낸다.
-	//m_pRenderer->EndRender();
 
 	static float s_time = 0.f;
 	s_time += mTimeManager.GetDeltaTime();
@@ -1172,89 +1155,6 @@ void Process::decalUpdate()
 	}
 }
 
-/*=============================================================================
-		camera
-=============================================================================*/
-#pragma region camera
-void Process::strafe(fq::common::Transform& cameraTransform, float distance)
-{
-	//mPosition = XMFLOAT3(mRight.x * d + mPosition.x, mRight.y * d + mPosition.y, mRight.z * d + mPosition.z);
-	DirectX::SimpleMath::Matrix tempMatrix;
-	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
-
-	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
-		tempMatrix._11 * distance + cameraTransform.worldPosition.x,
-		tempMatrix._12 * distance + cameraTransform.worldPosition.y,
-		tempMatrix._13 * distance + cameraTransform.worldPosition.z);
-
-	cameraTransform.worldMatrix =
-		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
-		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
-}
-
-void Process::walk(fq::common::Transform& cameraTransform, float distance)
-{
-	DirectX::SimpleMath::Matrix tempMatrix;
-	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
-
-	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
-		tempMatrix._31 * distance + cameraTransform.worldPosition.x,
-		tempMatrix._32 * distance + cameraTransform.worldPosition.y,
-		tempMatrix._33 * distance + cameraTransform.worldPosition.z);
-
-	cameraTransform.worldMatrix =
-		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
-		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
-}
-
-void Process::worldUpdown(fq::common::Transform& cameraTransform, float distance)
-{
-	DirectX::SimpleMath::Matrix tempMatrix;
-	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
-
-	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
-		tempMatrix._21 * distance + cameraTransform.worldPosition.x,
-		tempMatrix._22 * distance + cameraTransform.worldPosition.y,
-		tempMatrix._23 * distance + cameraTransform.worldPosition.z);
-
-	cameraTransform.worldMatrix =
-		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
-		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
-}
-
-void Process::yaw(fq::common::Transform& cameraTransform, float angle)
-{
-	DirectX::SimpleMath::Vector3 up{ 0, 1, 0 };
-	//up.Normalize();
-	up = up * angle;
-	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(up.y, up.x, up.z);
-
-	cameraTransform.worldRotation = cameraTransform.worldRotation * quaternion;
-
-	cameraTransform.worldMatrix =
-		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
-		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
-}
-
-void Process::pitch(fq::common::Transform& cameraTransform, float angle)
-{
-	DirectX::SimpleMath::Vector3 right{ 1, 0, 0 };
-	right = right * angle;
-	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(right.y, right.x, right.z);
-
-	cameraTransform.worldRotation = quaternion * cameraTransform.worldRotation;
-
-	cameraTransform.worldMatrix =
-		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
-		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
-}
-#pragma endregion camera
-
 void Process::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
 {
 	createModel(modelPath, {}, transform);
@@ -1344,78 +1244,6 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 			}
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
-	}
-}
-
-void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
-{
-	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
-
-	for (auto mesh : modelData.Meshes)
-	{
-		if (mesh.second.Vertices.empty())
-		{
-			continue;
-		}
-
-		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = modelPath;
-		meshInfo.MeshName = mesh.second.Name;
-		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
-
-		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
-		mTerrainMeshObjects.push_back(iTerrainMeshObject);
-
-		//fq::graphics::TerrainMaterialInfo terrainMaterial;
-		terrainMaterial.Layers.clear();
-
-		fq::graphics::TerrainLayer layer1;
-		fq::graphics::TerrainLayer layer2;
-		fq::graphics::TerrainLayer layer3;
-
-		layer1.BaseColor = "./resource/example/texture/t2.jpg";
-		layer2.BaseColor = "./resource/example/texture/t1.jpg";
-		layer3.BaseColor = "./resource/example/texture/t3.jpg";
-
-		layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
-		layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
-		layer3.NormalMap = "./resource/example/texture/character_normal.png";
-
-		layer1.TileOffsetX = 0.5;
-		layer1.TileOffsetY = 0.5;
-		layer2.TileOffsetX = 0;
-		layer2.TileOffsetY = 0;
-		layer3.TileOffsetX = 0;
-		layer3.TileOffsetY = 0;
-
-		layer1.TileSizeX = 20;
-		layer2.TileSizeX = 20;
-		layer3.TileSizeX = 20;
-		layer1.TileSizeY = 20;
-		layer2.TileSizeY = 20;
-		layer3.TileSizeY = 20;
-
-		layer1.Metalic = 0;
-		layer2.Metalic = 0;
-		layer3.Metalic = 0;
-
-		layer1.Roughness = 0;
-		layer2.Roughness = 0;
-		layer3.Roughness = 0;
-
-		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
-
-		// Height 설정
-		terrainMaterial.HeightFileName = "./resource/example/texture/terrain.raw";
-		terrainMaterial.HeightScale = 1000;
-		terrainMaterial.Width = 513;
-		terrainMaterial.Height = 513;
-
-		terrainMaterial.Layers.push_back(layer1);
-		terrainMaterial.Layers.push_back(layer2);
-		terrainMaterial.Layers.push_back(layer3);
-
-		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
 }
 
