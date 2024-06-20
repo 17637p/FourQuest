@@ -18,7 +18,7 @@
 fq::graphics::D3D11PickingManager::D3D11PickingManager()
 	:mR(0),
 	mG(0),
-	mB(0)
+	mB()
 {
 }
 
@@ -81,7 +81,7 @@ void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<ISta
 	for (const auto& meshObject : terrainMeshObjects)
 	{
 		NextColor();
-		mTerrainMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
+		mTerrainMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, 200 / 255.0f };
 	}
 }
 
@@ -251,7 +251,8 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	for (const TerrainMeshJob& job : terrainMeshJobs)
 	{
-		job.TerrainMesh->BindForPicking(device);
+		TerrainMeshObject* terrainObject = static_cast<TerrainMeshObject*>(job.tempObject);
+		terrainObject->GetStaticMesh()->Bind(device);
 
 		ModelTransform modelTransform;
 		modelTransform.color = mTerrainMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };

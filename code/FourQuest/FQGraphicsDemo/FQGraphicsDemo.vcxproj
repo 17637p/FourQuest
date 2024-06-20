@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)FQCommon;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)FQGraphics;$(SolutionDir)FQCommon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(Solutiondir)FQCommon;$(IncludePath)</IncludePath>
@@ -136,16 +136,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BaseWindow.h" />
+    <ClInclude Include="DemoUtils.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="TerrainDemo.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="DefaultDemo.h" />
+    <ClInclude Include="UIDemo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DemoUtils.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="TerrainDemo.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="DefaultDemo.cpp" />
+    <ClCompile Include="UIDemo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

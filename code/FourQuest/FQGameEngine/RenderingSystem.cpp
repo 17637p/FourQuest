@@ -53,7 +53,7 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 	mSetViewportSizeHandler = eventMgr->
 		RegisterHandle<fq::event::SetViewportSize>([this](fq::event::SetViewportSize event)
 			{
-				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);		
+				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);
 			});
 }
 
@@ -79,7 +79,16 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				auto meshObject = mesh.GetSkinnedMeshObject();
 				if (meshObject)
 				{
-					meshObject->UpdateTransform(transform.GetWorldMatrix());
+					GameObject* parentObject = object.GetParent();
+
+					if (parentObject != nullptr)
+					{
+						meshObject->UpdateTransform(parentObject->GetComponent<Transform>()->GetWorldMatrix());
+					}
+					else
+					{
+						meshObject->UpdateTransform(DirectX::SimpleMath::Matrix::Identity);
+					}
 				}
 			});
 
