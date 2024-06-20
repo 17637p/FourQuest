@@ -3,6 +3,10 @@
 #include <imgui.h>
 #include <string>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <regex>
 #include <directxtk/WICTextureLoader.h>
 
 #include "imgui_stdlib.h"
@@ -28,7 +32,7 @@ fq::game_engine::FileDialog::FileDialog()
 	, mIconSize{ 100.f,100.f }
 	, mEditorProcess(nullptr)
 	, mGameProcess(nullptr)
-	,mbIsFindAllDirectory(false)
+	, mbIsFindAllDirectory(false)
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -134,7 +138,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 		if (ImGui::TreeNode(treeName.c_str()))
 		{
-			for (const auto& directory : directoryList )
+			for (const auto& directory : directoryList)
 			{
 				// ignore
 				if (directory.filename() == ".svn"
@@ -172,7 +176,7 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		if (mbIsFindAllDirectory)
 		{
 			directoryList = fq::path::GetFileListRecursive(mResourcePath);
-		
+
 			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
 				[](const std::filesystem::path& path)
 				{
@@ -343,9 +347,9 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		&& mEditorProcess->mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
 	{
 		fs::path newFileName = path.parent_path();
-		newFileName += "//" + fileName;
+		newFileName /= fileName;
 
-		fs::rename(path, newFileName);
+		changeDirectoryPath(path, newFileName);
 	}
 
 	ImGui::PopItemWidth();
@@ -394,7 +398,7 @@ void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 				fs::path newPath = path / dropPath->filename();
 
 				if (!fs::exists(newPath))
-					fs::rename(*dropPath, newPath);
+					changeDirectoryPath(*dropPath, newPath);
 			}
 		}
 		ImGui::EndDragDropTarget();
@@ -535,7 +539,8 @@ void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryP
 			// dropPath 파일을 path 안으로 넣는다.
 			// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
 			fs::path newPath = directoryPath / dropPath->filename();
-			fs::rename(*dropPath, newPath);
+
+			changeDirectoryPath(*dropPath, newPath);
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -684,5 +689,76 @@ void fq::game_engine::FileDialog::beginFavorite()
 		ImGui::TreePop();
 	}
 
+}
+
+void fq::game_engine::FileDialog::changeDirectoryPath(Path prev, Path current)
+{
+	mEditorProcess->mMainMenuBar->SaveScene();
+
+	fs::rename(prev, current);
+
+	// 리소스 경로의 prefab을 가져옵니다
+	auto fileList = fq::path::GetFileListRecursive(fq::path::GetResourcePath());
+
+	fileList.erase(std::remove_if(fileList.begin(), fileList.end(),
+		[](Path path)
+		{
+			if (path.extension() == ".prefab"
+				|| path.extension() == ".controller")
+			{
+				return false;
+			}
+			return true;
+
+		}), fileList.end());
+
+	auto prevRelativePath = fq::path::GetRelativePath(prev).string();
+	auto currntRelativePath = fq::path::GetRelativePath(current).string();
+
+	// 문자열 변환
+	size_t pos = 0;
+
+	while ((pos = prevRelativePath.find("\\", pos)) != std::string::npos)
+	{
+		prevRelativePath.replace(pos, std::string("\\").length(), "\\\\");
+		pos += std::string("\\\\").length();
+	}
+	pos = 0;
+
+	while ((pos = currntRelativePath.find("\\", pos)) != std::string::npos)
+	{
+		currntRelativePath.replace(pos, std::string("\\").length(), "\\\\");
+		pos += std::string("\\\\").length();
+	}
+
+	// 파일 쓰기
+	for (auto& file : fileList)
+	{
+		// 파일 읽기
+		std::ifstream inFille(file);
+
+		std::stringstream buffer;
+		buffer << inFille.rdbuf();
+		std::string fileContent = buffer.str();
+
+		inFille.close();
+
+		// 문자열 변환
+		size_t pos = 0;
+
+		while ((pos = fileContent.find(prevRelativePath, pos)) != std::string::npos)
+		{
+			fileContent.replace(pos, prevRelativePath.length(), currntRelativePath);
+			pos += currntRelativePath.length();
+		}
+
+		// 파일 쓰기
+		std::ofstream outFile(file);
+		outFile << fileContent;
+		outFile.close();
+	}
+
+	auto currentSceneName =  mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
+	mGameProcess->mEventManager->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
 }
 

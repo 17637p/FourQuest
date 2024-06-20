@@ -27,6 +27,8 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::ImageUI::Clone(std:
 		*cloneUI = *this;
 	}
 
+	cloneUI->mImageObjects.clear();
+
 	return cloneUI;
 }
 
