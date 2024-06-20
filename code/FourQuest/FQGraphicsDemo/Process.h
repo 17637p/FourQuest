@@ -76,8 +76,6 @@ private:
 
 	bool mResizing;
 
-	fq::graphics::TerrainMaterialInfo terrainMaterial;
-
 	// Graphics
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;

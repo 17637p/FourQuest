@@ -39,6 +39,9 @@
     <ClInclude Include="DemoUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="DefaultDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,6 +61,9 @@
     </ClCompile>
     <ClCompile Include="DemoUtils.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultDemo.cpp">
+      <Filter>Process</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
