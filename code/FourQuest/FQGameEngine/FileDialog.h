@@ -81,6 +81,9 @@ namespace fq::game_engine
 		void clearGarbage();
 
 		bool isMouseHoveringRect(const ImVec2& min, const ImVec2& max);
+
+		void changeDirectoryPath(Path prev, Path current);	
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
