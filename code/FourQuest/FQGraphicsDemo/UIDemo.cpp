@@ -1,4 +1,4 @@
-#include "DefaultDemo.h"
+#include "UIDemo.h"
 
 #include <IFQGraphics.h>
 
@@ -7,7 +7,7 @@
 
 using namespace fq::utils;
 
-DefaultDemo::DefaultDemo()
+UIDemo::UIDemo()
 	:mWindowPosX(0),
 	mWindowPosY(0),
 	mScreenWidth(1920),
@@ -23,14 +23,19 @@ DefaultDemo::DefaultDemo()
 	mEngineExporter = std::make_shared<fq::graphics::EngineExporter>();
 }
 
-DefaultDemo::~DefaultDemo()
+UIDemo::~UIDemo()
 {
+	for (fq::graphics::IImageObject* iobj : mImageObjects)
+	{
+		mTestGraphics->DeleteImageObject(iobj);
+	}
+
 	mEngineExporter->DeleteEngine(mTestGraphics);
 
 	CoUninitialize();
 }
 
-bool DefaultDemo::Init(HINSTANCE hInstance)
+bool UIDemo::Init(HINSTANCE hInstance)
 {
 	/// 기본적인 초기화
 	InputManager::GetInstance().Init(mHwnd);
@@ -69,10 +74,12 @@ bool DefaultDemo::Init(HINSTANCE hInstance)
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
 
+	createImage();
+
 	return true;
 }
 
-void DefaultDemo::Loop()
+void UIDemo::Loop()
 {
 	MSG msg;
 
@@ -96,12 +103,12 @@ void DefaultDemo::Loop()
 	}
 }
 
-void DefaultDemo::Finalize()
+void UIDemo::Finalize()
 {
 
 }
 
-LRESULT DefaultDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT UIDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC			hdc;
 	PAINTSTRUCT ps;
@@ -136,7 +143,7 @@ LRESULT DefaultDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);
 }
 
-void DefaultDemo::Update()
+void UIDemo::Update()
 {
 	mTimeManager.Update();
 	InputManager::GetInstance().Update();
@@ -196,9 +203,15 @@ void DefaultDemo::Update()
 		Yaw(mCameraTransform, dx);
 	}
 	mTestGraphics->UpdateCamera(mCameraTransform);
+
+	if (InputManager::GetInstance().IsGetKeyDown('M'))
+	{
+		//mImageObjects[0]->SetRotation(mImageObjects[0]->GetRotation() + 10);
+		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
+	}
 }
 
-void DefaultDemo::Render()
+void UIDemo::Render()
 {
 	mTestGraphics->BeginRender();
 	debugRender();
@@ -206,7 +219,7 @@ void DefaultDemo::Render()
 	mTestGraphics->EndRender();
 }
 
-void DefaultDemo::debugRender()
+void UIDemo::debugRender()
 {
 	using namespace fq::graphics::debug;
 
@@ -219,4 +232,40 @@ void DefaultDemo::debugRender()
 	gridInfo.GridSize = 1.f;
 	gridInfo.Color = { 1, 1, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
+}
+
+void UIDemo::createImage()
+{
+	fq::graphics::UIInfo uiInfo;
+	uiInfo.StartX = 500;
+	uiInfo.StartY = 500;
+	uiInfo.Width = 100;
+	uiInfo.Height = 100;
+	uiInfo.XRatio = 1;
+	uiInfo.YRatio = 1;
+	uiInfo.Alpha = 0.5;
+	uiInfo.Layer = 1;
+	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	uiInfo.ScaleX = 1;
+	uiInfo.ScaleY = 1;
+	uiInfo.RotationAngle = 0;
+
+	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	mImageObjects.push_back(tempImageObject);
+
+	uiInfo.StartX = 450;
+	uiInfo.StartY = 500;
+	uiInfo.Width = 100;
+	uiInfo.Height = 50;
+	uiInfo.XRatio = 1;
+	uiInfo.YRatio = 0.5;
+	uiInfo.Alpha = 1;
+	uiInfo.Layer = 0;
+	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	uiInfo.ScaleX = 1;
+	uiInfo.ScaleY = 1;
+	uiInfo.RotationAngle = 0;
+
+	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	mImageObjects.push_back(tempImageObject);
 }

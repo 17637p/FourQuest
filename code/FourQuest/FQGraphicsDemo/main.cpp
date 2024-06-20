@@ -1,9 +1,10 @@
 #include <memory>
 
 /// Demo
+//#include "DefaultDemo.h"
 #include "Process.h"
 #include "TerrainDemo.h"
-#include "DefaultDemo.h"
+#include "UIDemo.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../x64/Debug/FQGraphics.lib")
@@ -28,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//std::unique_ptr<Process> demo = std::make_unique<Process>();
 	//std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
-	std::unique_ptr<DefaultDemo> demo = std::make_unique<DefaultDemo>();
+	std::unique_ptr<UIDemo> demo = std::make_unique<UIDemo>();
 
 	demo->Init(hInstance);
 	demo->Loop();

@@ -4,7 +4,6 @@
 #include "InputManager.h"
 #include "DemoUtils.h"
 
-//temp
 #include "../FQGraphics/IFQGraphics.h"
 
 #include "../FQLoader/ModelConverter.h"
@@ -33,11 +32,6 @@ Process::Process()
 
 Process::~Process()
 {
-	for (fq::graphics::IImageObject* iobj : mImageObjects)
-	{
-		mTestGraphics->DeleteImageObject(iobj);
-	}
-
 	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
@@ -127,14 +121,7 @@ bool Process::Init(HINSTANCE hInstance)
 	}
 
 	// 카메라 초기화
-	fq::graphics::CameraInfo cameraInfo;
-
-	cameraInfo.isPerspective = true;
-	cameraInfo.filedOfView = 0.25f * 3.1415f;
-	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 30000;
-
-	mTestGraphics->SetCamera(cameraInfo);
+	AddDefaultCamera(mTestGraphics);
 
 	/// camera 초기화
 	cameraTransform.worldPosition = { 0, 0, 0 };
@@ -231,8 +218,6 @@ bool Process::Init(HINSTANCE hInstance)
 	decalInit();
 
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
-
-	createImage();
 
 	return true;
 }
@@ -428,11 +413,6 @@ void Process::Update()
 		float randY = (float)(rand() % 500 - 250);
 		float randZ = (float)(rand() % 500 - 250);
 		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('M'))
-	{
-		//mImageObjects[0]->SetRotation(mImageObjects[0]->GetRotation() + 10);
-		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
 	}
 
 	shadowTest();
@@ -1245,42 +1225,6 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
 	}
-}
-
-void Process::createImage()
-{
-	fq::graphics::UIInfo uiInfo;
-	uiInfo.StartX = 500;
-	uiInfo.StartY = 500;
-	uiInfo.Width = 100;
-	uiInfo.Height = 100;
-	uiInfo.XRatio = 1;
-	uiInfo.YRatio = 1;
-	uiInfo.Alpha = 0.5;
-	uiInfo.Layer = 1;
-	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
-	uiInfo.ScaleX = 1;
-	uiInfo.ScaleY = 1;
-	uiInfo.RotationAngle = 0;
-
-	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
-
-	uiInfo.StartX = 450;
-	uiInfo.StartY = 500;
-	uiInfo.Width = 100;
-	uiInfo.Height = 50;
-	uiInfo.XRatio = 1;
-	uiInfo.YRatio = 0.5;
-	uiInfo.Alpha = 1;
-	uiInfo.Layer = 0;
-	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
-	uiInfo.ScaleX = 1;
-	uiInfo.ScaleY = 1;
-	uiInfo.RotationAngle = 0;
-
-	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
 }
 
 void Process::calculateFrameStats()

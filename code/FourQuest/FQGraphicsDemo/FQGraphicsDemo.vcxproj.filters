@@ -42,6 +42,9 @@
     <ClInclude Include="DefaultDemo.h">
       <Filter>Process</Filter>
     </ClInclude>
+    <ClInclude Include="UIDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,6 +66,9 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="DefaultDemo.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDemo.cpp">
       <Filter>Process</Filter>
     </ClCompile>
   </ItemGroup>

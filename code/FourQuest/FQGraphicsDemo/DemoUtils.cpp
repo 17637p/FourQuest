@@ -1,5 +1,7 @@
 #include "DemoUtils.h"
 
+#include "../FQGraphics/IFQGraphics.h"
+
 void fq::utils::Strafe(fq::common::Transform& cameraTransform, float distance)
 {
 	DirectX::SimpleMath::Matrix tempMatrix;
@@ -75,4 +77,16 @@ void fq::utils::Pitch(fq::common::Transform& cameraTransform, float angle)
 		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
 		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
 		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void fq::utils::AddDefaultCamera(fq::graphics::IFQGraphics* graphcis)
+{
+	fq::graphics::CameraInfo cameraInfo;
+
+	cameraInfo.isPerspective = true;
+	cameraInfo.filedOfView = 0.25f * 3.1415f;
+	cameraInfo.nearPlain = 0.03f;
+	cameraInfo.farPlain = 30000;
+
+	graphcis->SetCamera(cameraInfo);
 }

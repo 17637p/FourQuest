@@ -143,6 +143,7 @@
     <ClInclude Include="TerrainDemo.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="DefaultDemo.h" />
+    <ClInclude Include="UIDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DemoUtils.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="TerrainDemo.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="DefaultDemo.cpp" />
+    <ClCompile Include="UIDemo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

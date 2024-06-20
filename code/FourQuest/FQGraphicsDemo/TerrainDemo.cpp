@@ -48,14 +48,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 
 	/// camera 초기화
-	fq::graphics::CameraInfo cameraInfo;
-
-	cameraInfo.isPerspective = true;
-	cameraInfo.filedOfView = 0.25f * 3.1415f;
-	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 1000;
-
-	mTestGraphics->SetCamera(cameraInfo);
+	AddDefaultCamera(mTestGraphics);
 
 	// Camera Transform 설정
 	mCameraTransform.worldPosition = { 0, 0, 0 };
