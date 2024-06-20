@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "BaseWindow.h"
 #include "TimeManager.h"
@@ -21,7 +20,6 @@ namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
-namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class IParticleObject; }
 namespace fq::graphics { class IDecalObject; }
@@ -43,13 +41,6 @@ private:
 	void Render();
 	void debugRender();
 	void shadowTest();
-
-	void strafe(fq::common::Transform& cameraTransform, float distance);
-	void walk(fq::common::Transform& cameraTransform, float distance);
-	void worldUpdown(fq::common::Transform& cameraTransform, float distance);
-
-	void yaw(fq::common::Transform& cameraTransform, float angle);
-	void pitch(fq::common::Transform& cameraTransform, float angle);
 
 	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
@@ -93,7 +84,6 @@ private:
 
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
-	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
 	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
