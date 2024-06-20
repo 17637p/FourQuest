@@ -54,9 +54,12 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DepthStencilView> mNoneDSV;
 		std::shared_ptr<class D3D11DepthStencilView> mDSV;
 
-		std::shared_ptr<class ShaderProgram> mAdditiveRenderProgram;
-		std::shared_ptr<class ShaderProgram> mSubtractiveRenderProgram;
-		std::shared_ptr<class ShaderProgram> mModulateRenderProgram;
+		std::shared_ptr<class D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<class D3D11RasterizerState> mCullOffRasterizer;
+		std::shared_ptr<class D3D11BlendState> mAdditiveState;
+		std::shared_ptr<class D3D11BlendState> mSubtractiveState;
+		std::shared_ptr<class D3D11BlendState> mModulateState;
+		std::shared_ptr<class ShaderProgram> mRenderProgram;
 
 		std::shared_ptr<class D3D11ComputeShader> mInitDeadListCS;
 		std::shared_ptr<class D3D11ComputeShader> mInitParticlesCS;

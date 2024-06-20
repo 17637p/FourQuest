@@ -291,7 +291,7 @@ namespace fq::graphics
 
 	struct TrailInfo
 	{
-		enum { MAX_VERTEX_SIZE = 128 };
+		enum { MAX_VERTEX_SIZE = 1024 };
 
 		enum class EAlignment
 		{
@@ -453,6 +453,7 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+		float AlphaCutoff = 0.1f;
 	};
 
 	struct ParticleMaterialInfo
@@ -462,6 +463,7 @@ namespace fq::graphics
 			Additive,
 			Subtractive,
 			Modulate,
+			// Opaque,
 		} RenderModeType = ERenderMode::Additive;
 
 		enum class EColorMode
@@ -474,7 +476,7 @@ namespace fq::graphics
 			Difference // 
 		} ColorModeType = EColorMode::Multiply;
 
-		bool bIsTwoSide;
+		bool bIsTwoSide = false;
 
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
@@ -487,6 +489,8 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+
+		float AlphaCutoff = 0.1f;
 	};
 
 	struct DecalMaterialInfo
@@ -508,6 +512,7 @@ namespace fq::graphics
 		bool bUseNormalness = true;
 		bool bIsUsedEmissive = true;
 
-		// float NormalBlend = 0.5f; // 추가예정
+		float NormalBlend = 0.5f; // 0 ~ 1, srcNormal의 가중치, 1이라면 decal의 노말이 전부 적용된다.
+		float AlphaCutoff = 0.1f;
 	};
 };

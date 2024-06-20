@@ -56,7 +56,7 @@ void main(point VS_OUTPUT input[1], inout TriangleStream<PS_INPUT> SpriteStream)
         
         output.PosTex = mul(output.PosH, texTransform);
         
-        output.Tex = uv;
+        output.Tex = mul(float4(uv, 0, 1), gParticleRender.TexTransform);
         output.Color = input[0].Color;
 
         SpriteStream.Append(output);

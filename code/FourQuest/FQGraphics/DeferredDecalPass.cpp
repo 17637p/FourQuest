@@ -34,7 +34,8 @@ namespace fq::graphics
 		auto DeferredDecalVS = std::make_shared<D3D11VertexShader>(mDevice, L"DeferredDecalVS.cso");
 		auto decalPS = std::make_shared<D3D11PixelShader>(mDevice, L"DeferredDecalPS.cso");
 		mDecalProgram = std::make_shared<ShaderProgram>(mDevice, DeferredDecalVS, nullptr, decalPS, pipelieState);
-		mPerFrameCB = std::make_shared< D3D11ConstantBuffer<decal::PerFrame>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDecalMaterialCB = std::make_shared< D3D11ConstantBuffer<CBDecalMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mDecalObjectCB = std::make_shared< D3D11ConstantBuffer<CBDecalObject>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mLinearClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
@@ -102,7 +103,8 @@ namespace fq::graphics
 		mLinearClampSamplerState = nullptr;
 		mPointClampSamplerState = nullptr;
 
-		mPerFrameCB = nullptr;
+		mDecalMaterialCB = nullptr;
+		mDecalObjectCB = nullptr;
 
 		mBoxVB = nullptr;
 		mBoxIB = nullptr;
@@ -140,8 +142,9 @@ namespace fq::graphics
 
 			mDecalProgram->Bind(mDevice);
 
-			mPerFrameCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
-			mPerFrameCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mDecalObjectCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
+			mDecalObjectCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
+			mDecalMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 			mLinearClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
@@ -165,9 +168,6 @@ namespace fq::graphics
 		}
 
 		// cb update
-		decal::PerFrame perFrameData;
-		perFrameData.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
-		perFrameData.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
 
 		const std::set<IDecalObject*>& decalObjects = mDecalManager->GetDecalObjects();
 
@@ -183,25 +183,31 @@ namespace fq::graphics
 			int index = material->GetHasEmissive() << 4 | material->GetHasNormal() << 3 | material->GetHasRoughness() << 2 | material->GetHasMetalness() << 1 | material->GetHasBaseColor() << 0;
 			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
 
-			perFrameData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0);
-			perFrameData.World = transform.Transpose();
-			perFrameData.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
-			perFrameData.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
-			perFrameData.InvWV = (transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+			CBDecalObject decalObjectCB;
+			decalObjectCB.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
+			decalObjectCB.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
+			decalObjectCB.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0);
+			decalObjectCB.World = transform.Transpose();
+			decalObjectCB.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
+			decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
+			decalObjectCB.InvWV = (transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+			decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
+			mDecalObjectCB->Update(mDevice, decalObjectCB);
 
-			perFrameData.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
-			perFrameData.AlphaClipThreshold = 0.1f;
-
-			perFrameData.bUseMultiplyAlpha = true;
-			perFrameData.bUseAlphaClip = true;
-			perFrameData.bUseAlbedoMap = material->GetHasBaseColor();
-			perFrameData.bUseMetalnessMap = material->GetHasMetalness();
-
-			perFrameData.bUseRoughnessMap = material->GetHasRoughness();
-			perFrameData.bUseNormalMap = material->GetHasNormal();
-			perFrameData.bUseEmissiveMap = material->GetHasEmissive();
-
-			mPerFrameCB->Update(mDevice, perFrameData);
+			const auto& materialInfo = material->GetInfo();
+			CBDecalMaterial decalMaterialCB;
+			decalMaterialCB.BaseColor = materialInfo.BaseColor;
+			decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor;
+			decalMaterialCB.Metalness = materialInfo.Metalness;
+			decalMaterialCB.Roughness = materialInfo.Roughness;
+			decalMaterialCB.bUseBaseColor = materialInfo.bUseBaseColor && material->GetHasBaseColor();
+			decalMaterialCB.bUseMetalness = materialInfo.bUseMetalness && material->GetHasMetalness();
+			decalMaterialCB.bUseRoughness = materialInfo.bUseRoughness && material->GetHasRoughness();
+			decalMaterialCB.bUseNormalness = materialInfo.bUseNormalness && material->GetHasNormal();
+			decalMaterialCB.bIsUsedEmissive = materialInfo.bIsUsedEmissive && material->GetHasEmissive();
+			decalMaterialCB.NormalBlend = materialInfo.NormalBlend;
+			decalMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
+			mDecalMaterialCB->Update(mDevice, decalMaterialCB);
 
 			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
 

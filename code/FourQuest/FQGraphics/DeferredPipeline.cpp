@@ -75,9 +75,9 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mTerrainPass);
-		mPasses.push_back(mTrailRenderPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
+		mPasses.push_back(mTrailRenderPass);
 		mPasses.push_back(mParticlePass);
 		mPasses.push_back(mSingleColorPass);
 		mPasses.push_back(mOutLinePass);

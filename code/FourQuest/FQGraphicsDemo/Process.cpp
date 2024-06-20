@@ -980,7 +980,7 @@ void Process::particleUpdate()
 
 		particleInfo.Instance.bIsRenderDebug = true;
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
-		particleInfo.Instance.bIsEmit = GetAsyncKeyState('O') & 0x8000;
+		particleInfo.Instance.bIsEmit = true; // GetAsyncKeyState('O') & 0x8000;
 		particleInfo.Instance.bIsReset = GetAsyncKeyState('I') & 0x8000;
 
 		obj->SetInfo(particleInfo);
@@ -1152,6 +1152,7 @@ void Process::trailInit()
 
 	ParticleMaterialInfo particleMaterialInfo;
 	particleMaterialInfo.BaseColorFileName = L"./resource/example/texture/trail01.png";
+	particleMaterialInfo.bIsTwoSide = true;
 	std::shared_ptr<IParticleMaterial> particleMaterial = mTestGraphics->CreateMaterial(particleMaterialInfo);
 
 	{

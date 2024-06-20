@@ -8,14 +8,15 @@
 // {
 //
 //   float4 cBaseColor;                 // Offset:    0 Size:    16
-//   float cMetalness;                  // Offset:   16 Size:     4
-//   float cRoughness;                  // Offset:   20 Size:     4
-//   bool cUseAlbedoMap;                // Offset:   24 Size:     4
-//   bool cUseMetalnessMap;             // Offset:   28 Size:     4
-//   bool cUseRoughnessMap;             // Offset:   32 Size:     4
-//   bool cUseNormalMap;                // Offset:   36 Size:     4
-//   bool cUseEmissiveMap;              // Offset:   40 Size:     4
-//   bool cUseOpacityMap;               // Offset:   44 Size:     4 [unused]
+//   float4 cEmissiveColor;             // Offset:   16 Size:    16
+//   float4x4 TexTransform;             // Offset:   32 Size:    64 [unused]
+//   float cMetalness;                  // Offset:   96 Size:     4
+//   float cRoughness;                  // Offset:  100 Size:     4
+//   bool cUseAlbedoMap;                // Offset:  104 Size:     4
+//   bool cUseMetalnessMap;             // Offset:  108 Size:     4
+//   bool cUseRoughnessMap;             // Offset:  112 Size:     4
+//   bool cUseNormalMap;                // Offset:  116 Size:     4
+//   bool cUseEmissiveMap;              // Offset:  120 Size:     4
 //
 // }
 //
@@ -64,7 +65,7 @@
 //
 ps_5_0
 dcl_globalFlags refactoringAllowed
-dcl_constantbuffer CB0[3], immediateIndexed
+dcl_constantbuffer CB0[8], immediateIndexed
 dcl_sampler s0, mode_default
 dcl_resource_texture2d (float,float,float,float) t0
 dcl_resource_texture2d (float,float,float,float) t1
@@ -107,21 +108,20 @@ dcl_temps 4
 //   o1.x <- pout.Metalness; 
 //   o0.x <- pout.Albedo.x; o0.y <- pout.Albedo.y; o0.z <- pout.Albedo.z; o0.w <- pout.Albedo.w
 //
-#line 62 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelPSDeferred.hlsl"
-if_nz cb0[1].z
+#line 66 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelPSDeferred.hlsl"
+if_nz cb0[6].z
 
-#line 64
-  sample_indexable(texture2d)(float,float,float,float) o0.xyzw, v4.xyxx, t0.xyzw, s0
-
-#line 65
-else 
+#line 68
+  sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v4.xyxx, t0.xyzw, s0
+  mul o0.xyzw, r0.xyzw, cb0[0].xyzw
 
 #line 69
+else 
   mov o0.xyzw, cb0[0].xyzw  // o0.x <- pout.Albedo.x; o0.y <- pout.Albedo.y; o0.z <- pout.Albedo.z; o0.w <- pout.Albedo.w
 endif 
 
 #line 71
-if_nz cb0[1].w
+if_nz cb0[6].w
 
 #line 73
   sample_indexable(texture2d)(float,float,float,float) r0.x, v4.xyxx, t1.xyzw, s0  // r0.x <- pout.Metalness
@@ -131,11 +131,11 @@ if_nz cb0[1].w
 else 
 
 #line 78
-  mov o1.x, cb0[1].x  // o1.x <- pout.Metalness
+  mov o1.x, cb0[6].x  // o1.x <- pout.Metalness
 endif 
 
 #line 80
-if_nz cb0[2].x
+if_nz cb0[7].x
 
 #line 82
   sample_indexable(texture2d)(float,float,float,float) r0.x, v4.xyxx, t2.xyzw, s0  // r0.x <- pout.Roughness
@@ -145,11 +145,11 @@ if_nz cb0[2].x
 else 
 
 #line 87
-  mov o2.x, cb0[1].y  // o2.x <- pout.Roughness
+  mov o2.x, cb0[6].y  // o2.x <- pout.Roughness
 endif 
 
 #line 89
-if_nz cb0[2].y
+if_nz cb0[7].y
 
 #line 91
   sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v4.xyxx, t3.xyzw, s0  // r0.x <- pout.Normal.x; r0.y <- pout.Normal.y; r0.z <- pout.Normal.z; r0.w <- pout.Normal.w
@@ -210,22 +210,20 @@ mul o6.xyz, r0.xyzx, l(0.500000, 0.500000, 0.500000, 0.000000)
 add r0.xyz, v3.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
 mul o7.xyz, r0.xyzx, l(0.500000, 0.500000, 0.500000, 0.000000)
 
-#line 106
-if_nz cb0[2].z
-
 #line 108
-  sample_indexable(texture2d)(float,float,float,float) r0.xyz, v4.xyxx, t4.xyzw, s0  // r0.x <- pout.Emissive.x; r0.y <- pout.Emissive.y; r0.z <- pout.Emissive.z
+if_nz cb0[7].z
 
-#line 109
-  mov o4.xyz, r0.xyzx
+#line 110
+  sample_indexable(texture2d)(float,float,float,float) r0.xyz, v4.xyxx, t4.xyzw, s0
+  mul o4.xyz, r0.xyzx, cb0[1].xyzx
+
+#line 111
 else 
-
-#line 113
-  mov o4.xyz, l(0,0,0,0)  // o4.x <- pout.Emissive.x; o4.y <- pout.Emissive.y; o4.z <- pout.Emissive.z
+  mov o4.xyz, cb0[1].xyzx  // o4.x <- pout.Emissive.x; o4.y <- pout.Emissive.y; o4.z <- pout.Emissive.z
 endif 
 
-#line 115
+#line 113
 mov o5.xyz, v1.xyzx
 mov o5.w, v4.z
 ret 
-// Approximately 60 instruction slots used
+// Approximately 61 instruction slots used

@@ -113,13 +113,6 @@ struct ParticleRotationOverLifetime
     int bIsUsed;
 };
 
-struct ParticleRender
-{
-    int bHasTexture;
-    int bUseMultiplyAlpha;
-    int bUseAlphaClip;
-    float AlphaClipThreshold;
-};
 
 cbuffer cbParticleFrame : register(b0)
 {
@@ -150,7 +143,7 @@ cbuffer cbParticleObject : register(b1)
     
     ParticleRotationOverLifetime gParticleRotationOverLifetime;
 
-    ParticleRender gParticleRender;
+    ParticleMaterial gParticleRender;
 };
 
 #define SHAPE_SPHERE 0
@@ -498,7 +491,7 @@ void processOrbital(float3 posW, float3 InitEmitterPos, float3 velW, out float3 
 
         float3 offset = posW - InitEmitterPos; // 
 
-        float power = length(axis); 
+        float power = length(axis);
         
         float angle = gParticleInstance.FrameTime * power * gParticleMain.SimulationSpeed;;
 

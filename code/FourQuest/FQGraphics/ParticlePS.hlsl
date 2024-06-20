@@ -1,7 +1,8 @@
 #include "ParticleCommon.hlsli"
 
-Texture2D gParticleTexture : register(t0);
-Texture2D gDepthTexture : register(t1); // 表捞 咆胶贸
+Texture2D gAlbedoTexture : register(t0);
+Texture2D gEmissiveTexture : register(t1);
+Texture2D gDepthTexture : register(t2); // 表捞 咆胶贸
 
 SamplerState gSamWrapLinear : register(s0);
 SamplerState gSamClampLinear : register(s1);
@@ -24,37 +25,60 @@ float4 main(PS_INPUT pin) : SV_TARGET
         clip(-1);
     }
 	
-    float4 albedo = float4(1, 1, 1, 1);
+    float4 albedo = gParticleRender.BaseColor;
     
-    if (gParticleRender.bHasTexture)
+    if (gParticleRender.bUseAlbedo)
     {
-        float gamma = 2.2f;
-        albedo = gParticleTexture.SampleLevel(gSamClampLinear, pin.Tex, 0);
-        albedo = pow(albedo, gamma);
+        albedo *= gAlbedoTexture.SampleLevel(gSamClampLinear, pin.Tex, 0);
     }
     
-    float4 color = albedo * pin.Color;
+    float3 emissive = gParticleRender.EmssiveColor.rgb;
     
-    if (gParticleRender.bUseAlphaClip)
+    if (gParticleRender.bUseEmissive)
     {
-        clip(color.a - gParticleRender.AlphaClipThreshold);
+        emissive *= gAlbedoTexture.SampleLevel(gSamClampLinear, pin.Tex, 0).rgb;
     }
     
-    if (gParticleRender.bUseMultiplyAlpha)
+    switch (gParticleRender.ColorMode)
     {
-        color.rgb *= color.a;
-
+        case COLOR_MODE_MULTIPLY:
+            albedo *= pin.Color;
+            break;
+        case COLOR_MODE_ADDITIVE:
+            albedo += pin.Color;
+            break;
+        case COLOR_MODE_SUBTRACT:
+            albedo -= pin.Color;
+            break;
+        case COLOR_MODE_OVERLAY:
+            albedo = OverlayMode(albedo, pin.Color);
+            break;
+        case COLOR_MODE_COLOR:
+            albedo = ColorMode(albedo, pin.Color);
+            break;
+        case COLOR_MODE_DIFFERENCE:
+            albedo = abs(albedo - pin.Color);
+            break;
     }
+    
+    float4 color = float4(albedo.rgb + emissive, albedo.a);
+    
+    switch (gParticleRender.RenderMode)
+    {
+        case RENDER_MODE_ADDITIVE:
+            color.rgb *= color.a;
+            break;
+        case RENDER_MODE_SUBTRACTIVE:
+            color.rgb *= color.a;
+            break;
+        case RENDER_MODE_MODULATE:
+            color.rgb *= color.a;
+            break;
+        case RENDER_MODE_OPQUE:
+            break;
+    }
+    
+    clip(color.a - gParticleRender.AlphaCutoff);
     
     return color;
-    
-    // float z = pin.PosH.z;
-    // float weight = clamp(pow(min(1.0, color.a * 10.0f) + 0.01, 3.0f) * 1e8 * pow(1.0 - z * 0.9f, 3.0f), 1e-2, 3e3);
-    // PixelOut pout;
-    // 
-    // // over
-    // pout.Accum = float4(color.rgb * color.a, color.a) * weight;
-    // pout.Reveal = color.a;
-    // 
-    // return pout;
 }

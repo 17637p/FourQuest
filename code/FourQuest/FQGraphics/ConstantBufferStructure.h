@@ -65,21 +65,6 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix ViewProjMat;
 	};
 
-	struct CBMaterial
-	{
-		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
-		
-		float Metalness = 0.f;
-		float Roughness = 0.f;
-		int bUseAlbedoMap;
-		int bUseMetalnessMap;
-		
-		int bUseRoughnessMap;
-		int bUseNormalMap;
-		int bUseEmissiveMap;
-		int bUseOpacityMap;
-	};
-
 	struct Layer
 	{
 		float TileSizeX;
@@ -119,6 +104,93 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector3 eyePosition;
 		float pad2;
+	};
+
+	struct OutLineColor
+	{
+		DirectX::SimpleMath::Color color;
+	};
+
+	struct ScreenSize
+	{
+		unsigned int width;
+		unsigned int height;
+		float pad[2];
+	};
+
+	struct TerrainHull
+	{
+		float MinDist;
+		float MaxDist;
+		float MinTess;
+		float MaxTess;
+		DirectX::XMFLOAT3 gEyePosW;
+		float pad;
+		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
+	};
+
+	struct CBParticleMaterial
+	{
+		DirectX::SimpleMath::Vector4 BaseColor;
+		DirectX::SimpleMath::Vector4 EmissiveColor;
+		DirectX::SimpleMath::Matrix TexTransform;
+
+		int RenderMode;
+		int ColorMode;
+		int bUseAlbedoMap;
+		int bUseEmissiveMap;
+
+		float AlphaCutoff;
+		float unused[3];
+	};
+
+	struct CBMaterial
+	{
+		DirectX::SimpleMath::Color BaseColor;
+		DirectX::SimpleMath::Color EmissiveColor;
+		DirectX::SimpleMath::Matrix TexTransform;
+
+		float Metalness;
+		float Roughness;
+		int bUseAlbedoMap;
+		int bUseMetalnessMap;
+
+		int bUseRoughnessMap;
+		int bUseNormalMap;
+		int bUseEmissiveMap;
+		float unused[1];
+	};
+
+	struct CBDecalObject
+	{
+		DirectX::SimpleMath::Matrix TexTransform;
+		DirectX::SimpleMath::Matrix World;
+		DirectX::SimpleMath::Matrix View;
+		DirectX::SimpleMath::Matrix Proj;
+		DirectX::SimpleMath::Matrix InvWV;
+
+		DirectX::SimpleMath::Vector2 Deproject;
+		float NormalThresholdInRadian;
+		float unused[1];
+	};
+
+	struct CBDecalMaterial
+	{
+		DirectX::SimpleMath::Color BaseColor;
+		DirectX::SimpleMath::Color EmissiveColor;
+
+		float Metalness;
+		float Roughness;
+		int bUseBaseColor;
+		int bUseMetalness;
+
+		int bUseRoughness;
+		int bUseNormalness;
+		int bIsUsedEmissive;
+		float NormalBlend;
+
+		float AlphaCutoff;
+		float unused[3];
 	};
 
 	struct ParticleFrameData
@@ -234,36 +306,7 @@ namespace fq::graphics
 			float unused[2];
 		} RotationOverLifetimeData;
 
-		struct Render
-		{
-			int bHasTexture;
-			int bUseMultiplyAlpha;
-			int bUseAlphaClip;
-			float AlphaClipThreshold;
-		} RenderData;
-	};
-
-	struct OutLineColor
-	{
-		DirectX::SimpleMath::Color color;
-	};
-
-	struct ScreenSize
-	{
-		unsigned int width;
-		unsigned int height;
-		float pad[2];
-	};
-
-	struct TerrainHull
-	{
-		float MinDist;
-		float MaxDist;
-		float MinTess;
-		float MaxTess;
-		DirectX::XMFLOAT3 gEyePosW;
-		float pad;
-		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
+		CBParticleMaterial ParticleMaterialData;
 	};
 
 	template <typename T>

@@ -4,36 +4,11 @@
 #include <directxtk\SimpleMath.h>
 #include "Pass.h"
 #include "D3D11Common.h"
+#include "ConstantBufferStructure.h"
 
 namespace fq::graphics
 {
 	class D3D11DecalManager;
-
-	namespace decal
-	{
-		struct PerFrame
-		{
-			DirectX::SimpleMath::Matrix TexTransform;
-			DirectX::SimpleMath::Matrix World;
-			DirectX::SimpleMath::Matrix View;
-			DirectX::SimpleMath::Matrix Proj;
-			DirectX::SimpleMath::Matrix InvWV;
-
-			DirectX::SimpleMath::Vector2 Deproject;
-			float NormalThresholdInRadian;
-			float AlphaClipThreshold;
-			
-			int bUseMultiplyAlpha;
-			int bUseAlphaClip;
-			int bUseAlbedoMap;
-			int bUseMetalnessMap;
-
-			int bUseRoughnessMap;
-			int bUseNormalMap;
-			int bUseEmissiveMap;
-			float unused[1];
-		};
-	}
 
 	class DeferredDecalPass : public Pass
 	{
@@ -80,7 +55,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
 
-		std::shared_ptr<D3D11ConstantBuffer<decal::PerFrame>> mPerFrameCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBDecalObject>> mDecalObjectCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBDecalMaterial>> mDecalMaterialCB;
 
 		std::shared_ptr<D3D11VertexBuffer> mBoxVB;
 		std::shared_ptr<D3D11IndexBuffer> mBoxIB;

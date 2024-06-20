@@ -27,6 +27,22 @@
 //
 // }
 //
+// cbuffer cbMaterial
+// {
+//
+//   float4 cBaseColor;                 // Offset:    0 Size:    16 [unused]
+//   float4 cEmissiveColor;             // Offset:   16 Size:    16 [unused]
+//   float4x4 gTexTransform;            // Offset:   32 Size:    64
+//   float cMetalness;                  // Offset:   96 Size:     4 [unused]
+//   float cRoughness;                  // Offset:  100 Size:     4 [unused]
+//   bool cUseAlbedoMap;                // Offset:  104 Size:     4 [unused]
+//   bool cUseMetalnessMap;             // Offset:  108 Size:     4 [unused]
+//   bool cUseRoughnessMap;             // Offset:  112 Size:     4 [unused]
+//   bool cUseNormalMap;                // Offset:  116 Size:     4 [unused]
+//   bool cUseEmissiveMap;              // Offset:  120 Size:     4 [unused]
+//
+// }
+//
 //
 // Resource Bindings:
 //
@@ -35,6 +51,7 @@
 // cbModelTransform                  cbuffer      NA          NA            cb0      1 
 // cbSceneTransform                  cbuffer      NA          NA            cb1      1 
 // cbBoneTransform                   cbuffer      NA          NA            cb2      1 
+// cbMaterial                        cbuffer      NA          NA            cb3      1 
 //
 //
 //
@@ -69,6 +86,7 @@ dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[4], immediateIndexed
 dcl_constantbuffer CB1[8], immediateIndexed
 dcl_constantbuffer CB2[512], dynamicIndexed
+dcl_constantbuffer CB3[4], immediateIndexed
 dcl_input v0.xyz
 dcl_input v1.xyz
 dcl_input v2.xyz
@@ -101,61 +119,61 @@ dcl_temps 20
 //   o1.x <- <main return value>.PositionW.x; o1.y <- <main return value>.PositionW.y; o1.z <- <main return value>.PositionW.z; o1.w <- <main return value>.DepthView; 
 //   o0.x <- <main return value>.PositionH.x; o0.y <- <main return value>.PositionH.y; o0.z <- <main return value>.PositionH.z; o0.w <- <main return value>.PositionH.w
 //
-#line 58 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\ModelVS.hlsl"
+#line 74 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelVS.hlsl"
 ishl r0.xyzw, v4.xyzw, l(2, 2, 2, 2)
 
-#line 55
+#line 71
 mul r1.x, v5.x, cb2[r0.x + 0].w  // r1.x <- worldMat._m30
 mul r1.y, v5.x, cb2[r0.x + 1].w  // r1.y <- worldMat._m31
 mul r1.z, v5.x, cb2[r0.x + 2].w  // r1.z <- worldMat._m32
 mul r1.w, v5.x, cb2[r0.x + 3].w  // r1.w <- worldMat._m33
 
-#line 56
+#line 72
 mul r2.x, v5.y, cb2[r0.y + 0].w
 mul r2.y, v5.y, cb2[r0.y + 1].w
 mul r2.z, v5.y, cb2[r0.y + 2].w
 mul r2.w, v5.y, cb2[r0.y + 3].w
 add r1.xyzw, r1.xyzw, r2.xyzw
 
-#line 57
+#line 73
 mul r2.x, v5.z, cb2[r0.z + 0].w
 mul r2.y, v5.z, cb2[r0.z + 1].w
 mul r2.z, v5.z, cb2[r0.z + 2].w
 mul r2.w, v5.z, cb2[r0.z + 3].w
 add r1.xyzw, r1.xyzw, r2.xyzw
 
-#line 58
+#line 74
 mul r2.x, v5.w, cb2[r0.w + 0].w
 mul r2.y, v5.w, cb2[r0.w + 1].w
 mul r2.z, v5.w, cb2[r0.w + 2].w
 mul r2.w, v5.w, cb2[r0.w + 3].w
 add r1.xyzw, r1.xyzw, r2.xyzw
 
-#line 59
+#line 75
 dp4 r2.w, r1.xyzw, cb0[3].xyzw  // r2.w <- worldMat._m33
 
-#line 55
+#line 71
 mul r3.xyz, v5.xxxx, cb2[r0.x + 0].yxzy  // r3.x <- worldMat._m10; r3.y <- worldMat._m00; r3.z <- worldMat._m20
 
-#line 56
+#line 72
 mov r4.x, r3.y
 
-#line 55
+#line 71
 mul r5.xyz, v5.xxxx, cb2[r0.x + 1].xzyx  // r5.x <- worldMat._m01; r5.y <- worldMat._m21; r5.z <- worldMat._m11
 
-#line 56
+#line 72
 mov r4.y, r5.x
 
-#line 55
+#line 71
 mul r6.xyz, v5.xxxx, cb2[r0.x + 2].xyzx  // r6.x <- worldMat._m02; r6.y <- worldMat._m12; r6.z <- worldMat._m22
 
-#line 56
+#line 72
 mov r4.z, r6.x
 
-#line 55
+#line 71
 mul r7.xyz, v5.xxxx, cb2[r0.x + 3].xyzx  // r7.x <- worldMat._m03; r7.y <- worldMat._m13; r7.z <- worldMat._m23
 
-#line 56
+#line 72
 mov r4.w, r7.x
 mul r8.xyz, v5.yyyy, cb2[r0.y + 0].yxzy
 mov r9.x, r8.y
@@ -167,7 +185,7 @@ mul r12.xyz, v5.yyyy, cb2[r0.y + 3].xyzx
 mov r9.w, r12.x
 add r4.xyzw, r4.xyzw, r9.xyzw  // r4.x <- worldMat._m00; r4.y <- worldMat._m01; r4.z <- worldMat._m02; r4.w <- worldMat._m03
 
-#line 57
+#line 73
 mul r9.xyz, v5.zzzz, cb2[r0.z + 0].yxzy
 mov r13.x, r9.y
 mul r14.xyz, v5.zzzz, cb2[r0.z + 1].xzyx
@@ -178,7 +196,7 @@ mul r0.xyz, v5.zzzz, cb2[r0.z + 3].xyzx
 mov r13.w, r0.x
 add r4.xyzw, r4.xyzw, r13.xyzw
 
-#line 58
+#line 74
 mul r13.xyz, v5.wwww, cb2[r0.w + 0].yxzy
 mov r16.x, r13.y
 mul r17.xyz, v5.wwww, cb2[r0.w + 1].xzyx
@@ -189,10 +207,10 @@ mov r16.z, r18.x
 mov r16.w, r19.x
 add r4.xyzw, r4.xyzw, r16.xyzw
 
-#line 59
+#line 75
 dp4 r2.x, r4.xyzw, cb0[3].xyzw  // r2.x <- worldMat._m03
 
-#line 56
+#line 72
 mov r5.x, r3.z
 mov r3.y, r5.z
 mov r3.z, r6.y
@@ -208,7 +226,7 @@ mov r10.w, r12.z
 add r5.xyzw, r5.xyzw, r10.xyzw  // r5.x <- worldMat._m20; r5.z <- worldMat._m22; r5.w <- worldMat._m23
 add r3.xyzw, r3.xyzw, r8.xyzw  // r3.y <- worldMat._m11; r3.z <- worldMat._m12; r3.w <- worldMat._m13
 
-#line 57
+#line 73
 mov r14.x, r9.z
 mov r9.y, r14.z
 mov r9.z, r15.y
@@ -218,7 +236,7 @@ mov r14.w, r0.z
 add r0.xyzw, r5.xyzw, r14.xyzw  // r0.x <- worldMat._m20; r0.y <- worldMat._m21; r0.z <- worldMat._m22; r0.w <- worldMat._m23
 add r3.xyzw, r3.xyzw, r9.xyzw
 
-#line 58
+#line 74
 mov r17.x, r13.z
 mov r13.y, r17.z
 mov r13.z, r18.y
@@ -228,25 +246,25 @@ mov r17.w, r19.z
 add r0.xyzw, r0.xyzw, r17.xyzw
 add r3.xyzw, r3.xyzw, r13.xyzw
 
-#line 59
+#line 75
 dp4 r2.y, r3.xyzw, cb0[3].xyzw  // r2.y <- worldMat._m13
 dp4 r2.z, r0.xyzw, cb0[3].xyzw  // r2.z <- worldMat._m23
 
-#line 66
+#line 82
 mov r5.xyz, v0.xyzx
 mov r5.w, l(1.000000)
 dp4 r2.w, r5.xyzw, r2.xyzw  // r2.w <- vout.PositionH.w
 
-#line 59
+#line 75
 dp4 r6.w, r1.xyzw, cb0[0].xyzw  // r6.w <- worldMat._m30
 dp4 r6.x, r4.xyzw, cb0[0].xyzw  // r6.x <- worldMat._m00
 dp4 r6.y, r3.xyzw, cb0[0].xyzw  // r6.y <- worldMat._m10
 dp4 r6.z, r0.xyzw, cb0[0].xyzw  // r6.z <- worldMat._m20
 
-#line 66
+#line 82
 dp4 r2.x, r5.xyzw, r6.xyzw  // r2.x <- vout.PositionH.x
 
-#line 59
+#line 75
 dp4 r7.w, r1.xyzw, cb0[1].xyzw  // r7.w <- worldMat._m31
 dp4 r1.w, r1.xyzw, cb0[2].xyzw  // r1.w <- worldMat._m32
 dp4 r7.x, r4.xyzw, cb0[1].xyzw  // r7.x <- worldMat._m01
@@ -256,63 +274,68 @@ dp4 r1.y, r3.xyzw, cb0[2].xyzw  // r1.y <- worldMat._m12
 dp4 r7.z, r0.xyzw, cb0[1].xyzw  // r7.z <- worldMat._m21
 dp4 r1.z, r0.xyzw, cb0[2].xyzw  // r1.z <- worldMat._m22
 
-#line 66
+#line 82
 dp4 r2.y, r5.xyzw, r7.xyzw  // r2.y <- vout.PositionH.y
 dp4 r2.z, r5.xyzw, r1.xyzw  // r2.z <- vout.PositionH.z
 
-#line 67
+#line 83
 dp4 o0.x, r2.xyzw, cb1[4].xyzw
 dp4 o0.y, r2.xyzw, cb1[5].xyzw
 dp4 o0.w, r2.xyzw, cb1[7].xyzw
 dp4 r0.x, r2.xyzw, cb1[6].xyzw  // r0.x <- vout.PositionH.z
 
-#line 82
+#line 98
 mov o0.z, r0.x
 mov o4.z, r0.x
 
-#line 70
+#line 86
 mov r2.w, l(1.000000)
 dp4 o1.w, r2.xyzw, cb1[2].xyzw
 
-#line 82
+#line 98
 mov o1.xyz, r2.xyzx
 
-#line 72
+#line 88
 dp3 r0.x, v1.xyzx, r6.xyzx
 
-#line 75
+#line 91
 dp3 r2.x, v2.xyzx, r6.xyzx
 
-#line 72
+#line 88
 dp3 r0.y, v1.xyzx, r7.xyzx
 
-#line 75
+#line 91
 dp3 r2.y, v2.xyzx, r7.xyzx
 
-#line 72
+#line 88
 dp3 r0.z, v1.xyzx, r1.xyzx
 
-#line 75
+#line 91
 dp3 r2.z, v2.xyzx, r1.xyzx
 
-#line 72
+#line 88
 dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul r0.xyz, r0.wwww, r0.xyzx  // r0.x <- vout.NormalW.x; r0.y <- vout.NormalW.y; r0.z <- vout.NormalW.z
 
-#line 82
+#line 98
 mov o2.xyz, r0.xyzx
 
-#line 75
+#line 91
 dp3 r0.w, r2.xyzx, r2.xyzx
 rsq r0.w, r0.w
 mul r1.xyz, r0.wwww, r2.xyzx  // r1.x <- vout.TangentW.x; r1.y <- vout.TangentW.y; r1.z <- vout.TangentW.z
 
-#line 82
+#line 98
 mov o3.xyz, r1.xyzx
-mov o4.xy, v3.xyxx
 
-#line 73
+#line 94
+mov r2.xy, v3.xyxx
+mov r2.z, l(1.000000)
+dp3 o4.x, r2.xyzx, cb3[2].xywx
+dp3 o4.y, r2.xyzx, cb3[3].xywx
+
+#line 89
 dp3 r2.x, r0.xyzx, cb1[0].xyzx
 dp3 r2.y, r0.xyzx, cb1[1].xyzx
 dp3 r2.z, r0.xyzx, cb1[2].xyzx
@@ -320,7 +343,7 @@ dp3 r0.x, r2.xyzx, r2.xyzx
 rsq r0.x, r0.x
 mul o5.xyz, r0.xxxx, r2.xyzx
 
-#line 76
+#line 92
 dp3 r0.x, r1.xyzx, cb1[0].xyzx
 dp3 r0.y, r1.xyzx, cb1[1].xyzx
 dp3 r0.z, r1.xyzx, cb1[2].xyzx
@@ -328,6 +351,6 @@ dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul o6.xyz, r0.wwww, r0.xyzx
 
-#line 82
+#line 98
 ret 
-// Approximately 144 instruction slots used
+// Approximately 147 instruction slots used

@@ -16,6 +16,26 @@ namespace fq::graphics
 	{
 		using namespace DirectX::SimpleMath;
 
+		auto iter1 = mCatmulRomTopVertics.begin();
+		for (; iter1 != mCatmulRomTopVertics.end(); ++iter1)
+		{
+			if ((*iter1)->Age < 0)
+			{
+				break;
+			}
+		}
+		mCatmulRomTopVertics.erase(iter1, mCatmulRomTopVertics.end());
+
+		auto iter2 = mCatmulRomBottomVertics.begin();
+		for (; iter2 != mCatmulRomBottomVertics.end(); ++iter2)
+		{
+			if ((*iter2)->Age < 0)
+			{
+				break;
+			}
+		}
+		mCatmulRomBottomVertics.erase(iter2, mCatmulRomBottomVertics.end());
+
 		auto iter = mVertices.begin();
 		for (; iter != mVertices.end(); ++iter)
 		{
@@ -26,6 +46,7 @@ namespace fq::graphics
 
 
 			iter->Age -= mTrailInfo.FrameTime;
+
 		}
 		mVertices.erase(iter, mVertices.end());
 
@@ -43,7 +64,9 @@ namespace fq::graphics
 				Vertex topVertex;
 				Vertex bottomVertex;
 				topVertex.Age = mTrailInfo.Time;
+				topVertex.Color = { 1, 1, 1, 1 };
 				bottomVertex.Age = mTrailInfo.Time;
+				bottomVertex.Color = { 1, 1, 1, 1 };
 
 				switch (mTrailInfo.AlignmentType)
 				{
@@ -70,7 +93,46 @@ namespace fq::graphics
 				}
 
 				mVertices.push_front(topVertex);
+				mCatmulRomTopVertics.push_front(&mVertices.front());
 				mVertices.push_front(bottomVertex);
+				mCatmulRomBottomVertics.push_front(&mVertices.front());
+
+				while (mCatmulRomTopVertics.size() >= 4)
+				{
+					size_t catmullRomCount = 2;
+
+					for (size_t j = 0; j < catmullRomCount; ++j)
+					{
+						Vertex catmullRomTopVertex;
+						Vertex catmullRomBottomVertex;
+						catmullRomTopVertex.Age = mTrailInfo.Time;
+						catmullRomTopVertex.Color = { 1, 1, 1, 1 };
+						catmullRomBottomVertex.Age = mTrailInfo.Time;
+						catmullRomBottomVertex.Color = { 1, 1, 1, 1 };
+
+						float weight = (float)(j + 1) / (catmullRomCount + 1);
+
+						catmullRomTopVertex.Position = catmullRom(
+							mCatmulRomTopVertics[0]->Position,
+							mCatmulRomTopVertics[1]->Position,
+							mCatmulRomTopVertics[2]->Position,
+							mCatmulRomTopVertics[3]->Position,
+							weight);
+						catmullRomBottomVertex.Position = catmullRom(
+							mCatmulRomBottomVertics[0]->Position,
+							mCatmulRomBottomVertics[1]->Position,
+							mCatmulRomBottomVertics[2]->Position,
+							mCatmulRomBottomVertics[3]->Position,
+							weight);
+
+						mVertices.push_front(catmullRomTopVertex);
+						mVertices.push_front(catmullRomBottomVertex);
+					}
+
+					mCatmulRomTopVertics.pop_back();
+					mCatmulRomBottomVertics.pop_back();
+				}
+
 			}
 
 			mLastPosition = position;
@@ -115,7 +177,7 @@ namespace fq::graphics
 
 					mVertices[i].UV = { remainder, 0 };
 					mVertices[i + 1].UV = { remainder, 1 };
-				
+
 					remainder += texcoordX;
 				}
 

@@ -27,20 +27,17 @@ namespace fq::graphics
 		mEmitCS = std::make_shared<D3D11ComputeShader>(mDevice, L"ParticleEmitCS.cso");
 		mSimulateCS = std::make_shared<D3D11ComputeShader>(mDevice, L"ParticleSimulateCS.cso");
 
-		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
-		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
-		auto additiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
-		auto subtractiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Subtractive);
-		auto modulateState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Modulate);
-		auto additivePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, additiveState);
-		auto subtractivePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, subtractiveState);
-		auto modulatePipelieState = std::make_shared<PipelineState>(nullptr, nullptr, modulateState);
+		mDefaultRasterizer = mResourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
+		mCullOffRasterizer = mResourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
+		mAdditiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
+		mSubtractiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Subtractive);
+		mModulateState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Modulate);
+		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+
 		auto particleRenderVS = std::make_shared<D3D11VertexShader>(mDevice, L"ParticleVS.cso");
 		auto particleRednerPS = std::make_shared<D3D11PixelShader>(mDevice, L"ParticlePS.cso");
 		auto particleRednerGS = std::make_shared<D3D11GeometryShader>(mDevice, L"ParticleGS.cso");
-		mAdditiveRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, additivePipelieState);
-		mSubtractiveRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, subtractivePipelieState);
-		mModulateRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, modulatePipelieState);
+		mRenderProgram = std::make_shared<ShaderProgram>(mDevice, particleRenderVS, particleRednerGS, particleRednerPS, pipelieState);
 
 		D3D11Util::CreateRandomTexture2DSRV(mDevice->GetDevice().Get(), mRandomTextureSRV.GetAddressOf());
 
@@ -238,10 +235,14 @@ namespace fq::graphics
 		particleObjectData.RotationOverLifetimeData.AngularVelocityInRadian = particleInfo.RotationOverLifetimeData.AngularVelocityInDegree * 3.141592 / 180;
 		particleObjectData.RotationOverLifetimeData.bIsUsed = particleInfo.RotationOverLifetimeData.bIsUsed;
 
-		particleObjectData.RenderData.bHasTexture = particleMaterial->GetHasBaseColor();
-		particleObjectData.RenderData.bUseMultiplyAlpha = true;
-		particleObjectData.RenderData.bUseAlphaClip = true;
-		particleObjectData.RenderData.AlphaClipThreshold = 0.1f;
+		particleObjectData.ParticleMaterialData.BaseColor = materialInfo.BaseColor;
+		particleObjectData.ParticleMaterialData.EmissiveColor = materialInfo.EmissiveColor;
+		particleObjectData.ParticleMaterialData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(materialInfo.Tiling.x, materialInfo.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(materialInfo.Offset.x, materialInfo.Offset.y, 0);
+		particleObjectData.ParticleMaterialData.RenderMode = (int)materialInfo.RenderModeType;
+		particleObjectData.ParticleMaterialData.ColorMode = (int)materialInfo.ColorModeType;
+		particleObjectData.ParticleMaterialData.bUseAlbedoMap = particleMaterial->GetHasBaseColor();
+		particleObjectData.ParticleMaterialData.bUseEmissiveMap = particleMaterial->GetHasEmissive();
+		particleObjectData.ParticleMaterialData.AlphaCutoff = materialInfo.AlphaCutoff;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
@@ -278,7 +279,6 @@ namespace fq::graphics
 		{
 			return;
 		}
-
 
 		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get(), particleObject->mDeadListUAV.Get() };
 		UINT initialCounts[] = { (UINT)-1,  (UINT)-1 };
@@ -347,17 +347,27 @@ namespace fq::graphics
 		std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 
 		const auto& materialInfo = particleMaterial->GetInfo();
+		mRenderProgram->Bind(mDevice);
 
+		if (materialInfo.bIsTwoSide)
+		{
+			mCullOffRasterizer->Bind(mDevice);
+		}
+		else
+		{
+			mDefaultRasterizer->Bind(mDevice);
+		}
+		
 		switch (materialInfo.RenderModeType)
 		{
 		case ParticleMaterialInfo::ERenderMode::Additive:
-			mAdditiveRenderProgram->Bind(mDevice);
+			mAdditiveState->Bind(mDevice);
 			break;
-		case ParticleMaterialInfo::ERenderMode::Subtractive: // 정렬 필요
-			mSubtractiveRenderProgram->Bind(mDevice);
+		case ParticleMaterialInfo::ERenderMode::Subtractive: 
+			mSubtractiveState->Bind(mDevice);
 			break;
 		case ParticleMaterialInfo::ERenderMode::Modulate:
-			mModulateRenderProgram->Bind(mDevice);
+			mModulateState->Bind(mDevice);
 			break;
 		default:
 			assert(false);
@@ -374,10 +384,14 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		ID3D11ShaderResourceView* vs_srv[] = { particleObject->mParticleBufferSRV.Get(), particleObject->mAliveIndexBufferSRV.Get() };
-		ID3D11ShaderResourceView* ps_srv[] = { !particleMaterial->GetHasBaseColor() ? nullptr : particleMaterial->GetBaseColor()->GetSRV().Get(),mDepthSRV.Get() };
+		ID3D11ShaderResourceView* ps_srv[] = { 
+			!particleMaterial->GetHasBaseColor() ? nullptr : particleMaterial->GetBaseColor()->GetSRV().Get(),
+			!particleMaterial->GetHasEmissive() ? nullptr : particleMaterial->GetEmissive()->GetSRV().Get(),
+			mDepthSRV.Get() };
 
 		mParticleFrameCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);
 		mParticleObjectCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
+		mParticleObjectCB->Bind(mDevice, ED3D11ShaderType::GeometryShader, 1);
 
 		mDevice->GetDeviceContext()->VSSetShaderResources(0, ARRAYSIZE(vs_srv), vs_srv);
 		mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(ps_srv), ps_srv);

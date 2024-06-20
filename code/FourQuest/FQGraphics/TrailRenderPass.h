@@ -4,6 +4,7 @@
 #include <memory>
 #include "Pass.h"
 #include "D3D11Common.h"
+#include "ConstantBufferStructure.h"
 
 namespace fq::graphics
 {
@@ -42,12 +43,18 @@ namespace fq::graphics
 
 		D3D11_VIEWPORT mViewport;
 
+		std::shared_ptr<class D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<class D3D11RasterizerState> mCullOffRasterizer;
+		std::shared_ptr<class D3D11BlendState> mAdditiveState;
+		std::shared_ptr<class D3D11BlendState> mSubtractiveState;
+		std::shared_ptr<class D3D11BlendState> mModulateState;
 		std::shared_ptr<ShaderProgram> mShaderProgram;
 		std::shared_ptr<D3D11SamplerState> mLinearWrapSS;
 
 		std::shared_ptr<D3D11VertexBuffer> mDynamicVB;
 
 		std::shared_ptr<D3D11ConstantBuffer<PerFrame>> mPerFrameCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBParticleMaterial>> mMaterialCB;
 	};
 }
 

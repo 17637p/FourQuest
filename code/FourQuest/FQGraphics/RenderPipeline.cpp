@@ -77,6 +77,9 @@ namespace fq::graphics
 	{
 		for (std::shared_ptr<Pass> pass : mPasses)
 		{
+			ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
+			
 			if (mDiffuseCubeMap != nullptr)
 			{
 				mDiffuseCubeMap->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);

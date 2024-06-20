@@ -49,19 +49,14 @@ PixelOut main(VertexOut pin) : SV_Target
     float2 uv = posLocalInTex.xz;
     uv += 0.5f;
     
+    pout.Albedo = gBaseColor;
+    
     if (gUseAlbedoMap)
     {
-        pout.Albedo = gAlbedoMap.Sample(gSamplerAnisotropic, uv);
+        pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, uv);
     }
-    else
-    {
-        pout.Albedo = float4(1, 1, 1, 1);
-    }
-    
-    if (gUseAlphaClip)
-    {
-        clip(pout.Albedo.a - gAlphaClipThreshold);
-    }
+  
+    clip(pout.Albedo.a - gAlphaCutoff);
     
     if (gUseMetalnessMap)
     {
@@ -69,7 +64,7 @@ PixelOut main(VertexOut pin) : SV_Target
     }
     else
     {
-        pout.Metalness = 0.f;
+        pout.Metalness = gMetalness;
 
     }
     
@@ -79,7 +74,7 @@ PixelOut main(VertexOut pin) : SV_Target
     }
     else
     {
-        pout.Roughness = 0.f;
+        pout.Roughness = gRoughness;
     }
     
     if (gUseNormalMap)
@@ -102,18 +97,16 @@ PixelOut main(VertexOut pin) : SV_Target
     {
         pout.Normal = float4(0, 0, 0, 0);
     }
+    
+    pout.Emissive.rgb = gEmissiveColor.rgb;
+    
     if (gUseEmissiveMap)
     {
-        pout.Emissive = gEmissiveMap.Sample(gSamplerAnisotropic, uv);
+        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, uv).rgb;
     }
     else
     {
         pout.Emissive = float4(0, 0, 0, 0);
-    }
-    
-    if (gUseMultiplyAlpha)
-    {
-        pout.Albedo.rgb *= pout.Albedo.a;
     }
     
     return pout;
