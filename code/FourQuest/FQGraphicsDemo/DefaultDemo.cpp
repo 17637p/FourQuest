@@ -39,12 +39,6 @@ bool DefaultDemo::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
 
-	/// Terrain 생성
-	const std::string planeModelPath = "./resource/Graphics/TerrainDemo/Plane.model";
-	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx", planeModelPath);
-	const std::string textureBasePath = "./resource/Graphics/TerrainDemo";
-	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
-
 	/// camera 초기화
 	AddDefaultCamera(mTestGraphics);
 
