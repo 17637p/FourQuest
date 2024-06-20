@@ -164,6 +164,7 @@ void fq::game_engine::PathFindingSystem::OnRemoveComponent(const fq::event::Remo
 	if (event.id == mAgentID)
 	{
 		fq::game_module::NavigationAgent* agent = static_cast<fq::game_module::NavigationAgent*>(event.component);
+		agent->DeleteAgentData();
 		mAgents.erase(std::remove(mAgents.begin(), mAgents.end(), agent));
 	}
 }
@@ -192,6 +193,7 @@ void fq::game_engine::PathFindingSystem::OnDestroyedGameObject(const fq::event::
 	fq::game_module::NavigationAgent* agent = event.object->GetComponent<fq::game_module::NavigationAgent>();
 	if (agent != nullptr)
 	{
+		agent->DeleteAgentData();
 		mAgents.erase(std::remove(mAgents.begin(), mAgents.end(), agent));
 	}
 }

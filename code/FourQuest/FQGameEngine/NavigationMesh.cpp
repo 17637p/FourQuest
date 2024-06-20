@@ -382,6 +382,11 @@ dtCrowd* fq::game_engine::NavigationMeshBuilder::GetCrowd()
 	return mNavigationMeshData->crowd;
 }
 
+void fq::game_engine::NavigationMeshBuilder::RemoveAgent(UINT agentIndex)
+{
+	mNavigationMeshData->crowd->removeAgent(agentIndex);
+}
+
 #pragma region NavigationData
 fq::game_engine::NavigationMeshBuilder::NavigationMeshData::NavigationMeshData(NavigationMeshBuilder* navFieldComponent)
 	:navFieldComponent(navFieldComponent)

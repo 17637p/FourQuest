@@ -16,6 +16,7 @@ namespace fq::game_module
 		virtual void OnUpdate(float dt) override;
 
 		void CreateAgentData();
+		void DeleteAgentData();
 		void RegisterNavigationField(fq::game_engine::PathFindingSystem* pathFindingSystem);
 		
 		float GetSpeed();
