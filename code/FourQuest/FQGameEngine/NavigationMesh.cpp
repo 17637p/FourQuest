@@ -3,6 +3,11 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/AddNavigationMeshObject.h"
 
+#include <fstream>
+#include <io.h>
+
+#include <recastnavigation/RecastAlloc.h>
+
 fq::game_engine::NavigationMeshBuilder::NavigationMeshBuilder(GameProcess* tempProcess)
 	:mTempProcess(tempProcess),
 	mNavigationMeshData(nullptr),
@@ -115,10 +120,10 @@ void fq::game_engine::NavigationMeshBuilder::build(
 	static_assert(sizeof(DirectX::SimpleMath::Vector3) == sizeof(float) * 3);
 	assert(!worldVertices.empty() && !faces.empty());
 	assert(faces.size() % 3 == 0);
-	buildNavigationMesh(reinterpret_cast<float*>(&worldVertices[0]), worldVertices.size(), &faces[0], faces.size() / 3, buildSettings);
+	preBuildNavigationMesh(reinterpret_cast<float*>(&worldVertices[0]), worldVertices.size(), &faces[0], faces.size() / 3, buildSettings);
 }
 
-void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
+void fq::game_engine::NavigationMeshBuilder::preBuildNavigationMesh(
 	const float* worldVertices, size_t verticesNum,
 	const int* faces, size_t facesNum,
 	const BuildSettings& buildSettings /* = Default */)
@@ -229,70 +234,7 @@ void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(
 	rcFreeCompactHeightfield(compactHeightField);
 	rcFreeContourSet(contourSet);
 
-	// detour 单捞磐 积己
-	unsigned char* navData{ nullptr };
-	int navDataSize{ 0 };
-
-	assert(config.maxVertsPerPoly <= DT_VERTS_PER_POLYGON);
-
-	// Update poly flags from areas.
-	for (int i = 0; i < polyMesh->npolys; ++i)
-	{
-		if (polyMesh->areas[i] == RC_WALKABLE_AREA)
-		{
-			polyMesh->areas[i] = 0;
-			polyMesh->flags[i] = 1;
-		}
-	}
-	dtNavMeshCreateParams params;
-	memset(&params, 0, sizeof(params));
-	params.verts = polyMesh->verts;
-	params.vertCount = polyMesh->nverts;
-	params.polys = polyMesh->polys;
-	params.polyAreas = polyMesh->areas;
-	params.polyFlags = polyMesh->flags;
-	params.polyCount = polyMesh->npolys;
-	params.nvp = polyMesh->nvp;
-	params.detailMeshes = detailMesh->meshes;
-	params.detailVerts = detailMesh->verts;
-	params.detailVertsCount = detailMesh->nverts;
-	params.detailTris = detailMesh->tris;
-	params.detailTriCount = detailMesh->ntris;
-	params.offMeshConVerts = 0;
-	params.offMeshConRad = 0;
-	params.offMeshConDir = 0;
-	params.offMeshConAreas = 0;
-	params.offMeshConFlags = 0;
-	params.offMeshConUserID = 0;
-	params.offMeshConCount = 0;
-	params.walkableHeight = config.walkableHeight;
-	params.walkableRadius = config.walkableRadius;
-	params.walkableClimb = config.walkableClimb;
-	rcVcopy(params.bmin, polyMesh->bmin);
-	rcVcopy(params.bmax, polyMesh->bmax);
-	params.cs = config.cs;
-	params.ch = config.ch;
-	params.buildBvTree = true;
-
-	processResult = dtCreateNavMeshData(&params, &navData, &navDataSize);
-	assert(processResult == true);
-
-	dtNavMesh* navMesh{ mNavigationMeshData->navMesh = dtAllocNavMesh() };
-	assert(navMesh != nullptr);
-
-	dtStatus status;
-	status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
-	assert(dtStatusFailed(status) == false);
-
-	dtNavMeshQuery* navQuery{ mNavigationMeshData->navQuery };
-	status = navQuery->init(navMesh, 2048);
-	assert(dtStatusFailed(status) == false);
-
-	mNavigationMeshData->crowd->init(buildSettings.maxCrowdNumber, buildSettings.maxAgentRadius, navMesh);
-
-	mHasNavigationMesh = true;
-
-	spdlog::info("Navigation Mesh Build Success");
+	buildNavigationMesh(buildSettings);
 }
 
 void duDebugDrawNavMeshPoly(std::vector<DirectX::SimpleMath::Vector3>& navMeshVertices, const dtNavMesh& mesh, dtPolyRef ref)
@@ -385,6 +327,310 @@ dtCrowd* fq::game_engine::NavigationMeshBuilder::GetCrowd()
 void fq::game_engine::NavigationMeshBuilder::RemoveAgent(UINT agentIndex)
 {
 	mNavigationMeshData->crowd->removeAgent(agentIndex);
+}
+
+void fq::game_engine::NavigationMeshBuilder::SaveNavMesh(std::string& fileName)
+{
+	if (!mHasNavigationMesh)
+	{
+		spdlog::error("Not Exist Navigation Mesh");
+		return;
+	}
+
+	std::string line;
+	std::ofstream navMeshFile("./resource/NavMesh/" + fileName + ".Nav");
+	if (navMeshFile.is_open()) 
+	{
+		// Write Confing
+		navMeshFile << mNavigationMeshData->config.width << "\n";
+		navMeshFile << mNavigationMeshData->config.height << "\n";
+		navMeshFile << mNavigationMeshData->config.tileSize << "\n";
+		navMeshFile << mNavigationMeshData->config.borderSize << "\n";
+		navMeshFile << mNavigationMeshData->config.cs << "\n";
+		navMeshFile << mNavigationMeshData->config.ch << "\n";
+		navMeshFile << mNavigationMeshData->config.bmin[0] << "\n";
+		navMeshFile << mNavigationMeshData->config.bmin[1] << "\n";
+		navMeshFile << mNavigationMeshData->config.bmin[2] << "\n";
+		navMeshFile << mNavigationMeshData->config.bmax[0] << "\n";
+		navMeshFile << mNavigationMeshData->config.bmax[1] << "\n";
+		navMeshFile << mNavigationMeshData->config.bmax[2] << "\n";
+		navMeshFile << mNavigationMeshData->config.walkableSlopeAngle << "\n";
+		navMeshFile << mNavigationMeshData->config.walkableHeight << "\n";
+		navMeshFile << mNavigationMeshData->config.walkableClimb << "\n";
+		navMeshFile << mNavigationMeshData->config.walkableRadius << "\n";
+		navMeshFile << mNavigationMeshData->config.maxEdgeLen << "\n";
+		navMeshFile << mNavigationMeshData->config.maxSimplificationError << "\n";
+		navMeshFile << mNavigationMeshData->config.minRegionArea << "\n";
+		navMeshFile << mNavigationMeshData->config.mergeRegionArea << "\n";
+		navMeshFile << mNavigationMeshData->config.maxVertsPerPoly << "\n";
+		navMeshFile << mNavigationMeshData->config.detailSampleDist << "\n";
+		navMeshFile << mNavigationMeshData->config.detailSampleMaxError << "\n";
+
+		// Write PolyMesh
+		navMeshFile << mNavigationMeshData->polyMesh->nverts << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->npolys << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->maxpolys << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->nvp << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->bmin[0] << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->bmin[1] << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->bmin[2] << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->bmax[0] << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->bmax[1] << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->bmax[2] << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->cs << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->ch << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->borderSize << "\n";
+		navMeshFile << mNavigationMeshData->polyMesh->maxEdgeError << "\n";
+		for (UINT i = 0; i < 3 * mNavigationMeshData->polyMesh->nverts; i++)
+		{
+			navMeshFile << mNavigationMeshData->polyMesh->verts[i] << "\n";
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys * 2 * mNavigationMeshData->polyMesh->nvp; i++)
+		{
+			navMeshFile << mNavigationMeshData->polyMesh->polys[i] << "\n";
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys; i++)
+		{
+			navMeshFile << mNavigationMeshData->polyMesh->regs[i] << "\n";
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys; i++)
+		{
+			navMeshFile << mNavigationMeshData->polyMesh->flags[i] << "\n";
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys; i++)
+		{
+			navMeshFile << (int)mNavigationMeshData->polyMesh->areas[i] << "\n";
+		}
+
+		//Write PolyMeshDetail
+		navMeshFile << mNavigationMeshData->polyMeshDetail->nmeshes << "\n";
+		navMeshFile << mNavigationMeshData->polyMeshDetail->nverts << "\n";
+		navMeshFile << mNavigationMeshData->polyMeshDetail->ntris << "\n";
+		for (UINT i = 0; i < 4 * mNavigationMeshData->polyMeshDetail->nmeshes; i++)
+		{
+			navMeshFile << mNavigationMeshData->polyMeshDetail->meshes[i] << "\n";
+		}
+		for (UINT i = 0; i < 3 * mNavigationMeshData->polyMeshDetail->nverts; i++)
+		{
+			navMeshFile << mNavigationMeshData->polyMeshDetail->verts[i] << "\n";
+		}
+		for (UINT i = 0; i < 4 * mNavigationMeshData->polyMeshDetail->ntris; i++)
+		{
+			navMeshFile << (int)mNavigationMeshData->polyMeshDetail->tris[i] << "\n";
+		}
+		navMeshFile.close();
+	}
+	else
+	{
+		spdlog::error("NavMesh File Can't write");
+	}
+
+	spdlog::info("Navigation Mesh Save Successful");
+}
+
+void fq::game_engine::NavigationMeshBuilder::LoadNavMesh(std::string& fileName, BuildSettings buildSettrings)
+{
+	if (mNavigationMeshData != nullptr)
+	{
+		delete mNavigationMeshData;
+	}
+
+	if (!(_access(("./resource/NavMesh/" + fileName + ".Nav").c_str(), 0) != -1))
+	{
+		spdlog::error("Not Exist Navigation Mesh");
+	}
+
+	mNavigationMeshData = new NavigationMeshData(this);
+	mNavigationMeshData->polyMesh = rcAllocPolyMesh();
+	mNavigationMeshData->polyMeshDetail = rcAllocPolyMeshDetail();
+
+	std::ifstream navMeshFile("./resource/NavMesh/" + fileName + ".Nav");
+
+	if (navMeshFile.is_open()) {
+		// Read Confing
+		navMeshFile >> mNavigationMeshData->config.width;
+		navMeshFile >> mNavigationMeshData->config.height;
+		navMeshFile >> mNavigationMeshData->config.tileSize;
+		navMeshFile >> mNavigationMeshData->config.borderSize;
+		navMeshFile >> mNavigationMeshData->config.cs;
+		navMeshFile >> mNavigationMeshData->config.ch;
+		navMeshFile >> mNavigationMeshData->config.bmin[0];
+		navMeshFile >> mNavigationMeshData->config.bmin[1];
+		navMeshFile >> mNavigationMeshData->config.bmin[2];
+		navMeshFile >> mNavigationMeshData->config.bmax[0];
+		navMeshFile >> mNavigationMeshData->config.bmax[1];
+		navMeshFile >> mNavigationMeshData->config.bmax[2];
+		navMeshFile >> mNavigationMeshData->config.walkableSlopeAngle;
+		navMeshFile >> mNavigationMeshData->config.walkableHeight;
+		navMeshFile >> mNavigationMeshData->config.walkableClimb;
+		navMeshFile >> mNavigationMeshData->config.walkableRadius;
+		navMeshFile >> mNavigationMeshData->config.maxEdgeLen; 
+		navMeshFile >> mNavigationMeshData->config.maxSimplificationError;
+		navMeshFile >> mNavigationMeshData->config.minRegionArea; 
+		navMeshFile >> mNavigationMeshData->config.mergeRegionArea;
+		navMeshFile >> mNavigationMeshData->config.maxVertsPerPoly; 
+		navMeshFile >> mNavigationMeshData->config.detailSampleDist; 
+		navMeshFile >> mNavigationMeshData->config.detailSampleMaxError;
+
+		// Read PolyMesh
+		navMeshFile >> mNavigationMeshData->polyMesh->nverts;
+		navMeshFile >> mNavigationMeshData->polyMesh->npolys;
+		navMeshFile >> mNavigationMeshData->polyMesh->maxpolys;
+		navMeshFile >> mNavigationMeshData->polyMesh->nvp;
+		navMeshFile >> mNavigationMeshData->polyMesh->bmin[0];
+		navMeshFile >> mNavigationMeshData->polyMesh->bmin[1];
+		navMeshFile >> mNavigationMeshData->polyMesh->bmin[2];
+		navMeshFile >> mNavigationMeshData->polyMesh->bmax[0];
+		navMeshFile >> mNavigationMeshData->polyMesh->bmax[1];
+		navMeshFile >> mNavigationMeshData->polyMesh->bmax[2];
+		navMeshFile >> mNavigationMeshData->polyMesh->cs;
+		navMeshFile >> mNavigationMeshData->polyMesh->ch;
+		navMeshFile >> mNavigationMeshData->polyMesh->borderSize; 
+		navMeshFile >> mNavigationMeshData->polyMesh->maxEdgeError; 
+
+		mNavigationMeshData->polyMesh->verts = 
+			(unsigned short*)rcAlloc(sizeof(unsigned short) * mNavigationMeshData->polyMesh->nverts * 3, RC_ALLOC_PERM);
+		mNavigationMeshData->polyMesh->polys = 
+			(unsigned short*)rcAlloc(sizeof(unsigned short) * mNavigationMeshData->polyMesh->maxpolys * 2 * mNavigationMeshData->polyMesh->nvp, RC_ALLOC_PERM);
+		mNavigationMeshData->polyMesh->regs = 
+			(unsigned short*)rcAlloc(sizeof(unsigned short) * mNavigationMeshData->polyMesh->maxpolys, RC_ALLOC_PERM);
+		mNavigationMeshData->polyMesh->flags = 
+			(unsigned short*)rcAlloc(sizeof(unsigned short) * mNavigationMeshData->polyMesh->maxpolys, RC_ALLOC_PERM);
+		mNavigationMeshData->polyMesh->areas = 
+			(unsigned char*)rcAlloc(sizeof(unsigned char) * mNavigationMeshData->polyMesh->maxpolys, RC_ALLOC_PERM);
+		
+		for (UINT i = 0; i < 3 * mNavigationMeshData->polyMesh->nverts; i++)
+		{
+			navMeshFile >> mNavigationMeshData->polyMesh->verts[i];
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys * 2 * mNavigationMeshData->polyMesh->nvp; i++)
+		{
+			navMeshFile >> mNavigationMeshData->polyMesh->polys[i];
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys; i++)
+		{
+			navMeshFile >> mNavigationMeshData->polyMesh->regs[i];
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys; i++)
+		{
+			navMeshFile >> mNavigationMeshData->polyMesh->flags[i];
+		}
+		for (UINT i = 0; i < mNavigationMeshData->polyMesh->maxpolys; i++)
+		{
+			int temp;
+			navMeshFile >> temp;
+			mNavigationMeshData->polyMesh->areas[i] = temp;
+		}
+
+		// Read PolyMeshDetail
+		navMeshFile >> mNavigationMeshData->polyMeshDetail->nmeshes;
+		navMeshFile >> mNavigationMeshData->polyMeshDetail->nverts;
+		navMeshFile >> mNavigationMeshData->polyMeshDetail->ntris;
+
+		mNavigationMeshData->polyMeshDetail->meshes =
+			(unsigned int*)rcAlloc(sizeof(unsigned int) * mNavigationMeshData->polyMeshDetail->nmeshes * 4, RC_ALLOC_PERM);
+		mNavigationMeshData->polyMeshDetail->verts =
+			(float*)rcAlloc(sizeof(float) * mNavigationMeshData->polyMeshDetail->nverts * 3, RC_ALLOC_PERM);
+		mNavigationMeshData->polyMeshDetail->tris =
+			(unsigned char*)rcAlloc(sizeof(unsigned char) * mNavigationMeshData->polyMeshDetail->ntris * 4, RC_ALLOC_PERM);
+		
+		for (UINT i = 0; i < 4 * mNavigationMeshData->polyMeshDetail->nmeshes; i++)
+		{
+			navMeshFile >> mNavigationMeshData->polyMeshDetail->meshes[i];
+		}
+		for (UINT i = 0; i < 3 * mNavigationMeshData->polyMeshDetail->nverts; i++)
+		{
+			navMeshFile >> mNavigationMeshData->polyMeshDetail->verts[i];
+		}
+		for (UINT i = 0; i < 4 * mNavigationMeshData->polyMeshDetail->ntris; i++)
+		{
+			int temp;
+			navMeshFile >> temp;
+			mNavigationMeshData->polyMeshDetail->tris[i] = temp;
+		}
+
+		navMeshFile.close();
+
+		buildNavigationMesh(buildSettrings);
+		spdlog::info("Navigation Mesh Load Successful");
+	}
+	else
+	{
+		spdlog::error("NavMesh File Can't Load");
+	}
+}
+
+void fq::game_engine::NavigationMeshBuilder::buildNavigationMesh(const BuildSettings& buildSettings)
+{
+	// detour 单捞磐 积己
+	rcConfig config = mNavigationMeshData->config;
+	rcPolyMesh* polyMesh = mNavigationMeshData->polyMesh;
+	rcPolyMeshDetail* detailMesh = mNavigationMeshData->polyMeshDetail;
+	unsigned char* navData{ nullptr };
+	int navDataSize{ 0 };
+
+	assert(config.maxVertsPerPoly <= DT_VERTS_PER_POLYGON);
+
+	// Update poly flags from areas.
+	for (int i = 0; i < polyMesh->npolys; ++i)
+	{
+		if (polyMesh->areas[i] == RC_WALKABLE_AREA)
+		{
+			polyMesh->areas[i] = 0;
+			polyMesh->flags[i] = 1;
+		}
+	}
+	dtNavMeshCreateParams params;
+	memset(&params, 0, sizeof(params));
+	params.verts = polyMesh->verts;
+	params.vertCount = polyMesh->nverts;
+	params.polys = polyMesh->polys;
+	params.polyAreas = polyMesh->areas;
+	params.polyFlags = polyMesh->flags;
+	params.polyCount = polyMesh->npolys;
+	params.nvp = polyMesh->nvp;
+	params.detailMeshes = detailMesh->meshes;
+	params.detailVerts = detailMesh->verts;
+	params.detailVertsCount = detailMesh->nverts;
+	params.detailTris = detailMesh->tris;
+	params.detailTriCount = detailMesh->ntris;
+	params.offMeshConVerts = 0;
+	params.offMeshConRad = 0;
+	params.offMeshConDir = 0;
+	params.offMeshConAreas = 0;
+	params.offMeshConFlags = 0;
+	params.offMeshConUserID = 0;
+	params.offMeshConCount = 0;
+	params.walkableHeight = config.walkableHeight;
+	params.walkableRadius = config.walkableRadius;
+	params.walkableClimb = config.walkableClimb;
+	rcVcopy(params.bmin, polyMesh->bmin);
+	rcVcopy(params.bmax, polyMesh->bmax);
+	params.cs = config.cs;
+	params.ch = config.ch;
+	params.buildBvTree = true;
+
+	bool processResult{ false };
+
+	processResult = dtCreateNavMeshData(&params, &navData, &navDataSize);
+	assert(processResult == true);
+
+	dtNavMesh* navMesh{ mNavigationMeshData->navMesh = dtAllocNavMesh() };
+	assert(navMesh != nullptr);
+
+	dtStatus status;
+	status = navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
+	assert(dtStatusFailed(status) == false);
+
+	dtNavMeshQuery* navQuery{ mNavigationMeshData->navQuery };
+	status = navQuery->init(navMesh, 2048);
+	assert(dtStatusFailed(status) == false);
+
+	mNavigationMeshData->crowd->init(buildSettings.maxCrowdNumber, buildSettings.maxAgentRadius, navMesh);
+
+	mHasNavigationMesh = true;
+
+	spdlog::info("Navigation Mesh Build Success");
 }
 
 #pragma region NavigationData

@@ -1,6 +1,8 @@
 #pragma once
 #include "IEditorWindow.h"
 
+#include <string>
+
 namespace fq::game_engine
 {
 	class GameProcess;
@@ -23,6 +25,7 @@ namespace fq::game_engine
 
 	private:
 		bool mbIsOpen;
+		std::string mSaveFileName;
 
 		GameProcess* mGameProcess;
 		PathFindingSystem* mPathFindingSystem;
