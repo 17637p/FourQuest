@@ -24,7 +24,6 @@ namespace fq::game_engine
 		~ParticleSystem();
 
 		void Initialize(GameProcess* gameProcess);
-		void Update(float dt);
 
 		void OnLoadScene();
 

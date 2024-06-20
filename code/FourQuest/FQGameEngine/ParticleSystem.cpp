@@ -7,7 +7,7 @@
 
 fq::game_engine::ParticleSystem::ParticleSystem()
 	:mGameProcess(nullptr)
-	,mbIsGameLoaded(false)
+	, mbIsGameLoaded(false)
 {}
 
 fq::game_engine::ParticleSystem::~ParticleSystem()
@@ -41,22 +41,6 @@ void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 		RegisterHandle<fq::event::RemoveComponent>(this, &ParticleSystem::RemoveComponent);
 }
 
-void fq::game_engine::ParticleSystem::Update(float dt)
-{
-	using namespace fq::game_module;
-	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-
-	scene->ViewComponents<Transform, Particle>
-		([dt](GameObject& object, Transform& transform, Particle& particle)
-			{
-				auto particleObject = particle.GetParticleObject();
-				if (particleObject)
-				{
-					particleObject->SetTransform(transform.GetWorldMatrix());
-					particleObject->SetFrameTime(dt);
-				}
-			});
-}
 
 void fq::game_engine::ParticleSystem::OnUnLoadScene()
 {
@@ -116,7 +100,6 @@ void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* 
 	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleInfo);
 	particle->SetParticleObject(particleObject);
 
-	particleObject->SetIsRenderDebug(true);
 	particleObject->SetIsEmit(true);
 }
 
@@ -131,6 +114,9 @@ void fq::game_engine::ParticleSystem::unloadParticle(fq::game_module::GameObject
 	auto particleObject = particle->GetParticleObject();
 
 	if (particleObject != nullptr)
+	{
 		mGameProcess->mGraphics->DeleteParticleObject(particleObject);
+		particle->SetParticleObject(nullptr);
+	}
 }
 

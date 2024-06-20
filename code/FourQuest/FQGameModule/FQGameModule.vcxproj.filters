@@ -251,9 +251,6 @@
     <ClInclude Include="Particle.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Decal.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="ImageUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
@@ -268,6 +265,12 @@
     </ClInclude>
     <ClInclude Include="ScreenManager.h">
       <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Decal.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -406,9 +409,6 @@
     <ClCompile Include="Particle.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Decal.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ImageUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
     </ClCompile>
@@ -423,6 +423,12 @@
     </ClCompile>
     <ClCompile Include="ScreenManager.cpp">
       <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Decal.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
