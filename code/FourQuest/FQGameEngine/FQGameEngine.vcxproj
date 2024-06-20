@@ -162,6 +162,7 @@
     <ClInclude Include="DebugSystem.h" />
     <ClInclude Include="DecalSystem.h" />
     <ClInclude Include="EditorEnum.h" />
+    <ClInclude Include="EditorHelper.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="ImGuiColor.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="DebugSystem.cpp" />
     <ClCompile Include="DecalSystem.cpp" />
+    <ClCompile Include="EditorHelper.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
     <ClCompile Include="LightSystem.cpp" />

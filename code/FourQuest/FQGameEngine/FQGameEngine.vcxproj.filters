@@ -206,6 +206,9 @@
     <ClInclude Include="DecalSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="EditorHelper.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -336,6 +339,9 @@
     </ClCompile>
     <ClCompile Include="DecalSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorHelper.cpp">
+      <Filter>src\10.Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

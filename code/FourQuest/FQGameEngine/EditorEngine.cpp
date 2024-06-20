@@ -9,6 +9,7 @@
 
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "EditorHelper.h"
 
 #include "WindowSystem.h"
 #include "ModelSystem.h"
@@ -48,7 +49,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* startSceneName = "GitaeTest";
+	std::string startSceneName = EditorHelper::GetStartSceneName();
 
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
@@ -227,6 +228,8 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	EditorHelper::SetStartSceneName(mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName());
+
 	mGameProcess->mSceneManager->UnloadScene();
 
 	// Editor Process

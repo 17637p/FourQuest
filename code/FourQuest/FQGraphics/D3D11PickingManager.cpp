@@ -81,7 +81,7 @@ void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<ISta
 	for (const auto& meshObject : terrainMeshObjects)
 	{
 		NextColor();
-		mTerrainMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, 200 / 255.0f };
+		mTerrainMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
 	}
 }
 
