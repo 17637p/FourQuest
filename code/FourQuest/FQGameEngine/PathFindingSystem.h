@@ -38,6 +38,10 @@ namespace fq::game_engine
 
 		bool HasNavigationMesh();
 
+		// SaveLoad
+		void SaveNavMesh(std::string& fileName);
+		void LoadNavMesh(std::string& fileName);
+
 		// Debug
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
 

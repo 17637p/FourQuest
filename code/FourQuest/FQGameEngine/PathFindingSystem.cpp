@@ -207,3 +207,13 @@ void fq::game_engine::PathFindingSystem::OnStartScene()
 {
 	mIsStartScene = true;
 }
+
+void fq::game_engine::PathFindingSystem::SaveNavMesh(std::string& fileName)
+{
+	mBuilder->SaveNavMesh(fileName);
+}
+
+void fq::game_engine::PathFindingSystem::LoadNavMesh(std::string& fileName)
+{
+	mBuilder->LoadNavMesh(fileName, *mBuildSettings);
+}

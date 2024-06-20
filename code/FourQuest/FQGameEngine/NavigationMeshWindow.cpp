@@ -7,9 +7,11 @@
 #include "../FQGameModule/SceneManager.h"
 #include "NavigationMesh.h"
 
+#include "imgui_stdlib.h"
 
 fq::game_engine::NavigationMeshWindow::NavigationMeshWindow()
-	:mbIsOpen(false)
+	:mbIsOpen(false),
+	mSaveFileName("NavMesh")
 {
 }
 
@@ -35,6 +37,16 @@ void fq::game_engine::NavigationMeshWindow::beginButtonBuild()
 	{
 		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
 		mPathFindingSystem->BuildNavigationMesh(scene);
+	}
+
+	ImGui::InputText(".txt", &mSaveFileName);
+	if (ImGui::Button("Save", ImVec2{ 133,25 }))
+	{
+		mPathFindingSystem->SaveNavMesh(mSaveFileName);
+	}
+	if (ImGui::Button("Load", ImVec2{ 133,25 }))
+	{
+		mPathFindingSystem->LoadNavMesh(mSaveFileName);
 	}
 }
 
