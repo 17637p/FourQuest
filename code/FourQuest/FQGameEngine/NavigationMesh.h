@@ -44,6 +44,7 @@ namespace fq::game_engine
 		// agent
 		dtNavMeshQuery* GetNavQuery() const;
 		int AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams);
+		void RemoveAgent(UINT agentIndex);
 		dtCrowd* GetCrowd();
 
 		// Debug Draw ¿ë

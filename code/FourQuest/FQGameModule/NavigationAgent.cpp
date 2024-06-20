@@ -14,8 +14,6 @@ fq::game_module::NavigationAgent::NavigationAgent()
 
 fq::game_module::NavigationAgent::~NavigationAgent()
 {
-	if (mImpl)
-		delete mImpl;
 }
 
 void fq::game_module::NavigationAgent::OnUpdate(float dt)
@@ -138,4 +136,9 @@ void fq::game_module::NavigationAgent::CreateAgentData()
 void fq::game_module::NavigationAgent::Stop()
 {
 	mImpl->crowd->resetMoveTarget(mImpl->agentIdx);
+}
+
+void fq::game_module::NavigationAgent::DeleteAgentData()
+{
+	delete mImpl;
 }
