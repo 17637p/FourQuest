@@ -1079,7 +1079,7 @@ void Process::socketUpdate()
 {
 	const auto& bones = mSoketSkinnedMeshObject->GetBones();
 
-	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(54) * mSoketSkinnedMeshObject->GetTransform();
+	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(99) * mSoketSkinnedMeshObject->GetTransform();
 	mSocketStaticMeshObject->SetTransform(socketTransform);
 
 	assert(bones[13].Index == mSoketSkinnedMeshObject->GetBoneIndex(bones[13].Name));
@@ -1153,6 +1153,7 @@ void Process::trailInit()
 	ParticleMaterialInfo particleMaterialInfo;
 	particleMaterialInfo.BaseColorFileName = L"./resource/example/texture/trail01.png";
 	particleMaterialInfo.bIsTwoSide = true;
+	particleMaterialInfo.BaseColor = { 1, 1, 1, 1 };
 	std::shared_ptr<IParticleMaterial> particleMaterial = mTestGraphics->CreateMaterial(particleMaterialInfo);
 
 	{
@@ -1165,28 +1166,73 @@ void Process::trailUpdate()
 {
 	using namespace fq::graphics;
 
+	static float s_prev_time = 0.f;
 	static float s_time = 0.f;
 
-	s_time += mTimeManager.GetDeltaTime();
+	float deltaTime = mTimeManager.GetDeltaTime();
+	deltaTime = fmod(deltaTime, 0.02);
+
+	s_prev_time = s_time;
+	s_time += deltaTime;
 
 	for (auto* trailObject : mTrailObjects)
 	{
 		TrailInfo trailInfo = trailObject->GetTrailInfo();
 
 		trailInfo.FrameTime = mTimeManager.GetDeltaTime();
-		trailInfo.Time = 5.f;
-		trailInfo.Width = 30;
+		trailInfo.Time = 1.5f;
 		trailInfo.MinVertexDistance = 10;
-		trailInfo.AlignmentType = TrailInfo::EAlignment::View;
+		trailInfo.AlignmentType = TrailInfo::EAlignment::TransformZ;
 		trailInfo.TextureMode = TrailInfo::ETextureMode::Stretch;
+
+		trailInfo.WidthRatios.clear();
+		trailInfo.WidthRatios.push_back({ 10000, 0.2 });
+		trailInfo.WidthRatios.push_back({ 7000, 0.4 });
+		trailInfo.WidthRatios.push_back({ 5000, 0.9 });
+		
+		trailInfo.ColorRatios.clear();
+		trailInfo.ColorRatios.push_back({ 1, 0, 0, 0.2});
+		trailInfo.ColorRatios.push_back({ 0, 1, 0, 0.5});
+		trailInfo.ColorRatios.push_back({ 0, 0, 1, 0.9});
+		
+
 		//if (s_time > 1.f)
 		//{
 		//	trailInfo.bIsEmit ^= true;
 		//	s_time -= 1.f;
 		//}
 
+		trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateRotationX(3.14 * 0.5f) * mSocketStaticMeshObject->GetTransform());
+		//
+		// if (s_time < 1.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(0, 0, 10));
+		// }
+		// else if (s_time < 2.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(0, 400, 10));
+		// }
+		// else if (s_time < 3.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(400, 400, 10));
+		// }
+		// else if (s_time < 4.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(400, 0, 10));
+		// }
+		//else
+		//{
+		//	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(200, -200, 10));
+		//	mStaticMeshObjects[0]->SetTransform(DirectX::SimpleMath::Matrix::CreateScale(20) * trailObject->GetTransform());
+		//}
+
 		trailObject->SetTrailInfo(trailInfo);
-		trailObject->SetTransform(mSocketStaticMeshObject->GetTransform());
+
+	}
+
+	if (s_time >= 5.f)
+	{
+		s_time = 0.f;
 	}
 }
 

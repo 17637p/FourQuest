@@ -24,6 +24,8 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 Position;
 			DirectX::SimpleMath::Vector4 Color;
 			DirectX::SimpleMath::Vector2 UV;
+			DirectX::SimpleMath::Vector3 ExtendAxis;
+			DirectX::SimpleMath::Vector3 Origin;
 			float Age;
 		};
 
@@ -47,21 +49,9 @@ namespace fq::graphics
 
 		const std::deque<Vertex>& GetVertices() const { return mVertices; }
 
-
 	private:
-		DirectX::SimpleMath::Vector3 catmullRom(const DirectX::SimpleMath::Vector3& P0, const DirectX::SimpleMath::Vector3& P1, const DirectX::SimpleMath::Vector3& P2, const DirectX::SimpleMath::Vector3& P3, float t) {
-			float t2 = t * t;
-			float t3 = t2 * t;
-
-			DirectX::SimpleMath::Vector3 result;
-			result = 0.5f * ((2.0f * P1) +
-				(-P0 + P2) * t +
-				(2.0f * P0 - 5.0f * P1 + 4.0f * P2 - P3) * t2 +
-				(-P0 + 3.0f * P1 - 3.0f * P2 + P3) * t3);
-
-			return result;
-		}
-
+		DirectX::SimpleMath::Vector3 catmullRom(const DirectX::SimpleMath::Vector3& P0, const DirectX::SimpleMath::Vector3& P1, const DirectX::SimpleMath::Vector3& P2, const DirectX::SimpleMath::Vector3& P3, float t);
+	
 	private:
 		DirectX::SimpleMath::Matrix mTransform;
 		TrailInfo mTrailInfo;
@@ -69,8 +59,8 @@ namespace fq::graphics
 		std::deque<Vertex> mVertices;
 		DirectX::SimpleMath::Vector3 mLastPosition;
 
-		std::deque<Vertex*> mCatmulRomTopVertics;
-		std::deque<Vertex*> mCatmulRomBottomVertics;
+		std::deque<Vertex> mCatmulRomTopVertics;
+		std::deque<Vertex> mCatmulRomBottomVertics;
 	};
 }
 

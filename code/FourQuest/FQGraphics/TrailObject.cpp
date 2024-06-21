@@ -19,72 +19,82 @@ namespace fq::graphics
 		auto iter1 = mCatmulRomTopVertics.begin();
 		for (; iter1 != mCatmulRomTopVertics.end(); ++iter1)
 		{
-			if ((*iter1)->Age < 0)
+			if (iter1->Age >= mTrailInfo.Time)
 			{
 				break;
 			}
+
+			iter1->Age += mTrailInfo.FrameTime;
 		}
 		mCatmulRomTopVertics.erase(iter1, mCatmulRomTopVertics.end());
 
 		auto iter2 = mCatmulRomBottomVertics.begin();
 		for (; iter2 != mCatmulRomBottomVertics.end(); ++iter2)
 		{
-			if ((*iter2)->Age < 0)
+			if (iter2->Age >= mTrailInfo.Time)
 			{
 				break;
 			}
+
+			iter2->Age += mTrailInfo.FrameTime;
 		}
 		mCatmulRomBottomVertics.erase(iter2, mCatmulRomBottomVertics.end());
 
 		auto iter = mVertices.begin();
 		for (; iter != mVertices.end(); ++iter)
 		{
-			if (iter->Age < mTrailInfo.FrameTime)
+			if (iter->Age >= mTrailInfo.Time)
 			{
 				break;
 			}
 
-
-			iter->Age -= mTrailInfo.FrameTime;
+			iter->Age += mTrailInfo.FrameTime;
 
 		}
 		mVertices.erase(iter, mVertices.end());
 
 		DirectX::SimpleMath::Vector3 position = Vector3::Transform(Vector3::Zero, mTransform);
-
 		float distance = DirectX::SimpleMath::Vector3::Distance(position, mLastPosition);
+
 		if (distance > mTrailInfo.MinVertexDistance && mTrailInfo.bIsEmit)
 		{
 			size_t frameMaxDivideCount = std::min<size_t>(distance / mTrailInfo.MinVertexDistance, TrailInfo::MAX_VERTEX_SIZE / 60.f);
 
 			for (size_t i = 0; i < frameMaxDivideCount; ++i)
 			{
-				float ratio = i / frameMaxDivideCount;
+				float ratio = (float)(i + 1) / (frameMaxDivideCount);
 
 				Vertex topVertex;
 				Vertex bottomVertex;
-				topVertex.Age = mTrailInfo.Time;
+
+				topVertex.Age = 0;
 				topVertex.Color = { 1, 1, 1, 1 };
-				bottomVertex.Age = mTrailInfo.Time;
+				bottomVertex.Age = 0;
 				bottomVertex.Color = { 1, 1, 1, 1 };
 
 				switch (mTrailInfo.AlignmentType)
 				{
 				case TrailInfo::EAlignment::View:
 				{
-					Vector3 dir = position - mLastPosition;
-					dir.Normalize();
-					Vector3::TransformNormal(dir, Matrix::CreateFromAxisAngle(dir, 3.14 * 0.5));
-					Vector3 yAxis = dir.Cross(cameraPos - mLastPosition);
+					Vector3 xAxis = position - mLastPosition;
+					xAxis.Normalize();
+					Vector3 zAxis = cameraPos - mLastPosition;
+					zAxis.Normalize();
+					Vector3 yAxis = zAxis.Cross(xAxis);
 					yAxis.Normalize();
-					topVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) + yAxis * mTrailInfo.Width;
-					bottomVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) - yAxis * mTrailInfo.Width;
+
+					topVertex.Origin = Vector3::Lerp(mLastPosition, position, ratio);
+					topVertex.ExtendAxis = yAxis;
+					bottomVertex.Origin = topVertex.Origin;
+					bottomVertex.ExtendAxis = -yAxis;
 				}
 				break;
 				case TrailInfo::EAlignment::TransformZ:
 				{
-					topVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) + mTransform.Up() * mTrailInfo.Width;
-					bottomVertex.Position = Vector3::Lerp(position, mLastPosition, ratio) - mTransform.Up() * mTrailInfo.Width;
+					topVertex.Origin = Vector3::Lerp(mLastPosition, position, ratio);
+					topVertex.ExtendAxis = mTransform.Up();
+					bottomVertex.Origin = topVertex.Origin;
+					bottomVertex.ExtendAxis = -mTransform.Up();
 				}
 				break;
 				default:
@@ -92,49 +102,84 @@ namespace fq::graphics
 					break;
 				}
 
-				mVertices.push_front(topVertex);
-				mCatmulRomTopVertics.push_front(&mVertices.front());
+				topVertex.Position = topVertex.Origin + topVertex.ExtendAxis * 10;
+				bottomVertex.Position = bottomVertex.Origin + bottomVertex.ExtendAxis * 10;
+
+				mVertices.push_front(topVertex); // 앞에 있을 수록 최신 데이터, 
+				mCatmulRomTopVertics.push_front(topVertex);
 				mVertices.push_front(bottomVertex);
-				mCatmulRomBottomVertics.push_front(&mVertices.front());
+				mCatmulRomBottomVertics.push_front(bottomVertex);
 
 				while (mCatmulRomTopVertics.size() >= 4)
 				{
-					size_t catmullRomCount = 2;
-
-					for (size_t j = 0; j < catmullRomCount; ++j)
+					for (size_t j = 0; j < mTrailInfo.VertexDivisionCount; ++j)
 					{
 						Vertex catmullRomTopVertex;
 						Vertex catmullRomBottomVertex;
 						catmullRomTopVertex.Age = mTrailInfo.Time;
-						catmullRomTopVertex.Color = { 1, 1, 1, 1 };
+						catmullRomTopVertex.Color = { 1, 1, 1, 1 };;
 						catmullRomBottomVertex.Age = mTrailInfo.Time;
-						catmullRomBottomVertex.Color = { 1, 1, 1, 1 };
+						catmullRomBottomVertex.Color = { 1, 1, 1, 1 };;
 
-						float weight = (float)(j + 1) / (catmullRomCount + 1);
+						float weight = (float)(j + 1) / (mTrailInfo.VertexDivisionCount + 1);
 
 						catmullRomTopVertex.Position = catmullRom(
-							mCatmulRomTopVertics[0]->Position,
-							mCatmulRomTopVertics[1]->Position,
-							mCatmulRomTopVertics[2]->Position,
-							mCatmulRomTopVertics[3]->Position,
+							mCatmulRomTopVertics[3].Position,
+							mCatmulRomTopVertics[2].Position,
+							mCatmulRomTopVertics[1].Position,
+							mCatmulRomTopVertics[0].Position,
 							weight);
-						catmullRomBottomVertex.Position = catmullRom(
-							mCatmulRomBottomVertics[0]->Position,
-							mCatmulRomBottomVertics[1]->Position,
-							mCatmulRomBottomVertics[2]->Position,
-							mCatmulRomBottomVertics[3]->Position,
+						
+						catmullRomTopVertex.ExtendAxis = catmullRom(
+							mCatmulRomTopVertics[3].ExtendAxis,
+							mCatmulRomTopVertics[2].ExtendAxis,
+							mCatmulRomTopVertics[1].ExtendAxis,
+							mCatmulRomTopVertics[0].ExtendAxis,
 							weight);
 
-						mVertices.push_front(catmullRomTopVertex);
-						mVertices.push_front(catmullRomBottomVertex);
+						catmullRomTopVertex.Age = mCatmulRomTopVertics[2].Age;
+						catmullRomTopVertex.Origin = catmullRom(
+							mCatmulRomTopVertics[3].Origin,
+							mCatmulRomTopVertics[2].Origin,
+							mCatmulRomTopVertics[1].Origin,
+							mCatmulRomTopVertics[0].Origin,
+							weight);
+
+						catmullRomBottomVertex.Position = catmullRom(
+							mCatmulRomBottomVertics[3].Position,
+							mCatmulRomBottomVertics[2].Position,
+							mCatmulRomBottomVertics[1].Position,
+							mCatmulRomBottomVertics[0].Position,
+							weight);
+						
+						catmullRomBottomVertex.ExtendAxis = catmullRom(
+							mCatmulRomBottomVertics[3].ExtendAxis,
+							mCatmulRomBottomVertics[2].ExtendAxis,
+							mCatmulRomBottomVertics[1].ExtendAxis,
+							mCatmulRomBottomVertics[0].ExtendAxis,
+							weight);
+
+						catmullRomBottomVertex.Age = mCatmulRomBottomVertics[2].Age;
+						catmullRomBottomVertex.Origin = catmullRom(
+							mCatmulRomBottomVertics[3].Origin,
+							mCatmulRomBottomVertics[2].Origin,
+							mCatmulRomBottomVertics[1].Origin,
+							mCatmulRomBottomVertics[0].Origin,
+							weight);
+
+						mVertices.insert(mVertices.begin() + 4, catmullRomTopVertex);
+						mVertices.insert(mVertices.begin() + 4, catmullRomBottomVertex);
 					}
 
 					mCatmulRomTopVertics.pop_back();
 					mCatmulRomBottomVertics.pop_back();
 				}
-
 			}
 
+			if (mLastPosition.Distance(mLastPosition, position) > 410.f)
+			{
+				mLastPosition = position;
+			}
 			mLastPosition = position;
 		}
 
@@ -152,6 +197,127 @@ namespace fq::graphics
 			}
 
 			mVertices.erase(mVertices.begin() + vertexCount, mVertices.end());
+		}
+
+		// 보간 처리
+		size_t i = 0;
+		for (auto& vertex : mVertices)
+		{
+			float lifetimeRatio = vertex.Age / mTrailInfo.Time;
+
+			// extend
+			if (mTrailInfo.AlignmentType == TrailInfo::EAlignment::View && mVertices.size() > i + 2)
+			{
+				const auto& nextVertex = mVertices[i + 2];
+				Vector3 xAxis = nextVertex.Origin - vertex.Origin;
+				xAxis.Normalize();
+				Vector3 zAxis = cameraPos - vertex.Origin;
+				zAxis.Normalize();
+				Vector3 yAxis = zAxis.Cross(xAxis);
+				yAxis.Normalize();
+
+				vertex.ExtendAxis = i % 2 == 0 ? yAxis : -yAxis;
+			}
+			++i;
+
+			// pos
+			if (!mTrailInfo.WidthRatios.empty())
+			{
+				auto next = mTrailInfo.WidthRatios.begin();
+
+				for (; next != mTrailInfo.WidthRatios.end(); ++next)
+				{
+					if (next->y > lifetimeRatio)
+					{
+						break;
+					}
+				}
+
+				if (next == mTrailInfo.WidthRatios.begin())
+				{
+					vertex.Position = vertex.Origin + vertex.ExtendAxis * next->x;
+				}
+				else if (next == mTrailInfo.WidthRatios.end())
+				{
+					auto prev = std::prev(next);
+					vertex.Position = vertex.Origin + vertex.ExtendAxis * prev->x;
+				}
+				else
+				{
+					auto prev = std::prev(next);
+					float devider = (next->y - prev->y);
+					float lerpRatio = (lifetimeRatio - prev->y) / (devider == 0 ? 0.001f : devider);
+					vertex.Position = vertex.Origin + vertex.ExtendAxis * std::lerp(prev->x, next->x, lerpRatio);
+				}
+			}
+
+			// color
+			if (!mTrailInfo.ColorRatios.empty())
+			{
+				auto next = mTrailInfo.ColorRatios.begin();
+
+				for (; next != mTrailInfo.ColorRatios.end(); ++next)
+				{
+					if (next->w > lifetimeRatio)
+					{
+						break;
+					}
+				}
+
+				if (next == mTrailInfo.ColorRatios.begin())
+				{
+					vertex.Color.x = next->x;
+					vertex.Color.y = next->y;
+					vertex.Color.z = next->z;
+				}
+				else if (next == mTrailInfo.ColorRatios.end())
+				{
+					auto prev = std::prev(next);
+					vertex.Color.x = prev->x;
+					vertex.Color.y = prev->y;
+					vertex.Color.z = prev->z;
+				}
+				else
+				{
+					auto prev = std::prev(next);
+					float devider = (next->w - prev->w);
+					float lerpRatio = (lifetimeRatio - prev->w) / (devider == 0 ? 0.001f : devider);
+					vertex.Color.x = std::lerp(prev->x, next->x, lerpRatio);
+					vertex.Color.y = std::lerp(prev->y, next->y, lerpRatio);
+					vertex.Color.z = std::lerp(prev->z, next->z, lerpRatio);
+				}
+			}
+
+			// alpha
+			if (!mTrailInfo.AlphaRatios.empty())
+			{
+				auto next = mTrailInfo.AlphaRatios.begin();
+
+				for (; next != mTrailInfo.AlphaRatios.end(); ++next)
+				{
+					if (next->y > lifetimeRatio)
+					{
+						break;
+					}
+				}
+
+				if (next == mTrailInfo.AlphaRatios.begin())
+				{
+					vertex.Color.w = next->x;
+				}
+				else if (next == mTrailInfo.AlphaRatios.end())
+				{
+					auto prev = std::prev(next);
+					vertex.Color.w = prev->x;
+				}
+				else
+				{
+					auto prev = std::prev(next);
+					float devider = (next->y - prev->y);
+					float lerpRatio = (lifetimeRatio - prev->y) / (devider == 0 ? 0.001f : devider);
+					vertex.Color.w = std::lerp(prev->x, next->x, lerpRatio);
+				}
+			}
 		}
 
 		// uv
@@ -235,5 +401,19 @@ namespace fq::graphics
 				break;
 			}
 		}
+	}
+
+	DirectX::SimpleMath::Vector3 TrailObject::catmullRom(const DirectX::SimpleMath::Vector3& P0, const DirectX::SimpleMath::Vector3& P1, const DirectX::SimpleMath::Vector3& P2, const DirectX::SimpleMath::Vector3& P3, float t)
+	{
+		float t2 = t * t;
+		float t3 = t2 * t;
+
+		DirectX::SimpleMath::Vector3 result;
+		result = 0.5f * ((2.0f * P1) +
+			(-P0 + P2) * t +
+			(2.0f * P0 - 5.0f * P1 + 4.0f * P2 - P3) * t2 +
+			(-P0 + 3.0f * P1 - 3.0f * P2 + P3) * t3);
+
+		return result;
 	}
 }

@@ -291,7 +291,7 @@ namespace fq::graphics
 
 	struct TrailInfo
 	{
-		enum { MAX_VERTEX_SIZE = 1024 };
+		enum { MAX_VERTEX_SIZE = 512 };
 
 		enum class EAlignment
 		{
@@ -308,10 +308,12 @@ namespace fq::graphics
 		};
 
 		float Time = 5.f;
-		float Width = 1000.f;
+		std::vector<DirectX::SimpleMath::Vector2> WidthRatios = { {10, 0 } }; // x : width, y : ratio
 		float MinVertexDistance = 1.f; // 월드 공간에 정의된 트레일 간 최소 거리
+		unsigned int VertexDivisionCount = 0; // 두 정점 사이에 곡선으로 나눌 개수
 		bool bIsEmit = true;
-		DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+		std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ { 1, 1, 1, 0} }; // xyz : rgb, z : ratio
+		std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ { 1, 0 } }; // x : a, y : ratio
 
 		EAlignment AlignmentType = EAlignment::View;
 		ETextureMode TextureMode = ETextureMode::DistributePerSegment;
