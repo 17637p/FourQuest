@@ -19,6 +19,7 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterChase::Clon
 
 void fq::client::MonsterChase::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	spdlog::trace("MonsterChase {}", animator.GetGameObject()->GetID());
 	mMoveDistance = 0;
 }
 
@@ -50,8 +51,10 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 	MoveToTarget(animator, moveDist);
 	mMoveDistance += 0;
 
+ 	game_module::GameObject& object = *monster->GetTarget();
+
 	// 타겟과의 거리가 가까울 때
-	float targetDist = monster->CalculateDistanceTarget(*monster->GetTarget());
+	float targetDist = monster->CalculateDistanceTarget(monster->GetTarget());
 
 	if (targetDist < monster->GetTargetAttackRange())
 	{

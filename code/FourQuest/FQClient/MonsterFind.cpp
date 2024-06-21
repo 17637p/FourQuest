@@ -19,20 +19,23 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterFind::Clone
 
 void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	spdlog::trace("MonsterFind {}", animator.GetGameObject()->GetID());
+
 	Monster* monster = animator.GetComponent<Monster>();
 
 	auto componentView = monster->GetScene()->GetComponentView<Player>();
 
 	float distMin = FLT_MAX;
 
-	for (auto& player : componentView)
+	for (auto iter = componentView.begin(); iter != componentView.end() ; ++iter)
 	{
-		float dist = monster->CalculateDistanceTarget(player);
+		float dist = monster->CalculateDistanceTarget(iter.Get());
 
-		if (distMin > dist)
+		if (distMin > dist && !iter.Get()->IsDestroyed())
 		{
 			distMin = dist;
-			monster->SetTarget(&player);
+			
+			monster->SetTarget(iter.Get());
 		}
 	}
 

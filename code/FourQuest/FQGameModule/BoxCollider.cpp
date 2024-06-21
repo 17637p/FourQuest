@@ -44,6 +44,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::BoxCollider::Clone(
 	}
 
 	cloneCollider->mBoxinfomation.colliderInfo.id = fq::physics::unregisterID;
+	cloneCollider->mCollisionCount = 0;
 
 	return cloneCollider;
 }
@@ -106,7 +107,7 @@ void fq::game_module::BoxCollider::OnTriggerEnter(const Collision& collision)
 
 void fq::game_module::BoxCollider::OnTriggerExit(const Collision& collision)
 {
-	assert(mCollisionCount != 0);
+	//assert(mCollisionCount != 0);
 	--mCollisionCount;
 }
 

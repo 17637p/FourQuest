@@ -47,10 +47,10 @@ std::shared_ptr<fq::game_module::Component> fq::client::Monster::Clone(std::shar
 	return cloneMonster;
 }
 
-float fq::client::Monster::CalculateDistanceTarget(fq::game_module::GameObject& target)
+float fq::client::Monster::CalculateDistanceTarget(fq::game_module::GameObject* target)
 {
 	DirectX::SimpleMath::Vector3 targetPosition =
-		target.GetComponent<fq::game_module::Transform>()->GetWorldPosition();
+		target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 	DirectX::SimpleMath::Vector3 myPosition =
 		GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 
@@ -86,6 +86,11 @@ fq::game_module::GameObject* fq::client::Monster::GetTarget() const
 
 void fq::client::Monster::SetTarget(fq::game_module::GameObject* target)
 {
+	if (target != nullptr)
+	{
+		assert(!target->IsDestroyed());
+	}
+
 	mTarget = target;
 }
 

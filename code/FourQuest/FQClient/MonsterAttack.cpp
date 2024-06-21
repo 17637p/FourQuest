@@ -21,6 +21,7 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterAttack::Clo
 
 void fq::client::MonsterAttack::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	spdlog::trace("MonsterAttack {}", animator.GetGameObject()->GetID());
 	// Target 방향 회전
 	rotateToTarget(animator);
 

@@ -18,7 +18,7 @@ namespace fq::client
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 
 		// State ¿ë
-		float CalculateDistanceTarget(fq::game_module::GameObject& gameObject);
+		float CalculateDistanceTarget(fq::game_module::GameObject* gameObject);
 
 		fq::game_module::GameObject* GetTarget() const;
 		void SetTarget(fq::game_module::GameObject* target);
