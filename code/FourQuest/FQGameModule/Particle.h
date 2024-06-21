@@ -64,6 +64,9 @@ namespace fq::game_module
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
+		void OnStart() override;
+		void OnUpdate(float dt) override;
+
 	private:
 		graphics::IParticleObject* mParticleObject;
 		graphics::ParticleInfo mParticleInfo;

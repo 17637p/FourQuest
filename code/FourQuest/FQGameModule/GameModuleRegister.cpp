@@ -12,6 +12,7 @@
 #include "Particle.h"
 #include "Decal.h"
 #include "ImageUI.h"
+#include "Socket.h"
 
 // Physics
 #include "Terrain.h"
@@ -569,6 +570,18 @@ void fq::game_module::RegisterMetaData()
 		.data<&LogStateBehaviour::SetEnterCount, &LogStateBehaviour::GetEnterCount>("EnterCount"_hs)
 		.prop(fq::reflect::prop::Name, "EnterCount")
 		.base<IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Socket	                                 //
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Socket>()
+		.type("Socket"_hs)
+		.prop(fq::reflect::prop::Name, "Socket")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&Socket::SetBoneName, &Socket::GetBoneName>("BoneName"_hs)
+		.prop(fq::reflect::prop::Name, "BoneName")
+		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                              Prefab                                  //

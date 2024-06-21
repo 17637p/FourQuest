@@ -189,7 +189,6 @@ void fq::game_engine::EditorEngine::Process()
 			//							System Process								//
 			//////////////////////////////////////////////////////////////////////////
 
-			mGameProcess->mParticleSystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
@@ -218,6 +217,7 @@ void fq::game_engine::EditorEngine::Process()
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
+
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;
@@ -305,6 +305,8 @@ void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 	mEditor->mInputManager->Update();
 
 	mEditor->mGamePlayWindow->UpdateCamera(dt);
+	mEditor->mGamePlayWindow->UpdateParticle(dt);
+
 	mEditor->mGamePlayWindow->ExcutShortcut();
 	mEditor->mMainMenuBar->ExcuteShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();

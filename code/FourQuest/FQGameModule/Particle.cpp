@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include "Transform.h"
+
 fq::game_module::Particle::Particle()
 	: mParticleInfo{}
 	, mParticleObject(nullptr)
@@ -137,4 +139,22 @@ void fq::game_module::Particle::SetParticlesPerSecond(float data)
 
 	if (mParticleObject)
 		mParticleObject->SetInfo(mParticleInfo);
+}
+
+void fq::game_module::Particle::OnUpdate(float dt)
+{
+	if (mParticleObject)
+	{
+		mParticleObject->SetTransform(GetComponent<Transform>()->GetWorldMatrix());
+		mParticleObject->SetFrameTime(dt);
+	}
+}
+
+void fq::game_module::Particle::OnStart()
+{
+	if (mParticleObject)
+	{
+		mParticleObject->SetIsEmit(true);
+	}
+
 }

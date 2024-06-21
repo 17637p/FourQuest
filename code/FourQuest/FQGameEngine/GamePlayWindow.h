@@ -56,6 +56,11 @@ namespace fq::game_engine
 		void UpdateCamera(float dt);
 
 		/// <summary>
+		/// 현재 선택한 오브젝트의 파티클을 보여줍니다
+		/// </summary>
+		void UpdateParticle(float dt);
+
+		/// <summary>
 		/// 에디터 카메라가 타겟을 바라봅니다
 		/// </summary>
 		void LookAtTarget(DirectX::SimpleMath::Vector3 target);
