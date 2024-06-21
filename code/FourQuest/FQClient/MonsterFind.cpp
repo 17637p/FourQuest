@@ -19,7 +19,6 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterFind::Clone
 
 void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-	spdlog::trace("MonsterFind {}", animator.GetGameObject()->GetID());
 
 	Monster* monster = animator.GetComponent<Monster>();
 

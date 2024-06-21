@@ -13,7 +13,6 @@ fq::client::MonsterIdle::~MonsterIdle()
 
 void fq::client::MonsterIdle::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-	spdlog::trace("MonsterIdle {}", animator.GetGameObject()->GetID());
 }
 
 void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)

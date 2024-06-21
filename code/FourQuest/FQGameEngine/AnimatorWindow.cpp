@@ -585,7 +585,7 @@ void fq::game_engine::AnimatorWindow::SelectObject(fq::editor_event::SelectObjec
 	if (event.object->HasComponent<game_module::Animator>())
 	{
 		auto animator = event.object->GetComponent<game_module::Animator>();
-		mSelectObjectName = event.object->GetName();
+		mSelectObjectName = event.object->GetName(); 
 		mSelectController = animator->GetSharedController();
 		mSelectControllerPath = animator->GetControllerPath();
 		createContext();

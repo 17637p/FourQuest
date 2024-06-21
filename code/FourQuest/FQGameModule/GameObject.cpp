@@ -137,7 +137,7 @@ fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
 std::vector<fq::game_module::GameObject*> fq::game_module::GameObject::GetChildren()
 {
 	assert(HasComponent<Transform>());
-
+ 
 	const auto& childrenTransform = GetComponent<Transform>()->GetChildren();
 
 	std::vector<GameObject*> children;

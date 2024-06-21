@@ -19,7 +19,6 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterChase::Clon
 
 void fq::client::MonsterChase::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-	spdlog::trace("MonsterChase {}", animator.GetGameObject()->GetID());
 	mMoveDistance = 0;
 }
 

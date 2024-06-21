@@ -10,6 +10,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Scene.h"
+#include "ObjectPool.h"
 
 
 using json = nlohmann::json;
@@ -261,7 +262,8 @@ fq::game_module::PrefabManager::PrefabInstance fq::game_module::PrefabManager::I
 	{
 		auto orginObject = objectQueue.front();
 		objectQueue.pop();
-		auto clone = std::make_shared<fq::game_module::GameObject>(*orginObject);
+
+		auto clone = ObjectPool::GetInstance()->Assign<fq::game_module::GameObject>(*orginObject);
 		instance.push_back(clone);
 
 		auto parentT = orginObject->GetComponent<Transform>()->GetParentTransform();

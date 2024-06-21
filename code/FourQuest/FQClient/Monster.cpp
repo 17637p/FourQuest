@@ -86,10 +86,6 @@ fq::game_module::GameObject* fq::client::Monster::GetTarget() const
 
 void fq::client::Monster::SetTarget(fq::game_module::GameObject* target)
 {
-	if (target != nullptr)
-	{
-		assert(!target->IsDestroyed());
-	}
 
 	mTarget = target;
 }
