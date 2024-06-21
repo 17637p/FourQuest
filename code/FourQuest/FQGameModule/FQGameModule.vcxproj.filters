@@ -257,9 +257,6 @@
     <ClInclude Include="ImageUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
-    <ClInclude Include="AddNavigationMeshObject.h">
-      <Filter>include\10.PathFinding</Filter>
-    </ClInclude>
     <ClInclude Include="NavigationAgent.h">
       <Filter>include\10.PathFinding</Filter>
     </ClInclude>
@@ -268,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="ScreenManager.h">
       <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMeshLoader.h">
+      <Filter>include\10.PathFinding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -412,9 +412,6 @@
     <ClCompile Include="ImageUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
     </ClCompile>
-    <ClCompile Include="AddNavigationMeshObject.cpp">
-      <Filter>src\10.PathFinding</Filter>
-    </ClCompile>
     <ClCompile Include="NavigationAgent.cpp">
       <Filter>src\10.PathFinding</Filter>
     </ClCompile>
@@ -423,6 +420,9 @@
     </ClCompile>
     <ClCompile Include="ScreenManager.cpp">
       <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMeshLoader.cpp">
+      <Filter>src\10.PathFinding</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

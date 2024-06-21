@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/NavigationMeshLoader.h"
 
 #include "NavigationMesh.h"
 #include "GameProcess.h"
@@ -206,6 +207,23 @@ bool fq::game_engine::PathFindingSystem::HasNavigationMesh()
 void fq::game_engine::PathFindingSystem::OnStartScene()
 {
 	mIsStartScene = true;
+	auto navMeshLoaderView = mScene->GetComponentView <fq::game_module::NavigationMeshLoader>();
+	for (auto& navMeshLoader : navMeshLoaderView)
+	{
+		std::filesystem::path navPath =
+			navMeshLoader.GetComponent<fq::game_module::NavigationMeshLoader>()->GetNavigationMeshPath();
+
+		std::string navPathFileName = navPath.filename().string();
+		std::string navPathFileNameOnly = navPathFileName.substr(0, navPathFileName.length() - 4);
+
+		mBuilder->LoadNavMesh(navPathFileNameOnly, *mBuildSettings);
+
+		mHasNavigationMesh = true;
+		for (const auto& agent : mAgents)
+		{
+			agent->RegisterNavigationField(this);
+		}
+	}
 }
 
 void fq::game_engine::PathFindingSystem::SaveNavMesh(std::string& fileName)

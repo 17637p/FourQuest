@@ -31,8 +31,8 @@
 #include "LogStateBehaviour.h"
 
 // PathFinding
-#include "AddNavigationMeshObject.h"
 #include "NavigationAgent.h"
+#include "NavigationMeshLoader.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -138,6 +138,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::ReadOnly)
 		.data<&StaticMeshRenderer::SetOutlineColor, &StaticMeshRenderer::GetOutlineColor>("Outline"_hs)
 		.prop(fq::reflect::prop::Name, "Outline")
+		.data<&StaticMeshRenderer::SetIsNavigationMeshUsed, &StaticMeshRenderer::GetIsNavigationMeshUsed>("isUsedNavigationMesh"_hs)
+		.prop(fq::reflect::prop::Name, "isUsedNavigationMesh")
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -922,15 +924,17 @@ void fq::game_module::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                             ±Ê√£±‚									//
 	//////////////////////////////////////////////////////////////////////////
-	entt::meta<AddNavigationMeshObject>()
-		.type("AddNavigationMeshObject"_hs)
-		.prop(fq::reflect::prop::Name, "AddNavigationMeshObject")
-		.data<&AddNavigationMeshObject::SetIsUsed, &AddNavigationMeshObject::GetIsUsed>("IsUsed"_hs)
-		.prop(fq::reflect::prop::Name, "IsUsed")
-		.base<fq::game_module::Component>();
-
 	entt::meta<NavigationAgent>()
 		.type("NavigationAgent"_hs)
 		.prop(fq::reflect::prop::Name, "NavigationAgent")
+		.base<fq::game_module::Component>();
+
+	entt::meta<NavigationMeshLoader>()
+		.type("NavigationMeshLoader"_hs)
+		.prop(fq::reflect::prop::Name, "NavigationMeshLoader")
+		.data<&NavigationMeshLoader::SetNavigationMeshPath, &NavigationMeshLoader::GetNavigationMeshPath>("NavigationMeshPath"_hs)
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::Name, "NavigationMeshPath")
+		.prop(fq::reflect::prop::DragDrop, ".Nav")
 		.base<fq::game_module::Component>();
 }

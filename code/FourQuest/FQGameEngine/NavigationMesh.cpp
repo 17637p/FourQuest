@@ -1,7 +1,6 @@
 #include "NavigationMesh.h"
 
 #include "../FQGameModule/NavigationAgent.h"
-#include "../FQGameModule/AddNavigationMeshObject.h"
 
 #include <fstream>
 #include <io.h>
@@ -33,11 +32,11 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 	std::vector<int> fieldIndices;
 
 	// Mesh 하나로 통합하기 (하나의 Vertex Buffer, Index Buffer)
-	auto componentView = scene->GetComponentView<fq::game_module::AddNavigationMeshObject>();
+	auto componentView = scene->GetComponentView<fq::game_module::StaticMeshRenderer>();
 	for (auto& navObject : componentView)
 	{
 		// NavMesh 추가는 해뒀지만 디버그 등의 이유로 사용하지 않기로 했다면
-		bool isUsed = navObject.GetComponent<fq::game_module::AddNavigationMeshObject>()->GetIsUsed();
+		bool isUsed = navObject.GetComponent<fq::game_module::StaticMeshRenderer>()->GetIsNavigationMeshUsed();
 		if (!isUsed)
 		{
 			continue;

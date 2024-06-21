@@ -1,9 +1,7 @@
 #pragma once
 
-// Builder
 #include "../FQGameModule/GameModule.h"
 
-// Navigation 
 #include <memory>
 
 #include <recastnavigation/Recast.h>

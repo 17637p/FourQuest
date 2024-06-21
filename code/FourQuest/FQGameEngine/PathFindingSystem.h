@@ -76,11 +76,11 @@ namespace fq::game_engine
 
 		fq::game_module::EventHandler mOnLoadSceneHandler;
 		fq::game_module::EventHandler mOnUnloadSceneHandler;
+		fq::game_module::EventHandler mStartSceneHandler;
 		fq::game_module::EventHandler mAddComponentHandler;
 		fq::game_module::EventHandler mRemoveComponentHandler;
 		fq::game_module::EventHandler mOnAddGameObjectHandler;
 		fq::game_module::EventHandler mDestroyedGameObjectHandler;
-		fq::game_module::EventHandler mStartSceneHandler;
 
 		entt::id_type mAgentID;
 	};

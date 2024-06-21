@@ -91,10 +91,16 @@ namespace fq::game_module
 		/// </summary>
 		void SetOutlineColor(DirectX::SimpleMath::Color color);
 
+		// Navigation 사용 여부
+		bool GetIsNavigationMeshUsed() const { return mIsNavigationMeshUsed; }
+		void SetIsNavigationMeshUsed(bool val) { mIsNavigationMeshUsed = val; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
 	private:
+		bool mIsNavigationMeshUsed; // Navigation Mesh의 장애물로 사용할 것인가
+
 		StaticMeshObject* mStaticMeshObject;
 		fq::graphics::MeshObjectInfo mMeshInfomation;
 		DirectX::SimpleMath::Color mOutlineColor;
