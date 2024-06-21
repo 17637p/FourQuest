@@ -269,6 +269,9 @@
     <ClInclude Include="ScreenManager.h">
       <Filter>include\05.Input</Filter>
     </ClInclude>
+    <ClInclude Include="Trail.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -423,6 +426,9 @@
     </ClCompile>
     <ClCompile Include="ScreenManager.cpp">
       <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Trail.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

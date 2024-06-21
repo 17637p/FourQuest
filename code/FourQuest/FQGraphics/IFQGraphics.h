@@ -90,13 +90,25 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
 
-			// VFX
-			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) abstract;
-			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			// Material
 
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) abstract;
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
 			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
 
+			virtual FQ_GRAPHICS void  DeleteNamedMaterial(const std::string& key) abstract;
+			virtual FQ_GRAPHICS void  DeleteNamedParticleMaterial(const std::string& key) abstract;
+			virtual FQ_GRAPHICS void  DeleteNamedDecalMaterial(const std::string& key) abstract;
+
+			// VFX
 			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
 

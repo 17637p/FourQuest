@@ -60,13 +60,24 @@ namespace fq::graphics
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
 
+		// Material
+		std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) override;
+		std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) override;
+		std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& materialInfo) override;
+
+		std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) override;
+		std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) override;
+		std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) override;
+
+		void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) override;
+		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial) override;
+		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial) override;
+
+		void  DeleteNamedMaterial(const std::string& key) override;
+		void  DeleteNamedParticleMaterial(const std::string& key) override;
+		void  DeleteNamedDecalMaterial(const std::string& key) override;
+
 		// VFX
-		std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo);
-		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial);
-
-		std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& materialInfo);
-		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial);
-
 		IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) override;
 		void DeleteParticleObject(IParticleObject* particleObject) override;
 

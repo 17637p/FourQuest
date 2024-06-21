@@ -206,6 +206,7 @@
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="LogStateBehaviour.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="Trail.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +260,7 @@
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="LogStateBehaviour.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="Trail.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>

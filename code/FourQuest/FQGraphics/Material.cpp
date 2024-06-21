@@ -10,9 +10,10 @@
 
 namespace fq::graphics
 {
-	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo)
+	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo, const std::string& name)
 		: mResourceManager(resourceManager)
 		, mInfo(materialInfo)
+		, mName(name)
 	{
 		loadTexture();
 	}
@@ -214,9 +215,10 @@ namespace fq::graphics
 		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, width, height);
 	}
 
-	ParticleMaterial::ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo)
+	ParticleMaterial::ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo, const std::string& name)
 		: mResourceManager(resourceManager)
 		, mInfo(materialInfo)
+		, mName(name)
 	{
 		loadTexture();
 	}
@@ -231,9 +233,10 @@ namespace fq::graphics
 		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
 	}
 
-	DecalMaterial::DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo)
+	DecalMaterial::DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo, const std::string& name)
 		: mResourceManager(resourceManager)
 		, mInfo(materialInfo)
+		, mName(name)
 	{
 		loadTexture();
 	}

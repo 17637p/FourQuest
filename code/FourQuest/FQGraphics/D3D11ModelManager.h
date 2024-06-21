@@ -44,11 +44,21 @@ namespace fq::graphics
 		void DeleteBoneHierarchy(const std::string& key);
 		void DeleteAnimation(const std::string& key);
 
+		std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo);
 		std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo);
-		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial);
-
 		std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& decalMaterialInfo);
+
+		std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo);
+		std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo);
+		std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo);
+
+		void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial);
+		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial);
 		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial);
+
+		void  DeleteNamedMaterial(const std::string& key);
+		void  DeleteNamedParticleMaterial(const std::string& key);
+		void  DeleteNamedDecalMaterial(const std::string& key);
 
 		template <typename Resource>
 		std::shared_ptr<Resource> FindResourceOrNull(std::map<std::string, std::shared_ptr<Resource>>& storage, std::string key);
@@ -74,12 +84,16 @@ namespace fq::graphics
 		std::map<std::string, fq::common::Model> mModels;
 		std::map<std::string, std::shared_ptr<StaticMesh>> mStaticMeshes;
 		std::map<std::string, std::shared_ptr<SkinnedMesh>> mSkinnedMeshes;
-		std::map<std::string, std::shared_ptr<Material>> mMaterials;
 		std::map<std::string, std::shared_ptr<BoneHierarchy>> mBoneHierarchies;
 		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationClips;
 
+		std::set<std::shared_ptr<IMaterial>> mMaterials;
 		std::set<std::shared_ptr<IParticleMaterial>> mParticleMaterials;
 		std::set<std::shared_ptr<IDecalMaterial>> mDecalMaterials;
+
+		std::map<std::string, std::shared_ptr<IMaterial>> mNamedMaterials;
+		std::map<std::string, std::shared_ptr<IParticleMaterial>> mNamedParticleMaterials;
+		std::map<std::string, std::shared_ptr<IDecalMaterial>> mNamedDecalMaterials;
 	};
 
 	template <typename Resource, typename... Args>

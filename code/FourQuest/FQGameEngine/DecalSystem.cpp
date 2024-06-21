@@ -1,6 +1,5 @@
 #include "DecalSystem.h"
 
-
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"

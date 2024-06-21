@@ -47,6 +47,10 @@ namespace fq::graphics
 		void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) override { mIParticleMaterial = iParticleMaterial; }
 		std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const override { return mIParticleMaterial; }
 
+		// FrameTime
+		void SetFrameTime(float frameTime) override { mFrameTime = frameTime; }
+		float GetFrameTIme() const override {return mFrameTime;		}
+
 		const std::deque<Vertex>& GetVertices() const { return mVertices; }
 
 	private:
@@ -54,6 +58,7 @@ namespace fq::graphics
 	
 	private:
 		DirectX::SimpleMath::Matrix mTransform;
+		float mFrameTime;
 		TrailInfo mTrailInfo;
 		std::shared_ptr<IParticleMaterial> mIParticleMaterial;
 		std::deque<Vertex> mVertices;

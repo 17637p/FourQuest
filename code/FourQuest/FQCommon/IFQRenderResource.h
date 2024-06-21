@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <string>
 #include "FQCommonLoader.h"
 #include "FQCommonGraphics.h"
 
@@ -21,6 +22,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetInfo(const MaterialInfo& info) abstract;
 			virtual FQ_GRAPHICS const MaterialInfo& GetInfo() const abstract;
 
+			virtual FQ_GRAPHICS const std::string& GetName() const abstract;
+
 		protected:
 			virtual ~IMaterial() = default;
 		};
@@ -31,6 +34,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetInfo(const ParticleMaterialInfo& info) abstract;
 			virtual FQ_GRAPHICS const ParticleMaterialInfo& GetInfo() const abstract;
 
+			virtual FQ_GRAPHICS const std::string& GetName() const abstract;
+
 		protected:
 			virtual ~IParticleMaterial() = default;
 		};
@@ -40,6 +45,8 @@ extern "C" {
 		public:
 			virtual FQ_GRAPHICS void SetInfo(const DecalMaterialInfo& info) abstract;
 			virtual FQ_GRAPHICS const DecalMaterialInfo& GetInfo() const abstract;
+
+			virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
 		protected:
 			virtual ~IDecalMaterial() = default;

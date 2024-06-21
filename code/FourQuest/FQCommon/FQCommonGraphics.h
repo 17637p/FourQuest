@@ -317,8 +317,6 @@ namespace fq::graphics
 
 		EAlignment AlignmentType = EAlignment::View;
 		ETextureMode TextureMode = ETextureMode::DistributePerSegment;
-
-		float FrameTime = 0.f;
 	};
 
 	namespace debug
@@ -478,8 +476,6 @@ namespace fq::graphics
 			Difference // 
 		} ColorModeType = EColorMode::Multiply;
 
-		bool bIsTwoSide = false;
-
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
 
@@ -493,6 +489,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 
 		float AlphaCutoff = 0.1f;
+		bool bIsTwoSide = false;
 	};
 
 	struct DecalMaterialInfo

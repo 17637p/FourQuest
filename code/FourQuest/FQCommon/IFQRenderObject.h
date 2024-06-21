@@ -238,6 +238,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const abstract;
 
+			// FrameTime
+			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
+			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
+
 		protected:
 			virtual ~ITrailObject() = default;
 		};

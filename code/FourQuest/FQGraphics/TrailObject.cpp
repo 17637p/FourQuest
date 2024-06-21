@@ -7,6 +7,7 @@ namespace fq::graphics
 		: mTransform(transform)
 		, mTrailInfo(trailInfo)
 		, mIParticleMaterial(iParticleMaterial)
+		, mFrameTime(0.f)
 	{
 		using namespace DirectX::SimpleMath;
 		mLastPosition = Vector3::Transform(Vector3::Zero, mTransform);
@@ -24,7 +25,7 @@ namespace fq::graphics
 				break;
 			}
 
-			iter1->Age += mTrailInfo.FrameTime;
+			iter1->Age += mFrameTime;
 		}
 		mCatmulRomTopVertics.erase(iter1, mCatmulRomTopVertics.end());
 
@@ -36,7 +37,7 @@ namespace fq::graphics
 				break;
 			}
 
-			iter2->Age += mTrailInfo.FrameTime;
+			iter2->Age += mFrameTime;
 		}
 		mCatmulRomBottomVertics.erase(iter2, mCatmulRomBottomVertics.end());
 
@@ -48,7 +49,7 @@ namespace fq::graphics
 				break;
 			}
 
-			iter->Age += mTrailInfo.FrameTime;
+			iter->Age += mFrameTime;
 
 		}
 		mVertices.erase(iter, mVertices.end());
@@ -66,11 +67,8 @@ namespace fq::graphics
 
 				Vertex topVertex;
 				Vertex bottomVertex;
-
 				topVertex.Age = 0;
-				topVertex.Color = { 1, 1, 1, 1 };
 				bottomVertex.Age = 0;
-				bottomVertex.Color = { 1, 1, 1, 1 };
 
 				switch (mTrailInfo.AlignmentType)
 				{
@@ -102,9 +100,6 @@ namespace fq::graphics
 					break;
 				}
 
-				topVertex.Position = topVertex.Origin + topVertex.ExtendAxis * 10;
-				bottomVertex.Position = bottomVertex.Origin + bottomVertex.ExtendAxis * 10;
-
 				mVertices.push_front(topVertex); // 앞에 있을 수록 최신 데이터, 
 				mCatmulRomTopVertics.push_front(topVertex);
 				mVertices.push_front(bottomVertex);
@@ -116,50 +111,20 @@ namespace fq::graphics
 					{
 						Vertex catmullRomTopVertex;
 						Vertex catmullRomBottomVertex;
-						catmullRomTopVertex.Age = mTrailInfo.Time;
-						catmullRomTopVertex.Color = { 1, 1, 1, 1 };;
-						catmullRomBottomVertex.Age = mTrailInfo.Time;
-						catmullRomBottomVertex.Color = { 1, 1, 1, 1 };;
 
 						float weight = (float)(j + 1) / (mTrailInfo.VertexDivisionCount + 1);
-
-						catmullRomTopVertex.Position = catmullRom(
-							mCatmulRomTopVertics[3].Position,
-							mCatmulRomTopVertics[2].Position,
-							mCatmulRomTopVertics[1].Position,
-							mCatmulRomTopVertics[0].Position,
-							weight);
 						
-						catmullRomTopVertex.ExtendAxis = catmullRom(
-							mCatmulRomTopVertics[3].ExtendAxis,
-							mCatmulRomTopVertics[2].ExtendAxis,
-							mCatmulRomTopVertics[1].ExtendAxis,
-							mCatmulRomTopVertics[0].ExtendAxis,
-							weight);
-
-						catmullRomTopVertex.Age = mCatmulRomTopVertics[2].Age;
+						catmullRomTopVertex.ExtendAxis = DirectX::SimpleMath::Vector3::Lerp(mCatmulRomTopVertics[2].ExtendAxis, mCatmulRomTopVertics[1].ExtendAxis, weight);
+						catmullRomTopVertex.Age = std::lerp(mCatmulRomTopVertics[2].Age, mCatmulRomTopVertics[1].Age, weight);
 						catmullRomTopVertex.Origin = catmullRom(
 							mCatmulRomTopVertics[3].Origin,
 							mCatmulRomTopVertics[2].Origin,
 							mCatmulRomTopVertics[1].Origin,
 							mCatmulRomTopVertics[0].Origin,
 							weight);
-
-						catmullRomBottomVertex.Position = catmullRom(
-							mCatmulRomBottomVertics[3].Position,
-							mCatmulRomBottomVertics[2].Position,
-							mCatmulRomBottomVertics[1].Position,
-							mCatmulRomBottomVertics[0].Position,
-							weight);
 						
-						catmullRomBottomVertex.ExtendAxis = catmullRom(
-							mCatmulRomBottomVertics[3].ExtendAxis,
-							mCatmulRomBottomVertics[2].ExtendAxis,
-							mCatmulRomBottomVertics[1].ExtendAxis,
-							mCatmulRomBottomVertics[0].ExtendAxis,
-							weight);
-
-						catmullRomBottomVertex.Age = mCatmulRomBottomVertics[2].Age;
+						catmullRomBottomVertex.ExtendAxis = DirectX::SimpleMath::Vector3::Lerp(mCatmulRomBottomVertics[2].ExtendAxis, mCatmulRomBottomVertics[1].ExtendAxis, weight);
+						catmullRomBottomVertex.Age = std::lerp(mCatmulRomBottomVertics[2].Age, mCatmulRomBottomVertics[1].Age, weight);
 						catmullRomBottomVertex.Origin = catmullRom(
 							mCatmulRomBottomVertics[3].Origin,
 							mCatmulRomBottomVertics[2].Origin,
@@ -176,31 +141,19 @@ namespace fq::graphics
 				}
 			}
 
-			if (mLastPosition.Distance(mLastPosition, position) > 410.f)
-			{
-				mLastPosition = position;
-			}
 			mLastPosition = position;
 		}
 
 		// vertex 조정
 		while (mVertices.size() > TrailInfo::MAX_VERTEX_SIZE)
 		{
-			size_t vertexCount = mVertices.size();
 			size_t removeCount = (mVertices.size() / 4) * 2;
-			vertexCount -= removeCount;
-
-			for (size_t i = 0; i < vertexCount; i += 2)
-			{
-				mVertices[i] = mVertices[removeCount + i];
-				mVertices[i + 1] = mVertices[removeCount + i + 1];
-			}
-
-			mVertices.erase(mVertices.begin() + vertexCount, mVertices.end());
+			mVertices.erase(mVertices.end() - (removeCount), mVertices.end());
 		}
 
 		// 보간 처리
 		size_t i = 0;
+
 		for (auto& vertex : mVertices)
 		{
 			float lifetimeRatio = vertex.Age / mTrailInfo.Time;
@@ -220,7 +173,7 @@ namespace fq::graphics
 			}
 			++i;
 
-			// pos
+			// pos, gpu에서 처리 가능
 			if (!mTrailInfo.WidthRatios.empty())
 			{
 				auto next = mTrailInfo.WidthRatios.begin();
@@ -251,7 +204,7 @@ namespace fq::graphics
 				}
 			}
 
-			// color
+			// color, gpu에서 처리 가능
 			if (!mTrailInfo.ColorRatios.empty())
 			{
 				auto next = mTrailInfo.ColorRatios.begin();
@@ -288,7 +241,7 @@ namespace fq::graphics
 				}
 			}
 
-			// alpha
+			// alpha, gpu에서 처리 가능
 			if (!mTrailInfo.AlphaRatios.empty())
 			{
 				auto next = mTrailInfo.AlphaRatios.begin();

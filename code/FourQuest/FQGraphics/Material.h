@@ -18,7 +18,7 @@ namespace fq::graphics
 	class Material : public IMaterial
 	{
 	public:
-		Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo);
+		Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo, const std::string& name = "");
 		~Material() = default;
 
 		void SetInfo(const MaterialInfo& info) override { mInfo = info; loadTexture(); }
@@ -40,10 +40,13 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
 		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
 
+		const std::string& GetName() const override { return mName; }
+
 	private:
 		void loadTexture();
 
 	private:
+		std::string mName;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		MaterialInfo mInfo;
 
@@ -114,7 +117,7 @@ namespace fq::graphics
 	class ParticleMaterial : public IParticleMaterial
 	{
 	public:
-		ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo);
+		ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo, const std::string& name = "");
 		~ParticleMaterial() = default;
 
 		void SetInfo(const ParticleMaterialInfo& info) override { mInfo = info; loadTexture(); }
@@ -128,10 +131,13 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
 
+		const std::string& GetName() const override { return mName; }
+
 	private:
 		void loadTexture();
 
 	private:
+		std::string mName;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		ParticleMaterialInfo mInfo;
 
@@ -142,7 +148,7 @@ namespace fq::graphics
 	class DecalMaterial : public IDecalMaterial
 	{
 	public:
-		DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo);
+		DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo, const std::string& name = "");
 		~DecalMaterial() = default;
 
 		void SetInfo(const DecalMaterialInfo& info) override { mInfo = info; loadTexture(); }
@@ -163,11 +169,14 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
 		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
+		
+		const std::string& GetName() const override { return mName; }
 
 	private:
 		void loadTexture();
 
 	private:
+		std::string mName;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		DecalMaterialInfo mInfo;
 

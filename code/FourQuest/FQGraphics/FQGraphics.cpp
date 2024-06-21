@@ -339,22 +339,56 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 	}
 }
 
+std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
 std::shared_ptr<IParticleMaterial> FQGraphics::CreateMaterial(const ParticleMaterialInfo& materialInfo)
 {
 	return mModelManager->CreateMaterial(materialInfo);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateMaterial(const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+
+std::shared_ptr<IMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+
+void FQGraphics::DeleteMaterial(std::shared_ptr<IMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
 }
 void FQGraphics::DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial)
 {
 	mModelManager->DeleteMaterial(iMaterial);
 }
-
-std::shared_ptr<IDecalMaterial> FQGraphics::CreateMaterial(const DecalMaterialInfo& materialInfo)
-{
-	return mModelManager->CreateMaterial(materialInfo);
-}
 void FQGraphics::DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial)
 {
 	mModelManager->DeleteMaterial(iMaterial);
+}
+
+void FQGraphics::DeleteNamedMaterial(const std::string& key) 
+{
+	mModelManager->DeleteNamedMaterial(key);
+}
+void FQGraphics::DeleteNamedParticleMaterial(const std::string& key) 
+{
+	mModelManager->DeleteNamedParticleMaterial(key);
+}
+void FQGraphics::DeleteNamedDecalMaterial(const std::string& key) 
+{
+	mModelManager->DeleteNamedDecalMaterial(key);
 }
 
 IParticleObject* FQGraphics::CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)

@@ -117,7 +117,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
-	for (size_t i = 0; i < 10; ++i)
+	for (size_t i = 0; i < 1; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
@@ -520,6 +520,15 @@ void Process::Render()
 		const auto& data = obj->GetMeshData();
 	}
 
+	static float s_animTime = 0.f;
+	s_animTime += mTimeManager.GetDeltaTime();
+	bool bIsUpdateAnim = false;
+
+	if (s_animTime > 0.02f)
+	{
+		bIsUpdateAnim = true;
+		s_animTime -= 0.02f;
+	}
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
@@ -556,7 +565,11 @@ void Process::Render()
 			obj->SetUseShadow(false);
 		}
 
-		obj->UpdateAnimationTime(s_time);
+		if (bIsUpdateAnim)
+		{
+			obj->UpdateAnimationTime(s_time);
+		}
+
 		obj->SetAlpha(0.3f);
 		const auto& data = obj->GetMeshData();
 	}
@@ -1181,20 +1194,20 @@ void Process::trailUpdate()
 
 		trailInfo.FrameTime = mTimeManager.GetDeltaTime();
 		trailInfo.Time = 1.5f;
-		trailInfo.MinVertexDistance = 10;
+		trailInfo.MinVertexDistance = 50;
 		trailInfo.AlignmentType = TrailInfo::EAlignment::TransformZ;
 		trailInfo.TextureMode = TrailInfo::ETextureMode::Stretch;
-
+		trailInfo.VertexDivisionCount = 5;
 		trailInfo.WidthRatios.clear();
 		trailInfo.WidthRatios.push_back({ 10000, 0.2 });
 		trailInfo.WidthRatios.push_back({ 7000, 0.4 });
 		trailInfo.WidthRatios.push_back({ 5000, 0.9 });
-		
+
 		trailInfo.ColorRatios.clear();
-		trailInfo.ColorRatios.push_back({ 1, 0, 0, 0.2});
-		trailInfo.ColorRatios.push_back({ 0, 1, 0, 0.5});
-		trailInfo.ColorRatios.push_back({ 0, 0, 1, 0.9});
-		
+		trailInfo.ColorRatios.push_back({ 1, 0, 0, 0.2 });
+		trailInfo.ColorRatios.push_back({ 0, 1, 0, 0.5 });
+		trailInfo.ColorRatios.push_back({ 0, 0, 1, 0.9 });
+
 
 		//if (s_time > 1.f)
 		//{

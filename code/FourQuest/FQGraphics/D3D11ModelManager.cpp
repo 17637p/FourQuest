@@ -180,7 +180,7 @@ namespace fq::graphics
 	}
 	void D3D11ModelManager::DeleteMaterial(const std::string& key)
 	{
-		mMaterials.erase(key);
+		mNamedMaterials.erase(key);
 	}
 	void D3D11ModelManager::DeleteBoneHierarchy(const std::string& key)
 	{
@@ -191,28 +191,95 @@ namespace fq::graphics
 		mAnimationClips.erase(key);
 	}
 
+	std::shared_ptr<IMaterial> D3D11ModelManager::CreateMaterial(const MaterialInfo& materialInfo)
+	{
+		std::shared_ptr<IMaterial> material = std::make_shared<Material>(mResourceManager, materialInfo);
+		mMaterials.insert(material);
+		return material;
+	}
 	std::shared_ptr<IParticleMaterial> D3D11ModelManager::CreateMaterial(const ParticleMaterialInfo& materialInfo)
 	{
 		std::shared_ptr<IParticleMaterial> material = std::make_shared<ParticleMaterial>(mResourceManager, materialInfo);
 		mParticleMaterials.insert(material);
-
 		return material;
 	}
-	void  D3D11ModelManager::DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial)
-	{
-		mParticleMaterials.erase(iParticleMaterial);
-	}
-
 	std::shared_ptr<IDecalMaterial> D3D11ModelManager::CreateMaterial(const DecalMaterialInfo& materialInfo)
 	{
 		std::shared_ptr<IDecalMaterial> material = std::make_shared<DecalMaterial>(mResourceManager, materialInfo);
 		mDecalMaterials.insert(material);
-
 		return material;
+	}
+
+	std::shared_ptr<IMaterial> D3D11ModelManager::CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo)
+	{
+		auto find = mNamedMaterials.find(key);
+
+		if (find != mNamedMaterials.end())
+		{
+			return find->second;
+		}
+
+		std::shared_ptr<IMaterial> material = std::make_shared<Material>(mResourceManager, materialInfo);
+		mNamedMaterials.insert({ key, material });
+		mMaterials.insert(material);
+		return material;
+	}
+	std::shared_ptr<IParticleMaterial> D3D11ModelManager::CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo)
+	{
+		auto find = mNamedParticleMaterials.find(key);
+
+		if (find != mNamedParticleMaterials.end())
+		{
+			return find->second;
+		}
+
+		std::shared_ptr<IParticleMaterial> material = std::make_shared<ParticleMaterial>(mResourceManager, materialInfo);
+		mNamedParticleMaterials.insert({ key, material });
+		mParticleMaterials.insert(material);
+		return material;
+	}
+	std::shared_ptr<IDecalMaterial> D3D11ModelManager::CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& materialInfo)
+	{
+		auto find = mNamedDecalMaterials.find(key);
+
+		if (find != mNamedDecalMaterials.end())
+		{
+			return find->second;
+		}
+
+		std::shared_ptr<IDecalMaterial> material = std::make_shared<DecalMaterial>(mResourceManager, materialInfo);
+		mNamedDecalMaterials.insert({ key, material });
+		mDecalMaterials.insert(material);
+		return material;
+	}
+
+	void  D3D11ModelManager::DeleteMaterial(std::shared_ptr<IMaterial> iMaterial)
+	{
+		mMaterials.erase(iMaterial);
+		mNamedMaterials.erase(iMaterial->GetName());
+	}
+	void  D3D11ModelManager::DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial)
+	{
+		mParticleMaterials.erase(iParticleMaterial);
+		mNamedParticleMaterials.erase(iParticleMaterial->GetName());
 	}
 	void  D3D11ModelManager::DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial)
 	{
 		mDecalMaterials.erase(iDecalMaterial);
+		mNamedDecalMaterials.erase(iDecalMaterial->GetName());
+	}
+
+	void  D3D11ModelManager::DeleteNamedMaterial(const std::string& key)
+	{
+		mNamedMaterials.erase(key);
+	}
+	void  D3D11ModelManager::DeleteNamedParticleMaterial(const std::string& key)
+	{
+		mNamedParticleMaterials.erase(key);
+	}
+	void  D3D11ModelManager::DeleteNamedDecalMaterial(const std::string& key)
+	{
+		mNamedDecalMaterials.erase(key);
 	}
 
 	const fq::common::Model& D3D11ModelManager::FindModel(const std::string& path)
