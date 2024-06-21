@@ -79,6 +79,7 @@ namespace fq::game_engine
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSettingFilePath;
 		ax::NodeEditor::EditorContext* mContext;
+		entt::id_type mSelectNodeID;
 
 		bool mbIsOpen;
 		std::unordered_map<NodeID, std::string> mMatchNodeID;

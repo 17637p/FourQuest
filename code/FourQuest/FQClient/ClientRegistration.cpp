@@ -125,6 +125,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<Attack>()
 		.type("Attack"_hs)
 		.prop(fq::reflect::prop::Name, "Attack")
+		.data<&Attack::mAttackTime>("AttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTime")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

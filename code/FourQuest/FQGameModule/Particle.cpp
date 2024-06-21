@@ -149,3 +149,12 @@ void fq::game_module::Particle::OnUpdate(float dt)
 		mParticleObject->SetFrameTime(dt);
 	}
 }
+
+void fq::game_module::Particle::OnStart()
+{
+	if (mParticleObject)
+	{
+		mParticleObject->SetIsEmit(true);
+	}
+
+}
