@@ -1428,12 +1428,9 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					}
 					beginIsItemHovered_Comment(data);
 				}
-
 			}
-			ImGui::EndChild();
 		}
-
-
+		ImGui::EndChild();
 	}
 	ImGui::PopStyleColor(1);
 
