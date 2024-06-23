@@ -190,6 +190,9 @@
     <ClInclude Include="D3D11DecalManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11LightProbeManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -450,6 +453,9 @@
       <Filter>Pass\DeferredPipelinePass\Source</Filter>
     </ClCompile>
     <ClCompile Include="D3D11DecalManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11LightProbeManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
   </ItemGroup>

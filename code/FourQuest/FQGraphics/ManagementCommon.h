@@ -11,5 +11,7 @@
 #include "D3D11PickingManager.h"
 #include "D3D11CullingManager.h"
 #include "D3D11ParticleManager.h"
-#include "UIManager.h"
 #include "D3D11DecalManager.h"
+#include "D3D11LightProbeManager.h"
+
+#include "UIManager.h"

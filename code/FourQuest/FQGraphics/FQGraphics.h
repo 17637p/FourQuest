@@ -93,6 +93,11 @@ namespace fq::graphics
 
 		virtual void UseShadow(const unsigned int id, bool bUseShadow);
 
+		// Light Probe
+		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
+		virtual void DeleteCubeProbe(unsigned short index) override;
+		virtual void SaveCubeProbeTexture() override;
+		 
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
 		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
@@ -121,6 +126,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 		std::shared_ptr<class D3D11ParticleManager> mParticleManager;
 		std::shared_ptr<class D3D11DecalManager> mDecalManager;
+		std::shared_ptr<class D3D11LightProbeManager> mLightProbeManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;

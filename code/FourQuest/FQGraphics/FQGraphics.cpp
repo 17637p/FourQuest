@@ -28,6 +28,7 @@ FQGraphics::FQGraphics()
 	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
 	, mDecalManager(std::make_shared<D3D11DecalManager>())
+	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 {
 }
 
@@ -53,6 +54,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mDecalManager->Initialize(mDevice, mResourceManager);
+	mLightProbeManager->Initialize(mDevice, mResourceManager);
 
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
 
@@ -72,6 +74,70 @@ void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
 void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
 {
 	mRenderManager->SetIBLTexture(diffuse, specular, brdfLUT);
+}
+
+void FQGraphics::DeleteCubeProbe(unsigned short index)
+{
+
+}
+
+void FQGraphics::SaveCubeProbeTexture()
+{
+	DirectX::SimpleMath::Quaternion front = 
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({0, 0, 0}, 1.0f);
+	DirectX::SimpleMath::Quaternion back =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(180), 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 180, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion up =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(-90), 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -90, 0, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion bottom =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(90), 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 90, 0, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion left =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(-90), 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -0, -90, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion right =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(90), 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
+
+	DirectX::SimpleMath::Quaternion directionQuaternions[] = {front, back, up, bottom, left, right};
+
+	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
+	std::unordered_map<unsigned short, CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
+	for (const auto& cubeProbe : cubeProbes)
+	{
+		fq::common::Transform probeTransform;
+
+		probeTransform.worldPosition = cubeProbe.second->position;
+		probeTransform.worldScale = { 1, 1, 1 };
+
+		for (unsigned int i = 0; i < 6; i++)
+		{
+			probeTransform.worldRotation = directionQuaternions[i];
+			probeTransform.worldMatrix = 
+				DirectX::SimpleMath::Matrix::CreateScale(probeTransform.worldScale) *
+				DirectX::SimpleMath::Matrix::CreateFromQuaternion(probeTransform.worldRotation) *
+				DirectX::SimpleMath::Matrix::CreateTranslation(probeTransform.worldPosition);
+
+			UpdateCamera(probeTransform);
+
+			BeginRender();
+			Render();
+			EndRender();
+
+			mLightProbeManager->SaveCubeProbeTexture();
+		}
+	}
+
+	// 드로우 6면 일단 각각 다른 파일로 저장하고 나중에는 6면을 한장에 저장하자
+	// 파일 저장
+}
+
+unsigned short FQGraphics::AddCubeProbe(const DirectX::SimpleMath::Vector3& position)
+{
+	return mLightProbeManager->AddCubeProbe(position);
 }
 
 void FQGraphics::DeleteImageObject(IImageObject* imageObject)

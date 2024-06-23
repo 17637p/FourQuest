@@ -70,6 +70,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
+	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
 
 	return true;
 }
@@ -212,6 +213,12 @@ void TerrainDemo::Update()
 		Pitch(mCameraTransform, dy);
 		Yaw(mCameraTransform, dx);
 	}
+
+	if (InputManager::GetInstance().IsGetKeyDown('L'))
+	{
+		mTestGraphics->SaveCubeProbeTexture();
+	}
+
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
 
