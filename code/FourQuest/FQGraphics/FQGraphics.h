@@ -96,7 +96,7 @@ namespace fq::graphics
 		// Light Probe
 		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteCubeProbe(unsigned short index) override;
-		virtual void SaveCubeProbeTexture() override;
+		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;
 		 
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;

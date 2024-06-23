@@ -81,7 +81,7 @@ void FQGraphics::DeleteCubeProbe(unsigned short index)
 
 }
 
-void FQGraphics::SaveCubeProbeTexture()
+void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned short height)
 {
 	DirectX::SimpleMath::Quaternion front = 
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, 0, 0);
@@ -104,7 +104,11 @@ void FQGraphics::SaveCubeProbeTexture()
 
 	DirectX::SimpleMath::Quaternion directionQuaternions[] = {front, back, up, bottom, left, right};
 
+	unsigned short curWidth = mDevice->GetWidth();
+	unsigned short curHeight = mDevice->GetHeight();
+
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
+	SetWindowSize(width, height);
 	std::unordered_map<unsigned short, CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
 	for (const auto& cubeProbe : cubeProbes)
 	{
@@ -120,17 +124,20 @@ void FQGraphics::SaveCubeProbeTexture()
 				DirectX::SimpleMath::Matrix::CreateScale(probeTransform.worldScale) *
 				DirectX::SimpleMath::Matrix::CreateFromQuaternion(probeTransform.worldRotation) *
 				DirectX::SimpleMath::Matrix::CreateTranslation(probeTransform.worldPosition);
-
+			
 			UpdateCamera(probeTransform);
 
+			// 이 부분 나중에 개선해야함, 그리는 건 항상 같은데 job 을 다시 만들 필요가 없음 
 			BeginRender();
 			Render();
-			EndRender();
+
+			mJobManager->ClearAll();
+			//EndRender();
 
 			mLightProbeManager->SaveCubeProbeTexture();
 		}
 	}
-
+	SetWindowSize(curWidth, curHeight);
 	// 드로우 6면 일단 각각 다른 파일로 저장하고 나중에는 6면을 한장에 저장하자
 	// 파일 저장
 }

@@ -216,7 +216,7 @@ void TerrainDemo::Update()
 
 	if (InputManager::GetInstance().IsGetKeyDown('L'))
 	{
-		mTestGraphics->SaveCubeProbeTexture();
+		mTestGraphics->SaveCubeProbeTexture(512, 512);
 	}
 
 	mTestGraphics->UpdateCamera(mCameraTransform);
