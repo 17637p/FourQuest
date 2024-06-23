@@ -65,7 +65,7 @@ extern "C" {
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& GetModel(std::string path) abstract;
 			virtual FQ_GRAPHICS void DeleteModel(std::string path) abstract;
-			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IMaterial>> GetMaterials() const abstract;
+			virtual FQ_GRAPHICS std::set<std::shared_ptr<IMaterial>> GetMaterials() const abstract;
 
 			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) abstract;
 			virtual FQ_GRAPHICS void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) abstract;
@@ -99,6 +99,10 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetNamedMaterialOrNull(const std::string& key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetNamedParticleMaterialOrNull(const std::string& key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetNamedDecalMaterialOrNull(const std::string& key) abstract;
 
 			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) abstract;
 			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;

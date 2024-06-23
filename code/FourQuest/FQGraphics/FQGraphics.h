@@ -35,7 +35,7 @@ namespace fq::graphics
 		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
 		virtual const fq::common::Model& GetModel(std::string path) override;
 		virtual void DeleteModel(std::string path) override;
-		virtual std::vector<std::shared_ptr<IMaterial>> GetMaterials() const override;
+		virtual std::set<std::shared_ptr<IMaterial>> GetMaterials() const override;
 
 		virtual IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
 		virtual void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) override;
@@ -68,6 +68,10 @@ namespace fq::graphics
 		std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) override;
 		std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) override;
 		std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) override;
+
+		std::shared_ptr<IMaterial> GetNamedMaterialOrNull(const std::string& key) override;
+		std::shared_ptr<IParticleMaterial> GetNamedParticleMaterialOrNull(const std::string& key) override;
+		std::shared_ptr<IDecalMaterial> GetNamedDecalMaterialOrNull(const std::string& key) override;
 
 		void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) override;
 		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial) override;

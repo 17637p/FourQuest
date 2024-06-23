@@ -258,7 +258,7 @@ void FQGraphics::DeleteModel(std::string path)
 	mModelManager->DeleteModel(path);
 }
 
-std::vector<std::shared_ptr<IMaterial>> FQGraphics::GetMaterials() const
+std::set<std::shared_ptr<IMaterial>> FQGraphics::GetMaterials() const
 {
 	return mModelManager->GetMaterials();
 }
@@ -365,6 +365,19 @@ std::shared_ptr<IDecalMaterial> FQGraphics::CreateNamedMaterial(const std::strin
 	return mModelManager->CreateNamedMaterial(key, materialInfo);
 }
 
+std::shared_ptr<IMaterial> FQGraphics::GetNamedMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedMaterialOrNull(key);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::GetNamedParticleMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedParticleMaterialOrNull(key);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::GetNamedDecalMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedDecalMaterialOrNull(key);
+}
+
 void FQGraphics::DeleteMaterial(std::shared_ptr<IMaterial> iMaterial)
 {
 	mModelManager->DeleteMaterial(iMaterial);
@@ -378,15 +391,15 @@ void FQGraphics::DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial)
 	mModelManager->DeleteMaterial(iMaterial);
 }
 
-void FQGraphics::DeleteNamedMaterial(const std::string& key) 
+void FQGraphics::DeleteNamedMaterial(const std::string& key)
 {
 	mModelManager->DeleteNamedMaterial(key);
 }
-void FQGraphics::DeleteNamedParticleMaterial(const std::string& key) 
+void FQGraphics::DeleteNamedParticleMaterial(const std::string& key)
 {
 	mModelManager->DeleteNamedParticleMaterial(key);
 }
-void FQGraphics::DeleteNamedDecalMaterial(const std::string& key) 
+void FQGraphics::DeleteNamedDecalMaterial(const std::string& key)
 {
 	mModelManager->DeleteNamedDecalMaterial(key);
 }

@@ -29,7 +29,7 @@ namespace fq::graphics
 		void ConvertModel(const std::string& fbxFile, const std::string& fileName);
 
 		const fq::common::Model& CreateModel(const std::shared_ptr<D3D11Device>& device, std::string fileName, std::filesystem::path textureBasePath = "");
-		template <typename Resource, typename... Args>
+		template <typename Resource, typename ResourecType, typename... Args>
 		bool CreateResource(std::map<std::string, std::shared_ptr<Resource>>& storage, std::string key, Args... args);
 		bool CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
 		bool CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData);
@@ -52,6 +52,10 @@ namespace fq::graphics
 		std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo);
 		std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo);
 
+		std::shared_ptr<IMaterial> GetNamedMaterialOrNull(const std::string& key);
+		std::shared_ptr<IParticleMaterial> GetNamedParticleMaterialOrNull(const std::string& key);
+		std::shared_ptr<IDecalMaterial> GetNamedDecalMaterialOrNull(const std::string& key);
+
 		void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial);
 		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial);
 		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial);
@@ -65,7 +69,7 @@ namespace fq::graphics
 		const fq::common::Model& FindModel(const std::string& path);
 		std::shared_ptr<StaticMesh> FindStaticMeshOrNull(const std::string& key);
 		std::shared_ptr<SkinnedMesh> FindSkinnedMeshOrNull(const std::string& key);
-		std::shared_ptr<Material> FindMaterialOrNull(const std::string& key);
+		std::shared_ptr<IMaterial> FindMaterialOrNull(const std::string& key);
 		std::shared_ptr<BoneHierarchy> FindBoneHierarchyOrNull(const std::string& key);
 		std::shared_ptr<fq::common::AnimationClip> FindAnimationOrNull(const std::string& key);
 
@@ -75,7 +79,7 @@ namespace fq::graphics
 		std::string GenerateBoneHierarachyKey(const std::string& fileName);
 		std::string GenerateAnimationKey(const std::string& fileName, const std::string& animationName);
 
-		std::vector<std::shared_ptr<IMaterial>> GetMaterials() const;
+		std::set<std::shared_ptr<IMaterial>> GetMaterials() const { return mMaterials; }
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
@@ -96,7 +100,7 @@ namespace fq::graphics
 		std::map<std::string, std::shared_ptr<IDecalMaterial>> mNamedDecalMaterials;
 	};
 
-	template <typename Resource, typename... Args>
+	template <typename Resource, typename ResourecType, typename... Args>
 	bool D3D11ModelManager::CreateResource(std::map<std::string, std::shared_ptr<Resource>>& storage, std::string key, Args... args)
 	{
 		auto find = storage.find(key);
@@ -106,7 +110,7 @@ namespace fq::graphics
 			return false;
 		}
 
-		std::shared_ptr<Resource> resource = std::make_shared<Resource>(args...);
+		std::shared_ptr<Resource> resource = std::make_shared<ResourecType>(args...);
 		storage.insert({ key, resource });
 
 		return true;
