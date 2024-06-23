@@ -110,12 +110,6 @@ namespace fq::physics
 	struct PhysicsClothGetData
 	{
 		DirectX::SimpleMath::Matrix worldTransform;
-		DirectX::SimpleMath::Vector3* vertices;
-		DirectX::SimpleMath::Vector3* nomals;
-		DirectX::SimpleMath::Vector2* uv;
-		unsigned int vertexSize;
-		unsigned int* indics;
-		unsigned int indexSize;
 	};
 	struct PhysicsClothSetData
 	{
@@ -279,12 +273,20 @@ namespace fq::physics
 	{
 		unsigned int id = unregisterID;
 		unsigned int layerNumber = 0;
+
 		PhysicsClothMaterialInfo materialInfo;
-		unsigned int particleNumberX = 5;
-		unsigned int particleNumberZ = 5;
+
 		DirectX::SimpleMath::Matrix worldTransform = {};
 		float particleSpacing = 2.f;
 		float totalClothMass = 10.f;
+
+		DirectX::SimpleMath::Vector3* vertices;
+		DirectX::SimpleMath::Vector2* uvs;
+		unsigned int* indices;
+		unsigned int vertexSize;
+		unsigned int indexSize;
+		void* vertexBuffer = nullptr;
+		void* indexBuffer = nullptr;
 	};
 #pragma endregion
 }

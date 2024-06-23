@@ -197,9 +197,6 @@
     <ClCompile Include="StaticRigidBody.cpp">
       <Filter>PhysicsActor\RigidBody</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsCloth.cpp">
-      <Filter>PhysicsActor\Cloth</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsClothManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
@@ -215,5 +212,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="PhysicsCloth.cu">
+      <Filter>PhysicsActor\Cloth</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
