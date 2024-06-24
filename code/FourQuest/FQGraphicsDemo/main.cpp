@@ -27,9 +27,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//_crtBreakAlloc = 101010; //_CrtSetBreakAlloc(101010); 
 #endif
 
-	//std::unique_ptr<Process> demo = std::make_unique<Process>();
+	std::unique_ptr<Process> demo = std::make_unique<Process>();
 	//std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
-	std::unique_ptr<UIDemo> demo = std::make_unique<UIDemo>();
+	//std::unique_ptr<UIDemo> demo = std::make_unique<UIDemo>();
 
 	demo->Init(hInstance);
 	demo->Loop();
