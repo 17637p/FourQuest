@@ -28,7 +28,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #endif
 
 	//std::unique_ptr<Process> demo = std::make_unique<Process>();
-	std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
+	//std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
+	std::unique_ptr<Process> demo = std::make_unique<Process>();
+	//std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
 	//std::unique_ptr<UIDemo> demo = std::make_unique<UIDemo>();
 
 	demo->Init(hInstance);

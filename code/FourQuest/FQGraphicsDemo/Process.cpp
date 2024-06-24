@@ -1218,11 +1218,14 @@ void Process::convertFBXModelAll(std::filesystem::path readFolderPath, std::file
 {
 	for (const auto& iter : std::filesystem::directory_iterator{ readFolderPath })
 	{
-		auto outPath = iter.path();
-		outPath.replace_extension(".model");
-		outPath = outFolderPath / outPath.filename();
+		if (iter.path().extension() == ".fbx")
+		{
+			auto outPath = iter.path();
+			outPath.replace_extension(".model");
+			outPath = outFolderPath / outPath.filename();
 
-		mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+			mTestGraphics->ConvertModel(iter.path().string(), outPath.string());
+		}
 	}
 }
 
