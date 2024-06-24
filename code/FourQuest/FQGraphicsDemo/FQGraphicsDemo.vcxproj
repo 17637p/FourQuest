@@ -138,6 +138,7 @@
     <ClInclude Include="BaseWindow.h" />
     <ClInclude Include="DemoUtils.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="OutLineDemo.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TerrainDemo.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="DemoUtils.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OutLineDemo.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="TerrainDemo.cpp" />
     <ClCompile Include="TimeManager.cpp" />

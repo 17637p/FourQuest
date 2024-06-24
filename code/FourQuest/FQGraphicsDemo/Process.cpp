@@ -79,7 +79,7 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
-	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
+	//convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/temp123.model";
@@ -310,7 +310,16 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = mTimeManager.GetDeltaTime() * 100.f;
+	float speed = mTimeManager.GetDeltaTime() * 100.f;
+	if (InputManager::GetInstance().IsGetKey(VK_SHIFT))
+	{
+		speed = mTimeManager.GetDeltaTime() * 1000;
+	}
+	else
+	{
+		speed = mTimeManager.GetDeltaTime() * 100.f;
+	}
+
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		Walk(cameraTransform, speed);
@@ -377,11 +386,16 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+		//mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
 		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
 			L"./resource/example/texture/defaultSpecularHDR.dds",
 			L"./resource/example/texture/defaultBrdf.dds");
+
+		//mTestGraphics->SetSkyBox(L"TestTest.dds");
+		//mTestGraphics->SetIBLTexture(L"TestTest.dds",
+		//	L"TestTest.dds",
+		//	L"TestTest.dds");
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
@@ -1144,7 +1158,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 			if (testIndex == 0)
 			{
-				iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+				//iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 			}
 
 			testIndex++;
@@ -1162,36 +1176,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
-			//static int testIndex = 0;
-			//
-			//if (testIndex == 0)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-			//}
-			//else if (testIndex == 1)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
-			//}
-			//else if (testIndex == 2)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
-			//}
-			//else if (testIndex == 3)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
-			//}
-			//else if (testIndex == 4)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
-			//}
-			//else if (testIndex == 5)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
-			//}
-			//testIndex++;
-
-			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-
+			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 
 			for (const auto& animInfo : animInfos)
 			{

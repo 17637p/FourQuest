@@ -106,13 +106,24 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 
 	DirectX::SimpleMath::Quaternion directionQuaternions[] = { right, left, up, bottom, front, back };
 
+	// 카메라 Probe 기준으로 설정
 	unsigned short curWidth = mDevice->GetWidth();
 	unsigned short curHeight = mDevice->GetHeight();
 
-	std::vector<std::wstring> paths{};
+	float curFieldOfView = mCameraManager->GetFovY(ECameraType::Player);
+
+	CameraInfo cameraInfo;
+	cameraInfo.isPerspective = true;
+	cameraInfo.fieldOfView = 90 * (3.14 / 180);
+	cameraInfo.nearPlain = mCameraManager->GetNearPlane(ECameraType::Player);
+	cameraInfo.farPlain = mCameraManager->GetFarPlane(ECameraType::Player);
+
+	SetCamera(cameraInfo);
+	SetWindowSize(width, height);
 
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
-	SetWindowSize(width, height);
+	std::vector<std::wstring> paths{};
+
 	std::unordered_map<unsigned short, CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
 	for (const auto& cubeProbe : cubeProbes)
 	{
@@ -143,6 +154,11 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 		}
 		D3D11Texture cubeMap{ mDevice, paths };
 	}
+
+	// 카메라 재설정 
+	cameraInfo.fieldOfView = curFieldOfView;
+
+	SetCamera(cameraInfo);
 	SetWindowSize(curWidth, curHeight);
 	// 드로우 6면 일단 각각 다른 파일로 저장하고 나중에는 6면을 한장에 저장하자
 	// 파일 저장
