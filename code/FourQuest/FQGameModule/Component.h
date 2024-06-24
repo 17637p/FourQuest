@@ -16,8 +16,8 @@ namespace fq::game_module
 	{
 	public:
 		Component();
-		Component(const Component& other) = default;
-		Component& operator =(const Component& other) = default;
+		Component(const Component& other);
+		Component& operator =(const Component& other);
 		Component(Component&& other) = default;
 
 		virtual ~Component();

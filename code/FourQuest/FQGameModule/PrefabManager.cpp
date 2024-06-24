@@ -270,6 +270,7 @@ fq::game_module::PrefabManager::PrefabInstance fq::game_module::PrefabManager::I
 		if (parentT != nullptr)
 		{
 			auto iter = matchParent.find(parentT->GetGameObject()->GetName());
+			assert(iter != matchParent.end());
 			clone->GetComponent<Transform>()->SetParent(iter->second->GetComponent<Transform>());
 		}
 		matchParent.insert({ clone->GetName(), clone });

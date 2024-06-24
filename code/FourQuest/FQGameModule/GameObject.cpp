@@ -64,15 +64,15 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 		if (iter == mComponents.end())
 		{
 			// 货肺 积己
-			std::shared_ptr<Component> cloneComponent(component->Clone());
+			std::shared_ptr<Component> cloneComponent = component->Clone();
 			mComponents.insert({ id,cloneComponent });
 			cloneComponent->SetGameObject(this);
 		}
 		else
 		{
 			// 丹绢竞快扁
-			component->Clone(iter->second);
-			component->SetGameObject(this);
+			component->Clone(iter-> second);
+			iter->second->SetGameObject(this);
 		}
 	}
 
@@ -211,6 +211,11 @@ void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr
 
 void fq::game_module::GameObject::RemoveAllComponent()
 {
+	for (auto&  [id,component] : mComponents)
+	{
+		component->SetGameObject(nullptr);
+	}
+
 	mComponents.clear();
 }
 
