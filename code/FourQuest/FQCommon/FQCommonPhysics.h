@@ -280,13 +280,8 @@ namespace fq::physics
 		float particleSpacing = 2.f;
 		float totalClothMass = 10.f;
 
-		DirectX::SimpleMath::Vector3* vertices;
-		DirectX::SimpleMath::Vector2* uvs;
-		unsigned int* indices;
-		unsigned int vertexSize;
-		unsigned int indexSize;
-		void* vertexBuffer = nullptr;
-		void* indexBuffer = nullptr;
+		void* vertexBuffer = nullptr;							// D3D11Buffer*
+		void* indexBuffer = nullptr;							// D3D11Buffer*
 	};
 #pragma endregion
 }

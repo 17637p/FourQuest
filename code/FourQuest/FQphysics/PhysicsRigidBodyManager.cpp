@@ -314,7 +314,7 @@ namespace fq::physics
 	}
 #pragma endregion
 
-#pragma region RemoveRigidBody
+#pragma region RemoveRigidBody 
 	bool PhysicsRigidBodyManager::RemoveRigidBody(const unsigned int& id, physx::PxScene* scene, std::vector<physx::PxActor*>& removeActorList)
 	{
 		if (mRigidBodyContainer.find(id) == mRigidBodyContainer.end())

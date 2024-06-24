@@ -117,9 +117,6 @@
     <ClInclude Include="StaticRigidBody.h">
       <Filter>PhysicsActor\RigidBody</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsCloth.h">
-      <Filter>PhysicsActor\Cloth</Filter>
-    </ClInclude>
     <ClInclude Include="PhysicsClothManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
@@ -131,6 +128,12 @@
     </ClInclude>
     <ClInclude Include="PhysicsCollisionDataManager.h">
       <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaPhysicsCloth.h">
+      <Filter>PhysicsActor\Cloth</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaClothTool.h">
+      <Filter>PhysicsActor\Cloth</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,12 +212,15 @@
     <ClCompile Include="PhysicsCollisionDataManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="CudaPhysicsCloth.cpp">
+      <Filter>PhysicsActor\Cloth</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="PhysicsCloth.cu">
+    <CudaCompile Include="CudaClothTool.cu">
       <Filter>PhysicsActor\Cloth</Filter>
     </CudaCompile>
   </ItemGroup>

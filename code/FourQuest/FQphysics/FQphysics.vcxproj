@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(Solutiondir)FQCommon;$(WindowsSDK_IncludePath);$(VC_IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(Solutiondir)FQphysics\Libraries\Lib\deb;$(CUDA_PATH);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(Solutiondir)FQphysics\Libraries\Lib\deb;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(Solutiondir)FQCommon;$(IncludePath)</IncludePath>
@@ -121,6 +121,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CudaCompile>
+      <AdditionalOptions>-std=c++17 %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -146,13 +149,14 @@
     <ClInclude Include="CharacterPhysics.h" />
     <ClInclude Include="CharacterQueryFilterCallback.h" />
     <ClInclude Include="ConvexMeshResource.h" />
+    <ClInclude Include="CudaClothTool.h" />
+    <ClInclude Include="CudaPhysicsCloth.h" />
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="CharacterJoint.h" />
     <ClInclude Include="CharacterLink.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
-    <ClInclude Include="PhysicsCloth.h" />
     <ClInclude Include="PhysicsClothManager.h" />
     <ClInclude Include="PhysicsCollisionDataManager.h" />
     <ClInclude Include="PhysicsCookingMeshTool.h" />
@@ -174,6 +178,7 @@
     <ClCompile Include="CharacterPhysics.cpp" />
     <ClCompile Include="CharacterQueryFilterCallback.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
+    <ClCompile Include="CudaPhysicsCloth.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="CharacterJoint.cpp" />
     <ClCompile Include="CharacterLink.cpp" />
@@ -199,7 +204,7 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="PhysicsCloth.cu" />
+    <CudaCompile Include="CudaClothTool.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

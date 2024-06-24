@@ -16,6 +16,7 @@ namespace fq::physics
 	class PhysicsCharactorControllerManager;
 	class PhysicsCharacterPhysicsManager;
 	class PhysicsCollisionDataManager;
+	class PhysicsClothManager;
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -156,6 +157,29 @@ namespace fq::physics
 		virtual bool SimulationCharacter(unsigned int id) override;
 #pragma endregion
 
+#pragma region PhysicsClothManager
+		/// <summary>
+		/// 천을 생성합니다.
+		/// </summary>
+		virtual bool CreateCloth(const PhysicsClothInfo& info) override;
+
+		/// <summary>
+		/// 천 데이터를 얻습니다.
+		/// </summary>
+		virtual bool GetClothData(unsigned int id, PhysicsClothGetData& data) override;
+
+		/// <summary>
+		/// 천 데이터를 세팅합니다.
+		/// </summary>
+		virtual bool SetClothData(unsigned int id, const PhysicsClothSetData& data) override;
+
+		/// <summary>
+		/// 천을 삭제합니다.
+		/// </summary>
+		virtual bool RemoveCloth(unsigned int id) override;
+#pragma endregion
+
+
 		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
 
 		/// <summary>
@@ -178,6 +202,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
+		std::shared_ptr<PhysicsClothManager> mClothManager;
 		std::shared_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 
 		// 충돌 이벤트 클래스
