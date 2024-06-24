@@ -1192,7 +1192,6 @@ void Process::trailUpdate()
 	{
 		TrailInfo trailInfo = trailObject->GetTrailInfo();
 
-		trailInfo.FrameTime = mTimeManager.GetDeltaTime();
 		trailInfo.Time = 1.5f;
 		trailInfo.MinVertexDistance = 50;
 		trailInfo.AlignmentType = TrailInfo::EAlignment::TransformZ;
@@ -1216,6 +1215,7 @@ void Process::trailUpdate()
 		//}
 
 		trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateRotationX(3.14 * 0.5f) * mSocketStaticMeshObject->GetTransform());
+		trailObject->SetFrameTime(mTimeManager.GetDeltaTime());
 		//
 		// if (s_time < 1.f)
 		// {
