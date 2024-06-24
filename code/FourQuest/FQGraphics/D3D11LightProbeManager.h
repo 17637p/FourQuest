@@ -1,8 +1,9 @@
 #pragma once
 #include <unordered_map>
-#include <directxtk/SimpleMath.h>
-
 #include <memory>
+#include <string>
+
+#include <directxtk/SimpleMath.h>
 
 namespace fq::graphics
 {
@@ -26,7 +27,7 @@ namespace fq::graphics
 		void DeleteCubeProbe(unsigned short index);
 		std::unordered_map<unsigned short, CubeProbe*> GetCubeProbes() const;
 
-		void SaveCubeProbeTexture();
+		std::wstring SaveCubeProbeTexture(); //return path Name
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;

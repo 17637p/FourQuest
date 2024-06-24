@@ -217,8 +217,6 @@ bool Process::Init(HINSTANCE hInstance)
 	particleInit();
 	decalInit();
 
-	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
-
 	return true;
 }
 
@@ -376,16 +374,6 @@ void Process::Update()
 		Yaw(cameraTransform, dx);
 	}
 
-	//picking 테스트
-	if (InputManager::GetInstance().IsGetKey('Y'))
-	{
-		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
-		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
-		{
-			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
-			int a = 3;
-		}
-	}
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
@@ -516,19 +504,6 @@ void Process::Render()
 		obj->SetAlpha(0.3f);
 		const auto& data = obj->GetMeshData();
 	}
-
-	// --------------------font Test-------------------------------
-	DirectX::SimpleMath::Rectangle drawRect;
-	drawRect.x = 600;
-	drawRect.y = 600;
-	drawRect.width = 1000;
-	drawRect.height = 1000;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
-
-	drawRect.x = 600;
-	drawRect.y = 700;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
-	// ---------------------------------------------------
 
 	mTestGraphics->EndRender();
 

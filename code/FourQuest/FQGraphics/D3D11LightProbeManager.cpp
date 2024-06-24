@@ -1,6 +1,7 @@
 #include "D3D11LightProbeManager.h"
 
 #include <DirectXTex.h>
+#include <directxtk/DDSTextureLoader.h>
 
 #include "d3d11resourceManager.h"
 #include "D3D11View.h"
@@ -35,7 +36,7 @@ void fq::graphics::D3D11LightProbeManager::DeleteCubeProbe(unsigned short index)
 	mCubeProbes.erase(index);
 }
 
-void fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture()
+std::wstring fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture()
 {
 	HRESULT hr = S_OK;
 
@@ -81,6 +82,8 @@ void fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture()
 	//	return hr;
 
 	index++;
+
+	return fileName;
 }
 
 std::unordered_map<unsigned short, CubeProbe*> fq::graphics::D3D11LightProbeManager::GetCubeProbes() const

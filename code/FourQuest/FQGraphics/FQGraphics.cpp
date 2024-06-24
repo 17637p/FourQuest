@@ -6,6 +6,8 @@
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
 
+#include "D3D11Texture.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -102,10 +104,12 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(90), 0, 0);
 		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
 
-	DirectX::SimpleMath::Quaternion directionQuaternions[] = {front, back, up, bottom, left, right};
+	DirectX::SimpleMath::Quaternion directionQuaternions[] = { right, left, up, bottom, front, back };
 
 	unsigned short curWidth = mDevice->GetWidth();
 	unsigned short curHeight = mDevice->GetHeight();
+
+	std::vector<std::wstring> paths{};
 
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
 	SetWindowSize(width, height);
@@ -134,8 +138,10 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 			mJobManager->ClearAll();
 			//EndRender();
 
-			mLightProbeManager->SaveCubeProbeTexture();
+			std::wstring path = mLightProbeManager->SaveCubeProbeTexture();
+			paths.push_back(path);
 		}
+		D3D11Texture cubeMap{ mDevice, paths };
 	}
 	SetWindowSize(curWidth, curHeight);
 	// 드로우 6면 일단 각각 다른 파일로 저장하고 나중에는 6면을 한장에 저장하자
