@@ -9,6 +9,9 @@
 namespace fq::physics
 {
 	PhysicsSimulationEventCallback::PhysicsSimulationEventCallback()
+		: mFunction()
+		, mCollisionDataManager()
+		, mTriggerContainer()
 	{
 	}
 

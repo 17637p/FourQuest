@@ -39,7 +39,15 @@ namespace fq::physics
 		}
 
 		// 새로운 shape를 actor에 추가
+		physx::PxShape* prevShape = nullptr;
+		actor->getShapes(&prevShape, 1);
+		if (prevShape != nullptr)
+		{
+			actor->detachShape(*prevShape);
+		}
+
 		actor->attachShape(*newShape);
+		assert(newShape->getReferenceCount() == 2);
 
 		// 새로운 shape 해제
 		newShape->release();

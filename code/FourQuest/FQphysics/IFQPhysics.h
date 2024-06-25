@@ -179,10 +179,31 @@ extern "C" {
 			virtual bool SimulationCharacter(unsigned int id) abstract;
 #pragma endregion
 
+#pragma region PhysicsClothManager
+			/// <summary>
+			/// 천을 생성합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool CreateCloth(const PhysicsClothInfo& info) abstract;
+
+			/// <summary>
+			/// 천 데이터를 얻습니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool GetClothData(unsigned int id, PhysicsClothGetData& data) abstract;
+
+			/// <summary>
+			/// 천 데이터를 세팅합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool SetClothData(unsigned int id, const PhysicsClothSetData& data) abstract;
+
+			/// <summary>
+			/// 천을 삭제합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool RemoveCloth(unsigned int id) abstract;
+#pragma endregion
+
 #pragma region ResourceManager
 			virtual FQ_PHYSICS bool HasConvexMeshResource(const unsigned int& hash) abstract;
 #pragma endregion
-
 
 			/// <summary>
 			/// spdlog를 설정합니다

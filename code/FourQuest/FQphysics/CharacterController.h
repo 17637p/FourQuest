@@ -70,7 +70,6 @@ namespace fq::physics
 	};
 
 #pragma region GetSet
-
 	physx::PxController* CharacterController::GetPxController()
 	{
 		return mPxController;
@@ -103,6 +102,5 @@ namespace fq::physics
 
 		mPxController->setPosition(vector);
 	}
-
 #pragma endregion
 }

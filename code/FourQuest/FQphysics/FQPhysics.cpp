@@ -6,6 +6,7 @@
 #include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsResourceManager.h"
 #include "PhysicsCollisionDataManager.h"
+#include "PhysicsClothManager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 #include "ConvexMeshResource.h"
@@ -65,6 +66,7 @@ namespace fq::physics
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mResourceManager(std::make_shared<PhysicsResourceManager>())
 		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
+		, mClothManager(std::make_shared<PhysicsClothManager>())
 		, mCollisionDataManager(std::make_shared<PhysicsCollisionDataManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
@@ -136,6 +138,7 @@ namespace fq::physics
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
@@ -165,6 +168,8 @@ namespace fq::physics
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())
+			return false;
+		if (!mClothManager->Update())
 			return false;
 
 		return true;
@@ -219,6 +224,7 @@ namespace fq::physics
 		}
 
 		return raycastData;
+
 	}
 
 #pragma region RigidBodyManager
@@ -345,6 +351,25 @@ namespace fq::physics
 	bool FQPhysics::SimulationCharacter(unsigned int id)
 	{
 		return mCharacterPhysicsManager->SimulationCharacter(id);
+	}
+#pragma endregion
+
+#pragma region PhysicsClothManager
+	bool FQPhysics::CreateCloth(const PhysicsClothInfo& info)
+	{
+		return mClothManager->CreateCloth(info, mCollisionMatrix);
+	}
+	bool FQPhysics::GetClothData(unsigned int id, PhysicsClothGetData& data)
+	{
+		return mClothManager->GetClothData(id, data);
+	}
+	bool FQPhysics::SetClothData(unsigned int id, const PhysicsClothSetData& data)
+	{
+		return mClothManager->SetClothData(id, data);
+	}
+	bool FQPhysics::RemoveCloth(unsigned int id)
+	{
+		return mClothManager->RemoveCloth(id, mActorsToRemove);
 	}
 #pragma endregion
 
