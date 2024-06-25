@@ -110,12 +110,6 @@ namespace fq::physics
 	struct PhysicsClothGetData
 	{
 		DirectX::SimpleMath::Matrix worldTransform;
-		DirectX::SimpleMath::Vector3* vertices;
-		DirectX::SimpleMath::Vector3* nomals;
-		DirectX::SimpleMath::Vector2* uv;
-		unsigned int vertexSize;
-		unsigned int* indics;
-		unsigned int indexSize;
 	};
 	struct PhysicsClothSetData
 	{
@@ -262,29 +256,32 @@ namespace fq::physics
 #pragma region PhysicsCloth
 	struct PhysicsClothMaterialInfo
 	{
-		float friction = 0.8f;
-		float damping = 0.001f;
-		float adhesion = 1e+7f;
-		float viscosity = 0.001f;
-		float vorticityConfinement = 0.5f;
-		float surfaceTension = 0.005f;
-		float cohesion = 0.05f;
-		float lift = 0.f;
-		float drag = 0.f;
-		float cflCoefficient = 1.f;
-		float gravityScale = 2.f;
+		float friction = 0.8f;				// 마찰 계수 : 천의 표면과 다른 물체 간의 마찰 정도를 결정합니다.
+		float damping = 0.001f;				// 감쇠 계수 : 천의 운동 에너지를 감쇠시키는 정도를 나타냅니다.
+		float adhesion = 1e+7f;				// 점착력 : 천이 다른 표면에 붙는 정도를 나타냅니다.
+		float viscosity = 0.001f;			// 점성 : 천의 내부 저항으로 인해 움직임이 저하되는 정도를 나타냅니다.
+		float vorticityConfinement = 0.5f;	// 와도 구속 : 천의 소용돌이 효과를 제어하는 데 사용됩니다.
+		float surfaceTension = 0.005f;		// 표면 장력 : 천의 표면에서 발생하는 장력을 나타냅니다.
+		float cohesion = 0.05f;				// 응집력 : 천의 입자들이 서로 모이는 힘을 나타냅니다.
+		float lift = 0.f;					// 양력 : 천이 위로 떠오르는 힘을 나타냅니다.
+		float drag = 0.f;					// 항력 : 천이 움직일 때 저항을 받는 힘을 나타냅니다.
+		float cflCoefficient = 1.f;			// CFL 계수 : 천 시뮬레이션에서 안정성을 제어하는 계수입니다.
+		float gravityScale = 2.f;			// 중력 스케일 : 천에 작용하는 중력의 크기를 조정합니다.
 	};
 
 	struct PhysicsClothInfo
 	{
 		unsigned int id = unregisterID;
 		unsigned int layerNumber = 0;
+
 		PhysicsClothMaterialInfo materialInfo;
-		unsigned int particleNumberX = 5;
-		unsigned int particleNumberZ = 5;
+
 		DirectX::SimpleMath::Matrix worldTransform = {};
 		float particleSpacing = 2.f;
 		float totalClothMass = 10.f;
+
+		void* vertexBuffer = nullptr;							// D3D11Buffer*
+		void* indexBuffer = nullptr;							// D3D11Buffer*
 	};
 #pragma endregion
 }

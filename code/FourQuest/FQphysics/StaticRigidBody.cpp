@@ -13,6 +13,10 @@ namespace fq::physics
 	{
 		CollisionData* data = (CollisionData*)mRigidStatic->userData;
 		data->isDead = true;
+
+		physx::PxShape* shape;
+		mRigidStatic->getShapes(&shape, 1);
+		mRigidStatic->detachShape(*shape);
 	}
 
 	bool StaticRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data)
@@ -27,8 +31,8 @@ namespace fq::physics
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
-		data->myId = GetID(); 
-		data->myLayerNumber = GetLayerNumber();
+		data->myId = mID;
+		data->myLayerNumber = mLayerNumber;
 		shape->userData = data.get();
 		shape->setContactOffset(0.02f);
 		shape->setRestOffset(0.01f);
@@ -48,7 +52,12 @@ namespace fq::physics
 		if (mRigidStatic == nullptr)
 			return false;
 		if (!mRigidStatic->attachShape(*shape))
+		{
+			assert(shape->getReferenceCount() == 1);
 			return false;
+		}
+
+		assert(shape->getReferenceCount() == 2);
 
 		return true;
 	}
@@ -74,6 +83,7 @@ namespace fq::physics
 			boxGeometry.halfExtents.x = mExtent.x * scale.x;
 			boxGeometry.halfExtents.y = mExtent.y * scale.y;
 			boxGeometry.halfExtents.z = mExtent.z * scale.z;
+			assert(shape->getReferenceCount() == 1);
 			mRigidStatic->detachShape(*shape);
 			updateShapeGeometry(mRigidStatic, boxGeometry, physics, material, collisionMatrix);
 		}
@@ -83,6 +93,7 @@ namespace fq::physics
 			float maxValue = std::max<float>(scale.x, std::max<float>(scale.y, scale.z));
 
 			sphereGeometry.radius = mRadius * maxValue;
+			assert(shape->getReferenceCount() == 1);
 			mRigidStatic->detachShape(*shape);
 			updateShapeGeometry(mRigidStatic, sphereGeometry, physics, material, collisionMatrix);
 		}
@@ -93,6 +104,7 @@ namespace fq::physics
 
 			capsuleGeometry.radius = mRadius * maxValue;
 			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
+			assert(shape->getReferenceCount() == 1);
 			mRigidStatic->detachShape(*shape);
 			updateShapeGeometry(mRigidStatic, capsuleGeometry, physics, material, collisionMatrix);
 		}
@@ -102,10 +114,9 @@ namespace fq::physics
 			convexmeshGeometry.scale.scale.x = scale.x;
 			convexmeshGeometry.scale.scale.y = scale.y;
 			convexmeshGeometry.scale.scale.z = scale.z;
+			assert(shape->getReferenceCount() == 1);
 			mRigidStatic->detachShape(*shape);
 			updateShapeGeometry(mRigidStatic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
-
-		shape->release();
 	}
 }
