@@ -4,6 +4,7 @@
 #include "TimeManager.h"
 
 #include <memory>
+#include <string>
 
 #include <FQCommon.h>
 #include <FQCommonGraphics.h>
@@ -28,6 +29,9 @@ private:
 	void Update();
 	void Render();
 	void debugRender();
+
+	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform);
+	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 private:
 	/// 기본적으로 필요한 변수들 

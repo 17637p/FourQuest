@@ -39,6 +39,8 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	{
 		MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff, gif 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
 	}
+
+	type = TextureType::Default;
 }
 
 fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
@@ -78,6 +80,8 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	d3d11Device->GetDevice()->CreateShaderResourceView(hmapTex, &srvDesc, &mTextureSRV);
 
 	hmapTex->Release();
+
+	type = TextureType::Default;
 }
 
 fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::wstring>& texturePaths)
@@ -145,36 +149,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 
 	d3d11Device->GetDevice()->CreateShaderResourceView(cubeTexture, &SMViewDesc, mTextureSRV.GetAddressOf());
 
-	//--------------------------------------------------------------
-	ID3D11Resource* resource;
-	mTextureSRV->GetResource(&resource);
-
-	// Query the resource for the ID3D11Texture2D interface
-	ID3D11Texture2D* cubeMapTexture;
-	//if (FAILED(hr))
-	//	return hr;
-	mTextureSRV->GetResource(&resource);
-
-	// Get the description of the texture
-	D3D11_TEXTURE2D_DESC desc;
-	resource->QueryInterface<ID3D11Texture2D>(&cubeMapTexture);
-	cubeMapTexture->GetDesc(&desc);
-
-	// Ensure the texture is indeed a cube map
-	if (!(desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE))
-	{
-		// 경고
-	}
-	//	return E_FAIL;
-
-	// Capture the texture into a ScratchImage
-	DirectX::ScratchImage scratchImage;
-	CaptureTexture(d3d11Device->GetDevice().Get(), d3d11Device->GetDeviceContext().Get(), cubeMapTexture, scratchImage);
-	//if (FAILED(hr))
-	//	return hr;
-
-	// Save the ScratchImage to a DDS file
-	SaveToDDSFile(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DirectX::DDS_FLAGS_NONE, L"TestTest.dds");
+	type = TextureType::CubeMap;
 }
 
 std::string fq::graphics::D3D11Texture::GenerateRID(const std::wstring& texturePath)
@@ -241,6 +216,50 @@ void fq::graphics::D3D11Texture::Bind(const std::shared_ptr<D3D11Device>& d3d11D
 			d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, numOfTexture, textureSRVs.data());
 			break;
 		}
+		default:
+			break;
+	}
+}
+
+void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& savePath)
+{
+	switch (type)
+	{
+		case fq::graphics::D3D11Texture::TextureType::Default:
+			break;
+		case fq::graphics::D3D11Texture::TextureType::CubeMap:
+		{
+			ID3D11Resource* resource;
+			mTextureSRV->GetResource(&resource);
+
+			// Query the resource for the ID3D11Texture2D interface
+			ID3D11Texture2D* cubeMapTexture;
+			//if (FAILED(hr))
+			//	return hr;
+			mTextureSRV->GetResource(&resource);
+
+			// Get the description of the texture
+			D3D11_TEXTURE2D_DESC desc;
+			resource->QueryInterface<ID3D11Texture2D>(&cubeMapTexture);
+			cubeMapTexture->GetDesc(&desc);
+
+			// Ensure the texture is indeed a cube map
+			if (!(desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE))
+			{
+				// 경고
+			}
+			//	return E_FAIL;
+
+			// Capture the texture into a ScratchImage
+			DirectX::ScratchImage scratchImage;
+			CaptureTexture(d3d11Device->GetDevice().Get(), d3d11Device->GetDeviceContext().Get(), cubeMapTexture, scratchImage);
+			//if (FAILED(hr))
+			//	return hr;
+
+			// Save the ScratchImage to a DDS file
+			SaveToDDSFile(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DirectX::DDS_FLAGS_NONE, savePath.c_str());
+		}
+			break;
 		default:
 			break;
 	}

@@ -12,6 +12,7 @@ namespace fq::graphics
 
 	struct CubeProbe
 	{
+		unsigned int index;
 		DirectX::SimpleMath::Vector3 position;
 	};
 
@@ -27,7 +28,7 @@ namespace fq::graphics
 		void DeleteCubeProbe(unsigned short index);
 		std::unordered_map<unsigned short, CubeProbe*> GetCubeProbes() const;
 
-		std::wstring SaveCubeProbeTexture(); //return path Name
+		std::wstring SaveCubeProbeTexture(const unsigned int index, const std::wstring& direction); //return path Name
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;

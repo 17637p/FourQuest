@@ -78,7 +78,7 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
 	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
-	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	//convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
 	//convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
@@ -386,35 +386,16 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		//mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
 		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
 			L"./resource/example/texture/defaultSpecularHDR.dds",
 			L"./resource/example/texture/defaultBrdf.dds");
 
-		//mTestGraphics->SetSkyBox(L"TestTest.dds");
-		//mTestGraphics->SetIBLTexture(L"TestTest.dds",
-		//	L"TestTest.dds",
-		//	L"TestTest.dds");
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('O'))
-	{
-		for (const auto& object : mStaticMeshObjects)
-		{
-			mTestGraphics->DeleteStaticMeshObject(object);
-		}
-
-		mStaticMeshObjects.clear();
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('P'))
-	{
-		const std::string modelPath = "./resource/example/model/gun.model";
-		const std::string textureBasePath = "./resource/example/texture";
-
-		float randX = (float)(rand() % 500 - 250);
-		float randY = (float)(rand() % 500 - 250);
-		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		//mTestGraphics->SetSkyBox(L"CubeProbe0.dds");
+		//mTestGraphics->SetIBLTexture(L"CubeProbe0.dds",
+		//	L"CubeProbe0.dds",
+		//	L"CubeProbe0.dds");
 	}
 
 	shadowTest();

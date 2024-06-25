@@ -118,7 +118,7 @@ namespace fq::graphics
 		mTextureWidth = terrainMaterial.TextureWidth;
 		mTextureHeight = terrainMaterial.TextureHeight;
 
-		mCellsPerPatch = (mTextureWidth + mTextureHeight) / 64;
+		mCellsPerPatch = (mTextureWidth + mTextureHeight) / 16;
 
 		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
 		BuildTerrainMesh(device, mTempStaticMesh);

@@ -214,3 +214,67 @@ void OutLineDemo::debugRender()
 	gridInfo.Color = { 1, 1, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
 }
+
+void OutLineDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
+{
+	createModel(modelPath, {}, transform);
+}
+
+void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
+{
+	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
+
+	for (auto mesh : modelData.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = modelPath;
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
+
+		if (mesh.second.BoneVertices.empty())
+		{
+			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+
+			static int testIndex = 0;
+
+			if (testIndex == 0)
+			{
+				//iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			}
+
+			testIndex++;
+
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
+			}
+
+			//mStaticMeshObjects.push_back(iStaticMeshObject);
+		}
+		else
+		{
+			meshInfo.Transform = transform;
+
+			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+
+			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iSkinnedMeshObject, animInfo);
+			}
+			//mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
+		}
+	}
+}
+

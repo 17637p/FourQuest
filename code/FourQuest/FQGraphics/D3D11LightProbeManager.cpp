@@ -24,7 +24,10 @@ unsigned short fq::graphics::D3D11LightProbeManager::AddCubeProbe(const DirectX:
 {
 	unsigned short probeIndex = mCubeProbes.size();
 	CubeProbe* newCubeProbe = new CubeProbe;
+
 	newCubeProbe->position = position;
+	newCubeProbe->index = probeIndex;
+
 	mCubeProbes[probeIndex] = newCubeProbe;
 
 	return probeIndex;
@@ -36,7 +39,7 @@ void fq::graphics::D3D11LightProbeManager::DeleteCubeProbe(unsigned short index)
 	mCubeProbes.erase(index);
 }
 
-std::wstring fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture()
+std::wstring fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture(const unsigned int index, const std::wstring& direction)
 {
 	HRESULT hr = S_OK;
 
@@ -73,15 +76,11 @@ std::wstring fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture()
 	//if (FAILED(hr))
 	//	return hr;
 
-	static int index = 0;
-
-	std::wstring fileName = L"test" + std::to_wstring(index) + L".DDS";
+	std::wstring fileName = L"CubeTexture" + std::to_wstring(index) + direction + L".dds";
 	//const wchar_t* filename = L"test.DDS";
 	hr = SaveToDDSFile(*image.GetImage(0, 0, 0), DirectX::DDS_FLAGS_NONE, fileName.c_str());
 	//if (FAILED(hr))
 	//	return hr;
-
-	index++;
 
 	return fileName;
 }

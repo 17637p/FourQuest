@@ -105,6 +105,7 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
 
 	DirectX::SimpleMath::Quaternion directionQuaternions[] = { right, left, up, bottom, front, back };
+	std::vector<std::wstring> directions = { L"right", L"left", L"up", L"bottom", L"front", L"back" };
 
 	// 카메라 Probe 기준으로 설정
 	unsigned short curWidth = mDevice->GetWidth();
@@ -149,10 +150,12 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 			mJobManager->ClearAll();
 			//EndRender();
 
-			std::wstring path = mLightProbeManager->SaveCubeProbeTexture();
+			std::wstring path = mLightProbeManager->SaveCubeProbeTexture(cubeProbe.second->index, directions[i]);
 			paths.push_back(path);
 		}
 		D3D11Texture cubeMap{ mDevice, paths };
+		std::wstring cubeMapFileName = L"CubeProbe" + std::to_wstring(cubeProbe.second->index) + L".dds";
+		cubeMap.Save(mDevice, cubeMapFileName);
 	}
 
 	// 카메라 재설정 

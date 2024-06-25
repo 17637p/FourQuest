@@ -38,7 +38,10 @@ namespace fq::graphics
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const { return mTextureSRV; }
 
+		void Save(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& savePath);
+
 	private:
+		TextureType type;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mTextureSRV;
 	};
 }
