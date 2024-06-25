@@ -28,6 +28,7 @@ namespace fq::physics
 		newShape->setContactOffset(0.02f);
 		newShape->setRestOffset(0.01f);
 
+
 		if (mColliderType == EColliderType::COLLISION)
 		{
 			newShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);

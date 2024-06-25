@@ -275,7 +275,6 @@ namespace fq::physics
 	}
 	bool FQPhysics::ChangeScene()
 	{
-
 		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()

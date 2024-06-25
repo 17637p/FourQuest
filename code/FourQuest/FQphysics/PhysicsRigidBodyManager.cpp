@@ -60,7 +60,7 @@ namespace fq::physics
 
 		return true;
 	}
-
+		
 	bool PhysicsRigidBodyManager::FinalUpdate()
 	{
 #ifdef _DEBUG

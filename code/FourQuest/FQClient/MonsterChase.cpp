@@ -50,7 +50,7 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 	MoveToTarget(animator, moveDist);
 	mMoveDistance += 0;
 
- 	game_module::GameObject& object = *monster->GetTarget();
+	game_module::GameObject& object = *monster->GetTarget();
 
 	// 타겟과의 거리가 가까울 때
 	float targetDist = monster->CalculateDistanceTarget(monster->GetTarget().get());
@@ -85,7 +85,7 @@ void fq::client::MonsterChase::MoveToTarget(fq::game_module::Animator& animator,
 	fq::game_module::NavigationAgent* agent = animator.GetComponent<fq::game_module::NavigationAgent>();
 
 	fq::game_module::GameObject* target = monster->GetTarget().get();
-	
+
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 
 	//fq::game_module::Transform* myTransform = monster->GetComponent<fq::game_module::Transform>();
@@ -107,11 +107,11 @@ void fq::client::MonsterChase::rotateToTarget(fq::game_module::Animator& animato
 	fq::game_module::NavigationAgent* agent = animator.GetComponent<fq::game_module::NavigationAgent>();
 
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
-	
+
 	// 내위치
 	fq::game_module::Transform* myTransform = monster->GetComponent<fq::game_module::Transform>();
 	DirectX::SimpleMath::Vector3 myPosition = myTransform->GetWorldPosition();
-	
+
 	// 빼기
 	DirectX::SimpleMath::Vector3 directionVector = targetPosition - myPosition;
 	directionVector.y = 0;
@@ -119,14 +119,17 @@ void fq::client::MonsterChase::rotateToTarget(fq::game_module::Animator& animato
 	directionVector.Normalize();
 
 	DirectX::SimpleMath::Quaternion directionQuaternion;
-	if (directionVector == DirectX::SimpleMath::Vector3::Backward)
+
+	directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directionVector, { 0, 1, 0 });
+	directionQuaternion.Normalize();
+
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
+
+	// UpVector가 뒤집힌 경우
+	if (rotationMatrix._22 <= -0.9f)
 	{
-		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directionVector, { 0, -1, 0 });
-	}
-	else
-	{
-		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directionVector, { 0, 1, 0 });
+		rotationMatrix._22 = 1.f;
 	}
 
-	myTransform->SetLocalRotation(directionQuaternion);
+	myTransform->SetLocalRotationToMatrix(rotationMatrix);
 }
