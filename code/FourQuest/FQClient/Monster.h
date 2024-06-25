@@ -20,13 +20,13 @@ namespace fq::client
 		// State 용
 		float CalculateDistanceTarget(fq::game_module::GameObject* gameObject);
 
-		fq::game_module::GameObject* GetTarget() const;
+		std::shared_ptr<fq::game_module::GameObject> GetTarget() const;
 		void SetTarget(fq::game_module::GameObject* target);
 		bool GetIsDamaged() const;
 		void SetIsDamaged(bool isDamaged);
 		float GetDamaged() const;
 		float GetLastAttackTime() const { return mLastAttackTime; }
-		fq::game_module::GameObject* GetLastAttacker() const;
+		std::shared_ptr<fq::game_module::GameObject> GetLastAttacker() const;
 
 		// 수정 가능한 변수
 		float GetMaxHP() const { return mMaxHP; }
@@ -66,11 +66,13 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		fq::game_module::GameObject* mTarget;
+		std::shared_ptr<fq::game_module::GameObject> mTarget;
+		//fq::game_module::GameObject* mTarget;
 
 		bool mIsDamaged;
 		float mDamaged; // 실제 받은 데미지 값 
-		fq::game_module::GameObject* mLastAttacker; // 마지막으로 공격한 플레이어
+		std::shared_ptr<fq::game_module::GameObject> mLastAttacker;
+		//fq::game_module::GameObject* mLastAttacker; // 마지막으로 공격한 플레이어
 		float mLastAttackTime;
 
 		// Stat

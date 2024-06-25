@@ -79,15 +79,17 @@ float fq::client::Monster::GetAttackWaitTime() const
 	return mAttackWaitTime;
 }
 
-fq::game_module::GameObject* fq::client::Monster::GetTarget() const
+std::shared_ptr<fq::game_module::GameObject> fq::client::Monster::GetTarget() const
 {
 	return mTarget;
 }
 
 void fq::client::Monster::SetTarget(fq::game_module::GameObject* target)
 {
-
-	mTarget = target;
+	if (target != nullptr)
+	{
+		mTarget = target->shared_from_this();
+	}
 }
 
 bool fq::client::Monster::GetIsDamaged() const
@@ -140,7 +142,7 @@ void fq::client::Monster::SetAttackPower(float attackPower)
 	mAttackPower = attackPower;
 }
 
-fq::game_module::GameObject* fq::client::Monster::GetLastAttacker() const
+std::shared_ptr<fq::game_module::GameObject> fq::client::Monster::GetLastAttacker() const
 {
 	return mLastAttacker;
 }
@@ -155,7 +157,7 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 		mLastAttackTime = 0;
 
 		mDamaged = pAttack->GetAttackPower();
-		mLastAttacker = pAttack->GetAttacker();
+		mLastAttacker = pAttack->GetAttacker()->shared_from_this();
 	}
 }
 

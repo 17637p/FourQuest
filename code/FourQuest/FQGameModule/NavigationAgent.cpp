@@ -14,10 +14,10 @@ fq::game_module::NavigationAgent::NavigationAgent()
 
 fq::game_module::NavigationAgent::~NavigationAgent()
 {
-	if (mImpl != nullptr)
-	{
-		mImpl->crowd->removeAgent(mImpl->agentIdx);
-	}
+	//if (mImpl != nullptr)
+	//{
+	//	mImpl->crowd->removeAgent(mImpl->agentIdx);
+	//}
 }
 
 void fq::game_module::NavigationAgent::OnUpdate(float dt)

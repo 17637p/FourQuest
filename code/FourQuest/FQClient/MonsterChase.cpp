@@ -34,7 +34,7 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
 		return;
 	}
 
-	fq::game_module::GameObject* target = monster->GetTarget();
+	fq::game_module::GameObject* target = monster->GetTarget().get();
 	if (target->IsDestroyed())
 	{
 		animator.SetParameterTrigger("OnIdle");
@@ -53,7 +53,7 @@ void fq::client::MonsterChase::OnStateUpdate(game_module::Animator& animator, ga
  	game_module::GameObject& object = *monster->GetTarget();
 
 	// 타겟과의 거리가 가까울 때
-	float targetDist = monster->CalculateDistanceTarget(monster->GetTarget());
+	float targetDist = monster->CalculateDistanceTarget(monster->GetTarget().get());
 
 	if (targetDist < monster->GetTargetAttackRange())
 	{
@@ -84,7 +84,7 @@ void fq::client::MonsterChase::MoveToTarget(fq::game_module::Animator& animator,
 	Monster* monster = animator.GetComponent<Monster>();
 	fq::game_module::NavigationAgent* agent = animator.GetComponent<fq::game_module::NavigationAgent>();
 
-	fq::game_module::GameObject* target = monster->GetTarget();
+	fq::game_module::GameObject* target = monster->GetTarget().get();
 	
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 
@@ -103,7 +103,7 @@ void fq::client::MonsterChase::rotateToTarget(fq::game_module::Animator& animato
 	Monster* monster = animator.GetComponent<Monster>();
 
 	// 플레이어 위치
-	fq::game_module::GameObject* target = monster->GetTarget();
+	fq::game_module::GameObject* target = monster->GetTarget().get();
 	fq::game_module::NavigationAgent* agent = animator.GetComponent<fq::game_module::NavigationAgent>();
 
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();

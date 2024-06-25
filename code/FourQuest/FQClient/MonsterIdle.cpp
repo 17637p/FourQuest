@@ -33,7 +33,7 @@ void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator,
 		}
 		else
 		{
-			float targetDist = monster->CalculateDistanceTarget(monster->GetTarget());
+			float targetDist = monster->CalculateDistanceTarget(monster->GetTarget().get());
 
 			if (targetDist < monster->GetTargetAttackRange())
 			{
