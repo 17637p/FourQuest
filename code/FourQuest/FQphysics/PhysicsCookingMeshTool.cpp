@@ -59,5 +59,7 @@ namespace fq::physics
 
 		physx::PxTriangleMesh* aTriangleMesh = PxCreateTriangleMesh(params, meshDesc,
 			physics->getPhysicsInsertionCallback());
+
+		return aTriangleMesh;
 	}
 }

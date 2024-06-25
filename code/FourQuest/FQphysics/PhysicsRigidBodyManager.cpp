@@ -34,7 +34,7 @@ namespace fq::physics
 		mPhysics = physics;
 		mResourceManager = resourceManager;
 		mCollisionDataManager = collisionDataManager;
-		
+
 		return true;
 	}
 
@@ -99,13 +99,16 @@ namespace fq::physics
 	{
 		using namespace DirectX::SimpleMath;
 
+		if (mRigidBodyContainer.find(id) == mRigidBodyContainer.end())
+			return false;
+
 		auto body = mRigidBodyContainer.find(id)->second;
 
 		std::shared_ptr<DynamicRigidBody> dynamicBody = std::dynamic_pointer_cast<DynamicRigidBody>(body);
 		if (dynamicBody)
 		{
 			Matrix dxTransform = rigidBodyData.transform;
-			physx::PxTransform pxTransform; 
+			physx::PxTransform pxTransform;
 			physx::PxVec3 pxLinearVelocity;
 			physx::PxVec3 pxangularVelocity;
 			CopyDxVec3ToPxVec3(rigidBodyData.linearVelocity, pxLinearVelocity);
@@ -159,6 +162,9 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+
+		shape->release();
+
 		if (rigidBody != nullptr)
 		{
 			rigidBody->SetExtent(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z);
@@ -174,11 +180,15 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		
+		shape->release();
+
 		if (rigidBody != nullptr)
 		{
 			rigidBody->SetRadius(info.raidus);
 			return true;
 		}
+
 
 		return false;
 	}
@@ -189,6 +199,9 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		
+		shape->release();
+
 		if (rigidBody != nullptr)
 		{
 			rigidBody->SetRadius(info.raidus);
@@ -208,6 +221,9 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+
+		shape->release();
+
 		if (rigidBody != nullptr)
 			return true;
 
@@ -220,11 +236,15 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxBoxGeometry(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+
+		shape->release();
+
 		if (rigidBody != nullptr)
 		{
 			rigidBody->SetExtent(info.boxExtent.x, info.boxExtent.y, info.boxExtent.z);
 			return true;
 		}
+
 
 		return false;
 	}
@@ -235,6 +255,9 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+
+		shape->release();
+
 		if (rigidBody != nullptr)
 		{
 			rigidBody->SetRadius(info.raidus);
@@ -250,6 +273,9 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxCapsuleGeometry(info.raidus, info.halfHeight), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+
+		shape->release();
+
 		if (rigidBody != nullptr)
 		{
 			rigidBody->SetRadius(info.raidus);
@@ -269,6 +295,9 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+		
+		shape->release();
+
 		if (rigidBody != nullptr)
 			return true;
 
@@ -285,7 +314,10 @@ namespace fq::physics
 		std::shared_ptr<StaticRigidBody> staticBody = std::make_shared<StaticRigidBody>(colliderType, info.id, info.layerNumber);
 		std::shared_ptr<CollisionData> collisiondata = std::make_shared<CollisionData>();
 
-		if (!staticBody->Initialize(info, shape, mPhysics, collisiondata)) return nullptr;
+		if (!staticBody->Initialize(info, shape, mPhysics, collisiondata))
+		{
+			return nullptr;
+		}
 
 		mCollisionDataManager.lock()->Create(info.id, collisiondata);
 		mRigidBodyContainer.insert(std::make_pair(staticBody->GetID(), staticBody));
@@ -474,7 +506,7 @@ namespace fq::physics
 				physx::PxShape* shape;
 				physx::PxRigidActor* actor = staticBody->GetPxRigidStatic();
 				actor->getShapes(&shape, 1);
-				
+
 				if (shape != nullptr && shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 				{
 					shared_ptr<vector<vector<DirectX::SimpleMath::Vector3>>> polygon = make_shared<vector<vector<DirectX::SimpleMath::Vector3>>>();

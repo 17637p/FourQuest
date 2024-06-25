@@ -12,6 +12,9 @@ namespace fq::physics
 		, mCharacterMovement(nullptr)
 		, mMaterial(nullptr)
 		, mPxController(nullptr)
+		, mFilters(nullptr)
+		, mFilterData(nullptr)
+		, mCharacterQueryFilterCallback(nullptr)
 	{
 	}
 
