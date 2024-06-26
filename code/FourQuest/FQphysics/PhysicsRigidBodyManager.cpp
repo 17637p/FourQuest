@@ -165,7 +165,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -184,7 +184,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -204,7 +204,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 		
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -227,7 +227,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -243,7 +243,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -263,7 +263,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -282,7 +282,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -305,7 +305,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		pxMaterial->release();
+		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
