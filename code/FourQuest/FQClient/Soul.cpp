@@ -34,7 +34,6 @@ void fq::client::Soul::OnStart()
 {
 	mController = GetComponent<game_module::CharacterController>();
 
-
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
 		{

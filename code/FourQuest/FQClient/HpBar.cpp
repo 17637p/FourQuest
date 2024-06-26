@@ -9,13 +9,14 @@ fq::client::HpBar::~HpBar()
 }
 
 fq::client::HpBar::HpBar()
-	:mIsVisible(true)
+	:mIsVisible(false)
 	, mMainCamera(nullptr)
 	, mTransform(nullptr)
 	, mImageUI(nullptr)
 	, mHpRatio(1.f)
 	, mDecreaseRatio(0.f)
 	, mDecreaseOffset(0.5f)
+	, mDeceraseTime(0.f)
 	, mDecreaseSpeed(1.f)
 	, mWorldOffset(0.f)
 	, mScreenOffset(0.f)
@@ -61,31 +62,17 @@ void fq::client::HpBar::SetVisible(bool isVisible)
 		auto infomations = mImageUI->GetUIInfomations();
 		for (int i = 0; i < 3; ++i)
 		{
-			infomations[i].Width = 0.f;
-			infomations[i].Height = 0.f;
+			infomations[i].Alpha = 0.f;
 		}
 		mImageUI->SetUIInfomations(infomations);
 	}
 	else
 	{
 		auto infomations = mImageUI->GetUIInfomations();
-		assert(infomations.size() == 3);
-
-		// OutBar
-		infomations[0].Width = mBarSize.x;
-		infomations[0].Height = mBarSize.y;
-		infomations[0].Layer = layer::OutBar;
-
-		// InnerBar
-		infomations[1].Width = mBarSize.x - mInnerOffset;
-		infomations[1].Height = mBarSize.y - mInnerOffset;
-		infomations[1].Layer = layer::InnerBar;
-
-		// DecreaseBar
-		infomations[2].Width = mBarSize.x - mInnerOffset;
-		infomations[2].Height = mBarSize.y - mInnerOffset;
-		infomations[2].Layer = layer::DecreaseBar;
-
+		for (int i = 0; i < 3; ++i)
+		{
+			infomations[i].Alpha = 1.f;
+		}
 		mImageUI->SetUIInfomations(infomations);
 	}
 }
@@ -110,6 +97,26 @@ void fq::client::HpBar::OnStart()
 			mMainCamera = camera;
 		}
 	}
+
+	auto infomations = mImageUI->GetUIInfomations();
+	assert(infomations.size() == 3);
+
+	// OutBar
+	infomations[0].Width = mBarSize.x;
+	infomations[0].Height = mBarSize.y;
+	infomations[0].Layer = layer::OutBar;
+
+	// InnerBar
+	infomations[1].Width = mBarSize.x - mInnerOffset;
+	infomations[1].Height = mBarSize.y - mInnerOffset;
+	infomations[1].Layer = layer::InnerBar;
+
+	// DecreaseBar
+	infomations[2].Width = mBarSize.x - mInnerOffset;
+	infomations[2].Height = mBarSize.y - mInnerOffset;
+	infomations[2].Layer = layer::DecreaseBar;
+
+	mImageUI->SetUIInfomations(infomations);
 
 	SetVisible(mIsVisible);
 }

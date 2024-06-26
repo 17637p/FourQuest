@@ -171,6 +171,7 @@
     <ClInclude Include="PrefabResource.h" />
     <ClInclude Include="PrefabTest.h" />
     <ClInclude Include="ScreenManager.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
@@ -229,6 +230,7 @@
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />
     <ClCompile Include="ScreenManager.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />

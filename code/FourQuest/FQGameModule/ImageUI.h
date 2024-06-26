@@ -22,7 +22,7 @@ namespace fq::game_module
 		std::vector<fq::graphics::UIInfo> GetUIInfomations() const { return mUIInfomations; }
 		
 		void SetUIInfomations(std::vector<fq::graphics::UIInfo> infomations);
-		void SetUIInfomation(size_t index, fq::graphics::UIInfo infomation);
+		void SetUIInfomation(size_t index, const fq::graphics::UIInfo& infomation);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

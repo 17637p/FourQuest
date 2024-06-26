@@ -1179,10 +1179,22 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					}
 					beginIsItemHovered_Comment(data);
 				}
-				if (data.type() == entt::resolve<size_t>())
+				else if (data.type() == entt::resolve<size_t>())
 				{
 					size_t val = data.get(pod).cast<size_t>();
 					ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U64, &val);
+
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						data.set(pod, val);
+						changedData = true;
+					}
+					beginIsItemHovered_Comment(data);
+				}
+				else if (data.type() == entt::resolve<unsigned int>())
+				{
+					unsigned int val = data.get(pod).cast<unsigned int>();
+					ImGui::InputScalar(memberName.c_str(), ImGuiDataType_U32, &val);
 
 					if (ImGui::IsItemDeactivatedAfterEdit())
 					{

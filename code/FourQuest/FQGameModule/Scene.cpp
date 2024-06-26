@@ -92,7 +92,7 @@ void fq::game_module::Scene::CleanUp(bool isRemoveComponents)
 		{
 			if (object->IsDestroyed() && isRemoveComponents)
 			{
-				object->RemoveAllComponent();
+				//object->RemoveAllComponent();
 			}
 
 			return object->IsDestroyed();

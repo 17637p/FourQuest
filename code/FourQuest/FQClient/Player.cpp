@@ -13,6 +13,8 @@ fq::client::Player::Player()
 	, mDashElapsedTime(0.f)
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(0.f)
+	, mAnimator(nullptr)
+	, mSoulStack(0.f)
 {}
 
 fq::client::Player::~Player()

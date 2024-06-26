@@ -83,10 +83,6 @@ namespace fq::physics
 		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
 			return;
 
-		spdlog::trace("Myscale {} , {} , {}", mScale.x, mScale.y, mScale.z);
-		spdlog::trace("Outscale {} , {} , {}", scale.x, scale.y, scale.z);
-
-
 		mScale = scale;
 
 		physx::PxShape* shape;
