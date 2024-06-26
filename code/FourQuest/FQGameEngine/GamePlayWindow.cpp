@@ -704,7 +704,7 @@ void fq::game_engine::GamePlayWindow::checkMouse()
 
 void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 {
-	if (!mSelectObject)
+	if (!mSelectObject || mSelectObject->IsDestroyed())
 		return;
 
 	std::queue<game_module::GameObject*> q;
