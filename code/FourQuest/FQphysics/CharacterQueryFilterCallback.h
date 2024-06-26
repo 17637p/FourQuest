@@ -18,6 +18,7 @@ namespace fq::physics
 		virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit, const PxShape* shape, const PxRigidActor* actor) override;
 
 		inline std::shared_ptr<physx::PxFilterData> GetFilterData();
+		inline void SetFilterData(std::shared_ptr<physx::PxFilterData> newData);
 
 	public:
 		std::shared_ptr<physx::PxFilterData> mFilterData;
@@ -27,5 +28,8 @@ namespace fq::physics
 	{
 		return mFilterData;
 	}
+	void CharacterQueryFilterCallback::SetFilterData(std::shared_ptr<physx::PxFilterData> newData)
+	{
+		mFilterData = newData;
+	}
 }
-

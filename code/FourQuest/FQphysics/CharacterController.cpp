@@ -2,6 +2,7 @@
 
 #include "CharacterMovement.h"
 #include "CharacterQueryFilterCallback.h"
+#include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
 {
@@ -66,9 +67,13 @@ namespace fq::physics
 
 		// 바닥과 충돌을 안한다면 떨어짐 상태로 체크
 		if (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
+		{
 			mCharacterMovement->SetIsFall(false);
+		}
 		else
+		{
 			mCharacterMovement->SetIsFall(true);
+		}
 
 		// 입력받은 값 초기화
 		mInputMove = {};
@@ -79,10 +84,46 @@ namespace fq::physics
 	void CharacterController::AddMovementInput(const DirectX::SimpleMath::Vector3& input)
 	{
 		if (std::abs(input.x) > 0)
+		{
 			mInputMove.x = input.x;
+		}
 		if (std::abs(input.y) > 0)
+		{
 			mInputMove.y = input.y;
+		}
 		if (std::abs(input.z) > 0)
+		{
 			mInputMove.z = input.z;
+		}
+	}
+
+	bool CharacterController::ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	{
+		if (newLayerNumber == UINT_MAX)
+		{
+			return false;
+		}
+
+		std::shared_ptr<physx::PxFilterData> newFilterData = std::make_shared<physx::PxFilterData>();
+		newFilterData->word0 = mLayerNumber;
+		newFilterData->word1 = collisionMatrix[mLayerNumber];
+		mCharacterQueryFilterCallback->SetFilterData(newFilterData);
+
+		physx::PxShape* shape;
+		mPxController->getActor()->getShapes(&shape, 1);
+		shape->setSimulationFilterData(*newFilterData.get());
+
+		CollisionData* data = (CollisionData*)mPxController->getActor()->userData;
+		data->isDead = true;
+
+		std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
+		newData->myId = mID;
+		newData->myLayerNumber = mLayerNumber;
+
+		mPxController->getActor()->userData = newData.get();
+
+		collisionDataManager.lock()->Create(mID, newData);
+
+		return true;
 	}
 }

@@ -127,6 +127,7 @@ namespace fq::physics
 
 			pxBody->setGlobalPose(pxTransform);
 			dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			dynamicBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 
 			return true;
 		}
@@ -147,6 +148,7 @@ namespace fq::physics
 
 			pxBody->setGlobalPose(pxTransform);
 			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
+			staticBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 
 			return true;
 		}
@@ -163,6 +165,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -180,7 +183,8 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxSphereGeometry(info.raidus), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
-		
+
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -200,6 +204,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 		
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -222,6 +227,7 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -237,6 +243,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -256,6 +263,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -274,6 +282,7 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -295,7 +304,8 @@ namespace fq::physics
 		physx::PxShape* shape = mPhysics->createShape(physx::PxConvexMeshGeometry(pxConvexMesh), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
-		
+
+		pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)

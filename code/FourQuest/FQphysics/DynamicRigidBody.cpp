@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <spdlog/spdlog.h>
+#include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
 {
@@ -131,5 +132,34 @@ namespace fq::physics
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
+	}
+
+	bool DynamicRigidBody::ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	{
+		if (newLayerNumber == UINT_MAX)
+		{
+			return false;
+		}
+
+		mLayerNumber = newLayerNumber;
+
+		physx::PxShape* shape;
+		mRigidDynamic->getShapes(&shape, 1);
+
+		physx::PxFilterData newFilterData;
+		newFilterData.word0 = newLayerNumber;
+		newFilterData.word1 = collisionMatrix[newLayerNumber];
+		shape->setSimulationFilterData(newFilterData);
+
+		CollisionData* data = (CollisionData*)mRigidDynamic->userData;
+		data->isDead = true;
+
+		std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
+		newData->myId = mID;
+		newData->myLayerNumber = mLayerNumber;
+		collisionDataManager.lock()->Create(mID, newData);
+		shape->userData = newData.get();
+
+		return true;
 	}
 }
