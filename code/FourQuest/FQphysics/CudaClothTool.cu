@@ -377,7 +377,6 @@ namespace fq::physics
 		processVerticesKernel << <blocksPerGrid, threadsPerBlock >> > (d_firstVertex, d_secondVertex, (Vertex*)devPtr, vertexSize);
 		cudaStatus = cudaDeviceSynchronize(); assert(cudaStatus == cudaSuccess);
 
-
 		// CUDA 리소스를 언매핑
 		cudaStatus = cudaGraphicsUnmapResources(1, &ID3D11VertexBuffer); assert(cudaStatus == cudaSuccess);
 

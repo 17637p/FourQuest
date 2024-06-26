@@ -1,5 +1,6 @@
 #include "StaticRigidBody.h"
 #include "EngineDataConverter.h"
+#include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
 {
@@ -65,10 +66,14 @@ namespace fq::physics
 	void StaticRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
 		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))
+		{
 			return;
+		}
 
 		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
+		{
 			return;
+		}
 
 		mScale = scale;
 
@@ -118,5 +123,35 @@ namespace fq::physics
 			mRigidStatic->detachShape(*shape);
 			updateShapeGeometry(mRigidStatic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
+	}
+
+	bool StaticRigidBody::ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	{
+		if (newLayerNumber == UINT_MAX)
+		{
+			return false;
+		}
+
+		mLayerNumber = newLayerNumber;
+
+		physx::PxShape* shape;
+		mRigidStatic->getShapes(&shape, 1);
+
+		physx::PxFilterData newFilterData;
+		newFilterData.word0 = newLayerNumber;
+		newFilterData.word1 = collisionMatrix[newLayerNumber];
+		shape->setSimulationFilterData(newFilterData);
+
+		CollisionData* data = (CollisionData*)mRigidStatic->userData;
+		data->isDead = true;
+
+		std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
+		newData->myId = mID;
+		newData->myLayerNumber = mLayerNumber;
+		shape->userData = newData.get();
+
+		collisionDataManager.lock()->Create(mID, newData);
+
+		return true;
 	}
 }

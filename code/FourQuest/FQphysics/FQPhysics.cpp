@@ -321,7 +321,7 @@ namespace fq::physics
 	}
 	void FQPhysics::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
-		mCCTManager->SetCharacterControllerData(id, controllerData);
+		mCCTManager->SetCharacterControllerData(id, controllerData, mCollisionMatrix);
 	}
 	void FQPhysics::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
 	{

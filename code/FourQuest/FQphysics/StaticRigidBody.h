@@ -5,6 +5,8 @@
 
 namespace fq::physics
 {
+	class PhysicsCollisionDataManager;
+
 	class StaticRigidBody : public RigidBody
 	{
 	public:
@@ -29,6 +31,9 @@ namespace fq::physics
 		/// 스태틱 리지드 바디를 반환합니다.
 		/// </summary>
 		inline physx::PxRigidStatic* GetPxRigidStatic();
+
+
+		bool ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix) override;
 
