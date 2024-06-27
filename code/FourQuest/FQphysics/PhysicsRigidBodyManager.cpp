@@ -253,7 +253,7 @@ namespace fq::physics
 			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
@@ -273,7 +273,7 @@ namespace fq::physics
 			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
@@ -369,7 +369,7 @@ namespace fq::physics
 			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
@@ -389,7 +389,7 @@ namespace fq::physics
 			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
