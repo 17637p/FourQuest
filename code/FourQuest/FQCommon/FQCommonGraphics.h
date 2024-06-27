@@ -267,7 +267,7 @@ namespace fq::graphics
 			bool bIsReset{ true };
 			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
 			bool bIsRenderDebug{ true };
-		} Instance;
+		} InstanceData;
 	};
 
 	struct DecalInfo
@@ -282,8 +282,8 @@ namespace fq::graphics
 
 		float Opacity; // base color¿¡ °öÇØÁü
 
-		DirectX::SimpleMath::Vector2 Tiling;
-		DirectX::SimpleMath::Vector2 Offset;
+		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 
 		DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };
 		bool bIsRenderDebug = true;

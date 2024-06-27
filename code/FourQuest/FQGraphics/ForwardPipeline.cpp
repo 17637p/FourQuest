@@ -42,7 +42,7 @@ namespace fq::graphics
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, particleManager, width, height);
-		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mSkyBoxPass->Initialize(device, cameraManager, resourceManager, lightManager);
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
@@ -72,8 +72,8 @@ namespace fq::graphics
 		mFullScreenLastPass = mFullScreenPass;
 	}
 
-	void ForwardPipeline::SetSkyBox(const std::wstring& path)
+	void ForwardPipeline::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
 	{
-		mSkyBoxPass->SetSkyBox(path);
+		mSkyBoxPass->SetSkyBox(path, bUseIBL, envScale);
 	}
 }

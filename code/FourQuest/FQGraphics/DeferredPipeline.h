@@ -37,7 +37,7 @@ namespace fq::graphics
 		void Finalize() override;
 		virtual void OnResize(unsigned short width, unsigned short height);
 
-		void SetSkyBox(const std::wstring& path);
+		void SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale);
 
 	private:
 		std::shared_ptr<class ShadowPass> mShadowPass;

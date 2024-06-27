@@ -180,13 +180,10 @@ namespace fq::graphics
 
 			material->Bind(mDevice);
 
-			int index = material->GetHasEmissive() << 4 | material->GetHasNormal() << 3 | material->GetHasRoughness() << 2 | material->GetHasMetalness() << 1 | material->GetHasBaseColor() << 0;
-			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
-
 			CBDecalObject decalObjectCB;
 			decalObjectCB.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
 			decalObjectCB.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
-			decalObjectCB.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0);
+			decalObjectCB.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0)).Transpose();
 			decalObjectCB.World = transform.Transpose();
 			decalObjectCB.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
 			decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
@@ -209,6 +206,9 @@ namespace fq::graphics
 			decalMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
 			mDecalMaterialCB->Update(mDevice, decalMaterialCB);
 
+			int index = decalMaterialCB.bIsUsedEmissive << 4 | decalMaterialCB.bUseNormalness << 3 | decalMaterialCB.bUseRoughness << 2 | decalMaterialCB.bUseMetalness << 1 | decalMaterialCB.bUseBaseColor << 0;
+			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
+
 			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
 
 			if (decalInfo.bIsRenderDebug)
@@ -224,7 +224,6 @@ namespace fq::graphics
 				obbInfo.OBB.Transform(obbInfo.OBB, transform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
-
 			}
 		}
 	}

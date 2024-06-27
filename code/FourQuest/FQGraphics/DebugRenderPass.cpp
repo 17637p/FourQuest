@@ -64,7 +64,7 @@ namespace fq::graphics
 			ParticleObject* particleObject = (ParticleObject*)particleObjectInterface;
 			const auto& info = particleObject->GetInfo();
 
-			if (!info.Instance.bIsRenderDebug)
+			if (!info.InstanceData.bIsRenderDebug)
 			{
 				continue;
 			}
@@ -83,7 +83,7 @@ namespace fq::graphics
 				sphereInfo.YAxis = Vector3::TransformNormal(sphereInfo.YAxis * shapeData.Radius, finalTransform);
 				sphereInfo.ZAxis = Vector3::TransformNormal(sphereInfo.ZAxis * shapeData.Radius, finalTransform);
 				sphereInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-				sphereInfo.Color = info.Instance.DebugRenderColor;
+				sphereInfo.Color = info.InstanceData.DebugRenderColor;
 				mDebugDrawManager->Submit(sphereInfo);
 				break;
 			}
@@ -95,7 +95,7 @@ namespace fq::graphics
 				hemisphereInfo.YAxis = Vector3::TransformNormal(hemisphereInfo.YAxis * shapeData.Radius, finalTransform);
 				hemisphereInfo.ZAxis = Vector3::TransformNormal(hemisphereInfo.ZAxis * shapeData.Radius, finalTransform);
 				hemisphereInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-				hemisphereInfo.Color = info.Instance.DebugRenderColor;
+				hemisphereInfo.Color = info.InstanceData.DebugRenderColor;
 
 				mDebugDrawManager->Submit(hemisphereInfo);
 				break;
@@ -110,7 +110,7 @@ namespace fq::graphics
 				coneInfo.AngleInRadian = shapeData.AngleInDegree * 3.141592f / 180.f;
 				coneInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
 				coneInfo.Height = particleObject->GetInfo().MainData.StartSpeed.x;
-				coneInfo.Color = info.Instance.DebugRenderColor;
+				coneInfo.Color = info.InstanceData.DebugRenderColor;
 
 				mDebugDrawManager->Submit(coneInfo);
 				break;
@@ -124,7 +124,7 @@ namespace fq::graphics
 				dountInfo.ZAxis = Vector3::TransformNormal(dountInfo.ZAxis * shapeData.Radius, finalTransform);
 				dountInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
 				dountInfo.DountRadius = shapeData.DountRadius;
-				dountInfo.Color = info.Instance.DebugRenderColor;
+				dountInfo.Color = info.InstanceData.DebugRenderColor;
 
 				mDebugDrawManager->Submit(dountInfo);
 				break;
@@ -133,7 +133,7 @@ namespace fq::graphics
 			{
 				debug::OBBInfo obbInfo;
 				obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
-				obbInfo.Color = info.Instance.DebugRenderColor;
+				obbInfo.Color = info.InstanceData.DebugRenderColor;
 
 				mDebugDrawManager->Submit(obbInfo);
 				break;
@@ -145,7 +145,7 @@ namespace fq::graphics
 				ringInfo.MajorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX * shapeData.Radius, finalTransform);
 				ringInfo.MinorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ * shapeData.Radius, finalTransform);
 				ringInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592 / 180.f;
-				ringInfo.Color = info.Instance.DebugRenderColor;
+				ringInfo.Color = info.InstanceData.DebugRenderColor;
 
 				mDebugDrawManager->Submit(ringInfo);
 				break;
@@ -155,7 +155,7 @@ namespace fq::graphics
 				debug::OBBInfo obbInfo;
 				obbInfo.OBB.Extents = { 1, 0, 1 };
 				obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
-				obbInfo.Color = info.Instance.DebugRenderColor;
+				obbInfo.Color = info.InstanceData.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 				break;
 			}

@@ -252,7 +252,7 @@ namespace fq::graphics
 		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 		const auto& info = particleObject->GetInfo();
 
-		if (info.Instance.bIsReset)
+		if (info.InstanceData.bIsReset)
 		{
 			mInitDeadListCS->Bind(mDevice);
 			UINT initialCount[] = { 0 };
@@ -277,7 +277,7 @@ namespace fq::graphics
 
 		if (particleObject->mNumToEmit <= 0)
 		{
-			return;
+			//return;
 		}
 
 		ID3D11UnorderedAccessView* uavs[] = { particleObject->mParticleBufferUAV.Get(), particleObject->mDeadListUAV.Get() };

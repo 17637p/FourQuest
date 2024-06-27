@@ -53,6 +53,7 @@ void fq::game_engine::TrailSystem::Update(float dt)
 				if (trailObjectInterface != nullptr)
 				{
 					trailObjectInterface->SetTransform(transform.GetWorldMatrix());
+					trailObjectInterface->SetFrameTime(dt);
 				}
 			});
 }
@@ -66,19 +67,19 @@ void fq::game_engine::TrailSystem::OnAddGameObject(const fq::event::AddGameObjec
 {
 	if (!mbIsGameLoaded) return;
 
-	loadDecal(event.object);
+	loadTrail(event.object);
 }
 
 void fq::game_engine::TrailSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
-	unloadDecal(event.object);
+	unloadTrail(event.object);
 }
 
 void fq::game_engine::TrailSystem::AddComponent(const fq::event::AddComponent& event)
 {
 	if (event.id == entt::resolve<fq::game_module::Trail>().id())
 	{
-		loadDecal(event.component->GetGameObject());
+		loadTrail(event.component->GetGameObject());
 	}
 }
 
@@ -86,7 +87,7 @@ void fq::game_engine::TrailSystem::RemoveComponent(const fq::event::RemoveCompon
 {
 	if (event.id == entt::resolve<fq::game_module::Trail>().id())
 	{
-		unloadDecal(event.component->GetGameObject());
+		unloadTrail(event.component->GetGameObject());
 	}
 }
 
@@ -96,13 +97,13 @@ void fq::game_engine::TrailSystem::OnLoadScene()
 
 	for (auto& object : scene->GetObjectView(true))
 	{
-		loadDecal(&object);
+		loadTrail(&object);
 	}
 
 	mbIsGameLoaded = true;
 }
 
-void fq::game_engine::TrailSystem::loadDecal(fq::game_module::GameObject* object)
+void fq::game_engine::TrailSystem::loadTrail(fq::game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::Trail>())
 	{
@@ -110,13 +111,17 @@ void fq::game_engine::TrailSystem::loadDecal(fq::game_module::GameObject* object
 	}
 
 	auto trail = object->GetComponent<fq::game_module::Trail>();
-	auto trailInfo = trail->GetTrailInfo();
+	fq::graphics::TrailInfo trailInfo = trail->GetTrailInfo();
+	fq::graphics::ParticleMaterialInfo materialInfo = trail->GetParticleMaterialInfo();
+	
+	auto particleMaterial = mGameProcess->mGraphics->CreateMaterial(materialInfo);
+	auto trailObjectInterface = mGameProcess->mGraphics->CreateTrailObject(object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix(), trailInfo, particleMaterial);
 
-	auto trailObjectInterface = mGameProcess->mGraphics->CreateTrailObject(trailInfo);
 	trail->SetTrailObjectInterface(trailObjectInterface);
+	trail->SetParticleMaterial(particleMaterial);
 }
 
-void fq::game_engine::TrailSystem::unloadDecal(fq::game_module::GameObject* object)
+void fq::game_engine::TrailSystem::unloadTrail(fq::game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::Trail>())
 	{
@@ -128,5 +133,11 @@ void fq::game_engine::TrailSystem::unloadDecal(fq::game_module::GameObject* obje
 
 	if (trailObjectInterface != nullptr)
 		mGameProcess->mGraphics->DeleteTrailObject(trailObjectInterface);
+
+	if (trail->GetParticleMaterial() != nullptr)
+	{
+		mGameProcess->mGraphics->DeleteMaterial(trail->GetParticleMaterial());
+		trail->SetParticleMaterial(nullptr);
+	}
 }
 

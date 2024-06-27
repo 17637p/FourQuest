@@ -138,7 +138,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteImageObject(IImageObject* imageObject) abstract;
 
 			/// SkyBox
-			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) abstract;
 			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;
 
 			/// Light

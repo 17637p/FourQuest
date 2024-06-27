@@ -54,7 +54,7 @@ namespace fq::graphics
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
 		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, particleManager, width, height);
-		mSkyBoxPass->Initialize(device, cameraManager, resourceManager);
+		mSkyBoxPass->Initialize(device, cameraManager, resourceManager, lightManager);
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
 		mTerrainPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
@@ -116,8 +116,8 @@ namespace fq::graphics
 		RenderPipeline::OnResize(width, height);
 	}
 
-	void DeferredPipeline::SetSkyBox(const std::wstring& path)
+	void DeferredPipeline::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
 	{
-		mSkyBoxPass->SetSkyBox(path);
+		mSkyBoxPass->SetSkyBox(path, bUseIBL, envScale);
 	}
 }

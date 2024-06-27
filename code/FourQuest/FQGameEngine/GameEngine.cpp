@@ -20,6 +20,7 @@
 #include "SoundSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "TrailSystem.h"
 #include "UISystem.h"
 
 #include "FQGameEngineRegister.h"
@@ -79,6 +80,7 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
 	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
+	mGameProcess->mTrailSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
@@ -138,7 +140,7 @@ void fq::game_engine::GameEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 			//							Physics Process								//
 			//////////////////////////////////////////////////////////////////////////
-			
+
 			static float accmulator = 0.f;
 			constexpr float fixedDeltaTime = 1.f / 60.f;
 			accmulator += deltaTime;
@@ -174,13 +176,14 @@ void fq::game_engine::GameEngine::Process()
 
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
-		
+
 			//////////////////////////////////////////////////////////////////////////
 			//							System Process								//
 			//////////////////////////////////////////////////////////////////////////
-			
+
 			mGameProcess->mParticleSystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
+			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
@@ -214,7 +217,7 @@ void fq::game_engine::GameEngine::Finalize()
 	mGameProcess->mGraphics->Finalize();
 	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
 	fq::physics::EngineExporter().DeleteEngine(mGameProcess->mPhysics);
-	
+
 	// GameProcess
 	mGameProcess->mSceneManager->Finalize();
 	mGameProcess->mEventManager->RemoveAllHandles();

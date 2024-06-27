@@ -606,5 +606,14 @@
     <CustomBuild Include="TrailPS.hlsl">
       <Filter>Shader\PS</Filter>
     </CustomBuild>
+    <CustomBuild Include="DiffuseIrradianceCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpecularBRDFCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SpecularIBLCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

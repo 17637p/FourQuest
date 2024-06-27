@@ -49,6 +49,8 @@ PixelOut main(VertexOut pin) : SV_Target
     float2 uv = posLocalInTex.xz;
     uv += 0.5f;
     
+    uv = mul(float4(uv, 0, 1), gTexMatrix);
+    
     pout.Albedo = gBaseColor;
     
     if (gUseAlbedoMap)

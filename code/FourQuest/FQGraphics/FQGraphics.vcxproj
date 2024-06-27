@@ -573,6 +573,32 @@ fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="DiffuseIrradianceCS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="SpecularBRDFCS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="SpecularIBLCS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+    </CustomBuild>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

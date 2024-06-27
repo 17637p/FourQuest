@@ -51,8 +51,8 @@ namespace fq::game_engine
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
 	private:
-		void loadDecal(fq::game_module::GameObject* object);
-		void unloadDecal(fq::game_module::GameObject* object);
+		void loadTrail(fq::game_module::GameObject* object);
+		void unloadTrail(fq::game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;

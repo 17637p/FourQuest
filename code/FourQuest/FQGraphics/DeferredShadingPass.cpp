@@ -179,6 +179,21 @@ namespace fq::graphics
 			mNormalSRV->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
 			mEmissiveSRV->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
 			mPositionSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			
+			const auto& iblTexture = mLightManager->GetIBLTexture();
+			if (iblTexture.DiffuseIrradiance != nullptr)
+			{
+				mDevice->GetDeviceContext()->PSSetShaderResources(6, 1, iblTexture.DiffuseIrradiance->GetSRV().GetAddressOf());
+			}
+			if (iblTexture.SpecularIBL != nullptr)
+			{
+				mDevice->GetDeviceContext()->PSSetShaderResources(7, 1, iblTexture.SpecularIBL->GetSRV().GetAddressOf());
+			}
+			if (iblTexture.SpecularBRDF != nullptr)
+			{
+				mDevice->GetDeviceContext()->PSSetShaderResources(8, 1, iblTexture.SpecularBRDF->GetSRV().GetAddressOf());
+			}
+
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 
 			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);

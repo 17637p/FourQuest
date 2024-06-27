@@ -106,7 +106,7 @@ namespace fq::graphics
 		virtual void DeleteImageObject(IImageObject* imageObject) override;
 
 		/// SkyBox
-		virtual void SetSkyBox(const std::wstring& path) override;
+		virtual void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) override;
 		virtual void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) override;
 
 		/// Light

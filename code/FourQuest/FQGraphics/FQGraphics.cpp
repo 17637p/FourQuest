@@ -66,11 +66,10 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 	return true;
 }
 
-void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
+void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
 {
-	mRenderManager->SetSkyBox(path);
+	mRenderManager->SetSkyBox(path, bUseIBL, envScale);
 }
-
 void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
 {
 	mRenderManager->SetIBLTexture(diffuse, specular, brdfLUT);

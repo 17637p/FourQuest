@@ -75,7 +75,7 @@ namespace fq::graphics
 
 	void ParticleObject::reset()
 	{
-		mParticleInfo.Instance.bIsReset = false;
+		mParticleInfo.InstanceData.bIsReset = false;
 		mTimePos = 0.f;
 		mFrameTime = 0.f;
 		mAccumlation = 0.f;
@@ -130,7 +130,7 @@ namespace fq::graphics
 			return;
 		}
 
-		if (mParticleInfo.Instance.bIsEmit)
+		if (mParticleInfo.InstanceData.bIsEmit)
 		{
 			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * frameTime;
 		}

@@ -26,3 +26,13 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Trail::Clone(std::s
 
 	return cloneTrail;
 }
+
+void fq::game_module::Trail::SetParticleMaterialInfo(graphics::ParticleMaterialInfo data)
+{
+	mParticleMaterialInfo = data;
+
+	if (mParticleMaterial != nullptr)
+	{
+		mParticleMaterial->SetInfo(mParticleMaterialInfo);
+	}
+}

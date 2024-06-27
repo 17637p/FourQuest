@@ -73,24 +73,19 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 		{
 			if (ImGui::Checkbox("UseGrayScale", &mbUseGrayScale))
 			{
-				auto materials =  mGameProcess->mGraphics->GetMaterials();
+				auto materials = mGameProcess->mGraphics->GetMaterials();
 
 				for (auto& material : materials)
 				{
-					fq::graphics::MaterialTextureUseFlag flag{};
-					flag.bUseBaseColor = !mbUseGrayScale;
-					flag.bUseMetalness = !mbUseGrayScale;
-					flag.bUseNormalness = !mbUseGrayScale;
-					flag.bUseRoughness = !mbUseGrayScale;
+					auto materialInfo = material->GetInfo();
 
-					material->SetTextureUseFlag(flag);
-				
-					if (mbUseGrayScale)
-					{
-						fq::common::Material mat;
-						mat.BaseColor = { 1.f,1.f,1.f,1.f };
-						material->SetMaterialData(mat);
-					}
+					materialInfo.bUseBaseColor = !mbUseGrayScale;
+					materialInfo.bUseMetalness = !mbUseGrayScale;
+					materialInfo.bUseNormalness = !mbUseGrayScale;
+					materialInfo.bUseRoughness = !mbUseGrayScale;
+					materialInfo.BaseColor = { 1.f,1.f,1.f,1.f };
+
+					material->SetInfo(materialInfo);
 				}
 
 			}

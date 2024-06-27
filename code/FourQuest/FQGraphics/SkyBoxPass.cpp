@@ -9,11 +9,15 @@ namespace fq::graphics
 	{
 	}
 
-	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11CameraManager> cameraManager, std::shared_ptr<D3D11ResourceManager> resourceManager)
+	void SkyBoxPass::Initialize(std::shared_ptr<D3D11Device> device,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
+		std::shared_ptr<D3D11ResourceManager> resourceManager,
+		std::shared_ptr<D3D11LightManager> lightManager)
 	{
 		mDevice = device;
 		mCameraManager = cameraManager;
 		mResourceManager = resourceManager;
+		mLightManager = lightManager;
 
 		auto skyBoxVS = std::make_shared<D3D11VertexShader>(device, L"SkyBoxVS.cso");
 		auto skyboxPS = std::make_shared<D3D11PixelShader>(device, L"SkyBoxPS.cso");
@@ -106,7 +110,11 @@ namespace fq::graphics
 
 		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
-		mSkyBoxTexture->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+		auto srv = mSkyBoxTexture->GetSRV();
+		if (srv != nullptr)
+		{
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, 1, srv.GetAddressOf());
+		}
 
 		ViewRotationProjectionMatrix viewProjectionMatrix;
 		DirectX::SimpleMath::Matrix view = mCameraManager->GetViewMatrix(ECameraType::Player);
@@ -121,7 +129,7 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
 	}
 
-	void SkyBoxPass::SetSkyBox(const std::wstring& path)
+	void SkyBoxPass::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
 	{
 		if (path == L"")
 		{
@@ -130,6 +138,12 @@ namespace fq::graphics
 		}
 
 		isSetSkyBox = true;
-		mSkyBoxTexture = mResourceManager->Create<D3D11Texture>(path);
+		mSkyBoxTexture = mResourceManager->Create<D3D11CubeTexture>(path);
+
+		if (bUseIBL)
+		{
+			IBLTexture iblTexture = mLightManager->CreateIBLTexture(mDevice, mSkyBoxTexture, envScale);
+			mLightManager->SetIBLTexture(iblTexture);
+		}
 	}
 }

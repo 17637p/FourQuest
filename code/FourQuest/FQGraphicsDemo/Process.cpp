@@ -115,7 +115,7 @@ bool Process::Init(HINSTANCE hInstance)
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 	createModel(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 10, 0 }));
 
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
+	// createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 1; ++i)
 	{
@@ -407,11 +407,7 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
-		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
-		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
-			L"./resource/example/texture/defaultSpecularHDR.dds",
-			L"./resource/example/texture/defaultBrdf.dds");
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/123EnvHDR.dds", true, 1.f);
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{
@@ -575,16 +571,16 @@ void Process::Render()
 	}
 
 	// --------------------font Test-------------------------------
-	DirectX::SimpleMath::Rectangle drawRect;
-	drawRect.x = 600;
-	drawRect.y = 600;
-	drawRect.width = 1000;
-	drawRect.height = 1000;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
-
-	drawRect.x = 600;
-	drawRect.y = 700;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+	//DirectX::SimpleMath::Rectangle drawRect;
+	//drawRect.x = 600;
+	//drawRect.y = 600;
+	//drawRect.width = 1000;
+	//drawRect.height = 1000;
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+	//
+	//drawRect.x = 600;
+	//drawRect.y = 700;
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
 	// ---------------------------------------------------
 
 	mTestGraphics->EndRender();
@@ -601,6 +597,7 @@ void Process::Render()
 
 void Process::debugRender()
 {
+	return;
 	using namespace fq::graphics::debug;
 
 	SphereInfo sphereInfo;
@@ -991,10 +988,10 @@ void Process::particleUpdate()
 		{
 		}
 
-		particleInfo.Instance.bIsRenderDebug = true;
+		particleInfo.InstanceData.bIsRenderDebug = true;
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
-		particleInfo.Instance.bIsEmit = true; // GetAsyncKeyState('O') & 0x8000;
-		particleInfo.Instance.bIsReset = GetAsyncKeyState('I') & 0x8000;
+		particleInfo.InstanceData.bIsEmit = GetAsyncKeyState('O') & 0x8000;
+		particleInfo.InstanceData.bIsReset = GetAsyncKeyState('I') & 0x8000;
 
 		obj->SetInfo(particleInfo);
 	}
@@ -1192,8 +1189,8 @@ void Process::trailUpdate()
 	{
 		TrailInfo trailInfo = trailObject->GetTrailInfo();
 
-		trailInfo.Time = 1.5f;
-		trailInfo.MinVertexDistance = 50;
+		trailInfo.Time = 0.5f;
+		trailInfo.MinVertexDistance = 25;
 		trailInfo.AlignmentType = TrailInfo::EAlignment::TransformZ;
 		trailInfo.TextureMode = TrailInfo::ETextureMode::Stretch;
 		trailInfo.VertexDivisionCount = 5;
@@ -1204,8 +1201,8 @@ void Process::trailUpdate()
 
 		trailInfo.ColorRatios.clear();
 		trailInfo.ColorRatios.push_back({ 1, 0, 0, 0.2 });
-		trailInfo.ColorRatios.push_back({ 0, 1, 0, 0.5 });
-		trailInfo.ColorRatios.push_back({ 0, 0, 1, 0.9 });
+		trailInfo.ColorRatios.push_back({ 0.5, 0, 0, 0.5 });
+		trailInfo.ColorRatios.push_back({ 0.1, 0, 1, 0.9 });
 
 
 		//if (s_time > 1.f)
