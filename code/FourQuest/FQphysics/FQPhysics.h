@@ -105,6 +105,19 @@ namespace fq::physics
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
+
+		/// <summary>
+		/// Triangle Mesh의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs() override;
+		const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices() override;
+
+		/// <summary>
+		/// Height Field의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField() override;
 #pragma endregion
 
 #pragma region CharacterControllerManager

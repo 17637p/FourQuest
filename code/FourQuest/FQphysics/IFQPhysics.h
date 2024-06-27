@@ -114,10 +114,23 @@ extern "C" {
 			virtual FQ_PHYSICS bool RemoveAllRigidBody() abstract;
 
 			/// <summary>
-			/// 디버그용 폴리곤 데이터를 전달 받습니다.
+			/// 컨벡스 메시의 디버그용 데이터를 전달 받습니다.
 			/// </summary>
 			/// <returns></returns>
 			virtual FQ_PHYSICS const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() abstract;
+
+			/// <summary>
+			/// Triangle Mesh의 디버그용 데이터를 전달 받습니다.
+			/// </summary>
+			/// <returns></returns>
+			virtual FQ_PHYSICS const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs() abstract;
+			virtual FQ_PHYSICS const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices() abstract;
+
+			/// <summary>
+			/// Height Field의 디버그용 데이터를 전달 받습니다.
+			/// </summary>
+			/// <returns></returns>
+			virtual FQ_PHYSICS const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField() abstract;
 
 			/// <summary>
 			/// 씬 체인지할 시에 모든 리지드 바디를 삭제하고 이벤트 콜백을 씬이 넘어가기 전에 처리합니다.

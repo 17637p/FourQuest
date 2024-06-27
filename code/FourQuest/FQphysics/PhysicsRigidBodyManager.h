@@ -8,6 +8,8 @@
 #include <set>
 #include <vector>
 
+#include "DebugData.h"
+
 namespace fq::physics
 {
 	class RigidBody;
@@ -15,9 +17,10 @@ namespace fq::physics
 	class StaticRigidBody;
 	class DynamicRigidBody;
 	class PhysicsCollisionDataManager;
+	class DebugData;
 
 	using PolygonMesh = std::shared_ptr<std::vector<std::vector<DirectX::SimpleMath::Vector3>>>;
-
+	
 	class PhysicsRigidBodyManager
 	{
 	public:
@@ -88,7 +91,15 @@ namespace fq::physics
 		/// </summary>
 		void ExtractDebugData();
 
-		inline std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
+		/// <summary>
+		/// 디버그 데이터를 받아옵니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon();
+		const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs();
+		const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices();
+		const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField();
+
 		inline std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& GetRigidBodyContainer();
 
 	private:
@@ -100,13 +111,8 @@ namespace fq::physics
 		std::unordered_map<unsigned int, std::shared_ptr<RigidBody>> mRigidBodyContainer;
 		std::vector<std::shared_ptr<RigidBody>> mUpcomingActors;
 
-		std::unordered_map<unsigned int, PolygonMesh> mDebugPolygon;
+		std::shared_ptr<DebugData> mDebugData;
 	};
-
-	std::unordered_map<unsigned int, PolygonMesh>& PhysicsRigidBodyManager::GetDebugPolygon()
-	{
-		return mDebugPolygon;
-	}
 
 	std::unordered_map<unsigned int, std::shared_ptr<RigidBody>>& PhysicsRigidBodyManager::GetRigidBodyContainer()
 	{

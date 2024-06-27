@@ -154,6 +154,7 @@
     <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="CudaClothTool.h" />
     <ClInclude Include="CudaPhysicsCloth.h" />
+    <ClInclude Include="DebugData.h" />
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="CharacterJoint.h" />
     <ClInclude Include="CharacterLink.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="CharacterQueryFilterCallback.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="CudaPhysicsCloth.cpp" />
+    <ClCompile Include="DebugData.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="CharacterJoint.cpp" />
     <ClCompile Include="CharacterLink.cpp" />

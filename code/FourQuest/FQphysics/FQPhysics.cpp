@@ -303,6 +303,18 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->GetDebugPolygon();
 	}
+	const std::unordered_map<unsigned int, std::vector<unsigned int>>& FQPhysics::GetDebugTriangleIndiecs()
+	{
+		return mRigidBodyManager->GetDebugTriangleIndiecs();
+	}
+	const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& FQPhysics::GetDebugTriangleVertices()
+	{
+		return mRigidBodyManager->GetDebugTriangleVertices();
+	}
+	const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& FQPhysics::GetDebugHeightField()
+	{
+		return mRigidBodyManager->GetDebugHeightField();
+	}
 #pragma endregion
 
 #pragma region CCTManager

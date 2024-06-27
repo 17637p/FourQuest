@@ -138,6 +138,7 @@
     <ClInclude Include="TriangleMeshResource.h">
       <Filter>Resource\Header</Filter>
     </ClInclude>
+    <ClInclude Include="DebugData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -224,6 +225,7 @@
     <ClCompile Include="TriangleMeshResource.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="DebugData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
