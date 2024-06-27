@@ -157,29 +157,51 @@ namespace fq::physics
 	struct BoxColliderInfo
 	{
 		ColliderInfo colliderInfo;
-		DirectX::SimpleMath::Vector3 boxExtent;
+		DirectX::SimpleMath::Vector3 boxExtent;		// 길이
 	};
 
 	struct SphereColliderInfo
 	{
 		ColliderInfo colliderInfo;
-		float raidus;
+		float raidus = 1.f;				// 반지름
 	};
 
 	struct CapsuleColliderInfo
 	{
 		ColliderInfo colliderInfo;
-		float raidus;
-		float halfHeight;
+		float raidus = 1.f;				// 반지름
+		float halfHeight = 1.f;			// 높이
 	};
 
 	struct ConvexMeshColliderInfo
 	{
 		ColliderInfo colliderInfo;
-		DirectX::SimpleMath::Vector3* vertices;					// 모델 버텍스
-		int vertexSize;											// 모델 버텍스 사이즈
+		DirectX::SimpleMath::Vector3* vertices = nullptr;		// 모델 버텍스
+		int vertexSize = 0;										// 모델 버텍스 사이즈
 		unsigned char convexPolygonLimit = 4;					// 컨벡스 메시에 생성할 폴리곤 최대 수 ( 최소 : 4개 이상, 최대 256개 미만 )
 		unsigned int convexMeshHash = 0;						// 컨벡스 메시 해쉬 값
+	};
+
+	struct TriangleMeshColliderInfo
+	{
+		unsigned int triangleMeshHash = 0;			// 컨벡스 메시 해쉬 값
+		ColliderInfo colliderInfo;
+		DirectX::SimpleMath::Vector3* vertices = nullptr;			// 모델 버텍스
+		int vertexSize = 0;							// 모델 버텍스 사이즈
+		unsigned int* indices = nullptr;			// 모델 인덱스
+		int indexSize = 0;							// 모델 인덱스 사이즈
+	};
+
+	struct HeightFieldColliderInfo
+	{
+		unsigned int heightFieldMeshHash = 0;		// 컨벡스 메시 해쉬 값
+		ColliderInfo colliderInfo;					
+		int* height = nullptr;						// 높이 맵
+		unsigned int numCols = 0;					// 가로 (열)
+		unsigned int numRows = 0;					// 세로 (행)
+		float heightScale = 1.f;					// 높이 스케일
+		float rowScale = 1.f;						// 가로(열) 스케일
+		float colScale = 1.f;						// 세로(행) 스케일
 	};
 #pragma endregion
 

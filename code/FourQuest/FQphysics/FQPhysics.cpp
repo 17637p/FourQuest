@@ -244,6 +244,14 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
+	bool FQPhysics::CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+	}
+	bool FQPhysics::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+	}
 	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
@@ -257,6 +265,14 @@ namespace fq::physics
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
 	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+	}
+	bool FQPhysics::CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+	}
+	bool FQPhysics::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}

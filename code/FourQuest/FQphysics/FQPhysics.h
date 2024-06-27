@@ -66,10 +66,14 @@ namespace fq::physics
 		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환

@@ -7,6 +7,8 @@
 #include "StaticRigidBody.h"
 #include "EngineDataConverter.h"
 #include "ConvexMeshResource.h"
+#include "HeightFieldResource.h"
+#include "TriangleMeshResource.h"
 
 #include "PhysicsCookingMeshTool.h"
 
@@ -165,7 +167,6 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -184,7 +185,6 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -204,7 +204,6 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 		
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -227,13 +226,54 @@ namespace fq::physics
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
+		{
 			return true;
+		}
 
 		return false;
+	}
+
+	bool PhysicsRigidBodyManager::CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
+	{
+		std::weak_ptr<TriangleMeshResource> triangleMesh = mResourceManager.lock()->Create<TriangleMeshResource>(info.triangleMeshHash, info.vertices, info.vertexSize, info.indices, info.indexSize);
+		physx::PxTriangleMesh* pxTriangleMesh = triangleMesh.lock()->GetTriangleMesh();
+
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh), *pxMaterial);
+
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+
+		shape->release();
+
+		if (rigidBody != nullptr)
+		{
+			return true;
+		}
+
+		return true;
+	}
+
+	bool PhysicsRigidBodyManager::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)
+	{
+		std::weak_ptr<HeightFieldResource> heightField = mResourceManager.lock()->Create<HeightFieldResource>(info.heightFieldMeshHash, info.height, info.numCols, info.numRows);
+		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
+
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlags(), info.heightScale, info.rowScale, info.colScale), *pxMaterial);
+
+		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+
+		shape->release();
+
+		if (rigidBody != nullptr)
+		{
+			return true;
+		}
+
+		return true;
 	}
 
 	bool PhysicsRigidBodyManager::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
@@ -243,7 +283,6 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -263,7 +302,6 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -282,7 +320,6 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
@@ -305,13 +342,54 @@ namespace fq::physics
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 
-		//pxMaterial->release();
 		shape->release();
 
 		if (rigidBody != nullptr)
+		{
 			return true;
+		}
 
 		return false;
+	}
+
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
+	{
+		std::weak_ptr<TriangleMeshResource> triangleMesh = mResourceManager.lock()->Create<TriangleMeshResource>(info.triangleMeshHash, info.vertices, info.vertexSize, info.indices, info.indexSize);
+		physx::PxTriangleMesh* pxTriangleMesh = triangleMesh.lock()->GetTriangleMesh();
+
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh), *pxMaterial);
+
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+
+		shape->release();
+
+		if (rigidBody != nullptr)
+		{
+			return true;
+		}
+
+		return true;
+	}
+
+	bool PhysicsRigidBodyManager::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix, bool isKinematic)
+	{
+		std::weak_ptr<HeightFieldResource> heightField = mResourceManager.lock()->Create<HeightFieldResource>(info.heightFieldMeshHash, info.height, info.numCols, info.numRows);
+		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
+
+		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlags(), info.heightScale, info.rowScale, info.colScale), *pxMaterial);
+
+		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+
+		shape->release();
+
+		if (rigidBody != nullptr)
+		{
+			return true;
+		}
+
+		return true;
 	}
 
 	StaticRigidBody* PhysicsRigidBodyManager::SettingStaticBody(physx::PxShape* shape, const ColliderInfo& info, const EColliderType& colliderType, int* collisionMatrix)

@@ -21,10 +21,18 @@ namespace fq::physics
 		/// </summary>
 		static physx::PxTriangleMesh* CookingTriangleMesh(
 			physx::PxPhysics* physics,
-			DirectX::SimpleMath::Vector3* vertices,
-			unsigned int vertexSize,
-			unsigned int* indices,
-			unsigned int indexSize);
+			const DirectX::SimpleMath::Vector3* vertices,
+			const unsigned int& vertexSize,
+			const unsigned int* indices,
+			const unsigned int& indexSize);
 
+		/// <summary>
+		/// 터레인의 값을 읽어서 물리 공간에서 물리 시뮬레이션을 돌릴 수 있는 필드 맵을 생서합니다.
+		/// </summary>
+		static physx::PxHeightField* CookingHeightField(
+			physx::PxPhysics* physics,
+			const int* height,
+			const unsigned int& numCols,
+			const unsigned int& numRows);
 	};
 }
