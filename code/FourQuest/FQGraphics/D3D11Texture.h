@@ -15,12 +15,21 @@ namespace fq::graphics
 
 	class D3D11Texture : public ResourceBase
 	{
+		enum class TextureType
+		{
+			Default,
+			CubeMap
+		};
+
 	public:
 		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const std::wstring& texturePath);
 		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const std::vector<float>& rawArray,
 			const UINT width, const UINT height);
+		// Cube Map
+		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
+			const std::vector<std::wstring>& texturePaths);
 
 		static std::string GenerateRID(const std::wstring& texturePath);
 
@@ -29,7 +38,10 @@ namespace fq::graphics
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const { return mTextureSRV; }
 
+		void Save(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& savePath);
+
 	private:
+		TextureType type;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mTextureSRV;
 	};
 }

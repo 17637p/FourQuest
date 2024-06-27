@@ -21,6 +21,15 @@ void MulMatrixVector3(const DirectX::SimpleMath::Matrix& mat, DirectX::SimpleMat
 	vec = result;
 }
 
+float calculateVectorMagnitude(const DirectX::SimpleMath::Vector3& point1, const DirectX::SimpleMath::Vector3& point2)
+{
+	float dx = point2.x - point1.x;
+	float dy = point2.y - point1.y;
+	float dz = point2.z - point1.z;
+
+	return std::sqrt(dx * dx + dy * dy + dz * dz);
+}
+
 namespace fq::physics
 {
 	CudaPhysicsCloth::CudaPhysicsCloth(unsigned int id, unsigned int layerNumber)
@@ -32,7 +41,8 @@ namespace fq::physics
 		, mIndices()
 		, mSprings()
 		, mSameVertices()
-		, mTotalClothMass(10.f)
+		, mClothMass(1.f)
+		, mRestOffset(1.f)
 		, mPBDMaterial(nullptr)
 		, mParticleSystem(nullptr)
 		, mClothBuffer(nullptr)
@@ -114,10 +124,12 @@ namespace fq::physics
 		RegisterD3D11IndexBufferWithCUDA((ID3D11Buffer*)info.indexBuffer);
 
 		mWorldTransform = info.worldTransform;
-		mTotalClothMass = info.totalClothMass;
+		mClothMass = info.clothMass;
 
-		if (!CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource)) return;
-		if (!CudaClothTool::copyIndexFromGPUToCPU(mIndices, mCudaIndexResource)) return;
+		bool isSucced = CudaClothTool::copyVertexFromGPUToCPU(mVertices, mUV, mWorldTransform, mCudaVertexResource);
+		assert(isSucced);
+		isSucced = CudaClothTool::copyIndexFromGPUToCPU(mIndices, mCudaIndexResource);
+		assert(isSucced);
 	}
 
 	bool areVerticesEqual(const DirectX::SimpleMath::Vector3& vertex1, const DirectX::SimpleMath::Vector3& vertex2, float epsilon = 1e-6)
@@ -176,16 +188,15 @@ namespace fq::physics
 		const physx::PxU32 numTriangles = mIndices.size() / 3;	// 삼각형 갯수
 
 		// 입자 시스템의 설정
-		const physx::PxReal particleMass = mTotalClothMass / mVertices.size();
-		const physx::PxReal restOffset = 2.f;
+		const physx::PxReal particleMass = mClothMass / 100.f;
 
 		// 입자 시스템 생성
 		mParticleSystem = physics->createPBDParticleSystem(*cudaContextManager);
 
-		mParticleSystem->setRestOffset(1.f);
-		mParticleSystem->setContactOffset(restOffset + 0.02f);
-		mParticleSystem->setParticleContactOffset(restOffset + 0.02f);
-		mParticleSystem->setSolidRestOffset(restOffset);
+		mParticleSystem->setRestOffset(0.1f);
+		mParticleSystem->setContactOffset(mRestOffset + 0.02f);
+		mParticleSystem->setParticleContactOffset(mRestOffset + 0.02f);
+		mParticleSystem->setSolidRestOffset(mRestOffset);
 
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
@@ -215,17 +226,6 @@ namespace fq::physics
 		// cloth 생성
 		createCloth(numParticles, cudaContextManager, phase, positionInvMass, velocity);
 	}
-
-
-	float calculateVectorMagnitude(const DirectX::SimpleMath::Vector3& point1, const DirectX::SimpleMath::Vector3& point2) 
-	{
-		float dx = point2.x - point1.x;
-		float dy = point2.y - point1.y;
-		float dz = point2.z - point1.z;
-
-		return std::sqrt(dx * dx + dy * dy + dz * dz);
-	}
-
 
 	void CudaPhysicsCloth::settingParticleBuffer(
 		const physx::PxU32& numSprings,
@@ -320,16 +320,6 @@ namespace fq::physics
 	void CudaPhysicsCloth::GetPhysicsCloth(PhysicsClothGetData& data)
 	{
 		data.worldTransform = mWorldTransform;
-	}
-
-	physx::PxVec4 multiply(const physx::PxMat44& mat, const physx::PxVec4& vec)  // 4x4 행렬과 PxVec4를 곱하는 함수
-	{
-		physx::PxVec4 result;
-		result.x = mat(0, 0) * vec.x + mat(0, 1) * vec.y + mat(0, 2) * vec.z + mat(0, 3) * vec.w;
-		result.y = mat(1, 0) * vec.x + mat(1, 1) * vec.y + mat(1, 2) * vec.z + mat(1, 3) * vec.w;
-		result.z = mat(2, 0) * vec.x + mat(2, 1) * vec.y + mat(2, 2) * vec.z + mat(2, 3) * vec.w;
-		result.w = mat(3, 0) * vec.x + mat(3, 1) * vec.y + mat(3, 2) * vec.z + mat(3, 3) * vec.w;
-		return result;
 	}
 
 	bool CudaPhysicsCloth::SetPhysicsCloth(const PhysicsClothSetData& data)

@@ -76,6 +76,9 @@ bool UIDemo::Init(HINSTANCE hInstance)
 
 	createImage();
 
+	// Font 추가
+	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+
 	return true;
 }
 
@@ -209,6 +212,23 @@ void UIDemo::Update()
 		//mImageObjects[0]->SetRotation(mImageObjects[0]->GetRotation() + 10);
 		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
 	}
+
+	///////////////////////////////////////////////////////////////
+	// --------------------font Test-------------------------------
+	///////////////////////////////////////////////////////////////
+
+	DirectX::SimpleMath::Rectangle drawRect;
+	drawRect.x = 600;
+	drawRect.y = 600;
+	drawRect.width = 1000;
+	drawRect.height = 1000;
+	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+
+	drawRect.x = 600;
+	drawRect.y = 700;
+	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+
+	// -----------------------------------------------------------
 }
 
 void UIDemo::Render()

@@ -10,7 +10,7 @@ namespace fq::graphics
 	struct CameraInfo
 	{
 		bool isPerspective = false;
-		float filedOfView = 0;
+		float fieldOfView = 0;
 		float nearPlain = 0;
 		float farPlain = 0;
 	};
@@ -396,4 +396,13 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
 		};
 	};
+
+	//// ---------------------------------------------------------------------
+	////							Light Probe
+	//// ---------------------------------------------------------------------
+	//struct CubeProbe
+	//{
+	//	unsigned short Index;
+	//	DirectX::SimpleMath::Vector3 Position;
+	//};
 };

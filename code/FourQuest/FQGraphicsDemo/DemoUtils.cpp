@@ -84,7 +84,7 @@ void fq::utils::AddDefaultCamera(fq::graphics::IFQGraphics* graphcis)
 	fq::graphics::CameraInfo cameraInfo;
 
 	cameraInfo.isPerspective = true;
-	cameraInfo.filedOfView = 0.25f * 3.1415f;
+	cameraInfo.fieldOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 0.03f;
 	cameraInfo.farPlain = 30000;
 

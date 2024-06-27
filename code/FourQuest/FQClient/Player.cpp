@@ -91,6 +91,8 @@ void fq::client::Player::Attack()
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	auto transform = GetComponent<game_module::Transform>();
+	fq::game_module::BoxCollider* collider = attackObj->GetComponent<fq::game_module::BoxCollider>();
+	collider->SetExtent({ mAttackRange.x, mAttackRange.y, mAttackRange.z });
 
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
@@ -98,12 +100,14 @@ void fq::client::Player::Attack()
 	attackComponent->SetAttackPower(100.f);
 
 	auto forward = transform->GetWorldMatrix().Forward();
+	auto up = transform->GetWorldMatrix().Up();
 	forward.Normalize();
+	up.Normalize();
 
 	attackObj->SetTag(game_module::ETag::PlayerAttack);
 
 	attackT->SetLocalRotation(transform->GetWorldRotation());
-	attackT->SetLocalPosition(transform->GetWorldPosition() + forward);
+	attackT->SetLocalPosition(transform->GetWorldPosition() + (forward * mAttackPositionOffset) + (up * 1));
 
 	GetScene()->AddGameObject(attackObj);
 }

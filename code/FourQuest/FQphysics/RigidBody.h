@@ -19,6 +19,7 @@ namespace fq::physics
 		RigidBody(fq::physics::EColliderType colliderType, unsigned int id, unsigned int layerNumber);
 		virtual ~RigidBody();
 
+
 		inline const unsigned int GetID() const;
 		inline const unsigned int GetLayerNumber() const;
 		inline const EColliderType& GetColliderType() const;

@@ -52,6 +52,10 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AttakPrefab")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
+		.data<&Player::mAttackRange>("AttackRange"_hs)
+		.prop(reflect::prop::Name, "AttackRange")
+		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
+		.prop(reflect::prop::Name, "AttackPositionOffset")
 		.base<game_module::Component>();
 	
 	entt::meta<DeadArmour>()

@@ -78,8 +78,8 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
 	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
-	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
-	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
+	//convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	//convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/temp123.model";
@@ -217,8 +217,6 @@ bool Process::Init(HINSTANCE hInstance)
 	particleInit();
 	decalInit();
 
-	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
-
 	return true;
 }
 
@@ -312,7 +310,16 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = mTimeManager.GetDeltaTime() * 100.f;
+	float speed = mTimeManager.GetDeltaTime() * 100.f;
+	if (InputManager::GetInstance().IsGetKey(VK_SHIFT))
+	{
+		speed = mTimeManager.GetDeltaTime() * 1000;
+	}
+	else
+	{
+		speed = mTimeManager.GetDeltaTime() * 100.f;
+	}
+
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
 		Walk(cameraTransform, speed);
@@ -376,16 +383,6 @@ void Process::Update()
 		Yaw(cameraTransform, dx);
 	}
 
-	//picking 테스트
-	if (InputManager::GetInstance().IsGetKey('Y'))
-	{
-		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
-		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
-		{
-			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
-			int a = 3;
-		}
-	}
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
@@ -394,25 +391,11 @@ void Process::Update()
 		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
 			L"./resource/example/texture/defaultSpecularHDR.dds",
 			L"./resource/example/texture/defaultBrdf.dds");
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('O'))
-	{
-		for (const auto& object : mStaticMeshObjects)
-		{
-			mTestGraphics->DeleteStaticMeshObject(object);
-		}
 
-		mStaticMeshObjects.clear();
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('P'))
-	{
-		const std::string modelPath = "./resource/example/model/gun.model";
-		const std::string textureBasePath = "./resource/example/texture";
-
-		float randX = (float)(rand() % 500 - 250);
-		float randY = (float)(rand() % 500 - 250);
-		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		//mTestGraphics->SetSkyBox(L"CubeProbe0.dds");
+		//mTestGraphics->SetIBLTexture(L"CubeProbe0.dds",
+		//	L"CubeProbe0.dds",
+		//	L"CubeProbe0.dds");
 	}
 
 	shadowTest();
@@ -516,19 +499,6 @@ void Process::Render()
 		obj->SetAlpha(0.3f);
 		const auto& data = obj->GetMeshData();
 	}
-
-	// --------------------font Test-------------------------------
-	DirectX::SimpleMath::Rectangle drawRect;
-	drawRect.x = 600;
-	drawRect.y = 600;
-	drawRect.width = 1000;
-	drawRect.height = 1000;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
-
-	drawRect.x = 600;
-	drawRect.y = 700;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
-	// ---------------------------------------------------
 
 	mTestGraphics->EndRender();
 
@@ -1169,7 +1139,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 			if (testIndex == 0)
 			{
-				iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+				//iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 			}
 
 			testIndex++;
@@ -1187,36 +1157,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
-			//static int testIndex = 0;
-			//
-			//if (testIndex == 0)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-			//}
-			//else if (testIndex == 1)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
-			//}
-			//else if (testIndex == 2)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
-			//}
-			//else if (testIndex == 3)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
-			//}
-			//else if (testIndex == 4)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
-			//}
-			//else if (testIndex == 5)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
-			//}
-			//testIndex++;
-
-			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-
+			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 
 			for (const auto& animInfo : animInfos)
 			{
