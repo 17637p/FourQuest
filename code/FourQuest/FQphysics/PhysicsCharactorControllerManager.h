@@ -71,7 +71,7 @@ namespace fq::physics
 		/// </summary>
 		void GetCharacterControllerData(const unsigned int& id, CharacterControllerGetSetData& data);
 		void GetCharacterMovementData(const unsigned int& id, CharacterMovementGetSetData& data);
-		void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData);
+		void SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData, int* collisionMatrix);
 		void SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData);
 
 	private:

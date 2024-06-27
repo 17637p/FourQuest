@@ -27,7 +27,6 @@ namespace fq::physics
 
 		PxShape* curShape;
 		actor->getShapes(&curShape, 1);
-		auto type = curShape->getConcreteType();
 
 		physx::PxFilterData data = curShape->getSimulationFilterData();
 

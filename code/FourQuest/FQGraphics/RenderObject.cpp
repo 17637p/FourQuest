@@ -46,6 +46,8 @@ namespace fq::graphics
 		, mbUseShadow(true)
 		, mOutLineColor{ -1, -1, -1 }
 		, mbIsAppliedDecal(false)
+		, mBlendTimePos(0.f)
+		, mTimePos(0.f)
 	{
 	}
 
@@ -390,7 +392,8 @@ namespace fq::graphics
 		mImagePath(""),
 		mRotationAngle(0),
 		mScaleX(1),
-		mScaleY(1)
+		mScaleY(1),
+		mAlpha(1.f)
 	{
 	}
 

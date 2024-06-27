@@ -5,6 +5,7 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "AnimationSystem.h"
 
@@ -124,6 +125,16 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	// 2. PrefabInstance¸¦ ·Îµå
 
 
+	// 3. SkyBox Load
+	auto scenePath = fq::path::GetScenePath() / scene->GetSceneName();
+
+	if (std::filesystem::exists(scenePath))
+	{
+		fq::game_module::SkyBox skybox;
+		skybox.Load(scenePath);
+		mGameProcess->mGraphics->SetSkyBox(skybox.mSkyBox);
+		mGameProcess->mGraphics->SetIBLTexture(skybox.mDiffuse, skybox.mSpecular, skybox.mBrdfLUT);
+	}
 
 	mbIsGameLoaded = true;
 }

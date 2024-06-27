@@ -26,24 +26,42 @@ namespace fq::physics
 		CudaPhysicsCloth(unsigned int id, unsigned int layerNumber);
 		~CudaPhysicsCloth();
 
+		/// <summary>
+		/// 초기화
+		/// </summary>
 		bool Initialize(const PhysicsClothInfo& info, 
 			physx::PxPhysics* physics, 
 			physx::PxScene* scene, 
 			physx::PxCudaContextManager* cudaContextManager, 
 			std::shared_ptr<CollisionData> collisionData,
 			int* collisionMatrix);
+
+		/// <summary>
+		/// 실시간 시뮬레이션 된 천 입자들을 ID11Buffer에 업데이트
+		/// </summary>
 		bool UpdatePhysicsCloth(physx::PxCudaContextManager* cudaContextManager);
 
+		/// <summary>
+		/// 천 GetSet
+		/// </summary>
 		void GetPhysicsCloth(PhysicsClothGetData& data);
 		bool SetPhysicsCloth(const PhysicsClothSetData& data);
 
+		/// <summary>
+		/// 버텍스 ID3D11Buffer 저장
+		/// </summary>
 		bool RegisterD3D11VertexBufferWithCUDA(ID3D11Buffer* buffer);
+
+		/// <summary>
+		/// 인덱스 ID3D11Buffer 저장
+		/// </summary>
 		bool RegisterD3D11IndexBufferWithCUDA(ID3D11Buffer* buffer);
 
 		inline const unsigned int& GetID();
 		inline const unsigned int& GetLayerNumber();
 		inline const DirectX::SimpleMath::Matrix& GetWorldTrnasform();
-		inline const float& GetTotalClothMass();
+		inline const float& GetClothMass();
+		inline const float& GetRestOffset();
 		inline physx::PxPBDParticleSystem* GetPBDParticleSystem();
 		inline void SetLayerNumber(const unsigned int& layerNumber);
 
@@ -82,7 +100,8 @@ namespace fq::physics
 		DirectX::SimpleMath::Matrix					mWorldTransform;
 		std::vector<DirectX::SimpleMath::Vector3>	mVertices;
 		std::vector<DirectX::SimpleMath::Vector2>	mUV;
-		float mTotalClothMass;
+		float mClothMass;
+		float mRestOffset;
 		std::vector<unsigned int> mIndices;
 		std::set<std::pair<unsigned int, unsigned int>>		mSprings;
 		std::vector<std::pair<unsigned int, unsigned int>>	mSameVertices;
@@ -109,9 +128,13 @@ namespace fq::physics
 	{
 		return mWorldTransform;
 	}
-	const float& CudaPhysicsCloth::GetTotalClothMass()
+	const float& CudaPhysicsCloth::GetClothMass()
 	{
-		return mTotalClothMass;
+		return mClothMass;
+	}
+	const float& CudaPhysicsCloth::GetRestOffset()
+	{
+		return mRestOffset;
 	}
 	physx::PxPBDParticleSystem* CudaPhysicsCloth::GetPBDParticleSystem()
 	{

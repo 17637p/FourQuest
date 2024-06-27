@@ -53,18 +53,22 @@ void fq::game_module::ImageUI::SetUIInfomations(std::vector<fq::graphics::UIInfo
 
 
 
-void fq::game_module::ImageUI::SetUIInfomation(size_t index, fq::graphics::UIInfo infomation)
+void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics::UIInfo& infomation)
 {
 	if (mImageObjects[index] == nullptr) return;
 
 	mImageObjects[index]->SetStartX(infomation.StartX);
 	mImageObjects[index]->SetStartY(infomation.StartY);
+
 	mImageObjects[index]->SetWidth(infomation.Width);
 	mImageObjects[index]->SetHeight(infomation.Height);
+
 	mImageObjects[index]->SetAlpha(infomation.Alpha);
 	mImageObjects[index]->SetLayer(infomation.Layer);
+
 	mImageObjects[index]->SetXRatio(infomation.XRatio);
 	mImageObjects[index]->SetYRatio(infomation.YRatio);
+
 	mImageObjects[index]->SetScaleX(infomation.ScaleX);
 	mImageObjects[index]->SetScaleY(infomation.ScaleY);
 

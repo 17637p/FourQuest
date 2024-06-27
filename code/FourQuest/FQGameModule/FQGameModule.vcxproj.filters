@@ -99,6 +99,12 @@
     <Filter Include="src\10.PathFinding">
       <UniqueIdentifier>{1bcfb876-d582-4468-97e0-906710d30f9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\11.SkyBox">
+      <UniqueIdentifier>{9c08872f-78ae-4e48-9037-60c014459e3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.SkyBox">
+      <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -265,12 +271,15 @@
     </ClInclude>
     <ClInclude Include="NavigationMeshLoader.h">
       <Filter>include\10.PathFinding</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Socket.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Decal.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>include\11.SkyBox</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -423,12 +432,15 @@
     </ClCompile>
     <ClCompile Include="NavigationMeshLoader.cpp">
       <Filter>src\10.PathFinding</Filter>
-	</ClCompile>
-	<ClCompile Include="Decal.cpp">
+    </ClCompile>
+    <ClCompile Include="Decal.cpp">
       <Filter>src\01.EntityComponent</Filter>
     </ClCompile>
     <ClCompile Include="Socket.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>src\11.SkyBox</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

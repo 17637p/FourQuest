@@ -67,7 +67,10 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Armour>("Armour"_hs) // 8
 		.prop(fq::reflect::prop::Name, "Armour")
 		.data<ETag::Floor>("Floor"_hs) // 9
-		.prop(fq::reflect::prop::Name, "Floor");
+		.prop(fq::reflect::prop::Name, "Floor")
+		.data<ETag::Soul>("Soul"_hs) // 10
+		.prop(fq::reflect::prop::Name, "Soul");
+
 
 	// GameObject
 	entt::meta<GameObject>()
