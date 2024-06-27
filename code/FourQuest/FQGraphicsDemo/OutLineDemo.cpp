@@ -1,4 +1,4 @@
-#include "TerrainDemo.h"
+#include "OutLineDemo.h"
 
 #include <IFQGraphics.h>
 
@@ -7,7 +7,7 @@
 
 using namespace fq::utils;
 
-TerrainDemo::TerrainDemo()
+OutLineDemo::OutLineDemo()
 	:mWindowPosX(0),
 	mWindowPosY(0),
 	mScreenWidth(1920),
@@ -23,14 +23,14 @@ TerrainDemo::TerrainDemo()
 	mEngineExporter = std::make_shared<fq::graphics::EngineExporter>();
 }
 
-TerrainDemo::~TerrainDemo()
+OutLineDemo::~OutLineDemo()
 {
 	mEngineExporter->DeleteEngine(mTestGraphics);
 
 	CoUninitialize();
 }
 
-bool TerrainDemo::Init(HINSTANCE hInstance)
+bool OutLineDemo::Init(HINSTANCE hInstance)
 {
 	/// 기본적인 초기화
 	InputManager::GetInstance().Init(mHwnd);
@@ -38,14 +38,6 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
-
-	/// Terrain 생성
-	const std::string planeModelPath = "./resource/Graphics/TerrainDemo/Plane.model";
-	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx", planeModelPath);
-	const std::string textureBasePath = "./resource/Graphics/TerrainDemo";
-	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
-
-	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 
 	/// camera 초기화
 	AddDefaultCamera(mTestGraphics);
@@ -70,12 +62,11 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
-	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
 
 	return true;
 }
 
-void TerrainDemo::Loop()
+void OutLineDemo::Loop()
 {
 	MSG msg;
 
@@ -99,12 +90,12 @@ void TerrainDemo::Loop()
 	}
 }
 
-void TerrainDemo::Finalize()
+void OutLineDemo::Finalize()
 {
 
 }
 
-LRESULT TerrainDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT OutLineDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC			hdc;
 	PAINTSTRUCT ps;
@@ -139,7 +130,7 @@ LRESULT TerrainDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);
 }
 
-void TerrainDemo::Update()
+void OutLineDemo::Update()
 {
 	mTimeManager.Update();
 	InputManager::GetInstance().Update();
@@ -152,21 +143,6 @@ void TerrainDemo::Update()
 	if (GetAsyncKeyState(VK_ESCAPE))
 	{
 		PostQuitMessage(0);
-	}
-
-	//picking 테스트
-	if (InputManager::GetInstance().IsGetKey('Y'))
-	{
-		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
-		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
-		{
-			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
-			if (temp != nullptr)
-			{
-				int t = 3;
-			}
-			int a = 3;
-		}
 	}
 
 	// 카메라 조작
@@ -213,16 +189,10 @@ void TerrainDemo::Update()
 		Pitch(mCameraTransform, dy);
 		Yaw(mCameraTransform, dx);
 	}
-
-	if (InputManager::GetInstance().IsGetKeyDown('L'))
-	{
-		mTestGraphics->SaveCubeProbeTexture(1024, 1024);
-	}
-
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
 
-void TerrainDemo::Render()
+void OutLineDemo::Render()
 {
 	mTestGraphics->BeginRender();
 	debugRender();
@@ -230,7 +200,7 @@ void TerrainDemo::Render()
 	mTestGraphics->EndRender();
 }
 
-void TerrainDemo::debugRender()
+void OutLineDemo::debugRender()
 {
 	using namespace fq::graphics::debug;
 
@@ -245,7 +215,12 @@ void TerrainDemo::debugRender()
 	mTestGraphics->DrawGrid(gridInfo);
 }
 
-void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
+void OutLineDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
+{
+	createModel(modelPath, {}, transform);
+}
+
+void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
 {
 	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
 
@@ -261,61 +236,45 @@ void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matr
 		meshInfo.MeshName = mesh.second.Name;
 		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
 
-		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
-		mTerrainMeshObjects.push_back(iTerrainMeshObject);
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
 
-		//fq::graphics::TerrainMaterialInfo terrainMaterial;
-		terrainMaterial.Layers.clear();
+		if (mesh.second.BoneVertices.empty())
+		{
+			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
 
-		fq::graphics::TerrainLayer layer1;
-		fq::graphics::TerrainLayer layer2;
-		fq::graphics::TerrainLayer layer3;
+			static int testIndex = 0;
 
-		layer1.BaseColor = "./resource/Graphics/TerrainDemo/t2.jpg";
-		layer2.BaseColor = "./resource/Graphics/TerrainDemo/t1.jpg";
-		layer3.BaseColor = "./resource/Graphics/TerrainDemo/t3.jpg";
+			if (testIndex == 0)
+			{
+				//iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+			}
 
-		layer1.NormalMap = "./resource/Graphics/TerrainDemo/boxNormal.jpg";
-		layer2.NormalMap = "./resource/Graphics/TerrainDemo/cerberus_N.png";
-		layer3.NormalMap = "./resource/Graphics/TerrainDemo/character_normal.png";
+			testIndex++;
 
-		layer1.TileOffsetX = 0.5;
-		layer1.TileOffsetY = 0.5;
-		layer2.TileOffsetX = 0;
-		layer2.TileOffsetY = 0;
-		layer3.TileOffsetX = 0;
-		layer3.TileOffsetY = 0;
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iStaticMeshObject, animInfo);
+			}
 
-		layer1.TileSizeX = 20;
-		layer2.TileSizeX = 20;
-		layer3.TileSizeX = 20;
-		layer1.TileSizeY = 20;
-		layer2.TileSizeY = 20;
-		layer3.TileSizeY = 20;
+			//mStaticMeshObjects.push_back(iStaticMeshObject);
+		}
+		else
+		{
+			meshInfo.Transform = transform;
 
-		layer1.Metalic = 0;
-		layer2.Metalic = 0;
-		layer3.Metalic = 0;
+			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
-		layer1.Roughness = 0;
-		layer2.Roughness = 0;
-		layer3.Roughness = 0;
+			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 
-		terrainMaterial.AlPhaFileName = "./resource/Graphics/TerrainDemo/TestAlpha4.png";
-
-		// Height 설정
-		terrainMaterial.HeightFileName = "./resource/Graphics/TerrainDemo/terrain.raw";
-		terrainMaterial.HeightScale = 1000;
-		terrainMaterial.TerrainWidth = 513;
-		terrainMaterial.TerrainHeight = 513;
-
-		terrainMaterial.TextureWidth = 513;
-		terrainMaterial.TextureHeight = 513;
-
-		terrainMaterial.Layers.push_back(layer1);
-		terrainMaterial.Layers.push_back(layer2);
-		terrainMaterial.Layers.push_back(layer3);
-
-		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
+			for (const auto& animInfo : animInfos)
+			{
+				mTestGraphics->AddAnimation(iSkinnedMeshObject, animInfo);
+			}
+			//mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
+		}
 	}
 }
+

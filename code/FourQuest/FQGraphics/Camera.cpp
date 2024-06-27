@@ -40,7 +40,7 @@ void fq::graphics::Camera::Update(const fq::common::Transform& transform)
 void fq::graphics::Camera::SetCamera(const CameraInfo& cameraInfo)
 {
 	mIsPerspective = cameraInfo.isPerspective;
-	mFieldOfView = cameraInfo.filedOfView;
+	mFieldOfView = cameraInfo.fieldOfView;
 	mNearPlane = cameraInfo.nearPlain;
 	mFarPlane = cameraInfo.farPlain;
 
