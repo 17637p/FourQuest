@@ -68,7 +68,7 @@ float4 main(VertexOut pin) : SV_TARGET
     
     if (cUseAlbedoMap)
     {
-        albedo = gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
     
     float metalness = cMetalness;

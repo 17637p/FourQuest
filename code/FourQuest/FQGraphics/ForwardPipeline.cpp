@@ -71,9 +71,4 @@ namespace fq::graphics
 
 		mFullScreenLastPass = mFullScreenPass;
 	}
-
-	void ForwardPipeline::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
-	{
-		mSkyBoxPass->SetSkyBox(path, bUseIBL, envScale);
-	}
 }

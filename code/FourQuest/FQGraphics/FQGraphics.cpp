@@ -2,6 +2,7 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 #include "D3D11Shader.h"
+#include "D3D11Texture.h"
 
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
@@ -68,11 +69,22 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 
 void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
 {
-	mRenderManager->SetSkyBox(path, bUseIBL, envScale);
+	auto skybox = std::make_shared<D3D11CubeTexture>(mDevice, path);
+	mLightManager->SetSkybox(skybox);
+
+	if (bUseIBL)
+	{
+		IBLTexture iblTexture = mLightManager->CreateIBLTexture(mDevice, skybox, EEnvironmentFormat::RGBA32, EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution::Size32x32, envScale);
+		mLightManager->SetIBLTexture(iblTexture);
+	}
 }
-void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
+void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffusePath, const std::wstring& specularPath, const std::wstring& brdfLUTPath)
 {
-	mRenderManager->SetIBLTexture(diffuse, specular, brdfLUT);
+	IBLTexture iblTexture;
+	iblTexture.SpecularIBL = std::make_shared<D3D11CubeTexture>(mDevice, specularPath);
+	iblTexture.DiffuseIrradiance = std::make_shared<D3D11CubeTexture>(mDevice, diffusePath);
+	iblTexture.SpecularBRDF = std::make_shared<D3D11Texture>(mDevice, brdfLUTPath);
+	mLightManager->SetIBLTexture(iblTexture);
 }
 
 void FQGraphics::DeleteImageObject(IImageObject* imageObject)

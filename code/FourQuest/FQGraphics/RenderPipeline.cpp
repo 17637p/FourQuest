@@ -87,18 +87,6 @@ namespace fq::graphics
 		HR(swapChain->Present(0, 0));
 	}
 
-	void RenderPipeline::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
-	{
-		if (diffuse == L"" || specular == L"" || brdfLUT == L"")
-		{
-			return;
-		}
-
-		mDiffuseCubeMap = mResourceManager->Create<D3D11Texture>(diffuse);
-		mSpecularCubeMap = mResourceManager->Create<D3D11Texture>(specular);
-		mBRDFLUT = mResourceManager->Create<D3D11Texture>(brdfLUT);
-	}
-
 	void RenderPipeline::RenderFullScreen()
 	{
 		mFullScreenLastPass->Render();

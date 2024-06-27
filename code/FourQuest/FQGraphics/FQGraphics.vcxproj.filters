@@ -615,5 +615,8 @@
     <CustomBuild Include="SpecularIBLCS.hlsl">
       <Filter>Shader\CS</Filter>
     </CustomBuild>
+    <CustomBuild Include="ResizeCubemapCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

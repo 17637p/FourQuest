@@ -289,7 +289,7 @@ fq::graphics::D3D11CubeTexture::D3D11CubeTexture(const std::shared_ptr<D3D11Devi
 	}
 
 	HR(d3d11Device->GetDevice()->CreateTexture2D(&desc, nullptr, mTexture.GetAddressOf()));
-
+	
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = desc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
@@ -310,6 +310,8 @@ std::string fq::graphics::D3D11CubeTexture::GenerateRID(const std::wstring& text
 void fq::graphics::D3D11CubeTexture::CreateUAV(const std::shared_ptr<D3D11Device>& d3d11Device, UINT mipSlice)
 {
 	assert(mTexture != nullptr);
+
+	mUAV.Reset();
 
 	D3D11_TEXTURE2D_DESC desc;
 	mTexture->GetDesc(&desc);

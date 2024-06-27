@@ -159,8 +159,8 @@ namespace fq::graphics
 
 		// init
 		{
-			// ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
-			// mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
+			ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
+			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 		}
 
 		// bind

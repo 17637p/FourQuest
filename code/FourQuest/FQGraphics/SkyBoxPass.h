@@ -21,8 +21,6 @@ namespace fq::graphics
 		void OnResize(unsigned short width, unsigned short height) override {}
 		void Render() override;
 
-		void SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale);
-
 	private:
 		bool isSetSkyBox;
 

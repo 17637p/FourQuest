@@ -149,38 +149,6 @@ namespace fq::graphics
 		return nullptr;
 	}
 
-	void D3D11RenderManager::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
-	{
-		switch (mPipelineType)
-		{
-		case fq::graphics::EPipelineType::Forward:
-			return mForwardPipeline->SetSkyBox(path, bUseIBL, envScale);
-			break;
-		case fq::graphics::EPipelineType::Deferred:
-			return mDeferredPipeline->SetSkyBox(path, bUseIBL, envScale);
-			break;
-		default:
-			assert(false);
-			break;
-		}
-	}
-
-	void D3D11RenderManager::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
-	{
-		switch (mPipelineType)
-		{
-		case fq::graphics::EPipelineType::Forward:
-			return mForwardPipeline->SetIBLTexture(diffuse, specular, brdfLUT);
-			break;
-		case fq::graphics::EPipelineType::Deferred:
-			return mDeferredPipeline->SetIBLTexture(diffuse, specular, brdfLUT);
-			break;
-		default:
-			assert(false);
-			break;
-		}
-	}
-
 	void D3D11RenderManager::RenderFullScreen()
 	{
 		switch (mPipelineType)

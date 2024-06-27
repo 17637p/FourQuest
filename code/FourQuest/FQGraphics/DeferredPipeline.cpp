@@ -115,9 +115,4 @@ namespace fq::graphics
 
 		RenderPipeline::OnResize(width, height);
 	}
-
-	void DeferredPipeline::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
-	{
-		mSkyBoxPass->SetSkyBox(path, bUseIBL, envScale);
-	}
 }

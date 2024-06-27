@@ -405,7 +405,7 @@ void Process::Update()
 		}
 	}
 	// 스카이박스 
-	if (InputManager::GetInstance().IsGetKeyDown('K'))
+	 if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/123EnvHDR.dds", true, 1.f);
 	}
