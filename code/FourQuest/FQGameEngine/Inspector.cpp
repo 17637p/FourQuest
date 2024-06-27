@@ -473,6 +473,7 @@ void fq::game_engine::Inspector::beginAddComponent()
 					beginIter != endIter; ++beginIter)
 				{
 					auto typeName = fq::reflect::GetName(beginIter->second);
+					typeName += "##Component";
 
 					if (ImGui::Selectable(typeName.c_str()))
 					{

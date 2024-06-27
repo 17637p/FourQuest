@@ -20,6 +20,7 @@
 #include "SoundSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "PathFindingSystem.h"
 #include "UISystem.h"
 
 #include "FQGameEngineRegister.h"
@@ -80,6 +81,7 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
 	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
+	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
@@ -183,6 +185,7 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//

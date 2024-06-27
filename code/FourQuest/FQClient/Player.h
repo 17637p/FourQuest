@@ -18,13 +18,10 @@ namespace fq::client
 		void Attack();
 		void SummonSoul();
 
-		float GetHp() const { return mHp; }
-		void SetHp(float hp) { mHp = hp; }
-
 	private:
 		void processInput();
 		void processCoolTime(float dt);
-		
+
 		void OnStart() override;
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
@@ -35,6 +32,7 @@ namespace fq::client
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
 
+		float mMaxHp;
 		float mHp;
 		float mAttackPower;
 		float mSoulStack;
