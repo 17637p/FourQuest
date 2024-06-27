@@ -25,6 +25,7 @@ fq::game_engine::Inspector::Inspector()
 	, mSelectObjectHandler{}
 	, mbIsOpen(true)
 	, mViewType(ViewType::None)
+	, mImguiID(0)
 {}
 
 fq::game_engine::Inspector::~Inspector()
@@ -62,6 +63,8 @@ void fq::game_engine::Inspector::Initialize(GameProcess* game, EditorProcess* ed
 
 void fq::game_engine::Inspector::Render()
 {
+	mImguiID = 0;
+
 	if (!mbIsOpen) return;
 
 	if (ImGui::Begin("Inspector", &mbIsOpen))
@@ -604,7 +607,7 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 	{
 		ImGui::SameLine();
 		// Add element
-		std::string addText = "Add##AddButton";
+		std::string addText = "Add##AddButton" + std::to_string(mImguiID++);
 		if (ImGui::Button(addText.c_str()))
 		{
 			auto baseValue = view.value_type().construct();
@@ -617,7 +620,7 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		ImGui::SameLine();
 
 		// Delete element
-		std::string deleteText = "Delete##DelteButton";
+		std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
 		if (ImGui::Button(deleteText.c_str()))
 		{
 			auto last = view.begin();
@@ -1156,7 +1159,7 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 
 	if (index != -1)
 	{
-		podName += "[" + std::to_string(index) + "]";
+		podName += "[" + std::to_string(index) + "]" + "##" + std::to_string(mImguiID++);
 	}
 
 	if (ImGui::CollapsingHeader(podName.c_str()))
