@@ -101,9 +101,8 @@ dcl_temps 4
 //   o7.w <- <main return value>.SourceTangent.w; o7.x <- <main return value>.SourceTangent.x; o7.y <- <main return value>.SourceTangent.y; o7.z <- <main return value>.SourceTangent.z; 
 //   o6.x <- <main return value>.SourceNormal.x; o6.y <- <main return value>.SourceNormal.y; o6.z <- <main return value>.SourceNormal.z; 
 //   o5.x <- <main return value>.PositionW.x; o5.y <- <main return value>.PositionW.y; o5.z <- <main return value>.PositionW.z; o5.w <- <main return value>.PositionW.w; 
-//   o3.x <- <main return value>.Normal.x; o3.y <- <main return value>.Normal.y; o3.z <- <main return value>.Normal.z; 
 //   o4.x <- pout.Emissive.x; o4.y <- pout.Emissive.y; o4.z <- pout.Emissive.z; 
-//   o3.w <- pout.Normal.w; 
+//   o3.x <- pout.Normal.x; o3.y <- pout.Normal.y; o3.z <- pout.Normal.z; o3.w <- pout.Normal.w; 
 //   o2.x <- pout.Roughness; 
 //   o1.x <- pout.Metalness; 
 //   o0.x <- pout.Albedo.x; o0.y <- pout.Albedo.y; o0.z <- pout.Albedo.z; o0.w <- pout.Albedo.w
@@ -184,46 +183,36 @@ if_nz cb0[7].y
 #line 92 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelPSDeferred.hlsl"
   dp3 r1.x, r0.xyzx, r0.xyzx
   rsq r1.x, r1.x
-  mul r0.xyz, r0.xyzx, r1.xxxx  // r0.x <- pout.Normal.x; r0.y <- pout.Normal.y; r0.z <- pout.Normal.z
+  mul o3.xyz, r0.xyzx, r1.xxxx
 
 #line 93
   mov o3.w, r0.w
 else 
 
 #line 96
-  dp3 r0.w, v2.xyzx, v2.xyzx
-  rsq r0.w, r0.w
-  mul r0.xyz, r0.wwww, v2.xyzx  // r0.x <- pout.Normal.x; r0.y <- pout.Normal.y; r0.z <- pout.Normal.z
+  dp3 r0.x, v2.xyzx, v2.xyzx
+  rsq r0.x, r0.x
+  mul o3.xyz, r0.xxxx, v2.xyzx  // o3.x <- pout.Normal.x; o3.y <- pout.Normal.y; o3.z <- pout.Normal.z
 
 #line 97
 endif 
 
-#line 99
-add r0.xyz, r0.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
-mul o3.xyz, r0.xyzx, l(0.500000, 0.500000, 0.500000, 0.000000)
-
-#line 100
-add r0.xyz, v2.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
-mul o6.xyz, r0.xyzx, l(0.500000, 0.500000, 0.500000, 0.000000)
-
-#line 101
-add r0.xyz, v3.xyzx, l(1.000000, 1.000000, 1.000000, 0.000000)
-mul o7.xyz, r0.xyzx, l(0.500000, 0.500000, 0.500000, 0.000000)
-
-#line 108
+#line 107
 if_nz cb0[7].z
 
-#line 110
+#line 109
   sample_indexable(texture2d)(float,float,float,float) r0.xyz, v4.xyxx, t4.xyzw, s0
   mul o4.xyz, r0.xyzx, cb0[1].xyzx
 
-#line 111
+#line 110
 else 
   mov o4.xyz, cb0[1].xyzx  // o4.x <- pout.Emissive.x; o4.y <- pout.Emissive.y; o4.z <- pout.Emissive.z
 endif 
 
-#line 113
+#line 112
 mov o5.xyz, v1.xyzx
 mov o5.w, v4.z
+mov o6.xyz, v2.xyzx
+mov o7.xyz, v3.xyzx
 ret 
-// Approximately 61 instruction slots used
+// Approximately 57 instruction slots used

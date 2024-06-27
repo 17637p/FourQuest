@@ -45,9 +45,10 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DepthStencilView> mDefualtDSV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mPositionWSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mSourceNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mSourceTangentSRV;
+
+		std::shared_ptr<D3D11Texture> mCopiedNormal;
 
 		std::shared_ptr<D3D11DepthStencilState> mStencilComparisionEqual;
 		std::shared_ptr<ShaderProgram> mDecalProgram;

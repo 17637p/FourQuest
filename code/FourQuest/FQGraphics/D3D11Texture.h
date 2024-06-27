@@ -33,6 +33,7 @@ namespace fq::graphics
 		UINT GetWidth() const { return mWidth; }
 		UINT GetHeight() const { return mHeight; }
 		UINT GetLevel() const { return mLevels; }
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> GetTexture() const { return mTexture; }
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetUAV() const { return mUAV; }
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const { return mSRV; }
 

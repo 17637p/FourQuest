@@ -33,7 +33,7 @@ PixelOut main(VertexOut pin) : SV_Target
     float2 depthUV = screenPosition * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     
     float3 normal = gSourceNormalTexture.Sample(gSamplerAnisotropic, depthUV).xyz;
-    clip(dot(normalize(normal * 2 - 1), pin.Orientation) - cos(gNormalThresholdInRadian));
+    clip(dot(normalize(normal), pin.Orientation) - cos(gNormalThresholdInRadian));
     
     float3 posW = gPositionWTexture.Sample(gSamplerAnisotropic, depthUV);
     float3 posV = mul(float4(posW, 1.f), gViewMatrix);
@@ -66,8 +66,7 @@ PixelOut main(VertexOut pin) : SV_Target
     }
     else
     {
-        pout.Metalness = gMetalness;
-
+        pout.Metalness = 0;
     }
     
     if (gUseRoughnessMap)
@@ -76,7 +75,7 @@ PixelOut main(VertexOut pin) : SV_Target
     }
     else
     {
-        pout.Roughness = gRoughness;
+        pout.Roughness = 0;
     }
     
     if (gUseNormalMap)
@@ -84,16 +83,15 @@ PixelOut main(VertexOut pin) : SV_Target
         float4 normalInTex = gNormalMap.Sample(gSamplerAnisotropic, uv);
         float4 sourceNormal = gSourceNormalTexture.Sample(gSamplerAnisotropic, depthUV);
         
-        
         if (sourceNormal.x > 100.f)
         {
             clip(-1.f);
         }
         
-        sourceNormal = sourceNormal * 2 - 1;
         float4 sourceTangent = normalize(gSourceTangentTexture.Sample(gSamplerAnisotropic, depthUV) * 2 - 1);
         pout.Normal.xyz = normalize(NormalSampleToWorldSpace(normalInTex.xyz, sourceNormal.xyz, sourceTangent.xyz));
-        pout.Normal.xyz = (pout.Normal.xyz + float3(1.f, 1.f, 1.f)) * 0.5f;
+        pout.Normal.w = gNormalBlend;
+
     }
     else
     {

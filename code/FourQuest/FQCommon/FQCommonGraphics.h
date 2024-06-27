@@ -280,8 +280,6 @@ namespace fq::graphics
 		unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
 		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 
-		float Opacity; // base color에 곱해짐
-
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 
@@ -495,8 +493,6 @@ namespace fq::graphics
 	struct DecalMaterialInfo
 	{
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
-		float Metalness = 0.f;
-		float Roughness = 0.f;
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
 
 		std::wstring BaseColorFileName;

@@ -96,9 +96,8 @@ PixelOut main(VertexOut pin) : SV_TARGET
         pout.Normal.xyz = normalize(pin.NormalW);
     }
 
-    pout.Normal.xyz = (pout.Normal.xyz + float3(1.f, 1.f, 1.f)) * 0.5f;
-    pout.SourceNormal.xyz = (pin.NormalW.xyz + float3(1.f, 1.f, 1.f)) * 0.5f;
-    pout.SourceTangent.xyz = (pin.TangentW.xyz  +float3(1.f, 1.f, 1.f)) * 0.5f;
+    pout.SourceNormal.xyz = pin.NormalW.xyz;
+    pout.SourceTangent.xyz = pin.TangentW.xyz;
 
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;

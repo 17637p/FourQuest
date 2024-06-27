@@ -93,9 +93,10 @@ namespace fq::graphics
 		mDefualtDSV = nullptr;
 
 		mPositionWSRV = nullptr;
-		mNormalSRV = nullptr;
 		mSourceNormalSRV = nullptr;
 		mSourceTangentSRV = nullptr;
+
+		mCopiedNormal = nullptr;
 
 		mStencilComparisionEqual = nullptr;
 		mDecalProgram = nullptr;
@@ -126,12 +127,12 @@ namespace fq::graphics
 
 		auto positionWRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
 		mPositionWSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, positionWRTV);
-		auto normalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
-		mNormalSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, normalRTV);
 		auto sourceNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal);
 		mSourceNormalSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, sourceNormalRTV);
 		auto sourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
 		mSourceTangentSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, sourceTangentRTV);
+
+		mCopiedNormal = std::make_shared<D3D11Texture>(mDevice, width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
 	}
 	void DeferredDecalPass::Render()
 	{
@@ -161,8 +162,13 @@ namespace fq::graphics
 			renderTargetViews.push_back(mEmissiveRTV);
 			D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDefualtDSV);
 
+			ID3D11Resource* resource;
+			mNormalRTV->GetRTV()->GetResource(&resource);
+			mDevice->GetDeviceContext()->CopyResource(mCopiedNormal->GetTexture().Get(), resource);
+			resource->Release();
+
 			mPositionWSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
-			// mNormalSRV->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
+			mCopiedNormal->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
 			mSourceNormalSRV->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
 			mSourceTangentSRV->Bind(mDevice, 8, ED3D11ShaderType::PixelShader);
 		}
@@ -175,8 +181,19 @@ namespace fq::graphics
 		{
 			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
 			std::shared_ptr<DecalMaterial> material = std::static_pointer_cast<DecalMaterial>(decalObjectInterface->GetDecalMaterial());
-			const auto& transform = decalObject->GetTransform();
+			auto transform = decalObject->GetTransform();
 			const auto& decalInfo = decalObject->GetDecalInfo();
+
+			DirectX::SimpleMath::Vector3 translation;
+			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Quaternion rotation;
+			transform.Decompose(scale, rotation, translation);
+
+			auto calcTransform =
+				DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Width, decalInfo.Depth, decalInfo.Height)
+				* DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Pivot.x, decalInfo.Pivot.z, decalInfo.Pivot.y)
+				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+				* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
 
 			material->Bind(mDevice);
 
@@ -184,10 +201,10 @@ namespace fq::graphics
 			decalObjectCB.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
 			decalObjectCB.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
 			decalObjectCB.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0)).Transpose();
-			decalObjectCB.World = transform.Transpose();
+			decalObjectCB.World = calcTransform.Transpose();
 			decalObjectCB.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
 			decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
-			decalObjectCB.InvWV = (transform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+			decalObjectCB.InvWV = (calcTransform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
 			decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
 			mDecalObjectCB->Update(mDevice, decalObjectCB);
 
@@ -195,8 +212,6 @@ namespace fq::graphics
 			CBDecalMaterial decalMaterialCB;
 			decalMaterialCB.BaseColor = materialInfo.BaseColor;
 			decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor;
-			decalMaterialCB.Metalness = materialInfo.Metalness;
-			decalMaterialCB.Roughness = materialInfo.Roughness;
 			decalMaterialCB.bUseBaseColor = materialInfo.bUseBaseColor && material->GetHasBaseColor();
 			decalMaterialCB.bUseMetalness = materialInfo.bUseMetalness && material->GetHasMetalness();
 			decalMaterialCB.bUseRoughness = materialInfo.bUseRoughness && material->GetHasRoughness();
@@ -215,13 +230,13 @@ namespace fq::graphics
 			{
 				debug::OBBInfo obbInfo;
 				obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
-				obbInfo.OBB.Transform(obbInfo.OBB, transform);
+				obbInfo.OBB.Transform(obbInfo.OBB, calcTransform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 				obbInfo = {};
 				obbInfo.OBB.Center = { 0.f, -0.25f, 0.f };
 				obbInfo.OBB.Extents = { 0.1f, 0.25f, 0.1f };
-				obbInfo.OBB.Transform(obbInfo.OBB, transform);
+				obbInfo.OBB.Transform(obbInfo.OBB, calcTransform);
 				obbInfo.Color = decalInfo.DebugRenderColor;
 				mDebugDrawManager->Submit(obbInfo);
 			}
@@ -234,15 +249,21 @@ namespace fq::graphics
 		blendDesc.AlphaToCoverageEnable = FALSE;
 		blendDesc.IndependentBlendEnable = TRUE;
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[1].BlendEnable = FALSE;
 		blendDesc.RenderTarget[2].BlendEnable = FALSE;
-		blendDesc.RenderTarget[3].BlendEnable = FALSE;
+		blendDesc.RenderTarget[3].BlendEnable = TRUE;
+		blendDesc.RenderTarget[3].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[3].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[3].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[3].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[3].DestBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[3].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		blendDesc.RenderTarget[4] = blendDesc.RenderTarget[0];
 
 		for (int i = 0; i < 2; ++i)

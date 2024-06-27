@@ -57,91 +57,98 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 position = Vector3::Transform(Vector3::Zero, mTransform);
 		float distance = DirectX::SimpleMath::Vector3::Distance(position, mLastPosition);
 
-		if (distance > mTrailInfo.MinVertexDistance && mTrailInfo.bIsEmit)
+		if (!mTrailInfo.bIsEmit)
 		{
-			size_t frameMaxDivideCount = std::min<size_t>(distance / mTrailInfo.MinVertexDistance, TrailInfo::MAX_VERTEX_SIZE / 60.f);
-
-			for (size_t i = 0; i < frameMaxDivideCount; ++i)
+			mLastPosition = position;
+		}
+		else
+		{
+			if (distance > mTrailInfo.MinVertexDistance && mTrailInfo.bIsEmit)
 			{
-				float ratio = (float)(i + 1) / (frameMaxDivideCount);
+				size_t frameMaxDivideCount = std::min<size_t>(distance / mTrailInfo.MinVertexDistance, TrailInfo::MAX_VERTEX_SIZE / 60.f);
 
-				Vertex topVertex;
-				Vertex bottomVertex;
-				topVertex.Age = 0;
-				bottomVertex.Age = 0;
-
-				switch (mTrailInfo.AlignmentType)
+				for (size_t i = 0; i < frameMaxDivideCount; ++i)
 				{
-				case TrailInfo::EAlignment::View:
-				{
-					Vector3 xAxis = position - mLastPosition;
-					xAxis.Normalize();
-					Vector3 zAxis = cameraPos - mLastPosition;
-					zAxis.Normalize();
-					Vector3 yAxis = zAxis.Cross(xAxis);
-					yAxis.Normalize();
+					float ratio = (float)(i + 1) / (frameMaxDivideCount);
 
-					topVertex.Origin = Vector3::Lerp(mLastPosition, position, ratio);
-					topVertex.ExtendAxis = yAxis;
-					bottomVertex.Origin = topVertex.Origin;
-					bottomVertex.ExtendAxis = -yAxis;
-				}
-				break;
-				case TrailInfo::EAlignment::TransformZ:
-				{
-					topVertex.Origin = Vector3::Lerp(mLastPosition, position, ratio);
-					topVertex.ExtendAxis = mTransform.Up();
-					bottomVertex.Origin = topVertex.Origin;
-					bottomVertex.ExtendAxis = -mTransform.Up();
-				}
-				break;
-				default:
-					assert(false);
-					break;
-				}
+					Vertex topVertex;
+					Vertex bottomVertex;
+					topVertex.Age = 0;
+					bottomVertex.Age = 0;
 
-				mVertices.push_front(topVertex); // 앞에 있을 수록 최신 데이터, 
-				mCatmulRomTopVertics.push_front(topVertex);
-				mVertices.push_front(bottomVertex);
-				mCatmulRomBottomVertics.push_front(bottomVertex);
-
-				while (mCatmulRomTopVertics.size() >= 4)
-				{
-					for (size_t j = 0; j < mTrailInfo.VertexDivisionCount; ++j)
+					switch (mTrailInfo.AlignmentType)
 					{
-						Vertex catmullRomTopVertex;
-						Vertex catmullRomBottomVertex;
+					case TrailInfo::EAlignment::View:
+					{
+						Vector3 xAxis = position - mLastPosition;
+						xAxis.Normalize();
+						Vector3 zAxis = cameraPos - mLastPosition;
+						zAxis.Normalize();
+						Vector3 yAxis = zAxis.Cross(xAxis);
+						yAxis.Normalize();
 
-						float weight = (float)(j + 1) / (mTrailInfo.VertexDivisionCount + 1);
-						
-						catmullRomTopVertex.ExtendAxis = DirectX::SimpleMath::Vector3::Lerp(mCatmulRomTopVertics[2].ExtendAxis, mCatmulRomTopVertics[1].ExtendAxis, weight);
-						catmullRomTopVertex.Age = std::lerp(mCatmulRomTopVertics[2].Age, mCatmulRomTopVertics[1].Age, weight);
-						catmullRomTopVertex.Origin = catmullRom(
-							mCatmulRomTopVertics[3].Origin,
-							mCatmulRomTopVertics[2].Origin,
-							mCatmulRomTopVertics[1].Origin,
-							mCatmulRomTopVertics[0].Origin,
-							weight);
-						
-						catmullRomBottomVertex.ExtendAxis = DirectX::SimpleMath::Vector3::Lerp(mCatmulRomBottomVertics[2].ExtendAxis, mCatmulRomBottomVertics[1].ExtendAxis, weight);
-						catmullRomBottomVertex.Age = std::lerp(mCatmulRomBottomVertics[2].Age, mCatmulRomBottomVertics[1].Age, weight);
-						catmullRomBottomVertex.Origin = catmullRom(
-							mCatmulRomBottomVertics[3].Origin,
-							mCatmulRomBottomVertics[2].Origin,
-							mCatmulRomBottomVertics[1].Origin,
-							mCatmulRomBottomVertics[0].Origin,
-							weight);
-
-						mVertices.insert(mVertices.begin() + 4, catmullRomTopVertex);
-						mVertices.insert(mVertices.begin() + 4, catmullRomBottomVertex);
+						topVertex.Origin = Vector3::Lerp(mLastPosition, position, ratio);
+						topVertex.ExtendAxis = yAxis;
+						bottomVertex.Origin = topVertex.Origin;
+						bottomVertex.ExtendAxis = -yAxis;
+					}
+					break;
+					case TrailInfo::EAlignment::TransformZ:
+					{
+						topVertex.Origin = Vector3::Lerp(mLastPosition, position, ratio);
+						topVertex.ExtendAxis = mTransform.Up();
+						bottomVertex.Origin = topVertex.Origin;
+						bottomVertex.ExtendAxis = -mTransform.Up();
+					}
+					break;
+					default:
+						assert(false);
+						break;
 					}
 
-					mCatmulRomTopVertics.pop_back();
-					mCatmulRomBottomVertics.pop_back();
-				}
-			}
+					mVertices.push_front(topVertex); // 앞에 있을 수록 최신 데이터, 
+					mCatmulRomTopVertics.push_front(topVertex);
+					mVertices.push_front(bottomVertex);
+					mCatmulRomBottomVertics.push_front(bottomVertex);
 
-			mLastPosition = position;
+					while (mCatmulRomTopVertics.size() >= 4)
+					{
+						for (size_t j = 0; j < mTrailInfo.VertexDivisionCount; ++j)
+						{
+							Vertex catmullRomTopVertex;
+							Vertex catmullRomBottomVertex;
+
+							float weight = (float)(j + 1) / (mTrailInfo.VertexDivisionCount + 1);
+
+							catmullRomTopVertex.ExtendAxis = DirectX::SimpleMath::Vector3::Lerp(mCatmulRomTopVertics[2].ExtendAxis, mCatmulRomTopVertics[1].ExtendAxis, weight);
+							catmullRomTopVertex.Age = std::lerp(mCatmulRomTopVertics[2].Age, mCatmulRomTopVertics[1].Age, weight);
+							catmullRomTopVertex.Origin = catmullRom(
+								mCatmulRomTopVertics[3].Origin,
+								mCatmulRomTopVertics[2].Origin,
+								mCatmulRomTopVertics[1].Origin,
+								mCatmulRomTopVertics[0].Origin,
+								weight);
+
+							catmullRomBottomVertex.ExtendAxis = DirectX::SimpleMath::Vector3::Lerp(mCatmulRomBottomVertics[2].ExtendAxis, mCatmulRomBottomVertics[1].ExtendAxis, weight);
+							catmullRomBottomVertex.Age = std::lerp(mCatmulRomBottomVertics[2].Age, mCatmulRomBottomVertics[1].Age, weight);
+							catmullRomBottomVertex.Origin = catmullRom(
+								mCatmulRomBottomVertics[3].Origin,
+								mCatmulRomBottomVertics[2].Origin,
+								mCatmulRomBottomVertics[1].Origin,
+								mCatmulRomBottomVertics[0].Origin,
+								weight);
+
+							mVertices.insert(mVertices.begin() + 4, catmullRomTopVertex);
+							mVertices.insert(mVertices.begin() + 4, catmullRomBottomVertex);
+						}
+
+						mCatmulRomTopVertics.pop_back();
+						mCatmulRomBottomVertics.pop_back();
+					}
+				}
+
+				mLastPosition = position;
+			}
 		}
 
 		// vertex 조정
