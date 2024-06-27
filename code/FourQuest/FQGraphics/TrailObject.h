@@ -6,10 +6,6 @@
 #include "../FQCommon/IFQRenderObject.h"
 #include "D3D11Common.h"
 
-// 해야하는 것
-// 1. 메테리얼 넣기
-// 2. 
-
 namespace fq::graphics
 {
 	class D3D11ResourceManager;

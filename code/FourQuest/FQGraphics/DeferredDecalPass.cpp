@@ -96,8 +96,6 @@ namespace fq::graphics
 		mSourceNormalSRV = nullptr;
 		mSourceTangentSRV = nullptr;
 
-		mCopiedNormal = nullptr;
-
 		mStencilComparisionEqual = nullptr;
 		mDecalProgram = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
@@ -131,8 +129,6 @@ namespace fq::graphics
 		mSourceNormalSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, sourceNormalRTV);
 		auto sourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
 		mSourceTangentSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, sourceTangentRTV);
-
-		mCopiedNormal = std::make_shared<D3D11Texture>(mDevice, width, height, DXGI_FORMAT_R16G16B16A16_FLOAT, 1);
 	}
 	void DeferredDecalPass::Render()
 	{
@@ -162,21 +158,14 @@ namespace fq::graphics
 			renderTargetViews.push_back(mEmissiveRTV);
 			D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDefualtDSV);
 
-			ID3D11Resource* resource;
-			mNormalRTV->GetRTV()->GetResource(&resource);
-			mDevice->GetDeviceContext()->CopyResource(mCopiedNormal->GetTexture().Get(), resource);
-			resource->Release();
-
 			mPositionWSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
-			mCopiedNormal->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
 			mSourceNormalSRV->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
 			mSourceTangentSRV->Bind(mDevice, 8, ED3D11ShaderType::PixelShader);
 		}
 
 		// cb update
-
 		const std::set<IDecalObject*>& decalObjects = mDecalManager->GetDecalObjects();
-
+		
 		for (IDecalObject* decalObjectInterface : decalObjects)
 		{
 			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);

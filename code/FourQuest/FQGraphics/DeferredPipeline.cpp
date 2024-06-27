@@ -13,7 +13,7 @@ namespace fq::graphics
 		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
 		, mDebugRenderPass(std::make_shared<DebugRenderPass>())
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
-		, mTerrainPass(std::make_shared<TerrainPass>())
+		, mTerrainPass(std::make_shared<TerrainPass>(EPipelineType::Deferred))
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
 		, mSingleColorPass(std::make_shared<SingleColorPass>())
 		, mOutLinePass(std::make_shared<OutLinePass>())
@@ -70,11 +70,11 @@ namespace fq::graphics
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mGeometryPass);
+		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mDecalPass);
 		mPasses.push_back(mShadingPass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
-		mPasses.push_back(mTerrainPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mTrailRenderPass);

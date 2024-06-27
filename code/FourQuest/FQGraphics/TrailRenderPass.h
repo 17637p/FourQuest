@@ -10,7 +10,6 @@ namespace fq::graphics
 {
 	class D3D11TrailManager;
 
-
 	class TrailRenderPass : public Pass
 	{
 	public:

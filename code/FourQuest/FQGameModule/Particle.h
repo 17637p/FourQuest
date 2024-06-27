@@ -44,6 +44,10 @@ namespace fq::game_module
 		ParticleInfo::ForceOverLifetime GetForceOverLifetimeData()const { return mParticleInfo.ForceOverLifeTimeData; }
 		void SetForceOverLifetimeData(ParticleInfo::ForceOverLifetime data);
 
+		const std::vector<DirectX::SimpleMath::Vector4>& GetColorRatios() const { return mParticleInfo.ColorOverLifetimeData.ColorRatios; }
+		void SetColorRatios(const std::vector<DirectX::SimpleMath::Vector4>& colorRatios) { mParticleInfo.ColorOverLifetimeData.ColorRatios = colorRatios; tryUpdateObjectInfo(); }
+		const std::vector<DirectX::SimpleMath::Vector2>& GetAlphaRatios() const { return mParticleInfo.ColorOverLifetimeData.AlphaRatios; }
+		void SetAlphaRatios(const std::vector<DirectX::SimpleMath::Vector2>& alphaRatios) { mParticleInfo.ColorOverLifetimeData.AlphaRatios = alphaRatios; tryUpdateObjectInfo(); }
 		ParticleInfo::ColorOverLifetime GetColorOverLifeTime()const { return mParticleInfo.ColorOverLifetimeData; }
 		void SetColorOverLifeTime(ParticleInfo::ColorOverLifetime data);
 
@@ -73,6 +77,14 @@ namespace fq::game_module
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
+
+		void tryUpdateObjectInfo()
+		{
+			if (mParticleObject != nullptr)
+			{
+				mParticleObject->SetInfo(mParticleInfo);
+			}
+		}
 
 	private:
 		graphics::IParticleObject* mParticleObject;

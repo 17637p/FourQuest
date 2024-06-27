@@ -222,12 +222,8 @@ namespace fq::graphics
 
 		struct ColorOverLifetime
 		{
-			enum { RATIO_SIZE = 8 };
-
-			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ RATIO_SIZE }; // value, ratio 
-			size_t AlphaRatioCount{ 0 };
-			std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ RATIO_SIZE }; // { value }, ratio
-			size_t ColorRatioCount{ 0 };
+			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ { 1, 0 }, }; // value, ratio 
+			std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ { 1, 1, 1, 0}, }; // { value }, ratio
 			bool bIsUsed{ false };
 		} ColorOverLifetimeData;
 
@@ -277,7 +273,7 @@ namespace fq::graphics
 		float Depth = 1.f;
 		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
 
-		unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
+		// unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
 		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
@@ -289,7 +285,7 @@ namespace fq::graphics
 
 	struct TrailInfo
 	{
-		enum { MAX_VERTEX_SIZE = 512 };
+		enum { MAX_VERTEX_SIZE = 1024 };
 
 		enum class EAlignment
 		{
@@ -308,7 +304,7 @@ namespace fq::graphics
 		float Time = 5.f;
 		std::vector<DirectX::SimpleMath::Vector2> WidthRatios = { {10, 0 } }; // x : width, y : ratio
 		float MinVertexDistance = 1.f; // 월드 공간에 정의된 트레일 간 최소 거리
-		unsigned int VertexDivisionCount = 0; // 두 정점 사이에 곡선으로 나눌 개수
+		size_t VertexDivisionCount = 1; // 두 정점 사이에 곡선으로 나눌 개수
 		bool bIsEmit = true;
 		std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ { 1, 1, 1, 0} }; // xyz : rgb, z : ratio
 		std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ { 1, 0 } }; // x : a, y : ratio
@@ -461,7 +457,7 @@ namespace fq::graphics
 			Additive,
 			Subtractive,
 			Modulate,
-			// Opaque,
+			Opaque,
 		} RenderModeType = ERenderMode::Additive;
 
 		enum class EColorMode

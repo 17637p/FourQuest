@@ -202,28 +202,16 @@ namespace fq::graphics
 		particleObjectData.ForceOverLifeTimeData.Force = particleInfo.ForceOverLifeTimeData.Force;
 		particleObjectData.ForceOverLifeTimeData.bIsUsed = particleInfo.ForceOverLifeTimeData.bIsUsed;
 
-		for (size_t i = 0; i < 8; ++i)
+		particleObjectData.ColorOverLifetimeData.AlphaRatioCount = std::min<size_t>(particleInfo.ColorOverLifetimeData.AlphaRatios.size(), 8);
+		particleObjectData.ColorOverLifetimeData.ColorRatioCount = std::min<size_t>(particleInfo.ColorOverLifetimeData.ColorRatios.size(), 8);
+		for (size_t i = 0; i < particleObjectData.ColorOverLifetimeData.AlphaRatioCount; ++i)
 		{
-			if (particleInfo.ColorOverLifetimeData.ColorRatioCount > i)
-			{
-				particleObjectData.ColorOverLifetimeData.ColorRatios[i] = particleInfo.ColorOverLifetimeData.ColorRatios[i];
-			}
-			else
-			{
-				particleObjectData.ColorOverLifetimeData.ColorRatios[i] = DirectX::SimpleMath::Vector4{ 0, 0, 0, 0 };
-			}
-
-			if (particleInfo.ColorOverLifetimeData.AlphaRatioCount > i)
-			{
-				particleObjectData.ColorOverLifetimeData.AlphaRatios[i] = DirectX::SimpleMath::Vector4{ particleInfo.ColorOverLifetimeData.AlphaRatios[i].x, particleInfo.ColorOverLifetimeData.AlphaRatios[i].y, 0, 0 };
-			}
-			else
-			{
-				particleObjectData.ColorOverLifetimeData.AlphaRatios[i] = DirectX::SimpleMath::Vector4{ 0, 0, 0, 0 };
-			}
+			particleObjectData.ColorOverLifetimeData.AlphaRatios[i] = DirectX::SimpleMath::Vector4{ particleInfo.ColorOverLifetimeData.AlphaRatios[i].x, particleInfo.ColorOverLifetimeData.AlphaRatios[i].y, 0, 0 };
 		}
-		particleObjectData.ColorOverLifetimeData.AlphaRatioCount = particleInfo.ColorOverLifetimeData.AlphaRatioCount;
-		particleObjectData.ColorOverLifetimeData.ColorRatioCount = particleInfo.ColorOverLifetimeData.ColorRatioCount;
+		for (size_t i = 0; i < particleObjectData.ColorOverLifetimeData.ColorRatioCount; ++i)
+		{
+			particleObjectData.ColorOverLifetimeData.ColorRatios[i] = particleInfo.ColorOverLifetimeData.ColorRatios[i];
+		}
 		particleObjectData.ColorOverLifetimeData.bIsUsed = particleInfo.ColorOverLifetimeData.bIsUsed;
 
 		particleObjectData.SizeOverLifetimeData.PointA = particleInfo.SizeOverLifetimeData.PointA;
@@ -240,8 +228,8 @@ namespace fq::graphics
 		particleObjectData.ParticleMaterialData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(materialInfo.Tiling.x, materialInfo.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(materialInfo.Offset.x, materialInfo.Offset.y, 0);
 		particleObjectData.ParticleMaterialData.RenderMode = (int)materialInfo.RenderModeType;
 		particleObjectData.ParticleMaterialData.ColorMode = (int)materialInfo.ColorModeType;
-		particleObjectData.ParticleMaterialData.bUseAlbedoMap = particleMaterial->GetHasBaseColor();
-		particleObjectData.ParticleMaterialData.bUseEmissiveMap = particleMaterial->GetHasEmissive();
+		particleObjectData.ParticleMaterialData.bUseAlbedoMap = particleMaterial->GetHasBaseColor() && materialInfo.bIsUsedBaseColor;;
+		particleObjectData.ParticleMaterialData.bUseEmissiveMap = particleMaterial->GetHasEmissive() && materialInfo.bIsUsedEmissive;
 		particleObjectData.ParticleMaterialData.AlphaCutoff = materialInfo.AlphaCutoff;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
@@ -357,13 +345,13 @@ namespace fq::graphics
 		{
 			mDefaultRasterizer->Bind(mDevice);
 		}
-		
+
 		switch (materialInfo.RenderModeType)
 		{
 		case ParticleMaterialInfo::ERenderMode::Additive:
 			mAdditiveState->Bind(mDevice);
 			break;
-		case ParticleMaterialInfo::ERenderMode::Subtractive: 
+		case ParticleMaterialInfo::ERenderMode::Subtractive:
 			mSubtractiveState->Bind(mDevice);
 			break;
 		case ParticleMaterialInfo::ERenderMode::Modulate:
@@ -384,7 +372,7 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 		ID3D11ShaderResourceView* vs_srv[] = { particleObject->mParticleBufferSRV.Get(), particleObject->mAliveIndexBufferSRV.Get() };
-		ID3D11ShaderResourceView* ps_srv[] = { 
+		ID3D11ShaderResourceView* ps_srv[] = {
 			!particleMaterial->GetHasBaseColor() ? nullptr : particleMaterial->GetBaseColor()->GetSRV().Get(),
 			!particleMaterial->GetHasEmissive() ? nullptr : particleMaterial->GetEmissive()->GetSRV().Get(),
 			mDepthSRV.Get() };

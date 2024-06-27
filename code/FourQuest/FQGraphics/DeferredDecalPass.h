@@ -48,8 +48,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mSourceNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mSourceTangentSRV;
 
-		std::shared_ptr<D3D11Texture> mCopiedNormal;
-
 		std::shared_ptr<D3D11DepthStencilState> mStencilComparisionEqual;
 		std::shared_ptr<ShaderProgram> mDecalProgram;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;

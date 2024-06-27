@@ -12,7 +12,7 @@ namespace fq::graphics
 		, mTransparentCompositePass(std::make_shared<TransparentCompositePass>())
 		, mDebugRenderPass(std::make_shared<DebugRenderPass>())
 		, mSkyBoxPass(std::make_shared<SkyBoxPass>())
-		, mTerrainPass(std::make_shared<TerrainPass>())
+		, mTerrainPass(std::make_shared<TerrainPass>(EPipelineType::Forward))
 		, mFullScreenPass(std::make_shared<FullScreenPass>())
 		, mParticlePass(std::make_shared<ParticlePass>())
 		, mSingleColorPass(std::make_shared<SingleColorPass>())
