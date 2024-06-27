@@ -3,12 +3,14 @@
 
 #include "Attack.h"
 #include "CameraMoving.h"
+#include "HpBar.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
 	, mAttackPrafab{}
 	, mController(nullptr)
 	, mHp(0.f)
+	, mMaxHp(0.f)
 	, mDashCoolTime(1.f)
 	, mDashElapsedTime(0.f)
 	, mInvincibleTime(1.f)
@@ -49,6 +51,8 @@ void fq::client::Player::OnUpdate(float dt)
 
 void fq::client::Player::OnStart()
 {
+	mMaxHp = mHp;
+
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	assert(mAnimator);
 
@@ -59,6 +63,7 @@ void fq::client::Player::OnStart()
 		{
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
+
 }
 
 void fq::client::Player::processInput()
@@ -125,6 +130,15 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 		mHp -= attackPower;
 
 		mInvincibleElapsedTime = mInvincibleTime;
+
+		// UI 설정
+		GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+
+		// 플레이어 사망처리 
+		if (mHp <= 0.f)
+		{
+			SummonSoul();
+		}
 	}
 }
 
@@ -151,4 +165,5 @@ void fq::client::Player::processCoolTime(float dt)
 	mDashElapsedTime = std::max(mDashElapsedTime - dt, 0.f);
 	mInvincibleElapsedTime = std::max(mInvincibleElapsedTime - dt, 0.f);
 }
+
 

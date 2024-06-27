@@ -120,6 +120,8 @@ void fq::game_module::CharacterController::OnCollisionEnter(const Collision& col
 
 void fq::game_module::CharacterController::OnCollisionExit(const Collision& collision)
 {
+	if (mCollisionCount == 0) return;
+
 	--mCollisionCount;
 }
 
@@ -130,7 +132,7 @@ void fq::game_module::CharacterController::OnTriggerEnter(const Collision& colli
 
 void fq::game_module::CharacterController::OnTriggerExit(const Collision& collision)
 {
-//	assert(mCollisionCount != 0);
+	if (mCollisionCount == 0) return;
 
 	--mCollisionCount;
 }
