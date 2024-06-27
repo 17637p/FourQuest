@@ -74,7 +74,7 @@
     <IncludePath>$(SolutionDir)FQGraphics;$(SolutionDir)FQCommon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(Solutiondir)FQCommon;$(IncludePath)</IncludePath>
+    <IncludePath>$(Solutiondir)FQGraphics;$(Solutiondir)FQCommon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

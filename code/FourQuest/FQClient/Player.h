@@ -44,8 +44,12 @@ namespace fq::client
 
 		float mInvincibleTime; // 무적시간 
 		float mDashCoolTime; // 대쉬쿨타임
+
 		game_module::PrefabResource mAttackPrafab;
 		game_module::PrefabResource mSoulPrefab;
+
+		DirectX::SimpleMath::Vector3 mAttackRange;
+		float mAttackPositionOffset;
 
 		friend void RegisterMetaData();
 	};
