@@ -63,21 +63,26 @@ float4 main(PS_INPUT pin) : SV_TARGET
     
     float4 color = float4(albedo.rgb + emissive, albedo.a);
     
-    switch (gParticleRender.RenderMode)
+    if (gParticleRender.bUseMultiplyAlpha)
     {
-        case RENDER_MODE_ADDITIVE:
-            color.rgb *= color.a;
-            break;
-        case RENDER_MODE_SUBTRACTIVE:
-            color.rgb *= color.a;
-            break;
-        case RENDER_MODE_MODULATE:
-            color.rgb *= color.a;
-            break;
-        case RENDER_MODE_ALPHA_BLEND:
-            // color.rgb *= color.a;
-            break;
+        color.rgb *= color.a;
     }
+    
+    // switch (gParticleRender.RenderMode)
+    // {
+    //     case RENDER_MODE_ADDITIVE:
+    //         color.rgb *= color.a;
+    //         break;
+    //     case RENDER_MODE_SUBTRACTIVE:
+    //         color.rgb *= color.a;
+    //         break;
+    //     case RENDER_MODE_MODULATE:
+    //         color.rgb *= color.a;
+    //         break;
+    //     case RENDER_MODE_ALPHA_BLEND:
+    //         // color.rgb *= color.a;
+    //         break;
+    // }
     
     clip(color.a - gParticleRender.AlphaCutoff);
     

@@ -125,6 +125,7 @@ namespace fq::graphics
 				particleMaterialCB.bUseAlbedoMap = material->GetHasBaseColor();
 				particleMaterialCB.bUseEmissiveMap = material->GetHasEmissive();
 				particleMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
+				particleMaterialCB.bUseMultiplyAlpha = materialInfo.bUseMultiplyAlpha;
 				mMaterialCB->Update(mDevice, particleMaterialCB);
 
 				// dynamic vertex update

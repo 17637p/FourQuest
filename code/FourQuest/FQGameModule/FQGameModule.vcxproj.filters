@@ -281,6 +281,9 @@
     <ClInclude Include="SkyBox.h">
       <Filter>include\11.SkyBox</Filter>
     </ClInclude>
+    <ClInclude Include="Trail.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -433,14 +436,17 @@
     <ClCompile Include="NavigationMeshLoader.cpp">
       <Filter>src\10.PathFinding</Filter>
     </ClCompile>
-    <ClCompile Include="Decal.cpp">
-      <Filter>src\01.EntityComponent</Filter>
-    </ClCompile>
     <ClCompile Include="Socket.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="SkyBox.cpp">
       <Filter>src\11.SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Decal.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Trail.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

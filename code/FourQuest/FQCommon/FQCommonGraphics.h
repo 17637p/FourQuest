@@ -263,6 +263,7 @@ namespace fq::graphics
 		{
 			bool bIsEmit{ true };
 			bool bIsReset{ true };
+			bool bUseMultiplyAlpha{ true };
 			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
 			bool bIsRenderDebug{ true };
 		} InstanceData;
@@ -486,6 +487,7 @@ namespace fq::graphics
 
 		float AlphaCutoff = 0.1f;
 		bool bIsTwoSide = false;
+		bool bUseMultiplyAlpha = true;
 	};
 
 	struct DecalMaterialInfo

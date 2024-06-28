@@ -169,7 +169,7 @@ float4 main(VertexOut pin) : SV_TARGET
         return float4(albedo + emissive, 1.f);
     }
 
-    normal = normalize(normal * 2.f - 1.f);
+    normal = normalize(normal);
     float metalness = gMetalnessMap.Sample(gPointClampSampler, pin.uv).x;
     float roughness = gRoughnessMap.Sample(gPointClampSampler, pin.uv).x;
     float4 position = gPositionWorldMap.Sample(gPointClampSampler, pin.uv);

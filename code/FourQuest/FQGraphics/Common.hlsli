@@ -449,5 +449,6 @@ struct ParticleMaterial
     int bUseAlbedo;
     int bUseEmissive;
     
+    int bUseMultiplyAlpha;
     float AlphaCutoff;
 };
