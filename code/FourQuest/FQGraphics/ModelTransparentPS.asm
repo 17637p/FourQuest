@@ -33,40 +33,20 @@ dcl_resource_texture2d (float,float,float,float) t1
 dcl_input_ps linear v0.xy
 dcl_output o0.xyzw
 dcl_temps 2
-//
-// Initial variable locations:
-//   v0.x <- uv.x; v0.y <- uv.y; 
-//   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
-//
-#line 221 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelTransparentPS.hlsl"
-sample_indexable(texture2d)(float,float,float,float) r0.x, v0.xyxx, t1.xyzw, s0  // r0.x <- reveal
-
-#line 337 "C:\Git\FourQuest\code\FourQuest\FQGraphics\Common.hlsli"
+sample_indexable(texture2d)(float,float,float,float) r0.x, v0.xyxx, t1.xyzw, s0
 add r0.y, r0.x, l(-1.000000)
 max r0.z, |r0.x|, l(1.000000)
 mul r0.z, r0.z, l(0.000010)
-ge r0.y, r0.z, |r0.y|  // r0.y <- <IsApproximatelyEqual return value>
-
-#line 226 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelTransparentPS.hlsl"
+ge r0.y, r0.z, |r0.y|
 discard_nz r0.y
-
-#line 229
-sample_indexable(texture2d)(float,float,float,float) r1.xyzw, v0.xyxx, t0.xyzw, s0  // r1.x <- accum.x; r1.y <- accum.y; r1.z <- accum.z; r1.w <- accum.w
-
-#line 232
+sample_indexable(texture2d)(float,float,float,float) r1.xyzw, v0.xyxx, t0.xyzw, s0
 max r0.y, r1.y, r1.x
 max r0.y, r1.z, r0.y
 and r0.y, r0.y, l(0x7fffffff)
 ieq r0.y, r0.y, l(0x7f800000)
-
-#line 235
-movc r0.yzw, r0.yyyy, r1.wwww, r1.xxyz  // r0.y <- accum.x; r0.z <- accum.y; r0.w <- accum.z
-
-#line 237
+movc r0.yzw, r0.yyyy, r1.wwww, r1.xxyz
 max r1.x, r1.w, l(0.000010)
 div o0.xyz, r0.yzwy, r1.xxxx
-
-#line 239
 add o0.w, -r0.x, l(1.000000)
 ret 
 // Approximately 16 instruction slots used

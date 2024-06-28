@@ -542,7 +542,7 @@ fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledSh
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso
-fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_DEFERRED.cso /D DEFERRED</Command>
+fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_DEFERRED.cso /D DEFERRED=1</Command>
     </CustomBuild>
     <CustomBuild Include="TerrainVS.hlsl">
       <FileType>Document</FileType>
