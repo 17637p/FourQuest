@@ -131,9 +131,6 @@
     <ClInclude Include="MonsterSpawner.h">
       <Filter>include\02.MonsterSpawner</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerDeadState.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -192,9 +189,6 @@
     </ClCompile>
     <ClCompile Include="MonsterSpawner.cpp">
       <Filter>src\02.MonsterSpawner</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerDeadState.cpp">
-      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

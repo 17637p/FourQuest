@@ -70,14 +70,14 @@ void fq::game_module::Camera::SetFieldOfView(float degree)
 {
 	constexpr float min = DirectX::XMConvertToRadians(0.00001f);
 	constexpr float max = DirectX::XMConvertToRadians(180.f);
-
-	mCameraInfomation.filedOfView =
+	
+	mCameraInfomation.fieldOfView =
 		std::clamp(DirectX::XMConvertToRadians(degree), min, max);
 }
 
 float fq::game_module::Camera::GetFieldOfView() const
 {
-	return DirectX::XMConvertToDegrees(mCameraInfomation.filedOfView);
+	return DirectX::XMConvertToDegrees(mCameraInfomation.fieldOfView);
 }
 
 float fq::game_module::Camera::GetNearPlain() const
@@ -103,7 +103,7 @@ void fq::game_module::Camera::SetFarPlain(float distance)
 
 DirectX::SimpleMath::Matrix fq::game_module::Camera::GetProjection(float aspectRatio) const
 {
-	return DirectX::XMMatrixPerspectiveFovLH(mCameraInfomation.filedOfView
+	return DirectX::XMMatrixPerspectiveFovLH(mCameraInfomation.fieldOfView
 		, aspectRatio
 		, mCameraInfomation.nearPlain
 		, mCameraInfomation.farPlain);
