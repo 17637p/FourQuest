@@ -46,7 +46,6 @@
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="PlayerAttackState.h" />
     <ClInclude Include="PlayerDashState.h" />
-    <ClInclude Include="PlayerDeadState.h" />
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMovementState.h" />
@@ -69,7 +68,6 @@
     <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="PlayerAttackState.cpp" />
     <ClCompile Include="PlayerDashState.cpp" />
-    <ClCompile Include="PlayerDeadState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />
