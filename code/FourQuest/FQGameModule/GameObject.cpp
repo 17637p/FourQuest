@@ -64,15 +64,15 @@ fq::game_module::GameObject& fq::game_module::GameObject::operator=(const GameOb
 		if (iter == mComponents.end())
 		{
 			// 货肺 积己
-			std::shared_ptr<Component> cloneComponent(component->Clone());
+			std::shared_ptr<Component> cloneComponent = component->Clone();
 			mComponents.insert({ id,cloneComponent });
 			cloneComponent->SetGameObject(this);
 		}
 		else
 		{
 			// 丹绢竞快扁
-			component->Clone(iter->second);
-			component->SetGameObject(this);
+			component->Clone(iter-> second);
+			iter->second->SetGameObject(this);
 		}
 	}
 
@@ -137,7 +137,7 @@ fq::game_module::GameObject* fq::game_module::GameObject::GetParent()
 std::vector<fq::game_module::GameObject*> fq::game_module::GameObject::GetChildren()
 {
 	assert(HasComponent<Transform>());
-
+ 
 	const auto& childrenTransform = GetComponent<Transform>()->GetChildren();
 
 	std::vector<GameObject*> children;
@@ -211,6 +211,11 @@ void fq::game_module::GameObject::AddComponent(entt::id_type id, std::shared_ptr
 
 void fq::game_module::GameObject::RemoveAllComponent()
 {
+	for (auto&  [id,component] : mComponents)
+	{
+		component->SetGameObject(nullptr);
+	}
+
 	mComponents.clear();
 }
 
@@ -315,5 +320,22 @@ void fq::game_module::GameObject::OnTriggerExit(const Collision& collision)
 	{
 		component->OnTriggerExit(collision);
 	}
+}
+
+fq::game_module::GameObject* fq::game_module::GameObject::GetRootObject()
+{
+	if (!HasParent())
+		return this;
+
+	GameObject* mRoot = nullptr;
+
+	GameObject* child = this;
+	do 
+	{
+		mRoot = child;
+		child = child->GetParent();
+	} while (child != nullptr);
+
+	return mRoot;
 }
 

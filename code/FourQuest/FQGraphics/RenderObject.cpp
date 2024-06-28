@@ -46,6 +46,8 @@ namespace fq::graphics
 		, mbUseShadow(true)
 		, mOutLineColor{ -1, -1, -1 }
 		, mbIsAppliedDecal(false)
+		, mBlendTimePos(0.f)
+		, mTimePos(0.f)
 	{
 	}
 
@@ -99,20 +101,26 @@ namespace fq::graphics
 		mNumIndices(0),
 		mWidth(0),
 		mHeight(0),
+		mTextureWidth(0),
+		mTextureHeight(0),
 		mNumPatchVertRows(0),
 		mNumPatchVertCols(0),
 		mNumPatchVertices(0),
 		mNumPatchQuadFaces(0),
+		mIsBakeMesh(false),
 		mCellsPerPatch(64)
 	{
 	}
 
 	void TerrainMeshObject::SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& terrainMaterial)
 	{
-		mWidth = terrainMaterial.Width;
-		mHeight = terrainMaterial.Height;
+		mWidth = terrainMaterial.TerrainWidth;
+		mHeight = terrainMaterial.TerrainHeight;
 
-		mCellsPerPatch = (mWidth + mHeight) / 16;
+		mTextureWidth = terrainMaterial.TextureWidth;
+		mTextureHeight = terrainMaterial.TextureHeight;
+
+		mCellsPerPatch = (mTextureWidth + mTextureHeight) / 16;
 
 		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
 		BuildTerrainMesh(device, mTempStaticMesh);
@@ -212,12 +220,14 @@ namespace fq::graphics
 		mesh.Subsets[0].IndexCount = mNumIndices;
 
 		mTerrainMesh = std::make_shared<TerrainMesh>(device, mesh);
+
+		BuildStaticMesh(device, mesh);
 	}
 
 	void TerrainMeshObject::CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY)
 	{
-		mNumPatchVertRows = ((mHeight - 1) / mCellsPerPatch) + 1;
-		mNumPatchVertCols = ((mWidth - 1) / mCellsPerPatch) + 1;
+		mNumPatchVertRows = ((mTextureHeight - 1) / mCellsPerPatch) + 1;
+		mNumPatchVertCols = ((mTextureWidth - 1) / mCellsPerPatch) + 1;
 
 		mNumPatchVertices = mNumPatchVertRows * mNumPatchVertCols;
 		mNumPatchQuadFaces = (mNumPatchVertRows - 1) * (mNumPatchVertCols - 1);
@@ -249,7 +259,7 @@ namespace fq::graphics
 		{
 			for (UINT x = x0; x <= x1; ++x)
 			{
-				UINT k = y * mWidth + x;
+				UINT k = y * mTextureWidth + x;
 				minY = min(minY, heightMap[k]);
 				maxY = max(maxY, heightMap[k]);
 			}
@@ -264,7 +274,6 @@ namespace fq::graphics
 		// https://copynull.tistory.com/324
 		// https://github.com/jjuiddong/Introduction-to-3D-Game-Programming-With-DirectX11
 		// https://ddidding.tistory.com/95
-		// 새벽이라 계산하기 싫다! 지금은 오전 4시
 		for (UINT i = 0; i < mesh.Indices.size() / 4; i++)
 		{
 			// Normal 계산 
@@ -338,6 +347,40 @@ namespace fq::graphics
 		}
 	}
 
+	void TerrainMeshObject::BuildStaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& terrainMesh)
+	{
+		fq::common::Mesh newStaticMesh = terrainMesh;
+
+		for (UINT i = 0; i < terrainMesh.Vertices.size(); i++)
+		{
+			newStaticMesh.Vertices[i].Pos.y = newStaticMesh.BoundsYVertices[i].BoundsY.y;
+		}
+
+		std::vector<unsigned int> terrainTriIndexBuffer;
+
+		for (UINT i = 0; i < terrainMesh.Indices.size(); i += 4)
+		{
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 0]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 3]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 2]);
+
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 0]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 1]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 3]);
+		}
+
+		newStaticMesh.Indices = terrainTriIndexBuffer;
+		//newStaticMesh.Vertices;
+		//newStaticMesh.Indices;
+
+		mTempStaticMesh = std::make_shared<StaticMesh>(device, newStaticMesh);
+	}
+
+	const fq::common::Mesh& TerrainMeshObject::GetMeshData() const
+	{
+		return mTempStaticMesh->GetMeshData();
+	}
+
 	ImageObject::ImageObject()
 		:mStartX(0),
 		mStartY(0),
@@ -349,7 +392,8 @@ namespace fq::graphics
 		mImagePath(""),
 		mRotationAngle(0),
 		mScaleX(1),
-		mScaleY(1)
+		mScaleY(1),
+		mAlpha(1.f)
 	{
 	}
 

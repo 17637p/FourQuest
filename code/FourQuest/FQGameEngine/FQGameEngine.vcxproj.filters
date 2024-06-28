@@ -188,8 +188,8 @@
     <ClInclude Include="Setting.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
-    <ClInclude Include="DecalSystem.h">
-      <Filter>include</Filter>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
     <ClInclude Include="UISystem.h">
       <Filter>include\03.GameSystem</Filter>
@@ -203,11 +203,11 @@
     <ClInclude Include="NavigationMesh.h">
       <Filter>include\03.GameSystem\PathFindingSystem</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
+    <ClInclude Include="DecalSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="TrailSystem.h">
-      <Filter>include</Filter>
+    <ClInclude Include="EditorHelper.h">
+      <Filter>include\10.Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -325,9 +325,6 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
-    <ClCompile Include="DecalSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="UISystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
@@ -340,8 +337,11 @@
     <ClCompile Include="NavigationMesh.cpp">
       <Filter>src\03.GameSystem\PathFindingSystem</Filter>
     </ClCompile>
-    <ClCompile Include="TrailSystem.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="DecalSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorHelper.cpp">
+      <Filter>src\10.Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

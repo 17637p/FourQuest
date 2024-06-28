@@ -34,6 +34,8 @@ namespace fq::game_module
 		/// <param name="scale">로컬 스케일</param>
 		void GenerateLocal(Vector3 position, Quaternion rotation, Vector3 scale);
 
+		void GenerateWorld(Vector3 position, Quaternion rotation, Vector3 scale);
+
 		/// <summary>
 		/// 트랜스폼을 반환합니다
 		/// </summary>
@@ -83,6 +85,11 @@ namespace fq::game_module
 		void SetLocalRotation(Quaternion rotation);
 
 		/// <summary>
+		/// 로컬 공간 회전값을 행렬값으로 변환합니다
+		/// </summary>
+		void SetLocalRotationToMatrix(Matrix rotation);
+
+		/// <summary>
 		/// 로컬 공간의 스케일 값을 반환합니다
 		/// </summary>
 		/// <returns>로컬 스케일</returns>
@@ -111,6 +118,14 @@ namespace fq::game_module
 		/// 월드행렬을 설정합니다
 		/// </summary>
 		void SetWorldMatrix(Matrix matrix);
+
+		/// <summary>
+		/// 월드 
+		/// </summary>
+		/// <param name="scale"></param>
+		/// <param name="rotation"></param>
+		/// <param name="position"></param>
+		void SetWorldTransform(Vector3 scale, Quaternion rotation, Vector3 position);
 
 		/// <summary>
 		/// 로컬 행렬을 반환합니다

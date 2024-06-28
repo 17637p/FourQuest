@@ -21,6 +21,7 @@
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
 #include "TrailSystem.h"
+#include "PathFindingSystem.h"
 #include "UISystem.h"
 
 #include "FQGameEngineRegister.h"
@@ -47,7 +48,7 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess 초기화
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* StartSceneName = "PlayerTest2";
+	constexpr const char* StartSceneName = "Level2";
 
 	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()
@@ -82,6 +83,7 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
 	mGameProcess->mTrailSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
+	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mSceneManager->LoadScene();
@@ -181,12 +183,13 @@ void fq::game_engine::GameEngine::Process()
 			//							System Process								//
 			//////////////////////////////////////////////////////////////////////////
 
-			mGameProcess->mParticleSystem->Update(deltaTime);
+			// mGameProcess->mParticleSystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//

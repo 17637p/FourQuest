@@ -157,7 +157,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 	auto rigid = object->GetComponent<RigidBody>();
 	auto transform = object->GetComponent<Transform>();
-	bool isStatic = rigid->IsStatic();
+	auto bodyType = rigid->GetBodyType();
 
 	// 1. Box Colllider
 	if (object->HasComponent<BoxCollider>())
@@ -175,7 +175,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		boxCollider->SetBoxInfomation(boxInfo);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(boxInfo, type);
 			assert(check);
@@ -185,9 +185,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				,  boxCollider->GetGameObject()->shared_from_this()
 				, boxCollider,false} });
 		}
-		else
+		else 
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type, isKinematic);
 			assert(check);
 			mColliderContainer.insert({ colliderID, 
 				{mBoxTypeID
@@ -213,7 +215,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		calculateOffset(sphereInfo.colliderInfo.collisionTransform, offset);
 		sphereCollider->SetSphereInfomation(sphereInfo);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(sphereInfo, type);
 			assert(check);
@@ -225,7 +227,9 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type,isKinematic);
 			assert(check);
 			mColliderContainer.insert({ id, 
 				{mSphereTypeID
@@ -251,7 +255,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		capsuleCollider->SetCapsuleInfomation(capsuleInfo);
 		calculateOffset(capsuleInfo.colliderInfo.collisionTransform, offset);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
 			assert(check);
@@ -264,7 +268,9 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type, isKinematic);
 			assert(check);
 			mColliderContainer.insert({ id, 
 				{mCapsuleTypeID
@@ -352,7 +358,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		meshCollider->SetConvexMeshInfomation(convexMeshInfo);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(convexMeshInfo, type);
 			assert(check);
@@ -364,7 +370,9 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type, isKinematic);
 			assert(check);
 			mColliderContainer.insert({ id, 
 				{mCapsuleTypeID
@@ -514,7 +522,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				matrix._42 = pos.y;
 				matrix._43 = pos.z;
 			}
-
 			transform->SetWorldMatrix(matrix);
 		}
 		else

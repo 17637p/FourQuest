@@ -190,17 +190,8 @@
     <ClInclude Include="D3D11DecalManager.h">
       <Filter>Management</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11TrailManager.h">
+    <ClInclude Include="D3D11LightProbeManager.h">
       <Filter>Management</Filter>
-    </ClInclude>
-    <ClInclude Include="DecalObject.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="TrailObject.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="TrailRenderPass.h">
-      <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -464,17 +455,8 @@
     <ClCompile Include="D3D11DecalManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
-    <ClCompile Include="DecalObject.cpp">
-      <Filter>Object\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11TrailManager.cpp">
+    <ClCompile Include="D3D11LightProbeManager.cpp">
       <Filter>Management\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="TrailRenderPass.cpp">
-      <Filter>Pass\PipelineIndependentPass\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="TrailObject.cpp">
-      <Filter>Object\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -599,24 +581,6 @@
     </CustomBuild>
     <CustomBuild Include="ModelShadowGS.hlsl">
       <Filter>Shader\GS</Filter>
-    </CustomBuild>
-    <CustomBuild Include="TrailVS.hlsl">
-      <Filter>Shader\VS</Filter>
-    </CustomBuild>
-    <CustomBuild Include="TrailPS.hlsl">
-      <Filter>Shader\PS</Filter>
-    </CustomBuild>
-    <CustomBuild Include="DiffuseIrradianceCS.hlsl">
-      <Filter>Shader\CS</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpecularBRDFCS.hlsl">
-      <Filter>Shader\CS</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SpecularIBLCS.hlsl">
-      <Filter>Shader\CS</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ResizeCubemapCS.hlsl">
-      <Filter>Shader\CS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

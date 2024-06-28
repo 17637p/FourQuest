@@ -25,9 +25,6 @@ namespace fq::client
 		float GetAttackPower() const { return mAttackPower; }
 		void SetAttackPower(float val) { mAttackPower = val; }
 
-		float GetAttackTime() const { return mAttackTime; }
-		void SetAttackTime(float val) { mAttackTime = val; }
-
 		fq::game_module::GameObject* GetAttacker() const { return mAttacker; }
 		void SetAttacker(fq::game_module::GameObject* val) { mAttacker = val; }
 
@@ -41,6 +38,8 @@ namespace fq::client
 		float mElapsedTime;
 
 		fq::game_module::GameObject* mAttacker;
+
+		friend void RegisterMetaData();
 	};
 }
 

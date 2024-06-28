@@ -67,6 +67,7 @@ namespace fq::game_module
 		void SetParameterFloat(const std::string& id, float val);
 		void SetParameterBoolean(const std::string& id, bool val);
 		void SetParameterTrigger(const std::string& id);
+		void SetParameterOffTrigger(const std::string& id);
 
 		/// <summary>
 		/// 애니메이터가 애니메이션을 관리하는 스키닝 메쉬들을 반환합니다.

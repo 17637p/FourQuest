@@ -70,10 +70,12 @@ void fq::client::MonsterAttack::rotateToTarget(fq::game_module::Animator& animat
 	Monster* monster = animator.GetComponent<Monster>();
 
 	// 플레이어 위치
-	fq::game_module::GameObject* target = monster->GetTarget();
+	fq::game_module::GameObject* target = monster->GetTarget().get();
 	if (target->IsDestroyed())
 	{
 		animator.SetParameterTrigger("OnIdle");
+		monster->SetTarget(nullptr);
+		return;
 	}
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 	

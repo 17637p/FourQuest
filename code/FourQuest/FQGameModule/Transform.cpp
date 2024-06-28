@@ -149,6 +149,17 @@ void fq::game_module::Transform::SetLocalRotation(Quaternion rotation)
 	GenerateLocal(mFQTransform.localPosition, rotation, mFQTransform.localScale);
 }
 
+void fq::game_module::Transform::SetLocalRotationToMatrix(Matrix rotation)
+{
+	mFQTransform.localMatrix = Matrix::CreateScale(mFQTransform.localScale)
+		* rotation
+		* Matrix::CreateTranslation(mFQTransform.localPosition);
+
+	mFQTransform.localRotation = Quaternion::CreateFromRotationMatrix(rotation);
+
+	updateWorldMatrix();
+}
+
 void fq::game_module::Transform::SetLocalScale(Vector3 scale)
 {
 	GenerateLocal(mFQTransform.localPosition, mFQTransform.localRotation, scale);
@@ -216,6 +227,21 @@ void fq::game_module::Transform::GenerateLocal(Vector3 position, Quaternion rota
 
 	updateWorldMatrix();
 }
+
+
+void fq::game_module::Transform::GenerateWorld(Vector3 position, Quaternion rotation, Vector3 scale)
+{
+	mFQTransform.worldMatrix = Matrix::CreateScale(scale)
+		* Matrix::CreateFromQuaternion(rotation)
+		* Matrix::CreateTranslation(position);
+
+	mFQTransform.worldPosition = position;
+	mFQTransform.worldRotation = rotation;
+	mFQTransform.worldScale = scale;
+
+	updateLocalMatrix();
+}
+
 
 void fq::game_module::Transform::SetLocalMatrix(DirectX::SimpleMath::Matrix matrix)
 {

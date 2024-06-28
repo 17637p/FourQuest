@@ -92,7 +92,7 @@ void fq::game_module::Scene::CleanUp(bool isRemoveComponents)
 		{
 			if (object->IsDestroyed() && isRemoveComponents)
 			{
-				object->RemoveAllComponent();
+				//object->RemoveAllComponent();
 			}
 
 			return object->IsDestroyed();
@@ -121,7 +121,9 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 
 	if (mIsStartScene) // 씬이 시작된경우 프레임 마지막에 추가합니다
 	{
-		for (auto child : object->GetChildren())
+		auto children = object->GetChildren();
+
+		for (auto child : children)
 		{
 			AddGameObject(child->shared_from_this());
 		}

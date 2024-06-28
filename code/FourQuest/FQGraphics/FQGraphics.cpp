@@ -7,6 +7,8 @@
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
 
+#include "D3D11Texture.h"
+
 using namespace fq::graphics;
 
 FQGraphics::~FQGraphics()
@@ -30,6 +32,7 @@ FQGraphics::FQGraphics()
 	, mUIManager(std::make_shared<UIManager>())
 	, mDecalManager(std::make_shared<D3D11DecalManager>())
 	, mTrailManager(std::make_shared<D3D11TrailManager>())
+	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 {
 }
 
@@ -56,6 +59,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mDecalManager->Initialize(mDevice, mResourceManager);
 	mTrailManager->Initialize(mDevice, mResourceManager);
+	mLightProbeManager->Initialize(mDevice, mResourceManager);
 
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
 
@@ -85,6 +89,100 @@ void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffusePath, co
 	iblTexture.DiffuseIrradiance = std::make_shared<D3D11CubeTexture>(mDevice, diffusePath);
 	iblTexture.SpecularBRDF = std::make_shared<D3D11Texture>(mDevice, brdfLUTPath);
 	mLightManager->SetIBLTexture(iblTexture);
+}
+
+void FQGraphics::DeleteCubeProbe(unsigned short index)
+{
+
+}
+
+void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned short height)
+{
+	DirectX::SimpleMath::Quaternion front = 
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({0, 0, 0}, 1.0f);
+	DirectX::SimpleMath::Quaternion back =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(180), 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 180, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion up =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(-90), 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -90, 0, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion bottom =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(90), 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 90, 0, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion left =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(-90), 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -0, -90, 0 }, 1.0f);
+	DirectX::SimpleMath::Quaternion right =
+		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(90), 0, 0);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
+
+	DirectX::SimpleMath::Quaternion directionQuaternions[] = { right, left, up, bottom, front, back };
+	std::vector<std::wstring> directions = { L"right", L"left", L"up", L"bottom", L"front", L"back" };
+
+	// 카메라 Probe 기준으로 설정
+	unsigned short curWidth = mDevice->GetWidth();
+	unsigned short curHeight = mDevice->GetHeight();
+
+	float curFieldOfView = mCameraManager->GetFovY(ECameraType::Player);
+
+	CameraInfo cameraInfo;
+	cameraInfo.isPerspective = true;
+	cameraInfo.fieldOfView = 90 * (3.14 / 180);
+	cameraInfo.nearPlain = mCameraManager->GetNearPlane(ECameraType::Player);
+	cameraInfo.farPlain = mCameraManager->GetFarPlane(ECameraType::Player);
+
+	SetCamera(cameraInfo);
+	SetWindowSize(width, height);
+
+	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
+	std::vector<std::wstring> paths{};
+
+	std::unordered_map<unsigned short, CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
+	for (const auto& cubeProbe : cubeProbes)
+	{
+		fq::common::Transform probeTransform;
+
+		probeTransform.worldPosition = cubeProbe.second->position;
+		probeTransform.worldScale = { 1, 1, 1 };
+
+		for (unsigned int i = 0; i < 6; i++)
+		{
+			probeTransform.worldRotation = directionQuaternions[i];
+			probeTransform.worldMatrix = 
+				DirectX::SimpleMath::Matrix::CreateScale(probeTransform.worldScale) *
+				DirectX::SimpleMath::Matrix::CreateFromQuaternion(probeTransform.worldRotation) *
+				DirectX::SimpleMath::Matrix::CreateTranslation(probeTransform.worldPosition);
+			
+			UpdateCamera(probeTransform);
+
+			// 이 부분 나중에 개선해야함, 그리는 건 항상 같은데 job 을 다시 만들 필요가 없음 
+			BeginRender();
+			Render();
+
+			mJobManager->ClearAll();
+			//EndRender();
+
+			std::wstring path = mLightProbeManager->SaveCubeProbeTexture(cubeProbe.second->index, directions[i]);
+			paths.push_back(path);
+		}
+		D3D11Texture cubeMap{ mDevice, paths };
+		std::wstring cubeMapFileName = L"CubeProbe" + std::to_wstring(cubeProbe.second->index) + L".dds";
+		cubeMap.Save(mDevice, cubeMapFileName);
+	}
+
+	// 카메라 재설정 
+	cameraInfo.fieldOfView = curFieldOfView;
+
+	SetCamera(cameraInfo);
+	SetWindowSize(curWidth, curHeight);
+	// 드로우 6면 일단 각각 다른 파일로 저장하고 나중에는 6면을 한장에 저장하자
+	// 파일 저장
+}
+
+unsigned short FQGraphics::AddCubeProbe(const DirectX::SimpleMath::Vector3& position)
+{
+	return mLightProbeManager->AddCubeProbe(position);
 }
 
 void FQGraphics::DeleteImageObject(IImageObject* imageObject)

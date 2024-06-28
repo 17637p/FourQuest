@@ -1,9 +1,7 @@
 #pragma once
 
-// Builder
 #include "../FQGameModule/GameModule.h"
 
-// Navigation 
 #include <memory>
 
 #include <recastnavigation/Recast.h>
@@ -44,7 +42,12 @@ namespace fq::game_engine
 		// agent
 		dtNavMeshQuery* GetNavQuery() const;
 		int AddAgent(DirectX::SimpleMath::Vector3 pos, dtCrowdAgentParams* agentParams);
+		void RemoveAgent(UINT agentIndex);
 		dtCrowd* GetCrowd();
+
+		// SaveLoad
+		void SaveNavMesh(std::string& fileName);
+		void LoadNavMesh(std::string& fileName, BuildSettings buildSettrings);
 
 		// Debug Draw ¿ë
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
@@ -53,10 +56,11 @@ namespace fq::game_engine
 		void build(std::vector<DirectX::SimpleMath::Vector3> worldVertices,
 			std::vector<int> faces,
 			const BuildSettings& buildSettings = BuildSettings{});
-		void buildNavigationMesh(
+		void preBuildNavigationMesh(
 			const float* worldVertices, size_t verticesNum,
 			const int* faces, size_t facesNum,
 			const BuildSettings& buildSettings = BuildSettings{});
+		void buildNavigationMesh(const BuildSettings& buildSettings = BuildSettings{});
 
 	private:
 		GameProcess* mTempProcess;
@@ -74,8 +78,8 @@ namespace fq::game_engine
 		NavigationMeshBuilder* navFieldComponent;
 
 		std::unique_ptr<rcContext> context;
-		rcPolyMesh* polyMesh;
 		rcConfig config;
+		rcPolyMesh* polyMesh;
 		rcPolyMeshDetail* polyMeshDetail;
 		class dtNavMesh* navMesh;
 		class dtNavMeshQuery* navQuery;

@@ -80,14 +80,18 @@ extern "C" {
 			/// <summary>
 			/// 물리 공간에 추가할 스태틱 바디 및 다이나믹 바디 생성
 			/// </summary>
-			virtual bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
-			virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
-			virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
-			virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
-			virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual FQ_PHYSICS bool CreateStaticBody(const BoxColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual FQ_PHYSICS bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual FQ_PHYSICS bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual FQ_PHYSICS bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual FQ_PHYSICS bool CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual FQ_PHYSICS bool CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType) abstract;
+			virtual FQ_PHYSICS bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual FQ_PHYSICS bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual FQ_PHYSICS bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual FQ_PHYSICS bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual FQ_PHYSICS bool CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
+			virtual FQ_PHYSICS bool CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) abstract;
 
 			/// <summary>
 			/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -110,10 +114,23 @@ extern "C" {
 			virtual FQ_PHYSICS bool RemoveAllRigidBody() abstract;
 
 			/// <summary>
-			/// 디버그용 폴리곤 데이터를 전달 받습니다.
+			/// 컨벡스 메시의 디버그용 데이터를 전달 받습니다.
 			/// </summary>
 			/// <returns></returns>
 			virtual FQ_PHYSICS const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() abstract;
+
+			/// <summary>
+			/// Triangle Mesh의 디버그용 데이터를 전달 받습니다.
+			/// </summary>
+			/// <returns></returns>
+			virtual FQ_PHYSICS const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs() abstract;
+			virtual FQ_PHYSICS const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices() abstract;
+
+			/// <summary>
+			/// Height Field의 디버그용 데이터를 전달 받습니다.
+			/// </summary>
+			/// <returns></returns>
+			virtual FQ_PHYSICS const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField() abstract;
 
 			/// <summary>
 			/// 씬 체인지할 시에 모든 리지드 바디를 삭제하고 이벤트 콜백을 씬이 넘어가기 전에 처리합니다.
@@ -179,10 +196,31 @@ extern "C" {
 			virtual bool SimulationCharacter(unsigned int id) abstract;
 #pragma endregion
 
+#pragma region PhysicsClothManager
+			/// <summary>
+			/// 천을 생성합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool CreateCloth(const PhysicsClothInfo& info) abstract;
+
+			/// <summary>
+			/// 천 데이터를 얻습니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool GetClothData(unsigned int id, PhysicsClothGetData& data) abstract;
+
+			/// <summary>
+			/// 천 데이터를 세팅합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool SetClothData(unsigned int id, const PhysicsClothSetData& data) abstract;
+
+			/// <summary>
+			/// 천을 삭제합니다.
+			/// </summary>
+			virtual FQ_PHYSICS bool RemoveCloth(unsigned int id) abstract;
+#pragma endregion
+
 #pragma region ResourceManager
 			virtual FQ_PHYSICS bool HasConvexMeshResource(const unsigned int& hash) abstract;
 #pragma endregion
-
 
 			/// <summary>
 			/// spdlog를 설정합니다

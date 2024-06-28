@@ -25,6 +25,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SphereCollider::Clo
 	}
 
 	cloneCollider->mSphereColliderInfo.colliderInfo.id = fq::physics::unregisterID;
+	cloneCollider->mCollisionCount = 0;
 
 	return cloneCollider;
 }

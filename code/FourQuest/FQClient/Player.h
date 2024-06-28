@@ -18,15 +18,9 @@ namespace fq::client
 		void Attack();
 		void SummonSoul();
 
-		float GetHp() const { return mHp; }
-		void SetHp(float hp) { mHp = hp; }
-
-		fq::game_module::PrefabResource GetAttackPrefab() const { return mAttack; }
-		void SetAttackPrefab(fq::game_module::PrefabResource val) { mAttack = val; }
-		fq::game_module::PrefabResource GetSoulPrefab() const { return mSoul; }
-		void SetSoulPrefab(fq::game_module::PrefabResource val) { mSoul = val; }
 	private:
 		void processInput();
+		void processCoolTime(float dt);
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -38,11 +32,24 @@ namespace fq::client
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
 
+		float mMaxHp;
 		float mHp;
 		float mAttackPower;
+		float mSoulStack;
 
-		game_module::PrefabResource mAttack;
-		game_module::PrefabResource mSoul;
+		float mDashElapsedTime;
+		float mInvincibleElapsedTime;
+
+		float mInvincibleTime; // 무적시간 
+		float mDashCoolTime; // 대쉬쿨타임
+
+		game_module::PrefabResource mAttackPrafab;
+		game_module::PrefabResource mSoulPrefab;
+
+		DirectX::SimpleMath::Vector3 mAttackRange;
+		float mAttackPositionOffset;
+
+		friend void RegisterMetaData();
 	};
 
 

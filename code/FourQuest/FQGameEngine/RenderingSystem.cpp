@@ -5,6 +5,7 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "AnimationSystem.h"
 
@@ -53,7 +54,7 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 	mSetViewportSizeHandler = eventMgr->
 		RegisterHandle<fq::event::SetViewportSize>([this](fq::event::SetViewportSize event)
 			{
-				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);		
+				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);
 			});
 }
 
@@ -79,7 +80,16 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				auto meshObject = mesh.GetSkinnedMeshObject();
 				if (meshObject)
 				{
-					meshObject->UpdateTransform(transform.GetWorldMatrix());
+					GameObject* parentObject = object.GetParent();
+
+					if (parentObject != nullptr)
+					{
+						meshObject->UpdateTransform(parentObject->GetComponent<Transform>()->GetWorldMatrix());
+					}
+					else
+					{
+						meshObject->UpdateTransform(DirectX::SimpleMath::Matrix::Identity);
+					}
 				}
 			});
 
@@ -115,6 +125,16 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	// 2. PrefabInstance¸¦ ·Îµå
 
 
+	// 3. SkyBox Load
+	auto scenePath = fq::path::GetScenePath() / scene->GetSceneName();
+
+	if (std::filesystem::exists(scenePath))
+	{
+		fq::game_module::SkyBox skybox;
+		skybox.Load(scenePath);
+		mGameProcess->mGraphics->SetSkyBox(skybox.mSkyBox);
+		mGameProcess->mGraphics->SetIBLTexture(skybox.mDiffuse, skybox.mSpecular, skybox.mBrdfLUT);
+	}
 
 	mbIsGameLoaded = true;
 }
@@ -432,8 +452,11 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	fq::graphics::TerrainMaterialInfo info;
 	info.AlPhaFileName = terrain->GetAlphaMap();
 	info.Layers = terrain->GetTerrainLayers();
-	info.Width = terrain->GetWidth();
-	info.Height = terrain->GetHeight();
+	info.TerrainWidth = terrain->GetWidth();
+	info.TerrainHeight = terrain->GetHeight();
+
+	info.TextureWidth = terrain->GetTextureWidth();
+	info.TextureHeight = terrain->GetTextureHeight();
 	info.HeightScale = terrain->GetHeightScale();
 	info.HeightFileName = terrain->GetHeightMap();
 

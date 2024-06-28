@@ -9,6 +9,7 @@
 
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "EditorHelper.h"
 
 #include "WindowSystem.h"
 #include "ModelSystem.h"
@@ -49,7 +50,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* startSceneName = "PlayerTest2";
+	std::string startSceneName = EditorHelper::GetStartSceneName();
 
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
@@ -190,17 +191,16 @@ void fq::game_engine::EditorEngine::Process()
 			//							System Process								//
 			//////////////////////////////////////////////////////////////////////////
 
-			mGameProcess->mParticleSystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
-			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			// ·£´õ¸µ 
 			mGameProcess->mGraphics->BeginRender();
@@ -220,6 +220,7 @@ void fq::game_engine::EditorEngine::Process()
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
+
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;
@@ -230,6 +231,8 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	EditorHelper::SetStartSceneName(mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName());
+
 	mGameProcess->mSceneManager->UnloadScene();
 
 	// Editor Process
@@ -305,6 +308,8 @@ void fq::game_engine::EditorEngine::UpdateEditor(float dt)
 	mEditor->mInputManager->Update();
 
 	mEditor->mGamePlayWindow->UpdateCamera(dt);
+	mEditor->mGamePlayWindow->UpdateParticle(dt);
+
 	mEditor->mGamePlayWindow->ExcutShortcut();
 	mEditor->mMainMenuBar->ExcuteShortcut();
 	mEditor->mCommandSystem->ExcuteShortcut();

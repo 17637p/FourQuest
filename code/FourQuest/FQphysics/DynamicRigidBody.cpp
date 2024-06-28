@@ -2,6 +2,8 @@
 #include "EngineDataConverter.h"
 
 #include <memory>
+#include <spdlog/spdlog.h>
+#include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
 {
@@ -16,6 +18,10 @@ namespace fq::physics
 	{
 		CollisionData* data = (CollisionData*)mRigidDynamic->userData;
 		data->isDead = true;
+
+		physx::PxShape* shape;
+		mRigidDynamic->getShapes(&shape, 1);
+		mRigidDynamic->detachShape(*shape);
 	}
 
 	bool DynamicRigidBody::Initialize(ColliderInfo colliderInfo, physx::PxShape* shape, physx::PxPhysics* physics, std::shared_ptr<CollisionData> data, bool isKinematic)
@@ -30,8 +36,8 @@ namespace fq::physics
 			shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 		}
 
-		data->myId = GetID();
-		data->myLayerNumber = GetLayerNumber();
+		data->myId = mID;
+		data->myLayerNumber = mLayerNumber;
 		shape->userData = data.get();
 		shape->setContactOffset(0.02f);
 		shape->setRestOffset(0.01f);
@@ -48,7 +54,12 @@ namespace fq::physics
 		mRigidDynamic->userData = data.get();
 
 		if (!mRigidDynamic->attachShape(*shape))
+		{
+			assert(shape->getReferenceCount() == 1);
 			return false;
+		}
+		assert(shape->getReferenceCount() == 2);
+
 		physx::PxRigidBodyExt::updateMassAndInertia(*mRigidDynamic, 1.f);
 
 		if (isKinematic)
@@ -64,7 +75,7 @@ namespace fq::physics
 
 		return true;
 	}
-	
+
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
 		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))
@@ -86,6 +97,7 @@ namespace fq::physics
 			boxGeometry.halfExtents.x = mExtent.x * scale.x;
 			boxGeometry.halfExtents.y = mExtent.y * scale.y;
 			boxGeometry.halfExtents.z = mExtent.z * scale.z;
+			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, boxGeometry, physics, material, collisionMatrix);
 		}
@@ -95,6 +107,7 @@ namespace fq::physics
 			float maxValue = std::max<float>(scale.x, std::max<float>(scale.y, scale.z));
 
 			sphereGeometry.radius = mRadius * maxValue;
+			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, sphereGeometry, physics, material, collisionMatrix);
 		}
@@ -105,6 +118,7 @@ namespace fq::physics
 
 			capsuleGeometry.radius = mRadius * maxValue;
 			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
+			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, capsuleGeometry, physics, material, collisionMatrix);
 		}
@@ -114,10 +128,38 @@ namespace fq::physics
 			convexmeshGeometry.scale.scale.x = scale.x;
 			convexmeshGeometry.scale.scale.y = scale.y;
 			convexmeshGeometry.scale.scale.z = scale.z;
+			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
 			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix);
 		}
+	}
 
-		shape->release();
+	bool DynamicRigidBody::ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	{
+		if (newLayerNumber == UINT_MAX)
+		{
+			return false;
+		}
+
+		mLayerNumber = newLayerNumber;
+
+		physx::PxShape* shape;
+		mRigidDynamic->getShapes(&shape, 1);
+
+		physx::PxFilterData newFilterData;
+		newFilterData.word0 = newLayerNumber;
+		newFilterData.word1 = collisionMatrix[newLayerNumber];
+		shape->setSimulationFilterData(newFilterData);
+
+		CollisionData* data = (CollisionData*)mRigidDynamic->userData;
+		data->isDead = true;
+
+		std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
+		newData->myId = mID;
+		newData->myLayerNumber = mLayerNumber;
+		collisionDataManager.lock()->Create(mID, newData);
+		shape->userData = newData.get();
+
+		return true;
 	}
 }

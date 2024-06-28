@@ -151,7 +151,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AddNavigationMeshObject.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
     <ClInclude Include="AnimationStateNode.h" />
     <ClInclude Include="AnimationTransition.h" />
@@ -165,12 +164,15 @@
     <ClInclude Include="IStateBehaviour.h" />
     <ClInclude Include="NavigationAgent.h" />
     <ClInclude Include="NavigationAgentImpl.h" />
+    <ClInclude Include="NavigationMeshLoader.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
     <ClInclude Include="PrefabResource.h" />
     <ClInclude Include="PrefabTest.h" />
     <ClInclude Include="ScreenManager.h" />
+    <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="Socket.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
@@ -210,7 +212,6 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AddNavigationMeshObject.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
     <ClCompile Include="AnimationStateNode.cpp" />
     <ClCompile Include="AnimationTransition.cpp" />
@@ -224,11 +225,14 @@
     <ClCompile Include="IStateBehaviour.cpp" />
     <ClCompile Include="NavigationAgent.cpp" />
     <ClCompile Include="NavigationAgentImpl.cpp" />
+    <ClCompile Include="NavigationMeshLoader.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />
     <ClCompile Include="ScreenManager.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />

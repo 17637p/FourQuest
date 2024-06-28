@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "BaseWindow.h"
 #include "TimeManager.h"
@@ -21,8 +20,6 @@ namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
-namespace fq::graphics { class ITerrainMeshObject; }
-namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class IParticleObject; }
 namespace fq::graphics { class IDecalObject; }
 namespace fq::graphics { class ITrailObject; }
@@ -45,17 +42,8 @@ private:
 	void debugRender();
 	void shadowTest();
 
-	void strafe(fq::common::Transform& cameraTransform, float distance);
-	void walk(fq::common::Transform& cameraTransform, float distance);
-	void worldUpdown(fq::common::Transform& cameraTransform, float distance);
-
-	void yaw(fq::common::Transform& cameraTransform, float angle);
-	void pitch(fq::common::Transform& cameraTransform, float angle);
-
 	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createImage();
 
 	void calculateFrameStats();
 
@@ -89,16 +77,12 @@ private:
 
 	bool mResizing;
 
-	fq::graphics::TerrainMaterialInfo terrainMaterial;
-
 	// Graphics
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
-	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
-	std::vector<fq::graphics::IImageObject*> mImageObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
 	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
 	std::vector<fq::graphics::ITrailObject*> mTrailObjects;

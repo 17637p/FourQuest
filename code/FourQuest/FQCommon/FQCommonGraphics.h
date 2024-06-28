@@ -10,7 +10,7 @@ namespace fq::graphics
 	struct CameraInfo
 	{
 		bool isPerspective = false;
-		float filedOfView = 0;
+		float fieldOfView = 0;
 		float nearPlain = 0;
 		float farPlain = 0;
 	};
@@ -98,10 +98,12 @@ namespace fq::graphics
 		std::string AlPhaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
 
 		std::string HeightFileName; // Raw 파일
+		float TextureWidth;
+		float TextureHeight;
 
 		float HeightScale; // 전체 높이 (Length)
-		float Width; // 가로 크기
-		float Height; // 세로 크기
+		float TerrainWidth; // 가로 크기
+		float TerrainHeight; // 세로 크기
 	};
 
 	struct ParticleInfo
@@ -506,4 +508,12 @@ namespace fq::graphics
 		float NormalBlend = 0.5f; // 0 ~ 1, srcNormal의 가중치, 1이라면 decal의 노말이 전부 적용된다.
 		float AlphaCutoff = 0.1f;
 	};
+	//// ---------------------------------------------------------------------
+	////							Light Probe
+	//// ---------------------------------------------------------------------
+	//struct CubeProbe
+	//{
+	//	unsigned short Index;
+	//	DirectX::SimpleMath::Vector3 Position;
+	//};
 };

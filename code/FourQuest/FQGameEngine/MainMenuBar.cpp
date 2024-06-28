@@ -168,6 +168,9 @@ void fq::game_engine::MainMenuBar::createScene(std::string sceneName)
 	// coliision_matrix 颇老 积己
 	fq::physics::CollisionMatrix().Save(scenePath);
 
+	// skybox 颇老 积己
+	fq::game_module::SkyBox().Save(scenePath);
+
 	// ... etc 
 
 	// Scene 函版 夸没 
@@ -232,7 +235,10 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 3. AnimatorController 历厘
 	mEditorProcess->mAnimatorWindow->SaveAnimatorController();
 
-	// 3. ... etc 
+	// 3.SkyBox 历厘
+	mEditorProcess->mSkyBoxWindow->SaveSkyBox(scenePath);
+
+	//  ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);
 }
 

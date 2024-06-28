@@ -1,6 +1,8 @@
 #include "MonsterIdle.h"
 #include "Monster.h"
 
+#include <spdlog/spdlog.h>
+
 fq::client::MonsterIdle::MonsterIdle()
 {
 }
@@ -17,8 +19,10 @@ void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator,
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
-	if (monster->GetTarget() == nullptr)
+	if (monster->GetTarget() == nullptr
+		|| monster->GetTarget()->IsDestroyed())
 	{
+		monster->SetTarget(nullptr);
 		animator.SetParameterTrigger("OnFind");
 	}
 	else
@@ -29,7 +33,7 @@ void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator,
 		}
 		else
 		{
-			float targetDist = monster->CalculateDistanceTarget(*monster->GetTarget());
+			float targetDist = monster->CalculateDistanceTarget(monster->GetTarget().get());
 
 			if (targetDist < monster->GetTargetAttackRange())
 			{

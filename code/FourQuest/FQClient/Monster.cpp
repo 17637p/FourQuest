@@ -1,16 +1,19 @@
 #include "Monster.h"
 
-#include "Player.h"
 #include "Attack.h"
+
+#include "../FQGameModule/NavigationAgent.h"
 
 fq::client::Monster::Monster()
 	:mTarget(nullptr),
 	mIsDamaged(false),
 	mDamaged(0),
 	mLastAttacker(nullptr),
+	mMaxHP(0),
 	mHP(0),
 	mAttackPower(0),
 	mMoveSpeed(0),
+	mAcceleration(0.5),
 	mTargetAttackRange(1),
 	mChaseDistance(5),
 	mAttackWaitTime(1),
@@ -44,10 +47,10 @@ std::shared_ptr<fq::game_module::Component> fq::client::Monster::Clone(std::shar
 	return cloneMonster;
 }
 
-float fq::client::Monster::CalculateDistanceTarget(fq::game_module::GameObject& target)
+float fq::client::Monster::CalculateDistanceTarget(fq::game_module::GameObject* target)
 {
 	DirectX::SimpleMath::Vector3 targetPosition =
-		target.GetComponent<fq::game_module::Transform>()->GetWorldPosition();
+		target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 	DirectX::SimpleMath::Vector3 myPosition =
 		GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 
@@ -76,14 +79,17 @@ float fq::client::Monster::GetAttackWaitTime() const
 	return mAttackWaitTime;
 }
 
-fq::game_module::GameObject* fq::client::Monster::GetTarget() const
+std::shared_ptr<fq::game_module::GameObject> fq::client::Monster::GetTarget() const
 {
 	return mTarget;
 }
 
 void fq::client::Monster::SetTarget(fq::game_module::GameObject* target)
 {
-	mTarget = target;
+	if (target != nullptr)
+	{
+		mTarget = target->shared_from_this();
+	}
 }
 
 bool fq::client::Monster::GetIsDamaged() const
@@ -136,7 +142,7 @@ void fq::client::Monster::SetAttackPower(float attackPower)
 	mAttackPower = attackPower;
 }
 
-fq::game_module::GameObject* fq::client::Monster::GetLastAttacker() const
+std::shared_ptr<fq::game_module::GameObject> fq::client::Monster::GetLastAttacker() const
 {
 	return mLastAttacker;
 }
@@ -151,7 +157,7 @@ void fq::client::Monster::OnTriggerEnter(const fq::game_module::Collision& colli
 		mLastAttackTime = 0;
 
 		mDamaged = pAttack->GetAttackPower();
-		mLastAttacker = pAttack->GetAttacker();
+		mLastAttacker = pAttack->GetAttacker()->shared_from_this();
 	}
 }
 
@@ -163,5 +169,16 @@ void fq::client::Monster::SetIsDamaged(bool isDamaged)
 void fq::client::Monster::OnUpdate(float dt)
 {
 	mLastAttackTime += dt;
+}
+
+void fq::client::Monster::OnStart()
+{
+	fq::game_module::NavigationAgent* agent = GetGameObject()->GetComponent<fq::game_module::NavigationAgent>();
+
+	agent->SetSpeed(mMoveSpeed);
+	agent->SetAcceleration(mAcceleration);
+	agent->SetRadius(0.3);
+
+	mMaxHP = mHP;
 }
 

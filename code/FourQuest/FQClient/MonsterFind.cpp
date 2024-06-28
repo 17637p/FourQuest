@@ -27,11 +27,12 @@ void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, 
 
 	for (auto& player : componentView)
 	{
-		float dist = monster->CalculateDistanceTarget(player);
+		float dist = monster->CalculateDistanceTarget(&player);
 
-		if (distMin > dist)
+		if (distMin > dist && !player.IsDestroyed())
 		{
 			distMin = dist;
+
 			monster->SetTarget(&player);
 		}
 	}

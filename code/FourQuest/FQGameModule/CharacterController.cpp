@@ -25,6 +25,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::CharacterController
 	}
 
 	cloneController->mControllerInfo.id = fq::physics::unregisterID;
+	cloneController->mCollisionCount = 0;
 
 	return cloneController;
 }
@@ -119,6 +120,8 @@ void fq::game_module::CharacterController::OnCollisionEnter(const Collision& col
 
 void fq::game_module::CharacterController::OnCollisionExit(const Collision& collision)
 {
+	if (mCollisionCount == 0) return;
+
 	--mCollisionCount;
 }
 
@@ -129,6 +132,8 @@ void fq::game_module::CharacterController::OnTriggerEnter(const Collision& colli
 
 void fq::game_module::CharacterController::OnTriggerExit(const Collision& collision)
 {
+	if (mCollisionCount == 0) return;
+
 	--mCollisionCount;
 }
 

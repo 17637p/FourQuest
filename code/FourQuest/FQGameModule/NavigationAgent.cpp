@@ -14,7 +14,10 @@ fq::game_module::NavigationAgent::NavigationAgent()
 
 fq::game_module::NavigationAgent::~NavigationAgent()
 {
-	delete mImpl;
+	//if (mImpl != nullptr)
+	//{
+	//	mImpl->crowd->removeAgent(mImpl->agentIdx);
+	//}
 }
 
 void fq::game_module::NavigationAgent::OnUpdate(float dt)
@@ -24,14 +27,12 @@ void fq::game_module::NavigationAgent::OnUpdate(float dt)
 
 void fq::game_module::NavigationAgent::RegisterNavigationField(fq::game_engine::PathFindingSystem* pathFindingSystem)
 {
-	// addagent
 	mPathFindingSystem = pathFindingSystem;
 
 	Transform* agentTransform =  GetGameObject()->GetComponent<Transform>();
 	mImpl->agentIdx = pathFindingSystem->AddAgentToCrowd(agentTransform->GetWorldPosition(), &mImpl->agentParams);
 
 	mImpl->crowd = mPathFindingSystem->GetCrowd();
-	// µî·Ï 
 }
 
 float fq::game_module::NavigationAgent::GetSpeed()
@@ -93,6 +94,17 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 
 	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
 	mImpl->crowd->requestMoveTarget(mImpl->agentIdx, mImpl->targetRef, mImpl->targetPos);
+
+	//auto param = mImpl->crowd->getObstacleAvoidanceParams(mImpl->agentParams.obstacleAvoidanceType);
+	//
+	//dtObstacleAvoidanceParams nextParam{*param};
+	//
+	//nextParam.horizTime = 20;
+	//nextParam.adaptiveDivs = 20;
+	//nextParam.adaptiveRings = 7;
+	//nextParam.adaptiveDepth = 10;
+	//nextParam.weightSide = 3;
+	//mImpl->crowd->setObstacleAvoidanceParams(mImpl->agentParams.obstacleAvoidanceType, &nextParam);
 }
 
 int fq::game_module::NavigationAgent::GetAgentIndex()
@@ -123,4 +135,15 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::NavigationAgent::Cl
 void fq::game_module::NavigationAgent::CreateAgentData()
 {
 	mImpl = new Impl(this);
+}
+
+void fq::game_module::NavigationAgent::Stop()
+{
+	mImpl->crowd->resetMoveTarget(mImpl->agentIdx);
+}
+
+void fq::game_module::NavigationAgent::DeleteAgentData()
+{
+	mImpl->crowd->removeAgent(mImpl->agentIdx);
+	delete mImpl;
 }

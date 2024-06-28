@@ -1,13 +1,22 @@
+#define NOMINMAX
 #include "Player.h"
 
 #include "Attack.h"
 #include "CameraMoving.h"
+#include "HpBar.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
-	, mAttack{}
+	, mAttackPrafab{}
 	, mController(nullptr)
 	, mHp(0.f)
+	, mMaxHp(0.f)
+	, mDashCoolTime(1.f)
+	, mDashElapsedTime(0.f)
+	, mInvincibleTime(1.f)
+	, mInvincibleElapsedTime(0.f)
+	, mAnimator(nullptr)
+	, mSoulStack(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -33,14 +42,17 @@ std::shared_ptr<fq::game_module::Component> fq::client::Player::Clone(std::share
 }
 
 void fq::client::Player::OnUpdate(float dt)
-{
+{ 
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
 	processInput();
+	processCoolTime(dt);
 }
 
 void fq::client::Player::OnStart()
 {
+	mMaxHp = mHp;
+
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	assert(mAnimator);
 
@@ -51,15 +63,18 @@ void fq::client::Player::OnStart()
 		{
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
+
 }
 
 void fq::client::Player::processInput()
 {
 	auto input = GetScene()->GetInputManager();
 
-	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	bool isDashAble = mDashElapsedTime == 0.f;
+	if (isDashAble && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
 	{
 		mAnimator->SetParameterTrigger("OnDash");
+		mDashElapsedTime = mDashCoolTime;
 	}
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
@@ -71,24 +86,28 @@ void fq::client::Player::processInput()
 
 void fq::client::Player::Attack()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttack);
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackPrafab);
 	auto& attackObj = *(instance.begin());
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	auto transform = GetComponent<game_module::Transform>();
+	fq::game_module::BoxCollider* collider = attackObj->GetComponent<fq::game_module::BoxCollider>();
+	collider->SetExtent({ mAttackRange.x, mAttackRange.y, mAttackRange.z });
 
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 	attackComponent->SetAttacker(GetGameObject());
-	attackComponent->SetAttackPower(1.f);
+	attackComponent->SetAttackPower(100.f);
 
 	auto forward = transform->GetWorldMatrix().Forward();
+	auto up = transform->GetWorldMatrix().Up();
 	forward.Normalize();
+	up.Normalize();
 
 	attackObj->SetTag(game_module::ETag::PlayerAttack);
 
 	attackT->SetLocalRotation(transform->GetWorldRotation());
-	attackT->SetLocalPosition(transform->GetWorldPosition() + forward);
+	attackT->SetLocalPosition(transform->GetWorldPosition() + (forward * mAttackPositionOffset) + (up * 1));
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -104,21 +123,32 @@ void fq::client::Player::OnDestroy()
 
 void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 {
-	if (collision.other->GetTag() == game_module::ETag::MonsterAttack)
+	bool isHitAble = mInvincibleElapsedTime == 0.f;
+
+	// 플레이어 피격
+	if (isHitAble && collision.other->GetTag() == game_module::ETag::MonsterAttack)
 	{
 		mAnimator->SetParameterTrigger("OnHit");
-
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
-
 		float attackPower = monsterAtk->GetAttackPower();
-
 		mHp -= attackPower;
+
+		mInvincibleElapsedTime = mInvincibleTime;
+
+		// UI 설정
+		GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+
+		// 플레이어 사망처리 
+		if (mHp <= 0.f)
+		{
+			SummonSoul();
+		}
 	}
 }
 
 void fq::client::Player::SummonSoul()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoul);
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoulPrefab);
 	auto& soul = *(instance.begin());
 
 	// 컨트롤러 연결
@@ -133,4 +163,11 @@ void fq::client::Player::SummonSoul()
 	GetScene()->AddGameObject(soul);
 	GetScene()->DestroyGameObject(GetGameObject());
 }
+
+void fq::client::Player::processCoolTime(float dt)
+{
+	mDashElapsedTime = std::max(mDashElapsedTime - dt, 0.f);
+	mInvincibleElapsedTime = std::max(mInvincibleElapsedTime - dt, 0.f);
+}
+
 

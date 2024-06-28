@@ -24,6 +24,7 @@ fq::game_engine::AnimatorWindow::AnimatorWindow()
 	, mOnLoadSceneHandler{}
 	, mStartSceneHandler{}
 	, mSelectObjectHandler{}
+	, mSelectNodeID(0)
 {}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
@@ -334,8 +335,9 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	}
 
 	// Node ¼±ÅÃ
-	if (ed::IsNodeSelected(nodeID))
+	if (ed::IsNodeSelected(nodeID) && mSelectNodeID != nodeID)
 	{
+		mSelectNodeID = nodeID;
 		mEventManager->FireEvent<editor_event::SelectAnimationState>(
 			{ mSelectController, name }
 		);
@@ -578,13 +580,15 @@ void fq::game_engine::AnimatorWindow::OnUnloadScene()
 
 void fq::game_engine::AnimatorWindow::SelectObject(fq::editor_event::SelectObject event)
 {
-	if (event.object == nullptr
-		|| !event.object->HasComponent<game_module::Animator>()) return;
+	if (event.object == nullptr) return;
 
-	auto animator = event.object->GetComponent<game_module::Animator>();
-	mSelectObjectName = event.object->GetName();
-	mSelectController = animator->GetSharedController();
-	mSelectControllerPath = animator->GetControllerPath();
-	createContext();
+	if (event.object->HasComponent<game_module::Animator>())
+	{
+		auto animator = event.object->GetComponent<game_module::Animator>();
+		mSelectObjectName = event.object->GetName(); 
+		mSelectController = animator->GetSharedController();
+		mSelectControllerPath = animator->GetControllerPath();
+		createContext();
+	}
 }
 

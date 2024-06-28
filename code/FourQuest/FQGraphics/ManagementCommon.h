@@ -14,3 +14,6 @@
 #include "UIManager.h"
 #include "D3D11DecalManager.h"
 #include "D3D11TrailManager.h"
+#include "D3D11DecalManager.h"
+#include "D3D11LightProbeManager.h"
+#include "UIManager.h"

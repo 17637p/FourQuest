@@ -47,6 +47,8 @@ namespace fq::game_module
 
 		GameObject(const GameObject&& other) = delete;
 
+
+
 		//////////////////////////////////////////////////////////////////////////
 		//					      Call Back Event								//  
 		//////////////////////////////////////////////////////////////////////////
@@ -139,6 +141,12 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>없으면 nullptr, 그렇지 않으면 부모 포인터</returns>
 		GameObject* GetParent();
+
+		/// <summary>
+		/// 계층구조 최상단의 부모를 반환합니다
+		/// 자기자신이 최상단이면 자기 자신을 반환합니다
+		/// </summary>
+		GameObject* GetRootObject();
 
 		/// <summary>
 		/// 부모 계층이 있는지 확인합니다

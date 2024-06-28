@@ -15,6 +15,12 @@ namespace fq::graphics
 
 	class D3D11Texture : public ResourceBase
 	{
+		enum class TextureType
+		{
+			Default,
+			CubeMap
+		};
+
 	public:
 		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const std::wstring& texturePath);
@@ -22,6 +28,9 @@ namespace fq::graphics
 			const std::vector<float>& rawArray,
 			const UINT width, const UINT height);
 		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, UINT width, UINT height, DXGI_FORMAT format, UINT levels = 0);
+		// Cube Map
+		D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
+			const std::vector<std::wstring>& texturePaths);
 
 		static std::string GenerateRID(const std::wstring& texturePath);
 
@@ -37,6 +46,8 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetUAV() const { return mUAV; }
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const { return mSRV; }
 
+		void Save(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& savePath);
+
 	private:
 		UINT mWidth;
 		UINT mHeight;
@@ -44,6 +55,7 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> mTexture;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSRV;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mUAV;
+		TextureType type;
 	};
 
 	class D3D11CubeTexture : public ResourceBase
@@ -70,6 +82,7 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> mTexture;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mUAV;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSRV;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mTextureSRV;
 	};
 }
 

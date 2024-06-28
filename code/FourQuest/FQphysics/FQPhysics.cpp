@@ -6,6 +6,7 @@
 #include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsResourceManager.h"
 #include "PhysicsCollisionDataManager.h"
+#include "PhysicsClothManager.h"
 #include "PhysicsSimulationEventCallback.h"
 
 #include "ConvexMeshResource.h"
@@ -65,6 +66,7 @@ namespace fq::physics
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mResourceManager(std::make_shared<PhysicsResourceManager>())
 		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
+		, mClothManager(std::make_shared<PhysicsClothManager>())
 		, mCollisionDataManager(std::make_shared<PhysicsCollisionDataManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
@@ -136,6 +138,7 @@ namespace fq::physics
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
@@ -165,6 +168,8 @@ namespace fq::physics
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())
+			return false;
+		if (!mClothManager->Update())
 			return false;
 
 		return true;
@@ -219,6 +224,7 @@ namespace fq::physics
 		}
 
 		return raycastData;
+
 	}
 
 #pragma region RigidBodyManager
@@ -238,6 +244,14 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
+	bool FQPhysics::CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+	}
+	bool FQPhysics::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+	}
 	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
@@ -251,6 +265,14 @@ namespace fq::physics
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
 	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+	}
+	bool FQPhysics::CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+	}
+	bool FQPhysics::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
@@ -275,12 +297,23 @@ namespace fq::physics
 	}
 	bool FQPhysics::ChangeScene()
 	{
-
 		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
+	}
+	const std::unordered_map<unsigned int, std::vector<unsigned int>>& FQPhysics::GetDebugTriangleIndiecs()
+	{
+		return mRigidBodyManager->GetDebugTriangleIndiecs();
+	}
+	const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& FQPhysics::GetDebugTriangleVertices()
+	{
+		return mRigidBodyManager->GetDebugTriangleVertices();
+	}
+	const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& FQPhysics::GetDebugHeightField()
+	{
+		return mRigidBodyManager->GetDebugHeightField();
 	}
 #pragma endregion
 
@@ -315,7 +348,7 @@ namespace fq::physics
 	}
 	void FQPhysics::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
-		mCCTManager->SetCharacterControllerData(id, controllerData);
+		mCCTManager->SetCharacterControllerData(id, controllerData, mCollisionMatrix);
 	}
 	void FQPhysics::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
 	{
@@ -345,6 +378,25 @@ namespace fq::physics
 	bool FQPhysics::SimulationCharacter(unsigned int id)
 	{
 		return mCharacterPhysicsManager->SimulationCharacter(id);
+	}
+#pragma endregion
+
+#pragma region PhysicsClothManager
+	bool FQPhysics::CreateCloth(const PhysicsClothInfo& info)
+	{
+		return mClothManager->CreateCloth(info, mCollisionMatrix);
+	}
+	bool FQPhysics::GetClothData(unsigned int id, PhysicsClothGetData& data)
+	{
+		return mClothManager->GetClothData(id, data);
+	}
+	bool FQPhysics::SetClothData(unsigned int id, const PhysicsClothSetData& data)
+	{
+		return mClothManager->SetClothData(id, data);
+	}
+	bool FQPhysics::RemoveCloth(unsigned int id)
+	{
+		return mClothManager->RemoveCloth(id, mActorsToRemove);
 	}
 #pragma endregion
 

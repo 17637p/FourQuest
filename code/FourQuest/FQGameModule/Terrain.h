@@ -37,12 +37,21 @@ namespace fq::game_module
 		void SetWidth(float widht);
 		float GetWidth() const;
 
+		// NavMesh로 사용할 지 안 할지
+		bool GetIsUseNavMesh() const { return mIsUseNavMesh; }
+		void SetIsUseNavMesh(bool val) { mIsUseNavMesh = val; }
+
+		float GetTextureWidth() const { return mTextureWidth; }
+		void SetTextureWidth(float val) { mTextureWidth = val; }
+		float GetTextureHeight() const { return mTextureHeight; }
+		void SetTextureHeight(float val) { mTextureHeight = val; }
 	private:
 		entt::meta_handle GetHandle() override;
 
 	private:
 		fq::graphics::ITerrainMeshObject* mTerrainMeshObject;
 
+		bool mIsUseNavMesh;
 		std::vector<fq::graphics::TerrainLayer> mTerrainLayers; // 최대 4
 		std::string mAlPhaMapPath; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
 		std::string mHeightMapPath; 
@@ -50,6 +59,8 @@ namespace fq::game_module
 		float mHeightScale;
 		float mWidth;
 		float mHeight;
+		float mTextureWidth;
+		float mTextureHeight;
 	};
 
 

@@ -11,7 +11,9 @@
 #include "Light.h"
 #include "Particle.h"
 #include "Decal.h"
+#include "Trail.h"
 #include "ImageUI.h"
+#include "Socket.h"
 
 // Physics
 #include "Terrain.h"
@@ -31,8 +33,8 @@
 #include "LogStateBehaviour.h"
 
 // PathFinding
-#include "AddNavigationMeshObject.h"
 #include "NavigationAgent.h"
+#include "NavigationMeshLoader.h"
 
 void fq::game_module::RegisterMetaData()
 {
@@ -66,7 +68,10 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Armour>("Armour"_hs) // 8
 		.prop(fq::reflect::prop::Name, "Armour")
 		.data<ETag::Floor>("Floor"_hs) // 9
-		.prop(fq::reflect::prop::Name, "Floor");
+		.prop(fq::reflect::prop::Name, "Floor")
+		.data<ETag::Soul>("Soul"_hs) // 10
+		.prop(fq::reflect::prop::Name, "Soul");
+
 
 	// GameObject
 	entt::meta<GameObject>()
@@ -138,6 +143,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::ReadOnly)
 		.data<&StaticMeshRenderer::SetOutlineColor, &StaticMeshRenderer::GetOutlineColor>("Outline"_hs)
 		.prop(fq::reflect::prop::Name, "Outline")
+		.data<&StaticMeshRenderer::SetIsNavigationMeshUsed, &StaticMeshRenderer::GetIsNavigationMeshUsed>("isUsedNavigationMesh"_hs)
+		.prop(fq::reflect::prop::Name, "isUsedNavigationMesh")
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -189,14 +196,14 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "RotationAngle")
 		.data<&graphics::UIInfo::ScaleX>("ScaleX"_hs)
 		.prop(fq::reflect::prop::Name, "ScaleX")
-		.data<&graphics::UIInfo::RotationAngle>("ScaleY"_hs)
+		.data<&graphics::UIInfo::ScaleY>("ScaleY"_hs)
 		.prop(fq::reflect::prop::Name, "ScaleY");
 
 	entt::meta<ImageUI>()
 		.type("ImageUI"_hs)
 		.prop(fq::reflect::prop::Name, "ImageUI")
 		.prop(fq::reflect::prop::Label, "UI")
-		.data<&ImageUI::SetUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
+		.data<&ImageUI::setUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
 		.prop(fq::reflect::prop::Name, "UIInfomations")
 		.base<Component>();
 
@@ -274,16 +281,22 @@ void fq::game_module::RegisterMetaData()
 		.type("Terrain"_hs)
 		.prop(fq::reflect::prop::Name, "Terrain")
 		.prop(fq::reflect::prop::Label, "Rendering")
-		.data<&Terrain::SetWidth, &Terrain::GetWidth>("Width"_hs)
-		.prop(fq::reflect::prop::Name, "Width")
-		.data<&Terrain::SetHeight, &Terrain::GetHeight>("Height"_hs)
-		.prop(fq::reflect::prop::Name, "Height")
+		.data<&Terrain::SetIsUseNavMesh, &Terrain::GetIsUseNavMesh>("IsUseNavMesh"_hs)
+		.prop(fq::reflect::prop::Name, "IsUseNavMesh")
+		.data<&Terrain::SetWidth, &Terrain::GetWidth>("TerrainWidth"_hs)
+		.prop(fq::reflect::prop::Name, "TerrainWidth")
+		.data<&Terrain::SetHeight, &Terrain::GetHeight>("TerrainHeight"_hs)
+		.prop(fq::reflect::prop::Name, "TerrainHeight")
 		.data<&Terrain::SetHeightScale, &Terrain::GetHeightScale>("HeightScale"_hs)
 		.prop(fq::reflect::prop::Name, "HeightScale")
 		.data<&Terrain::SetHeightMap, &Terrain::GetHeightMap>("HeightMap"_hs)
 		.prop(fq::reflect::prop::Name, "HeightMap")
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(fq::reflect::prop::DragDrop, ".raw")
+		.data<&Terrain::SetTextureWidth, &Terrain::GetTextureWidth>("TextureWidth"_hs)
+		.prop(fq::reflect::prop::Name, "TextureWidth")
+		.data<&Terrain::SetTextureHeight, &Terrain::GetTextureHeight>("TextureHeight"_hs)
+		.prop(fq::reflect::prop::Name, "TextureHeight")
 		.data<&Terrain::SetAlphaMap, &Terrain::GetAlphaMap>("AlphaMap"_hs)
 		.prop(fq::reflect::prop::Name, "AlphaMap")
 		.prop(fq::reflect::prop::RelativePath)
@@ -302,20 +315,29 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<fq::physics::EColliderType>()
 		.type("ColliderType"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderType")
-		.prop(fq::reflect::prop::Label, "Physcis")
 		.data<fq::physics::EColliderType::COLLISION>("Collision"_hs)
 		.prop(fq::reflect::prop::Name, "Collision")
 		.data<fq::physics::EColliderType::TRIGGER>("Trigger"_hs)
 		.prop(fq::reflect::prop::Name, "Trigger");
+
+	// BodyType
+	entt::meta<RigidBody::EBodyType>()
+		.type("ColliderBodyType"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderBodyType")
+		.data<RigidBody::EBodyType::Static>("Static"_hs)
+		.prop(fq::reflect::prop::Name, "Static")
+		.data<RigidBody::EBodyType::Dynamic>("Dynamic"_hs)
+		.prop(fq::reflect::prop::Name, "Dynamic")
+		.data<RigidBody::EBodyType::Kinematic>("Kinematic"_hs)
+		.prop(fq::reflect::prop::Name, "Kinematic");
 
 	// Rigid Body
 	entt::meta<RigidBody>()
 		.type("RigidBody"_hs)
 		.prop(fq::reflect::prop::Name, "RigidBody")
 		.prop(fq::reflect::prop::Label, "Physcis")
-		.data<&RigidBody::SetStatic, &RigidBody::IsStatic>("IsStatic"_hs)
-		.prop(fq::reflect::prop::Name, "IsStatic")
-		.prop(fq::reflect::prop::Comment, "static or dynamic")
+		.data<&RigidBody::SetBodyType, &RigidBody::GetBodyType>("BodyType"_hs)
+		.prop(fq::reflect::prop::Name, "BodyType")
 		.data<&RigidBody::SetLinearVelocity, &RigidBody::GetLinearVelocity>("LinearVelocity"_hs)
 		.prop(fq::reflect::prop::Name, "LinearVelocity")
 		.data<&RigidBody::SetAngularVelocity, &RigidBody::GetAngularVelocity>("AgularVelocity"_hs)
@@ -552,6 +574,18 @@ void fq::game_module::RegisterMetaData()
 		.data<&LogStateBehaviour::SetEnterCount, &LogStateBehaviour::GetEnterCount>("EnterCount"_hs)
 		.prop(fq::reflect::prop::Name, "EnterCount")
 		.base<IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Socket	                                 //
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Socket>()
+		.type("Socket"_hs)
+		.prop(fq::reflect::prop::Name, "Socket")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&Socket::SetBoneName, &Socket::GetBoneName>("BoneName"_hs)
+		.prop(fq::reflect::prop::Name, "BoneName")
+		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                              Prefab                                  //
@@ -902,18 +936,10 @@ void fq::game_module::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                             ±æÃ£±â									//
 	//////////////////////////////////////////////////////////////////////////
-	entt::meta<AddNavigationMeshObject>()
-		.type("AddNavigationMeshObject"_hs)
-		.prop(fq::reflect::prop::Name, "AddNavigationMeshObject")
-		.data<&AddNavigationMeshObject::SetIsUsed, &AddNavigationMeshObject::GetIsUsed>("IsUsed"_hs)
-		.prop(fq::reflect::prop::Name, "IsUsed")
-		.base<fq::game_module::Component>();
-
 	entt::meta<NavigationAgent>()
 		.type("NavigationAgent"_hs)
 		.prop(fq::reflect::prop::Name, "NavigationAgent")
 		.base<fq::game_module::Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            µ¥Ä®									//
@@ -1166,4 +1192,13 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "NormalBlend")
 		.data<&fq::graphics::DecalMaterialInfo::AlphaCutoff>("AlphaCutoff"_hs)
 		.prop(fq::reflect::prop::Name, "AlphaCutoff");
+
+	entt::meta<NavigationMeshLoader>()
+		.type("NavigationMeshLoader"_hs)
+		.prop(fq::reflect::prop::Name, "NavigationMeshLoader")
+		.data<&NavigationMeshLoader::SetNavigationMeshPath, &NavigationMeshLoader::GetNavigationMeshPath>("NavigationMeshPath"_hs)
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::Name, "NavigationMeshPath")
+		.prop(fq::reflect::prop::DragDrop, ".Nav")
+		.base<fq::game_module::Component>();
 }

@@ -16,6 +16,7 @@ namespace fq::physics
 	class PhysicsCharactorControllerManager;
 	class PhysicsCharacterPhysicsManager;
 	class PhysicsCollisionDataManager;
+	class PhysicsClothManager;
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -65,10 +66,14 @@ namespace fq::physics
 		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -100,6 +105,19 @@ namespace fq::physics
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
+
+		/// <summary>
+		/// Triangle Mesh의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs() override;
+		const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices() override;
+
+		/// <summary>
+		/// Height Field의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField() override;
 #pragma endregion
 
 #pragma region CharacterControllerManager
@@ -156,6 +174,29 @@ namespace fq::physics
 		virtual bool SimulationCharacter(unsigned int id) override;
 #pragma endregion
 
+#pragma region PhysicsClothManager
+		/// <summary>
+		/// 천을 생성합니다.
+		/// </summary>
+		virtual bool CreateCloth(const PhysicsClothInfo& info) override;
+
+		/// <summary>
+		/// 천 데이터를 얻습니다.
+		/// </summary>
+		virtual bool GetClothData(unsigned int id, PhysicsClothGetData& data) override;
+
+		/// <summary>
+		/// 천 데이터를 세팅합니다.
+		/// </summary>
+		virtual bool SetClothData(unsigned int id, const PhysicsClothSetData& data) override;
+
+		/// <summary>
+		/// 천을 삭제합니다.
+		/// </summary>
+		virtual bool RemoveCloth(unsigned int id) override;
+#pragma endregion
+
+
 		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
 
 		/// <summary>
@@ -178,6 +219,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
+		std::shared_ptr<PhysicsClothManager> mClothManager;
 		std::shared_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 
 		// 충돌 이벤트 클래스

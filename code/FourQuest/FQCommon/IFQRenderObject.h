@@ -139,6 +139,8 @@ extern "C" {
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const abstract;
 
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
 		protected:
 			virtual ~ITerrainMeshObject() = default;
 		};

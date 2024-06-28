@@ -142,6 +142,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="D3D11DecalManager.h" />
+    <ClInclude Include="D3D11LightProbeManager.h" />
     <ClInclude Include="D3D11ParticleManager.h" />
     <ClInclude Include="D3D11TrailManager.h" />
     <ClInclude Include="DecalObject.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="D3D11DecalManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11LightManager.cpp" />
+    <ClCompile Include="D3D11LightProbeManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
     <ClCompile Include="D3D11ParticleManager.cpp" />
     <ClCompile Include="D3D11PickingManager.cpp" />

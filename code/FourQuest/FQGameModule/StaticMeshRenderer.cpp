@@ -5,6 +5,7 @@ fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
 	, mOutlineColor{0.f,0.f,0.f,0.f}
+	, mIsNavigationMeshUsed(true)
 {}
 
 fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
@@ -61,6 +62,8 @@ void fq::game_module::StaticMeshRenderer::SetOutlineColor(DirectX::SimpleMath::C
 	mOutlineColor = color;
 
 	if (mStaticMeshObject)
+	{			
 		mStaticMeshObject->SetOutlineColor(mOutlineColor);
+	}
 }
 

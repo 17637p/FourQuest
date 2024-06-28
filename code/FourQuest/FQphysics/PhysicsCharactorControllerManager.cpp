@@ -122,11 +122,12 @@ namespace fq::physics
 		data.velocity = movement->GetDisplacementVector();
 		data.isFall = movement->GetIsFall();
 	}
-	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
+	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData, int* collisionMatrix)
 	{
 		auto& controller = mCCTmap.find(id)->second;
 		physx::PxController* pxController = controller->GetPxController();
 
+		mCCTmap.find(id)->second->ChangeLayerNumber(controllerData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 		controller->SetPosition(controllerData.position);
 	}
 	void PhysicsCharactorControllerManager::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)

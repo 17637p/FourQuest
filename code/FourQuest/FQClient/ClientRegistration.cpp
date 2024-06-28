@@ -19,6 +19,9 @@
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
 
+// MonsterSpawner
+#include "MonsterSpawner.h"
+
 #include "Attack.h"
 
 // UI
@@ -38,19 +41,28 @@ void fq::client::RegisterMetaData()
 		.type("Player"_hs)
 		.prop(reflect::prop::Name, "Player")
 		.prop(reflect::prop::Label, "Player")
-		.data<&Player::SetHp, &Player::GetHp>("HP"_hs)
+		.data<&Player::mHp>("Hp"_hs)
 		.prop(reflect::prop::Name, "Hp")
-		.data<&Player::SetAttackPrefab, &Player::GetAttackPrefab>("AttakPrefab"_hs)
+		.data<&Player::mDashCoolTime>("DashCoolTime"_hs)
+		.prop(reflect::prop::Name, "DashCoolTime")
+		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
+		.prop(reflect::prop::Name, "InvincibleTime")
+		.prop(reflect::prop::Comment, u8"무적시간")
+		.data<&Player::mAttackPrafab>("AttakPrefab"_hs)
 		.prop(reflect::prop::Name, "AttakPrefab")
-		.data<&Player::SetSoulPrefab, &Player::GetSoulPrefab>("SoulPrefab"_hs)
+		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
+		.data<&Player::mAttackRange>("AttackRange"_hs)
+		.prop(reflect::prop::Name, "AttackRange")
+		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
+		.prop(reflect::prop::Name, "AttackPositionOffset")
 		.base<game_module::Component>();
 	
 	entt::meta<DeadArmour>()
 		.type("DeadArmour"_hs)
 		.prop(reflect::prop::Name, "DeadArmour")
 		.prop(reflect::prop::Label, "Player")
-		.data<&DeadArmour::SetLivingArmour, &DeadArmour::GetLivingArmour>("LivingArmour"_hs)
+		.data<&DeadArmour::mLivingArmourPrefab>("LivingArmour"_hs)
 		.prop(reflect::prop::Name, "LivingArmour")
 		.base<game_module::Component>();
 
@@ -82,6 +94,9 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlayerAttackState>()
 		.type("PlayerAttackState"_hs)
 		.prop(reflect::prop::Name, "PlayerAttackState")
+		.data<&PlayerAttackState::mAttackRebound>("AttackRebound"_hs)
+		.prop(reflect::prop::Name, "AttackRebound")
+		.prop(reflect::prop::Comment, u8"공격 반동")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -95,8 +110,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "HP")
 		.data<&Monster::SetAttackPower, &Monster::GetAttackPower>("AttackPower"_hs)
 		.prop(fq::reflect::prop::Name, "AttackPower")
-		.data<&Monster::SetMoveSpeed, &Monster::GetMoveSpeed>("MoveSpeed"_hs)
-		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.data<&Monster::SetMoveSpeed, &Monster::GetMoveSpeed>("MaxMoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MaxMoveSpeed")
+		.data<&Monster::SetAcceleration, &Monster::GetAcceleration>("MaxAcceleration"_hs)
+		.prop(fq::reflect::prop::Name, "MaxAcceleration")
 		.data<&Monster::SetChaseDistance, &Monster::GetChaseDistance>("ChaseDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ChaseDistance")
 		.data<&Monster::SetAttackWaitTime, &Monster::GetAttackWaitTime>("AttackWaitTime"_hs)
@@ -112,6 +129,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<Attack>()
 		.type("Attack"_hs)
 		.prop(fq::reflect::prop::Name, "Attack")
+		.data<&Attack::mAttackTime>("AttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTime")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -148,6 +167,19 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             몬스터 스포너	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MonsterSpawner>()
+		.type("MonsterSpawner"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterSpawner")
+		.data<&MonsterSpawner::mMonster>("MonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterPrefab")
+		.data<&MonsterSpawner::mSpawnCoolTime>("SpwanCoolTime"_hs)
+		.prop(fq::reflect::prop::Name, "SpwanCoolTime")
+		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
 	//                             카메라									//
 	//////////////////////////////////////////////////////////////////////////
 
@@ -172,7 +204,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ZoomInPadY")
 		.base<fq::game_module::Component>();
 
-
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//
 	//////////////////////////////////////////////////////////////////////////
@@ -181,6 +212,23 @@ void fq::client::RegisterMetaData()
 		.type("HpBar"_hs)
 		.prop(fq::reflect::prop::Name, "HpBar")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&HpBar::mIsVisible>("IsVisible"_hs)
+		.prop(fq::reflect::prop::Name, "IsVisible")
+		.data<&HpBar::mBarSize>("BarSize"_hs)
+		.prop(fq::reflect::prop::Name, "BarSize")
+		.data<&HpBar::mDecreaseSpeed>("DecreaseSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "DecreaseSpeed")
+		.data<&HpBar::mDecreaseOffset>("DecreaseOffset"_hs)
+		.prop(fq::reflect::prop::Name, "DecreaseOffset")
+		.data<&HpBar::mWorldOffset>("WorldOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldOffset")
+		.prop(fq::reflect::prop::Comment, u8"월드 공간의 Y를 더한후 UI 위치 계산")
+		.data<&HpBar::mScreenOffset>("ScreenOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ScreenOffset")
+		.prop(fq::reflect::prop::Comment, u8"Screen 공간의 Y를 더한후 UI 위치 계산")
+		.data<&HpBar::mInnerOffset>("InnerOffset"_hs)
+		.prop(fq::reflect::prop::Name, "InnerOffset")
+		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
 		.base<fq::game_module::Component>();
 }
 

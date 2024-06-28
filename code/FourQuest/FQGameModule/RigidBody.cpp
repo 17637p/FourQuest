@@ -1,7 +1,7 @@
 #include "RigidBody.h"
 
 fq::game_module::RigidBody::RigidBody()
-	:mbIsStatic(false)
+	:mBodyType(EBodyType::Dynamic)
 {
 }
 
@@ -30,4 +30,9 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::RigidBody::Clone(st
 entt::meta_handle fq::game_module::RigidBody::GetHandle()
 {
 	return *this;
+}
+
+void fq::game_module::RigidBody::AddLinearVelocity(Vector3 velocity)
+{
+	mLinearVelocity += velocity;
 }

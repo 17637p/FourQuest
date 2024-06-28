@@ -46,6 +46,8 @@ namespace fq::physics
 		/// <param name="input"> 이동하거나 점프를 하기 위해 입력 받는 키 값 (x,y,z) </param>
 		void AddMovementInput(const DirectX::SimpleMath::Vector3& input);
 
+		bool ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager);
+
 
 		inline physx::PxController* GetPxController();
 		inline const unsigned int& GetID();
@@ -70,7 +72,6 @@ namespace fq::physics
 	};
 
 #pragma region GetSet
-
 	physx::PxController* CharacterController::GetPxController()
 	{
 		return mPxController;
@@ -103,6 +104,5 @@ namespace fq::physics
 
 		mPxController->setPosition(vector);
 	}
-
 #pragma endregion
 }

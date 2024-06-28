@@ -28,6 +28,7 @@ namespace fq::physics
 		newShape->setContactOffset(0.02f);
 		newShape->setRestOffset(0.01f);
 
+
 		if (mColliderType == EColliderType::COLLISION)
 		{
 			newShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
@@ -39,7 +40,15 @@ namespace fq::physics
 		}
 
 		// 새로운 shape를 actor에 추가
+		physx::PxShape* prevShape = nullptr;
+		actor->getShapes(&prevShape, 1);
+		if (prevShape != nullptr)
+		{
+			actor->detachShape(*prevShape);
+		}
+
 		actor->attachShape(*newShape);
+		assert(newShape->getReferenceCount() == 2);
 
 		// 새로운 shape 해제
 		newShape->release();

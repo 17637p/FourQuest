@@ -24,6 +24,7 @@ cbuffer cbModelTransform : register(b0)
 
 cbuffer cbSceneTransform : register(b1)
 {
+    float4x4 cView;
     float4x4 cViewProj;
 };
 

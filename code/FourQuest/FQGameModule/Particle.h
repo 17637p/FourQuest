@@ -85,6 +85,8 @@ namespace fq::game_module
 				mParticleObject->SetInfo(mParticleInfo);
 			}
 		}
+		void OnStart() override;
+		void OnUpdate(float dt) override;
 
 	private:
 		graphics::IParticleObject* mParticleObject;

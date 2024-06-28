@@ -33,10 +33,10 @@ void fq::client::PlayerInputState::OnStateUpdate(game_module::Animator& animator
 
 void fq::client::PlayerInputState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
+	animator.SetParameterOffTrigger("PushX");
+	animator.SetParameterOffTrigger("PushY");
 }
 
 void fq::client::PlayerInputState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }

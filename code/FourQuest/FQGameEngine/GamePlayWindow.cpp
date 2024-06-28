@@ -4,6 +4,7 @@
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 #include <algorithm>
+#include <queue>
 
 #include "../FQGameModule/InputManager.h"
 #include "../FQGraphics/IFQGraphics.h"
@@ -259,7 +260,7 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 			mGameProcess->mEventManager
 				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
-					{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+			{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
 					, static_cast<unsigned short>(mViewportSize.y - mViewPortOffset.y) });
 		}
 	}
@@ -620,6 +621,7 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			return;
 		}
 
+
 		// 피킹한 오브젝트 탐색
 		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 		scene->ViewComponents<fq::game_module::StaticMeshRenderer>(
@@ -627,9 +629,18 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			{
 				if (mesh.GetStaticMeshObject() == meshPtr)
 				{
-					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					if (mEditorProcess->mSettingWindow->UseRootPicking())
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.GetRootObject()->shared_from_this(), mSelectObject });
+					}
+					else
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					}
 				}
+
 			});
 
 		scene->ViewComponents<fq::game_module::SkinnedMeshRenderer>(
@@ -637,8 +648,16 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			{
 				if (mesh.GetSkinnedMeshObject() == meshPtr)
 				{
-					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					if (mEditorProcess->mSettingWindow->UseRootPicking())
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.GetRootObject()->shared_from_this(), mSelectObject });
+					}
+					else
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					}
 				}
 			});
 
@@ -646,8 +665,16 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			{
 				if (terrain.GetTerrainMeshObject() == meshPtr)
 				{
-					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					if (mEditorProcess->mSettingWindow->UseRootPicking())
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.GetRootObject()->shared_from_this(), mSelectObject });
+					}
+					else
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					}
 				}
 			});
 	}
@@ -673,4 +700,40 @@ void fq::game_engine::GamePlayWindow::checkMouse()
 		else
 			mbIsMouseHoveredWindow = false;
 	}
+}
+
+void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
+{
+	if (!mSelectObject || mSelectObject->IsDestroyed())
+		return;
+
+	std::queue<game_module::GameObject*> q;
+	q.push(mSelectObject.get());
+
+	while (!q.empty())
+	{
+		auto tmp = q.front();
+
+		if (tmp && tmp->HasComponent<game_module::Particle>())
+		{
+			auto particle = tmp->GetComponent<game_module::Particle>();
+			auto particleObject = particle->GetParticleObject();
+
+			if (particleObject)
+			{
+				auto worldM = tmp->GetComponent<game_module::Transform>()->GetWorldMatrix();
+
+				particleObject->SetTransform(worldM);
+				particleObject->SetFrameTime(dt);
+			}
+		}
+
+		for (auto child : tmp->GetChildren())
+		{
+			q.push(child);
+		}
+		q.pop();
+	}
+
+
 }

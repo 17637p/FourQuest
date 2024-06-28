@@ -15,8 +15,6 @@ namespace fq::game_engine
 
 	/// <summary>
 	/// 게임오브젝트에 대한 정보를 표시한다.
-	/// 
-	/// Unity에서는 리소스에 대한 정보도 같이 표시해준다 여기서도 기능을 넣을까?
 	/// </summary>
 	class Inspector : public IEditorWindow
 	{

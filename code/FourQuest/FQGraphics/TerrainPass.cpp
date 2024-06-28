@@ -189,7 +189,7 @@ namespace fq::graphics
 			TerrainHull terrainHull;
 			terrainHull.MinDist = 200;
 			terrainHull.MaxDist = 5000;
-			terrainHull.MinTess = 0;
+			terrainHull.MinTess = 1;
 			terrainHull.MaxTess = 10;
 			terrainHull.gEyePosW = mCameraManager->GetPosition(ECameraType::Player);
 			// 절두체 면 계산 

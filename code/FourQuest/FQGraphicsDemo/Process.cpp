@@ -2,14 +2,16 @@
 
 //#include "GUIManager.h"
 #include "InputManager.h"
+#include "DemoUtils.h"
 
-//temp
 #include "../FQGraphics/IFQGraphics.h"
 
 #include "../FQLoader/ModelConverter.h"
 #include "../FQLoader/ModelLoader.h"
 
 #include <FQCommonGraphics.h>
+
+using namespace fq::utils;
 
 Process::Process()
 	:
@@ -30,11 +32,6 @@ Process::Process()
 
 Process::~Process()
 {
-	for (fq::graphics::IImageObject* iobj : mImageObjects)
-	{
-		mTestGraphics->DeleteImageObject(iobj);
-	}
-
 	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
@@ -88,6 +85,8 @@ bool Process::Init(HINSTANCE hInstance)
 
 	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
 	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource123123");
+	//convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	//convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
 	const std::string modelPath = "./resource/example/model/gun.model";
 	const std::string animModelPath0 = "./resource/example/model/temp123.model";
@@ -117,7 +116,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	// createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
 	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
-	for (size_t i = 0; i < 1; ++i)
+	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
@@ -131,14 +130,7 @@ bool Process::Init(HINSTANCE hInstance)
 	}
 
 	// 카메라 초기화
-	fq::graphics::CameraInfo cameraInfo;
-
-	cameraInfo.isPerspective = true;
-	cameraInfo.filedOfView = 0.25f * 3.1415f;
-	cameraInfo.nearPlain = 0.03f;
-	cameraInfo.farPlain = 30000;
-
-	mTestGraphics->SetCamera(cameraInfo);
+	AddDefaultCamera(mTestGraphics);
 
 	/// camera 초기화
 	cameraTransform.worldPosition = { 0, 0, 0 };
@@ -235,10 +227,6 @@ bool Process::Init(HINSTANCE hInstance)
 	decalInit();
 	trailInit();
 
-	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
-
-	createImage();
-
 	return true;
 }
 
@@ -317,6 +305,8 @@ LRESULT Process::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 void Process::Update()
 {
 	mTimeManager.Update();
+	InputManager::GetInstance().Update();
+
 	calculateFrameStats();
 
 	if (GetAsyncKeyState(VK_F1) & 0x8000)
@@ -330,57 +320,66 @@ void Process::Update()
 	}
 
 	// 카메라 조작
-	const float speed = mTimeManager.GetDeltaTime() * 100.f;
+	float speed = mTimeManager.GetDeltaTime() * 100.f;
+	if (InputManager::GetInstance().IsGetKey(VK_SHIFT))
+	{
+		speed = mTimeManager.GetDeltaTime() * 1000;
+	}
+	else
+	{
+		speed = mTimeManager.GetDeltaTime() * 100.f;
+	}
+
 	if (InputManager::GetInstance().IsGetKey('W'))
 	{
-		walk(cameraTransform, speed);
+		Walk(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('S'))
 	{
-		walk(cameraTransform, -speed);
+		Walk(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('D'))
 	{
-		strafe(cameraTransform, speed);
+		Strafe(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('A'))
 	{
-		strafe(cameraTransform, -speed);
+		Strafe(cameraTransform, -speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('E'))
 	{
-		worldUpdown(cameraTransform, speed);
+		WorldUpdown(cameraTransform, speed);
 	}
 	if (InputManager::GetInstance().IsGetKey('Q'))
 	{
-		worldUpdown(cameraTransform, -speed);
+		WorldUpdown(cameraTransform, -speed);
 	}
 
-	// Test용 두 번째 카메라
-	if (InputManager::GetInstance().IsGetKey('I'))
-	{
-		walk(cameraTransform2, speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('K'))
-	{
-		walk(cameraTransform2, -speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('L'))
-	{
-		strafe(cameraTransform2, speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('J'))
-	{
-		strafe(cameraTransform2, -speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('O'))
-	{
-		worldUpdown(cameraTransform2, speed);
-	}
-	if (InputManager::GetInstance().IsGetKey('U'))
-	{
-		worldUpdown(cameraTransform2, -speed);
-	}
+	//// Test용 두 번째 카메라
+	//if (InputManager::GetInstance().IsGetKey('I'))
+	//{
+	//	Walk(cameraTransform2, speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('K'))
+	//{
+	//	Walk(cameraTransform2, -speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('L'))
+	//{
+	//	strafe(cameraTransform2, speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('J'))
+	//{
+	//	strafe(cameraTransform2, -speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('O'))
+	//{
+	//	worldUpdown(cameraTransform2, speed);
+	//}
+	//if (InputManager::GetInstance().IsGetKey('U'))
+	//{
+	//	worldUpdown(cameraTransform2, -speed);
+	//}
 
 	mTestGraphics->UpdateCamera(cameraTransform);
 	//mTestGraphics->UpdateColCamera(cameraTransform2); 이거 키면 두 번째 카메라로 컬링 테스트 가능
@@ -390,20 +389,10 @@ void Process::Update()
 		float dx = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().x) * (3.141592f / 180.0f));
 		float dy = (0.25f * static_cast<float>(InputManager::GetInstance().GetDeltaPosition().y) * (3.141592f / 180.0f));
 
-		pitch(cameraTransform, dy);
-		yaw(cameraTransform, dx);
+		Pitch(cameraTransform, dy);
+		Yaw(cameraTransform, dx);
 	}
 
-	//picking 테스트
-	if (InputManager::GetInstance().IsGetKey('Y'))
-	{
-		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
-		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
-		{
-			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
-			int a = 3;
-		}
-	}
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
@@ -415,23 +404,16 @@ void Process::Update()
 		{
 			mTestGraphics->DeleteStaticMeshObject(object);
 		}
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
+		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
+			L"./resource/example/texture/defaultSpecularHDR.dds",
+			L"./resource/example/texture/defaultBrdf.dds");
 
-		mStaticMeshObjects.clear();
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('P'))
-	{
-		const std::string modelPath = "./resource/example/model/gun.model";
-		const std::string textureBasePath = "./resource/example/texture";
-
-		float randX = (float)(rand() % 500 - 250);
-		float randY = (float)(rand() % 500 - 250);
-		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
-	}
-	if (InputManager::GetInstance().IsGetKeyDown('M'))
-	{
-		//mImageObjects[0]->SetRotation(mImageObjects[0]->GetRotation() + 10);
-		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
+		//mTestGraphics->SetSkyBox(L"CubeProbe0.dds");
+		//mTestGraphics->SetIBLTexture(L"CubeProbe0.dds",
+		//	L"CubeProbe0.dds",
+		//	L"CubeProbe0.dds");
 	}
 
 	shadowTest();
@@ -449,24 +431,6 @@ void Process::Render()
 	mTestGraphics->BeginRender();
 	debugRender();
 	mTestGraphics->Render();
-	/// 그리기를 준비한다.
-	//m_pRenderer->BeginRender();
-	//
-	///// 엔진만의 그리기를 한다.
-	//m_pRenderer->Render(IImpGraphicsEngine::RendererType::Forward);
-	//
-	//if (_has2ndCamera)
-	//{
-	//	m_pRenderer->UpdateRight(m_timer->DeltaTime());
-	//
-	//	m_pRenderer->BeginRenderRight();
-	//	m_pRenderer->RenderRight(IImpGraphicsEngine::RendererType::Forward);
-	//}
-	//
-	//m_pRenderer->RenderUI();
-	//_guiManager->Render();
-	///// 그리기를 끝낸다.
-	//m_pRenderer->EndRender();
 
 	static float s_time = 0.f;
 	s_time += mTimeManager.GetDeltaTime();
@@ -1154,6 +1118,7 @@ void Process::decalUpdate()
 	}
 }
 
+<<<<<<< HEAD
 void Process::trailInit()
 {
 	using namespace fq::graphics;
@@ -1361,7 +1326,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 			if (testIndex == 0)
 			{
-				iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
+				//iStaticMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 			}
 
 			testIndex++;
@@ -1379,36 +1344,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
-			//static int testIndex = 0;
-			//
-			//if (testIndex == 0)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-			//}
-			//else if (testIndex == 1)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 1, 0, 1 });
-			//}
-			//else if (testIndex == 2)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 0, 1 });
-			//}
-			//else if (testIndex == 3)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 0, 1, 1 });
-			//}
-			//else if (testIndex == 4)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 1, 1 });
-			//}
-			//else if (testIndex == 5)
-			//{
-			//	iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 0, 1, 1, 1 });
-			//}
-			//testIndex++;
-
-			iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
-
+			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 
 			for (const auto& animInfo : animInfos)
 			{
@@ -1417,114 +1353,6 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
 	}
-}
-
-void Process::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
-{
-	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
-
-	for (auto mesh : modelData.Meshes)
-	{
-		if (mesh.second.Vertices.empty())
-		{
-			continue;
-		}
-
-		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = modelPath;
-		meshInfo.MeshName = mesh.second.Name;
-		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
-
-		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
-		mTerrainMeshObjects.push_back(iTerrainMeshObject);
-
-		//fq::graphics::TerrainMaterialInfo terrainMaterial;
-		terrainMaterial.Layers.clear();
-
-		fq::graphics::TerrainLayer layer1;
-		fq::graphics::TerrainLayer layer2;
-		fq::graphics::TerrainLayer layer3;
-
-		layer1.BaseColor = "./resource/example/texture/t2.jpg";
-		layer2.BaseColor = "./resource/example/texture/t1.jpg";
-		layer3.BaseColor = "./resource/example/texture/t3.jpg";
-
-		layer1.NormalMap = "./resource/example/texture/boxNormal.jpg";
-		layer2.NormalMap = "./resource/example/texture/cerberus_N.png";
-		layer3.NormalMap = "./resource/example/texture/character_normal.png";
-
-		layer1.TileOffsetX = 0.5;
-		layer1.TileOffsetY = 0.5;
-		layer2.TileOffsetX = 0;
-		layer2.TileOffsetY = 0;
-		layer3.TileOffsetX = 0;
-		layer3.TileOffsetY = 0;
-
-		layer1.TileSizeX = 20;
-		layer2.TileSizeX = 20;
-		layer3.TileSizeX = 20;
-		layer1.TileSizeY = 20;
-		layer2.TileSizeY = 20;
-		layer3.TileSizeY = 20;
-
-		layer1.Metalic = 0;
-		layer2.Metalic = 0;
-		layer3.Metalic = 0;
-
-		layer1.Roughness = 0;
-		layer2.Roughness = 0;
-		layer3.Roughness = 0;
-
-		terrainMaterial.AlPhaFileName = "./resource/example/texture/TestAlpha4.png";
-
-		// Height 설정
-		terrainMaterial.HeightFileName = "./resource/example/texture/terrain.raw";
-		terrainMaterial.HeightScale = 1000;
-		terrainMaterial.Width = 513;
-		terrainMaterial.Height = 513;
-
-		terrainMaterial.Layers.push_back(layer1);
-		terrainMaterial.Layers.push_back(layer2);
-		terrainMaterial.Layers.push_back(layer3);
-
-		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
-	}
-}
-
-void Process::createImage()
-{
-	fq::graphics::UIInfo uiInfo;
-	uiInfo.StartX = 500;
-	uiInfo.StartY = 500;
-	uiInfo.Width = 100;
-	uiInfo.Height = 100;
-	uiInfo.XRatio = 1;
-	uiInfo.YRatio = 1;
-	uiInfo.Alpha = 0.5;
-	uiInfo.Layer = 1;
-	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
-	uiInfo.ScaleX = 1;
-	uiInfo.ScaleY = 1;
-	uiInfo.RotationAngle = 0;
-
-	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
-
-	uiInfo.StartX = 450;
-	uiInfo.StartY = 500;
-	uiInfo.Width = 100;
-	uiInfo.Height = 50;
-	uiInfo.XRatio = 1;
-	uiInfo.YRatio = 0.5;
-	uiInfo.Alpha = 1;
-	uiInfo.Layer = 0;
-	uiInfo.ImagePath = "./resource/example/texture/1_Base_color.png";
-	uiInfo.ScaleX = 1;
-	uiInfo.ScaleY = 1;
-	uiInfo.RotationAngle = 0;
-
-	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
 }
 
 void Process::calculateFrameStats()

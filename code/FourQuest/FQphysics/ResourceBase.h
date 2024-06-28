@@ -7,6 +7,8 @@ namespace fq::physics
 	enum class EResourceType
 	{
 		CONVEX_MESH,
+		TRIANGLE_MESH,
+		HEIGHT_FIELD,
 
 		END
 	};

@@ -38,12 +38,17 @@ namespace fq::game_engine
 
 		bool HasNavigationMesh();
 
+		// SaveLoad
+		void SaveNavMesh(std::string& fileName);
+		void LoadNavMesh(std::string& fileName);
+
 		// Debug
 		std::vector<DirectX::SimpleMath::Vector3> GetNavMeshVertices();
 
 		// Event Process
 		void OnLoadScene(const fq::event::OnLoadScene event);
 		void OnUnloadScene();
+		void OnStartScene();
 		void OnAddComponent(const fq::event::AddComponent& event);
 		void OnRemoveComponent(const fq::event::RemoveComponent& event);
 		void OnAddGameObject(const fq::event::AddGameObject& event);
@@ -61,6 +66,7 @@ namespace fq::game_engine
 		// Navigation 
 		bool mIsLoadedScene;
 		bool mHasNavigationMesh;
+		bool mIsStartScene;
 		BuildSettings* mBuildSettings;
 		NavigationMeshBuilder* mBuilder;
 
@@ -70,13 +76,13 @@ namespace fq::game_engine
 
 		fq::game_module::EventHandler mOnLoadSceneHandler;
 		fq::game_module::EventHandler mOnUnloadSceneHandler;
+		fq::game_module::EventHandler mStartSceneHandler;
 		fq::game_module::EventHandler mAddComponentHandler;
 		fq::game_module::EventHandler mRemoveComponentHandler;
 		fq::game_module::EventHandler mOnAddGameObjectHandler;
 		fq::game_module::EventHandler mDestroyedGameObjectHandler;
 
 		entt::id_type mAgentID;
-
 	};
 }
 

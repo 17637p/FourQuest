@@ -15,7 +15,7 @@ namespace fq::game_module
 		MonsterAttack = 7,
 		Armour = 8,
 		Floor = 9,
-		Tag10 = 10,
+		Soul = 10,
 		Tag11 = 11,
 		Tag12 = 12,
 		Tag13 = 13,

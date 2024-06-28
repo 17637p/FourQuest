@@ -7,7 +7,10 @@ fq::game_module::Terrain::Terrain()
 	mHeightMapPath{ "./resource/internal/terrain.raw" },
 	mHeightScale(65),
 	mWidth(65),
-	mHeight(65)
+	mHeight(65),
+	mTextureWidth(513),
+	mTextureHeight(513),
+	mIsUseNavMesh(true)
 {
 
 }

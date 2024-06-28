@@ -367,15 +367,14 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 
 fq::game_module::AnimatorController::TransitionIterator fq::game_module::AnimatorController::checkStateTransition(const StateName& name)
 {
+	std::vector<TransitionIterator> transitions;
+
 	// State 조건
 	for (auto [beginIter, endIter]
 		= mTransitions.equal_range(name);
 		beginIter != endIter; ++beginIter)
 	{
-		bool passCondition = checkConditions(beginIter->second, mTimePos);
-
-		if (passCondition)
-			return beginIter;
+		transitions.push_back(beginIter);
 	}
 
 	// AnyState 조건
@@ -383,10 +382,27 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 		= mTransitions.equal_range("AnyState");
 		beginIter != endIter; ++beginIter)
 	{
-		bool passCondition = checkConditions(beginIter->second, mTimePos);
+		transitions.push_back(beginIter);
+	}
+
+	// ExitTime이 작은 순서대로 정렬
+	std::sort(transitions.begin(), transitions.end(), [](const TransitionIterator& lhs, const TransitionIterator& rhs)
+		{
+			if (lhs->second.GetExitTime() < rhs->second.GetExitTime())
+			{
+				return true;
+			}
+			return false;
+		});
+	 
+
+	// 전환조건 확인
+	for (auto& iter : transitions)
+	{
+		bool passCondition = checkConditions(iter->second, mTimePos);
 
 		if (passCondition)
-			return beginIter;
+			return iter;
 	}
 
 	return mTransitions.end();
@@ -518,10 +534,8 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 
 void fq::game_module::AnimatorController::Update(float dt)
 {
-	mCurrentState->second.OnStateUpdate(dt);
-
 	if (mNextState != mStates.end())
-	{
 		mNextState->second.OnStateUpdate(dt);
-	}
+	else
+		mCurrentState->second.OnStateUpdate(dt);
 }
