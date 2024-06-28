@@ -66,10 +66,14 @@ namespace fq::physics
 		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -101,6 +105,19 @@ namespace fq::physics
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
+
+		/// <summary>
+		/// Triangle Mesh의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs() override;
+		const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices() override;
+
+		/// <summary>
+		/// Height Field의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField() override;
 #pragma endregion
 
 #pragma region CharacterControllerManager

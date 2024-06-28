@@ -85,7 +85,6 @@ void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, st
 		}
 
 		debugPolygon.push_back(vertices);
-		//RENDER->AddDebugPolygon(vertices);
 	}
 }
 

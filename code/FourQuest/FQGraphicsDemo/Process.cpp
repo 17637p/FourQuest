@@ -52,6 +52,11 @@ Process::~Process()
 		mTestGraphics->DeleteDecalObject(iobj);
 	}
 
+	for (fq::graphics::ITrailObject* iobj : mTrailObjects)
+	{
+		mTestGraphics->DeleteTrailObject(iobj);
+	}
+
 	//mTestGraphics->DeleteLight(1);
 	//mTestGraphics->DeleteLight(2);
 	//mTestGraphics->DeleteLight(3);
@@ -78,6 +83,8 @@ bool Process::Init(HINSTANCE hInstance)
 	mTestGraphics->ConvertModel("./resource/example/fbx/geoBox.fbx", geoModelPath);
 	mTestGraphics->ConvertModel("./resource/example/fbx/Plane.fbx", planeModelPath);
 
+	convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource123123");
 	//convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
 	//convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
@@ -107,17 +114,19 @@ bool Process::Init(HINSTANCE hInstance)
 	createModel(geoModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 10, 1, 10 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -100, 0 }));
 	createModel(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1, 1, 1 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 10, 0 }));
 
+	// createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 50, 100, 0 }));
+	//createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateScale({ 1000, 1, 1000 }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 500, 0 }));
 	for (size_t i = 0; i < 10; ++i)
 	{
 		float randX = (float)(rand() % 500 - 250);
 		float randY = (float)(rand() % 100);
 		float randZ = (float)(rand() % 500 - 250);
-		createModel(modelPath);// , DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
+		createModel(modelPath, DirectX::SimpleMath::Matrix::CreateScale(0.01f));// , DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 		createModel(animModelPath0, animInfo, DirectX::SimpleMath::Matrix::CreateScale(100) * DirectX::SimpleMath::Matrix::CreateTranslation({ randX, randY, randZ }));
 
-		// mSocketStaticMeshObject = mStaticMeshObjects.back();
-		// mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
-		// mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
+		mSocketStaticMeshObject = mStaticMeshObjects.back();
+		mSoketSkinnedMeshObject = mSkinnedMeshObjects.back();
+		mSocketInitTransform = mSocketStaticMeshObject->GetTransform();
 	}
 
 	// 카메라 초기화
@@ -216,6 +225,7 @@ bool Process::Init(HINSTANCE hInstance)
 
 	particleInit();
 	decalInit();
+	trailInit();
 
 	return true;
 }
@@ -386,6 +396,14 @@ void Process::Update()
 	// 스카이박스 
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
+		mTestGraphics->SetSkyBox(L"./resource/example/texture/123EnvHDR.dds", true, 1.f);
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('O'))
+	{
+		for (const auto& object : mStaticMeshObjects)
+		{
+			mTestGraphics->DeleteStaticMeshObject(object);
+		}
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/custom1.dds");
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/defaultEnvHDR.dds");
 		mTestGraphics->SetIBLTexture(L"./resource/example/texture/defaultDiffuseHDR.dds",
@@ -403,6 +421,9 @@ void Process::Update()
 	materialUpdate();
 	socketUpdate();
 	decalUpdate();
+	trailUpdate();
+
+	InputManager::GetInstance().Update();
 }
 
 void Process::Render()
@@ -459,6 +480,15 @@ void Process::Render()
 		const auto& data = obj->GetMeshData();
 	}
 
+	static float s_animTime = 0.f;
+	s_animTime += mTimeManager.GetDeltaTime();
+	bool bIsUpdateAnim = false;
+
+	if (s_animTime > 0.02f)
+	{
+		bIsUpdateAnim = true;
+		s_animTime -= 0.02f;
+	}
 
 	for (auto& obj : mSkinnedMeshObjects)
 	{
@@ -495,10 +525,27 @@ void Process::Render()
 			obj->SetUseShadow(false);
 		}
 
-		obj->UpdateAnimationTime(s_time);
+		if (bIsUpdateAnim)
+		{
+			obj->UpdateAnimationTime(s_time);
+		}
+
 		obj->SetAlpha(0.3f);
 		const auto& data = obj->GetMeshData();
 	}
+
+	// --------------------font Test-------------------------------
+	//DirectX::SimpleMath::Rectangle drawRect;
+	//drawRect.x = 600;
+	//drawRect.y = 600;
+	//drawRect.width = 1000;
+	//drawRect.height = 1000;
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+	//
+	//drawRect.x = 600;
+	//drawRect.y = 700;
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+	// ---------------------------------------------------
 
 	mTestGraphics->EndRender();
 
@@ -514,6 +561,7 @@ void Process::Render()
 
 void Process::debugRender()
 {
+	return;
 	using namespace fq::graphics::debug;
 
 	SphereInfo sphereInfo;
@@ -649,6 +697,10 @@ void Process::particleInit()
 	using namespace fq::graphics;
 	using namespace DirectX::SimpleMath;
 
+	ParticleMaterialInfo particleMaterialInfo;
+	particleMaterialInfo.BaseColorFileName = L"./resource/example/texture/Particle02.png";
+	std::shared_ptr<IParticleMaterial> particleMaterial = mTestGraphics->CreateMaterial(particleMaterialInfo);
+
 	{
 		ParticleInfo particleInfo = { };
 		IParticleObject* obj;
@@ -667,14 +719,13 @@ void Process::particleInit()
 		particleInfo.LimitVelocityOverLifetimeData.Speed = 5.f;
 		particleInfo.LimitVelocityOverLifetimeData.Dampen = 0.5f;
 
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 300,0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
-
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -300, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -695,13 +746,13 @@ void Process::particleInit()
 		//particleInfo.ForceOverLifeTimeData.bIsUsed = true;
 		//particleInfo.ForceOverLifeTimeData.Force = { 5, -50, 0 };
 
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -720,19 +771,13 @@ void Process::particleInit()
 		particleInfo.ShapeData.Scale = { 2, 4, 3 };
 		particleInfo.ShapeData.Radius = 10.f;
 
-		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Subtractive;
-		//particleInfo.VelocityOverLifetimeData.bIsUsed = true;
-		//particleInfo.VelocityOverLifetimeData.Velocity = { 0, 0, 0 };
-		//particleInfo.VelocityOverLifetimeData.Orbital = { 0, 10, 0 };
-		//particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
-		//
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -100, 300, 0 }));
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ -100, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -768,13 +813,13 @@ void Process::particleInit()
 		//particleInfo.ColorOverLifetimeData.ColorRatios[3] = { 1, 1, 1, 1 };
 		//particleInfo.ColorOverLifetimeData.ColorRatioCount = 4;
 		//
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 300, 0 }));
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -804,22 +849,19 @@ void Process::particleInit()
 		// particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
 
 		particleInfo.ColorOverLifetimeData.bIsUsed = true;
-		particleInfo.ColorOverLifetimeData.AlphaRatios[0] = { 1.f, 0 };
-		particleInfo.ColorOverLifetimeData.AlphaRatios[1] = { 1.f, 1 };
-		particleInfo.ColorOverLifetimeData.AlphaRatioCount = 2;
-		particleInfo.ColorOverLifetimeData.ColorRatios[0] = { 1, 0.7, 0.6, 0 };
-		particleInfo.ColorOverLifetimeData.ColorRatios[1] = { 1, 0.2, 0.2, 0.05 };
-		particleInfo.ColorOverLifetimeData.ColorRatios[2] = { 1, 0.2, 0.2, 0.9f };
-		particleInfo.ColorOverLifetimeData.ColorRatios[3] = { 0.1, 0.1, 0.1, 1 };
-		particleInfo.ColorOverLifetimeData.ColorRatioCount = 4;
-
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(3.14, 0, 0) * DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 300, 0 }));
+		particleInfo.ColorOverLifetimeData.AlphaRatios.push_back({ 1.f, 0 });
+		particleInfo.ColorOverLifetimeData.AlphaRatios.push_back({ 1.f, 1 });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 1, 0.7, 0.6, 0 });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 1, 0.2, 0.2, 0.05 });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 1, 0.2, 0.2, 0.9f });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 0.1, 0.1, 0.1, 1 });
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
-		particleInfo.EmissionData.ParticlesPerSecond = 100.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 100, 100,0 }));
+		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -840,21 +882,13 @@ void Process::particleInit()
 		particleInfo.SizeOverLifetimeData.PointB = { 1, 0.5f };
 		particleInfo.SizeOverLifetimeData.PointC = { 1, 0.9f };
 		particleInfo.SizeOverLifetimeData.PointD = { 20, 1.f };
-		particleInfo.RenderData.BlendMode = ParticleInfo::Render::EBlendMode::Moudulate;
-
-		// particleInfo.VelocityOverLifetimeData.bIsUsed = true;
-		// particleInfo.VelocityOverLifetimeData.Velocity = { 0, 10, 0 };
-		// particleInfo.VelocityOverLifetimeData.Orbital = { 0, 1, 0 };
-		// particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
-
-
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 200, 300,0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 200, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 
@@ -870,13 +904,13 @@ void Process::particleInit()
 		particleInfo.ShapeData.Scale = { 10, 10, 10 };
 		particleInfo.ShapeData.Radius = 10.f;
 		particleInfo.ShapeData.ShapeType = ParticleInfo::Shape::EShape::Rectangle;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 300, 0 }));
+		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 
 		particleInfo.EmissionData.ParticlesPerSecond = 200.f;
-		obj = mTestGraphics->CreateParticleObject(particleInfo);
-		obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation({ 300, 100,0 }));
+		transform = DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 100,0 });
+		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);
 	}
 }
@@ -911,30 +945,17 @@ void Process::particleUpdate()
 
 		if (GetAsyncKeyState('P') & 0x8000)
 		{
-			particleInfo.RenderData.TexturePath = "./resource/example/texture/Particle00.png";
 		}
 		else
 		{
-			particleInfo.RenderData.TexturePath = "./resource/example/texture/Particle01.png";
 		}
 
-		// obj->SetInfo(particleInfo);
+		particleInfo.InstanceData.bIsRenderDebug = true;
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
-		obj->SetIsRenderDebug(true);
+		particleInfo.InstanceData.bIsEmit = GetAsyncKeyState('O') & 0x8000;
+		particleInfo.InstanceData.bIsReset = GetAsyncKeyState('I') & 0x8000;
 
-		if (GetAsyncKeyState('O') & 0x8000)
-		{
-			obj->SetIsEmit(true);
-		}
-		else
-		{
-			obj->SetIsEmit(false);
-		}
-
-		if (GetAsyncKeyState('I') & 0x8000)
-		{
-			obj->SetIsReset(true);
-		}
+		obj->SetInfo(particleInfo);
 	}
 }
 
@@ -947,95 +968,90 @@ void Process::materialUpdate()
 
 	for (auto matrialInterface : mTestGraphics->GetMaterials())
 	{
-		fq::graphics::MaterialTextureUseFlag textureUseFlag;
-		auto materialData = matrialInterface->GetMaterialData();
+		auto materialData = matrialInterface->GetInfo();
+
 		if (GetAsyncKeyState('U') & 0x8000)
 		{
-			textureUseFlag.bUseBaseColor = false;
-			textureUseFlag.bUseMetalness = false;
-			textureUseFlag.bUseRoughness = false;
+			materialData.bUseBaseColor = false;
+			materialData.bUseMetalness = false;
+			materialData.bUseRoughness = false;
 			materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 			materialData.Metalness = tempColor;
 			materialData.Roughness = tempColor;
-			materialData.BaseColorFileName = L"boxBaseColor.jpg";
-			materialData.NormalFileName = L"boxNormal.jpg";
-			matrialInterface->SetMaterialData(materialData);
+			materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+			materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
 		}
 		else
 		{
-			textureUseFlag.bUseMetalness = true;
-			textureUseFlag.bUseRoughness = true;
-			textureUseFlag.bUseBaseColor = true;
+			materialData.bUseMetalness = true;
+			materialData.bUseRoughness = true;
+			materialData.bUseBaseColor = true;
 		}
 
-		matrialInterface->SetTextureUseFlag(textureUseFlag);
+		matrialInterface->SetInfo(materialData);
 	}
 
 	for (auto meshInterface : mSkinnedMeshObjects)
 	{
 		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
 		{
-			fq::graphics::MaterialTextureUseFlag textureUseFlag;
-			auto materialData = matrialInterface->GetMaterialData();
+			auto materialData = matrialInterface->GetInfo();
+
 			if (GetAsyncKeyState('Y') & 0x8000)
 			{
-				textureUseFlag.bUseBaseColor = false;
-				textureUseFlag.bUseMetalness = false;
-				textureUseFlag.bUseRoughness = false;
+				materialData.bUseBaseColor = false;
+				materialData.bUseMetalness = false;
+				materialData.bUseRoughness = false;
 				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 				materialData.Metalness = tempColor;
 				materialData.Roughness = tempColor;
-				materialData.BaseColorFileName = L"boxBaseColor.jpg";
-				materialData.NormalFileName = L"boxNormal.jpg";
-				matrialInterface->SetMaterialData(materialData);
+				materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+				materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
 			}
 			else
 			{
-				textureUseFlag.bUseMetalness = true;
-				textureUseFlag.bUseRoughness = true;
-				textureUseFlag.bUseBaseColor = true;
+				materialData.bUseMetalness = true;
+				materialData.bUseRoughness = true;
+				materialData.bUseBaseColor = true;
 			}
 
-			matrialInterface->SetTextureUseFlag(textureUseFlag);
+			matrialInterface->SetInfo(materialData);
 		}
 	}
 	for (auto meshInterface : mStaticMeshObjects)
 	{
 		for (auto matrialInterface : meshInterface->GetMaterialInterfaces())
 		{
-			fq::graphics::MaterialTextureUseFlag textureUseFlag;
-			auto materialData = matrialInterface->GetMaterialData();
+			auto materialData = matrialInterface->GetInfo();
+
 			if (GetAsyncKeyState('T') & 0x8000)
 			{
-				textureUseFlag.bUseBaseColor = false;
-				textureUseFlag.bUseMetalness = false;
-				textureUseFlag.bUseRoughness = false;
+				materialData.bUseBaseColor = false;
+				materialData.bUseMetalness = false;
+				materialData.bUseRoughness = false;
 				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
 				materialData.Metalness = tempColor;
 				materialData.Roughness = tempColor;
-				materialData.BaseColorFileName = L"boxBaseColor.jpg";
-				materialData.NormalFileName = L"boxNormal.jpg";
-				matrialInterface->SetMaterialData(materialData);
+				materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+				materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
 			}
 			else
 			{
-				textureUseFlag.bUseMetalness = true;
-				textureUseFlag.bUseRoughness = true;
-				textureUseFlag.bUseBaseColor = true;
+				materialData.bUseMetalness = true;
+				materialData.bUseRoughness = true;
+				materialData.bUseBaseColor = true;
 			}
 
-			matrialInterface->SetTextureUseFlag(textureUseFlag);
+			matrialInterface->SetInfo(materialData);
 		}
 	}
 }
 
 void Process::socketUpdate()
 {
-	return;
-
 	const auto& bones = mSoketSkinnedMeshObject->GetBones();
 
-	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(13) * mSoketSkinnedMeshObject->GetTransform();
+	auto socketTransform = mSocketInitTransform * mSoketSkinnedMeshObject->GetRootTransform(99) * mSoketSkinnedMeshObject->GetTransform();
 	mSocketStaticMeshObject->SetTransform(socketTransform);
 
 	assert(bones[13].Index == mSoketSkinnedMeshObject->GetBoneIndex(bones[13].Name));
@@ -1055,32 +1071,28 @@ void Process::decalInit()
 {
 	using namespace fq::graphics;
 	using namespace DirectX::SimpleMath;
+
+	DecalMaterialInfo decalMaterialInfo;
+	decalMaterialInfo.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+	decalMaterialInfo.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+	std::shared_ptr<IDecalMaterial> decalMaterial = mTestGraphics->CreateMaterial(decalMaterialInfo);
+
 	{
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
-		decalInfo.MatrialData.NormalFileName = L"boxNormal.jpg";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 	{
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"boxBaseColor.jpg";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 	{
 		DecalInfo decalInfo;
-		decalInfo.MatrialData.BaseColorFileName = L"cerberus_A.png";
-		decalInfo.MatrialData.NormalFileName = L"cerberus_N.png";
-		decalInfo.MatrialData.MetalnessFileName = L"cerberus_M.png";
-		decalInfo.MatrialData.RoughnessFileName = L"cerberus_R.png";
-		decalInfo.TextureBasePath = "./resource/example/texture";
-		decalInfo.Transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(decalInfo);
+		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
+		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 }
@@ -1097,13 +1109,188 @@ void Process::decalUpdate()
 	for (IDecalObject* decalObject : mDecalObjects)
 	{
 		DecalInfo decalInfo = decalObject->GetDecalInfo();
-		decalInfo.Transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
-		decalInfo.NormalThresholdInRadian = 3.14 * 0.5f;
+		auto transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
+		decalInfo.NormalThresholdInDegree = 90;
 		decalObject->SetDecalInfo(decalInfo);
+		decalObject->SetTransform(transform);
 
 		++i;
 	}
 }
+
+<<<<<<< HEAD
+void Process::trailInit()
+{
+	using namespace fq::graphics;
+
+	ParticleMaterialInfo particleMaterialInfo;
+	particleMaterialInfo.BaseColorFileName = L"./resource/example/texture/trail01.png";
+	particleMaterialInfo.bIsTwoSide = true;
+	particleMaterialInfo.BaseColor = { 1, 1, 1, 1 };
+	std::shared_ptr<IParticleMaterial> particleMaterial = mTestGraphics->CreateMaterial(particleMaterialInfo);
+
+	{
+		TrailInfo trailInfo;
+		auto* interfaceClass = mTestGraphics->CreateTrailObject(DirectX::SimpleMath::Matrix::Identity, trailInfo, particleMaterial);
+		mTrailObjects.push_back(interfaceClass);
+	}
+}
+void Process::trailUpdate()
+{
+	using namespace fq::graphics;
+
+	static float s_prev_time = 0.f;
+	static float s_time = 0.f;
+
+	float deltaTime = mTimeManager.GetDeltaTime();
+	deltaTime = fmod(deltaTime, 0.02);
+
+	s_prev_time = s_time;
+	s_time += deltaTime;
+
+	for (auto* trailObject : mTrailObjects)
+	{
+		TrailInfo trailInfo = trailObject->GetTrailInfo();
+
+		trailInfo.Time = 0.5f;
+		trailInfo.MinVertexDistance = 25;
+		trailInfo.AlignmentType = TrailInfo::EAlignment::TransformZ;
+		trailInfo.TextureMode = TrailInfo::ETextureMode::Stretch;
+		trailInfo.VertexDivisionCount = 5;
+		trailInfo.WidthRatios.clear();
+		trailInfo.WidthRatios.push_back({ 10000, 0.2 });
+		trailInfo.WidthRatios.push_back({ 7000, 0.4 });
+		trailInfo.WidthRatios.push_back({ 5000, 0.9 });
+
+		trailInfo.ColorRatios.clear();
+		trailInfo.ColorRatios.push_back({ 1, 0, 0, 0.2 });
+		trailInfo.ColorRatios.push_back({ 0.5, 0, 0, 0.5 });
+		trailInfo.ColorRatios.push_back({ 0.1, 0, 1, 0.9 });
+
+
+		//if (s_time > 1.f)
+		//{
+		//	trailInfo.bIsEmit ^= true;
+		//	s_time -= 1.f;
+		//}
+
+		trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateRotationX(3.14 * 0.5f) * mSocketStaticMeshObject->GetTransform());
+		trailObject->SetFrameTime(mTimeManager.GetDeltaTime());
+		//
+		// if (s_time < 1.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(0, 0, 10));
+		// }
+		// else if (s_time < 2.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(0, 400, 10));
+		// }
+		// else if (s_time < 3.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(400, 400, 10));
+		// }
+		// else if (s_time < 4.f)
+		// {
+		// 	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(400, 0, 10));
+		// }
+		//else
+		//{
+		//	trailObject->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(200, -200, 10));
+		//	mStaticMeshObjects[0]->SetTransform(DirectX::SimpleMath::Matrix::CreateScale(20) * trailObject->GetTransform());
+		//}
+
+		trailObject->SetTrailInfo(trailInfo);
+
+	}
+
+	if (s_time >= 5.f)
+	{
+		s_time = 0.f;
+	}
+}
+
+/*=============================================================================
+		camera
+=============================================================================*/
+#pragma region camera
+void Process::strafe(fq::common::Transform& cameraTransform, float distance)
+{
+	//mPosition = XMFLOAT3(mRight.x * d + mPosition.x, mRight.y * d + mPosition.y, mRight.z * d + mPosition.z);
+	DirectX::SimpleMath::Matrix tempMatrix;
+	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
+
+	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
+		tempMatrix._11 * distance + cameraTransform.worldPosition.x,
+		tempMatrix._12 * distance + cameraTransform.worldPosition.y,
+		tempMatrix._13 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::walk(fq::common::Transform& cameraTransform, float distance)
+{
+	DirectX::SimpleMath::Matrix tempMatrix;
+	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
+
+	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
+		tempMatrix._31 * distance + cameraTransform.worldPosition.x,
+		tempMatrix._32 * distance + cameraTransform.worldPosition.y,
+		tempMatrix._33 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::worldUpdown(fq::common::Transform& cameraTransform, float distance)
+{
+	DirectX::SimpleMath::Matrix tempMatrix;
+	tempMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation);
+
+	cameraTransform.worldPosition = DirectX::SimpleMath::Vector3(
+		tempMatrix._21 * distance + cameraTransform.worldPosition.x,
+		tempMatrix._22 * distance + cameraTransform.worldPosition.y,
+		tempMatrix._23 * distance + cameraTransform.worldPosition.z);
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::yaw(fq::common::Transform& cameraTransform, float angle)
+{
+	DirectX::SimpleMath::Vector3 up{ 0, 1, 0 };
+	//up.Normalize();
+	up = up * angle;
+	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(up.y, up.x, up.z);
+
+	cameraTransform.worldRotation = cameraTransform.worldRotation * quaternion;
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+
+void Process::pitch(fq::common::Transform& cameraTransform, float angle)
+{
+	DirectX::SimpleMath::Vector3 right{ 1, 0, 0 };
+	right = right * angle;
+	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(right.y, right.x, right.z);
+
+	cameraTransform.worldRotation = quaternion * cameraTransform.worldRotation;
+
+	cameraTransform.worldMatrix =
+		DirectX::SimpleMath::Matrix::CreateScale(cameraTransform.worldScale) *
+		DirectX::SimpleMath::Matrix::CreateFromQuaternion(cameraTransform.worldRotation) *
+		DirectX::SimpleMath::Matrix::CreateTranslation(cameraTransform.worldPosition);
+}
+#pragma endregion camera
 
 void Process::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
 {
@@ -1182,6 +1369,11 @@ void Process::calculateFrameStats()
 
 void Process::convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath)
 {
+	if (!std::filesystem::exists(readFolderPath))
+	{
+		return;
+	}
+
 	for (const auto& iter : std::filesystem::directory_iterator{ readFolderPath })
 	{
 		if (iter.path().extension() == ".fbx")
@@ -1197,6 +1389,11 @@ void Process::convertFBXModelAll(std::filesystem::path readFolderPath, std::file
 
 void Process::convertFBXModelAll(std::filesystem::path folderPath)
 {
+	if (!std::filesystem::exists(folderPath))
+	{
+		return;
+	}
+
 	for (const auto& iter : std::filesystem::recursive_directory_iterator{ folderPath })
 	{
 		if (iter.path().extension() == ".fbx")

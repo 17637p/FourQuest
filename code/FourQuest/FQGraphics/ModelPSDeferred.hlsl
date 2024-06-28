@@ -30,15 +30,17 @@ struct PixelOut
 cbuffer cbMaterial : register(b0)
 {
     float4 cBaseColor;
+    float4 cEmissiveColor;
+    float4x4 TexTransform;
+    
     float cMetalness;
     float cRoughness;
-    
     bool cUseAlbedoMap;
     bool cUseMetalnessMap;
+  
     bool cUseRoughnessMap;
     bool cUseNormalMap;
     bool cUseEmissiveMap;
-    bool cUseOpacityMap;
 };
 
 cbuffer cbSceneTransform : register(b1)
@@ -59,13 +61,11 @@ PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
+    pout.Albedo = cBaseColor;
+
     if (cUseAlbedoMap)
     {
-        pout.Albedo = gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
-    }
-    else
-    {
-        pout.Albedo =  cBaseColor;
+        pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
     }
 
     if (cUseMetalnessMap)
@@ -96,20 +96,17 @@ PixelOut main(VertexOut pin) : SV_TARGET
         pout.Normal.xyz = normalize(pin.NormalW);
     }
 
-    pout.Normal.xyz = (pout.Normal.xyz + float3(1.f, 1.f, 1.f)) * 0.5f;
-    pout.SourceNormal.xyz = (pin.NormalW.xyz + float3(1.f, 1.f, 1.f)) * 0.5f;
-    pout.SourceTangent.xyz = (pin.TangentW.xyz  +float3(1.f, 1.f, 1.f)) * 0.5f;
+    pout.SourceNormal.xyz = pin.NormalW.xyz;
+    pout.SourceTangent.xyz = pin.TangentW.xyz;
 
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;
-    
+
+    pout.Emissive.rgb = cEmissiveColor.rgb;
+
     if (cUseEmissiveMap)
     {
-        pout.Emissive.rgb = gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
-    }
-    else
-    {
-        pout.Emissive.rgb = float3(0.f, 0.f, 0.f);
+        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
 
     return pout;

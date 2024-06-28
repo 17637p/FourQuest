@@ -70,7 +70,7 @@ void fq::game_module::Camera::SetFieldOfView(float degree)
 {
 	constexpr float min = DirectX::XMConvertToRadians(0.00001f);
 	constexpr float max = DirectX::XMConvertToRadians(180.f);
-	
+
 	mCameraInfomation.fieldOfView =
 		std::clamp(DirectX::XMConvertToRadians(degree), min, max);
 }

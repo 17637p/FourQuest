@@ -33,7 +33,7 @@ PixelOut main(VertexOut pin) : SV_Target
     float2 depthUV = screenPosition * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     
     float3 normal = gSourceNormalTexture.Sample(gSamplerAnisotropic, depthUV).xyz;
-    clip(dot(normalize(normal * 2 - 1), pin.Orientation) - cos(gNormalThresholdInRadian));
+    clip(dot(normalize(normal), pin.Orientation) - cos(gNormalThresholdInRadian));
     
     float3 posW = gPositionWTexture.Sample(gSamplerAnisotropic, depthUV);
     float3 posV = mul(float4(posW, 1.f), gViewMatrix);
@@ -49,19 +49,16 @@ PixelOut main(VertexOut pin) : SV_Target
     float2 uv = posLocalInTex.xz;
     uv += 0.5f;
     
+    uv = mul(float4(uv, 0, 1), gTexMatrix);
+    
+    pout.Albedo = gBaseColor;
+    
     if (gUseAlbedoMap)
     {
-        pout.Albedo = gAlbedoMap.Sample(gSamplerAnisotropic, uv);
+        pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, uv);
     }
-    else
-    {
-        pout.Albedo = float4(1, 1, 1, 1);
-    }
-    
-    if (gUseAlphaClip)
-    {
-        clip(pout.Albedo.a - gAlphaClipThreshold);
-    }
+  
+    clip(pout.Albedo.a - gAlphaCutoff);
     
     if (gUseMetalnessMap)
     {
@@ -69,8 +66,7 @@ PixelOut main(VertexOut pin) : SV_Target
     }
     else
     {
-        pout.Metalness = 0.f;
-
+        pout.Metalness = 0;
     }
     
     if (gUseRoughnessMap)
@@ -79,7 +75,7 @@ PixelOut main(VertexOut pin) : SV_Target
     }
     else
     {
-        pout.Roughness = 0.f;
+        pout.Roughness = 0;
     }
     
     if (gUseNormalMap)
@@ -87,33 +83,30 @@ PixelOut main(VertexOut pin) : SV_Target
         float4 normalInTex = gNormalMap.Sample(gSamplerAnisotropic, uv);
         float4 sourceNormal = gSourceNormalTexture.Sample(gSamplerAnisotropic, depthUV);
         
-        
         if (sourceNormal.x > 100.f)
         {
             clip(-1.f);
         }
         
-        sourceNormal = sourceNormal * 2 - 1;
         float4 sourceTangent = normalize(gSourceTangentTexture.Sample(gSamplerAnisotropic, depthUV) * 2 - 1);
         pout.Normal.xyz = normalize(NormalSampleToWorldSpace(normalInTex.xyz, sourceNormal.xyz, sourceTangent.xyz));
-        pout.Normal.xyz = (pout.Normal.xyz + float3(1.f, 1.f, 1.f)) * 0.5f;
+        pout.Normal.w = gNormalBlend;
+
     }
     else
     {
         pout.Normal = float4(0, 0, 0, 0);
     }
+    
+    pout.Emissive.rgb = gEmissiveColor.rgb;
+    
     if (gUseEmissiveMap)
     {
-        pout.Emissive = gEmissiveMap.Sample(gSamplerAnisotropic, uv);
+        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, uv).rgb;
     }
     else
     {
         pout.Emissive = float4(0, 0, 0, 0);
-    }
-    
-    if (gUseMultiplyAlpha)
-    {
-        pout.Albedo.rgb *= pout.Albedo.a;
     }
     
     return pout;

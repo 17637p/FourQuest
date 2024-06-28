@@ -32,14 +32,8 @@ namespace fq::graphics
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 
-		D3D_SHADER_MACRO macroShading[] =
-		{
-			{"SHADING", ""},
-			{ NULL, NULL}
-		};
-
 		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
-		auto shadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_SHADING.cso" );
+		auto shadingPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_SHADING.cso");
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, shadingPS, pipelieState);
 
@@ -160,7 +154,7 @@ namespace fq::graphics
 			}
 
 			mDirectioanlShadowInfoCB->Update(mDevice, directionalShadowData);
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
+			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
 		}
 
 		// init
@@ -185,6 +179,21 @@ namespace fq::graphics
 			mNormalSRV->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
 			mEmissiveSRV->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
 			mPositionSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			
+			const auto& iblTexture = mLightManager->GetIBLTexture();
+			if (iblTexture.DiffuseIrradiance != nullptr)
+			{
+				mDevice->GetDeviceContext()->PSSetShaderResources(6, 1, iblTexture.DiffuseIrradiance->GetSRV().GetAddressOf());
+			}
+			if (iblTexture.SpecularIBL != nullptr)
+			{
+				mDevice->GetDeviceContext()->PSSetShaderResources(7, 1, iblTexture.SpecularIBL->GetSRV().GetAddressOf());
+			}
+			if (iblTexture.SpecularBRDF != nullptr)
+			{
+				mDevice->GetDeviceContext()->PSSetShaderResources(8, 1, iblTexture.SpecularBRDF->GetSRV().GetAddressOf());
+			}
+
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 
 			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);

@@ -13,15 +13,17 @@ struct VertexOut
 cbuffer cbMaterial : register(b0)
 {
     float4 cBaseColor;
+    float4 cEmissiveColor;
+    float4x4 TexTransform;
+    
     float cMetalness;
     float cRoughness;
-    
     bool cUseAlbedoMap;
     bool cUseMetalnessMap;
+  
     bool cUseRoughnessMap;
     bool cUseNormalMap;
     bool cUseEmissiveMap;
-    bool cUseOpacityMap;
 };
 
 cbuffer cbLight : register(b1)
@@ -66,7 +68,7 @@ float4 main(VertexOut pin) : SV_TARGET
     
     if (cUseAlbedoMap)
     {
-        albedo = gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
     
     float metalness = cMetalness;
@@ -91,11 +93,11 @@ float4 main(VertexOut pin) : SV_TARGET
         normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
-    float3 emissive = float3(0.f, 0.f, 0.f);
+    float3 emissive = cEmissiveColor.rgb;
     
     if (cUseEmissiveMap)
     {
-        emissive = gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
 
     float3 directLighting = 0.0;

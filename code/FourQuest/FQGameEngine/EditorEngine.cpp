@@ -21,6 +21,7 @@
 #include "SoundSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "TrailSystem.h"
 #include "UISystem.h"
 #include "PathFindingSystem.h"
 
@@ -82,6 +83,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mAnimationSystem->Initialize(mGameProcess.get());
 	mGameProcess->mParticleSystem->Initialize(mGameProcess.get());
 	mGameProcess->mDecalSystem->Initialize(mGameProcess.get());
+	mGameProcess->mTrailSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 
@@ -190,6 +192,7 @@ void fq::game_engine::EditorEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 
 			mGameProcess->mDecalSystem->Update(deltaTime);
+			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();

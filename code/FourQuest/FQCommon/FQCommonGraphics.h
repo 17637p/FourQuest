@@ -67,8 +67,8 @@ namespace fq::graphics
 
 		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
 
-		float XRatio= 1.f; // 1이 전부다 출력
-		float YRatio= 1.f; // 1이 전부다 출력
+		float XRatio = 1.f; // 1이 전부다 출력
+		float YRatio = 1.f; // 1이 전부다 출력
 
 		std::string ImagePath;
 
@@ -224,12 +224,8 @@ namespace fq::graphics
 
 		struct ColorOverLifetime
 		{
-			enum { RATIO_SIZE = 8 };
-
-			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ RATIO_SIZE }; // value, ratio 
-			size_t AlphaRatioCount{ 0 };
-			std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ RATIO_SIZE }; // { value }, ratio
-			size_t ColorRatioCount{ 0 };
+			std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ { 1, 0 }, }; // value, ratio 
+			std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ { 1, 1, 1, 0}, }; // { value }, ratio
 			bool bIsUsed{ false };
 		} ColorOverLifetimeData;
 
@@ -253,36 +249,70 @@ namespace fq::graphics
 			enum class ERenderMode
 			{
 				Billboard,
-			};
-			enum class EBlendMode
-			{
-				Additive,
-				Subtractive,
-				Moudulate
+				// StretchedBillboard,
+				// HorizontalBillboard,
+				// VerticalBillboard,
+				// Mesh,
+				// None 
 			};
 
 			ERenderMode RenderMode = ERenderMode::Billboard;
-			EBlendMode BlendMode = EBlendMode::Additive;
-			std::string TexturePath = "./resource/example/texture/Particle00.png";
-			bool bUseMultiplyAlpha = true;
-			bool bUseAlphaClip = true;
-			float AlphaClipThreshold = 0.1f;
 		} RenderData;
+
+		struct Instance
+		{
+			bool bIsEmit{ true };
+			bool bIsReset{ true };
+			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
+			bool bIsRenderDebug{ true };
+		} InstanceData;
 	};
 
 	struct DecalInfo
 	{
-		std::filesystem::path TextureBasePath = "";
-		fq::common::Material MatrialData;
-		DirectX::SimpleMath::Matrix Transform;
-		DirectX::SimpleMath::Matrix TexTransform;
-		unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
-		float NormalThresholdInRadian = 3.14f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
-		bool bUseMultiplyAlpha = true;
-		bool bUseAlphaClip = true;
-		float AlphaClipThreshold = 0.1f;
-		bool bUseDebugRender = true;
+		float Width = 1.f;
+		float Height = 1.f;
+		float Depth = 1.f;
+		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
+
+		// unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
+		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
+
+		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+
 		DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };
+		bool bIsRenderDebug = true;
+	};
+
+	struct TrailInfo
+	{
+		enum { MAX_VERTEX_SIZE = 1024 };
+
+		enum class EAlignment
+		{
+			View,
+			TransformZ,
+		};
+
+		enum class ETextureMode
+		{
+			Stretch, // 트레일 전체 길이를 한 번에 매핑
+			Tile, // 월드 공간의 단위를 기반하여 텍스처 반복, 반복 거리 10이네
+			DistributePerSegment,// 버텍스 간격이 균등하다고 가정한 후 트레일의 전체 길이를 한 번에 매핑
+			RepeatPerSegment, // 트레일 세그먼트당 한 번 트레일 텍스처 반복
+		};
+
+		float Time = 5.f;
+		std::vector<DirectX::SimpleMath::Vector2> WidthRatios = { {10, 0 } }; // x : width, y : ratio
+		float MinVertexDistance = 1.f; // 월드 공간에 정의된 트레일 간 최소 거리
+		size_t VertexDivisionCount = 1; // 두 정점 사이에 곡선으로 나눌 개수
+		bool bIsEmit = true;
+		std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ { 1, 1, 1, 0} }; // xyz : rgb, z : ratio
+		std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ { 1, 0 } }; // x : a, y : ratio
+
+		EAlignment AlignmentType = EAlignment::View;
+		ETextureMode TextureMode = ETextureMode::DistributePerSegment;
 	};
 
 	namespace debug
@@ -397,6 +427,87 @@ namespace fq::graphics
 		};
 	};
 
+	// material
+	struct MaterialInfo
+	{
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		float Metalness = 0.f;
+		float Roughness = 0.f;
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+
+		bool bUseBaseColor = true;
+		bool bUseMetalness = true;
+		bool bUseRoughness = true;
+		bool bUseNormalness = true;
+		bool bIsUsedEmissive = true;
+
+		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+		float AlphaCutoff = 0.1f;
+	};
+
+	struct ParticleMaterialInfo
+	{
+		enum class ERenderMode
+		{
+			Additive,
+			Subtractive,
+			Modulate,
+			AlphaBlend,
+		} RenderModeType = ERenderMode::Additive;
+
+		enum class EColorMode
+		{
+			Multiply,
+			Additive,
+			Subtractive,
+			Overlay, // 
+			Color, // 입자 텍스처 알파와 입자의 알베도 색상
+			Difference // 
+		} ColorModeType = EColorMode::Multiply;
+
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		std::wstring BaseColorFileName;
+		std::wstring EmissiveFileName;
+
+		bool bIsUsedBaseColor = true;
+		bool bIsUsedEmissive = true;
+
+		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
+		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
+
+		float AlphaCutoff = 0.1f;
+		bool bIsTwoSide = false;
+	};
+
+	struct DecalMaterialInfo
+	{
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		std::wstring BaseColorFileName;
+		std::wstring MetalnessFileName;
+		std::wstring RoughnessFileName;
+		std::wstring NormalFileName;
+		std::wstring EmissiveFileName;
+
+		bool bUseBaseColor = true;
+		bool bUseMetalness = true;
+		bool bUseRoughness = true;
+		bool bUseNormalness = true;
+		bool bIsUsedEmissive = true;
+
+		float NormalBlend = 0.5f; // 0 ~ 1, srcNormal의 가중치, 1이라면 decal의 노말이 전부 적용된다.
+		float AlphaCutoff = 0.1f;
+	};
 	//// ---------------------------------------------------------------------
 	////							Light Probe
 	//// ---------------------------------------------------------------------

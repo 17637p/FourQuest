@@ -44,6 +44,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
 			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11TrailManager> trailManager,
 			unsigned short width,
 			unsigned short height,
 			EPipelineType pipelineType);
@@ -55,9 +56,7 @@ namespace fq::graphics
 		void Render();
 		void RenderFullScreen();
 		void EndRender();
-
-		void SetSkyBox(const std::wstring& path);
-		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
+		
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;
 
 	private:

@@ -26,6 +26,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
 		std::shared_ptr<D3D11DecalManager> decalManager,
+		std::shared_ptr<D3D11TrailManager> trailManager,
 		unsigned short width,
 		unsigned short height,
 		EPipelineType pipelineType)
@@ -37,10 +38,10 @@ namespace fq::graphics
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, decalManager, width, height);
+			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, decalManager, trailManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, decalManager, width, height);
+			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, decalManager, trailManager, width, height);
 			break;
 		default:
 			assert(false);
@@ -148,51 +149,19 @@ namespace fq::graphics
 		return nullptr;
 	}
 
-	void D3D11RenderManager::SetSkyBox(const std::wstring& path)
-	{
-		switch (mPipelineType)
-		{
-		case fq::graphics::EPipelineType::Forward:
-			return mForwardPipeline->SetSkyBox(path);
-			break;
-		case fq::graphics::EPipelineType::Deferred:
-			return mDeferredPipeline->SetSkyBox(path);
-			break;
-		default:
-			assert(false);
-			break;
-		}
-	}
-
-	void D3D11RenderManager::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
-	{
-		switch (mPipelineType)
-		{
-		case fq::graphics::EPipelineType::Forward:
-			return mForwardPipeline->SetIBLTexture(diffuse, specular, brdfLUT);
-			break;
-		case fq::graphics::EPipelineType::Deferred:
-			return mDeferredPipeline->SetIBLTexture(diffuse, specular, brdfLUT);
-			break;
-		default:
-			assert(false);
-			break;
-		}
-	}
-
 	void D3D11RenderManager::RenderFullScreen()
 	{
 		switch (mPipelineType)
 		{
-			case fq::graphics::EPipelineType::Forward:
-				return mForwardPipeline->RenderFullScreen();
-				break;
-			case fq::graphics::EPipelineType::Deferred:
-				return mDeferredPipeline->RenderFullScreen();
-				break;
-			default:
-				assert(false);
-				break;
+		case fq::graphics::EPipelineType::Forward:
+			return mForwardPipeline->RenderFullScreen();
+			break;
+		case fq::graphics::EPipelineType::Deferred:
+			return mDeferredPipeline->RenderFullScreen();
+			break;
+		default:
+			assert(false);
+			break;
 		}
 	}
 }

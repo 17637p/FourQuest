@@ -725,7 +725,6 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 
 				particleObject->SetTransform(worldM);
 				particleObject->SetFrameTime(dt);
-				particleObject->SetIsRenderDebug(true);
 			}
 		}
 

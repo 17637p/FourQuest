@@ -28,6 +28,7 @@
 #include "SoundClip.h"
 #include "Particle.h"
 #include "Decal.h"
+#include "Trail.h"
 #include "ImageUI.h"
 
 #include "EventHandler.h"

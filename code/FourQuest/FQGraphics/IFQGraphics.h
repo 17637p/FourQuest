@@ -65,7 +65,7 @@ extern "C" {
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& GetModel(std::string path) abstract;
 			virtual FQ_GRAPHICS void DeleteModel(std::string path) abstract;
-			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IMaterial>> GetMaterials() const abstract;
+			virtual FQ_GRAPHICS std::set<std::shared_ptr<IMaterial>> GetMaterials() const abstract;
 
 			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) abstract;
 			virtual FQ_GRAPHICS void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) abstract;
@@ -90,12 +90,37 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
 
+			// Material
+
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetNamedMaterialOrNull(const std::string& key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetNamedParticleMaterialOrNull(const std::string& key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetNamedDecalMaterialOrNull(const std::string& key) abstract;
+
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) abstract;
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
+
+			virtual FQ_GRAPHICS void  DeleteNamedMaterial(const std::string& key) abstract;
+			virtual FQ_GRAPHICS void  DeleteNamedParticleMaterial(const std::string& key) abstract;
+			virtual FQ_GRAPHICS void  DeleteNamedDecalMaterial(const std::string& key) abstract;
+
 			// VFX
-			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo) abstract;
+			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
 
-			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DecalInfo& decalInfo) abstract;
+			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
 			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObjectInterface) abstract;
+
+			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			virtual FQ_GRAPHICS void DeleteTrailObject(ITrailObject* trailObjectInterface) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
@@ -113,7 +138,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteImageObject(IImageObject* imageObject) abstract;
 
 			/// SkyBox
-			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path) abstract;
+			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) abstract;
 			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;
 
 			/// Light

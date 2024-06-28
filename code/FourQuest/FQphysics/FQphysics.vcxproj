@@ -154,9 +154,11 @@
     <ClInclude Include="ConvexMeshResource.h" />
     <ClInclude Include="CudaClothTool.h" />
     <ClInclude Include="CudaPhysicsCloth.h" />
+    <ClInclude Include="DebugData.h" />
     <ClInclude Include="EngineDataConverter.h" />
     <ClInclude Include="CharacterJoint.h" />
     <ClInclude Include="CharacterLink.h" />
+    <ClInclude Include="HeightFieldResource.h" />
     <ClInclude Include="PhysicsCCTHitCallback.h" />
     <ClInclude Include="PhysicsCharacterPhysicsManager.h" />
     <ClInclude Include="PhysicsCharactorControllerManager.h" />
@@ -174,6 +176,7 @@
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="StaticRigidBody.h" />
+    <ClInclude Include="TriangleMeshResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterController.cpp" />
@@ -182,9 +185,11 @@
     <ClCompile Include="CharacterQueryFilterCallback.cpp" />
     <ClCompile Include="ConvexMeshResource.cpp" />
     <ClCompile Include="CudaPhysicsCloth.cpp" />
+    <ClCompile Include="DebugData.cpp" />
     <ClCompile Include="EngineDataConverter.cpp" />
     <ClCompile Include="CharacterJoint.cpp" />
     <ClCompile Include="CharacterLink.cpp" />
+    <ClCompile Include="HeightFieldResource.cpp" />
     <ClCompile Include="PhysicsCCTHitCallback.cpp" />
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp" />
     <ClCompile Include="PhysicsCharactorControllerManager.cpp" />
@@ -202,6 +207,7 @@
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="StaticRigidBody.cpp" />
+    <ClCompile Include="TriangleMeshResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

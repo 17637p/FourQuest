@@ -35,7 +35,7 @@ namespace fq::graphics
 		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
 		virtual const fq::common::Model& GetModel(std::string path) override;
 		virtual void DeleteModel(std::string path) override;
-		virtual std::vector<std::shared_ptr<IMaterial>> GetMaterials() const override;
+		virtual std::set<std::shared_ptr<IMaterial>> GetMaterials() const override;
 
 		virtual IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
 		virtual void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) override;
@@ -60,12 +60,36 @@ namespace fq::graphics
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
 
-		// VFX
-		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
-		void DeleteParticleObject(IParticleObject* particleObject);
+		// Material
+		std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) override;
+		std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) override;
+		std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& materialInfo) override;
 
-		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
-		void DeleteDecalObject(IDecalObject* decalObjectInterface);
+		std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) override;
+		std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) override;
+		std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) override;
+
+		std::shared_ptr<IMaterial> GetNamedMaterialOrNull(const std::string& key) override;
+		std::shared_ptr<IParticleMaterial> GetNamedParticleMaterialOrNull(const std::string& key) override;
+		std::shared_ptr<IDecalMaterial> GetNamedDecalMaterialOrNull(const std::string& key) override;
+
+		void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) override;
+		void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial) override;
+		void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial) override;
+
+		void  DeleteNamedMaterial(const std::string& key) override;
+		void  DeleteNamedParticleMaterial(const std::string& key) override;
+		void  DeleteNamedDecalMaterial(const std::string& key) override;
+
+		// VFX
+		IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) override;
+		void DeleteParticleObject(IParticleObject* particleObject) override;
+
+		IDecalObject* CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial) override;
+		void DeleteDecalObject(IDecalObject* decalObjectInterface) override;
+
+		ITrailObject* CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) override;
+		void DeleteTrailObject(ITrailObject* trailObjectInterface) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
@@ -82,7 +106,7 @@ namespace fq::graphics
 		virtual void DeleteImageObject(IImageObject* imageObject) override;
 
 		/// SkyBox
-		virtual void SetSkyBox(const std::wstring& path) override;
+		virtual void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) override;
 		virtual void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) override;
 
 		/// Light
@@ -126,6 +150,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 		std::shared_ptr<class D3D11ParticleManager> mParticleManager;
 		std::shared_ptr<class D3D11DecalManager> mDecalManager;
+		std::shared_ptr<class D3D11TrailManager> mTrailManager;
 		std::shared_ptr<class D3D11LightProbeManager> mLightProbeManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;

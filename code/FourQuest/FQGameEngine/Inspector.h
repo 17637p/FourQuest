@@ -70,6 +70,8 @@ namespace fq::game_engine
 
 		ViewType mViewType;
 
+		UINT mImguiID;
+
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		UINT mCurrentAddComponentIndex;
 		UINT mCurrentAddBehaviourIndex;

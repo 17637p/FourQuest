@@ -2,6 +2,7 @@
 #include "D3D11Device.h"
 #include "ManagementCommon.h"
 #include "D3D11Shader.h"
+#include "D3D11Texture.h"
 
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
@@ -30,6 +31,7 @@ FQGraphics::FQGraphics()
 	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
 	, mDecalManager(std::make_shared<D3D11DecalManager>())
+	, mTrailManager(std::make_shared<D3D11TrailManager>())
 	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 {
 }
@@ -52,10 +54,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mTrailManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mDecalManager->Initialize(mDevice, mResourceManager);
+	mTrailManager->Initialize(mDevice, mResourceManager);
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
 
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
@@ -68,14 +71,24 @@ bool fq::graphics::FQGraphics::Update(float deltaTime)
 	return true;
 }
 
-void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path)
+void fq::graphics::FQGraphics::SetSkyBox(const std::wstring& path, bool bUseIBL, float envScale)
 {
-	mRenderManager->SetSkyBox(path);
-}
+	auto skybox = std::make_shared<D3D11CubeTexture>(mDevice, path);
+	mLightManager->SetSkybox(skybox);
 
-void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
+	if (bUseIBL)
+	{
+		IBLTexture iblTexture = mLightManager->CreateIBLTexture(mDevice, skybox, EEnvironmentFormat::RGBA32, EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution::Size32x32, envScale);
+		mLightManager->SetIBLTexture(iblTexture);
+	}
+}
+void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffusePath, const std::wstring& specularPath, const std::wstring& brdfLUTPath)
 {
-	mRenderManager->SetIBLTexture(diffuse, specular, brdfLUT);
+	IBLTexture iblTexture;
+	iblTexture.SpecularIBL = std::make_shared<D3D11CubeTexture>(mDevice, specularPath);
+	iblTexture.DiffuseIrradiance = std::make_shared<D3D11CubeTexture>(mDevice, diffusePath);
+	iblTexture.SpecularBRDF = std::make_shared<D3D11Texture>(mDevice, brdfLUTPath);
+	mLightManager->SetIBLTexture(iblTexture);
 }
 
 void FQGraphics::DeleteCubeProbe(unsigned short index)
@@ -354,7 +367,7 @@ void FQGraphics::DeleteModel(std::string path)
 	mModelManager->DeleteModel(path);
 }
 
-std::vector<std::shared_ptr<IMaterial>> FQGraphics::GetMaterials() const
+std::set<std::shared_ptr<IMaterial>> FQGraphics::GetMaterials() const
 {
 	return mModelManager->GetMaterials();
 }
@@ -435,9 +448,74 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 	}
 }
 
-IParticleObject* FQGraphics::CreateParticleObject(const ParticleInfo& particleInfo)
+std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
 {
-	return mParticleManager->CreateParticleObject(particleInfo);
+	return mModelManager->CreateMaterial(materialInfo);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::CreateMaterial(const ParticleMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateMaterial(const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+
+std::shared_ptr<IMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+
+std::shared_ptr<IMaterial> FQGraphics::GetNamedMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedMaterialOrNull(key);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::GetNamedParticleMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedParticleMaterialOrNull(key);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::GetNamedDecalMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedDecalMaterialOrNull(key);
+}
+
+void FQGraphics::DeleteMaterial(std::shared_ptr<IMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+void FQGraphics::DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+void FQGraphics::DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+
+void FQGraphics::DeleteNamedMaterial(const std::string& key)
+{
+	mModelManager->DeleteNamedMaterial(key);
+}
+void FQGraphics::DeleteNamedParticleMaterial(const std::string& key)
+{
+	mModelManager->DeleteNamedParticleMaterial(key);
+}
+void FQGraphics::DeleteNamedDecalMaterial(const std::string& key)
+{
+	mModelManager->DeleteNamedDecalMaterial(key);
+}
+
+IParticleObject* FQGraphics::CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+{
+	return mParticleManager->CreateParticleObject(transform, particleInfo, iParticleMaterial);
 }
 
 void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
@@ -445,18 +523,27 @@ void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
 	mParticleManager->DeleteParticleObject(particleObject);
 }
 
-IDecalObject* FQGraphics::CreateDecalObject(const DecalInfo& decalInfo)
+IDecalObject* FQGraphics::CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial)
 {
-	return mDecalManager->CreateDecalObject(decalInfo);
+	return mDecalManager->CreateDecalObject(transform, decalInfo, iDecalMaterial);
 }
 void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
 {
 	mDecalManager->DeleteDecalObject(decalObjectInterface);
 }
 
+ITrailObject* FQGraphics::CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+{
+	return mTrailManager->CreateTrailObject(trasform, trailInfo, iParticleMaterial);
+}
+void FQGraphics::DeleteTrailObject(ITrailObject* trailObjectInterface)
+{
+	mTrailManager->DeleteTrailObject(trailObjectInterface);
+}
+
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mTrailManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

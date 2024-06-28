@@ -375,14 +375,12 @@ float2 calcEllipsoidRadius(float radius, float2 viewSpaceVelocity)
     return float2(radius, minRadius);
 }
 
-
 // this creates the standard Hessian-normal-form plane equation from three points, 
 // except it is simplified for the case where the first point is the origin
 float3 CreatePlaneEquation(float3 b, float3 c)
 {
     return normalize(cross(b, c));
 }
-
 
 // point-plane distance, simplified for the case where 
 // the plane passes through the origin
@@ -393,3 +391,63 @@ float GetSignedDistanceFromPlane(float3 p, float3 eqn)
     return dot(eqn, p);
 }
 
+float3 RGBtoHSV(float3 rgb)
+{
+    float4 K = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    float4 p = (rgb.g < rgb.b) ? float4(rgb.bg, K.wz) : float4(rgb.gb, K.xy);
+    float4 q = (rgb.r < p.x) ? float4(p.xyw, rgb.r) : float4(rgb.r, p.yzx);
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return float3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+float3 HSVtoRGB(float3 hsv)
+{
+    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    float3 p = abs(frac(hsv.xxx + K.xyz) * 6.0 - K.www);
+    return hsv.z * lerp(K.xxx, saturate(p - K.xxx), hsv.y);
+}
+
+float4 OverlayMode(float4 src, float4 dst)
+{
+    float4 result;
+    result.r = (dst.r < 0.5) ? (2.0 * src.r * dst.r) : (1.0 - 2.0 * (1.0 - src.r) * (1.0 - dst.r));
+    result.g = (dst.g < 0.5) ? (2.0 * src.g * dst.g) : (1.0 - 2.0 * (1.0 - src.g) * (1.0 - dst.g));
+    result.b = (dst.b < 0.5) ? (2.0 * src.b * dst.b) : (1.0 - 2.0 * (1.0 - src.b) * (1.0 - dst.b));
+    result.a = src.a * dst.a; // Assuming alpha is multiplied
+    return result;
+}
+
+float4 ColorMode(float4 src, float4 dst)
+{
+    float3 srcHsv = RGBtoHSV(src.rgb);
+    float3 dstHsv = RGBtoHSV(dst.rgb);
+    float3 resultRgb = HSVtoRGB(float3(srcHsv.r, srcHsv.g, dstHsv.b));
+    return float4(resultRgb, src.a);
+}
+
+#define RENDER_MODE_ADDITIVE 0
+#define RENDER_MODE_SUBTRACTIVE 1
+#define RENDER_MODE_MODULATE 2
+#define RENDER_MODE_ALPHA_BLEND 3
+
+#define COLOR_MODE_MULTIPLY 0
+#define COLOR_MODE_ADDITIVE 1
+#define COLOR_MODE_SUBTRACT 2
+#define COLOR_MODE_OVERLAY 3
+#define COLOR_MODE_COLOR 4
+#define COLOR_MODE_DIFFERENCE 5
+
+struct ParticleMaterial
+{
+    float4 BaseColor;
+    float4 EmssiveColor;
+    float4x4 TexTransform;
+    
+    int RenderMode;
+    int ColorMode;
+    int bUseAlbedo;
+    int bUseEmissive;
+    
+    float AlphaCutoff;
+};

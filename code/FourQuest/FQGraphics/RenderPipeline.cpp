@@ -77,13 +77,6 @@ namespace fq::graphics
 	{
 		for (std::shared_ptr<Pass> pass : mPasses)
 		{
-			if (mDiffuseCubeMap != nullptr)
-			{
-				mDiffuseCubeMap->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
-				mSpecularCubeMap->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
-				mBRDFLUT->Bind(mDevice, 8, ED3D11ShaderType::PixelShader);
-			}
-
 			pass->Render();
 		}
 	}
@@ -92,18 +85,6 @@ namespace fq::graphics
 	{
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
 		HR(swapChain->Present(0, 0));
-	}
-
-	void RenderPipeline::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
-	{
-		if (diffuse == L"" || specular == L"" || brdfLUT == L"")
-		{
-			return;
-		}
-
-		mDiffuseCubeMap = mResourceManager->Create<D3D11Texture>(diffuse);
-		mSpecularCubeMap = mResourceManager->Create<D3D11Texture>(specular);
-		mBRDFLUT = mResourceManager->Create<D3D11Texture>(brdfLUT);
 	}
 
 	void RenderPipeline::RenderFullScreen()

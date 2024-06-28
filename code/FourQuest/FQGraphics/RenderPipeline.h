@@ -12,6 +12,7 @@ namespace fq::graphics
 	class Pass;
 	class D3D11ParticleManager;
 	class D3D11DecalManager;
+	class D3D11TrailManager;
 
 	class RenderPipeline
 	{
@@ -32,7 +33,6 @@ namespace fq::graphics
 		virtual void EndRender();
 
 		inline std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
-		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
 
 	protected:
 		std::shared_ptr<D3D11Device> mDevice;
@@ -45,11 +45,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 		std::shared_ptr<D3D11DepthStencilView> mNoneDSV;
-
-		// IBL юс╫ц
-		std::shared_ptr<class D3D11Texture> mDiffuseCubeMap;
-		std::shared_ptr<class D3D11Texture> mSpecularCubeMap;
-		std::shared_ptr<class D3D11Texture> mBRDFLUT;
 	};
 
 	inline std::shared_ptr<D3D11ShaderResourceView>& RenderPipeline::GetBackBufferSRV()

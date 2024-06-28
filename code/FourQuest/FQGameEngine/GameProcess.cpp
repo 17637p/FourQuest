@@ -12,6 +12,7 @@
 #include "AnimationSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "TrailSystem.h"
 #include "UISystem.h"
 #include "PathFindingSystem.h"
 
@@ -32,6 +33,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mAnimationSystem(std::make_unique<AnimationSystem>())
 	, mParticleSystem(std::make_unique<ParticleSystem>())
 	, mDecalSystem(std::make_unique<DecalSystem>())
+	, mTrailSystem(std::make_unique<TrailSystem>())
 	, mUISystem(std::make_unique<UISystem>())
 	, mPathFindgingSystem(std::make_unique<PathFindingSystem>(this))
 	, mGraphics(nullptr)

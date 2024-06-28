@@ -17,12 +17,7 @@ void CopyPxTransformToDirectXMatrix(const physx::PxTransform& pxTransform, Direc
 /// <param name="pxTransform"> 전환된 매트릭스 정보 값을 받을 매개 변수입니다. </param>
 void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform);
 
-/// <summary>
-/// ConvexMesh 도형을 가진 RigidBody 디버그 데이터 추출
-/// </summary>
-/// <param name="_body"> 리지드 바디 </param>
-/// <param name="_shape"> 도형 </param>
-void ExtractDebugConvexMesh(physx::PxRigidActor* body, physx::PxShape* shape, std::vector<std::vector<DirectX::SimpleMath::Vector3>>& myPolygon);
+
 
 void CopyPxVec3ToDxVec3(const physx::PxVec3& pxVector, DirectX::SimpleMath::Vector3& dxVector);
 void CopyDxVec3ToPxVec3(const DirectX::SimpleMath::Vector3& dxVector, physx::PxVec3& pxVector);

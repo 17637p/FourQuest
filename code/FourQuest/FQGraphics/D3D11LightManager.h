@@ -13,6 +13,32 @@ namespace fq::common { struct Transform; }
 namespace fq::graphics
 {
 	struct LightInfo;
+	class D3D11Texture;
+	class D3D11CubeTexture;
+	template <typename T>
+	class D3D11ConstantBuffer;
+
+	struct IBLTexture
+	{
+		std::shared_ptr<D3D11CubeTexture> DiffuseIrradiance;
+		std::shared_ptr<D3D11CubeTexture> SpecularIBL;
+		std::shared_ptr<D3D11Texture> SpecularBRDF;
+	};
+
+	enum class EEnvironmentFormat
+	{
+		RGBA16,
+		RGBA32,
+	};
+	enum class EEnvironmentResoulution
+	{
+		Size32x32,
+		Size64x64,
+		Size128x128,
+		Size256x256,
+		Size512x512,
+		Size1024x1024,
+	};
 
 	class D3D11LightManager
 	{
@@ -36,6 +62,16 @@ namespace fq::graphics
 		// 임시 추가
 		inline std::vector<std::shared_ptr<Light<DirectionalLight>>> GetDirectionalShadows() const;
 
+		void SetIBLTexture(IBLTexture IBLTexture) { mIBLTexture = IBLTexture; }
+		const IBLTexture& GetIBLTexture() const { return mIBLTexture; }
+
+		// 임시 추가, 스카이 박스도 매니저에서 관리 대상이 되는 게 수정하기 편할 거 같아서 추가
+		void SetSkybox(std::shared_ptr<D3D11CubeTexture> skyBox) { mSkyBox = skyBox; }
+		const std::shared_ptr<D3D11CubeTexture>& GetSkybox() const { return mSkyBox; }
+
+
+		IBLTexture CreateIBLTexture(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11CubeTexture> cubemapTexture, EEnvironmentFormat envFormat = EEnvironmentFormat::RGBA32, EEnvironmentResoulution specularResolution = EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution diffuseResolution = EEnvironmentResoulution::Size32x32, float envScale = 1.f);
+
 	private:
 		std::shared_ptr<D3D11ConstantBuffer<LightData>> mLightConstantBuffer;
 
@@ -43,7 +79,24 @@ namespace fq::graphics
 		std::unordered_map<unsigned int, std::shared_ptr<Light<PointLight>>>		mPointLights;
 		std::unordered_map<unsigned int, std::shared_ptr<Light<SpotLight>>>			mSpotLight;
 
+		struct SpecularMapFilterSettingsCB
+		{
+			float roughness;
+			float EnvScale;
+			float padding[2];
+		};
+
 		std::unordered_map<unsigned int, std::shared_ptr<Light<DirectionalLight>>>	mDirectionalShadows;
+		std::shared_ptr<class D3D11ComputeShader> mResizeCubemapCS;
+		std::shared_ptr<class D3D11ComputeShader> mDiffuseIrradianceCS;
+		std::shared_ptr<class D3D11ComputeShader> mSpecularIBLCS;
+		std::shared_ptr<class D3D11ComputeShader> mSpecularBRDFCS;
+		std::shared_ptr<class D3D11SamplerState> mLinearWrapSampler;
+		std::shared_ptr<D3D11ConstantBuffer<SpecularMapFilterSettingsCB>> mSpecularMapFilterSettingsCB;
+
+		IBLTexture mIBLTexture;
+		std::shared_ptr<D3D11Texture> mSpecularBRDF;
+		std::shared_ptr<D3D11CubeTexture> mSkyBox;
 	};
 
 	inline std::shared_ptr<D3D11ConstantBuffer<LightData>> D3D11LightManager::GetLightConstnatBuffer()

@@ -6,21 +6,17 @@
 
 namespace fq::graphics
 {
-	ParticleObject::ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
-		: mTexture(nullptr)
-		, mResourceManager(resourceManager)
+	ParticleObject::ParticleObject(std::shared_ptr<D3D11Device> device, const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+		: mTransform(transform)
 		, mParticleInfo(particleInfo)
-		, mbIsReset(true)
+		, mIParticleMaterial(iParticleMaterial)
 		, mTimePos(0.f)
 		, mFrameTime(0.f)
 		, mAccumlation(0.f)
 		, mNumToEmit(0)
 		, mDebugInfo{ 0, }
-		, mbIsEmit(false)
 		, mRandomSeed(rand() / (float)(rand()))
 	{
-		mTexture = mResourceManager->Create<D3D11Texture>(fq::loader::Util::ToWide(particleInfo.RenderData.TexturePath));
-
 		D3D11_BUFFER_DESC desc;
 		desc.ByteWidth = sizeof(Particle) * ParticleInfo::MAX_PARTICLE_COUNT;
 		desc.Usage = D3D11_USAGE_DEFAULT;
@@ -77,15 +73,9 @@ namespace fq::graphics
 		device->GetDevice()->CreateUnorderedAccessView(mAliveIndexBuffer.Get(), &uav, mAliveIndexBufferUAV.GetAddressOf());
 	}
 
-	void ParticleObject::SetInfo(const ParticleInfo& info)
-	{
-		mParticleInfo = info;
-		mTexture = mResourceManager->Create<D3D11Texture>(fq::loader::Util::ToWide(info.RenderData.TexturePath));
-	}
-
 	void ParticleObject::reset()
 	{
-		mbIsReset = false;
+		mParticleInfo.InstanceData.bIsReset = false;
 		mTimePos = 0.f;
 		mFrameTime = 0.f;
 		mAccumlation = 0.f;
@@ -140,7 +130,7 @@ namespace fq::graphics
 			return;
 		}
 
-		if (mbIsEmit)
+		if (mParticleInfo.InstanceData.bIsEmit)
 		{
 			mAccumlation += mParticleInfo.EmissionData.ParticlesPerSecond * frameTime;
 		}
