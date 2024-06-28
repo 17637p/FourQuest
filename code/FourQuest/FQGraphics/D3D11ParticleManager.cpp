@@ -32,6 +32,7 @@ namespace fq::graphics
 		mAdditiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
 		mSubtractiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Subtractive);
 		mModulateState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Modulate);
+		mAlphaBlendState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::AlphaBlend);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 
 		auto particleRenderVS = std::make_shared<D3D11VertexShader>(mDevice, L"ParticleVS.cso");
@@ -356,6 +357,9 @@ namespace fq::graphics
 			break;
 		case ParticleMaterialInfo::ERenderMode::Modulate:
 			mModulateState->Bind(mDevice);
+			break;
+		case ParticleMaterialInfo::ERenderMode::AlphaBlend:
+			mAlphaBlendState->Bind(mDevice);
 			break;
 		default:
 			assert(false);

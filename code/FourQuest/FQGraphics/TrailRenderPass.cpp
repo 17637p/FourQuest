@@ -34,6 +34,7 @@ namespace fq::graphics
 		mAdditiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Additive);
 		mSubtractiveState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Subtractive);
 		mModulateState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::Modulate);
+		mAlphaBlendState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::AlphaBlend);
 		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, vertexShader, nullptr, pixelShader, pipelieState);
 		mLinearWrapSS = mResourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 
@@ -59,6 +60,8 @@ namespace fq::graphics
 		mAdditiveState = nullptr;
 		mSubtractiveState = nullptr;
 		mModulateState = nullptr;
+		mAlphaBlendState = nullptr;
+
 		mShaderProgram = nullptr;
 		mLinearWrapSS = nullptr;
 
@@ -139,6 +142,9 @@ namespace fq::graphics
 					break;
 				case ParticleMaterialInfo::ERenderMode::Modulate:
 					mModulateState->Bind(mDevice);
+					break;
+				case ParticleMaterialInfo::ERenderMode::AlphaBlend:
+					mAlphaBlendState->Bind(mDevice);
 					break;
 				default:
 					assert(false);

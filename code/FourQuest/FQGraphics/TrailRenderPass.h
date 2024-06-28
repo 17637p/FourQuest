@@ -47,6 +47,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11BlendState> mAdditiveState;
 		std::shared_ptr<class D3D11BlendState> mSubtractiveState;
 		std::shared_ptr<class D3D11BlendState> mModulateState;
+		std::shared_ptr<class D3D11BlendState> mAlphaBlendState;
 		std::shared_ptr<ShaderProgram> mShaderProgram;
 		std::shared_ptr<D3D11SamplerState> mLinearWrapSS;
 

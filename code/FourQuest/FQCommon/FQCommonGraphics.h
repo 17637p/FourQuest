@@ -457,7 +457,7 @@ namespace fq::graphics
 			Additive,
 			Subtractive,
 			Modulate,
-			Opaque,
+			AlphaBlend,
 		} RenderModeType = ERenderMode::Additive;
 
 		enum class EColorMode

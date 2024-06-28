@@ -405,7 +405,7 @@ void Process::Update()
 		}
 	}
 	// 스카이박스 
-	 if (InputManager::GetInstance().IsGetKeyDown('K'))
+	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->SetSkyBox(L"./resource/example/texture/123EnvHDR.dds", true, 1.f);
 	}
@@ -885,14 +885,12 @@ void Process::particleInit()
 		// particleInfo.VelocityOverLifetimeData.Offset = { 10, 0, 0 };
 
 		particleInfo.ColorOverLifetimeData.bIsUsed = true;
-		particleInfo.ColorOverLifetimeData.AlphaRatios[0] = { 1.f, 0 };
-		particleInfo.ColorOverLifetimeData.AlphaRatios[1] = { 1.f, 1 };
-		particleInfo.ColorOverLifetimeData.AlphaRatioCount = 2;
-		particleInfo.ColorOverLifetimeData.ColorRatios[0] = { 1, 0.7, 0.6, 0 };
-		particleInfo.ColorOverLifetimeData.ColorRatios[1] = { 1, 0.2, 0.2, 0.05 };
-		particleInfo.ColorOverLifetimeData.ColorRatios[2] = { 1, 0.2, 0.2, 0.9f };
-		particleInfo.ColorOverLifetimeData.ColorRatios[3] = { 0.1, 0.1, 0.1, 1 };
-		particleInfo.ColorOverLifetimeData.ColorRatioCount = 4;
+		particleInfo.ColorOverLifetimeData.AlphaRatios.push_back({ 1.f, 0 });
+		particleInfo.ColorOverLifetimeData.AlphaRatios.push_back({ 1.f, 1 });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 1, 0.7, 0.6, 0 });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 1, 0.2, 0.2, 0.05 });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 1, 0.2, 0.2, 0.9f });
+		particleInfo.ColorOverLifetimeData.ColorRatios.push_back({ 0.1, 0.1, 0.1, 1 });
 		auto transform = Matrix::CreateScale(1, 2, 3) * Matrix::CreateFromYawPitchRoll(1.24, 2.46, 3.68) * DirectX::SimpleMath::Matrix::CreateTranslation({ -200, 300,0 });
 		obj = mTestGraphics->CreateParticleObject(transform, particleInfo, particleMaterial);
 		mParticleObjects.push_back(obj);

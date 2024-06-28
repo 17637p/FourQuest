@@ -74,7 +74,8 @@ float4 main(PS_INPUT pin) : SV_TARGET
         case RENDER_MODE_MODULATE:
             color.rgb *= color.a;
             break;
-        case RENDER_MODE_OPQUE:
+        case RENDER_MODE_ALPHA_BLEND:
+            // color.rgb *= color.a;
             break;
     }
     

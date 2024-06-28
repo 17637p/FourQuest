@@ -1075,7 +1075,10 @@ void fq::game_module::RegisterMetaData()
 		.data<fq::graphics::ParticleMaterialInfo::ERenderMode::Subtractive>("Subtractive"_hs)
 		.prop(fq::reflect::prop::Name, "Subtractive")
 		.data<fq::graphics::ParticleMaterialInfo::ERenderMode::Modulate>("Modulate"_hs)
-		.prop(fq::reflect::prop::Name, "Modulate");
+		.prop(fq::reflect::prop::Name, "Modulate")
+		.data<fq::graphics::ParticleMaterialInfo::ERenderMode::AlphaBlend>("AlphaBlend"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaBlend");
+
 
 	entt::meta<fq::graphics::ParticleMaterialInfo::EColorMode>()
 		.prop(fq::reflect::prop::Name, "TrailAlignment")
