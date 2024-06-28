@@ -205,6 +205,10 @@
     <ClInclude Include="D3D11TrailManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11PostProcessingManager.h" />
+    <ClInclude Include="GeometryHelper.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -481,6 +485,10 @@
     </ClCompile>
     <ClCompile Include="TrailObject.cpp">
       <Filter>Object\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11PostProcessingManager.cpp" />
+    <ClCompile Include="GeometryHelper.cpp">
+      <Filter>Common\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

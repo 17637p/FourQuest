@@ -144,9 +144,11 @@
     <ClInclude Include="D3D11DecalManager.h" />
     <ClInclude Include="D3D11LightProbeManager.h" />
     <ClInclude Include="D3D11ParticleManager.h" />
+    <ClInclude Include="D3D11PostProcessingManager.h" />
     <ClInclude Include="D3D11TrailManager.h" />
     <ClInclude Include="DecalObject.h" />
     <ClInclude Include="DeferredDecalPass.h" />
+    <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="OutLineAddPass.h" />
     <ClInclude Include="OutLineBlurPass.h" />
     <ClInclude Include="OutLinePass.h" />
@@ -221,6 +223,7 @@
     <ClCompile Include="D3D11ModelManager.cpp" />
     <ClCompile Include="D3D11ParticleManager.cpp" />
     <ClCompile Include="D3D11PickingManager.cpp" />
+    <ClCompile Include="D3D11PostProcessingManager.cpp" />
     <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
     <ClCompile Include="D3D11RenderManager.cpp" />
@@ -241,6 +244,7 @@
     <ClCompile Include="FowardRenderPass.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="FullScreenPass.cpp" />
+    <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="D3D11ObjectManager.cpp" />

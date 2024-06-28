@@ -316,6 +316,7 @@ bool FQGraphics::Render()
 	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	mRenderManager->Render();
+	// postprocessing
 	mUIManager->Render();
 	mRenderManager->RenderFullScreen();
 	return true;
