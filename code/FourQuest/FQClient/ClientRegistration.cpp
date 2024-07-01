@@ -119,6 +119,9 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerAttackState::mAttackRebound>("AttackRebound"_hs)
 		.prop(reflect::prop::Name, "AttackRebound")
 		.prop(reflect::prop::Comment, u8"공격 반동")
+		.data<&PlayerAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(reflect::prop::Comment, u8"공격 시간")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

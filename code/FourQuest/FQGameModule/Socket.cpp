@@ -46,7 +46,7 @@ void fq::game_module::Socket::OnUpdate(float dt)
 
 		matrix.Decompose(scale, rotation, pos);
 		
-		mTransform->GenerateLocal(pos, rotation, scale);
+		mTransform->GenerateLocal(pos, rotation, mTransform->GetLocalScale());
 	}
 }
 

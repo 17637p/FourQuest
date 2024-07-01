@@ -53,12 +53,10 @@ namespace fq::client
 
 		float mFeverTime; // °©¿Ê ¹öÇÁ ½Ã°£
 
-
 		game_module::PrefabResource mAttackPrafab; 
 		game_module::PrefabResource mSoulPrefab; // ¿µÈ¥È­ ÇÁ¸®ÆÕ 
 
 		float mAttackPositionOffset; 
-
 
 		friend void RegisterMetaData();
 	};

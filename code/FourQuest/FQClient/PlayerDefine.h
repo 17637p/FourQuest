@@ -22,4 +22,7 @@ namespace fq::client
 		unsigned int ControllerID; // 컨트롤러 아이디
 		ESoulType SoulType; // 영혼타입
 	};
+
+
+
 }

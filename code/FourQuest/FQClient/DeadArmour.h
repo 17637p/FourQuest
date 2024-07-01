@@ -30,6 +30,7 @@ namespace fq::client
 		game_module::PrefabResource mLivingArmourPrefab;
 
 		unsigned short mPlayerCount;
+		bool mbIsVisible;
 
 		friend void RegisterMetaData();
 	};
