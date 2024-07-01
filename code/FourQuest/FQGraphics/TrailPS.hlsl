@@ -75,20 +75,25 @@ float4 main(VertexOut pin) : SV_TARGET
     
     float4 color = float4(albedo.rgb + emissive, albedo.a);
     
-    switch (gParticleMaterial.RenderMode)
+    if (gParticleMaterial.bUseMultiplyAlpha)
     {
-        case RENDER_MODE_OPQUE:
-            break;
-        case RENDER_MODE_ADDITIVE:
-            color.rgb *= color.a;
-            break;
-        case RENDER_MODE_SUBTRACTIVE:
-            color.rgb *= color.a;
-            break;
-        case RENDER_MODE_MODULATE:
-            color.rgb *= color.a;
-            break;
+        color.rgb *= color.a;
     }
+    
+    // switch (gParticleMaterial.RenderMode)
+    // {
+    //     case RENDER_MODE_OPQUE:
+    //         break;
+    //     case RENDER_MODE_ADDITIVE:
+    //         color.rgb *= color.a;
+    //         break;
+    //     case RENDER_MODE_SUBTRACTIVE:
+    //         color.rgb *= color.a;
+    //         break;
+    //     case RENDER_MODE_MODULATE:
+    //         color.rgb *= color.a;
+    //         break;
+    // }
     
     clip(color.a - gParticleMaterial.AlphaCutoff);
     

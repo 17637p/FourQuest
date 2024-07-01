@@ -140,8 +140,9 @@ namespace fq::graphics
 		int bUseAlbedoMap;
 		int bUseEmissiveMap;
 
+		int bUseMultiplyAlpha;
 		float AlphaCutoff;
-		float unused[3];
+		float unused[2];
 	};
 
 	struct CBMaterial

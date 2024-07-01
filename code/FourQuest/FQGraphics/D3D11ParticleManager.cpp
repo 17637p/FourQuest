@@ -232,6 +232,7 @@ namespace fq::graphics
 		particleObjectData.ParticleMaterialData.bUseAlbedoMap = particleMaterial->GetHasBaseColor() && materialInfo.bIsUsedBaseColor;;
 		particleObjectData.ParticleMaterialData.bUseEmissiveMap = particleMaterial->GetHasEmissive() && materialInfo.bIsUsedEmissive;
 		particleObjectData.ParticleMaterialData.AlphaCutoff = materialInfo.AlphaCutoff;
+		particleObjectData.ParticleMaterialData.bUseMultiplyAlpha = materialInfo.bUseMultiplyAlpha;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}

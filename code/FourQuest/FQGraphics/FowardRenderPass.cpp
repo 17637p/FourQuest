@@ -25,12 +25,6 @@ namespace fq::graphics
 		mLightManager = lightManager;
 		mResourceManager = resourceManager;
 
-		D3D_SHADER_MACRO macroSkinning[] =
-		{
-			{"SKINNING", ""},
-			{ NULL, NULL}
-		};
-
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
 		auto meshPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPS.cso");
