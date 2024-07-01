@@ -722,7 +722,7 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 			if (particleObject)
 			{
 				auto worldM = tmp->GetComponent<game_module::Transform>()->GetWorldMatrix();
-
+				 
 				particleObject->SetTransform(worldM);
 				particleObject->SetFrameTime(dt);
 			}

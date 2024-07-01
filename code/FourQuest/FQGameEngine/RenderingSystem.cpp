@@ -132,8 +132,12 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	{
 		fq::game_module::SkyBox skybox;
 		skybox.Load(scenePath);
-		mGameProcess->mGraphics->SetSkyBox(skybox.mSkyBox);
-		mGameProcess->mGraphics->SetIBLTexture(skybox.mDiffuse, skybox.mSpecular, skybox.mBrdfLUT);
+
+		if (skybox.HasSkyBox())
+			mGameProcess->mGraphics->SetSkyBox(skybox.mSkyBox);
+
+		if (skybox.HasIBLTexture())
+			mGameProcess->mGraphics->SetIBLTexture(skybox.mDiffuse, skybox.mSpecular, skybox.mBrdfLUT);
 	}
 
 	mbIsGameLoaded = true;

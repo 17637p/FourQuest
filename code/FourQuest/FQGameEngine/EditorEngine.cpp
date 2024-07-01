@@ -181,6 +181,9 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Animation Update
 				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+				
+				// PathFindingSystem Update
+				mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
@@ -188,7 +191,7 @@ void fq::game_engine::EditorEngine::Process()
 			else mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
 
 			//////////////////////////////////////////////////////////////////////////
-			//							System Process								//
+			//							Bind Process								//
 			//////////////////////////////////////////////////////////////////////////
 
 			mGameProcess->mDecalSystem->Update(deltaTime);
@@ -196,7 +199,6 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//

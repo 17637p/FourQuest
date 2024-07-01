@@ -1,6 +1,7 @@
 #include "DeadArmour.h"
 
 #include "Soul.h"
+#include "Player.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
@@ -28,23 +29,26 @@ std::shared_ptr<fq::game_module::Component> fq::client::DeadArmour::Clone(std::s
 	return cloneController;
 }
 
-void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
+void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 {
-	assert(id <= 3);
+	assert(info.ControllerID <= 3);
 
+	// 인스턴스 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
-
 	auto& livingArmour = *(instance.begin());
 
 	// 컨트롤러 연결
-	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(id);
+	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(info.ControllerID);
+
+	// 영혼 타입 설정
+	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
 
 	// 위치 설정
 	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
 	livingArmour->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
 
 	GetScene()->AddGameObject(livingArmour);
-
+	
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());
 }

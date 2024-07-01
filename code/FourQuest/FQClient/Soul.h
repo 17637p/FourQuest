@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../FQGameModule/GameModule.h"
-
+#include "PlayerDefine.h"
 
 namespace fq::client
 {
@@ -13,14 +13,14 @@ namespace fq::client
 		Soul();
 		~Soul();
 		
-		/// <summary>
-		/// 복사본을 반환합니다 
-		/// </summary>
-		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void DestorySoul();
 
+		fq::client::ESoulType GetSoulType() const { return mSoulType; }
+		void SetSoulType(fq::client::ESoulType type) { mSoulType = type; }
+	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void OnStart()override;
 		void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		void OnTriggerExit(const fq::game_module::Collision& collision) override;
@@ -29,6 +29,8 @@ namespace fq::client
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;
+
+		ESoulType mSoulType;
 	};
 
 }

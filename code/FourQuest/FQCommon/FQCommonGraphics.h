@@ -298,7 +298,7 @@ namespace fq::graphics
 		enum class ETextureMode
 		{
 			Stretch, // 트레일 전체 길이를 한 번에 매핑
-			Tile, // 월드 공간의 단위를 기반하여 텍스처 반복, 반복 거리 10이네
+			Tile, // 월드 공간의 단위를 기반하여 텍스처 반복, 반복 거리 10이네 
 			DistributePerSegment,// 버텍스 간격이 균등하다고 가정한 후 트레일의 전체 길이를 한 번에 매핑
 			RepeatPerSegment, // 트레일 세그먼트당 한 번 트레일 텍스처 반복
 		};

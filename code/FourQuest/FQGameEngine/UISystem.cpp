@@ -121,6 +121,7 @@ void fq::game_engine::UISystem::loadImageUI(game_module::GameObject* object)
 	{
 		if (!std::filesystem::exists(imageInfomation.ImagePath))
 		{
+			spdlog::warn("[UISystem] {} Load failed", imageInfomation.ImagePath );
 			imageObjects.push_back(nullptr);
 		}
 		else

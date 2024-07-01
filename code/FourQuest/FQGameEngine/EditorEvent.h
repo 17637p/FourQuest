@@ -17,5 +17,4 @@ namespace fq::editor_event
 		std::shared_ptr<fq::game_module::AnimatorController> controller;
 		std::string stateName;
 	};
-
 }

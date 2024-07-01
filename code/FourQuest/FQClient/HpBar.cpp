@@ -9,7 +9,7 @@ fq::client::HpBar::~HpBar()
 }
 
 fq::client::HpBar::HpBar()
-	:mIsVisible(false)
+	:mIsVisible(true)
 	, mMainCamera(nullptr)
 	, mTransform(nullptr)
 	, mImageUI(nullptr)

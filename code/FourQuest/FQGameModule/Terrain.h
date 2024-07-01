@@ -13,9 +13,6 @@ namespace fq::game_module
 		Terrain();
 		virtual ~Terrain();
 
-		/// <summary>
-		/// 복사본을 반환합니다 
-		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		void SetTerrainLayers(const std::vector<fq::graphics::TerrainLayer>& terrainLayers);

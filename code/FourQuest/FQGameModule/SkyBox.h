@@ -9,6 +9,11 @@ namespace fq::game_module
 	class SkyBox
 	{
 		using Path = std::filesystem::path;
+
+	public:
+		bool HasSkyBox()const;
+		bool HasIBLTexture()const;
+
 	public:
 		void Save(const Path& directory);
 		void Load(const Path& directory);

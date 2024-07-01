@@ -46,9 +46,11 @@
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="PlayerAttackState.h" />
     <ClInclude Include="PlayerDashState.h" />
+    <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMovementState.h" />
+    <ClInclude Include="PlayerUI.h" />
     <ClInclude Include="Soul.h" />
     <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
@@ -71,6 +73,7 @@
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />
+    <ClCompile Include="PlayerUI.cpp" />
     <ClCompile Include="Soul.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

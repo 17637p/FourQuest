@@ -55,37 +55,33 @@ void fq::game_module::CharacterController::SetControllerInfo(fq::physics::Charac
 
 void fq::game_module::CharacterController::OnUpdate(float dt)
 {
-	if (!mbCanMoveCharater)
-	{
-		mbOnMove = false;
-		return;
-	}
-
 	using namespace DirectX::SimpleMath;
 
 	auto inputMgr = GetScene()->GetInputManager();
 	Vector3 input = Vector3::Zero;
 
-	// 컨트롤러
+	// 컨트롤러 입력
 	input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
 	input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
 
-	if (input == Vector3::Zero)
+	// 캐릭터 컨트롤러 이동 처리 
+	if (!mbCanMoveCharater)
 	{
 		mbOnMove = false;
+	}
+	else
+	{
+		mbOnMove = input != Vector3::Zero;
 		GetScene()->GetEventManager()
 			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input });
-		return;
 	}
-
-	mbOnMove = true;
-	GetScene()->GetEventManager()
-		->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input });
 
 	float lengthSq = input.LengthSquared();
 
 	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
 	constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+	// 캐릭터 컨트롤러 회전 처리
 	if (mbOnRotation && lengthSq >= rotationOffsetSq)
 	{
 		// 바라보는 방향 설정 
@@ -158,6 +154,5 @@ void fq::game_module::CharacterController::SetPadInputRotation()
 	{
 		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
 	}
-
 }
 

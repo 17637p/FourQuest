@@ -54,3 +54,15 @@ void fq::game_module::SkyBox::Load(const Path& directory)
 		mBrdfLUT = skybox_json.at("brdfLUT").get<std::wstring>();
 	}
 }
+
+bool fq::game_module::SkyBox::HasSkyBox() const
+{
+	return std::filesystem::exists(mSkyBox);
+}
+
+bool fq::game_module::SkyBox::HasIBLTexture() const
+{
+	return std::filesystem::exists(mDiffuse)
+		&& std::filesystem::exists(mSpecular)
+		&& std::filesystem::exists(mBrdfLUT);
+}
