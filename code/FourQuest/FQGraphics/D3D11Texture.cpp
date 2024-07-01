@@ -11,6 +11,8 @@
 #include "D3D11Device.h"
 #include "Define.h"
 
+#include "SHMath/DirectXSH.h"
+
 fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& texturePath)
 	:ResourceBase(ResourceType::Texture)
 {
@@ -236,7 +238,7 @@ void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11D
 			ID3D11Texture2D* cubeMapTexture;
 			//if (FAILED(hr))
 			//	return hr;
-			mTextureSRV->GetResource(&resource);
+			//mTextureSRV->GetResource(&resource);
 
 			// Get the description of the texture
 			D3D11_TEXTURE2D_DESC desc;
@@ -263,4 +265,25 @@ void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11D
 		default:
 			break;
 	}
+}
+
+void fq::graphics::D3D11Texture::GetSHCoefficientRGB(const std::shared_ptr<D3D11Device>& d3d11Device, float* R, float* G, float* B)
+{
+	//if (type == TextureType::Default)
+	//{
+	//	return;
+	//}
+
+	ID3D11Resource* resource = nullptr;
+	mTextureSRV->GetResource(&resource);
+	assert(resource);
+
+	// Query the resource for the ID3D11Texture2D interface
+	ID3D11Texture2D* cubeMapTexture = nullptr;
+	resource->QueryInterface<ID3D11Texture2D>(&cubeMapTexture);
+	assert(cubeMapTexture);
+
+	DirectX::SHProjectCubeMap(d3d11Device->GetDeviceContext().Get(), 3, cubeMapTexture, R, G, B);
+
+	return;
 }

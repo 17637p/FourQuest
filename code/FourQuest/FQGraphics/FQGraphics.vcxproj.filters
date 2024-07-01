@@ -193,6 +193,12 @@
     <ClInclude Include="D3D11LightProbeManager.h">
       <Filter>Management</Filter>
     </ClInclude>
+    <ClInclude Include="SHMath\DirectXSH.h">
+      <Filter>D3D11\SHMath</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbePass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -290,6 +296,9 @@
     </Filter>
     <Filter Include="Shader\DS">
       <UniqueIdentifier>{36bcf3c2-5b0d-4a7e-9f26-df6390ca562b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11\SHMath">
+      <UniqueIdentifier>{1828af67-1bc5-4141-8fc4-5a5c7e9cb194}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -458,6 +467,18 @@
     <ClCompile Include="D3D11LightProbeManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
+    <ClCompile Include="SHMath\DirectXSH.cpp">
+      <Filter>D3D11\SHMath</Filter>
+    </ClCompile>
+    <ClCompile Include="SHMath\DirectXSHD3D11.cpp">
+      <Filter>D3D11\SHMath</Filter>
+    </ClCompile>
+    <ClCompile Include="SHMath\DirectXSHD3D12.cpp">
+      <Filter>D3D11\SHMath</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbePass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DecalCommon.hlsli">
@@ -467,6 +488,9 @@
       <Filter>Shader\Common</Filter>
     </None>
     <None Include="ParticleCommon.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="Probe.hlsli">
       <Filter>Shader\Common</Filter>
     </None>
   </ItemGroup>
@@ -581,6 +605,12 @@
     </CustomBuild>
     <CustomBuild Include="ModelShadowGS.hlsl">
       <Filter>Shader\GS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbePS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

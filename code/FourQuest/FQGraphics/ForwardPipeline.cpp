@@ -19,6 +19,7 @@ namespace fq::graphics
 		, mOutLinePass(std::make_shared<OutLinePass>())
 		, mOutLineBlurPass(std::make_shared<OutLineBlurPass>())
 		, mOutLineAddPass(std::make_shared<OutLineAddPass>())
+		, mLightProbePass(std::make_shared<LightProbePass>())
 	{
 	}
 
@@ -50,10 +51,12 @@ namespace fq::graphics
 		mOutLineAddPass->Initialize(device, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager, width, height);
+		mLightProbePass->Initialize(device, jobManager, cameraManager, resourceManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
 		mPasses.push_back(mRenderPass);
+		mPasses.push_back(mLightProbePass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mTerrainPass);
@@ -71,5 +74,7 @@ namespace fq::graphics
 	void ForwardPipeline::SetSkyBox(const std::wstring& path)
 	{
 		mSkyBoxPass->SetSkyBox(path);
+		mLightProbePass->SetLightProbe(L"./resource/example/texture/custom1.dds");
+		//mLightProbePass->SetLightProbe(L"./resource/example/texture/custom1.dds");
 	}
 }

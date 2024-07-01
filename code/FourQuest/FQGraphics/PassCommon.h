@@ -14,6 +14,7 @@
 #include "OutLineBlurPass.h"
 #include "OutLineAddPass.h"
 #include "DeferredDecalPass.h"
+#include "LightProbePass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"

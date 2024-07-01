@@ -51,6 +51,7 @@ namespace fq::graphics
 		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
 		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 		std::shared_ptr<class ParticlePass> mParticlePass;
+		std::shared_ptr<class LightProbePass> mLightProbePass;
 	};
 }
 
