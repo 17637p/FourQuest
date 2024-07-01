@@ -52,6 +52,11 @@ void fq::game_module::Socket::OnUpdate(float dt)
 
 void fq::game_module::Socket::OnStart()
 {
+	BindBone();
+}
+
+void fq::game_module::Socket::BindBone()
+{
 	mTransform = GetComponent<Transform>();
 
 	auto parent = GetGameObject()->GetParent();

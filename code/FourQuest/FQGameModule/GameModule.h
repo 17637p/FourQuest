@@ -30,6 +30,7 @@
 #include "Decal.h"
 #include "Trail.h"
 #include "ImageUI.h"
+#include "Socket.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"

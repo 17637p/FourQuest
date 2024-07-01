@@ -15,9 +15,11 @@ namespace fq::game_module
 
 		std::string GetBoneName() const { return mBoneName; }
 		void SetBoneName(std::string val) { mBoneName = val; }
+		void OnUpdate(float dt)override;
+
+		void BindBone();
 	private:
 		void OnStart() override;
-		void OnUpdate(float dt)override;
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 

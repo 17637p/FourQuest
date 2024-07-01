@@ -9,7 +9,4 @@ namespace fq::game_engine
 		Play, // 플레이
 		Pause, // 정지
 	};
-
-
-
 }

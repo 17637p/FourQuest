@@ -144,7 +144,6 @@ void fq::game_engine::EditorEngine::Process()
 
 			if (mode == EditorMode::Play)
 			{
-
 				//////////////////////////////////////////////////////////////////////////
 				//							Physics Process								//
 				//////////////////////////////////////////////////////////////////////////
@@ -181,15 +180,24 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Animation Update
 				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
-				
+
 				// PathFindingSystem Update
 				mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
-			}
-			else mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
 
+			}
+			else
+			{
+				//////////////////////////////////////////////////////////////////////////
+				//							Edit, Pause Mode							//
+				//////////////////////////////////////////////////////////////////////////
+				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
+
+				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
+			}
+		
 			//////////////////////////////////////////////////////////////////////////
 			//							Bind Process								//
 			//////////////////////////////////////////////////////////////////////////
