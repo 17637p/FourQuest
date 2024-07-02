@@ -105,6 +105,12 @@
     <Filter Include="src\11.SkyBox">
       <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\12.ThreadPool">
+      <UniqueIdentifier>{67188304-3881-48e3-92da-a080319dd720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.ThreadPool">
+      <UniqueIdentifier>{63171bad-388a-4f42-909a-b06f1937084b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -284,6 +290,9 @@
     <ClInclude Include="Trail.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>include\12.ThreadPool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -447,6 +456,9 @@
     </ClCompile>
     <ClCompile Include="Trail.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>src\12.ThreadPool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
