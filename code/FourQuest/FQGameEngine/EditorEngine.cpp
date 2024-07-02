@@ -246,7 +246,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mSceneManager->UnloadScene();
 
 	// Editor Process
-	mEditor->mPrefabSystem->Finalize();
+	mEditor->mImageSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
@@ -294,7 +294,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mImGuiSystem->Initialize(mGameProcess->mWindowSystem->GetHWND()
 		, mGameProcess->mGraphics->GetDivice(), mGameProcess->mGraphics->GetDeviceContext());
 	mEditor->mCommandSystem->Initialize(mGameProcess.get(), mEditor.get());
-	mEditor->mPrefabSystem->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mImageSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mModelSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mDebugSystem->Initialize(mGameProcess.get());
 

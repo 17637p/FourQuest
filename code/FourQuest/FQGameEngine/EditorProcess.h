@@ -22,7 +22,7 @@
 // system
 #include "ImGuiSystem.h"
 #include "CommandSystem.h"
-#include "PrefabSystem.h"
+#include "ImageSystem.h"
 #include "ModelSystem.h"
 #include "DebugSystem.h"
 
@@ -56,7 +56,7 @@ namespace fq::game_engine
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
-		std::unique_ptr<PrefabSystem> mPrefabSystem;
+		std::unique_ptr<ImageSystem> mImageSystem;
 		std::unique_ptr<ModelSystem> mModelSystem;
 		std::unique_ptr<DebugSystem> mDebugSystem;
 

@@ -125,7 +125,7 @@
     <ClInclude Include="EditorEvent.h">
       <Filter>include\10.Editor</Filter>
     </ClInclude>
-    <ClInclude Include="PrefabSystem.h">
+    <ClInclude Include="ImageSystem.h">
       <Filter>include\12.EditorSystem</Filter>
     </ClInclude>
     <ClInclude Include="ImGuiSystem.h">
@@ -209,6 +209,9 @@
     <ClInclude Include="EditorHelper.h">
       <Filter>include\10.Editor</Filter>
     </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -268,7 +271,7 @@
     <ClCompile Include="EditorEvent.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
-    <ClCompile Include="PrefabSystem.cpp">
+    <ClCompile Include="ImageSystem.cpp">
       <Filter>src\12.EditorSystem</Filter>
     </ClCompile>
     <ClCompile Include="ImGuiSystem.cpp">
@@ -342,6 +345,9 @@
     </ClCompile>
     <ClCompile Include="EditorHelper.cpp">
       <Filter>src\10.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
