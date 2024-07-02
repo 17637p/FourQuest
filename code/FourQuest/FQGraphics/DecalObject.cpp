@@ -2,10 +2,10 @@
 
 namespace fq::graphics
 {
-	DecalObject::DecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial)
-		: mTransform(transform)
+	DecalObject::DecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform)
+		: mIDecalMaterial(iDecalMaterial)
 		, mDecalInfo(decalInfo)
-		, mIDecalMaterial(iDecalMaterial)
+		, mTransform(transform)
 	{
 	}
 }

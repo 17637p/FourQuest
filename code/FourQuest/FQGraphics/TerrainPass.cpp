@@ -255,12 +255,12 @@ namespace fq::graphics
 			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
 			{
 				job.TerrainMesh->Bind(mDevice);
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TransformPtr);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TerrainMeshObject->GetTransform());
 
 				if (job.TerrainMaterial != nullptr)
 				{
 					job.TerrainMaterial->Bind(mDevice);
-					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
+					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.TerrainMeshObject);
 				}
 
 				job.TerrainMesh->Draw(mDevice, job.SubsetIndex);

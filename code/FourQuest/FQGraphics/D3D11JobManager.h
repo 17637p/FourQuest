@@ -15,13 +15,10 @@ namespace fq::graphics
 	public:
 		D3D11JobManager();
 		~D3D11JobManager() = default;
-		
-		void CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject);
-		void CreateStaticMeshJobs(const std::set<IStaticMeshObject*>& staticMeshObjects);
-		void CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject);
-		void CreateSkinnedMeshJobs(const std::set<ISkinnedMeshObject*>& skinnedMeshObjects);
-		void CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct);
-		void CreateTerrainMeshJobs(const std::set<ITerrainMeshObject*>& terrainMeshObjects);
+
+		void CreateStaticMeshJob(std::shared_ptr<IStaticMeshObject> iStaticMeshObject);
+		void CreateSkinnedMeshJob(std::shared_ptr<ISkinnedMeshObject> iSkinnedMeshObject);
+		void CreateTerrainMeshJob(std::shared_ptr<ITerrainMeshObject> iTerrainMeshObjct);
 
 		void ClearAll();
 		void ClearStaticMeshJobs();

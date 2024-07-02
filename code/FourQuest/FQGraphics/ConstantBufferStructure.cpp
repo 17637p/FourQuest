@@ -55,7 +55,7 @@ namespace fq::graphics
 	void ConstantBufferHelper::UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
 		const std::shared_ptr<TerrainMaterial>& material,
-		const ITerrainMeshObject* iTerrainObject)
+		const std::shared_ptr<ITerrainMeshObject> iTerrainObject)
 	{
 		TerrainTexture terrainTexture;
 		terrainTexture.NumOfTexture = material->GetNumOfTexture();

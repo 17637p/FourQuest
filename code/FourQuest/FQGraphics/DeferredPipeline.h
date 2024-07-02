@@ -30,8 +30,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
-			std::shared_ptr<D3D11DecalManager> decalManager,
-			std::shared_ptr<D3D11TrailManager> trailManager,
+			std::shared_ptr<D3D11ObjectManager> objectManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize() override;

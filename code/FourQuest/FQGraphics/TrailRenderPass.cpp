@@ -6,7 +6,7 @@
 namespace fq::graphics
 {
 	void TrailRenderPass::Initialize(std::shared_ptr<D3D11Device> device,
-		std::shared_ptr<D3D11TrailManager> trailManager,
+		std::shared_ptr<D3D11ObjectManager> objectManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
 		std::shared_ptr< D3D11LightManager> lightManager,
@@ -16,7 +16,7 @@ namespace fq::graphics
 		Finalize();
 
 		mDevice = device;
-		mTrailManager = trailManager;
+		mObjectManager = objectManager;
 		mCameraManager = cameraManager;
 		mResourceManager = resourceManager;
 		mLightManager = lightManager;
@@ -50,7 +50,7 @@ namespace fq::graphics
 		mResourceManager = nullptr;
 		mCameraManager = nullptr;
 		mLightManager = nullptr;
-		mTrailManager = nullptr;
+		mObjectManager = nullptr;
 
 		mBackBufferRTV = nullptr;
 		mDSV = nullptr;
@@ -106,11 +106,11 @@ namespace fq::graphics
 
 		// render
 		{
-			const std::set<ITrailObject*>& trailObjects = mTrailManager->GetTrailObjects();
+			const std::set<std::shared_ptr<ITrailObject>>& trailObjects = mObjectManager->GetTrailObjects();
 
-			for (ITrailObject* trailObjectInterface : trailObjects)
+			for (std::shared_ptr<ITrailObject> trailObjectInterface : trailObjects)
 			{
-				TrailObject* trailObject = static_cast<TrailObject*>(trailObjectInterface);
+				std::shared_ptr<TrailObject> trailObject = std::static_pointer_cast<TrailObject>(trailObjectInterface);
 				std::shared_ptr<ParticleMaterial> material = std::static_pointer_cast<ParticleMaterial>(trailObject->GetIParticleMaterial());
 
 				material->Bind(mDevice);

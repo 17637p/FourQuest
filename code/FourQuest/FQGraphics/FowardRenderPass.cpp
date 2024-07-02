@@ -5,6 +5,7 @@
 #include "RenderJob.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "RenderObject.h"
 #include "Define.h"
 
 namespace fq::graphics
@@ -196,12 +197,14 @@ namespace fq::graphics
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Opaque)
+				const MaterialInfo& materialInfo = job.Material->GetInfo();
+
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
 				{
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
@@ -211,17 +214,28 @@ namespace fq::graphics
 
 			mSkinnedMeshShaderProgram->Bind(mDevice);
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
+			std::vector<DirectX::SimpleMath::Matrix> identityTransforms(BoneTransform::MAX_BOND_COUNT);
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Opaque)
+				const MaterialInfo& materialInfo = job.Material->GetInfo();
+
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
 				{
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
+
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
+					}
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

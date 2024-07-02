@@ -59,25 +59,80 @@ extern "C" {
 			virtual FQ_GRAPHICS bool SetWindowSize(const unsigned short width, const unsigned short height) abstract; // 툴의 에디터를 포함한 전체 윈도우 영역
 			virtual FQ_GRAPHICS bool SetViewportSize(const unsigned short width, const unsigned short height) abstract; // 툴에서 씬을 그리는 영역
 
-			// 랜더 오브젝트 & Animation
-			virtual FQ_GRAPHICS void WriteModel(std::string path, const fq::common::Model& modelData) abstract;
-			virtual FQ_GRAPHICS void ConvertModel(std::string fbxFile, std::string path) abstract;
-			virtual FQ_GRAPHICS const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") abstract;
-			virtual FQ_GRAPHICS const fq::common::Model& GetModel(std::string path) abstract;
-			virtual FQ_GRAPHICS void DeleteModel(std::string path) abstract;
-			virtual FQ_GRAPHICS std::set<std::shared_ptr<IMaterial>> GetMaterials() const abstract;
+			// Model Data Helper
+			virtual FQ_GRAPHICS void WriteModel(const std::string& path, const fq::common::Model& modelData) abstract;
+			virtual FQ_GRAPHICS fq::common::Model ReadModel(const std::string& path) abstract;
+			virtual FQ_GRAPHICS fq::common::Model ConvertModel(const std::string& fbxFile) abstract;
 
-			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) abstract;
-			virtual FQ_GRAPHICS void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) abstract;
-			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* meshObject) abstract;
+			// Model Resource Control
+			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& GetModel(const std::string& path) abstract;
+			virtual FQ_GRAPHICS void DeleteModelResource(const std::string& path) abstract;
 
-			virtual FQ_GRAPHICS ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) abstract;
-			virtual FQ_GRAPHICS void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) abstract;
-			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName) abstract;
 
-			virtual FQ_GRAPHICS ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) abstract;
-			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) abstract;
-			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
+			// Render Resource Control
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(const fq::common::Mesh& meshData) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const fq::common::Model& model) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const std::vector<fq::common::Node> nodes) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> CreateAnimation(const fq::common::AnimationClip& animationClip) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const fq::common::Model& model) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> CreateAnimation(std::string key, const fq::common::AnimationClip& animationClip) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const std::string& key, const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) abstract;
+
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IStaticMesh>> GetStaticMeshes() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<ISkinnedMesh>> GetSkinnedMeshes() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<INodeHierarchy>> GetNodeHierarchies() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IAnimation>> GetAnimations() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IMaterial>> GetMaterials() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IParticleMaterial>> GetParticleMaterials() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IDecalMaterial>> GetDecalMaterials() abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshOrNull(std::string key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshOrNull(std::string key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyOrNull(std::string key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationOrNull(std::string key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialOrNull(const std::string& key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetParticleMaterialOrNull(const std::string& key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetDecalMaterialOrNull(const std::string& key) abstract;
+
+			virtual FQ_GRAPHICS void DeleteStaticMesh(std::string key) abstract;
+			virtual FQ_GRAPHICS void DeleteSkinnedMesh(std::string key) abstract;
+			virtual FQ_GRAPHICS void DeleteNodeHierarchy(std::string key) abstract;
+			virtual FQ_GRAPHICS void DeleteAnimation(std::string key) abstract;
+			virtual FQ_GRAPHICS void DeleteMaterial(const std::string& key) abstract;
+			virtual FQ_GRAPHICS void DeleteParticleMaterial(const std::string& key) abstract;
+			virtual FQ_GRAPHICS void DeleteDecalMaterial(const std::string& key) abstract;
+
+			// RenderObject
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMeshObject> CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMeshObject> CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ITerrainMeshObject>  CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleObject> CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalObject> CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ITrailObject> CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+
+			virtual FQ_GRAPHICS void DeleteStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> skinnedMeshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(std::shared_ptr<ITerrainMeshObject> meshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteParticleObject(std::shared_ptr<IParticleObject> particleObject) abstract;
+			virtual FQ_GRAPHICS void DeleteDecalObject(std::shared_ptr<IDecalObject> decalObject) abstract;
+			virtual FQ_GRAPHICS void DeleteTrailObject(std::shared_ptr<ITrailObject> trailObject) abstract;
+
+			virtual FQ_GRAPHICS void SetTerrainMeshObject(std::shared_ptr<ITerrainMeshObject>  meshObject, const TerrainMaterialInfo& material) abstract;
 
 			/// Primitive
 			// Debug Draw
@@ -89,38 +144,6 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawRing(const debug::RingInfo& ringInfo) abstract;
 			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
-
-			// Material
-
-			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateMaterial(const ParticleMaterialInfo& materialInfo) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
-
-			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) abstract;
-
-			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetNamedMaterialOrNull(const std::string& key) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetNamedParticleMaterialOrNull(const std::string& key) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetNamedDecalMaterialOrNull(const std::string& key) abstract;
-
-			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IMaterial> iMaterial) abstract;
-			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
-			virtual FQ_GRAPHICS void  DeleteMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
-
-			virtual FQ_GRAPHICS void  DeleteNamedMaterial(const std::string& key) abstract;
-			virtual FQ_GRAPHICS void  DeleteNamedParticleMaterial(const std::string& key) abstract;
-			virtual FQ_GRAPHICS void  DeleteNamedDecalMaterial(const std::string& key) abstract;
-
-			// VFX
-			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
-			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
-
-			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
-			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObjectInterface) abstract;
-
-			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
-			virtual FQ_GRAPHICS void DeleteTrailObject(ITrailObject* trailObjectInterface) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
@@ -159,7 +182,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void UpdateColCamera(const fq::common::Transform& cameraTransform) abstract;
 
 			/// Picking
-			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<void> GetPickingObject(const short mouseX, const short mouseY) abstract;
 
 			/// For IMGUI(D3D11)
 			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;

@@ -360,7 +360,7 @@ namespace fq::loader
 		}
 
 		DirectX::BoundingBox::CreateFromPoints(resultMesh.RenderBoundingBox, min, max);
-		DirectX::BoundingSphere::CreateFromBoundingBox(resultMesh.GetRenderBoundingSphere, resultMesh.RenderBoundingBox);
+		DirectX::BoundingSphere::CreateFromBoundingBox(resultMesh.RenderBoundingSphere, resultMesh.RenderBoundingBox);
 
 		return resultMesh;
 	}

@@ -32,12 +32,12 @@ Process::Process()
 
 Process::~Process()
 {
-	for (fq::graphics::IStaticMeshObject* iobj : mStaticMeshObjects)
+	for (std::shared_ptr<fq::graphics::IStaticMeshObject> iobj : mStaticMeshObjects)
 	{
 		mTestGraphics->DeleteStaticMeshObject(iobj);
 	}
 
-	for (fq::graphics::ISkinnedMeshObject* iobj : mSkinnedMeshObjects)
+	for (std::shared_ptr<fq::graphics::ISkinnedMeshObject> iobj : mSkinnedMeshObjects)
 	{
 		mTestGraphics->DeleteSkinnedMeshObject(iobj);
 	}
@@ -47,7 +47,7 @@ Process::~Process()
 		mTestGraphics->DeleteParticleObject(iobj);
 	}
 
-	for (fq::graphics::IDecalObject* iobj : mDecalObjects)
+	for (fq::graphics::std::shared_ptr<IDecalObject> iobj : mDecalObjects)
 	{
 		mTestGraphics->DeleteDecalObject(iobj);
 	}
@@ -1080,19 +1080,19 @@ void Process::decalInit()
 	{
 		DecalInfo decalInfo;
 		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.45f) * Matrix::CreateTranslation({ -400, 0, -400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
+		std::shared_ptr<IDecalObject> decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 	{
 		DecalInfo decalInfo;
 		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.3) * Matrix::CreateTranslation({ -400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
+		std::shared_ptr<IDecalObject> decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 	{
 		DecalInfo decalInfo;
 		auto transform = Matrix::CreateScale(400) * Matrix::CreateRotationX(3.14 * 0.30f) * Matrix::CreateTranslation({ 400, 0, 400 });
-		IDecalObject* decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
+		std::shared_ptr<IDecalObject> decalObject = mTestGraphics->CreateDecalObject(transform, decalInfo, decalMaterial);
 		mDecalObjects.push_back(decalObject);
 	}
 }
@@ -1106,7 +1106,7 @@ void Process::decalUpdate()
 	s_rotate += mTimeManager.GetDeltaTime();
 
 	int i = -(int)mDecalObjects.size() + mDecalObjects.size() / 2;
-	for (IDecalObject* decalObject : mDecalObjects)
+	for (std::shared_ptr<IDecalObject> decalObject : mDecalObjects)
 	{
 		DecalInfo decalInfo = decalObject->GetDecalInfo();
 		auto transform = Matrix::CreateScale(200) * Matrix::CreateRotationX(s_rotate) * Matrix::CreateTranslation({ (float)i * 200, 0, 0 });
@@ -1320,7 +1320,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 
 		if (mesh.second.BoneVertices.empty())
 		{
-			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+			std::shared_ptr<fq::graphics::IStaticMeshObject> iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
 
 			static int testIndex = 0;
 
@@ -1342,7 +1342,7 @@ void Process::createModel(std::string modelPath, std::vector<fq::graphics::Anima
 		{
 			meshInfo.Transform = transform;
 
-			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+			std::shared_ptr<fq::graphics::ISkinnedMeshObject> iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
 			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 

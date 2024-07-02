@@ -91,7 +91,7 @@ namespace fq::graphics
 		mDepthSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, mDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS)->GetSRV();
 	}
 
-	void D3D11ParticleManager::Excute()
+	void D3D11ParticleManager::BeginRender()
 	{
 		// update frameCB
 		ParticleFrameData particleFrameData;
@@ -114,37 +114,21 @@ namespace fq::graphics
 
 		mPointClamp->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 		mPointClamp->Bind(mDevice, 1, ED3D11ShaderType::ComputeShader);
-
-		for (IParticleObject* particleObjectInterface : mParticleObjects)
-		{
-			emit(particleObjectInterface);
-			simulate(particleObjectInterface);
-			render(particleObjectInterface);
-		}
-
+	}
+	void D3D11ParticleManager::Render(std::shared_ptr<IParticleObject> particleObject)
+	{
+		emit(particleObject);
+		simulate(particleObject);
+		render(particleObject);
+	}
+	void D3D11ParticleManager::EndRender()
+	{
 		mDevice->GetDeviceContext()->GSSetShader(NULL, NULL, NULL);
 	}
 
-	IParticleObject* D3D11ParticleManager::CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+	void D3D11ParticleManager::updateParticleObjectCB(std::shared_ptr<IParticleObject> particleObjectInterface)
 	{
-
-		IParticleObject* particleObjectInferface = new ParticleObject(mDevice, transform, particleInfo, iParticleMaterial);
-		mParticleObjects.insert(particleObjectInferface);
-
-		return particleObjectInferface;
-	}
-
-	void D3D11ParticleManager::DeleteParticleObject(IParticleObject* particleObjectInterface)
-	{
-		mParticleObjects.erase(particleObjectInterface);
-
-		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
-		delete particleObject;
-	}
-
-	void D3D11ParticleManager::updateParticleObjectCB(IParticleObject* particleObjectInterface)
-	{
-		const ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
 		const std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 		const ParticleInfo& particleInfo = particleObject->GetInfo();
 		const ParticleMaterialInfo& materialInfo = particleMaterial->GetInfo();
@@ -237,9 +221,9 @@ namespace fq::graphics
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
 
-	void D3D11ParticleManager::emit(IParticleObject* particleObjectInterface)
+	void D3D11ParticleManager::emit(std::shared_ptr<IParticleObject> particleObjectInterface)
 	{
-		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
 		const auto& info = particleObject->GetInfo();
 
 		if (info.InstanceData.bIsReset)
@@ -293,9 +277,9 @@ namespace fq::graphics
 #endif
 	}
 
-	void D3D11ParticleManager::simulate(IParticleObject* particleObjectInterface)
+	void D3D11ParticleManager::simulate(std::shared_ptr<IParticleObject> particleObjectInterface)
 	{
-		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
 
 		mDevice->GetDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -331,9 +315,9 @@ namespace fq::graphics
 #endif
 	}
 
-	void D3D11ParticleManager::render(IParticleObject* particleObjectInterface)
+	void D3D11ParticleManager::render(std::shared_ptr<IParticleObject> particleObjectInterface)
 	{
-		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
 		std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 
 		const auto& materialInfo = particleMaterial->GetInfo();

@@ -9,7 +9,7 @@
 #include <wrl.h>
 
 #include "Mesh.h"
-#include "BoneHierarchy.h"
+#include "NodeHierarchy.h"
 #include "AnimationHelper.h"
 #include "D3D11Texture.h"
 #include "D3D11Device.h"
@@ -24,484 +24,84 @@ namespace fq::graphics
 	class Material;
 	class TerrainMaterial;
 	struct TerrainMaterialInfo;
+	class D3D11JobManager;
 
 	class StaticMeshObject : public IStaticMeshObject
 	{
 	public:
-		StaticMeshObject(std::shared_ptr<StaticMesh> staticMesh,
+		StaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh,
 			std::vector<std::shared_ptr<IMaterial>> materials,
-			DirectX::SimpleMath::Matrix transform);
+			const MeshObjectInfo& info,
+			const DirectX::SimpleMath::Matrix& transforms);
 		~StaticMeshObject() = default;
 
-		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		// Transform
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
-		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
-		inline virtual void SetAlpha(float alpha) override;
-		inline virtual void SetUseShadow(bool bUseShadow) override;
-		inline virtual void SetAnimationTime(float timePos) override;
-		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
-		inline virtual bool SetBlendAnimationKey(const std::array<std::string, 2> animationKeys) override;
-		inline virtual bool SetBlendAnimationKey(const std::string& lhsAnimationKey, const std::string& rhsAnimationKey) override;
-		inline virtual void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) override;
-		inline virtual void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) override;
+		// Info
+		virtual void SetMeshObjectInfo(const MeshObjectInfo& info) override { mInfo = info; }
+		virtual const MeshObjectInfo& GetMeshObjectInfo() const override { return mInfo; }
 
-		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
-		inline virtual EObjectRenderType GetObjectRenderType() const override;
-		inline virtual float GetAlpha() const override;
-		inline virtual bool GetUseShadow() const override;
-		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
-		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
-		inline virtual float GetAnimationTime() const override;
-		inline virtual float GetBlendTime() const override;
-
-		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;
-		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
-
-		// Outline
-		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
-		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
-
-		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
-		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materialInterfaces) { mMaterials = materialInterfaces; }
+		// Material
+		virtual void SetMaterials(const std::vector<std::shared_ptr<IMaterial>>& materials) override { mMaterials = materials; }
+		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterials() const override { return mMaterials; }
 
 		// Mesh
-		virtual const fq::common::Mesh& GetMeshData() const override { return mStaticMesh->GetMeshData(); }
+		virtual void SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh) override { mStaticMesh = staticMesh; }
+		virtual std::shared_ptr<IStaticMesh> GetStaticMesh() const override { return mStaticMesh; }
 
-		// Decal
-		virtual void SetIsAppliedDecal(bool bIsAppiedDecal) override { mbIsAppliedDecal = bIsAppiedDecal; }
-		virtual const bool GetIsAppliedDecal() const override { return mbIsAppliedDecal; }
+		// NodeHierarchy
+		virtual void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) override { mNodeHierarchyInstance = nodeHierarchyInstance; }
+		virtual std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const override { return mNodeHierarchyInstance; }
+		virtual void SetReferenceBoneIndex(size_t index) override { mIndex = index; }
+		virtual size_t GetReferenceBoneIndex() const override { return mIndex; }
 
 	private:
-		std::shared_ptr<StaticMesh> mStaticMesh;
+		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
+		size_t mIndex;
+		std::shared_ptr<IStaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
+		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
-		EObjectRenderType mObjectRenderType;
-		float mAlpha;
-		bool mbUseShadow;
-
-		float mTimePos;
-		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
-		const fq::common::NodeClip* mNodeCache;
-		std::shared_ptr<fq::common::AnimationClip> mClipCache;
-
-		const fq::common::NodeClip* mBlendNodeCache;
-		std::shared_ptr<fq::common::AnimationClip> mBlendClipCache;
-		float mBlendTimePos;
-
-		DirectX::SimpleMath::Color mOutLineColor;
-
-		bool mbIsAppliedDecal;
 	};
-
-#pragma region inlineFunc
-
-	void StaticMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
-	{
-		SetTransform(transform);
-	}
-
-	inline void StaticMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
-	{
-		mTransform = transform;
-	}
-	inline void StaticMeshObject::SetObjectRenderType(EObjectRenderType renderType)
-	{
-		mObjectRenderType = renderType;
-	}
-	inline void StaticMeshObject::SetAlpha(float alpha)
-	{
-		mAlpha = std::clamp<float>(alpha, 0.f, 1.f);
-	}
-	inline void StaticMeshObject::SetUseShadow(bool bUseShadow)
-	{
-		mbUseShadow = bUseShadow;
-	}
-	inline void StaticMeshObject::SetAnimationTime(float timePos)
-	{
-		mTimePos = timePos;
-
-		if (mNodeCache != nullptr && mClipCache != nullptr)
-		{
-			fq::common::Keyframe lhs;
-			fq::common::Keyframe rhs;
-			float weight;
-
-			AnimationHelper::FindKeyframe(mNodeCache->Keyframes, *mClipCache, timePos, &lhs, &rhs, &weight);
-			fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
-			mTransform = AnimationHelper::CreateMatrix(keyframe);
-		}
-	}
-	inline bool StaticMeshObject::SetAnimationKey(const std::string& animationKey)
-	{
-		auto find = mAnimationMap.find(animationKey);
-
-		if (find == mAnimationMap.end())
-		{
-			return false;
-		}
-
-		const std::vector<fq::common::NodeClip>& nodeClips = find->second->NodeClips;
-		auto nodeClip = std::find_if(nodeClips.begin(), nodeClips.end(), [&](const fq::common::NodeClip& nodeClip) { return nodeClip.NodeName == mStaticMesh->GetMeshData().NodeName; });
-
-		mClipCache = find->second;
-
-		if (nodeClip != nodeClips.end())
-		{
-			mNodeCache = &(*nodeClip);
-		}
-
-		return true;
-	}
-	inline bool StaticMeshObject::SetBlendAnimationKey(const std::array<std::string, 2> animationKeys)
-	{
-		return SetBlendAnimationKey(animationKeys[0], animationKeys[1]);
-	}
-	inline bool StaticMeshObject::SetBlendAnimationKey(const std::string& animationKey, const std::string& blendAnimationKey)
-	{
-		auto find = mAnimationMap.find(animationKey);
-
-		if (find == mAnimationMap.end())
-		{
-			return false;
-		}
-
-		auto secondFind = mAnimationMap.find(blendAnimationKey);
-
-		if (secondFind == mAnimationMap.end())
-		{
-			return false;
-		}
-
-		const std::vector<fq::common::NodeClip>& nodeClips = find->second->NodeClips;
-		auto nodeClip = std::find_if(nodeClips.begin(), nodeClips.end(), [&](const fq::common::NodeClip& nodeClip) { return nodeClip.NodeName == mStaticMesh->GetMeshData().NodeName; });
-		mClipCache = find->second;
-
-		if (nodeClip != nodeClips.end())
-		{
-			mNodeCache = &(*nodeClip);
-		}
-
-		const std::vector<fq::common::NodeClip>& secondNodeClips = secondFind->second->NodeClips;
-		auto secondNodeClip = std::find_if(secondNodeClips.begin(), secondNodeClips.end(), [&](const fq::common::NodeClip& nodeClip) { return nodeClip.NodeName == mStaticMesh->GetMeshData().NodeName; });
-		mBlendClipCache = secondFind->second;
-
-		if (secondNodeClip != secondNodeClips.end())
-		{
-			mBlendNodeCache = &(*secondNodeClip);
-		}
-
-		return true;
-	}
-	inline void StaticMeshObject::SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight)
-	{
-		SetBlendAnimationTime(timePos[0], timePos[1], blendWeight);
-	}
-	inline void StaticMeshObject::SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight)
-	{
-		mTimePos = timePos;
-		mBlendTimePos = blendTimePos;
-
-		if (mNodeCache == nullptr && mBlendNodeCache == nullptr)
-		{
-			return;
-		}
-
-		blendWeight = std::min<float>(blendWeight, 1.f);
-		blendWeight = std::max<float>(blendWeight, 0.f);
-
-		fq::common::Keyframe srcAnimation;
-		fq::common::Keyframe destAnimation;
-
-		if (mNodeCache != nullptr && mClipCache != nullptr)
-		{
-			fq::common::Keyframe lhs;
-			fq::common::Keyframe rhs;
-			float weight;
-
-			AnimationHelper::FindKeyframe(mNodeCache->Keyframes, *mClipCache, timePos, &lhs, &rhs, &weight);
-			srcAnimation = AnimationHelper::Interpolate(lhs, rhs, weight);
-		}
-
-		if (mBlendNodeCache != nullptr && mBlendClipCache != nullptr)
-		{
-			fq::common::Keyframe lhs;
-			fq::common::Keyframe rhs;
-			float weight;
-
-			AnimationHelper::FindKeyframe(mBlendNodeCache->Keyframes, *mBlendClipCache, timePos, &lhs, &rhs, &weight);
-			destAnimation = AnimationHelper::Interpolate(lhs, rhs, weight);
-		}
-
-		fq::common::Keyframe resultKeyframe = AnimationHelper::Interpolate(srcAnimation, destAnimation, blendWeight);
-		mTransform = AnimationHelper::CreateMatrix(resultKeyframe);
-	}
-
-	inline const std::shared_ptr<StaticMesh>& StaticMeshObject::GetStaticMesh() const
-	{
-		return mStaticMesh;
-	}
-	inline EObjectRenderType StaticMeshObject::GetObjectRenderType() const
-	{
-		return mObjectRenderType;
-	}
-	inline float StaticMeshObject::GetAlpha() const
-	{
-		return mAlpha;
-	}
-	inline bool StaticMeshObject::GetUseShadow() const
-	{
-		return mbUseShadow;
-	}
-	inline DirectX::BoundingBox StaticMeshObject::GetRenderBoundingBox() const
-	{
-		return mStaticMesh->GetMeshData().RenderBoundingBox;
-	}
-	inline DirectX::BoundingSphere StaticMeshObject::GetRenderBoundingSphere() const
-	{
-		return mStaticMesh->GetMeshData().GetRenderBoundingSphere;
-	}
-	inline float StaticMeshObject::GetAnimationTime() const
-	{
-		return mTimePos;
-	}
-	inline float StaticMeshObject::GetBlendTime() const
-	{
-		return mBlendTimePos;
-	}
-	inline const DirectX::SimpleMath::Matrix& StaticMeshObject::GetTransform() const
-	{
-		return mTransform;
-	}
-	inline void StaticMeshObject::AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip)
-	{
-		mAnimationMap.insert({ animationKey, animationClip });
-	}
-
-#pragma endregion
 
 	class SkinnedMeshObject : public ISkinnedMeshObject
 	{
 	public:
-		SkinnedMeshObject(std::shared_ptr<SkinnedMesh> SkinnedMesh,
+		SkinnedMeshObject(std::shared_ptr<ISkinnedMesh> SkinnedMesh,
 			std::vector<std::shared_ptr<IMaterial>> materials,
-			DirectX::SimpleMath::Matrix transform,
-			BoneHierarchyCache boneHierarchyCache);
+			const MeshObjectInfo& info,
+			const DirectX::SimpleMath::Matrix& transforms);
 		~SkinnedMeshObject() = default;
 
-		inline virtual void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		inline virtual void UpdateAnimationTime(float timePos) override;
+		// Transform
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
-		inline virtual void SetBindPose() override;
-		inline virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
-		inline virtual void SetAnimationTime(float timePos) override;
-		inline virtual void SetObjectRenderType(EObjectRenderType renderType) override;
-		inline virtual void SetAlpha(float alpha) override;
-		inline virtual void SetUseShadow(bool bUseShadow) override;
-		inline virtual bool SetAnimationKey(const std::string& animationKey) override;
-		inline virtual bool SetBlendAnimationKey(const std::array<std::string, 2> animKey) override;
-		inline virtual bool SetBlendAnimationKey(const std::string& animKey, const std::string& blendAnimKey) override;
-		inline virtual void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) override;
-		inline virtual void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) override;
+		// Info
+		virtual void SetMeshObjectInfo(const MeshObjectInfo& info) override { mInfo = info; }
+		virtual const MeshObjectInfo& GetMeshObjectInfo() const override { return mInfo; }
 
-		inline virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
-		inline virtual float GetAnimationTime() const override;
-		inline virtual EObjectRenderType GetObjectRenderType() const override;
-		inline virtual float GetAlpha() const override;
-		inline virtual bool GetUseShadow() const override;
-		inline virtual std::set<std::string> GetAnimationKeys() const override;
-		inline virtual DirectX::BoundingBox GetRenderBoundingBox() const override;
-		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
-		inline virtual float GetBlendTime() const override;
-
-		inline void AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip);
-		inline const std::shared_ptr<SkinnedMesh>& GetSkinnedMesh() const;
-		inline const std::vector<DirectX::SimpleMath::Matrix>& GetTransposedFinalTransforms() const;
-
-		// Outline
-		virtual void SetOutlineColor(const DirectX::SimpleMath::Color& color) override;
-		virtual DirectX::SimpleMath::Color GetOutlineColor() const override;
-
-		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const { return mMaterials; }
-		virtual void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) { mMaterials = materials; }
-
-		// Bone
-		virtual const std::vector<fq::common::Bone>& GetBones() const override;
-		virtual unsigned int GetBoneIndex(const std::string& boneName) const;
-		virtual bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex);
-		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const;
-		virtual bool TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform);
-		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const;
-		virtual const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const;
+		// Material
+		virtual void SetMaterials(const std::vector<std::shared_ptr<IMaterial>>& materials) override { mMaterials = materials; }
+		virtual const std::vector<std::shared_ptr<IMaterial>>& GetMaterials() const override { return mMaterials; }
 
 		// Mesh
-		virtual const fq::common::Mesh& GetMeshData() const override { return mSkinnedMesh->GetMeshData(); }
+		virtual void SetSkinnedMesh(std::shared_ptr<ISkinnedMesh> skinnedMesh) override { mSkinnedMesh = skinnedMesh; }
+		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMesh() const override { return mSkinnedMesh; }
 
-		// Decal
-		virtual void SetIsAppliedDecal(bool bIsAppiedDecal) override { mbIsAppliedDecal = bIsAppiedDecal; }
-		virtual const bool GetIsAppliedDecal() const override { return mbIsAppliedDecal; }
-
+		// NodeHierarchy
+		virtual void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) override { mNodeHierarchyInstance = nodeHierarchyInstance; }
+		virtual std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const override { return mNodeHierarchyInstance; }
 
 	private:
-		std::shared_ptr<SkinnedMesh> mSkinnedMesh;
+		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
+		std::shared_ptr<ISkinnedMesh> mSkinnedMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
+		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
-		float mTimePos;
-		float mBlendTimePos;
-		BoneHierarchyCache mBoneHierarchyCache;
-		std::map<std::string, std::shared_ptr<fq::common::AnimationClip>> mAnimationMap;
-		EObjectRenderType mObjectRenderType;
-		float mAlpha;
-		bool mbUseShadow;
-		DirectX::SimpleMath::Color mOutLineColor;
-		bool mbIsAppliedDecal;
 	};
-
-#pragma region inlineFunc
-	inline void SkinnedMeshObject::UpdateTransform(const DirectX::SimpleMath::Matrix& transform)
-	{
-		mTransform = transform;
-	}
-	inline void SkinnedMeshObject::UpdateAnimationTime(float timePos)
-	{
-		mTimePos = timePos;
-		mBoneHierarchyCache.Update(timePos);
-	}
-
-	inline void SkinnedMeshObject::AddAnimation(std::string animationKey, std::shared_ptr<fq::common::AnimationClip> animationClip)
-	{
-		mAnimationMap.insert({ animationKey, animationClip });
-	}
-
-	inline bool SkinnedMeshObject::SetAnimationKey(const std::string& animationKey)
-	{
-		auto find = mAnimationMap.find(animationKey);
-
-		if (find == mAnimationMap.end())
-		{
-			return false;
-		}
-
-		mBoneHierarchyCache.SetAnimation(find->second);
-
-		return true;
-	}
-	inline bool SkinnedMeshObject::SetBlendAnimationKey(const std::array<std::string, 2> animationKeys)
-	{
-		return SetBlendAnimationKey(animationKeys[0], animationKeys[1]);
-	}
-	inline bool SkinnedMeshObject::SetBlendAnimationKey(const std::string& srcAnimationKey, const std::string& destAnimationKey)
-	{
-		auto find = mAnimationMap.find(srcAnimationKey);
-
-		if (find == mAnimationMap.end())
-		{
-			return false;
-		}
-
-		auto secondFind = mAnimationMap.find(destAnimationKey);
-
-		if (secondFind == mAnimationMap.end())
-		{
-			return false;
-		}
-
-		mBoneHierarchyCache.SetAnimation(find->second, secondFind->second);
-
-		return true;
-	}
-
-	inline void SkinnedMeshObject::SetBindPose()
-	{
-		mTimePos = 0.f;
-		mBoneHierarchyCache.SetBindPose();
-	}
-	inline void SkinnedMeshObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
-	{
-		mTransform = transform;
-	}
-	inline void SkinnedMeshObject::SetAnimationTime(float timePos)
-	{
-		mTimePos = timePos;
-		mBoneHierarchyCache.Update(timePos);
-	}
-	inline void SkinnedMeshObject::SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight)
-	{
-		SetBlendAnimationTime(timePos[0], timePos[1], blendWeight);
-	}
-	inline void SkinnedMeshObject::SetBlendAnimationTime(float lhsTimePos, float rhsTimePos, float blendWeight)
-	{
-		mTimePos = lhsTimePos;
-		mBlendTimePos = rhsTimePos;
-		blendWeight = std::min<float>(blendWeight, 1.f);
-		blendWeight = std::max<float>(blendWeight, 0.f);
-		mBoneHierarchyCache.Update(mTimePos, mBlendTimePos, blendWeight);
-	}
-	inline void SkinnedMeshObject::SetObjectRenderType(EObjectRenderType renderType)
-	{
-		mObjectRenderType = renderType;
-	}
-	inline const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetTransform() const
-	{
-		return mTransform;
-	}
-	inline float SkinnedMeshObject::GetAnimationTime() const
-	{
-		return mTimePos;
-	}
-	inline  std::set<std::string> SkinnedMeshObject::GetAnimationKeys() const
-	{
-		std::set<std::string> animationKeys;
-
-		for (const auto& [name, clip] : mAnimationMap)
-		{
-			animationKeys.insert(name);
-		}
-
-		return animationKeys;
-	}
-	inline DirectX::BoundingBox SkinnedMeshObject::GetRenderBoundingBox() const
-	{
-		return mSkinnedMesh->GetMeshData().RenderBoundingBox;
-	}
-	inline DirectX::BoundingSphere SkinnedMeshObject::GetRenderBoundingSphere() const
-	{
-		return mSkinnedMesh->GetMeshData().GetRenderBoundingSphere;
-	}
-	inline float SkinnedMeshObject::GetBlendTime() const
-	{
-		return mBlendTimePos;
-	}
-	inline  EObjectRenderType SkinnedMeshObject::GetObjectRenderType() const
-	{
-		return mObjectRenderType;
-	}
-	inline float SkinnedMeshObject::GetAlpha() const
-	{
-		return mAlpha;
-	}
-	inline bool SkinnedMeshObject::GetUseShadow() const
-	{
-		return mbUseShadow;
-	}
-	inline const std::shared_ptr<SkinnedMesh>& SkinnedMeshObject::GetSkinnedMesh() const
-	{
-		return mSkinnedMesh;
-	}
-	inline const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetTransposedFinalTransforms() const
-	{
-		return mBoneHierarchyCache.GetTransposedFinalTransforms();
-	}
-	inline void SkinnedMeshObject::SetAlpha(float alpha)
-	{
-		mAlpha = std::clamp<float>(alpha, 0.f, 1.f);
-	}
-	inline void SkinnedMeshObject::SetUseShadow(bool bUseShadow)
-	{
-		mbUseShadow = bUseShadow;
-	}
-
-#pragma endregion
 
 	class TerrainMeshObject : public ITerrainMeshObject
 	{
@@ -545,7 +145,7 @@ namespace fq::graphics
 		void CalcNormalTangent(fq::common::Mesh& mesh);
 
 	private:
-		std::shared_ptr<StaticMesh> mTempStaticMesh; 
+		std::shared_ptr<StaticMesh> mTempStaticMesh;
 		std::shared_ptr<TerrainMesh> mTerrainMesh;
 		std::shared_ptr<TerrainMaterial> mMaterial;
 
@@ -589,7 +189,7 @@ namespace fq::graphics
 	}
 	inline DirectX::BoundingSphere TerrainMeshObject::GetRenderBoundingSphere() const
 	{
-		return mTerrainMesh->GetMeshData().GetRenderBoundingSphere;
+		return mTerrainMesh->GetMeshData().RenderBoundingSphere;
 	}
 	inline const std::shared_ptr<TerrainMaterial>& TerrainMeshObject::GetTerrainMaterial() const
 	{

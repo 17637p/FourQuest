@@ -4,6 +4,7 @@
 #include <string>
 #include "FQCommonLoader.h"
 #include "FQCommonGraphics.h"
+#include "IFQRenderResource.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -16,6 +17,73 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
+		class IStaticMesh
+		{
+		public:
+			virtual FQ_GRAPHICS void* GetVertexBuffer() abstract;
+			virtual FQ_GRAPHICS void* GetIndexBuffer() abstract;
+
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
+		protected:
+			virtual ~IStaticMesh() = default;
+		};
+
+		class ISkinnedMesh
+		{
+		public:
+			virtual FQ_GRAPHICS void* GetVertexBuffer() abstract;
+			virtual FQ_GRAPHICS void* GetIndexBuffer() abstract;
+
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
+		protected:
+			virtual ~ISkinnedMesh() = default;
+		};
+
+		class IAnimation
+		{
+		public:
+			virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
+
+			virtual const fq::common::AnimationClip& GetAnimationClip() const abstract;
+
+		protected:
+			virtual ~IAnimation() = default;
+		};
+
+		class INodeHierarchyInstance;
+		
+		class INodeHierarchy
+		{
+		public:
+			virtual FQ_GRAPHICS void CreateAnimationCache(std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS void DeleteAnimationCache(std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> CreateNodeHierarchyInstance() abstract;
+
+			virtual FQ_GRAPHICS const std::vector<fq::common::Bone>& GetBones() const abstract;
+			virtual FQ_GRAPHICS unsigned int GetBoneIndex(const std::string& boneName) const abstract;
+			virtual FQ_GRAPHICS bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex) const abstract;
+
+		protected:
+			virtual ~INodeHierarchy() = default;
+		};
+
+		class INodeHierarchyInstance
+		{
+		public:
+			virtual FQ_GRAPHICS void SetBindPose() abstract;
+			virtual FQ_GRAPHICS void Update(float timePos, std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS void Update(float lhsTimePos, std::shared_ptr<IAnimation> lhsAnimation, float rhsTimePos, std::shared_ptr<IAnimation> rhsAnimation, float weight) abstract;
+
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchy() const abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;
+			virtual FQ_GRAPHICS const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const abstract;
+
+		protected:
+			virtual ~INodeHierarchyInstance() = default;
+		};
 		class IMaterial
 		{
 		public:

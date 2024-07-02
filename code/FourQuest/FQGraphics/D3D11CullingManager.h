@@ -46,8 +46,8 @@ namespace fq::graphics
 			const DirectX::SimpleMath::Quaternion& rotation,
 			const DirectX::SimpleMath::Matrix& projectionMatrix);
 
-		std::set<IStaticMeshObject*> GetInFrustumStaticObjects(const std::set<IStaticMeshObject*>& staticObjects);
-		std::set<ISkinnedMeshObject*> GetInFrustumSkinnedObjects(const std::set<ISkinnedMeshObject*>& skinnedObjects);
+		std::set<std::shared_ptr<IStaticMeshObject>> GetInFrustumStaticObjects(const std::set<std::shared_ptr<IStaticMeshObject>>& staticObjects);
+		std::set<std::shared_ptr<ISkinnedMeshObject>> GetInFrustumSkinnedObjects(const std::set<std::shared_ptr<ISkinnedMeshObject>>& skinnedObjects);
 
 	private:
 		DirectX::BoundingFrustum cameraFrustum;

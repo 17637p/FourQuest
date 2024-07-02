@@ -243,7 +243,7 @@ void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::A
 
 		if (mesh.second.BoneVertices.empty())
 		{
-			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+			std::shared_ptr<fq::graphics::IStaticMeshObject> iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
 
 			static int testIndex = 0;
 
@@ -265,7 +265,7 @@ void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::A
 		{
 			meshInfo.Transform = transform;
 
-			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+			std::shared_ptr<fq::graphics::ISkinnedMeshObject> iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
 			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 

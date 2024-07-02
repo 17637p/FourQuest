@@ -24,18 +24,15 @@ namespace fq::graphics
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager);
 		void OnResize(unsigned short width, unsigned short height);
 
-		void Excute();
-
-		IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial);
-		void DeleteParticleObject(IParticleObject* particleObjectInterface);
-
-		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
+		void BeginRender();
+		void Render(std::shared_ptr<IParticleObject> particleObject);
+		void EndRender();
 
 	private:
-		void updateParticleObjectCB(IParticleObject* particleObjectInterface);
-		void emit(IParticleObject* particleObjectInterface);
-		void simulate(IParticleObject* particleObjectInterface);
-		void render(IParticleObject* particleObjectInterface);
+		void updateParticleObjectCB(std::shared_ptr<IParticleObject> particleObjectInterface);
+		void emit(std::shared_ptr<IParticleObject> particleObjectInterface);
+		void simulate(std::shared_ptr<IParticleObject> particleObjectInterface);
+		void render(std::shared_ptr<IParticleObject> particleObjectInterface);
 
 		int align(int value, int aligment);
 		int readCounter(ID3D11UnorderedAccessView* uav);
@@ -44,8 +41,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
-
-		std::set<IParticleObject*> mParticleObjects;
 
 		std::shared_ptr<D3D11ConstantBuffer<ParticleFrameData>> mParticleFrameCB;
 		std::shared_ptr<D3D11ConstantBuffer<ParticleObjectData>> mParticleObjectCB;

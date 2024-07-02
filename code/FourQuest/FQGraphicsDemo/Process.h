@@ -81,14 +81,14 @@ private:
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
-	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
-	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
+	std::vector<std::shared_ptr<fq::graphics::IStaticMeshObject>> mStaticMeshObjects;
+	std::vector<std::shared_ptr<fq::graphics::ISkinnedMeshObject>> mSkinnedMeshObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
-	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
+	std::vector<fq::graphics::std::shared_ptr<IDecalObject>> mDecalObjects;
 	std::vector<fq::graphics::ITrailObject*> mTrailObjects;
 
-	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
-	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;
+	std::shared_ptr<fq::graphics::IStaticMeshObject> mSocketStaticMeshObject;
+	std::shared_ptr<fq::graphics::ISkinnedMeshObject> mSoketSkinnedMeshObject;
 	DirectX::SimpleMath::Matrix mSocketInitTransform;
 	// Camera
 	fq::common::Transform cameraTransform;

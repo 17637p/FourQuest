@@ -79,6 +79,7 @@ namespace fq::graphics
 			device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
 		}
 
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVertexBuffer;
@@ -127,6 +128,8 @@ namespace fq::graphics
 		}
 
 		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer() const { return mIndexBuffer; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndexBuffer;

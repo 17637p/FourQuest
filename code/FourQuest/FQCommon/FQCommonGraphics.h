@@ -41,7 +41,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 direction;
 	};
 
-	struct MeshObjectInfo
+	struct MeshObjectInfo12
 	{
 		std::string ModelPath;
 		std::string MeshName;
@@ -431,6 +431,12 @@ namespace fq::graphics
 	// material
 	struct MaterialInfo
 	{
+		enum class ERenderMode
+		{
+			Opaque,
+			Transparent
+		} RenderModeType = ERenderMode::Opaque;
+
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		float Metalness = 0.f;
 		float Roughness = 0.f;

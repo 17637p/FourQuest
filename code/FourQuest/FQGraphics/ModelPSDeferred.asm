@@ -86,58 +86,130 @@ dcl_output o5.xyzw
 dcl_output o6.xyz
 dcl_output o7.xyz
 dcl_temps 4
+//
+// Initial variable locations:
+//   v0.x <- pin.PositionH.x; v0.y <- pin.PositionH.y; v0.z <- pin.PositionH.z; v0.w <- pin.PositionH.w; 
+//   v1.x <- pin.PositionW.x; v1.y <- pin.PositionW.y; v1.z <- pin.PositionW.z; 
+//   v2.x <- pin.NormalW.x; v2.y <- pin.NormalW.y; v2.z <- pin.NormalW.z; 
+//   v3.x <- pin.TangentW.x; v3.y <- pin.TangentW.y; v3.z <- pin.TangentW.z; 
+//   v4.x <- pin.UV.x; v4.y <- pin.UV.y; v4.z <- pin.ClipSpacePosZ; 
+//   v1.w <- pin.DepthView; 
+//   v5.x <- pin.NormalV.x; v5.y <- pin.NormalV.y; v5.z <- pin.NormalV.z; 
+//   v6.x <- pin.TangentV.x; v6.y <- pin.TangentV.y; v6.z <- pin.TangentV.z; 
+//   o4.w <- <main return value>.Emissive.w; 
+//   o6.w <- <main return value>.SourceNormal.w; 
+//   o7.w <- <main return value>.SourceTangent.w; o7.x <- <main return value>.SourceTangent.x; o7.y <- <main return value>.SourceTangent.y; o7.z <- <main return value>.SourceTangent.z; 
+//   o6.x <- <main return value>.SourceNormal.x; o6.y <- <main return value>.SourceNormal.y; o6.z <- <main return value>.SourceNormal.z; 
+//   o5.x <- <main return value>.PositionW.x; o5.y <- <main return value>.PositionW.y; o5.z <- <main return value>.PositionW.z; o5.w <- <main return value>.PositionW.w; 
+//   o4.x <- pout.Emissive.x; o4.y <- pout.Emissive.y; o4.z <- pout.Emissive.z; 
+//   o3.x <- pout.Normal.x; o3.y <- pout.Normal.y; o3.z <- pout.Normal.z; o3.w <- pout.Normal.w; 
+//   o2.x <- pout.Roughness; 
+//   o1.x <- pout.Metalness; 
+//   o0.x <- pout.Albedo.x; o0.y <- pout.Albedo.y; o0.z <- pout.Albedo.z; o0.w <- pout.Albedo.w
+//
+#line 66 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelPSDeferred.hlsl"
 if_nz cb0[6].z
+
+#line 68
   sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v4.xyxx, t0.xyzw, s0
   mul o0.xyzw, r0.xyzw, cb0[0].xyzw
+
+#line 69
 else 
-  mov o0.xyzw, cb0[0].xyzw
+  mov o0.xyzw, cb0[0].xyzw  // o0.x <- pout.Albedo.x; o0.y <- pout.Albedo.y; o0.z <- pout.Albedo.z; o0.w <- pout.Albedo.w
 endif 
+
+#line 71
 if_nz cb0[6].w
-  sample_indexable(texture2d)(float,float,float,float) r0.x, v4.xyxx, t1.xyzw, s0
+
+#line 73
+  sample_indexable(texture2d)(float,float,float,float) r0.x, v4.xyxx, t1.xyzw, s0  // r0.x <- pout.Metalness
+
+#line 74
   mov o1.x, r0.x
 else 
-  mov o1.x, cb0[6].x
+
+#line 78
+  mov o1.x, cb0[6].x  // o1.x <- pout.Metalness
 endif 
+
+#line 80
 if_nz cb0[7].x
-  sample_indexable(texture2d)(float,float,float,float) r0.x, v4.xyxx, t2.xyzw, s0
+
+#line 82
+  sample_indexable(texture2d)(float,float,float,float) r0.x, v4.xyxx, t2.xyzw, s0  // r0.x <- pout.Roughness
+
+#line 83
   mov o2.x, r0.x
 else 
-  mov o2.x, cb0[6].y
+
+#line 87
+  mov o2.x, cb0[6].y  // o2.x <- pout.Roughness
 endif 
+
+#line 89
 if_nz cb0[7].y
-  sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v4.xyxx, t3.xyzw, s0
+
+#line 91
+  sample_indexable(texture2d)(float,float,float,float) r0.xyzw, v4.xyxx, t3.xyzw, s0  // r0.x <- pout.Normal.x; r0.y <- pout.Normal.y; r0.z <- pout.Normal.z; r0.w <- pout.Normal.w
+
+#line 236 "C:\Git\FourQuest\code\FourQuest\FQGraphics\Common.hlsli"
   mad r0.xyz, r0.xyzx, l(2.000000, 2.000000, 2.000000, 0.000000), l(-1.000000, -1.000000, -1.000000, 0.000000)
   dp3 r1.x, r0.xyzx, r0.xyzx
   rsq r1.x, r1.x
-  mul r0.xyz, r0.xyzx, r1.xxxx
+  mul r0.xyz, r0.xyzx, r1.xxxx  // r0.x <- normalT.x; r0.y <- normalT.y; r0.z <- normalT.z
+
+#line 239
   dp3 r1.x, v2.xyzx, v2.xyzx
   rsq r1.x, r1.x
-  mul r1.xyz, r1.xxxx, v2.xyzx
+  mul r1.xyz, r1.xxxx, v2.xyzx  // r1.x <- N.x; r1.y <- N.y; r1.z <- N.z
+
+#line 240
   dp3 r1.w, v3.xyzx, r1.xyzx
   mad r2.xyz, -r1.wwww, r1.xyzx, v3.xyzx
   dp3 r1.w, r2.xyzx, r2.xyzx
   rsq r1.w, r1.w
-  mul r2.xyz, r1.wwww, r2.xyzx
+  mul r2.xyz, r1.wwww, r2.xyzx  // r2.x <- T.x; r2.y <- T.y; r2.z <- T.z
+
+#line 241
   mul r3.xyz, r1.zxyz, r2.yzxy
-  mad r3.xyz, r1.yzxy, r2.zxyz, -r3.xyzx
+  mad r3.xyz, r1.yzxy, r2.zxyz, -r3.xyzx  // r3.x <- B.x; r3.y <- B.y; r3.z <- B.z
+
+#line 246
   mul r3.xyz, r0.yyyy, r3.xyzx
   mad r2.xyz, r0.xxxx, r2.xyzx, r3.xyzx
-  mad r0.xyz, r0.zzzz, r1.xyzx, r2.xyzx
+  mad r0.xyz, r0.zzzz, r1.xyzx, r2.xyzx  // r0.x <- bumpedNormalW.x; r0.y <- bumpedNormalW.y; r0.z <- bumpedNormalW.z
+
+#line 92 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelPSDeferred.hlsl"
   dp3 r1.x, r0.xyzx, r0.xyzx
   rsq r1.x, r1.x
   mul o3.xyz, r0.xyzx, r1.xxxx
+
+#line 93
   mov o3.w, r0.w
 else 
+
+#line 96
   dp3 r0.x, v2.xyzx, v2.xyzx
   rsq r0.x, r0.x
-  mul o3.xyz, r0.xxxx, v2.xyzx
+  mul o3.xyz, r0.xxxx, v2.xyzx  // o3.x <- pout.Normal.x; o3.y <- pout.Normal.y; o3.z <- pout.Normal.z
+
+#line 97
 endif 
+
+#line 107
 if_nz cb0[7].z
+
+#line 109
   sample_indexable(texture2d)(float,float,float,float) r0.xyz, v4.xyxx, t4.xyzw, s0
   mul o4.xyz, r0.xyzx, cb0[1].xyzx
+
+#line 110
 else 
-  mov o4.xyz, cb0[1].xyzx
+  mov o4.xyz, cb0[1].xyzx  // o4.x <- pout.Emissive.x; o4.y <- pout.Emissive.y; o4.z <- pout.Emissive.z
 endif 
+
+#line 112
 mov o5.xyz, v1.xyzx
 mov o5.w, v4.z
 mov o6.xyz, v2.xyzx

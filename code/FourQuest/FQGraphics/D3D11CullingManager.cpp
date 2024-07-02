@@ -2,13 +2,13 @@
 
 #include "RenderObject.h"
 
-std::set<fq::graphics::IStaticMeshObject*> fq::graphics::D3D11CullingManager::GetInFrustumStaticObjects(const std::set<IStaticMeshObject*>& staticObjects)
+std::set<std::shared_ptr<fq::graphics::IStaticMeshObject>> fq::graphics::D3D11CullingManager::GetInFrustumStaticObjects(const std::set<std::shared_ptr<IStaticMeshObject>>& staticObjects)
 {
-	std::set<IStaticMeshObject*> inFrustumObjects;
+	std::set<std::shared_ptr<IStaticMeshObject>> inFrustumObjects;
 
 	for (const auto& staticObject : staticObjects)
 	{
-		DirectX::BoundingSphere sphere = staticObject->GetRenderBoundingSphere();
+		DirectX::BoundingSphere sphere = staticObject->GetStaticMesh()->GetMeshData().RenderBoundingSphere;
 		sphere.Transform(sphere, staticObject->GetTransform());
 
 		bool isIntersects = cameraFrustum.Intersects(sphere);
@@ -21,13 +21,13 @@ std::set<fq::graphics::IStaticMeshObject*> fq::graphics::D3D11CullingManager::Ge
 	return inFrustumObjects;
 }
 
-std::set<fq::graphics::ISkinnedMeshObject*> fq::graphics::D3D11CullingManager::GetInFrustumSkinnedObjects(const std::set<ISkinnedMeshObject*>& skinnedObjects)
+std::set<std::shared_ptr<fq::graphics::ISkinnedMeshObject>> fq::graphics::D3D11CullingManager::GetInFrustumSkinnedObjects(const std::set<std::shared_ptr<ISkinnedMeshObject>>& skinnedObjects)
 {
-	std::set<ISkinnedMeshObject*> inFrustumObjects;
+	std::set<std::shared_ptr<ISkinnedMeshObject>> inFrustumObjects;
 
 	for (const auto& skinnedObject : skinnedObjects)
 	{
-		DirectX::BoundingSphere sphere = skinnedObject->GetRenderBoundingSphere();
+		DirectX::BoundingSphere sphere = skinnedObject->GetSkinnedMesh()->GetMeshData().RenderBoundingSphere;
 		sphere.Transform(sphere, skinnedObject->GetTransform());
 
 		bool isIntersects = cameraFrustum.Intersects(sphere);

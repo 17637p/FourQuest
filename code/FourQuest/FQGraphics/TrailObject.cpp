@@ -3,10 +3,10 @@
 
 namespace fq::graphics
 {
-	TrailObject::TrailObject(const DirectX::SimpleMath::Matrix& transform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
-		: mTransform(transform)
+	TrailObject::TrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
+		: mIParticleMaterial(iParticleMaterial)
 		, mTrailInfo(trailInfo)
-		, mIParticleMaterial(iParticleMaterial)
+		, mTransform(transform)
 		, mFrameTime(0.f)
 	{
 		using namespace DirectX::SimpleMath;
