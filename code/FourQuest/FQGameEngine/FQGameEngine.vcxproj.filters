@@ -211,6 +211,15 @@
     </ClInclude>
     <ClInclude Include="TrailSystem.h">
       <Filter>include</Filter>
+	</ClInclude>
+	<ClInclude Include="ArticulationHierarchy.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationInspector.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -348,6 +357,15 @@
     </ClCompile>
     <ClCompile Include="TrailSystem.cpp">
       <Filter>src</Filter>
+	</ClCompile>
+    <ClCompile Include="ArticulationHierarchy.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationInspector.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

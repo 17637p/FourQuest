@@ -45,6 +45,7 @@
 #include "ICollider.h"
 #include "Collision.h"
 #include "CollisionMatrix.h"
+#include "Articulation.h"
 #include "SkyBox.h"
 
 // Animation

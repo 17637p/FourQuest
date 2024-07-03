@@ -42,7 +42,8 @@ void fq::game_engine::Hierarchy::Initialize(GameProcess* game, EditorProcess* ed
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandle = mEventManager->RegisterHandle<editor_event::SelectObject>
-		([this](editor_event::SelectObject event) {
+		([this](editor_event::SelectObject event) 
+			{
 		mSelectObject = event.object;
 			});
 

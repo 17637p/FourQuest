@@ -253,6 +253,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	mEditor->mLogWindow->Finalize();
 	mEditor->mImGuiSystem->Finalize();
 	mEditor->mAnimatorWindow->Finalize();
+	mEditor->mArticulationHierarchy->Finalize();
 
 	// SystemFinalize
 	mGameProcess->mGraphics->Finalize();
@@ -283,6 +284,8 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mAnimatorWindow->Render();
 	mEditor->mSettingWindow->Render();
 	mEditor->mNavMeshWindow->Render();
+	mEditor->mArticulationHierarchy->Render();
+	mEditor->mArticulationInspector->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -311,6 +314,8 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mSettingWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mNavMeshWindow->Initialize(mGameProcess.get());
+	mEditor->mArticulationHierarchy->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)
