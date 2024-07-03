@@ -80,12 +80,12 @@ namespace fq::physics
 		std::vector<physx::PxHeightFieldSample> samples(numRows * numCols);
 
 		// 샘플 배열 초기화 (높이 값 설정)
-		for (physx::PxU32 i = 0; i < numRows; ++i)
+		for (physx::PxU32 i = 1; i < numRows; ++i)
 		{
-			for (physx::PxU32 j = 0; j < numCols; ++j)
+			for (physx::PxU32 j = 1; j < numCols; ++j)
 			{
-				samples[i * numCols + j].height = height[i * numCols + j];
-				samples[i * numCols + j].setTessFlag();
+				samples[(numRows - i) * numCols - j].height = -height[(numRows - i) * numCols - j];
+				samples[(numRows - i) * numCols - j].setTessFlag();
 			}
 		}
 

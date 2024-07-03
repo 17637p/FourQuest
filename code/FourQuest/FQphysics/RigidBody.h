@@ -32,7 +32,20 @@ namespace fq::physics
 		inline void SetExtent(const float& x, const float& y, const float& z);
 		inline void SetScale(const DirectX::SimpleMath::Vector3& scale);
 
+		/// <summary>
+		/// 조정된 스케일 값에 따라서 PxShape값 변경
+		/// </summary>
 		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix) abstract;
+
+		/// <summary>
+		/// 보정 오프셋 값 저장
+		/// </summary>
+		inline void SetOffsetTranslation(DirectX::SimpleMath::Matrix offsetMatrix);
+
+		/// <summary>
+		/// 보정 오프셋 값 반환
+		/// </summary>
+		inline const DirectX::SimpleMath::Matrix& GetOffsetTranslation();
 
 	protected:
 		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix);
@@ -42,6 +55,7 @@ namespace fq::physics
 		unsigned int mLayerNumber;
 		EColliderType mColliderType;
 
+		DirectX::SimpleMath::Matrix mOffsetTranslation;
 		DirectX::SimpleMath::Vector3 mScale;
 		float mRadius;
 		float mHalfHeight;
@@ -93,5 +107,14 @@ namespace fq::physics
 	void RigidBody::SetScale(const DirectX::SimpleMath::Vector3& scale)
 	{
 		mScale = scale;
+	}
+
+	void RigidBody::SetOffsetTranslation(DirectX::SimpleMath::Matrix offsetMatrix)
+	{
+		mOffsetTranslation = offsetMatrix;
+	}
+	const DirectX::SimpleMath::Matrix& RigidBody::GetOffsetTranslation()
+	{
+		return mOffsetTranslation;
 	}
 }

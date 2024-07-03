@@ -181,8 +181,7 @@ namespace fq::game_engine
 			// GameObject를 생성합니다
 			if (ImGui::MenuItem("CreateEmpty"))
 			{
-				mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
-					, std::make_shared<fq::game_module::GameObject>());
+				
 			}
 
 			ImGui::EndPopup();
