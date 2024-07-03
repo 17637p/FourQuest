@@ -246,7 +246,7 @@ namespace fq::physics
 		float limitsHigh = 60.f;										// 범위 ( Limit일 때 회전 윗 각도 범위 : 0.0 ~ 180.0 )
 	};
 
-	struct CharacterJointInfo
+	struct JointInfo
 	{
 		JointAxisInfo Swing1AxisInfo;						// Swing1( X축을 중심으로 한 회전 )
 		JointAxisInfo Swing2AxisInfo;						// Swing2( Y축을 중심으로 한 회전 )
@@ -257,20 +257,19 @@ namespace fq::physics
 		float maxForce = 1.f;								// 최대 힘 : 관절 드라이브가 적용할 수 있는 최대 힘 
 	};
 
-	struct CharacterLinkInfo
+	struct LinkInfo
 	{
 		std::string boneName = {};							// 해당 본(링크)의 이름
 		std::string parentBoneName = {};					// 부모 본(링크)의 이름
 		float density = 1.f;								// 밀도 ( 0.f ~ 1.f )
-		CharacterJointInfo JointInfo;						// 조인트 정보
 		DirectX::SimpleMath::Matrix localTransform = {};	// 로컬 좌표
+		JointInfo jointInfo;								// 조인트 정보
 	};
 
-	struct CharacterPhysicsInfo
+	struct ArticulationInfo
 	{
-		std::string modelPath = {};								// 모델 파일(본 데이터를 가지고 있는) 경로
 		unsigned int id = unregisterID;						// 아이디
-		unsigned int layerNumber = 0;						// 레이어 넘버
+		unsigned int layerNumber = 0;						// 충돌 레이어 넘버
 		DirectX::SimpleMath::Matrix worldTransform = {};	// 월드 좌표
 		float staticFriction = 1.f;							// 정적 마찰 계수 ( 0.f ~ 1.f )
 		float dynamicFriction = 1.f;						// 동적 마찰 계수 ( 0.f ~ 1.f )

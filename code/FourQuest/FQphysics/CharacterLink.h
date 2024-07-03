@@ -22,7 +22,7 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 링크 초기화 함수
 		/// </summary>
-		bool Initialize(const CharacterLinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
+		bool Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
 
 		/// <summary>
 		/// 캐릭터 링크 지오메트리 추가 함수

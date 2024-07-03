@@ -52,16 +52,13 @@
     <Filter Include="Helper\Header">
       <UniqueIdentifier>{e1535b79-53fd-4591-9ccd-7be24301626e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tool\Header">
+      <UniqueIdentifier>{f1976975-5348-49c9-862d-fd5d9c8c4d5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Physics.h">
       <Filter>physx</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsCookingMeshTool.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaClothTool.h">
-      <Filter>PhysicsActor\Header</Filter>
     </ClInclude>
     <ClInclude Include="CudaPhysicsCloth.h">
       <Filter>PhysicsActor\Header</Filter>
@@ -143,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="CharacterPhysics.h">
       <Filter>Character\CharacterPhysics\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaClothTool.h">
+      <Filter>Tool\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCookingMeshTool.h">
+      <Filter>Tool\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -239,7 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaClothTool.cu">
-      <Filter>PhysicsActor</Filter>
+      <Filter>Tool</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>

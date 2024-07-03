@@ -24,7 +24,7 @@ namespace fq::physics
 	{
 	}
 
-	bool CharacterJoint::Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const CharacterJointInfo& info)
+	bool CharacterJoint::Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const JointInfo& info)
 	{
 		mParentLink = parentLink;
 		mOwnerLink = ownerLink;

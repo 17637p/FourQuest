@@ -185,9 +185,14 @@ namespace fq::game_engine
 			ImGui::InputText("Name", &mAnimationClipNames[number]);
 
 			if (!mbIsPlay)
+			{
 				beginButton_AnimationPlay(number);
+			}
 			else
+			{
 				beginButton_AnimationStop(number);
+			}
+
 			ImGui::SameLine(80.f);
 			beginButton_AnimationSave(number);
 			ImGui::TreePop();
@@ -235,7 +240,9 @@ namespace fq::game_engine
 		{
 			mCurrentAnimaitionNumber++;
 			if (mCurrentAnimaitionNumber >= mAnimationSize)
+			{
 				mCurrentAnimaitionNumber = 0;
+			}
 
 			mEventManager->FireEvent<fq::event::WriteAnimation>(
 				{ mAnimationName, mAnimationClipContainer[number], mRegisteredObject.get(), (unsigned int)mAnimationSize }
@@ -262,7 +269,6 @@ namespace fq::game_engine
 
 				std::vector<fq::game_module::GameObject*> gameObjects = mRegisteredObject->GetChildren();
 				mExtractObjectNames.reserve(gameObjects.size());
-				//mExtractObjectNames.push_back(mRegisteredObject->GetName());
 
 				// 애니메이션 이름
 				std::string animationName;

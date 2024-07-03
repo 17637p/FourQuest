@@ -20,6 +20,8 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mCollisionMatrixWindow(std::make_unique<CollisionMatrixWindow>())
 	, mPhysicsAnimatorWindow(std::make_unique<PhysicsAnimatorWindow>())
 	, mNavMeshWindow(std::make_unique<NavigationMeshWindow>())
+	, mArticulationHierarchy(std::make_unique<ArticulationHierarchy>())
+	, mArticulationInspector(std::make_unique<ArticulationInspector>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

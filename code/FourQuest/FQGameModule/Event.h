@@ -148,7 +148,7 @@ namespace fq::event
 		bool bIsLoop;
 		unsigned int channelIndex;
 	};
-
+	      
 	struct OnStopChannel
 	{
 		unsigned int channelIndex;

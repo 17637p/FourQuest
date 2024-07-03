@@ -27,13 +27,13 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 파직스 (관절) 추가
 		/// </summary>
-		bool CreateCharacterphysics(const CharacterPhysicsInfo& info);
+		bool CreateCharacterphysics(const ArticulationInfo& info);
 
 		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
 		template <typename ...Params>
-		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, Params... params);
+		bool AddArticulationLink(unsigned int id, const LinkInfo& info, int* collisionMatrix, Params... params);
 
 		/// <summary>
 		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
@@ -60,7 +60,7 @@ namespace fq::physics
 	};
 
 	template<typename ...Params>
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, Params ...params)
+	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const LinkInfo& info, int* collisionMatrix, Params ...params)
 	{
 		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
