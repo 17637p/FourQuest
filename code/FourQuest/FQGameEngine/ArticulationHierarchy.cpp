@@ -40,6 +40,8 @@ namespace fq::game_engine
 		mScene = mGameProcess->mSceneManager->GetCurrentScene();
 		mEventManager = mGameProcess->mEventManager.get();
 		mInputManager = mEditorProcess->mInputManager.get();
+
+		mArticulationData = std::make_shared<fq::game_module::ArticulationData>();
 	}
 
 	void ArticulationHierarchy::Finalize()
@@ -170,6 +172,43 @@ namespace fq::game_engine
 			return;
 
 
+	}
+
+	void ArticulationHierarchy::beginPopupContextWindow_HierarchyChild()
+	{
+		if (ImGui::BeginPopupContextWindow())
+		{
+			// GameObject를 생성합니다
+			if (ImGui::MenuItem("CreateEmpty"))
+			{
+				mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
+					, std::make_shared<fq::game_module::GameObject>());
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void ArticulationHierarchy::beginPopupContextItem_Link()
+	{
+		//if (ImGui::BeginPopupContextItem(ContextItemName.c_str()))
+		//{
+		//	// GameObject를 생성합니다
+		//	if (ImGui::MenuItem("Destroy"))
+		//	{
+		//		mEditorProcess->mCommandSystem->Push<DestroyObjectCommand>(mScene
+		//			, object.shared_from_this());
+		//	}
+
+		//	// GameObject를 생성합니다
+		//	if (ImGui::MenuItem("CreateEmpty"))
+		//	{
+		//		mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene
+		//			, std::make_shared<fq::game_module::GameObject>());
+		//	}
+
+		//	ImGui::EndPopup();
+		//}
 	}
 
 	void ArticulationHierarchy::dragDropGameWindow()

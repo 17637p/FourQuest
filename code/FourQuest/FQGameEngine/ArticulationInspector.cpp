@@ -1,10 +1,9 @@
 #include "ArticulationInspector.h"
 
-#include "../FQGameModule/Articulation.h"
-
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
+#include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/ArticulationData.h"
 
 namespace fq::game_engine

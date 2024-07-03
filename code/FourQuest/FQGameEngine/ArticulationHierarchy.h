@@ -64,7 +64,21 @@ namespace fq::game_engine
 		/// <param name="object">정보를 표시하는 오브젝트</param>
 		void beginGameObjectBar(fq::game_module::GameObject& object);
 
+		/// <summary>
+		/// 관절의 계층구조를 표시하는 창
+		/// </summary>
 		void beginArticulationHierarchy();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void beginPopupContextWindow_HierarchyChild();
+
+		/// <summary>
+		/// 관절의 계층 구조에서 우클릭 하면 링크를 생성할지 나타나는 창
+		/// </summary>
+		void beginPopupContextItem_Link();
+
 
 
 	private:
@@ -85,6 +99,7 @@ namespace fq::game_engine
 		std::vector<fq::common::Bone> mBones;
 
 		std::shared_ptr<fq::game_module::ArticulationData> mArticulationData;
+		std::vector<std::shared_ptr<fq::game_module::LinkData>> mLinkData;
 		std::shared_ptr<fq::game_module::LinkData> mSelectLinkData;
 
 		// 이벤트관련
