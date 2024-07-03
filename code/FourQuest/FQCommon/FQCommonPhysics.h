@@ -147,7 +147,7 @@ namespace fq::physics
 	{
 		unsigned int id = unregisterID;
 		unsigned int layerNumber = 0;
-		fq::common::Transform collisionTransform = {};
+		fq::common::Transform	collisionTransform = {};
 		float staticFriction = 1.f;							// 정적 마찰 계수
 		float dynamicFriction = 1.f;						// 동적 마찰 계수
 		float restitution = 1.f;							// 복원 계수

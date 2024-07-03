@@ -127,7 +127,7 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 {
 	if (event.id == mBoxTypeID || event.id == mSphereTypeID
 		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
-		|| event.id == mRigidTypeID)
+		|| event.id == mRigidTypeID || event.id == mTerrainTypeID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -137,7 +137,7 @@ void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComp
 {
 	if (event.id == mBoxTypeID || event.id == mSphereTypeID
 		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
-		|| event.id == mRigidTypeID)
+		|| event.id == mRigidTypeID || event.id == mTerrainTypeID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -168,11 +168,12 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 	info.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 	info.colliderInfo.collisionTransform = transform->GetTransform();
 	info.height = terrain->GetTerrainMeshObject()->GetHeightData();
-	info.heightScale = terrain->GetHeightScale();
+
+	info.heightScale = terrain->GetHeightScale() / 255.f;
 	info.numCols = terrain->GetWidth();
 	info.numRows = terrain->GetHeight();
-	info.rowScale = 1.f;
-	info.colScale = 1.f;
+	info.rowScale = terrain->GetTextureWidth() / 100.f;
+	info.colScale = terrain->GetTextureHeight() / 100.f;
 
 	mPhysicsEngine->CreateStaticBody(info, physics::EColliderType::COLLISION);
 	mColliderContainer.insert({ id,
@@ -181,7 +182,6 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 		,  collider->GetGameObject()->shared_from_this()
 		, collider,false} });
 }
-
 
 void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* object)
 {
