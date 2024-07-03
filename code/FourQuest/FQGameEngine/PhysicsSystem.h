@@ -113,6 +113,8 @@ namespace fq::game_engine
 		/// </summary>
 		void AddInputMove(const fq::event::AddInputMove& event);
 
+		void AddTerrainCollider(fq::game_module::GameObject* object);
+
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);

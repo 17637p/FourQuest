@@ -23,6 +23,7 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "CharacterController.h"
+#include "TerrainCollider.h"
 
 //
 #include "SoundClip.h"
@@ -306,7 +307,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
 		.base<Component>();
 
-
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
 	//////////////////////////////////////////////////////////////////////////
@@ -442,6 +442,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PolygonLimit")
 		.base<Component>();
 
+	// MeshCollider
+	entt::meta<TerrainCollider>()
+		.type("TerrainCollider"_hs)
+		.prop(fq::reflect::prop::Name, "TerrainCollider")
+		.prop(fq::reflect::prop::Label, "Physcis")
+		.base<Component>();
 
 	entt::meta<fq::physics::CharacterControllerInfo>()
 		.type("CharacterControllerInfo"_hs)
