@@ -160,7 +160,10 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 
 	physics::HeightFieldColliderInfo info{};
 
-	info.colliderInfo.id = ++mLastColliderID;
+	ColliderID id = ++mLastColliderID;
+
+	collider->SetColliderID(id);
+	info.colliderInfo.id = id;
 	info.heightFieldMeshHash = entt::hashed_string(terrain->GetAlphaMap().c_str()).value();
 	info.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
 	info.colliderInfo.collisionTransform = transform->GetTransform();
@@ -172,6 +175,11 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 	info.colScale = 1.f;
 
 	mPhysicsEngine->CreateStaticBody(info, physics::EColliderType::COLLISION);
+	mColliderContainer.insert({ id,
+		{mTerrainTypeID
+		, collider->shared_from_this()
+		,  collider->GetGameObject()->shared_from_this()
+		, collider,false} });
 }
 
 
@@ -475,7 +483,7 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 		auto id = terrainCollider->GetColliderID();
 		assert(id != physics::unregisterID);
 
-		mColliderContainer.at(id).bIsDestroyed = terrainCollider
+		mColliderContainer.at(id).bIsDestroyed = true;
 	}
 
 }

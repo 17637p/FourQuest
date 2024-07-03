@@ -460,11 +460,9 @@
     <ClCompile Include="Trail.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="TerrainCollider.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
-=======
     <ClCompile Include="Articulation.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
@@ -474,6 +472,5 @@
     <ClCompile Include="ArticulationData.cpp">
       <Filter>src\07.Physics</Filter>
     </ClCompile>
->>>>>>> origin/ArticulationEditor
   </ItemGroup>
 </Project>
