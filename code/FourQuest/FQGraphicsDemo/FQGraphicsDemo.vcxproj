@@ -139,7 +139,10 @@
     <ClInclude Include="DemoUtils.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="OutLineDemo.h" />
-    <ClInclude Include="Process.h" />
+    <ClInclude Include="Process.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TerrainDemo.h" />
     <ClInclude Include="TimeManager.h" />
@@ -151,7 +154,10 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OutLineDemo.cpp" />
-    <ClCompile Include="Process.cpp" />
+    <ClCompile Include="Process.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="TerrainDemo.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="DefaultDemo.cpp" />

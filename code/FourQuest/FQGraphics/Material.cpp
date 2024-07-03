@@ -39,6 +39,7 @@ namespace fq::graphics
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 		const TerrainMaterialInfo& materialData,
+		UINT width, UINT height,
 		std::filesystem::path basePath /*= ""*/)
 		:mBaseColors{},
 		mNormals{},
@@ -49,6 +50,8 @@ namespace fq::graphics
 		mMetalics{},
 		mRoughnesses{},
 		mAlpha{ nullptr },
+		mWidth{width},
+		mHeight{height},
 		mHeightscale(materialData.HeightScale)
 	{
 		mBasePath = basePath;
@@ -123,11 +126,7 @@ namespace fq::graphics
 
 	void TerrainMaterial::LoadHeight(const std::string& heightMapFilePath)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
-		std::vector<unsigned char> in(width * height);
+		std::vector<unsigned char> in(mWidth * mHeight);
 
 		std::ifstream inFile;
 		inFile.open(heightMapFilePath.c_str(), std::ios_base::binary);
@@ -139,32 +138,26 @@ namespace fq::graphics
 			inFile.close();
 		}
 
-		mHeightMapData.resize(width * height, 0);
-		for (UINT i = 0; i < width * height; i++)
+		mHeightMapData.resize(mWidth * mHeight, 0);
+		mHeightMapRawData.resize(mWidth * mHeight, 0);
+		for (UINT i = 0; i < mWidth * mHeight; i++)
 		{
+			mHeightMapRawData[i] = in[i];
 			mHeightMapData[i] = (in[i] / 255.0f) * mHeightscale;
 		}
 	}
 
 	bool TerrainMaterial::InBounds(int i, int j)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
 		return
 			j >= 0 &&
-			i < (int)height &&
+			i < (int)mHeight &&
 			i >= 0 &&
-			j < (int)width;
+			j < (int)mWidth;
 	}
 
 	float TerrainMaterial::Average(int i, int j)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
 		float average = 0.0f;
 		float num = 0.0f;
 
@@ -174,7 +167,7 @@ namespace fq::graphics
 			{
 				if (InBounds(m, n))
 				{
-					average += mHeightMapData[m * width + n];
+					average += mHeightMapData[m * mWidth + n];
 					num += 1.0f;
 				}
 			}
@@ -189,17 +182,13 @@ namespace fq::graphics
 
 	void TerrainMaterial::SmoothHeightMap()
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
 		std::vector<float> dest(mHeightMapData.size());
 
-		for (UINT i = 0; i < height; i++)
+		for (UINT i = 0; i < mHeight; i++)
 		{
-			for (UINT j = 0; j < width; j++)
+			for (UINT j = 0; j < mWidth; j++)
 			{
-				dest[i * width + j] = Average(i, j);
+				dest[i * mWidth + j] = Average(i, j);
 			}
 		}
 
@@ -208,11 +197,7 @@ namespace fq::graphics
 
 	void TerrainMaterial::BuildHeightMapSRV(const std::shared_ptr<D3D11Device>& device)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
-		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, width, height);
+		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, mWidth, mHeight);
 	}
 
 	ParticleMaterial::ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo, const std::string& name)
