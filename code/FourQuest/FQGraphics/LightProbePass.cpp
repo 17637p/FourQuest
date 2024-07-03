@@ -34,7 +34,7 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 	mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 	mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 	mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
-	mLightProbeCB = std::make_shared<D3D11ConstantBuffer<LightProbe>>(mDevice, ED3D11ConstantBuffer::Transform);
+	mLightProbeCB = std::make_shared<D3D11ConstantBuffer<LightProbeCB>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
 	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);

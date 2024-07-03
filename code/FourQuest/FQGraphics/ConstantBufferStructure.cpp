@@ -74,9 +74,9 @@ namespace fq::graphics
 
 	// https://docs.unity3d.com/kr/2021.2/Manual/LightProbes-TechnicalInformation.html
 	// https://www.ppsloan.org/publications/StupidSH36.pdf
-	void ConstantBufferHelper::UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<D3D11ConstantBuffer<LightProbe>>& cbuffer, float* r, float* g, float* b)
+	void ConstantBufferHelper::UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer, float* r, float* g, float* b)
 	{
-		LightProbe probe;
+		LightProbeCB probe;
 
 		DirectX::SimpleMath::Vector4 vCoeff[3];
 		float* fLight[3] = { r, g, b };

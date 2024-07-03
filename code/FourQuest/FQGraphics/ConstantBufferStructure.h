@@ -266,7 +266,7 @@ namespace fq::graphics
 		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
 	};
 
-	struct LightProbe
+	struct LightProbeCB
 	{
 		DirectX::XMFLOAT4 Ar;
 		DirectX::XMFLOAT4 Ag;
@@ -301,7 +301,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);
 		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<LightProbe>>& cbuffer,
+			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
 			float* r, float* g, float* b);
 	};
 }

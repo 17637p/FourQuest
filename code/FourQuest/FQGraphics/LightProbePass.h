@@ -37,7 +37,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<LightProbe>> mLightProbeCB;
+		std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>> mLightProbeCB;
 
 		bool isSetProbe = false;
 		std::shared_ptr<D3D11Texture> mProbeTexture;
