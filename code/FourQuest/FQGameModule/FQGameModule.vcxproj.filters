@@ -66,9 +66,6 @@
     <Filter Include="include\01.EntityComponent\Graphics">
       <UniqueIdentifier>{03c7b1cc-2fb8-435a-a4d9-ca9f80bc4d16}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\08.Prefab">
-      <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\08.Prefab">
       <UniqueIdentifier>{d8a213a9-9766-44a7-8f3a-0bbf7584100e}</UniqueIdentifier>
     </Filter>
@@ -104,6 +101,9 @@
     </Filter>
     <Filter Include="src\11.SkyBox">
       <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\08.Prefab">
+      <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +284,15 @@
     <ClInclude Include="Trail.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Articulation.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkData.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationData.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -447,6 +456,15 @@
     </ClCompile>
     <ClCompile Include="Trail.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Articulation.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkData.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationData.cpp">
+      <Filter>src\07.Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

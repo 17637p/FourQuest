@@ -25,7 +25,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsCharacterPhysicsManager::CreateCharacterphysics(const CharacterPhysicsInfo& info)
+	bool PhysicsCharacterPhysicsManager::CreateCharacterphysics(const ArticulationInfo& info)
 	{
 		if (mCharacterPhysicsContainer.find(info.id) != mCharacterPhysicsContainer.end())
 			return false;

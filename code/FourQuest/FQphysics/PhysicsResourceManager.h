@@ -13,6 +13,8 @@ namespace fq::physics
 {
 	class MaterialResource;
 	class ConvexMeshResource;
+	class TriangleMeshResource;
+	class HeightFieldResource;
 
 	class PhysicsResourceManager
 	{
@@ -80,6 +82,10 @@ namespace fq::physics
 	{
 		if (std::is_same_v<T, ConvexMeshResource>)
 			return EResourceType::CONVEX_MESH;
+		if (std::is_same_v<T, TriangleMeshResource>)
+			return EResourceType::TRIANGLE_MESH;
+		if (std::is_same_v<T, HeightFieldResource>)
+			return EResourceType::HEIGHT_FIELD;
 
 		return EResourceType::END;
 	}

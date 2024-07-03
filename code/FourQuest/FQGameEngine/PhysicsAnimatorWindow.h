@@ -23,9 +23,11 @@ namespace fq::game_engine
 		void Initialize(GameProcess* game);
 
 		void Render() override;
+
 		void UpdateAnimation(float dt);
 
 		bool& IsWindowOpen() { return mbIsOpen; }
+
 		void StartScene();
 
 	private:

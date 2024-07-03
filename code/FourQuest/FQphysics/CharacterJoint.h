@@ -19,7 +19,7 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 조인트 초기화 함수
 		/// </summary>
-		bool Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const CharacterJointInfo& info);
+		bool Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const JointInfo& info);
 		
 		inline const std::shared_ptr<CharacterLink> GetOwnerLink();
 		inline const std::shared_ptr<CharacterLink> GetParentLink();
