@@ -113,6 +113,8 @@ namespace fq::game_engine
 		/// </summary>
 		void AddInputMove(const fq::event::AddInputMove& event);
 
+		void AddTerrainCollider(fq::game_module::GameObject* object);
+
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
@@ -143,6 +145,7 @@ namespace fq::game_engine
 		entt::id_type mCapsuleTypeID;
 		entt::id_type mMeshTypeID;
 		entt::id_type mCharactorControllerTypeID;
+		entt::id_type mTerrainTypeID;
 		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;

@@ -284,6 +284,9 @@
     <ClInclude Include="Trail.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
     <ClInclude Include="Articulation.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
@@ -456,6 +459,9 @@
     </ClCompile>
     <ClCompile Include="Trail.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Articulation.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>

@@ -5,6 +5,7 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQphysics/IFQPhysics.h"
+#include "../FQReflect/entt.hpp"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 #include "ModelSystem.h"
@@ -23,6 +24,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mCapsuleTypeID(0)
 	, mMeshTypeID(0)
 	, mCharactorControllerTypeID(0)
+	, mTerrainTypeID(0)
 	, mRigidTypeID(0)
 	, mAddInputMoveHandler{}
 {}
@@ -68,6 +70,7 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 	mMeshTypeID = entt::resolve<fq::game_module::MeshCollider>().id();
 	mCharactorControllerTypeID = entt::resolve<fq::game_module::CharacterController>().id();
 	mRigidTypeID = entt::resolve<game_module::RigidBody>().id();
+	mTerrainTypeID = entt::resolve<game_module::TerrainCollider>().id();
 }
 
 
@@ -146,6 +149,40 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 	setPhysicsEngineinfo();
 }
 
+void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::TerrainCollider>())
+		return;
+
+	game_module::TerrainCollider* collider = object->GetComponent<game_module::TerrainCollider>();
+	game_module::Transform* transform = object->GetComponent<game_module::Transform>();
+	game_module::Terrain* terrain = object->GetComponent<game_module::Terrain>();
+
+	physics::HeightFieldColliderInfo info{};
+
+	ColliderID id = ++mLastColliderID;
+
+	collider->SetColliderID(id);
+	info.colliderInfo.id = id;
+	info.heightFieldMeshHash = entt::hashed_string(terrain->GetAlphaMap().c_str()).value();
+	info.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
+	info.colliderInfo.collisionTransform = transform->GetTransform();
+	info.height = terrain->GetTerrainMeshObject()->GetHeightData();
+	info.heightScale = terrain->GetHeightScale();
+	info.numCols = terrain->GetWidth();
+	info.numRows = terrain->GetHeight();
+	info.rowScale = 1.f;
+	info.colScale = 1.f;
+
+	mPhysicsEngine->CreateStaticBody(info, physics::EColliderType::COLLISION);
+	mColliderContainer.insert({ id,
+		{mTerrainTypeID
+		, collider->shared_from_this()
+		,  collider->GetGameObject()->shared_from_this()
+		, collider,false} });
+}
+
+
 void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* object)
 {
 	using namespace fq::game_module;
@@ -179,19 +216,19 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(boxInfo, type);
 			assert(check);
-			mColliderContainer.insert({ colliderID, 
+			mColliderContainer.insert({ colliderID,
 				{mBoxTypeID
 				, boxCollider->shared_from_this()
 				,  boxCollider->GetGameObject()->shared_from_this()
 				, boxCollider,false} });
 		}
-		else 
+		else
 		{
 			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
 
 			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ colliderID, 
+			mColliderContainer.insert({ colliderID,
 				{mBoxTypeID
 				, boxCollider->shared_from_this()
 				, boxCollider->GetGameObject()->shared_from_this()
@@ -229,9 +266,9 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
 
-			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type,isKinematic);
+			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mSphereTypeID
 				, sphereCollider->shared_from_this()
 				, sphereCollider->GetGameObject()->shared_from_this()
@@ -259,7 +296,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mCapsuleTypeID
 				, capsuleCollider->shared_from_this()
 				, object->shared_from_this()
@@ -272,7 +309,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mCapsuleTypeID
 				, capsuleCollider->shared_from_this()
 				,object->shared_from_this()
@@ -297,7 +334,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
 
-		mColliderContainer.insert({ id, 
+		mColliderContainer.insert({ id,
 			{mCharactorControllerTypeID
 			, controller->shared_from_this()
 			,object->shared_from_this()
@@ -362,7 +399,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(convexMeshInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mCapsuleTypeID
 				, meshCollider->shared_from_this()
 				,object->shared_from_this()
@@ -374,7 +411,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mCapsuleTypeID
 				, meshCollider->shared_from_this()
 				,object->shared_from_this()
@@ -438,6 +475,17 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
+
+	// 5. TerrainCollider 
+	if (object->HasComponent<TerrainCollider>())
+	{
+		auto terrainCollider = object->GetComponent<TerrainCollider>();
+		auto id = terrainCollider->GetColliderID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
@@ -752,4 +800,3 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 
 	mCallbacks.clear();
 }
-
