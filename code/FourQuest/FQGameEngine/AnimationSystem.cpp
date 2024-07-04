@@ -55,28 +55,29 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		[dt](GameObject& object, Animator& animator)
 		{
 			animator.UpdateAnimation(dt);
-			std::shared_ptr<AnimatorController> controller = animator.GetSharedController();
 
-			if (controller == nullptr)
+			if (!animator.GetHasController())
 			{
 				// log
 				return;
 			}
 
-			auto nodeHierarchyInstance = animator.GetNodeHierarchyInstance();
-			float timePos = controller->GetTimePos();
+			auto& controller = animator.GetController();
 
-			if (controller->IsInTransition())
+			auto nodeHierarchyInstance = animator.GetNodeHierarchyInstance();
+			float timePos = controller.GetTimePos();
+
+			if (controller.IsInTransition())
 			{
-				float blendPos = controller->GetBlendTimePos();
-				float blendWeight = controller->GetBlendWeight();
-				animator.GetNodeHierarchyInstance()->Update(timePos, controller->GetCurrentStateAnimation(), blendPos, controller->GetNextStateAnimationOrNull(), blendWeight);
+				float blendPos = controller.GetBlendTimePos();
+				float blendWeight = controller.GetBlendWeight();
+				animator.GetNodeHierarchyInstance()->Update(timePos, controller.GetCurrentStateAnimation(), blendPos, controller.GetNextStateAnimationOrNull(), blendWeight);
 			}
 			else
 			{
-				if (controller->GetCurrentStateAnimation() != nullptr)
+				if (controller.GetCurrentStateAnimation() != nullptr)
 				{
-					animator.GetNodeHierarchyInstance()->Update(timePos, controller->GetCurrentStateAnimation());
+					animator.GetNodeHierarchyInstance()->Update(timePos, controller.GetCurrentStateAnimation());
 				}
 			}
 		});

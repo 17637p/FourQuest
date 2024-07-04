@@ -44,6 +44,8 @@ namespace fq::game_module
 		/// </summary>
 		std::shared_ptr<AnimatorController> GetSharedController()const { return mController; }
 
+		bool GetHasController() const { return mController != nullptr; }
+
 		/// <summary>
 		/// 애니메이션 상태를 업데이트 합니다 
 		/// </summary>
@@ -74,7 +76,7 @@ namespace fq::game_module
 		/// 애니메이션 정보를 관리하는 계층구조 인스턴스를 반환합니다.
 		/// </summary>
 		std::shared_ptr<fq::graphics::INodeHierarchyInstance> GetNodeHierarchyInstance() const { return mNodeHierarchyInstance; }
-		void SetNodeHierarchyInstance(std::shared_ptr<fq::graphics::INodeHierarchyInstance> nodeHierarchyInstance)  { mNodeHierarchyInstance = nodeHierarchyInstance; }
+		void SetNodeHierarchyInstance(std::shared_ptr<fq::graphics::INodeHierarchyInstance> nodeHierarchyInstance) { mNodeHierarchyInstance = nodeHierarchyInstance; }
 
 		void SetNodeHierarchy(std::shared_ptr<fq::graphics::INodeHierarchy> nodeHierarchy) { mNodeHierarchy = nodeHierarchy; }
 		std::shared_ptr<fq::graphics::INodeHierarchy> GetNodeHierarchy() const { return mNodeHierarchy; }
