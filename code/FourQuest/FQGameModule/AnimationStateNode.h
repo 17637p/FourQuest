@@ -5,6 +5,7 @@
 
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQReflect/FQReflect.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::game_module
 {
@@ -47,8 +48,10 @@ namespace fq::game_module
 		void SetAnimationKey(std::string val) { mAnimationKey = val; }
 		float GetDuration() const { return mDuration; }
 		void SetDuration(float val) { mDuration = val; }
-		bool IsLoof() const { return mbIsLoof; } 
+		bool IsLoof() const { return mbIsLoof; }
 		void SetLoof(bool val) { mbIsLoof = val; }
+		void SetAnimation(std::shared_ptr<fq::graphics::IAnimation> animation) { mAnimation = animation; }
+		std::shared_ptr<fq::graphics::IAnimation> GetAnimation() { return mAnimation; }
 
 		StateBehaviourMap& GetStateBehaviourMap() { return mBehaviours; }
 		const StateBehaviourMap& GetStateBehaviourMap() const { return mBehaviours; }
@@ -67,6 +70,7 @@ namespace fq::game_module
 		bool mbIsLoof;
 
 		StateBehaviourMap mBehaviours;
+		std::shared_ptr<fq::graphics::IAnimation> mAnimation;
 	};
 
 }

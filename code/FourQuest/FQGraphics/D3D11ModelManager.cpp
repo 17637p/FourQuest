@@ -41,6 +41,8 @@ namespace fq::graphics
 			return find->second;
 		}
 
+		assert(std::filesystem::exists(path));
+
 		fq::common::Model model = fq::loader::ModelLoader::Read(path);
 
 		for (const auto& material : model.Materials)
@@ -92,6 +94,87 @@ namespace fq::graphics
 		mModels.insert({ path, std::move(model) });
 
 		return mModels[path];
+	}
+
+	bool D3D11ModelManager::TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath , fq::common::Model* outDataOrNull)
+	{
+		auto find = mModels.find(path);
+
+		if (find != mModels.end())
+		{
+			if (outDataOrNull != nullptr)
+			{
+				*outDataOrNull = find->second;
+			}
+
+			return true;
+		}
+
+		std::filesystem::path fileSystemPath = path;
+
+
+		if (!std::filesystem::exists(fileSystemPath)
+			|| fileSystemPath.extension() != ".model")
+		{
+			return false;
+		}
+
+		fq::common::Model model = fq::loader::ModelLoader::Read(path);
+
+		for (const auto& material : model.Materials)
+		{
+			if (material.Name.empty())
+			{
+				continue;
+			}
+
+			MaterialInfo materialInfo;
+
+			materialInfo.BaseColor = material.BaseColor;
+			materialInfo.Metalness = material.Metalness;
+			materialInfo.Roughness = material.Roughness;
+
+			if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = textureBasePath / material.BaseColorFileName;
+			if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = textureBasePath / material.MetalnessFileName;
+			if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = textureBasePath / material.RoughnessFileName;
+			if (material.NormalFileName != L"") materialInfo.NormalFileName = textureBasePath / material.NormalFileName;
+			if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = textureBasePath / material.EmissiveFileName;
+
+			CreateMaterial(GenerateMaterialKey(path, material.Name), materialInfo);
+		}
+
+		for (const auto& [node, mesh] : model.Meshes)
+		{
+			if (mesh.Vertices.empty())
+			{
+				continue;
+			}
+
+			if (mesh.BoneVertices.empty())
+			{
+				CreateStaticMesh(GenerateStaticMeshKey(path, mesh.Name), mesh);
+			}
+			else
+			{
+				CreateSkinnedMesh(GenerateSkinnedMeshKey(path, mesh.Name), mesh);
+			}
+		}
+
+		CreateNodeHierarchy(GenerateBoneHierarachyKey(path), model);
+
+		for (const auto& animation : model.Animations)
+		{
+			CreateAnimation(GenerateAnimationKey(path, animation.Name), animation);
+		}
+
+		mModels.insert({ path, std::move(model) });
+
+		if (outDataOrNull != nullptr)
+		{
+			*outDataOrNull = mModels[path];
+		}
+
+		return true;
 	}
 
 	const fq::common::Model& D3D11ModelManager::GetModel(const std::string& path)

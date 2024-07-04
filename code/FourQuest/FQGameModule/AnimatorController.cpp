@@ -365,6 +365,19 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 	return mNextState->first;
 }
 
+
+std::shared_ptr<fq::graphics::IAnimation> fq::game_module::AnimatorController::GetNextStateAnimationOrNull() const
+{
+	if (mNextState == mStates.end())
+	{
+		return nullptr;
+	}
+
+	return mNextState->second.GetAnimation();
+}
+
+
+
 fq::game_module::AnimatorController::TransitionIterator fq::game_module::AnimatorController::checkStateTransition(const StateName& name)
 {
 	std::vector<TransitionIterator> transitions;
@@ -394,7 +407,7 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 			}
 			return false;
 		});
-	 
+
 
 	// 전환조건 확인
 	for (auto& iter : transitions)
@@ -419,14 +432,15 @@ void fq::game_module::AnimatorController::emitChangeState()
 		// Entry는 바로 전환합니다 
 		if (mCurrentState->first == "Entry")
 		{
+			;
 			mCurrentState = mNextState;
 			mNextState = mStates.end();
 			isBlend = false;
 
 			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
 				isBlend,
-				mCurrentState->first,
-				"",
+				mCurrentState->second.GetAnimation(),
+				nullptr,
 				mAnimator
 				});
 		}
@@ -434,8 +448,8 @@ void fq::game_module::AnimatorController::emitChangeState()
 		{
 			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
 				isBlend,
-				mCurrentState->first,
-				mNextState->first,
+				mCurrentState->second.GetAnimation(),
+				mNextState->second.GetAnimation(),
 				mAnimator
 				});
 		}
@@ -444,8 +458,8 @@ void fq::game_module::AnimatorController::emitChangeState()
 	{
 		eventMgr->FireEvent<fq::event::ChangeAnimationState>({
 			isBlend,
-			mCurrentState->first,
-			{},
+			mCurrentState->second.GetAnimation(),
+			nullptr,
 			mAnimator
 			});
 	}

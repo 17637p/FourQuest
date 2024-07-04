@@ -32,6 +32,7 @@ namespace fq::graphics
 		fq::common::Model ConvertModel(const std::string& fbxFilePath);
 
 		const fq::common::Model& CreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath = "");
+		bool TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr);
 		const fq::common::Model& GetModel(const std::string& path);
 		bool TryGetModel(const std::string& path, fq::common::Model* model);
 		void DeleteModelResource(const std::string& path);

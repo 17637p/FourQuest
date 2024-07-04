@@ -45,8 +45,9 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 		auto staticMesh = navObject.GetComponent<fq::game_module::StaticMeshRenderer>();
 		if (staticMesh != nullptr)
 		{
-			auto vertices = staticMesh->GetStaticMeshObject()->GetMeshData().Vertices;
-			auto indices = staticMesh->GetStaticMeshObject()->GetMeshData().Indices;
+			const auto& staticMeshInterface = staticMesh->GetStaticMeshObject()->GetStaticMesh();
+			auto vertices = staticMeshInterface->GetMeshData().Vertices;
+			auto indices = staticMeshInterface->GetMeshData().Indices;
 
 			UINT preVerticesSize = fieldVertices.size();
 			fieldVertices.reserve(preVerticesSize + vertices.size());

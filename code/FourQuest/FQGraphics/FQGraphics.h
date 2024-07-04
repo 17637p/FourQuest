@@ -37,6 +37,7 @@ namespace fq::graphics
 
 		// Model Resource Control
 		virtual const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") override;
+		virtual bool TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
 		virtual const fq::common::Model& GetModel(const std::string& path) override;
 		virtual void DeleteModelResource(const std::string& path) override;
 

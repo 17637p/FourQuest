@@ -130,6 +130,19 @@ void fq::game_module::RegisterMetaData()
 	//                                Mesh                                  //
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<fq::graphics::MeshObjectInfo>()
+		.type("MeshObjectInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::MeshObjectInfo::bUseShadow>("UseShadow"_hs)
+		.prop(fq::reflect::prop::Comment, u8"그림자 적용 여부")
+		.prop(fq::reflect::prop::Name, "UseShadow")
+		.data<&fq::graphics::MeshObjectInfo::OutlineColor>("OutlineColor"_hs)
+		.prop(fq::reflect::prop::Name, "OutlineColor")
+		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
+		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
+		.prop(fq::reflect::prop::Name, "IsAppliedDecal");
+
 	// StaticMeshRenderer
 	entt::meta<StaticMeshRenderer>()
 		.type("StaticMeshRenderer"_hs)
@@ -143,8 +156,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
-		.data<&StaticMeshRenderer::SetOutlineColor, &StaticMeshRenderer::GetOutlineColor>("Outline"_hs)
-		.prop(fq::reflect::prop::Name, "Outline")
+		.data<&StaticMeshRenderer::SetMeshObjectInfomation, &StaticMeshRenderer::GetMeshObjectInfomation>("MeshObjectInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
 		.data<&StaticMeshRenderer::SetIsNavigationMeshUsed, &StaticMeshRenderer::GetIsNavigationMeshUsed>("isUsedNavigationMesh"_hs)
 		.prop(fq::reflect::prop::Name, "isUsedNavigationMesh")
 		.base<Component>();
@@ -162,8 +175,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
-		.data<&SkinnedMeshRenderer::SetOutlineColor, &SkinnedMeshRenderer::GetOutlineColor>("Outline"_hs)
-		.prop(fq::reflect::prop::Name, "Outline")
+		.data<&SkinnedMeshRenderer::SetMeshObjectInfomation, &SkinnedMeshRenderer::GetMeshObjectInfomation>("MeshObjectInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -607,7 +620,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Density")
 		.prop(fq::reflect::prop::Comment, u8"밀도 ( 0.f ~ 1.f )");
 
-	
+
 	entt::meta<Articulation>()
 		.type("Articulation"_hs)
 		.prop(fq::reflect::prop::Name, "Articulation")
@@ -673,6 +686,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ControllerPath")
 		.prop(fq::reflect::prop::DragDrop, ".controller")
 		.prop(fq::reflect::prop::RelativePath)
+		.data<&Animator::SetModelPath, &Animator::GetModelPath>("ModelPath"_hs)
+		.prop(fq::reflect::prop::Comment, u8"애니메이션 처리 시 참조할 본 계층 구조")
+		.prop(fq::reflect::prop::DragDrop, ".model")
+		.prop(fq::reflect::prop::Name, "ModelPath")
 		.base<Component>();
 
 	entt::meta<LogStateBehaviour>()

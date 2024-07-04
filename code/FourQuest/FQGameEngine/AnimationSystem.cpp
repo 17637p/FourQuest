@@ -55,22 +55,29 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		[dt](GameObject& object, Animator& animator)
 		{
 			animator.UpdateAnimation(dt);
+			std::shared_ptr<AnimatorController> controller = animator.GetSharedController();
 
-			auto& controller = animator.GetController();
-
-			for (auto mesh : animator.GetSkinnedMeshs())
+			if (controller == nullptr)
 			{
-				float timePos = controller.GetTimePos();
+				// log
+				return;
+			}
 
-				if (controller.IsInTransition())
+			auto nodeHierarchyInstance = animator.GetNodeHierarchyInstance();
+			float timePos = controller->GetTimePos();
+
+			if (controller->IsInTransition())
+			{
+				float blendPos = controller->GetBlendTimePos();
+				float blendWeight = controller->GetBlendWeight();
+				animator.GetNodeHierarchyInstance()->Update(timePos, controller->GetCurrentStateAnimation(), blendPos, controller->GetNextStateAnimationOrNull(), blendWeight);
+			}
+			else
+			{
+				if (controller->GetCurrentStateAnimation() != nullptr)
 				{
-					float blendPos = controller.GetBlendTimePos();
-					float blendWeight = controller.GetBlendWeight();
-					mesh->GetSkinnedMeshObject()
-						->SetBlendAnimationTime({ timePos, blendPos }, blendWeight);
+					animator.GetNodeHierarchyInstance()->Update(timePos, controller->GetCurrentStateAnimation());
 				}
-				else
-					mesh->GetSkinnedMeshObject()->SetAnimationTime(timePos);
 			}
 		});
 }
@@ -93,7 +100,36 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 		return false;
 	}
 
+	if (!mGameProcess->mGraphics->TryCreateModelResource(animator->GetModelPath()))
+	{
+		return false;
+	}
+
+	auto nodeHierarchy = mGameProcess->mGraphics->GetNodeHierarchyByModelPathOrNull(animator->GetModelPath());
+	auto nodeHierarchyInstance = nodeHierarchy->CreateNodeHierarchyInstance();
+	animator->SetNodeHierarchy(nodeHierarchy);
+	animator->SetNodeHierarchyInstance(nodeHierarchyInstance);
+
 	auto controller = mLoader.Load(controllerPath);
+
+	for (auto& [stateName, animationStateNode] : controller->GetStateMap())
+	{
+		const auto& modelPath = animationStateNode.GetModelPath();
+		const auto& animName = animationStateNode.GetAnimationName();
+
+		if (!modelPath.empty() && !animName.empty())
+		{
+			mGameProcess->mGraphics->CreateModelResource(animationStateNode.GetModelPath());
+			auto animationInterface = mGameProcess->mGraphics->GetAnimationByModelPathOrNull(animationStateNode.GetModelPath(), animationStateNode.GetAnimationName());
+
+			if (animationInterface != nullptr)
+			{
+				animationStateNode.SetAnimation(animationInterface);
+				nodeHierarchy->RegisterAnimation(animationInterface);
+			}
+		}
+	}
+
 	controller->SetAnimator(animator);
 	animator->SetController(controller);
 
@@ -102,30 +138,32 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 
 void fq::game_engine::AnimationSystem::processCallBack()
 {
-	while (!mStateQueue.empty())
-	{
-		auto event = mStateQueue.front();
-		mStateQueue.pop();
-
-		auto animator = event.animator;
-
-		if (animator->GetGameObject()->IsDestroyed())
-		{
-			continue;
-		}
-
-		const auto& meshs = animator->GetSkinnedMeshs();
-		for (auto& mesh : meshs)
-		{
-
-			if (event.bIsBlend)
-			{
-				mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
-			}
-			else
-			{
-			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
-			}
-		}
-	}
+	return;
+	// while (!mStateQueue.empty())
+	// {
+	// 	auto event = mStateQueue.front();
+	// 	mStateQueue.pop();
+	// 
+	// 	auto animator = event.animator;
+	// 
+	// 	if (animator->GetGameObject()->IsDestroyed())
+	// 	{
+	// 		continue;
+	// 	}
+	// 	animator->gets
+	// 
+	// 		const auto& meshs = animator->GetSkinnedMeshs();
+	// 	for (auto& mesh : meshs)
+	// 	{
+	// 		// IAnimation ref 
+	// 		if (event.bIsBlend)
+	// 		{
+	// 			mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
+	// 		}
+	// 		else
+	// 		{
+	// 			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
+	// 		}
+	// 	}
+	// }
 }

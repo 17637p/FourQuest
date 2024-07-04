@@ -66,6 +66,7 @@ extern "C" {
 
 			// Model Resource Control
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") abstract;
+			virtual FQ_GRAPHICS bool TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr) abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& GetModel(const std::string& path) abstract;
 			virtual FQ_GRAPHICS void DeleteModelResource(const std::string& path) abstract;
 

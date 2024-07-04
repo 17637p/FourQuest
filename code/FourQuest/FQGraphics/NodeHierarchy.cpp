@@ -45,6 +45,7 @@ namespace fq::graphics
 
 	void NodeHierarchy::RegisterAnimation(std::shared_ptr<IAnimation> animation)
 	{
+		assert(animation != nullptr);
 		auto find = mAnimationCaches.find(animation);
 
 		if (find != mAnimationCaches.end())
@@ -220,24 +221,27 @@ namespace fq::graphics
 
 			fq::common::Keyframe lhsKeyframe;
 			fq::common::Keyframe rhsKeyframe;
-			fq::common::Keyframe lhs;
-			fq::common::Keyframe rhs;
-			float weight;
 
 			if (lhsNodeClip != nullptr)
 			{
+				fq::common::Keyframe lhs;
+				fq::common::Keyframe rhs;
+				float weight;
 				AnimationHelper::FindKeyframe(lhsNodeClip->Keyframes, lhsAnimationClip, lhsTimePos, &lhs, &rhs, &weight);
 				lhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
 			}
 
 			if (rhsNodeClip != nullptr)
 			{
+				fq::common::Keyframe lhs;
+				fq::common::Keyframe rhs;
+				float weight;
 				AnimationHelper::FindKeyframe(rhsNodeClip->Keyframes, rhsAnimationClip, rhsTimePos, &lhs, &rhs, &weight);
 				rhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
 			}
 
 			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);
-			mRootTransforms[i] = AnimationHelper::CreateMatrix(nodeKeyframe);
+			mRootTransforms[lhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 
 		calculateRootTransform();

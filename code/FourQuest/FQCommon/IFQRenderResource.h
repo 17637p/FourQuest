@@ -58,6 +58,9 @@ extern "C" {
 
 		class INodeHierarchyInstance;
 
+		/// <summary>
+		/// 모델 데이터와 대응되는 노드 계층 구조를 관리하는 클래스
+		/// </summary>
 		class INodeHierarchy
 		{
 		public:
@@ -76,6 +79,9 @@ extern "C" {
 			virtual ~INodeHierarchy() = default;
 		};
 
+		/// <summary>
+		/// 메쉬 오브젝트가 참조할 애니메이션 정보(변환 행렬 팔레트)를 관리하는 클래스
+		/// </summary>
 		class INodeHierarchyInstance
 		{
 		public:

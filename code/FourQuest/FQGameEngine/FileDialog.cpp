@@ -486,7 +486,9 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 				fileName = fileName.substr(0, fileName.size() - 4);
 
 				fs::path directory = path.parent_path() / fileName;
-				mGameProcess->mGraphics->ConvertModel(path.string(), directory.string());
+
+				auto modelData = mGameProcess->mGraphics->ConvertModel(path.string());
+				mGameProcess->mGraphics->WriteModel(directory.string(), modelData);
 			}
 		}
 
@@ -532,7 +534,8 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 			fileName = fileName.substr(0, fileName.size() - 4);
 
 			fs::path directory = target.parent_path() / fileName;
-			mGameProcess->mGraphics->ConvertModel(target.string(), directory.string());
+			auto modelData = mGameProcess->mGraphics->ConvertModel(target.string());
+			mGameProcess->mGraphics->WriteModel(directory.string(), modelData);
 		}
 	}
 

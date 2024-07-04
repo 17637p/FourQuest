@@ -97,8 +97,8 @@ void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* 
 	auto particle = object->GetComponent<fq::game_module::Particle>();
 	auto particleInfo = particle->GetParticleInfomation();
 	fq::graphics::ParticleMaterialInfo materialInfo = particle->GetParticleMaterialInfo();
-	auto particleMaterial = mGameProcess->mGraphics->CreateMaterial(materialInfo);
-	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix(), particleInfo, particleMaterial);
+	auto particleMaterial = mGameProcess->mGraphics->CreateParticleMaterial(materialInfo);
+	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleMaterial, particleInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	particle->SetParticleObject(particleObject);
 	particle->SetParticleMaterial(particleMaterial);
 }
@@ -118,11 +118,6 @@ void fq::game_engine::ParticleSystem::unloadParticle(fq::game_module::GameObject
 		mGameProcess->mGraphics->DeleteParticleObject(particleObject);
 
 		auto material = particle->GetParticleMaterial();
-
-		if (material)
-		{
-			mGameProcess->mGraphics->DeleteMaterial(material);
-			particle->SetParticleObject(nullptr);
-		}
+		particle->SetParticleObject(nullptr);
 	}
 }

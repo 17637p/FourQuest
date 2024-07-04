@@ -322,7 +322,6 @@ void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path 
 		materialInterfaces.reserve(mesh.Subsets.size());
 		MeshObjectInfo meshObjectInfo;
 
-
 		for (const auto& subset : mesh.Subsets)
 		{
 			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(modelPath, subset.MaterialName);

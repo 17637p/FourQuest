@@ -3,7 +3,6 @@
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
 	,mSkinnedMeshObject(nullptr)
-	,mOutlineColor{0.f,0.f,0.f,0.f}
 {
 }
 
@@ -36,32 +35,3 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SkinnedMeshRenderer
 	return cloneMesh;
 }
 
-void fq::game_module::SkinnedMeshRenderer::SetMeshName(std::string name)
-{
-	mMeshInfomation.MeshName = name;
-}
-
-void fq::game_module::SkinnedMeshRenderer::SetMaterials(std::vector<std::string> materials)
-{
-	mMeshInfomation.MaterialNames = std::move(materials);
-}
-
-
-void fq::game_module::SkinnedMeshRenderer::SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info)
-{
-	mMeshInfomation = std::move(info);
-}
-
-void fq::game_module::SkinnedMeshRenderer::SetModelPath(std::string path)
-{
-	mMeshInfomation.ModelPath = path;
-
-}
-
-void fq::game_module::SkinnedMeshRenderer::SetOutlineColor(DirectX::SimpleMath::Color color)
-{
-	mOutlineColor = color;
-
-	if (mSkinnedMeshObject)
-		mSkinnedMeshObject->SetOutlineColor(mOutlineColor);
-}
