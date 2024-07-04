@@ -14,6 +14,7 @@
 
 #include "../FQLoader/ModelLoader.h"
 #include "../FQCommon/FQCommonGraphics.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::graphics { class Renderer; }
 namespace fq::graphics { class IFQGraphics; }
@@ -42,25 +43,29 @@ private:
 	void debugRender();
 	void shadowTest();
 
-	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	void calculateFrameStats();
 
 	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
 	void convertFBXModelAll(std::filesystem::path folderPath);
 
-	void particleInit();
-	void particleUpdate();
+	void renderObjectInit();
+	void renderObjectUpdate();
 
+	void animationUpdate();
 	void materialUpdate();
-
 	void socketUpdate();
 
-	void decalInit();
-	void decalUpdate();
+	void VFXInit();
+	void VFXUpdate();
 
+	void particleInit();
+	void decalInit();
 	void trailInit();
+
+	void particleUpdate();
+	void decalUpdate();
 	void trailUpdate();
 
 private:
@@ -81,14 +86,14 @@ private:
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
-	std::vector<std::shared_ptr<fq::graphics::IStaticMeshObject>> mStaticMeshObjects;
-	std::vector<std::shared_ptr<fq::graphics::ISkinnedMeshObject>> mSkinnedMeshObjects;
+	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
+	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
-	std::vector<fq::graphics::std::shared_ptr<IDecalObject>> mDecalObjects;
+	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
 	std::vector<fq::graphics::ITrailObject*> mTrailObjects;
 
-	std::shared_ptr<fq::graphics::IStaticMeshObject> mSocketStaticMeshObject;
-	std::shared_ptr<fq::graphics::ISkinnedMeshObject> mSoketSkinnedMeshObject;
+	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
+	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;
 	DirectX::SimpleMath::Matrix mSocketInitTransform;
 	// Camera
 	fq::common::Transform cameraTransform;

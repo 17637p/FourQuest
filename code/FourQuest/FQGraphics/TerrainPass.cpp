@@ -5,6 +5,7 @@
 #include "RenderJob.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "RenderObject.h"
 #include "Define.h"
 
 namespace fq::graphics

@@ -326,7 +326,7 @@ namespace fq::graphics
 		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
 			const std::shared_ptr<TerrainMaterial>& material,
-			const std::shared_ptr<ITerrainMeshObject> iTerrainObject);
+			const ITerrainMeshObject* iTerrainObject);
 		static void UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);

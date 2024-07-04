@@ -222,6 +222,8 @@ void OutLineDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix
 
 void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
 {
+	mTestGraphics->CreateModelResource(modelPath);
+
 	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
 
 	for (auto mesh : modelData.Meshes)
@@ -243,7 +245,7 @@ void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::A
 
 		if (mesh.second.BoneVertices.empty())
 		{
-			std::shared_ptr<fq::graphics::IStaticMeshObject> iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
 
 			static int testIndex = 0;
 
@@ -265,7 +267,7 @@ void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::A
 		{
 			meshInfo.Transform = transform;
 
-			std::shared_ptr<fq::graphics::ISkinnedMeshObject> iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
+			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInfo);
 
 			//iSkinnedMeshObject->SetOutlineColor(DirectX::SimpleMath::Color{ 1, 0, 0, 1 });
 

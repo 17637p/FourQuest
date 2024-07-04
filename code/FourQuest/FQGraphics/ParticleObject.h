@@ -55,6 +55,7 @@ namespace fq::graphics
 		// Info
 		void SetInfo(const ParticleInfo& info) override { mParticleInfo = info; }
 		const ParticleInfo& GetInfo() const override { return mParticleInfo; }
+		ParticleInfo& GetInfo() override { return mParticleInfo; }
 
 		// Material
 		virtual void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) override { mIParticleMaterial = iParticleMaterial; }

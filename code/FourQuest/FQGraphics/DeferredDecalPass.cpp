@@ -164,11 +164,11 @@ namespace fq::graphics
 		}
 
 		// cb update
-		const std::set<std::shared_ptr<IDecalObject>>& decalObjects = mObjectManager->GetDecalObjects();
+		const std::set<IDecalObject*>& decalObjects = mObjectManager->GetDecalObjects();
 
-		for (std::shared_ptr<IDecalObject> decalObjectInterface : decalObjects)
+		for (IDecalObject* decalObjectInterface : decalObjects)
 		{
-			std::shared_ptr<DecalObject> decalObject = std::static_pointer_cast<DecalObject>(decalObjectInterface);
+			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
 			std::shared_ptr<DecalMaterial> material = std::static_pointer_cast<DecalMaterial>(decalObjectInterface->GetDecalMaterial());
 			auto transform = decalObject->GetTransform();
 			const auto& decalInfo = decalObject->GetDecalInfo();

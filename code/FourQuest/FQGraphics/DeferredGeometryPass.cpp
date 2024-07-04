@@ -112,7 +112,7 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 
 			mDSV->Clear(mDevice);
-			mAlbedoRTV->Clear(mDevice, { 1.f, 1.f, 1.f, 1.f });
+			mAlbedoRTV->Clear(mDevice);
 			mMetalnessRTV->Clear(mDevice);
 			mRoughnessRTV->Clear(mDevice);
 			mNormalRTV->Clear(mDevice, { 1000, 0, 0, 0 });

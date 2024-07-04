@@ -56,16 +56,14 @@ namespace fq::graphics
 			materialInfo.Metalness = material.Metalness;
 			materialInfo.Roughness = material.Roughness;
 
-			if (material.BaseColorFileName != L"")materialInfo.BaseColorFileName = textureBasePath / material.BaseColorFileName;
-			if (material.MetalnessFileName != L"")materialInfo.MetalnessFileName = textureBasePath / material.MetalnessFileName;
-			if (material.RoughnessFileName != L"")materialInfo.RoughnessFileName = textureBasePath / material.RoughnessFileName;
-			if (material.NormalFileName != L"")materialInfo.NormalFileName = textureBasePath / material.NormalFileName;
-			if (material.EmissiveFileName != L"")materialInfo.EmissiveFileName = textureBasePath / material.EmissiveFileName;
+			if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = textureBasePath / material.BaseColorFileName;
+			if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = textureBasePath / material.MetalnessFileName;
+			if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = textureBasePath / material.RoughnessFileName;
+			if (material.NormalFileName != L"") materialInfo.NormalFileName = textureBasePath / material.NormalFileName;
+			if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = textureBasePath / material.EmissiveFileName;
 
 			CreateMaterial(GenerateMaterialKey(path, material.Name), materialInfo);
 		}
-
-		bool bHasSkinnedMesh = false;
 
 		for (const auto& [node, mesh] : model.Meshes)
 		{
@@ -81,14 +79,10 @@ namespace fq::graphics
 			else
 			{
 				CreateSkinnedMesh(GenerateSkinnedMeshKey(path, mesh.Name), mesh);
-				bHasSkinnedMesh = true;
 			}
 		}
 
-		if (bHasSkinnedMesh)
-		{
-			CreateNodeHierarchy(GenerateBoneHierarachyKey(path), model);
-		}
+		CreateNodeHierarchy(GenerateBoneHierarachyKey(path), model);
 
 		for (const auto& animation : model.Animations)
 		{
@@ -177,6 +171,10 @@ namespace fq::graphics
 	std::shared_ptr<IStaticMesh> D3D11ModelManager::GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName)
 	{
 		return findOrNull(mStaticMeshes, GenerateStaticMeshKey(modelPath, meshName));
+	}
+	std::shared_ptr<ISkinnedMesh> D3D11ModelManager::GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName)
+	{
+		return findOrNull(mSkinnedMeshes, GenerateSkinnedMeshKey(modelPath, meshName));
 	}
 	std::shared_ptr<INodeHierarchy> D3D11ModelManager::GetNodeHierarchyByModelPathOrNull(std::string modelPath)
 	{

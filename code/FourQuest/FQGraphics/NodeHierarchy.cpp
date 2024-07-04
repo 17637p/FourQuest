@@ -43,7 +43,7 @@ namespace fq::graphics
 		}
 	}
 
-	void NodeHierarchy::CreateAnimationCache(std::shared_ptr<IAnimation> animation)
+	void NodeHierarchy::RegisterAnimation(std::shared_ptr<IAnimation> animation)
 	{
 		auto find = mAnimationCaches.find(animation);
 
@@ -83,10 +83,7 @@ namespace fq::graphics
 		}
 
 		mAnimationCaches.insert({ animation, cacheData });
-	}
-	void NodeHierarchy::DeleteAnimationCache(std::shared_ptr<IAnimation> animation)
-	{
-		mAnimationCaches.erase(animation);
+		mRegisterAnimations.insert(animation);
 	}
 
 	std::shared_ptr<INodeHierarchyInstance> NodeHierarchy::CreateNodeHierarchyInstance()
@@ -142,6 +139,8 @@ namespace fq::graphics
 		const auto& find = animationCache.find(animation);
 		const auto& animClip = animation->GetAnimationClip();
 
+		SetBindPose();
+
 		if (find != animationCache.end())
 		{
 			const auto boneNodeClipCache = find->second;
@@ -193,7 +192,6 @@ namespace fq::graphics
 
 		calculateRootTransform();
 	}
-
 	void NodeHierarchyInstance::Update(float lhsTimePos, std::shared_ptr<IAnimation> lhsAnimation, float rhsTimePos, std::shared_ptr<IAnimation> rhsAnimation, float weight)
 	{
 		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
@@ -205,6 +203,8 @@ namespace fq::graphics
 		{
 			return;
 		}
+
+		SetBindPose();
 
 		const size_t BONE_COUNT = mNodeHierarchy->GetBones().size();
 
@@ -254,8 +254,7 @@ namespace fq::graphics
 		for (size_t i = 0; i < bones.size(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mTransposedFinalTransforms[i] = bones[i].OffsetMatrix * mRootTransforms[i];
-			mTransposedFinalTransforms[i] = mTransposedFinalTransforms[i].Transpose();
+			mTransposedFinalTransforms[i] = (bones[i].OffsetMatrix * mRootTransforms[i]).Transpose();
 		}
 	}
 }

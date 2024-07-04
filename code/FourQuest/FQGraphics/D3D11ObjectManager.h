@@ -27,37 +27,54 @@ namespace fq::graphics
 	{
 	public:
 		D3D11ObjectManager() = default;
-		~D3D11ObjectManager() = default;
+		~D3D11ObjectManager();
 
-		std::shared_ptr<IStaticMeshObject> CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform);
-		std::shared_ptr<ISkinnedMeshObject> CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform);
-		std::shared_ptr<ITerrainMeshObject> CreateTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform);
-		std::shared_ptr<IParticleObject> CreateParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
-		std::shared_ptr<IDecalObject> CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform);
-		std::shared_ptr<ITrailObject> CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform);
+		void ClearDeleteQueue();
 
-		void DeleteStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject);
-		void DeleteSkinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> skinnedMeshObject);
-		void DeleteTerrainMeshObject(std::shared_ptr<ITerrainMeshObject> terrainMeshObjectInterface);
-		void DeleteParticleObject(std::shared_ptr<IParticleObject> particleObject);
-		void DeleteDecalObject(std::shared_ptr<IDecalObject> decalObject);
-		void DeleteTrailObject(std::shared_ptr<ITrailObject> trailObject);
+		IStaticMeshObject* CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform);
+		ISkinnedMeshObject* CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform);
+		ITerrainMeshObject* CreateTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform);
+		IParticleObject* CreateParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
+		IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform);
+		ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform);
 
-		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<ITerrainMeshObject> iTerrainMeshObject, const TerrainMaterialInfo& material);
+		void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject);
+		void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject);
+		void DeleteTerrainMeshObject(ITerrainMeshObject* terrainMeshObjectInterface);
+		void DeleteParticleObject(IParticleObject* particleObject);
+		void DeleteDecalObject(IDecalObject* decalObject);
+		void DeleteTrailObject(ITrailObject* trailObject);
 
-		const std::set<std::shared_ptr<IStaticMeshObject>>& GetStaticMeshObjects() const { return mStaticMeshObjects; }
-		const std::set<std::shared_ptr<ISkinnedMeshObject>>& GetSkinnedMeshObjects() const { return mSkinnedMeshObjects; }
-		const std::set<std::shared_ptr<ITerrainMeshObject>>& GetTerrainMeshObjects() const { return mTerrainMeshObjects; }
-		const std::set<std::shared_ptr<IParticleObject>>& GetParticleObjects() const { return mParticleObjects; }
-		const std::set<std::shared_ptr<IDecalObject>>& GetDecalObjects() const { return mDecalObjects; }
-		const std::set<std::shared_ptr<ITrailObject>>& GetTrailObjects() const { return mTrailObjects; }
+		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material);
+
+		const std::set<IStaticMeshObject*>& GetStaticMeshObjects() const { return mStaticMeshObjects; }
+		const std::set<ISkinnedMeshObject*>& GetSkinnedMeshObjects() const { return mSkinnedMeshObjects; }
+		const std::set<ITerrainMeshObject*>& GetTerrainMeshObjects() const { return mTerrainMeshObjects; }
+		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
+		const std::set<IDecalObject*>& GetDecalObjects() const { return mDecalObjects; }
+		const std::set<ITrailObject*>& GetTrailObjects() const { return mTrailObjects; }
 
 	private:
-		std::set<std::shared_ptr<IStaticMeshObject>> mStaticMeshObjects;
-		std::set<std::shared_ptr<ISkinnedMeshObject>> mSkinnedMeshObjects;
-		std::set<std::shared_ptr<ITerrainMeshObject>> mTerrainMeshObjects;
-		std::set<std::shared_ptr<IParticleObject>> mParticleObjects;
-		std::set<std::shared_ptr<IDecalObject>> mDecalObjects;
-		std::set<std::shared_ptr<ITrailObject>> mTrailObjects;
+		template <typename Child, typename Parent>
+		void deleteObject(Parent* parentPtr)
+		{
+			Child* childPtr = static_cast<Child*>(parentPtr);
+			delete childPtr;
+		}
+
+	private:
+		std::set<IStaticMeshObject*> mStaticMeshObjects;
+		std::set<ISkinnedMeshObject*> mSkinnedMeshObjects;
+		std::set<ITerrainMeshObject*> mTerrainMeshObjects;
+		std::set<IParticleObject*> mParticleObjects;
+		std::set<IDecalObject*> mDecalObjects;
+		std::set<ITrailObject*> mTrailObjects;
+
+		std::queue<IStaticMeshObject*> mStaticMeshObjectDeleteQueue;
+		std::queue<ISkinnedMeshObject*> mSkinnedMeshObjectDeleteQueue;
+		std::queue<ITerrainMeshObject*> mTerrainMeshObjectDeleteQueue;
+		std::queue<IParticleObject*> mParticleObjectDeleteQueue;
+		std::queue<IDecalObject*> mDecalObjectDeleteQueue;
+		std::queue<ITrailObject*> mTrailObjectDeleteQueue;
 	};
 }

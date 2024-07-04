@@ -14,77 +14,135 @@
 
 namespace fq::graphics
 {
-	std::shared_ptr<IStaticMeshObject> D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+	D3D11ObjectManager::~D3D11ObjectManager()
 	{
-		std::shared_ptr<IStaticMeshObject> staticMeshObject = std::make_shared<StaticMeshObject>(staticMesh, materials, meshObjectInfo, transform);
+		for (auto* element : mStaticMeshObjects) { deleteObject<StaticMeshObject>(element); } mStaticMeshObjects.clear();
+		for (auto* element : mSkinnedMeshObjects) { deleteObject<SkinnedMeshObject>(element); } mSkinnedMeshObjects.clear();
+		for (auto* element : mTerrainMeshObjects) { deleteObject<TerrainMeshObject>(element); } mTerrainMeshObjects.clear();
+		for (auto* element : mParticleObjects) { deleteObject<ParticleObject>(element); } mParticleObjects.clear();
+		for (auto* element : mDecalObjects) { deleteObject<DecalObject>(element); } mDecalObjects.clear();
+		for (auto* element : mTrailObjects) { deleteObject<TrailObject>(element); } mTrailObjects.clear();
+
+		ClearDeleteQueue();
+	}
+
+	void D3D11ObjectManager::ClearDeleteQueue()
+	{
+		while (!mStaticMeshObjectDeleteQueue.empty()) { deleteObject<StaticMeshObject>(mStaticMeshObjectDeleteQueue.front()); mStaticMeshObjectDeleteQueue.pop(); }
+		while (!mSkinnedMeshObjectDeleteQueue.empty()) { deleteObject<SkinnedMeshObject>(mSkinnedMeshObjectDeleteQueue.front()); mSkinnedMeshObjectDeleteQueue.pop(); }
+		while (!mTerrainMeshObjectDeleteQueue.empty()) { deleteObject<TerrainMeshObject>(mTerrainMeshObjectDeleteQueue.front()); mTerrainMeshObjectDeleteQueue.pop(); }
+		while (!mParticleObjectDeleteQueue.empty()) { deleteObject<ParticleObject>(mParticleObjectDeleteQueue.front()); mParticleObjectDeleteQueue.pop(); }
+		while (!mDecalObjectDeleteQueue.empty()) { deleteObject<DecalObject>(mDecalObjectDeleteQueue.front()); mDecalObjectDeleteQueue.pop(); }
+		while (!mTrailObjectDeleteQueue.empty()) { deleteObject<TrailObject>(mTrailObjectDeleteQueue.front()); mTrailObjectDeleteQueue.pop(); }
+	}
+
+	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+	{
+		IStaticMeshObject* staticMeshObject = new StaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
 		mStaticMeshObjects.insert(staticMeshObject);
 
 		return staticMeshObject;
 	}
-	std::shared_ptr<ISkinnedMeshObject> D3D11ObjectManager::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+	ISkinnedMeshObject* D3D11ObjectManager::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 	{
-		std::shared_ptr<ISkinnedMeshObject> skinnedMeshObject = std::make_shared<SkinnedMeshObject>(skinnedMesh, materials, meshObjectInfo, transform);
+		ISkinnedMeshObject* skinnedMeshObject = new SkinnedMeshObject(skinnedMesh, materials, meshObjectInfo, transform);
 		mSkinnedMeshObjects.insert(skinnedMeshObject);
 
 		return skinnedMeshObject;
 	}
-	std::shared_ptr<ITerrainMeshObject> D3D11ObjectManager::CreateTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform)
+	ITerrainMeshObject* D3D11ObjectManager::CreateTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform)
 	{
-		std::shared_ptr<ITerrainMeshObject> terrainMeshObject = std::make_shared<TerrainMeshObject>(device, std::static_pointer_cast<StaticMesh>(staticMesh), transform);
+		ITerrainMeshObject* terrainMeshObject = new TerrainMeshObject(device, std::static_pointer_cast<StaticMesh>(staticMesh), transform);
 		mTerrainMeshObjects.insert(terrainMeshObject);
 
 		return terrainMeshObject;
 	}
-	std::shared_ptr<IParticleObject> D3D11ObjectManager::CreateParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
+	IParticleObject* D3D11ObjectManager::CreateParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
 	{
-		std::shared_ptr<IParticleObject> particleObject = std::make_shared<ParticleObject>(device, iParticleMaterial, particleInfo, transform);
+		IParticleObject* particleObject = new ParticleObject(device, iParticleMaterial, particleInfo, transform);
 		mParticleObjects.insert(particleObject);
 
 		return particleObject;
 	}
-	std::shared_ptr<IDecalObject> D3D11ObjectManager::CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform)
+	IDecalObject* D3D11ObjectManager::CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform)
 	{
-		std::shared_ptr<IDecalObject> decalObject = std::make_shared<DecalObject>(iDecalMaterial, decalInfo, transform);
+		IDecalObject* decalObject = new DecalObject(iDecalMaterial, decalInfo, transform);
 		mDecalObjects.insert(decalObject);
 
 		return decalObject;
 	}
-	std::shared_ptr<ITrailObject> D3D11ObjectManager::CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
+	ITrailObject* D3D11ObjectManager::CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
 	{
-		std::shared_ptr<ITrailObject> trailObject = std::make_shared<TrailObject>(iParticleMaterial, trailInfo, transform);
+		ITrailObject* trailObject = new TrailObject(iParticleMaterial, trailInfo, transform);
 		mTrailObjects.insert(trailObject);
 
 		return trailObject;
 	}
 
-	void D3D11ObjectManager::DeleteStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject)
+	void D3D11ObjectManager::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
 	{
-		mStaticMeshObjects.erase(staticMeshObject);
+		auto find = mStaticMeshObjects.find(staticMeshObject);
+
+		if (find != mStaticMeshObjects.end())
+		{
+			mStaticMeshObjects.erase(find);
+			mStaticMeshObjectDeleteQueue.push(staticMeshObject);
+		}
 	}
-	void D3D11ObjectManager::DeleteSkinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> skinnedMeshObject)
+	void D3D11ObjectManager::DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject)
 	{
-		mSkinnedMeshObjects.erase(skinnedMeshObject);
+		auto find = mSkinnedMeshObjects.find(skinnedMeshObject);
+
+		if (find != mSkinnedMeshObjects.end())
+		{
+			mSkinnedMeshObjects.erase(find);
+			mSkinnedMeshObjectDeleteQueue.push(skinnedMeshObject);
+		}
 	}
-	void D3D11ObjectManager::DeleteTerrainMeshObject(std::shared_ptr<ITerrainMeshObject> terrainMeshObjectInterface)
+	void D3D11ObjectManager::DeleteTerrainMeshObject(ITerrainMeshObject* terrainMeshObjectInterface)
 	{
-		mTerrainMeshObjects.erase(terrainMeshObjectInterface);
+		auto find = mTerrainMeshObjects.find(terrainMeshObjectInterface);
+
+		if (find != mTerrainMeshObjects.end())
+		{
+			mTerrainMeshObjects.erase(find);
+			mTerrainMeshObjectDeleteQueue.push(terrainMeshObjectInterface);
+		}
 	}
-	void D3D11ObjectManager::DeleteParticleObject(std::shared_ptr<IParticleObject> particleObject)
+	void D3D11ObjectManager::DeleteParticleObject(IParticleObject* particleObject)
 	{
-		mParticleObjects.erase(particleObject);
+		auto find = mParticleObjects.find(particleObject);
+
+		if (find != mParticleObjects.end())
+		{
+			mParticleObjects.erase(find);
+			mParticleObjectDeleteQueue.push(particleObject);
+		}
 	}
-	void D3D11ObjectManager::DeleteDecalObject(std::shared_ptr<IDecalObject> decalObject)
+	void D3D11ObjectManager::DeleteDecalObject(IDecalObject* decalObject)
 	{
-		mDecalObjects.erase(decalObject);
+		auto find = mDecalObjects.find(decalObject);
+
+		if (find != mDecalObjects.end())
+		{
+			mDecalObjects.erase(find);
+			mDecalObjectDeleteQueue.push(decalObject);
+		}
 	}
-	void D3D11ObjectManager::DeleteTrailObject(std::shared_ptr<ITrailObject> trailObject)
+	void D3D11ObjectManager::DeleteTrailObject(ITrailObject* trailObject)
 	{
-		mTrailObjects.erase(trailObject);
+		auto find = mTrailObjects.find(trailObject);
+
+		if (find != mTrailObjects.end())
+		{
+			mTrailObjects.erase(find);
+			mTrailObjectDeleteQueue.push(trailObject);
+		}
 	}
 
-	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<ITerrainMeshObject> iTerrainMeshObject, const TerrainMaterialInfo& material)
+	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material)
 	{
-		std::shared_ptr<TerrainMeshObject> terrainMeshObject = std::static_pointer_cast<TerrainMeshObject>(iTerrainMeshObject);
+		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
 		terrainMeshObject->SetTerrainMaterial(device, material);
 	}
 }

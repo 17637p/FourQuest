@@ -2,6 +2,8 @@
 
 #include <filesystem>
 #include <string>
+#include <set>
+#include <map>
 #include "FQCommonLoader.h"
 #include "FQCommonGraphics.h"
 #include "IFQRenderResource.h"
@@ -45,6 +47,8 @@ extern "C" {
 		{
 		public:
 			virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
+			// virtual FQ_GRAPHICS void SetName(const std::string& name) abstract;
+			// virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
 			virtual const fq::common::AnimationClip& GetAnimationClip() const abstract;
 
@@ -53,13 +57,16 @@ extern "C" {
 		};
 
 		class INodeHierarchyInstance;
-		
+
 		class INodeHierarchy
 		{
 		public:
-			virtual FQ_GRAPHICS void CreateAnimationCache(std::shared_ptr<IAnimation> animation) abstract;
-			virtual FQ_GRAPHICS void DeleteAnimationCache(std::shared_ptr<IAnimation> animation) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> CreateNodeHierarchyInstance() abstract;
+
+			virtual FQ_GRAPHICS void RegisterAnimation(std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS void UnregisterAnimation(std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS void UnregisterAllAnimations() abstract;
+			virtual FQ_GRAPHICS const std::set<std::shared_ptr<IAnimation>>& GetRegisterAnimations() const abstract;
 
 			virtual FQ_GRAPHICS const std::vector<fq::common::Bone>& GetBones() const abstract;
 			virtual FQ_GRAPHICS unsigned int GetBoneIndex(const std::string& boneName) const abstract;

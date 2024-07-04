@@ -2,9 +2,9 @@
 
 #include "RenderObject.h"
 
-std::set<std::shared_ptr<fq::graphics::IStaticMeshObject>> fq::graphics::D3D11CullingManager::GetInFrustumStaticObjects(const std::set<std::shared_ptr<IStaticMeshObject>>& staticObjects)
+std::set<fq::graphics::IStaticMeshObject*> fq::graphics::D3D11CullingManager::GetInFrustumStaticObjects(const std::set<IStaticMeshObject*>& staticObjects)
 {
-	std::set<std::shared_ptr<IStaticMeshObject>> inFrustumObjects;
+	std::set<IStaticMeshObject*> inFrustumObjects;
 
 	for (const auto& staticObject : staticObjects)
 	{
@@ -21,9 +21,9 @@ std::set<std::shared_ptr<fq::graphics::IStaticMeshObject>> fq::graphics::D3D11Cu
 	return inFrustumObjects;
 }
 
-std::set<std::shared_ptr<fq::graphics::ISkinnedMeshObject>> fq::graphics::D3D11CullingManager::GetInFrustumSkinnedObjects(const std::set<std::shared_ptr<ISkinnedMeshObject>>& skinnedObjects)
+std::set<fq::graphics::ISkinnedMeshObject*> fq::graphics::D3D11CullingManager::GetInFrustumSkinnedObjects(const std::set<ISkinnedMeshObject*>& skinnedObjects)
 {
-	std::set<std::shared_ptr<ISkinnedMeshObject>> inFrustumObjects;
+	std::set<ISkinnedMeshObject*> inFrustumObjects;
 
 	for (const auto& skinnedObject : skinnedObjects)
 	{

@@ -34,6 +34,7 @@ namespace fq::graphics
 	}
 	void StaticMesh::Create(const fq::common::Mesh& meshData)
 	{
+		mMeshData = meshData;
 		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(mDevice, meshData.Indices);
 		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
 	}
@@ -75,6 +76,8 @@ namespace fq::graphics
 
 	void SkinnedMesh::Create(const fq::common::Mesh& meshData)
 	{
+		mMeshData = meshData;
+
 		struct Vertex
 		{
 			DirectX::SimpleMath::Vector3 Pos;

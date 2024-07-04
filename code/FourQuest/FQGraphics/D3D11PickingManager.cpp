@@ -64,9 +64,9 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	mBackBufferRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
 }
 
-void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<std::shared_ptr<IStaticMeshObject>>& staticMeshObjects,
-	const std::set<std::shared_ptr<ISkinnedMeshObject>>& skinnedMeshObjects,
-	const std::set<std::shared_ptr<ITerrainMeshObject>>& terrainMeshObjects)
+void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
 	for (const auto& meshObject : staticMeshObjects)
 	{
@@ -165,12 +165,12 @@ unsigned int fq::graphics::D3D11PickingManager::MakeRGBAUnsignedInt(DirectX::Sim
 }
 
 
-std::shared_ptr<void> fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device,
+void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const short y, const std::shared_ptr<D3D11Device>& device,
 	const std::shared_ptr<D3D11CameraManager>& cameraManager,
 	const std::shared_ptr<D3D11JobManager>& jobManager,
-	const std::set<std::shared_ptr<IStaticMeshObject>>& staticMeshObjects,
-	const std::set<std::shared_ptr<ISkinnedMeshObject>>& skinnedMeshObjects,
-	const std::set<std::shared_ptr<ITerrainMeshObject>>& terrainMeshObjects)
+	const std::set<IStaticMeshObject*>& staticMeshObjects,
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
 	mR = 0;
 	mG = 0;
@@ -181,7 +181,7 @@ std::shared_ptr<void> fq::graphics::D3D11PickingManager::GetPickedObject(const s
 
 	unsigned int pickedhashColor = GetHashColor(device, x, y);
 
-	std::shared_ptr<void> object = nullptr;
+	void* object = nullptr;
 
 	// static
 	for (auto it = mStaticMeshObjects.begin(); it != mStaticMeshObjects.end(); ++it) {
@@ -212,9 +212,9 @@ std::shared_ptr<void> fq::graphics::D3D11PickingManager::GetPickedObject(const s
 void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11Device>& device,
 	const std::shared_ptr<D3D11CameraManager>& cameraManager,
 	const std::shared_ptr<D3D11JobManager>& jobManager,
-	const std::set<std::shared_ptr<IStaticMeshObject>>& staticMeshObjects,
-	const std::set<std::shared_ptr<ISkinnedMeshObject>>& skinnedMeshObjects,
-	const std::set<std::shared_ptr<ITerrainMeshObject>>& terrainMeshObjects)
+	const std::set<IStaticMeshObject*>& staticMeshObjects,
+	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
 {
 	mPickingDrawRTV->Clear(device, { 0.f, 0.f, 0.f, 1.f });
 	mDSV->Clear(device);
@@ -237,7 +237,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	for (const StaticMeshJob& job : staticMeshJobs)
 	{
-		std::shared_ptr<StaticMeshObject> staticMeshObject = std::static_pointer_cast<StaticMeshObject>(job.StaticMeshObject);
+		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(job.StaticMeshObject);
 		std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(staticMeshObject->GetStaticMesh());
 
 		staticMesh->Bind(device);
@@ -253,7 +253,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	for (const TerrainMeshJob& job : terrainMeshJobs)
 	{
-		std::shared_ptr<TerrainMeshObject> terrainObject = std::static_pointer_cast<TerrainMeshObject>(job.TerrainMeshObject);
+		TerrainMeshObject* terrainObject = static_cast<TerrainMeshObject*>(job.TerrainMeshObject);
 		std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(terrainObject->GetStaticMesh());
 		staticMesh->Bind(device);
 
@@ -273,7 +273,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	std::vector<DirectX::SimpleMath::Matrix> identityTransforms(BoneTransform::MAX_BOND_COUNT);
 	for (const SkinnedMeshJob& job : skinnedMeshJobs)
 	{
-		std::shared_ptr<SkinnedMeshObject> skinnedMeshObject = std::static_pointer_cast<SkinnedMeshObject>(job.SkinnedMeshObject);
+		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(job.SkinnedMeshObject);
 		std::shared_ptr<SkinnedMesh> skinnedMesh = std::static_pointer_cast<SkinnedMesh>(skinnedMeshObject->GetSkinnedMesh());
 		std::shared_ptr<NodeHierarchyInstance> nodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(skinnedMeshObject->GetNodeHierarchyInstance());
 		skinnedMesh->Bind(device);

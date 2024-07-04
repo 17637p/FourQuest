@@ -38,6 +38,7 @@ namespace fq::graphics
 
 		std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath);
 		std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName);
+		std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName);
 		std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName);
 		std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName);
 
@@ -113,7 +114,10 @@ namespace fq::graphics
 				return find->second;
 			}
 
-			container.insert({ key, std::make_shared<U>(args...) });
+			auto result = std::make_shared<U>(args...);
+			container.insert({ key, result });
+
+			return result;
 		}
 
 		template <typename T>

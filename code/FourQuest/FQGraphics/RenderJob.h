@@ -25,7 +25,7 @@ namespace fq::graphics
 		size_t SubsetIndex;
 		std::shared_ptr<StaticMesh> StaticMesh;
 		std::shared_ptr<Material> Material;
-		std::shared_ptr<StaticMeshObject> StaticMeshObject;
+		StaticMeshObject* StaticMeshObject;
 	};
 
 	struct SkinnedMeshJob
@@ -33,7 +33,7 @@ namespace fq::graphics
 		size_t SubsetIndex;
 		std::shared_ptr<SkinnedMesh> SkinnedMesh;
 		std::shared_ptr<Material> Material;
-		std::shared_ptr<SkinnedMeshObject> SkinnedMeshObject;
+		SkinnedMeshObject* SkinnedMeshObject;
 		std::shared_ptr<NodeHierarchyInstance> NodeHierarchyInstnace;
 	};
 
@@ -42,6 +42,6 @@ namespace fq::graphics
 		size_t SubsetIndex;
 		std::shared_ptr<TerrainMesh> TerrainMesh;
 		std::shared_ptr<TerrainMaterial> TerrainMaterial;
-		std::shared_ptr<ITerrainMeshObject> TerrainMeshObject;
+		TerrainMeshObject* TerrainMeshObject;
 	};
 }

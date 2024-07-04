@@ -106,11 +106,11 @@ namespace fq::graphics
 
 		// render
 		{
-			const std::set<std::shared_ptr<ITrailObject>>& trailObjects = mObjectManager->GetTrailObjects();
+			const std::set<ITrailObject*>& trailObjects = mObjectManager->GetTrailObjects();
 
-			for (std::shared_ptr<ITrailObject> trailObjectInterface : trailObjects)
+			for (ITrailObject* trailObjectInterface : trailObjects)
 			{
-				std::shared_ptr<TrailObject> trailObject = std::static_pointer_cast<TrailObject>(trailObjectInterface);
+				TrailObject* trailObject = static_cast<TrailObject*>(trailObjectInterface);
 				std::shared_ptr<ParticleMaterial> material = std::static_pointer_cast<ParticleMaterial>(trailObject->GetIParticleMaterial());
 
 				material->Bind(mDevice);

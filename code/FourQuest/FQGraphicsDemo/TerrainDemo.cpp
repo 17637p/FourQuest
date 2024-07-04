@@ -41,9 +41,10 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 
 	/// Terrain »ý¼º
 	const std::string planeModelPath = "./resource/Graphics/TerrainDemo/Plane.model";
-	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx", planeModelPath);
+	fq::common::Model modelData = mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx");
+	mTestGraphics->WriteModel(planeModelPath, modelData);
 	const std::string textureBasePath = "./resource/Graphics/TerrainDemo";
-	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
+	mTestGraphics->CreateModelResource(planeModelPath, textureBasePath);
 
 	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 
@@ -256,12 +257,9 @@ void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matr
 			continue;
 		}
 
-		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = modelPath;
-		meshInfo.MeshName = mesh.second.Name;
-		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+		auto staticMeshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.second.Name);
 
-		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(meshInfo);
+		fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mTestGraphics->CreateTerrainMeshObject(staticMeshInterface, transform);
 		mTerrainMeshObjects.push_back(iTerrainMeshObject);
 
 		//fq::graphics::TerrainMaterialInfo terrainMaterial;

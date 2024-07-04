@@ -63,9 +63,9 @@ namespace fq::graphics
 		mBackBufferRTV->Bind(mDevice, mDefaultDSV);
 
 
-		for (std::shared_ptr<IParticleObject> particleObjectInterface : mObjectManager->GetParticleObjects())
+		for (IParticleObject* particleObjectInterface : mObjectManager->GetParticleObjects())
 		{
-			std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
+			ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 			const auto& info = particleObject->GetInfo();
 
 			if (!info.InstanceData.bIsRenderDebug)

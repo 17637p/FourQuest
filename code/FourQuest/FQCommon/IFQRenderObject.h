@@ -22,13 +22,6 @@ extern "C" {
 		class IDecalMaterial;
 		class IParticleMaterial;
 
-		struct MeshObjectInfo
-		{
-			bool bUseShadow;
-			DirectX::SimpleMath::Color OutlineColor;
-			bool bIsAppliedDecal;
-		};
-
 		class IStaticMeshObject
 		{
 		public:
@@ -148,6 +141,7 @@ extern "C" {
 			// Info
 			virtual FQ_GRAPHICS void SetInfo(const ParticleInfo& info) abstract;
 			virtual FQ_GRAPHICS const ParticleInfo& GetInfo() const abstract;
+			virtual FQ_GRAPHICS ParticleInfo& GetInfo() abstract;
 
 			// Material
 			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
@@ -190,6 +184,7 @@ extern "C" {
 			// Info
 			virtual FQ_GRAPHICS void SetTrailInfo(const TrailInfo& trailInfo) abstract;
 			virtual FQ_GRAPHICS const TrailInfo& GetTrailInfo() const abstract;
+			virtual FQ_GRAPHICS TrailInfo& GetTrailInfo() abstract;
 
 			// Material
 			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;

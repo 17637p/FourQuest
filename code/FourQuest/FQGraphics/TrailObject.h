@@ -38,6 +38,7 @@ namespace fq::graphics
 		// Info
 		void SetTrailInfo(const TrailInfo& trailInfo) override { mTrailInfo = trailInfo; }
 		const TrailInfo& GetTrailInfo() const override { return mTrailInfo; }
+		 TrailInfo& GetTrailInfo()  override { return mTrailInfo; }
 
 		// Material
 		void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) override { mIParticleMaterial = iParticleMaterial; }

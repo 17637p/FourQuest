@@ -226,7 +226,7 @@ void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
 	mCullingManager->UpdateCameraFrustum(cameraTransform.worldPosition, cameraTransform.worldRotation, mCameraManager->GetProjectionMatrix(ECameraType::Player));
 }
 
-std::shared_ptr<void> FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
+void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
 	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, mObjectManager->GetStaticMeshObjects(), mObjectManager->GetSkinnedMeshObjects(), mObjectManager->GetTerrainMeshObjects());
 }
@@ -284,14 +284,14 @@ bool FQGraphics::BeginRender()
 bool FQGraphics::Render()
 {
 	// 컬링 추가해야 됨 
-	std::set<std::shared_ptr<IStaticMeshObject>> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
-	std::set<std::shared_ptr<ISkinnedMeshObject>> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
-	std::set<std::shared_ptr<ITerrainMeshObject>> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
+	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
+	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+	std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
 
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 
-	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
+  	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
 	for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
 	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
 
@@ -306,6 +306,7 @@ bool FQGraphics::EndRender()
 {
 	mRenderManager->EndRender();
 	mJobManager->ClearAll();
+	mObjectManager->ClearDeleteQueue();
 
 	return true;
 }
@@ -370,7 +371,10 @@ std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshByModelPathO
 {
 	return mModelManager->GetStaticMeshByModelPathOrNull(modelPath, meshName);
 }
-
+std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName)
+{
+	return mModelManager->GetSkinnedMeshByModelPathOrNull(modelPath, meshName);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName)
 {
 	return mModelManager->GetMaterialByModelPathOrNull(modelPath, materialName);
@@ -536,57 +540,57 @@ void fq::graphics::FQGraphics::DeleteDecalMaterial(const std::string& key)
 	mModelManager->DeleteDecalMaterial(key);
 }
 
-std::shared_ptr<IStaticMeshObject> fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+IStaticMeshObject* fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	return mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
 }
-std::shared_ptr<ISkinnedMeshObject> fq::graphics::FQGraphics::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+ISkinnedMeshObject* fq::graphics::FQGraphics::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	return mObjectManager->CreateSkinnedMeshObject(skinnedMesh, materials, meshObjectInfo, transform);
 }
-std::shared_ptr<ITerrainMeshObject> fq::graphics::FQGraphics::CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform)
+ITerrainMeshObject* fq::graphics::FQGraphics::CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform)
 {
 	return mObjectManager->CreateTerrainMeshObject(mDevice, staticMesh, transform);
 }
-std::shared_ptr<IParticleObject> fq::graphics::FQGraphics::CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
+IParticleObject* fq::graphics::FQGraphics::CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	return mObjectManager->CreateParticleObject(mDevice, iParticleMaterial, particleInfo, transform);
 }
-std::shared_ptr<IDecalObject> fq::graphics::FQGraphics::CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform)
+IDecalObject* fq::graphics::FQGraphics::CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	return mObjectManager->CreateDecalObject(iDecalMaterial, decalInfo, transform);
 }
-std::shared_ptr<ITrailObject> fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
+ITrailObject* fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	return mObjectManager->CreateTrailObject(iParticleMaterial, trailInfo, transform);
 }
 
-void fq::graphics::FQGraphics::DeleteStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject)
+void fq::graphics::FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
 {
 	mObjectManager->DeleteStaticMeshObject(staticMeshObject);
 }
-void fq::graphics::FQGraphics::DeleteSkinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> skinnedMeshObject)
+void fq::graphics::FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject)
 {
 	mObjectManager->DeleteSkinnedMeshObject(skinnedMeshObject);
 }
-void fq::graphics::FQGraphics::DeleteTerrainMeshObject(std::shared_ptr<ITerrainMeshObject> meshObject)
+void fq::graphics::FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
 {
 	mObjectManager->DeleteTerrainMeshObject(meshObject);
 }
-void fq::graphics::FQGraphics::DeleteParticleObject(std::shared_ptr<IParticleObject> particleObject)
+void fq::graphics::FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
 {
 	mObjectManager->DeleteParticleObject(particleObject);
 }
-void fq::graphics::FQGraphics::DeleteDecalObject(std::shared_ptr<IDecalObject> decalObject)
+void fq::graphics::FQGraphics::DeleteDecalObject(IDecalObject* decalObject)
 {
 	mObjectManager->DeleteDecalObject(decalObject);
 }
-void fq::graphics::FQGraphics::DeleteTrailObject(std::shared_ptr<ITrailObject> trailObject)
+void fq::graphics::FQGraphics::DeleteTrailObject(ITrailObject* trailObject)
 {
 	mObjectManager->DeleteTrailObject(trailObject);
 }
 
-void fq::graphics::FQGraphics::SetTerrainMeshObject(std::shared_ptr<ITerrainMeshObject> meshObject, const TerrainMaterialInfo& material)
+void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
 {
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
 }

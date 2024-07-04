@@ -115,7 +115,7 @@ namespace fq::graphics
 		mPointClamp->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 		mPointClamp->Bind(mDevice, 1, ED3D11ShaderType::ComputeShader);
 	}
-	void D3D11ParticleManager::Render(std::shared_ptr<IParticleObject> particleObject)
+	void D3D11ParticleManager::Render(IParticleObject* particleObject)
 	{
 		emit(particleObject);
 		simulate(particleObject);
@@ -126,9 +126,9 @@ namespace fq::graphics
 		mDevice->GetDeviceContext()->GSSetShader(NULL, NULL, NULL);
 	}
 
-	void D3D11ParticleManager::updateParticleObjectCB(std::shared_ptr<IParticleObject> particleObjectInterface)
+	void D3D11ParticleManager::updateParticleObjectCB(IParticleObject* particleObjectInterface)
 	{
-		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
+		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 		const std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 		const ParticleInfo& particleInfo = particleObject->GetInfo();
 		const ParticleMaterialInfo& materialInfo = particleMaterial->GetInfo();
@@ -221,9 +221,9 @@ namespace fq::graphics
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
 
-	void D3D11ParticleManager::emit(std::shared_ptr<IParticleObject> particleObjectInterface)
+	void D3D11ParticleManager::emit(IParticleObject* particleObjectInterface)
 	{
-		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
+		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 		const auto& info = particleObject->GetInfo();
 
 		if (info.InstanceData.bIsReset)
@@ -277,9 +277,9 @@ namespace fq::graphics
 #endif
 	}
 
-	void D3D11ParticleManager::simulate(std::shared_ptr<IParticleObject> particleObjectInterface)
+	void D3D11ParticleManager::simulate(IParticleObject* particleObjectInterface)
 	{
-		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
+		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 
 		mDevice->GetDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -315,9 +315,9 @@ namespace fq::graphics
 #endif
 	}
 
-	void D3D11ParticleManager::render(std::shared_ptr<IParticleObject> particleObjectInterface)
+	void D3D11ParticleManager::render(IParticleObject* particleObjectInterface)
 	{
-		std::shared_ptr<ParticleObject> particleObject = std::static_pointer_cast<ParticleObject>(particleObjectInterface);
+		ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
 		std::shared_ptr<ParticleMaterial> particleMaterial = std::static_pointer_cast<ParticleMaterial>(particleObject->GetIParticleMaterial());
 
 		const auto& materialInfo = particleMaterial->GetInfo();

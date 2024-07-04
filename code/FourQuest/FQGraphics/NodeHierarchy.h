@@ -25,9 +25,12 @@ namespace fq::graphics
 		void Create(const fq::common::Model& model);
 		void Create(const std::vector<fq::common::Node> nodes);
 
-		virtual void CreateAnimationCache(std::shared_ptr<IAnimation> animation) override;
-		virtual void DeleteAnimationCache(std::shared_ptr<IAnimation> animation) override;
 		virtual std::shared_ptr<INodeHierarchyInstance> CreateNodeHierarchyInstance() override;
+
+		virtual void RegisterAnimation(std::shared_ptr<IAnimation> animation) override;
+		virtual void UnregisterAnimation(std::shared_ptr<IAnimation> animation) override { mAnimationCaches.erase(animation); mRegisterAnimations.clear(); }
+		virtual void UnregisterAllAnimations() override { mAnimationCaches.clear(); mRegisterAnimations.clear(); }
+		virtual const std::set<std::shared_ptr<IAnimation>>& GetRegisterAnimations() const override { return mRegisterAnimations; }
 
 		virtual const std::vector<fq::common::Bone>& GetBones() const override { return mBones; }
 		virtual unsigned int GetBoneIndex(const std::string& boneName) const override;
@@ -37,6 +40,7 @@ namespace fq::graphics
 	private:
 		std::vector<fq::common::Bone> mBones;
 		std::map<std::shared_ptr<IAnimation>, std::vector<BoneNodeClipCache>> mAnimationCaches;
+		std::set<std::shared_ptr<IAnimation>> mRegisterAnimations;
 	};
 
 	class NodeHierarchyInstance : public INodeHierarchyInstance

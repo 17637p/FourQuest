@@ -25,14 +25,14 @@ namespace fq::graphics
 		void OnResize(unsigned short width, unsigned short height);
 
 		void BeginRender();
-		void Render(std::shared_ptr<IParticleObject> particleObject);
+		void Render(IParticleObject* particleObject);
 		void EndRender();
 
 	private:
-		void updateParticleObjectCB(std::shared_ptr<IParticleObject> particleObjectInterface);
-		void emit(std::shared_ptr<IParticleObject> particleObjectInterface);
-		void simulate(std::shared_ptr<IParticleObject> particleObjectInterface);
-		void render(std::shared_ptr<IParticleObject> particleObjectInterface);
+		void updateParticleObjectCB(IParticleObject* particleObjectInterface);
+		void emit(IParticleObject* particleObjectInterface);
+		void simulate(IParticleObject* particleObjectInterface);
+		void render(IParticleObject* particleObjectInterface);
 
 		int align(int value, int aligment);
 		int readCounter(ID3D11UnorderedAccessView* uav);

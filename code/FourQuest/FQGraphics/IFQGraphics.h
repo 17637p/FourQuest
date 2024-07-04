@@ -71,6 +71,7 @@ extern "C" {
 
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName) abstract;
 
@@ -118,21 +119,21 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteDecalMaterial(const std::string& key) abstract;
 
 			// RenderObject
-			virtual FQ_GRAPHICS std::shared_ptr<IStaticMeshObject> CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMeshObject> CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<ITerrainMeshObject>  CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IParticleObject> CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IDecalObject> CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<ITrailObject> CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS IStaticMeshObject* CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS ISkinnedMeshObject* CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS ITerrainMeshObject* CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
 
-			virtual FQ_GRAPHICS void DeleteStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject) abstract;
-			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> skinnedMeshObject) abstract;
-			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(std::shared_ptr<ITerrainMeshObject> meshObject) abstract;
-			virtual FQ_GRAPHICS void DeleteParticleObject(std::shared_ptr<IParticleObject> particleObject) abstract;
-			virtual FQ_GRAPHICS void DeleteDecalObject(std::shared_ptr<IDecalObject> decalObject) abstract;
-			virtual FQ_GRAPHICS void DeleteTrailObject(std::shared_ptr<ITrailObject> trailObject) abstract;
+			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) abstract;
+			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
+			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObject) abstract;
+			virtual FQ_GRAPHICS void DeleteTrailObject(ITrailObject* trailObject) abstract;
 
-			virtual FQ_GRAPHICS void SetTerrainMeshObject(std::shared_ptr<ITerrainMeshObject>  meshObject, const TerrainMaterialInfo& material) abstract;
+			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
 			/// Primitive
 			// Debug Draw
@@ -182,7 +183,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void UpdateColCamera(const fq::common::Transform& cameraTransform) abstract;
 
 			/// Picking
-			virtual FQ_GRAPHICS std::shared_ptr<void> GetPickingObject(const short mouseX, const short mouseY) abstract;
+			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;
 
 			/// For IMGUI(D3D11)
 			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;
