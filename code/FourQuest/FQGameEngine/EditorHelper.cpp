@@ -5,6 +5,8 @@
 #include <string>
 
 #include "../FQCommon/FQPath.h"
+#include "../FQGameModule/GameModule.h"
+#include "GameProcess.h"
 
 std::string fq::game_engine::EditorHelper::GetStartSceneName()
 {
@@ -36,4 +38,18 @@ void fq::game_engine::EditorHelper::SetStartSceneName(std::string name)
 	std::ofstream outFile(internalPath);
 	outFile << name;
 	outFile.close();
+}
+
+void fq::game_engine::EditorHelper::UpdateEditorMode(GameProcess* game, float dt)
+{
+	auto scene = game->mSceneManager->GetCurrentScene();
+
+	/// Editor의 동기화를 위한 처리를 합니다
+
+	for (auto& object : scene->GetComponentView<game_module::Socket>())
+	{
+		auto socket = object.GetComponent<game_module::Socket>();
+		socket->BindBone();
+		socket->OnUpdate(dt);
+	}
 }

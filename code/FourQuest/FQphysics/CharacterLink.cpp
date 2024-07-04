@@ -21,7 +21,7 @@ namespace fq::physics
 
 	}
 
-	bool CharacterLink::Initialize(const CharacterLinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation)
+	bool CharacterLink::Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation)
 	{
 		mName = info.boneName;
 		mDensity = info.density;
@@ -38,7 +38,7 @@ namespace fq::physics
 		else
 		{
 			mPxLink = pxArticulation->createLink(parentLink->GetPxLink(), pxLocalTransform);
-			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.JointInfo);
+			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}
 
 		return true;

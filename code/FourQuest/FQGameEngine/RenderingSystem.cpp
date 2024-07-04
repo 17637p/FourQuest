@@ -8,6 +8,7 @@
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "AnimationSystem.h"
+#include "PhysicsSystem.h"
 
 fq::game_engine::RenderingSystem::RenderingSystem()
 	:mGameProcess(nullptr)
@@ -132,8 +133,12 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	{
 		fq::game_module::SkyBox skybox;
 		skybox.Load(scenePath);
-		mGameProcess->mGraphics->SetSkyBox(skybox.mSkyBox);
-		mGameProcess->mGraphics->SetIBLTexture(skybox.mDiffuse, skybox.mSpecular, skybox.mBrdfLUT);
+
+		if (skybox.HasSkyBox())
+			mGameProcess->mGraphics->SetSkyBox(skybox.mSkyBox);
+
+		if (skybox.HasIBLTexture())
+			mGameProcess->mGraphics->SetIBLTexture(skybox.mDiffuse, skybox.mSpecular, skybox.mBrdfLUT);
 	}
 
 	mbIsGameLoaded = true;
@@ -461,6 +466,9 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	info.HeightFileName = terrain->GetHeightMap();
 
 	mGameProcess->mGraphics->SetTerrainMeshObject(iTerrainMeshObject, info);
+
+	// Terrain Collider 생성요청 
+	mGameProcess->mPhysicsSystem->AddTerrainCollider(object);
 }
 
 void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject* object)

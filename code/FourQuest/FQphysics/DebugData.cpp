@@ -92,7 +92,7 @@ namespace fq::physics
 				std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>> line;
 				extractDebugHeightField(actor, shape, line);
 
-				mDebugHeightField.insert(std::make_pair(dynamicBody->GetID(), line));
+				mDebugHeightField.insert(std::make_pair(staticBody->GetID(), line));
 			}
 		}
 	}

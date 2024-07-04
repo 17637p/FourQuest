@@ -1,9 +1,11 @@
 #include "DeadArmour.h"
 
 #include "Soul.h"
+#include "Player.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
+	, mbIsVisible(false)
 {}
 
 fq::client::DeadArmour::~DeadArmour()
@@ -28,16 +30,19 @@ std::shared_ptr<fq::game_module::Component> fq::client::DeadArmour::Clone(std::s
 	return cloneController;
 }
 
-void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
+void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 {
-	assert(id <= 3);
+	assert(info.ControllerID <= 3);
 
+	// 인스턴스 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
-
 	auto& livingArmour = *(instance.begin());
 
 	// 컨트롤러 연결
-	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(id);
+	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(info.ControllerID);
+
+	// 영혼 타입 설정
+	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
 
 	// 위치 설정
 	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
@@ -103,6 +108,7 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 {
 	using namespace DirectX::SimpleMath;
 
+	mbIsVisible = isVisible;
 	auto imageUI = GetComponent<game_module::ImageUI>();
 
 	auto uiInfo = imageUI->GetUIInfomations();
@@ -111,19 +117,6 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 		// UI 보이게 설정 
 		uiInfo[0].ScaleX = 1.f;
 		uiInfo[0].ScaleY = 1.f;
-		fq::game_module::Camera* mainCamera = nullptr;
-
-		GetScene()->GetEventManager()->FireEvent < fq::event::GetMainCamera>(
-			{
-				&mainCamera
-			});
-		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
-		
-		float height = GetScene()->GetScreenManager()->GetScreenHeight();
-		float width = GetScene()->GetScreenManager()->GetScreenWidth();
-
-		auto viewProj = mainCamera->GetViewProjection();
-		Vector3 screenPos = Vector3::Transform(pos, viewProj);
 	}
 	else
 	{
@@ -136,8 +129,34 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 
 void fq::client::DeadArmour::OnUpdate(float dt)
 {
-	// UI 위치 갱신 
+	using namespace DirectX::SimpleMath;
 
+	// UI 위치 갱신 
+	if (mbIsVisible)
+	{
+		fq::game_module::Camera* mainCamera = nullptr;
+
+		GetScene()->GetEventManager()->FireEvent < fq::event::GetMainCamera>(
+			{
+				&mainCamera
+			});
+		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
+
+		float height = GetScene()->GetScreenManager()->GetScreenHeight();
+		float width = GetScene()->GetScreenManager()->GetScreenWidth();
+
+		auto viewProj = mainCamera->GetViewProjection();
+		Vector3 screenPos = Vector3::Transform(pos, viewProj);
+		auto imageUI = GetComponent<game_module::ImageUI>();
+		assert(imageUI);
+
+		auto uiInfomations = imageUI->GetUIInfomations();
+
+		uiInfomations[0].StartX = width * 0.5f + (screenPos.x * width * 0.5f);
+		uiInfomations[0].StartY = height * 0.5f - (screenPos.y * height * 0.5f);
+
+		imageUI->SetUIInfomations(uiInfomations);
+	}
 
 }
 

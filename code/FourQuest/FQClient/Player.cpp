@@ -4,6 +4,7 @@
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
+#include "Soul.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -17,6 +18,8 @@ fq::client::Player::Player()
 	, mInvincibleElapsedTime(0.f)
 	, mAnimator(nullptr)
 	, mSoulStack(0.f)
+	, mFeverTime(0.f)
+	, mSoulType(ESoulType::Sword)
 {}
 
 fq::client::Player::~Player()
@@ -46,6 +49,7 @@ void fq::client::Player::OnUpdate(float dt)
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
 	processInput();
+	processFeverTime(dt);
 	processCoolTime(dt);
 }
 
@@ -63,6 +67,13 @@ void fq::client::Player::OnStart()
 		{
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
+
+	// 영혼 타입 적용
+	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
+
+
+	// TODO : 갑옷 버프 적용
+
 
 }
 
@@ -91,8 +102,6 @@ void fq::client::Player::Attack()
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	auto transform = GetComponent<game_module::Transform>();
-	fq::game_module::BoxCollider* collider = attackObj->GetComponent<fq::game_module::BoxCollider>();
-	collider->SetExtent({ mAttackRange.x, mAttackRange.y, mAttackRange.z });
 
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
@@ -106,7 +115,6 @@ void fq::client::Player::Attack()
 
 	attackObj->SetTag(game_module::ETag::PlayerAttack);
 
-	attackT->SetLocalRotation(transform->GetWorldRotation());
 	attackT->SetLocalPosition(transform->GetWorldPosition() + (forward * mAttackPositionOffset) + (up * 1));
 
 	GetScene()->AddGameObject(attackObj);
@@ -155,6 +163,9 @@ void fq::client::Player::SummonSoul()
 	soul->GetComponent<game_module::CharacterController>()
 		->SetControllerID(mController->GetControllerID());
 
+	// 소울 타입 설정
+	soul->GetComponent<Soul>()->SetSoulType(mSoulType);
+
 	// 위치 설정
 	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
 	localMat._42 += 1.f;
@@ -170,4 +181,18 @@ void fq::client::Player::processCoolTime(float dt)
 	mInvincibleElapsedTime = std::max(mInvincibleElapsedTime - dt, 0.f);
 }
 
+void fq::client::Player::processFeverTime(float dt)
+{
+	if (mFeverTime == 0.f)
+		return;
+
+	mFeverTime = std::max(mFeverTime - dt, 0.f);
+
+	// 갑옷 버프 종료
+	if (mFeverTime == 0.f)
+	{
+		// TODO : 갑옷 해제에 대한 버프를 진행
+		mAttackPower = mAttackPower * 0.5f;
+	}
+}
 

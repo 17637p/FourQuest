@@ -7,7 +7,6 @@
 #include <sstream>
 #include <string>
 #include <regex>
-#include <directxtk/WICTextureLoader.h>
 
 #include "imgui_stdlib.h"
 #include "../FQReflect/FQReflect.h"
@@ -18,6 +17,7 @@
 #include "EditorProcess.h"
 #include "WindowSystem.h"
 #include "ModelSystem.h"
+#include "ImageSystem.h"
 
 namespace fs = std::filesystem;
 
@@ -26,13 +26,12 @@ fq::game_engine::FileDialog::FileDialog()
 	, mSelectPath{}
 	, mDragDropPath{}
 	, mbIsOpen{ true }
-	, mTextures{}
-	, mIconTexture{}
 	, mDevice(nullptr)
 	, mIconSize{ 100.f,100.f }
 	, mEditorProcess(nullptr)
 	, mGameProcess(nullptr)
 	, mbIsFindAllDirectory(false)
+	, mImageSystem(nullptr)
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -61,15 +60,13 @@ void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* e
 	mResourcePath = fq::path::GetResourcePath();
 	mSelectPath = mResourcePath;
 	mDevice = mGameProcess->mGraphics->GetDivice();
+	mImageSystem = mEditorProcess->mImageSystem.get();
 
-	loadIcon();
 	clearGarbage();
 }
 
 void fq::game_engine::FileDialog::Finalize()
 {
-	clearTexture();
-	clearIconTexture();
 }
 
 void fq::game_engine::FileDialog::beginWindow_FilePathWindow()
@@ -254,29 +251,6 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 	beginDragDropTarget_FileList();
 }
 
-ID3D11ShaderResourceView* fq::game_engine::FileDialog::loadTexture(const Path& path)
-{
-	ID3D11ShaderResourceView* texture = nullptr;
-
-	DirectX::CreateWICTextureFromFile(mDevice, path.c_str(),
-		nullptr, &texture);
-
-	return texture;
-}
-
-void fq::game_engine::FileDialog::loadIcon()
-{
-	Path iconPath = mResourcePath;
-	iconPath += "\\internal\\icon";
-
-	auto iconList = fq::path::GetFileList(iconPath);
-
-	for (const Path& path : iconList)
-	{
-		auto* texture = loadTexture(path);
-		mIconTexture.insert({ path.filename() ,texture });
-	}
-}
 
 void fq::game_engine::FileDialog::drawFile(const Path& path)
 {
@@ -287,7 +261,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		ImVec2 min = ImGui::GetCursorScreenPos();
 		ImVec2 max = { min.x + mIconSize.x, min.y + mIconSize.y };
-		ImGui::Image(GetIcon(L"folder.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"folder.png"), mIconSize);
 
 		if (isMouseHoveringRect(min, max)
 			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -297,39 +271,39 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	}
 	else if (extension == ".fbx")
 	{
-		ImGui::Image(GetIcon(L"fbx.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"fbx.png"), mIconSize);
 	}
 	else if (extension == ".json")
 	{
-		ImGui::Image(GetIcon(L"json.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"json.png"), mIconSize);
 	}
 	else if (extension == ".mp3")
 	{
-		ImGui::Image(GetIcon(L"mp3.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"mp3.png"), mIconSize);
 	}
 	else if (extension == ".wav")
 	{
-		ImGui::Image(GetIcon(L"wav.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"wav.png"), mIconSize);
 	}
 	else if (extension == ".prefab")
 	{
-		ImGui::Image(GetIcon(L"prefab.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"prefab.png"), mIconSize);
 	}
 	else if (extension == ".png" || extension == ".jpg")
 	{
-		drawTextureImage(path);
+		mImageSystem->DrawTextureImage(path, mIconSize);
 	}
 	else if (extension == ".model")
 	{
-		ImGui::Image(GetIcon(L"model.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"model.png"), mIconSize);
 	}
 	else if (extension == ".controller")
 	{
-		ImGui::Image(GetIcon(L"controller.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"controller.png"), mIconSize);
 	}
 	else
 	{
-		ImGui::Image(GetIcon(L"error.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"error.png"), mIconSize);
 	}
 
 	beginPopupContextItem_File(path);
@@ -353,18 +327,6 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	}
 
 	ImGui::PopItemWidth();
-}
-
-ID3D11ShaderResourceView* fq::game_engine::FileDialog::GetIcon(const std::wstring& name)
-{
-	auto iter = mIconTexture.find(name);
-
-	if (iter == mIconTexture.end())
-	{
-		return mIconTexture[L"error.png"];
-	}
-
-	return iter->second;
 }
 
 void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
@@ -403,53 +365,6 @@ void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 		ImGui::EndDragDropTarget();
 	}
 
-}
-
-void fq::game_engine::FileDialog::drawTextureImage(const Path& path)
-{
-	auto iter = mTextures.find(path);
-
-	ID3D11ShaderResourceView* texture = nullptr;
-
-	if (iter == mTextures.end())
-	{
-		texture = loadTexture(path);
-		mTextures.insert({ path, texture });
-	}
-	else
-	{
-		texture = iter->second;
-	}
-	ImGui::Image(texture, mIconSize);
-}
-
-void fq::game_engine::FileDialog::clearTexture()
-{
-	for (auto& [path, texture] : mTextures)
-	{
-		if (texture)
-		{
-			texture->Release();
-			texture = nullptr;
-		}
-	}
-
-	mTextures.clear();
-}
-
-
-void fq::game_engine::FileDialog::clearIconTexture()
-{
-	for (auto& [path, texture] : mIconTexture)
-	{
-		if (texture)
-		{
-			texture->Release();
-			texture = nullptr;
-		}
-	}
-
-	mIconTexture.clear();
 }
 
 bool fq::game_engine::FileDialog::isMouseHoveringRect(const ImVec2& min, const ImVec2& max)
@@ -521,7 +436,6 @@ void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
 void fq::game_engine::FileDialog::selectPath(Path path)
 {
 	mSelectPath = path;
-	clearTexture();
 }
 
 void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryPath)

@@ -10,9 +10,6 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineDataConverter">
-      <UniqueIdentifier>{752b9b18-cffd-4eb2-b3d8-9cbf956e680f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tool">
       <UniqueIdentifier>{b44d4da7-2419-4b10-93d2-155e5d2d13d7}</UniqueIdentifier>
     </Filter>
@@ -49,22 +46,19 @@
     <Filter Include="Character\CharacterPhysics\Header">
       <UniqueIdentifier>{f1e7ae0f-1f54-43bc-8f48-7ef64760b066}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{752b9b18-cffd-4eb2-b3d8-9cbf956e680f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper\Header">
+      <UniqueIdentifier>{e1535b79-53fd-4591-9ccd-7be24301626e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tool\Header">
+      <UniqueIdentifier>{f1976975-5348-49c9-862d-fd5d9c8c4d5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Physics.h">
       <Filter>physx</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineDataConverter.h">
-      <Filter>EngineDataConverter</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsCookingMeshTool.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterPhysics.h">
-      <Filter>Character\CharacterPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaClothTool.h">
-      <Filter>PhysicsActor\Header</Filter>
     </ClInclude>
     <ClInclude Include="CudaPhysicsCloth.h">
       <Filter>PhysicsActor\Header</Filter>
@@ -138,7 +132,21 @@
     <ClInclude Include="TriangleMeshResource.h">
       <Filter>Resource\Header</Filter>
     </ClInclude>
-    <ClInclude Include="DebugData.h" />
+    <ClInclude Include="DebugData.h">
+      <Filter>Helper\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineDataConverter.h">
+      <Filter>Helper\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPhysics.h">
+      <Filter>Character\CharacterPhysics\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaClothTool.h">
+      <Filter>Tool\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCookingMeshTool.h">
+      <Filter>Tool\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -154,7 +162,7 @@
       <Filter>physx</Filter>
     </ClCompile>
     <ClCompile Include="EngineDataConverter.cpp">
-      <Filter>EngineDataConverter</Filter>
+      <Filter>Helper</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsCookingMeshTool.cpp">
       <Filter>Tool</Filter>
@@ -225,14 +233,16 @@
     <ClCompile Include="TriangleMeshResource.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
-    <ClCompile Include="DebugData.cpp" />
+    <ClCompile Include="DebugData.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaClothTool.cu">
-      <Filter>PhysicsActor</Filter>
+      <Filter>Tool</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>

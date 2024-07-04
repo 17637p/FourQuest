@@ -181,14 +181,14 @@ extern "C" {
 			/// <summary>
 			/// 캐릭터 파직스 (관절) 추가
 			/// </summary>
-			virtual bool CreateCharacterphysics(const CharacterPhysicsInfo& info) abstract;
+			virtual bool CreateCharacterphysics(const ArticulationInfo& info) abstract;
 
 			/// <summary>
 			/// 가지고 있는 관절 중, 링크 및 조인트 추가
 			/// </summary>
-			virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
-			virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius) abstract;
-			virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius) abstract;
+			virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
+			virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius) abstract;
+			virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) abstract;
 
 			/// <summary>
 			/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스

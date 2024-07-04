@@ -107,7 +107,7 @@ void fq::game_module::BoxCollider::OnTriggerEnter(const Collision& collision)
 
 void fq::game_module::BoxCollider::OnTriggerExit(const Collision& collision)
 {
-	//assert(mCollisionCount != 0);
+	assert(mCollisionCount != 0);
 	--mCollisionCount;
 }
 

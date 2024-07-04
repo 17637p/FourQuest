@@ -121,6 +121,7 @@ namespace fq::graphics
 		inline virtual DirectX::BoundingSphere GetRenderBoundingSphere() const override;
 
 		virtual const fq::common::Mesh& GetMeshData() const override;
+		virtual int* GetHeightData() const override;
 
 		inline const std::shared_ptr<TerrainMesh>& GetTerrainMesh() const;
 		inline const std::shared_ptr<StaticMesh>& GetStaticMesh() const;

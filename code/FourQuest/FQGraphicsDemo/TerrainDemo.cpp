@@ -170,6 +170,12 @@ void TerrainDemo::Update()
 		}
 	}
 
+	if (InputManager::GetInstance().IsGetKey('U'))
+	{
+		auto test = mTerrainMeshObjects[0]->GetHeightData();
+		int a = 3;
+	}
+
 	// 카메라 조작
 	float speed = mTimeManager.GetDeltaTime();
 	if (InputManager::GetInstance().IsGetKey(VK_SHIFT))

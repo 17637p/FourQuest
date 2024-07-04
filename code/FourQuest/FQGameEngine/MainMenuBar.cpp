@@ -291,6 +291,12 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onNavMesh = mEditorProcess->mNavMeshWindow->IsWindowOpen();
 		ImGui::Checkbox("NavigationMesh", &onNavMesh);
 
+		bool& articulationHierarchy = mEditorProcess->mArticulationHierarchy->IsWindowOpen();
+		ImGui::Checkbox("ArticulationHierarchy", &articulationHierarchy);
+
+		bool& articulationInspector = mEditorProcess->mArticulationInspector->IsWindowOpen();
+		ImGui::Checkbox("ArticulationInspector", &articulationInspector);
+
 		ImGui::EndMenu();
 	}
 }

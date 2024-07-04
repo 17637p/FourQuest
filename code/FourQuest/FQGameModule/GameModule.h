@@ -23,6 +23,7 @@
 #include "SphereCollider.h"
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
+#include "TerrainCollider.h"
 #include "RigidBody.h"
 #include "CharacterController.h"
 #include "SoundClip.h"
@@ -30,6 +31,7 @@
 #include "Decal.h"
 #include "Trail.h"
 #include "ImageUI.h"
+#include "Socket.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"
@@ -43,6 +45,7 @@
 #include "ICollider.h"
 #include "Collision.h"
 #include "CollisionMatrix.h"
+#include "Articulation.h"
 #include "SkyBox.h"
 
 // Animation

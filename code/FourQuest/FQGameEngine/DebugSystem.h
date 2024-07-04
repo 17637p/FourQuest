@@ -46,6 +46,7 @@ namespace fq::game_engine
 		bool& GetOnConvexMeshCollider() { return mbOnConvexMeshCollider; }
 		bool& GetOnCharaterController() { return mbOnCharaterController; }
 		bool& GetOnNavigationMesh() { return mbOnNavigationMesh; }
+		bool& GetOnTerrainCollider() { return mbOnTerrainCollider; }
 
 	private:
 		void renderGrid();
@@ -53,6 +54,7 @@ namespace fq::game_engine
 		void renderBoxCollider();
 		void renderCapsuleCollider();
 		void renderConvexMeshCollider();
+		void renderTerrainCollider();
 		void renderCharaterController();
 		void renderNavigationMesh();
 
@@ -67,6 +69,7 @@ namespace fq::game_engine
 		bool mbOnSphereCollider;
 		bool mbOnConvexMeshCollider;
 		bool mbOnCharaterController;
+		bool mbOnTerrainCollider;
 		bool mbOnNavigationMesh;
 
 		fq::graphics::debug::GridInfo mGridInfo;

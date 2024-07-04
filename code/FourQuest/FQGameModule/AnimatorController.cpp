@@ -534,6 +534,8 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 
 void fq::game_module::AnimatorController::Update(float dt)
 {
+	///  애니메이션 전환중에는 NextState에 대한 Update 처리를 진행합니다
+
 	if (mNextState != mStates.end())
 		mNextState->second.OnStateUpdate(dt);
 	else

@@ -63,6 +63,7 @@ namespace fq::graphics
 	public:
 		TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 			const TerrainMaterialInfo& materialData,
+			UINT width, UINT height,
 			std::filesystem::path basePath = "");
 		~TerrainMaterial() = default;
 
@@ -79,6 +80,7 @@ namespace fq::graphics
 		float GetRoughness(unsigned short index) const { return mRoughnesses[index]; }
 
 		std::vector<float> GetHeightMapData() const { return mHeightMapData; }
+		int* GetHeightMapRawData() { return mHeightMapRawData.data(); }
 
 	private:
 		void LoadHeight(const std::string& heightMapFilePath);
@@ -104,8 +106,11 @@ namespace fq::graphics
 		std::vector<float> mRoughnesses;
 
 		std::shared_ptr<D3D11Texture> mHeightMap;
+		std::vector<int> mHeightMapRawData;
 		std::vector<float> mHeightMapData;
 		// temp
+		UINT mWidth;
+		UINT mHeight;
 		float mHeightscale;
 
 		std::shared_ptr<D3D11Texture> mAlpha;

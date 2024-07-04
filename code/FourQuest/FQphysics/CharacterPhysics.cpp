@@ -22,7 +22,7 @@ namespace fq::physics
 		mCollisionData->isDead = true;
 	}
 
-	bool CharacterPhysics::Initialize(const CharacterPhysicsInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData)
+	bool CharacterPhysics::Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData)
 	{
 		mCollisionData = collisionData;
 		mPxArticulation = physics->createArticulationReducedCoordinate();
@@ -32,7 +32,6 @@ namespace fq::physics
 		mPxArticulation->setMaxCOMAngularVelocity(10000.f);
 
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
-		mModelPath = info.modelPath;
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
 		mWorldTransform = info.worldTransform;
@@ -40,7 +39,7 @@ namespace fq::physics
 		physx::PxTransform pxTransform;
 		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
 
-		CharacterLinkInfo linkInfo;
+		LinkInfo linkInfo;
 		std::string str = "root";
 		linkInfo.boneName = "root";
 		linkInfo.parentBoneName = "";
@@ -49,7 +48,7 @@ namespace fq::physics
 		return true;
 	}
 
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent)
+	bool CharacterPhysics::AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
@@ -74,7 +73,7 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const float& radius)
+	bool CharacterPhysics::AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& radius)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 
@@ -99,7 +98,7 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const CharacterLinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius)
+	bool CharacterPhysics::AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius)
 	{
 		std::shared_ptr<CharacterLink> link = std::make_shared<CharacterLink>();
 

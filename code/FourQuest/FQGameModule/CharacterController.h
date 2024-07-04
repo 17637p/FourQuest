@@ -135,8 +135,8 @@ namespace fq::game_module
 		unsigned int mCollisionCount;
 
 		bool mbIsFalling;
-		bool mbCanMoveCharater;
 		bool mbOnMove;
+		bool mbCanMoveCharater;
 		bool mbOnRotation;
 	};
 

@@ -23,6 +23,8 @@
 #include "CapsuleCollider.h"
 #include "MeshCollider.h"
 #include "CharacterController.h"
+#include "TerrainCollider.h"
+#include "Articulation.h"
 
 //
 #include "SoundClip.h"
@@ -306,7 +308,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
 		.base<Component>();
 
-
 	//////////////////////////////////////////////////////////////////////////
 	//                              Physics                                 //
 	//////////////////////////////////////////////////////////////////////////
@@ -442,6 +443,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PolygonLimit")
 		.base<Component>();
 
+	// MeshCollider
+	entt::meta<TerrainCollider>()
+		.type("TerrainCollider"_hs)
+		.prop(fq::reflect::prop::Name, "TerrainCollider")
+		.prop(fq::reflect::prop::Label, "Physcis")
+		.base<Component>();
 
 	entt::meta<fq::physics::CharacterControllerInfo>()
 		.type("CharacterControllerInfo"_hs)
@@ -507,6 +514,108 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MoveInfo")
 		.data<&CharacterController::SetControllerInfo, &CharacterController::GetControllerInfo>("ControllerInfo"_hs)
 		.prop(fq::reflect::prop::Name, "ControllerInfo")
+		.base<Component>();
+
+
+	// Articulation
+	entt::meta<fq::physics::JointAxisInfo>()
+		.type("JointAxisInfo"_hs)
+		.prop(fq::reflect::prop::Name, "JointAxisInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::physics::JointAxisInfo::motion>("Motion"_hs)
+		.prop(fq::reflect::prop::Name, "Motion")
+		.prop(fq::reflect::prop::Comment, u8"모션 제한")
+		.data<&fq::physics::JointAxisInfo::limitsLow>("LimitsLow"_hs)
+		.prop(fq::reflect::prop::Name, "LimitsLow")
+		.prop(fq::reflect::prop::Comment, u8"범위 ( Limit일 때 회전 아랫 각도 범위 : -180.0 ~ 0.0 ) ")
+		.data<&fq::physics::JointAxisInfo::limitsHigh>("LimitsHigh"_hs)
+		.prop(fq::reflect::prop::Name, "LimitsHigh")
+		.prop(fq::reflect::prop::Comment, u8"범위 ( Limit일 때 회전 윗 각도 범위 : 0.0 ~ 180.0 )");
+
+
+	entt::meta<fq::physics::JointInfo>()
+		.type("JointInfo"_hs)
+		.prop(fq::reflect::prop::Name, "JointInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::physics::JointInfo::Swing1AxisInfo>("Swing1AxisInfo"_hs)
+		.prop(fq::reflect::prop::Name, "Swing1AxisInfo")
+		.prop(fq::reflect::prop::Comment, u8"Swing1( X축을 중심으로 한 회전 )")
+		.data<&fq::physics::JointInfo::Swing2AxisInfo>("Swing2AxisInfo"_hs)
+		.prop(fq::reflect::prop::Name, "Swing2AxisInfo")
+		.prop(fq::reflect::prop::Comment, u8"Swing2( Y축을 중심으로 한 회전 )")
+		.data<&fq::physics::JointInfo::TwistAxisInfo>("TwistAxisInfo"_hs)
+		.prop(fq::reflect::prop::Name, "TwistAxisInfo")
+		.prop(fq::reflect::prop::Comment, u8"Twist( Z축을 중심으로 한 회전 )")
+		.data<&fq::physics::JointInfo::localTransform>("LocalTransform"_hs)
+		.prop(fq::reflect::prop::Name, "LocalTransform")
+		.prop(fq::reflect::prop::Comment, u8"조인트의 로절 좌표 ( 부모 위치로 부터의 상대 위치 )")
+		.data<&fq::physics::JointInfo::stiffness>("Stiffness"_hs)
+		.prop(fq::reflect::prop::Name, "Stiffness")
+		.prop(fq::reflect::prop::Comment, u8"강성 : 관절이 목표 위치로 이동하려는 힘의 크기 ( 0.f ~ 1.f )")
+		.data<&fq::physics::JointInfo::damping>("Damping"_hs)
+		.prop(fq::reflect::prop::Name, "Damping")
+		.prop(fq::reflect::prop::Comment, u8"감쇠 계수 : 운동에 대한 저항력 ( 진동을 방지하고 부드럽게 움직이동 할 수 있게 ) ( 0.f ~ 1.f )")
+		.data<&fq::physics::JointInfo::maxForce>("MaxForce"_hs)
+		.prop(fq::reflect::prop::Name, "MaxForce")
+		.prop(fq::reflect::prop::Comment, u8"최대 힘 : 관절 드라이브가 적용할 수 있는 최대 힘 ");
+
+
+	entt::meta<fq::physics::LinkInfo>()
+		.type("LinkInfo"_hs)
+		.prop(fq::reflect::prop::Name, "LinkInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::physics::LinkInfo::boneName>("BoneName"_hs)
+		.prop(fq::reflect::prop::Name, "BoneName")
+		.prop(fq::reflect::prop::Comment, u8"해당 본(링크)의 이름")
+		.data<&fq::physics::LinkInfo::parentBoneName>("ParentBoneName"_hs)
+		.prop(fq::reflect::prop::Name, "ParentBoneName")
+		.prop(fq::reflect::prop::Comment, u8"부모 본(링크)의 이름")
+		.data<&fq::physics::LinkInfo::density>("Density"_hs)
+		.prop(fq::reflect::prop::Name, "Density")
+		.prop(fq::reflect::prop::Comment, u8"밀도 ( 0.f ~ 1.f )")
+		.data<&fq::physics::LinkInfo::localTransform>("LocalTransform"_hs)
+		.prop(fq::reflect::prop::Name, "LocalTransform")
+		.prop(fq::reflect::prop::Comment, u8"로컬 좌표")
+		.data<&fq::physics::LinkInfo::jointInfo>("JointInfo"_hs)
+		.prop(fq::reflect::prop::Name, "JointInfo")
+		.prop(fq::reflect::prop::Comment, u8"조인트 정보");
+
+
+	entt::meta<fq::physics::ArticulationInfo>()
+		.type("ArticulationInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ArticulationInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::physics::ArticulationInfo::id>("ID"_hs)
+		.prop(fq::reflect::prop::Name, "ID")
+		.prop(fq::reflect::prop::Comment, u8"아이디")
+		.data<&fq::physics::ArticulationInfo::layerNumber>("LayerNumber"_hs)
+		.prop(fq::reflect::prop::Name, "LayerNumber")
+		.prop(fq::reflect::prop::Comment, u8"충돌 레이어 넘버")
+		.data<&fq::physics::ArticulationInfo::worldTransform>("WorldTransform"_hs)
+		.prop(fq::reflect::prop::Name, "WorldTransform")
+		.prop(fq::reflect::prop::Comment, u8"월드 좌표")
+		.data<&fq::physics::ArticulationInfo::staticFriction>("StaticFriction"_hs)
+		.prop(fq::reflect::prop::Name, "StaticFriction")
+		.prop(fq::reflect::prop::Comment, u8"정적 마찰 계수 ( 0.f ~ 1.f )")
+		.data<&fq::physics::ArticulationInfo::dynamicFriction>("DynamicFriction"_hs)
+		.prop(fq::reflect::prop::Name, "DynamicFriction")
+		.prop(fq::reflect::prop::Comment, u8"동적 마찰 계수 ( 0.f ~ 1.f )")
+		.data<&fq::physics::ArticulationInfo::restitution>("Restitution"_hs)
+		.prop(fq::reflect::prop::Name, "Restitution")
+		.prop(fq::reflect::prop::Comment, u8"복원 계수 ( 0.f ~ 1.f )")
+		.data<&fq::physics::ArticulationInfo::density>("Density"_hs)
+		.prop(fq::reflect::prop::Name, "Density")
+		.prop(fq::reflect::prop::Comment, u8"밀도 ( 0.f ~ 1.f )");
+
+	
+	entt::meta<Articulation>()
+		.type("Articulation"_hs)
+		.prop(fq::reflect::prop::Name, "Articulation")
+		.prop(fq::reflect::prop::Label, "Physcis")
+		.data<&Articulation::SetArticulationPath, &Articulation::GetArticulationPath>("ArticulationPath"_hs)
+		.prop(fq::reflect::prop::Name, "ArticulationPath")
+		.prop(fq::reflect::prop::DragDrop, ".articulation")
+		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

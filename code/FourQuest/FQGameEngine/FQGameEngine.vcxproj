@@ -155,6 +155,8 @@
   <ItemGroup>
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="AnimatorWindow.h" />
+    <ClInclude Include="ArticulationHierarchy.h" />
+    <ClInclude Include="ArticulationInspector.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="CollisionMatrixWindow.h" />
     <ClInclude Include="Command.h" />
@@ -188,7 +190,7 @@
     <ClInclude Include="PhysicsAnimatorWindow.h" />
     <ClInclude Include="NodeEditorStruct.h" />
     <ClInclude Include="PhysicsSystem.h" />
-    <ClInclude Include="PrefabSystem.h" />
+    <ClInclude Include="ImageSystem.h" />
     <ClInclude Include="ModelSystem.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="EditorEngine.h" />
@@ -203,6 +205,8 @@
   <ItemGroup>
     <ClCompile Include="AnimationSystem.cpp" />
     <ClCompile Include="AnimatorWindow.cpp" />
+    <ClCompile Include="ArticulationHierarchy.cpp" />
+    <ClCompile Include="ArticulationInspector.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="CollisionMatrixWindow.cpp" />
     <ClCompile Include="Command.cpp" />
@@ -235,7 +239,7 @@
     <ClCompile Include="PhysicsAnimatorWindow.cpp" />
     <ClCompile Include="NodeEditorStruct.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="PrefabSystem.cpp" />
+    <ClCompile Include="ImageSystem.cpp" />
     <ClCompile Include="ModelSystem.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />
     <ClCompile Include="EditorEngine.cpp" />

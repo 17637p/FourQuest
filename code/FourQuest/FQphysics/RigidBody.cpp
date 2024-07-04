@@ -10,6 +10,8 @@ namespace fq::physics
 		, mHalfHeight()
 		, mExtent()
 		, mScale(DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f))
+		, mOffsetTranslation(DirectX::SimpleMath::Matrix::Identity)
+		, mOffsetRotation(DirectX::SimpleMath::Matrix::Identity)
 	{
 	}
 

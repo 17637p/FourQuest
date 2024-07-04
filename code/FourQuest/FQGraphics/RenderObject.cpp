@@ -62,9 +62,9 @@ namespace fq::graphics
 		mTextureWidth = terrainMaterial.TextureWidth;
 		mTextureHeight = terrainMaterial.TextureHeight;
 
-		mCellsPerPatch = (mTextureWidth + mTextureHeight) / 16;
+		mCellsPerPatch = (mTextureWidth + mTextureHeight) / 4;
 
-		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
+		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial, mTextureWidth, mTextureHeight);
 		BuildTerrainMesh(device, mTempStaticMesh);
 	}
 
@@ -321,6 +321,11 @@ namespace fq::graphics
 	const fq::common::Mesh& TerrainMeshObject::GetMeshData() const
 	{
 		return mTempStaticMesh->GetMeshData();
+	}
+
+	int* TerrainMeshObject::GetHeightData() const
+	{
+		return mMaterial->GetHeightMapRawData();
 	}
 
 	ImageObject::ImageObject()

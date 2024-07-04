@@ -11,6 +11,7 @@ namespace fq::game_engine
 {
 	class GameProcess;
 	class EditorProcess;
+	class ImageSystem;
 
 	/// <summary>
 	/// 파일 시스템을 관리하는 창
@@ -43,13 +44,6 @@ namespace fq::game_engine
 		/// </summary>
 		void ProcessWindowDropFile();
 
-		/// <summary>
-		/// 아이콘을 이미지를 반환합닌다 
-		/// </summary>
-		/// <param name="name">아이콘 이름</param>
-		/// <returns>아잌노 이미지</returns>
-		ID3D11ShaderResourceView* GetIcon(const std::wstring& name);
-
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
@@ -64,20 +58,13 @@ namespace fq::game_engine
 		void beginPopupContextWindow_FileList();
 		void beginDragDropTarget_FileList();
 
-		void loadIcon();
 		void beginDragDrop_File(const Path& path);
 		void beginPopupContextItem_File(const Path& path); 
 		void drawFile(const Path& path);
 
-		void drawTextureImage(const Path& path);
-	
-		ID3D11ShaderResourceView* loadTexture(const Path& path);
-
 		void selectPath(Path path);
 		void setIconSize();
 
-		void clearTexture();
-		void clearIconTexture();
 		void clearGarbage();
 
 		bool isMouseHoveringRect(const ImVec2& min, const ImVec2& max);
@@ -87,6 +74,7 @@ namespace fq::game_engine
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
+		ImageSystem* mImageSystem;
 
 		Path mResourcePath;
 		Path mSelectPath;
@@ -94,8 +82,6 @@ namespace fq::game_engine
 
 		ID3D11Device* mDevice;
 		ImVec2 mIconSize;
-		std::unordered_map <std::wstring, ID3D11ShaderResourceView*> mIconTexture;
-		std::unordered_map <Path, ID3D11ShaderResourceView*> mTextures;
 
 		bool mbIsFindAllDirectory;
 		bool mbIsOpen;

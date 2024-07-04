@@ -1,20 +1,22 @@
 #pragma once
 
 #include "../FQGameModule/GameModule.h"
+#include "PlayerDefine.h"
 
 namespace fq::client
 {
 	class DeadArmour :	public game_module::Component
 	{
-		using ControllerID = unsigned int;
-
 	public:
 		DeadArmour();
 		~DeadArmour();
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 	public:
-		void SummonLivingArmour(ControllerID id);
+		/// <summary>
+		/// 죽은 갑옷에서 플레이어를 소환합니다
+		/// </summary>
+		void SummonLivingArmour(PlayerInfo info);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -28,6 +30,7 @@ namespace fq::client
 		game_module::PrefabResource mLivingArmourPrefab;
 
 		unsigned short mPlayerCount;
+		bool mbIsVisible;
 
 		friend void RegisterMetaData();
 	};

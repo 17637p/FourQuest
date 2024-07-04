@@ -144,7 +144,6 @@ void fq::game_engine::EditorEngine::Process()
 
 			if (mode == EditorMode::Play)
 			{
-
 				//////////////////////////////////////////////////////////////////////////
 				//							Physics Process								//
 				//////////////////////////////////////////////////////////////////////////
@@ -182,13 +181,25 @@ void fq::game_engine::EditorEngine::Process()
 				// Animation Update
 				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
 
+				// PathFindingSystem Update
+				mGameProcess->mPathFindgingSystem->Update(deltaTime);
+
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
-			}
-			else mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
 
+			}
+			else
+			{
+				//////////////////////////////////////////////////////////////////////////
+				//							Edit, Pause Mode							//
+				//////////////////////////////////////////////////////////////////////////
+				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
+
+				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
+			}
+		
 			//////////////////////////////////////////////////////////////////////////
-			//							System Process								//
+			//							Bind Process								//
 			//////////////////////////////////////////////////////////////////////////
 
 			mGameProcess->mDecalSystem->Update(deltaTime);
@@ -196,7 +207,6 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
@@ -236,13 +246,14 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mSceneManager->UnloadScene();
 
 	// Editor Process
-	mEditor->mPrefabSystem->Finalize();
+	mEditor->mImageSystem->Finalize();
 	mEditor->mFileDialog->Finalize();
 	mEditor->mGamePlayWindow->Finalize();
 	mEditor->mInspector->Finalize();
 	mEditor->mLogWindow->Finalize();
 	mEditor->mImGuiSystem->Finalize();
 	mEditor->mAnimatorWindow->Finalize();
+	mEditor->mArticulationHierarchy->Finalize();
 
 	// SystemFinalize
 	mGameProcess->mGraphics->Finalize();
@@ -273,6 +284,8 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mAnimatorWindow->Render();
 	mEditor->mSettingWindow->Render();
 	mEditor->mNavMeshWindow->Render();
+	mEditor->mArticulationHierarchy->Render();
+	mEditor->mArticulationInspector->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -284,7 +297,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mImGuiSystem->Initialize(mGameProcess->mWindowSystem->GetHWND()
 		, mGameProcess->mGraphics->GetDivice(), mGameProcess->mGraphics->GetDeviceContext());
 	mEditor->mCommandSystem->Initialize(mGameProcess.get(), mEditor.get());
-	mEditor->mPrefabSystem->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mImageSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mModelSystem->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mDebugSystem->Initialize(mGameProcess.get());
 
@@ -301,6 +314,8 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mAnimatorWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mSettingWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mNavMeshWindow->Initialize(mGameProcess.get());
+	mEditor->mArticulationHierarchy->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

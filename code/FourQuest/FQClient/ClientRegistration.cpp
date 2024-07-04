@@ -2,6 +2,9 @@
 #include "ClientRegistration.h"
 
 #include "../FQReflect/FQReflect.h"
+
+// Player 
+#include "PlayerDefine.h"
 #include "Player.h"
 #include "Soul.h"
 #include "PlayerInputState.h"
@@ -37,10 +40,24 @@ void fq::client::RegisterMetaData()
 	//                             플레이어 관련								//
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<ESoulType>()
+		.prop(fq::reflect::prop::Name, "SoulType")
+		.conv<std::underlying_type_t<ESoulType>>()
+		.data<ESoulType::Sword>("Sword"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Sword")
+		.data<ESoulType::Shield>("Shield"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Shield")
+		.data<ESoulType::Bow>("Bow"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Bow")
+		.data<ESoulType::Staff>("Staff"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Staff");
+
 	entt::meta<Player>()
 		.type("Player"_hs)
 		.prop(reflect::prop::Name, "Player")
 		.prop(reflect::prop::Label, "Player")
+		.data<&Player::SetSoulType, &Player::GetSoulType>("SoulType"_hs)
+		.prop(reflect::prop::Name, "SoulType")
 		.data<&Player::mHp>("Hp"_hs)
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::mDashCoolTime>("DashCoolTime"_hs)
@@ -48,16 +65,17 @@ void fq::client::RegisterMetaData()
 		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
 		.prop(reflect::prop::Name, "InvincibleTime")
 		.prop(reflect::prop::Comment, u8"무적시간")
+		.data<&Player::mAttackPositionOffset>("FeverTime"_hs)
+		.prop(reflect::prop::Name, "FeverTime")
+		.prop(reflect::prop::Comment, u8"갑옷 버프 시간")
 		.data<&Player::mAttackPrafab>("AttakPrefab"_hs)
 		.prop(reflect::prop::Name, "AttakPrefab")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
-		.data<&Player::mAttackRange>("AttackRange"_hs)
-		.prop(reflect::prop::Name, "AttackRange")
 		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
 		.prop(reflect::prop::Name, "AttackPositionOffset")
 		.base<game_module::Component>();
-	
+
 	entt::meta<DeadArmour>()
 		.type("DeadArmour"_hs)
 		.prop(reflect::prop::Name, "DeadArmour")
@@ -70,6 +88,8 @@ void fq::client::RegisterMetaData()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
 		.prop(reflect::prop::Label, "Player")
+		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
+		.prop(reflect::prop::Name, "SoulType")
 		.base<game_module::Component>();
 
 	entt::meta<PlayerInputState>()
@@ -80,8 +100,10 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlayerMovementState>()
 		.type("PlayerMovementState"_hs)
 		.prop(reflect::prop::Name, "PlayerMovementState")
-		.data<&PlayerMovementState::SetMovePlayer, &PlayerMovementState::CanMovePlayer>("CanMovePlayer"_hs)
+		.data<&PlayerMovementState::mbCanMovePlayer>("CanMovePlayer"_hs)
 		.prop(reflect::prop::Name, "CanMovePlayer")
+		.data<&PlayerMovementState::mbOnRotation>("OnRotation"_hs)
+		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<PlayerDashState>()
@@ -97,6 +119,9 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerAttackState::mAttackRebound>("AttackRebound"_hs)
 		.prop(reflect::prop::Name, "AttackRebound")
 		.prop(reflect::prop::Comment, u8"공격 반동")
+		.data<&PlayerAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(reflect::prop::Comment, u8"공격 시간")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
