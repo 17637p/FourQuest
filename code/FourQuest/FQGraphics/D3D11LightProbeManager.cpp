@@ -6,6 +6,7 @@
 #include "d3d11resourceManager.h"
 #include "D3D11View.h"
 #include "D3D11Device.h"
+#include "D3D11Texture.h"
 
 using namespace fq::graphics;
 
@@ -32,8 +33,8 @@ int fq::graphics::D3D11LightProbeManager::AddCubeProbe(const DirectX::SimpleMath
 
 	newCubeProbe->position = position;
 	newCubeProbe->index = mCubeProbeIndex;
-
-	mCubeProbes[mCubeProbeIndex] = newCubeProbe;
+	
+	mCubeProbes.push_back(newCubeProbe);
 
 	mCubeProbeIndex++;
 
@@ -46,7 +47,7 @@ void fq::graphics::D3D11LightProbeManager::DeleteCubeProbe(int index)
 	mCubeProbes[index]->index = -1;
 }
 
-std::wstring fq::graphics::D3D11LightProbeManager::SaveCubeProbeTexture(const int index, const std::wstring& direction)
+std::wstring fq::graphics::D3D11LightProbeManager::SaveProbe1DirectionTexture(const int index, const std::wstring& direction)
 {
 	HRESULT hr = S_OK;
 
@@ -97,6 +98,79 @@ std::vector<CubeProbe*> fq::graphics::D3D11LightProbeManager::GetCubeProbes() co
 	return mCubeProbes;
 }
 
+void D3D11LightProbeManager::lerpLightProbe(Tetrahedron* tet, const DirectX::SimpleMath::Vector4& weights, float* r, float* g, float* b)
+{
+	for (int i = 0; i < 9; i++)
+	{
+		r[i] = tet->probes[0]->coefficient[i] * weights.x;
+		r[i] += tet->probes[1]->coefficient[i] * weights.y;
+		r[i] += tet->probes[2]->coefficient[i] * weights.z;
+		r[i] += tet->probes[3]->coefficient[i] * weights.w;
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		g[i] = tet->probes[0]->coefficient[i + 9] * weights.x;
+		g[i] += tet->probes[1]->coefficient[i + 9] * weights.y;
+		g[i] += tet->probes[2]->coefficient[i + 9] * weights.z;
+		g[i] += tet->probes[3]->coefficient[i + 9] * weights.w;
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		b[i] = tet->probes[0]->coefficient[i + 18] * weights.x;
+		b[i] += tet->probes[1]->coefficient[i + 18] * weights.y;
+		b[i] += tet->probes[2]->coefficient[i + 18] * weights.z;
+		b[i] += tet->probes[3]->coefficient[i + 18] * weights.w;
+	}
+}
+
+void D3D11LightProbeManager::GetCoefficientTetrahedronWeight(const DirectX::SimpleMath::Vector4& weights, int TetIndex, float* r, float* g, float* b)
+{
+	lerpLightProbe(mTetrahedrons[TetIndex], weights, r, g, b);
+}
+
+int D3D11LightProbeManager::GetTetIndex(int& tetIndex, const DirectX::SimpleMath::Vector3& position,
+	DirectX::SimpleMath::Vector4& weights)
+{
+	int step;
+
+	getLightProbeInterpolationWeights(mTetrahedrons, position, tetIndex, weights, step);
+
+	return tetIndex;
+}
+
+void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
+{
+	float* r = new float[9];
+	float* g = new float[9];
+	float* b = new float[9];
+
+	for (int i = 0; i < mLightProbes.size(); i++)
+	{
+		auto cubeMap = mResourceManager->Create<D3D11Texture>(L"LightProbe" + std::to_wstring(i) + L".dds");
+
+		cubeMap->GetSHCoefficientRGB(mDevice, r, g, b);
+
+		for (int j = 0; j < 9; j++)
+		{
+			mLightProbes[i]->coefficient[j] = r[j];
+		}
+		for (int j = 0; j < 9; j++)
+		{
+			mLightProbes[i]->coefficient[j + 9] = g[j];
+		}
+		for (int j = 0; j < 9; j++)
+		{
+			mLightProbes[i]->coefficient[j + 18] = b[j];
+		}
+	}
+
+	delete[] r;
+	delete[] g;
+	delete[] b;
+}
+
 std::vector<LightProbe*> D3D11LightProbeManager::GetLightProbes() const
 {
 	return mLightProbes;
@@ -109,12 +183,12 @@ void D3D11LightProbeManager::DeleteLightProbe(int index)
 
 int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
 {
-	LightProbe* newCubeProbe = new LightProbe;
+	LightProbe* newLightProbe = new LightProbe;
 
-	newCubeProbe->position = position;
-	newCubeProbe->index = mLightProbeIndex;
+	newLightProbe->position = position;
+	newLightProbe->index = mLightProbeIndex;
 
-	mLightProbes[mLightProbeIndex] = newCubeProbe;
+	mLightProbes.push_back(newLightProbe);
 
 	mLightProbeIndex++;
 
@@ -147,25 +221,28 @@ void D3D11LightProbeManager::MakeTetrahedron()
 		for (int j = 0; j < 4; j++)
 		{
 			int point_index = out.tetrahedronlist[i * 4 + j];
-			int neighbor_index = out.tetrahedronlist[i * 4 + j];
+			int neighbor_index = out.neighborlist[i * 4 + j];
 			
 			newTet->probes[j] = mLightProbes[point_index];
 			newTet->neighbors[j] = neighbor_index;
 		}
 		newTet->matrix = DirectX::SimpleMath::Matrix{
-			newTet->probes[0]->position,
-			newTet->probes[1]->position,
-			newTet->probes[2]->position
+			newTet->probes[0]->position.x - newTet->probes[3]->position.x, newTet->probes[1]->position.x - newTet->probes[3]->position.x, newTet->probes[2]->position.x - newTet->probes[3]->position.x, 0,
+			newTet->probes[0]->position.y - newTet->probes[3]->position.y, newTet->probes[1]->position.y - newTet->probes[3]->position.y, newTet->probes[2]->position.y - newTet->probes[3]->position.y, 0,
+			newTet->probes[0]->position.z - newTet->probes[3]->position.z, newTet->probes[1]->position.z - newTet->probes[3]->position.z, newTet->probes[2]->position.z - newTet->probes[3]->position.z, 0,
+			0, 0, 0, 1
 		};
-		newTet->matrix._41 = newTet->probes[3]->position.x;
-		newTet->matrix._42 = newTet->probes[3]->position.y;
-		newTet->matrix._43 = newTet->probes[3]->position.z;
+		newTet->matrix = newTet->matrix.Transpose();
+		newTet->matrix = newTet->matrix.Invert();
 
 		mTetrahedrons.push_back(newTet);
 	}
+
+	out.save_elements("output");
+	out.save_nodes("output");
 }
 
-void D3D11LightProbeManager::GetLightProbeInterpolationWeights(const std::vector<Tetrahedron> tets, const DirectX::SimpleMath::Vector3& position, int tetIndex, DirectX::SimpleMath::Vector4& weights, float& t, int& steps)
+void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int tetIndex, DirectX::SimpleMath::Vector4& weights, int& steps)
 {
 	const int tetCount = tets.size();
 	if (tetIndex < 0 || tetIndex >= tetCount)
@@ -178,8 +255,14 @@ void D3D11LightProbeManager::GetLightProbeInterpolationWeights(const std::vector
 	{
 		// Check if we're in the current "best guess" tetrahedron
 		// 현재 "최선의 추측" 사면체인지 확인합니다.
-		const Tetrahedron& tet = tets[tetIndex];
-		GetBarycentriCoordinateForInnerTetrahedron(position, tet, weights);
+		// temp
+		if (tetIndex < 0)
+		{
+			break;
+		}
+
+		const Tetrahedron& tet = *tets[tetIndex];
+		getBarycentriCoordinateForInnerTetrahedron(position, tet, weights);
 		if (weights.x >= 0.0f && weights.y >= 0.0f && weights.z >= 0.0f && weights.w >= 0.0f)
 		{
 			// Success!
@@ -211,9 +294,9 @@ void D3D11LightProbeManager::GetLightProbeInterpolationWeights(const std::vector
 	}
 }
 
-void D3D11LightProbeManager::GetBarycentriCoordinateForInnerTetrahedron(const DirectX::SimpleMath::Vector3& p, const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords)
+void D3D11LightProbeManager::getBarycentriCoordinateForInnerTetrahedron(const DirectX::SimpleMath::Vector3& p, const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords)
 {
-	DirectX::SimpleMath::Vector3 mult = DirectX::SimpleMath::Vector3::Transform(p - tet.probes[3]->position, tet.matrix);
+	DirectX::SimpleMath::Vector3 mult = DirectX::SimpleMath::Vector3::TransformNormal(p - tet.probes[3]->position, tet.matrix);
 	coords.x = mult.x;
 	coords.y = mult.y;
 	coords.z = mult.z;
