@@ -355,12 +355,9 @@
     <ClCompile Include="EditorHelper.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
-<<<<<<< HEAD
-=======
     <ClCompile Include="TrailSystem.cpp">
       <Filter>src</Filter>
 	</ClCompile>
->>>>>>> origin/TerrainColliderEngine
     <ClCompile Include="ArticulationHierarchy.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>

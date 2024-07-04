@@ -47,6 +47,16 @@ namespace fq::physics
 		/// </summary>
 		inline const DirectX::SimpleMath::Matrix& GetOffsetTranslation();
 
+		/// <summary>
+		/// 보정 오프셋 값 저장
+		/// </summary>
+		inline void SetOffsetRotation(DirectX::SimpleMath::Matrix offsetMatrix);
+
+		/// <summary>
+		/// 보정 오프셋 값 반환
+		/// </summary>
+		inline const DirectX::SimpleMath::Matrix& GetOffsetRotation();
+
 	protected:
 		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix);
 
@@ -55,6 +65,7 @@ namespace fq::physics
 		unsigned int mLayerNumber;
 		EColliderType mColliderType;
 
+		DirectX::SimpleMath::Matrix mOffsetRotation;
 		DirectX::SimpleMath::Matrix mOffsetTranslation;
 		DirectX::SimpleMath::Vector3 mScale;
 		float mRadius;
@@ -116,5 +127,15 @@ namespace fq::physics
 	const DirectX::SimpleMath::Matrix& RigidBody::GetOffsetTranslation()
 	{
 		return mOffsetTranslation;
+	}
+
+	void RigidBody::SetOffsetRotation(DirectX::SimpleMath::Matrix offsetMatrix)
+	{
+		mOffsetRotation = offsetMatrix;
+	}
+
+	const DirectX::SimpleMath::Matrix& RigidBody::GetOffsetRotation()
+	{
+		return mOffsetRotation;
 	}
 }

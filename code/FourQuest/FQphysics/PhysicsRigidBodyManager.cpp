@@ -93,7 +93,11 @@ namespace fq::physics
 			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
 			DirectX::SimpleMath::Matrix dxMatrix;
 			CopyPxTransformToDirectXMatrix(pxBody->getGlobalPose(), dxMatrix);
-			rigidBodyData.transform = DirectX::SimpleMath::Matrix::CreateScale(staticBody->GetScale()) * dxMatrix * staticBody->GetOffsetTranslation();
+			rigidBodyData.transform = 
+				DirectX::SimpleMath::Matrix::CreateScale(staticBody->GetScale()) 
+				* staticBody->GetOffsetRotation()
+				* dxMatrix
+				* staticBody->GetOffsetTranslation();
 		}
 	}
 
@@ -124,7 +128,10 @@ namespace fq::physics
 			Vector3 scale;
 			Quaternion rotation;
 			dxTransform.Decompose(scale, rotation, position);
-			dxTransform = Matrix::CreateScale(1.f) * Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position) * dynamicBody->GetOffsetTranslation().Invert();
+			dxTransform = Matrix::CreateScale(1.f) 
+				* Matrix::CreateFromQuaternion(rotation) 
+				* Matrix::CreateTranslation(position);
+
 			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 
 			pxBody->setGlobalPose(pxTransform);
@@ -145,9 +152,13 @@ namespace fq::physics
 			DirectX::SimpleMath::Quaternion rotation;
 
 			dxTransform.Decompose(scale, rotation, position);
-			dxTransform = Matrix::CreateScale(1.f) * Matrix::CreateFromQuaternion(rotation) * Matrix::CreateTranslation(position) * staticBody->GetOffsetTranslation().Invert();
-			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
+			dxTransform = Matrix::CreateScale(1.f)
+				* Matrix::CreateFromQuaternion(rotation)
+				* staticBody->GetOffsetRotation().Invert()
+				* Matrix::CreateTranslation(position)
+				* staticBody->GetOffsetTranslation().Invert();
 
+			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 			pxBody->setGlobalPose(pxTransform);
 			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 			staticBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
@@ -262,11 +273,12 @@ namespace fq::physics
 		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
 
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlags(), info.heightScale, info.rowScale, info.colScale), *pxMaterial);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlags(physx::PxMeshGeometryFlag::eDOUBLE_SIDED), info.heightScale, info.rowScale, info.colScale), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
+		rigidBody->SetOffsetRotation(DirectX::SimpleMath::Matrix::CreateRotationZ(180.f / 180.f * 3.14f));
 		rigidBody->SetOffsetTranslation(
-			DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-info.rowScale * info.numRows * 0.5f, 0.f, -info.colScale * info.numCols * 0.5f)));
+			DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(info.rowScale * info.numRows * 0.5f, 0.f, -info.colScale * info.numCols * 0.5f)));
 
 		shape->release();
 
@@ -380,11 +392,12 @@ namespace fq::physics
 		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
 
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlags(), info.heightScale, info.rowScale, info.colScale), *pxMaterial);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlag::eDOUBLE_SIDED, info.heightScale , info.rowScale, info.colScale), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
+		rigidBody->SetOffsetRotation(DirectX::SimpleMath::Matrix::CreateRotationZ(180.f / 180.f * 3.14f));
 		rigidBody->SetOffsetTranslation(
-			DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(-info.rowScale * info.numRows * 0.5f, 0.f, -info.colScale * info.numCols * 0.5f)));
+			DirectX::SimpleMath::Matrix::CreateTranslation(DirectX::SimpleMath::Vector3(info.rowScale * info.numRows * 0.5f, 0.f, -info.colScale * info.numCols * 0.5f)));
 
 		shape->release();
 
