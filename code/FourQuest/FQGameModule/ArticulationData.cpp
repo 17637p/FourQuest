@@ -13,4 +13,9 @@ namespace fq::game_module
 	ArticulationData::~ArticulationData()
 	{
 	}
+
+	void ArticulationData::Update()
+	{
+		mRootLinkData->Update();
+	}
 }

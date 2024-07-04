@@ -72,13 +72,29 @@ namespace fq::game_engine
 		/// <summary>
 		/// 
 		/// </summary>
+		void beginLinkDataBar(std::shared_ptr<fq::game_module::LinkData> link);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void beginLinkDataNameBar(std::shared_ptr<fq::game_module::LinkData> link);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void beginLinkSelectButton(std::shared_ptr<fq::game_module::LinkData> link);
+
+		/// <summary>
+		/// 
+		/// </summary>
 		void beginPopupContextWindow_HierarchyChild();
 
 		/// <summary>
 		/// 관절의 계층 구조에서 우클릭 하면 링크를 생성할지 나타나는 창
 		/// </summary>
-		void beginPopupContextItem_Link();
+		void beginPopupContextItem_Link(std::shared_ptr<fq::game_module::LinkData> link);
 
+		void dragDropLinkBar(std::shared_ptr<fq::game_module::LinkData> link);
 
 
 	private:
@@ -99,10 +115,12 @@ namespace fq::game_engine
 		std::vector<fq::common::Bone> mBones;
 
 		std::shared_ptr<fq::game_module::ArticulationData> mArticulationData;
-		std::vector<std::shared_ptr<fq::game_module::LinkData>> mLinkData;
 		std::shared_ptr<fq::game_module::LinkData> mSelectLinkData;
 
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectObjectHandle;
+
+
+		unsigned int mLinkID;
 	};
 }

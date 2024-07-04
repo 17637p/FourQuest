@@ -15,6 +15,8 @@ namespace fq::game_module
 		LinkData();
 		~LinkData();
 
+		void Update();
+
 		inline const std::string& GetBoneName();
 		inline const std::string& GetParentBoneName();
 		inline const float& GetDensity();
@@ -34,6 +36,9 @@ namespace fq::game_module
 		inline const fq::physics::EArticulationMotion& GetTwistAxisMotion();
 		inline const float& GetTwistLimitLow();
 		inline const float& GetTwistLimitHigh();
+
+		inline const bool& GetIsDead();
+		inline const unsigned int& GetID();
 
 		inline void SetBoneName(const std::string& name);
 		inline void SetParentBoneName(const std::string& parentName);
@@ -55,12 +60,17 @@ namespace fq::game_module
 		inline void SetTwistLimitLow(const float& limitsLow);
 		inline void SetTwistLimitHigh(const float& limitsHigh);
 
+		inline void SetIsDead(const bool& isDead);
+		inline void SetID(const bool& id);
+
 		inline std::shared_ptr<LinkData> GetChildLinkData(LinkName name);
 		inline std::unordered_map<LinkName, std::shared_ptr<LinkData>>& GetChildrenLinkData();
 		inline void AddChildLinkData(LinkName name, std::shared_ptr<LinkData> linkData);
 
 	private:
 		fq::physics::LinkInfo mLinkInfo;
+		bool mbIsDead;
+		unsigned int mID;
 
 		std::unordered_map<LinkName, std::shared_ptr<LinkData>> mChildrenLinkData;
 	};
@@ -135,7 +145,14 @@ namespace fq::game_module
 	{
 		return mLinkInfo.jointInfo.TwistAxisInfo.limitsHigh;
 	}
-
+	const bool& LinkData::GetIsDead()
+	{
+		return mbIsDead;
+	}
+	const unsigned int& LinkData::GetID()
+	{
+		return mID;
+	}
 
 	void LinkData::SetBoneName(const std::string& name)
 	{
@@ -207,6 +224,14 @@ namespace fq::game_module
 	{
 		mLinkInfo.jointInfo.TwistAxisInfo.limitsHigh = limitsHigh;
 	}
+	void LinkData::SetIsDead(const bool& isDead)
+	{
+		mbIsDead = isDead;
+	}
+	void LinkData::SetID(const bool& id)
+	{
+		mID = id;
+	}
 
 	std::shared_ptr<LinkData> LinkData::GetChildLinkData(LinkName name)
 	{
@@ -216,6 +241,7 @@ namespace fq::game_module
 	{
 		return mChildrenLinkData;
 	}
+
 	void LinkData::AddChildLinkData(LinkName name, std::shared_ptr<LinkData> linkData)
 	{
 		mChildrenLinkData.insert(std::make_pair(name, linkData));
