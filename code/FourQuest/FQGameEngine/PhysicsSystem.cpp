@@ -172,8 +172,8 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 	info.heightScale = terrain->GetHeightScale() / 255.f;
 	info.numCols = terrain->GetWidth() ;
 	info.numRows = terrain->GetHeight();
-	info.rowScale = terrain->GetTextureWidth() / 100.f;
-	info.colScale = terrain->GetTextureHeight() / 100.f;
+	info.rowScale = terrain->GetTextureWidth() / 300.f;
+	info.colScale = terrain->GetTextureHeight() / 300.f;
 
 	mPhysicsEngine->CreateStaticBody(info, physics::EColliderType::COLLISION);
 	mColliderContainer.insert({ id,

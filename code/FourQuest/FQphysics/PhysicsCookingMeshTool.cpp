@@ -82,7 +82,7 @@ namespace fq::physics
 		// 샘플 배열 초기화 (높이 값 설정)
 		for (physx::PxU32 i = 1; i < numRows; ++i)
 		{
-			for (physx::PxU32 j = 1; j < numCols; ++j)
+			for (physx::PxU32 j = 1; j <= numCols; ++j)
 			{
 				samples[(numRows - i) * numCols - j].height = -height[(numRows - i) * numCols - j];
 				samples[(numRows - i) * numCols - j].setTessFlag();

@@ -15,6 +15,8 @@ namespace fq::game_module
 	public:
 		ArticulationData();
 		~ArticulationData();
+
+		void Update();
 		
 		inline const unsigned int& GetID();
 		inline const unsigned int& GetLayerNumber();
