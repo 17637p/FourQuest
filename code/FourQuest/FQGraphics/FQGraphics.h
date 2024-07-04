@@ -94,6 +94,9 @@ namespace fq::graphics
 		virtual void UseShadow(const unsigned int id, bool bUseShadow);
 
 		// Light Probe
+		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;
+		virtual void BakeLightProbe() override;
+
 		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteCubeProbe(unsigned short index) override;
 		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;

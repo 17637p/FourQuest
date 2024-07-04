@@ -124,6 +124,9 @@ extern "C" {
 			virtual FQ_GRAPHICS void UseShadow(const unsigned int id, bool bUseShadow) abstract;
 
 			// Light Probe
+			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;
+			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
+
 			virtual FQ_GRAPHICS unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) abstract;
 			virtual FQ_GRAPHICS void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) abstract;
 			virtual FQ_GRAPHICS void DeleteCubeProbe(unsigned short index) abstract;

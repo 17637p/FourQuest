@@ -29,6 +29,7 @@ namespace fq::graphics
 	class D3D11JobManager;
 	class D3D11DebugDrawManager;
 	class D3D11ParticleManager;
+	class D3D11LightProbeManager;
 
 	class D3D11RenderManager
 	{
@@ -44,6 +45,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
 			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 			unsigned short width,
 			unsigned short height,
 			EPipelineType pipelineType);

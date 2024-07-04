@@ -102,8 +102,8 @@ float4 main(VertexOut pin) : SV_TARGET
 
     Material material;
     material.albedo = albedo;
-    material.roughness = roughness;
-    material.metallic = metalness;
+    material.roughness = 0;
+    material.metallic = 0;
     float3 toEye = normalize(eyePosition - pin.PositionW);
     
     // DirectionalLight Ã³¸®
@@ -197,5 +197,6 @@ float4 main(VertexOut pin) : SV_TARGET
      //    emissive = float3(0, 0, 0.1f);
      //}
    
-    return float4(directLighting + ambientLighting + emissive, 1.f);
+    //return float4(directLighting + ambientLighting + emissive, 1.f);
+    return float4(albedo, 1.f);
 }

@@ -4,6 +4,7 @@
 
 #include "InputManager.h"
 #include "DemoUtils.h"
+#include <IFQRenderResource.h>
 
 using namespace fq::utils;
 
@@ -71,6 +72,60 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
 	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
+
+	//Light Probe Test
+	const std::string cubeYModel = "./resource/Graphics/TerrainDemo/testCubeY.model";
+	const std::string cubeYModel1 = "./resource/Graphics/TerrainDemo/testCubeY1.model";
+	const std::string cubeYModel2 = "./resource/Graphics/TerrainDemo/testCubeY2.model";
+	const std::string cubeYModel3 = "./resource/Graphics/TerrainDemo/testCubeY3.model";
+
+	const std::string sphereModel = "./resource/Graphics/TerrainDemo/testSphere.model";
+	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/testCubeY.fbx", cubeYModel);
+	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/testCubeY1.fbx", cubeYModel1);
+	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/testCubeY2.fbx", cubeYModel2);
+	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/testCubeY3.fbx", cubeYModel3);
+
+	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/testSphere.fbx", sphereModel);
+
+	const std::string textureBase3Path = "./resource/example/texture";
+	mTestGraphics->CreateModel(cubeYModel, textureBase3Path);
+	mTestGraphics->CreateModel(cubeYModel1, textureBase3Path);
+	mTestGraphics->CreateModel(cubeYModel2, textureBase3Path);
+	mTestGraphics->CreateModel(cubeYModel3, textureBase3Path);
+	mTestGraphics->CreateModel(sphereModel, textureBase3Path);
+
+	createModel(cubeYModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 2.5, 0, 0 }));
+	createModel(cubeYModel1, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -2.5, 0, 0 }));
+	createModel(cubeYModel2, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 2.5 }));
+	createModel(cubeYModel3, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, -2.5 }));
+
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.3, 1.2, -0.3 }));
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.3, 1.4, 0.3 }));
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.3, 1.7, -0.3 }));
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.3, 1.9, 0.3 }));
+
+	lightProbePositions.push_back({ 1, 1, 0 });
+	lightProbePositions.push_back({ -1, 1, 0 });
+	lightProbePositions.push_back({ 0, 1, 1 });
+	lightProbePositions.push_back({ 0, 1, -1 });
+	lightProbePositions.push_back({ 1, 2, 0 });
+	lightProbePositions.push_back({ -1,2, 0 });
+	lightProbePositions.push_back({ 0, 2, 1 });
+	lightProbePositions.push_back({ 0, 2, - 1 });
+
+	//lightProbePositions.push_back({ 5, -1, 0 });
+	//lightProbePositions.push_back({ -5, -1, 0 });
+	//lightProbePositions.push_back({ 0, -1, 5 });
+	//lightProbePositions.push_back({ 0, -1, -5 });
+	//lightProbePositions.push_back({ 5, 10, 0 });
+	//lightProbePositions.push_back({ -5,10, 0 });
+	//lightProbePositions.push_back({ 0, 10, 5 });
+	//lightProbePositions.push_back({ 0, 10, -5 });
+
+	for (int i = 0; i < lightProbePositions.size(); i++)
+	{
+		mTestGraphics->AddLightProbe(lightProbePositions[i]);
+	}
 
 	return true;
 }
@@ -218,6 +273,10 @@ void TerrainDemo::Update()
 	{
 		mTestGraphics->SaveCubeProbeTexture(1024, 1024);
 	}
+	if (InputManager::GetInstance().IsGetKeyDown('K'))
+	{
+		mTestGraphics->BakeLightProbe();
+	}
 
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
@@ -243,6 +302,18 @@ void TerrainDemo::debugRender()
 	gridInfo.GridSize = 1.f;
 	gridInfo.Color = { 1, 1, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
+
+	SphereInfo sphereInfo;
+	sphereInfo.Sphere.Center = { 0, 0, 0 };
+	sphereInfo.Sphere.Radius = 0.1f;
+	sphereInfo.Color = { 1,1,1,1 };
+
+	for (int i = 0; i < lightProbePositions.size(); i++)
+	{
+		sphereInfo.Sphere.Center = lightProbePositions[i];
+		mTestGraphics->DrawSphere(sphereInfo);
+	}
+
 }
 
 void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
@@ -318,4 +389,62 @@ void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matr
 
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
+}
+
+void TerrainDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
+{
+	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
+
+	static int index = 0;
+
+	for (auto mesh : modelData.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = modelPath;
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
+
+		if (mesh.second.BoneVertices.empty())
+		{
+			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+
+			std::vector<std::shared_ptr<fq::graphics::IMaterial>> mat = iStaticMeshObject->GetMaterialInterfaces();
+			for (int i = 0; i < mat.size(); i++)
+			{
+				fq::common::Material matData = mat[i]->GetMaterialData();
+				if (index == 0)
+				{
+					matData.BaseColorFileName = L"Red.png";
+				}
+				else if (index == 1)
+				{
+					matData.BaseColorFileName = L"Green.png";
+				}
+				else if (index == 2)
+				{
+					matData.BaseColorFileName = L"Blue.png";
+				}
+				else
+				{
+					matData.BaseColorFileName = L"Black.png";
+				}
+
+				mat[i]->SetMaterialData(matData);
+			}
+
+			mStaticMeshObjects.push_back(iStaticMeshObject);
+		}
+	}
+
+	index++;
 }

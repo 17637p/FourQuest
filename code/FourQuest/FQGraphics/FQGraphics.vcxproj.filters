@@ -199,6 +199,9 @@
     <ClInclude Include="LightProbePass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
+    <ClInclude Include="LightProbeAddPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -479,6 +482,9 @@
     <ClCompile Include="LightProbePass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
+    <ClCompile Include="LightProbeAddPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DecalCommon.hlsli">
@@ -611,6 +617,12 @@
     </CustomBuild>
     <CustomBuild Include="LightProbePS.hlsl">
       <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeAddPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeAddVS.hlsl">
+      <Filter>Shader\VS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11JobManager> jobManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
+			std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize() override;
@@ -25,10 +26,12 @@ namespace fq::graphics
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<D3D11LightProbeManager> mLightProbeManager;
 
 		std::shared_ptr<D3D11RenderTargetView> mLightProbeIrrRTV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
+		std::shared_ptr<D3D11SamplerState> mDefaultSS;
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualDS;
 
 		std::unique_ptr<class ShaderProgram> mLightProbePassStaticMeshPassShaderProgram;

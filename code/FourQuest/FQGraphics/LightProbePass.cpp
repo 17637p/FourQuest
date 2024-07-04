@@ -11,6 +11,7 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 	std::shared_ptr<D3D11JobManager> jobManager,
 	std::shared_ptr<D3D11CameraManager> cameraManager,
 	std::shared_ptr<D3D11ResourceManager> resourceManager,
+	std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 	unsigned short width,
 	unsigned short height)
 {
@@ -20,6 +21,7 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 	mJobManager = jobManager;
 	mCameraManager = cameraManager;
 	mResourceManager = resourceManager;
+	mLightProbeManager = lightProbeManager;
 
 	auto LightProbeStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"LightProbeVS.cso");
 	auto LightProbeSkinnedVS = std::make_shared<D3D11VertexShader>(device, L"LightProbeVS_SKINNING.cso");
@@ -37,7 +39,9 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 	mLightProbeCB = std::make_shared<D3D11ConstantBuffer<LightProbeCB>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
+
 	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+	mDefaultSS = resourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
 
 	r = new float[9];
 	g = new float[9];
@@ -96,6 +100,7 @@ void fq::graphics::LightProbePass::Render()
 
 		// pixel shader에 바인드
 		mLightProbeCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 0);
+		mDefaultSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
 		mLightProbePassStaticMeshPassShaderProgram->Bind(mDevice);
 
@@ -103,6 +108,13 @@ void fq::graphics::LightProbePass::Render()
 		{
 			if (job.ObjectRenderType == EObjectRenderType::Opaque)
 			{
+				int tetIndex = 0;
+				DirectX::SimpleMath::Vector4 weights;
+				// position 가져오기
+				mLightProbeManager->GetTetIndex(tetIndex, { (job.TransformPtr)->_41, (job.TransformPtr)->_42, (job.TransformPtr)->_43 }, weights);
+
+				mLightProbeManager->GetCoefficientTetrahedronWeight(weights, tetIndex, r, g, b);
+
 				ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b);
 
 				job.StaticMesh->Bind(mDevice);
@@ -119,8 +131,6 @@ void fq::graphics::LightProbePass::Render()
 
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
-			ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b);
-
 			job.SkinnedMesh->Bind(mDevice);
 			job.Material->Bind(mDevice);
 
@@ -130,25 +140,19 @@ void fq::graphics::LightProbePass::Render()
 			job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 		}
 	}
+
+	// UnBind
+	{
+
+	}
 }
 
 void fq::graphics::LightProbePass::OnResize(unsigned short width, unsigned short height)
 {
-	mLightProbeIrrRTV->OnResize(mDevice, ED3D11RenderTargetViewType::LightProbeIrr, width, height);
+	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
 }
 
 void fq::graphics::LightProbePass::SetLightProbe(const std::wstring& texturePaths)
 {
-	if (texturePaths.size() == 0)
-	{
-		isSetProbe = false;
-		return;
-	}
-
 	isSetProbe = true;
-	mProbeTexture = mResourceManager->Create<D3D11Texture>(texturePaths);
-
-	mProbeTexture->GetSHCoefficientRGB(mDevice, r, g, b);
-
-	int a = 3;
 }

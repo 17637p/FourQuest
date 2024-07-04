@@ -14,5 +14,6 @@ cbuffer cbParticleFrame : register(b0)
 float4 main(VertexOut pin) : SV_Target
 {
 	float3 irr = ShadeIrad(float4(pin.NormalW, 1.0f), lightProbe);
+
 	return float4(irr, 1.0f); 
 }

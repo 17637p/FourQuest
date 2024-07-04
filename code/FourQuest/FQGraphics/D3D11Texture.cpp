@@ -255,11 +255,13 @@ void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11D
 			// Capture the texture into a ScratchImage
 			DirectX::ScratchImage scratchImage;
 			CaptureTexture(d3d11Device->GetDevice().Get(), d3d11Device->GetDeviceContext().Get(), cubeMapTexture, scratchImage);
+			DirectX::ScratchImage float16Image;
+			Convert(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, float16Image);
 			//if (FAILED(hr))
 			//	return hr;
 
 			// Save the ScratchImage to a DDS file
-			SaveToDDSFile(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DirectX::DDS_FLAGS_NONE, savePath.c_str());
+			SaveToDDSFile(float16Image.GetImages(), float16Image.GetImageCount(), float16Image.GetMetadata(), DirectX::DDS_FLAGS_NONE, savePath.c_str());
 		}
 			break;
 		default:

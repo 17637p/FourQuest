@@ -21,7 +21,7 @@ void fq::graphics::OutLineAddPass::Initialize(std::shared_ptr<D3D11Device> devic
 	mOutLineBlurSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, outLineBlurRTV);
 
 	mOffScreenRTV = mResourceManager->Get<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
-	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 
 	mDefaultSS = resourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
 
@@ -81,6 +81,11 @@ void fq::graphics::OutLineAddPass::Render()
 	// draw
 	{
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
+	}
+
+	// UnBind
+	{
+		mOutLineBlurSRV->UnBind(mDevice, 0, ED3D11ShaderType::PixelShader);
 	}
 }
 

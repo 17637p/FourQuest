@@ -279,6 +279,11 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	}
 }
 
+void D3D11RenderTargetView::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	//d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, nullptr, nullptr);
+}
+
 Microsoft::WRL::ComPtr<ID3D11RenderTargetView> D3D11RenderTargetView::GetRTV()
 {
 	return mRTV;

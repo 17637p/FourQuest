@@ -3,7 +3,7 @@ struct VertexIn
 	float3 Position : POSITION;
     float3 NormalL : NORMAL;
     float3 TangentL : TANGENT;
-    float2 UV : UV;
+    float2 UV : TEXCOORD;
 #ifdef SKINNING
     int4 Indices : INDICES;
     float4 Weights : WEIGHTS;
