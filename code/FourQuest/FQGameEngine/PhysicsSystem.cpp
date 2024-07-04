@@ -170,7 +170,7 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 	info.height = terrain->GetTerrainMeshObject()->GetHeightData();
 
 	info.heightScale = terrain->GetHeightScale() / 255.f;
-	info.numCols = terrain->GetWidth();
+	info.numCols = terrain->GetWidth() ;
 	info.numRows = terrain->GetHeight();
 	info.rowScale = terrain->GetTextureWidth() / 100.f;
 	info.colScale = terrain->GetTextureHeight() / 100.f;

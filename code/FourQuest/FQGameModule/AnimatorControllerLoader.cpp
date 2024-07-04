@@ -127,6 +127,12 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		float exitTime = value.at("exitTime");
 		float transitionDuration = value.at("transitionDuration");
 		int interruptionSource = value.at("InterruptionSource");
+		bool canTransitionToSelf = true;
+		if (value.find("canTransitionToSelf") != value.end())
+		{
+			canTransitionToSelf = value.at("canTransitionToSelf");
+		}
+
 		AnimationTransition transition{};
 
 		transition.SetExitState(exit);
@@ -134,6 +140,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		transition.SetExitTime(exitTime);
 		transition.SetTransitionDuration(transitionDuration);
 		transition.SetInterruptionSource(static_cast<AnimationTransition::InterruptionSource>(interruptionSource));
+		transition.SetCanTrasitionToSelf(canTransitionToSelf);
 
 		json conditionsJson = value.at("conditions");
 		for (auto& conditionJson : conditionsJson)
@@ -164,7 +171,6 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 
 		controller->AddTransition(transition);
 	}
-
 
 	return controller;
 }
@@ -234,6 +240,7 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		transitionJson["exitTime"] = transition.GetExitTime();
 		transitionJson["transitionDuration"] = transition.GetTransitionDuration();
 		transitionJson["InterruptionSource"] = static_cast<int>(transition.GetInterruptionSource());
+		transitionJson["canTransitionToSelf"] = transition.CanTrasitionToSelf();
 
 		ordered_json conditionsJson;
 		// 조건 저장 

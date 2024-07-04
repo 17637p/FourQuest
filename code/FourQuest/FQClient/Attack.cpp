@@ -21,6 +21,7 @@ fq::client::Attack::Attack()
 	:mAttackPower(-1)
 	,mElapsedTime(0.f)
 	,mAttackTime(0.1f)
+	,mAttackDirection(NoDirection)
 {
 
 }

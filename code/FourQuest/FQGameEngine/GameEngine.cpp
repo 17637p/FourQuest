@@ -48,7 +48,7 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess ÃÊ±âÈ­
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* StartSceneName = "Level2";
+	constexpr const char* StartSceneName = "GitaeTest";
 
 	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()

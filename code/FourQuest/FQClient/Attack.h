@@ -11,6 +11,7 @@ namespace fq::client
 	// Attacker 도 Attack을 소환하는 오브젝트를 넣어주세요~
 	class Attack : public fq::game_module::Component
 	{
+
 	public:
 		Attack();
 		~Attack();
@@ -28,14 +29,21 @@ namespace fq::client
 		fq::game_module::GameObject* GetAttacker() const { return mAttacker; }
 		void SetAttacker(fq::game_module::GameObject* val) { mAttacker = val; }
 
-	private:
+		DirectX::SimpleMath::Vector3 GetAttackDirection() const { return mAttackDirection; }
+		void SetAttackDirection(DirectX::SimpleMath::Vector3 val) { mAttackDirection = val; }
 		entt::meta_handle GetHandle() override { return *this; }
+	private:
+
+	public:
+		// 공경 방향이 없는 경우
+		inline static DirectX::SimpleMath::Vector3 NoDirection = DirectX::SimpleMath::Vector3::Zero;
 
 	private:
 		// 공격력
 		float mAttackPower;
 		float mAttackTime;
 		float mElapsedTime;
+		DirectX::SimpleMath::Vector3 mAttackDirection;
 
 		fq::game_module::GameObject* mAttacker;
 

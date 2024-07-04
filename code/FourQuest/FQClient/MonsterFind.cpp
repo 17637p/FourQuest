@@ -32,7 +32,6 @@ void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, 
 		if (distMin > dist && !player.IsDestroyed())
 		{
 			distMin = dist;
-
 			monster->SetTarget(&player);
 		}
 	}

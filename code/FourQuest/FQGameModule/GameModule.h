@@ -32,6 +32,7 @@
 #include "Trail.h"
 #include "ImageUI.h"
 #include "Socket.h"
+#include "NavigationAgent.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"

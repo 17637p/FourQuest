@@ -361,7 +361,7 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 	{
 		return {};
 	}
-
+		
 	return mNextState->first;
 }
 
@@ -382,6 +382,13 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 		= mTransitions.equal_range("AnyState");
 		beginIter != endIter; ++beginIter)
 	{
+		// EnterState가 같은 상태인지 확인합니다
+		if (!beginIter->second.CanTrasitionToSelf()
+			&& beginIter->second.GetEnterState() == name)
+		{
+			continue;
+		}
+
 		transitions.push_back(beginIter);
 	}
 

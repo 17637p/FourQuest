@@ -38,16 +38,16 @@ dcl_temps 2
 //   v0.x <- uv.x; v0.y <- uv.y; 
 //   o0.x <- <main return value>.x; o0.y <- <main return value>.y; o0.z <- <main return value>.z; o0.w <- <main return value>.w
 //
-#line 221 "C:\Users\user\Documents\GitHub\FourQuest\code\FourQuest\FQGraphics\ModelTransparentPS.hlsl"
+#line 221 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\ModelTransparentPS.hlsl"
 sample_indexable(texture2d)(float,float,float,float) r0.x, v0.xyxx, t1.xyzw, s0  // r0.x <- reveal
 
-#line 337 "C:\Users\user\Documents\GitHub\FourQuest\code\FourQuest\FQGraphics\Common.hlsli"
+#line 337 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\Common.hlsli"
 add r0.y, r0.x, l(-1.000000)
 max r0.z, |r0.x|, l(1.000000)
 mul r0.z, r0.z, l(0.000010)
 ge r0.y, r0.z, |r0.y|  // r0.y <- <IsApproximatelyEqual return value>
 
-#line 226 "C:\Users\user\Documents\GitHub\FourQuest\code\FourQuest\FQGraphics\ModelTransparentPS.hlsl"
+#line 226 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\ModelTransparentPS.hlsl"
 discard_nz r0.y
 
 #line 229
