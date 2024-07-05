@@ -6,9 +6,9 @@
 
 fq::game_module::Socket::Socket()
 	:mTransform(nullptr)
-	, mNodeHierarchyInstance(nullptr)
-	, mBoneIndex(0)
-	, mBoneName{}
+	,mSkinnedMeshRenderer(nullptr)
+	,mBoneIndex(0)
+	,mBoneName{}
 {}
 
 fq::game_module::Socket::~Socket()
@@ -36,16 +36,16 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Socket::Clone(std::
 
 void fq::game_module::Socket::OnUpdate(float dt)
 {
-	if (mNodeHierarchyInstance)
+	if (mSkinnedMeshRenderer)
 	{
-		auto matrix = mNodeHierarchyInstance->GetRootTransform(mBoneIndex);
-
+		auto matrix = mSkinnedMeshRenderer->GetSkinnedMeshObject()->GetRootTransform(mBoneIndex);
+		
 		DirectX::SimpleMath::Vector3 pos;
 		DirectX::SimpleMath::Vector3 scale;
 		DirectX::SimpleMath::Quaternion rotation;
 
 		matrix.Decompose(scale, rotation, pos);
-
+		
 		mTransform->GenerateLocal(pos, rotation, mTransform->GetLocalScale());
 	}
 }
@@ -64,13 +64,17 @@ void fq::game_module::Socket::BindBone()
 	if (parent && parent->HasComponent<game_module::Animator>())
 	{
 		auto animator = parent->GetComponent<game_module::Animator>();
-		auto boneHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
-		auto boneHierarchy = boneHierarchyInstance->GetNodeHierarchy();
-		bool check = boneHierarchy->TryGetBoneIndex(GetBoneName(), &mBoneIndex);
 
-		if (check)
+		for (auto mesh : animator->GetSkinnedMeshs())
 		{
-			mNodeHierarchyInstance = boneHierarchyInstance;
+			auto skinnedMeshObject = mesh->GetSkinnedMeshObject();
+			bool check = skinnedMeshObject->TryGetBoneIndex(GetBoneName(), &mBoneIndex);
+
+			if (check)
+			{
+				mSkinnedMeshRenderer = mesh;
+				return;
+			}
 		}
 	}
 }

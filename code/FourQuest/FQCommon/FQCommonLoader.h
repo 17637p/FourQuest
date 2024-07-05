@@ -25,7 +25,7 @@ namespace fq::common
 		std::string Name;
 		unsigned int Index;
 		unsigned int ParentIndex;
-		DirectX::SimpleMath::Matrix ToParentMatrix;
+		DirectX::SimpleMath::Matrix BindposeMatrix;
 		DirectX::SimpleMath::Matrix OffsetMatrix;
 	};
 
@@ -92,7 +92,7 @@ namespace fq::common
 		std::vector<Subset> Subsets;
 
 		DirectX::BoundingBox RenderBoundingBox;
-		DirectX::BoundingSphere RenderBoundingSphere;
+		DirectX::BoundingSphere GetRenderBoundingSphere;
 	};
 
 	struct Material

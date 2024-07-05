@@ -18,6 +18,9 @@ void fq::game_engine::AnimationSystem::Initialize(GameProcess* game)
 	mGameProcess = game;
 	mScene = mGameProcess->mSceneManager->GetCurrentScene();
 	mGraphics = mGameProcess->mGraphics;
+
+	mChangeAnimationStateHandler = mGameProcess->mEventManager
+		->RegisterHandle<fq::event::ChangeAnimationState>(this, &AnimationSystem::ChangeAnimationState);
 }
 
 void fq::game_engine::AnimationSystem::UpdateAnimation(float dt)
@@ -25,7 +28,10 @@ void fq::game_engine::AnimationSystem::UpdateAnimation(float dt)
 	// 1. State Update
 	updateAnimtorState(dt);
 
-	// 2. Animation을 적용
+	// 2. Animation 변경요청  
+	processCallBack();
+
+	// 3. Animation을 적용
 	processAnimation(dt);
 }
 
@@ -50,39 +56,35 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		{
 			animator.UpdateAnimation(dt);
 
-			if (!animator.GetHasController() || !animator.GetHasNodeHierarchyInstance())
-			{
-				spdlog::warn("{} does not have a controller", object.GetName());
-				return;
-			}
-
 			auto& controller = animator.GetController();
-			auto& nodeHierarchyInstance = animator.GetNodeHierarchyInstance();
-			float timePos = controller.GetTimePos();
 
-			if (controller.IsInTransition())
+			for (auto mesh : animator.GetSkinnedMeshs())
 			{
-				float blendPos = controller.GetBlendTimePos();
-				float blendWeight = controller.GetBlendWeight();
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
-			}
-			else
-			{
-				if (controller.GetHasCurrentStateAnimation())
+				float timePos = controller.GetTimePos();
+
+				if (controller.IsInTransition())
 				{
-					nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+					float blendPos = controller.GetBlendTimePos();
+					float blendWeight = controller.GetBlendWeight();
+					mesh->GetSkinnedMeshObject()
+						->SetBlendAnimationTime({ timePos, blendPos }, blendWeight);
 				}
 				else
-				{
-					int a = 0;
-				}
+					mesh->GetSkinnedMeshObject()->SetAnimationTime(timePos);
 			}
 		});
+}
+
+
+void fq::game_engine::AnimationSystem::ChangeAnimationState(const fq::event::ChangeAnimationState& event)
+{
+	mStateQueue.push(event);
 }
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
 {
 	auto animator = object->GetComponent<fq::game_module::Animator>();
+
 	auto controllerPath = animator->GetControllerPath();
 
 	if (!std::filesystem::exists(controllerPath))
@@ -91,42 +93,39 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 		return false;
 	}
 
-	// 애니메이션 리소스 로딩
-	if (!mGameProcess->mGraphics->TryCreateModelResource(animator->GetNodeHierarchyModelPath())) // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
-	{
-		return false;
-	}
-
-	// 계층구조와 인스턴스 생성 및 바인딩
-	auto nodeHierarchy = mGameProcess->mGraphics->GetNodeHierarchyByModelPathOrNull(animator->GetNodeHierarchyModelPath());
-
-	auto nodeHierarchyInstance = nodeHierarchy->CreateNodeHierarchyInstance();
-	animator->SetNodeHierarchy(nodeHierarchy);
-	animator->SetNodeHierarchyInstance(nodeHierarchyInstance);
-
 	auto controller = mLoader.Load(controllerPath);
-
-	// 애니메이션 노드에 애니메이션 리소스 바인딩
-	for (auto& [stateName, animationStateNode] : controller->GetStateMap())
-	{
-		const auto& modelPath = animationStateNode.GetModelPath();
-		const auto& animName = animationStateNode.GetAnimationName();
-
-		if (!modelPath.empty() && !animName.empty())
-		{
-			mGameProcess->mGraphics->CreateModelResource(animationStateNode.GetModelPath()); // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
-			auto animationInterface = mGameProcess->mGraphics->GetAnimationByModelPathOrNull(animationStateNode.GetModelPath(), animationStateNode.GetAnimationName());
-
-			if (animationInterface != nullptr)
-			{
-				animationStateNode.SetAnimation(animationInterface);
-				nodeHierarchy->RegisterAnimation(animationInterface);
-			}
-		}
-	}
-
 	controller->SetAnimator(animator);
 	animator->SetController(controller);
 
 	return true;
+}
+
+void fq::game_engine::AnimationSystem::processCallBack()
+{
+	while (!mStateQueue.empty())
+	{
+		auto event = mStateQueue.front();
+		mStateQueue.pop();
+
+		auto animator = event.animator;
+
+		if (animator->GetGameObject()->IsDestroyed())
+		{
+			continue;
+		}
+
+		const auto& meshs = animator->GetSkinnedMeshs();
+		for (auto& mesh : meshs)
+		{
+
+			if (event.bIsBlend)
+			{
+				mesh->GetSkinnedMeshObject()->SetBlendAnimationKey(event.currentState, event.nextState);
+			}
+			else
+			{
+			mesh->GetSkinnedMeshObject()->SetAnimationKey(event.currentState);
+			}
+		}
+	}
 }

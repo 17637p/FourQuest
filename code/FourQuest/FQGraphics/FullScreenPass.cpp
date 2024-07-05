@@ -28,8 +28,22 @@ namespace fq::graphics
 
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 
-		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));
-		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(D3D11IndexBuffer::CreateFullScreenIndexBuffer(device));
+		std::vector<DirectX::SimpleMath::Vector2> positions =
+		{
+			{ -1, 1 },
+			{ 1, 1 },
+			{ -1, -1 },
+			{ 1, -1 }
+		};
+
+		std::vector<unsigned int> indices =
+		{
+			0,1,2,
+			1,3,2
+		};
+
+		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 
 		OnResize(width, height);
 	}

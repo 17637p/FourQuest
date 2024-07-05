@@ -6,7 +6,6 @@ namespace fq::graphics
 {
 	void ParticlePass::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11ParticleManager> paricleManager,
-		std::shared_ptr<D3D11ObjectManager> objectManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
 		std::shared_ptr< D3D11LightManager> lightManager,
@@ -17,7 +16,6 @@ namespace fq::graphics
 
 		mDevice = device;
 		mParticleManager = paricleManager;
-		mObjectManager = objectManager;
 		mCameraManager = cameraManager;
 		mLightManager = lightManager;
 		mResourceManager = resourceManager;
@@ -36,7 +34,6 @@ namespace fq::graphics
 	{
 		mDevice = nullptr;
 		mResourceManager = nullptr;
-		mObjectManager = nullptr;
 		mCameraManager = nullptr;
 		mLightManager = nullptr;
 		mParticleManager = nullptr;
@@ -57,14 +54,6 @@ namespace fq::graphics
 	void ParticlePass::Render()
 	{
 		mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
-
-		mParticleManager->BeginRender();
-
-		for (const auto& particleObject : mObjectManager->GetParticleObjects())
-		{
-			mParticleManager->Render(particleObject);
-		}
-
-		mParticleManager->EndRender();
+		mParticleManager->Excute();
 	}
 }

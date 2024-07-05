@@ -69,6 +69,7 @@ namespace fq::graphics
 		void SetSkybox(std::shared_ptr<D3D11CubeTexture> skyBox) { mSkyBox = skyBox; }
 		const std::shared_ptr<D3D11CubeTexture>& GetSkybox() const { return mSkyBox; }
 
+
 		IBLTexture CreateIBLTexture(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11CubeTexture> cubemapTexture, EEnvironmentFormat envFormat = EEnvironmentFormat::RGBA32, EEnvironmentResoulution specularResolution = EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution diffuseResolution = EEnvironmentResoulution::Size32x32, float envScale = 1.f);
 
 	private:

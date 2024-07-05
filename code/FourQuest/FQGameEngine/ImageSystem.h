@@ -6,9 +6,6 @@
 #include <unordered_map>
 #include <d3d11.h>
 #include <imgui.h>
-#include <mutex>
-#include <shared_mutex>
-#include <future>
 
 namespace fq::game_engine
 {
@@ -32,8 +29,9 @@ namespace fq::game_engine
 		ID3D11ShaderResourceView* GetIcon(const std::wstring& name);
 		void DrawTextureImage(const Path& path, ImVec2 size);
 
+		ID3D11ShaderResourceView* LoadTexture(const Path& path);
+
 	private:
-		ID3D11ShaderResourceView* loadTexture(const Path& path)const ;
 		void loadIcon();
 		void clearTexture();
 		void clearIconTexture();
@@ -47,8 +45,8 @@ namespace fq::game_engine
 		std::unordered_map<std::wstring, ID3D11ShaderResourceView*> mIconTexture;
 		std::unordered_map<Path, ID3D11ShaderResourceView*> mTextures;
 
-		std::shared_mutex mTexturesMutex;
-
 		fq::game_module::EventHandler mOnLoadSceneHandler;
 	};
+
+
 }

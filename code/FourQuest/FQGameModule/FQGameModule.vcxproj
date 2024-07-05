@@ -211,7 +211,6 @@
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="LogStateBehaviour.h" />
     <ClInclude Include="TerrainCollider.h" />
-    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Trail.h" />
     <ClInclude Include="Transform.h" />
@@ -272,7 +271,6 @@
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="LogStateBehaviour.cpp" />
     <ClCompile Include="TerrainCollider.cpp" />
-    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Trail.cpp" />
     <ClCompile Include="Transform.cpp" />

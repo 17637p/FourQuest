@@ -153,16 +153,6 @@ namespace fq::game_module
 		/// </summary>
 		void SetExitTime(float second) { mExitTime = second; }
 
-		/// <summary>
-		/// 같은 상태로 다시 전환이 가능한지 반환합니다
-		/// </summary>
-		bool CanTrasitionToSelf() const { return mbCanTrasitionToSelf; }
-		
-		/// <summary>
-		/// 같은 상태로 다시 전환이 가능한지 설정합니다
-		/// </summary>
-		void SetCanTrasitionToSelf(bool canTransitionToSelf) { mbCanTrasitionToSelf = canTransitionToSelf; }
-
 	public:
 		static constexpr float NoExitTime = -1.f;
 
@@ -173,7 +163,6 @@ namespace fq::game_module
 		float mExitTime = NoExitTime; 
 		float mTransitionDuration;
 		InterruptionSource mInterruptionSource;
-		bool mbCanTrasitionToSelf;
 
 		std::vector<TransitionCondition> mConditions;
 	};

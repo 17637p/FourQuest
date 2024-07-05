@@ -222,8 +222,6 @@ void OutLineDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix
 
 void OutLineDemo::createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform)
 {
-	mTestGraphics->CreateModelResource(modelPath);
-
 	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
 
 	for (auto mesh : modelData.Meshes)

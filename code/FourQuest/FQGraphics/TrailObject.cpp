@@ -3,10 +3,10 @@
 
 namespace fq::graphics
 {
-	TrailObject::TrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
-		: mIParticleMaterial(iParticleMaterial)
+	TrailObject::TrailObject(const DirectX::SimpleMath::Matrix& transform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+		: mTransform(transform)
 		, mTrailInfo(trailInfo)
-		, mTransform(transform)
+		, mIParticleMaterial(iParticleMaterial)
 		, mFrameTime(0.f)
 	{
 		using namespace DirectX::SimpleMath;
@@ -16,15 +16,6 @@ namespace fq::graphics
 	void TrailObject::Simulate(DirectX::SimpleMath::Vector3 cameraPos)
 	{
 		using namespace DirectX::SimpleMath;
-
-		if (mTrailInfo.bIsReset)
-		{
-			mTrailInfo.bIsReset = false;
-
-			mVertices.clear();
-			mCatmulRomTopVertics.clear();
-			mCatmulRomBottomVertics.clear();
-		}
 
 		auto iter1 = mCatmulRomTopVertics.begin();
 		for (; iter1 != mCatmulRomTopVertics.end(); ++iter1)
@@ -74,7 +65,7 @@ namespace fq::graphics
 		{
 			if (distance > mTrailInfo.MinVertexDistance && mTrailInfo.bIsEmit)
 			{
-				size_t frameMaxDivideCount = 1.f; // std::min<size_t>(distance / mTrailInfo.MinVertexDistance, TrailInfo::MAX_VERTEX_SIZE / 60.f);
+				size_t frameMaxDivideCount = std::min<size_t>(distance / mTrailInfo.MinVertexDistance, TrailInfo::MAX_VERTEX_SIZE / 60.f);
 
 				for (size_t i = 0; i < frameMaxDivideCount; ++i)
 				{

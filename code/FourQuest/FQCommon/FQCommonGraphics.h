@@ -43,9 +43,17 @@ namespace fq::graphics
 
 	struct MeshObjectInfo
 	{
-		bool bUseShadow = true;
-		DirectX::SimpleMath::Color OutlineColor;
-		bool bIsAppliedDecal;
+		std::string ModelPath;
+		std::string MeshName;
+		std::vector<std::string> MaterialNames;
+		DirectX::SimpleMath::Matrix Transform;
+	};
+
+	struct AnimationInfo
+	{
+		std::string ModelPath;
+		std::string AnimationName; // Model Data의 Animation 이름
+		std::string AnimationKey; // ISkinnedMeshObject SetAnimation에서 사용할 이름
 	};
 
 	struct UIInfo
@@ -301,7 +309,6 @@ namespace fq::graphics
 		float MinVertexDistance = 1.f; // 월드 공간에 정의된 트레일 간 최소 거리
 		size_t VertexDivisionCount = 1; // 두 정점 사이에 곡선으로 나눌 개수
 		bool bIsEmit = true;
-		bool bIsReset = true;
 		std::vector<DirectX::SimpleMath::Vector4> ColorRatios{ { 1, 1, 1, 0} }; // xyz : rgb, z : ratio
 		std::vector<DirectX::SimpleMath::Vector2> AlphaRatios{ { 1, 0 } }; // x : a, y : ratio
 
@@ -424,12 +431,6 @@ namespace fq::graphics
 	// material
 	struct MaterialInfo
 	{
-		enum class ERenderMode
-		{
-			Opaque,
-			Transparent
-		} RenderModeType = ERenderMode::Opaque;
-
 		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
 		float Metalness = 0.f;
 		float Roughness = 0.f;

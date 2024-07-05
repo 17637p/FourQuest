@@ -94,6 +94,7 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 
 	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
 	mImpl->crowd->requestMoveTarget(mImpl->agentIdx, mImpl->targetRef, mImpl->targetPos);
+
 	//auto param = mImpl->crowd->getObstacleAvoidanceParams(mImpl->agentParams.obstacleAvoidanceType);
 	//
 	//dtObstacleAvoidanceParams nextParam{*param};

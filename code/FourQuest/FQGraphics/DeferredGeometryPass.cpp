@@ -4,8 +4,7 @@
 #include "RenderJob.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "NodeHierarchy.h"
-#include "RenderObject.h"
+#include "BoneHierarchy.h"
 
 namespace fq::graphics
 {
@@ -112,7 +111,7 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 
 			mDSV->Clear(mDevice);
-			mAlbedoRTV->Clear(mDevice);
+			mAlbedoRTV->Clear(mDevice, { 1.f, 1.f, 1.f, 1.f });
 			mMetalnessRTV->Clear(mDevice);
 			mRoughnessRTV->Clear(mDevice);
 			mNormalRTV->Clear(mDevice, { 1000, 0, 0, 0 });
@@ -153,14 +152,12 @@ namespace fq::graphics
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+				if (job.ObjectRenderType == EObjectRenderType::Opaque)
 				{
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					if (job.tempObject->GetIsAppliedDecal())
 					{
 						mLessEqualStencilReplaceState->Bind(mDevice, 0);
 					}
@@ -169,7 +166,7 @@ namespace fq::graphics
 						mLessEqualStencilReplaceState->Bind(mDevice, 1);
 					}
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
@@ -178,18 +175,15 @@ namespace fq::graphics
 
 			mSkinnedMeshShaderProgram->Bind(mDevice);
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
-			std::vector<DirectX::SimpleMath::Matrix> identityTransform(BoneTransform::MAX_BOND_COUNT);
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+				if (job.ObjectRenderType == EObjectRenderType::Opaque)
 				{
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					if (job.tempObject->GetIsAppliedDecal())
 					{
 						mLessEqualStencilReplaceState->Bind(mDevice, 0);
 					}
@@ -198,17 +192,9 @@ namespace fq::graphics
 						mLessEqualStencilReplaceState->Bind(mDevice, 1);
 					}
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-
-					if (job.NodeHierarchyInstnace != nullptr)
-					{
-						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
-					}
-					else
-					{
-						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
-					}
+					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

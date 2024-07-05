@@ -8,7 +8,6 @@ namespace fq::graphics
 {
 	void DebugRenderPass::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11JobManager> jobManager,
-		std::shared_ptr<D3D11ObjectManager> objectManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
@@ -20,7 +19,6 @@ namespace fq::graphics
 
 		mDevice = device;
 		mJobManager = jobManager;
-		mObjectManager = objectManager;
 		mDebugDrawManager = debugDrawManager;
 		mCameraManager = cameraManager;
 		mResourceManager = resourceManager;
@@ -36,7 +34,6 @@ namespace fq::graphics
 	{
 		mDevice = nullptr;
 		mJobManager = nullptr;
-		mObjectManager = nullptr;
 		mDebugDrawManager = nullptr;
 		mCameraManager = nullptr;
 		mResourceManager = nullptr;
@@ -62,10 +59,9 @@ namespace fq::graphics
 
 		mBackBufferRTV->Bind(mDevice, mDefaultDSV);
 
-
-		for (IParticleObject* particleObjectInterface : mObjectManager->GetParticleObjects())
+		for (IParticleObject* particleObjectInterface : mParticleManager->GetParticleObjects())
 		{
-			ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+			ParticleObject* particleObject = (ParticleObject*)particleObjectInterface;
 			const auto& info = particleObject->GetInfo();
 
 			if (!info.InstanceData.bIsRenderDebug)

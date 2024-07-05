@@ -37,8 +37,22 @@ namespace fq::graphics
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, shadingPS, pipelieState);
 
-		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));
-		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(D3D11IndexBuffer::CreateFullScreenIndexBuffer(device));
+		std::vector<DirectX::SimpleMath::Vector2> positions =
+		{
+			{ -1, 1 },
+			{ 1, 1 },
+			{ -1, -1 },
+			{ 1, -1 }
+		};
+
+		std::vector<unsigned int> indices =
+		{
+			0,1,2,
+			1,3,2
+		};
+
+		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 
 		mDirectioanlShadowInfoCB = resourceManager->Create< D3D11ConstantBuffer<DirectionalShadowInfo>>(ED3D11ConstantBuffer::DirectionalShadowInfo);
 	}

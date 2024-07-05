@@ -65,11 +65,8 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 	{
 		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 		{
-			auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
-			auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
-			info.OutlineColor = { 0.8f, 0.6f, 0.2f, 1.0f };
-
-			skinnedMeshRenderer->SetMeshObjectInfomation(info);
+			child->GetComponent<game_module::SkinnedMeshRenderer>()
+				->SetOutlineColor({ 0.8f, 0.6f, 0.2f, 1.0f });
 		}
 
 		// 상호작용 UI 
@@ -91,7 +88,8 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 			// OutLine
 			if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 			{
-				child->GetComponent<game_module::SkinnedMeshRenderer>()->GetMeshObjectInfomation().OutlineColor = { 0.f, 0.f, 0.f, 1.0f };
+				child->GetComponent<game_module::SkinnedMeshRenderer>()
+					->SetOutlineColor({ 0.f, 0.f, 0.f, 1.0f });
 			}
 			// 상호작용 UI 
 			setUI(false);

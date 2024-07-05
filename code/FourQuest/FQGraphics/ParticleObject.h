@@ -45,17 +45,16 @@ namespace fq::graphics
 		};
 
 	public:
-		ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
+		ParticleObject(std::shared_ptr<D3D11Device> device, const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial);
 		virtual ~ParticleObject() = default;
-
-		// Transform
-		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
 		// Info
 		void SetInfo(const ParticleInfo& info) override { mParticleInfo = info; }
 		const ParticleInfo& GetInfo() const override { return mParticleInfo; }
-		ParticleInfo& GetInfo() override { return mParticleInfo; }
+
+		// Transform
+		void SetTransform(const DirectX::SimpleMath::Matrix& transform)override { mTransform = transform; }
+		DirectX::SimpleMath::Matrix GetTransform() const override { return mTransform; }
 
 		// Material
 		virtual void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) override { mIParticleMaterial = iParticleMaterial; }
@@ -83,9 +82,9 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mAliveIndexBufferSRV;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mAliveIndexBufferUAV;
 
-		std::shared_ptr<IParticleMaterial> mIParticleMaterial;
-		ParticleInfo mParticleInfo;
 		DirectX::SimpleMath::Matrix mTransform;
+		ParticleInfo mParticleInfo;
+		std::shared_ptr<IParticleMaterial> mIParticleMaterial;
 
 		float mTimePos;
 		float mFrameTime;
@@ -94,7 +93,9 @@ namespace fq::graphics
 		bool mbIsRunDuationCycle;
 		float mStartTimePos;
 		size_t mCycleCount;
+
 		float mRandomSeed;
+
 		DebugInfo mDebugInfo;
 	};
 }

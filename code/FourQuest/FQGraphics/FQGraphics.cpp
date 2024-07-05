@@ -30,6 +30,8 @@ FQGraphics::FQGraphics()
 	, mCullingManager(std::make_shared<D3D11CullingManager>())
 	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
+	, mDecalManager(std::make_shared<D3D11DecalManager>())
+	, mTrailManager(std::make_shared<D3D11TrailManager>())
 	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 {
 }
@@ -52,9 +54,11 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mObjectManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mTrailManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
+	mDecalManager->Initialize(mDevice, mResourceManager);
+	mTrailManager->Initialize(mDevice, mResourceManager);
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
 
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
@@ -94,24 +98,24 @@ void FQGraphics::DeleteCubeProbe(unsigned short index)
 
 void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned short height)
 {
-	DirectX::SimpleMath::Quaternion front =
+	DirectX::SimpleMath::Quaternion front = 
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({0, 0, 0}, 1.0f);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({0, 0, 0}, 1.0f);
 	DirectX::SimpleMath::Quaternion back =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(180), 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 180, 0 }, 1.0f);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 180, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion up =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(-90), 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -90, 0, 0 }, 1.0f);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -90, 0, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion bottom =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(90), 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 90, 0, 0 }, 1.0f);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 90, 0, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion left =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(-90), 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -0, -90, 0 }, 1.0f);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -0, -90, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion right =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(90), 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
+		//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
 
 	DirectX::SimpleMath::Quaternion directionQuaternions[] = { right, left, up, bottom, front, back };
 	std::vector<std::wstring> directions = { L"right", L"left", L"up", L"bottom", L"front", L"back" };
@@ -145,11 +149,11 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 		for (unsigned int i = 0; i < 6; i++)
 		{
 			probeTransform.worldRotation = directionQuaternions[i];
-			probeTransform.worldMatrix =
+			probeTransform.worldMatrix = 
 				DirectX::SimpleMath::Matrix::CreateScale(probeTransform.worldScale) *
 				DirectX::SimpleMath::Matrix::CreateFromQuaternion(probeTransform.worldRotation) *
 				DirectX::SimpleMath::Matrix::CreateTranslation(probeTransform.worldPosition);
-
+			
 			UpdateCamera(probeTransform);
 
 			// 이 부분 나중에 개선해야함, 그리는 건 항상 같은데 job 을 다시 만들 필요가 없음 
@@ -189,6 +193,21 @@ void FQGraphics::DeleteImageObject(IImageObject* imageObject)
 fq::graphics::IImageObject* FQGraphics::CreateImageObject(const UIInfo& uiInfo)
 {
 	return mUIManager->CreateImageObject(uiInfo);
+}
+
+void FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
+{
+	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
+}
+
+void FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
+{
+	mObjectManager->DeleteTerrainMeshObject(meshObject);
+}
+
+fq::graphics::ITerrainMeshObject* FQGraphics::CreateTerrainMeshObject(const MeshObjectInfo& info)
+{
+	return mObjectManager->CreateTerrainMeshObject(mDevice, mModelManager, info);
 }
 
 void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)
@@ -283,20 +302,20 @@ bool FQGraphics::BeginRender()
 
 bool FQGraphics::Render()
 {
-	// 컬링 추가해야 됨 
 	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
 	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+
+	// 컬링 추가해야 됨 
 	std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
 
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 
-	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
-	for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
-	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
+	mJobManager->CreateStaticMeshJobs(mObjectManager->GetStaticMeshObjects());
+	mJobManager->CreateSkinnedMeshJobs(mObjectManager->GetSkinnedMeshObjects());
+	mJobManager->CreateTerrainMeshJobs(terrainMeshesToRender);
 
 	mRenderManager->Render();
-	// postprocessing
 	mUIManager->Render();
 	mRenderManager->RenderFullScreen();
 	return true;
@@ -306,7 +325,6 @@ bool FQGraphics::EndRender()
 {
 	mRenderManager->EndRender();
 	mJobManager->ClearAll();
-	mObjectManager->ClearDeleteQueue();
 
 	return true;
 }
@@ -334,273 +352,64 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 	return true;
 }
 
-void FQGraphics::WriteModel(const std::string& path, const fq::common::Model& modelData)
+const fq::common::Model& FQGraphics::CreateModel(std::string path, std::filesystem::path textureBasePath)
 {
-	mModelManager->WriteModel(path, modelData);
-}
-fq::common::Model fq::graphics::FQGraphics::ReadModel(const std::string& path)
-{
-	return mModelManager->ReadModel(path);
-}
-fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxFile)
-{
-	return mModelManager->ConvertModel(fbxFile);
+	return mModelManager->CreateModel(mDevice, path, textureBasePath);
 }
 
-const fq::common::Model& FQGraphics::CreateModelResource(const std::string& path, std::filesystem::path textureBasePath)
+const fq::common::Model& FQGraphics::GetModel(std::string path)
 {
-	return mModelManager->CreateModelResource(mDevice, path, textureBasePath);
+	return mModelManager->FindModel(path);
 }
 
-bool FQGraphics::TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
+void FQGraphics::DeleteModel(std::string path)
 {
-	return mModelManager->TryCreateModelResource(mDevice, path, textureBasePath, outDataOrNull);
+	mModelManager->DeleteModel(path);
 }
 
-const fq::common::Model& FQGraphics::GetModel(const std::string& path)
-{
-	return mModelManager->GetModel(path);
-}
-
-void FQGraphics::DeleteModelResource(const std::string& path)
-{
-	mModelManager->DeleteModelResource(path);
-}
-
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::GetNodeHierarchyByModelPathOrNull(std::string modelPath)
-{
-	return mModelManager->GetNodeHierarchyByModelPathOrNull(modelPath);
-}
-
-std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName)
-{
-	return mModelManager->GetStaticMeshByModelPathOrNull(modelPath, meshName);
-}
-std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName)
-{
-	return mModelManager->GetSkinnedMeshByModelPathOrNull(modelPath, meshName);
-}
-std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName)
-{
-	return mModelManager->GetMaterialByModelPathOrNull(modelPath, materialName);
-}
-
-std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName)
-{
-	return mModelManager->GetAnimationByModelPathOrNull(modelPath, animationName);
-}
-
-std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::CreateStaticMesh(const fq::common::Mesh& meshData)
-{
-	return mModelManager->CreateStaticMesh(meshData);
-}
-
-std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::CreateSkinnedMesh(const fq::common::Mesh& meshData)
-{
-	return mModelManager->CreateSkinnedMesh(meshData);
-}
-
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::CreateNodeHierarchy(const fq::common::Model& model)
-{
-	return mModelManager->CreateNodeHierarchy(model);
-}
-
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::CreateNodeHierarchy(const std::vector<fq::common::Node> nodes)
-{
-	return mModelManager->CreateNodeHierarchy(nodes);
-}
-
-std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(const fq::common::AnimationClip& animationClip)
-{
-	return mModelManager->CreateAnimation(animationClip);
-}
-
-std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
-{
-	return mModelManager->CreateMaterial(materialInfo);
-}
-std::shared_ptr<IParticleMaterial> fq::graphics::FQGraphics::CreateParticleMaterial(const ParticleMaterialInfo& materialInfo)
-{
-	return mModelManager->CreateParticleMaterial(materialInfo);
-}
-std::shared_ptr<IDecalMaterial> fq::graphics::FQGraphics::CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo)
-{
-	return mModelManager->CreateDecalMaterial(decalMaterialInfo);
-}
-std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::CreateStaticMesh(std::string key, const fq::common::Mesh& meshData)
-{
-	return mModelManager->CreateStaticMesh(key, meshData);
-}
-std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData)
-{
-	return mModelManager->CreateSkinnedMesh(key, meshData);
-}
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::CreateNodeHierarchy(std::string key, const fq::common::Model& model)
-{
-	return mModelManager->CreateNodeHierarchy(key, model);
-}
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes)
-{
-	return mModelManager->CreateNodeHierarchy(key, nodes);
-}
-std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(std::string key, const fq::common::AnimationClip& animationClip)
-{
-	return mModelManager->CreateAnimation(key, animationClip);
-}
-std::shared_ptr<IMaterial> fq::graphics::FQGraphics::CreateMaterial(const std::string& key, const MaterialInfo& materialInfo)
-{
-	return mModelManager->CreateMaterial(key, materialInfo);
-}
-std::shared_ptr<IParticleMaterial> fq::graphics::FQGraphics::CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo)
-{
-	return mModelManager->CreateParticleMaterial(key, materialInfo);
-}
-std::shared_ptr<IDecalMaterial> fq::graphics::FQGraphics::CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo)
-{
-	return mModelManager->CreateDecalMaterial(key, decalMaterialInfo);
-}
-std::vector<std::shared_ptr<IStaticMesh>> fq::graphics::FQGraphics::GetStaticMeshes()
-{
-	return mModelManager->GetStaticMeshes();
-}
-std::vector<std::shared_ptr<ISkinnedMesh>> fq::graphics::FQGraphics::GetSkinnedMeshes()
-{
-	return mModelManager->GetSkinnedMeshes();
-}
-std::vector<std::shared_ptr<INodeHierarchy>> fq::graphics::FQGraphics::GetNodeHierarchies()
-{
-	return mModelManager->GetNodeHierarchies();
-}
-std::vector<std::shared_ptr<IAnimation>> fq::graphics::FQGraphics::GetAnimations()
-{
-	return mModelManager->GetAnimations();
-}
-std::vector<std::shared_ptr<IMaterial>> fq::graphics::FQGraphics::GetMaterials()
+std::set<std::shared_ptr<IMaterial>> FQGraphics::GetMaterials() const
 {
 	return mModelManager->GetMaterials();
 }
-std::vector<std::shared_ptr<IParticleMaterial>> fq::graphics::FQGraphics::GetParticleMaterials()
+
+void FQGraphics::WriteModel(std::string path, const fq::common::Model& modelData)
 {
-	return mModelManager->GetParticleMaterials();
-}
-std::vector<std::shared_ptr<IDecalMaterial>> fq::graphics::FQGraphics::GetDecalMaterials()
-{
-	return mModelManager->GetDecalMaterials();
-}
-std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshOrNull(std::string key)
-{
-	return mModelManager->GetStaticMeshOrNull(key);
-}
-std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshOrNull(std::string key)
-{
-	return mModelManager->GetSkinnedMeshOrNull(key);
-}
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::GetNodeHierarchyOrNull(std::string key)
-{
-	return mModelManager->GetNodeHierarchyOrNull(key);
-}
-std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationOrNull(std::string key)
-{
-	return mModelManager->GetAnimationOrNull(key);
-}
-std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialOrNull(const std::string& key)
-{
-	return mModelManager->GetMaterialOrNull(key);
-}
-std::shared_ptr<IParticleMaterial> fq::graphics::FQGraphics::GetParticleMaterialOrNull(const std::string& key)
-{
-	return mModelManager->GetParticleMaterialOrNull(key);
-}
-std::shared_ptr<IDecalMaterial> fq::graphics::FQGraphics::GetDecalMaterialOrNull(const std::string& key)
-{
-	return mModelManager->GetDecalMaterialOrNull(key);
+	mModelManager->WriteModel(path, modelData);
 }
 
-void fq::graphics::FQGraphics::DeleteStaticMesh(std::string key)
+void FQGraphics::ConvertModel(std::string fbxFile, std::string fileName)
 {
-	mModelManager->DeleteStaticMesh(key);
-}
-void fq::graphics::FQGraphics::DeleteSkinnedMesh(std::string key)
-{
-	mModelManager->DeleteSkinnedMesh(key);
-}
-void fq::graphics::FQGraphics::DeleteNodeHierarchy(std::string key)
-{
-	mModelManager->DeleteNodeHierarchy(key);
-}
-void fq::graphics::FQGraphics::DeleteAnimation(std::string key)
-{
-	mModelManager->DeleteAnimation(key);
-}
-void fq::graphics::FQGraphics::DeleteMaterial(const std::string& key)
-{
-	mModelManager->DeleteMaterial(key);
-}
-void fq::graphics::FQGraphics::DeleteParticleMaterial(const std::string& key)
-{
-	mModelManager->DeleteParticleMaterial(key);
-}
-void fq::graphics::FQGraphics::DeleteDecalMaterial(const std::string& key)
-{
-	mModelManager->DeleteDecalMaterial(key);
+	mModelManager->ConvertModel(fbxFile, fileName);
 }
 
-IStaticMeshObject* fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+IStaticMeshObject* FQGraphics::CreateStaticMeshObject(MeshObjectInfo info)
 {
-	assert(staticMesh != nullptr);
-	return mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
-}
-ISkinnedMeshObject* fq::graphics::FQGraphics::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
-{
-	assert(skinnedMesh != nullptr);
-	return mObjectManager->CreateSkinnedMeshObject(skinnedMesh, materials, meshObjectInfo, transform);
-}
-ITerrainMeshObject* fq::graphics::FQGraphics::CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform)
-{
-	assert(staticMesh != nullptr);
-	return mObjectManager->CreateTerrainMeshObject(mDevice, staticMesh, transform);
-}
-IParticleObject* fq::graphics::FQGraphics::CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
-{
-	return mObjectManager->CreateParticleObject(mDevice, iParticleMaterial, particleInfo, transform);
-}
-IDecalObject* fq::graphics::FQGraphics::CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform)
-{
-	return mObjectManager->CreateDecalObject(iDecalMaterial, decalInfo, transform);
-}
-ITrailObject* fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform)
-{
-	return mObjectManager->CreateTrailObject(iParticleMaterial, trailInfo, transform);
+	return mObjectManager->CreateStaticMeshObject(mModelManager, info);
 }
 
-void fq::graphics::FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
+void FQGraphics::AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info)
 {
-	mObjectManager->DeleteStaticMeshObject(staticMeshObject);
-}
-void fq::graphics::FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject)
-{
-	mObjectManager->DeleteSkinnedMeshObject(skinnedMeshObject);
-}
-void fq::graphics::FQGraphics::DeleteTerrainMeshObject(ITerrainMeshObject* meshObject)
-{
-	mObjectManager->DeleteTerrainMeshObject(meshObject);
-}
-void fq::graphics::FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
-{
-	mObjectManager->DeleteParticleObject(particleObject);
-}
-void fq::graphics::FQGraphics::DeleteDecalObject(IDecalObject* decalObject)
-{
-	mObjectManager->DeleteDecalObject(decalObject);
-}
-void fq::graphics::FQGraphics::DeleteTrailObject(ITrailObject* trailObject)
-{
-	mObjectManager->DeleteTrailObject(trailObject);
+	mObjectManager->AddAnimation(mModelManager, iStaticMeshObject, info);
 }
 
-void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
+void FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* meshObject)
 {
-	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
+	mObjectManager->DeleteStaticMeshObject(meshObject);
+}
+
+ISkinnedMeshObject* FQGraphics::CreateSkinnedMeshObject(MeshObjectInfo info)
+{
+	return mObjectManager->CreateSkinnedMeshObject(mModelManager, info);
+}
+
+void FQGraphics::AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info)
+{
+	mObjectManager->AddAnimation(mModelManager, iSkinnedMeshObject, info);
+}
+
+void FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject)
+{
+	mObjectManager->DeleteSkinnedMeshObject(iSkinnedMeshObject);
 }
 
 void FQGraphics::DrawSphere(const debug::SphereInfo& sphereInfo)
@@ -639,9 +448,102 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 	}
 }
 
+std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::CreateMaterial(const ParticleMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateMaterial(const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateMaterial(materialInfo);
+}
+
+std::shared_ptr<IMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const MaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::CreateNamedMaterial(const std::string& key, const DecalMaterialInfo& materialInfo)
+{
+	return mModelManager->CreateNamedMaterial(key, materialInfo);
+}
+
+std::shared_ptr<IMaterial> FQGraphics::GetNamedMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedMaterialOrNull(key);
+}
+std::shared_ptr<IParticleMaterial> FQGraphics::GetNamedParticleMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedParticleMaterialOrNull(key);
+}
+std::shared_ptr<IDecalMaterial> FQGraphics::GetNamedDecalMaterialOrNull(const std::string& key)
+{
+	return mModelManager->GetNamedDecalMaterialOrNull(key);
+}
+
+void FQGraphics::DeleteMaterial(std::shared_ptr<IMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+void FQGraphics::DeleteMaterial(std::shared_ptr<IParticleMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+void FQGraphics::DeleteMaterial(std::shared_ptr<IDecalMaterial> iMaterial)
+{
+	mModelManager->DeleteMaterial(iMaterial);
+}
+
+void FQGraphics::DeleteNamedMaterial(const std::string& key)
+{
+	mModelManager->DeleteNamedMaterial(key);
+}
+void FQGraphics::DeleteNamedParticleMaterial(const std::string& key)
+{
+	mModelManager->DeleteNamedParticleMaterial(key);
+}
+void FQGraphics::DeleteNamedDecalMaterial(const std::string& key)
+{
+	mModelManager->DeleteNamedDecalMaterial(key);
+}
+
+IParticleObject* FQGraphics::CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+{
+	return mParticleManager->CreateParticleObject(transform, particleInfo, iParticleMaterial);
+}
+
+void FQGraphics::DeleteParticleObject(IParticleObject* particleObject)
+{
+	mParticleManager->DeleteParticleObject(particleObject);
+}
+
+IDecalObject* FQGraphics::CreateDecalObject(const DirectX::SimpleMath::Matrix& transform, const DecalInfo& decalInfo, std::shared_ptr<IDecalMaterial> iDecalMaterial)
+{
+	return mDecalManager->CreateDecalObject(transform, decalInfo, iDecalMaterial);
+}
+void FQGraphics::DeleteDecalObject(IDecalObject* decalObjectInterface)
+{
+	mDecalManager->DeleteDecalObject(decalObjectInterface);
+}
+
+ITrailObject* FQGraphics::CreateTrailObject(const DirectX::SimpleMath::Matrix& trasform, const TrailInfo& trailInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+{
+	return mTrailManager->CreateTrailObject(trasform, trailInfo, iParticleMaterial);
+}
+void FQGraphics::DeleteTrailObject(ITrailObject* trailObjectInterface)
+{
+	mTrailManager->DeleteTrailObject(trailObjectInterface);
+}
+
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mObjectManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mDecalManager, mTrailManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

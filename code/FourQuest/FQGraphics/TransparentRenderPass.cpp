@@ -4,8 +4,7 @@
 #include "ShadowPass.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "NodeHierarchy.h"
-#include "RenderObject.h"
+#include "BoneHierarchy.h"
 
 namespace fq::graphics
 {
@@ -195,19 +194,17 @@ namespace fq::graphics
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
+				if (job.ObjectRenderType == EObjectRenderType::Transparent)
 				{
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
 					AlphaData alphaData;
 					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
+					alphaData.Alpha = job.Alpha;
 
 					mAlphaDataCB->Update(mDevice, alphaData);
 
@@ -217,32 +214,21 @@ namespace fq::graphics
 
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 			mSkinnedMeshShaderProgram->Bind(mDevice);
-			std::vector<DirectX::SimpleMath::Matrix> identityTransforms(BoneTransform::MAX_BOND_COUNT);
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
+				if (job.ObjectRenderType == EObjectRenderType::Transparent)
 				{
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-
-					if (job.NodeHierarchyInstnace != nullptr)
-					{
-						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
-					}
-					else
-					{
-						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
-					}
+					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
 					AlphaData alphaData;
 					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
+					alphaData.Alpha = job.Alpha;
 
 					mAlphaDataCB->Update(mDevice, alphaData);
 

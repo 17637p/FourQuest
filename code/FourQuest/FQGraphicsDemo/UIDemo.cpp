@@ -46,10 +46,9 @@ bool UIDemo::Init(HINSTANCE hInstance)
 
 	/// Terrain 생성
 	const std::string planeModelPath = "./resource/Graphics/TerrainDemo/Plane.model";
-	fq::common::Model modelData = mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx");
-	mTestGraphics->WriteModel(planeModelPath, modelData);
+	mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx", planeModelPath);
 	const std::string textureBasePath = "./resource/Graphics/TerrainDemo";
-	mTestGraphics->CreateModelResource(planeModelPath, textureBasePath);
+	mTestGraphics->CreateModel(planeModelPath, textureBasePath);
 
 	/// camera 초기화
 	AddDefaultCamera(mTestGraphics);

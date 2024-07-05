@@ -24,9 +24,12 @@ namespace fq::graphics
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager);
 		void OnResize(unsigned short width, unsigned short height);
 
-		void BeginRender();
-		void Render(IParticleObject* particleObject);
-		void EndRender();
+		void Excute();
+
+		IParticleObject* CreateParticleObject(const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial);
+		void DeleteParticleObject(IParticleObject* particleObjectInterface);
+
+		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
 
 	private:
 		void updateParticleObjectCB(IParticleObject* particleObjectInterface);
@@ -41,6 +44,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
+
+		std::set<IParticleObject*> mParticleObjects;
 
 		std::shared_ptr<D3D11ConstantBuffer<ParticleFrameData>> mParticleFrameCB;
 		std::shared_ptr<D3D11ConstantBuffer<ParticleObjectData>> mParticleObjectCB;

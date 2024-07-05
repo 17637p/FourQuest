@@ -95,10 +95,9 @@ struct PixelOut
     float Metalness : SV_Target1;
     float Roughness : SV_Target2;
     float4 Normal : SV_Target3;
-    float4 Emissive : SV_Target4;
-    float4 PositionW : SV_Target5;
-    float4 SourceNormal : SV_Target6;
-    float4 SourceTangent : SV_Target7;
+    float4 PositionW : SV_Target4;
+    float4 SourceNormal : SV_Target5;
+    float4 SourceTangent : SV_Target6;
 };
 
 #else
@@ -112,7 +111,7 @@ struct PixelOut
 
 PixelOut main(DomainOut pin)
 {
-    PixelOut pout = (PixelOut) 0;
+    PixelOut pout = (PixelOut)0;
     
     float2 leftTex = pin.UV + float2(-gTexelCellSpaceU, 0.0f);
     float2 rightTex = pin.UV + float2(gTexelCellSpaceU, 0.0f);
@@ -226,7 +225,6 @@ PixelOut main(DomainOut pin)
     pout.Albedo.w = 1.f;
     pout.Metalness = resultMetalic;
     pout.Roughness = resultRoughness;
-    pout.Emissive = float4(0.f, 0.f, 0.f, 0.f);
     pout.SourceNormal.xyz = pin.NormalW;
     pout.SourceTangent.xyz = pin.TangentW;
     pout.PositionW.xyz = pin.PositionW;

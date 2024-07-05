@@ -170,7 +170,7 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 	info.height = terrain->GetTerrainMeshObject()->GetHeightData();
 
 	info.heightScale = terrain->GetHeightScale() / 255.f;
-	info.numCols = terrain->GetWidth() ;
+	info.numCols = terrain->GetWidth();
 	info.numRows = terrain->GetHeight();
 	info.rowScale = terrain->GetTextureWidth() / 300.f;
 	info.colScale = terrain->GetTextureHeight() / 300.f;
@@ -363,8 +363,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		if (hasStaticMesh)
 		{
 			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
-			auto meshName = staticMeshRenderer->GetMeshName();
-			auto modelPath = staticMeshRenderer->GetModelPath();
+			auto meshName = staticMeshRenderer->GetMeshObjectInfomation().MeshName;
+			auto modelPath = staticMeshRenderer->GetMeshObjectInfomation().ModelPath;
 
 			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(modelPath);
 			assert(check);
@@ -384,8 +384,8 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		else // skinned mesh 
 		{
 			auto skinnedMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
-			auto modelPath = skinnedMeshRenderer->GetModelPath();
-			auto meshName = skinnedMeshRenderer->GetMeshName();
+			auto modelPath = skinnedMeshRenderer->GetMeshObjectInfomation().ModelPath;
+			auto meshName = skinnedMeshRenderer->GetMeshObjectInfomation().MeshName;
 
 			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(modelPath);
 			assert(check);

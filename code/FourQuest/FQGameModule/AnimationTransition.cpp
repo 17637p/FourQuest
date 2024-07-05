@@ -122,7 +122,6 @@ fq::game_module::AnimationTransition::AnimationTransition(std::string prev, std:
 	,mExitTime(NoExitTime)
 	,mTransitionDuration(1.f)
 	, mInterruptionSource(InterruptionSource::None)
-	, mbCanTrasitionToSelf(false)
 {}
 
 fq::game_module::AnimationTransition::AnimationTransition()
@@ -132,7 +131,6 @@ fq::game_module::AnimationTransition::AnimationTransition()
 	, mExitTime(NoExitTime)
 	, mTransitionDuration(1.f)
 	, mInterruptionSource(InterruptionSource::None)
-	, mbCanTrasitionToSelf(false)
 {
 }
 

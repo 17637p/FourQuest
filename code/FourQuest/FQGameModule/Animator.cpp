@@ -38,26 +38,22 @@ void fq::game_module::Animator::SetController(std::shared_ptr<AnimatorController
 
 void fq::game_module::Animator::SetParameterInt(const std::string& id, int val)
 {
-	if (mController != nullptr)
-		mController->SetParameter(id, val);
+	mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterFloat(const std::string& id, float val)
 {
-	if (mController != nullptr)
-		mController->SetParameter(id, val);
+	mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterBoolean(const std::string& id, bool val)
 {
-	if (mController != nullptr)
-		mController->SetParameter(id, val);
+	mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterTrigger(const std::string& id)
 {
-	if (mController != nullptr)
-		mController->SetParameter(id, AnimatorController::OnTrigger);
+	mController->SetParameter(id, AnimatorController::OnTrigger);
 }
 
 void fq::game_module::Animator::SetParameterOffTrigger(const std::string& id)

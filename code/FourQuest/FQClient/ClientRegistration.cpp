@@ -3,8 +3,6 @@
 
 #include "../FQReflect/FQReflect.h"
 
-#include "GameManager.h"
-
 // Player 
 #include "PlayerDefine.h"
 #include "Player.h"
@@ -24,14 +22,6 @@
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
 
-// PlantMoster
-#include "PlantMonster.h"
-#include "PlantAttack.h"
-#include "PlantMonsterAttckState.h"
-#include "PlantMonsterDeadState.h"
-#include "PlantMonsterIdleState.h"
-#include "PlantMonsterStareState.h"
-
 // MonsterSpawner
 #include "MonsterSpawner.h"
 
@@ -45,15 +35,6 @@
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
-
-	//////////////////////////////////////////////////////////////////////////
-	//                             GameManager								//
-	//////////////////////////////////////////////////////////////////////////
-	
-	entt::meta<GameManager>()
-		.type("GameManager"_hs)
-		.prop(reflect::prop::Name, "GameManager")
-		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//
@@ -208,59 +189,6 @@ void fq::client::RegisterMetaData()
 	entt::meta<MonsterDie>()
 		.type("MonsterDie"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterDie")
-		.base<fq::game_module::IStateBehaviour>();
-
-	//////////////////////////////////////////////////////////////////////////
-	//                             원거리 몬스터 	 							//
-	//////////////////////////////////////////////////////////////////////////
-	
-	entt::meta<PlantMonster>()
-		.type("PlantMonster"_hs)
-		.prop(fq::reflect::prop::Name, "PlantMonster")
-		.data<&PlantMonster::mHp>("Hp"_hs)
-		.prop(fq::reflect::prop::Name, "Hp")
-		.data<&PlantMonster::mAttackPower>("AttackPower"_hs)
-		.prop(fq::reflect::prop::Name, "AttackPower")
-		.data<&PlantMonster::mProjectileSpeed>("ProjectileSpeed"_hs)
-		.prop(fq::reflect::prop::Name, "ProjectileSpeed")
-		.data<&PlantMonster::mAttackRange>("AttackRange"_hs)
-		.prop(fq::reflect::prop::Name, "AttackRange")
-		.data<&PlantMonster::mAttackPrefab>("AttackPrefab"_hs)
-		.prop(fq::reflect::prop::Name, "AttackPrefab")
-		.data<&PlantMonster::mAttackCoolTime>("AttackCoolTime"_hs)
-		.prop(fq::reflect::prop::Name, "AttackCoolTime")
-		.base<fq::game_module::Component>();
-
-	entt::meta<PlantAttack>()
-		.type("PlantAttack"_hs)
-		.prop(fq::reflect::prop::Name, "PlantAttack")
-		.base<fq::game_module::Component>();
-
-
-	//////////////////////////////////////////////////////////////////////////
-	//                         원거리 몬스터 상태								//
-	//////////////////////////////////////////////////////////////////////////
-
-	entt::meta<PlantMonsterAttckState>()
-		.type("PlantMonsterAttckState"_hs)
-		.prop(fq::reflect::prop::Name, "PlantMonsterAttckState")
-		.data<&PlantMonsterAttckState::mAttackTiming>("AttackTiming"_hs)
-		.prop(fq::reflect::prop::Name, "AttackTiming")
-		.base<fq::game_module::IStateBehaviour>();
-
-	entt::meta<PlantMonsterStareState>()
-		.type("PlantMonsterStareState"_hs)
-		.prop(fq::reflect::prop::Name, "PlantMonsterStareState")
-		.base<fq::game_module::IStateBehaviour>();
-
-	entt::meta<PlantMonsterDeadState>()
-		.type("PlantMonsterDeadState"_hs)
-		.prop(fq::reflect::prop::Name, "PlantMonsterDeadState")
-		.base<fq::game_module::IStateBehaviour>();
-
-	entt::meta<PlantMonsterIdleState>()
-		.type("PlantMonsterIdleState"_hs)
-		.prop(fq::reflect::prop::Name, "PlantMonsterIdleState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

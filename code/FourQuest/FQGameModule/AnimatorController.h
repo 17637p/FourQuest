@@ -88,25 +88,9 @@ namespace fq::game_module
 		StateName GetCurrentStateName() const { return mCurrentState->first; }
 
 		/// <summary>
-		/// 현재 애니메이션의 애니메이션 인터페이스를 반환합니다 
-		/// </summary>
-		fq::graphics::IAnimation& GetCurrentStateAnimation() const { return mCurrentState->second.GetAnimation(); }
-		std::shared_ptr<fq::graphics::IAnimation> GetSharedCurrentStateAnimation() const { return mCurrentState->second.GetSharedAnimation(); }
-		const std::shared_ptr<fq::graphics::IAnimation>& GetSharedRefCurrentStateAnimation() const { return mCurrentState->second.GetSharedRefAnimation(); }
-		bool GetHasCurrentStateAnimation() const { return mCurrentState->second.GetHasAnimation(); }
-
-		/// <summary>
 		/// 다음 애니메이션 이름을 반환합니다  
 		/// </summary>
 		StateName GetNextStateName()const;
-
-		/// <summary>
-		/// 다음 애니메이션의 애니메이션 인터페이스를 반환합니다
-		/// </summary>
-		fq::graphics::IAnimation& GetNextStateAnimation() const;
-		std::shared_ptr<fq::graphics::IAnimation> GetSharedNextStateAnimationOrNull() const;
-		const std::shared_ptr<fq::graphics::IAnimation>& GetSharedRefNextStateAnimation() const;
-		bool GetHasNextStateAnimation() const;
 
 		/// <summary>
 		/// 새로운 스테이트를 추가합니다 
@@ -196,9 +180,6 @@ namespace fq::game_module
 		float mBlendTimePos;
 		float mBlendWeight;
 		float mBlendElapsedTime;
-
-
-		// animation ref Map
-		// animation cache
 	};
+
 }

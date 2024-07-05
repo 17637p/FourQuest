@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "../FQCommon/FQCommonLoader.h"
-#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::graphics
 {
@@ -14,7 +13,6 @@ namespace fq::graphics
 	class MeshBase
 	{
 	public:
-		MeshBase() = default;
 		MeshBase(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~MeshBase() = 0 {};
 
@@ -34,40 +32,18 @@ namespace fq::graphics
 		return mMeshData;
 	}
 
-	class StaticMesh : public IStaticMesh, public MeshBase
+	class StaticMesh : public MeshBase
 	{
 	public:
-		StaticMesh(std::shared_ptr<D3D11Device> device);
-		StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData);
+		StaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~StaticMesh() = default;
-
-		virtual void Create(const fq::common::Mesh& meshData);
-
-		virtual void* GetVertexBuffer() override;
-		virtual void* GetIndexBuffer() override;
-
-		virtual const fq::common::Mesh& GetMeshData() const override { return mMeshData; }
-
-	private:
-		std::shared_ptr<D3D11Device> mDevice;
 	};
 
-	class SkinnedMesh : public ISkinnedMesh, public MeshBase
+	class SkinnedMesh : public MeshBase
 	{
 	public:
-		SkinnedMesh(std::shared_ptr<D3D11Device> device);
-		SkinnedMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData);
+		SkinnedMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~SkinnedMesh() = default;
-
-		virtual void Create(const fq::common::Mesh& meshData);
-
-		virtual void* GetVertexBuffer() override;
-		virtual void* GetIndexBuffer() override;
-
-		virtual const fq::common::Mesh& GetMeshData() const override { return mMeshData; }
-
-	private:
-		std::shared_ptr<D3D11Device> mDevice;
 	};
 
 	class TerrainMesh : public MeshBase

@@ -113,9 +113,9 @@ void fq::game_engine::TrailSystem::loadTrail(fq::game_module::GameObject* object
 	auto trail = object->GetComponent<fq::game_module::Trail>();
 	fq::graphics::TrailInfo trailInfo = trail->GetTrailInfo();
 	fq::graphics::ParticleMaterialInfo materialInfo = trail->GetParticleMaterialInfo();
-
-	auto particleMaterial = mGameProcess->mGraphics->CreateParticleMaterial(materialInfo);
-	auto trailObjectInterface = mGameProcess->mGraphics->CreateTrailObject(particleMaterial, trailInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
+	
+	auto particleMaterial = mGameProcess->mGraphics->CreateMaterial(materialInfo);
+	auto trailObjectInterface = mGameProcess->mGraphics->CreateTrailObject(object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix(), trailInfo, particleMaterial);
 
 	trail->SetTrailObjectInterface(trailObjectInterface);
 	trail->SetParticleMaterial(particleMaterial);
@@ -134,6 +134,10 @@ void fq::game_engine::TrailSystem::unloadTrail(fq::game_module::GameObject* obje
 	if (trailObjectInterface != nullptr)
 		mGameProcess->mGraphics->DeleteTrailObject(trailObjectInterface);
 
-	trail->SetParticleMaterial(nullptr);
+	if (trail->GetParticleMaterial() != nullptr)
+	{
+		mGameProcess->mGraphics->DeleteMaterial(trail->GetParticleMaterial());
+		trail->SetParticleMaterial(nullptr);
+	}
 }
 

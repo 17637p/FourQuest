@@ -5,7 +5,6 @@
 #include "CameraMoving.h"
 #include "HpBar.h"
 #include "Soul.h"
-#include "ClientEvent.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -63,10 +62,6 @@ void fq::client::Player::OnStart()
 
 	mController = GetComponent<fq::game_module::CharacterController>();
 
-	// Player등록
-	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
-		{GetGameObject(), PlayerType::LivingArmour});
-
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
 		{
@@ -76,7 +71,10 @@ void fq::client::Player::OnStart()
 	// 영혼 타입 적용
 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
+
 	// TODO : 갑옷 버프 적용
+
+
 }
 
 void fq::client::Player::processInput()

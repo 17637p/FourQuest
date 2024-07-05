@@ -49,8 +49,8 @@ namespace fq::graphics
 	public:
 		D3D11PickingManager();
 
-		void Initialize(const std::shared_ptr<D3D11Device> device,
-			const std::shared_ptr<D3D11ResourceManager> resourceManager,
+		void Initialize(const std::shared_ptr<D3D11Device> device, 
+			const std::shared_ptr<D3D11ResourceManager> resourceManager, 
 			const unsigned short width, const unsigned short height);
 		// 5. 해당 오브젝트 인스턴스 반환하기 
 		void* GetPickedObject(
@@ -68,14 +68,14 @@ namespace fq::graphics
 	private:
 		// 1. 오브젝트 마다 해쉬 컬러 정하기
 		// 일단은 그냥 오브젝트 전부를 받는데 컬링 하고 나면 이렇게 전부 받을 필요 없다.
-		void MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
+		void MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects, 
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
 			const std::set<ITerrainMeshObject*>& terrainMeshObjects);
 
 		void DrawObject(const std::shared_ptr<D3D11Device>& device,
 			const std::shared_ptr<D3D11CameraManager>& cameraManager,
 			const std::shared_ptr<D3D11JobManager>& jobManager,
-			const std::set<IStaticMeshObject*>& staticMeshObjects,
+			const std::set<IStaticMeshObject*>& staticMeshObjects, 
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
 			const std::set<ITerrainMeshObject*>& terrainMeshObjects);
 
@@ -91,7 +91,7 @@ namespace fq::graphics
 		unsigned __int8 mR;
 		unsigned __int8 mG;
 		unsigned __int8 mB;
-
+		        
 		bool IsOnPicking;
 
 		std::unordered_map<IStaticMeshObject*, DirectX::SimpleMath::Color> mStaticMeshObjects;

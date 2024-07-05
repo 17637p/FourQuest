@@ -20,64 +20,15 @@ namespace fq::graphics
 		d3d11Device->GetDeviceContext()->DrawIndexed(subset.IndexCount, subset.IndexStart, subset.VertexStart);
 	}
 
-
-	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device)
-		: MeshBase()
-		, mDevice(device)
+	StaticMesh::StaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData)
+		: MeshBase(device, meshData)
 	{
-	}
-	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
-		: MeshBase()
-		, mDevice(device)
-	{
-		Create(meshData);
-	}
-	void StaticMesh::Create(const fq::common::Mesh& meshData)
-	{
-		mMeshData = meshData;
-		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(mDevice, meshData.Indices);
-		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
-	}
-	void* StaticMesh::GetVertexBuffer()
-	{
-		auto vertexBuffer = mVertexBuffer->GetVertexBuffer();
-
-		if (vertexBuffer == nullptr)
-		{
-			return nullptr;
-		}
-
-		return vertexBuffer.Get();
-	}
-	void* StaticMesh::GetIndexBuffer()
-	{
-		auto indexBuffer = mIndexBuffer->GetIndexBuffer();
-
-		if (indexBuffer == nullptr)
-		{
-			return nullptr;
-		}
-
-		return indexBuffer.Get();
+		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(device, meshData.Vertices);
 	}
 
-	SkinnedMesh::SkinnedMesh(std::shared_ptr<D3D11Device> device)
-		: MeshBase()
-		, mDevice(device)
+	SkinnedMesh::SkinnedMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData)
+		: MeshBase(device, meshData)
 	{
-	}
-
-	SkinnedMesh::SkinnedMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
-		: MeshBase()
-		, mDevice(device)
-	{
-		Create(meshData);
-	}
-
-	void SkinnedMesh::Create(const fq::common::Mesh& meshData)
-	{
-		mMeshData = meshData;
-
 		struct Vertex
 		{
 			DirectX::SimpleMath::Vector3 Pos;
@@ -109,30 +60,7 @@ namespace fq::graphics
 			vertices.push_back(std::move(vertex));
 		}
 
-		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(mDevice, meshData.Indices);
-		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
-	}
-	void* SkinnedMesh::GetVertexBuffer()
-	{
-		auto vertexBuffer = mVertexBuffer->GetVertexBuffer();
-
-		if (vertexBuffer == nullptr)
-		{
-			return nullptr;
-		}
-
-		return vertexBuffer.Get();
-	}
-	void* SkinnedMesh::GetIndexBuffer()
-	{
-		auto indexBuffer = mIndexBuffer->GetIndexBuffer();
-
-		if (indexBuffer == nullptr)
-		{
-			return nullptr;
-		}
-
-		return indexBuffer.Get();
+		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(device, vertices);
 	}
 
 	TerrainMesh::TerrainMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData)

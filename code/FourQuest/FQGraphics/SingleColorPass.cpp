@@ -2,7 +2,7 @@
 #include "D3D11Common.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "RenderObject.h"
+
 #include "ManagementCommon.h"
 
 #include <IFQRenderObject.h>
@@ -90,14 +90,10 @@ void fq::graphics::SingleColorPass::Render()
 
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
-			const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-			if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+			if (job.ObjectRenderType == EObjectRenderType::Opaque)
 			{
-				const MeshObjectInfo& meshObjectInfo = job.StaticMeshObject->GetMeshObjectInfo();
-
 				OutLineColor outlineColor;
-				outlineColor.color = meshObjectInfo.OutlineColor;
+				outlineColor.color = job.tempObject->GetOutlineColor();
 				if (outlineColor.color.R() < 0 ||
 					outlineColor.color.G() < 0 ||
 					outlineColor.color.B() < 0 ||
@@ -111,19 +107,20 @@ void fq::graphics::SingleColorPass::Render()
 				job.StaticMesh->Bind(mDevice);
 				job.Material->Bind(mDevice);
 
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
 
-		std::vector<DirectX::SimpleMath::Matrix> identityTransform(BoneTransform::MAX_BOND_COUNT);
+		mSingleColorSkinnedMeshPassShaderProgram->Bind(mDevice);
+		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 
 		// Color 값 있는 친구들 (-1, -1, -1 이 아닌 object 들만 출력)
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
 			OutLineColor outlineColor;
-			outlineColor.color = job.SkinnedMeshObject->GetMeshObjectInfo().OutlineColor;
+			outlineColor.color = job.tempObject->GetOutlineColor();
 			if (outlineColor.color.R() == -1)
 			{
 				continue;
@@ -134,16 +131,8 @@ void fq::graphics::SingleColorPass::Render()
 			job.SkinnedMesh->Bind(mDevice);
 			job.Material->Bind(mDevice);
 
-			ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
-
-			if (job.NodeHierarchyInstnace != nullptr)
-			{
-				ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
-			}
-			else
-			{
-				ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
-			}
+			ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+			ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
 			job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 		}

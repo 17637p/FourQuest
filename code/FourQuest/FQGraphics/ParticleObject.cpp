@@ -6,10 +6,10 @@
 
 namespace fq::graphics
 {
-	ParticleObject::ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform)
-		: mIParticleMaterial(iParticleMaterial)
+	ParticleObject::ParticleObject(std::shared_ptr<D3D11Device> device, const DirectX::SimpleMath::Matrix& transform, const ParticleInfo& particleInfo, std::shared_ptr<IParticleMaterial> iParticleMaterial)
+		: mTransform(transform)
 		, mParticleInfo(particleInfo)
-		, mTransform(transform)
+		, mIParticleMaterial(iParticleMaterial)
 		, mTimePos(0.f)
 		, mFrameTime(0.f)
 		, mAccumlation(0.f)

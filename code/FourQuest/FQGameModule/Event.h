@@ -6,7 +6,6 @@
 #include <directxtk\SimpleMath.h>
 
 #include "../FQReflect/entt.hpp"
-#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::game_module
 {
@@ -44,7 +43,7 @@ namespace fq::event
 	{
 
 	};
-
+	
 	/// <summary>
 	/// Scene Unload할 때 호출
 	/// </summary>
@@ -60,25 +59,25 @@ namespace fq::event
 	};
 
 	/// <summary>
-	/// 씬 변경 요청 이벤트
+ 	/// 씬 변경 요청 이벤트
 	/// </summary>
 	struct RequestChangeScene
 	{
 		std::string sceneName;
 		bool bIsInvokeStartScene; // 클라이언트에서는 true로 호출합니다
-	};
+ 	};
 
 	/// <summary>
 	/// 게임 종료 요청 이벤트 
 	/// </summary>
-	struct RequestExitGame
+	struct RequestExitGame 
 	{
 	};
 
 	/// <summary>
 	/// 씬에 새로운 게임오브젝트를 추가시 호출
 	/// </summary>
-	struct AddGameObject
+	struct AddGameObject 
 	{
 		fq::game_module::GameObject* object;
 	};
@@ -151,7 +150,7 @@ namespace fq::event
 		bool bIsLoop;
 		unsigned int channelIndex;
 	};
-
+	      
 	struct OnStopChannel
 	{
 		unsigned int channelIndex;
@@ -183,8 +182,8 @@ namespace fq::event
 	struct ChangeAnimationState
 	{
 		bool bIsBlend;
-		std::shared_ptr<fq::graphics::IAnimation> currentState;
-		std::shared_ptr<fq::graphics::IAnimation> nextState;
+		std::string currentState;
+		std::string nextState;
 		fq::game_module::Animator* animator;
 	};
 

@@ -76,7 +76,7 @@
     <ClInclude Include="AnimationHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="NodeHierarchy.h">
+    <ClInclude Include="BoneHierarchy.h">
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="D3D11Util.h">
@@ -187,6 +187,9 @@
     <ClInclude Include="DeferredDecalPass.h">
       <Filter>Pass\DeferredPipelinePass</Filter>
     </ClInclude>
+    <ClInclude Include="D3D11DecalManager.h">
+      <Filter>Management</Filter>
+    </ClInclude>
     <ClInclude Include="D3D11LightProbeManager.h">
       <Filter>Management</Filter>
     </ClInclude>
@@ -199,12 +202,8 @@
     <ClInclude Include="TrailRenderPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11PostProcessingManager.h" />
-    <ClInclude Include="GeometryHelper.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Resource</Filter>
+    <ClInclude Include="D3D11TrailManager.h">
+      <Filter>Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -312,7 +311,7 @@
     <ClCompile Include="FowardRenderPass.cpp">
       <Filter>Pass\ForwardPipelinePass</Filter>
     </ClCompile>
-    <ClCompile Include="NodeHierarchy.cpp">
+    <ClCompile Include="BoneHierarchy.cpp">
       <Filter>Resource\Source</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
@@ -465,24 +464,23 @@
     <ClCompile Include="DeferredDecalPass.cpp">
       <Filter>Pass\DeferredPipelinePass\Source</Filter>
     </ClCompile>
+    <ClCompile Include="D3D11DecalManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
     <ClCompile Include="D3D11LightProbeManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
     <ClCompile Include="TrailRenderPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
+    <ClCompile Include="D3D11TrailManager.cpp">
+      <Filter>Management\Source</Filter>
+    </ClCompile>
     <ClCompile Include="DecalObject.cpp">
       <Filter>Object\Source</Filter>
     </ClCompile>
     <ClCompile Include="TrailObject.cpp">
       <Filter>Object\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="D3D11PostProcessingManager.cpp" />
-    <ClCompile Include="GeometryHelper.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Resource\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

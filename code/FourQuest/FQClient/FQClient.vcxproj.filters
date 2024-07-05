@@ -27,6 +27,9 @@
     <Filter Include="src\02.Monster">
       <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\02.Monster\State">
+      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\02.Monster\State">
       <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
     </Filter>
@@ -60,15 +63,6 @@
     <Filter Include="src\02.MonsterSpawner">
       <UniqueIdentifier>{54587631-95c0-41c8-a15b-25928da0ef24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.Monster\State">
-      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\06.GameManager">
-      <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\06.GameManager">
-      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -76,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="Client.h">
       <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>include\02.Monster</Filter>
     </ClInclude>
     <ClInclude Include="MonsterIdle.h">
       <Filter>include\02.Monster\State</Filter>
@@ -128,40 +125,13 @@
     <ClInclude Include="UILayerDefine.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterSpawner.h">
+      <Filter>include\02.MonsterSpawner</Filter>
+    </ClInclude>
     <ClInclude Include="PlayerUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="PlayerDefine.h">
-      <Filter>include\00.Define</Filter>
-    </ClInclude>
-    <ClInclude Include="Monster.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantAttack.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantMonsterAttckState.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantMonsterDeadState.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantMonster.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantMonsterStareState.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantMonsterIdleState.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterSpawner.h">
-      <Filter>include\02.MonsterSpawner</Filter>
-    </ClInclude>
-    <ClInclude Include="GameManager.h">
-      <Filter>include\06.GameManager</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientEvent.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
   </ItemGroup>
@@ -225,27 +195,6 @@
     </ClCompile>
     <ClCompile Include="PlayerUI.cpp">
       <Filter>src\05.UI</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantMonster.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantAttack.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantMonsterAttckState.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantMonsterDeadState.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantMonsterStareState.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantMonsterIdleState.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="GameManager.cpp">
-      <Filter>src\06.GameManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

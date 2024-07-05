@@ -137,43 +137,31 @@
   <ItemGroup>
     <ClInclude Include="BaseWindow.h" />
     <ClInclude Include="DemoUtils.h" />
-    <ClInclude Include="EffectDemo.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Process.h" />
-    <ClInclude Include="RenderObjectDemo.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    <ClInclude Include="OutLineDemo.h" />
+    <ClInclude Include="Process.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="TerrainDemo.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="TerrainDemo.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="DefaultDemo.h" />
-    <ClInclude Include="UIDemo.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="UIDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DemoUtils.cpp" />
-    <ClCompile Include="EffectDemo.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Process.cpp" />
-    <ClCompile Include="RenderObjectDemo.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="TerrainDemo.cpp">
+    <ClCompile Include="OutLineDemo.cpp" />
+    <ClCompile Include="Process.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="TerrainDemo.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="DefaultDemo.cpp" />
-    <ClCompile Include="UIDemo.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="UIDemo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

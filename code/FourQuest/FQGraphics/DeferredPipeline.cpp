@@ -32,7 +32,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager>& resourceManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
-		std::shared_ptr<D3D11ObjectManager> objectManager,
+		std::shared_ptr<D3D11DecalManager> decalManager,
+		std::shared_ptr<D3D11TrailManager> trailManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -52,7 +53,7 @@ namespace fq::graphics
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
 		mShadingPass->Initialize(device, resourceManager, lightManager, cameraManager, width, height);
-		mDebugRenderPass->Initialize(device, jobManager, objectManager, debugDrawManager, cameraManager, resourceManager, particleManager, width, height);
+		mDebugRenderPass->Initialize(device, jobManager, debugDrawManager, cameraManager, resourceManager, particleManager, width, height);
 		mSkyBoxPass->Initialize(device, cameraManager, resourceManager, lightManager);
 		mTransparentRenderPass->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, width, height);
 		mTransparentCompositePass->Initialize(device, resourceManager, width, height);
@@ -62,9 +63,9 @@ namespace fq::graphics
 		mOutLineBlurPass->Initialize(device, resourceManager, width, height);
 		mOutLineAddPass->Initialize(device, resourceManager);
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
-		mParticlePass->Initialize(device, particleManager, objectManager, cameraManager, resourceManager, lightManager, width, height);
-		mDecalPass->Initialize(device, resourceManager, cameraManager, objectManager, debugDrawManager, width, height);
-		mTrailRenderPass->Initialize(device, objectManager, cameraManager, resourceManager, lightManager, width, height);
+		mParticlePass->Initialize(device, particleManager, cameraManager, resourceManager, lightManager, width, height);
+		mDecalPass->Initialize(device, resourceManager, cameraManager, decalManager, debugDrawManager, width, height);
+		mTrailRenderPass->Initialize(device, trailManager, cameraManager, resourceManager, lightManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);

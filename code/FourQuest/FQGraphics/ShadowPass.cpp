@@ -4,8 +4,7 @@
 #include "RenderJob.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "NodeHierarchy.h"
-#include "RenderObject.h"
+#include "BoneHierarchy.h"
 
 namespace fq::graphics
 {
@@ -231,16 +230,16 @@ namespace fq::graphics
 
 		mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 		mDirectionalShadowTransformCB->Bind(mDevice, ED3D11ShaderType::GeometryShader);
-		mStaticMeshShaderProgram->Bind(mDevice);
 
+		mStaticMeshShaderProgram->Bind(mDevice);
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
-			if (job.StaticMeshObject->GetMeshObjectInfo().bUseShadow)
+			if (job.bUseShadow)
 			{
 				job.StaticMesh->Bind(mDevice);
 				job.Material->Bind(mDevice);
 
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
@@ -248,25 +247,15 @@ namespace fq::graphics
 
 		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 		mSkinnedMeshShaderProgram->Bind(mDevice);
-		std::vector<DirectX::SimpleMath::Matrix> identityTransform(BoneTransform::MAX_BOND_COUNT);
-
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
-			if (job.SkinnedMeshObject->GetMeshObjectInfo().bUseShadow)
+			if (job.bUseShadow)
 			{
 				job.SkinnedMesh->Bind(mDevice);
 				job.Material->Bind(mDevice);
 
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
-
-				if (job.NodeHierarchyInstnace != nullptr)
-				{
-					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
-				}
-				else
-				{
-					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
-				}
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+				ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
 				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 			}

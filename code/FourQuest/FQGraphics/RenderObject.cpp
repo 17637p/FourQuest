@@ -1,35 +1,93 @@
-#include <d3d11.h>
-#include <algorithm>
 #include "RenderObject.h"
-#include "NodeHierarchy.h"
+#include "BoneHierarchy.h"
+
 #include "Material.h"
-#include "D3D11JobManager.h"
+
+#include <d3d11.h>
+
+#include <algorithm>
 
 namespace fq::graphics
 {
-	StaticMeshObject::StaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh,
+	StaticMeshObject::StaticMeshObject(std::shared_ptr<StaticMesh> staticMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
-		const MeshObjectInfo& info,
-		const DirectX::SimpleMath::Matrix& transform)
-		: mNodeHierarchyInstance(nullptr)
-		, mIndex((size_t)-1)
-		, mStaticMesh(staticMesh)
+		DirectX::SimpleMath::Matrix transform)
+		: mStaticMesh(staticMesh)
 		, mMaterials(materials)
-		, mInfo(info)
 		, mTransform(transform)
+		, mObjectRenderType(EObjectRenderType::Opaque)
+		, mAlpha(1.f)
+		, mbUseShadow(true)
+		, mOutLineColor{ -1, -1, -1 }
+		, mbIsAppliedDecal(true)
 	{
 	}
 
-	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh,
-		std::vector<std::shared_ptr<IMaterial>> materials,
-		const MeshObjectInfo& info,
-		const DirectX::SimpleMath::Matrix& transform)
-		: mNodeHierarchyInstance(nullptr)
-		, mSkinnedMesh(skinnedMesh)
-		, mMaterials(materials)
-		, mInfo(info)
-		, mTransform(transform)
+	void StaticMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
 	{
+		mOutLineColor = color;
+	}
+
+	DirectX::SimpleMath::Color StaticMeshObject::GetOutlineColor() const
+	{
+		return mOutLineColor;
+	}
+
+	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
+		std::vector<std::shared_ptr<IMaterial>> materials,
+		DirectX::SimpleMath::Matrix transform,
+		BoneHierarchyCache boneHierarchyCache)
+		: mSkinnedMesh(skinnedMesh)
+		, mMaterials(materials)
+		, mTransform(transform)
+		, mBoneHierarchyCache(boneHierarchyCache)
+		, mObjectRenderType(EObjectRenderType::Opaque)
+		, mAlpha(1.f)
+		, mbUseShadow(true)
+		, mOutLineColor{ -1, -1, -1 }
+		, mbIsAppliedDecal(false)
+		, mBlendTimePos(0.f)
+		, mTimePos(0.f)
+	{
+	}
+
+	void SkinnedMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
+	{
+		mOutLineColor = color;
+	}
+
+	DirectX::SimpleMath::Color SkinnedMeshObject::GetOutlineColor() const
+	{
+		return mOutLineColor;
+	}
+
+	const std::vector<fq::common::Bone>& SkinnedMeshObject::GetBones() const
+	{
+		return mBoneHierarchyCache.GetBoneHierarchy()->GetBones();
+	}
+	unsigned int SkinnedMeshObject::GetBoneIndex(const std::string& boneName) const
+	{
+		return mBoneHierarchyCache.GetBoneHierarchy()->GetBoneIndex(boneName);
+	}
+	bool SkinnedMeshObject::TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex)
+	{
+		return mBoneHierarchyCache.GetBoneHierarchy()->TryGetBoneIndex(boneName, outBoneIndex);
+	}
+	const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetRootTransform(const std::string& boneName) const
+	{
+		return mBoneHierarchyCache.GetRootTransform(boneName);
+	}
+	bool SkinnedMeshObject::TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform)
+	{
+		return mBoneHierarchyCache.TryGetRootTransform(boneName, outRootTransform);
+	}
+	const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetRootTransform(size_t index) const
+	{
+		return mBoneHierarchyCache.GetRootTransform(index);
+	}
+	const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetRootTransforms() const
+	{
+		return mBoneHierarchyCache.GetRootTransforms();
 	}
 
 	TerrainMeshObject::TerrainMeshObject(

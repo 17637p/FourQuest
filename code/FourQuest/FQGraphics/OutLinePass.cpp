@@ -28,8 +28,22 @@ void fq::graphics::OutLinePass::Initialize(std::shared_ptr<D3D11Device> device, 
 
 	OnResize(width, height);
 
-	mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));
-	mFullScreenIB = std::make_shared<D3D11IndexBuffer>(D3D11IndexBuffer::CreateFullScreenIndexBuffer(device));
+	std::vector<DirectX::SimpleMath::Vector2> positions =
+	{
+		{ -1, 1 },
+		{ 1, 1 },
+		{ -1, -1 },
+		{ 1, -1 }
+	};
+
+	std::vector<unsigned int> indices =
+	{
+		0,1,2,
+		1,3,2
+	};
+
+	mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
+	mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
 }
 
 void fq::graphics::OutLinePass::Finalize()

@@ -17,7 +17,6 @@
 #include <memory>
 #include <filesystem>
 #include <string>
-#include <functional>
 
 // WIN
 #include <Windows.h>
