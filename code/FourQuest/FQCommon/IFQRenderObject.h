@@ -25,6 +25,9 @@ extern "C" {
 		class IStaticMeshObject
 		{
 		public:
+			virtual FQ_GRAPHICS void Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo); 
+			virtual FQ_GRAPHICS void RenderInstanced(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo);
+
 			// Transform
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;

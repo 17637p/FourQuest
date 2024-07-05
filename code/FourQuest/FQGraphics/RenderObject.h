@@ -35,6 +35,9 @@ namespace fq::graphics
 			const DirectX::SimpleMath::Matrix& transforms);
 		~StaticMeshObject() = default;
 
+		virtual void Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo) override;
+		virtual void RenderInstance(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo) override;
+
 		// Transform
 		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
 		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
@@ -56,6 +59,10 @@ namespace fq::graphics
 		virtual std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const override { return mNodeHierarchyInstance; }
 		virtual void SetReferenceBoneIndex(size_t index) override { mIndex = index; }
 		virtual size_t GetReferenceBoneIndex() const override { return mIndex; }
+
+		// InstanceData
+		const std::vector<std::pair<DirectX::SimpleMath::Matrix, MeshObjectInfo>>& GetInstanceData() const { return mInstanceData; }
+		void ClearInstanceData() { mInstanceData.clear(); }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;

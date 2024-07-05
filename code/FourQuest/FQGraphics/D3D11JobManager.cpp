@@ -64,6 +64,11 @@ namespace fq::graphics
 		}
 	}
 
+	void D3D11JobManager::CreateInstanceStaticMeshJob(IStaticMeshObject* iStaticMeshObject, const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo)
+	{
+
+	}
+
 	void D3D11JobManager::ClearAll()
 	{
 		ClearStaticMeshJobs();

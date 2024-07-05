@@ -20,6 +20,15 @@ namespace fq::graphics
 	{
 	}
 
+	void StaticMeshObject::Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo)
+	{
+		// create job;
+	}
+	void StaticMeshObject::RenderInstanced(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo)
+	{
+		mInstanceData.push_back({ transform, mashObjectInfo });
+	}
+
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
 		const MeshObjectInfo& info,

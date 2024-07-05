@@ -20,6 +20,8 @@ namespace fq::graphics
 		void CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject);
 		void CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct);
 
+		void CreateInstanceStaticMeshJob(IStaticMeshObject* iStaticMeshObject, const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo);
+
 		void ClearAll();
 		void ClearStaticMeshJobs();
 		void ClearSkinnedMeshJobs();
@@ -35,6 +37,8 @@ namespace fq::graphics
 		std::vector<StaticMeshJob> mStaticMeshJobs;
 		std::vector<SkinnedMeshJob> mSkinnedMeshJobs;
 		std::vector<TerrainMeshJob> mTerrainMeshJobs;
+
+		std::map<IStaticMeshObject, std::vector<std::pair<DirectX::SimpleMath::Matrix, MeshObjectInfo>>> mInstanceStaticMeshJob;
 	};
 
 	inline const std::vector<StaticMeshJob>& D3D11JobManager::GetStaticMeshJobs() const
