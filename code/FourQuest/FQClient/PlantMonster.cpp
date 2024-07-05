@@ -16,6 +16,8 @@ fq::client::PlantMonster::PlantMonster()
 	, mAnimator(nullptr)
 	, mAttackRange(1.f)
 	, mGameManager(nullptr)
+	, mAttackCoolTime(0.f)
+	, mAttackElapsedTime(0.f)
 {
 }
 

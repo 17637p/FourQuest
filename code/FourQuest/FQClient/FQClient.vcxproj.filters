@@ -27,9 +27,6 @@
     <Filter Include="src\02.Monster">
       <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\02.Monster\State">
-      <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\03.Attack">
       <UniqueIdentifier>{7cef8521-d7f1-4691-a728-888cad1df5cc}</UniqueIdentifier>
     </Filter>
@@ -54,20 +51,29 @@
     <Filter Include="include\04.Camera">
       <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.MonsterSpawner">
-      <UniqueIdentifier>{9bce7788-29fa-4d0c-9286-d16daa9d5e1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\02.MonsterSpawner">
-      <UniqueIdentifier>{54587631-95c0-41c8-a15b-25928da0ef24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\02.Monster\State">
-      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\06.GameManager">
       <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\06.GameManager">
       <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Prototype">
+      <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Prototype">
+      <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Melee">
+      <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Plant">
+      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Melee">
+      <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Plant">
+      <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,24 +82,6 @@
     </ClInclude>
     <ClInclude Include="Client.h">
       <Filter>include\00.Define</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterIdle.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterFind.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterDie.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterDamaged.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterChase.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterAttack.h">
-      <Filter>include\02.Monster\State</Filter>
     </ClInclude>
     <ClInclude Include="Attack.h">
       <Filter>include\03.Attack</Filter>
@@ -134,29 +122,17 @@
     <ClInclude Include="PlayerDefine.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
-    <ClInclude Include="Monster.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantAttack.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
     <ClInclude Include="PlantMonsterAttckState.h">
-      <Filter>include\02.Monster\State</Filter>
+      <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
     <ClInclude Include="PlantMonsterDeadState.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="PlantMonster.h">
-      <Filter>include\02.Monster</Filter>
+      <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
     <ClInclude Include="PlantMonsterStareState.h">
-      <Filter>include\02.Monster\State</Filter>
+      <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
     <ClInclude Include="PlantMonsterIdleState.h">
-      <Filter>include\02.Monster\State</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterSpawner.h">
-      <Filter>include\02.MonsterSpawner</Filter>
+      <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
       <Filter>include\06.GameManager</Filter>
@@ -164,31 +140,49 @@
     <ClInclude Include="ClientEvent.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterAttack.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterChase.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterDamaged.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterDie.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterFind.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterIdle.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGroup.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterSpawner.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonster.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantAttack.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonster.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonster.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
       <Filter>src\00.Define</Filter>
-    </ClCompile>
-    <ClCompile Include="Monster.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterIdle.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterDie.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterDamaged.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterAttack.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterChase.cpp">
-      <Filter>src\02.Monster\State</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterFind.cpp">
-      <Filter>src\02.Monster\State</Filter>
     </ClCompile>
     <ClCompile Include="Attack.cpp">
       <Filter>src\03.Attack</Filter>
@@ -220,32 +214,59 @@
     <ClCompile Include="HpBar.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterSpawner.cpp">
-      <Filter>src\02.MonsterSpawner</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="PlantMonster.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
-    <ClCompile Include="PlantAttack.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
     <ClCompile Include="PlantMonsterAttckState.cpp">
-      <Filter>src\02.Monster\State</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterDeadState.cpp">
-      <Filter>src\02.Monster\State</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterStareState.cpp">
-      <Filter>src\02.Monster\State</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterIdleState.cpp">
-      <Filter>src\02.Monster\State</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
       <Filter>src\06.GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterAttack.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterChase.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDamaged.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDie.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterFind.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterIdle.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterGroup.cpp">
+      <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawner.cpp">
+      <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonster.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantAttack.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonster.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

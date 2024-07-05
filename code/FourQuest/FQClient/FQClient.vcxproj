@@ -36,6 +36,8 @@
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="HpBar.h" />
+    <ClInclude Include="IMonster.h" />
+    <ClInclude Include="MeleeMonster.h" />
     <ClInclude Include="MonsterAttack.h" />
     <ClInclude Include="MonsterChase.h" />
     <ClInclude Include="ClientRegistration.h" />
@@ -44,6 +46,7 @@
     <ClInclude Include="MonsterDamaged.h" />
     <ClInclude Include="MonsterDie.h" />
     <ClInclude Include="MonsterFind.h" />
+    <ClInclude Include="MonsterGroup.h" />
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="PlantAttack.h" />
@@ -68,6 +71,7 @@
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HpBar.cpp" />
+    <ClCompile Include="MeleeMonster.cpp" />
     <ClCompile Include="MonsterAttack.cpp" />
     <ClCompile Include="MonsterChase.cpp" />
     <ClCompile Include="ClientRegistration.cpp" />
@@ -75,6 +79,7 @@
     <ClCompile Include="MonsterDamaged.cpp" />
     <ClCompile Include="MonsterDie.cpp" />
     <ClCompile Include="MonsterFind.cpp" />
+    <ClCompile Include="MonsterGroup.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
     <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="PlantAttack.cpp" />
