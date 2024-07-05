@@ -119,7 +119,7 @@ dcl_temps 20
 //   o1.x <- <main return value>.PositionW.x; o1.y <- <main return value>.PositionW.y; o1.z <- <main return value>.PositionW.z; o1.w <- <main return value>.DepthView; 
 //   o0.x <- <main return value>.PositionH.x; o0.y <- <main return value>.PositionH.y; o0.z <- <main return value>.PositionH.z; o0.w <- <main return value>.PositionH.w
 //
-#line 74 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\ModelVS.hlsl"
+#line 74 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelVS.hlsl"
 ishl r0.xyzw, v4.xyzw, l(2, 2, 2, 2)
 
 #line 71

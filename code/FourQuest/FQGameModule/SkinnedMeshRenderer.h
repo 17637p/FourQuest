@@ -61,6 +61,12 @@ namespace fq::game_module
 		/// </summary>
 		void SetMaterials(std::vector<std::string> materials) { mMaterialNames = std::move(materials); }
 
+		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos()const { return mMaterialInfos; }
+		void SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos);
+
+		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }
+		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces);
+
 		/// <summary>
 		/// 메쉬정보를 설정합니다
 		/// </summary>
@@ -78,10 +84,13 @@ namespace fq::game_module
 
 	private:
 		SkinnedMeshObject* mSkinnedMeshObject;
+		fq::graphics::MeshObjectInfo mMeshInfomation;
+
 		std::string mModelPath;
 		std::string mMeshName;
 		std::vector<std::string> mMaterialNames;
-		fq::graphics::MeshObjectInfo mMeshInfomation;
+		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;
+		std::vector<std::shared_ptr<fq::graphics::IMaterial>> mMaterialInterfaces;
 	};
 
 

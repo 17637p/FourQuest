@@ -221,6 +221,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	{
 		ISkinnedMeshObject* iSkinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, skinnedMeshRenderer->GetMeshObjectInfomation(), transform->GetLocalMatrix());
 		skinnedMeshRenderer->SetSkinnedMeshObject(iSkinnedMeshObject);
+		skinnedMeshRenderer->SetMaterialInterfaces(materialInterfaces);
 	}
 }
 
@@ -307,6 +308,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	{
 		IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, staticMeshRenderer->GetMeshObjectInfomation(), transform->GetLocalMatrix());
 		staticMeshRenderer->SetStaticMeshObject(iStaticMeshObject);
+		staticMeshRenderer->SetMaterialInterfaces(materialInterfaces);
 	}
 }
 
