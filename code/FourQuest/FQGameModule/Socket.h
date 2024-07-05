@@ -1,10 +1,9 @@
 #pragma once
 #include "Component.h"
-
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::game_module
 {
-	class SkinnedMeshRenderer;
 	class Transform;
 
 	class Socket : public Component
@@ -25,7 +24,7 @@ namespace fq::game_module
 
 	private:
 		Transform* mTransform;
-		SkinnedMeshRenderer* mSkinnedMeshRenderer;
+		std::shared_ptr<fq::graphics::INodeHierarchyInstance> mNodeHierarchyInstance;
 		std::string mBoneName;
 		unsigned int mBoneIndex;
 	};

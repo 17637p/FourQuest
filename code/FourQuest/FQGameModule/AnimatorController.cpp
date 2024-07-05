@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <spdlog/spdlog.h>
+#include <cassert>
 
 #include "Animator.h"
 #include "Scene.h"
@@ -361,8 +362,35 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 	{
 		return {};
 	}
-
+		
 	return mNextState->first;
+}
+
+fq::graphics::IAnimation& fq::game_module::AnimatorController::GetNextStateAnimation() const
+{
+	assert(mNextState != mStates.end());
+	return mNextState->second.GetAnimation();
+}
+
+std::shared_ptr<fq::graphics::IAnimation> fq::game_module::AnimatorController::GetSharedNextStateAnimationOrNull() const
+{
+	if (mNextState == mStates.end())
+	{
+		return nullptr;
+	}
+
+	return mNextState->second.GetSharedAnimation();
+}
+
+const std::shared_ptr<fq::graphics::IAnimation>& fq::game_module::AnimatorController::GetSharedRefNextStateAnimation() const
+{
+	assert(mNextState != mStates.end());
+	return mNextState->second.GetSharedRefAnimation();
+}
+
+bool fq::game_module::AnimatorController::GetHasNextStateAnimation() const
+{
+	return mNextState != mStates.end() && mNextState->second.GetHasAnimation();
 }
 
 fq::game_module::AnimatorController::TransitionIterator fq::game_module::AnimatorController::checkStateTransition(const StateName& name)
@@ -382,6 +410,13 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 		= mTransitions.equal_range("AnyState");
 		beginIter != endIter; ++beginIter)
 	{
+		// EnterState가 같은 상태인지 확인합니다
+		if (!beginIter->second.CanTrasitionToSelf()
+			&& beginIter->second.GetEnterState() == name)
+		{
+			continue;
+		}
+
 		transitions.push_back(beginIter);
 	}
 
@@ -394,7 +429,7 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 			}
 			return false;
 		});
-	 
+
 
 	// 전환조건 확인
 	for (auto& iter : transitions)
@@ -422,32 +457,7 @@ void fq::game_module::AnimatorController::emitChangeState()
 			mCurrentState = mNextState;
 			mNextState = mStates.end();
 			isBlend = false;
-
-			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-				isBlend,
-				mCurrentState->first,
-				"",
-				mAnimator
-				});
 		}
-		else
-		{
-			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-				isBlend,
-				mCurrentState->first,
-				mNextState->first,
-				mAnimator
-				});
-		}
-	}
-	else
-	{
-		eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-			isBlend,
-			mCurrentState->first,
-			{},
-			mAnimator
-			});
 	}
 }
 

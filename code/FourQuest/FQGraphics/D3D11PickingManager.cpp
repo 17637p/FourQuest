@@ -49,7 +49,7 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 	};
 
 	mStaticMeshVS = std::make_shared<D3D11VertexShader>(device, L"PickingVS.cso");
-	mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"PickingVS_SKINNING.cso" );
+	mSkinnedMeshVS = std::make_shared<D3D11VertexShader>(device, L"PickingVS_SKINNING.cso");
 	mMeshPS = std::make_shared<D3D11PixelShader>(device, L"PickingPS.cso");
 
 	mStaticMeshLayout = std::make_shared<D3D11InputLayout>(device, mStaticMeshVS->GetBlob().Get());
@@ -221,9 +221,9 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	mPickingDrawRTV->Bind(device, mDSV);
 
 	// 나중에는 position 만 있는 걸로 수정해야함
-	jobManager->CreateStaticMeshJobs(staticMeshObjects);
-	jobManager->CreateSkinnedMeshJobs(skinnedMeshObjects);
-	jobManager->CreateTerrainMeshJobs(terrainMeshObjects);
+	for (auto element : staticMeshObjects) { jobManager->CreateStaticMeshJob(element); }
+	for (auto element : skinnedMeshObjects) { jobManager->CreateSkinnedMeshJob(element); }
+	for (auto element : terrainMeshObjects) { jobManager->CreateTerrainMeshJob(element); }
 
 	std::vector<StaticMeshJob> staticMeshJobs = jobManager->GetStaticMeshJobs();
 	std::vector<SkinnedMeshJob> skinnedMeshJobs = jobManager->GetSkinnedMeshJobs();
@@ -237,28 +237,30 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	for (const StaticMeshJob& job : staticMeshJobs)
 	{
-		job.StaticMesh->Bind(device);
+		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(job.StaticMeshObject);
+		std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(staticMeshObject->GetStaticMesh());
+
+		staticMesh->Bind(device);
 
 		ModelTransform modelTransform;
-		modelTransform.color = mStaticMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
-		modelTransform.world = (*job.TransformPtr).Transpose();
+		modelTransform.color = mStaticMeshObjects[staticMeshObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = staticMeshObject->GetTransform().Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
-
 		mConstantBuffer->Update(device, modelTransform);
 
-		job.StaticMesh->Draw(device, job.SubsetIndex);
+		staticMesh->Draw(device, job.SubsetIndex);
 	}
 
 	for (const TerrainMeshJob& job : terrainMeshJobs)
 	{
-		TerrainMeshObject* terrainObject = static_cast<TerrainMeshObject*>(job.tempObject);
-		terrainObject->GetStaticMesh()->Bind(device);
+		TerrainMeshObject* terrainObject = static_cast<TerrainMeshObject*>(job.TerrainMeshObject);
+		std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(terrainObject->GetStaticMesh());
+		staticMesh->Bind(device);
 
 		ModelTransform modelTransform;
-		modelTransform.color = mTerrainMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
-		modelTransform.world = (job.TransformPtr).Transpose();
+		modelTransform.color = mTerrainMeshObjects[terrainObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = (terrainObject->GetTransform()).Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
-
 		mConstantBuffer->Update(device, modelTransform);
 
 		job.TerrainMesh->Draw(device, job.SubsetIndex);
@@ -266,22 +268,32 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 
 	mSkinnedMeshLayout->Bind(device);
 	mSkinnedMeshVS->Bind(device);
-
 	mBoneTransformCB->Bind(device, ED3D11ShaderType::VertexShader, 2);
 
+	std::vector<DirectX::SimpleMath::Matrix> identityTransforms(BoneTransform::MAX_BOND_COUNT);
 	for (const SkinnedMeshJob& job : skinnedMeshJobs)
 	{
-		job.SkinnedMesh->Bind(device);
+		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(job.SkinnedMeshObject);
+		std::shared_ptr<SkinnedMesh> skinnedMesh = std::static_pointer_cast<SkinnedMesh>(skinnedMeshObject->GetSkinnedMesh());
+		std::shared_ptr<NodeHierarchyInstance> nodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(skinnedMeshObject->GetNodeHierarchyInstance());
+		skinnedMesh->Bind(device);
 
 		ModelTransform modelTransform;
-		modelTransform.color = mSkinnedMeshObjects[job.tempObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
-		modelTransform.world = (*job.TransformPtr).Transpose();
+		modelTransform.color = mSkinnedMeshObjects[skinnedMeshObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = skinnedMeshObject->GetTransform().Transpose();
 		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
-
 		mConstantBuffer->Update(device, modelTransform);
-		ConstantBufferHelper::UpdateBoneTransformCB(device, mBoneTransformCB, *job.BoneMatricesPtr);
 
-		job.SkinnedMesh->Draw(device, job.SubsetIndex);
+		if (nodeHierarchyInstnace != nullptr)
+		{
+			ConstantBufferHelper::UpdateBoneTransformCB(device, mBoneTransformCB, nodeHierarchyInstnace->GetTransposedFinalTransforms());
+		}
+		else
+		{
+			ConstantBufferHelper::UpdateBoneTransformCB(device, mBoneTransformCB, identityTransforms);
+		}
+
+		skinnedMesh->Draw(device, job.SubsetIndex);
 	}
 
 	jobManager->ClearAll();

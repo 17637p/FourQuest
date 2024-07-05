@@ -1,12 +1,12 @@
 #pragma once
 
-
 #ifndef FQ_GAME_MODULE_H
 #define FQ_GAME_MODULE_H
 
 #include "GameModuleEnum.h"
 #include "GameModuleRegister.h"
 
+#include "ThreadPool.h"
 #include "Scene.h"
 #include "GameObject.h"
 #include "Component.h"
@@ -32,6 +32,7 @@
 #include "Trail.h"
 #include "ImageUI.h"
 #include "Socket.h"
+#include "NavigationAgent.h"
 
 #include "EventHandler.h"
 #include "EventManager.h"

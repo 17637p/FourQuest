@@ -9,70 +9,42 @@ namespace fq::graphics
 	D3D11JobManager::D3D11JobManager()
 	{
 		mStaticMeshJobs.reserve(RESERVE_SIZE);
+		mSkinnedMeshJobs.reserve(RESERVE_SIZE);
+		mTerrainMeshJobs.reserve(RESERVE_SIZE);
 	}
+
 	void D3D11JobManager::CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject)
 	{
-		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
-		const std::shared_ptr<StaticMesh>& staticMesh = staticMeshObject->GetStaticMesh();
-		const std::vector<std::shared_ptr<IMaterial>> materials = staticMeshObject->GetMaterialInterfaces();
-		const fq::common::Mesh& meshData = staticMesh->GetMeshData();
+		const auto& material = iStaticMeshObject->GetMaterials();
+		const size_t JOB_COUNT = std::min<size_t>(material.size(), iStaticMeshObject->GetStaticMesh()->GetMeshData().Subsets.size());
 
-		for (size_t i = 0; i < materials.size(); ++i)
+		for (size_t i = 0; i < JOB_COUNT; ++i)
 		{
 			StaticMeshJob job;
 			job.SubsetIndex = i;
-			job.TransformPtr = &staticMeshObject->GetTransform();
-			job.Material = std::static_pointer_cast<Material>(materials[i]);
-			job.StaticMesh = staticMesh;
-			job.ObjectRenderType = staticMeshObject->GetObjectRenderType();
-			job.Alpha = staticMeshObject->GetAlpha();
-			job.bUseShadow = staticMeshObject->GetUseShadow();
-			job.tempObject = staticMeshObject;
+			job.StaticMesh = std::static_pointer_cast<StaticMesh>(iStaticMeshObject->GetStaticMesh());
+			job.Material = std::static_pointer_cast<Material>(material[i]);
+			job.StaticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
 
 			mStaticMeshJobs.push_back(job);
 		}
 	}
-	void D3D11JobManager::CreateStaticMeshJobs(const std::set<IStaticMeshObject*>& staticMeshObjects)
-	{
-		for (IStaticMeshObject* iStaticMeshObject : staticMeshObjects)
-		{
-			CreateStaticMeshJob(iStaticMeshObject);
-		}
-	}
 	void D3D11JobManager::CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject)
 	{
-		SkinnedMeshObject* skinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
-		const std::shared_ptr<SkinnedMesh>& skinnedMesh = skinnedMeshObject->GetSkinnedMesh();
-		const std::vector<std::shared_ptr<IMaterial>> materials = skinnedMeshObject->GetMaterialInterfaces();
-		const fq::common::Mesh& meshData = skinnedMesh->GetMeshData();
-		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms = skinnedMeshObject->GetTransposedFinalTransforms();
+		const auto& material = iSkinnedMeshObject->GetMaterials();
+		const size_t JOB_COUNT = std::min<size_t>(material.size(), iSkinnedMeshObject->GetSkinnedMesh()->GetMeshData().Subsets.size());
 
-		assert(meshData.Subsets.size() <= materials.size());
-
-		for (size_t i = 0; i < materials.size(); ++i)
+		for (size_t i = 0; i < JOB_COUNT; ++i)
 		{
 			SkinnedMeshJob job;
 			job.SubsetIndex = i;
-			job.TransformPtr = &skinnedMeshObject->GetTransform();
-			job.Material = std::static_pointer_cast<Material>(materials[i]);
-			job.SkinnedMesh = skinnedMesh;
-			job.BoneMatricesPtr = &finalTransforms;
-			job.ObjectRenderType = skinnedMeshObject->GetObjectRenderType();
-			job.Alpha = skinnedMeshObject->GetAlpha();
-			job.bUseShadow = skinnedMeshObject->GetUseShadow();
-			job.tempObject = skinnedMeshObject;
-
+			job.SkinnedMesh = std::static_pointer_cast<SkinnedMesh>(iSkinnedMeshObject->GetSkinnedMesh());
+			job.Material = std::static_pointer_cast<Material>(material[i]);
+			job.SkinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
+			job.NodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(iSkinnedMeshObject->GetNodeHierarchyInstance());
 			mSkinnedMeshJobs.push_back(job);
 		}
 	}
-	void D3D11JobManager::CreateSkinnedMeshJobs(const std::set<ISkinnedMeshObject*>& skinnedMeshObjects)
-	{
-		for (ISkinnedMeshObject* iSkinnedMeshRenderJob : skinnedMeshObjects)
-		{
-			CreateSkinnedMeshJob(iSkinnedMeshRenderJob);
-		}
-	}
-
 	void D3D11JobManager::CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct)
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObjct);
@@ -84,21 +56,11 @@ namespace fq::graphics
 		{
 			TerrainMeshJob job;
 			job.SubsetIndex = i;
-
-			job.TransformPtr = terrainMeshObject->GetTransform();
 			job.TerrainMaterial = material;
 			job.TerrainMesh = terrainMesh;
-			job.tempObject = terrainMeshObject;
+			job.TerrainMeshObject = static_cast<TerrainMeshObject*>(terrainMeshObject);
 
 			mTerrainMeshJobs.push_back(job);
-		}
-	}
-
-	void D3D11JobManager::CreateTerrainMeshJobs(const std::set<ITerrainMeshObject*>& terrainMeshObjects)
-	{
-		for (ITerrainMeshObject* iTerrainMeshRenderJob : terrainMeshObjects)
-		{
-			CreateTerrainMeshJob(iTerrainMeshRenderJob);
 		}
 	}
 

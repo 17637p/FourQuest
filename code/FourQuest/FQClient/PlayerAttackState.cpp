@@ -33,6 +33,7 @@ void fq::client::PlayerAttackState::OnStateEnter(game_module::Animator& animator
 	if (mAttackTiming == mElapsedTime)
 	{
 		animator.GetComponent<Player>()->Attack();
+		mElapsedTime = mAttackTiming;
 	}
 }
 
@@ -48,5 +49,11 @@ void fq::client::PlayerAttackState::OnStateUpdate(game_module::Animator& animato
 	{
 		animator.GetComponent<Player>()->Attack();
 		mElapsedTime = mAttackTiming;
+
+
 	}
+}
+
+void fq::client::PlayerAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
+{
 }
