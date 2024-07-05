@@ -22,7 +22,7 @@ namespace fq::game_engine
 		, mBones()
 		, mArticulationData(nullptr)
 		, mSelectLinkData(nullptr)
-		, mSelectLinkHandle()
+		, mSelectObjectHandle()
 		, mbIsOpen(false)
 		, mbIsBoneHierarchy(true)
 		, mbIsArticulationHierarchy(false)
@@ -44,12 +44,6 @@ namespace fq::game_engine
 		mInputManager = mEditorProcess->mInputManager.get();
 
 		mArticulationData = std::make_shared<fq::game_module::ArticulationData>();
-
-		mSelectLinkHandle = mEventManager->RegisterHandle<fq::event::SelectLinkData>
-			([this](fq::event::SelectLinkData event)
-				{
-					mSelectLinkData = event.linkData;
-				});
 	}
 
 	void ArticulationHierarchy::Finalize()
@@ -110,7 +104,6 @@ namespace fq::game_engine
 		if (!mbIsArticulationHierarchy)
 			return;
 
-		beginPopupContextWindow_HierarchyChild();
 		beginLinkDataBar(mArticulationData->GetRootLinkData().lock());
 	}
 
@@ -125,41 +118,24 @@ namespace fq::game_engine
 		beginLinkSelectButton(link);
 		beginPopupContextItem_Link(link);
 
-		// 드래그앤 드랍 처리
-		dragDropLinkBar(link);
+
 
 		// 링크 이름
 		beginLinkDataNameBar(link);
 
-		auto children = link->GetChildrenLinkData();
-
-		if (!children.empty())
+		for (auto& childLink : link->GetChildrenLinkData())
 		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(cursorPosX);
-
-			std::string treeNodeName = "##Tree" + std::to_string(link->GetID());
-
-			if (ImGui::TreeNode(treeNodeName.c_str()))
-			{
-				for (auto& childLink : link->GetChildrenLinkData())
-				{
-					beginLinkDataBar(childLink.second);
-				}
-
-				ImGui::TreePop();
-			}
+			beginLinkDataBar(childLink.second);
 		}
 	}
 
 	void ArticulationHierarchy::beginLinkDataNameBar(std::shared_ptr<fq::game_module::LinkData> link)
 	{
-		std::string id = "##" + std::to_string(link->GetID());
 		std::string linkName = link->GetBoneName();
 
 		ImGui::SetNextItemWidth(150.f);
 
-		if (ImGui::InputText(id.c_str(), &linkName)
+		if (ImGui::InputText("##", &linkName)
 			&& mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
 		{
 			// 이름이 수정된 경우 Set 명령어 전달합니다
@@ -169,15 +145,13 @@ namespace fq::game_engine
 			{
 				childLink.second->SetParentBoneName(linkName);
 			}
-
-			linkName = link->GetBoneName();
 		}
 	}
 
 	void ArticulationHierarchy::beginLinkSelectButton(std::shared_ptr<fq::game_module::LinkData> link)
 	{
 		// 선택 버튼
-		std::string buttonName = "##buttonName" + std::to_string(link->GetID());
+		std::string buttonName = "##buttonName" + link->GetID();
 
 		bool isSelected = mSelectLinkData != nullptr 
 			&& mSelectLinkData->GetID() == link->GetID();
@@ -190,11 +164,7 @@ namespace fq::game_engine
 		// 여기에 이제 링크가 선택 되었다는 이벤트를 추가하면 됩니다.
 		if (ImGui::Button(buttonName.c_str()))
 		{
-			mSelectLinkData = link;
 
-			mEventManager->FireEvent<fq::event::SelectLinkData>(
-				{ mArticulationData, mSelectLinkData }
-			);
 		}
 
 		if (isSelected)
@@ -286,7 +256,7 @@ namespace fq::game_engine
 			{
 				std::shared_ptr<fq::game_module::LinkData> rootLink = mArticulationData->GetRootLinkData().lock();
 				std::shared_ptr<fq::game_module::LinkData> newLink = std::make_shared<fq::game_module::LinkData>();
-				newLink->SetBoneName("newLink" + std::to_string(mLinkID));
+				newLink->SetBoneName("newLink");
 				newLink->SetParentBoneName(rootLink->GetBoneName());
 				newLink->SetID(mLinkID++);
 				rootLink->AddChildLinkData(newLink->GetBoneName(), newLink);
@@ -298,65 +268,29 @@ namespace fq::game_engine
 
 	void ArticulationHierarchy::beginPopupContextItem_Link(std::shared_ptr<fq::game_module::LinkData> link)
 	{
-		std::string ContextItemName = link->GetID() + "ContextItem";
+		std::string ContextItemName = link->GetBoneName();
 
 		if (ImGui::BeginPopupContextItem(ContextItemName.c_str()))
 		{
-			// Link를 생성합니다
+			// GameObject를 생성합니다
 			if (ImGui::MenuItem("Destroy"))
 			{
 				link->SetIsDead(true);
 			}
 
-			// Link를 생성합니다
+			// GameObject를 생성합니다
 			if (ImGui::MenuItem("CreateEmpty"))
 			{
 				std::shared_ptr<fq::game_module::LinkData> newLink = std::make_shared<fq::game_module::LinkData>();
 
-				newLink->SetBoneName("newLink" + std::to_string(mLinkID));
+				newLink->SetBoneName("newLink");
 				newLink->SetParentBoneName(link->GetBoneName());
-				newLink->SetID(mLinkID++);
 				link->AddChildLinkData(newLink->GetBoneName(), newLink);
+				link->SetID(mLinkID++);
 			}
 
 			ImGui::EndPopup();
 		}
-	}
-
-	void addLinkData(std::shared_ptr<fq::game_module::LinkData> tourLink, std::shared_ptr<fq::game_module::LinkData> link, std::string addLinkName)
-	{
-		for (auto& childLink : tourLink->GetChildrenLinkData())
-		{
-			addLinkData(childLink.second, link, addLinkName);
-		}
-
-		if (tourLink == link)
-		{
-			return;
-		}
-
-		std::shared_ptr<fq::game_module::LinkData> moveLink = tourLink->GetChildLinkData(addLinkName);
-
-		if (moveLink != nullptr)
-		{
-			link->AddChildLinkData(addLinkName, tourLink->GetChildLinkData(addLinkName));
-			return;
-		}
-	}
-
-	void removeLinkData(std::shared_ptr<fq::game_module::LinkData> tourLink, std::shared_ptr<fq::game_module::LinkData> link, std::string removeLinkName)
-	{
-		for (auto& childLink : tourLink->GetChildrenLinkData())
-		{
-			removeLinkData(childLink.second, link, removeLinkName);
-		}
-
-		if (tourLink == link)
-		{
-			return;
-		}
-
-		tourLink->RemoveChildLinkData(removeLinkName);
 	}
 
 	void ArticulationHierarchy::dragDropLinkBar(std::shared_ptr<fq::game_module::LinkData> link)
@@ -390,11 +324,9 @@ namespace fq::game_engine
 					}
 				}
 
-				addLinkData(mArticulationData->GetRootLinkData().lock(), link, dropLink->GetBoneName());
-				removeLinkData(mArticulationData->GetRootLinkData().lock(), link, dropLink->GetBoneName());
+				//for ()
+				
 			}
-
-			ImGui::EndDragDropTarget();
 		}
 	}
 

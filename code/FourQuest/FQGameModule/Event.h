@@ -14,8 +14,6 @@ namespace fq::game_module
 	class Camera;
 	class Light;
 	class Animator;
-	class ArticulationData;
-	class LinkData;
 }
 
 namespace fq::event
@@ -203,16 +201,6 @@ namespace fq::event
 	{
 		unsigned int colliderID;
 		DirectX::SimpleMath::Vector3 input;
-	};
-
-	//////////////////////////////////////////////////////////////////////////
-	//							Articulation Event							// 
-	//////////////////////////////////////////////////////////////////////////
-
-	struct SelectLinkData
-	{
-		std::shared_ptr<fq::game_module::ArticulationData> articulationData;
-		std::shared_ptr<fq::game_module::LinkData> linkData;
 	};
 
 }
