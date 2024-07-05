@@ -3,14 +3,20 @@
 
 #include <directxtk/WICTextureLoader.h>
 #include <imgui.h>
+#include <spdlog/spdlog.h>
 
 #include "../FQCommon/FQPath.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/ThreadPool.h"
 #include "GameProcess.h"
 
 fq::game_engine::ImageSystem::ImageSystem()
 	:mGameProcess(nullptr)
-	,mEditorProcess(nullptr)
+	, mEditorProcess(nullptr)
+	, mDevice(nullptr)
+	, mResourcePath{}
+	, mIconTexture{}
+	, mTextures{}
 {}
 
 fq::game_engine::ImageSystem::~ImageSystem()
@@ -43,12 +49,12 @@ void fq::game_engine::ImageSystem::loadIcon()
 
 	for (const Path& path : iconList)
 	{
-		auto* texture = LoadTexture(path);
+		auto* texture = loadTexture(path);
 		mIconTexture.insert({ path.filename() ,texture });
 	}
 }
 
-ID3D11ShaderResourceView* fq::game_engine::ImageSystem::LoadTexture(const Path& path)
+ID3D11ShaderResourceView* fq::game_engine::ImageSystem::loadTexture(const Path& path)const
 {
 	ID3D11ShaderResourceView* texture = nullptr;
 
@@ -106,13 +112,37 @@ void fq::game_engine::ImageSystem::DrawTextureImage(const Path& path, ImVec2 siz
 
 	if (iter == mTextures.end())
 	{
-		texture = LoadTexture(path);
+		std::unique_lock<std::shared_mutex> lock(mTexturesMutex);
 		mTextures.insert({ path, texture });
+
+		// ThreadPool 사용해보기
+		game_module::ThreadPool::GetInstance()->EnqueueJob([this, path]()
+			{
+				auto texture = loadTexture(path);
+
+				if (texture)
+				{
+					std::unique_lock<std::shared_mutex> lock(mTexturesMutex);
+					mTextures[path] = texture;
+;				}
+				else
+				{
+					spdlog::warn("image load failed -> {}" , path.string());
+				}
+			});
 	}
 	else
 	{
 		texture = iter->second;
 	}
 
-	ImGui::Image(texture, size);
+
+	if (texture)
+	{
+		ImGui::Image(texture, size);
+	}
+	else
+	{
+		ImGui::Image(GetIcon(L"load.png"), size);
+	}
 }

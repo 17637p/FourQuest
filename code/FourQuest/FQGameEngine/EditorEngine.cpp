@@ -43,6 +43,9 @@ void fq::game_engine::EditorEngine::Initialize()
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
 
+	// 쓰레드 풀 생성
+	fq::game_module::ThreadPool::Initialize();
+
 	// 윈도우 창 초기화 
 	mGameProcess->mWindowSystem->InitializeEditorType();
 
@@ -265,6 +268,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mEventManager->RemoveAllHandles();
 
 	fq::game_module::ObjectPool::Finalize();
+	fq::game_module::ThreadPool::Finalize();
 
 	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();
