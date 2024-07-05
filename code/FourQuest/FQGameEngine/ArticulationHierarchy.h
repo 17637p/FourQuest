@@ -54,46 +54,49 @@ namespace fq::game_engine
 		void beginBoneHierarchy();
 
 		/// <summary>
-		/// 게임오브젝트의 이름을 나타내는 바
+		/// 게임오브젝트(본)의 이름을 나타내는 바
 		/// </summary>
 		void beginGameObjectNameBar(fq::game_module::GameObject& object);
 
 		/// <summary>
-		/// 게임오브젝트를 나태내는 바
+		/// 게임오브젝트(본)를 나태내는 바
 		/// </summary>
 		/// <param name="object">정보를 표시하는 오브젝트</param>
 		void beginGameObjectBar(fq::game_module::GameObject& object);
 
 		/// <summary>
-		/// 관절의 계층구조를 표시하는 창
+		/// 관절의 계층구조(Articulation)를 표시하는 창
 		/// </summary>
 		void beginArticulationHierarchy();
 
 		/// <summary>
-		/// 
+		/// Articulation의 Link들을 표시하는 창
 		/// </summary>
 		void beginLinkDataBar(std::shared_ptr<fq::game_module::LinkData> link);
 
 		/// <summary>
-		/// 
+		/// Articulation의 Link의 이름을 표시하는 바
 		/// </summary>
 		void beginLinkDataNameBar(std::shared_ptr<fq::game_module::LinkData> link);
 
 		/// <summary>
-		/// 
+		/// 선택한 Link의 버튼을 관리하는 바
 		/// </summary>
 		void beginLinkSelectButton(std::shared_ptr<fq::game_module::LinkData> link);
 
 		/// <summary>
-		/// 
+		/// 자식 Link클 생성하는 팝업창
 		/// </summary>
 		void beginPopupContextWindow_HierarchyChild();
 
 		/// <summary>
-		/// 관절의 계층 구조에서 우클릭 하면 링크를 생성할지 나타나는 창
+		/// 관절의 계층 구조에서 우클릭 하면 링크를 생성할지 나타나는 팝업창
 		/// </summary>
 		void beginPopupContextItem_Link(std::shared_ptr<fq::game_module::LinkData> link);
 
+		/// <summary>
+		/// 
+		/// </summary>
 		void dragDropLinkBar(std::shared_ptr<fq::game_module::LinkData> link);
 
 
@@ -118,7 +121,7 @@ namespace fq::game_engine
 		std::shared_ptr<fq::game_module::LinkData> mSelectLinkData;
 
 		// 이벤트관련
-		fq::game_module::EventHandler mSelectObjectHandle;
+		fq::game_module::EventHandler mSelectLinkHandle;
 
 
 		unsigned int mLinkID;

@@ -8,6 +8,7 @@ namespace fq::game_module
 		: mArticulationInfo()
 		, mRootLinkData(std::make_shared<LinkData>())
 	{
+		mRootLinkData->SetBoneName("Root");
 	}
 
 	ArticulationData::~ArticulationData()
