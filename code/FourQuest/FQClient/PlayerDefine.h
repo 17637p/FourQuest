@@ -1,5 +1,6 @@
 #pragma once
 
+
 namespace fq::client
 {
 	/// <summary>
@@ -23,6 +24,11 @@ namespace fq::client
 		ESoulType SoulType; // øµ»•≈∏¿‘
 	};
 
+	enum class PlayerType
+	{
+		Soul,
+		LivingArmour
+	};
 
 
 }

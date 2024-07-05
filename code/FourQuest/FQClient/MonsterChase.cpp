@@ -104,7 +104,6 @@ void fq::client::MonsterChase::rotateToTarget(fq::game_module::Animator& animato
 
 	// 플레이어 위치
 	fq::game_module::GameObject* target = monster->GetTarget().get();
-	fq::game_module::NavigationAgent* agent = animator.GetComponent<fq::game_module::NavigationAgent>();
 
 	DirectX::SimpleMath::Vector3 targetPosition = target->GetComponent<fq::game_module::Transform>()->GetWorldPosition();
 

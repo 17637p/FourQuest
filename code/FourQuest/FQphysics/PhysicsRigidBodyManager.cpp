@@ -253,7 +253,7 @@ namespace fq::physics
 		physx::PxTriangleMesh* pxTriangleMesh = triangleMesh.lock()->GetTriangleMesh();
 
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh), *pxMaterial);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 
@@ -273,7 +273,7 @@ namespace fq::physics
 		physx::PxHeightField* pxHeightField = heightField.lock()->GetHeightField();
 
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlags(physx::PxMeshGeometryFlag::eDOUBLE_SIDED), info.heightScale, info.rowScale, info.colScale), *pxMaterial);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxHeightFieldGeometry(pxHeightField, physx::PxMeshGeometryFlag::eDOUBLE_SIDED, info.heightScale, info.rowScale, info.colScale), *pxMaterial);
 
 		StaticRigidBody* rigidBody = SettingStaticBody(shape, info.colliderInfo, colliderType, collisionMatrix);
 		rigidBody->SetOffsetRotation(DirectX::SimpleMath::Matrix::CreateRotationZ(180.f / 180.f * 3.14f));
@@ -372,7 +372,7 @@ namespace fq::physics
 		physx::PxTriangleMesh* pxTriangleMesh = triangleMesh.lock()->GetTriangleMesh();
 
 		physx::PxMaterial* pxMaterial = mPhysics->createMaterial(info.colliderInfo.staticFriction, info.colliderInfo.dynamicFriction, info.colliderInfo.restitution);
-		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh), *pxMaterial);
+		physx::PxShape* shape = mPhysics->createShape(physx::PxTriangleMeshGeometry(pxTriangleMesh, physx::PxMeshScale(), physx::PxMeshGeometryFlag::eDOUBLE_SIDED), *pxMaterial);
 
 		DynamicRigidBody* rigidBody = SettingDynamicBody(shape, info.colliderInfo, colliderType, collisionMatrix, isKinematic);
 

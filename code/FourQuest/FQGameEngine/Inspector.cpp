@@ -911,6 +911,16 @@ void fq::game_engine::Inspector::beginAnimationController(const std::shared_ptr<
 					ImGui::EndCombo();
 				}
 
+				// AnyState 특별 처리 
+				if (transition.GetExitState() == "AnyState")
+				{
+					bool canTransitionToSelf = transition.CanTrasitionToSelf();
+					if (ImGui::Checkbox("CanTranstionToSelf", &canTransitionToSelf))
+					{
+						transition.SetCanTrasitionToSelf(canTransitionToSelf);
+					}
+				}
+
 				ImGui::Separator();
 				ImGui::Text("Conditions");
 

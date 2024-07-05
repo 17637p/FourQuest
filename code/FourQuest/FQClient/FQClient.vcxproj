@@ -30,9 +30,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="HpBar.h" />
     <ClInclude Include="MonsterAttack.h" />
     <ClInclude Include="MonsterChase.h" />
@@ -44,6 +46,12 @@
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
+    <ClInclude Include="PlantAttack.h" />
+    <ClInclude Include="PlantMonster.h" />
+    <ClInclude Include="PlantMonsterAttckState.h" />
+    <ClInclude Include="PlantMonsterDeadState.h" />
+    <ClInclude Include="PlantMonsterIdleState.h" />
+    <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerAttackState.h" />
     <ClInclude Include="PlayerDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
@@ -58,6 +66,7 @@
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="MonsterAttack.cpp" />
     <ClCompile Include="MonsterChase.cpp" />
@@ -68,6 +77,12 @@
     <ClCompile Include="MonsterFind.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
     <ClCompile Include="MonsterSpawner.cpp" />
+    <ClCompile Include="PlantAttack.cpp" />
+    <ClCompile Include="PlantMonster.cpp" />
+    <ClCompile Include="PlantMonsterAttckState.cpp" />
+    <ClCompile Include="PlantMonsterDeadState.cpp" />
+    <ClCompile Include="PlantMonsterIdleState.cpp" />
+    <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerAttackState.cpp" />
     <ClCompile Include="PlayerDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
