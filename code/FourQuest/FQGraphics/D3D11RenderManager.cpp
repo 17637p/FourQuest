@@ -196,4 +196,21 @@ namespace fq::graphics
 				break;
 		}
 	}
+
+	void D3D11RenderManager::SetLightProbe(bool isSetLightProbe)
+	{
+		switch (mPipelineType)
+		{
+			case fq::graphics::EPipelineType::Forward:
+				return mForwardPipeline->SetLightProbe(isSetLightProbe);
+				break;
+			case fq::graphics::EPipelineType::Deferred:
+				//return mDeferredPipeline->SetLightProbe(isSetLightProbe);
+				break;
+			default:
+				assert(false);
+				break;
+		}
+	}
 }
+

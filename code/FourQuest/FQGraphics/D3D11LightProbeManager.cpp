@@ -2,6 +2,7 @@
 
 #include <DirectXTex.h>
 #include <directxtk/DDSTextureLoader.h>
+#include <fstream>
 
 #include "d3d11resourceManager.h"
 #include "D3D11View.h"
@@ -15,6 +16,7 @@ fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
 	mResourceManager(nullptr),
 	mCubeProbeIndex(0),
 	mLightProbeIndex(0),
+	mLightProbeSize(0),
 	mCubeProbes{},
 	mLightProbes{},
 	mTetrahedrons{}
@@ -98,6 +100,188 @@ std::vector<CubeProbe*> fq::graphics::D3D11LightProbeManager::GetCubeProbes() co
 	return mCubeProbes;
 }
 
+DirectX::SimpleMath::Vector3 D3D11LightProbeManager::GetLightProbePosition(int lightProbeIndex)
+{
+	return mLightProbes[mLightProbePair[lightProbeIndex]]->position;
+}
+
+bool D3D11LightProbeManager::LoadLightProbes(const std::string& fileName)
+{
+	if (mLightProbeSize != 0)
+	{
+		ClearAllLightProbe();
+		ClearAllTetrahedron();
+	}
+
+	std::ifstream lightProbeFile("./resource/LightProbe/" + fileName + ".Ltp");
+
+	if (lightProbeFile.is_open())
+	{
+		lightProbeFile >> mLightProbeSize;
+
+		// Write LightProbe
+		for (int i = 0; i < mLightProbeSize; i++)
+		{
+			LightProbe* newLightProbe = new LightProbe;
+
+			lightProbeFile >> newLightProbe->position.x;
+			lightProbeFile >> newLightProbe->position.y;
+			lightProbeFile >> newLightProbe->position.z;
+
+			for (int j = 0; j < 27; j++)
+			{
+				lightProbeFile >> newLightProbe->coefficient[j];
+			}
+
+			mLightProbes.push_back(newLightProbe);
+		}
+
+		// Tetrahedron Size
+		int tetSize = -1;
+		lightProbeFile >> tetSize;
+
+		// Write Tetrahedron 
+		for (int i = 0; i < tetSize; i++)
+		{
+			Tetrahedron* newTetrahedron = new Tetrahedron;
+			// probe index
+			for (int j = 0; j < 4; j++)
+			{
+				int probeIndex = -1;
+
+				lightProbeFile >> probeIndex;
+				newTetrahedron->probes[j] = mLightProbes[probeIndex];
+				//newTetrahedron->probes[j]->index;
+			}
+
+			// neighbors
+			for (int j = 0; j < 4; j++)
+			{
+				lightProbeFile >> newTetrahedron->neighbors[j];
+			}
+
+			// Matrix
+			for (int j = 0; j < 3; j++)
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					lightProbeFile >> newTetrahedron->matrix.m[j][k];
+				}
+			}
+
+			mTetrahedrons.push_back(newTetrahedron);
+		}
+
+		lightProbeFile.close();
+
+		return true;
+	}
+	else
+	{
+		// 읽지 못함
+		//spdlog::error("NavMesh File Can't Load");
+
+		return false;
+	}
+}
+
+void D3D11LightProbeManager::SaveLightProbes(const std::string& fileName)
+{
+	if (mLightProbeSize < 3)
+	{
+		//spdlog::error("Not Exist Navigation Mesh");
+		return;
+	}
+
+	std::string line;
+	std::ofstream lightProbeFile("./resource/LightProbe/" + fileName + ".Ltp");
+	if (lightProbeFile.is_open())
+	{
+		// LightProbeSize
+		lightProbeFile << mLightProbeSize << "\n";
+
+		// Write LightProbe
+		for (int i = 0; i < mLightProbeSize; i++)
+		{
+			lightProbeFile << mLightProbes[i]->position.x << " ";
+			lightProbeFile << mLightProbes[i]->position.y << " ";
+			lightProbeFile << mLightProbes[i]->position.z << "\n";
+
+			for (int j = 0; j < 27; j++)
+			{
+				lightProbeFile << mLightProbes[i]->coefficient[j] << " ";
+			}
+			lightProbeFile << "\n";
+		}
+
+		// Tetrahedron Size
+		lightProbeFile << mTetrahedrons.size() << "\n";
+
+		// Write Tetrahedron 
+		for (int i = 0; i < mTetrahedrons.size(); i++)
+		{
+			// probe index
+			for (int j = 0; j < 4; j++)
+			{
+				lightProbeFile << mTetrahedrons[i]->probes[j]->index << " ";
+			}
+			lightProbeFile << "\n";
+
+			// neighbors
+			for (int j = 0; j < 4; j++)
+			{
+				lightProbeFile << mTetrahedrons[i]->neighbors[j] << " ";
+			}
+			lightProbeFile << "\n";
+
+			// Matrix
+			for (int j = 0; j < 3; j++)
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					lightProbeFile << mTetrahedrons[i]->matrix.m[j][k] << " ";
+				}
+			}
+			lightProbeFile << "\n";
+		}
+
+		lightProbeFile.close();
+	}
+	else
+	{
+		// 파일 오픈 불가
+		//spdlog::error("NavMesh File Can't write");
+	}
+
+	// 성공
+	//spdlog::info("Navigation Mesh Save Successful");
+}
+
+void D3D11LightProbeManager::ClearAllTetrahedron()
+{
+	for (int i = 0; i < mTetrahedrons.size(); i++)
+	{
+		delete mTetrahedrons[i];
+	}
+	mTetrahedrons.clear();
+}
+
+void D3D11LightProbeManager::ClearAllLightProbe()
+{
+	for (int i = 0; i < mLightProbeSize; i++)
+	{
+		delete mLightProbes[i];
+	}
+	mLightProbes.clear();
+	mLightProbeIndex = 0;
+	mLightProbeSize = 0;
+}
+
+int D3D11LightProbeManager::GetLightProbesSize()
+{
+	return mLightProbeSize;
+}
+
 void D3D11LightProbeManager::lerpLightProbe(Tetrahedron* tet, const DirectX::SimpleMath::Vector4& weights, float* r, float* g, float* b)
 {
 	for (int i = 0; i < 9; i++)
@@ -146,7 +330,7 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 	float* g = new float[9];
 	float* b = new float[9];
 
-	for (int i = 0; i < mLightProbes.size(); i++)
+	for (int i = 0; i < mLightProbeSize; i++)
 	{
 		auto cubeMap = mResourceManager->Create<D3D11Texture>(L"LightProbe" + std::to_wstring(i) + L".dds");
 
@@ -178,7 +362,15 @@ std::vector<LightProbe*> D3D11LightProbeManager::GetLightProbes() const
 
 void D3D11LightProbeManager::DeleteLightProbe(int index)
 {
-	mLightProbes[index]->index = -1;
+	// 삭제하기
+	int deleteIndex = mLightProbePair[index];
+	delete mLightProbes[deleteIndex];
+	mLightProbeSize--;
+
+	// 삭제하고 맨 뒤에 있던 라이트 프로브를 그 자리에 넣어주기
+	mLightProbes[deleteIndex] = mLightProbes[mLightProbeSize];
+	mLightProbePair[mLightProbeSize] = deleteIndex;
+	mLightProbes[deleteIndex]->index = deleteIndex;
 }
 
 int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
@@ -186,20 +378,24 @@ int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& po
 	LightProbe* newLightProbe = new LightProbe;
 
 	newLightProbe->position = position;
-	newLightProbe->index = mLightProbeIndex;
+	newLightProbe->index = mLightProbeSize;
 
+	mLightProbePair[mLightProbeIndex] = mLightProbeSize;
 	mLightProbes.push_back(newLightProbe);
 
 	mLightProbeIndex++;
+	mLightProbeSize++;
 
 	return mLightProbeIndex;
 }
 
 void D3D11LightProbeManager::MakeTetrahedron()
 {
+	ClearAllTetrahedron();
+
 	tetgenio in, out;
 	// 삭제한 것 처리하고 해야됨
-	in.numberofpoints = mLightProbes.size();
+	in.numberofpoints = mLightProbeSize;
 
 	in.pointlist = new REAL[in.numberofpoints * 3];
 	for (int i = 0; i < in.numberofpoints; i++)

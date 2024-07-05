@@ -19,10 +19,9 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 position;
 	};
 
-	// -1이면 유효하지 않은 라이트 프로브
 	struct LightProbe
 	{
-		int index;
+		int index; // 저장했다가 불러올 때 필요
 		DirectX::SimpleMath::Vector3 position;
 
 		float coefficient[27]; // 0~8 Red, 9~17 Green, 18~26 Blue
@@ -59,6 +58,9 @@ namespace fq::graphics
 
 		std::vector<CubeProbe*> GetCubeProbes() const;
 		std::vector<LightProbe*> GetLightProbes() const;
+		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
+		int GetLightProbesSize();
+		DirectX::SimpleMath::Vector3 GetLightProbePosition(int lightProbeIndex);
 
 		std::wstring SaveProbe1DirectionTexture(const int index, const std::wstring& direction); //return path Name
 		void BakeAllLightProbeCoefficient();
@@ -68,6 +70,13 @@ namespace fq::graphics
 		int GetTetIndex(int& tetIndex, const DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector4& weights);
 
 		void GetCoefficientTetrahedronWeight(const DirectX::SimpleMath::Vector4& weights, int TetIndex, float* r, float* g, float* b/*(27)*/);
+
+		void ClearAllTetrahedron();
+		void ClearAllLightProbe();
+
+		void SaveLightProbes(const std::string& fileName);
+		// position 정보만 담긴 probe 정보를 넘김
+		bool LoadLightProbes(const std::string& fileName);
 
 		//void GetBarycentricCoordinates(const std::vector<DirectX::SimpleMath::Vector3> vertices, const std::vector<DirectX::SimpleMath::Vector3>& hullRays,
 		//	const DirectX::SimpleMath::Vector3& p, const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords, float& t);
@@ -96,9 +105,11 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
 		int mCubeProbeIndex;
-		int mLightProbeIndex;
+		int mLightProbeIndex; // 현재까지 만들어진 lightProbe 5개에서 1개 삭제돼도 5
+		int mLightProbeSize; // 지금 가지고 있는 Lightprobe 개수 위의 경우 4
 		std::vector<CubeProbe*> mCubeProbes;
 		std::vector<LightProbe*> mLightProbes;
+		std::unordered_map<int, int> mLightProbePair; // 게임 엔진에서 가지고 있는 라이트 프로브 인덱스를 실제 라이트 프로브 인덱스와 연결해주는 것
 		std::vector<Tetrahedron*> mTetrahedrons;
 	};
 }

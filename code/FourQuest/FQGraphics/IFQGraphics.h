@@ -125,7 +125,11 @@ extern "C" {
 
 			// Light Probe
 			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;
+			virtual FQ_GRAPHICS void DeleteLightProbe(int index) abstract;
 			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
+
+			virtual FQ_GRAPHICS void SaveLightProbes(const std::string& fileName) abstract;
+			virtual FQ_GRAPHICS void LoadLightProbes(const std::string& fileName) abstract;
 
 			virtual FQ_GRAPHICS unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) abstract;
 			virtual FQ_GRAPHICS void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) abstract;

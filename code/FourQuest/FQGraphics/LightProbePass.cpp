@@ -71,7 +71,12 @@ void fq::graphics::LightProbePass::Finalize()
 
 void fq::graphics::LightProbePass::Render()
 {
-	if (!isSetProbe)
+	// Init
+	{
+		mLightProbeIrrRTV->Clear(mDevice, { 0,0,0,1 });
+	}
+
+	if (!mIsSetLightProbe)
 	{
 		return;
 	}
@@ -82,11 +87,6 @@ void fq::graphics::LightProbePass::Render()
 		sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 		sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 		mSceneTransformCB->Update(mDevice, sceneTransform);
-	}
-
-	// Init
-	{
-		mLightProbeIrrRTV->Clear(mDevice, { 0,0,0,1 });
 	}
 
 	// Bind
@@ -152,7 +152,7 @@ void fq::graphics::LightProbePass::OnResize(unsigned short width, unsigned short
 	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
 }
 
-void fq::graphics::LightProbePass::SetLightProbe(const std::wstring& texturePaths)
+void fq::graphics::LightProbePass::SetLightProbe(bool isSetLightProbe)
 {
-	isSetProbe = true;
+	mIsSetLightProbe = isSetLightProbe;
 }

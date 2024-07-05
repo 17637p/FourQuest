@@ -19,7 +19,7 @@ namespace fq::graphics
 		void OnResize(unsigned short width, unsigned short height) override;
 		void Render() override;
 
-		void SetLightProbe(const std::wstring& texturePaths);
+		void SetLightProbe(bool isSetLightProbe);
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
@@ -42,8 +42,9 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>> mLightProbeCB;
 
-		bool isSetProbe = false;
 		std::shared_ptr<D3D11Texture> mProbeTexture;
+
+		bool mIsSetLightProbe;
 
 		float* r;
 		float* g;

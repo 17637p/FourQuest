@@ -60,6 +60,7 @@ namespace fq::graphics
 
 		void SetSkyBox(const std::wstring& path);
 		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
+		void SetLightProbe(bool isSetLightProbe);
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;
 
 	private:

@@ -113,6 +113,15 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	lightProbePositions.push_back({ 0, 2, 1 });
 	lightProbePositions.push_back({ 0, 2, - 1 });
 
+	lightProbePositions.push_back({ 1, 1, 1 });
+	lightProbePositions.push_back({ -1, 1, 1 });
+	lightProbePositions.push_back({ -1, 1, -1 });
+	lightProbePositions.push_back({ 1, 1, -1 });
+	lightProbePositions.push_back({ 1, 2, 1 });
+	lightProbePositions.push_back({ -1,2, 1 });
+	lightProbePositions.push_back({ -1, 2, -1 });
+	lightProbePositions.push_back({ 1, 2, -1 });
+
 	//lightProbePositions.push_back({ 5, -1, 0 });
 	//lightProbePositions.push_back({ -5, -1, 0 });
 	//lightProbePositions.push_back({ 0, -1, 5 });
@@ -276,6 +285,18 @@ void TerrainDemo::Update()
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
 		mTestGraphics->BakeLightProbe();
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('O'))
+	{
+		mTestGraphics->DeleteLightProbe(3);
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('N'))
+	{
+		mTestGraphics->SaveLightProbes("lightProbe");
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('M'))
+	{
+		mTestGraphics->LoadLightProbes("lightProbe");
 	}
 
 	mTestGraphics->UpdateCamera(mCameraTransform);

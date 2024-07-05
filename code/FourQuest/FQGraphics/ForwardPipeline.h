@@ -38,6 +38,7 @@ namespace fq::graphics
 			unsigned short height);
 
 		void SetSkyBox(const std::wstring& path);
+		void SetLightProbe(bool isSetLightProbe);
 
 	private:
 		std::shared_ptr<class ShadowPass> mShadowPass;

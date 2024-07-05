@@ -62,16 +62,19 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mTerrainPass);
-		mPasses.push_back(mLightProbePass);
-		mPasses.push_back(mLightProbeAddPass);
-		mPasses.push_back(mOutLineAddPass);
+		//if (mIsSetLightProbe)
+		{
+			mPasses.push_back(mLightProbePass);
+			mPasses.push_back(mLightProbeAddPass);
+			mPasses.push_back(mOutLineAddPass);
+		}
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mParticlePass);
 		mPasses.push_back(mSingleColorPass);
 		mPasses.push_back(mOutLinePass);
 		mPasses.push_back(mOutLineBlurPass);
-		//mPasses.push_back(mOutLineAddPass);
+		mPasses.push_back(mOutLineAddPass);
 
 		mFullScreenLastPass = mFullScreenPass;
 	}
@@ -79,7 +82,10 @@ namespace fq::graphics
 	void ForwardPipeline::SetSkyBox(const std::wstring& path)
 	{
 		mSkyBoxPass->SetSkyBox(path);
-		mLightProbePass->SetLightProbe(L"./resource/example/texture/custom1.dds");
-		//mLightProbePass->SetLightProbe(L"./resource/example/texture/custom1.dds");
+	}
+
+	void ForwardPipeline::SetLightProbe(bool isSetLightProbe)
+	{
+		mLightProbePass->SetLightProbe(isSetLightProbe);
 	}
 }
