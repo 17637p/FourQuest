@@ -318,14 +318,12 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 	}
 
 	// AnimatorController 로드 요청
-
 	bool check = mGameProcess->mAnimationSystem->LoadAnimatorController(object);
 
 	if (!check) return;
 
-	// 애니메이션 리소스 데이터 바인딩
 	auto animator = object->GetComponent<fq::game_module::Animator>();
-	auto nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
+	auto nodeHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
 
 	// 자식 계층의 메쉬들을 연결합니다.
 	for (auto& child : object->GetChildren())
@@ -341,7 +339,6 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 		}
 	}
 }
-
 
 void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 {

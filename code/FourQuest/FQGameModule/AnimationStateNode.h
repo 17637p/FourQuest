@@ -50,8 +50,13 @@ namespace fq::game_module
 		void SetDuration(float val) { mDuration = val; }
 		bool IsLoof() const { return mbIsLoof; }
 		void SetLoof(bool val) { mbIsLoof = val; }
+
+		// 局聪皋捞记 府家胶 包访
 		void SetAnimation(std::shared_ptr<fq::graphics::IAnimation> animation) { mAnimation = animation; }
-		std::shared_ptr<fq::graphics::IAnimation> GetAnimation() { return mAnimation; }
+		fq::graphics::IAnimation& GetAnimation() { return *mAnimation; }
+		std::shared_ptr<fq::graphics::IAnimation> GetSharedAnimation() { return mAnimation; }
+		const std::shared_ptr<fq::graphics::IAnimation>& GetSharedRefAnimation() { return mAnimation; }
+		bool GetHasAnimation() { return mAnimation != nullptr; }
 
 		StateBehaviourMap& GetStateBehaviourMap() { return mBehaviours; }
 		const StateBehaviourMap& GetStateBehaviourMap() const { return mBehaviours; }

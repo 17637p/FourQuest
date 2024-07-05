@@ -32,11 +32,8 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 
 	auto& graphics = mGameProcess->mGraphics;
 	const auto& model = graphics->CreateModelResource(modelPath.string(), texturePath);
-	auto boneHierarchy = graphics->GetNodeHierarchyByModelPathOrNull(modelPath.string());
-	auto boneHierarchyCache = boneHierarchy->CreateNodeHierarchyInstance();
 
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> modelObjects;
-
 
 	// StaticMesh 생성
 	for (const auto& [node, mesh] : model.Meshes)
@@ -75,32 +72,37 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			continue;
 		}
 
-		// 재질 래퍼런스 받기
-		std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces;
-		materialInterfaces.reserve(mesh.Subsets.size());
+		// 재질 데이터 저장
+		std::vector<std::string> materialNames;
+		materialNames.reserve(mesh.Subsets.size());
 		fq::graphics::MeshObjectInfo meshObjectInfo;
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(modelPath.string(), subset.MaterialName);
-			materialInterfaces.push_back(materialInterface);
+			materialNames.push_back(subset.MaterialName);
 		}
 
 		// StaticMeshObject 생성
 		if (mesh.BoneVertices.empty())
 		{
 			auto& staticMeshRenderer = nodeObject->AddComponent<fq::game_module::StaticMeshRenderer>();
-			std::shared_ptr < fq::graphics::IStaticMesh> meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(modelPath.string(), mesh.Name);
-			fq::graphics::IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
-			staticMeshRenderer.SetStaticMeshObject(iStaticMeshObject);
+			//std::shared_ptr < fq::graphics::IStaticMesh> meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(modelPath.string(), mesh.Name);
+			//fq::graphics::IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
+			//staticMeshRenderer.SetStaticMeshObject(iStaticMeshObject);
+			staticMeshRenderer.SetModelPath(modelPath.string());
+			staticMeshRenderer.SetMaterials(materialNames);
+			staticMeshRenderer.SetMeshName(mesh.Name);
 		}
 		else // SkinnedMeshObject 생성
 		{
 			auto& skinnedMeshRenderer = nodeObject->AddComponent<fq::game_module::SkinnedMeshRenderer>();
-			std::shared_ptr<fq::graphics::ISkinnedMesh> meshInterface = mGameProcess->mGraphics->GetSkinnedMeshByModelPathOrNull(modelPath.string(), mesh.Name);
-			fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
-			iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
-			skinnedMeshRenderer.SetSkinnedMeshObject(iSkinnedMeshObject);
+			//std::shared_ptr<fq::graphics::ISkinnedMesh> meshInterface = mGameProcess->mGraphics->GetSkinnedMeshByModelPathOrNull(modelPath.string(), mesh.Name);
+			//fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
+			//iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
+			//skinnedMeshRenderer.SetSkinnedMeshObject(iSkinnedMeshObject);
+			skinnedMeshRenderer.SetModelPath(modelPath.string());
+			skinnedMeshRenderer.SetMaterials(materialNames);
+			skinnedMeshRenderer.SetMeshName(mesh.Name);
 		}
 	}
 

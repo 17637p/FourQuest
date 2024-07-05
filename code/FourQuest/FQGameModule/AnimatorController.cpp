@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <spdlog/spdlog.h>
+#include <cassert>
 
 #include "Animator.h"
 #include "Scene.h"
@@ -365,18 +366,32 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 	return mNextState->first;
 }
 
+fq::graphics::IAnimation& fq::game_module::AnimatorController::GetNextStateAnimation() const
+{
+	assert(mNextState != mStates.end());
+	return mNextState->second.GetAnimation();
+}
 
-std::shared_ptr<fq::graphics::IAnimation> fq::game_module::AnimatorController::GetNextStateAnimationOrNull() const
+std::shared_ptr<fq::graphics::IAnimation> fq::game_module::AnimatorController::GetSharedNextStateAnimationOrNull() const
 {
 	if (mNextState == mStates.end())
 	{
 		return nullptr;
 	}
 
-	return mNextState->second.GetAnimation();
+	return mNextState->second.GetSharedAnimation();
 }
 
+const std::shared_ptr<fq::graphics::IAnimation>& fq::game_module::AnimatorController::GetSharedRefNextStateAnimation() const
+{
+	assert(mNextState != mStates.end());
+	return mNextState->second.GetSharedRefAnimation();
+}
 
+bool fq::game_module::AnimatorController::GetHasNextStateAnimation() const
+{
+	return mNextState != mStates.end() && mNextState->second.GetHasAnimation();
+}
 
 fq::game_module::AnimatorController::TransitionIterator fq::game_module::AnimatorController::checkStateTransition(const StateName& name)
 {
@@ -432,36 +447,10 @@ void fq::game_module::AnimatorController::emitChangeState()
 		// Entry는 바로 전환합니다 
 		if (mCurrentState->first == "Entry")
 		{
-			;
 			mCurrentState = mNextState;
 			mNextState = mStates.end();
 			isBlend = false;
-
-			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-				isBlend,
-				mCurrentState->second.GetAnimation(),
-				nullptr,
-				mAnimator
-				});
 		}
-		else
-		{
-			eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-				isBlend,
-				mCurrentState->second.GetAnimation(),
-				mNextState->second.GetAnimation(),
-				mAnimator
-				});
-		}
-	}
-	else
-	{
-		eventMgr->FireEvent<fq::event::ChangeAnimationState>({
-			isBlend,
-			mCurrentState->second.GetAnimation(),
-			nullptr,
-			mAnimator
-			});
 	}
 }
 

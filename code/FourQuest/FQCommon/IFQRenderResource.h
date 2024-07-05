@@ -86,8 +86,8 @@ extern "C" {
 		{
 		public:
 			virtual FQ_GRAPHICS void SetBindPose() abstract;
-			virtual FQ_GRAPHICS void Update(float timePos, std::shared_ptr<IAnimation> animation) abstract;
-			virtual FQ_GRAPHICS void Update(float lhsTimePos, std::shared_ptr<IAnimation> lhsAnimation, float rhsTimePos, std::shared_ptr<IAnimation> rhsAnimation, float weight) abstract;
+			virtual FQ_GRAPHICS void Update(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
+			virtual FQ_GRAPHICS void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
 
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchy() const abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;

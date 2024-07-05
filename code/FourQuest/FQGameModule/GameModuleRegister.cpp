@@ -686,10 +686,11 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ControllerPath")
 		.prop(fq::reflect::prop::DragDrop, ".controller")
 		.prop(fq::reflect::prop::RelativePath)
-		.data<&Animator::SetModelPath, &Animator::GetModelPath>("ModelPath"_hs)
+		.data<&Animator::SetNodeHierarchyModelPath, &Animator::GetNodeHierarchyModelPath>("NodeHierarchyModelPath"_hs)
 		.prop(fq::reflect::prop::Comment, u8"애니메이션 처리 시 참조할 본 계층 구조")
 		.prop(fq::reflect::prop::DragDrop, ".model")
-		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::Name, "NodeHierarchyModelPath")
+		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 
 	entt::meta<LogStateBehaviour>()

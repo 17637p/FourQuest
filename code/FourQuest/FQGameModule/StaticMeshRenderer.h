@@ -49,7 +49,7 @@ namespace fq::game_module
 		/// 메쉬 이름을 반환합니다
 		/// </summary>
 		/// <returns></returns>
-		std::string GetMeshName()const { return mModelPath; }
+		std::string GetMeshName()const { return mMeshName; }
 
 		/// <summary>
 		/// 메쉬 이름을 설정합니다
@@ -73,7 +73,7 @@ namespace fq::game_module
 		/// 메쉬정보를 설정합니다
 		/// </summary>
 		/// <param name="info">메쉬 정보</param>
-		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info) { mMeshInfomation = std::move(info); }
+		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info) { mMeshInfomation = std::move(info); if (mStaticMeshObject != nullptr) { mStaticMeshObject->SetMeshObjectInfo(mMeshInfomation); } }
 
 		/// <summary>
 		/// 메쉬정보를 반환합니다

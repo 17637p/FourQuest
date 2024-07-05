@@ -133,7 +133,7 @@ namespace fq::graphics
 		std::fill(mTransposedFinalTransforms.begin(), mTransposedFinalTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
 	}
 
-	void NodeHierarchyInstance::Update(float timePos, std::shared_ptr<IAnimation> animation)
+	void NodeHierarchyInstance::Update(float timePos, const std::shared_ptr<IAnimation>& animation)
 	{
 		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
 		const auto& animationCache = nodeHierarchy->GetAnimationCaches();
@@ -193,7 +193,7 @@ namespace fq::graphics
 
 		calculateRootTransform();
 	}
-	void NodeHierarchyInstance::Update(float lhsTimePos, std::shared_ptr<IAnimation> lhsAnimation, float rhsTimePos, std::shared_ptr<IAnimation> rhsAnimation, float weight)
+	void NodeHierarchyInstance::Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight)
 	{
 		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
 		const auto& animationCache = nodeHierarchy->GetAnimationCaches();
