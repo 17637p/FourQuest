@@ -5,6 +5,7 @@
 #include "PlantAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
+#include "GameManager.h"
 
 fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)

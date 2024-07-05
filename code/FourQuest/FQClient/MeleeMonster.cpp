@@ -31,3 +31,18 @@ void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 {
 
 }
+
+void fq::client::MeleeMonster::OnStart()
+{
+
+}
+
+void fq::client::MeleeMonster::EmitAttack()
+{
+
+}
+
+void fq::client::MeleeMonster::LookAtTarget()
+{
+
+}

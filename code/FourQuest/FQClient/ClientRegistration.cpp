@@ -24,6 +24,14 @@
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
 
+// MeleeMonster
+#include "MeleeMonster.h"
+#include "MeleeMonsterIdleState.h"
+#include "MeleeMonsterAttackState.h"
+#include "MeleeMonsterChaseState.h"
+#include "MeleeMonsterPatrolState.h"
+#include "MeleeMonsterDeadState.h"
+
 // PlantMoster
 #include "PlantMonster.h"
 #include "PlantAttack.h"
@@ -209,6 +217,57 @@ void fq::client::RegisterMetaData()
 	entt::meta<MonsterDie>()
 		.type("MonsterDie"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterDie")
+		.base<fq::game_module::IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             근접 몬스터 	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MeleeMonster>()
+		.type("MeleeMonster"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonster")
+		.prop(reflect::prop::Label, "Monster")
+		.data<&MeleeMonster::mHp>("Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Hp")
+		.data<&MeleeMonster::mAttackPower>("AttackPower"_hs)
+		.prop(fq::reflect::prop::Name, "AttackPower")
+		.data<&MeleeMonster::mAcceleration>("Acceleration"_hs)
+		.prop(fq::reflect::prop::Name, "Acceleration")
+		.data<&MeleeMonster::mMoveSpeed>("MoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.data<&MeleeMonster::mAttackRange>("AttackRange"_hs)
+		.prop(fq::reflect::prop::Name, "AttackRange")
+		.data<&MeleeMonster::mAttackPrefab>("AttackPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "AttackPrefab")
+		.base<fq::game_module::Component>();
+	
+	//////////////////////////////////////////////////////////////////////////
+	//                             근접 몬스터 상태  							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MeleeMonsterIdleState>()
+		.type("MeleeMonsterIdleState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterIdleState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterAttackState>()
+		.type("MeleeMonsterAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterAttackState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterChaseState>()
+		.type("MeleeMonsterChaseState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterChaseState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterPatrolState>()
+		.type("MeleeMonsterPatrolState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterPatrolState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterDeadState>()
+		.type("MeleeMonsterDeadState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterDeadState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

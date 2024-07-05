@@ -18,22 +18,29 @@ namespace fq::client
 
 		void SetTarget(game_module::GameObject* target) override;
 
+		void EmitAttack();
+
+		void LookAtTarget();
+
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+		void OnStart()override;
 
 	private:
 		GameManager* mGameManager;
+		fq::game_module::Animator* mAnimator;
 		std::shared_ptr<game_module::GameObject> mTarget;
 
 		float mMaxHp;
 		float mHp;
-		float mAttakPower;
+		float mAttackPower;
 		float mMoveSpeed;
 		float mAcceleration;
 		float mAttackRange;
 
-		fq::game_module::PrefabResource mAttack;
+		fq::game_module::PrefabResource mAttackPrefab;
 
 		friend void RegisterMetaData();
 	};

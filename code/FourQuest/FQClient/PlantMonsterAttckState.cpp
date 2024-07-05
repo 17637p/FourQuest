@@ -22,7 +22,7 @@ void fq::client::PlantMonsterAttckState::OnStateEnter(game_module::Animator& ani
 	// 아웃라인 변경
 	for (auto mesh : animator.GetSkinnedMeshs())
 	{
-		mesh->GetSkinnedMeshObject()->SetOutlineColor({ 1.f,0.f,0.f,1.f });
+		mesh->GetSkinnedMeshObject()->SetOutlineColor({ 0.f,1.f,0.f,1.f });
 	}
 
 	mElapsedTime = 0.f;

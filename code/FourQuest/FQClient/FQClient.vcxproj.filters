@@ -60,9 +60,6 @@
     <Filter Include="src\02.Monster\Prototype">
       <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\02.Monster\Prototype">
-      <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.Monster\Melee">
       <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
     </Filter>
@@ -74,6 +71,9 @@
     </Filter>
     <Filter Include="src\02.Monster\Plant">
       <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Prototype">
+      <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -161,23 +161,32 @@
     <ClInclude Include="Monster.h">
       <Filter>include\02.Monster\Prototype</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterGroup.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterSpawner.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="IMonster.h">
       <Filter>include\02.Monster</Filter>
     </ClInclude>
     <ClInclude Include="PlantAttack.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
+    <ClInclude Include="PlantMonster.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterIdleState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterPatrolState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterChaseState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterAttackState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
     <ClInclude Include="MeleeMonster.h">
       <Filter>include\02.Monster\Melee</Filter>
     </ClInclude>
-    <ClInclude Include="PlantMonster.h">
-      <Filter>include\02.Monster\Plant</Filter>
+    <ClInclude Include="MeleeMonsterDeadState.h">
+      <Filter>include\02.Monster\Melee</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -253,9 +262,6 @@
     <ClCompile Include="Monster.cpp">
       <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterGroup.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
     <ClCompile Include="MonsterSpawner.cpp">
       <Filter>src\02.Monster</Filter>
     </ClCompile>
@@ -265,7 +271,22 @@
     <ClCompile Include="PlantAttack.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
+    <ClCompile Include="MeleeMonsterIdleState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterPatrolState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterChaseState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterAttackState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
     <ClCompile Include="MeleeMonster.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterDeadState.cpp">
       <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
   </ItemGroup>
