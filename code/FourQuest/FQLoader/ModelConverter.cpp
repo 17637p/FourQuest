@@ -360,7 +360,7 @@ namespace fq::loader
 		}
 
 		DirectX::BoundingBox::CreateFromPoints(resultMesh.RenderBoundingBox, min, max);
-		DirectX::BoundingSphere::CreateFromBoundingBox(resultMesh.GetRenderBoundingSphere, resultMesh.RenderBoundingBox);
+		DirectX::BoundingSphere::CreateFromBoundingBox(resultMesh.RenderBoundingSphere, resultMesh.RenderBoundingBox);
 
 		return resultMesh;
 	}
@@ -410,6 +410,7 @@ namespace fq::loader
 					bone.NodeIndex = nodeIndex;
 					(*inoutMeshes)[nodeIndex].first.OffsetMatrix = DirectX::SimpleMath::Matrix(bonePtr->mOffsetMatrix[0]).Transpose();
 					bones.insert(bone);
+					mesh.Bones.push_back(bone);
 
 					for (unsigned int j = 0; j < bonePtr->mNumWeights; ++j)
 					{
@@ -437,8 +438,29 @@ namespace fq::loader
 					}
 				}
 
+				for (auto& boneVertex : boneVertices)
+				{
+					float weightSum = boneVertex.BoneWeights[0] +
+						boneVertex.BoneWeights[1] +
+						boneVertex.BoneWeights[2] +
+						boneVertex.BoneWeights[3];
+
+					if (weightSum < 1.f)
+					{
+						boneVertex.BoneWeights[0] *= (1.f / weightSum);
+						boneVertex.BoneWeights[1] *= (1.f / weightSum);
+						boneVertex.BoneWeights[2] *= (1.f / weightSum);
+						boneVertex.BoneWeights[3] *= (1.f / weightSum);
+					}
+				}
+
 				subset.AiMeshPtr = nullptr;
 				mesh.BoneVertices.insert(mesh.BoneVertices.end(), boneVertices.begin(), boneVertices.end());
+
+				for (const auto& bone : bones)
+				{
+					mesh.Bones.push_back(bone);
+				}
 			}
 		}
 	}

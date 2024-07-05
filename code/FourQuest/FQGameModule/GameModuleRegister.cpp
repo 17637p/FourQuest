@@ -130,6 +130,19 @@ void fq::game_module::RegisterMetaData()
 	//                                Mesh                                  //
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<fq::graphics::MeshObjectInfo>()
+		.type("MeshObjectInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::MeshObjectInfo::bUseShadow>("UseShadow"_hs)
+		.prop(fq::reflect::prop::Comment, u8"그림자 적용 여부")
+		.prop(fq::reflect::prop::Name, "UseShadow")
+		.data<&fq::graphics::MeshObjectInfo::OutlineColor>("OutlineColor"_hs)
+		.prop(fq::reflect::prop::Name, "OutlineColor")
+		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
+		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
+		.prop(fq::reflect::prop::Name, "IsAppliedDecal");
+
 	// StaticMeshRenderer
 	entt::meta<StaticMeshRenderer>()
 		.type("StaticMeshRenderer"_hs)
@@ -137,14 +150,18 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Rendering")
 		.data<&StaticMeshRenderer::SetModelPath, &StaticMeshRenderer::GetModelPath>("ModelPath"_hs)
 		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::ReadOnly)
 		.prop(fq::reflect::prop::RelativePath)
 		.data<&StaticMeshRenderer::SetMeshName, &StaticMeshRenderer::GetMeshName>("MeshName"_hs)
 		.prop(fq::reflect::prop::Name, "MeshName")
+		.prop(fq::reflect::prop::ReadOnly)
 		.data<&StaticMeshRenderer::SetMaterials, &StaticMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
-		.data<&StaticMeshRenderer::SetOutlineColor, &StaticMeshRenderer::GetOutlineColor>("Outline"_hs)
-		.prop(fq::reflect::prop::Name, "Outline")
+		.data<&StaticMeshRenderer::SetMaterialInfos, &StaticMeshRenderer::GetMaterialInfos>("MaterialInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialInfo")
+		.data<&StaticMeshRenderer::SetMeshObjectInfomation, &StaticMeshRenderer::GetMeshObjectInfomation>("MeshObjectInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
 		.data<&StaticMeshRenderer::SetIsNavigationMeshUsed, &StaticMeshRenderer::GetIsNavigationMeshUsed>("isUsedNavigationMesh"_hs)
 		.prop(fq::reflect::prop::Name, "isUsedNavigationMesh")
 		.base<Component>();
@@ -156,14 +173,18 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Rendering")
 		.data<&SkinnedMeshRenderer::SetModelPath, &SkinnedMeshRenderer::GetModelPath>("ModelPath"_hs)
 		.prop(fq::reflect::prop::Name, "ModelPath")
+		.prop(fq::reflect::prop::ReadOnly)
 		.prop(fq::reflect::prop::RelativePath)
 		.data<&SkinnedMeshRenderer::SetMeshName, &SkinnedMeshRenderer::GetMeshName>("MeshName"_hs)
 		.prop(fq::reflect::prop::Name, "MeshName")
+		.prop(fq::reflect::prop::ReadOnly)
 		.data<&SkinnedMeshRenderer::SetMaterials, &SkinnedMeshRenderer::GetMaterials>("Materials"_hs)
 		.prop(fq::reflect::prop::Name, "Materials")
 		.prop(fq::reflect::prop::ReadOnly)
-		.data<&SkinnedMeshRenderer::SetOutlineColor, &SkinnedMeshRenderer::GetOutlineColor>("Outline"_hs)
-		.prop(fq::reflect::prop::Name, "Outline")
+		.data<&SkinnedMeshRenderer::SetMaterialInfos, &SkinnedMeshRenderer::GetMaterialInfos>("MaterialInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialInfo")
+		.data<&SkinnedMeshRenderer::SetMeshObjectInfomation, &SkinnedMeshRenderer::GetMeshObjectInfomation>("MeshObjectInfo"_hs)
+		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -607,7 +628,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Density")
 		.prop(fq::reflect::prop::Comment, u8"밀도 ( 0.f ~ 1.f )");
 
-	
+
 	entt::meta<Articulation>()
 		.type("Articulation"_hs)
 		.prop(fq::reflect::prop::Name, "Articulation")
@@ -672,6 +693,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&Animator::SetControllerPath, &Animator::GetControllerPath>("ControllerPath"_hs)
 		.prop(fq::reflect::prop::Name, "ControllerPath")
 		.prop(fq::reflect::prop::DragDrop, ".controller")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&Animator::SetNodeHierarchyModelPath, &Animator::GetNodeHierarchyModelPath>("NodeHierarchyModelPath"_hs)
+		.prop(fq::reflect::prop::Comment, u8"애니메이션 처리 시 참조할 본 계층 구조")
+		.prop(fq::reflect::prop::DragDrop, ".model")
+		.prop(fq::reflect::prop::Name, "NodeHierarchyModelPath")
 		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 
@@ -1164,10 +1190,20 @@ void fq::game_module::RegisterMetaData()
 	//                             머테리얼									//
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<fq::graphics::MaterialInfo::ERenderMode>()
+		.prop(fq::reflect::prop::Name, "MaterialInfoERenderMode")
+		.conv<std::underlying_type_t<fq::graphics::ParticleMaterialInfo::ERenderMode>>()
+		.data<fq::graphics::MaterialInfo::ERenderMode::Opaque>("Opaque"_hs)
+		.prop(fq::reflect::prop::Name, "Opaque")
+		.data<fq::graphics::MaterialInfo::ERenderMode::Transparent>("Transparent"_hs)
+		.prop(fq::reflect::prop::Name, "Transparent");
+
 	entt::meta<fq::graphics::MaterialInfo>()
 		.type("MaterialInfo"_hs)
 		.prop(fq::reflect::prop::Name, "MaterialInfo")
 		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::MaterialInfo::RenderModeType>("RenderModeType"_hs)
+		.prop(fq::reflect::prop::Name, "RenderModeType")
 		.data<&fq::graphics::MaterialInfo::BaseColor>("BaseColor"_hs)
 		.prop(fq::reflect::prop::Name, "BaseColor")
 		.data<&fq::graphics::MaterialInfo::Metalness>("Metalness"_hs)
@@ -1210,7 +1246,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AlphaCutoff");
 
 	entt::meta<fq::graphics::ParticleMaterialInfo::ERenderMode>()
-		.prop(fq::reflect::prop::Name, "TrailAlignment")
+		.prop(fq::reflect::prop::Name, "ParticleMaterialInfoERenderMode")
 		.conv<std::underlying_type_t<fq::graphics::ParticleMaterialInfo::ERenderMode>>()
 		.data<fq::graphics::ParticleMaterialInfo::ERenderMode::Additive>("Additive"_hs)
 		.prop(fq::reflect::prop::Name, "Additive")
@@ -1223,7 +1259,7 @@ void fq::game_module::RegisterMetaData()
 
 
 	entt::meta<fq::graphics::ParticleMaterialInfo::EColorMode>()
-		.prop(fq::reflect::prop::Name, "TrailAlignment")
+		.prop(fq::reflect::prop::Name, "ParticleMaterialInfoEColorMode")
 		.conv<std::underlying_type_t<fq::graphics::ParticleMaterialInfo::EColorMode>>()
 		.data<fq::graphics::ParticleMaterialInfo::EColorMode::Multiply>("Multiply"_hs)
 		.prop(fq::reflect::prop::Name, "Multiply")

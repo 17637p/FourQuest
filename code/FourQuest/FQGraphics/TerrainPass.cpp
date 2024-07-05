@@ -5,6 +5,7 @@
 #include "RenderJob.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "RenderObject.h"
 #include "Define.h"
 
 namespace fq::graphics
@@ -69,6 +70,7 @@ namespace fq::graphics
 			mMetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
 			mRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);
 			mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
+			mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
 			mPositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
 			mSourceNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal);
 			mSourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
@@ -131,6 +133,7 @@ namespace fq::graphics
 		mMetalnessRTV = nullptr;
 		mRoughnessRTV = nullptr;
 		mNormalRTV = nullptr;
+		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
 		mSourceNormalRTV = nullptr;
 		mSourceTangentRTV = nullptr;
@@ -172,6 +175,7 @@ namespace fq::graphics
 				renderTargetViews.push_back(mMetalnessRTV);
 				renderTargetViews.push_back(mRoughnessRTV);
 				renderTargetViews.push_back(mNormalRTV);
+				renderTargetViews.push_back(mEmissiveRTV);
 				renderTargetViews.push_back(mPositionRTV);
 				renderTargetViews.push_back(mSourceNormalRTV);
 				renderTargetViews.push_back(mSourceTangentRTV);
@@ -255,12 +259,12 @@ namespace fq::graphics
 			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
 			{
 				job.TerrainMesh->Bind(mDevice);
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TransformPtr);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TerrainMeshObject->GetTransform());
 
 				if (job.TerrainMaterial != nullptr)
 				{
 					job.TerrainMaterial->Bind(mDevice);
-					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
+					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.TerrainMeshObject);
 				}
 
 				job.TerrainMesh->Draw(mDevice, job.SubsetIndex);

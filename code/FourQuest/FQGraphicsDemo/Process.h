@@ -14,6 +14,7 @@
 
 #include "../FQLoader/ModelLoader.h"
 #include "../FQCommon/FQCommonGraphics.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::graphics { class Renderer; }
 namespace fq::graphics { class IFQGraphics; }
@@ -42,25 +43,29 @@ private:
 	void debugRender();
 	void shadowTest();
 
-	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	void calculateFrameStats();
 
 	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
 	void convertFBXModelAll(std::filesystem::path folderPath);
 
-	void particleInit();
-	void particleUpdate();
+	void renderObjectInit();
+	void renderObjectUpdate();
 
+	void animationUpdate();
 	void materialUpdate();
-
 	void socketUpdate();
 
-	void decalInit();
-	void decalUpdate();
+	void VFXInit();
+	void VFXUpdate();
 
+	void particleInit();
+	void decalInit();
 	void trailInit();
+
+	void particleUpdate();
+	void decalUpdate();
 	void trailUpdate();
 
 private:

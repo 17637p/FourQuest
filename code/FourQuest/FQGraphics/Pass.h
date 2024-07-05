@@ -28,6 +28,7 @@ namespace fq::graphics
 	class D3D11CubeTexture;
 	class D3D11UnorderedAccessView;
 	class D3D11StructuredBuffer;
+	class D3D11ObjectManager;
 
 	class Pass
 	{

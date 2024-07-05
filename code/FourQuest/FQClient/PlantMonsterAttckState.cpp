@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "PlantMonster.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlantMonsterAttckState::Clone()
 {
@@ -11,7 +12,7 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlantMonsterAttckS
 
 fq::client::PlantMonsterAttckState::PlantMonsterAttckState()
 	:mAttackTiming(0.f)
-	,mElapsedTime(0.f)
+	, mElapsedTime(0.f)
 {}
 
 fq::client::PlantMonsterAttckState::~PlantMonsterAttckState()
@@ -19,11 +20,6 @@ fq::client::PlantMonsterAttckState::~PlantMonsterAttckState()
 
 void fq::client::PlantMonsterAttckState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	// 아웃라인 변경
-	for (auto mesh : animator.GetSkinnedMeshs())
-	{
-		mesh->GetSkinnedMeshObject()->SetOutlineColor({ 0.f,1.f,0.f,1.f });
-	}
 
 	mElapsedTime = 0.f;
 
@@ -33,11 +29,6 @@ void fq::client::PlantMonsterAttckState::OnStateEnter(game_module::Animator& ani
 		animator.GetComponent<PlantMonster>()->EmitAttack();
 		mElapsedTime = mAttackTiming;
 
-		// 아웃라인 변경
-		for (auto mesh : animator.GetSkinnedMeshs())
-		{
-			mesh->GetSkinnedMeshObject()->SetOutlineColor({ 0.f,0.f,0.f,1.f });
-		}
 	}
 }
 
@@ -53,20 +44,9 @@ void fq::client::PlantMonsterAttckState::OnStateUpdate(game_module::Animator& an
 	{
 		animator.GetComponent<PlantMonster>()->EmitAttack();
 		mElapsedTime = mAttackTiming;
-
-		// 아웃라인 변경
-		for (auto mesh : animator.GetSkinnedMeshs())
-		{
-			mesh->GetSkinnedMeshObject()->SetOutlineColor({ 0.f,0.f,0.f,1.f });
-		}
 	}
 }
 
 void fq::client::PlantMonsterAttckState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	// 아웃라인 변경
-	for (auto mesh : animator.GetSkinnedMeshs())
-	{
-		mesh->GetSkinnedMeshObject()->SetOutlineColor({ 0.f,0.f,0.f,1.f });
-	}
 }

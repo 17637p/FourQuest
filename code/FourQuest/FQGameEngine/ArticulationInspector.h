@@ -32,7 +32,7 @@ namespace fq::game_engine
 		inline bool& IsWindowOpen();
 
 	private:
-		void createLink();
+		void beginLinkData();
 
 	private:
 		GameProcess* mGameProcess;
@@ -49,6 +49,4 @@ namespace fq::game_engine
 	{
 		return mbIsOpen;
 	}
-
-
 }

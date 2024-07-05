@@ -77,6 +77,7 @@ namespace fq::game_engine
 		/// 애니메이션을 작동합니다.
 		/// </summary>
 		void WriteAnimation(const fq::event::WriteAnimation& event);
+
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);

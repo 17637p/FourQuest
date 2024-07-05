@@ -4,12 +4,34 @@
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
-	, mOutlineColor{0.f,0.f,0.f,0.f}
 	, mIsNavigationMeshUsed(true)
 {}
 
 fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
 {
+}
+
+void fq::game_module::StaticMeshRenderer::SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos)
+{
+	mMaterialInfos = std::move(materialInfos);
+
+	size_t MAX_COUNT = std::min<size_t>(mMaterialInfos.size(), mMaterialInterfaces.size());
+
+	for (size_t i = 0; i < MAX_COUNT; ++i)
+	{
+		mMaterialInterfaces[i]->SetInfo(mMaterialInfos[i]);
+	}
+}
+
+void fq::game_module::StaticMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces)
+{
+	mMaterialInterfaces = materialInterfaces;
+	mMaterialInfos.clear();
+
+	for (auto& materialInterface : materialInterfaces)
+	{
+		mMaterialInfos.push_back(materialInterface->GetInfo());
+	}
 }
 
 entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()
@@ -35,35 +57,3 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::StaticMeshRenderer:
 
 	return cloneMesh;
 }
-
-void fq::game_module::StaticMeshRenderer::SetModelPath(std::string path)
-{
-	mMeshInfomation.ModelPath = path;
-}
-
-void fq::game_module::StaticMeshRenderer::SetMeshName(std::string name)
-{
-	mMeshInfomation.MeshName = name;
-}
-
-void fq::game_module::StaticMeshRenderer::SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info)
-{
-	mMeshInfomation = std::move(info);
-
-}
-
-void fq::game_module::StaticMeshRenderer::SetMaterials(std::vector<std::string> materials)
-{
-	mMeshInfomation.MaterialNames = std::move(materials);
-}
-
-void fq::game_module::StaticMeshRenderer::SetOutlineColor(DirectX::SimpleMath::Color color)
-{
-	mOutlineColor = color;
-
-	if (mStaticMeshObject)
-	{			
-		mStaticMeshObject->SetOutlineColor(mOutlineColor);
-	}
-}
-

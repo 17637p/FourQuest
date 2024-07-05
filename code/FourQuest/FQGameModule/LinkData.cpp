@@ -3,8 +3,7 @@
 namespace fq::game_module
 {
 	LinkData::LinkData()
-		: mLinkInfo()
-		, mbIsDead(false)
+		: mbIsDead(false)
 		, mChildrenLinkData()
 		, mID(0)
 	{
@@ -16,14 +15,19 @@ namespace fq::game_module
 
 	void LinkData::Update()
 	{
-		for (auto& link : mChildrenLinkData)
+		for (auto it = mChildrenLinkData.begin(); it != mChildrenLinkData.end(); )
 		{
-			if (link.second->GetIsDead())
+			if (it->second->GetIsDead())
 			{
-				mChildrenLinkData.erase(mChildrenLinkData.find(link.first));
+				// 요소를 삭제하고 반복자를 갱신합니다.
+				it = mChildrenLinkData.erase(it);
 			}
-
-			link.second->Update();
+			else
+			{
+				// 요소를 업데이트하고 다음 요소로 이동합니다.
+				it->second->Update();
+				++it;
+			}
 		}
 	}
 }

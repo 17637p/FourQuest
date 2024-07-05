@@ -45,7 +45,10 @@
     <ClInclude Include="UIDemo.h">
       <Filter>Process</Filter>
     </ClInclude>
-    <ClInclude Include="OutLineDemo.h">
+    <ClInclude Include="RenderObjectDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectDemo.h">
       <Filter>Process</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,7 +77,10 @@
     <ClCompile Include="UIDemo.cpp">
       <Filter>Process</Filter>
     </ClCompile>
-    <ClCompile Include="OutLineDemo.cpp">
+    <ClCompile Include="EffectDemo.cpp">
+      <Filter>Process</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObjectDemo.cpp">
       <Filter>Process</Filter>
     </ClCompile>
   </ItemGroup>

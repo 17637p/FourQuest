@@ -137,16 +137,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationHelper.h" />
-    <ClInclude Include="BoneHierarchy.h" />
+    <ClInclude Include="NodeHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
-    <ClInclude Include="D3D11DecalManager.h" />
     <ClInclude Include="D3D11LightProbeManager.h" />
     <ClInclude Include="D3D11ParticleManager.h" />
-    <ClInclude Include="D3D11TrailManager.h" />
+    <ClInclude Include="D3D11PostProcessingManager.h" />
     <ClInclude Include="DecalObject.h" />
     <ClInclude Include="DeferredDecalPass.h" />
+    <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="OutLineAddPass.h" />
     <ClInclude Include="OutLineBlurPass.h" />
     <ClInclude Include="OutLinePass.h" />
@@ -207,27 +208,27 @@
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationHelper.cpp" />
-    <ClCompile Include="BoneHierarchy.cpp" />
+    <ClCompile Include="NodeHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />
     <ClCompile Include="D3D11Buffer.cpp" />
     <ClCompile Include="D3D11CameraManager.cpp" />
     <ClCompile Include="D3D11CullingManager.cpp" />
-    <ClCompile Include="D3D11DecalManager.cpp" />
     <ClCompile Include="D3D11Device.cpp" />
     <ClCompile Include="D3D11LightManager.cpp" />
     <ClCompile Include="D3D11LightProbeManager.cpp" />
     <ClCompile Include="D3D11ModelManager.cpp" />
     <ClCompile Include="D3D11ParticleManager.cpp" />
     <ClCompile Include="D3D11PickingManager.cpp" />
+    <ClCompile Include="D3D11PostProcessingManager.cpp" />
     <ClCompile Include="D3D11TextManager.cpp" />
     <ClCompile Include="D3D11JobManager.cpp" />
     <ClCompile Include="D3D11RenderManager.cpp" />
     <ClCompile Include="D3D11Shader.cpp" />
     <ClCompile Include="D3D11State.cpp" />
     <ClCompile Include="D3D11Texture.cpp" />
-    <ClCompile Include="D3D11TrailManager.cpp" />
     <ClCompile Include="D3D11Util.cpp" />
     <ClCompile Include="D3D11View.cpp" />
     <ClCompile Include="D3D11DebugDrawManager.cpp" />
@@ -241,6 +242,7 @@
     <ClCompile Include="FowardRenderPass.cpp" />
     <ClCompile Include="FQGraphics.cpp" />
     <ClCompile Include="FullScreenPass.cpp" />
+    <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="D3D11ObjectManager.cpp" />

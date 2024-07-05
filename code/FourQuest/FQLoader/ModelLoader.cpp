@@ -115,7 +115,7 @@ namespace fq::loader
 			}
 
 			fileUtil.Read<DirectX::BoundingBox>(&mesh.RenderBoundingBox);
-			fileUtil.Read<DirectX::BoundingSphere>(&mesh.GetRenderBoundingSphere);
+			fileUtil.Read<DirectX::BoundingSphere>(&mesh.RenderBoundingSphere);
 
 			modelData.push_back({ std::move(node), std::move(mesh) });
 		}
@@ -257,7 +257,7 @@ namespace fq::loader
 			}
 
 			fileUtil.Write<DirectX::BoundingBox>(mesh.RenderBoundingBox);
-			fileUtil.Write<DirectX::BoundingSphere>(mesh.GetRenderBoundingSphere);
+			fileUtil.Write<DirectX::BoundingSphere>(mesh.RenderBoundingSphere);
 		}
 	}
 	void ModelLoader::WriteMaterialByData(const std::vector<fq::common::Material>& materialData, FileUtil& fileUtil)

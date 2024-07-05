@@ -10,6 +10,7 @@
 #include <d3d11.h>
 #include <directxtk/BufferHelpers.h>
 #include <deque>
+#include <directxtk/SimpleMath.h>
 
 #include "D3D11Device.h"
 #include "D3D11ResourceType.h"
@@ -32,7 +33,6 @@ namespace fq::graphics
 			, mOffset(offset)
 			, mbUseCPUWrite(true)
 		{
-
 			D3D11_BUFFER_DESC bd = {};
 			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 			bd.Usage = D3D11_USAGE_DYNAMIC;
@@ -45,6 +45,19 @@ namespace fq::graphics
 		}
 
 		static void Bind(const std::shared_ptr<D3D11Device>& device, const std::vector<std::shared_ptr<D3D11VertexBuffer>>& buffers, UINT startSlot = 0);
+
+		static D3D11VertexBuffer CreateFullScreenVertexBuffer(const std::shared_ptr<D3D11Device>& device)
+		{
+			std::vector<DirectX::SimpleMath::Vector2> positions =
+			{
+				{ -1, 1 },
+				{ 1, 1 },
+				{ -1, -1 },
+				{ 1, -1 }
+			};
+
+			return D3D11VertexBuffer(device, positions);
+		}
 
 		void Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot = 0);
 
@@ -65,6 +78,8 @@ namespace fq::graphics
 
 			device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
 		}
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVertexBuffer;
@@ -101,7 +116,20 @@ namespace fq::graphics
 	public:
 		D3D11IndexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<unsigned int>& indices);
 
+		static D3D11IndexBuffer CreateFullScreenIndexBuffer(const std::shared_ptr<D3D11Device>& device)
+		{
+			std::vector<unsigned int> indices =
+			{
+				0,1,2,
+				1,3,2
+			};
+
+			return D3D11IndexBuffer(device, indices);
+		}
+
 		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer() const { return mIndexBuffer; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndexBuffer;

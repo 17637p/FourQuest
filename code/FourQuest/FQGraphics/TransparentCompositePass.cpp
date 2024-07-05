@@ -22,29 +22,15 @@ namespace fq::graphics
 		mPixelRevealageThresholdSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, pixelRevealageThresholdRTV);
 
 		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
-		auto transparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_COMPOSITE.cso" );
+		auto transparentCompositePS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_COMPOSITE.cso");
 		auto OITCompositeState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITComposite);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, OITCompositeState);
 		mShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, transparentCompositePS, pipelieState);
 
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 
-		std::vector<DirectX::SimpleMath::Vector2> positions =
-		{
-			{ -1, 1 },
-			{ 1, 1 },
-			{ -1, -1 },
-			{ 1, -1 }
-		};
-
-		std::vector<unsigned int> indices =
-		{
-			0,1,2,
-			1,3,2
-		};
-
-		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(device, positions);
-		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(device, indices);
+		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));
+		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(D3D11IndexBuffer::CreateFullScreenIndexBuffer(device));
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;

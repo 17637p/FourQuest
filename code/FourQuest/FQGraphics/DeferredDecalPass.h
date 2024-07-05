@@ -8,7 +8,7 @@
 
 namespace fq::graphics
 {
-	class D3D11DecalManager;
+	class D3D11ObjectManager;
 
 	class DeferredDecalPass : public Pass
 	{
@@ -16,7 +16,7 @@ namespace fq::graphics
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
-			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11ObjectManager> objectManager,
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			unsigned short width,
 			unsigned short height);
@@ -31,7 +31,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
-		std::shared_ptr<D3D11DecalManager> mDecalManager;
+		std::shared_ptr<D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<D3D11DebugDrawManager> mDebugDrawManager;
 
 		D3D11_VIEWPORT mViewport;

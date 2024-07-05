@@ -9,7 +9,7 @@ namespace fq::graphics
 	void DeferredDecalPass::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
-		std::shared_ptr<D3D11DecalManager> decalManager,
+		std::shared_ptr<D3D11ObjectManager> objectManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		unsigned short width,
 		unsigned short height)
@@ -17,7 +17,7 @@ namespace fq::graphics
 		mDevice = device;
 		mResourceManager = resourceManager;
 		mCameraManager = cameraManager;
-		mDecalManager = decalManager;
+		mObjectManager = objectManager;
 		mDebugDrawManager = debugDrawManager;
 
 		mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
@@ -81,7 +81,7 @@ namespace fq::graphics
 		mDevice = nullptr;
 		mResourceManager = nullptr;
 		mCameraManager = nullptr;
-		mDecalManager = nullptr;
+		mObjectManager = nullptr;
 		mDebugDrawManager = nullptr;
 
 		mAlbedoRTV = nullptr;
@@ -164,8 +164,8 @@ namespace fq::graphics
 		}
 
 		// cb update
-		const std::set<IDecalObject*>& decalObjects = mDecalManager->GetDecalObjects();
-		
+		const std::set<IDecalObject*>& decalObjects = mObjectManager->GetDecalObjects();
+
 		for (IDecalObject* decalObjectInterface : decalObjects)
 		{
 			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
