@@ -71,7 +71,7 @@ namespace fq::game_module
 		/// 메쉬정보를 설정합니다
 		/// </summary>
 		/// <param name="info">메쉬 정보</param>
-		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info) { mMeshInfomation = std::move(info); }
+		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info) { mMeshInfomation = std::move(info); if (mSkinnedMeshObject != nullptr) { mSkinnedMeshObject->SetMeshObjectInfo(mMeshInfomation); } }
 
 		/// <summary>
 		/// 메쉬정보를 반환합니다
