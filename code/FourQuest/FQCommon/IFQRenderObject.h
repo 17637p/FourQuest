@@ -25,16 +25,9 @@ extern "C" {
 		class IStaticMeshObject
 		{
 		public:
-			virtual FQ_GRAPHICS void Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo); 
-			virtual FQ_GRAPHICS void RenderInstanced(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo);
-
-			// Transform
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
-
-			// Info
-			virtual FQ_GRAPHICS void SetMeshObjectInfo(const MeshObjectInfo& info) abstract;
-			virtual FQ_GRAPHICS const MeshObjectInfo& GetMeshObjectInfo() const abstract;
+			// Render
+			virtual FQ_GRAPHICS void Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo) abstract;
+			virtual FQ_GRAPHICS void RenderInstance(const DirectX::SimpleMath::Matrix& transform) abstract;
 
 			// Material
 			virtual FQ_GRAPHICS void SetMaterials(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
@@ -49,6 +42,10 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const abstract;
 			virtual FQ_GRAPHICS void SetReferenceBoneIndex(size_t index) abstract;
 			virtual FQ_GRAPHICS size_t GetReferenceBoneIndex() const abstract;
+
+			// Instanceing
+			virtual FQ_GRAPHICS void SetInstanceInfo(const MeshObjectInfo& meshObjectInfo) abstract;
+			virtual FQ_GRAPHICS const MeshObjectInfo& GetInstanceInfo() const abstract;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;

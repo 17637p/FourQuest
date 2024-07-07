@@ -20,6 +20,7 @@ namespace fq::graphics
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 		void Draw(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex);
+		void DrawInstancing(const std::shared_ptr<D3D11Device>& d3d11Device, size_t instancingCount, size_t subsetIndex);
 
 		inline const fq::common::Mesh& GetMeshData() const;
 

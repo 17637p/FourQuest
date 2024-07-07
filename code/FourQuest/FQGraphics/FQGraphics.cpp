@@ -291,7 +291,6 @@ bool FQGraphics::Render()
 	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 
-	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
 	for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
 	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
 
@@ -548,7 +547,7 @@ void fq::graphics::FQGraphics::DeleteDecalMaterial(const std::string& key)
 IStaticMeshObject* fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	assert(staticMesh != nullptr);
-	return mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
+	return mObjectManager->CreateStaticMeshObject(mJobManager, staticMesh, materials, meshObjectInfo, transform);
 }
 ISkinnedMeshObject* fq::graphics::FQGraphics::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {

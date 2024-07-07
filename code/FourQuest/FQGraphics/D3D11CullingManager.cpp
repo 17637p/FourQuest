@@ -9,7 +9,7 @@ std::set<fq::graphics::IStaticMeshObject*> fq::graphics::D3D11CullingManager::Ge
 	for (const auto& staticObject : staticObjects)
 	{
 		DirectX::BoundingSphere sphere = staticObject->GetStaticMesh()->GetMeshData().RenderBoundingSphere;
-		sphere.Transform(sphere, staticObject->GetTransform());
+		//sphere.Transform(sphere, staticObject->GetTransform());
 
 		bool isIntersects = cameraFrustum.Intersects(sphere);
 		if (isIntersects)

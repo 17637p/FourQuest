@@ -16,11 +16,14 @@ namespace fq::graphics
 		D3D11JobManager();
 		~D3D11JobManager() = default;
 
-		void CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject);
+		void AddStaticMeshJob(const StaticMeshJob& job)
+		{
+			mStaticMeshJobs.push_back(job);
+		}
 		void CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject);
 		void CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct);
 
-		void CreateInstanceStaticMeshJob(IStaticMeshObject* iStaticMeshObject, const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo);
+		void AddInstanceingMeshObject(IStaticMeshObject* iStaticMeshObject);
 
 		void ClearAll();
 		void ClearStaticMeshJobs();
@@ -31,6 +34,8 @@ namespace fq::graphics
 		inline const std::vector<SkinnedMeshJob>& GetSkinnedMeshJobs() const;
 		inline const std::vector<TerrainMeshJob>& GetTerrainMeshJobs() const;
 
+		const std::set<IStaticMeshObject*> GetInstanceStaticMeshObjects() const { return mInstanceStaticMeshObjects; }
+
 	private:
 		enum { RESERVE_SIZE = 2048 };
 
@@ -38,7 +43,7 @@ namespace fq::graphics
 		std::vector<SkinnedMeshJob> mSkinnedMeshJobs;
 		std::vector<TerrainMeshJob> mTerrainMeshJobs;
 
-		std::map<IStaticMeshObject, std::vector<std::pair<DirectX::SimpleMath::Matrix, MeshObjectInfo>>> mInstanceStaticMeshJob;
+		std::set<IStaticMeshObject*> mInstanceStaticMeshObjects;
 	};
 
 	inline const std::vector<StaticMeshJob>& D3D11JobManager::GetStaticMeshJobs() const

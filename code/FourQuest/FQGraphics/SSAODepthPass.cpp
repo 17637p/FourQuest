@@ -95,20 +95,20 @@ void fq::graphics::SSAODepthPass::Render()
 	{
 		mSSAOViewDepthStaticMeshPassShaderProgram->Bind(mDevice);
 
-		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
-		{
-			const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-			if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
-			{
-				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
-
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-
-				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
-			}
-		}
+		//for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+		//{
+		//	const MaterialInfo& materialInfo = job.Material->GetInfo();
+		//
+		//	if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+		//	{
+		//		job.StaticMesh->Bind(mDevice);
+		//		job.Material->Bind(mDevice);
+		//
+		//		ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+		//
+		//		job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+		//	}
+		//}
 
 		mSSAOViewDepthskinnedMeshPassShaderProgram->Bind(mDevice);
 		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);

@@ -9,7 +9,7 @@ struct VertexIn
     int4 Indices : INDICES;
     float4 Weights : WEIGHTS;
 #elif defined INSTANCING
-    float4x4 World : WORLD;
+    row_major float4x4 World : WORLD; // 전치 연산 뺴기 위해서 임시 추가
 #endif
 };
 

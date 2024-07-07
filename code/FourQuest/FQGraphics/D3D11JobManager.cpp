@@ -13,22 +13,7 @@ namespace fq::graphics
 		mTerrainMeshJobs.reserve(RESERVE_SIZE);
 	}
 
-	void D3D11JobManager::CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject)
-	{
-		const auto& material = iStaticMeshObject->GetMaterials();
-		const size_t JOB_COUNT = std::min<size_t>(material.size(), iStaticMeshObject->GetStaticMesh()->GetMeshData().Subsets.size());
 
-		for (size_t i = 0; i < JOB_COUNT; ++i)
-		{
-			StaticMeshJob job;
-			job.SubsetIndex = i;
-			job.StaticMesh = std::static_pointer_cast<StaticMesh>(iStaticMeshObject->GetStaticMesh());
-			job.Material = std::static_pointer_cast<Material>(material[i]);
-			job.StaticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
-
-			mStaticMeshJobs.push_back(job);
-		}
-	}
 	void D3D11JobManager::CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject)
 	{
 		const auto& material = iSkinnedMeshObject->GetMaterials();
@@ -64,9 +49,9 @@ namespace fq::graphics
 		}
 	}
 
-	void D3D11JobManager::CreateInstanceStaticMeshJob(IStaticMeshObject* iStaticMeshObject, const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo)
+	void D3D11JobManager::AddInstanceingMeshObject(IStaticMeshObject* iStaticMeshObject)
 	{
-
+		mInstanceStaticMeshObjects.insert(iStaticMeshObject);
 	}
 
 	void D3D11JobManager::ClearAll()
@@ -74,6 +59,13 @@ namespace fq::graphics
 		ClearStaticMeshJobs();
 		ClearSkinnedMeshJobs();
 		ClearTerrainMeshJobs();
+
+		for (auto* iMeshObject : mInstanceStaticMeshObjects)
+		{
+			auto meshObject = static_cast<StaticMeshObject*>(iMeshObject);
+			meshObject->ClearInstanceData();
+		}
+		mInstanceStaticMeshObjects.clear();
 	}
 	void D3D11JobManager::ClearStaticMeshJobs()
 	{

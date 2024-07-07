@@ -36,9 +36,9 @@ namespace fq::graphics
 		while (!mTrailObjectDeleteQueue.empty()) { deleteObject<TrailObject>(mTrailObjectDeleteQueue.front()); mTrailObjectDeleteQueue.pop(); }
 	}
 
-	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
+	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<D3D11JobManager> jobManager, std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 	{
-		IStaticMeshObject* staticMeshObject = new StaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
+		IStaticMeshObject* staticMeshObject = new StaticMeshObject(staticMesh, materials, meshObjectInfo, transform, jobManager);
 		mStaticMeshObjects.insert(staticMeshObject);
 
 		return staticMeshObject;

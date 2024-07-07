@@ -39,7 +39,7 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 	mTimeManager.Init();
 
 	mTestGraphics = mEngineExporter->GetEngine();
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	/// RenderObject 생성
 	mTestGraphics->WriteModel("./resource/Graphics/RenderObjectDemo/gun.model", mTestGraphics->ConvertModel("./resource/Graphics/RenderObjectDemo/gun.fbx"));
@@ -58,11 +58,11 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 		};
 
 	addPath("./resource/Graphics/RenderObjectDemo/gun");
-	addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
-	addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
-	addPath("./resource/Graphics/RenderObjectDemo/player01");
-	addPath("./resource/Graphics/RenderObjectDemo/playerani7");
-	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	 // addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
+	 // addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
+	 // addPath("./resource/Graphics/RenderObjectDemo/player01");
+	 // addPath("./resource/Graphics/RenderObjectDemo/playerani7");
+	 // addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
 
 	for (size_t i = 0; i < modelPaths.size(); ++i)
 	{
@@ -71,7 +71,7 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 
 	for (size_t i = 0; i < modelPaths.size(); ++i)
 	{
-		for (int j = -5; j < 5; ++j)
+		for (int j = 0; j < 1; ++j)
 		{
 			createModel(modelPaths[i], textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(j * 1, i * 2, 0));
 		}
@@ -224,6 +224,29 @@ void RenderObjectDemo::Update()
 		}
 	}
 
+	int staticMeshObjectIndex = 0;
+	for (fq::graphics::IStaticMeshObject*& staticMeshObject : mStaticMeshObjects)
+	{
+		--staticMeshObjectIndex;
+		for (int i = -50; i < 50; ++i)
+		{
+			auto trnasform = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(i * 1, staticMeshObjectIndex, 0);
+			fq::graphics::MeshObjectInfo meshObjectInfo;
+			meshObjectInfo.bIsAppliedDecal = true;
+			meshObjectInfo.bUseShadow = true;
+			meshObjectInfo.OutlineColor = {};
+
+			if (GetAsyncKeyState('I') & 0x8000)
+			{
+				staticMeshObject->RenderInstance(trnasform);// , meshObjectInfo);
+			}
+			else
+			{
+				staticMeshObject->Render(trnasform, meshObjectInfo);
+			}
+		}
+	}
+
 	// 카메라 조작
 	float speed = mTimeManager.GetDeltaTime();
 	if (InputManager::GetInstance().IsGetKey(VK_SHIFT))
@@ -276,7 +299,9 @@ void RenderObjectDemo::Render()
 {
 	mTestGraphics->BeginRender();
 	debugRender();
+
 	mTestGraphics->Render();
+
 	mTestGraphics->EndRender();
 }
 

@@ -235,16 +235,34 @@ namespace fq::graphics
 
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
-			if (job.StaticMeshObject->GetMeshObjectInfo().bUseShadow)
+			if (!job.MeshObjectInfo.bUseShadow)
 			{
-				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
+				continue;
+			}
 
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+			std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(job.StaticMeshObject->GetStaticMesh());
+			staticMesh->Bind(mDevice);
 
-				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+			const auto& materialInterfaces = job.StaticMeshObject->GetMaterials();
+
+			for (size_t subsetIndex = 0; subsetIndex < materialInterfaces.size(); ++subsetIndex)
+			{
+				staticMesh->Draw(mDevice, subsetIndex);
 			}
 		}
+
+		// for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+		// {
+		// 	if (job.StaticMeshObject->GetMeshObjectInfo().bUseShadow)
+		// 	{
+		// 		job.StaticMesh->Bind(mDevice);
+		// 		job.Material->Bind(mDevice);
+		// 
+		// 		ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+		// 
+		// 		job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+		// 	}
+		// }
 
 		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 		mSkinnedMeshShaderProgram->Bind(mDevice);

@@ -88,34 +88,34 @@ void fq::graphics::SingleColorPass::Render()
 
 		mSingleColorStaticMeshPassShaderProgram->Bind(mDevice);
 
-		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
-		{
-			const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-			if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
-			{
-				const MeshObjectInfo& meshObjectInfo = job.StaticMeshObject->GetMeshObjectInfo();
-
-				OutLineColor outlineColor;
-				outlineColor.color = meshObjectInfo.OutlineColor;
-				if (outlineColor.color.R() < 0 ||
-					outlineColor.color.G() < 0 ||
-					outlineColor.color.B() < 0 ||
-					(outlineColor.color.R() == 0 && outlineColor.color.G() == 0 || outlineColor.color.B() == 0))
-				{
-					continue;
-				}
-
-				mOutlineColorCB->Update(mDevice, outlineColor);
-
-				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
-
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-
-				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
-			}
-		}
+		// for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+		// {
+		// 	const MaterialInfo& materialInfo = job.Material->GetInfo();
+		// 
+		// 	if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+		// 	{
+		// 		const MeshObjectInfo& meshObjectInfo = job.StaticMeshObject->GetMeshObjectInfo();
+		// 
+		// 		OutLineColor outlineColor;
+		// 		outlineColor.color = meshObjectInfo.OutlineColor;
+		// 		if (outlineColor.color.R() < 0 ||
+		// 			outlineColor.color.G() < 0 ||
+		// 			outlineColor.color.B() < 0 ||
+		// 			(outlineColor.color.R() == 0 && outlineColor.color.G() == 0 || outlineColor.color.B() == 0))
+		// 		{
+		// 			continue;
+		// 		}
+		// 
+		// 		mOutlineColorCB->Update(mDevice, outlineColor);
+		// 
+		// 		job.StaticMesh->Bind(mDevice);
+		// 		job.Material->Bind(mDevice);
+		// 
+		// 		ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+		// 
+		// 		job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+		// 	}
+		// }
 
 		std::vector<DirectX::SimpleMath::Matrix> identityTransform(BoneTransform::MAX_BOND_COUNT);
 

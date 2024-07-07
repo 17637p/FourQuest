@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "NodeHierarchy.h"
 #include "RenderObject.h"
+#include "Define.h"
 
 namespace fq::graphics
 {
@@ -38,12 +39,14 @@ namespace fq::graphics
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto staticMeshInstancingVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_INSTANCING.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
 		auto geometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY.cso");
 		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
 		auto skinningPipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, geometryPS, pipelieState);
+		mStaticMeshInstancingShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshInstancingVS, nullptr, geometryPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
@@ -52,6 +55,29 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
+
+		mInstancingVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, MAX_INSTANCEING_SIZE * sizeof(DirectX::SimpleMath::Matrix), sizeof(DirectX::SimpleMath::Matrix), 0);
+
+		D3D11_INPUT_ELEMENT_DESC inputlayouts[] =
+		{
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TANGENT",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
+		};
+
+		HR(device->GetDevice()->CreateInputLayout(
+			inputlayouts,
+			ARRAYSIZE(inputlayouts),
+			staticMeshInstancingVS->GetBlob()->GetBufferPointer(),
+			staticMeshInstancingVS->GetBlob()->GetBufferSize(),
+			mInstanceIL.GetAddressOf()
+		));
+
 	}
 	void DeferredGeometryPass::Finalize()
 	{
@@ -149,18 +175,48 @@ namespace fq::graphics
 
 		// Draw
 		{
-			mStaticMeshShaderProgram->Bind(mDevice);
-
-			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+			// staticMesh
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
+				mStaticMeshShaderProgram->Bind(mDevice);
 
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+				for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 				{
-					job.StaticMesh->Bind(mDevice);
-					job.Material->Bind(mDevice);
+					std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(job.StaticMeshObject->GetStaticMesh());
+					staticMesh->Bind(mDevice);
 
-					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					const auto& materialInterfaces = job.StaticMeshObject->GetMaterials();
+
+					for (size_t subsetIndex = 0; subsetIndex < materialInterfaces.size(); ++subsetIndex)
+					{
+						std::shared_ptr<Material> material = std::static_pointer_cast<Material>(materialInterfaces[subsetIndex]);
+						const MaterialInfo& materialInfo = material->GetInfo();
+
+						if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+						{
+							material->Bind(mDevice);
+
+							ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.Transform);
+							ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, material);
+
+							staticMesh->Draw(mDevice, subsetIndex);
+						}
+					}
+				}
+			}
+
+			// instanceing staticMesh
+			{
+				mStaticMeshInstancingShaderProgram->Bind(mDevice);
+				mDevice->GetDeviceContext()->IASetInputLayout(mInstanceIL.Get());
+				mInstancingVertexBuffer->Bind(mDevice, 1);
+
+				for (const IStaticMeshObject* iStaticMeshObject : mJobManager->GetInstanceStaticMeshObjects())
+				{
+					const StaticMeshObject* staticMeshObject = static_cast<const StaticMeshObject*>(iStaticMeshObject);
+					const std::vector<DirectX::SimpleMath::Matrix>& transforms = staticMeshObject->GetInstanceData();
+					const size_t INSTNACING_COUNT = transforms.size();
+
+					if (staticMeshObject->GetInstanceInfo().bIsAppliedDecal)
 					{
 						mLessEqualStencilReplaceState->Bind(mDevice, 0);
 					}
@@ -169,10 +225,30 @@ namespace fq::graphics
 						mLessEqualStencilReplaceState->Bind(mDevice, 1);
 					}
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					for (size_t i = 0; i < INSTNACING_COUNT; i += MAX_INSTANCEING_SIZE)
+					{
+						size_t currentInstancingCount = std::min<size_t>(INSTNACING_COUNT - i, MAX_INSTANCEING_SIZE);
+						mInstancingVertexBuffer->Update(mDevice, (void*)& transforms[i], currentInstancingCount, sizeof(DirectX::SimpleMath::Matrix));
 
-					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+						auto staticMesh = std::static_pointer_cast<StaticMesh>(staticMeshObject->GetStaticMesh());
+						staticMesh->Bind(mDevice);
+
+						auto& materialInterfaces = staticMeshObject->GetMaterials();
+
+						for (size_t subsetIndex = 0; subsetIndex < materialInterfaces.size(); ++subsetIndex)
+						{
+							auto material = std::static_pointer_cast<Material>(materialInterfaces[subsetIndex]);
+							const MaterialInfo& materialInfo = material->GetInfo();
+
+							if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+							{
+								ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, material);
+								material->Bind(mDevice);
+
+								staticMesh->DrawInstancing(mDevice, currentInstancingCount, subsetIndex);
+							}
+						}
+					}
 				}
 			}
 

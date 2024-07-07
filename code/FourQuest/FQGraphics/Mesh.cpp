@@ -19,7 +19,11 @@ namespace fq::graphics
 		const fq::common::Mesh::Subset& subset = mMeshData.Subsets[subsetIndex];
 		d3d11Device->GetDeviceContext()->DrawIndexed(subset.IndexCount, subset.IndexStart, subset.VertexStart);
 	}
-
+	void MeshBase::DrawInstancing(const std::shared_ptr<D3D11Device>& d3d11Device, size_t instancingCount, size_t subsetIndex)
+	{
+		const fq::common::Mesh::Subset& subset = mMeshData.Subsets[subsetIndex];
+		d3d11Device->GetDeviceContext()->DrawIndexedInstanced(subset.IndexCount, instancingCount, subset.IndexStart, subset.VertexStart, 0);
+	}
 
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device)
 		: MeshBase()

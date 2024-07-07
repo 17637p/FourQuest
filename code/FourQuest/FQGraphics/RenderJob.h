@@ -22,9 +22,8 @@ namespace fq::graphics
 
 	struct StaticMeshJob
 	{
-		size_t SubsetIndex;
-		std::shared_ptr<StaticMesh> StaticMesh;
-		std::shared_ptr<Material> Material;
+		MeshObjectInfo MeshObjectInfo;
+		DirectX::SimpleMath::Matrix Transform;
 		StaticMeshObject* StaticMeshObject;
 	};
 

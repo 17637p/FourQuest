@@ -32,8 +32,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// std::unique_ptr<Process> demo = std::make_unique<Process>();
 	// std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
 	// std::unique_ptr<UIDemo> demo = std::make_unique<UIDemo>();
-	// std::unique_ptr<RenderObjectDemo> demo = std::make_unique<RenderObjectDemo>();
-	std::unique_ptr<EffectDemo> demo = std::make_unique<EffectDemo>();
+	 std::unique_ptr<RenderObjectDemo> demo = std::make_unique<RenderObjectDemo>();
+	//std::unique_ptr<EffectDemo> demo = std::make_unique<EffectDemo>();
 
 	demo->Init(hInstance);
 	demo->Loop();

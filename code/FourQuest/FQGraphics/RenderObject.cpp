@@ -10,23 +10,31 @@ namespace fq::graphics
 	StaticMeshObject::StaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
 		const MeshObjectInfo& info,
-		const DirectX::SimpleMath::Matrix& transform)
-		: mNodeHierarchyInstance(nullptr)
+		const DirectX::SimpleMath::Matrix& transform,
+		std::shared_ptr<D3D11JobManager> jobManager)
+		: mJobManager(jobManager)
+		, mNodeHierarchyInstance(nullptr)
 		, mIndex((size_t)-1)
 		, mStaticMesh(staticMesh)
 		, mMaterials(materials)
-		, mInfo(info)
-		, mTransform(transform)
 	{
 	}
 
 	void StaticMeshObject::Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo)
 	{
-		// create job;
+		StaticMeshJob job;
+		job.MeshObjectInfo = mashObjectInfo;
+		job.Transform = transform;
+		job.StaticMeshObject = this;
+
+		mJobManager->AddStaticMeshJob(job);
 	}
-	void StaticMeshObject::RenderInstanced(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo)
+	void StaticMeshObject::RenderInstance(const DirectX::SimpleMath::Matrix& transform)
 	{
-		mInstanceData.push_back({ transform, mashObjectInfo });
+		if (mInstanceData.empty())
+			mJobManager->AddInstanceingMeshObject(this);
+
+		mInstanceData.push_back(transform);
 	}
 
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh,

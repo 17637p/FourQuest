@@ -24,6 +24,8 @@ namespace fq::graphics
 		void Render() override;
 
 	private:
+		enum { MAX_INSTANCEING_SIZE = 512 };
+
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
@@ -45,6 +47,7 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<ShaderProgram> mStaticMeshInstancingShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
@@ -53,5 +56,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;
+
+		std::shared_ptr<D3D11VertexBuffer> mInstancingVertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInstanceIL;
 	};
 }

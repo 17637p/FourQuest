@@ -32,19 +32,12 @@ namespace fq::graphics
 		StaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh,
 			std::vector<std::shared_ptr<IMaterial>> materials,
 			const MeshObjectInfo& info,
-			const DirectX::SimpleMath::Matrix& transforms);
+			const DirectX::SimpleMath::Matrix& transforms,
+			std::shared_ptr<D3D11JobManager> jobManager);
 		~StaticMeshObject() = default;
 
 		virtual void Render(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo) override;
-		virtual void RenderInstance(const DirectX::SimpleMath::Matrix& transform, const MeshObjectInfo& mashObjectInfo) override;
-
-		// Transform
-		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
-
-		// Info
-		virtual void SetMeshObjectInfo(const MeshObjectInfo& info) override { mInfo = info; }
-		virtual const MeshObjectInfo& GetMeshObjectInfo() const override { return mInfo; }
+		virtual void RenderInstance(const DirectX::SimpleMath::Matrix& transform) override;
 
 		// Material
 		virtual void SetMaterials(const std::vector<std::shared_ptr<IMaterial>>& materials) override { mMaterials = materials; }
@@ -61,16 +54,20 @@ namespace fq::graphics
 		virtual size_t GetReferenceBoneIndex() const override { return mIndex; }
 
 		// InstanceData
-		const std::vector<std::pair<DirectX::SimpleMath::Matrix, MeshObjectInfo>>& GetInstanceData() const { return mInstanceData; }
+		virtual void SetInstanceInfo(const MeshObjectInfo& meshObjectInfo) override { mInstancingInfo; }
+		virtual const MeshObjectInfo& GetInstanceInfo() const override { return mInstancingInfo; }
+		const std::vector<DirectX::SimpleMath::Matrix>& GetInstanceData() const { return mInstanceData; }
 		void ClearInstanceData() { mInstanceData.clear(); }
 
 	private:
+		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		size_t mIndex;
 		std::shared_ptr<IStaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
-		MeshObjectInfo mInfo;
-		DirectX::SimpleMath::Matrix mTransform;
+
+		std::vector<DirectX::SimpleMath::Matrix> mInstanceData;
+		MeshObjectInfo mInstancingInfo;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject

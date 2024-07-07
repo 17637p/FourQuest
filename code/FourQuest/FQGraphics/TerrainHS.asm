@@ -134,7 +134,7 @@ dcl_indexrange o0.x 4
 //   v[3][2].x <- patch[3].TangentW.x; v[3][2].y <- patch[3].TangentW.y; v[3][2].z <- patch[3].TangentW.z; 
 //   v[3][3].x <- patch[3].UV.x; v[3][3].y <- patch[3].UV.y; v[3][3].z <- patch[3].BoundsY.x; v[3][3].w <- patch[3].BoundsY.y
 //
-#line 114 "C:\Git\FourQuest\code\FourQuest\FQGraphics\TerrainHS.hlsl"
+#line 114 "C:\Git\FinalProject\code\FourQuest\FQGraphics\TerrainHS.hlsl"
 iadd r0.x, vForkInstanceID.x, l(-1)
 ult r0.yz, vForkInstanceID.xxxx, l(0, 1, 2, 0)
 movc r0.x, r0.y, l(0), r0.x

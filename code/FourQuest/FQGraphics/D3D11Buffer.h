@@ -79,6 +79,18 @@ namespace fq::graphics
 			device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
 		}
 
+		void Update(std::shared_ptr<D3D11Device> device, const void* srcPtr, size_t count, size_t size)
+		{
+			assert(mbUseCPUWrite);
+
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			device->GetDeviceContext()->Map(mVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+			memcpy(mappedData.pData, srcPtr, count * size);
+
+			device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
+		}
+
 		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
 	private:

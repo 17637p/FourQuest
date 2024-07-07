@@ -221,7 +221,7 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	mPickingDrawRTV->Bind(device, mDSV);
 
 	// 나중에는 position 만 있는 걸로 수정해야함
-	for (auto element : staticMeshObjects) { jobManager->CreateStaticMeshJob(element); }
+	// for (auto element : staticMeshObjects) {  jobManager->CreateStaticMeshJob(element); }
 	for (auto element : skinnedMeshObjects) { jobManager->CreateSkinnedMeshJob(element); }
 	for (auto element : terrainMeshObjects) { jobManager->CreateTerrainMeshJob(element); }
 
@@ -235,21 +235,21 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	mMeshPS->Bind(device);
 	mConstantBuffer->Bind(device, ED3D11ShaderType::VertexShader);
 
-	for (const StaticMeshJob& job : staticMeshJobs)
-	{
-		StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(job.StaticMeshObject);
-		std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(staticMeshObject->GetStaticMesh());
-
-		staticMesh->Bind(device);
-
-		ModelTransform modelTransform;
-		modelTransform.color = mStaticMeshObjects[staticMeshObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
-		modelTransform.world = staticMeshObject->GetTransform().Transpose();
-		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
-		mConstantBuffer->Update(device, modelTransform);
-
-		staticMesh->Draw(device, job.SubsetIndex);
-	}
+	// for (const StaticMeshJob& job : staticMeshJobs)
+	// {
+	// 	StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(job.StaticMeshObject);
+	// 	std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(staticMeshObject->GetStaticMesh());
+	// 
+	// 	staticMesh->Bind(device);
+	// 
+	// 	ModelTransform modelTransform;
+	// 	modelTransform.color = mStaticMeshObjects[staticMeshObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+	// 	modelTransform.world = staticMeshObject->GetTransform().Transpose();
+	// 	modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
+	// 	mConstantBuffer->Update(device, modelTransform);
+	// 
+	// 	staticMesh->Draw(device, job.SubsetIndex);
+	// }
 
 	for (const TerrainMeshJob& job : terrainMeshJobs)
 	{

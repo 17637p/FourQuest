@@ -195,23 +195,31 @@ namespace fq::graphics
 
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
+				std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(job.StaticMeshObject->GetStaticMesh());
+				staticMesh->Bind(mDevice);
 
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
+				const auto& materialInterfaces = job.StaticMeshObject->GetMaterials();
+
+				for (size_t subsetIndex = 0; subsetIndex < materialInterfaces.size(); ++subsetIndex)
 				{
-					job.StaticMesh->Bind(mDevice);
-					job.Material->Bind(mDevice);
+					std::shared_ptr<Material> material = std::static_pointer_cast<Material>(materialInterfaces[subsetIndex]);
+					const MaterialInfo& materialInfo = material->GetInfo();
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
+					{
+						material->Bind(mDevice);
 
-					AlphaData alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.Transform);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, material);
 
-					mAlphaDataCB->Update(mDevice, alphaData);
+						AlphaData alphaData;
+						alphaData.bUseAlphaConstant = true;
+						alphaData.Alpha = materialInfo.BaseColor.A();
 
-					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+						mAlphaDataCB->Update(mDevice, alphaData);
+
+						staticMesh->Draw(mDevice, subsetIndex);
+					}
 				}
 			}
 
