@@ -50,6 +50,7 @@ void fq::client::MeleeMonster::OnStart()
 {
 	mTransform = GetComponent<game_module::Transform>();
 	mStartPosition = mTransform->GetWorldPosition();
+	mAnimator = GetComponent<game_module::Animator>();
 
 	mMaxHp = mHp;
 
@@ -104,12 +105,12 @@ void fq::client::MeleeMonster::Patrol()
 
 	float distance = (worldPos - mPatrolDestination).Length();
 
-	constexpr float EndPatrolDistance = 0.1f;
+	constexpr float EndPatrolDistance = 1.5f;
 
 	// 목표 지점 도착 
 	if (distance <= EndPatrolDistance)
 	{
-		changeToRandomIdleOrPatrol();
+		ChangeToRandomIdleOrPatrol();
 	}
 	else //  몬스터 이동 
 	{
@@ -117,7 +118,7 @@ void fq::client::MeleeMonster::Patrol()
 	}
 }
 
-void fq::client::MeleeMonster::changeToRandomIdleOrPatrol()
+void fq::client::MeleeMonster::ChangeToRandomIdleOrPatrol()
 {
 	static std::random_device rd;
 	static std::mt19937 gen(rd());
@@ -128,8 +129,7 @@ void fq::client::MeleeMonster::changeToRandomIdleOrPatrol()
 	// Idle
 	if (val < 0.5f)  
 	{
-		
-
+		mAnimator->SetParameterBoolean("OnPatrol", false);
 	}
 	else // Patrol
 	{
