@@ -1,6 +1,7 @@
 #include "MeleeMonsterAttackState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "MeleeMonster.h"
 
 fq::client::MeleeMonsterAttackState::MeleeMonsterAttackState()
 {

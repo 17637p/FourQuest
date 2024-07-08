@@ -1,14 +1,19 @@
 #include "MeleeMonster.h"
 
 fq::client::MeleeMonster::MeleeMonster()
-{
-
-}
+	:mMaxHp(0.f)
+	,mHp(100.f)
+	,mAttackPower(10.f)
+	,mMoveSpeed(1.f)
+	,mAcceleration(1.f)
+	,mAttackRange(10.f)
+	,mGameManager(nullptr)
+	,mAnimator(nullptr)
+	,mTarget(nullptr)
+{}
 
 fq::client::MeleeMonster::~MeleeMonster()
-{
-
-}
+{}
 
 std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {

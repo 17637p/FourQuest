@@ -17,11 +17,8 @@ namespace fq::client
 		~MeleeMonster();
 
 		void SetTarget(game_module::GameObject* target) override;
-
 		void EmitAttack();
-
 		void LookAtTarget();
-
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
