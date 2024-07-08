@@ -145,6 +145,7 @@ namespace fq::graphics
 		float unused[2];
 	};
 
+	// 타일링이랑 알파 컷오프 처리 추가해두기
 	struct CBMaterial
 	{
 		DirectX::SimpleMath::Color BaseColor;
@@ -158,8 +159,8 @@ namespace fq::graphics
 
 		int bUseRoughnessMap;
 		int bUseNormalMap;
-		int bUseEmissiveMap;
-		float unused[1];
+		int bUseEmissiveMap;		
+		float AlphaCutoff;
 	};
 
 	struct CBDecalObject

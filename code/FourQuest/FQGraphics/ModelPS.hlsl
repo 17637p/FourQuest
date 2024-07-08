@@ -24,6 +24,7 @@ cbuffer cbMaterial : register(b0)
     bool cUseRoughnessMap;
     bool cUseNormalMap;
     bool cUseEmissiveMap;
+    float cAlphaCutoff;
 };
 
 cbuffer cbLight : register(b1)
@@ -41,7 +42,7 @@ cbuffer cbLight : register(b1)
     float pad2;
 };
 
-cbuffer cbShadowTransformCascaseEnd: register(b2)
+cbuffer cbShadowTransformCascaseEnd : register(b2)
 {
     matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
@@ -64,13 +65,16 @@ Texture2DArray gDirectionalShadowMap : register(t9);
 
 float4 main(VertexOut pin) : SV_TARGET
 {
-    float3 albedo = cBaseColor.rgb;
+    float4 color = cBaseColor;
     
     if (cUseAlbedoMap)
     {
-        albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        color *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
     }
     
+    clip(color.a - cAlphaCutoff);
+    
+    float3 albedo = color.rgb;
     float metalness = cMetalness;
 
     if (cUseMetalnessMap)

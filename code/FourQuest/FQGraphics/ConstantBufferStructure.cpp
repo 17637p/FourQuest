@@ -28,16 +28,17 @@ namespace fq::graphics
 		CBMaterialData.BaseColor = info.BaseColor;
 		CBMaterialData.EmissiveColor = info.EmissiveColor;
 		CBMaterialData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0);
-	
+
 		CBMaterialData.Metalness = info.Metalness;
 		CBMaterialData.Roughness = info.Roughness;
 		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && info.bUseBaseColor;
 		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && info.bUseMetalness;
-		
+
 		CBMaterialData.bUseNormalMap = material->GetHasNormal() && info.bUseNormalness;
 		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && info.bUseRoughness;
 		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive();
-		
+		CBMaterialData.AlphaCutoff = info.AlphaCutoff;
+
 		cbuffer->Update(device, CBMaterialData);
 	}
 	void ConstantBufferHelper::UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,

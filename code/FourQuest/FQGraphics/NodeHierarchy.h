@@ -61,6 +61,7 @@ namespace fq::graphics
 		const std::vector<DirectX::SimpleMath::Matrix> GetTransposedFinalTransforms() const { return mTransposedFinalTransforms; }
 
 	private:
+		void clear();
 		void calculateRootTransform();
 
 	private:
