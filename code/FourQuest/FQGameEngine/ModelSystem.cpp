@@ -9,6 +9,7 @@
 
 #include "EditorProcess.h"
 #include "GameProcess.h"
+#include "RenderingSystem.h"
 
 fq::game_engine::ModelSystem::ModelSystem()
 	:mGameProcess(nullptr)
@@ -27,7 +28,7 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* 
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
-	std::filesystem::path texturePath = path.parent_path();
+	std::filesystem::path texturePath = mGameProcess->mRenderingSystem->GetDefaultTexturePath();
 	std::filesystem::path modelPath = path;
 
 	auto& graphics = mGameProcess->mGraphics;

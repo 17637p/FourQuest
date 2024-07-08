@@ -50,9 +50,14 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		{
 			animator.UpdateAnimation(dt);
 
-			if (!animator.GetHasController() || !animator.GetHasNodeHierarchyInstance())
+			if (!animator.GetHasController() )
 			{
 				spdlog::warn("{} does not have a controller", object.GetName());
+				return;
+			}
+			else if (!animator.GetHasNodeHierarchyInstance())
+			{
+				spdlog::warn("animator does not have a node hierarchy instance ", object.GetName());
 				return;
 			}
 

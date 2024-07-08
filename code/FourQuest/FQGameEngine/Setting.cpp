@@ -102,6 +102,8 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
+
+			//Texture 로드경로 설정
 			auto defaultTexturePath = mGameProcess->mRenderingSystem->GetDefaultTexturePath();
 
 			std::string sPath = defaultTexturePath.string();
