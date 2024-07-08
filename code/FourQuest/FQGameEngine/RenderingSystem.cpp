@@ -85,7 +85,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 					if (parentObject != nullptr)
 					{
-						meshObject->SetTransform(parentObject->GetComponent<Transform>()->GetWorldMatrix());
+						meshObject->SetTransform(transform.GetWorldMatrix());
 					}
 					else
 					{

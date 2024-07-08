@@ -29,7 +29,6 @@ namespace fq::graphics
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
-
 		// Model Data Helper
 		virtual void WriteModel(const std::string& path, const fq::common::Model& modelData) override;
 		virtual fq::common::Model ReadModel(const std::string& path) override;

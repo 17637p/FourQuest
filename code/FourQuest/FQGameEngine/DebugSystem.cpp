@@ -193,7 +193,6 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 
 	Color color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
 
-
 	auto calpsuleInfo = collider.GetCapsuleInfomation();
 	auto offset = collider.GetOffset();
 	auto eDirection = collider.GetDirection();
