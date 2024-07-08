@@ -106,7 +106,7 @@ void fq::graphics::LightProbePass::Render()
 
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 		{
-			if (job.ObjectRenderType == EObjectRenderType::Opaque)
+			if (job.ObjectRenderType == EObjectRenderType::Opaque && job.tempObject->GetUseLightProbe())
 			{
 				int tetIndex = 0;
 				DirectX::SimpleMath::Vector4 weights;

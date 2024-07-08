@@ -33,6 +33,16 @@ namespace fq::graphics
 		return mOutLineColor;
 	}
 
+	void StaticMeshObject::SetUseLightProbe(bool isUseLightProbe)
+	{
+		mIsUseLightProbe = isUseLightProbe;
+	}
+
+	bool StaticMeshObject::GetUseLightProbe()
+	{
+		return mIsUseLightProbe;
+	}
+
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
 		DirectX::SimpleMath::Matrix transform,

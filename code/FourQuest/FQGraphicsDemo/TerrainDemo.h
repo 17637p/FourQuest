@@ -35,7 +35,7 @@ private:
 	void createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	//Probe Test
-	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform);
+	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe);
 
 private:
 	/// 기본적으로 필요한 변수들 

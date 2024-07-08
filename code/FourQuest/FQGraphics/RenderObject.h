@@ -72,6 +72,10 @@ namespace fq::graphics
 		virtual void SetIsAppliedDecal(bool bIsAppiedDecal) override { mbIsAppliedDecal = bIsAppiedDecal; }
 		virtual const bool GetIsAppliedDecal() const override { return mbIsAppliedDecal; }
 
+		// LightProbe
+		virtual void SetUseLightProbe(bool isUseLightProbe) override;
+		virtual bool GetUseLightProbe() override;
+
 	private:
 		std::shared_ptr<StaticMesh> mStaticMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
@@ -92,6 +96,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color mOutLineColor;
 
 		bool mbIsAppliedDecal;
+		bool mIsUseLightProbe;
 	};
 
 #pragma region inlineFunc

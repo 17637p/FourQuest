@@ -5,7 +5,12 @@
 
 #include <directxtk/SimpleMath.h>
 
+#ifdef _DEBUG
 #pragma comment(lib, "../FQGraphics/tetgen.lib")
+#else
+#pragma comment(lib, "../FQGraphics/tetgenL.lib")
+#endif // DEBUG
+
 #include "../FQGraphics/tetgen.h"
 
 namespace fq::graphics

@@ -3,6 +3,7 @@
 #include <DirectXTex.h>
 #include <directxtk/DDSTextureLoader.h>
 #include <fstream>
+#include <filesystem>
 
 #include "d3d11resourceManager.h"
 #include "D3D11View.h"
@@ -193,8 +194,15 @@ void D3D11LightProbeManager::SaveLightProbes(const std::string& fileName)
 		return;
 	}
 
+
+	std::filesystem::path dirPath = "./resource/LightProbe/";
+	if (!std::filesystem::exists(dirPath))
+	{
+		std::filesystem::create_directory(dirPath);
+	}
+
 	std::string line;
-	std::ofstream lightProbeFile("./resource/LightProbe/" + fileName + ".Ltp");
+	std::ofstream lightProbeFile(dirPath.string() + fileName + ".Ltp");
 	if (lightProbeFile.is_open())
 	{
 		// LightProbeSize

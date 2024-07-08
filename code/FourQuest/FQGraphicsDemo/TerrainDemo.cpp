@@ -67,10 +67,16 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
 	directionalLightInfo.intensity = 2;
-	directionalLightInfo.direction = { 0, -0.7, -0.7 };
+	directionalLightInfo.direction = { 0.5, -0.7, -0.3 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
+
+	directionalLightInfo.direction = { -0.3, 0.2, 0.7 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(2, directionalLightInfo);
+
 	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
 
 	//Light Probe Test
@@ -94,15 +100,20 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	mTestGraphics->CreateModel(cubeYModel3, textureBase3Path);
 	mTestGraphics->CreateModel(sphereModel, textureBase3Path);
 
-	createModel(cubeYModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 2.5, 0, 0 }));
-	createModel(cubeYModel1, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -2.5, 0, 0 }));
-	createModel(cubeYModel2, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 2.5 }));
-	createModel(cubeYModel3, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, -2.5 }));
+	createModel(cubeYModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 2.5, 0, 0 }), false);
+	createModel(cubeYModel1, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -2.5, 0, 0 }), false);
+	createModel(cubeYModel2, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 2.5 }), false);
+	createModel(cubeYModel3, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, -2.5 }), false);
 
-	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.3, 1.2, -0.3 }));
-	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.3, 1.4, 0.3 }));
-	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.3, 1.7, -0.3 }));
-	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.3, 1.9, 0.3 }));
+	//createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.2, -0.7 }), true);
+	//createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.4, 0.7 }), true);
+	//createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.7, -0.7 }), true);
+	//createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.9, 0.7 }), true);
+
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.2, 0 }), true);
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.4, 0 }), true);
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.7 }), true);
+	createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.7 }), true);
 
 	lightProbePositions.push_back({ 1, 1, 0 });
 	lightProbePositions.push_back({ -1, 1, 0 });
@@ -412,7 +423,7 @@ void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matr
 	}
 }
 
-void TerrainDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform)
+void TerrainDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe)
 {
 	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
 
@@ -455,15 +466,20 @@ void TerrainDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix
 				{
 					matData.BaseColorFileName = L"Blue.png";
 				}
-				else
+				else if (index == 3)
 				{
 					matData.BaseColorFileName = L"Black.png";
+				}
+				else
+				{
+
 				}
 
 				mat[i]->SetMaterialData(matData);
 			}
 
 			mStaticMeshObjects.push_back(iStaticMeshObject);
+			iStaticMeshObject->SetUseLightProbe(isUseLightProbe);
 		}
 	}
 

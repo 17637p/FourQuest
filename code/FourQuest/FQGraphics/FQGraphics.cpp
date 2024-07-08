@@ -100,16 +100,9 @@ void FQGraphics::DeleteLightProbe(int index)
 
 void FQGraphics::BakeLightProbe()
 {
-	static bool isSetLightProbe = false;
-
-	if (!isSetLightProbe)
-	{
-		mLightProbeManager->BakeAllLightProbeCoefficient();
-	}
-		mLightProbeManager->MakeTetrahedron();
-		mRenderManager->SetLightProbe(true);
-
-	isSetLightProbe = true;
+	mLightProbeManager->BakeAllLightProbeCoefficient();
+	mLightProbeManager->MakeTetrahedron();
+	mRenderManager->SetLightProbe(true);
 }
 
 int FQGraphics::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
