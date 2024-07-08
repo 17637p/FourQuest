@@ -103,6 +103,7 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	auto nodeHierarchyInstance = nodeHierarchy->CreateNodeHierarchyInstance();
 	animator->SetNodeHierarchy(nodeHierarchy);
 	animator->SetNodeHierarchyInstance(nodeHierarchyInstance);
+	nodeHierarchyInstance->SetBindPose();
 
 	auto controller = mLoader.Load(controllerPath);
 
