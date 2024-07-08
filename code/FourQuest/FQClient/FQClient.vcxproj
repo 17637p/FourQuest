@@ -36,6 +36,12 @@
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="HpBar.h" />
+    <ClInclude Include="MeleeMonster.h" />
+    <ClInclude Include="MeleeMonsterAttackState.h" />
+    <ClInclude Include="MeleeMonsterChaseState.h" />
+    <ClInclude Include="MeleeMonsterDeadState.h" />
+    <ClInclude Include="MeleeMonsterIdleState.h" />
+    <ClInclude Include="MeleeMonsterPatrolState.h" />
     <ClInclude Include="MonsterAttack.h" />
     <ClInclude Include="MonsterChase.h" />
     <ClInclude Include="ClientRegistration.h" />
@@ -68,6 +74,12 @@
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HpBar.cpp" />
+    <ClCompile Include="MeleeMonster.cpp" />
+    <ClCompile Include="MeleeMonsterAttackState.cpp" />
+    <ClCompile Include="MeleeMonsterChaseState.cpp" />
+    <ClCompile Include="MeleeMonsterDeadState.cpp" />
+    <ClCompile Include="MeleeMonsterIdleState.cpp" />
+    <ClCompile Include="MeleeMonsterPatrolState.cpp" />
     <ClCompile Include="MonsterAttack.cpp" />
     <ClCompile Include="MonsterChase.cpp" />
     <ClCompile Include="ClientRegistration.cpp" />

@@ -5,6 +5,7 @@
 #include "PlantAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
+#include "GameManager.h"
 
 fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)
@@ -16,6 +17,8 @@ fq::client::PlantMonster::PlantMonster()
 	, mAnimator(nullptr)
 	, mAttackRange(1.f)
 	, mGameManager(nullptr)
+	, mAttackCoolTime(0.f)
+	, mAttackElapsedTime(0.f)
 {
 }
 
