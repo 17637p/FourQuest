@@ -4,6 +4,7 @@
 
 #include "InputManager.h"
 #include "DemoUtils.h"
+#include <IFQRenderResource.h>
 
 using namespace fq::utils;
 
@@ -67,11 +68,51 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
 	directionalLightInfo.intensity = 2;
-	directionalLightInfo.direction = { 0, -0.7, -0.7 };
+	directionalLightInfo.direction = { 0.5, -0.7, -0.3 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
+
+	directionalLightInfo.direction = { -0.3, 0.2, 0.7 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(2, directionalLightInfo);
+
+	renderObjectInit();
+
 	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
+
+	lightProbePositions.push_back({ 1, 1, 0 });
+	lightProbePositions.push_back({ -1, 1, 0 });
+	lightProbePositions.push_back({ 0, 1, 1 });
+	lightProbePositions.push_back({ 0, 1, -1 });
+	lightProbePositions.push_back({ 1, 2, 0 });
+	lightProbePositions.push_back({ -1,2, 0 });
+	lightProbePositions.push_back({ 0, 2, 1 });
+	lightProbePositions.push_back({ 0, 2, - 1 });
+
+	lightProbePositions.push_back({ 1, 1, 1 });
+	lightProbePositions.push_back({ -1, 1, 1 });
+	lightProbePositions.push_back({ -1, 1, -1 });
+	lightProbePositions.push_back({ 1, 1, -1 });
+	lightProbePositions.push_back({ 1, 2, 1 });
+	lightProbePositions.push_back({ -1,2, 1 });
+	lightProbePositions.push_back({ -1, 2, -1 });
+	lightProbePositions.push_back({ 1, 2, -1 });
+
+	//lightProbePositions.push_back({ 5, -1, 0 });
+	//lightProbePositions.push_back({ -5, -1, 0 });
+	//lightProbePositions.push_back({ 0, -1, 5 });
+	//lightProbePositions.push_back({ 0, -1, -5 });
+	//lightProbePositions.push_back({ 5, 10, 0 });
+	//lightProbePositions.push_back({ -5,10, 0 });
+	//lightProbePositions.push_back({ 0, 10, 5 });
+	//lightProbePositions.push_back({ 0, 10, -5 });
+
+	for (int i = 0; i < lightProbePositions.size(); i++)
+	{
+		mTestGraphics->AddLightProbe(lightProbePositions[i]);
+	}
 
 	return true;
 }
@@ -143,6 +184,7 @@ LRESULT TerrainDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 void TerrainDemo::Update()
 {
 	mTimeManager.Update();
+	renderObjectUpdate();
 	InputManager::GetInstance().Update();
 
 	if (GetAsyncKeyState(VK_F1) & 0x8000)
@@ -225,6 +267,22 @@ void TerrainDemo::Update()
 	{
 		mTestGraphics->SaveCubeProbeTexture(1024, 1024);
 	}
+	if (InputManager::GetInstance().IsGetKeyDown('K'))
+	{
+		mTestGraphics->BakeLightProbe();
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('O'))
+	{
+		mTestGraphics->DeleteLightProbe(3);
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('N'))
+	{
+		mTestGraphics->SaveLightProbes("lightProbe");
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('M'))
+	{
+		mTestGraphics->LoadLightProbes("lightProbe");
+	}
 
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
@@ -250,6 +308,18 @@ void TerrainDemo::debugRender()
 	gridInfo.GridSize = 1.f;
 	gridInfo.Color = { 1, 1, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
+
+	SphereInfo sphereInfo;
+	sphereInfo.Sphere.Center = { 0, 0, 0 };
+	sphereInfo.Sphere.Radius = 0.1f;
+	sphereInfo.Color = { 1,1,1,1 };
+
+	for (int i = 0; i < lightProbePositions.size(); i++)
+	{
+		sphereInfo.Sphere.Center = lightProbePositions[i];
+		mTestGraphics->DrawSphere(sphereInfo);
+	}
+
 }
 
 void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform /*= DirectX::SimpleMath::Matrix::Identity*/)
@@ -323,3 +393,264 @@ void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matr
 		mTestGraphics->SetTerrainMeshObject(iTerrainMeshObject, terrainMaterial);
 	}
 }
+
+/*
+void TerrainDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe)
+{
+	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
+
+	static int index = 0;
+
+	for (auto mesh : modelData.Meshes)
+	{
+		if (mesh.second.Vertices.empty())
+		{
+			continue;
+		}
+
+		fq::graphics::MeshObjectInfo meshInfo;
+		meshInfo.ModelPath = modelPath;
+		meshInfo.MeshName = mesh.second.Name;
+		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
+
+		for (auto subset : mesh.second.Subsets)
+		{
+			meshInfo.MaterialNames.push_back(subset.MaterialName);
+		}
+
+		if (mesh.second.BoneVertices.empty())
+		{
+			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
+
+			std::vector<std::shared_ptr<fq::graphics::IMaterial>> mat = iStaticMeshObject->GetMaterialInterfaces();
+			for (int i = 0; i < mat.size(); i++)
+			{
+				fq::common::Material matData = mat[i]->GetMaterialData();
+				if (index == 0)
+				{
+					matData.BaseColorFileName = L"Red.png";
+				}
+				else if (index == 1)
+				{
+					matData.BaseColorFileName = L"Green.png";
+				}
+				else if (index == 2)
+				{
+					matData.BaseColorFileName = L"Blue.png";
+				}
+				else if (index == 3)
+				{
+					matData.BaseColorFileName = L"Black.png";
+				}
+				else
+				{
+
+				}
+
+				mat[i]->SetMaterialData(matData);
+			}
+
+			mStaticMeshObjects.push_back(iStaticMeshObject);
+			iStaticMeshObject->SetUseLightProbe(isUseLightProbe);
+		}
+	}
+
+	index++;
+}*/
+
+void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe)
+{
+	using namespace fq::graphics;
+
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(modelPath, textureBasePath);
+
+	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(modelPath);
+
+	static int index = 0;
+
+	for (auto animation : modelData.Animations)
+	{
+		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(modelPath, animation.Name);
+		boneHierarchy->RegisterAnimation(animationInterface);
+	}
+
+	auto boneHierarchyCache = boneHierarchy->CreateNodeHierarchyInstance();
+
+	for (const auto& [node, mesh] : modelData.Meshes)
+	{
+		if (mesh.Vertices.empty())
+		{
+			continue;
+		}
+
+		std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
+		materialInterfaces.reserve(mesh.Subsets.size());
+		MeshObjectInfo meshObjectInfo;
+
+
+		for (const auto& subset : mesh.Subsets)
+		{
+			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(modelPath, subset.MaterialName);
+			materialInterfaces.push_back(materialInterface);
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
+			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, node.ToParentMatrix * transform);
+			mStaticMeshObjects.push_back(iStaticMeshObject);
+			iStaticMeshObject->SetUseLightProbe(isUseLightProbe);
+
+			std::vector<std::shared_ptr<fq::graphics::IMaterial>> mat = iStaticMeshObject->GetMaterials();
+			for (int i = 0; i < mat.size(); i++)
+			{
+				fq::graphics::MaterialInfo matData = mat[i]->GetInfo();
+				if (index == 0)
+				{
+					matData.BaseColorFileName = textureBasePath.wstring() + L"/Red.png";
+				}
+				else if (index == 1)
+				{
+					matData.BaseColorFileName = textureBasePath.wstring() + L"/Green.png";
+				}
+				else if (index == 2)
+				{
+					matData.BaseColorFileName = textureBasePath.wstring() + L"/Blue.png";
+				}
+				else if (index == 3)
+				{
+					matData.BaseColorFileName = textureBasePath.wstring() + L"/Black.png";
+				}
+				else
+				{
+			
+				}
+			
+				mat[i]->SetInfo(matData);
+			}
+			iStaticMeshObject->SetMaterials(mat);
+		}
+	}
+
+	index++;
+}
+
+void TerrainDemo::renderObjectInit()
+{
+	// convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	// convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
+
+	//Light Probe Test
+	 const std::string cubeYModel = "./resource/Graphics/TerrainDemo/testCubeY.model";
+	 const std::string cubeYModel1 = "./resource/Graphics/TerrainDemo/testCubeY1.model";
+	 const std::string cubeYModel2 = "./resource/Graphics/TerrainDemo/testCubeY2.model";
+	 const std::string cubeYModel3 = "./resource/Graphics/TerrainDemo/testCubeY3.model";
+
+	 const std::string sphereModel = "./resource/Graphics/TerrainDemo/testSphere.model";
+
+	 const std::string textureBase3Path = "./resource/example/texture";
+
+	 createModel(cubeYModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 2.5, 0, 0 }), false);
+	 createModel(cubeYModel1, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -2.5, 0, 0 }), false);
+	 createModel(cubeYModel2, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 2.5 }), false);
+	 createModel(cubeYModel3, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, -2.5 }), false);
+
+	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.2, -0.7 }), true);
+	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.4, 0.7 }), true);
+	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.7, -0.7 }), true);
+	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.9, 0.7 }), true);
+
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.2, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.4, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.7 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.7 }), true);
+}
+
+void TerrainDemo::renderObjectUpdate()
+{
+	materialUpdate();
+}
+
+void TerrainDemo::materialUpdate()
+{
+	static float tempColor = 0.0f;
+
+	tempColor += mTimeManager.GetDeltaTime();
+	tempColor = fmod(tempColor, 1.f);
+
+	for (auto matrialInterface : mTestGraphics->GetMaterials())
+	{
+		auto materialData = matrialInterface->GetInfo();
+
+		if (GetAsyncKeyState('U') & 0x8000)
+		{
+			materialData.bUseBaseColor = false;
+			materialData.bUseMetalness = false;
+			materialData.bUseRoughness = false;
+			materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+			materialData.Metalness = tempColor;
+			materialData.Roughness = tempColor;
+			//materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+			//materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+		}
+		else
+		{
+			materialData.bUseMetalness = true;
+			materialData.bUseRoughness = true;
+			materialData.bUseBaseColor = true;
+		}
+
+		matrialInterface->SetInfo(materialData);
+	}
+
+	
+	for (auto meshInterface : mStaticMeshObjects)
+	{
+		for (auto matrialInterface : meshInterface->GetMaterials())
+		{
+			auto materialData = matrialInterface->GetInfo();
+
+			if (GetAsyncKeyState('T') & 0x8000)
+			{
+				materialData.bUseBaseColor = false;
+				materialData.bUseMetalness = false;
+				materialData.bUseRoughness = false;
+				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+				materialData.Metalness = tempColor;
+				materialData.Roughness = tempColor;
+				// materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+				// materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+			}
+			else
+			{
+				materialData.bUseMetalness = true;
+				materialData.bUseRoughness = true;
+				materialData.bUseBaseColor = true;
+			}
+
+			matrialInterface->SetInfo(materialData);
+		}
+	}
+}
+
+void TerrainDemo::convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath)
+{
+	if (!std::filesystem::exists(readFolderPath))
+	{
+		return;
+	}
+
+	for (const auto& iter : std::filesystem::directory_iterator{ readFolderPath })
+	{
+		if (iter.path().extension() == ".fbx")
+		{
+			auto outPath = iter.path();
+			outPath.replace_extension(".model");
+			outPath = outFolderPath / outPath.filename();
+
+			auto convertedData = mTestGraphics->ConvertModel(iter.path().string());
+			mTestGraphics->WriteModel(outPath.string(), convertedData);
+		}
+	}
+}
+

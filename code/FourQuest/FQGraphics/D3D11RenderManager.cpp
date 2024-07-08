@@ -26,6 +26,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
 		std::shared_ptr<D3D11ObjectManager> objectManager,
+		std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 		unsigned short width,
 		unsigned short height,
 		EPipelineType pipelineType)
@@ -37,7 +38,7 @@ namespace fq::graphics
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, objectManager, width, height);
+			mForwardPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, objectManager, lightProbeManager, width, height);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
 			mDeferredPipeline->Initialize(device, jobManager, cameraManager, lightManager, resourceManager, debugDrawManager, particleManager, objectManager, width, height);
@@ -163,4 +164,21 @@ namespace fq::graphics
 			break;
 		}
 	}
+
+	void D3D11RenderManager::SetLightProbe(bool isSetLightProbe)
+	{
+		switch (mPipelineType)
+		{
+			case fq::graphics::EPipelineType::Forward:
+				return mForwardPipeline->SetLightProbe(isSetLightProbe);
+				break;
+			case fq::graphics::EPipelineType::Deferred:
+				//return mDeferredPipeline->SetLightProbe(isSetLightProbe);
+				break;
+			default:
+				assert(false);
+				break;
+		}
+	}
 }
+

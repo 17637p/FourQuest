@@ -204,4 +204,5 @@ float4 main(VertexOut pin) : SV_TARGET
      //}
    
     return float4(directLighting + ambientLighting + emissive, 1.f);
+    //return float4(albedo, 1.f);
 }

@@ -3,7 +3,7 @@
 #include "../FQGameModule/NavigationAgent.h"
 
 #include <fstream>
-#include <io.h>
+#include <filesystem>
 
 #include <recastnavigation/RecastAlloc.h>
 
@@ -338,7 +338,14 @@ void fq::game_engine::NavigationMeshBuilder::SaveNavMesh(std::string& fileName)
 	}
 
 	std::string line;
-	std::ofstream navMeshFile("./resource/NavMesh/" + fileName + ".Nav");
+
+	std::filesystem::path dirPath = "./resource/NavMesh/";
+	if (!std::filesystem::exists(dirPath))
+	{
+		std::filesystem::create_directory(dirPath);
+	}
+
+	std::ofstream navMeshFile(dirPath.string() + fileName + ".Nav");
 	if (navMeshFile.is_open()) 
 	{
 		// Write Confing

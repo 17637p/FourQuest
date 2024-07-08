@@ -4,7 +4,8 @@ struct VertexOut
 	float2 uv : Texcoord;
 };
 
-Texture2D outLineBlur : register(t0); 
+Texture2D OffScreen : register(t0); 
+Texture2D lightProbe : register(t1); 
 
 SamplerState defaultSS : register(s0);
 
@@ -12,7 +13,8 @@ float4 main(VertexOut pin) : SV_Target
 {
 	float3 result;
 
-	result = outLineBlur.Sample(defaultSS, pin.uv);
+	result = lightProbe.Sample(defaultSS, pin.uv);
+	result += OffScreen.Sample(defaultSS, pin.uv);
 
 	return float4(result, 1);
 }

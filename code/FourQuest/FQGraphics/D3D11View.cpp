@@ -63,6 +63,8 @@ void fq::graphics::D3D11RenderTargetView::OnResize(const std::shared_ptr<D3D11De
 	case ED3D11RenderTargetViewType::Emissive:
 		// intentional fall through
 	case ED3D11RenderTargetViewType::Offscreen:
+		// intentional fall through
+	case ED3D11RenderTargetViewType::LightProbeIrr:
 	{
 		D3D11_TEXTURE2D_DESC textureDesc = {};
 		textureDesc.Width = width;
@@ -275,6 +277,11 @@ void fq::graphics::D3D11RenderTargetView::Bind(const std::shared_ptr<D3D11Device
 	{
 		d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, mRTV.GetAddressOf(), nullptr);
 	}
+}
+
+void D3D11RenderTargetView::UnBind(const std::shared_ptr<D3D11Device>& d3d11Device)
+{
+	//d3d11Device->GetDeviceContext()->OMSetRenderTargets(1, nullptr, nullptr);
 }
 
 Microsoft::WRL::ComPtr<ID3D11RenderTargetView> D3D11RenderTargetView::GetRTV()

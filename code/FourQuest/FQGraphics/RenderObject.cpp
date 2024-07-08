@@ -20,6 +20,16 @@ namespace fq::graphics
 	{
 	}
 
+	void StaticMeshObject::SetUseLightProbe(bool isUseLightProbe)
+	{
+		mIsUseLightProbe = isUseLightProbe;
+	}
+
+	bool StaticMeshObject::GetUseLightProbe()
+	{
+		return mIsUseLightProbe;
+	}
+
 	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
 		const MeshObjectInfo& info,

@@ -52,7 +52,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mCameraManager->Initialize(width, height);
 	mLightManager->Initialize(mDevice);
 	mDebugDrawManager->Initialize(mDevice);
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mObjectManager, width, height, pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mObjectManager, mLightProbeManager, width, height, pipelineType);
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
@@ -85,6 +85,38 @@ void fq::graphics::FQGraphics::SetIBLTexture(const std::wstring& diffusePath, co
 	iblTexture.DiffuseIrradiance = std::make_shared<D3D11CubeTexture>(mDevice, diffusePath);
 	iblTexture.SpecularBRDF = std::make_shared<D3D11Texture>(mDevice, brdfLUTPath);
 	mLightManager->SetIBLTexture(iblTexture);
+}
+
+void FQGraphics::LoadLightProbes(const std::string& fileName)
+{
+	bool isSucceedLoad = mLightProbeManager->LoadLightProbes(fileName);
+	if (isSucceedLoad)
+	{
+		mRenderManager->SetLightProbe(true);
+	}
+}
+
+void FQGraphics::SaveLightProbes(const std::string& fileName)
+{
+	mLightProbeManager->SaveLightProbes(fileName);
+}
+
+void FQGraphics::DeleteLightProbe(int index)
+{
+	mLightProbeManager->DeleteLightProbe(index);
+	mRenderManager->SetLightProbe(false);
+}
+
+void FQGraphics::BakeLightProbe()
+{
+	mLightProbeManager->BakeAllLightProbeCoefficient();
+	mLightProbeManager->MakeTetrahedron();
+	mRenderManager->SetLightProbe(true);
+}
+
+int FQGraphics::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
+{
+	return mLightProbeManager->AddLightProbe(position);
 }
 
 void FQGraphics::DeleteCubeProbe(unsigned short index)
@@ -131,15 +163,17 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 	SetCamera(cameraInfo);
 	SetWindowSize(width, height);
 
+	mRenderManager->SetLightProbe(false);
+
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
 	std::vector<std::wstring> paths{};
 
-	std::unordered_map<unsigned short, CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
+	std::vector<CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
 	for (const auto& cubeProbe : cubeProbes)
 	{
 		fq::common::Transform probeTransform;
 
-		probeTransform.worldPosition = cubeProbe.second->position;
+		probeTransform.worldPosition = cubeProbe->position;
 		probeTransform.worldScale = { 1, 1, 1 };
 
 		for (unsigned int i = 0; i < 6; i++)
@@ -159,12 +193,46 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 			mJobManager->ClearAll();
 			//EndRender();
 
-			std::wstring path = mLightProbeManager->SaveCubeProbeTexture(cubeProbe.second->index, directions[i]);
+			std::wstring path = mLightProbeManager->SaveProbe1DirectionTexture(cubeProbe->index, directions[i]);
 			paths.push_back(path);
 		}
 		D3D11Texture cubeMap{ mDevice, paths };
-		std::wstring cubeMapFileName = L"CubeProbe" + std::to_wstring(cubeProbe.second->index) + L".dds";
+		std::wstring cubeMapFileName = L"CubeProbe" + std::to_wstring(cubeProbe->index) + L".dds";
 		cubeMap.Save(mDevice, cubeMapFileName);
+	}
+
+	std::vector<LightProbe*> lightProbes = mLightProbeManager->GetLightProbes();
+	for (int lightProbeIndex = 0; lightProbeIndex < mLightProbeManager->GetLightProbesSize(); lightProbeIndex++)
+	{
+		fq::common::Transform probeTransform;
+
+		probeTransform.worldPosition = lightProbes[lightProbeIndex]->position;
+		probeTransform.worldScale = { 1, 1, 1 };
+
+		for (unsigned int i = 0; i < 6; i++)
+		{
+			probeTransform.worldRotation = directionQuaternions[i];
+			probeTransform.worldMatrix =
+				DirectX::SimpleMath::Matrix::CreateScale(probeTransform.worldScale) *
+				DirectX::SimpleMath::Matrix::CreateFromQuaternion(probeTransform.worldRotation) *
+				DirectX::SimpleMath::Matrix::CreateTranslation(probeTransform.worldPosition);
+
+			UpdateCamera(probeTransform);
+
+			// 이 부분 나중에 개선해야함, 그리는 건 항상 같은데 job 을 다시 만들 필요가 없음 
+			BeginRender();
+			Render();
+
+			mJobManager->ClearAll();
+			//EndRender();
+
+			std::wstring path = mLightProbeManager->SaveProbe1DirectionTexture(lightProbeIndex, directions[i]);
+			paths.push_back(path);
+		}
+		D3D11Texture cubeMap{ mDevice, paths };
+		std::wstring cubeMapFileName = L"LightProbe" + std::to_wstring(lightProbeIndex) + L".dds";
+		cubeMap.Save(mDevice, cubeMapFileName);
+		paths.clear();
 	}
 
 	// 카메라 재설정 
@@ -641,7 +709,7 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
-	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mObjectManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
+	mRenderManager->Initialize(mDevice, mJobManager, mCameraManager, mLightManager, mResourceManager, mDebugDrawManager, mParticleManager, mObjectManager, mLightProbeManager, mDevice->GetWidth(), mDevice->GetHeight(), pipelineType);
 }
 
 ID3D11Device* FQGraphics::GetDivice()

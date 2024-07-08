@@ -47,6 +47,8 @@ namespace fq::graphics
 		PositionWClipZ,
 		SourceNormal,
 		SourceTangent,
+
+		LightProbeIrr,
 	};
 
 	enum class ED3D11ShaderResourceViewType

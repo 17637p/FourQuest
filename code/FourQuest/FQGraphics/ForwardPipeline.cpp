@@ -20,6 +20,8 @@ namespace fq::graphics
 		, mOutLineBlurPass(std::make_shared<OutLineBlurPass>())
 		, mOutLineAddPass(std::make_shared<OutLineAddPass>())
 		, mTrailRenderPass(std::make_shared<TrailRenderPass>())
+		, mLightProbePass(std::make_shared<LightProbePass>())
+		, mLightProbeAddPass(std::make_shared<LightProbeAddPass>())
 	{
 	}
 
@@ -31,6 +33,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
 		std::shared_ptr<D3D11ObjectManager> objectManager,
+		std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -52,6 +55,8 @@ namespace fq::graphics
 		mFullScreenPass->Initialize(device, resourceManager, width, height);
 		mParticlePass->Initialize(device, particleManager, objectManager, cameraManager, resourceManager, lightManager, width, height);
 		mTrailRenderPass->Initialize(device, objectManager, cameraManager, resourceManager, lightManager, width, height);
+		mLightProbePass->Initialize(device, jobManager, cameraManager, resourceManager, lightProbeManager, width, height);
+		mLightProbeAddPass->Initialize(device, resourceManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
@@ -59,6 +64,12 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mTerrainPass);
+		//if (mIsSetLightProbe)
+		{
+			mPasses.push_back(mLightProbePass);
+			mPasses.push_back(mLightProbeAddPass);
+			mPasses.push_back(mOutLineAddPass);
+		}
 		mPasses.push_back(mTrailRenderPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
@@ -69,5 +80,10 @@ namespace fq::graphics
 		mPasses.push_back(mOutLineAddPass);
 
 		mFullScreenLastPass = mFullScreenPass;
+	}
+
+	void ForwardPipeline::SetLightProbe(bool isSetLightProbe)
+	{
+		mLightProbePass->SetLightProbe(isSetLightProbe);
 	}
 }
