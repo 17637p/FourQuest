@@ -1,15 +1,16 @@
 #pragma once
 
 #include "../FQGameModule/GameModule.h"
-
-#include "GameManager.h"
+#include "IMonster.h"
 
 namespace fq::client
 {
+	class GameManager;
+
 	/// <summary>
 	/// 원거리 몬스터 
 	/// </summary>
-	class PlantMonster :public game_module::Component
+	class PlantMonster :public game_module::Component , public IMonster
 	{
 	public:
 		PlantMonster();
@@ -20,7 +21,7 @@ namespace fq::client
 		/// </summary>
 		void EmitAttack();
 
-		void SetTarget(fq::game_module::GameObject* target);
+		void SetTarget(fq::game_module::GameObject* target) override;
 
 		/// <summary>
 		/// 타겟을 응시합니다 

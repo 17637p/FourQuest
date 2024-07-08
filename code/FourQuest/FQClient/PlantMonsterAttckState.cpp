@@ -20,6 +20,7 @@ fq::client::PlantMonsterAttckState::~PlantMonsterAttckState()
 
 void fq::client::PlantMonsterAttckState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+
 	mElapsedTime = 0.f;
 
 	// 공격 즉시 발동

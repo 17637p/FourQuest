@@ -2,7 +2,8 @@
 
 #include <filesystem>
 #include <spdlog/spdlog.h>
-
+#include <ostream>
+#include <fstream>
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQCommon/FQPath.h"
@@ -19,6 +20,7 @@ fq::game_engine::RenderingSystem::RenderingSystem()
 	, mRemoveComponentHandler{}
 	, mAddComponentHandler{}
 	, mbIsGameLoaded(false)
+	, mDefaultTexturePath{}
 {}
 
 fq::game_engine::RenderingSystem::~RenderingSystem()
@@ -27,6 +29,8 @@ fq::game_engine::RenderingSystem::~RenderingSystem()
 void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 {
 	mGameProcess = gameProcess;
+
+	loadDefaultTexturePath();
 
 	// EventHandle 등록
 	auto& eventMgr = mGameProcess->mEventManager;
@@ -85,7 +89,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 					if (parentObject != nullptr)
 					{
-						meshObject->SetTransform(parentObject->GetComponent<Transform>()->GetWorldMatrix());
+						meshObject->SetTransform(transform.GetWorldMatrix());
 					}
 					else
 					{
@@ -124,7 +128,6 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	}
 
 	// 2. PrefabInstance를 로드
-
 
 	// 3. SkyBox Load
 	auto scenePath = fq::path::GetScenePath() / scene->GetSceneName();
@@ -342,7 +345,7 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 	}
 }
 
-void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
+void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path, bool bUseDefaultTexturePath /*= false*/)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -354,8 +357,8 @@ void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path)
 
 	if (iter == mLoadModels.end())
 	{
-		std::filesystem::path texturePath = path;
-		texturePath = texturePath.remove_filename();
+		std::filesystem::path texturePath = bUseDefaultTexturePath ?
+			GetDefaultTexturePath() : std::filesystem::path(path).remove_filename();
 
 		mGameProcess->mGraphics->CreateModelResource(path, texturePath);
 		mLoadModels.insert(path);
@@ -499,4 +502,33 @@ void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject
 	auto terrainMeshObject = terrain->GetTerrainMeshObject();
 	mGameProcess->mGraphics->DeleteTerrainMeshObject(terrainMeshObject);
 	terrain->SetTerrainMeshObject(nullptr);
+}
+
+void fq::game_engine::RenderingSystem::loadDefaultTexturePath()
+{
+	auto filePath = fq::path::GetInternalPath() / "init" / "texture_path.txt";
+
+	if (std::filesystem::exists(filePath))
+	{
+		std::ifstream input(filePath);
+		std::stringstream buffer;
+		buffer << input.rdbuf();
+		mDefaultTexturePath = fq::path::GetAbsolutePath(buffer.str());
+	}
+}
+
+void fq::game_engine::RenderingSystem::saveDefaultTexturePath()
+{
+	auto internalPath = fq::path::GetInternalPath() / "init" / "texture_path.txt";
+	std::ofstream out(internalPath);
+
+	auto relativePath = fq::path::GetRelativePath(mDefaultTexturePath);
+	out <<relativePath.string();
+	out.close();
+}
+
+void fq::game_engine::RenderingSystem::SetDefaultTexturePath(std::filesystem::path path)
+{
+	mDefaultTexturePath = path;
+	saveDefaultTexturePath();
 }
