@@ -266,6 +266,21 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 	}
 }
 
+fq::game_module::GameObject* fq::game_engine::GamePlayWindow::GetEditorCamera()
+{
+	return mCameraObject.get();
+}
+
+ImVec2 fq::game_engine::GamePlayWindow::GetViewPortSize()
+{
+	return mViewportSize;
+}
+
+ImGuizmo::OPERATION fq::game_engine::GamePlayWindow::GetOperation()
+{
+	return mOperation;
+}
+
 void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 {
 	auto windowPos = ImGui::GetWindowPos();

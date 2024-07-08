@@ -17,6 +17,6 @@ namespace fq::game_module
 
 	void ArticulationData::Update()
 	{
-		mRootLinkData->Update();
+		mRootLinkData->Update(mArticulationInfo.worldTransform);
 	}
 }

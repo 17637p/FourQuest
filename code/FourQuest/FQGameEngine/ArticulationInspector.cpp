@@ -110,7 +110,7 @@ namespace fq::game_engine
 				DirectX::SimpleMath::Vector3 linkPosition;
 				DirectX::SimpleMath::Quaternion linkRotation;
 				DirectX::SimpleMath::Vector3 linkScale;
-				localTransform.Decompose(linkPosition, linkRotation, linkScale);
+				localTransform.Decompose(linkScale, linkRotation, linkPosition);
 
 				ImGui::InputFloat3("LinkScale", (float*)&linkScale);
 				ImGui::InputFloat4("LinkRotation", (float*)&linkRotation);
@@ -143,7 +143,7 @@ namespace fq::game_engine
 				DirectX::SimpleMath::Vector3 jointPosition;
 				DirectX::SimpleMath::Quaternion jointRotation;
 				DirectX::SimpleMath::Vector3 jointScale;
-				jointLocalTransform.Decompose(jointPosition, jointRotation, jointScale);
+				jointLocalTransform.Decompose(jointScale, jointRotation, jointPosition);
 
 				ImGui::InputFloat3("JointScale", (float*)&jointScale);
 				ImGui::InputFloat4("JointRotation", (float*)&jointRotation);

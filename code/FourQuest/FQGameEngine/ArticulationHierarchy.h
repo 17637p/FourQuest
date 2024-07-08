@@ -99,6 +99,10 @@ namespace fq::game_engine
 		/// </summary>
 		void dragDropLinkBar(std::shared_ptr<fq::game_module::LinkData> link);
 
+		/// <summary>
+		/// 
+		/// </summary>
+		void beginGizmo();
 
 	private:
 		GameProcess*	mGameProcess;
@@ -112,17 +116,22 @@ namespace fq::game_engine
 		fq::game_module::EventManager* mEventManager;
 		fq::game_module::InputManager* mInputManager;
 		
+		// 본 관련 ( 그래픽스 )
 		std::filesystem::path* mPath;
 		std::shared_ptr<fq::game_module::GameObject> mObject;
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMeshRenderer;
 		std::vector<fq::common::Bone> mBones;
 
+		// 관절 관련
 		std::shared_ptr<fq::game_module::ArticulationData> mArticulationData;
 		std::shared_ptr<fq::game_module::LinkData> mSelectLinkData;
 
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectLinkHandle;
 
+		// 에디터 카메라 관련
+
+		// 기즈모 관련
 
 		unsigned int mLinkID;
 	};

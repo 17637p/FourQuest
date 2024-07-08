@@ -13,8 +13,10 @@ namespace fq::game_module
 	{
 	}
 
-	void LinkData::Update()
+	void LinkData::Update(const DirectX::SimpleMath::Matrix& parentWorldTransform)
 	{
+		mWorldTransform = mLinkInfo.localTransform * parentWorldTransform;
+
 		for (auto it = mChildrenLinkData.begin(); it != mChildrenLinkData.end(); )
 		{
 			if (it->second->GetIsDead())
@@ -25,7 +27,7 @@ namespace fq::game_module
 			else
 			{
 				// 요소를 업데이트하고 다음 요소로 이동합니다.
-				it->second->Update();
+				it->second->Update(mWorldTransform);
 				++it;
 			}
 		}

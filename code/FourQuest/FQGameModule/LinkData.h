@@ -15,12 +15,13 @@ namespace fq::game_module
 		LinkData();
 		~LinkData();
 
-		void Update();
+		void Update(const DirectX::SimpleMath::Matrix& parentWorldTransform);
 
 		inline const std::string& GetBoneName();
 		inline const std::string& GetParentBoneName();
 		inline const float& GetDensity();
-		inline const DirectX::SimpleMath::Matrix GetLocalTransform();
+		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();
+		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		
 		inline const DirectX::SimpleMath::Matrix& GetJointLocalTransform();
 		inline const float& GetJointStiffness();
@@ -43,7 +44,7 @@ namespace fq::game_module
 		inline void SetBoneName(const std::string& name);
 		inline void SetParentBoneName(const std::string& parentName);
 		inline void SetDensity(const float& density);
-		inline void SetLocalTransform(const DirectX::SimpleMath::Matrix localTransform);
+		inline void SetLocalTransform(const DirectX::SimpleMath::Matrix& localTransform);
 					
 		inline void SetJointLocalTransform(const DirectX::SimpleMath::Matrix& localTransform);
 		inline void SetJointStiffness(const float& stiffness);
@@ -72,6 +73,7 @@ namespace fq::game_module
 		fq::physics::LinkInfo mLinkInfo;
 		bool mbIsDead;
 		unsigned int mID;
+		DirectX::SimpleMath::Matrix mWorldTransform;
 
 		std::unordered_map<LinkName, std::shared_ptr<LinkData>> mChildrenLinkData;
 	};
@@ -88,9 +90,13 @@ namespace fq::game_module
 	{
 		return mLinkInfo.density;
 	}
-	const DirectX::SimpleMath::Matrix LinkData::GetLocalTransform()
+	const DirectX::SimpleMath::Matrix& LinkData::GetLocalTransform()
 	{
 		return mLinkInfo.localTransform;
+	}
+	const DirectX::SimpleMath::Matrix& LinkData::GetWorldTransform()
+	{
+		return mWorldTransform;
 	}
 
 	const DirectX::SimpleMath::Matrix& LinkData::GetJointLocalTransform()
@@ -167,7 +173,7 @@ namespace fq::game_module
 	{
 		mLinkInfo.density = density;
 	}
-	void LinkData::SetLocalTransform(const DirectX::SimpleMath::Matrix localTransform)
+	void LinkData::SetLocalTransform(const DirectX::SimpleMath::Matrix& localTransform)
 	{
 		mLinkInfo.localTransform = localTransform;
 	}

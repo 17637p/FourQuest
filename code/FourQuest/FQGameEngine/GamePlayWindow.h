@@ -66,6 +66,11 @@ namespace fq::game_engine
 		void LookAtTarget(DirectX::SimpleMath::Vector3 target);
 
 		void ExcutShortcut();
+
+		fq::game_module::GameObject* GetEditorCamera();
+		ImVec2 GetViewPortSize();
+		ImGuizmo::OPERATION GetOperation();
+
 	private:
 		void resizeWindow(ImVec2 size);
 		void pickObject();
