@@ -706,6 +706,14 @@ void FQGraphics::DrawPolygon(const debug::PolygonInfo& polygonInfo)
 		mDebugDrawManager->Submit(polygonInfo);
 	}
 }
+void fq::graphics::FQGraphics::DrawSphereEx(const debug::SphereInfoEx& sphereInfoEx)
+{
+	mDebugDrawManager->Submit(sphereInfoEx);
+}
+void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
+{
+	mDebugDrawManager->Submit(ringInfoEx);
+}
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)
 {
