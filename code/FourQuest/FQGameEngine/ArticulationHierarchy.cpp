@@ -404,63 +404,15 @@ namespace fq::game_engine
 	{
 		if (mSelectLinkData == nullptr)
 		{
-			ImGuizmo::Enable(false);
 			return;
 		}
 
-		auto& input = mEditorProcess->mInputManager;
+		DirectX::SimpleMath::Matrix linkMatrix = mSelectLinkData->GetWorldTransform();
+		DirectX::SimpleMath::Matrix beforeMatrix = mSelectLinkData->GetWorldTransform();
 
-		if (input->IsKeyState(EKey::RMouse, EKeyState::None))
-		{
-			if (input->IsKeyState(EKey::W, EKeyState::Tap))
-			{
-				mOperation = ImGuizmo::TRANSLATE;
-			}
-			if (input->IsKeyState(EKey::E, EKeyState::Tap))
-			{
-				mOperation = ImGuizmo::ROTATE;
-			}
-			if (input->IsKeyState(EKey::R, EKeyState::Tap))
-			{
-				mOperation = ImGuizmo::SCALE;
-			}
-			if (input->IsKeyState(EKey::Q, EKeyState::Tap))
-			{
-				mOperation = ImGuizmo::BOUNDS;
-			}
-		}
+		mEditorProcess->mGamePlayWindow->DrawGizumo(linkMatrix);
 
-		ImGuizmo::Enable(true);
-
-		using namespace DirectX::SimpleMath;
-
-		float x = mEditorProcess->mGamePlayWindow->GetWindowPosition().x;
-		float y = mEditorProcess->mGamePlayWindow->GetWindowPosition().y;
-		float width = mEditorProcess->mGamePlayWindow->GetWindowSize().x;
-		float height = mEditorProcess->mGamePlayWindow->GetWindowSize().y;
-
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuizmo::SetRect(x, y, width, height);
-
-		Matrix linkMatrix = mSelectLinkData->GetWorldTransform();
-		Matrix beforeMatrix = mSelectLinkData->GetWorldTransform();
-
-		fq::game_module::GameObject* cameraObject = mEditorProcess->mGamePlayWindow->GetEditorCamera();
-		ImVec2 viewportSize = mEditorProcess->mGamePlayWindow->GetViewPortSize();
-
-		auto camera = cameraObject->GetComponent<fq::game_module::Camera>();
-		auto view = camera->GetView();  
-		auto projection = camera->GetProjection(viewportSize.x / viewportSize.y);
-		
-		bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
-		float* snap = mEditorProcess->mSettingWindow->GetSnap();
-		auto mode = mEditorProcess->mSettingWindow->GetMode();
-
-		if (ImGuizmo::Manipulate(&view._11, &projection._11
-			, mOperation, mode, &linkMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
-		{
-			mSelectLinkData->SetLocalTransform(linkMatrix);
-		}
+		mSelectLinkData->SetLocalTransform(linkMatrix);
 	}
 
 	void ArticulationHierarchy::dragDropGameWindow()
@@ -478,7 +430,7 @@ namespace fq::game_engine
 				if (path->extension() == ".model")
 				{
 					//// 에디터 전용 씬을 생성
-					//mGameProcess->mEventManager
+					//mGameProcess->mEventManager 
 					//	->FireEvent<fq::event::RequestChangeScene>({ "Articulation_Editer", true });
 
 					// 모델을 로드
