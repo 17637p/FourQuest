@@ -37,6 +37,7 @@ namespace fq::graphics
 		IParticleObject* CreateParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
 		IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform);
 		ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform);
+		IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index);
 
 		void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject);
 		void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject);
@@ -44,6 +45,7 @@ namespace fq::graphics
 		void DeleteParticleObject(IParticleObject* particleObject);
 		void DeleteDecalObject(IDecalObject* decalObject);
 		void DeleteTrailObject(ITrailObject* trailObject);
+		void DeleteProbeObject(IProbeObject* probeObject);
 
 		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material);
 
@@ -53,6 +55,7 @@ namespace fq::graphics
 		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
 		const std::set<IDecalObject*>& GetDecalObjects() const { return mDecalObjects; }
 		const std::set<ITrailObject*>& GetTrailObjects() const { return mTrailObjects; }
+		const std::set<IProbeObject*>& GetProbeObjects() const { return mProbeObjects; }
 
 	private:
 		template <typename Child, typename Parent>
@@ -69,6 +72,7 @@ namespace fq::graphics
 		std::set<IParticleObject*> mParticleObjects;
 		std::set<IDecalObject*> mDecalObjects;
 		std::set<ITrailObject*> mTrailObjects;
+		std::set<IProbeObject*> mProbeObjects;
 
 		std::queue<IStaticMeshObject*> mStaticMeshObjectDeleteQueue;
 		std::queue<ISkinnedMeshObject*> mSkinnedMeshObjectDeleteQueue;
@@ -76,5 +80,6 @@ namespace fq::graphics
 		std::queue<IParticleObject*> mParticleObjectDeleteQueue;
 		std::queue<IDecalObject*> mDecalObjectDeleteQueue;
 		std::queue<ITrailObject*> mTrailObjectDeleteQueue;
+		std::queue<IProbeObject*> mProbeObjectDeleteQueue;
 	};
 }

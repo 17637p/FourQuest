@@ -145,4 +145,23 @@ namespace fq::graphics
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
 		terrainMeshObject->SetTerrainMaterial(device, material);
 	}
+
+	graphics::IProbeObject* D3D11ObjectManager::CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index)
+	{
+		IProbeObject* probeObject = new ProbeObject(staticMesh, transform, index);
+		mProbeObjects.insert(probeObject);
+
+		return probeObject;
+	}
+
+	void D3D11ObjectManager::DeleteProbeObject(IProbeObject* probeObject)
+	{
+		auto find = mProbeObjects.find(probeObject);
+
+		if (find != mProbeObjects.end())
+		{
+			mProbeObjects.erase(find);
+			mProbeObjectDeleteQueue.push(probeObject);
+		}
+	}
 }

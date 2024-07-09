@@ -54,6 +54,7 @@ namespace fq::graphics
 		std::shared_ptr<class TrailRenderPass> mTrailRenderPass;
 		std::shared_ptr<class LightProbePass> mLightProbePass;
 		std::shared_ptr<class LightProbeAddPass> mLightProbeAddPass;
+		std::shared_ptr<class DebugLightProbePass> mDebugLightProbePass;
 	};
 }
 

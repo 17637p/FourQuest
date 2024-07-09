@@ -96,6 +96,7 @@ namespace fq::graphics
 		virtual IParticleObject* CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform) override;
 		virtual IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) override;
 		virtual ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index) override;
 
 		virtual void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject) override;
 		virtual void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject) override;
@@ -103,6 +104,7 @@ namespace fq::graphics
 		virtual void DeleteParticleObject(IParticleObject* particleObject) override;
 		virtual void DeleteDecalObject(IDecalObject* decalObject) override;
 		virtual void DeleteTrailObject(ITrailObject* trailObject) override;
+		virtual void DeleteProbeObject(IProbeObject* probeObject) override;
 
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 

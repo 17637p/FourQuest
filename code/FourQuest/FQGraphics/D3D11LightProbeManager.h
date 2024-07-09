@@ -55,17 +55,20 @@ namespace fq::graphics
 
 		void Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
+		/// Add Delete
 		int AddCubeProbe(const DirectX::SimpleMath::Vector3& position);
 		void DeleteCubeProbe(int index);
 
 		int AddLightProbe(const DirectX::SimpleMath::Vector3& position);
 		void DeleteLightProbe(int index);
 
+		/// Get
 		std::vector<CubeProbe*> GetCubeProbes() const;
 		std::vector<LightProbe*> GetLightProbes() const;
-		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
 		int GetLightProbesSize();
 		DirectX::SimpleMath::Vector3 GetLightProbePosition(int lightProbeIndex);
+		float* GetLightProbeCoefficient(int lightProbeIndex);
+		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
 
 		std::wstring SaveProbe1DirectionTexture(const int index, const std::wstring& direction); //return path Name
 		void BakeAllLightProbeCoefficient();
@@ -76,13 +79,16 @@ namespace fq::graphics
 
 		void GetCoefficientTetrahedronWeight(const DirectX::SimpleMath::Vector4& weights, int TetIndex, float* r, float* g, float* b/*(27)*/);
 
+		/// Clear
 		void ClearAllTetrahedron();
 		void ClearAllLightProbe();
 
+		/// SaveLoad
 		void SaveLightProbes(const std::string& fileName);
 		// position 정보만 담긴 probe 정보를 넘김
 		bool LoadLightProbes(const std::string& fileName);
 
+		/// IsUsed
 		bool GetIsUsedLightProbe() const { return mIsUsedLightProbe; }
 		void SetIsUsedLightProbe(bool val) { mIsUsedLightProbe = val; }
 

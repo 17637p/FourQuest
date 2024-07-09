@@ -109,9 +109,14 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	//lightProbePositions.push_back({ 0, 10, 5 });
 	//lightProbePositions.push_back({ 0, 10, -5 });
 
+	const std::string sphereModel = "./resource/Graphics/TerrainDemo/testSphere.model";
+
 	for (int i = 0; i < lightProbePositions.size(); i++)
 	{
-		mTestGraphics->AddLightProbe(lightProbePositions[i]);
+		int probeIndex = mTestGraphics->AddLightProbe(lightProbePositions[i]);
+		createProbeObject(sphereModel, textureBasePath, 
+			DirectX::SimpleMath::Matrix::CreateScale({ 0.001f, 0.001f, 0.001f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ lightProbePositions[i].x, lightProbePositions[i].y, lightProbePositions[i].z }),
+			probeIndex);
 	}
 
 	return true;
@@ -309,16 +314,16 @@ void TerrainDemo::debugRender()
 	gridInfo.Color = { 1, 1, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
 
-	SphereInfo sphereInfo;
-	sphereInfo.Sphere.Center = { 0, 0, 0 };
-	sphereInfo.Sphere.Radius = 0.1f;
-	sphereInfo.Color = { 1,1,1,1 };
-
-	for (int i = 0; i < lightProbePositions.size(); i++)
-	{
-		sphereInfo.Sphere.Center = lightProbePositions[i];
-		mTestGraphics->DrawSphere(sphereInfo);
-	}
+	//SphereInfo sphereInfo;
+	//sphereInfo.Sphere.Center = { 0, 0, 0 };
+	//sphereInfo.Sphere.Radius = 0.1f;
+	//sphereInfo.Color = { 1,1,1,1 };
+	//
+	//for (int i = 0; i < lightProbePositions.size(); i++)
+	//{
+	//	sphereInfo.Sphere.Center = lightProbePositions[i];
+	//	mTestGraphics->DrawSphere(sphereInfo);
+	//}
 
 }
 
@@ -464,6 +469,31 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 				mat[i]->SetInfo(matData);
 			}
 			iStaticMeshObject->SetMaterials(mat);
+		}
+	}
+
+	index++;
+}
+
+void TerrainDemo::createProbeObject(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, int index)
+{
+	using namespace fq::graphics;
+
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(modelPath, textureBasePath);
+
+	for (const auto& [node, mesh] : modelData.Meshes)
+	{
+		if (mesh.Vertices.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
+
+			IProbeObject* iProbeObject = mTestGraphics->CreateProbeObject(meshInterface, node.ToParentMatrix * transform, index);
+			mProbeObjects.push_back(iProbeObject);
 		}
 	}
 

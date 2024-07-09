@@ -102,6 +102,11 @@ std::vector<CubeProbe*> fq::graphics::D3D11LightProbeManager::GetCubeProbes() co
 	return mCubeProbes;
 }
 
+float* D3D11LightProbeManager::GetLightProbeCoefficient(int lightProbeIndex)
+{
+	return mLightProbes[mLightProbePair[lightProbeIndex]]->coefficient;
+}
+
 DirectX::SimpleMath::Vector3 D3D11LightProbeManager::GetLightProbePosition(int lightProbeIndex)
 {
 	return mLightProbes[mLightProbePair[lightProbeIndex]]->position;
@@ -395,7 +400,7 @@ int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& po
 	mLightProbeIndex++;
 	mLightProbeSize++;
 
-	return mLightProbeIndex;
+	return mLightProbeIndex - 1;
 }
 
 void D3D11LightProbeManager::MakeTetrahedron()

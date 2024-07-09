@@ -671,6 +671,17 @@ void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObje
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
 }
 
+void FQGraphics::DeleteProbeObject(IProbeObject* probeObject)
+{
+	mObjectManager->DeleteProbeObject(probeObject);
+}
+
+fq::graphics::IProbeObject* FQGraphics::CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index)
+{
+	assert(staticMesh != nullptr);
+	return mObjectManager->CreateProbeObject(staticMesh, transform, index);
+}
+
 void FQGraphics::DrawSphere(const debug::SphereInfo& sphereInfo)
 {
 	mDebugDrawManager->Submit(sphereInfo);

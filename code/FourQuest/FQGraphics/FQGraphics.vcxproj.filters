@@ -205,7 +205,7 @@
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Resource</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="SHMath\DirectXSH.h">
       <Filter>D3D11\SHMath</Filter>
     </ClInclude>
@@ -213,6 +213,9 @@
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
     <ClInclude Include="LightProbeAddPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugLightProbePass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
   </ItemGroup>
@@ -495,7 +498,7 @@
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Resource\Source</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="SHMath\DirectXSH.cpp">
       <Filter>D3D11\SHMath</Filter>
     </ClCompile>
@@ -509,6 +512,9 @@
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
     <ClCompile Include="LightProbeAddPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugLightProbePass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -655,7 +661,7 @@
     </CustomBuild>
     <CustomBuild Include="SpecularIBLCS.hlsl">
       <Filter>Shader\CS</Filter>
-	</CustomBuild>
+    </CustomBuild>
     <CustomBuild Include="LightProbeVS.hlsl">
       <Filter>Shader\VS</Filter>
     </CustomBuild>
@@ -667,6 +673,12 @@
     </CustomBuild>
     <CustomBuild Include="LightProbeAddVS.hlsl">
       <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugLightprobeVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugLightProbePS.hlsl">
+      <Filter>Shader\PS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
