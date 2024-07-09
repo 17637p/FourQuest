@@ -28,7 +28,7 @@ void fq::graphics::DebugLightProbePass::Initialize(std::shared_ptr<D3D11Device> 
 
 	mBackBuffer = mResourceManager->Get<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 
-	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None); // object 그린거 받아와야 함
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default); // object 그린거 받아와야 함
 }
 
 void fq::graphics::DebugLightProbePass::Finalize()
