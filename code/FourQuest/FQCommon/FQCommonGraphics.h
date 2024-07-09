@@ -44,6 +44,7 @@ namespace fq::graphics
 	struct MeshObjectInfo
 	{
 		bool bUseShadow = true;
+		bool bUseLightProbe;
 		DirectX::SimpleMath::Color OutlineColor;
 		bool bIsAppliedDecal;
 	};

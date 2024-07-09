@@ -36,6 +36,7 @@ namespace fq::graphics
 
 		static void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
+		void UnBind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 		ComPtr<ID3D11RenderTargetView> GetRTV();
 

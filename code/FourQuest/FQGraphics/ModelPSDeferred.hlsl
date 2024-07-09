@@ -41,6 +41,7 @@ cbuffer cbMaterial : register(b0)
     bool cUseRoughnessMap;
     bool cUseNormalMap;
     bool cUseEmissiveMap;
+    float cAlphaCutoff;
 };
 
 cbuffer cbSceneTransform : register(b1)
@@ -67,6 +68,8 @@ PixelOut main(VertexOut pin) : SV_TARGET
     {
         pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
     }
+    
+    clip(pout.Albedo.a - cAlphaCutoff);
 
     if (cUseMetalnessMap)
     {

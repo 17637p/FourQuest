@@ -67,11 +67,20 @@ namespace fq::game_engine
 
 		void ExcutShortcut();
 
+<<<<<<< HEAD
 		fq::game_module::GameObject* GetEditorCamera();
 		ImVec2 GetWindowPosition();
 		ImVec2 GetWindowSize();
 		ImVec2 GetViewPortSize();
 		ImGuizmo::OPERATION GetOperation();
+=======
+		/// <summary>
+		/// 기즈모 그리기 함수 
+		/// SRT 행렬을 참조값을 받아서 기즈모가 움직이면 행렬값을 변환합니다
+		/// *** 그리지 않을 경우 호출하면 안됩니다 
+		/// </summary>
+		void DrawGizumo(DirectX::SimpleMath::Matrix& transform);
+>>>>>>> origin/main
 
 	private:
 		void resizeWindow(ImVec2 size);
@@ -109,6 +118,7 @@ namespace fq::game_engine
 		// 기즈모관련
 		DirectX::SimpleMath::Matrix mStart;
 		bool mbIsUsingGizumo;
+		bool mbAlreadyDrawGizumo;
 		ImGuizmo::OPERATION mOperation;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 

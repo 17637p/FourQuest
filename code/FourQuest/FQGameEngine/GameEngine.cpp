@@ -23,6 +23,7 @@
 #include "TrailSystem.h"
 #include "PathFindingSystem.h"
 #include "UISystem.h"
+#include "LightProbeSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"

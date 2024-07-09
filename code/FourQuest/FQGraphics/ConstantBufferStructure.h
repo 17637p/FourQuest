@@ -145,6 +145,7 @@ namespace fq::graphics
 		float unused[2];
 	};
 
+	// 타일링이랑 알파 컷오프 처리 추가해두기
 	struct CBMaterial
 	{
 		DirectX::SimpleMath::Color BaseColor;
@@ -158,8 +159,8 @@ namespace fq::graphics
 
 		int bUseRoughnessMap;
 		int bUseNormalMap;
-		int bUseEmissiveMap;
-		float unused[1];
+		int bUseEmissiveMap;		
+		float AlphaCutoff;
 	};
 
 	struct CBDecalObject
@@ -307,6 +308,17 @@ namespace fq::graphics
 		CBParticleMaterial ParticleMaterialData;
 	};
 
+	struct LightProbeCB
+	{
+		DirectX::XMFLOAT4 Ar;
+		DirectX::XMFLOAT4 Ag;
+		DirectX::XMFLOAT4 Ab;
+		DirectX::XMFLOAT4 Br;
+		DirectX::XMFLOAT4 Bg;
+		DirectX::XMFLOAT4 Bb;
+		DirectX::XMFLOAT4 C;
+	};
+
 	template <typename T>
 	class D3D11ConstantBuffer;
 	class D3D11Device;
@@ -330,5 +342,8 @@ namespace fq::graphics
 		static void UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);
+		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
+			float* r, float* g, float* b);
 	};
 }

@@ -57,6 +57,7 @@ namespace fq::game_engine
 		void renderTerrainCollider();
 		void renderCharaterController();
 		void renderNavigationMesh();
+		void renderLightProbe();
 
 	private:
 		GameProcess* mGameProcess;

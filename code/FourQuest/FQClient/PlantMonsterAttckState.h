@@ -15,7 +15,6 @@ namespace fq::client
 
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
-        void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 
     private:
         float mAttackTiming; // 공격발동 시간
@@ -23,5 +22,4 @@ namespace fq::client
  
 		friend void RegisterMetaData();
     };
-
 }

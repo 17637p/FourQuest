@@ -129,8 +129,14 @@ namespace fq::graphics
 
 	void NodeHierarchyInstance::SetBindPose()
 	{
-		std::fill(mRootTransforms.begin(), mRootTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
-		std::fill(mTransposedFinalTransforms.begin(), mTransposedFinalTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
+		const auto& bones = mNodeHierarchy->GetBones();
+
+		for (const auto& bone : bones)
+		{
+			mRootTransforms[bone.Index] = bone.ToParentMatrix;
+		}
+
+		calculateRootTransform();
 	}
 
 	void NodeHierarchyInstance::Update(float timePos, const std::shared_ptr<IAnimation>& animation)
@@ -140,7 +146,7 @@ namespace fq::graphics
 		const auto& find = animationCache.find(animation);
 		const auto& animClip = animation->GetAnimationClip();
 
-		SetBindPose();
+		clear();
 
 		if (find != animationCache.end())
 		{
@@ -205,7 +211,7 @@ namespace fq::graphics
 			return;
 		}
 
-		SetBindPose();
+		clear();
 
 		const size_t BONE_COUNT = mNodeHierarchy->GetBones().size();
 
@@ -245,6 +251,12 @@ namespace fq::graphics
 		}
 
 		calculateRootTransform();
+	}
+
+	void NodeHierarchyInstance::clear()
+	{
+		std::fill(mRootTransforms.begin(), mRootTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
+		std::fill(mTransposedFinalTransforms.begin(), mTransposedFinalTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
 	}
 
 	void NodeHierarchyInstance::calculateRootTransform()

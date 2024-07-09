@@ -117,6 +117,8 @@ void fq::graphics::SingleColorPass::Render()
 			}
 		}
 
+		mSingleColorSkinnedMeshPassShaderProgram->Bind(mDevice);
+		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 		std::vector<DirectX::SimpleMath::Matrix> identityTransform(BoneTransform::MAX_BOND_COUNT);
 
 		// Color 값 있는 친구들 (-1, -1, -1 이 아닌 object 들만 출력)

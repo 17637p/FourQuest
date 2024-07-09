@@ -276,7 +276,6 @@ void fq::game_engine::EditorEngine::Finalize()
 
 void fq::game_engine::EditorEngine::RenderEditorWinodw()
 {
-	mEditor->mGamePlayWindow->Render();
 	mEditor->mHierarchy->Render();
 	mEditor->mInspector->Render();
 	mEditor->mLogWindow->Render();
@@ -290,6 +289,10 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mNavMeshWindow->Render();
 	mEditor->mArticulationHierarchy->Render();
 	mEditor->mArticulationInspector->Render();
+	mEditor->mLightProbeWindow->Render();
+
+	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
+	mEditor->mGamePlayWindow->Render();
 }
 
 void fq::game_engine::EditorEngine::InitializeEditor()
@@ -320,6 +323,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mNavMeshWindow->Initialize(mGameProcess.get());
 	mEditor->mArticulationHierarchy->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mLightProbeWindow->Initialize(mGameProcess.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

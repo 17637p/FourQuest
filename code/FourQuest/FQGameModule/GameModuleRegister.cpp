@@ -57,8 +57,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Camera")
 		.data<ETag::Player>("Player"_hs) // 2
 		.prop(fq::reflect::prop::Name, "Player")
-		.data<ETag::Alien>("Alien"_hs) // 3
-		.prop(fq::reflect::prop::Name, "Alien")
+		.data<ETag::Monster>("Monster"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Monster")
 		.data<ETag::Obstacle>("Obstacle"_hs) // 4
 		.prop(fq::reflect::prop::Name, "Obstacle")
 		.data<ETag::Wall>("Wall"_hs) // 5

@@ -113,7 +113,6 @@ struct ParticleRotationOverLifetime
     int bIsUsed;
 };
 
-
 cbuffer cbParticleFrame : register(b0)
 {
     matrix gViewMatrix;

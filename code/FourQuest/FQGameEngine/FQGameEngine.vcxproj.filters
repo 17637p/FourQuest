@@ -211,8 +211,8 @@
     </ClInclude>
     <ClInclude Include="TrailSystem.h">
       <Filter>include</Filter>
-	</ClInclude>
-	<ClInclude Include="ArticulationHierarchy.h">
+    </ClInclude>
+    <ClInclude Include="ArticulationHierarchy.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="ArticulationInspector.h">
@@ -220,6 +220,12 @@
     </ClInclude>
     <ClInclude Include="TrailSystem.h">
       <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbeSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbeWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -357,7 +363,7 @@
     </ClCompile>
     <ClCompile Include="TrailSystem.cpp">
       <Filter>src</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ArticulationHierarchy.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
@@ -366,6 +372,12 @@
     </ClCompile>
     <ClCompile Include="TrailSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbeSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbeWindow.cpp">
+      <Filter>src\11.Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

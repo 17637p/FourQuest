@@ -12,6 +12,7 @@ namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 
 namespace fq::graphics { class ITerrainMeshObject; }
+namespace fq::graphics { class IStaticMeshObject; }
 
 class TerrainDemo : public BaseWindow<TerrainDemo>
 {
@@ -32,6 +33,13 @@ private:
 	void debugRender();
 
 	void createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+
+	//Probe Test
+	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe);
+	void materialUpdate();
+	void renderObjectInit();
+	void renderObjectUpdate();
+	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
 
 private:
 	/// 기본적으로 필요한 변수들 
@@ -57,5 +65,9 @@ private:
 	// Terrain
 	fq::graphics::TerrainMaterialInfo terrainMaterial;
 	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
+
+	// Probe Test
+	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
+	std::vector<DirectX::SimpleMath::Vector3> lightProbePositions;
 };
 

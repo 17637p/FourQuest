@@ -64,6 +64,8 @@ namespace fq::graphics
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
+
+		bool mIsUseLightProbe;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject

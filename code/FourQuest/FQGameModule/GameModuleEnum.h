@@ -8,7 +8,7 @@ namespace fq::game_module
 		Untagged = 0,
 		Camera = 1,
 		Player =2,
-		Alien = 3,
+		Monster = 3,
 		Obstacle = 4,
 		Wall = 5,
 		PlayerAttack = 6,

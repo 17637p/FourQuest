@@ -24,6 +24,14 @@
 #include "MonsterAttack.h"
 #include "MonsterDie.h"
 
+// MeleeMonster
+#include "MeleeMonster.h"
+#include "MeleeMonsterIdleState.h"
+#include "MeleeMonsterAttackState.h"
+#include "MeleeMonsterChaseState.h"
+#include "MeleeMonsterPatrolState.h"
+#include "MeleeMonsterDeadState.h"
+
 // PlantMoster
 #include "PlantMonster.h"
 #include "PlantAttack.h"
@@ -150,6 +158,7 @@ void fq::client::RegisterMetaData()
 	entt::meta<Monster>()
 		.type("Monster"_hs)
 		.prop(fq::reflect::prop::Name, "Monster")
+		.prop(reflect::prop::Label, "Monster")
 		.data<&Monster::SetHP, &Monster::GetHP>("HP"_hs)
 		.prop(fq::reflect::prop::Name, "HP")
 		.data<&Monster::SetAttackPower, &Monster::GetAttackPower>("AttackPower"_hs)
@@ -211,12 +220,69 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             근접 몬스터 	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MeleeMonster>()
+		.type("MeleeMonster"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonster")
+		.prop(reflect::prop::Label, "Monster")
+		.data<&MeleeMonster::mHp>("Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Hp")
+		.data<&MeleeMonster::mAttackPower>("AttackPower"_hs)
+		.prop(fq::reflect::prop::Name, "AttackPower")
+		.data<&MeleeMonster::mAcceleration>("Acceleration"_hs)
+		.prop(fq::reflect::prop::Name, "Acceleration")
+		.data<&MeleeMonster::mMoveSpeed>("MoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.data<&MeleeMonster::mAttackRange>("AttackRange"_hs)
+		.prop(fq::reflect::prop::Name, "AttackRange")
+		.data<&MeleeMonster::mAttackPrefab>("AttackPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "AttackPrefab")
+		.data<&MeleeMonster::mPatrolRange>("PatrolRange"_hs)
+		.prop(fq::reflect::prop::Name, "PatrolRange")
+		.prop(fq::reflect::prop::Comment, u8"순찰 범위")
+		.base<fq::game_module::Component>();
+	
+	//////////////////////////////////////////////////////////////////////////
+	//                             근접 몬스터 상태  							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MeleeMonsterIdleState>()
+		.type("MeleeMonsterIdleState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterIdleState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterAttackState>()
+		.type("MeleeMonsterAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterAttackState")
+		.data<&MeleeMonsterAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTiming")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterChaseState>()
+		.type("MeleeMonsterChaseState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterChaseState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterPatrolState>()
+		.type("MeleeMonsterPatrolState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterPatrolState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterDeadState>()
+		.type("MeleeMonsterDeadState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterDeadState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
 	//////////////////////////////////////////////////////////////////////////
 	
 	entt::meta<PlantMonster>()
 		.type("PlantMonster"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonster")
+		.prop(reflect::prop::Label, "Monster")
 		.data<&PlantMonster::mHp>("Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Hp")
 		.data<&PlantMonster::mAttackPower>("AttackPower"_hs)
@@ -233,6 +299,7 @@ void fq::client::RegisterMetaData()
 
 	entt::meta<PlantAttack>()
 		.type("PlantAttack"_hs)
+		.prop(reflect::prop::Label, "Monster")
 		.prop(fq::reflect::prop::Name, "PlantAttack")
 		.base<fq::game_module::Component>();
 
@@ -270,6 +337,7 @@ void fq::client::RegisterMetaData()
 	entt::meta<MonsterSpawner>()
 		.type("MonsterSpawner"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterSpawner")
+		.prop(reflect::prop::Label, "Monster")
 		.data<&MonsterSpawner::mMonster>("MonsterPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterPrefab")
 		.data<&MonsterSpawner::mSpawnCoolTime>("SpwanCoolTime"_hs)

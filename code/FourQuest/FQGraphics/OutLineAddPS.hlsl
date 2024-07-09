@@ -10,9 +10,9 @@ SamplerState defaultSS : register(s0);
 
 float4 main(VertexOut pin) : SV_Target
 {
-	float4 result;
+	float3 result;
 
 	result = outLineBlur.Sample(defaultSS, pin.uv);
 
-	return result;
+	return float4(result, 1);
 }

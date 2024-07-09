@@ -29,7 +29,6 @@ namespace fq::graphics
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
-
 		// Model Data Helper
 		virtual void WriteModel(const std::string& path, const fq::common::Model& modelData) override;
 		virtual fq::common::Model ReadModel(const std::string& path) override;
@@ -117,6 +116,8 @@ namespace fq::graphics
 		virtual void DrawRing(const debug::RingInfo& ringInfo) override;
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
+		virtual void DrawSphereEx(const debug::SphereInfoEx& sphereInfoEx) override;
+		virtual void DrawRingEx(const debug::RingInfoEx& ringInfoEx) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
@@ -145,6 +146,13 @@ namespace fq::graphics
 		virtual void UseShadow(const unsigned int id, bool bUseShadow);
 
 		// Light Probe
+		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;
+		virtual void DeleteLightProbe(int index) override;
+		virtual void BakeLightProbe() override;
+
+		virtual void SaveLightProbes(const std::string& fileName) override;
+		virtual void LoadLightProbes(const std::string& fileName) override;
+
 		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteCubeProbe(unsigned short index) override;
 		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;

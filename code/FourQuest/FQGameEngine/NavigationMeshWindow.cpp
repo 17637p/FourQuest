@@ -39,7 +39,7 @@ void fq::game_engine::NavigationMeshWindow::beginButtonBuild()
 		mPathFindingSystem->BuildNavigationMesh(scene);
 	}
 
-	ImGui::InputText(".txt", &mSaveFileName);
+	ImGui::InputText(".Nav", &mSaveFileName);
 	if (ImGui::Button("Save", ImVec2{ 133,25 }))
 	{
 		mPathFindingSystem->SaveNavMesh(mSaveFileName);

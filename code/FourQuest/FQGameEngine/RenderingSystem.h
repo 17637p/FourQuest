@@ -71,13 +71,15 @@ namespace fq::game_engine
 		/// <summary>
 		/// 모델을 로드합니다 
 		/// </summary>
-		void LoadModel(const ModelPath& path);
+		void LoadModel(const ModelPath& path, bool bUseDefaultTexturePath = true);
 
 		/// <summary>
 		/// 애니메이션을 작동합니다.
 		/// </summary>
 		void WriteAnimation(const fq::event::WriteAnimation& event);
 
+		std::filesystem::path GetDefaultTexturePath() const { return mDefaultTexturePath; }
+		void SetDefaultTexturePath(std::filesystem::path path);
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
@@ -92,6 +94,8 @@ namespace fq::game_engine
 
 		void unloadAllModel();
 		
+		void loadDefaultTexturePath();
+		void saveDefaultTexturePath();
 
 	private:
 		GameProcess* mGameProcess;
@@ -106,6 +110,7 @@ namespace fq::game_engine
 
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;
+		std::filesystem::path mDefaultTexturePath;
 
 		std::set<ModelPath> mLoadModels;
 	};
