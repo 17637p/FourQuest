@@ -9,6 +9,7 @@
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/ArticulationData.h"
 #include "../FQGameModule/LinkData.h"
+#include "../FQGraphics/IFQGraphics.h"
 
 namespace fq::game_engine
 {
@@ -62,23 +63,13 @@ namespace fq::game_engine
 		if (!mbIsOpen) return;
 
 		mArticulationData->Update();
+		drawArticulationDebug(mArticulationData->GetRootLinkData().lock());
 
 		if (ImGui::Begin("Articulation Hierarchy", &mbIsOpen))
 		{
 			ImGui::BeginChild("Articulation Hierarchy");
-			
-			if (ImGui::Button("BoneHierarchy"))
-			{
-				mbIsBoneHierarchy = true;
-				mbIsArticulationHierarchy = false;
-			} 
-			ImGui::SameLine();
-			if (ImGui::Button("ArticulationHierarchy"))
-			{
-				mbIsBoneHierarchy = false;
-				mbIsArticulationHierarchy = true;
-			}
 
+			beginHierarchyButton();
 			beginBoneHierarchy();
 			beginArticulationHierarchy();
 			beginGizmo();
@@ -408,11 +399,201 @@ namespace fq::game_engine
 		}
 
 		DirectX::SimpleMath::Matrix linkMatrix = mSelectLinkData->GetWorldTransform();
-		DirectX::SimpleMath::Matrix beforeMatrix = mSelectLinkData->GetWorldTransform();
 
 		mEditorProcess->mGamePlayWindow->DrawGizumo(linkMatrix);
 
+		linkMatrix = linkMatrix * mSelectLinkData->GetParentTransform().Invert();
 		mSelectLinkData->SetLocalTransform(linkMatrix);
+	}
+
+	void ArticulationHierarchy::drawArticulationDebug(std::shared_ptr<fq::game_module::LinkData> linkData)
+	{
+		fq::game_module::EShapeType shapeType = linkData->GetShapeType();
+		DirectX::SimpleMath::Color color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+
+		float jointAxisScale = 1.f;
+
+		switch (shapeType)
+		{
+		case fq::game_module::EShapeType::BOX:
+		{
+			fq::graphics::debug::OBBInfo info;
+
+			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Quaternion rotation;
+			DirectX::SimpleMath::Vector3 position;
+
+			DirectX::SimpleMath::Matrix worldTransform = linkData->GetWorldTransform();
+			worldTransform.Decompose(scale, rotation, position);
+
+			info.Color = color;
+			info.OBB.Center = position;
+			info.OBB.Orientation = rotation;
+			info.OBB.Extents = linkData->GetBoxExtent();
+
+			jointAxisScale = std::min(info.OBB.Extents.x, std::min(info.OBB.Extents.y, info.OBB.Extents.z));
+
+			mGameProcess->mGraphics->DrawOBB(info);
+		}
+		break;
+		case fq::game_module::EShapeType::SPHERE:
+		{
+			fq::graphics::debug::SphereInfo info;
+
+			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Quaternion rotation;
+			DirectX::SimpleMath::Vector3 position;
+
+			DirectX::SimpleMath::Matrix worldTransform = linkData->GetWorldTransform();
+			worldTransform.Decompose(scale, rotation, position);
+
+			info.Color = color;
+			info.Sphere.Center = position;
+			info.Sphere.Radius = linkData->GetSphereRadius();
+
+			jointAxisScale = info.Sphere.Radius;
+			
+			mGameProcess->mGraphics->DrawSphere(info);
+		}
+		break;
+		case fq::game_module::EShapeType::CAPSULE:
+		{
+			fq::graphics::debug::SphereInfo sphereinfo1;
+			fq::graphics::debug::SphereInfo sphereinfo2;
+			fq::graphics::debug::RayInfo rayInfo1;
+			fq::graphics::debug::RayInfo rayInfo2;
+			fq::graphics::debug::RayInfo rayInfo3;
+			fq::graphics::debug::RayInfo rayInfo4;
+
+			DirectX::SimpleMath::Vector3 scale;
+			DirectX::SimpleMath::Quaternion rotation;
+			DirectX::SimpleMath::Vector3 position;
+
+			DirectX::SimpleMath::Matrix worldTransform = linkData->GetWorldTransform();
+			worldTransform.Decompose(scale, rotation, position);
+
+			sphereinfo1.Color = color;
+			sphereinfo2.Color = color;
+			rayInfo1.Color = color;
+			rayInfo2.Color = color;
+			rayInfo3.Color = color;
+			rayInfo4.Color = color;
+
+			sphereinfo1.Sphere.Center = position + worldTransform.Right() * linkData->GetCapsuleHalfHeight();
+			sphereinfo2.Sphere.Center = position - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
+			sphereinfo1.Sphere.Radius = linkData->GetCapsuleRadius();
+			sphereinfo2.Sphere.Radius = linkData->GetCapsuleRadius();
+			rayInfo1.Normalize = false;
+			rayInfo2.Normalize = false;
+			rayInfo3.Normalize = false;
+			rayInfo4.Normalize = false;
+			rayInfo1.Origin = position + worldTransform.Forward() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
+			rayInfo2.Origin = position - worldTransform.Forward() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
+			rayInfo3.Origin = position + worldTransform.Up() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
+			rayInfo4.Origin = position - worldTransform.Up() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
+			rayInfo1.Direction = worldTransform.Right() * linkData->GetCapsuleHalfHeight() * 2;
+			rayInfo2.Direction = worldTransform.Right() * linkData->GetCapsuleHalfHeight() * 2;
+			rayInfo3.Direction = worldTransform.Right() * linkData->GetCapsuleHalfHeight() * 2;
+			rayInfo4.Direction = worldTransform.Right() * linkData->GetCapsuleHalfHeight() * 2;
+
+			jointAxisScale = sphereinfo1.Sphere.Radius;
+
+			mGameProcess->mGraphics->DrawSphere(sphereinfo1);
+			mGameProcess->mGraphics->DrawSphere(sphereinfo2);
+			mGameProcess->mGraphics->DrawRay(rayInfo1);
+			mGameProcess->mGraphics->DrawRay(rayInfo2);
+			mGameProcess->mGraphics->DrawRay(rayInfo3);
+			mGameProcess->mGraphics->DrawRay(rayInfo4);
+		}
+		break;
+		default:
+			break;
+		}
+
+		fq::graphics::debug::RingInfoEx swing1Info;
+		fq::graphics::debug::RingInfoEx swing2Info;
+		fq::graphics::debug::RingInfoEx twistInfo;
+
+		DirectX::SimpleMath::Matrix jointTransform = linkData->GetJointLocalTransform() * linkData->GetWorldTransform();
+		DirectX::SimpleMath::Vector3 jointPosition;
+		DirectX::SimpleMath::Quaternion jointRotation;
+		DirectX::SimpleMath::Vector3 jointScale;
+
+		jointTransform.Decompose(jointScale, jointRotation, jointPosition);
+
+		float swing1LimitLow = linkData->GetSwing1LimitLow() * (DirectX::XM_PI / 180.0);
+		DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(swing1LimitLow);
+		swing1Info.Origin = jointPosition;
+		swing1Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
+		swing1Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+		swing1Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+		swing1Info.ArcInRadian = (std::abs(linkData->GetSwing1LimitLow()) + std::abs(linkData->GetSwing1LimitHigh())) / 180.f * 3.14f;
+
+		float swing2LimitLow = linkData->GetSwing2LimitLow() * (DirectX::XM_PI / 180.0);
+		limitRotation = DirectX::SimpleMath::Matrix::CreateRotationZ( 90.f * DirectX::XM_PI / 180.0) * DirectX::SimpleMath::Matrix::CreateRotationX(swing2LimitLow);
+		swing2Info.Origin = jointPosition;
+		swing2Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
+		swing2Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+		swing2Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+		swing2Info.ArcInRadian = (std::abs(linkData->GetSwing2LimitLow()) + std::abs(linkData->GetSwing2LimitHigh())) / 180.f * 3.14f;
+
+		float twistLimitLow = linkData->GetTwistLimitLow() * (DirectX::XM_PI / 180.0);
+		limitRotation =
+			DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
+			* DirectX::SimpleMath::Matrix::CreateRotationY(90.f * DirectX::XM_PI / 180.0)
+			* DirectX::SimpleMath::Matrix::CreateRotationZ(-twistLimitLow);
+		twistInfo.Origin = jointPosition;
+		twistInfo.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
+		twistInfo.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+		twistInfo.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+		twistInfo.ArcInRadian = (std::abs(linkData->GetTwistLimitLow()) + std::abs(linkData->GetTwistLimitHigh())) / 180.f * 3.14f;
+
+		mGameProcess->mGraphics->DrawRingEx(swing1Info);
+		mGameProcess->mGraphics->DrawRingEx(swing2Info);
+		mGameProcess->mGraphics->DrawRingEx(twistInfo);
+
+		for (auto& childLinkData : linkData->GetChildrenLinkData())
+		{
+			drawArticulationDebug(childLinkData.second);
+		}
+	}
+
+	void ArticulationHierarchy::beginHierarchyButton()
+	{
+		bool bisCheck = false;
+
+		if (mbIsBoneHierarchy)
+		{
+			bisCheck = true;
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.f, 1.f, 0.f, 0.5f));
+		}
+		if (ImGui::Button("BoneHierarchy"))
+		{
+			mbIsBoneHierarchy = true;
+			mbIsArticulationHierarchy = false;
+		}
+		if (bisCheck)
+		{
+			bisCheck = false;
+			ImGui::PopStyleColor();
+		}
+		ImGui::SameLine();
+
+		if (mbIsArticulationHierarchy)
+		{
+			bisCheck = true;
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.f, 1.f, 0.f, 0.5f));
+		}
+		if (ImGui::Button("ArticulationHierarchy"))
+		{
+			mbIsBoneHierarchy = false;
+			mbIsArticulationHierarchy = true;
+		}
+		if (bisCheck)
+		{
+			bisCheck = false;
+			ImGui::PopStyleColor();
+		}
 	}
 
 	void ArticulationHierarchy::dragDropGameWindow()

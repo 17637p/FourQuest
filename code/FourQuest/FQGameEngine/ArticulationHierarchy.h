@@ -46,6 +46,11 @@ namespace fq::game_engine
 
 	private:
 		/// <summary>
+		/// 계층구조 버튼 함수
+		/// </summary>
+		void beginHierarchyButton();
+
+		/// <summary>
 		/// 드래그 드랍 게임오브젝트 처리
 		/// </summary>
 		void dragDropGameWindow();
@@ -105,6 +110,11 @@ namespace fq::game_engine
 		/// 선택된 Link와 Joint에 Guizmo를 입히는 함수
 		/// </summary>
 		void beginGizmo();
+
+		/// <summary>
+		/// Articulation(관절) 디버깅
+		/// </summary>
+		void drawArticulationDebug(std::shared_ptr<fq::game_module::LinkData> linkData);
 
 	private:
 		GameProcess*	mGameProcess;

@@ -6,6 +6,8 @@
 #include "EditorEvent.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "../FQGameModule/LinkData.h"
+
 #include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/ArticulationData.h"
 #include "../FQGraphics/IFQGraphics.h"
@@ -85,20 +87,20 @@ namespace fq::game_engine
 		}
 	}
 
-	void beginShapeCombo(int& itemCurrentIdx, const std::string& comboName)
+	void beginShapeCombo(const std::string& comboName, fq::game_module::EShapeType& shapeType)
 	{
 		const char* items[] = { "Box", "Sphere", "Capsule" };
-		if (ImGui::BeginCombo(comboName.c_str(), items[itemCurrentIdx]))
+		if (ImGui::BeginCombo(comboName.c_str(), items[(int)shapeType]))
 		{
 			// 콤보 박스와 각 항목을 추가합니다.
 			for (int i = 0; i < 3; i++)
 			{
-				const bool isSelected = (itemCurrentIdx == i);
+				const bool isSelected = (shapeType == (fq::game_module::EShapeType)i);
 
 				// 항목이 선택되었을 때 인덱스를 업데이트합니다.
 				if (ImGui::Selectable(items[i], isSelected))
 				{
-					itemCurrentIdx = i;
+					shapeType = (fq::game_module::EShapeType)i;
 				}
 
 				// 현재 선택된 항목을 강조합니다.
@@ -147,6 +149,7 @@ namespace fq::game_engine
 				float density = mSelectLink->GetDensity();
 				DirectX::SimpleMath::Matrix localTransform = mSelectLink->GetLocalTransform();
 
+				fq::game_module::EShapeType shapeType = mSelectLink->GetShapeType();
 				DirectX::SimpleMath::Vector3 extent = mSelectLink->GetBoxExtent();
 				float sphereRadius = mSelectLink->GetSphereRadius();
 				float capsuleHalfHeight = mSelectLink->GetCapsuleHalfHeight();
@@ -164,22 +167,21 @@ namespace fq::game_engine
 
 				ImGui::Separator();
 
-				static int shapeNumber = 0;
-				beginShapeCombo(shapeNumber, "Link Shape");
+				beginShapeCombo("Link Shape", shapeType);
 
-				switch (shapeNumber)
+				switch (shapeType)
 				{
-				case 0:
+				case fq::game_module::EShapeType::BOX:
 				{
 					ImGui::InputFloat3("Extent", (float*)&extent);
 				}
 				break;
-				case 1:
+				case fq::game_module::EShapeType::SPHERE:
 				{
 					ImGui::InputFloat("Radius", &sphereRadius);
 				}
 				break;
-				case 2:
+				case fq::game_module::EShapeType::CAPSULE:
 				{
 					ImGui::InputFloat("Half Height", &capsuleHalfHeight);
 					ImGui::InputFloat("Radius", &capsuleRadius);
@@ -197,6 +199,7 @@ namespace fq::game_engine
 				mSelectLink->SetBoneName(boneName);
 				mSelectLink->SetDensity(density);
 				mSelectLink->SetLocalTransform(localTransform);
+				mSelectLink->SetShapeType(shapeType);
 				mSelectLink->SetBoxExtent(extent);
 				mSelectLink->SetSphereRadius(sphereRadius);
 				mSelectLink->SetCapsuleHalfHeight(capsuleHalfHeight);

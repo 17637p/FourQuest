@@ -8,6 +8,14 @@ namespace fq::game_module
 {
 	using LinkName = std::string;
 
+	enum class EShapeType
+	{
+		BOX,
+		SPHERE,
+		CAPSULE,
+
+		END
+	};
 
 	class LinkData
 	{
@@ -21,10 +29,12 @@ namespace fq::game_module
 		inline const std::string& GetBoneName();
 		inline const std::string& GetParentBoneName();
 		inline const float& GetDensity();
+		inline const DirectX::SimpleMath::Matrix& GetParentTransform();
 		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();
 		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		
 		// Shape
+		inline const EShapeType& GetShapeType();
 		inline const DirectX::SimpleMath::Vector3& GetBoxExtent();
 		inline const float& GetSphereRadius();
 		inline const float& GetCapsuleRadius();
@@ -58,6 +68,7 @@ namespace fq::game_module
 		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& worldTransform);
 
 		// Shape
+		inline void SetShapeType(const EShapeType& type);
 		inline void SetBoxExtent(const DirectX::SimpleMath::Vector3& extent);
 		inline void SetSphereRadius(const float& radius);
 		inline void SetCapsuleRadius(const float& radius);
@@ -93,8 +104,11 @@ namespace fq::game_module
 		bool mbIsDead;
 		unsigned int mID;
 
+		DirectX::SimpleMath::Matrix mParentWorldTransform;
 		DirectX::SimpleMath::Matrix mWorldTransform;
 		DirectX::SimpleMath::Vector3 mExtent;
+
+		EShapeType mShapeType;
 		float mSphereRadius;
 		float mCapsuleHalfHeight;
 		float mCapsuleRadius;
@@ -114,6 +128,10 @@ namespace fq::game_module
 	{
 		return mLinkInfo.density;
 	}
+	const DirectX::SimpleMath::Matrix& LinkData::GetParentTransform()
+	{
+		return mParentWorldTransform;
+	}
 	const DirectX::SimpleMath::Matrix& LinkData::GetLocalTransform()
 	{
 		return mLinkInfo.localTransform;
@@ -123,6 +141,10 @@ namespace fq::game_module
 		return mWorldTransform;
 	}
 
+	const EShapeType& LinkData::GetShapeType()
+	{
+		return mShapeType;
+	}
 	const DirectX::SimpleMath::Vector3& LinkData::GetBoxExtent()
 	{
 		return mExtent;
@@ -223,6 +245,10 @@ namespace fq::game_module
 		mWorldTransform = worldTransform;
 	}
 
+	void LinkData::SetShapeType(const EShapeType& type)
+	{
+		mShapeType = type;
+	}
 	void LinkData::SetBoxExtent(const DirectX::SimpleMath::Vector3& extent)
 	{
 		mExtent = extent;
@@ -323,4 +349,6 @@ namespace fq::game_module
 		if (mChildrenLinkData.find(name) != mChildrenLinkData.end())
 			mChildrenLinkData.erase(mChildrenLinkData.find(name));
 	}
+
+	
 }

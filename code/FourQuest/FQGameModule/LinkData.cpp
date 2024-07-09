@@ -1,9 +1,14 @@
 #include "LinkData.h"
 
+#include "../FQCommon/FQCommonGraphics.h"
+
+
+
 namespace fq::game_module
 {
 	LinkData::LinkData()
 		: mbIsDead(false)
+		, mShapeType(EShapeType::BOX)
 		, mChildrenLinkData()
 		, mID(0)
 		, mSphereRadius(1.f)
@@ -19,6 +24,7 @@ namespace fq::game_module
 
 	void LinkData::Update(const DirectX::SimpleMath::Matrix& parentWorldTransform)
 	{
+		mParentWorldTransform = parentWorldTransform;
 		mWorldTransform = mLinkInfo.localTransform * parentWorldTransform;
 
 		for (auto it = mChildrenLinkData.begin(); it != mChildrenLinkData.end(); )
