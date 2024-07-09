@@ -361,6 +361,12 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
 {
+	auto x = ImGui::GetWindowPos().x;
+	auto y = ImGui::GetWindowPos().y;
+	auto width = ImGui::GetWindowSize().x;
+	auto height = ImGui::GetWindowSize().y;
+	ImGuizmo::SetRect(x, y, width, height);
+
 	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
 		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
 	{
@@ -372,13 +378,6 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 
 	using namespace DirectX::SimpleMath;
 
-	auto x = ImGui::GetWindowPos().x;
-	auto y = ImGui::GetWindowPos().y;
-	auto width = ImGui::GetWindowSize().x;
-	auto height = ImGui::GetWindowSize().y;
-
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(x, y, width, height);
 
 	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
 	auto objectMatrix = objectT->GetWorldMatrix();
@@ -734,6 +733,5 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 		}
 		q.pop();
 	}
-
-
 }
+

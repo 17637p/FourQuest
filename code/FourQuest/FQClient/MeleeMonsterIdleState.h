@@ -23,6 +23,7 @@ namespace fq::client
 
 	private:
 		float mElapsedTime;
+		float mChangeStateTime;
 	};
 
 
