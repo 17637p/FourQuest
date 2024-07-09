@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <imgui.h>
+#include <ImGuizmo.h>
 
 #include "IEditorWindow.h"
 
@@ -95,12 +97,12 @@ namespace fq::game_engine
 		void beginPopupContextItem_Link(std::shared_ptr<fq::game_module::LinkData> link);
 
 		/// <summary>
-		/// 
+		/// 링크 데이터를 드래그 드랍하여 계층구조를 고치는 함수
 		/// </summary>
 		void dragDropLinkBar(std::shared_ptr<fq::game_module::LinkData> link);
 
 		/// <summary>
-		/// 
+		/// 선택된 Link와 Joint에 Guizmo를 입히는 함수
 		/// </summary>
 		void beginGizmo();
 
@@ -132,6 +134,7 @@ namespace fq::game_engine
 		// 에디터 카메라 관련
 
 		// 기즈모 관련
+		ImGuizmo::OPERATION mOperation;
 
 		unsigned int mLinkID;
 	};

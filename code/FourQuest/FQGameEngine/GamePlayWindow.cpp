@@ -266,21 +266,6 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 	}
 }
 
-fq::game_module::GameObject* fq::game_engine::GamePlayWindow::GetEditorCamera()
-{
-	return mCameraObject.get();
-}
-
-ImVec2 fq::game_engine::GamePlayWindow::GetViewPortSize()
-{
-	return mViewportSize;
-}
-
-ImGuizmo::OPERATION fq::game_engine::GamePlayWindow::GetOperation()
-{
-	return mOperation;
-}
-
 void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 {
 	auto windowPos = ImGui::GetWindowPos();
@@ -379,7 +364,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
 		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
 	{
-		ImGuizmo::Enable(false);
+		//ImGuizmo::Enable(false);
 		return;
 	}
 
@@ -387,13 +372,13 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 
 	using namespace DirectX::SimpleMath;
 
-	auto x = ImGui::GetWindowPos().x;
-	auto y = ImGui::GetWindowPos().y;
+	mWindowPosition.x = ImGui::GetWindowPos().x;
+	mWindowPosition.y = ImGui::GetWindowPos().y;
 	auto width = ImGui::GetWindowSize().x;
 	auto height = ImGui::GetWindowSize().y;
 
 	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(x, y, width, height);
+	ImGuizmo::SetRect(mWindowPosition.x, mWindowPosition.y, width, height);
 
 	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
 	auto objectMatrix = objectT->GetWorldMatrix();
@@ -496,6 +481,8 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 {
 	mWindowSize = size;
+	mWindowPosition.x = ImGui::GetWindowPos().x;
+	mWindowPosition.y = ImGui::GetWindowPos().y;
 
 	constexpr float offsetY = 70.f;
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
@@ -749,6 +736,29 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 		}
 		q.pop();
 	}
+}
 
+fq::game_module::GameObject* fq::game_engine::GamePlayWindow::GetEditorCamera()
+{
+	return mCameraObject.get();
+}
 
+ImVec2 fq::game_engine::GamePlayWindow::GetWindowPosition()
+{
+	return mWindowPosition;
+}
+
+ImVec2 fq::game_engine::GamePlayWindow::GetWindowSize()
+{
+	return mWindowSize;
+}
+
+ImVec2 fq::game_engine::GamePlayWindow::GetViewPortSize()
+{
+	return mViewportSize;
+}
+
+ImGuizmo::OPERATION fq::game_engine::GamePlayWindow::GetOperation()
+{
+	return mOperation;
 }

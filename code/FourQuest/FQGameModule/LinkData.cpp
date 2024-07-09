@@ -6,6 +6,10 @@ namespace fq::game_module
 		: mbIsDead(false)
 		, mChildrenLinkData()
 		, mID(0)
+		, mSphereRadius(1.f)
+		, mCapsuleHalfHeight(1.f)
+		, mCapsuleRadius(1.f)
+		, mExtent{1.f, 1.f, 1.f}
 	{
 	}
 

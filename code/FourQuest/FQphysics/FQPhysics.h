@@ -196,7 +196,6 @@ namespace fq::physics
 		virtual bool RemoveCloth(unsigned int id) override;
 #pragma endregion
 
-
 		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
 
 		/// <summary>

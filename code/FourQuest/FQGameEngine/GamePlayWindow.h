@@ -68,6 +68,8 @@ namespace fq::game_engine
 		void ExcutShortcut();
 
 		fq::game_module::GameObject* GetEditorCamera();
+		ImVec2 GetWindowPosition();
+		ImVec2 GetWindowSize();
 		ImVec2 GetViewPortSize();
 		ImGuizmo::OPERATION GetOperation();
 
@@ -93,6 +95,7 @@ namespace fq::game_engine
 		bool mbIsPauseGame;
 		bool mbIsMouseHoveredWindow;
 
+		ImVec2 mWindowPosition;
 		ImVec2 mWindowSize;
 		ImVec2 mViewportSize;
 		ImVec2 mViewPortOffset;

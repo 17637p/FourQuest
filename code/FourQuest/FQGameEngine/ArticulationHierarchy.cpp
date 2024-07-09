@@ -1,6 +1,5 @@
 #include "ArticulationHierarchy.h"
 
-#include <imgui.h>
 #include "imgui_stdlib.h"
 
 #include "EditorProcess.h"
@@ -28,6 +27,7 @@ namespace fq::game_engine
 		, mbIsBoneHierarchy(true)
 		, mbIsArticulationHierarchy(false)
 		, mLinkID(1)
+		, mOperation(ImGuizmo::TRANSLATE)
 	{
 	}
 
@@ -81,6 +81,7 @@ namespace fq::game_engine
 
 			beginBoneHierarchy();
 			beginArticulationHierarchy();
+			beginGizmo();
 
 			ImGui::EndChild();
 			dragDropGameWindow();
@@ -407,44 +408,58 @@ namespace fq::game_engine
 			return;
 		}
 
+		auto& input = mEditorProcess->mInputManager;
+
+		if (input->IsKeyState(EKey::RMouse, EKeyState::None))
+		{
+			if (input->IsKeyState(EKey::W, EKeyState::Tap))
+			{
+				mOperation = ImGuizmo::TRANSLATE;
+			}
+			if (input->IsKeyState(EKey::E, EKeyState::Tap))
+			{
+				mOperation = ImGuizmo::ROTATE;
+			}
+			if (input->IsKeyState(EKey::R, EKeyState::Tap))
+			{
+				mOperation = ImGuizmo::SCALE;
+			}
+			if (input->IsKeyState(EKey::Q, EKeyState::Tap))
+			{
+				mOperation = ImGuizmo::BOUNDS;
+			}
+		}
+
 		ImGuizmo::Enable(true);
 
 		using namespace DirectX::SimpleMath;
 
-		float x = ImGui::GetWindowPos().x;
-		float y = ImGui::GetWindowPos().y;
-		float width = ImGui::GetWindowSize().x;
-		float height = ImGui::GetWindowSize().y;
+		float x = mEditorProcess->mGamePlayWindow->GetWindowPosition().x;
+		float y = mEditorProcess->mGamePlayWindow->GetWindowPosition().y;
+		float width = mEditorProcess->mGamePlayWindow->GetWindowSize().x;
+		float height = mEditorProcess->mGamePlayWindow->GetWindowSize().y;
 
+		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(x, y, width, height);
 
 		Matrix linkMatrix = mSelectLinkData->GetWorldTransform();
 		Matrix beforeMatrix = mSelectLinkData->GetWorldTransform();
 
-		auto& input = mEditorProcess->mInputManager;
-
 		fq::game_module::GameObject* cameraObject = mEditorProcess->mGamePlayWindow->GetEditorCamera();
 		ImVec2 viewportSize = mEditorProcess->mGamePlayWindow->GetViewPortSize();
 
 		auto camera = cameraObject->GetComponent<fq::game_module::Camera>();
-		auto view = camera->GetView();
+		auto view = camera->GetView();  
 		auto projection = camera->GetProjection(viewportSize.x / viewportSize.y);
-
+		
 		bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
 		float* snap = mEditorProcess->mSettingWindow->GetSnap();
 		auto mode = mEditorProcess->mSettingWindow->GetMode();
 
-		ImGuizmo::OPERATION operation = mEditorProcess->mGamePlayWindow->GetOperation();
-
 		if (ImGuizmo::Manipulate(&view._11, &projection._11
-			, operation, mode, &linkMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
+			, mOperation, mode, &linkMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
 		{
 			mSelectLinkData->SetLocalTransform(linkMatrix);
-		}
-
-		if (ImGuizmo::IsOver()
-			&& input->IsKeyState(EKey::LMouse, EKeyState::Tap))
-		{
 		}
 	}
 
