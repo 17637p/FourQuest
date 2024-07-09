@@ -295,6 +295,16 @@ void TerrainDemo::Update()
 		mTestGraphics->LoadLightProbes("lightProbe");
 	}
 
+	if (InputManager::GetInstance().IsGetKey('R'))
+	{
+		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
+		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
+		{
+			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+			int a = 3;
+		}
+	}
+
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
 
