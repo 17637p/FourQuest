@@ -37,8 +37,6 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 
-		void SetLightProbe(bool isSetLightProbe);
-
 	private:
 		std::shared_ptr<class ShadowPass> mShadowPass;
 		std::shared_ptr<class ForwardRenderPass> mRenderPass;

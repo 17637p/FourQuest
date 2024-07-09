@@ -83,6 +83,9 @@ namespace fq::graphics
 		// position 정보만 담긴 probe 정보를 넘김
 		bool LoadLightProbes(const std::string& fileName);
 
+		bool GetIsUsedLightProbe() const { return mIsUsedLightProbe; }
+		void SetIsUsedLightProbe(bool val) { mIsUsedLightProbe = val; }
+
 		//void GetBarycentricCoordinates(const std::vector<DirectX::SimpleMath::Vector3> vertices, const std::vector<DirectX::SimpleMath::Vector3>& hullRays,
 		//	const DirectX::SimpleMath::Vector3& p, const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords, float& t);
 		/// Outer Cells에 관련된 거라 일단 보류 
@@ -108,6 +111,8 @@ namespace fq::graphics
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+
+		bool mIsUsedLightProbe;
 
 		int mCubeProbeIndex;
 		int mLightProbeIndex; // 현재까지 만들어진 lightProbe 5개에서 1개 삭제돼도 5

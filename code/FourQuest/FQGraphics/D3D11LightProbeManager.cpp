@@ -20,7 +20,8 @@ fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
 	mLightProbeSize(0),
 	mCubeProbes{},
 	mLightProbes{},
-	mTetrahedrons{}
+	mTetrahedrons{},
+	mIsUsedLightProbe(false)
 {
 
 }

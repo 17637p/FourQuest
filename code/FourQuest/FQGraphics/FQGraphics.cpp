@@ -92,7 +92,7 @@ void FQGraphics::LoadLightProbes(const std::string& fileName)
 	bool isSucceedLoad = mLightProbeManager->LoadLightProbes(fileName);
 	if (isSucceedLoad)
 	{
-		mRenderManager->SetLightProbe(true);
+		mLightProbeManager->SetIsUsedLightProbe(true);
 	}
 }
 
@@ -104,14 +104,14 @@ void FQGraphics::SaveLightProbes(const std::string& fileName)
 void FQGraphics::DeleteLightProbe(int index)
 {
 	mLightProbeManager->DeleteLightProbe(index);
-	mRenderManager->SetLightProbe(false);
+	mLightProbeManager->SetIsUsedLightProbe(false);
 }
 
 void FQGraphics::BakeLightProbe()
 {
 	mLightProbeManager->BakeAllLightProbeCoefficient();
 	mLightProbeManager->MakeTetrahedron();
-	mRenderManager->SetLightProbe(true);
+	mLightProbeManager->SetIsUsedLightProbe(true);
 }
 
 int FQGraphics::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
@@ -163,7 +163,7 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 	SetCamera(cameraInfo);
 	SetWindowSize(width, height);
 
-	mRenderManager->SetLightProbe(false);
+	mLightProbeManager->SetIsUsedLightProbe(false);
 
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
 	std::vector<std::wstring> paths{};

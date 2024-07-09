@@ -64,12 +64,9 @@ namespace fq::graphics
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
 		mPasses.push_back(mTerrainPass);
-		//if (mIsSetLightProbe)
-		{
-			mPasses.push_back(mLightProbePass);
-			mPasses.push_back(mLightProbeAddPass);
-			mPasses.push_back(mOutLineAddPass);
-		}
+		mPasses.push_back(mLightProbePass);
+		mPasses.push_back(mLightProbeAddPass);
+		mPasses.push_back(mOutLineAddPass);
 		mPasses.push_back(mTrailRenderPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
@@ -80,10 +77,5 @@ namespace fq::graphics
 		mPasses.push_back(mOutLineAddPass);
 
 		mFullScreenLastPass = mFullScreenPass;
-	}
-
-	void ForwardPipeline::SetLightProbe(bool isSetLightProbe)
-	{
-		mLightProbePass->SetLightProbe(isSetLightProbe);
 	}
 }

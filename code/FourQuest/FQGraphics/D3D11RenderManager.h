@@ -58,8 +58,6 @@ namespace fq::graphics
 		void RenderFullScreen();
 		void EndRender();
 
-		void SetLightProbe(bool isSetLightProbe);
-
 		ID3D11ShaderResourceView* GetBackBufferSRV() const;
 
 	private:

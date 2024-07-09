@@ -57,10 +57,6 @@ namespace fq::graphics
 		virtual void SetReferenceBoneIndex(size_t index) override { mIndex = index; }
 		virtual size_t GetReferenceBoneIndex() const override { return mIndex; }
 
-		// LightProbe
-		virtual void SetUseLightProbe(bool isUseLightProbe) override;
-		virtual bool GetUseLightProbe() override;
-
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		size_t mIndex;

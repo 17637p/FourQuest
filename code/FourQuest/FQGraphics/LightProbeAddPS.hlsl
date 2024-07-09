@@ -13,8 +13,8 @@ float4 main(VertexOut pin) : SV_Target
 {
 	float3 result;
 
-	result = lightProbe.Sample(defaultSS, pin.uv);
-	result += OffScreen.Sample(defaultSS, pin.uv);
+	result = OffScreen.Sample(defaultSS, pin.uv);
+	result += lightProbe.Sample(defaultSS, pin.uv);
 
 	return float4(result, 1);
 }

@@ -47,10 +47,6 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetReferenceBoneIndex(size_t index) abstract;
 			virtual FQ_GRAPHICS size_t GetReferenceBoneIndex() const abstract;
 
-			// LightProbe
-			virtual FQ_GRAPHICS void SetUseLightProbe(bool isUseLightProbe) abstract;
-			virtual FQ_GRAPHICS bool GetUseLightProbe() abstract;
-
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};

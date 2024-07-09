@@ -78,7 +78,7 @@ void fq::graphics::LightProbePass::Render()
 		mLightProbeIrrRTV->Clear(mDevice, { 0,0,0,1 });
 	}
 
-	if (!mIsSetLightProbe)
+	if (!mLightProbeManager->GetIsUsedLightProbe())
 	{
 		return;
 	}
@@ -110,7 +110,8 @@ void fq::graphics::LightProbePass::Render()
 		{
 			const MaterialInfo& materialInfo = job.Material->GetInfo();
 
-			if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque && job.StaticMeshObject->GetUseLightProbe())
+			bool isUseLightProbe = job.StaticMeshObject->GetMeshObjectInfo().bUseLightProbe;
+			if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque && isUseLightProbe)
 			{
 				int tetIndex = 0;
 				DirectX::SimpleMath::Vector4 weights;
@@ -159,7 +160,5 @@ void fq::graphics::LightProbePass::OnResize(unsigned short width, unsigned short
 	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
 }
 
-void fq::graphics::LightProbePass::SetLightProbe(bool isSetLightProbe)
-{
-	mIsSetLightProbe = isSetLightProbe;
-}
+
+

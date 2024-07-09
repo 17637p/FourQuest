@@ -394,70 +394,6 @@ void TerrainDemo::createTerrain(std::string modelPath, DirectX::SimpleMath::Matr
 	}
 }
 
-/*
-void TerrainDemo::createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe)
-{
-	const fq::common::Model& modelData = mTestGraphics->GetModel(modelPath);
-
-	static int index = 0;
-
-	for (auto mesh : modelData.Meshes)
-	{
-		if (mesh.second.Vertices.empty())
-		{
-			continue;
-		}
-
-		fq::graphics::MeshObjectInfo meshInfo;
-		meshInfo.ModelPath = modelPath;
-		meshInfo.MeshName = mesh.second.Name;
-		meshInfo.Transform = mesh.first.ToParentMatrix * transform;
-
-		for (auto subset : mesh.second.Subsets)
-		{
-			meshInfo.MaterialNames.push_back(subset.MaterialName);
-		}
-
-		if (mesh.second.BoneVertices.empty())
-		{
-			fq::graphics::IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInfo);
-
-			std::vector<std::shared_ptr<fq::graphics::IMaterial>> mat = iStaticMeshObject->GetMaterialInterfaces();
-			for (int i = 0; i < mat.size(); i++)
-			{
-				fq::common::Material matData = mat[i]->GetMaterialData();
-				if (index == 0)
-				{
-					matData.BaseColorFileName = L"Red.png";
-				}
-				else if (index == 1)
-				{
-					matData.BaseColorFileName = L"Green.png";
-				}
-				else if (index == 2)
-				{
-					matData.BaseColorFileName = L"Blue.png";
-				}
-				else if (index == 3)
-				{
-					matData.BaseColorFileName = L"Black.png";
-				}
-				else
-				{
-
-				}
-
-				mat[i]->SetMaterialData(matData);
-			}
-
-			mStaticMeshObjects.push_back(iStaticMeshObject);
-			iStaticMeshObject->SetUseLightProbe(isUseLightProbe);
-		}
-	}
-
-	index++;
-}*/
-
 void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe)
 {
 	using namespace fq::graphics;
@@ -486,7 +422,7 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 		std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
 		materialInterfaces.reserve(mesh.Subsets.size());
 		MeshObjectInfo meshObjectInfo;
-
+		meshObjectInfo.bUseLightProbe = isUseLightProbe;
 
 		for (const auto& subset : mesh.Subsets)
 		{
@@ -499,7 +435,6 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
 			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, node.ToParentMatrix * transform);
 			mStaticMeshObjects.push_back(iStaticMeshObject);
-			iStaticMeshObject->SetUseLightProbe(isUseLightProbe);
 
 			std::vector<std::shared_ptr<fq::graphics::IMaterial>> mat = iStaticMeshObject->GetMaterials();
 			for (int i = 0; i < mat.size(); i++)
@@ -582,18 +517,18 @@ void TerrainDemo::materialUpdate()
 	{
 		auto materialData = matrialInterface->GetInfo();
 
-		if (GetAsyncKeyState('U') & 0x8000)
-		{
-			materialData.bUseBaseColor = false;
-			materialData.bUseMetalness = false;
-			materialData.bUseRoughness = false;
-			materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-			materialData.Metalness = tempColor;
-			materialData.Roughness = tempColor;
-			//materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
-			//materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
-		}
-		else
+		//if (GetAsyncKeyState('U') & 0x8000)
+		//{
+		//	materialData.bUseBaseColor = false;
+		//	materialData.bUseMetalness = false;
+		//	materialData.bUseRoughness = false;
+		//	materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+		//	materialData.Metalness = tempColor;
+		//	materialData.Roughness = tempColor;
+		//	//materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+		//	//materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+		//}
+		//else
 		{
 			materialData.bUseMetalness = true;
 			materialData.bUseRoughness = true;
@@ -610,18 +545,18 @@ void TerrainDemo::materialUpdate()
 		{
 			auto materialData = matrialInterface->GetInfo();
 
-			if (GetAsyncKeyState('T') & 0x8000)
-			{
-				materialData.bUseBaseColor = false;
-				materialData.bUseMetalness = false;
-				materialData.bUseRoughness = false;
-				materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
-				materialData.Metalness = tempColor;
-				materialData.Roughness = tempColor;
-				// materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
-				// materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
-			}
-			else
+			//if (GetAsyncKeyState('T') & 0x8000)
+			//{
+			//	materialData.bUseBaseColor = false;
+			//	materialData.bUseMetalness = false;
+			//	materialData.bUseRoughness = false;
+			//	materialData.BaseColor = { tempColor, tempColor, tempColor,tempColor };
+			//	materialData.Metalness = tempColor;
+			//	materialData.Roughness = tempColor;
+			//	// materialData.BaseColorFileName = L"./resource/example/texture/boxBaseColor.jpg";
+			//	// materialData.NormalFileName = L"./resource/example/texture/boxNormal.jpg";
+			//}
+			//else
 			{
 				materialData.bUseMetalness = true;
 				materialData.bUseRoughness = true;
