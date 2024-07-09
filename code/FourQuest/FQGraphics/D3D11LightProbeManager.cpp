@@ -28,7 +28,18 @@ fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
 
 fq::graphics::D3D11LightProbeManager::~D3D11LightProbeManager()
 {
-
+	for (int i = 0; i < mCubeProbes.size(); i++)
+	{
+		delete mCubeProbes[i];
+	}
+	for (int i = 0; i < mLightProbes.size(); i++)
+	{
+		delete mLightProbes[i];
+	}
+	for (int i = 0; i < mTetrahedrons.size(); i++)
+	{
+		delete mTetrahedrons[i];
+	}
 }
 
 int fq::graphics::D3D11LightProbeManager::AddCubeProbe(const DirectX::SimpleMath::Vector3& position)
@@ -93,6 +104,11 @@ std::wstring fq::graphics::D3D11LightProbeManager::SaveProbe1DirectionTexture(co
 	hr = SaveToDDSFile(*image.GetImage(0, 0, 0), DirectX::DDS_FLAGS_NONE, fileName.c_str());
 	//if (FAILED(hr))
 	//	return hr;
+
+	pBackBuffer->Release();
+	pTexture->Release();
+	pStagingTexture->Release();
+	image.Release();
 
 	return fileName;
 }

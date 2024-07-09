@@ -52,6 +52,10 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 
 void fq::graphics::LightProbePass::Finalize()
 {
+	delete[] r;
+	delete[] g;
+	delete[] b;
+
 	mDevice = nullptr;
 	mJobManager = nullptr;
 	mCameraManager = nullptr;

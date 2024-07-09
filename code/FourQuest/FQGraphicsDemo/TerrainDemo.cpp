@@ -26,6 +26,12 @@ TerrainDemo::TerrainDemo()
 
 TerrainDemo::~TerrainDemo()
 {
+	for (int i = 0; i < mProbeObjects.size(); i++)
+	{
+		mTestGraphics->DeleteProbeObject(mProbeObjects[i]);
+	}
+
+	mTestGraphics->Finalize();
 	mEngineExporter->DeleteEngine(mTestGraphics);
 
 	CoUninitialize();
@@ -80,8 +86,8 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 
 	renderObjectInit();
 
-	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
-
+	//mTestGraphics->AddCubeProbe({ 0, 6, 0 });
+	
 	lightProbePositions.push_back({ 1, 1, 0 });
 	lightProbePositions.push_back({ -1, 1, 0 });
 	lightProbePositions.push_back({ 0, 1, 1 });
@@ -90,7 +96,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	lightProbePositions.push_back({ -1,2, 0 });
 	lightProbePositions.push_back({ 0, 2, 1 });
 	lightProbePositions.push_back({ 0, 2, - 1 });
-
+	
 	lightProbePositions.push_back({ 1, 1, 1 });
 	lightProbePositions.push_back({ -1, 1, 1 });
 	lightProbePositions.push_back({ -1, 1, -1 });
@@ -114,7 +120,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	for (int i = 0; i < lightProbePositions.size(); i++)
 	{
 		int probeIndex = mTestGraphics->AddLightProbe(lightProbePositions[i]);
-		createProbeObject(sphereModel, textureBasePath, 
+		createProbeObject(sphereModel, textureBasePath,
 			DirectX::SimpleMath::Matrix::CreateScale({ 0.001f, 0.001f, 0.001f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ lightProbePositions[i].x, lightProbePositions[i].y, lightProbePositions[i].z }),
 			probeIndex);
 	}
