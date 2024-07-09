@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientEvent.h" />
+    <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
@@ -69,6 +70,7 @@
     <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
