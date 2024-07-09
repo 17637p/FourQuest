@@ -2,7 +2,6 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "PlantMonster.h"
-#include "../FQGameModule/SkinnedMeshRenderer.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlantMonsterAttckState::Clone()
 {
@@ -47,6 +46,3 @@ void fq::client::PlantMonsterAttckState::OnStateUpdate(game_module::Animator& an
 	}
 }
 
-void fq::client::PlantMonsterAttckState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
-{
-}

@@ -239,6 +239,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackRange")
 		.data<&MeleeMonster::mAttackPrefab>("AttackPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "AttackPrefab")
+		.data<&MeleeMonster::mPatrolRange>("PatrolRange"_hs)
+		.prop(fq::reflect::prop::Name, "PatrolRange")
+		.prop(fq::reflect::prop::Comment, u8"¼øÂû ¹üÀ§")
 		.base<fq::game_module::Component>();
 	
 	//////////////////////////////////////////////////////////////////////////
@@ -253,6 +256,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterAttackState>()
 		.type("MeleeMonsterAttackState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterAttackState")
+		.data<&MeleeMonsterAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTiming")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterChaseState>()

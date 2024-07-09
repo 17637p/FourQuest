@@ -1136,19 +1136,21 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 		stateNode.SetPlayBackSpeed(playBackSpeed);
 	}
 
+	float maxDuration = 0.f;
+
 	for (const auto& animationClip : model.Animations)
 	{
 		const auto& clipName = animationClip.Name;
 		if (clipName == stateNode.GetAnimationName())
 		{
-			stateNode.SetDuration(animationClip.Duration);
+			maxDuration = animationClip.Duration;
 		}
 	}
 
 	float duration = stateNode.GetDuration();
 	if (ImGui::InputFloat("Duration", &duration))
 	{
-		stateNode.SetDuration(duration);
+		stateNode.SetDuration(std::min(maxDuration, duration));
 	}
 
 	bool IsLoof = stateNode.IsLoof();

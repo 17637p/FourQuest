@@ -5,7 +5,6 @@
 #include "PlantAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
-#include "GameManager.h"
 
 fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)
@@ -85,7 +84,7 @@ void fq::client::PlantMonster::EmitAttack()
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
-	// TODO : 공격사운드 추가 
+	// TODO :  원거리 공격사운드 추가 
 
 }
 
@@ -97,7 +96,6 @@ void fq::client::PlantMonster::OnUpdate(float dt)
 		if (mTarget->IsDestroyed())
 			SetTarget(nullptr);
 	}
-
 
 	// 공격 쿨타임 
 	mAttackElapsedTime = std::max(mAttackElapsedTime - dt, 0.f);
@@ -118,7 +116,7 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 		// 타겟을 자신을 때린 사람으로 바꿉니다 
 		SetTarget(playerAttack->GetAttacker());
 
-		// 공격방향의 반대방향으로 몬스터가 바라봅니다
+		// TODO : (이건 필요하면) 공격방향의 반대방향으로 몬스터가 바라봅니다
 		auto attackDir = playerAttack->GetAttackDirection();
 		if (attackDir != client::Attack::NoDirection)
 		{
