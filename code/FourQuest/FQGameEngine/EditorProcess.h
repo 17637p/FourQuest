@@ -20,6 +20,7 @@
 #include "NavigationMeshWindow.h"
 #include "ArticulationHierarchy.h"
 #include "ArticulationInspector.h"
+#include "LightProbeWindow.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -56,6 +57,7 @@ namespace fq::game_engine
 		std::unique_ptr<NavigationMeshWindow> mNavMeshWindow;
 		std::unique_ptr<ArticulationHierarchy> mArticulationHierarchy;
 		std::unique_ptr<ArticulationInspector> mArticulationInspector;
+		std::unique_ptr<LightProbeWindow> mLightProbeWindow;
 
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;

@@ -297,6 +297,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& articulationInspector = mEditorProcess->mArticulationInspector->IsWindowOpen();
 		ImGui::Checkbox("ArticulationInspector", &articulationInspector);
 
+		bool& onLightProbe = mEditorProcess->mLightProbeWindow->IsWindowOpen();
+		ImGui::Checkbox("LightProbe", &onLightProbe);
+
 		ImGui::EndMenu();
 	}
 }

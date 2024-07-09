@@ -9,6 +9,7 @@
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
 #include "PathFindingSystem.h"
+#include "LightProbeSystem.h"
 
 fq::game_engine::DebugSystem::DebugSystem()
 	:mGameProcess(nullptr)
@@ -54,6 +55,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderConvexMeshCollider();
 	renderCharaterController();
 	renderNavigationMesh();
+	renderLightProbe();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -346,9 +348,6 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
-
-
-
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
 	if (!GetOnCapsuleCollider()) return;
@@ -384,17 +383,13 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 		}
 	}
 }
+
 void fq::game_engine::DebugSystem::renderTerrainCollider()
 {
 	if (!GetOnTerrainCollider()) return;
 
 	using namespace fq::game_module;
-
-
-
 }
-
-
 
 void fq::game_engine::DebugSystem::renderCharaterController()
 {
@@ -447,6 +442,23 @@ void fq::game_engine::DebugSystem::renderNavigationMesh()
 		info.Sphere.Radius = 0.05f;
 
 		info.Color = { 0, 1, 1, 1 };
+
+		mGameProcess->mGraphics->DrawSphere(info);
+	}
+}
+
+void fq::game_engine::DebugSystem::renderLightProbe()
+{
+	std::vector<LightProbe*> lightProbes = mGameProcess->mLightProbeSystem->GetLightProbes();
+
+	for (int i = 0; i < lightProbes.size(); i++)
+	{
+		fq::graphics::debug::SphereInfo info;
+
+		info.Sphere.Center = lightProbes[i]->position;
+		info.Sphere.Radius = 0.05f;
+
+		info.Color = { 1, 1, 0, 1 };
 
 		mGameProcess->mGraphics->DrawSphere(info);
 	}

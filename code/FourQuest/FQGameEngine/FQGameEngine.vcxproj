@@ -169,6 +169,8 @@
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
+    <ClInclude Include="LightProbeSystem.h" />
+    <ClInclude Include="LightProbeWindow.h" />
     <ClInclude Include="LightSystem.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="EditorEvent.h" />
@@ -216,6 +218,8 @@
     <ClCompile Include="EditorHelper.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
+    <ClCompile Include="LightProbeSystem.cpp" />
+    <ClCompile Include="LightProbeWindow.cpp" />
     <ClCompile Include="LightSystem.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />

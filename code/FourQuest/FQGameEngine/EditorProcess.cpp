@@ -22,6 +22,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mNavMeshWindow(std::make_unique<NavigationMeshWindow>())
 	, mArticulationHierarchy(std::make_unique<ArticulationHierarchy>())
 	, mArticulationInspector(std::make_unique<ArticulationInspector>())
+	, mLightProbeWindow(std::make_unique<LightProbeWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()
