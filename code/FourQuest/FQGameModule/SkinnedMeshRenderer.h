@@ -39,6 +39,16 @@ namespace fq::game_module
 		void SetModelPath(std::string path) { mModelPath = path; }
 
 		/// <summary>
+		/// 텍스처 폴더 경로를 설정합니다 
+		/// </summary>
+		std::string GetTexturePath() const { return mTexturePath; }
+		
+		/// <summary>
+		/// 텍스터 폴더 경로를 반환합니다
+		/// </summary>
+		void SetTexturePath(std::string path) { mTexturePath = path; }
+
+		/// <summary>
 		/// 메쉬 이름을 반환합니다
 		/// </summary>
 		/// <returns></returns>
@@ -87,6 +97,7 @@ namespace fq::game_module
 		fq::graphics::MeshObjectInfo mMeshInfomation;
 
 		std::string mModelPath;
+		std::string mTexturePath;
 		std::string mMeshName;
 		std::vector<std::string> mMaterialNames;
 		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;
