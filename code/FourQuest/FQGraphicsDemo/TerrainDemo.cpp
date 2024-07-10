@@ -541,10 +541,10 @@ void TerrainDemo::renderObjectInit()
 	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.7, -0.7 }), true);
 	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.9, 0.7 }), true);
 
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.2, 0 }), true);
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.4, 0 }), true);
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.7 }), true);
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.7 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.95, 1.2, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.95, 1.4, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.95 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.95 }), true);
 }
 
 void TerrainDemo::renderObjectUpdate()

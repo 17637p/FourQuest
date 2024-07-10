@@ -55,7 +55,7 @@ void fq::game_engine::DebugSystem::Render()
 	renderConvexMeshCollider();
 	renderCharaterController();
 	renderNavigationMesh();
-	renderLightProbe();
+	//renderLightProbe();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()

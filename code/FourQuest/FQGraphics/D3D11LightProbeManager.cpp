@@ -147,6 +147,8 @@ bool D3D11LightProbeManager::LoadLightProbes(const std::string& fileName)
 		{
 			LightProbe* newLightProbe = new LightProbe;
 
+			lightProbeFile >> newLightProbe->index;
+
 			lightProbeFile >> newLightProbe->position.x;
 			lightProbeFile >> newLightProbe->position.y;
 			lightProbeFile >> newLightProbe->position.z;
@@ -233,6 +235,8 @@ void D3D11LightProbeManager::SaveLightProbes(const std::string& fileName)
 		// Write LightProbe
 		for (int i = 0; i < mLightProbeSize; i++)
 		{
+			lightProbeFile << mLightProbes[i]->index << "\n";
+
 			lightProbeFile << mLightProbes[i]->position.x << " ";
 			lightProbeFile << mLightProbes[i]->position.y << " ";
 			lightProbeFile << mLightProbes[i]->position.z << "\n";

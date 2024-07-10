@@ -69,7 +69,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
 	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
 	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
-	mGameProcess->mGraphics->Initialize(hwnd, width, height);
+	mGameProcess->mGraphics->Initialize(hwnd, width, height, fq::graphics::EPipelineType::Forward);
 
 	// 물리 엔진 초기화
 	mGameProcess->mPhysics = fq::physics::EngineExporter().GetEngine();
@@ -321,7 +321,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mNavMeshWindow->Initialize(mGameProcess.get());
 	mEditor->mArticulationHierarchy->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
-	mEditor->mLightProbeWindow->Initialize(mGameProcess.get());
+	mEditor->mLightProbeWindow->Initialize(mGameProcess.get(), mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

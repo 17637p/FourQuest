@@ -3,6 +3,11 @@
 #include <vector>
 #include <directxtk/SimpleMath.h>
 
+namespace fq::graphics
+{
+	class IProbeObject;
+}
+
 namespace fq::game_engine
 {
 	class GameProcess;
@@ -22,16 +27,19 @@ namespace fq::game_engine
 		// 배치 
 		void AddLightProbe(DirectX::SimpleMath::Vector3 position);
 		void DeleteLightProbe(int index);
+
+
 		// 기즈모 써야함 
 		
-
 		// 디버그 드로우 
 		std::vector<LightProbe*> GetLightProbes() { return mLightProbes; }
+		std::vector<fq::graphics::IProbeObject*> GetLightProbeObjects() { return mProbeObjects; };
 
 	private:
 		fq::game_engine::GameProcess* mGameProcess;
 
 		std::vector<LightProbe*> mLightProbes;
+		std::vector<fq::graphics::IProbeObject*> mProbeObjects;
 	};
 }
 
