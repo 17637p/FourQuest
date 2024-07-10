@@ -34,6 +34,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mbIsUsingGizumo(false)
 	, mViewportSize{ 1.f,1.f }
 	, mViewPortOffset{ 0.f,0.f }
+	, mbAlreadyDrawGizumo(false)
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -57,6 +58,9 @@ void fq::game_engine::GamePlayWindow::Render()
 		drawSelectObjectDebugInfomation();
 	}
 	ImGui::End();
+
+	// 기즈모 그리기 세팅을 초기화합니다
+	mbAlreadyDrawGizumo = false;
 }
 
 void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProcess* editor)
@@ -361,6 +365,21 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
 {
+	using namespace DirectX::SimpleMath;
+
+	// 기즈모 창관련 설정 
+	auto x = ImGui::GetWindowPos().x;
+	auto y = ImGui::GetWindowPos().y;
+	auto width = ImGui::GetWindowSize().x;
+	auto height = ImGui::GetWindowSize().y;
+	ImGuizmo::SetRect(x, y, width, height);
+	
+	// 이미 다른곳에서 기즈모 그린경우 그리지 않습니다.
+	if (mbAlreadyDrawGizumo)
+	{
+		return;
+	}
+
 	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
 		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
 	{
@@ -369,16 +388,6 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	}
 
 	ImGuizmo::Enable(true);
-
-	using namespace DirectX::SimpleMath;
-
-	auto x = ImGui::GetWindowPos().x;
-	auto y = ImGui::GetWindowPos().y;
-	auto width = ImGui::GetWindowSize().x;
-	auto height = ImGui::GetWindowSize().y;
-
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(x, y, width, height);
 
 	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
 	auto objectMatrix = objectT->GetWorldMatrix();
@@ -734,6 +743,34 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 		}
 		q.pop();
 	}
+}
 
+void fq::game_engine::GamePlayWindow::DrawGizumo(DirectX::SimpleMath::Matrix& transform)
+{
+	if (mbAlreadyDrawGizumo)
+	{
+		return;
+	}
 
+	mbAlreadyDrawGizumo = true;
+	ImGuizmo::Enable(true);
+
+	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
+	auto objectMatrix = transform;
+
+	auto& input = mEditorProcess->mInputManager;
+
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto view = camera->GetView();
+	auto proj = camera->GetProjection(mViewportSize.x / mViewportSize.y);
+
+	bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
+	float* snap = mEditorProcess->mSettingWindow->GetSnap();
+	auto mode = mEditorProcess->mSettingWindow->GetMode();
+
+	if (ImGuizmo::Manipulate(&view._11, &proj._11
+		, mOperation, mode, &objectMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
+	{
+		transform = objectMatrix;
+	}
 }

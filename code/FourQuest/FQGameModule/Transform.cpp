@@ -160,6 +160,7 @@ void fq::game_module::Transform::SetLocalRotationToMatrix(Matrix rotation)
 	updateWorldMatrix();
 }
 
+
 void fq::game_module::Transform::SetLocalScale(Vector3 scale)
 {
 	GenerateLocal(mFQTransform.localPosition, mFQTransform.localRotation, scale);

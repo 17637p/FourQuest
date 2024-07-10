@@ -28,8 +28,8 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* 
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
-	std::filesystem::path texturePath = mGameProcess->mRenderingSystem->GetDefaultTexturePath();
 	std::filesystem::path modelPath = path;
+	std::filesystem::path texturePath =modelPath.remove_filename();
 
 	auto& graphics = mGameProcess->mGraphics;
 	const auto& model = graphics->CreateModelResource(modelPath.string(), texturePath);

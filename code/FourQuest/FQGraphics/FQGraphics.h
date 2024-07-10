@@ -118,6 +118,8 @@ namespace fq::graphics
 		virtual void DrawRing(const debug::RingInfo& ringInfo) override;
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
+		virtual void DrawSphereEx(const debug::SphereInfoEx& sphereInfoEx) override;
+		virtual void DrawRingEx(const debug::RingInfoEx& ringInfoEx) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;

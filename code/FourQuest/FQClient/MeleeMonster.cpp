@@ -50,6 +50,7 @@ void fq::client::MeleeMonster::OnStart()
 {
 	mTransform = GetComponent<game_module::Transform>();
 	mStartPosition = mTransform->GetWorldPosition();
+	mAnimator = GetComponent<game_module::Animator>();
 
 	mMaxHp = mHp;
 
@@ -100,52 +101,41 @@ void fq::client::MeleeMonster::Move(DirectX::SimpleMath::Vector3 destination)
 
 void fq::client::MeleeMonster::Patrol()
 {
-	auto worldPos = mTransform->GetWorldPosition();
+	std::random_device rd;
+	std::mt19937 gen(rd());
 
-	float distance = (worldPos - mPatrolDestination).Length();
+	// 순찰 위치 정하기 
+	std::uniform_real_distribution<float> patrolDis(0, mPatrolRange);
+	float distance = patrolDis(gen);
 
-	constexpr float EndPatrolDistance = 0.1f;
+	std::uniform_real_distribution<float> radianDis(0, DirectX::XM_2PI);
+	float radian = radianDis(gen);
 
-	// 목표 지점 도착 
-	if (distance <= EndPatrolDistance)
-	{
-		changeToRandomIdleOrPatrol();
-	}
-	else //  몬스터 이동 
-	{
-		Move(mPatrolDestination);
-	}
-}
+	mPatrolDestination = mStartPosition;
+	mPatrolDestination.x += std::cos(radian) * distance;
+	mPatrolDestination.z += std::sin(radian) * distance;
 
-void fq::client::MeleeMonster::changeToRandomIdleOrPatrol()
-{
-	static std::random_device rd;
-	static std::mt19937 gen(rd());
+	//// 순찰 방향으로 몬스터 방향 설정
 
-	std::uniform_real_distribution<float> dis(0, 1.f);
-	float val = dis(gen);
+	//auto monsterPos = mTransform->GetWorldPosition();
 
-	// Idle
-	if (val < 0.5f)  
-	{
-		
+	//auto lookDir = (mPatrolDestination - monsterPos);
+	//lookDir.y = 0.f;
+	//lookDir.Normalize();
 
-	}
-	else // Patrol
-	{
-		// 순찰 위치 정하기 
-		std::uniform_real_distribution<float> patrolDis(0, mPatrolRange);
-		float distance = patrolDis(gen);
+	//DirectX::SimpleMath::Quaternion directionQuaternion;
+	//if (lookDir == DirectX::SimpleMath::Vector3::Backward)
+	//{
+	//	directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(lookDir, { 0, -1, 0 });
+	//}
+	//else
+	//{
+	//	directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(lookDir, { 0, 1, 0 });
+	//}
 
-		std::uniform_real_distribution<float> radianDis(0, DirectX::XM_2PI);
-		float radian = radianDis(gen);
+	//mTransform->SetLocalRotation(directionQuaternion);
+	fq::game_module::NavigationAgent* agent = GetComponent<fq::game_module::NavigationAgent>();
 
-		mPatrolDestination = mStartPosition;
-		mPatrolDestination.x += std::cos(radian) * distance;
-		mPatrolDestination.z += std::sin(radian) * distance;
-
-		mAnimator->SetParameterBoolean("OnPatrol", true);
-	}
-
+	Move(mPatrolDestination);
 }
 

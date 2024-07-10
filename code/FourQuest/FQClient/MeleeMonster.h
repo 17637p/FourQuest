@@ -23,13 +23,11 @@ namespace fq::client
 		void Move(DirectX::SimpleMath::Vector3 destination);
 
 		void Patrol();
-
-
+	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void OnStart()override;
-		void changeToRandomIdleOrPatrol();
 
 	private:
 		GameManager* mGameManager;

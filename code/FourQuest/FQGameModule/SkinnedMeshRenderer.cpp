@@ -3,6 +3,8 @@
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
 	,mSkinnedMeshObject(nullptr)
+	,mTexturePath{}
+	,mModelPath{}
 {
 }
 

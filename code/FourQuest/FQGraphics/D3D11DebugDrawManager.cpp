@@ -438,6 +438,7 @@ namespace fq::graphics
 
 		debug::PolygonInfo polygonInfo;
 		polygonInfo.Points.resize(2);
+		polygonInfo.Color = info.Color;
 
 		if (info.ArcInRadian < DirectX::XM_PI * 0.5f)
 		{
@@ -723,9 +724,11 @@ namespace fq::graphics
 
 		mBatchEffect->Apply(device->GetDeviceContext().Get());
 		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
-		static const size_t c_ringSegments = 16;
+		const size_t c_ringSegments = 16;
+		const size_t RingVertexCount = 17;
+		const size_t TotalVertexCount = RingVertexCount + 2;
 
-		VertexPositionColor verts[c_ringSegments + 2];
+		VertexPositionColor verts[TotalVertexCount];
 
 		FLOAT fAngleDelta = info.ArcInRadian / float(c_ringSegments);
 		// Instead of calling cos/sin for each segment we calculate
@@ -739,21 +742,26 @@ namespace fq::graphics
 			1.f, 1.f, 1.f, 1.f
 		};
 		XMVECTOR incrementalCos = s_initialCos.v;
-		for (size_t i = 0; i < c_ringSegments + 1; i++)
+		for (size_t i = 0; i < RingVertexCount; i++)
 		{
 			XMVECTOR pos = XMVectorMultiplyAdd(info.MajorAxis, incrementalCos, info.Origin);
 			pos = XMVectorMultiplyAdd(info.MinorAxis, incrementalSin, pos);
+
 			XMStoreFloat3(&verts[i].position, pos);
 			XMStoreFloat4(&verts[i].color, info.Color);
 			// Standard formula to rotate a vector.
+
 			XMVECTOR newCos = incrementalCos * cosDelta - incrementalSin * sinDelta;
 			XMVECTOR newSin = incrementalCos * sinDelta + incrementalSin * cosDelta;
 			incrementalCos = newCos;
 			incrementalSin = newSin;
 		}
-		verts[c_ringSegments + 1] = verts[0];
 
-		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, verts, c_ringSegments + 1);
+		XMStoreFloat3(&verts[TotalVertexCount - 2].position, info.Origin);
+		XMStoreFloat4(&verts[TotalVertexCount - 2].color, info.Color);
+		verts[TotalVertexCount - 1] = verts[0];
+
+		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, verts, TotalVertexCount);
 	}
 
 	void D3D11DebugDrawManager::drawCube(const std::shared_ptr<D3D11Device>& device,

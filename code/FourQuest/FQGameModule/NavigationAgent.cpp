@@ -8,6 +8,7 @@
 fq::game_module::NavigationAgent::NavigationAgent()
 	:mImpl(),
 	mPathFindingSystem(nullptr)
+	,mbSyncRotationWithMovementDirection(true)
 {
 
 }
@@ -29,7 +30,7 @@ void fq::game_module::NavigationAgent::RegisterNavigationField(fq::game_engine::
 {
 	mPathFindingSystem = pathFindingSystem;
 
-	Transform* agentTransform =  GetGameObject()->GetComponent<Transform>();
+	Transform* agentTransform = GetGameObject()->GetComponent<Transform>();
 	mImpl->agentIdx = pathFindingSystem->AddAgentToCrowd(agentTransform->GetWorldPosition(), &mImpl->agentParams);
 
 	mImpl->crowd = mPathFindingSystem->GetCrowd();
@@ -94,6 +95,7 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 
 	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
 	mImpl->crowd->requestMoveTarget(mImpl->agentIdx, mImpl->targetRef, mImpl->targetPos);
+
 	//auto param = mImpl->crowd->getObstacleAvoidanceParams(mImpl->agentParams.obstacleAvoidanceType);
 	//
 	//dtObstacleAvoidanceParams nextParam{*param};
@@ -145,4 +147,23 @@ void fq::game_module::NavigationAgent::DeleteAgentData()
 {
 	mImpl->crowd->removeAgent(mImpl->agentIdx);
 	delete mImpl;
+}
+
+bool fq::game_module::NavigationAgent::HasReachedDestination() const
+{
+	const dtCrowdAgent* agent = mImpl->crowd->getAgent(mImpl->agentIdx);
+
+	if (!agent)
+	{
+		return false;
+	}
+
+	constexpr float tolerance = 0.5f;  // 허용오차  
+	float dx = mImpl->targetPos[0] - agent->npos[0];
+	float dy = mImpl->targetPos[1] - agent->npos[1];
+	float dz = mImpl->targetPos[2] - agent->npos[2];
+
+	float distance = sqrt(dx * dx + dy * dy + dz * dz);
+
+	return distance < tolerance;
 }
