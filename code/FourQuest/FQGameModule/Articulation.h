@@ -89,7 +89,4 @@ namespace fq::game_module
 		assert(mCollisionCount != 0);
 		mCollisionCount--;
 	}
-
-
-
 }

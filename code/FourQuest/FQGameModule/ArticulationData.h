@@ -34,6 +34,7 @@ namespace fq::game_module
 		inline void SetDensity(const float& density);
 
 		inline std::weak_ptr<LinkData> GetRootLinkData();
+		inline void SetRootLinkData(const std::shared_ptr<LinkData> rootLink);
 
 	private:
 		fq::physics::ArticulationInfo mArticulationInfo;
@@ -102,5 +103,9 @@ namespace fq::game_module
 	std::weak_ptr<LinkData> ArticulationData::GetRootLinkData()
 	{
 		return mRootLinkData;
+	}
+	void ArticulationData::SetRootLinkData(const std::shared_ptr<LinkData> rootLink)
+	{
+		mRootLinkData = rootLink;
 	}
 }

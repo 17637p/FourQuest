@@ -151,11 +151,6 @@ namespace fq::game_engine
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectLinkHandle;
 
-		// 에디터 카메라 관련
-
-		// 기즈모 관련
-		ImGuizmo::OPERATION mOperation;
-
 		unsigned int mLinkID;
 	};
 }

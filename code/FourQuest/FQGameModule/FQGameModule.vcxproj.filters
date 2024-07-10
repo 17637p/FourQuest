@@ -1,488 +1,494 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup>
-		<Filter Include="include">
-			<UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-			<Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-		</Filter>
-		<Filter Include="include\03.Scene">
-			<UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\05.Input">
-			<UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.EntityComponent">
-			<UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.EntityComponent\Internal">
-			<UniqueIdentifier>{f67d1a9f-b51e-4ff3-b023-f77a9cd51ee4}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\00.Define">
-			<UniqueIdentifier>{2aed6e42-fa01-4b0a-9ac6-0d4c1275f424}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\06.ObjectManager">
-			<UniqueIdentifier>{1c701873-e584-47bc-bca9-5e3cfb552373}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.EntityComponent\Physics">
-			<UniqueIdentifier>{d91e34b4-b6a1-4c6b-8c91-d5600f81eed5}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src">
-			<UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-			<Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-		</Filter>
-		<Filter Include="src\03.Scene">
-			<UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\04.Event">
-			<UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\05.Input">
-			<UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.EntityComponent">
-			<UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.EntityComponent\Internal">
-			<UniqueIdentifier>{f099fc72-a4ae-42b5-a922-1e37a39a9274}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.EntityComponent\Physics">
-			<UniqueIdentifier>{0a699caa-a806-4f97-8407-14a42b2e44c4}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\00.Define">
-			<UniqueIdentifier>{e48d2721-5a19-4b1f-8b8e-66485dd1be2a}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\06.ObjectManager">
-			<UniqueIdentifier>{e974bfdd-6214-4649-80f2-85ffc3273cb4}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\07.Physics">
-			<UniqueIdentifier>{6ceb4e20-1ddc-4f7f-967f-942ca45d0d82}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\07.Physics">
-			<UniqueIdentifier>{46982d69-3c1d-4224-877b-4ebd2d652872}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.EntityComponent\Graphics">
-			<UniqueIdentifier>{34e035ca-cf74-450f-b506-3d731aa5bc6f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.EntityComponent\Graphics">
-			<UniqueIdentifier>{03c7b1cc-2fb8-435a-a4d9-ca9f80bc4d16}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\08.Prefab">
-			<UniqueIdentifier>{d8a213a9-9766-44a7-8f3a-0bbf7584100e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\04.Event">
-			<UniqueIdentifier>{888e2fa8-48cf-4600-afba-d2abbbd0b5b1}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\09.Animation">
-			<UniqueIdentifier>{839fc744-eae7-473a-8fc8-2afd7441da3d}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\09.Animation">
-			<UniqueIdentifier>{fd4953c8-86f8-4c50-a374-0eea1dfb28bd}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\09.Animation\StateBehaviour">
-			<UniqueIdentifier>{1fdb9d54-076c-40b6-88f6-d93790f3191a}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\09.Animation\StateBehaviour">
-			<UniqueIdentifier>{6c282c41-2e6f-4caf-ba77-2b153b9ab3fe}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.EntityComponent\UI">
-			<UniqueIdentifier>{2a93baec-6e18-4d1b-99ef-c5917a4b338e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.EntityComponent\UI">
-			<UniqueIdentifier>{e2c736a9-6d4d-475a-9f0b-35788b19c52f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\10.PathFinding">
-			<UniqueIdentifier>{91bec4ff-da06-4cb9-b146-4d193dbcb34e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\10.PathFinding">
-			<UniqueIdentifier>{1bcfb876-d582-4468-97e0-906710d30f9e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\11.SkyBox">
-			<UniqueIdentifier>{9c08872f-78ae-4e48-9037-60c014459e3f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\11.SkyBox">
-			<UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\08.Prefab">
-			<UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\12.ThreadPool">
-			<UniqueIdentifier>{67188304-3881-48e3-92da-a080319dd720}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\12.ThreadPool">
-			<UniqueIdentifier>{63171bad-388a-4f42-909a-b06f1937084b}</UniqueIdentifier>
-		</Filter>
-	</ItemGroup>
-	<ItemGroup>
-		<ClInclude Include="GameObject.h">
-			<Filter>include\01.EntityComponent</Filter>
-		</ClInclude>
-		<ClInclude Include="Scene.h">
-			<Filter>include\03.Scene</Filter>
-		</ClInclude>
-		<ClInclude Include="EventManager.h">
-			<Filter>include\04.Event</Filter>
-		</ClInclude>
-		<ClInclude Include="InputManager.h">
-			<Filter>include\05.Input</Filter>
-		</ClInclude>
-		<ClInclude Include="TimeManager.h">
-			<Filter>include\05.Input</Filter>
-		</ClInclude>
-		<ClInclude Include="EventHandler.h">
-			<Filter>include\04.Event</Filter>
-		</ClInclude>
-		<ClInclude Include="FunctionTraits.h">
-			<Filter>include\04.Event</Filter>
-		</ClInclude>
-		<ClInclude Include="Event.h">
-			<Filter>include\04.Event</Filter>
-		</ClInclude>
-		<ClInclude Include="SceneManager.h">
-			<Filter>include\03.Scene</Filter>
-		</ClInclude>
-		<ClInclude Include="InputEnum.h">
-			<Filter>include\05.Input</Filter>
-		</ClInclude>
-		<ClInclude Include="Component.h">
-			<Filter>include\01.EntityComponent</Filter>
-		</ClInclude>
-		<ClInclude Include="Transform.h">
-			<Filter>include\01.EntityComponent</Filter>
-		</ClInclude>
-		<ClInclude Include="ComponentIterator.h">
-			<Filter>include\01.EntityComponent\Internal</Filter>
-		</ClInclude>
-		<ClInclude Include="ComponentView.h">
-			<Filter>include\01.EntityComponent\Internal</Filter>
-		</ClInclude>
-		<ClInclude Include="GameObjectIterator.h">
-			<Filter>include\01.EntityComponent\Internal</Filter>
-		</ClInclude>
-		<ClInclude Include="GameObjectView.h">
-			<Filter>include\01.EntityComponent\Internal</Filter>
-		</ClInclude>
-		<ClInclude Include="GameModule.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="GameModuleEnum.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="PrefabManager.h">
-			<Filter>include\06.ObjectManager</Filter>
-		</ClInclude>
-		<ClInclude Include="SceneHelper.h">
-			<Filter>include\03.Scene</Filter>
-		</ClInclude>
-		<ClInclude Include="GameModuleRegister.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="BoxCollider.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="SphereCollider.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="RigidBody.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="CapsuleCollider.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="MeshCollider.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="CollisionMatrix.h">
-			<Filter>include\07.Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="Collision.h">
-			<Filter>include\07.Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="SoundClip.h">
-			<Filter>include\01.EntityComponent</Filter>
-		</ClInclude>
-		<ClInclude Include="StaticMeshRenderer.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="Light.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="SkinnedMeshRenderer.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="Camera.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="SoundManager.h">
-			<Filter>include\05.Input</Filter>
-		</ClInclude>
-		<ClInclude Include="ObjectPool.h">
-			<Filter>include\06.ObjectManager</Filter>
-		</ClInclude>
-		<ClInclude Include="Pool.h">
-			<Filter>include\06.ObjectManager</Filter>
-		</ClInclude>
-		<ClInclude Include="PrefabResource.h">
-			<Filter>include\08.Prefab</Filter>
-		</ClInclude>
-		<ClInclude Include="InstantiatePrefab.h">
-			<Filter>include\08.Prefab</Filter>
-		</ClInclude>
-		<ClInclude Include="PrefabTest.h">
-			<Filter>include\01.EntityComponent</Filter>
-		</ClInclude>
-		<ClInclude Include="Animator.h">
-			<Filter>include\09.Animation</Filter>
-		</ClInclude>
-		<ClInclude Include="AnimatorController.h">
-			<Filter>include\09.Animation</Filter>
-		</ClInclude>
-		<ClInclude Include="AnimatorControllerLoader.h">
-			<Filter>include\09.Animation</Filter>
-		</ClInclude>
-		<ClInclude Include="AnimationStateNode.h">
-			<Filter>include\09.Animation</Filter>
-		</ClInclude>
-		<ClInclude Include="AnimationTransition.h">
-			<Filter>include\09.Animation</Filter>
-		</ClInclude>
-		<ClInclude Include="CharacterController.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="Terrain.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="IStateBehaviour.h">
-			<Filter>include\09.Animation\StateBehaviour</Filter>
-		</ClInclude>
-		<ClInclude Include="LogStateBehaviour.h">
-			<Filter>include\09.Animation\StateBehaviour</Filter>
-		</ClInclude>
-		<ClInclude Include="ICollider.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="Particle.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="ImageUI.h">
-			<Filter>include\01.EntityComponent\UI</Filter>
-		</ClInclude>
-		<ClInclude Include="NavigationAgent.h">
-			<Filter>include\10.PathFinding</Filter>
-		</ClInclude>
-		<ClInclude Include="NavigationAgentImpl.h">
-			<Filter>include\10.PathFinding</Filter>
-		</ClInclude>
-		<ClInclude Include="ScreenManager.h">
-			<Filter>include\05.Input</Filter>
-		</ClInclude>
-		<ClInclude Include="NavigationMeshLoader.h">
-			<Filter>include\10.PathFinding</Filter>
-		</ClInclude>
-		<ClInclude Include="Socket.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="Decal.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="SkyBox.h">
-			<Filter>include\11.SkyBox</Filter>
-		</ClInclude>
-		<ClInclude Include="Trail.h">
-			<Filter>include\01.EntityComponent\Graphics</Filter>
-		</ClInclude>
-		<ClInclude Include="TerrainCollider.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="Articulation.h">
-			<Filter>include\01.EntityComponent\Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="LinkData.h">
-			<Filter>include\07.Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="ArticulationData.h">
-			<Filter>include\07.Physics</Filter>
-		</ClInclude>
-		<ClInclude Include="ThreadPool.h">
-			<Filter>include\12.ThreadPool</Filter>
-		</ClInclude>
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="GameObject.cpp">
-			<Filter>src\01.EntityComponent</Filter>
-		</ClCompile>
-		<ClCompile Include="Scene.cpp">
-			<Filter>src\03.Scene</Filter>
-		</ClCompile>
-		<ClCompile Include="EventManager.cpp">
-			<Filter>src\04.Event</Filter>
-		</ClCompile>
-		<ClCompile Include="EventHandler.cpp">
-			<Filter>src\04.Event</Filter>
-		</ClCompile>
-		<ClCompile Include="TimeManager.cpp">
-			<Filter>src\05.Input</Filter>
-		</ClCompile>
-		<ClCompile Include="InputManager.cpp">
-			<Filter>src\05.Input</Filter>
-		</ClCompile>
-		<ClCompile Include="SceneManager.cpp">
-			<Filter>src\03.Scene</Filter>
-		</ClCompile>
-		<ClCompile Include="Component.cpp">
-			<Filter>src\01.EntityComponent</Filter>
-		</ClCompile>
-		<ClCompile Include="Transform.cpp">
-			<Filter>src\01.EntityComponent</Filter>
-		</ClCompile>
-		<ClCompile Include="GameObjectView.cpp">
-			<Filter>src\01.EntityComponent\Internal</Filter>
-		</ClCompile>
-		<ClCompile Include="GameObjectIterator.cpp">
-			<Filter>src\01.EntityComponent\Internal</Filter>
-		</ClCompile>
-		<ClCompile Include="ComponentView.cpp">
-			<Filter>src\01.EntityComponent\Internal</Filter>
-		</ClCompile>
-		<ClCompile Include="ComponentIterator.cpp">
-			<Filter>src\01.EntityComponent\Internal</Filter>
-		</ClCompile>
-		<ClCompile Include="GameModuleEnum.cpp">
-			<Filter>src\00.Define</Filter>
-		</ClCompile>
-		<ClCompile Include="PrefabManager.cpp">
-			<Filter>src\06.ObjectManager</Filter>
-		</ClCompile>
-		<ClCompile Include="SceneHelper.cpp">
-			<Filter>src\03.Scene</Filter>
-		</ClCompile>
-		<ClCompile Include="GameModuleRegister.cpp">
-			<Filter>src\00.Define</Filter>
-		</ClCompile>
-		<ClCompile Include="BoxCollider.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="SphereCollider.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="RigidBody.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="CapsuleCollider.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="MeshCollider.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="CollisionMatrix.cpp">
-			<Filter>src\07.Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="Collision.cpp">
-			<Filter>src\07.Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="SoundClip.cpp">
-			<Filter>src\01.EntityComponent</Filter>
-		</ClCompile>
-		<ClCompile Include="SkinnedMeshRenderer.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="StaticMeshRenderer.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="Light.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="Camera.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="SoundManager.cpp">
-			<Filter>src\05.Input</Filter>
-		</ClCompile>
-		<ClCompile Include="ObjectPool.cpp">
-			<Filter>src\06.ObjectManager</Filter>
-		</ClCompile>
-		<ClCompile Include="PrefabResource.cpp">
-			<Filter>src\08.Prefab</Filter>
-		</ClCompile>
-		<ClCompile Include="InstantiatePrefab.cpp">
-			<Filter>src\08.Prefab</Filter>
-		</ClCompile>
-		<ClCompile Include="PrefabTest.cpp">
-			<Filter>src\01.EntityComponent</Filter>
-		</ClCompile>
-		<ClCompile Include="Animator.cpp">
-			<Filter>src\09.Animation</Filter>
-		</ClCompile>
-		<ClCompile Include="AnimatorController.cpp">
-			<Filter>src\09.Animation</Filter>
-		</ClCompile>
-		<ClCompile Include="AnimatorControllerLoader.cpp">
-			<Filter>src\09.Animation</Filter>
-		</ClCompile>
-		<ClCompile Include="AnimationStateNode.cpp">
-			<Filter>src\09.Animation</Filter>
-		</ClCompile>
-		<ClCompile Include="AnimationTransition.cpp">
-			<Filter>src\09.Animation</Filter>
-		</ClCompile>
-		<ClCompile Include="Terrain.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="CharacterController.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="IStateBehaviour.cpp">
-			<Filter>src\09.Animation\StateBehaviour</Filter>
-		</ClCompile>
-		<ClCompile Include="LogStateBehaviour.cpp">
-			<Filter>src\09.Animation\StateBehaviour</Filter>
-		</ClCompile>
-		<ClCompile Include="ICollider.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="Particle.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="ImageUI.cpp">
-			<Filter>src\01.EntityComponent\UI</Filter>
-		</ClCompile>
-		<ClCompile Include="NavigationAgent.cpp">
-			<Filter>src\10.PathFinding</Filter>
-		</ClCompile>
-		<ClCompile Include="NavigationAgentImpl.cpp">
-			<Filter>src\10.PathFinding</Filter>
-		</ClCompile>
-		<ClCompile Include="ScreenManager.cpp">
-			<Filter>src\05.Input</Filter>
-		</ClCompile>
-		<ClCompile Include="NavigationMeshLoader.cpp">
-			<Filter>src\10.PathFinding</Filter>
-		</ClCompile>
-		<ClCompile Include="Socket.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="SkyBox.cpp">
-			<Filter>src\11.SkyBox</Filter>
-		</ClCompile>
-		<ClCompile Include="Decal.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="Trail.cpp">
-			<Filter>src\01.EntityComponent\Graphics</Filter>
-		</ClCompile>
-		<ClCompile Include="TerrainCollider.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="Articulation.cpp">
-			<Filter>src\01.EntityComponent\Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="LinkData.cpp">
-			<Filter>src\07.Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="ArticulationData.cpp">
-			<Filter>src\07.Physics</Filter>
-		</ClCompile>
-		<ClCompile Include="ThreadPool.cpp">
-			<Filter>src\12.ThreadPool</Filter>
-		</ClCompile>
-	</ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="include\03.Scene">
+      <UniqueIdentifier>{a3ec320c-8625-4813-8bff-03f15e6d67fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\05.Input">
+      <UniqueIdentifier>{0c912d72-6fa1-440d-98f9-c0e2eae0cd6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent">
+      <UniqueIdentifier>{8af22b26-25c9-4353-8ebc-78dc2dc1fb11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Internal">
+      <UniqueIdentifier>{f67d1a9f-b51e-4ff3-b023-f77a9cd51ee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\00.Define">
+      <UniqueIdentifier>{2aed6e42-fa01-4b0a-9ac6-0d4c1275f424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\06.ObjectManager">
+      <UniqueIdentifier>{1c701873-e584-47bc-bca9-5e3cfb552373}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Physics">
+      <UniqueIdentifier>{d91e34b4-b6a1-4c6b-8c91-d5600f81eed5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\03.Scene">
+      <UniqueIdentifier>{9bb4fa03-222b-4576-ac8a-20fa835d5a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\04.Event">
+      <UniqueIdentifier>{432315ef-c53f-405d-86f7-6c039bdcb13a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\05.Input">
+      <UniqueIdentifier>{a2f51288-f5e0-486e-80da-10f0e050681f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent">
+      <UniqueIdentifier>{5d28b1e3-0635-403d-9906-51c5bff73cde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Internal">
+      <UniqueIdentifier>{f099fc72-a4ae-42b5-a922-1e37a39a9274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Physics">
+      <UniqueIdentifier>{0a699caa-a806-4f97-8407-14a42b2e44c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\00.Define">
+      <UniqueIdentifier>{e48d2721-5a19-4b1f-8b8e-66485dd1be2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\06.ObjectManager">
+      <UniqueIdentifier>{e974bfdd-6214-4649-80f2-85ffc3273cb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\07.Physics">
+      <UniqueIdentifier>{6ceb4e20-1ddc-4f7f-967f-942ca45d0d82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\07.Physics">
+      <UniqueIdentifier>{46982d69-3c1d-4224-877b-4ebd2d652872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Graphics">
+      <UniqueIdentifier>{34e035ca-cf74-450f-b506-3d731aa5bc6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Graphics">
+      <UniqueIdentifier>{03c7b1cc-2fb8-435a-a4d9-ca9f80bc4d16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\08.Prefab">
+      <UniqueIdentifier>{d8a213a9-9766-44a7-8f3a-0bbf7584100e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\04.Event">
+      <UniqueIdentifier>{888e2fa8-48cf-4600-afba-d2abbbd0b5b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\09.Animation">
+      <UniqueIdentifier>{839fc744-eae7-473a-8fc8-2afd7441da3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\09.Animation">
+      <UniqueIdentifier>{fd4953c8-86f8-4c50-a374-0eea1dfb28bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\09.Animation\StateBehaviour">
+      <UniqueIdentifier>{1fdb9d54-076c-40b6-88f6-d93790f3191a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\09.Animation\StateBehaviour">
+      <UniqueIdentifier>{6c282c41-2e6f-4caf-ba77-2b153b9ab3fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\UI">
+      <UniqueIdentifier>{2a93baec-6e18-4d1b-99ef-c5917a4b338e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\UI">
+      <UniqueIdentifier>{e2c736a9-6d4d-475a-9f0b-35788b19c52f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\10.PathFinding">
+      <UniqueIdentifier>{91bec4ff-da06-4cb9-b146-4d193dbcb34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\10.PathFinding">
+      <UniqueIdentifier>{1bcfb876-d582-4468-97e0-906710d30f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.SkyBox">
+      <UniqueIdentifier>{9c08872f-78ae-4e48-9037-60c014459e3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.SkyBox">
+      <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\08.Prefab">
+      <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\12.ThreadPool">
+      <UniqueIdentifier>{67188304-3881-48e3-92da-a080319dd720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.ThreadPool">
+      <UniqueIdentifier>{63171bad-388a-4f42-909a-b06f1937084b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameObject.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>include\03.Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>include\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>include\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionTraits.h">
+      <Filter>include\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>include\04.Event</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>include\03.Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEnum.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentIterator.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentView.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectIterator.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectView.h">
+      <Filter>include\01.EntityComponent\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModule.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleEnum.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabManager.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneHelper.h">
+      <Filter>include\03.Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleRegister.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionMatrix.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundClip.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticMeshRenderer.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMeshRenderer.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Pool.h">
+      <Filter>include\06.ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabResource.h">
+      <Filter>include\08.Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="InstantiatePrefab.h">
+      <Filter>include\08.Prefab</Filter>
+    </ClInclude>
+    <ClInclude Include="PrefabTest.h">
+      <Filter>include\01.EntityComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatorController.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatorControllerLoader.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationStateNode.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTransition.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="IStateBehaviour.h">
+      <Filter>include\09.Animation\StateBehaviour</Filter>
+    </ClInclude>
+    <ClInclude Include="LogStateBehaviour.h">
+      <Filter>include\09.Animation\StateBehaviour</Filter>
+    </ClInclude>
+    <ClInclude Include="ICollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationAgent.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationAgentImpl.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenManager.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMeshLoader.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Decal.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>include\11.SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Trail.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Articulation.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkData.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationData.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>include\12.ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationLoader.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>src\03.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>src\04.Event</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHandler.cpp">
+      <Filter>src\04.Event</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>src\03.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectView.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectIterator.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentView.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentIterator.cpp">
+      <Filter>src\01.EntityComponent\Internal</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModuleEnum.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabManager.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneHelper.cpp">
+      <Filter>src\03.Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModuleRegister.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsuleCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionMatrix.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundClip.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticMeshRenderer.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>src\06.ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabResource.cpp">
+      <Filter>src\08.Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="InstantiatePrefab.cpp">
+      <Filter>src\08.Prefab</Filter>
+    </ClCompile>
+    <ClCompile Include="PrefabTest.cpp">
+      <Filter>src\01.EntityComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatorController.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatorControllerLoader.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationStateNode.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationTransition.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="IStateBehaviour.cpp">
+      <Filter>src\09.Animation\StateBehaviour</Filter>
+    </ClCompile>
+    <ClCompile Include="LogStateBehaviour.cpp">
+      <Filter>src\09.Animation\StateBehaviour</Filter>
+    </ClCompile>
+    <ClCompile Include="ICollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationAgent.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationAgentImpl.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenManager.cpp">
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMeshLoader.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>src\11.SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Decal.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Trail.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Articulation.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkData.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationData.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>src\12.ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationLoader.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

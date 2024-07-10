@@ -28,7 +28,6 @@ namespace fq::game_engine
 		, mbIsBoneHierarchy(true)
 		, mbIsArticulationHierarchy(false)
 		, mLinkID(1)
-		, mOperation(ImGuizmo::TRANSLATE)
 	{
 	}
 
@@ -540,8 +539,8 @@ namespace fq::game_engine
 		{
 			fq::graphics::debug::RingInfoEx swing1Info;
 
-			float swing1LimitLow = -linkData->GetSwing1LimitLow() * (DirectX::XM_PI / 180.0);
-			DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(swing1LimitLow);
+			float swing1LimitLow = linkData->GetSwing1LimitLow() * (DirectX::XM_PI / 180.0);
+			DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(-swing1LimitLow);
 			swing1Info.Origin = jointPosition;
 			swing1Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
 			swing1Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
@@ -554,10 +553,11 @@ namespace fq::game_engine
 		{
 			fq::graphics::debug::RingInfoEx swing2Info;
 
-			float swing2LimitLow = linkData->GetSwing2LimitLow() * (DirectX::XM_PI / 180.0);
+			float swing2LimitLow = linkData->GetSwing2LimitHigh() * (DirectX::XM_PI / 180.0);
 			DirectX::SimpleMath::Matrix limitRotation =
 				DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
-				* DirectX::SimpleMath::Matrix::CreateRotationX(swing2LimitLow);
+				* DirectX::SimpleMath::Matrix::CreateRotationY(90.f * DirectX::XM_PI / 180.0)
+				* DirectX::SimpleMath::Matrix::CreateRotationZ(swing2LimitLow);
 			swing2Info.Origin = jointPosition;
 			swing2Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
 			swing2Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
@@ -573,11 +573,10 @@ namespace fq::game_engine
 			float twistLimitLow = linkData->GetTwistLimitLow() * (DirectX::XM_PI / 180.0);
 			DirectX::SimpleMath::Matrix limitRotation =
 				DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
-				* DirectX::SimpleMath::Matrix::CreateRotationY(90.f * DirectX::XM_PI / 180.0)
-				* DirectX::SimpleMath::Matrix::CreateRotationZ(-twistLimitLow);
+				* DirectX::SimpleMath::Matrix::CreateRotationX(-twistLimitLow);
 			twistInfo.Origin = jointPosition;
 			twistInfo.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
-			twistInfo.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+			twistInfo.MinorAxis = limitRotation.Forward() / 3.f * jointAxisScale;
 			twistInfo.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
 			twistInfo.ArcInRadian = (linkData->GetTwistLimitHigh() - linkData->GetTwistLimitLow()) / 180.f * 3.14f;
 
