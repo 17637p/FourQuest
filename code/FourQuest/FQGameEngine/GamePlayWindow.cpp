@@ -388,7 +388,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	}
 
 	ImGuizmo::Enable(true);
-	 
+
 	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
 	auto objectMatrix = objectT->GetWorldMatrix();
 	auto beforeMatrix = objectT->GetWorldMatrix();

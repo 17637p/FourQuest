@@ -335,7 +335,15 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 
 			for (auto& extension : extensions)
 			{
-				if (dropPath->extension() == extension)
+				// 폴더 경로를 받는 경우 입력 
+				if (std::filesystem::is_directory(*dropPath) && extension == ".dir")
+				{
+					name = dropPath->string();
+					mEditorProcess->mCommandSystem->Push<SetMetaData>(
+						data, mSelectObject, handle, name);
+				}
+				// 확장자명이 같은 경우 입력 
+				else if (dropPath->extension() == extension)
 				{
 					name = dropPath->string();
 					mEditorProcess->mCommandSystem->Push<SetMetaData>(

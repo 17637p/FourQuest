@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
@@ -12,41 +8,20 @@
     <Filter Include="include\00.Define">
       <UniqueIdentifier>{d6c026bc-c71c-4917-8125-9c3638abc9f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\00.Define">
-      <UniqueIdentifier>{94971c36-b1fc-45eb-9373-91e219af22de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\01.Player">
       <UniqueIdentifier>{4cc17fe5-6a77-4aa1-a035-17dfceb38aed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\01.Player">
-      <UniqueIdentifier>{a9fd8395-d790-4773-b758-9d33d213ff26}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\02.Monster">
       <UniqueIdentifier>{5284a2c4-bff7-4230-9291-e8f1c7792924}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\02.Monster">
-      <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\03.Attack">
       <UniqueIdentifier>{7cef8521-d7f1-4691-a728-888cad1df5cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\03.Attack">
-      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\01.Player\State">
       <UniqueIdentifier>{e2c13996-e04b-41bd-9d23-c980f6326ec4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\01.Player\State">
-      <UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\04.Camera">
-      <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\05.UI">
       <UniqueIdentifier>{63b46a7a-3b24-41bb-b7e2-836cac641d28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\05.UI">
-      <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\04.Camera">
       <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
@@ -54,26 +29,51 @@
     <Filter Include="include\06.GameManager">
       <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\06.GameManager">
-      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\02.Monster\Prototype">
-      <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.Monster\Melee">
       <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\02.Monster\Plant">
       <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\02.Monster\Melee">
-      <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\02.Monster\Plant">
-      <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.Monster\Prototype">
       <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="include\src\00.Define">
+      <UniqueIdentifier>{94971c36-b1fc-45eb-9373-91e219af22de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\01.Player">
+      <UniqueIdentifier>{a9fd8395-d790-4773-b758-9d33d213ff26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\01.Player\State">
+      <UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\02.Monster">
+      <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\02.Monster\Prototype">
+      <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\02.Monster\Melee">
+      <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\02.Monster\Plant">
+      <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\03.Attack">
+      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\04.Camera">
+      <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\05.UI">
+      <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\src\06.GameManager">
+      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -188,106 +188,112 @@
     <ClInclude Include="MeleeMonsterDeadState.h">
       <Filter>include\02.Monster\Melee</Filter>
     </ClInclude>
+    <ClInclude Include="ClientHelper.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
-      <Filter>src\00.Define</Filter>
+      <Filter>include\src\00.Define</Filter>
     </ClCompile>
     <ClCompile Include="Attack.cpp">
-      <Filter>src\03.Attack</Filter>
+      <Filter>include\src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInputState.cpp">
-      <Filter>src\01.Player\State</Filter>
+      <Filter>include\src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="PlayerMovementState.cpp">
-      <Filter>src\01.Player\State</Filter>
+      <Filter>include\src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>src\01.Player</Filter>
+      <Filter>include\src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerDashState.cpp">
-      <Filter>src\01.Player\State</Filter>
+      <Filter>include\src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAttackState.cpp">
-      <Filter>src\01.Player\State</Filter>
+      <Filter>include\src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="CameraMoving.cpp">
-      <Filter>src\04.Camera</Filter>
+      <Filter>include\src\04.Camera</Filter>
     </ClCompile>
     <ClCompile Include="Soul.cpp">
-      <Filter>src\01.Player</Filter>
+      <Filter>include\src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="DeadArmour.cpp">
-      <Filter>src\01.Player</Filter>
+      <Filter>include\src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="HpBar.cpp">
-      <Filter>src\05.UI</Filter>
+      <Filter>include\src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="PlayerUI.cpp">
-      <Filter>src\05.UI</Filter>
+      <Filter>include\src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterAttckState.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
+      <Filter>include\src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterDeadState.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
+      <Filter>include\src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterStareState.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
+      <Filter>include\src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterIdleState.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
+      <Filter>include\src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>src\06.GameManager</Filter>
+      <Filter>include\src\06.GameManager</Filter>
     </ClCompile>
     <ClCompile Include="MonsterAttack.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterChase.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterDamaged.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterDie.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterFind.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterIdle.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="Monster.cpp">
-      <Filter>src\02.Monster\Prototype</Filter>
+      <Filter>include\src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterSpawner.cpp">
-      <Filter>src\02.Monster</Filter>
+      <Filter>include\src\02.Monster</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonster.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
+      <Filter>include\src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantAttack.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
+      <Filter>include\src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterIdleState.cpp">
-      <Filter>src\02.Monster\Melee</Filter>
+      <Filter>include\src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterPatrolState.cpp">
-      <Filter>src\02.Monster\Melee</Filter>
+      <Filter>include\src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterChaseState.cpp">
-      <Filter>src\02.Monster\Melee</Filter>
+      <Filter>include\src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterAttackState.cpp">
-      <Filter>src\02.Monster\Melee</Filter>
+      <Filter>include\src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonster.cpp">
-      <Filter>src\02.Monster\Melee</Filter>
+      <Filter>include\src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterDeadState.cpp">
-      <Filter>src\02.Monster\Melee</Filter>
+      <Filter>include\src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientHelper.cpp">
+      <Filter>include\src\00.Define</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

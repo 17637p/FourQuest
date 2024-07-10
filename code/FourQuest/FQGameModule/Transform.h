@@ -119,14 +119,7 @@ namespace fq::game_module
 		/// </summary>
 		void SetWorldMatrix(Matrix matrix);
 
-		/// <summary>
-		/// 월드 
-		/// </summary>
-		/// <param name="scale"></param>
-		/// <param name="rotation"></param>
-		/// <param name="position"></param>
-		void SetWorldTransform(Vector3 scale, Quaternion rotation, Vector3 position);
-
+		
 		/// <summary>
 		/// 로컬 행렬을 반환합니다
 		/// </summary>

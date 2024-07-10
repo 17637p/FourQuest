@@ -73,7 +73,35 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 			}
 
 			auto npos = mBuilder->GetCrowd()->getAgent(agent->GetAgentIndex())->npos;
-			agentT->SetLocalPosition({ npos[0], npos[1], npos[2] });
+
+			DirectX::SimpleMath::Vector3 nowPosition{ npos[0], npos[1], npos[2] };
+			auto rotation = agentT->GetLocalRotation();
+			auto scale = agentT->GetLocalScale();
+
+			// 7.9 Giatae : 회전 동기화 설정 추가 
+			if (agent->IsSyncRotationWithMovementDirection())
+			{
+				DirectX::SimpleMath::Vector3 PrevPosition = agentT->GetLocalPosition();
+
+				auto moveDir = nowPosition - PrevPosition;
+				moveDir.y = 0.f;
+				moveDir.Normalize();
+
+				if (moveDir == DirectX::SimpleMath::Vector3::Zero)
+				{
+
+				}
+				else if (moveDir == DirectX::SimpleMath::Vector3::Backward)
+				{
+					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, -1, 0 });
+				}
+				else
+				{
+					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, 1, 0 });
+				}
+			}
+
+			agentT->GenerateLocal(nowPosition, rotation, scale);
 		}
 	}
 }

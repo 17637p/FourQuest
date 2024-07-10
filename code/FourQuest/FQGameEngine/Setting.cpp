@@ -102,36 +102,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
-
-			//Texture 로드경로 설정
-			auto defaultTexturePath = mGameProcess->mRenderingSystem->GetDefaultTexturePath();
-
-			std::string sPath = defaultTexturePath.string();
-
-			if (ImGui::InputText("DefaultTexturePath", &sPath))
-			{
-			//	mGameProcess->mRenderingSystem->SetDefaultTexturePath(sPath);
-			}
-			
-			if (ImGui::BeginDragDropTarget())
-			{
-				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-
-				if (pathPayLoad)
-				{
-					std::filesystem::path* dropPath
-						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
-
-					if (std::filesystem::is_directory(*dropPath))
-					{
-						mGameProcess->mRenderingSystem->SetDefaultTexturePath(*dropPath);
-					}
-				}
-			}
-
-
-
 		}
 		ImGui::EndChild();
 	}
