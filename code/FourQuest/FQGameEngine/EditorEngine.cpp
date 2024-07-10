@@ -276,6 +276,7 @@ void fq::game_engine::EditorEngine::Finalize()
 
 void fq::game_engine::EditorEngine::RenderEditorWinodw()
 {
+	mEditor->mLightProbeWindow->Render();
 	mEditor->mHierarchy->Render();
 	mEditor->mInspector->Render();
 	mEditor->mLogWindow->Render();
@@ -289,7 +290,6 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mNavMeshWindow->Render();
 	mEditor->mArticulationHierarchy->Render();
 	mEditor->mArticulationInspector->Render();
-	mEditor->mLightProbeWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();

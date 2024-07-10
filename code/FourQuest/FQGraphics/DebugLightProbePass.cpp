@@ -39,6 +39,7 @@ void fq::graphics::DebugLightProbePass::Finalize()
 void fq::graphics::DebugLightProbePass::OnResize(unsigned short width, unsigned short height)
 {
 	mBackBuffer = mResourceManager->Get<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default); // object 그린거 받아와야 함
 }
 
 void fq::graphics::DebugLightProbePass::Render()

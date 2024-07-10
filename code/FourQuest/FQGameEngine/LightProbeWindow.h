@@ -29,15 +29,15 @@ namespace fq::game_engine
 		virtual void Render() override;
 
 		bool& IsWindowOpen() { return mbIsOpen; }
+		void PickObject(void* iProbeObject);
 
+	private:
 		void beginButtons();
 		void beginProbeList();
 		// add
 		// delete
 		// save
 		// load
-
-	private:
 
 	private:
 		bool mbIsOpen;
@@ -49,6 +49,9 @@ namespace fq::game_engine
 
 		fq::game_module::InputManager* mInputManager;
 		fq::graphics::IProbeObject* mSelectObject;
+
+		int mWidth;
+		int mHeight;
 	};
 }
 

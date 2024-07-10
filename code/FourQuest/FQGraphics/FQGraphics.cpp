@@ -202,7 +202,7 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 	//}
 
 	std::vector<LightProbe*> lightProbes = mLightProbeManager->GetLightProbes();
-	for (int lightProbeIndex = 0; lightProbeIndex < mLightProbeManager->GetLightProbesSize(); lightProbeIndex++)
+	for (int lightProbeIndex = 0; lightProbeIndex < lightProbes.size(); lightProbeIndex++)
 	{
 		fq::common::Transform probeTransform;
 
@@ -730,6 +730,11 @@ void fq::graphics::FQGraphics::DrawSphereEx(const debug::SphereInfoEx& sphereInf
 void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 {
 	mDebugDrawManager->Submit(ringInfoEx);
+}
+
+void FQGraphics::SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position)
+{
+	mLightProbeManager->SetLightProbe(index, position);
 }
 
 void FQGraphics::SetPipelineType(EPipelineType pipelineType)

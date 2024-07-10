@@ -98,7 +98,7 @@ void fq::graphics::LightProbeAddPass::Render()
 
 void fq::graphics::LightProbeAddPass::OnResize(unsigned short width, unsigned short height)
 {
-	mOutLineBlurRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::OutLineBlur, width, height);
+	mOutLineBlurRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OutLineBlur, width, height);
 
 	auto LightProbeRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr);
 	mLightProbeSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, LightProbeRTV);

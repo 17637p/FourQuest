@@ -180,8 +180,9 @@ extern "C" {
 			// Light Probe
 			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;
 			virtual FQ_GRAPHICS void DeleteLightProbe(int index) abstract;
-			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
+			virtual FQ_GRAPHICS void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) abstract;
 
+			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
 			virtual FQ_GRAPHICS void SaveLightProbes(const std::string& fileName) abstract;
 			virtual FQ_GRAPHICS void LoadLightProbes(const std::string& fileName) abstract;
 

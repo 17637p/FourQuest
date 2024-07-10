@@ -150,8 +150,9 @@ namespace fq::graphics
 		// Light Probe
 		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteLightProbe(int index) override;
-		virtual void BakeLightProbe() override;
+		virtual void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) override;
 
+		virtual void BakeLightProbe() override;
 		virtual void SaveLightProbes(const std::string& fileName) override;
 		virtual void LoadLightProbes(const std::string& fileName) override;
 

@@ -55,19 +55,20 @@ namespace fq::graphics
 
 		void Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
-		/// Add Delete
+		/// Add Delete Set
 		int AddCubeProbe(const DirectX::SimpleMath::Vector3& position);
 		void DeleteCubeProbe(int index);
 
 		int AddLightProbe(const DirectX::SimpleMath::Vector3& position);
+		void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position);
 		void DeleteLightProbe(int index);
 
 		/// Get
 		std::vector<CubeProbe*> GetCubeProbes() const;
 		std::vector<LightProbe*> GetLightProbes() const;
-		int GetLightProbesSize();
 		DirectX::SimpleMath::Vector3 GetLightProbePosition(int lightProbeIndex);
 		float* GetLightProbeCoefficient(int lightProbeIndex);
+		int GetProbeRealIndex(int index);
 		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
 
 		std::wstring SaveProbe1DirectionTexture(const int index, const std::wstring& direction); //return path Name
@@ -122,7 +123,6 @@ namespace fq::graphics
 
 		int mCubeProbeIndex;
 		int mLightProbeIndex; // 현재까지 만들어진 lightProbe 5개에서 1개 삭제돼도 5
-		int mLightProbeSize; // 지금 가지고 있는 Lightprobe 개수 위의 경우 4
 		std::vector<CubeProbe*> mCubeProbes;
 		std::vector<LightProbe*> mLightProbes;
 		std::unordered_map<int, int> mLightProbePair; // 게임 엔진에서 가지고 있는 라이트 프로브 인덱스를 실제 라이트 프로브 인덱스와 연결해주는 것
