@@ -125,6 +125,11 @@ void fq::client::HpBar::DecreaseHp(float ratio)
 {
 	if (mHpRatio == 0.f) return;
 
+	if (!mIsVisible)
+	{
+		SetVisible(true);
+	}
+
 	float decreaseHpRatio = mHpRatio - ratio;
 
 	if (decreaseHpRatio >= 0.f)

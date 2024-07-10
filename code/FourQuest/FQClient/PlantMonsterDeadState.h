@@ -13,6 +13,8 @@ namespace fq::client
 		PlantMonsterDeadState();
 		~PlantMonsterDeadState();
 
+		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
+
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 
 	private:

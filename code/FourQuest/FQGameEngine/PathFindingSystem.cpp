@@ -79,7 +79,7 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 			auto scale = agentT->GetLocalScale();
 
 			// 7.9 Giatae : 회전 동기화 설정 추가 
-			if (agent->IsSyncRotationWithMovementDirection())
+			if (agent->IsSyncRotationWithMovementDirection() && !agent->IsStopAgent())
 			{
 				DirectX::SimpleMath::Vector3 PrevPosition = agentT->GetLocalPosition();
 
@@ -87,20 +87,14 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 				moveDir.y = 0.f;
 				moveDir.Normalize();
 
-				if (moveDir == DirectX::SimpleMath::Vector3::Zero)
-				{
-
-				}
-				else if (moveDir == DirectX::SimpleMath::Vector3::Backward)
-				{
+				if (moveDir == DirectX::SimpleMath::Vector3::Backward)
 					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, -1, 0 });
-				}
-				else
-				{
+				else if (moveDir != DirectX::SimpleMath::Vector3::Zero)
 					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, 1, 0 });
-				}
+				
+				rotation.Normalize();
 			}
-
+				
 			agentT->GenerateLocal(nowPosition, rotation, scale);
 		}
 	}

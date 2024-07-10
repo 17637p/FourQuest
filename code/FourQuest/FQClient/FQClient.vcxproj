@@ -41,8 +41,10 @@
     <ClInclude Include="MeleeMonsterAttackState.h" />
     <ClInclude Include="MeleeMonsterChaseState.h" />
     <ClInclude Include="MeleeMonsterDeadState.h" />
+    <ClInclude Include="MeleeMonsterFindTargetState.h" />
     <ClInclude Include="MeleeMonsterIdleState.h" />
     <ClInclude Include="MeleeMonsterPatrolState.h" />
+    <ClInclude Include="MeleeMonsterWaitAttackState.h" />
     <ClInclude Include="MonsterAttack.h" />
     <ClInclude Include="MonsterChase.h" />
     <ClInclude Include="ClientRegistration.h" />
@@ -51,6 +53,7 @@
     <ClInclude Include="MonsterDamaged.h" />
     <ClInclude Include="MonsterDie.h" />
     <ClInclude Include="MonsterFind.h" />
+    <ClInclude Include="MonsterGroup.h" />
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="PlantAttack.h" />
@@ -80,8 +83,10 @@
     <ClCompile Include="MeleeMonsterAttackState.cpp" />
     <ClCompile Include="MeleeMonsterChaseState.cpp" />
     <ClCompile Include="MeleeMonsterDeadState.cpp" />
+    <ClCompile Include="MeleeMonsterFindTargetState.cpp" />
     <ClCompile Include="MeleeMonsterIdleState.cpp" />
     <ClCompile Include="MeleeMonsterPatrolState.cpp" />
+    <ClCompile Include="MeleeMonsterWaitAttackState.cpp" />
     <ClCompile Include="MonsterAttack.cpp" />
     <ClCompile Include="MonsterChase.cpp" />
     <ClCompile Include="ClientRegistration.cpp" />
@@ -89,6 +94,7 @@
     <ClCompile Include="MonsterDamaged.cpp" />
     <ClCompile Include="MonsterDie.cpp" />
     <ClCompile Include="MonsterFind.cpp" />
+    <ClCompile Include="MonsterGroup.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
     <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="PlantAttack.cpp" />

@@ -50,11 +50,17 @@ namespace fq::game_module
 		/// 움직이는 방향에 따라서 회전 방향의 동기화 여부를 설정합니다
 		/// </summary>
 		void SetSyncRotationWithMovementDirection(bool val) { mbSyncRotationWithMovementDirection = val; }
+		
+		/// <summary>
+		/// 현재 Agent가 정지상태인지 반환합니다.
+		/// </summary>
+		bool IsStopAgent() const { return mbIsStop; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		bool mbSyncRotationWithMovementDirection;
+		bool mbIsStop;
 
 		Impl* mImpl;
 		fq::game_engine::PathFindingSystem* mPathFindingSystem;

@@ -30,9 +30,12 @@ void fq::client::MeleeMonsterPatrolState::OnStateUpdate(game_module::Animator& a
 	// 목표 지점에 도착한지 확인합니다 
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 
-
 	if (agent->HasReachedDestination())
 	{
 		animator.SetParameterBoolean("OnPatrol", false);
 	}
+
+	auto monster = animator.GetComponent<MeleeMonster>();
+	monster->DetectTarget();
 }
+
