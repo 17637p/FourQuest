@@ -559,6 +559,8 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			{
 				Vector3 pos, scale;
 				Quaternion rotation;
+
+				
 				matrix.Decompose(scale, rotation, pos);
 				matrix._41 = 0.f;
 				matrix._42 = 0.f;

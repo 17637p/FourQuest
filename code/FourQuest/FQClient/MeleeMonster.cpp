@@ -13,6 +13,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mMoveSpeed(1.f)
 	, mAcceleration(1.f)
 	, mAttackRange(10.f)
+	, mPatrolRange(1.f)
 	, mGameManager(nullptr)
 	, mAnimator(nullptr)
 	, mTarget(nullptr)
@@ -43,7 +44,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 
 void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 {
-
+	mTarget = target->shared_from_this();
 }
 
 void fq::client::MeleeMonster::OnStart()
@@ -115,27 +116,35 @@ void fq::client::MeleeMonster::Patrol()
 	mPatrolDestination.x += std::cos(radian) * distance;
 	mPatrolDestination.z += std::sin(radian) * distance;
 
-	//// 순찰 방향으로 몬스터 방향 설정
-
-	//auto monsterPos = mTransform->GetWorldPosition();
-
-	//auto lookDir = (mPatrolDestination - monsterPos);
-	//lookDir.y = 0.f;
-	//lookDir.Normalize();
-
-	//DirectX::SimpleMath::Quaternion directionQuaternion;
-	//if (lookDir == DirectX::SimpleMath::Vector3::Backward)
-	//{
-	//	directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(lookDir, { 0, -1, 0 });
-	//}
-	//else
-	//{
-	//	directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(lookDir, { 0, 1, 0 });
-	//}
-
-	//mTransform->SetLocalRotation(directionQuaternion);
 	fq::game_module::NavigationAgent* agent = GetComponent<fq::game_module::NavigationAgent>();
 
 	Move(mPatrolDestination);
+}
+
+void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& collision)
+{
+	// 플레이어 공격 피격 처리
+	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
+	{
+		mAnimator->SetParameterTrigger("OnHit");
+		auto playerAttack = collision.other->GetComponent<Attack>();
+		float attackPower = playerAttack->GetAttackPower();
+
+		mHp -= attackPower;
+
+		GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+
+		// 타겟은 자신을 때린 사람으로 바꿉니다 
+		SetTarget(playerAttack->GetAttacker());
+
+		// 사망처리 
+		if (mHp <= 0.f)
+		{
+			mAnimator->SetParameterBoolean("IsDead", true);
+		}
+
+	}
+
+
 }
 

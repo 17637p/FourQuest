@@ -21,13 +21,13 @@ namespace fq::client
 		void LookAtTarget();
 
 		void Move(DirectX::SimpleMath::Vector3 destination);
-
 		void Patrol();
 	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void OnStart()override;
+		void OnTriggerEnter(const game_module::Collision& collision) override;
 
 	private:
 		GameManager* mGameManager;

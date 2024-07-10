@@ -9,6 +9,7 @@ fq::game_module::NavigationAgent::NavigationAgent()
 	:mImpl(),
 	mPathFindingSystem(nullptr)
 	,mbSyncRotationWithMovementDirection(true)
+	,mbIsStop(false)
 {
 
 }
@@ -96,6 +97,8 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
 	mImpl->crowd->requestMoveTarget(mImpl->agentIdx, mImpl->targetRef, mImpl->targetPos);
 
+	mbIsStop = false;
+
 	//auto param = mImpl->crowd->getObstacleAvoidanceParams(mImpl->agentParams.obstacleAvoidanceType);
 	//
 	//dtObstacleAvoidanceParams nextParam{*param};
@@ -141,6 +144,7 @@ void fq::game_module::NavigationAgent::CreateAgentData()
 void fq::game_module::NavigationAgent::Stop()
 {
 	mImpl->crowd->resetMoveTarget(mImpl->agentIdx);
+	mbIsStop = true;
 }
 
 void fq::game_module::NavigationAgent::DeleteAgentData()
