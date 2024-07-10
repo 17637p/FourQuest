@@ -14,10 +14,14 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlantMonsterDeadSt
 	return fq::game_module::ObjectPool::GetInstance()->Assign<PlantMonsterDeadState>(*this);
 }
 
-
-
 void fq::client::PlantMonsterDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
+}
+
+void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
+{
+	auto gameObject = animator.GetGameObject();
+	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 }

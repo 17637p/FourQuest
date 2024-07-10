@@ -2,28 +2,25 @@
 
 #include "../FQGameModule/IStateBehaviour.h"
 
+
 namespace fq::client
 {
-	/// <summary>
-	/// 근접 몬스터 공격 상태
-	/// </summary>
-	class MeleeMonsterAttackState :public fq::game_module::IStateBehaviour
+	class MeleeMonsterFindTargetState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		MeleeMonsterAttackState();
-		~MeleeMonsterAttackState();
+		MeleeMonsterFindTargetState();
+		~MeleeMonsterFindTargetState();
 
 	private:
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
+		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 
 	private:
-		float mAttackTiming; // 공격발동 시간
+		float mAnnounceTime;
 		float mElapsedTime;
-
-		friend void RegisterMetaData();
 	};
 
 }

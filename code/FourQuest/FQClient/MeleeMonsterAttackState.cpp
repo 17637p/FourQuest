@@ -28,7 +28,6 @@ void fq::client::MeleeMonsterAttackState::OnStateEnter(game_module::Animator& an
 		animator.GetComponent<MeleeMonster>()->EmitAttack();
 		mElapsedTime = mAttackTiming;
 	}
-
 }
 
 void fq::client::MeleeMonsterAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)

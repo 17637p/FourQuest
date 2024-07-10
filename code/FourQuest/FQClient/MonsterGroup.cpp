@@ -3,6 +3,18 @@
 #include "PlantMonster.h"
 #include "MeleeMonster.h"
 
+fq::client::MonsterGroup* fq::client::MonsterGroup::GetMonsterGroup(fq::game_module::GameObject* monster)
+{
+	auto parent = monster->GetParent();
+
+	if (parent == nullptr)
+	{
+		return nullptr;
+	}
+
+	return parent->GetComponent<MonsterGroup>();
+}
+
 fq::client::MonsterGroup::MonsterGroup()
 {
 
@@ -53,7 +65,7 @@ void fq::client::MonsterGroup::Register(fq::game_module::GameObject* monster)
 	mMonsters.push_back(monster->shared_from_this());
 }
 
-void fq::client::MonsterGroup::SetTarget(fq::game_module::GameObject* target)
+void fq::client::MonsterGroup::AnnounceFindedTarget(fq::game_module::GameObject* target)
 {
 	for (const auto& monster : mMonsters)
 	{
@@ -62,6 +74,6 @@ void fq::client::MonsterGroup::SetTarget(fq::game_module::GameObject* target)
 		{
 			monster->GetComponent<MeleeMonster>()->SetTarget(target);
 		}
-
 	}
 }
+

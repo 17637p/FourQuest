@@ -191,6 +191,15 @@
     <ClInclude Include="ClientHelper.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="MeleeMonsterWaitAttackState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterFindTargetState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGroup.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -294,6 +303,15 @@
     </ClCompile>
     <ClCompile Include="ClientHelper.cpp">
       <Filter>include\src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterWaitAttackState.cpp">
+      <Filter>include\src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterFindTargetState.cpp">
+      <Filter>include\src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterGroup.cpp">
+      <Filter>include\src\02.Monster</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

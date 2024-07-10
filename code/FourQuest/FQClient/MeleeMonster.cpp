@@ -1,10 +1,13 @@
+#define NOMINMAX
 #include "MeleeMonster.h"
 
 #include <random>
+#include <algorithm>
 
 #include "Attack.h"
 #include "GameManager.h"
 #include "HpBar.h"
+#include "MonsterGroup.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -14,12 +17,16 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAcceleration(1.f)
 	, mAttackRange(10.f)
 	, mPatrolRange(1.f)
+	, mDetectRange(3.f)
+	, mAttackCoolTime(3.f)
+	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
 	, mAnimator(nullptr)
 	, mTarget(nullptr)
 	, mStartPosition{}
 	, mPatrolDestination{}
 	, mTransform(nullptr)
+	, mAttackOffset(1.f)
 {}
 
 fq::client::MeleeMonster::~MeleeMonster()
@@ -44,7 +51,15 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 
 void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 {
+	if (target == nullptr)
+	{
+		mTarget = nullptr;
+		mAnimator->SetParameterBoolean("HasTarget", false);
+		return;
+	}
+
 	mTarget = target->shared_from_this();
+	mAnimator->SetParameterBoolean("HasTarget", true);
 }
 
 void fq::client::MeleeMonster::OnStart()
@@ -60,6 +75,9 @@ void fq::client::MeleeMonster::OnStart()
 	agent->SetSpeed(mMoveSpeed);
 	agent->SetAcceleration(mAcceleration);
 	agent->SetRadius(0.3f);
+
+	// GameManager 연결
+	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 }
 
 void fq::client::MeleeMonster::EmitAttack()
@@ -70,27 +88,28 @@ void fq::client::MeleeMonster::EmitAttack()
 	auto& attackObj = *(instance.begin());
 
 	auto attackT = attackObj->GetComponent<Transform>();
-	auto transform = GetComponent<Transform>();
 
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 	attackComponent->SetAttacker(GetGameObject());
 	attackComponent->SetAttackPower(mAttackPower);
 
-	DirectX::SimpleMath::Vector3 offset = { 0.f,1.f,0.f };
-	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
+	auto attackPos = mTransform->GetWorldPosition();
+	auto scale = attackT->GetWorldScale();
+	auto rotation = mTransform->GetWorldRotation();
+
+	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+	auto foward = rotationMat.Forward();
+	attackPos += foward * mAttackOffset;
+
+	attackT->GenerateWorld(attackPos, rotation, scale);
 
 	GetScene()->AddGameObject(attackObj);
 
 	// 공격 쿨타임 관련처리
-	//mAttackElapsedTime = mAttackCoolTime;
+	mAttackElapsedTime = mAttackCoolTime;
 
 	// TODO : 근접 몬스터 공격사운드 추가 
-}
-
-void fq::client::MeleeMonster::LookAtTarget()
-{
-
 }
 
 
@@ -142,9 +161,76 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 		{
 			mAnimator->SetParameterBoolean("IsDead", true);
 		}
+	}
+}
 
+void fq::client::MeleeMonster::ChaseTarget()
+{
+	auto targetT = mTarget->GetComponent<game_module::Transform>();
+	auto targetPos = targetT->GetWorldPosition();
+	Move(targetPos);
+}
+
+void fq::client::MeleeMonster::DetectTarget()
+{
+	auto monsterPos = mTransform->GetWorldPosition();
+
+	for (const auto& player : mGameManager->GetPlayers())
+	{
+		auto playerT = player->GetComponent<game_module::Transform>();
+		auto playerPos = playerT->GetWorldPosition();
+
+		float distance = (monsterPos - playerPos).Length();
+
+		if (distance <= mDetectRange)
+		{
+			SetTarget(player.get());
+			mAnimator->SetParameterBoolean("FindTarget", true);
+		}
+	}
+}
+
+void fq::client::MeleeMonster::CheckTargetInAttackRange()
+{
+	if (mTarget == nullptr || mTarget->IsDestroyed())
+	{
+		SetTarget(nullptr);
+		return;
 	}
 
+	auto targetT = mTarget->GetComponent<game_module::Transform>();
 
+	auto targetPos = targetT->GetWorldPosition();
+	auto monsterPos = mTransform->GetWorldPosition();
+
+	float distance = (targetPos - monsterPos).Length();
+	bool isInAttackRange = mAttackRange >= distance;
+
+	mAnimator->SetParameterBoolean("InAttackRange", isInAttackRange);
+}
+
+void fq::client::MeleeMonster::CheckAttackAble() const
+{
+	bool attackAble = mAttackElapsedTime == 0.f;
+
+	if (attackAble)
+	{
+		mAnimator->SetParameterTrigger("OnAttack");
+	}
+}
+
+void fq::client::MeleeMonster::OnUpdate(float dt)
+{
+	mAttackElapsedTime = std::max(0.f, mAttackElapsedTime - dt);
+}
+
+void fq::client::MeleeMonster::AnnounceFindedTarget()
+{
+	auto group = MonsterGroup::GetMonsterGroup(GetGameObject());
+
+	if (group)
+	{
+		group->AnnounceFindedTarget(mTarget.get());
+	}
 }
 
