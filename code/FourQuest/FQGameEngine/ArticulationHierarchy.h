@@ -46,12 +46,12 @@ namespace fq::game_engine
 
 	private:
 		/// <summary>
-		/// 계층구조 버튼 함수
+		/// 계층구조 버튼 함수 (본과 Articulation 계층구조 분리)
 		/// </summary>
 		void beginHierarchyButton();
 
 		/// <summary>
-		/// 드래그 드랍 게임오브젝트 처리
+		/// 드래그 드랍 게임오브젝트 처리 (model 데이터를 로드해서 본 데이터 추가)
 		/// </summary>
 		void dragDropGameWindow();
 
@@ -115,6 +115,16 @@ namespace fq::game_engine
 		/// Articulation(관절) 디버깅
 		/// </summary>
 		void drawArticulationDebug(std::shared_ptr<fq::game_module::LinkData> linkData);
+
+		/// <summary>
+		/// 링크 디버깅
+		/// </summary>
+		void drawLinkDebug(std::shared_ptr<fq::game_module::LinkData> linkData, float& jointAxisScale);
+
+		/// <summary>
+		/// 조인트 회전축 디버깅
+		/// </summary>
+		void drawJointAxisDebug(std::shared_ptr<fq::game_module::LinkData> linkData, const float& jointAxisScale);
 
 	private:
 		GameProcess*	mGameProcess;

@@ -247,6 +247,10 @@ namespace fq::game_engine
 
 	void ArticulationHierarchy::beginGameObjectNameBar(fq::game_module::GameObject& object)
 	{
+		if (object.GetComponent<fq::game_module::Light>() != nullptr
+			|| object.GetComponent<fq::game_module::SkinnedMeshRenderer>() != nullptr)
+			return;
+
 		std::string id = "##" + std::to_string(object.GetID());
 		std::string objectName = object.GetName();
 
@@ -408,10 +412,21 @@ namespace fq::game_engine
 
 	void ArticulationHierarchy::drawArticulationDebug(std::shared_ptr<fq::game_module::LinkData> linkData)
 	{
+		float jointAxisScale = 1.f;
+
+		drawLinkDebug(linkData, jointAxisScale);
+		drawJointAxisDebug(linkData, jointAxisScale);
+
+		for (auto& childLinkData : linkData->GetChildrenLinkData())
+		{
+			drawArticulationDebug(childLinkData.second);
+		}
+	}
+
+	void ArticulationHierarchy::drawLinkDebug(std::shared_ptr<fq::game_module::LinkData> linkData, float& jointAxisScale)
+	{
 		fq::game_module::EShapeType shapeType = linkData->GetShapeType();
 		DirectX::SimpleMath::Color color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
-
-		float jointAxisScale = 1.f;
 
 		switch (shapeType)
 		{
@@ -452,7 +467,7 @@ namespace fq::game_engine
 			info.Sphere.Radius = linkData->GetSphereRadius();
 
 			jointAxisScale = info.Sphere.Radius;
-			
+
 			mGameProcess->mGraphics->DrawSphere(info);
 		}
 		break;
@@ -509,11 +524,10 @@ namespace fq::game_engine
 		default:
 			break;
 		}
+	}
 
-		fq::graphics::debug::RingInfoEx swing1Info;
-		fq::graphics::debug::RingInfoEx swing2Info;
-		fq::graphics::debug::RingInfoEx twistInfo;
-
+	void ArticulationHierarchy::drawJointAxisDebug(std::shared_ptr<fq::game_module::LinkData> linkData, const float& jointAxisScale)
+	{
 		DirectX::SimpleMath::Matrix jointTransform = linkData->GetJointLocalTransform() * linkData->GetWorldTransform();
 		DirectX::SimpleMath::Vector3 jointPosition;
 		DirectX::SimpleMath::Quaternion jointRotation;
@@ -521,40 +535,53 @@ namespace fq::game_engine
 
 		jointTransform.Decompose(jointScale, jointRotation, jointPosition);
 
-		float swing1LimitLow = linkData->GetSwing1LimitLow() * (DirectX::XM_PI / 180.0);
-		DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(swing1LimitLow);
-		swing1Info.Origin = jointPosition;
-		swing1Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
-		swing1Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
-		swing1Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
-		swing1Info.ArcInRadian = (std::abs(linkData->GetSwing1LimitLow()) + std::abs(linkData->GetSwing1LimitHigh())) / 180.f * 3.14f;
-
-		float swing2LimitLow = linkData->GetSwing2LimitLow() * (DirectX::XM_PI / 180.0);
-		limitRotation = DirectX::SimpleMath::Matrix::CreateRotationZ( 90.f * DirectX::XM_PI / 180.0) * DirectX::SimpleMath::Matrix::CreateRotationX(swing2LimitLow);
-		swing2Info.Origin = jointPosition;
-		swing2Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
-		swing2Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
-		swing2Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
-		swing2Info.ArcInRadian = (std::abs(linkData->GetSwing2LimitLow()) + std::abs(linkData->GetSwing2LimitHigh())) / 180.f * 3.14f;
-
-		float twistLimitLow = linkData->GetTwistLimitLow() * (DirectX::XM_PI / 180.0);
-		limitRotation =
-			DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
-			* DirectX::SimpleMath::Matrix::CreateRotationY(90.f * DirectX::XM_PI / 180.0)
-			* DirectX::SimpleMath::Matrix::CreateRotationZ(-twistLimitLow);
-		twistInfo.Origin = jointPosition;
-		twistInfo.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
-		twistInfo.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
-		twistInfo.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
-		twistInfo.ArcInRadian = (std::abs(linkData->GetTwistLimitLow()) + std::abs(linkData->GetTwistLimitHigh())) / 180.f * 3.14f;
-
-		mGameProcess->mGraphics->DrawRingEx(swing1Info);
-		mGameProcess->mGraphics->DrawRingEx(swing2Info);
-		mGameProcess->mGraphics->DrawRingEx(twistInfo);
-
-		for (auto& childLinkData : linkData->GetChildrenLinkData())
+		// 조인트 회전 축 렌더링 디버그
+		if (linkData->GetSwing1AxisMotion() == fq::physics::EArticulationMotion::LIMITED)
 		{
-			drawArticulationDebug(childLinkData.second);
+			fq::graphics::debug::RingInfoEx swing1Info;
+
+			float swing1LimitLow = -linkData->GetSwing1LimitLow() * (DirectX::XM_PI / 180.0);
+			DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(swing1LimitLow);
+			swing1Info.Origin = jointPosition;
+			swing1Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
+			swing1Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+			swing1Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+			swing1Info.ArcInRadian = (linkData->GetSwing1LimitHigh() - linkData->GetSwing1LimitLow()) / 180.f * 3.14f;
+
+			mGameProcess->mGraphics->DrawRingEx(swing1Info);
+		}
+		if (linkData->GetSwing2AxisMotion() == fq::physics::EArticulationMotion::LIMITED)
+		{
+			fq::graphics::debug::RingInfoEx swing2Info;
+
+			float swing2LimitLow = linkData->GetSwing2LimitLow() * (DirectX::XM_PI / 180.0);
+			DirectX::SimpleMath::Matrix limitRotation =
+				DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
+				* DirectX::SimpleMath::Matrix::CreateRotationX(swing2LimitLow);
+			swing2Info.Origin = jointPosition;
+			swing2Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
+			swing2Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+			swing2Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+			swing2Info.ArcInRadian = (linkData->GetSwing2LimitHigh() - linkData->GetSwing2LimitLow()) / 180.f * 3.14f;
+
+			mGameProcess->mGraphics->DrawRingEx(swing2Info);
+		}
+		if (linkData->GetTwistAxisMotion() == fq::physics::EArticulationMotion::LIMITED)
+		{
+			fq::graphics::debug::RingInfoEx twistInfo;
+
+			float twistLimitLow = linkData->GetTwistLimitLow() * (DirectX::XM_PI / 180.0);
+			DirectX::SimpleMath::Matrix limitRotation =
+				DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
+				* DirectX::SimpleMath::Matrix::CreateRotationY(90.f * DirectX::XM_PI / 180.0)
+				* DirectX::SimpleMath::Matrix::CreateRotationZ(-twistLimitLow);
+			twistInfo.Origin = jointPosition;
+			twistInfo.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
+			twistInfo.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
+			twistInfo.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+			twistInfo.ArcInRadian = (linkData->GetTwistLimitHigh() - linkData->GetTwistLimitLow()) / 180.f * 3.14f;
+
+			mGameProcess->mGraphics->DrawRingEx(twistInfo);
 		}
 	}
 
