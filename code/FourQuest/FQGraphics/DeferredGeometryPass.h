@@ -44,6 +44,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
+		
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mStaticMeshnputLayouts;
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 

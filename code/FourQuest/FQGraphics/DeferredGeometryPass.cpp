@@ -52,6 +52,22 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
+
+		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[] =
+		{
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "UV", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		HR(mDevice->GetDevice()->CreateInputLayout(
+			inputLayoutDesc,
+			ARRAYSIZE(inputLayoutDesc),
+			staticMeshVS->GetBlob()->GetBufferPointer(),
+			staticMeshVS->GetBlob()->GetBufferSize(),
+			mStaticMeshnputLayouts.GetAddressOf()
+		));
 	}
 	void DeferredGeometryPass::Finalize()
 	{
@@ -155,9 +171,10 @@ namespace fq::graphics
 			{
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
 
+				job.StaticMesh->Bind(mDevice);
+
 				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
 				{
-					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
 					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
@@ -169,8 +186,20 @@ namespace fq::graphics
 						mLessEqualStencilReplaceState->Bind(mDevice, 1);
 					}
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
+						// ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+
+						//auto transform = job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex());
+						//ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()));
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					}
+
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetTexTransform());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}

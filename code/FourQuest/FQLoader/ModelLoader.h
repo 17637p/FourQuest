@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../FQCommon/FQCommonLoader.h"
+#include "../FQReflect/FQReflect.h"
 
 namespace fq::loader
 {
@@ -20,5 +21,23 @@ namespace fq::loader
 		static void WriteMeshByData(const std::vector<std::pair<fq::common::Node, fq::common::Mesh>>& modelData, FileUtil& fileUtil);
 		static void WriteMaterialByData(const std::vector<fq::common::Material>& materialData, FileUtil& fileUtil);
 		static void WriteAnimationByData(const std::vector<fq::common::AnimationClip>& animationDataByData, FileUtil& fileUtil);
+	};
+
+	class UVAnimationLoader
+	{
+	public:
+		static fq::common::UVAnimationClip Read(const std::filesystem::path& animFileName);
+
+	private:
+		fq::reflect::Converter mConverter;
+	};
+
+	class AnimationLoader
+	{
+	public:
+		static fq::common::AnimationClip Read(const std::filesystem::path& animFileName);
+
+	private:
+		fq::reflect::Converter mConverter;
 	};
 }

@@ -198,6 +198,23 @@ extern "C" {
 		protected:
 			virtual ~ITrailObject() = default;
 		};
+
+		// 생성은 중복 로딩 되도록 그냥 해버리고 처리해버리자
+		class IMeshEffectObject
+		{
+		public:
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Info
+			virtual FQ_GRAPHICS void SetMeshObjectInfo(const MeshObjectInfo& info) abstract;
+			virtual FQ_GRAPHICS const MeshObjectInfo& GetMeshObjectInfo() const abstract;
+
+			// TimePos
+			virtual FQ_GRAPHICS void SetTimePos(float timePos) abstract;
+			virtual FQ_GRAPHICS float GetTimePos() const abstract;
+		};
 	}
 #ifdef __cplusplus
 }

@@ -74,5 +74,6 @@ private:
 	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
 	std::vector<fq::graphics::ITrailObject*> mTrailObjects;
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
+	std::vector<fq::graphics::IMeshEffectObject*> mMeshEffectObjects;
 };
 

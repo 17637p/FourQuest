@@ -62,6 +62,13 @@ namespace fq::graphics
 			* DirectX::SimpleMath::Matrix::CreateTranslation(keyframe.Translation);
 	}
 
+	DirectX::SimpleMath::Matrix AnimationHelper::CreateMatrix(const fq::common::UVKeyframe& keyframe)
+	{
+		return DirectX::SimpleMath::Matrix::CreateScale(keyframe.Scale.x, keyframe.Scale.y, 0)
+			* DirectX::SimpleMath::Matrix::CreateRotationZ(keyframe.Rotation)
+			* DirectX::SimpleMath::Matrix::CreateTranslation(keyframe.Translation.x, keyframe.Translation.y, 0);
+	}
+
 	fq::common::Keyframe AnimationHelper::Interpolate(const fq::common::Keyframe& lhs, const fq::common::Keyframe& rhs, float weight)
 	{
 		fq::common::Keyframe keyframe;

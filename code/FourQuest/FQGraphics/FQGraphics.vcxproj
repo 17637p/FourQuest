@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationHelper.h" />
+    <ClInclude Include="MeshEffectObject.h" />
     <ClInclude Include="NodeHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
@@ -210,6 +211,7 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationHelper.cpp" />
+    <ClCompile Include="MeshEffectObject.cpp" />
     <ClCompile Include="NodeHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />

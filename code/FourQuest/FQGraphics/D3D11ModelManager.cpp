@@ -295,7 +295,7 @@ namespace fq::graphics
 	std::shared_ptr<IAnimation> D3D11ModelManager::CreateAnimation(const fq::common::AnimationClip& animationClip)
 	{
 		std::shared_ptr<IAnimation> animation = std::make_shared<Animation>(animationClip);
-		return std::shared_ptr<IAnimation>();
+		return animation;
 	}
 	std::shared_ptr<IMaterial> D3D11ModelManager::CreateMaterial(const MaterialInfo& materialInfo)
 	{

@@ -206,6 +206,9 @@
     <ClInclude Include="Animation.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="MeshEffectObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="D3D11">
@@ -483,6 +486,9 @@
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Resource\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshEffectObject.cpp">
+      <Filter>Object\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -39,6 +39,13 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
+	mTestGraphics->WriteModel("./resource/Graphics/EffectDemo/untitled.model", mTestGraphics->ConvertModel("./resource/Graphics/EffectDemo/untitled.fbx"));
+	mTestGraphics->WriteModel("./resource/Graphics/EffectDemo/Holland_Test.model", mTestGraphics->ConvertModel("./resource/Graphics/EffectDemo/Holland_Test.fbx"));
+	mTestGraphics->WriteModel("./resource/Graphics/EffectDemo/Sprite.model", mTestGraphics->ConvertModel("./resource/Graphics/EffectDemo/Sprite.fbx"));
+	mMeshEffectObjects.push_back(mTestGraphics->CreateMeshEffectObject("./resource/Graphics/EffectDemo/untitled.model", "./resource/Graphics/EffectDemo/TestUVAnim.txt", "./resource/Graphics/EffectDemo/TestTransformAnim.txt", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(10)));
+	//mMeshEffectObjects.push_back(mTestGraphics->CreateMeshEffectObject("./resource/Graphics/EffectDemo/Holland_Test.model", "./resource/Graphics/EffectDemo/uv_animation_data.txt", "./resource/Graphics/EffectDemo/transform_data.txt", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(100)));
+	// mMeshEffectObjects.push_back(mTestGraphics->CreateMeshEffectObject("./resource/Graphics/EffectDemo/Sprite.model", "./resource/Graphics/EffectDemo/uv_animation_data.txt", "./resource/Graphics/EffectDemo/transform_data.txt", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(100)));
+
 	materialInit();
 	particleInit();
 	decalInit();
@@ -48,7 +55,7 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	AddDefaultCamera(mTestGraphics);
 
 	// Camera Transform 설정
-	mCameraTransform.worldPosition = { 0, 0, -200 };
+	mCameraTransform.worldPosition = { 0, 0, -500 };
 	mCameraTransform.worldRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f));
 	mCameraTransform.worldScale = { 1, 1, 1 };
 
@@ -62,11 +69,28 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 2;
+	directionalLightInfo.intensity = 20;
 	directionalLightInfo.direction = { 0, -0.7, -0.7 };
 	directionalLightInfo.direction.Normalize();
 
 	mTestGraphics->AddLight(1, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1, 1, 1 };
+	directionalLightInfo.intensity = 20;
+	directionalLightInfo.direction = { 0, 0.7, -0.7 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(2, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1, 1, 1 };
+	directionalLightInfo.intensity = 20;
+	directionalLightInfo.direction = { 0, -0.7, 0.7 };
+	directionalLightInfo.direction.Normalize();
+
+	mTestGraphics->AddLight(3, directionalLightInfo);
+
 
 	return true;
 }
@@ -212,6 +236,11 @@ void EffectDemo::Update()
 		{
 			obj->SetTransform(DirectX::SimpleMath::Matrix::CreateTranslation(100 + i * 10, 0, 0) * DirectX::SimpleMath::Matrix::CreateRotationZ(s_time));
 		}
+	}
+
+	for (auto* meshEffectObject : mMeshEffectObjects)
+	{
+		meshEffectObject->SetTimePos(fmod(s_time * 0.5f, 2.f));
 	}
 
 	// 카메라 조작
@@ -611,10 +640,10 @@ void EffectDemo::decalInit()
 		}
 	}
 
-	const std::string fbxPath = "./resource/Graphics/EffectDemo/Plane.fbx";
-	const std::string modelPath = "./resource/Graphics/EffectDemo/Plane.model";
-	mTestGraphics->WriteModel(modelPath, mTestGraphics->ConvertModel(fbxPath));
-	createModel(modelPath, "", DirectX::SimpleMath::Matrix::CreateScale(1000));
+	//const std::string fbxPath = "./resource/Graphics/EffectDemo/untitled.fbx";
+	//const std::string modelPath = "./resource/Graphics/EffectDemo/untitled.model";
+	//mTestGraphics->WriteModel(modelPath, mTestGraphics->ConvertModel(fbxPath));
+	//createModel(modelPath, "", DirectX::SimpleMath::Matrix::CreateScale(1));
 }
 
 void EffectDemo::trailInit()

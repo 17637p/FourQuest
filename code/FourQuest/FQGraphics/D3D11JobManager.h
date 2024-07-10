@@ -19,6 +19,7 @@ namespace fq::graphics
 		void CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject);
 		void CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject);
 		void CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct);
+		void CreateMeshEffectJob(IMeshEffectObject* iMeshEffectObject);
 
 		void ClearAll();
 		void ClearStaticMeshJobs();

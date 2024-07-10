@@ -19,6 +19,7 @@ namespace fq::graphics
 		virtual ~MeshBase() = 0 {};
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11VertexBuffer> uvBuffer);
 		void Draw(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex);
 
 		inline const fq::common::Mesh& GetMeshData() const;

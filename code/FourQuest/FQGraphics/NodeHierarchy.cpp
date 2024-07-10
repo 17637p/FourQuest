@@ -146,7 +146,7 @@ namespace fq::graphics
 		const auto& find = animationCache.find(animation);
 		const auto& animClip = animation->GetAnimationClip();
 
-		clear();
+		SetBindPose();
 
 		if (find != animationCache.end())
 		{

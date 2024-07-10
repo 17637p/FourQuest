@@ -46,7 +46,7 @@ extern "C" {
 		class IAnimation
 		{
 		public:
-			virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
+			// virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
 			// virtual FQ_GRAPHICS void SetName(const std::string& name) abstract;
 			// virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 

@@ -20,14 +20,15 @@ namespace fq::graphics
 	}
 	void ConstantBufferHelper::UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
-		const std::shared_ptr<Material>& material)
+		const std::shared_ptr<Material>& material,
+		const DirectX::SimpleMath::Matrix& texTransform)
 	{
 		const auto& info = material->GetInfo();
 
 		CBMaterial CBMaterialData;
 		CBMaterialData.BaseColor = info.BaseColor;
 		CBMaterialData.EmissiveColor = info.EmissiveColor;
-		CBMaterialData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0);
+		CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0) * texTransform).Transpose();
 
 		CBMaterialData.Metalness = info.Metalness;
 		CBMaterialData.Roughness = info.Roughness;

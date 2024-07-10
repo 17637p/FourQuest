@@ -11,7 +11,7 @@ namespace fq::graphics
 		Animation(const fq::common::AnimationClip& animationClip);
 		virtual ~Animation() = default;
 
-		virtual void Create(const fq::common::AnimationClip& animationClip) override;
+		void Create(const fq::common::AnimationClip& animationClip);
 
 		virtual const fq::common::AnimationClip& GetAnimationClip() const override { return mAnimationClip; }
 

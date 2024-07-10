@@ -314,4 +314,114 @@ namespace fq::loader
 			}
 		}
 	}
+	fq::common::UVAnimationClip UVAnimationLoader::Read(const std::filesystem::path& filePath)
+	{
+		assert(std::filesystem::exists(filePath));
+
+		std::ifstream readData(filePath);
+		nlohmann::ordered_json controllerJson;
+
+		if (readData.is_open())
+		{
+			readData >> controllerJson;
+			readData.close();
+		}
+		else
+			assert(!"파일 열기 실패");
+
+
+		fq::common::UVAnimationClip result;
+
+		result.FrameCount = controllerJson.at("FrameCount").get<int>();
+		result.FramePerSecond = controllerJson.at("FramePerSecond").get<float>();
+		result.Duration = controllerJson.at("Duration").get<float>();
+
+		auto objects = controllerJson.find("objects");
+
+		for (const auto& [key, value] : objects.value().items())
+		{
+			fq::common::UVNodeClip uvNodeClip;
+			uvNodeClip.NodeName = value.at("object");
+			uvNodeClip.UVData.reserve(result.FrameCount);
+			auto keyFrameData = value.find("uv_animation_data");
+
+			for (const auto& [innerKey, innerValue] : keyFrameData.value().items())
+			{
+				fq::common::UVKeyframe uvKeyframe;
+
+				uvKeyframe.TimePos = innerValue.at("time").get<float>();
+
+				uvKeyframe.Translation.x = innerValue.at("translate")[0].get<float>();
+				uvKeyframe.Translation.y = innerValue.at("translate")[1].get<float>();
+
+				uvKeyframe.Rotation = innerValue.at("rotate")[0].get<float>();
+
+				uvKeyframe.Scale.x = innerValue.at("scale")[0].get<float>();
+				uvKeyframe.Scale.y = innerValue.at("scale")[1].get<float>();
+
+				uvNodeClip.UVData.push_back(uvKeyframe);
+			}
+
+			result.NodeClips.insert({ uvNodeClip.NodeName, uvNodeClip });
+		}
+
+		return result;
+	}
+
+	fq::common::AnimationClip AnimationLoader::Read(const std::filesystem::path& filePath)
+	{
+		std::ifstream readData(filePath);
+		nlohmann::ordered_json controllerJson;
+
+		if (readData.is_open())
+		{
+			readData >> controllerJson;
+			readData.close();
+		}
+		else
+			assert(!"파일 열기 실패");
+
+
+		fq::common::AnimationClip result;
+
+		result.FrameCount = controllerJson.at("FrameCount").get<int>();
+		result.FramePerSecond = controllerJson.at("FramePerSecond").get<float>();
+		result.Duration = controllerJson.at("Duration").get<float>();
+
+		auto objects = controllerJson.find("objects");
+
+		for (const auto& [key, value] : objects.value().items())
+		{
+			fq::common::NodeClip nodeClip;
+			nodeClip.NodeName = value.at("object");
+			nodeClip.Keyframes.reserve(result.FrameCount);
+			auto keyFrameData = value.find("transform_data");
+
+			for (const auto& [innerKey, innerValue] : keyFrameData.value().items())
+			{
+				fq::common::Keyframe keyframe;
+
+				keyframe.TimePos = innerValue.at("time").get<float>();
+
+				keyframe.Translation.x = innerValue.at("location")[0].get<float>();
+				keyframe.Translation.y = innerValue.at("location")[1].get<float>();
+				keyframe.Translation.z = innerValue.at("location")[2].get<float>();
+
+				keyframe.Rotation.x = innerValue.at("rotation")[0].get<float>();
+				keyframe.Rotation.y = innerValue.at("rotation")[1].get<float>();
+				keyframe.Rotation.z = innerValue.at("rotation")[2].get<float>();
+				keyframe.Rotation.w = innerValue.at("rotation")[3].get<float>();
+
+				keyframe.Scale.x = innerValue.at("scale")[0].get<float>();
+				keyframe.Scale.y = innerValue.at("scale")[1].get<float>();
+				keyframe.Scale.z = innerValue.at("scale")[2].get<float>();
+
+				nodeClip.Keyframes.push_back(keyframe);
+			}
+
+			result.NodeClips.push_back(nodeClip);
+		}
+
+		return result;
+	}
 }

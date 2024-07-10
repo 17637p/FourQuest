@@ -2,6 +2,7 @@
 #include "RenderObject.h"
 #include "Mesh.h"
 #include "Material.h"
+#include "MeshEffectObject.h"
 #include "../FQCommon/FQCommonLoader.h"
 
 namespace fq::graphics
@@ -25,6 +26,7 @@ namespace fq::graphics
 			job.StaticMesh = std::static_pointer_cast<StaticMesh>(iStaticMeshObject->GetStaticMesh());
 			job.Material = std::static_pointer_cast<Material>(material[i]);
 			job.StaticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
+			job.NodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(iStaticMeshObject->GetNodeHierarchyInstance());
 
 			mStaticMeshJobs.push_back(job);
 		}
@@ -61,6 +63,14 @@ namespace fq::graphics
 			job.TerrainMeshObject = static_cast<TerrainMeshObject*>(terrainMeshObject);
 
 			mTerrainMeshJobs.push_back(job);
+		}
+	}
+
+	void D3D11JobManager::CreateMeshEffectJob(IMeshEffectObject* iMeshEffectObject)
+	{
+		for (const auto& node : static_cast<MeshEffectObject*>(iMeshEffectObject)->GetNodes())
+		{
+			CreateStaticMeshJob(node.StaticMeshObject.get());
 		}
 	}
 

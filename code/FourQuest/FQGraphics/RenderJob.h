@@ -26,6 +26,7 @@ namespace fq::graphics
 		std::shared_ptr<StaticMesh> StaticMesh;
 		std::shared_ptr<Material> Material;
 		StaticMeshObject* StaticMeshObject;
+		std::shared_ptr<NodeHierarchyInstance> NodeHierarchyInstnace;
 	};
 
 	struct SkinnedMeshJob

@@ -294,6 +294,7 @@ bool FQGraphics::Render()
 	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
 	for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
 	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
+	for (auto element : mObjectManager->GetMeshEffectObjects()) { mJobManager->CreateMeshEffectJob(element); }
 
 	mRenderManager->Render();
 	// postprocessing
@@ -572,7 +573,10 @@ ITrailObject* fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParti
 {
 	return mObjectManager->CreateTrailObject(iParticleMaterial, trailInfo, transform);
 }
-
+IMeshEffectObject* fq::graphics::FQGraphics::CreateMeshEffectObject(const std::string& modelPath, const std::string& uvAnimationPath, const std::string& transformAnimationPath, const std::string& texturebasePath, const DirectX::SimpleMath::Matrix& transform)
+{
+	return mObjectManager->CreateMeshEffectObject(mDevice, mModelManager, modelPath, uvAnimationPath, transformAnimationPath, texturebasePath, transform);
+}
 void fq::graphics::FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
 {
 	mObjectManager->DeleteStaticMeshObject(staticMeshObject);
@@ -596,6 +600,10 @@ void fq::graphics::FQGraphics::DeleteDecalObject(IDecalObject* decalObject)
 void fq::graphics::FQGraphics::DeleteTrailObject(ITrailObject* trailObject)
 {
 	mObjectManager->DeleteTrailObject(trailObject);
+}
+void fq::graphics::FQGraphics::DeleteMeshEffectObject(IMeshEffectObject* meshEffectObject)
+{
+	mObjectManager->DeleteMeshEffectObject(meshEffectObject);
 }
 
 void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)

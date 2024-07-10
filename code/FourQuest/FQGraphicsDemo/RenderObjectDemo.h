@@ -68,9 +68,17 @@ private:
 		std::shared_ptr<fq::graphics::INodeHierarchyInstance> NodeHierarchyInstance;
 	};
 
+	struct StaticMeshRenderer
+	{
+		fq::graphics::IStaticMeshObject* StaticMeshObject;
+		std::map<std::string, std::shared_ptr<fq::graphics::IAnimation>> Animations;
+		std::shared_ptr<fq::graphics::INodeHierarchyInstance> NodeHierarchyInstance;
+	};
+
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<SkinnedMeshRender> mSkinnedMeshRenderers;
+	std::vector<StaticMeshRenderer> mStaticMeshRenderers;
 
 };
 
