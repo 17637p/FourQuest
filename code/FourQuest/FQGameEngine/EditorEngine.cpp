@@ -200,7 +200,7 @@ void fq::game_engine::EditorEngine::Process()
 
 				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
 			}
-		
+
 			//////////////////////////////////////////////////////////////////////////
 			//							Bind Process								//
 			//////////////////////////////////////////////////////////////////////////
@@ -245,6 +245,7 @@ void fq::game_engine::EditorEngine::Process()
 void fq::game_engine::EditorEngine::Finalize()
 {
 	EditorHelper::SetStartSceneName(mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName());
+	EditorHelper::SaveEditorSetting(mEditor.get());
 
 	mGameProcess->mSceneManager->UnloadScene();
 
@@ -324,6 +325,10 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mArticulationHierarchy->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLightProbeWindow->Initialize(mGameProcess.get(), mEditor.get());
+
+
+	// Editor Setting
+	EditorHelper::LoadEditorSetting(mEditor.get());
 }
 
 void fq::game_engine::EditorEngine::UpdateEditor(float dt)

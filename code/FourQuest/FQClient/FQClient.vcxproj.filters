@@ -38,41 +38,41 @@
     <Filter Include="include\02.Monster\Prototype">
       <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src">
+    <Filter Include="src">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="include\src\00.Define">
+    <Filter Include="src\00.Define">
       <UniqueIdentifier>{94971c36-b1fc-45eb-9373-91e219af22de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\01.Player">
+    <Filter Include="src\01.Player">
       <UniqueIdentifier>{a9fd8395-d790-4773-b758-9d33d213ff26}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\01.Player\State">
+    <Filter Include="src\01.Player\State">
       <UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\02.Monster">
+    <Filter Include="src\02.Monster">
       <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\02.Monster\Prototype">
+    <Filter Include="src\02.Monster\Prototype">
       <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\02.Monster\Melee">
+    <Filter Include="src\02.Monster\Melee">
       <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\02.Monster\Plant">
+    <Filter Include="src\02.Monster\Plant">
       <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\03.Attack">
+    <Filter Include="src\03.Attack">
       <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\04.Camera">
+    <Filter Include="src\04.Camera">
       <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\05.UI">
+    <Filter Include="src\05.UI">
       <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\src\06.GameManager">
+    <Filter Include="src\06.GameManager">
       <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -203,115 +203,115 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
-      <Filter>include\src\00.Define</Filter>
+      <Filter>src\00.Define</Filter>
     </ClCompile>
     <ClCompile Include="Attack.cpp">
-      <Filter>include\src\03.Attack</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInputState.cpp">
-      <Filter>include\src\01.Player\State</Filter>
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="PlayerMovementState.cpp">
-      <Filter>include\src\01.Player\State</Filter>
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>include\src\01.Player</Filter>
+      <Filter>src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerDashState.cpp">
-      <Filter>include\src\01.Player\State</Filter>
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="PlayerAttackState.cpp">
-      <Filter>include\src\01.Player\State</Filter>
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="CameraMoving.cpp">
-      <Filter>include\src\04.Camera</Filter>
+      <Filter>src\04.Camera</Filter>
     </ClCompile>
     <ClCompile Include="Soul.cpp">
-      <Filter>include\src\01.Player</Filter>
+      <Filter>src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="DeadArmour.cpp">
-      <Filter>include\src\01.Player</Filter>
+      <Filter>src\01.Player</Filter>
     </ClCompile>
     <ClCompile Include="HpBar.cpp">
-      <Filter>include\src\05.UI</Filter>
+      <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="PlayerUI.cpp">
-      <Filter>include\src\05.UI</Filter>
+      <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterAttckState.cpp">
-      <Filter>include\src\02.Monster\Plant</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterDeadState.cpp">
-      <Filter>include\src\02.Monster\Plant</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterStareState.cpp">
-      <Filter>include\src\02.Monster\Plant</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterIdleState.cpp">
-      <Filter>include\src\02.Monster\Plant</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>include\src\06.GameManager</Filter>
+      <Filter>src\06.GameManager</Filter>
     </ClCompile>
     <ClCompile Include="MonsterAttack.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterChase.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterDamaged.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterDie.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterFind.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterIdle.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="Monster.cpp">
-      <Filter>include\src\02.Monster\Prototype</Filter>
+      <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
     <ClCompile Include="MonsterSpawner.cpp">
-      <Filter>include\src\02.Monster</Filter>
+      <Filter>src\02.Monster</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonster.cpp">
-      <Filter>include\src\02.Monster\Plant</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="PlantAttack.cpp">
-      <Filter>include\src\02.Monster\Plant</Filter>
+      <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterIdleState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterPatrolState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterChaseState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterAttackState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonster.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterDeadState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="ClientHelper.cpp">
-      <Filter>include\src\00.Define</Filter>
+      <Filter>src\00.Define</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterWaitAttackState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterFindTargetState.cpp">
-      <Filter>include\src\02.Monster\Melee</Filter>
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="MonsterGroup.cpp">
-      <Filter>include\src\02.Monster</Filter>
+      <Filter>src\02.Monster</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
