@@ -152,6 +152,9 @@ namespace fq::game_engine
 		ColliderContainer mColliderContainer;
 		ColliderID mLastColliderID;
 		CallbackContainer mCallbacks;
+
+		// Articulation
+		fq::game_module::ArticulationLoader mArticulationLoader;
 	};
 
 

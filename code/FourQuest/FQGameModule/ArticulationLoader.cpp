@@ -32,18 +32,18 @@ namespace fq::game_module
 
 	void saveTheLink(const std::shared_ptr<LinkData> linkData, ordered_json& json)
 	{
-		ordered_json LinkJson;
 		ordered_json JointJson;
 		
-		LinkJson["boneName"] = linkData->GetBoneName();
-		LinkJson["parentBoneName"] = linkData->GetParentBoneName();
-		LinkJson["localTransform"] = MatrixToJson(linkData->GetLocalTransform());
-		LinkJson["density"] = linkData->GetDensity();
-		LinkJson["ShapeType"] = linkData->GetShapeType();
-		LinkJson["boxExtent"] = Vector3ToJson(linkData->GetBoxExtent());
-		LinkJson["sphereRadius"] = linkData->GetSphereRadius();
-		LinkJson["capsuleHalfHeight"] = linkData->GetCapsuleHalfHeight();
-		LinkJson["capsuleRadius"] = linkData->GetCapsuleRadius();
+		json["id"] = linkData->GetID();
+		json["boneName"] = linkData->GetBoneName();
+		json["parentBoneName"] = linkData->GetParentBoneName();
+		json["localTransform"] = MatrixToJson(linkData->GetLocalTransform());
+		json["density"] = linkData->GetDensity();
+		json["ShapeType"] = linkData->GetShapeType();
+		json["boxExtent"] = Vector3ToJson(linkData->GetBoxExtent());
+		json["sphereRadius"] = linkData->GetSphereRadius();
+		json["capsuleHalfHeight"] = linkData->GetCapsuleHalfHeight();
+		json["capsuleRadius"] = linkData->GetCapsuleRadius();
 		
 		JointJson["localTransform"] = MatrixToJson(linkData->GetJointLocalTransform());
 		JointJson["damping"] = linkData->GetJointDamping();
@@ -59,7 +59,7 @@ namespace fq::game_module
 		JointJson["TwistLimitHigh"] = linkData->GetTwistLimitHigh();
 		JointJson["TwistLimitLow"] = linkData->GetTwistLimitLow();
 
-		LinkJson["joint"] = JointJson;
+		json["joint"] = JointJson;
 
 		// Recursively process children
 		ordered_json childrenJson;
@@ -67,15 +67,8 @@ namespace fq::game_module
 		{
 			ordered_json childJson;
 			saveTheLink(childLink, childJson);
-			childrenJson[name] = childJson;
+			json["children"][name] = childJson;
 		}
-
-		if (!childrenJson.empty())
-		{
-			LinkJson["children"] = childrenJson;
-		}
-
-		json["linkData"][linkData->GetBoneName()] = LinkJson;
 	}
 
 	void ArticulationLoader::Save(const std::shared_ptr<ArticulationData> data, const Path& path)
@@ -93,10 +86,9 @@ namespace fq::game_module
 		articulationJson["rootLinkData"] = rootLinkJson;
 
 		std::ofstream file(path);
-
 		if (file.is_open())
 		{
-			file << articulationJson.dump(4);
+			file << articulationJson.dump(6);
 			file.close();
 		}
 		else
@@ -127,6 +119,7 @@ namespace fq::game_module
 	{
 		auto linkData = std::make_shared<LinkData>();
 
+		linkData->SetID(linkJson["id"]);
 		linkData->SetBoneName(linkJson["boneName"]);
 		linkData->SetParentBoneName(linkJson["parentBoneName"]);
 		linkData->SetLocalTransform(JsonToMatrix(linkJson["localTransform"]));
@@ -188,7 +181,7 @@ namespace fq::game_module
 		articulationData->SetStaticFriction(articulationJson["staticFriction"]);
 		articulationData->SetDynamicFriction(articulationJson["dynamicFriction"]);
 
-		auto rootLinkData = LoadLinkData(articulationJson["linkData"][articulationData->GetRootLinkData().lock()->GetBoneName()]);
+		auto rootLinkData = LoadLinkData(articulationJson["rootLinkData"]);
 		articulationData->SetRootLinkData(rootLinkData);
 
 		return articulationData;

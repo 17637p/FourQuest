@@ -41,9 +41,7 @@ namespace fq::game_engine
 
 		// 이벤트 핸들 등록
 		mStartSceneHandle = mEventManager->RegisterHandle<fq::event::StartScene>
-			([this]() {
-			StartScene();
-				});
+			([this]() {	StartScene(); });
 	}
 
 	void PhysicsAnimatorWindow::Render()

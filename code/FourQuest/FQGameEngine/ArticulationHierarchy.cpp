@@ -6,6 +6,7 @@
 #include "GameProcess.h"
 #include "CameraSystem.h"
 
+#include "../FQCommon/FQPath.h"
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/ArticulationData.h"
 #include "../FQGameModule/LinkData.h"
@@ -103,7 +104,25 @@ namespace fq::game_engine
 			return;
 
 		beginPopupContextWindow_HierarchyChild();
+		beginArticulationSaveButton();
 		beginLinkDataBar(mArticulationData->GetRootLinkData().lock());
+	}
+
+	void ArticulationHierarchy::beginArticulationSaveButton()
+	{
+		static std::string articulationName = "Articulation File Name";
+
+		ImGui::InputText("###", &articulationName);
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Save"))
+		{
+			std::string articulationPath = articulationName + ".articulation";
+
+			auto path = fq::path::GetResourcePath() / "Articulation" / articulationPath;
+			mArticulationLoader.Save(mArticulationData, path.c_str());
+		}
 	}
 
 	void ArticulationHierarchy::beginLinkDataBar(std::shared_ptr<fq::game_module::LinkData> link)
@@ -636,10 +655,6 @@ namespace fq::game_engine
 				// 모델 생성
 				if (path->extension() == ".model")
 				{
-					//// 에디터 전용 씬을 생성
-					//mGameProcess->mEventManager 
-					//	->FireEvent<fq::event::RequestChangeScene>({ "Articulation_Editer", true });
-
 					// 모델을 로드
 					mEditorProcess->mModelSystem->BuildModel(*path);
 
@@ -652,6 +667,12 @@ namespace fq::game_engine
 							break;
 						}
 					}
+				}
+
+				// Articulation 로드
+				if (path->extension() == ".articulation")
+				{
+					mArticulationData = mArticulationLoader.LoadArticulationData(*path);
 				}
 			}
 			ImGui::EndDragDropTarget();

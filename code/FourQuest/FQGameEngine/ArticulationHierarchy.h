@@ -77,6 +77,11 @@ namespace fq::game_engine
 		void beginArticulationHierarchy();
 
 		/// <summary>
+		/// 
+		/// </summary>
+		void beginArticulationSaveButton();
+
+		/// <summary>
 		/// Articulation의 Link들을 표시하는 창
 		/// </summary>
 		void beginLinkDataBar(std::shared_ptr<fq::game_module::LinkData> link);
@@ -130,6 +135,7 @@ namespace fq::game_engine
 		GameProcess*	mGameProcess;
 		EditorProcess*	mEditorProcess;
 
+		unsigned int mLinkID;
 		bool			mbIsOpen;
 		bool			mbIsBoneHierarchy;
 		bool			mbIsArticulationHierarchy;
@@ -151,6 +157,8 @@ namespace fq::game_engine
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectLinkHandle;
 
-		unsigned int mLinkID;
+		// Articulation
+		fq::game_module::ArticulationLoader mArticulationLoader;
+		std::filesystem::path mFilePath;
 	};
 }

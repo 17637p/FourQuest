@@ -1,5 +1,7 @@
 #include "Articulation.h"
 
+#include "ArticulationData.h"
+
 namespace fq::game_module
 {
 	Articulation::Articulation()

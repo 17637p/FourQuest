@@ -66,6 +66,7 @@ namespace fq::game_module
 	private:
 		unsigned int mID;
 		ArticulationPath mArticulationPath;
+
 		DirectX::SimpleMath::Vector3 mOffset;
 
 		unsigned int mCollisionCount;
