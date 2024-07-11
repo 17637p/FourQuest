@@ -32,13 +32,16 @@ namespace fq::game_engine
 		void SaveLightProbes(std::string fileName);
 		void LoadLightProbes(std::string fileName);
 		
-		float GetLightProbeScale() { return mLightProbeScale * 100; }
+		float GetLightProbeDefaultScale() { return mLightProbeDefaultScale * 100; }
 
 		// 디버그 드로우 
 		std::vector<fq::graphics::IProbeObject*> GetLightProbeObjects() { return mProbeObjects; };
 
+		float GetLightProbeScale() const { return mLightProbeScale; }
+		void SetLightProbeScale(float val) { mLightProbeScale = val; }
 	private:
 		fq::game_engine::GameProcess* mGameProcess;
+		float mLightProbeDefaultScale;
 		float mLightProbeScale;
 
 		std::vector<fq::graphics::IProbeObject*> mProbeObjects;

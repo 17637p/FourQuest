@@ -29,11 +29,12 @@ namespace fq::game_engine
 		virtual void Render() override;
 
 		bool& IsWindowOpen() { return mbIsOpen; }
-		void PickObject(void* iProbeObject);
+		void PickObject(void* iProbeObject); // GamePlayWindow 에서 호출 
 
 	private:
 		void beginButtons();
 		void beginProbeList();
+		void CheckCopyPaste();
 		// add
 		// delete
 		// save
@@ -53,6 +54,9 @@ namespace fq::game_engine
 		int mWidth;
 		int mHeight;
 		float mScale;
+
+		// Copy and Paste
+		fq::graphics::IProbeObject* mCopyObject;
 	};
 }
 

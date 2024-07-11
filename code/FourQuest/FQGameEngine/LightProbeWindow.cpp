@@ -42,6 +42,7 @@ void fq::game_engine::LightProbeWindow::Render()
 	{
 		beginButtons();
 		beginProbeList();
+		CheckCopyPaste();
 	}
 	ImGui::End();
 }
@@ -62,6 +63,10 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 	{
 		mLightProbeSystem->DeleteLightProbe(mSelectObject);
 		mSelectObject = nullptr;
+		if (mSelectObject == mCopyObject)
+		{
+			mCopyObject = nullptr;
+		}
 	}
 	{
 		std::string widthStr = std::to_string(mWidth);
@@ -93,6 +98,7 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 	if (ImGui::Button("Load", ImVec2{ 133,25 }))
 	{
 		mSelectObject = nullptr;
+		mCopyObject = nullptr;
 		mLightProbeSystem->LoadLightProbes(mSaveFileName);
 	}
 
@@ -104,6 +110,7 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 		try
 		{
 			mScale = std::stof(scaleStr);
+			mLightProbeSystem->SetLightProbeScale(mScale);
 
 			std::vector<fq::graphics::IProbeObject*> probeObjects = mLightProbeSystem->GetLightProbeObjects();
 			for (int i = 0; i < probeObjects.size(); i++)
@@ -117,9 +124,9 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 				transform.Decompose(scl, rot, pos);
 
 				scl = { 
-					mScale * mLightProbeSystem->GetLightProbeScale(), 
-					mScale * mLightProbeSystem->GetLightProbeScale(),
-					mScale * mLightProbeSystem->GetLightProbeScale() };
+					mScale * mLightProbeSystem->GetLightProbeDefaultScale(), 
+					mScale * mLightProbeSystem->GetLightProbeDefaultScale(),
+					mScale * mLightProbeSystem->GetLightProbeDefaultScale() };
 
 				probeObjects[i]->SetTransform(DirectX::SimpleMath::Matrix::CreateScale(scl)
 					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rot)
@@ -165,6 +172,7 @@ void fq::game_engine::LightProbeWindow::beginProbeList()
 			if (mSelectObject != probeObjects[i])
 			{
 				mSelectObject = probeObjects[i];
+				mGameProcess->mEventManager->FireEvent<editor_event::SelectObject>({ nullptr });
 
 				DirectX::SimpleMath::Matrix transform = probeObjects[i]->GetTransform();
 				DirectX::SimpleMath::Vector3 pos = { transform._41, transform._42, transform._43 };
@@ -227,5 +235,31 @@ void fq::game_engine::LightProbeWindow::PickObject(void* iProbeObject)
 	if (probeObject != probeObjects.end())
 	{
 		mSelectObject = *probeObject;
+	}
+}
+
+void fq::game_engine::LightProbeWindow::CheckCopyPaste()
+{
+	if (mInputManager->IsKeyState(EKey::Ctrl, EKeyState::Hold))
+	{
+		if (mInputManager->IsKeyState(EKey::C, EKeyState::Tap))
+		{
+			if (mSelectObject != nullptr)
+			{
+				mCopyObject = mSelectObject;
+			}
+		}
+	}
+
+	if (mInputManager->IsKeyState(EKey::Ctrl, EKeyState::Hold))
+	{
+		if (mInputManager->IsKeyState(EKey::V, EKeyState::Tap))
+		{
+			if (mCopyObject != nullptr)
+			{
+				DirectX::SimpleMath::Matrix transform = mCopyObject->GetTransform();
+				mLightProbeSystem->AddLightProbe({ transform._41, transform._42, transform._43 });
+			}
+		}
 	}
 }

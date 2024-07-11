@@ -7,7 +7,8 @@
 #include <fstream>
 
 fq::game_engine::LightProbeSystem::LightProbeSystem(GameProcess* tempProcess)
-	:mLightProbeScale(0.001f)
+	:mLightProbeDefaultScale(0.001f),
+	mLightProbeScale(1)
 {
 	mGameProcess = tempProcess;
 }
@@ -32,7 +33,10 @@ void fq::game_engine::LightProbeSystem::AddLightProbe(DirectX::SimpleMath::Vecto
 
 		auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(sphereModel, mesh.Name);
 
-		DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::CreateScale({ mLightProbeScale, mLightProbeScale, mLightProbeScale }) *
+		DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::CreateScale({ 
+			mLightProbeDefaultScale * mLightProbeScale, 
+			mLightProbeDefaultScale * mLightProbeScale,
+			mLightProbeDefaultScale * mLightProbeScale }) *
 			DirectX::SimpleMath::Matrix::CreateTranslation({ position.x, position.y, position.z });
 		fq::graphics::IProbeObject* iProbeObject = mGameProcess->mGraphics->CreateProbeObject(meshInterface, node.ToParentMatrix * transform, index);
 		mProbeObjects.push_back(iProbeObject);
