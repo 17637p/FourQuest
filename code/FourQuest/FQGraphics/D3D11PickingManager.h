@@ -25,6 +25,7 @@ namespace fq::graphics
 	class IStaticMeshObject;
 	class ISkinnedMeshObject;
 	class ITerrainMeshObject;
+	class IProbeObject;
 
 	class D3D11ResourceManager;
 	class D3D11CameraManager;
@@ -60,7 +61,8 @@ namespace fq::graphics
 			const std::shared_ptr<D3D11JobManager>& jobManager,
 			const std::set<IStaticMeshObject*>& staticMeshObjects,
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
-			const std::set<ITerrainMeshObject*>& terrainMeshObjects);
+			const std::set<ITerrainMeshObject*>& terrainMeshObjects,
+			const std::set<IProbeObject*>& probeObjects);
 		void OnResize(const short width, const short height, const std::shared_ptr<D3D11Device>& device);
 
 		void EndRender(const std::shared_ptr<D3D11Device>& device);
@@ -70,14 +72,16 @@ namespace fq::graphics
 		// 일단은 그냥 오브젝트 전부를 받는데 컬링 하고 나면 이렇게 전부 받을 필요 없다.
 		void MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
-			const std::set<ITerrainMeshObject*>& terrainMeshObjects);
+			const std::set<ITerrainMeshObject*>& terrainMeshObjects,
+			const std::set<IProbeObject*>& probeObjects);
 
 		void DrawObject(const std::shared_ptr<D3D11Device>& device,
 			const std::shared_ptr<D3D11CameraManager>& cameraManager,
 			const std::shared_ptr<D3D11JobManager>& jobManager,
 			const std::set<IStaticMeshObject*>& staticMeshObjects,
 			const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
-			const std::set<ITerrainMeshObject*>& terrainMeshObjects);
+			const std::set<ITerrainMeshObject*>& terrainMeshObjects,
+			const std::set<IProbeObject*>& probeObjects);
 
 		// 4. 그린 렌더 타겟에서 값 가져오기
 		unsigned int GetHashColor(const std::shared_ptr<D3D11Device> device, const short x, const short y);
@@ -97,6 +101,7 @@ namespace fq::graphics
 		std::unordered_map<IStaticMeshObject*, DirectX::SimpleMath::Color> mStaticMeshObjects;
 		std::unordered_map<ISkinnedMeshObject*, DirectX::SimpleMath::Color> mSkinnedMeshObjects;
 		std::unordered_map<ITerrainMeshObject*, DirectX::SimpleMath::Color> mTerrainMeshObjects;
+		std::unordered_map<IProbeObject*, DirectX::SimpleMath::Color> mProbeObjects;
 
 		//////////////////////////////////////////////////////////////////////////
 		std::shared_ptr<D3D11RenderTargetView> mPickingDrawRTV;

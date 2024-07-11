@@ -686,6 +686,8 @@ void fq::game_engine::GamePlayWindow::pickObject()
 					}
 				}
 			});
+
+		mEditorProcess->mLightProbeWindow->PickObject(meshPtr);
 	}
 }
 
@@ -755,7 +757,7 @@ void fq::game_engine::GamePlayWindow::DrawGizumo(DirectX::SimpleMath::Matrix& tr
 	mbAlreadyDrawGizumo = true;
 	ImGuizmo::Enable(true);
 
-	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
+	//auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
 	auto objectMatrix = transform;
 
 	auto& input = mEditorProcess->mInputManager;

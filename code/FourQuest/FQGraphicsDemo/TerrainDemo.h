@@ -13,6 +13,7 @@ namespace fq::graphics { class EngineExporter; }
 
 namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IStaticMeshObject; }
+namespace fq::graphics { class IProbeObject; }
 
 class TerrainDemo : public BaseWindow<TerrainDemo>
 {
@@ -36,6 +37,7 @@ private:
 
 	//Probe Test
 	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool isUseLightProbe);
+	void createProbeObject(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transformm, int index);
 	void materialUpdate();
 	void renderObjectInit();
 	void renderObjectUpdate();
@@ -68,6 +70,7 @@ private:
 
 	// Probe Test
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
+	std::vector<fq::graphics::IProbeObject*> mProbeObjects;
 	std::vector<DirectX::SimpleMath::Vector3> lightProbePositions;
 };
 

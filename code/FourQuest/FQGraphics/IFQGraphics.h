@@ -126,6 +126,7 @@ extern "C" {
 			virtual FQ_GRAPHICS IParticleObject* CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index) abstract;
 
 			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject) abstract;
 			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject) abstract;
@@ -133,6 +134,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteParticleObject(IParticleObject* particleObject) abstract;
 			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObject) abstract;
 			virtual FQ_GRAPHICS void DeleteTrailObject(ITrailObject* trailObject) abstract;
+			virtual FQ_GRAPHICS void DeleteProbeObject(IProbeObject* probeObject) abstract;
 
 			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
@@ -178,8 +180,9 @@ extern "C" {
 			// Light Probe
 			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;
 			virtual FQ_GRAPHICS void DeleteLightProbe(int index) abstract;
-			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
+			virtual FQ_GRAPHICS void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) abstract;
 
+			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
 			virtual FQ_GRAPHICS void SaveLightProbes(const std::string& fileName) abstract;
 			virtual FQ_GRAPHICS void LoadLightProbes(const std::string& fileName) abstract;
 

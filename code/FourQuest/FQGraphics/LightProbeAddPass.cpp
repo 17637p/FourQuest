@@ -24,7 +24,7 @@ void fq::graphics::LightProbeAddPass::Initialize(std::shared_ptr<D3D11Device> de
 	mOffScreenSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, offScreenRTV);
 
 	mOutLineBlurRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::OutLineBlur, width, height);
-	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 
 	mDefaultSS = resourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Default);
 
@@ -98,7 +98,7 @@ void fq::graphics::LightProbeAddPass::Render()
 
 void fq::graphics::LightProbeAddPass::OnResize(unsigned short width, unsigned short height)
 {
-	mOutLineBlurRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::OutLineBlur, width, height);
+	mOutLineBlurRTV->OnResize(mDevice, ED3D11RenderTargetViewType::OutLineBlur, width, height);
 
 	auto LightProbeRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr);
 	mLightProbeSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, LightProbeRTV);
