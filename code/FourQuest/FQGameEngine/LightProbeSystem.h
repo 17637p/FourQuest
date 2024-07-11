@@ -31,13 +31,15 @@ namespace fq::game_engine
 
 		void SaveLightProbes(std::string fileName);
 		void LoadLightProbes(std::string fileName);
-		// 기즈모 써야함 
 		
+		float GetLightProbeScale() { return mLightProbeScale * 100; }
+
 		// 디버그 드로우 
 		std::vector<fq::graphics::IProbeObject*> GetLightProbeObjects() { return mProbeObjects; };
 
 	private:
 		fq::game_engine::GameProcess* mGameProcess;
+		float mLightProbeScale;
 
 		std::vector<fq::graphics::IProbeObject*> mProbeObjects;
 	};

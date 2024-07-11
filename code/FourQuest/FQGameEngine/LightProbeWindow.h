@@ -52,6 +52,7 @@ namespace fq::game_engine
 
 		int mWidth;
 		int mHeight;
+		float mScale;
 	};
 }
 

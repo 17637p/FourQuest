@@ -372,6 +372,10 @@ void D3D11LightProbeManager::lerpLightProbe(Tetrahedron* tet, const DirectX::Sim
 
 void D3D11LightProbeManager::GetCoefficientTetrahedronWeight(const DirectX::SimpleMath::Vector4& weights, int TetIndex, float* r, float* g, float* b)
 {
+	if(TetIndex > mTetrahedrons.size())
+	{
+		return;
+	}
 	lerpLightProbe(mTetrahedrons[TetIndex], weights, r, g, b);
 }
 
@@ -507,7 +511,7 @@ void D3D11LightProbeManager::MakeTetrahedron()
 	out.save_nodes("output");
 }
 
-void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int tetIndex, DirectX::SimpleMath::Vector4& weights, int& steps)
+void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int& tetIndex, DirectX::SimpleMath::Vector4& weights, int& steps)
 {
 	const int tetCount = tets.size();
 	if (tetIndex < 0 || tetIndex >= tetCount)

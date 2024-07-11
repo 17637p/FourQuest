@@ -17,7 +17,8 @@ fq::game_engine::LightProbeWindow::LightProbeWindow()
 	:mbIsOpen(false),
 	mSaveFileName("LightProbe"),
 	mWidth(256),
-	mHeight(256)
+	mHeight(256),
+	mScale(1)
 {
 }
 
@@ -93,6 +94,42 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 	{
 		mSelectObject = nullptr;
 		mLightProbeSystem->LoadLightProbes(mSaveFileName);
+	}
+
+	std::string scaleStr = std::to_string(mScale);
+
+	if (ImGui::InputText("LightProbe Scale", &scaleStr)
+		&& mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
+	{
+		try
+		{
+			mScale = std::stof(scaleStr);
+
+			std::vector<fq::graphics::IProbeObject*> probeObjects = mLightProbeSystem->GetLightProbeObjects();
+			for (int i = 0; i < probeObjects.size(); i++)
+			{
+				DirectX::SimpleMath::Matrix transform = probeObjects[i]->GetTransform();
+
+				DirectX::SimpleMath::Vector3 pos;
+				DirectX::SimpleMath::Quaternion rot;
+				DirectX::SimpleMath::Vector3 scl;
+
+				transform.Decompose(scl, rot, pos);
+
+				scl = { 
+					mScale * mLightProbeSystem->GetLightProbeScale(), 
+					mScale * mLightProbeSystem->GetLightProbeScale(),
+					mScale * mLightProbeSystem->GetLightProbeScale() };
+
+				probeObjects[i]->SetTransform(DirectX::SimpleMath::Matrix::CreateScale(scl)
+					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rot)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(pos));
+			}
+		}
+		catch (const std::invalid_argument& e)
+		{
+
+		}
 	}
 }
 

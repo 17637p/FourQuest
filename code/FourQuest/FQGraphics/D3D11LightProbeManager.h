@@ -110,7 +110,7 @@ namespace fq::graphics
 		// p는 오브젝트 pos, coords는 out 할 무게중심 좌표, vertices는 Tet의 vertices이므로 Tet을 보내면 될 거 같은디 
 		void getBarycentriCoordinateForInnerTetrahedron(const DirectX::SimpleMath::Vector3& p,
 			const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords);
-		void getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int tetIndex,
+		void getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int& tetIndex,
 			DirectX::SimpleMath::Vector4& weights, int& steps);
 
 		void lerpLightProbe(Tetrahedron* tet, const DirectX::SimpleMath::Vector4& weights, float* r, float* g, float* b/*(27)*/);
