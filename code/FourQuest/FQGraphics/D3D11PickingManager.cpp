@@ -66,7 +66,8 @@ void fq::graphics::D3D11PickingManager::Initialize(const std::shared_ptr<D3D11De
 
 void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<IStaticMeshObject*>& staticMeshObjects,
 	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
-	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects,
+	const std::set<IProbeObject*>& probeObjects)
 {
 	for (const auto& meshObject : staticMeshObjects)
 	{
@@ -82,6 +83,11 @@ void fq::graphics::D3D11PickingManager::MakeObjectsHashColor(const std::set<ISta
 	{
 		NextColor();
 		mTerrainMeshObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
+	}
+	for (const auto& meshObject : probeObjects)
+	{
+		NextColor();
+		mProbeObjects[meshObject] = DirectX::SimpleMath::Color{ mR / 255.0f, mG / 255.0f, mB / 255.0f };
 	}
 }
 
@@ -170,14 +176,15 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 	const std::shared_ptr<D3D11JobManager>& jobManager,
 	const std::set<IStaticMeshObject*>& staticMeshObjects,
 	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
-	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects,
+	const std::set<IProbeObject*>& probeObjects)
 {
 	mR = 0;
 	mG = 0;
 	mB = 0;
 
-	MakeObjectsHashColor(staticMeshObjects, skinnedMeshObjects, terrainMeshObjects);
-	DrawObject(device, cameraManager, jobManager, staticMeshObjects, skinnedMeshObjects, terrainMeshObjects);
+	MakeObjectsHashColor(staticMeshObjects, skinnedMeshObjects, terrainMeshObjects, probeObjects);
+	DrawObject(device, cameraManager, jobManager, staticMeshObjects, skinnedMeshObjects, terrainMeshObjects, probeObjects);
 
 	unsigned int pickedhashColor = GetHashColor(device, x, y);
 
@@ -204,6 +211,13 @@ void* fq::graphics::D3D11PickingManager::GetPickedObject(const short x, const sh
 		}
 	}
 
+	// Probe
+	for (auto it = mProbeObjects.begin(); it != mProbeObjects.end(); ++it) {
+		if (MakeRGBAUnsignedInt(it->second) == pickedhashColor) {
+			object = it->first;
+		}
+	}
+
 	EndRender(device);
 
 	return object;
@@ -214,7 +228,8 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 	const std::shared_ptr<D3D11JobManager>& jobManager,
 	const std::set<IStaticMeshObject*>& staticMeshObjects,
 	const std::set<ISkinnedMeshObject*>& skinnedMeshObjects,
-	const std::set<ITerrainMeshObject*>& terrainMeshObjects)
+	const std::set<ITerrainMeshObject*>& terrainMeshObjects,
+	const std::set<IProbeObject*>& probeObjects)
 {
 	mPickingDrawRTV->Clear(device, { 0.f, 0.f, 0.f, 1.f });
 	mDSV->Clear(device);
@@ -264,6 +279,22 @@ void fq::graphics::D3D11PickingManager::DrawObject(const std::shared_ptr<D3D11De
 		mConstantBuffer->Update(device, modelTransform);
 
 		job.TerrainMesh->Draw(device, job.SubsetIndex);
+	}
+
+	for (IProbeObject* iProbeObject : probeObjects)
+	{
+		ProbeObject* probeObject = static_cast<ProbeObject*>(iProbeObject);
+		std::shared_ptr<StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(probeObject->GetStaticMesh());
+		staticMesh->Bind(device);
+
+		ModelTransform modelTransform;
+		modelTransform.color = mProbeObjects[iProbeObject]; //DirectX::SimpleMath::Color{ 0, 1, 0 };
+		modelTransform.world = (probeObject->GetTransform()).Transpose();
+		modelTransform.ViewProj = (cameraManager->GetViewMatrix(ECameraType::Player) * cameraManager->GetProjectionMatrix(ECameraType::Player)).Transpose();
+		mConstantBuffer->Update(device, modelTransform);
+
+		const size_t JOB_COUNT = probeObject->GetStaticMesh()->GetMeshData().Subsets.size();
+		staticMesh->Draw(device, JOB_COUNT - 1);
 	}
 
 	mSkinnedMeshLayout->Bind(device);

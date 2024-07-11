@@ -52,6 +52,10 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 
 void fq::graphics::LightProbePass::Finalize()
 {
+	delete[] r;
+	delete[] g;
+	delete[] b;
+
 	mDevice = nullptr;
 	mJobManager = nullptr;
 	mCameraManager = nullptr;
@@ -157,7 +161,8 @@ void fq::graphics::LightProbePass::Render()
 
 void fq::graphics::LightProbePass::OnResize(unsigned short width, unsigned short height)
 {
-	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
+	mLightProbeIrrRTV->OnResize(mDevice, ED3D11RenderTargetViewType::LightProbeIrr, width, height);
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 }
 
 

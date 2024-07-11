@@ -469,4 +469,45 @@ namespace fq::graphics
 		return mRotationAngle;
 	}
 
+	ProbeObject::ProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index)
+		: mIndex(index)
+		, mStaticMesh(staticMesh)
+		, mTransform(transform)
+	{
+	}
+
+	ProbeObject::~ProbeObject()
+	{
+	}
+
+	void ProbeObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+
+	const DirectX::SimpleMath::Matrix& ProbeObject::GetTransform() const
+	{
+		return mTransform;
+	}
+
+	void ProbeObject::SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh)
+	{
+		mStaticMesh = staticMesh;
+	}
+
+	std::shared_ptr<graphics::IStaticMesh> ProbeObject::GetStaticMesh() const
+	{
+		return mStaticMesh;
+	}
+
+	void ProbeObject::SetIndex(int index)
+	{
+		mIndex = index;
+	}
+
+	int ProbeObject::GetIndex()
+	{
+		return mIndex;
+	}
+
 }

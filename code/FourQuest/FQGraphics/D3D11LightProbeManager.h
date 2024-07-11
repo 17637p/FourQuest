@@ -55,17 +55,21 @@ namespace fq::graphics
 
 		void Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager);
 
+		/// Add Delete Set
 		int AddCubeProbe(const DirectX::SimpleMath::Vector3& position);
 		void DeleteCubeProbe(int index);
 
 		int AddLightProbe(const DirectX::SimpleMath::Vector3& position);
+		void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position);
 		void DeleteLightProbe(int index);
 
+		/// Get
 		std::vector<CubeProbe*> GetCubeProbes() const;
 		std::vector<LightProbe*> GetLightProbes() const;
-		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
-		int GetLightProbesSize();
 		DirectX::SimpleMath::Vector3 GetLightProbePosition(int lightProbeIndex);
+		float* GetLightProbeCoefficient(int lightProbeIndex);
+		int GetProbeRealIndex(int index);
+		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
 
 		std::wstring SaveProbe1DirectionTexture(const int index, const std::wstring& direction); //return path Name
 		void BakeAllLightProbeCoefficient();
@@ -76,13 +80,16 @@ namespace fq::graphics
 
 		void GetCoefficientTetrahedronWeight(const DirectX::SimpleMath::Vector4& weights, int TetIndex, float* r, float* g, float* b/*(27)*/);
 
+		/// Clear
 		void ClearAllTetrahedron();
 		void ClearAllLightProbe();
 
+		/// SaveLoad
 		void SaveLightProbes(const std::string& fileName);
 		// position 정보만 담긴 probe 정보를 넘김
 		bool LoadLightProbes(const std::string& fileName);
 
+		/// IsUsed
 		bool GetIsUsedLightProbe() const { return mIsUsedLightProbe; }
 		void SetIsUsedLightProbe(bool val) { mIsUsedLightProbe = val; }
 
@@ -103,7 +110,7 @@ namespace fq::graphics
 		// p는 오브젝트 pos, coords는 out 할 무게중심 좌표, vertices는 Tet의 vertices이므로 Tet을 보내면 될 거 같은디 
 		void getBarycentriCoordinateForInnerTetrahedron(const DirectX::SimpleMath::Vector3& p,
 			const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords);
-		void getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int tetIndex,
+		void getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int& tetIndex,
 			DirectX::SimpleMath::Vector4& weights, int& steps);
 
 		void lerpLightProbe(Tetrahedron* tet, const DirectX::SimpleMath::Vector4& weights, float* r, float* g, float* b/*(27)*/);
@@ -116,7 +123,6 @@ namespace fq::graphics
 
 		int mCubeProbeIndex;
 		int mLightProbeIndex; // 현재까지 만들어진 lightProbe 5개에서 1개 삭제돼도 5
-		int mLightProbeSize; // 지금 가지고 있는 Lightprobe 개수 위의 경우 4
 		std::vector<CubeProbe*> mCubeProbes;
 		std::vector<LightProbe*> mLightProbes;
 		std::unordered_map<int, int> mLightProbePair; // 게임 엔진에서 가지고 있는 라이트 프로브 인덱스를 실제 라이트 프로브 인덱스와 연결해주는 것
