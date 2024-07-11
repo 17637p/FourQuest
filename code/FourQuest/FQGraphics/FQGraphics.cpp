@@ -126,24 +126,20 @@ void FQGraphics::DeleteCubeProbe(unsigned short index)
 
 void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned short height)
 {
+	mLightProbeManager->SetIsUsedLightProbe(false);
+
 	DirectX::SimpleMath::Quaternion front =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({0, 0, 0}, 1.0f);
 	DirectX::SimpleMath::Quaternion back =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(180), 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 180, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion up =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(-90), 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -90, 0, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion bottom =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0, DirectX::XMConvertToRadians(90), 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 90, 0, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion left =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(-90), 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ -0, -90, 0 }, 1.0f);
 	DirectX::SimpleMath::Quaternion right =
 		DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(90), 0, 0);
-	//DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0, 90, 0 }, 1.0f);
 
 	DirectX::SimpleMath::Quaternion directionQuaternions[] = { right, left, up, bottom, front, back };
 	std::vector<std::wstring> directions = { L"right", L"left", L"up", L"bottom", L"front", L"back" };
@@ -162,8 +158,6 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 
 	SetCamera(cameraInfo);
 	SetWindowSize(width, height);
-
-	mLightProbeManager->SetIsUsedLightProbe(false);
 
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
 	std::vector<std::wstring> paths{};
@@ -240,8 +234,6 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 
 	SetCamera(cameraInfo);
 	SetWindowSize(curWidth, curHeight);
-	// 드로우 6면 일단 각각 다른 파일로 저장하고 나중에는 6면을 한장에 저장하자
-	// 파일 저장
 }
 
 unsigned short FQGraphics::AddCubeProbe(const DirectX::SimpleMath::Vector3& position)
@@ -730,6 +722,16 @@ void fq::graphics::FQGraphics::DrawSphereEx(const debug::SphereInfoEx& sphereInf
 void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 {
 	mDebugDrawManager->Submit(ringInfoEx);
+}
+
+void FQGraphics::SetLightProbeIntensity(float intensity)
+{
+	mLightProbeManager->SetIntensity(intensity);
+}
+
+void FQGraphics::SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe)
+{
+	mLightProbeManager->SetIsDrawDebugLightProbe(isDrawDebugLightProbe);
 }
 
 void FQGraphics::SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position)

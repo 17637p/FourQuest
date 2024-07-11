@@ -125,7 +125,7 @@ void fq::graphics::LightProbePass::Render()
 
 				mLightProbeManager->GetCoefficientTetrahedronWeight(weights, tetIndex, r, g, b);
 
-				ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b);
+				ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b, mLightProbeManager->GetIntensity());
 
 				job.StaticMesh->Bind(mDevice);
 				job.Material->Bind(mDevice);
@@ -143,6 +143,16 @@ void fq::graphics::LightProbePass::Render()
 
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
+			int tetIndex = 0;
+			DirectX::SimpleMath::Vector4 weights;
+			// position 가져오기
+			DirectX::SimpleMath::Matrix matrix = job.SkinnedMeshObject->GetTransform();
+			mLightProbeManager->GetTetIndex(tetIndex, { matrix._41, matrix._42, matrix._43 }, weights);
+
+			mLightProbeManager->GetCoefficientTetrahedronWeight(weights, tetIndex, r, g, b);
+
+			ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b, mLightProbeManager->GetIntensity());
+
 			job.SkinnedMesh->Bind(mDevice);
 			job.Material->Bind(mDevice);
 

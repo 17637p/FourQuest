@@ -13,12 +13,16 @@
 #include "../FQCommon/IFQRenderObject.h"
 #include "../FQGraphics/IFQGraphics.h"
 
+#include "PathFindingSystem.h"
+
 fq::game_engine::LightProbeWindow::LightProbeWindow()
 	:mbIsOpen(false),
 	mSaveFileName("LightProbe"),
 	mWidth(256),
 	mHeight(256),
-	mScale(1)
+	mScale(1),
+	mIsDrawDebugLightProbe(true),
+	mIntensity(1)
 {
 }
 
@@ -43,6 +47,7 @@ void fq::game_engine::LightProbeWindow::Render()
 		beginButtons();
 		beginProbeList();
 		CheckCopyPaste();
+		CancelSelect();
 	}
 	ImGui::End();
 }
@@ -68,6 +73,7 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 			mCopyObject = nullptr;
 		}
 	}
+	ImGui::Separator();
 	{
 		std::string widthStr = std::to_string(mWidth);
 		std::string heightStr = std::to_string(mHeight);
@@ -90,6 +96,17 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 		mLightProbeSystem->SaveProbeTexture(mWidth, mHeight);
 		mLightProbeSystem->BakeLightProbe();
 	}
+	// Nav Mesh 
+	if (ImGui::Button("Place Default", ImVec2{ 133,25 }))
+	{
+		std::vector<DirectX::SimpleMath::Vector3> navMeshVertices = mGameProcess->mPathFindgingSystem->GetNavMeshVertices();
+		std::set<DirectX::SimpleMath::Vector3> navMeshVerticesOptimize(navMeshVertices.begin(), navMeshVertices.end());
+		for (const auto& vertex : navMeshVerticesOptimize)
+		{
+			mLightProbeSystem->AddLightProbe(vertex);
+		}
+	}
+	ImGui::Separator();
 	ImGui::InputText(".Ltp", &mSaveFileName);
 	if (ImGui::Button("Save", ImVec2{ 133,25 }))
 	{
@@ -100,6 +117,27 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 		mSelectObject = nullptr;
 		mCopyObject = nullptr;
 		mLightProbeSystem->LoadLightProbes(mSaveFileName);
+	}
+	ImGui::Separator();
+	std::string intensityStr = std::to_string(mIntensity);
+	if (ImGui::InputText("Intensity", &intensityStr)
+		&& mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
+	{
+		try
+		{
+			mIntensity = std::stof(intensityStr);
+			mGameProcess->mGraphics->SetLightProbeIntensity(mIntensity);
+			//mLightProbeSystem->SetLightProbeScale(mIntensity);
+		}
+		catch (const std::invalid_argument& e)
+		{
+
+		}
+	}
+	ImGui::Separator();
+	if (ImGui::Checkbox("Draw Debug", &mIsDrawDebugLightProbe))
+	{
+		mGameProcess->mGraphics->SetIsDrawDebugLightProbe(mIsDrawDebugLightProbe);
 	}
 
 	std::string scaleStr = std::to_string(mScale);
@@ -138,6 +176,7 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 
 		}
 	}
+	ImGui::Separator();
 }
 
 void fq::game_engine::LightProbeWindow::beginProbeList()
@@ -235,6 +274,7 @@ void fq::game_engine::LightProbeWindow::PickObject(void* iProbeObject)
 	if (probeObject != probeObjects.end())
 	{
 		mSelectObject = *probeObject;
+		mGameProcess->mEventManager->FireEvent<editor_event::SelectObject>({ nullptr });
 	}
 }
 
@@ -261,5 +301,13 @@ void fq::game_engine::LightProbeWindow::CheckCopyPaste()
 				mLightProbeSystem->AddLightProbe({ transform._41, transform._42, transform._43 });
 			}
 		}
+	}
+}
+
+void fq::game_engine::LightProbeWindow::CancelSelect()
+{
+	if (mInputManager->IsKeyState(EKey::ESC, EKeyState::Tap))
+	{
+		mSelectObject = nullptr;
 	}
 }

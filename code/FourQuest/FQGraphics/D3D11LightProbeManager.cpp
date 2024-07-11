@@ -10,6 +10,8 @@
 #include "D3D11Device.h"
 #include "D3D11Texture.h"
 
+#include <cmath> // std::isnan, std::isinf
+
 using namespace fq::graphics;
 
 fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
@@ -20,7 +22,9 @@ fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
 	mCubeProbes{},
 	mLightProbes{},
 	mTetrahedrons{},
-	mIsUsedLightProbe(false)
+	mIsUsedLightProbe(false),
+	mIsDrawDebugLightProbe(true),
+	mIntensity(1)
 {
 
 }
@@ -297,7 +301,16 @@ void D3D11LightProbeManager::SaveLightProbes(const std::string& fileName)
 			{
 				for (int k = 0; k < 3; k++)
 				{
-					lightProbeFile << mTetrahedrons[i]->matrix.m[j][k] << " ";
+					bool isNan = std::isnan(mTetrahedrons[i]->matrix.m[j][k]);
+					bool isInf = std::isinf(mTetrahedrons[i]->matrix.m[j][k]);
+					if (isNan || isInf)
+					{
+						lightProbeFile << 0 << " ";
+					}
+					else
+					{
+						lightProbeFile << mTetrahedrons[i]->matrix.m[j][k] << " ";
+					}
 				}
 			}
 			lightProbeFile << "\n";

@@ -35,6 +35,7 @@ namespace fq::game_engine
 		void beginButtons();
 		void beginProbeList();
 		void CheckCopyPaste();
+		void CancelSelect();
 		// add
 		// delete
 		// save
@@ -54,6 +55,8 @@ namespace fq::game_engine
 		int mWidth;
 		int mHeight;
 		float mScale;
+		float mIntensity;
+		bool mIsDrawDebugLightProbe;
 
 		// Copy and Paste
 		fq::graphics::IProbeObject* mCopyObject;

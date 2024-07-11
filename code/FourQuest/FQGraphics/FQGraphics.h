@@ -123,6 +123,7 @@ namespace fq::graphics
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
+		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
@@ -159,6 +160,8 @@ namespace fq::graphics
 		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteCubeProbe(unsigned short index) override;
 		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;
+
+		virtual void SetLightProbeIntensity(float intensity) override;
 
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;

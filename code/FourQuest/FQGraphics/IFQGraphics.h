@@ -153,6 +153,7 @@ extern "C" {
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
+			virtual FQ_GRAPHICS void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) abstract;
 
 			/// UI
 			// text
@@ -189,6 +190,8 @@ extern "C" {
 			virtual FQ_GRAPHICS unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) abstract;
 			virtual FQ_GRAPHICS void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) abstract;
 			virtual FQ_GRAPHICS void DeleteCubeProbe(unsigned short index) abstract;
+
+			virtual FQ_GRAPHICS void SetLightProbeIntensity(float intensity) abstract;
 
 			/// Camera
 			virtual FQ_GRAPHICS void SetCamera(const CameraInfo& cameraInfo) abstract;

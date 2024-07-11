@@ -317,6 +317,8 @@ namespace fq::graphics
 		DirectX::XMFLOAT4 Bg;
 		DirectX::XMFLOAT4 Bb;
 		DirectX::XMFLOAT4 C;
+		float Intensity;
+		DirectX::XMFLOAT3 pad;
 	};
 
 	template <typename T>
@@ -344,6 +346,6 @@ namespace fq::graphics
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);
 		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
-			float* r, float* g, float* b);
+			float* r, float* g, float* b, float intensity);
 	};
 }
