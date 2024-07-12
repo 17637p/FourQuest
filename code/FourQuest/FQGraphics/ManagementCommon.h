@@ -14,3 +14,4 @@
 #include "UIManager.h"
 #include "D3D11LightProbeManager.h"
 #include "UIManager.h"
+#include "D3D11PostProcessingManager.h"

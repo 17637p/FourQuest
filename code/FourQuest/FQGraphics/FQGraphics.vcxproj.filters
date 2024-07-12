@@ -199,13 +199,12 @@
     <ClInclude Include="TrailRenderPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11PostProcessingManager.h" />
     <ClInclude Include="GeometryHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Resource</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="SHMath\DirectXSH.h">
       <Filter>D3D11\SHMath</Filter>
     </ClInclude>
@@ -214,6 +213,9 @@
     </ClInclude>
     <ClInclude Include="LightProbeAddPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11PostProcessingManager.h">
+      <Filter>Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -489,13 +491,12 @@
     <ClCompile Include="TrailObject.cpp">
       <Filter>Object\Source</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11PostProcessingManager.cpp" />
     <ClCompile Include="GeometryHelper.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
       <Filter>Resource\Source</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="SHMath\DirectXSH.cpp">
       <Filter>D3D11\SHMath</Filter>
     </ClCompile>
@@ -510,6 +511,9 @@
     </ClCompile>
     <ClCompile Include="LightProbeAddPass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11PostProcessingManager.cpp">
+      <Filter>Management\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -655,7 +659,7 @@
     </CustomBuild>
     <CustomBuild Include="SpecularIBLCS.hlsl">
       <Filter>Shader\CS</Filter>
-	</CustomBuild>
+    </CustomBuild>
     <CustomBuild Include="LightProbeVS.hlsl">
       <Filter>Shader\VS</Filter>
     </CustomBuild>
@@ -667,6 +671,24 @@
     </CustomBuild>
     <CustomBuild Include="LightProbeAddVS.hlsl">
       <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PostProcessingPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BloomDownSampleCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BloomExtractBrightAreasCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BloomAccumulateCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurHorzCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurVertCS.hlsl">
+      <Filter>Shader\CS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

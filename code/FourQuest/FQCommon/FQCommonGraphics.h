@@ -518,4 +518,37 @@ namespace fq::graphics
 	//	unsigned short Index;
 	//	DirectX::SimpleMath::Vector3 Position;
 	//};
+
+	struct PostProcessingInfo
+	{
+		float Gamma = 2.2f;
+
+		// color adjustment
+		float Exposure = 1.f;
+		float Contrast = 1.f;
+		float Saturation = 1.f;
+		bool bUseColorAdjustment;
+
+		// bloom
+		float BloomIntensity = 1.f;
+		float BloomThreshold = 1.f;
+		DirectX::SimpleMath::Color BloomColorTint = { 1, 1, 1, 1 };
+		bool bUseBloom;
+
+		// split toning;
+		DirectX::SimpleMath::Color ShadowColor = { 0, 0, 0, 0 };
+		DirectX::SimpleMath::Color HighlightColor = { 0, 0, 0, 0 };
+		float Balance = 0.5f;
+		bool bUseSplitToning;
+
+		// vignett
+		DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 0 };
+		float VignettRadius = 0.8f;
+		float VignettSmoothness = 0.4f;
+		bool bUseVignett;
+
+		// toneMapping
+		// operator
+		bool bUseToneMapping;
+	};
 };

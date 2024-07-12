@@ -14,6 +14,7 @@
 #include "Trail.h"
 #include "ImageUI.h"
 #include "Socket.h"
+#include "PostProcessing.h"
 
 // Physics
 #include "Terrain.h"
@@ -1374,5 +1375,56 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(fq::reflect::prop::Name, "NavigationMeshPath")
 		.prop(fq::reflect::prop::DragDrop, ".Nav")
+		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            포스트 프로세싱							//
+	//////////////////////////////////////////////////////////////////////////
+	entt::meta<fq::graphics::PostProcessingInfo>()
+		.type("PostProcessingInfo"_hs)
+		.prop(fq::reflect::prop::Name, "PostProcessingInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::graphics::PostProcessingInfo::Gamma>("Gamma"_hs)
+		.prop(fq::reflect::prop::Name, "Gamma")
+		.data<&fq::graphics::PostProcessingInfo::Exposure>("Exposure"_hs)
+		.prop(fq::reflect::prop::Name, "Exposure")
+		.data<&fq::graphics::PostProcessingInfo::Contrast>("Contrast"_hs)
+		.prop(fq::reflect::prop::Name, "Contrast")
+		.data<&fq::graphics::PostProcessingInfo::Saturation>("Saturation"_hs)
+		.prop(fq::reflect::prop::Name, "Saturation")
+		.data<&fq::graphics::PostProcessingInfo::bUseColorAdjustment>("bUseColorAdjustment"_hs)
+		.prop(fq::reflect::prop::Name, "bUseColorAdjustment")
+		.data<&fq::graphics::PostProcessingInfo::BloomIntensity>("BloomIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "BloomIntensity")
+		.data<&fq::graphics::PostProcessingInfo::BloomThreshold>("BloomThreshold"_hs)
+		.prop(fq::reflect::prop::Name, "BloomThreshold")
+		.data<&fq::graphics::PostProcessingInfo::BloomColorTint>("BloomColorTint"_hs)
+		.prop(fq::reflect::prop::Name, "BloomColorTint")
+		.data<&fq::graphics::PostProcessingInfo::bUseBloom>("bUseBloom"_hs)
+		.prop(fq::reflect::prop::Name, "bUseBloom")
+		.data<&fq::graphics::PostProcessingInfo::ShadowColor>("ShadowColor"_hs)
+		.prop(fq::reflect::prop::Name, "ShadowColor")
+		.data<&fq::graphics::PostProcessingInfo::HighlightColor>("HighlightColor"_hs)
+		.prop(fq::reflect::prop::Name, "HighlightColor")
+		.data<&fq::graphics::PostProcessingInfo::Balance>("Balance"_hs)
+		.prop(fq::reflect::prop::Name, "Balance")
+		.data<&fq::graphics::PostProcessingInfo::bUseSplitToning>("bUseSplitToning"_hs)
+		.prop(fq::reflect::prop::Name, "bUseSplitToning")
+		.data<&fq::graphics::PostProcessingInfo::VignettColor>("VignettColor"_hs)
+		.prop(fq::reflect::prop::Name, "VignettColor")
+		.data<&fq::graphics::PostProcessingInfo::VignettRadius>("VignettRadius"_hs)
+		.prop(fq::reflect::prop::Name, "VignettRadius")
+		.data<&fq::graphics::PostProcessingInfo::VignettSmoothness>("VignettSmoothness"_hs)
+		.prop(fq::reflect::prop::Name, "VignettSmoothness")
+		.data<&fq::graphics::PostProcessingInfo::bUseVignett>("bUseVignett"_hs)
+		.prop(fq::reflect::prop::Name, "bUseVignett")
+		.data<&fq::graphics::PostProcessingInfo::bUseToneMapping>("bUseToneMapping"_hs)
+		.prop(fq::reflect::prop::Name, "bUseToneMapping");
+
+	entt::meta<PostProcessing>()
+		.type("PostProcessing"_hs)
+		.prop(fq::reflect::prop::Name, "PostProcessing")
+		.data<&PostProcessing::SetPostProcessingInfo, &PostProcessing::GetPostProcessingInfo>("PostProcessingInfo"_hs)
+		.prop(fq::reflect::prop::Name, "PostProcessingInfo")
 		.base<fq::game_module::Component>();
 }

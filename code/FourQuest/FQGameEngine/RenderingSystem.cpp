@@ -104,6 +104,13 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					meshObject->SetTransform(mPlaneMatrix * transform.GetWorldMatrix());
 				}
 			});
+
+	scene->ViewComponents<PostProcessing>
+		([this](GameObject& object, PostProcessing& postProcessing)
+			{
+				auto info = postProcessing.GetPostProcessingInfo();
+				mGameProcess->mGraphics->SetPostProcessingInfo(info);
+			});
 }
 
 void fq::game_engine::RenderingSystem::OnLoadScene()

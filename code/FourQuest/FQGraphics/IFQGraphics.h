@@ -195,6 +195,10 @@ extern "C" {
 			/// Picking
 			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;
 
+			// PostProcessing
+			virtual FQ_GRAPHICS void  SetPostProcessingInfo(const PostProcessingInfo& info) abstract;
+			virtual FQ_GRAPHICS const PostProcessingInfo& GetPostProcessingInfo() const abstract;
+
 			/// For IMGUI(D3D11)
 			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;
 			virtual FQ_GRAPHICS ID3D11DeviceContext* GetDeviceContext() abstract;
