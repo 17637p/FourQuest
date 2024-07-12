@@ -5,6 +5,7 @@
 namespace fq::game_engine
 {
 	class GameProcess;
+	class EditorProcess;
 
 	class EditorHelper
 	{
@@ -13,5 +14,9 @@ namespace fq::game_engine
 		static void SetStartSceneName(std::string name);
 
 		static void UpdateEditorMode(GameProcess* game, float dt);
+		static void LoadEditorSetting(EditorProcess* editor);
+		static void SaveEditorSetting(EditorProcess* editor);
+
+		inline static std::string EditorVersion = "0.7.0";
 	};
 }

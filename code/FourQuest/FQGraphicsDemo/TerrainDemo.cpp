@@ -26,6 +26,12 @@ TerrainDemo::TerrainDemo()
 
 TerrainDemo::~TerrainDemo()
 {
+	for (int i = 0; i < mProbeObjects.size(); i++)
+	{
+		mTestGraphics->DeleteProbeObject(mProbeObjects[i]);
+	}
+
+	mTestGraphics->Finalize();
 	mEngineExporter->DeleteEngine(mTestGraphics);
 
 	CoUninitialize();
@@ -80,8 +86,8 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 
 	renderObjectInit();
 
-	mTestGraphics->AddCubeProbe({ 0, 6, 0 });
-
+	//mTestGraphics->AddCubeProbe({ 0, 6, 0 });
+	
 	lightProbePositions.push_back({ 1, 1, 0 });
 	lightProbePositions.push_back({ -1, 1, 0 });
 	lightProbePositions.push_back({ 0, 1, 1 });
@@ -90,7 +96,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	lightProbePositions.push_back({ -1,2, 0 });
 	lightProbePositions.push_back({ 0, 2, 1 });
 	lightProbePositions.push_back({ 0, 2, - 1 });
-
+	
 	lightProbePositions.push_back({ 1, 1, 1 });
 	lightProbePositions.push_back({ -1, 1, 1 });
 	lightProbePositions.push_back({ -1, 1, -1 });
@@ -109,9 +115,14 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	//lightProbePositions.push_back({ 0, 10, 5 });
 	//lightProbePositions.push_back({ 0, 10, -5 });
 
+	const std::string sphereModel = "./resource/Graphics/TerrainDemo/testSphere.model";
+
 	for (int i = 0; i < lightProbePositions.size(); i++)
 	{
-		mTestGraphics->AddLightProbe(lightProbePositions[i]);
+		int probeIndex = mTestGraphics->AddLightProbe(lightProbePositions[i]);
+		createProbeObject(sphereModel, textureBasePath,
+			DirectX::SimpleMath::Matrix::CreateScale({ 0.001f, 0.001f, 0.001f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ lightProbePositions[i].x, lightProbePositions[i].y, lightProbePositions[i].z }),
+			probeIndex);
 	}
 
 	return true;
@@ -284,6 +295,16 @@ void TerrainDemo::Update()
 		mTestGraphics->LoadLightProbes("lightProbe");
 	}
 
+	if (InputManager::GetInstance().IsGetKey('R'))
+	{
+		POINT mousePosition = InputManager::GetInstance().GetMousePosition();
+		if (mousePosition.x < mScreenWidth && mousePosition.y < mScreenHeight && mousePosition.x > 0 && mousePosition.y > 0)
+		{
+			auto temp = mTestGraphics->GetPickingObject(mousePosition.x, mousePosition.y);
+			int a = 3;
+		}
+	}
+
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
 
@@ -309,16 +330,16 @@ void TerrainDemo::debugRender()
 	gridInfo.Color = { 1, 1, 1, 1 };
 	mTestGraphics->DrawGrid(gridInfo);
 
-	SphereInfo sphereInfo;
-	sphereInfo.Sphere.Center = { 0, 0, 0 };
-	sphereInfo.Sphere.Radius = 0.1f;
-	sphereInfo.Color = { 1,1,1,1 };
-
-	for (int i = 0; i < lightProbePositions.size(); i++)
-	{
-		sphereInfo.Sphere.Center = lightProbePositions[i];
-		mTestGraphics->DrawSphere(sphereInfo);
-	}
+	//SphereInfo sphereInfo;
+	//sphereInfo.Sphere.Center = { 0, 0, 0 };
+	//sphereInfo.Sphere.Radius = 0.1f;
+	//sphereInfo.Color = { 1,1,1,1 };
+	//
+	//for (int i = 0; i < lightProbePositions.size(); i++)
+	//{
+	//	sphereInfo.Sphere.Center = lightProbePositions[i];
+	//	mTestGraphics->DrawSphere(sphereInfo);
+	//}
 
 }
 
@@ -470,6 +491,31 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 	index++;
 }
 
+void TerrainDemo::createProbeObject(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, int index)
+{
+	using namespace fq::graphics;
+
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(modelPath, textureBasePath);
+
+	for (const auto& [node, mesh] : modelData.Meshes)
+	{
+		if (mesh.Vertices.empty())
+		{
+			continue;
+		}
+
+		if (mesh.BoneVertices.empty())
+		{
+			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
+
+			IProbeObject* iProbeObject = mTestGraphics->CreateProbeObject(meshInterface, node.ToParentMatrix * transform, index);
+			mProbeObjects.push_back(iProbeObject);
+		}
+	}
+
+	index++;
+}
+
 void TerrainDemo::renderObjectInit()
 {
 	// convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
@@ -495,10 +541,10 @@ void TerrainDemo::renderObjectInit()
 	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.7, -0.7 }), true);
 	 //createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.9, 0.7 }), true);
 
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.2, 0 }), true);
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.4, 0 }), true);
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.7 }), true);
-	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.7 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.95, 1.2, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.95, 1.4, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.95 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.95 }), true);
 }
 
 void TerrainDemo::renderObjectUpdate()

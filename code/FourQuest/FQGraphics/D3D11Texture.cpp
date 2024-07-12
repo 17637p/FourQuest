@@ -135,7 +135,6 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	:ResourceBase(ResourceType::Texture)
 {
 	ID3D11Texture2D* cubeTexture = NULL;
-	ID3D11ShaderResourceView* shaderResourceView = NULL;
 
 	//Description of each face
 	D3D11_TEXTURE2D_DESC texDesc = {};
@@ -195,6 +194,8 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 
 	d3d11Device->GetDevice()->CreateShaderResourceView(cubeTexture, &SMViewDesc, mSRV.GetAddressOf());
+
+	cubeTexture->Release();
 
 	type = TextureType::CubeMap;
 }
@@ -445,6 +446,11 @@ void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11D
 
 		// Save the ScratchImage to a DDS file
 		SaveToDDSFile(float16Image.GetImages(), float16Image.GetImageCount(), float16Image.GetMetadata(), DirectX::DDS_FLAGS_NONE, savePath.c_str());
+
+		resource->Release();
+		cubeMapTexture->Release();
+		scratchImage.Release();
+		float16Image.Release();
 	}
 	break;
 	default:
@@ -469,6 +475,9 @@ void fq::graphics::D3D11Texture::GetSHCoefficientRGB(const std::shared_ptr<D3D11
 	assert(cubeMapTexture);
 
 	DirectX::SHProjectCubeMap(d3d11Device->GetDeviceContext().Get(), 3, cubeMapTexture, R, G, B);
+
+	resource->Release();
+	cubeMapTexture->Release();
 
 	return;
 }

@@ -24,6 +24,8 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterFindTa
 void fq::client::MeleeMonsterFindTargetState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	mElapsedTime = 0.f;
+
+	// TODO : MeleeMonster 발견 사운드 재생
 }
 
 void fq::client::MeleeMonsterFindTargetState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -41,5 +43,6 @@ void fq::client::MeleeMonsterFindTargetState::OnStateUpdate(game_module::Animato
 	if (mAnnounceTime == mElapsedTime)
 	{
 		animator.GetComponent<MeleeMonster>()->AnnounceFindedTarget();
+
 	}
 }

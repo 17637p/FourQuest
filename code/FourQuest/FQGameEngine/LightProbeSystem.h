@@ -2,16 +2,16 @@
 
 #include <vector>
 #include <directxtk/SimpleMath.h>
+#include <string>
+
+namespace fq::graphics
+{
+	class IProbeObject;
+}
 
 namespace fq::game_engine
 {
 	class GameProcess;
-
-	struct LightProbe
-	{
-		int index;
-		DirectX::SimpleMath::Vector3 position;
-	};
 
 	class LightProbeSystem
 	{
@@ -19,19 +19,32 @@ namespace fq::game_engine
 		LightProbeSystem(GameProcess* tempProcess);
 		~LightProbeSystem();
 
+		void Finalize();
+
 		// 배치 
 		void AddLightProbe(DirectX::SimpleMath::Vector3 position);
-		void DeleteLightProbe(int index);
-		// 기즈모 써야함 
+		void DeleteLightProbe(fq::graphics::IProbeObject* probeObject);
+		void Clear();
+
+		void SaveProbeTexture(int width, int height);
+		void BakeLightProbe();
+
+		void SaveLightProbes(std::string fileName);
+		void LoadLightProbes(std::string fileName);
 		
+		float GetLightProbeDefaultScale() { return mLightProbeDefaultScale * 100; }
 
 		// 디버그 드로우 
-		std::vector<LightProbe*> GetLightProbes() { return mLightProbes; }
+		std::vector<fq::graphics::IProbeObject*> GetLightProbeObjects() { return mProbeObjects; };
 
+		float GetLightProbeScale() const { return mLightProbeScale; }
+		void SetLightProbeScale(float val) { mLightProbeScale = val; }
 	private:
 		fq::game_engine::GameProcess* mGameProcess;
+		float mLightProbeDefaultScale;
+		float mLightProbeScale;
 
-		std::vector<LightProbe*> mLightProbes;
+		std::vector<fq::graphics::IProbeObject*> mProbeObjects;
 	};
 }
 

@@ -219,6 +219,9 @@ void fq::game_engine::GameEngine::Process()
 
 void fq::game_engine::GameEngine::Finalize()
 {
+	//System
+	mGameProcess->mLightProbeSystem->Finalize();
+
 	mGameProcess->mSceneManager->UnloadScene();
 
 	mGameProcess->mGraphics->Finalize();

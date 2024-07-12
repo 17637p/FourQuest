@@ -198,6 +198,24 @@ extern "C" {
 		protected:
 			virtual ~ITrailObject() = default;
 		};
+
+		class IProbeObject
+		{
+		public:
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Mesh
+			virtual FQ_GRAPHICS void SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMesh() const abstract;
+
+			// LightProbe
+			virtual FQ_GRAPHICS void SetIndex(int index) abstract;
+			virtual FQ_GRAPHICS int GetIndex() abstract;
+		protected:
+			virtual ~IProbeObject() = default;
+		};
 	}
 #ifdef __cplusplus
 }

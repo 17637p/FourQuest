@@ -52,6 +52,10 @@ void fq::graphics::LightProbePass::Initialize(std::shared_ptr<D3D11Device> devic
 
 void fq::graphics::LightProbePass::Finalize()
 {
+	delete[] r;
+	delete[] g;
+	delete[] b;
+
 	mDevice = nullptr;
 	mJobManager = nullptr;
 	mCameraManager = nullptr;
@@ -121,7 +125,7 @@ void fq::graphics::LightProbePass::Render()
 
 				mLightProbeManager->GetCoefficientTetrahedronWeight(weights, tetIndex, r, g, b);
 
-				ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b);
+				ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b, mLightProbeManager->GetIntensity());
 
 				job.StaticMesh->Bind(mDevice);
 				job.Material->Bind(mDevice);
@@ -139,6 +143,16 @@ void fq::graphics::LightProbePass::Render()
 
 		for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 		{
+			int tetIndex = 0;
+			DirectX::SimpleMath::Vector4 weights;
+			// position 가져오기
+			DirectX::SimpleMath::Matrix matrix = job.SkinnedMeshObject->GetTransform();
+			mLightProbeManager->GetTetIndex(tetIndex, { matrix._41, matrix._42, matrix._43 }, weights);
+
+			mLightProbeManager->GetCoefficientTetrahedronWeight(weights, tetIndex, r, g, b);
+
+			ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, r, g, b, mLightProbeManager->GetIntensity());
+
 			job.SkinnedMesh->Bind(mDevice);
 			job.Material->Bind(mDevice);
 
@@ -157,7 +171,8 @@ void fq::graphics::LightProbePass::Render()
 
 void fq::graphics::LightProbePass::OnResize(unsigned short width, unsigned short height)
 {
-	mLightProbeIrrRTV = mResourceManager->Create<fq::graphics::D3D11RenderTargetView>(ED3D11RenderTargetViewType::LightProbeIrr, width, height);
+	mLightProbeIrrRTV->OnResize(mDevice, ED3D11RenderTargetViewType::LightProbeIrr, width, height);
+	mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 }
 
 

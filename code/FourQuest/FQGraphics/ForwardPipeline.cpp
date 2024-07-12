@@ -22,6 +22,7 @@ namespace fq::graphics
 		, mTrailRenderPass(std::make_shared<TrailRenderPass>())
 		, mLightProbePass(std::make_shared<LightProbePass>())
 		, mLightProbeAddPass(std::make_shared<LightProbeAddPass>())
+		, mDebugLightProbePass(std::make_shared<DebugLightProbePass>())
 	{
 	}
 
@@ -57,6 +58,7 @@ namespace fq::graphics
 		mTrailRenderPass->Initialize(device, objectManager, cameraManager, resourceManager, lightManager, width, height);
 		mLightProbePass->Initialize(device, jobManager, cameraManager, resourceManager, lightProbeManager, width, height);
 		mLightProbeAddPass->Initialize(device, resourceManager, width, height);
+		mDebugLightProbePass->Initialize(device, objectManager, cameraManager, resourceManager, lightProbeManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
@@ -75,6 +77,7 @@ namespace fq::graphics
 		mPasses.push_back(mOutLinePass);
 		mPasses.push_back(mOutLineBlurPass);
 		mPasses.push_back(mOutLineAddPass);
+		mPasses.push_back(mDebugLightProbePass);
 
 		mFullScreenLastPass = mFullScreenPass;
 	}

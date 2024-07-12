@@ -64,8 +64,6 @@ namespace fq::graphics
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
-
-		bool mIsUseLightProbe;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject
@@ -167,7 +165,7 @@ namespace fq::graphics
 
 		unsigned int mCellsPerPatch;
 
-		// Geometry Shader 로 메시를 저장 해서 버퍼로 불러왔는가 
+		// Geometry Shader 로 메시를 저장 해서 버퍼로 불러왔는가 ...?
 		bool mIsBakeMesh;
 
 		DirectX::SimpleMath::Matrix mTransform;
@@ -264,6 +262,32 @@ namespace fq::graphics
 		float mScaleY;
 
 		std::string mImagePath;
+	};
+
+	class ProbeObject : public IProbeObject
+	{
+	public:
+		ProbeObject(std::shared_ptr<IStaticMesh> staticMesh,
+			const DirectX::SimpleMath::Matrix& transform,
+			int index);
+		~ProbeObject();
+
+		// Transform
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override;
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override;
+
+		// Mesh
+		virtual void SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh) override;
+		virtual std::shared_ptr<IStaticMesh> GetStaticMesh() const override;
+
+		// LightProbe
+		virtual void SetIndex(int index) override;
+		virtual int GetIndex() override;
+
+	private:
+		std::shared_ptr<IStaticMesh> mStaticMesh;
+		int mIndex;
+		DirectX::SimpleMath::Matrix mTransform;
 	};
 }
 

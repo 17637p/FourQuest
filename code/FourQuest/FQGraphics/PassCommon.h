@@ -16,6 +16,7 @@
 #include "TrailRenderPass.h"
 #include "LightProbePass.h"
 #include "LightProbeAddPass.h"
+#include "DebugLightProbePass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"

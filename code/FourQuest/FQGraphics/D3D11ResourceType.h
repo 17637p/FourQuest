@@ -49,6 +49,7 @@ namespace fq::graphics
 		SourceTangent,
 
 		LightProbeIrr,
+		DebugLightProbeIrr,
 	};
 
 	enum class ED3D11ShaderResourceViewType

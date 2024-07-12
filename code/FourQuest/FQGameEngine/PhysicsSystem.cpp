@@ -538,7 +538,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			rigid->SetAngularVelocity(data.angularVelocity);
 
 			auto matrix = data.transform;
-
 			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
 			auto direct = capsule->GetDirection();
 
@@ -559,7 +558,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			{
 				Vector3 pos, scale;
 				Quaternion rotation;
-
 				
 				matrix.Decompose(scale, rotation, pos);
 				matrix._41 = 0.f;
