@@ -146,6 +146,7 @@ namespace fq::game_engine
 		entt::id_type mMeshTypeID;
 		entt::id_type mCharactorControllerTypeID;
 		entt::id_type mTerrainTypeID;
+		entt::id_type mArticulationTypeID;
 		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;

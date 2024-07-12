@@ -3,6 +3,8 @@
 #include "CharacterLink.h"
 #include "EngineDataConverter.h"
 
+#include "PhysicsCollisionDataManager.h"
+
 namespace fq::physics
 {
 	CharacterPhysics::CharacterPhysics()
@@ -14,6 +16,7 @@ namespace fq::physics
 		, mLayerNumber()
 		, mLinkContainer()
 		, mWorldTransform()
+		, mbIsRagdoll(false)
 	{
 	}
 
@@ -27,17 +30,16 @@ namespace fq::physics
 		mCollisionData = collisionData;
 		mPxArticulation = physics->createArticulationReducedCoordinate();
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
-		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
+		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, true);
+		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eCOMPUTE_JOINT_FORCES, true);
+		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDRIVE_LIMITS_ARE_FORCES, true);
 		mPxArticulation->setSolverIterationCounts(4);
-		mPxArticulation->setMaxCOMAngularVelocity(10000.f);
+		mPxArticulation->setMaxCOMAngularVelocity(100.f);
 
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
 		mWorldTransform = info.worldTransform;
-
-		physx::PxTransform pxTransform;
-		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
 
 		LinkInfo linkInfo;
 		std::string str = "root";
@@ -122,6 +124,29 @@ namespace fq::physics
 		shape->setSimulationFilterData(filterdata);
 
 		return true;
+	}
+
+	bool CharacterPhysics::ChangeLayerNumber(const int& newLayerNumber, int* collisionMatrix, std::shared_ptr<PhysicsCollisionDataManager> mPhysicsCollisionDataManager)
+	{
+		if (newLayerNumber == UINT_MAX)
+		{
+			return false;
+		}
+
+		physx::PxFilterData newFilterData;
+		newFilterData.word0 = newLayerNumber;
+		newFilterData.word1 = collisionMatrix[newLayerNumber];
+
+		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
+		collisionData->myId = mID;
+		collisionData->myLayerNumber = newLayerNumber;
+
+		for (const auto& [name, myLink] : mLinkContainer)
+		{
+			myLink->ChangeLayerNumber(newFilterData, collisionData.get());
+		}
+		
+		mPhysicsCollisionDataManager->Create(mID, collisionData);
 	}
 }
 

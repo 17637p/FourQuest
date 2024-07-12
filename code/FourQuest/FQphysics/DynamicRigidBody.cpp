@@ -39,8 +39,8 @@ namespace fq::physics
 		data->myId = mID;
 		data->myLayerNumber = mLayerNumber;
 		shape->userData = data.get();
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
+		shape->setContactOffset(0.002f);
+		shape->setRestOffset(0.001f);
 
 		DirectX::SimpleMath::Matrix dxTransform = colliderInfo.collisionTransform.worldMatrix;
 		DirectX::SimpleMath::Vector3 position;

@@ -1,10 +1,17 @@
 #include "Articulation.h"
 
 #include "ArticulationData.h"
+#include "ArticulationLoader.h"
 
 namespace fq::game_module
 {
 	Articulation::Articulation()
+		: mID()
+		, mCollisionCount()
+		, mbIsRagdoll(true)
+		, mArticulationData()
+		, mArticulationPath()
+		, mOffset{}
 	{
 	}
 
@@ -29,6 +36,13 @@ namespace fq::game_module
 		cloneCollider->mCollisionCount = 0;
 
 		return cloneCollider;
+	}
+
+	void Articulation::Load()
+	{
+		fq::game_module::ArticulationLoader loader;
+
+		mArticulationData = loader.LoadArticulationData(mArticulationPath);
 	}
 
 	entt::meta_handle Articulation::GetHandle()

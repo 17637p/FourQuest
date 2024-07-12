@@ -26,13 +26,18 @@ namespace fq::game_module
 		/// <summary>
 		/// Articulation Data를 로드합니다.
 		/// </summary>
+		std::shared_ptr<ArticulationData> LoadArticulationData(const Path& path, unsigned int& number);
+
+		/// <summary>
+		/// Articulation Data를 로드합니다.
+		/// </summary>
 		std::shared_ptr<ArticulationData> LoadArticulationData(const Path& path);
 
 	private:
 		/// <summary>
 		/// 링크 데이터를 재귀함수를 통해서 로드합니다.
 		/// </summary>
-		std::shared_ptr<LinkData> LoadLinkData(const json& linkJson);
+		std::shared_ptr<LinkData> LoadLinkData(const json& linkJson, unsigned int& number);
 	};
 }
 

@@ -115,8 +115,9 @@ namespace fq::game_module
 		return DirectX::SimpleMath::Vector3(vecJson[0], vecJson[1], vecJson[2]);
 	}
 
-	std::shared_ptr<LinkData> ArticulationLoader::LoadLinkData(const json& linkJson)
+	std::shared_ptr<LinkData> ArticulationLoader::LoadLinkData(const json& linkJson, unsigned int& number)
 	{
+		number++;
 		auto linkData = std::make_shared<LinkData>();
 
 		linkData->SetID(linkJson["id"]);
@@ -149,13 +150,44 @@ namespace fq::game_module
 		{
 			for (const auto& [name, childLinkJson] : linkJson["children"].items())
 			{
-				linkData->AddChildLinkData(name, LoadLinkData(childLinkJson));
+				linkData->AddChildLinkData(name, LoadLinkData(childLinkJson, number));
 			}
 		}
 
 		return linkData;
 	}
 
+	std::shared_ptr<ArticulationData> ArticulationLoader::LoadArticulationData(const Path& path, unsigned int& number)
+	{
+		assert(fs::exists(path));
+		assert(path.extension() == ".articulation");
+		number = 0;
+
+		std::ifstream readData(path);
+		ordered_json articulationJson;
+
+		if (readData.is_open())
+		{
+			readData >> articulationJson;
+			readData.close();
+		}
+		else
+		{
+			assert(!"파일 읽기 실패!");
+		}
+
+		auto articulationData = std::make_shared<ArticulationData>();
+
+		articulationData->SetDensity(articulationJson["density"]);
+		articulationData->SetRestitution(articulationJson["restitution"]);
+		articulationData->SetStaticFriction(articulationJson["staticFriction"]);
+		articulationData->SetDynamicFriction(articulationJson["dynamicFriction"]);
+
+		auto rootLinkData = LoadLinkData(articulationJson["rootLinkData"], number);
+		articulationData->SetRootLinkData(rootLinkData);
+
+		return articulationData;
+	}
 	std::shared_ptr<ArticulationData> ArticulationLoader::LoadArticulationData(const Path& path)
 	{
 		assert(fs::exists(path));
@@ -181,7 +213,9 @@ namespace fq::game_module
 		articulationData->SetStaticFriction(articulationJson["staticFriction"]);
 		articulationData->SetDynamicFriction(articulationJson["dynamicFriction"]);
 
-		auto rootLinkData = LoadLinkData(articulationJson["rootLinkData"]);
+		unsigned int dummy = 0;
+
+		auto rootLinkData = LoadLinkData(articulationJson["rootLinkData"], dummy);
 		articulationData->SetRootLinkData(rootLinkData);
 
 		return articulationData;

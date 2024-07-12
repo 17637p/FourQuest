@@ -139,6 +139,7 @@ namespace fq::physics
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
 		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
@@ -376,9 +377,16 @@ namespace fq::physics
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
 	}
 
-	bool FQPhysics::SimulationCharacter(unsigned int id)
+	ArticulationGetData FQPhysics::GetArticulationData(const unsigned int& id)
 	{
-		return mCharacterPhysicsManager->SimulationCharacter(id);
+		ArticulationGetData data;
+		mCharacterPhysicsManager->GetArticulationData(id, data);
+		return data;
+	}
+
+	void FQPhysics::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData)
+	{
+		mCharacterPhysicsManager->SetArticulationData(id, articulationData, mCollisionMatrix);
 	}
 #pragma endregion
 

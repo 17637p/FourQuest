@@ -111,14 +111,28 @@ namespace fq::physics
 		bool isFall = false;									// 캐릭터가 떨어지고 있는지 체크 변수
 	};
 
+	struct ArticulationGetData
+	{
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;	
+		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
+		unsigned int myLayerNumber = UINT_MAX;
+	};
+
+	struct ArticulationSetData
+	{
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
+		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
+		unsigned int myLayerNumber = UINT_MAX;
+	};
+
 	struct PhysicsClothGetData
 	{
-		DirectX::SimpleMath::Matrix worldTransform = {};
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
 		unsigned int myLayerNumber = UINT_MAX;
 	};
 	struct PhysicsClothSetData
 	{
-		DirectX::SimpleMath::Matrix worldTransform = {};
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
 		unsigned int myLayerNumber = UINT_MAX;
 	};
 #pragma endregion

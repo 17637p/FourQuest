@@ -169,9 +169,10 @@ namespace fq::physics
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) override;
 
 		/// <summary>
-		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
+		/// 관절 (Articulation) Get/Set 데이터 입니다.
 		/// </summary>
-		virtual bool SimulationCharacter(unsigned int id) override;
+		virtual ArticulationGetData GetArticulationData(const unsigned int& id) override;
+		virtual void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) override;
 #pragma endregion
 
 #pragma region PhysicsClothManager

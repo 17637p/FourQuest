@@ -672,7 +672,7 @@ namespace fq::game_engine
 				// Articulation ·Îµå
 				if (path->extension() == ".articulation")
 				{
-					mArticulationData = mArticulationLoader.LoadArticulationData(*path);
+					mArticulationData = mArticulationLoader.LoadArticulationData(*path, mLinkID);
 				}
 			}
 			ImGui::EndDragDropTarget();

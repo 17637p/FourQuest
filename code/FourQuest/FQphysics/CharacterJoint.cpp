@@ -49,8 +49,6 @@ namespace fq::physics
 		CopyDirectXMatrixToPxTransform(parentLocalTransform, pxlocalTransform);
 		mPxJoint->setParentPose(pxlocalTransform);
 
-		ownerLink->GetLocalTransform();
-
 		mPxJoint->setJointType(physx::PxArticulationJointType::eSPHERICAL);
 		mPxJoint->setMotion(physx::PxArticulationAxis::eSWING1, (physx::PxArticulationMotion::Enum)info.Swing1AxisInfo.motion);
 		mPxJoint->setMotion(physx::PxArticulationAxis::eSWING2, (physx::PxArticulationMotion::Enum)info.Swing2AxisInfo.motion);
