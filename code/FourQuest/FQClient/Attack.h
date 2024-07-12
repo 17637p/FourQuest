@@ -39,6 +39,7 @@ namespace fq::client
 		inline static DirectX::SimpleMath::Vector3 NoDirection = DirectX::SimpleMath::Vector3::Zero;
 
 	private:
+
 		// °ø°Ý·Â
 		float mAttackPower;
 		float mAttackTime;

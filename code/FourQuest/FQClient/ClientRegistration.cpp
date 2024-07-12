@@ -14,6 +14,8 @@
 #include "PlayerDashState.h"
 #include "PlayerAttackState.h"
 #include "DeadArmour.h"
+#include "MagicArmour.h"
+#include "MagicBallAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -33,10 +35,11 @@
 #include "MeleeMonsterDeadState.h"
 #include "MeleeMonsterWaitAttackState.h"
 #include "MeleeMonsterFindTargetState.h"
+#include "MeleeMonsterHitState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
-#include "PlantAttack.h"
+#include "LinearAttack.h"
 #include "PlantMonsterAttckState.h"
 #include "PlantMonsterDeadState.h"
 #include "PlantMonsterIdleState.h"
@@ -50,7 +53,6 @@
 
 // UI
 #include "HpBar.h"
-
 #include "CameraMoving.h"
 
 void fq::client::RegisterMetaData()
@@ -82,6 +84,16 @@ void fq::client::RegisterMetaData()
 		.data<ESoulType::Staff>("Staff"_hs) // 3
 		.prop(fq::reflect::prop::Name, "Staff");
 
+	entt::meta<EMagicAttackType>()
+		.prop(fq::reflect::prop::Name, "MagicAttackType")
+		.conv<std::underlying_type_t<EMagicAttackType>>()
+		.data<EMagicAttackType::MagicBall>("MagicBall"_hs) // 0
+		.prop(fq::reflect::prop::Name, "MagicBall")
+		.data<EMagicAttackType::AOE>("AOE"_hs) // 1
+		.prop(fq::reflect::prop::Name, "AOE")
+		.data<EMagicAttackType::Razer>("Razer"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Razer");
+
 	entt::meta<Player>()
 		.type("Player"_hs)
 		.prop(reflect::prop::Name, "Player")
@@ -90,6 +102,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "SoulType")
 		.data<&Player::mHp>("Hp"_hs)
 		.prop(reflect::prop::Name, "Hp")
+		.data<&Player::mAttackPower>("AttackPower"_hs)
+		.prop(reflect::prop::Name, "AttackPower")
 		.data<&Player::mDashCoolTime>("DashCoolTime"_hs)
 		.prop(reflect::prop::Name, "DashCoolTime")
 		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
@@ -114,6 +128,18 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "LivingArmour")
 		.base<game_module::Component>();
 
+	entt::meta<MagicArmour>()
+		.type("MagicArmour"_hs)
+		.prop(reflect::prop::Name, "MagicArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&MagicArmour::mMagicBall>("MagicBall"_hs)
+		.prop(reflect::prop::Name, "MagicBall")
+		.data<&MagicArmour::mAOE>("AOE"_hs)
+		.prop(reflect::prop::Name, "AOE")
+		.data<&MagicArmour::mRazer>("Razer"_hs)
+		.prop(reflect::prop::Name, "Razer")
+		.base<game_module::Component>();
+
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
@@ -121,6 +147,10 @@ void fq::client::RegisterMetaData()
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
 		.base<game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                         플레이어 상태 관련								//
+	//////////////////////////////////////////////////////////////////////////
 
 	entt::meta<PlayerInputState>()
 		.type("PlayerInputState"_hs)
@@ -154,6 +184,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Comment, u8"공격 시간")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<MagicBallAttackState>()
+		.type("MagicAttackState"_hs)
+		.prop(reflect::prop::Name, "MagicAttackState")
+		.data<&MagicBallAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(reflect::prop::Comment, u8"공격 시간")
+		.base<game_module::IStateBehaviour>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터									//
 	//////////////////////////////////////////////////////////////////////////
@@ -182,12 +220,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Attack")
 		.base<fq::game_module::Component>();
 
-	entt::meta<Attack>()
-		.type("Attack"_hs)
-		.prop(fq::reflect::prop::Name, "Attack")
-		.data<&Attack::mAttackTime>("AttackTime"_hs)
-		.prop(fq::reflect::prop::Name, "AttackTime")
-		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터 상태								//
@@ -295,6 +327,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeleeMonsterFindTargetState")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<MeleeMonsterHitState>()
+		.type("MeleeMonsterHitState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterHitState")
+		.base<fq::game_module::IStateBehaviour>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
 	//////////////////////////////////////////////////////////////////////////
@@ -315,12 +352,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackPrefab")
 		.data<&PlantMonster::mAttackCoolTime>("AttackCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "AttackCoolTime")
-		.base<fq::game_module::Component>();
-
-	entt::meta<PlantAttack>()
-		.type("PlantAttack"_hs)
-		.prop(reflect::prop::Label, "Monster")
-		.prop(fq::reflect::prop::Name, "PlantAttack")
 		.base<fq::game_module::Component>();
 
 
@@ -398,6 +429,23 @@ void fq::client::RegisterMetaData()
 		.data<&CameraMoving::SetZoomInPadY, &CameraMoving::GetZoomInPadY>("ZoomInPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadY")
 		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            공격										//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Attack>()
+		.type("Attack"_hs)
+		.prop(fq::reflect::prop::Name, "Attack")
+		.data<&Attack::mAttackTime>("AttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTime")
+		.base<fq::game_module::Component>();
+
+	entt::meta<LinearAttack>()
+		.type("LinearAttack"_hs)
+		.prop(fq::reflect::prop::Name, "LinearAttack")
+		.base<fq::game_module::Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//

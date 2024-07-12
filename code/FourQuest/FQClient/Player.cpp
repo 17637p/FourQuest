@@ -65,7 +65,7 @@ void fq::client::Player::OnStart()
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
-		{GetGameObject(), PlayerType::LivingArmour});
+		{GetGameObject(), EPlayerType::LivingArmour});
 
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)

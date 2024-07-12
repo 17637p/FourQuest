@@ -89,9 +89,6 @@
     <ClInclude Include="PlayerInputState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerMovementState.h">
-      <Filter>include\01.Player\State</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
@@ -105,9 +102,6 @@
       <Filter>include\01.Player</Filter>
     </ClInclude>
     <ClInclude Include="Soul.h">
-      <Filter>include\01.Player</Filter>
-    </ClInclude>
-    <ClInclude Include="DeadArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
     <ClInclude Include="HpBar.h">
@@ -164,9 +158,6 @@
     <ClInclude Include="MonsterSpawner.h">
       <Filter>include\02.Monster</Filter>
     </ClInclude>
-    <ClInclude Include="PlantAttack.h">
-      <Filter>include\02.Monster\Plant</Filter>
-    </ClInclude>
     <ClInclude Include="PlantMonster.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
@@ -199,6 +190,30 @@
     </ClInclude>
     <ClInclude Include="MonsterGroup.h">
       <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="DeadArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicBallAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovementState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterHitState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="AOEAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageCalculation.h">
+      <Filter>include\00.Define</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -280,7 +295,7 @@
     <ClCompile Include="PlantMonster.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
-    <ClCompile Include="PlantAttack.cpp">
+    <ClCompile Include="LinearAttack.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterIdleState.cpp">
@@ -312,6 +327,18 @@
     </ClCompile>
     <ClCompile Include="MonsterGroup.cpp">
       <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicBallAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterHitState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="AOEAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

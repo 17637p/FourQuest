@@ -12,8 +12,6 @@ namespace fq::client
 		MeleeMonsterChaseState();
 		~MeleeMonsterChaseState();
 
-
-
 	private:
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		entt::meta_handle GetHandle() override { return *this; }

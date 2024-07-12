@@ -22,6 +22,7 @@ namespace fq::client
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType val) { mSoulType = val; }
 	
+		float GetAttackPower() const { return mAttackPower; }
 	private:
 		void processInput();
 		void processCoolTime(float dt);

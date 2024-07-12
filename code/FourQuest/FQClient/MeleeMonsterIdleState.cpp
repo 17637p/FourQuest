@@ -31,7 +31,6 @@ void fq::client::MeleeMonsterIdleState::OnStateUpdate(game_module::Animator& ani
 		mElapsedTime = 0.f;
 		animator.SetParameterBoolean("OnPatrol", true);
 	} 
-
 	auto monster = animator.GetComponent<MeleeMonster>();
 	monster->DetectTarget();
 }

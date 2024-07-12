@@ -11,6 +11,6 @@ namespace fq::client::event
 	struct RegisterPlayer
 	{
 		game_module::GameObject* player;
-		PlayerType type;
+		EPlayerType type;
 	};
 }
