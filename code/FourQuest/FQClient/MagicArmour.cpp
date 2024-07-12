@@ -65,6 +65,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	linearAttack->SetMoveSpeed(mMagicBallSpeed);
 	linearAttack->SetMoveDirection(direction);
 
+	// TODO:: MagicBall 사운드 추가 
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -82,6 +83,10 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	attackT->SetLocalPosition(attackPoint);
 
 	// AOE 공격력 계산 
+	float attackPower = mPlayer->GetAttackPower();
+	attackComponent->SetAttackPower(dc::GetAOEDamage(attackPower));
+
+	// TODO:: AOE Sound 추가
 
 }
 

@@ -196,7 +196,7 @@ void fq::game_module::Transform::updateLocalMatrix()
 	}
 }
 
-void fq::game_module::Transform::AddPosition(Vector3 deltaPosition)
+void fq::game_module::Transform::AddLocalPosition(Vector3 deltaPosition)
 {
 	GenerateLocal(mFQTransform.localPosition + deltaPosition
 		, mFQTransform.localRotation, mFQTransform.localScale);
@@ -256,5 +256,20 @@ void fq::game_module::Transform::SetWorldMatrix(Matrix matrix)
 	mFQTransform.worldMatrix = matrix;
 	decomposeWorldMatrix();
 	updateLocalMatrix();
+}
+
+void fq::game_module::Transform::SetWorldPosition(Vector3 worldPos)
+{
+	GenerateWorld(worldPos, mFQTransform.worldRotation, mFQTransform.worldScale);
+}
+
+void fq::game_module::Transform::SetWorldScale(Vector3 worldScale)
+{
+	GenerateWorld(mFQTransform.worldPosition, mFQTransform.worldRotation, worldScale);
+}
+
+void fq::game_module::Transform::SetWorldRotation(Quaternion worldRotation)
+{
+	GenerateWorld(mFQTransform.worldPosition, worldRotation, mFQTransform.worldScale);
 }
 

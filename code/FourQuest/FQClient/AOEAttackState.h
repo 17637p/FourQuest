@@ -16,6 +16,8 @@ namespace fq::client
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 
 	private:
+		fq::game_module::GameObject* mAttackWarningUI;
+
 
 	};
 

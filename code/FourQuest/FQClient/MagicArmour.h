@@ -29,6 +29,8 @@ namespace fq::client
 		/// </summary>
 		void EmitRazer();
 
+		fq::game_module::PrefabResource GetAttackWarningUI() const { return mAttackWarningUI; }
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }

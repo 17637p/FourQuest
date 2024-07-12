@@ -16,6 +16,7 @@
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
+#include "AOEAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -84,15 +85,6 @@ void fq::client::RegisterMetaData()
 		.data<ESoulType::Staff>("Staff"_hs) // 3
 		.prop(fq::reflect::prop::Name, "Staff");
 
-	entt::meta<EMagicAttackType>()
-		.prop(fq::reflect::prop::Name, "MagicAttackType")
-		.conv<std::underlying_type_t<EMagicAttackType>>()
-		.data<EMagicAttackType::MagicBall>("MagicBall"_hs) // 0
-		.prop(fq::reflect::prop::Name, "MagicBall")
-		.data<EMagicAttackType::AOE>("AOE"_hs) // 1
-		.prop(fq::reflect::prop::Name, "AOE")
-		.data<EMagicAttackType::Razer>("Razer"_hs) // 2
-		.prop(fq::reflect::prop::Name, "Razer");
 
 	entt::meta<Player>()
 		.type("Player"_hs)
@@ -191,6 +183,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AttackTiming")
 		.prop(reflect::prop::Comment, u8"공격 시간")
 		.base<game_module::IStateBehaviour>();
+
+	entt::meta<AOEAttackState>()
+		.type("AOEAttackState"_hs)
+		.prop(reflect::prop::Name, "AOEAttackState")
+		.base<game_module::IStateBehaviour>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터									//
