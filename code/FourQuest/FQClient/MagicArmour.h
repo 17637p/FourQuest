@@ -31,17 +31,22 @@ namespace fq::client
 
 		fq::game_module::PrefabResource GetAttackWarningUI() const { return mAttackWarningUI; }
 
+		float GetAOEMoveRange() const { return mAOEMoveRange; }
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;
 		void OnUpdate(float dt) override;
+		void checkInput();
 
 	private:
 		game_module::Transform* mTransform;
+		game_module::Animator* mAnimator;
+		game_module::CharacterController* mController;
 		Player* mPlayer;
 
 		float mMagicBallSpeed;
+		float mAOEMoveRange;
 
 		game_module::PrefabResource mMagicBall;
 		game_module::PrefabResource mAttackWarningUI;

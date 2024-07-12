@@ -7,11 +7,15 @@
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
+	,mAnimator(nullptr)
+	,mTransform(nullptr)
+	,mController(nullptr)
 	,mMagicBall{}
 	,mAOE{}
 	,mRazer{}
 	,mAttackWarningUI{}
 	,mMagicBallSpeed(10.f)
+	,mAOEMoveRange(10.f)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -88,6 +92,7 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 
 	// TODO:: AOE Sound Ãß°¡
 
+	GetScene()->AddGameObject(attackObj);
 }
 
 void fq::client::MagicArmour::EmitRazer()
@@ -97,10 +102,27 @@ void fq::client::MagicArmour::EmitRazer()
 
 void fq::client::MagicArmour::OnStart()
 {
+	mController = GetComponent<game_module::CharacterController>();
+	mAnimator = GetComponent<game_module::Animator>();
 	mTransform = GetComponent<game_module::Transform>();
 	mPlayer = GetComponent<Player>();
 }
 
 void fq::client::MagicArmour::OnUpdate(float dt)
 {
+	checkInput();
+}
+
+void fq::client::MagicArmour::checkInput()
+{
+	auto input = GetScene()->GetInputManager();
+
+	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	{
+		mAnimator->SetParameterBoolean("PushA", true);
+	}
+	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Away))
+	{
+		mAnimator->SetParameterBoolean("PushA", false);
+	}
 }

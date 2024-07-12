@@ -33,5 +33,5 @@ void fq::client::LinearAttack::OnUpdate(float dt)
 {
 	auto transform = GetComponent<game_module::Transform>();
 	DirectX::SimpleMath::Vector3 deltaPosition = mMoveDirection * dt * mMoveSpeed;
-	transform->AddPosition(deltaPosition);
+	transform->AddLocalPosition(deltaPosition);
 }
