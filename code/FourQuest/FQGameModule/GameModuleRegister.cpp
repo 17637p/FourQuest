@@ -1427,6 +1427,7 @@ void fq::game_module::RegisterMetaData()
 	entt::meta<PostProcessing>()
 		.type("PostProcessing"_hs)
 		.prop(fq::reflect::prop::Name, "PostProcessing")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
 		.data<&PostProcessing::SetPostProcessingInfo, &PostProcessing::GetPostProcessingInfo>("PostProcessingInfo"_hs)
 		.prop(fq::reflect::prop::Name, "PostProcessingInfo")
 		.base<fq::game_module::Component>();

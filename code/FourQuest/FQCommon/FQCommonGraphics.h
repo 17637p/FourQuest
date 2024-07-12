@@ -542,7 +542,7 @@ namespace fq::graphics
 		bool bUseSplitToning;
 
 		// vignett
-		DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 0 };
+		DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 1};
 		float VignettRadius = 0.8f;
 		float VignettSmoothness = 0.4f;
 		bool bUseVignett;

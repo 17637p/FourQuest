@@ -48,9 +48,9 @@ namespace fq::graphics
 		mPostProcessingRTV[1] = std::make_shared<D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mPostProcessingSRV[0] = std::make_shared<D3D11ShaderResourceView>(device, mPostProcessingRTV[0]);
 		mPostProcessingSRV[1] = std::make_shared<D3D11ShaderResourceView>(device, mPostProcessingRTV[1]);
-		auto offscreenRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
-		mOffscreenSRV = std::make_shared<D3D11ShaderResourceView>(device, offscreenRTV);
-		mBackBufferRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
+		mSwapChainRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
+		mOffscreenRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+		mOffscreenSRV = std::make_shared<D3D11ShaderResourceView>(device, mOffscreenRTV);
 
 		mExtractBrightUAV[0] = std::make_shared<D3D11UnorderedAccessView>(device, width / 2, height / 2);
 		mExtractBrightUAV[1] = std::make_shared<D3D11UnorderedAccessView>(device, width / 2, height / 2);
@@ -96,7 +96,7 @@ namespace fq::graphics
 	{
 		mFullScreenProgram->Bind(device);
 
-		mBackBufferRTV->Bind(device, mNoneDSV);
+		mOffscreenRTV->Bind(device, mNoneDSV);
 		mPostProcessingSRV[mSRVIndex]->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
 
@@ -105,8 +105,10 @@ namespace fq::graphics
 
 		device->GetDeviceContext()->DrawIndexed(6, 0, 0);
 
-		mBackBufferRTV->UnBind(device);
-		mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::PixelShader);
+		//mOffscreenRTV->UnBind(device);
+		//mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::PixelShader);
+
+		mSwapChainRTV->Bind(device, mNoneDSV);
 	}
 
 	void D3D11PostProcessingManager::Excute(std::shared_ptr<D3D11Device> device)
@@ -120,16 +122,23 @@ namespace fq::graphics
 		postProcessingBuffer.BloomColorTint = mPostProcessingInfo.BloomColorTint;
 		postProcessingBuffer.ShadowColor = mPostProcessingInfo.ShadowColor;
 		postProcessingBuffer.HighlightColor = mPostProcessingInfo.HighlightColor;
+		postProcessingBuffer.VignettColor = mPostProcessingInfo.VignettColor;
+
 		postProcessingBuffer.Exposure = mPostProcessingInfo.Exposure;
 		postProcessingBuffer.Contrast = mPostProcessingInfo.Contrast;
 		postProcessingBuffer.Saturation = mPostProcessingInfo.Saturation;
 		postProcessingBuffer.Gamma = mPostProcessingInfo.Gamma;
+
 		postProcessingBuffer.BloomIntensity = mPostProcessingInfo.BloomIntensity;
 		postProcessingBuffer.BloomThreshold = mPostProcessingInfo.BloomThreshold;
 		postProcessingBuffer.Balance = mPostProcessingInfo.Balance;
+		postProcessingBuffer.VignettRadius = mPostProcessingInfo.VignettRadius;
+
+		postProcessingBuffer.VignettSmoothness = mPostProcessingInfo.VignettSmoothness;
 		postProcessingBuffer.bUseColorAdjustment = mPostProcessingInfo.bUseColorAdjustment;
 		postProcessingBuffer.bUseBloom = mPostProcessingInfo.bUseBloom;
 		postProcessingBuffer.bUseSplitToning = mPostProcessingInfo.bUseSplitToning;
+
 		postProcessingBuffer.bUseVignett = mPostProcessingInfo.bUseVignett;
 		postProcessingBuffer.bUseToneMapping = mPostProcessingInfo.bUseToneMapping;
 
@@ -151,6 +160,7 @@ namespace fq::graphics
 		mPostProcessingRTV[mRTVIndex]->UnBind(device);
 		mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::PixelShader);
 		swapPostProcessingBuffer();
+
 	}
 
 	void D3D11PostProcessingManager::excuteBloom(std::shared_ptr<D3D11Device> device)

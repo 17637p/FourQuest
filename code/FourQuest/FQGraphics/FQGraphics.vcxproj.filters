@@ -680,5 +680,8 @@
     <CustomBuild Include="DebugLightProbePS.hlsl">
       <Filter>Shader\PS</Filter>
     </CustomBuild>
+    <CustomBuild Include="PostProcessingPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

@@ -84,9 +84,9 @@ Texture2D gSrcTexture : register(t0);
 Texture2D gBloomTexture : register(t1);
 SamplerState gSamplerPoint : register(s1);
 
-//#define BLOOMCURVE_METHOD_1
+#define BLOOMCURVE_METHOD_1
 //#define BLOOMCURVE_METHOD_2
-#define BLOOMCURVE_METHOD_3
+// #define BLOOMCURVE_METHOD_3
 
 float GetBloomCurve(float x, float threshold)
 {
