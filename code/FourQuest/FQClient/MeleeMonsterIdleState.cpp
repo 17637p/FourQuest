@@ -39,7 +39,7 @@ void fq::client::MeleeMonsterIdleState::OnStateEnter(game_module::Animator& anim
 {
 	mElapsedTime = 0.f;
 	mChangeStateTime = helper::RandomGenerator::GetInstance().GetRandomNumber(3.f, 10.f);
-
+	  
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
 }
