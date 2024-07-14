@@ -3,6 +3,7 @@
 #include "ManagementCommon.h"
 #include "D3D11Common.h"
 #include "D3D11Buffer.h"
+#include "D3D11Util.h"
 
 namespace fq::graphics
 {
@@ -13,7 +14,7 @@ namespace fq::graphics
 		mNoneDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 
 		mPointClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
-		mLinearWrapSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearClamp);
+		mLinearClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearClamp);
 
 		// vertexShader
 		auto fullScreenVS = std::make_shared<D3D11VertexShader>(device, L"FullScreenVS.cso");
@@ -21,7 +22,6 @@ namespace fq::graphics
 		// pixelShader
 		auto fullScreenPS = std::make_shared<D3D11PixelShader>(device, L"FullScreenPS.cso");
 		auto postProcessingPS = std::make_shared<D3D11PixelShader>(device, L"PostProcessingPS.cso");
-		auto bloomPS = std::make_shared<D3D11PixelShader>(device, L"BloomPS.cso");
 
 		// computeShader
 		mBloomExtractBrightAreasCS = std::make_shared<D3D11ComputeShader>(device, L"BloomExtractBrightAreasCS.cso");
@@ -34,7 +34,6 @@ namespace fq::graphics
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mFullScreenProgram = std::make_unique<ShaderProgram>(device, fullScreenVS, nullptr, fullScreenPS, pipelieState);
 		mPostProcessingProgram = std::make_unique<ShaderProgram>(device, fullScreenVS, nullptr, postProcessingPS, pipelieState);
-		mBloomProgram = std::make_unique<ShaderProgram>(device, fullScreenVS, nullptr, bloomPS, pipelieState);
 
 		// constantBuffer
 		mBloomParamsCB = std::make_shared<D3D11ConstantBuffer<BloomParams>>(device, ED3D11ConstantBuffer::Transform);
@@ -117,6 +116,11 @@ namespace fq::graphics
 		{
 			excuteBloom(device);
 		}
+		if (mPostProcessingInfo.bUseHueVsSatCurve && mPostProcessingInfo.bIsUpdateHueVsSatCurve)
+		{
+			D3D11Util::CreateCurveTexture(device->GetDevice().Get(), mHueVsSatCurveTextureSRV.GetAddressOf(), mPostProcessingInfo.Points);
+			mPostProcessingInfo.bIsUpdateHueVsSatCurve = false;
+		}
 
 		PostProcessingBuffer postProcessingBuffer;
 		postProcessingBuffer.BloomColorTint = mPostProcessingInfo.BloomColorTint;
@@ -147,8 +151,10 @@ namespace fq::graphics
 		mPostProcessingRTV[mRTVIndex]->Bind(device, mNoneDSV);
 
 		mPostProcessingSRV[mSRVIndex]->Bind(device, 0, ED3D11ShaderType::PixelShader);
-		mExtractBrightSRV[mDownScaleSRVIndex]->Bind(device, 1, ED3D11ShaderType::PixelShader);
+		mExtractBrightSRV[mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::PixelShader);
+		device->GetDeviceContext()->PSSetShaderResources(2, 1, mHueVsSatCurveTextureSRV.GetAddressOf());
 		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
+		mLinearClampSS->Bind(device, 1, ED3D11ShaderType::PixelShader);
 
 		mFullScreenVB->Bind(device);
 		mFullScreenIB->Bind(device);
@@ -178,15 +184,14 @@ namespace fq::graphics
 		// ¹àÀº ºÎºÐ ÃßÃâ
 		mBloomExtractBrightAreasCS->Bind(device);
 		mPostProcessingSRV[mSRVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
-		mExtractBrightUAV[mDownScaleUAVIndex]->Bind(device, 0);
-		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
+		mExtractBrightUAV[mDownScaleSRVIndex]->Bind(device, 0);
+		mLinearClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
 		mBloomParamsCB->Bind(device, ED3D11ShaderType::ComputeShader);
 		int dispatchX = align(width, 16) / 16;
 		int dispatchY = align(height, 16) / 16;
 		device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
-		mExtractBrightUAV[mDownScaleUAVIndex]->UnBind(device, 0);
+		mExtractBrightUAV[mDownScaleSRVIndex]->UnBind(device, 0);
 		mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
-		std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
 
 		{
 			width = device->GetWidth() / mDownScaleBufferDenominators[0];
@@ -195,15 +200,14 @@ namespace fq::graphics
 			// ´Ù¿î »ùÇÃ¸µ
 			mBloomDownSampleCS->Bind(device);
 			mExtractBrightSRV[mDownScaleSRVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
-			mDownScaleUAVs[0][mDownScaleUAVIndex]->Bind(device, 0);
-			mLinearWrapSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[0][mDownScaleSRVIndex]->Bind(device, 0);
+			mLinearClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
 			mBloomParamsCB->Bind(device, ED3D11ShaderType::ComputeShader);
 			dispatchX = align(width, 16) / 16;
 			dispatchY = align(height, 16) / 16;
 			device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
 			mExtractBrightSRV[mDownScaleSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
-			mDownScaleUAVs[0][mDownScaleUAVIndex]->UnBind(device, 0);
-			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
+			mDownScaleUAVs[0][mDownScaleSRVIndex]->UnBind(device, 0);
 
 			// ¼öÆò Èå¸®±â
 			mBlurHorzCS->Bind(device);
@@ -241,15 +245,14 @@ namespace fq::graphics
 			// ´Ù¿î »ùÇÃ¸µ
 			mBloomDownSampleCS->Bind(device);
 			mDownScaleSRVs[i][mDownScaleSRVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
-			mDownScaleUAVs[i + 1][mDownScaleUAVIndex]->Bind(device, 0);
-			mLinearWrapSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[i + 1][mDownScaleSRVIndex]->Bind(device, 0);
+			mLinearClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
 			mBloomParamsCB->Bind(device, ED3D11ShaderType::ComputeShader);
 			dispatchX = align(width, 16) / 16;
 			dispatchY = align(height, 16) / 16;
 			device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
 			mDownScaleSRVs[i][mDownScaleSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
-			mDownScaleUAVs[i + 1][mDownScaleUAVIndex]->UnBind(device, 0);
-			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
+			mDownScaleUAVs[i + 1][mDownScaleSRVIndex]->UnBind(device, 0);
 
 			// ¼öÆò Èå¸®±â
 			mBlurHorzCS->Bind(device);
@@ -274,7 +277,48 @@ namespace fq::graphics
 			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
 		}
 
-		for (int i = DOWN_SCALE_BUFFER_COUNT - 1; i >= 1; --i)
+		{
+			width = device->GetWidth() / mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT - 2];
+			height = device->GetHeight() / mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT - 2];
+
+			// ¾÷»ùÇÃ¸µ
+			mBloomAccumulateCS->Bind(device);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 1][mDownScaleSRVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleSRVIndex]->Bind(device, 1, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleUAVIndex]->Bind(device, 0);
+			mLinearClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mBloomParamsCB->Bind(device, ED3D11ShaderType::ComputeShader);
+			dispatchX = align(width, 16) / 16;
+			dispatchY = align(height, 16) / 16;
+			device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 1][mDownScaleSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleSRVIndex]->UnBind(device, 1, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleUAVIndex]->UnBind(device, 0);
+
+			// ¼öÆò Èå¸®±â
+			mBlurHorzCS->Bind(device);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleUAVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleSRVIndex]->Bind(device, 0);
+			dispatchX = align(width, 256) / 256;
+			dispatchY = height;
+			device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleUAVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleSRVIndex]->UnBind(device, 0);
+			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
+
+			// ¼öÁ÷ Èå¸®±â
+			mBlurVertCS->Bind(device);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleUAVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleSRVIndex]->Bind(device, 0);
+			dispatchX = width;
+			dispatchY = align(height, 256) / 256;
+			device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
+			mDownScaleSRVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleUAVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[DOWN_SCALE_BUFFER_COUNT - 2][mDownScaleSRVIndex]->UnBind(device, 0);
+			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
+		}
+
+		for (int i = DOWN_SCALE_BUFFER_COUNT - 2; i >= 1; --i)
 		{
 			width = device->GetWidth() / mDownScaleBufferDenominators[i - 1];
 			height = device->GetHeight() / mDownScaleBufferDenominators[i - 1];
@@ -286,18 +330,17 @@ namespace fq::graphics
 
 			// ¾÷»ùÇÃ¸µ
 			mBloomAccumulateCS->Bind(device);
-			mDownScaleSRVs[i][mDownScaleSRVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
-			mDownScaleSRVs[i - 1][mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::ComputeShader);
-			mDownScaleUAVs[i - 1][mDownScaleSRVIndex]->Bind(device, 0);
-			mLinearWrapSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleSRVs[i][mDownScaleUAVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleSRVs[i - 1][mDownScaleSRVIndex]->Bind(device, 1, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[i - 1][mDownScaleUAVIndex]->Bind(device, 0);
+			mLinearClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
 			mBloomParamsCB->Bind(device, ED3D11ShaderType::ComputeShader);
 			dispatchX = align(width, 16) / 16;
 			dispatchY = align(height, 16) / 16;
 			device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
-			mDownScaleSRVs[i][mDownScaleSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
-			mDownScaleSRVs[i - 1][mDownScaleUAVIndex]->UnBind(device, 1, ED3D11ShaderType::ComputeShader);
-			mDownScaleUAVs[i - 1][mDownScaleSRVIndex]->UnBind(device, 0);
-			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
+			mDownScaleSRVs[i][mDownScaleUAVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
+			mDownScaleSRVs[i - 1][mDownScaleSRVIndex]->UnBind(device, 1, ED3D11ShaderType::ComputeShader);
+			mDownScaleUAVs[i - 1][mDownScaleUAVIndex]->UnBind(device, 0);
 
 			// ¼öÆò Èå¸®±â
 			mBlurHorzCS->Bind(device);
@@ -324,20 +367,20 @@ namespace fq::graphics
 
 		width = device->GetWidth() / 2;
 		height = device->GetHeight() / 2;
+
 		// ¾÷»ùÇÃ¸µ
 		mBloomAccumulateCS->Bind(device);
-		mDownScaleSRVs[0][mDownScaleSRVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
-		mExtractBrightSRV[mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::ComputeShader);
-		mExtractBrightUAV[mDownScaleSRVIndex]->Bind(device, 0);
-		mLinearWrapSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+		mDownScaleSRVs[0][mDownScaleUAVIndex]->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+		mExtractBrightSRV[mDownScaleSRVIndex]->Bind(device, 1, ED3D11ShaderType::ComputeShader);
+		mExtractBrightUAV[mDownScaleUAVIndex]->Bind(device, 0);
+		mLinearClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
 		mBloomParamsCB->Bind(device, ED3D11ShaderType::ComputeShader);
 		dispatchX = align(width, 16) / 16;
 		dispatchY = align(height, 16) / 16;
 		device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
-		mDownScaleSRVs[0][mDownScaleSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
-		mExtractBrightSRV[mDownScaleUAVIndex]->UnBind(device, 1, ED3D11ShaderType::ComputeShader);
-		mExtractBrightUAV[mDownScaleSRVIndex]->UnBind(device, 0);
-		std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
+		mDownScaleSRVs[0][mDownScaleUAVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
+		mExtractBrightSRV[mDownScaleSRVIndex]->UnBind(device, 1, ED3D11ShaderType::ComputeShader);
+		mExtractBrightUAV[mDownScaleUAVIndex]->UnBind(device, 0);
 
 		// ¼öÆò Èå¸®±â
 		mBlurHorzCS->Bind(device);
@@ -359,5 +402,6 @@ namespace fq::graphics
 		device->GetDeviceContext()->Dispatch(dispatchX, dispatchY, 1);
 		mExtractBrightSRV[mDownScaleUAVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
 		mExtractBrightUAV[mDownScaleSRVIndex]->UnBind(device, 0);
+		std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
 	}
 }

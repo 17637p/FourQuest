@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <d3d11.h>
+#include <wrl.h>
 #include <directxtk\SimpleMath.h>
 #include "../FQCommon/FQCommonGraphics.h"
 
@@ -62,7 +64,8 @@ namespace fq::graphics
 
 			int bUseVignett;
 			int bUseToneMapping;
-			float unused[2];
+			int bUseHueVsSatCurve;
+			float unused[1];
 		};
 
 		struct BloomParams
@@ -85,11 +88,10 @@ namespace fq::graphics
 		unsigned int mSRVIndex = 1;
 
 		std::shared_ptr<class D3D11SamplerState> mPointClampSS;
-		std::shared_ptr<class D3D11SamplerState> mLinearWrapSS;
+		std::shared_ptr<class D3D11SamplerState> mLinearClampSS;
 
 		std::unique_ptr<class ShaderProgram> mFullScreenProgram;
 		std::unique_ptr<class ShaderProgram> mPostProcessingProgram;
-		std::unique_ptr<class ShaderProgram> mBloomProgram;
 		PostProcessingInfo mPostProcessingInfo;
 		std::shared_ptr<D3D11ConstantBuffer<PostProcessingBuffer>> mPostProcessingCB;
 
@@ -110,5 +112,7 @@ namespace fq::graphics
 		unsigned int mDownScaleSRVIndex = 0;
 		unsigned int mDownScaleUAVIndex = 1;
 
+		// color curve
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mHueVsSatCurveTextureSRV;
 	};
 }

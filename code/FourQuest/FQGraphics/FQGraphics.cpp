@@ -378,7 +378,7 @@ bool FQGraphics::Render()
 	}
 	mUIManager->Render();
 	mPostProcessingManager->RenderFullScreen(mDevice);
-	//mRenderManager->RenderFullScreen();
+	mRenderManager->RenderFullScreen();
 
 	return true;
 }

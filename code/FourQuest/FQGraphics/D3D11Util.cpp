@@ -154,4 +154,59 @@ namespace fq::graphics
 		assert(randomTex != nullptr);
 		device->CreateShaderResourceView(randomTex.Get(), &srv, ppSRV);
 	}
+	void D3D11Util::CreateCurveTexture(ID3D11Device* device, ID3D11ShaderResourceView** ppSRV, const std::vector<DirectX::SimpleMath::Vector2>& points)
+	{
+		auto evaluateCurve = [&points](float t)
+			{
+				{
+					if (points.empty()) return t;
+					if (points.size() == 1) return points[0].y;
+
+					for (size_t i = 1; i < points.size(); ++i)
+					{
+						if (t < points[i].x)
+						{
+							const auto& p0 = points[i - 1];
+							const auto& p1 = points[i];
+							float factor = (t - p0.x) / (p1.x - p0.x);
+							return p0.y + factor * (p1.y - p0.y);
+						}
+					}
+
+					return points.back().y;
+				}
+			};
+
+		std::vector<float> data(256);
+		for (int i = 0; i < 256; ++i)
+		{
+			float t = static_cast<float>(i) / 255.0f;
+			data[i] = evaluateCurve(t);
+		}
+
+		D3D11_TEXTURE1D_DESC desc = {};
+		desc.Width = 256;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R32_FLOAT;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = 0;
+		desc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA initData = {};
+		initData.pSysMem = data.data();
+		initData.SysMemPitch = static_cast<UINT>(256 * sizeof(float));
+
+		Microsoft::WRL::ComPtr<ID3D11Texture1D> texture;
+		HR(device->CreateTexture1D(&desc, &initData, texture.GetAddressOf()));
+	
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = desc.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+		srvDesc.Texture1D.MostDetailedMip = 0;
+		srvDesc.Texture1D.MipLevels = 1;
+
+		HR(device->CreateShaderResourceView(texture.Get(), &srvDesc, ppSRV));
+	}
 }

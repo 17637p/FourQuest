@@ -393,19 +393,66 @@ float GetSignedDistanceFromPlane(float3 p, float3 eqn)
 
 float3 RGBtoHSV(float3 rgb)
 {
-    float4 K = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    float4 p = (rgb.g < rgb.b) ? float4(rgb.bg, K.wz) : float4(rgb.gb, K.xy);
-    float4 q = (rgb.r < p.x) ? float4(p.xyw, rgb.r) : float4(rgb.r, p.yzx);
-    float d = q.x - min(q.w, q.y);
-    float e = 1.0e-10;
-    return float3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+    float cmax = max(rgb.r, max(rgb.g, rgb.b));
+    float cmin = min(rgb.r, min(rgb.g, rgb.b));
+    float delta = cmax - cmin;
+
+    float3 hsv;
+    hsv.z = cmax; // value
+    if (cmax != 0)
+        hsv.y = delta / cmax; // saturation
+    else
+    {
+        hsv.y = 0;
+        hsv.x = -1;
+        return hsv;
+    }
+
+    if (rgb.r == cmax)
+        hsv.x = (rgb.g - rgb.b) / delta; // between yellow & magenta
+    else if (rgb.g == cmax)
+        hsv.x = 2 + (rgb.b - rgb.r) / delta; // between cyan & yellow
+    else
+        hsv.x = 4 + (rgb.r - rgb.g) / delta; // between magenta & cyan
+
+    hsv.x /= 6;
+    if (hsv.x < 0)
+        hsv.x += 1;
+    return hsv;
 }
 
 float3 HSVtoRGB(float3 hsv)
 {
-    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    float3 p = abs(frac(hsv.xxx + K.xyz) * 6.0 - K.www);
-    return hsv.z * lerp(K.xxx, saturate(p - K.xxx), hsv.y);
+    float h = hsv.x * 6;
+    float s = hsv.y;
+    float v = hsv.z;
+
+    int i = floor(h);
+    float f = h - i;
+    float p = v * (1 - s);
+    float q = v * (1 - f * s);
+    float t = v * (1 - (1 - f) * s);
+
+    float3 rgb;
+    if (i == 0)
+        rgb = float3(v, t, p);
+    else if (i == 1)
+        rgb = float3(q, v, p);
+    else if (i == 2)
+        rgb = float3(p, v, t);
+    else if (i == 3)
+        rgb = float3(p, q, v);
+    else if (i == 4)
+        rgb = float3(t, p, v);
+    else
+        rgb = float3(v, p, q);
+
+    return rgb;
+}
+
+float GetBrightness(float3 color)
+{
+    return dot(color.rgb, float3(0.299, 0.587, 0.114));
 }
 
 float4 OverlayMode(float4 src, float4 dst)

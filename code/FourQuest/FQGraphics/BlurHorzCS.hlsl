@@ -13,9 +13,8 @@ cbuffer cbFixed
         0.047662179108871855,
         0.013519569015984728
     };
-
-};
     static const int gBlurRadius = 4;
+};
 
 Texture2D gInput : register(t0);
 RWTexture2D<float4> gOutput : register(u0);
@@ -25,17 +24,17 @@ RWTexture2D<float4> gOutput : register(u0);
 groupshared float4 gCache[CacheSize];
 
 [numthreads(N, 1, 1)]
-void main(int3 groupThreadID : SV_GroupThreadID
-	, int3 dispatchThreadID : SV_DispatchThreadID)
+void main(int3 groupThreadID : SV_GroupThreadID // 그룹 스레드 인덱스 0 ~ 255
+	, int3 dispatchThreadID : SV_DispatchThreadID) // dispatch * thread ID
 {
-    // 1 ~ 5
+    // 왼쪽 가장자리 처리
     if (groupThreadID.x < gBlurRadius)
     {
-        int x = max(dispatchThreadID.x - gBlurRadius, 0);
-        gCache[groupThreadID.x] = gInput[int2(x, dispatchThreadID.y)];
+        int x  = max(dispatchThreadID.x - gBlurRadius, 0);
+        gCache[groupThreadID.x] = gInput[int2(x, dispatchThreadID.y)]; 
     }
     
-    // textureSize 5
+    // 오른쪽 가장자리 처리
     if (groupThreadID.x >= N - gBlurRadius)
     {
         int x = min(dispatchThreadID.x + gBlurRadius, gInput.Length.x - 1);
@@ -52,7 +51,7 @@ void main(int3 groupThreadID : SV_GroupThreadID
 	[unroll]
     for (int i = -gBlurRadius; i <= gBlurRadius; ++i)
     {
-        int k = groupThreadID.x + gBlurRadius + i;
+        uint k = groupThreadID.x + gBlurRadius + i;
         blurColor += weights[i + gBlurRadius] * gCache[k];
     }
 

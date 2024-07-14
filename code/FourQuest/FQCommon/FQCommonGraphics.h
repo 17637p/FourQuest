@@ -523,6 +523,11 @@ namespace fq::graphics
 	{
 		float Gamma = 2.2f;
 
+		// color curve(HueToSat)
+		std::vector<DirectX::SimpleMath::Vector2> Points = { { 0.f, 0.5f}, { 1.f,  0.5f} };
+		bool bUseHueVsSatCurve;
+		bool bIsUpdateHueVsSatCurve; // true로 적용 시 Update 반영
+
 		// color adjustment
 		float Exposure = 1.f;
 		float Contrast = 1.f;
@@ -542,7 +547,7 @@ namespace fq::graphics
 		bool bUseSplitToning;
 
 		// vignett
-		DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 1};
+		DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 1 };
 		float VignettRadius = 0.8f;
 		float VignettSmoothness = 0.4f;
 		bool bUseVignett;

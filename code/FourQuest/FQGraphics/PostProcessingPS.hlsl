@@ -1,3 +1,5 @@
+#include "common.hlsli"
+
 float3 ReinhardToneMapping(float3 color)
 {
     return color / (color + 1.0);
@@ -13,19 +15,17 @@ float3 ACESFilm(float3 x)
     return saturate((x * (a * x + b)) / (x * (c * x + d) + e));
 }
 
-float GetBrightness(float3 color)
-{
-    return dot(color.rgb, float3(0.299, 0.587, 0.114));
-}
-
+// https://catlikecoding.com/unity/tutorials/custom-srp/color-grading/ 참고
 float3 AdjustExposure(float3 color, float exposure)
 {
+    exposure = pow(exposure, 2.f);
     color.rgb *= exposure;
     return color;
 }
 
 float3 AdjustContrast(float3 color, float contrast)
 {
+    contrast = contrast * 0.01f + 1.f;
     float3 mean = float3(0.5, 0.5, 0.5); // 평균 색상 값 (중간 값)
     color.rgb = (color.rgb - mean) * contrast + mean;
     return color;
@@ -33,13 +33,30 @@ float3 AdjustContrast(float3 color, float contrast)
 
 float3 AdjustSaturation(float3 color, float saturation)
 {
+    saturation = saturation * 0.01f + 1.f;
     float3 gray = GetBrightness(color); // 회색조 값
     color.rgb = lerp(gray, color.rgb, saturation);
     return color;
 }
 
+float3 SoftLight(float3 base, float3 blend)
+{
+    return (blend < 0.5) ?
+                    (2.0 * base * blend + base * base * (1.0 - 2.0 * blend)) :
+                    (sqrt(base) * (2.0 * blend - 1.0) + 2.0 * base * (1.0 - blend));
+}
+
 float3 AdjustSplitToning(float3 color, float3 shadowColor, float3 highlightColor, float balance)
 {
+    balance = balance * 0.01f;
+    float t = saturate(GetBrightness(saturate(color)) + balance);
+    float3 shadows = lerp(0.5, shadowColor.rgb, 1.0 - t);
+    float3 highlights = lerp(0.5, highlightColor.rgb, t);
+
+    color = SoftLight(color, shadows);
+    color = SoftLight(color, highlights);
+    return color;
+
     float brightness = GetBrightness(color);
     float3 result = lerp(shadowColor, highlightColor, smoothstep(balance - 0.1, balance + 0.1, brightness));
     result = lerp(color, result, 0.5);
@@ -78,11 +95,14 @@ cbuffer cColorAdjustment : register(b0)
 
     int bUseVignett;
     int bUseToneMapping;
+    int bUseHueVsSatCurve;
 };
 
 Texture2D gSrcTexture : register(t0);
 Texture2D gBloomTexture : register(t1);
-SamplerState gSamplerPoint : register(s1);
+Texture1D gHutVsSatCurveTexture : register(t2);
+SamplerState gSamplerPoint : register(s0);
+SamplerState gSamplerLinear : register(s1);
 
 #define BLOOMCURVE_METHOD_1
 //#define BLOOMCURVE_METHOD_2
@@ -94,7 +114,7 @@ float GetBloomCurve(float x, float threshold)
     x *= 2.0f;
     
 #ifdef BLOOMCURVE_METHOD_1
-    result = x*0.05+max(0,x-threshold)*0.5; // default threshold = 1.26
+    result = x * 0.05 + max(0, x - threshold) * 0.5; // default threshold = 1.26
 #endif
     
 #ifdef BLOOMCURVE_METHOD_2
@@ -115,14 +135,24 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
     
     if (bUseBloom)
     {
-        float3 bloomColor = gBloomTexture.Sample(gSamplerPoint, uv).rgb;
+        float3 bloomColor = gBloomTexture.Sample(gSamplerLinear, uv).rgb;
         color += bloomColor * GetBloomCurve(gBloomIntensity, gBloomThreshold) * gBloomColorTint.rgb;
+    }
+    
+    if (bUseHueVsSatCurve)
+    {
+        float3 hsv = RGBtoHSV(color);
+        return float4(hsv.y, hsv.y, hsv.y, 1.f);
+        hsv.y = 1.f;
+        color = HSVtoRGB(hsv);
     }
     
     if (bUseColorAdjustment)
     {
+        color = min(color, 60.f);
         color = AdjustExposure(color, gExposure);
         color = AdjustContrast(color, gContrast);
+        color = max(color, 0);
         color = AdjustSaturation(color, gSaturation);
     }
     
@@ -140,7 +170,7 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
     {
         color = AdjustVignetting(color, gVignettRadius, gVignettSmoothness, uv, gVignettColor);
     }
-
+    
     float3 retColor = pow(color, 1 / gGamma);
     
     return float4(retColor, 1.0);
