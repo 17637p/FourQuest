@@ -52,7 +52,7 @@ void fq::game_engine::LightProbeWindow::Render()
 	ImGui::End();
 }
 
-bool isNumber(const std::string& str) 
+bool isNumber(const std::string& str)
 {
 	return !str.empty() && std::all_of(str.begin(), str.end(), ::isdigit);
 }
@@ -93,8 +93,13 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 
 	if (ImGui::Button("Bake", ImVec2{ 133,25 }))
 	{
-		mLightProbeSystem->SaveProbeTexture(mWidth, mHeight);
-		mLightProbeSystem->BakeLightProbe();
+		int numLightProbe = mLightProbeSystem->GetLightProbeObjects().size();
+		if (numLightProbe >= 4)
+		{
+			mLightProbeSystem->SaveProbeTexture(mWidth, mHeight);
+			mLightProbeSystem->BakeLightProbe();
+		}
+		spdlog::error("Baking is only possible with four or more");
 	}
 	// Nav Mesh 
 	if (ImGui::Button("Place Default", ImVec2{ 133,25 }))
@@ -161,8 +166,8 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 
 				transform.Decompose(scl, rot, pos);
 
-				scl = { 
-					mScale * mLightProbeSystem->GetLightProbeDefaultScale(), 
+				scl = {
+					mScale * mLightProbeSystem->GetLightProbeDefaultScale(),
 					mScale * mLightProbeSystem->GetLightProbeDefaultScale(),
 					mScale * mLightProbeSystem->GetLightProbeDefaultScale() };
 
@@ -174,6 +179,35 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 		catch (const std::invalid_argument& e)
 		{
 
+		}
+	}
+	ImGui::Separator();
+	if (ImGui::Button("Apply All Mesh", ImVec2{ 133,25 }))
+	{
+		// staticmeshrenderer 가져와서 
+		auto componentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<fq::game_module::StaticMeshRenderer>();
+
+		float distMin = FLT_MAX;
+
+		for (auto& staticMeshRenderer : componentView)
+		{
+			auto meshInfo = staticMeshRenderer.GetComponent<fq::game_module::StaticMeshRenderer>()->GetMeshObjectInfomation();
+			meshInfo.bUseLightProbe = true;
+			staticMeshRenderer.GetComponent<fq::game_module::StaticMeshRenderer>()->SetMeshObjectInfomation(meshInfo);
+		}
+	}
+	if (ImGui::Button("Remove All Mesh", ImVec2{ 133,25 }))
+	{
+		// staticmeshrenderer 가져와서 
+		auto componentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<fq::game_module::StaticMeshRenderer>();
+
+		float distMin = FLT_MAX;
+
+		for (auto& staticMeshRenderer : componentView)
+		{
+			auto meshInfo = staticMeshRenderer.GetComponent<fq::game_module::StaticMeshRenderer>()->GetMeshObjectInfomation();
+			meshInfo.bUseLightProbe = false;
+			staticMeshRenderer.GetComponent<fq::game_module::StaticMeshRenderer>()->SetMeshObjectInfomation(meshInfo);
 		}
 	}
 	ImGui::Separator();
