@@ -14,6 +14,8 @@ using namespace fq::graphics;
 FQGraphics::~FQGraphics()
 {
 	mRenderManager = nullptr;
+	mObjectManager = nullptr;
+	mModelManager = nullptr;
 }
 
 FQGraphics::FQGraphics()
@@ -294,10 +296,10 @@ void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
 
 void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
-	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, 
-		mObjectManager->GetStaticMeshObjects(), 
-		mObjectManager->GetSkinnedMeshObjects(), 
-		mObjectManager->GetTerrainMeshObjects(), 
+	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager,
+		mObjectManager->GetStaticMeshObjects(),
+		mObjectManager->GetSkinnedMeshObjects(),
+		mObjectManager->GetTerrainMeshObjects(),
 		mObjectManager->GetProbeObjects());
 }
 
@@ -436,47 +438,47 @@ fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxF
 	return mModelManager->ConvertModel(fbxFile);
 }
 
-const fq::common::Model& FQGraphics::CreateModelResource(const std::string& path, std::filesystem::path textureBasePath)
+const fq::common::Model& FQGraphics::CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath)
 {
-	return mModelManager->CreateModelResource(mDevice, path, textureBasePath);
+	return mModelManager->CreateModelResource(mDevice, key, path, textureBasePath);
 }
 
-bool FQGraphics::TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
+bool FQGraphics::TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
 {
-	return mModelManager->TryCreateModelResource(mDevice, path, textureBasePath, outDataOrNull);
+	return mModelManager->TryCreateModelResource(mDevice, key, path, textureBasePath, outDataOrNull);
 }
 
-const fq::common::Model& FQGraphics::GetModel(const std::string& path)
+const fq::common::Model& FQGraphics::GetModel(unsigned int key)
 {
-	return mModelManager->GetModel(path);
+	return mModelManager->GetModel(key);
 }
 
-void FQGraphics::DeleteModelResource(const std::string& path)
+void FQGraphics::DeleteModelResource(unsigned int key)
 {
-	mModelManager->DeleteModelResource(path);
+	mModelManager->DeleteModelResource(key);
 }
 
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::GetNodeHierarchyByModelPathOrNull(std::string modelPath)
+std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::GetNodeHierarchyByModelPathOrNull(unsigned int key)
 {
-	return mModelManager->GetNodeHierarchyByModelPathOrNull(modelPath);
+	return mModelManager->GetNodeHierarchyByModelPathOrNull(key);
 }
 
-std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName)
+std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName)
 {
-	return mModelManager->GetStaticMeshByModelPathOrNull(modelPath, meshName);
+	return mModelManager->GetStaticMeshByModelPathOrNull(key, meshName);
 }
-std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName)
+std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName)
 {
-	return mModelManager->GetSkinnedMeshByModelPathOrNull(modelPath, meshName);
+	return mModelManager->GetSkinnedMeshByModelPathOrNull(key, meshName);
 }
-std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName)
+std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialByModelPathOrNull(unsigned int key, std::string materialName)
 {
-	return mModelManager->GetMaterialByModelPathOrNull(modelPath, materialName);
+	return mModelManager->GetMaterialByModelPathOrNull(key, materialName);
 }
 
-std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName)
+std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationByModelPathOrNull(unsigned int key, std::string animationName)
 {
-	return mModelManager->GetAnimationByModelPathOrNull(modelPath, animationName);
+	return mModelManager->GetAnimationByModelPathOrNull(key, animationName);
 }
 
 std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::CreateStaticMesh(const fq::common::Mesh& meshData)

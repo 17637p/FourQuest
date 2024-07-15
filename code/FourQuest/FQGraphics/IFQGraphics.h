@@ -65,16 +65,16 @@ extern "C" {
 			virtual FQ_GRAPHICS fq::common::Model ConvertModel(const std::string& fbxFile) abstract;
 
 			// Model Resource Control
-			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") abstract;
-			virtual FQ_GRAPHICS bool TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr) abstract;
-			virtual FQ_GRAPHICS const fq::common::Model& GetModel(const std::string& path) abstract;
-			virtual FQ_GRAPHICS void DeleteModelResource(const std::string& path) abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") abstract;
+			virtual FQ_GRAPHICS bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr) abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& GetModel(unsigned int key) abstract;
+			virtual FQ_GRAPHICS void DeleteModelResource(unsigned int key) abstract;
 
-			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName) abstract;
 
 			// Render Resource Control
 			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData) abstract;

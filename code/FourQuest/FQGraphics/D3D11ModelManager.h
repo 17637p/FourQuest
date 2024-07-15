@@ -31,17 +31,17 @@ namespace fq::graphics
 		fq::common::Model ReadModel(const std::string& path);
 		fq::common::Model ConvertModel(const std::string& fbxFilePath);
 
-		const fq::common::Model& CreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath = "");
-		bool TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr);
-		const fq::common::Model& GetModel(const std::string& path);
-		bool TryGetModel(const std::string& path, fq::common::Model* model);
-		void DeleteModelResource(const std::string& path);
+		const fq::common::Model& CreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "");
+		bool TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr);
+		const fq::common::Model& GetModel(unsigned int key);
+		bool TryGetModel(unsigned int key, fq::common::Model* model);
+		void DeleteModelResource(unsigned int key);
 
-		std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath);
-		std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName);
-		std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName);
-		std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName);
-		std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName);
+		std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key);
+		std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName);
+		std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName);
+		std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName);
+		std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName);
 
 		std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData);
 		std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(const fq::common::Mesh& meshData);
@@ -139,7 +139,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
-		std::map<std::string, fq::common::Model> mModels;
+		std::map<unsigned int, fq::common::Model> mModels;
 		std::map<std::string, std::shared_ptr<IStaticMesh>> mStaticMeshes;
 		std::map<std::string, std::shared_ptr<ISkinnedMesh>> mSkinnedMeshes;
 		std::map<std::string, std::shared_ptr<INodeHierarchy>> mNodeHierarchies;

@@ -35,16 +35,16 @@ namespace fq::graphics
 		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
 
 		// Model Resource Control
-		virtual const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") override;
-		virtual bool TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
-		virtual const fq::common::Model& GetModel(const std::string& path) override;
-		virtual void DeleteModelResource(const std::string& path) override;
+		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;
+		virtual bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
+		virtual const fq::common::Model& GetModel(unsigned int key) override;
+		virtual void DeleteModelResource(unsigned int key) override;
 
-		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath) override;
-		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName) override;
-		virtual std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName) override;
-		virtual std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName) override;
-		virtual std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName) override;
+		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key) override;
+		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName) override;
+		virtual std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName) override;
+		virtual std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName) override;
+		virtual std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName) override;
 
 		// Render Resource Control
 		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData) override;
