@@ -198,6 +198,11 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 	std::vector<LightProbe*> lightProbes = mLightProbeManager->GetLightProbes();
 	for (int lightProbeIndex = 0; lightProbeIndex < lightProbes.size(); lightProbeIndex++)
 	{
+		if (lightProbes[lightProbeIndex]->isBaked)
+		{
+			continue;
+		}
+
 		fq::common::Transform probeTransform;
 
 		probeTransform.worldPosition = lightProbes[lightProbeIndex]->position;

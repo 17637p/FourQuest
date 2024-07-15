@@ -35,7 +35,10 @@ namespace fq::game_engine
 		float GetLightProbeDefaultScale() { return mLightProbeDefaultScale * 100; }
 
 		// 디버그 드로우 
-		std::vector<fq::graphics::IProbeObject*> GetLightProbeObjects() { return mProbeObjects; };
+		std::vector<fq::graphics::IProbeObject*> GetLightProbeObjects() 
+		{ 
+			return mProbeObjects; 
+		};
 
 		float GetLightProbeScale() const { return mLightProbeScale; }
 		void SetLightProbeScale(float val) { mLightProbeScale = val; }

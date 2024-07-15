@@ -30,6 +30,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 position;
 
 		float coefficient[27]; // 0~8 Red, 9~17 Green, 18~26 Blue
+		bool isBaked;
 	};
 
 	struct Tetrahedron

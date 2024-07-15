@@ -66,11 +66,14 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 	ImGui::SameLine();
 	if (ImGui::Button("Delete", ImVec2{ 133,25 }))
 	{
-		mLightProbeSystem->DeleteLightProbe(mSelectObject);
-		mSelectObject = nullptr;
-		if (mSelectObject == mCopyObject)
+		if (mSelectObject != nullptr)
 		{
-			mCopyObject = nullptr;
+			mLightProbeSystem->DeleteLightProbe(mSelectObject);
+			mSelectObject = nullptr;
+			if (mSelectObject == mCopyObject)
+			{
+				mCopyObject = nullptr;
+			}
 		}
 	}
 	ImGui::Separator();
@@ -99,7 +102,10 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 			mLightProbeSystem->SaveProbeTexture(mWidth, mHeight);
 			mLightProbeSystem->BakeLightProbe();
 		}
-		spdlog::error("Baking is only possible with four or more");
+		else
+		{
+			spdlog::error("Baking is only possible with four or more");
+		}
 	}
 	// Nav Mesh 
 	if (ImGui::Button("Place Default", ImVec2{ 133,25 }))

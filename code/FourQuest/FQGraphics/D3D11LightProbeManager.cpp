@@ -128,6 +128,7 @@ int D3D11LightProbeManager::GetProbeRealIndex(int index)
 
 void D3D11LightProbeManager::SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position)
 {
+	mLightProbes[mLightProbePair[index]]->isBaked = false;
 	mLightProbes[mLightProbePair[index]]->position = position;
 }
 
@@ -161,6 +162,7 @@ bool D3D11LightProbeManager::LoadLightProbes(const std::string& fileName)
 		for (int i = 0; i < lightProbeSize; i++)
 		{
 			LightProbe* newLightProbe = new LightProbe;
+			newLightProbe->isBaked = true;
 
 			lightProbeFile >> newLightProbe->index;
 
@@ -410,6 +412,11 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 
 	for (int i = 0; i < mLightProbes.size(); i++)
 	{
+		if (mLightProbes[i]->isBaked)
+		{
+			continue;
+		}
+
 		auto cubeMap = mResourceManager->Create<D3D11Texture>(L"LightProbe" + std::to_wstring(i) + L".dds");
 
 		cubeMap->GetSHCoefficientRGB(mDevice, r, g, b);
@@ -426,6 +433,7 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 		{
 			mLightProbes[i]->coefficient[j + 18] = b[j];
 		}
+		mLightProbes[i]->isBaked = true;
 	}
 
 	delete[] r;
@@ -466,6 +474,7 @@ int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& po
 
 	newLightProbe->position = position;
 	newLightProbe->index = mLightProbes.size();
+	newLightProbe->isBaked = false;
 
 	mLightProbePair[mLightProbeIndex] = mLightProbes.size();
 	mLightProbes.push_back(newLightProbe);
@@ -540,6 +549,11 @@ void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector
 		// temp
 		if (tetIndex < 0)
 		{
+			weights.x = 0;
+			weights.y = 0;
+			weights.z = 0;
+			weights.w = 0;
+
 			break;
 		}
 
