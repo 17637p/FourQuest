@@ -7,6 +7,7 @@
 
 #include "../FQReflect/entt.hpp"
 #include "../FQCommon/IFQRenderResource.h"
+#include "GameModuleEnum.h"
 
 namespace fq::game_module
 {
@@ -215,7 +216,7 @@ namespace fq::event
 	{
 		struct ResultData
 		{
-			unsigned int hitCount = -1; 
+			unsigned int hitCount = -1;
 			std::vector<game_module::GameObject*> objects;
 			std::vector<DirectX::SimpleMath::Vector3> contactPoints;
 		};
@@ -223,6 +224,7 @@ namespace fq::event
 		DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
 		DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::Zero;
 		float distance = 0.f;
+		game_module::ETag tag = game_module::ETag::Untagged;
 
 		ResultData* result = nullptr;
 		bool bUseDebugDraw = false;

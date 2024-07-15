@@ -56,7 +56,7 @@ namespace fq::physics
 		/// <summary>
 		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
 		/// </summary>
-		virtual RayCastData RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance) override;
+		virtual RayCastOutput RayCast(const RayCastInput& info) override;
 
 #pragma region RigidBodyManager
 		/// <summary>

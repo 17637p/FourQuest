@@ -55,7 +55,6 @@ void fq::client::Player::OnUpdate(float dt)
 	processCoolTime(dt);
 
 	// RayCastTest
-
 	fq::event::RayCast::ResultData data;
 
   	auto tf =  GetComponent<game_module::Transform>();
@@ -64,14 +63,17 @@ void fq::client::Player::OnUpdate(float dt)
     auto direction = tf->GetLookAtVector();
 	auto distance = 5.f;
 	bool bUseDebugDraw = true;
+	auto tag = game_module::ETag::Untagged;
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
-		fq::event::RayCast {origin, direction, distance, &data , bUseDebugDraw}
+		fq::event::RayCast {origin, direction, distance, tag, &data , bUseDebugDraw}
 	);
+
+	spdlog::debug("hit count {}",data.hitCount);
 
 	for (auto object : data.objects)
 	{
-		spdlog::debug("{}", object->GetName());
+		spdlog::debug("name {}", object->GetName());
 	}
 
 }

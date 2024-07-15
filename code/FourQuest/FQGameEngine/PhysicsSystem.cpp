@@ -806,8 +806,14 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 
 void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 {
-	auto result = mPhysicsEngine->RayCast(0, 0, event.origin, event.direction, event.distance);
+	physics::RayCastInput rayCastInfo;
 
+	rayCastInfo.direction = event.direction;
+	rayCastInfo.distance = event.distance;
+	rayCastInfo.layerNumber = static_cast<int>(event.tag);
+	rayCastInfo.origin = event.origin;
+
+	auto result = mPhysicsEngine->RayCast(rayCastInfo);
 	event.result->hitCount = result.hitSize;
 	event.result->contactPoints.reserve(result.hitSize);
 	event.result->objects.reserve(result.hitSize);

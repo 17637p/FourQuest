@@ -75,10 +75,17 @@ namespace fq::physics
 		bool isDead = false;
 	};
 
-	struct RayCastData
+	struct RayCastInput
+	{
+		unsigned int layerNumber;
+		DirectX::SimpleMath::Vector3 origin;
+		DirectX::SimpleMath::Vector3 direction;
+		float distance;
+	};
+
+	struct RayCastOutput
 	{
 		unsigned int hitSize = 0;
-		unsigned int myId = 0;
 		unsigned int myLayerNumber = 0;
 		std::vector<unsigned int> id = {};
 		std::vector<unsigned int> layerNumber = {};

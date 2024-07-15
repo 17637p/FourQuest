@@ -189,28 +189,33 @@ namespace fq::physics
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 
-	RayCastData FQPhysics::RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance)
+	RayCastOutput FQPhysics::RayCast(const RayCastInput& info)
 	{
-		RayCastData raycastData;
-		raycastData.myId = myID;
-		raycastData.myLayerNumber = layerNumber;
-
-		physx::PxRaycastBuffer hitBuffer;
-
 		physx::PxVec3 pxOrigin;
 		physx::PxVec3 pxDirection;
-		CopyDxVec3ToPxVec3(origin, pxOrigin);
-		CopyDxVec3ToPxVec3(direction, pxDirection);
+		CopyDxVec3ToPxVec3(info.origin, pxOrigin);
+		CopyDxVec3ToPxVec3(info.direction, pxDirection);
 
-		bool isBlock = mScene->raycast(pxOrigin, pxDirection, distance, hitBuffer);
+		const physx::PxU32 maxHits = 20;
+		RayCastOutput output;
+		physx::PxRaycastHit hitBuffer[maxHits];
+		physx::PxRaycastBuffer hitBufferStruct(hitBuffer, maxHits);
+		output.myLayerNumber = info.layerNumber;
+
+
+		bool isBlock = mScene->raycast(pxOrigin
+			, pxDirection
+			, info.distance
+			, hitBufferStruct);
+
 		if (isBlock)
 		{
-			unsigned int hitSize = hitBuffer.getNbAnyHits();
-			raycastData.hitSize = hitSize;
+			unsigned int hitSize = hitBufferStruct.nbTouches;
+			output.hitSize = hitSize;
 
 			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
 			{
-				const physx::PxRaycastHit& hit = hitBuffer.getAnyHit(hitNumber);
+				const physx::PxRaycastHit& hit = hitBufferStruct.touches[hitNumber];
 				physx::PxShape* shape = hit.shape;
 
 				DirectX::SimpleMath::Vector3 position;
@@ -218,13 +223,13 @@ namespace fq::physics
 				unsigned int id = static_cast<CollisionData*>(shape->userData)->myId;
 				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
 
-				raycastData.contectPoints.push_back(position);
-				raycastData.id.push_back(id);
-				raycastData.layerNumber.push_back(layerNumber);
+				output.contectPoints.push_back(position);
+				output.id.push_back(id);
+				output.layerNumber.push_back(layerNumber);
 			}
 		}
 
-		return raycastData;
+		return output;
 
 	}
 
