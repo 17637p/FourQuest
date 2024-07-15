@@ -31,6 +31,7 @@ FQGraphics::FQGraphics()
 	, mParticleManager(std::make_shared<D3D11ParticleManager>())
 	, mUIManager(std::make_shared<UIManager>())
 	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
+	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
 {
 }
 
@@ -56,8 +57,8 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mPickingManager->Initialize(mDevice, mResourceManager, width, height);
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
-
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
+	mPostProcessingManager->Initialize(mDevice, mResourceManager, width, height);
 
 	return true;
 }
@@ -300,6 +301,16 @@ void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 		mObjectManager->GetProbeObjects());
 }
 
+void fq::graphics::FQGraphics::SetPostProcessingInfo(const PostProcessingInfo& info)
+{
+	mPostProcessingManager->SetPostProcessingInfo(info);
+}
+
+const PostProcessingInfo& fq::graphics::FQGraphics::GetPostProcessingInfo() const
+{
+	return mPostProcessingManager->GetPostProcessingInfo();
+}
+
 std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink_ptr> sinks)
 {
 	auto logger = std::make_shared<spdlog::logger>("Graphics",
@@ -365,9 +376,15 @@ bool FQGraphics::Render()
 	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
 
 	mRenderManager->Render();
-	// postprocessing
+
+	mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+	{
+		mPostProcessingManager->Excute(mDevice);
+	}
 	mUIManager->Render();
+	mPostProcessingManager->RenderFullScreen(mDevice);
 	mRenderManager->RenderFullScreen();
+
 	return true;
 }
 
@@ -401,6 +418,7 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 	mCameraManager->OnResize(width, height);
 	mPickingManager->OnResize(width, height, mDevice);
 	mUIManager->OnResize(mDevice, width, height);
+	mPostProcessingManager->OnResize(mDevice, mResourceManager, width, height);
 
 	return true;
 }

@@ -25,7 +25,6 @@ namespace fq::graphics
 		auto fullScreenPS = std::make_shared<D3D11PixelShader>(device, L"FullScreenPS.cso");
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mFullScreenShaderProgram = std::make_unique<ShaderProgram>(mDevice, fullScreenVS, nullptr, fullScreenPS, pipelieState);
-
 		mPointClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 
 		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));

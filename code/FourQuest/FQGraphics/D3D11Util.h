@@ -17,5 +17,6 @@ namespace fq::graphics
 		static float RandF(float a, float b);
 		static void CreateRandomTexture1DSRV(ID3D11Device* device, ID3D11ShaderResourceView** ppSRV);
 		static void CreateRandomTexture2DSRV(ID3D11Device* device, ID3D11ShaderResourceView** ppSRV);
+		static void CreateCurveTexture(ID3D11Device* device, ID3D11ShaderResourceView** ppSRV, const std::vector<DirectX::SimpleMath::Vector2>& points);
 	};
 }

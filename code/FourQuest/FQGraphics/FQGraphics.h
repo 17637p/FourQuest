@@ -171,6 +171,10 @@ namespace fq::graphics
 		/// Picking
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
 
+		// PostProcessing
+		virtual void  SetPostProcessingInfo(const PostProcessingInfo& info) override;
+		virtual const PostProcessingInfo& GetPostProcessingInfo() const override;
+
 		/// For IMGUI(D3D11)
 		ID3D11Device* GetDivice() override;
 		ID3D11DeviceContext* GetDeviceContext() override;
@@ -196,6 +200,8 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;
 		std::shared_ptr<class UIManager> mUIManager;
+
+		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
 	};
 }
 

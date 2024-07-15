@@ -329,8 +329,11 @@ fq::graphics::IBLTexture fq::graphics::D3D11LightManager::CreateIBLTexture(const
 		mLinearWrapSampler->Bind(d3d11Device, 0, ED3D11ShaderType::ComputeShader);
 		d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, result.DiffuseIrradiance->GetUAV().GetAddressOf(), nullptr);
 		mDiffuseIrradianceCS->Bind(d3d11Device);
+		mSpecularMapFilterSettingsCB->Bind(d3d11Device, ED3D11ShaderType::ComputeShader);
+
 		d3d11Device->GetDeviceContext()->Dispatch(result.DiffuseIrradiance->GetWidth() / 32, result.DiffuseIrradiance->GetHeight() / 32, 6);
 		d3d11Device->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, nullUAV, nullptr);
+		d3d11Device->GetDeviceContext()->CSSetConstantBuffers(0, 1, nullBuffer);
 	}
 
 	// Compute Cook-Torrance BRDF 2D LUT for split-sum approximation.

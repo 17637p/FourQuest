@@ -66,7 +66,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
     if (cUseAlbedoMap)
     {
-        pout.Albedo *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
+        pout.Albedo *= pow(gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV), 2.2f);
     }
     
     clip(pout.Albedo.a - cAlphaCutoff);

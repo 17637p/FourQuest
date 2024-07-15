@@ -16,6 +16,9 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{62fd0d3f-f4a5-4920-8b98-53ea8704293f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Process\Source">
+      <UniqueIdentifier>{1d47667f-579f-4f14-a438-35fdc42d1964}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseWindow.h">
@@ -51,13 +54,13 @@
     <ClInclude Include="EffectDemo.h">
       <Filter>Process</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessingDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>EntryPoint</Filter>
-    </ClCompile>
-    <ClCompile Include="Process.cpp">
-      <Filter>Process</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>Control</Filter>
@@ -65,23 +68,29 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Control</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainDemo.cpp">
-      <Filter>Process</Filter>
-    </ClCompile>
     <ClCompile Include="DemoUtils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="DefaultDemo.cpp">
-      <Filter>Process</Filter>
-    </ClCompile>
     <ClCompile Include="UIDemo.cpp">
-      <Filter>Process</Filter>
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultDemo.cpp">
+      <Filter>Process\Source</Filter>
     </ClCompile>
     <ClCompile Include="EffectDemo.cpp">
-      <Filter>Process</Filter>
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessingDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>Process\Source</Filter>
     </ClCompile>
     <ClCompile Include="RenderObjectDemo.cpp">
-      <Filter>Process</Filter>
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainDemo.cpp">
+      <Filter>Process\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -84,6 +84,7 @@ namespace fq::graphics
 	void RenderPipeline::EndRender()
 	{
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
+		auto result = mDevice->GetDevice()->GetDeviceRemovedReason();
 		HR(swapChain->Present(0, 0));
 	}
 
