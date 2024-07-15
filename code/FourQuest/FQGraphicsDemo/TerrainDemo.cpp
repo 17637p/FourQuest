@@ -56,7 +56,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	createTerrain(planeModelPath, DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 0, 0 }));
 
 	/// camera 초기화
-	AddDefaultCamera(mTestGraphics);
+	AddLittleNearCamera(mTestGraphics);
 
 	// Camera Transform 설정
 	mCameraTransform.worldPosition = { 0, 0, 0 };
@@ -276,11 +276,11 @@ void TerrainDemo::Update()
 
 	if (InputManager::GetInstance().IsGetKeyDown('L'))
 	{
-		mTestGraphics->SaveCubeProbeTexture(1024, 1024);
+		mTestGraphics->SaveCubeProbeTexture(true, 1024, 1024);
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('K'))
 	{
-		mTestGraphics->BakeLightProbe();
+		mTestGraphics->BakeLightProbe(true);
 	}
 	if (InputManager::GetInstance().IsGetKeyDown('O'))
 	{

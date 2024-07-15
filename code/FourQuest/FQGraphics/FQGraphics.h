@@ -202,6 +202,9 @@ namespace fq::graphics
 		std::shared_ptr<class UIManager> mUIManager;
 
 		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
+
+		// temp
+		bool mIsOnPostProcessing;
 	};
 }
 

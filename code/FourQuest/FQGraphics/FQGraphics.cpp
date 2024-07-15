@@ -32,6 +32,7 @@ FQGraphics::FQGraphics()
 	, mUIManager(std::make_shared<UIManager>())
 	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
+	, mIsOnPostProcessing(true)
 {
 }
 
@@ -162,7 +163,7 @@ void FQGraphics::SaveCubeProbeTexture(bool isAll, const unsigned short width, co
 
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
 	std::vector<std::wstring> paths{};
-
+	mIsOnPostProcessing = false;
 	//std::vector<CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
 	//for (const auto& cubeProbe : cubeProbes)
 	//{
@@ -240,6 +241,8 @@ void FQGraphics::SaveCubeProbeTexture(bool isAll, const unsigned short width, co
 
 	SetCamera(cameraInfo);
 	SetWindowSize(curWidth, curHeight);
+
+	mIsOnPostProcessing = true;
 }
 
 unsigned short FQGraphics::AddCubeProbe(const DirectX::SimpleMath::Vector3& position)
@@ -377,12 +380,18 @@ bool FQGraphics::Render()
 
 	mRenderManager->Render();
 
-	mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+	if (mIsOnPostProcessing)
 	{
-		mPostProcessingManager->Excute(mDevice);
+		mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+		{
+			mPostProcessingManager->Excute(mDevice);
+		}
 	}
 	mUIManager->Render();
-	mPostProcessingManager->RenderFullScreen(mDevice);
+	if (mIsOnPostProcessing)
+	{
+		mPostProcessingManager->RenderFullScreen(mDevice);
+	}
 	mRenderManager->RenderFullScreen();
 
 	return true;

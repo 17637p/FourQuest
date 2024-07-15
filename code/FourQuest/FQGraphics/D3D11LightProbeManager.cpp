@@ -51,7 +51,7 @@ int fq::graphics::D3D11LightProbeManager::AddCubeProbe(const DirectX::SimpleMath
 
 	newCubeProbe->position = position;
 	newCubeProbe->index = mCubeProbeIndex;
-	
+
 	mCubeProbes.push_back(newCubeProbe);
 
 	mCubeProbeIndex++;
@@ -482,6 +482,10 @@ int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& po
 	newLightProbe->position = position;
 	newLightProbe->index = mLightProbes.size();
 	newLightProbe->isBaked = false;
+	for (int i = 0; i < 27; i++)
+	{
+		newLightProbe->coefficient[i] = 0;
+	}
 
 	mLightProbePair[mLightProbeIndex] = mLightProbes.size();
 	mLightProbes.push_back(newLightProbe);

@@ -255,11 +255,6 @@ void EffectDemo::Update()
 		Yaw(mCameraTransform, dx);
 	}
 
-	if (InputManager::GetInstance().IsGetKeyDown('L'))
-	{
-		mTestGraphics->SaveCubeProbeTexture(1024, 1024);
-	}
-
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
 
