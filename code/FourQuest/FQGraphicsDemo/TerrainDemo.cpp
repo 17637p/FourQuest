@@ -44,7 +44,7 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 	mTimeManager.Init();
 
 	mTestGraphics = mEngineExporter->GetEngine();
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	/// Terrain »ý¼º
 	const std::string planeModelPath = "./resource/Graphics/TerrainDemo/Plane.model";
@@ -456,6 +456,10 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
 			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, node.ToParentMatrix * transform);
 			mStaticMeshObjects.push_back(iStaticMeshObject);
+
+			//auto meshInfo = iStaticMeshObject->GetMeshObjectInfo();
+			//meshInfo.OutlineColor = { 1, 0, 0, 1 };
+			//iStaticMeshObject->SetMeshObjectInfo(meshInfo);
 
 			std::vector<std::shared_ptr<fq::graphics::IMaterial>> mat = iStaticMeshObject->GetMaterials();
 			for (int i = 0; i < mat.size(); i++)
