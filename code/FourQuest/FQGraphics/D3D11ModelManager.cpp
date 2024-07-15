@@ -63,12 +63,12 @@ namespace fq::graphics
 			if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = textureBasePath / material.RoughnessFileName;
 			if (material.NormalFileName != L"") materialInfo.NormalFileName = textureBasePath / material.NormalFileName;
 			if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = textureBasePath / material.EmissiveFileName;
-
+			   
 			CreateMaterial(GenerateMaterialKey(std::to_string(key), material.Name), materialInfo);
 		}
-
+		    
 		for (const auto& [node, mesh] : model.Meshes)
-		{
+		{    
 			if (mesh.Vertices.empty())
 			{
 				continue;

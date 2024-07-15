@@ -1110,16 +1110,16 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	modelPath = stateNode.GetModelPath();
+	unsigned int key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, {});
 
 	if (modelPath.empty() || !isModelExist) return;
 
-	if (!mGameProcess->mRenderingSystem->IsLoadedModel(modelPath))
+	if (!mGameProcess->mRenderingSystem->IsLoadedModel(key))
 	{
 		mGameProcess->mRenderingSystem->LoadModel(modelPath);
 	}
 
-
-	const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
+	const auto& model = mGameProcess->mGraphics->GetModel(key);
 	// Animation Name º±≈√ 
 	auto aniName = stateNode.GetAnimationName();
 

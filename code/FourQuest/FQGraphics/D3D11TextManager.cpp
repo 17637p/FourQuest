@@ -1,6 +1,6 @@
 #include "D3D11TextManager.h"
 
-#include <directxtk/SpriteBatch.h>
+	#include <directxtk/SpriteBatch.h>
 #include <directxtk/SpriteFont.h>
 #include <directxtk/SimpleMath.h>
 #include <tchar.h>

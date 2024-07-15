@@ -1,6 +1,7 @@
 #include "AnimationSystem.h"
 
 #include "GameProcess.h"
+#include "RenderingSystem.h"
 
 fq::game_engine::AnimationSystem::AnimationSystem()
 	:mGameProcess(nullptr)
@@ -87,7 +88,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
 {
-	auto animator = object->GetComponent<fq::game_module::Animator>();
+       	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto controllerPath = animator->GetControllerPath();
 
 	if (!std::filesystem::exists(controllerPath))
@@ -96,14 +97,16 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 		return false;
 	}
 
+	unsigned int modelKey = mGameProcess->mRenderingSystem->GetModelKey(animator->GetNodeHierarchyModelPath(), {});
+
 	// 애니메이션 리소스 로딩
-	if (!mGameProcess->mGraphics->TryCreateModelResource(animator->GetNodeHierarchyModelPath())) // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
+	if (!mGameProcess->mGraphics->TryCreateModelResource( modelKey,animator->GetNodeHierarchyModelPath())) // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
 	{
 		return false;
 	}
 
 	// 계층구조와 인스턴스 생성 및 바인딩
-	auto nodeHierarchy = mGameProcess->mGraphics->GetNodeHierarchyByModelPathOrNull(animator->GetNodeHierarchyModelPath());
+	auto nodeHierarchy = mGameProcess->mGraphics->GetNodeHierarchyByModelPathOrNull(modelKey);
 
 	auto nodeHierarchyInstance = nodeHierarchy->CreateNodeHierarchyInstance();
 	animator->SetNodeHierarchy(nodeHierarchy);
@@ -117,11 +120,12 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	{
 		const auto& modelPath = animationStateNode.GetModelPath();
 		const auto& animName = animationStateNode.GetAnimationName();
+		unsigned int key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, {});
 
 		if (!modelPath.empty() && !animName.empty())
 		{
-			mGameProcess->mGraphics->CreateModelResource(animationStateNode.GetModelPath()); // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
-			auto animationInterface = mGameProcess->mGraphics->GetAnimationByModelPathOrNull(animationStateNode.GetModelPath(), animationStateNode.GetAnimationName());
+			mGameProcess->mGraphics->CreateModelResource(key,animationStateNode.GetModelPath()); // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
+			auto animationInterface = mGameProcess->mGraphics->GetAnimationByModelPathOrNull(key, animationStateNode.GetAnimationName());
 
 			if (animationInterface != nullptr)
 			{
