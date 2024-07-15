@@ -452,20 +452,27 @@ void D3D11LightProbeManager::DeleteLightProbe(int index)
 	int deleteIndex = mLightProbePair[index];
 	delete mLightProbes[deleteIndex];
 
-	for (auto& pair : mLightProbePair) 
+	if (deleteIndex == mLightProbes.size() - 1)
 	{
-		if (pair.second == mLightProbes[mLightProbes.size() - 1]->index) 
-		{
-			pair.second = deleteIndex;
-			break;
-		}
+		mLightProbes.erase(mLightProbes.begin() + mLightProbes.size() - 1);
 	}
+	else
+	{
+		for (auto& pair : mLightProbePair)
+		{
+			if (pair.second == mLightProbes[mLightProbes.size() - 1]->index)
+			{
+				pair.second = deleteIndex;
+				break;
+			}
+		}
 
-	// 삭제하고 맨 뒤에 있던 라이트 프로브를 그 자리에 넣어주기
-	mLightProbes[deleteIndex] = mLightProbes[mLightProbes.size() - 1];
-	mLightProbes[deleteIndex]->index = deleteIndex;
+		// 삭제하고 맨 뒤에 있던 라이트 프로브를 그 자리에 넣어주기
+		mLightProbes[deleteIndex] = mLightProbes[mLightProbes.size() - 1];
+		mLightProbes[deleteIndex]->index = deleteIndex;
 
-	mLightProbes.erase(mLightProbes.begin() + mLightProbes.size() - 1);
+		mLightProbes.erase(mLightProbes.begin() + mLightProbes.size() - 1);
+	}
 }
 
 int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
@@ -501,7 +508,10 @@ void D3D11LightProbeManager::MakeTetrahedron()
 	}
 
 	tetgenbehavior tetOption;
+	//tetOption.neighout = true;
 	tetOption.parse_commandline((char*)"n");  // 원하는 옵션 설정 n은 neighbors 만들기
+	//tetOption.maxvolume = 0.1f;                                               // '-a', -1.0.
+	//tetOption.maxvolume_length = 0.1f;
 
 	tetrahedralize(&tetOption, &in, &out);
 
