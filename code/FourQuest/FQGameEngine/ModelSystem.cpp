@@ -23,14 +23,12 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* 
 {
 	mGameProcess = game;
 	mEditorProcess = editor;
-
 }
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
 	std::filesystem::path modelPath = path;
-	std::filesystem::path texturePath =modelPath;
-	texturePath.remove_filename();
+	std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
 
 	auto& graphics = mGameProcess->mGraphics;
 	const auto& model = graphics->CreateModelResource(modelPath.string(), texturePath);
@@ -94,6 +92,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			staticMeshRenderer.SetModelPath(modelPath.string());
 			staticMeshRenderer.SetMaterials(materialNames);
 			staticMeshRenderer.SetMeshName(mesh.Name);
+			staticMeshRenderer.SetTexturePath(texturePath.string());
 		}
 		else // SkinnedMeshObject »ý¼º
 		{
@@ -105,6 +104,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			skinnedMeshRenderer.SetModelPath(modelPath.string());
 			skinnedMeshRenderer.SetMaterials(materialNames);
 			skinnedMeshRenderer.SetMeshName(mesh.Name);
+			skinnedMeshRenderer.SetTexturePath(texturePath.string());
 		}
 	}
 

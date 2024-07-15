@@ -21,6 +21,7 @@ fq::game_engine::DebugSystem::DebugSystem()
 	, mbOnConvexMeshCollider(false)
 	, mbOnCharaterController(false)
 	, mbOnNavigationMesh(false)
+	, mbOnTerrainCollider(false)
 {}
 
 fq::game_engine::DebugSystem::~DebugSystem()

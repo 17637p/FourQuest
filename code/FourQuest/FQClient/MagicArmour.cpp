@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "MagicArmour.h"
 
 #include "LinearAttack.h"
@@ -7,15 +8,19 @@
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
-	,mAnimator(nullptr)
-	,mTransform(nullptr)
-	,mController(nullptr)
-	,mMagicBall{}
-	,mAOE{}
-	,mRazer{}
-	,mAttackWarningUI{}
-	,mMagicBallSpeed(10.f)
-	,mAOEMoveRange(10.f)
+	, mAnimator(nullptr)
+	, mTransform(nullptr)
+	, mController(nullptr)
+	, mMagicBall{}
+	, mAOE{}
+	, mRazer{}
+	, mAttackWarningUI{}
+	, mMagicBallSpeed(10.f)
+	, mAOEMoveRange(10.f)
+	, mAOECoolTime(7.f)
+	, mAOEElapsedTime(0.f)
+	, mRazerCoolTime(5.f)
+	, mRazerElapsedTime(0.f)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -93,6 +98,9 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	// TODO:: AOE Sound Ãß°¡
 
 	GetScene()->AddGameObject(attackObj);
+
+	// CoolTime
+	mAOEElapsedTime = mAOECoolTime;
 }
 
 void fq::client::MagicArmour::EmitRazer()
@@ -111,6 +119,7 @@ void fq::client::MagicArmour::OnStart()
 void fq::client::MagicArmour::OnUpdate(float dt)
 {
 	checkInput();
+	checkCoolTime(dt);
 }
 
 void fq::client::MagicArmour::checkInput()
@@ -125,4 +134,15 @@ void fq::client::MagicArmour::checkInput()
 	{
 		mAnimator->SetParameterBoolean("PushA", false);
 	}
+}
+
+void fq::client::MagicArmour::checkCoolTime(float dt)
+{
+	// AOE
+	mAOEElapsedTime = std::max(0.f, mAOEElapsedTime - dt);
+	mAnimator->SetParameterFloat("AOECoolTime", mAOEElapsedTime);
+
+	// Razer
+	mRazerElapsedTime = std::max(0.f, mRazerCoolTime - dt);
+	mAnimator->SetParameterFloat("RazerCoolTime", mRazerElapsedTime);
 }

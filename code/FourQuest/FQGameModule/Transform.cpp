@@ -273,3 +273,8 @@ void fq::game_module::Transform::SetWorldRotation(Quaternion worldRotation)
 	GenerateWorld(mFQTransform.worldPosition, worldRotation, mFQTransform.worldScale);
 }
 
+DirectX::SimpleMath::Vector3 fq::game_module::Transform::GetLookAtVector() const
+{
+	return  Matrix::CreateFromQuaternion(mFQTransform.worldRotation).Forward();
+}
+

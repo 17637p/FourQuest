@@ -206,6 +206,28 @@ namespace fq::event
 		DirectX::SimpleMath::Vector3 input;
 	};
 
+
+	/// <summary>
+	/// RayCast 이벤트를 보내면 
+	/// result에 결과값을 전달합니다 
+	/// </summary>
+	struct RayCast
+	{
+		struct ResultData
+		{
+			unsigned int hitCount = -1; 
+			std::vector<game_module::GameObject*> objects;
+			std::vector<DirectX::SimpleMath::Vector3> contactPoints;
+		};
+
+		DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+		DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::Zero;
+		float distance = 0.f;
+
+		ResultData* result = nullptr;
+		bool bUseDebugDraw = false;
+	};
+
 	//////////////////////////////////////////////////////////////////////////
 	//							Articulation Event							// 
 	//////////////////////////////////////////////////////////////////////////

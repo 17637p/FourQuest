@@ -38,6 +38,7 @@ namespace fq::client
 		void OnStart() override;
 		void OnUpdate(float dt) override;
 		void checkInput();
+		void checkCoolTime(float dt);
 
 	private:
 		game_module::Transform* mTransform;
@@ -47,6 +48,10 @@ namespace fq::client
 
 		float mMagicBallSpeed;
 		float mAOEMoveRange;
+		float mAOECoolTime;
+		float mAOEElapsedTime;
+		float mRazerCoolTime;
+		float mRazerElapsedTime;
 
 		game_module::PrefabResource mMagicBall;
 		game_module::PrefabResource mAttackWarningUI;

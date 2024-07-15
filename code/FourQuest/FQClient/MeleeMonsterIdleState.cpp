@@ -17,7 +17,7 @@ fq::client::MeleeMonsterIdleState::MeleeMonsterIdleState()
 
 fq::client::MeleeMonsterIdleState::~MeleeMonsterIdleState()
 {
-
+	  
 }
 
 void fq::client::MeleeMonsterIdleState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)

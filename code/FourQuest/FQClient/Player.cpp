@@ -21,6 +21,7 @@ fq::client::Player::Player()
 	, mSoulStack(0.f)
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
+	, mAttackPositionOffset{}
 {}
 
 fq::client::Player::~Player()
@@ -52,6 +53,27 @@ void fq::client::Player::OnUpdate(float dt)
 	processInput();
 	processFeverTime(dt);
 	processCoolTime(dt);
+
+	// RayCastTest
+
+	fq::event::RayCast::ResultData data;
+
+  	auto tf =  GetComponent<game_module::Transform>();
+	auto origin =  tf->GetWorldPosition();
+	origin.y += 1.f;
+    auto direction = tf->GetLookAtVector();
+	auto distance = 5.f;
+	bool bUseDebugDraw = true;
+
+	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
+		fq::event::RayCast {origin, direction, distance, &data , bUseDebugDraw}
+	);
+
+	for (auto object : data.objects)
+	{
+		spdlog::debug("{}", object->GetName());
+	}
+
 }
 
 void fq::client::Player::OnStart()

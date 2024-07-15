@@ -207,6 +207,11 @@ namespace fq::game_module
 		/// <returns>자식이 없으면 true, 그렇지않으면 false</returns>
 		bool IsLeaf()const;
 
+		/// <summary>
+		/// 시선 방향 벡터를 반환합니다
+		/// </summary>
+		DirectX::SimpleMath::Vector3 GetLookAtVector()const;
+
 	private:
 		void decomposeWorldMatrix();
 		void decomposeLocalMatrix();
