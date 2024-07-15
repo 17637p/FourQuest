@@ -680,5 +680,25 @@
     <CustomBuild Include="DebugLightProbePS.hlsl">
       <Filter>Shader\PS</Filter>
     </CustomBuild>
+    <CustomBuild Include="PostProcessingPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BloomExtractBrightAreasCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurVertCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BloomAccumulateCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="BloomDownSampleCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="BlurHorzCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

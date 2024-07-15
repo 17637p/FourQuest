@@ -11,6 +11,7 @@
 #include <directxtk/BufferHelpers.h>
 #include <deque>
 #include <directxtk/SimpleMath.h>
+#include <directxtk\SimpleMath.h>
 
 #include "D3D11Device.h"
 #include "D3D11ResourceType.h"

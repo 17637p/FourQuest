@@ -133,7 +133,7 @@ dcl_temps 3
 //   vicp[3][2].x <- quad[3].TangentW.x; vicp[3][2].y <- quad[3].TangentW.y; vicp[3][2].z <- quad[3].TangentW.z; 
 //   vicp[3][3].x <- quad[3].UV.x; vicp[3][3].y <- quad[3].UV.y; vicp[3][3].z <- quad[3].BoundsY.x; vicp[3][3].w <- quad[3].BoundsY.y
 //
-#line 49 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\TerrainDS.hlsl"
+#line 49 "C:\Git\FourQuest\code\FourQuest\FQGraphics\TerrainDS.hlsl"
 add r0.xy, -vicp[2][0].xzxx, vicp[3][0].xzxx
 mad r0.xy, vDomain.xxxx, r0.xyxx, vicp[2][0].xzxx
 add r0.zw, -vicp[0][0].xxxz, vicp[1][0].xxxz
