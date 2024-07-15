@@ -48,7 +48,7 @@ bool PostProcessingDemo::Init(HINSTANCE hInstance)
 	createModel("./resource/Graphics/PostProcessingDemo/gun.model", textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(0.1f) * DirectX::SimpleMath::Matrix::CreateTranslation(0, 5, 0));
 
 	// Skybox
-	mTestGraphics->SetSkyBox(L"./resource/Graphics/PostProcessingDemo/defaultEnvHDR.dds", true);
+	mTestGraphics->SetSkyBox(L"./resource/Graphics/PostProcessingDemo/123EnvHDR.dds", true);
 
 	/// camera ÃÊ±âÈ­
 	AddDefaultCamera(mTestGraphics);
@@ -162,16 +162,11 @@ void PostProcessingDemo::Update()
 	info.BloomIntensity = 0.9f;
 	info.bUseColorAdjustment = true;
 	info.bUseToneMapping = true;
-	info.bUseHueVsSatCurve = true;
 	info.bUseColorAdjustment = true;
 	info.Exposure = 2.f;
 	info.Saturation = 2.f;
-	info.Contrast = 2.f;
-	if (GetAsyncKeyState('P') & 0x8000)
-	{
-		info.bIsUpdateHueVsSatCurve = true;
-	}
-	
+	info.Contrast = 10.f;
+
 	mTestGraphics->SetPostProcessingInfo(info);
 
 	using namespace fq::graphics;

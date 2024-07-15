@@ -523,37 +523,34 @@ namespace fq::graphics
 	{
 		float Gamma = 2.2f;
 
-		// color curve(HueToSat)
-		std::vector<DirectX::SimpleMath::Vector2> Points = { { 0.f, 0.5f}, { 1.f,  0.5f} };
-		bool bUseHueVsSatCurve;
-		bool bIsUpdateHueVsSatCurve; // true로 적용 시 Update 반영
-
 		// color adjustment
-		float Exposure = 1.f;
-		float Contrast = 1.f;
-		float Saturation = 1.f;
-		bool bUseColorAdjustment;
+		float Exposure = 1.f; // 2 제곱하여 적용
+		float Contrast = 0.f; // * 0.01 + 1하여 적용
+		float Saturation = 0.f; // * 0.01 + 1하여 적용
+		bool bUseColorAdjustment = false;
 
 		// bloom
-		float BloomIntensity = 1.f;
-		float BloomThreshold = 1.f;
+		float BloomIntensity = 1.f; // 최종 연산 시 이미지 합성 강도
+		float BloomThreshold = 1.f; // 블룸 시작 밝기
+		float BloomScatter = 1.f; // 블러링 된 이미지 누적 시 합성 강도
 		DirectX::SimpleMath::Color BloomColorTint = { 1, 1, 1, 1 };
-		bool bUseBloom;
+		bool bUseBloomScatter = false;
+		bool bUseBloom = false;
 
 		// split toning;
-		DirectX::SimpleMath::Color ShadowColor = { 0, 0, 0, 0 };
-		DirectX::SimpleMath::Color HighlightColor = { 0, 0, 0, 0 };
-		float Balance = 0.5f;
-		bool bUseSplitToning;
+		DirectX::SimpleMath::Color ShadowColor = { 128, 128, 128, 0 };
+		DirectX::SimpleMath::Color HighlightColor = { 128, 128, 128, 0 };
+		float Balance = 0.f; // ~1 ~ 1, 음수에 가까울 수록 Shadow Color 영향을 많이 받음
+		bool bUseSplitToning = false;
 
 		// vignett
 		DirectX::SimpleMath::Color VignettColor = { 0, 0, 0, 1 };
 		float VignettRadius = 0.8f;
 		float VignettSmoothness = 0.4f;
-		bool bUseVignett;
+		bool bUseVignett = false;
 
 		// toneMapping
 		// operator
-		bool bUseToneMapping;
+		bool bUseToneMapping = true;
 	};
 };

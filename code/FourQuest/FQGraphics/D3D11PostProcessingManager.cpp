@@ -116,11 +116,6 @@ namespace fq::graphics
 		{
 			excuteBloom(device);
 		}
-		if (mPostProcessingInfo.bUseHueVsSatCurve && mPostProcessingInfo.bIsUpdateHueVsSatCurve)
-		{
-			D3D11Util::CreateCurveTexture(device->GetDevice().Get(), mHueVsSatCurveTextureSRV.GetAddressOf(), mPostProcessingInfo.Points);
-			mPostProcessingInfo.bIsUpdateHueVsSatCurve = false;
-		}
 
 		PostProcessingBuffer postProcessingBuffer;
 		postProcessingBuffer.BloomColorTint = mPostProcessingInfo.BloomColorTint;
@@ -152,7 +147,6 @@ namespace fq::graphics
 
 		mPostProcessingSRV[mSRVIndex]->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mExtractBrightSRV[mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::PixelShader);
-		device->GetDeviceContext()->PSSetShaderResources(2, 1, mHueVsSatCurveTextureSRV.GetAddressOf());
 		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mLinearClampSS->Bind(device, 1, ED3D11ShaderType::PixelShader);
 
@@ -179,6 +173,8 @@ namespace fq::graphics
 		unsigned short width = device->GetWidth() / 2;
 		unsigned short height = device->GetHeight() / 2;
 		mBloomParams.Threshold = mPostProcessingInfo.BloomThreshold;
+		mBloomParams.Scatter = mPostProcessingInfo.BloomScatter;
+		mBloomParams.bUseScatter = mPostProcessingInfo.bUseBloomScatter;
 		mBloomParamsCB->Update(device, mBloomParams);
 
 		// 밝은 부분 추출

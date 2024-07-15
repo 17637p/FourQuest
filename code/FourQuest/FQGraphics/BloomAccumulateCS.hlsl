@@ -4,6 +4,13 @@ RWTexture2D<float4> gOutputTexture : register(u0);
 
 SamplerState linearSampler : register(s0);
 
+cbuffer BloomParams : register(b0)
+{
+    float gThreshold;
+    float gScatter;
+    bool bUseScatter;
+}
+
 [numthreads(16, 16, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
@@ -13,8 +20,16 @@ void main(uint3 DTid : SV_DispatchThreadID)
     if (DTid.x < width && DTid.y < height)
     {
         float2 uv = DTid.xy / float2(width, height);
-        float4 color = gDownSampleTexture.SampleLevel(linearSampler, uv, 0);
-        color += gInputTexture.SampleLevel(linearSampler, uv, 0);
-        gOutputTexture[DTid.xy] = color;
+        float4 downSampleColor = gDownSampleTexture.SampleLevel(linearSampler, uv, 0);
+        float4 inputColor = gInputTexture.SampleLevel(linearSampler, uv, 0);
+        
+        if (bUseScatter)
+        {
+            gOutputTexture[DTid.xy] = downSampleColor * gScatter + inputColor;
+        }
+        else
+        {
+            gOutputTexture[DTid.xy] = downSampleColor + inputColor;
+        }
     }
 }

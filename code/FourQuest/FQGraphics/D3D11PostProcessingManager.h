@@ -71,7 +71,9 @@ namespace fq::graphics
 		struct BloomParams
 		{
 			float Threshold;
-			float unused[3];
+			float Scatter;
+			int bUseScatter;
+			float unused[1];
 		} mBloomParams;
 
 	private:
@@ -111,8 +113,5 @@ namespace fq::graphics
 		unsigned int mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT] = { 4, 8, 16, 32 };
 		unsigned int mDownScaleSRVIndex = 0;
 		unsigned int mDownScaleUAVIndex = 1;
-
-		// color curve
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mHueVsSatCurveTextureSRV;
 	};
 }

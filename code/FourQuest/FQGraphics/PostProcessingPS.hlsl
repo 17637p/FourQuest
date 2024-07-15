@@ -39,28 +39,25 @@ float3 AdjustSaturation(float3 color, float saturation)
     return color;
 }
 
+float SoftLight(float base, float blend)
+{
+    return (blend < 0.5) ? (2 * base * blend + base * base * (1 - 2 * blend)) :
+                           (sqrt(base) * (2 * blend - 1) + 2 * base * (1 - blend));
+}
 float3 SoftLight(float3 base, float3 blend)
 {
-    return (blend < 0.5) ?
-                    (2.0 * base * blend + base * base * (1.0 - 2.0 * blend)) :
-                    (sqrt(base) * (2.0 * blend - 1.0) + 2.0 * base * (1.0 - blend));
+    return float3(SoftLight(base.r, blend.r), SoftLight(base.g, blend.g), SoftLight(base.b, blend.b));
 }
 
 float3 AdjustSplitToning(float3 color, float3 shadowColor, float3 highlightColor, float balance)
 {
-    balance = balance * 0.01f;
     float t = saturate(GetBrightness(saturate(color)) + balance);
     float3 shadows = lerp(0.5, shadowColor.rgb, 1.0 - t);
     float3 highlights = lerp(0.5, highlightColor.rgb, t);
-
+    
     color = SoftLight(color, shadows);
     color = SoftLight(color, highlights);
     return color;
-
-    float brightness = GetBrightness(color);
-    float3 result = lerp(shadowColor, highlightColor, smoothstep(balance - 0.1, balance + 0.1, brightness));
-    result = lerp(color, result, 0.5);
-    return result;
 }
 
 float3 AdjustVignetting(float3 color, float radius, float smoothness, float2 uv, float4 vigentteColor)
@@ -136,15 +133,7 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
     if (bUseBloom)
     {
         float3 bloomColor = gBloomTexture.Sample(gSamplerLinear, uv).rgb;
-        color += bloomColor * GetBloomCurve(gBloomIntensity, gBloomThreshold) * gBloomColorTint.rgb;
-    }
-    
-    if (bUseHueVsSatCurve)
-    {
-        float3 hsv = RGBtoHSV(color);
-        return float4(hsv.y, hsv.y, hsv.y, 1.f);
-        hsv.y = 1.f;
-        color = HSVtoRGB(hsv);
+        color += (bloomColor * GetBloomCurve(gBloomIntensity, gBloomThreshold) * gBloomColorTint.rgb);
     }
     
     if (bUseColorAdjustment)
@@ -156,16 +145,16 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
         color = AdjustSaturation(color, gSaturation);
     }
     
-    if (bUseSplitToning)
-    {
-        color = AdjustSplitToning(color, gShadowColor.rgb, gHighlightColor.rgb, saturate(gBalance));
-    }
-
     if (bUseToneMapping)
     {
         color = ReinhardToneMapping(color);
     }
     
+    if (bUseSplitToning)
+    {
+        color = AdjustSplitToning(color, gShadowColor.rgb, gHighlightColor.rgb, gBalance);
+    }
+
     if (bUseVignett)
     {
         color = AdjustVignetting(color, gVignettRadius, gVignettSmoothness, uv, gVignettColor);

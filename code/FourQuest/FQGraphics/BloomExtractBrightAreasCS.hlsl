@@ -6,6 +6,7 @@ SamplerState defaultSampler : register(s0);
 cbuffer BloomParams : register(b0)
 {
     float gThreshold;
+    float gScatter;
 }
 
 float4 ExtractBrightAreas(float4 color, float threshold)
