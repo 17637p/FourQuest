@@ -26,8 +26,8 @@ namespace fq::game_engine
 		void DeleteLightProbe(fq::graphics::IProbeObject* probeObject);
 		void Clear();
 
-		void SaveProbeTexture(int width, int height);
-		void BakeLightProbe();
+		void SaveProbeTexture(bool isAll, int width, int height);
+		void BakeLightProbe(bool isAll);
 
 		void SaveLightProbes(std::string fileName);
 		void LoadLightProbes(std::string fileName);

@@ -99,14 +99,29 @@ void fq::game_engine::LightProbeWindow::beginButtons()
 		int numLightProbe = mLightProbeSystem->GetLightProbeObjects().size();
 		if (numLightProbe >= 4)
 		{
-			mLightProbeSystem->SaveProbeTexture(mWidth, mHeight);
-			mLightProbeSystem->BakeLightProbe();
+			mLightProbeSystem->SaveProbeTexture(false, mWidth, mHeight);
+			mLightProbeSystem->BakeLightProbe(false);
 		}
 		else
 		{
 			spdlog::error("Baking is only possible with four or more");
 		}
 	}
+	ImGui::SameLine();
+	if (ImGui::Button("BakeAll", ImVec2{ 133,25 }))
+	{
+		int numLightProbe = mLightProbeSystem->GetLightProbeObjects().size();
+		if (numLightProbe >= 4)
+		{
+			mLightProbeSystem->SaveProbeTexture(true, mWidth, mHeight);
+			mLightProbeSystem->BakeLightProbe(true);
+		}
+		else
+		{
+			spdlog::error("Baking is only possible with four or more");
+		}
+	}
+
 	// Nav Mesh 
 	if (ImGui::Button("Place Default", ImVec2{ 133,25 }))
 	{

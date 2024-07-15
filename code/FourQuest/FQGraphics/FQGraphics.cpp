@@ -108,9 +108,9 @@ void FQGraphics::DeleteLightProbe(int index)
 	mLightProbeManager->SetIsUsedLightProbe(false);
 }
 
-void FQGraphics::BakeLightProbe()
+void FQGraphics::BakeLightProbe(bool isAll)
 {
-	mLightProbeManager->BakeAllLightProbeCoefficient();
+	mLightProbeManager->BakeAllLightProbeCoefficient(isAll);
 	mLightProbeManager->MakeTetrahedron();
 	mLightProbeManager->SetIsUsedLightProbe(true);
 }
@@ -125,7 +125,7 @@ void FQGraphics::DeleteCubeProbe(unsigned short index)
 
 }
 
-void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned short height)
+void FQGraphics::SaveCubeProbeTexture(bool isAll, const unsigned short width, const unsigned short height)
 {
 	mLightProbeManager->SetIsUsedLightProbe(false);
 
@@ -199,7 +199,7 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 	std::vector<LightProbe*> lightProbes = mLightProbeManager->GetLightProbes();
 	for (int lightProbeIndex = 0; lightProbeIndex < lightProbes.size(); lightProbeIndex++)
 	{
-		if (lightProbes[lightProbeIndex]->isBaked)
+		if (lightProbes[lightProbeIndex]->isBaked && !isAll)
 		{
 			continue;
 		}

@@ -51,14 +51,14 @@ void fq::game_engine::LightProbeSystem::DeleteLightProbe(fq::graphics::IProbeObj
 	mProbeObjects.erase(std::remove(mProbeObjects.begin(), mProbeObjects.end(), probeObject));
 }
 
-void fq::game_engine::LightProbeSystem::BakeLightProbe()
+void fq::game_engine::LightProbeSystem::BakeLightProbe(bool isAll)
 {
-	mGameProcess->mGraphics->BakeLightProbe();
+	mGameProcess->mGraphics->BakeLightProbe(isAll);
 }
 
-void fq::game_engine::LightProbeSystem::SaveProbeTexture(int width, int height)
+void fq::game_engine::LightProbeSystem::SaveProbeTexture(bool isAll, int width, int height)
 {
-	mGameProcess->mGraphics->SaveCubeProbeTexture(width, height);
+	mGameProcess->mGraphics->SaveCubeProbeTexture(isAll, width, height);
 }
 
 void fq::game_engine::LightProbeSystem::SaveLightProbes(std::string fileName)

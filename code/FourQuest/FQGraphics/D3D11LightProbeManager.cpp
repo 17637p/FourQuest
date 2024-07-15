@@ -404,7 +404,7 @@ int D3D11LightProbeManager::GetTetIndex(int& tetIndex, const DirectX::SimpleMath
 	return tetIndex;
 }
 
-void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
+void D3D11LightProbeManager::BakeAllLightProbeCoefficient(bool isAll)
 {
 	float* r = new float[9];
 	float* g = new float[9];
@@ -412,7 +412,7 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 
 	for (int i = 0; i < mLightProbes.size(); i++)
 	{
-		if (mLightProbes[i]->isBaked)
+		if (mLightProbes[i]->isBaked && !isAll)
 		{
 			continue;
 		}
