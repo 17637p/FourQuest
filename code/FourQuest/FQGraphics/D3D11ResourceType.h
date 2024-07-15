@@ -47,6 +47,9 @@ namespace fq::graphics
 		PositionWClipZ,
 		SourceNormal,
 		SourceTangent,
+
+		LightProbeIrr,
+		DebugLightProbeIrr,
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -76,7 +79,8 @@ namespace fq::graphics
 		AnisotropicClamp,
 		Shadow,
 		LinearWrap,
-		PointClamp
+		PointClamp,
+		LinearClamp,
 	};
 
 	enum class ED3D11RasterizerState

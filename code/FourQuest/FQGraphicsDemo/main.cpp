@@ -7,6 +7,7 @@
 #include "UIDemo.h"
 #include "RenderObjectDemo.h"
 #include "EffectDemo.h"
+#include "PostProcessingDemo.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../x64/Debug/FQGraphics.lib")
@@ -33,7 +34,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// std::unique_ptr<TerrainDemo> demo = std::make_unique<TerrainDemo>();
 	// std::unique_ptr<UIDemo> demo = std::make_unique<UIDemo>();
 	// std::unique_ptr<RenderObjectDemo> demo = std::make_unique<RenderObjectDemo>();
-	std::unique_ptr<EffectDemo> demo = std::make_unique<EffectDemo>();
+	// std::unique_ptr<EffectDemo> demo = std::make_unique<EffectDemo>();
+	std::unique_ptr<PostProcessingDemo> demo = std::make_unique<PostProcessingDemo>();
 
 	demo->Init(hInstance);
 	demo->Loop();

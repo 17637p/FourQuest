@@ -15,6 +15,7 @@
 #include "TrailSystem.h"
 #include "UISystem.h"
 #include "PathFindingSystem.h"
+#include "LightProbeSystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -36,6 +37,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mTrailSystem(std::make_unique<TrailSystem>())
 	, mUISystem(std::make_unique<UISystem>())
 	, mPathFindgingSystem(std::make_unique<PathFindingSystem>(this))
+	, mLightProbeSystem(std::make_unique<LightProbeSystem>(this))
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

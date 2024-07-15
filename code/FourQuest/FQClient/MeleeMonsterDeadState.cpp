@@ -23,3 +23,14 @@ void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& anima
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
 }
+
+void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
+{
+	auto agent = animator.GetComponent<game_module::NavigationAgent>();
+	agent->Stop();
+
+	auto gameObject = animator.GetGameObject();
+
+	gameObject->RemoveComponent<game_module::NavigationAgent>();
+	gameObject->RemoveComponent<game_module::CapsuleCollider>();
+}

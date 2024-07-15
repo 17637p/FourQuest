@@ -97,6 +97,7 @@ namespace fq::graphics
 		virtual IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) override;
 		virtual ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) override;
 		virtual IMeshEffectObject* CreateMeshEffectObject(const std::string& modelPath, const std::string& uvAnimationPath, const std::string& transformAnimationPath, const std::string& texturebasePath, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index) override;
 
 		virtual void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject) override;
 		virtual void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject) override;
@@ -105,6 +106,7 @@ namespace fq::graphics
 		virtual void DeleteDecalObject(IDecalObject* decalObject) override;
 		virtual void DeleteTrailObject(ITrailObject* trailObject) override;
 		virtual void DeleteMeshEffectObject(IMeshEffectObject* meshEffectObject) override;
+		virtual void DeleteProbeObject(IProbeObject* probeObject) override;
 
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
@@ -118,9 +120,12 @@ namespace fq::graphics
 		virtual void DrawRing(const debug::RingInfo& ringInfo) override;
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
+		virtual void DrawSphereEx(const debug::SphereInfoEx& sphereInfoEx) override;
+		virtual void DrawRingEx(const debug::RingInfoEx& ringInfoEx) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
+		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
@@ -146,9 +151,19 @@ namespace fq::graphics
 		virtual void UseShadow(const unsigned int id, bool bUseShadow);
 
 		// Light Probe
+		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;
+		virtual void DeleteLightProbe(int index) override;
+		virtual void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) override;
+
+		virtual void BakeLightProbe() override;
+		virtual void SaveLightProbes(const std::string& fileName) override;
+		virtual void LoadLightProbes(const std::string& fileName) override;
+
 		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteCubeProbe(unsigned short index) override;
 		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;
+
+		virtual void SetLightProbeIntensity(float intensity) override;
 
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
@@ -157,6 +172,10 @@ namespace fq::graphics
 
 		/// Picking
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
+
+		// PostProcessing
+		virtual void  SetPostProcessingInfo(const PostProcessingInfo& info) override;
+		virtual const PostProcessingInfo& GetPostProcessingInfo() const override;
 
 		/// For IMGUI(D3D11)
 		ID3D11Device* GetDivice() override;
@@ -183,6 +202,8 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;
 		std::shared_ptr<class UIManager> mUIManager;
+
+		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
 	};
 }
 

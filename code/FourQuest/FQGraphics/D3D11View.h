@@ -36,6 +36,7 @@ namespace fq::graphics
 
 		static void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11DepthStencilView>& depthStencilView);
+		void UnBind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 		ComPtr<ID3D11RenderTargetView> GetRTV();
 
@@ -60,7 +61,7 @@ namespace fq::graphics
 		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11RenderTargetView>& rendertargetView);
 		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11DepthStencilView>& depthStencilView);
 		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11DepthStencilView>& depthStencilView, DXGI_FORMAT format);
-		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11UnorderedAccessView>& unorderedAccessView);
+		D3D11ShaderResourceView(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<class D3D11UnorderedAccessView>& unorderedAccessView, bool bIsTexture = false);
 
 		static std::string GenerateRID(const ED3D11ShaderResourceViewType eViewType);
 
@@ -128,10 +129,12 @@ namespace fq::graphics
 		friend class D3D11ShaderResourceView;
 
 	public:
+		D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, const unsigned short width, const unsigned short height);
 		D3D11UnorderedAccessView(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11StructuredBuffer> buffer, eUAVType type);
 		~D3D11UnorderedAccessView() = default;
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, UINT startSlot, UINT initialCount = (UINT)-1);
+		void UnBind(const std::shared_ptr<D3D11Device>& d3d11Device, UINT startSlot, UINT initialCount = (UINT)-1);
 		void Clear(const std::shared_ptr<D3D11Device>& d3d11Device);
 
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> GetView() const { return mView; }

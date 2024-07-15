@@ -206,8 +206,17 @@
     <ClInclude Include="Animation.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="MeshEffectObject.h">
-      <Filter>Object</Filter>
+    <ClInclude Include="SHMath\DirectXSH.h">
+      <Filter>D3D11\SHMath</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbePass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbeAddPass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugLightProbePass.h">
+      <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +315,9 @@
     </Filter>
     <Filter Include="Shader\DS">
       <UniqueIdentifier>{36bcf3c2-5b0d-4a7e-9f26-df6390ca562b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="D3D11\SHMath">
+      <UniqueIdentifier>{1828af67-1bc5-4141-8fc4-5a5c7e9cb194}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -487,8 +499,23 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Resource\Source</Filter>
     </ClCompile>
-    <ClCompile Include="MeshEffectObject.cpp">
-      <Filter>Object\Source</Filter>
+    <ClCompile Include="SHMath\DirectXSH.cpp">
+      <Filter>D3D11\SHMath</Filter>
+    </ClCompile>
+    <ClCompile Include="SHMath\DirectXSHD3D11.cpp">
+      <Filter>D3D11\SHMath</Filter>
+    </ClCompile>
+    <ClCompile Include="SHMath\DirectXSHD3D12.cpp">
+      <Filter>D3D11\SHMath</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbePass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbeAddPass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugLightProbePass.cpp">
+      <Filter>Pass\PipelineIndependentPass\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -499,6 +526,9 @@
       <Filter>Shader\Common</Filter>
     </None>
     <None Include="ParticleCommon.hlsli">
+      <Filter>Shader\Common</Filter>
+    </None>
+    <None Include="Probe.hlsli">
       <Filter>Shader\Common</Filter>
     </None>
   </ItemGroup>
@@ -632,5 +662,43 @@
     <CustomBuild Include="SpecularIBLCS.hlsl">
       <Filter>Shader\CS</Filter>
     </CustomBuild>
+    <CustomBuild Include="LightProbeVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbePS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeAddPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeAddVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugLightprobeVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DebugLightProbePS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PostProcessingPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BloomExtractBrightAreasCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurVertCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BloomAccumulateCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="BloomDownSampleCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </FxCompile>
+    <FxCompile Include="BlurHorzCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

@@ -23,6 +23,7 @@
 #include "TrailSystem.h"
 #include "PathFindingSystem.h"
 #include "UISystem.h"
+#include "LightProbeSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -218,6 +219,9 @@ void fq::game_engine::GameEngine::Process()
 
 void fq::game_engine::GameEngine::Finalize()
 {
+	//System
+	mGameProcess->mLightProbeSystem->Finalize();
+
 	mGameProcess->mSceneManager->UnloadScene();
 
 	mGameProcess->mGraphics->Finalize();

@@ -127,6 +127,7 @@ extern "C" {
 			virtual FQ_GRAPHICS IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS IMeshEffectObject* CreateMeshEffectObject(const std::string& modelPath, const std::string& uvAnimationPath, const std::string& transformAnimationPath, const std::string& texturebasePath, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index) abstract;
 
 			virtual FQ_GRAPHICS void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject) abstract;
 			virtual FQ_GRAPHICS void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject) abstract;
@@ -135,6 +136,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteDecalObject(IDecalObject* decalObject) abstract;
 			virtual FQ_GRAPHICS void DeleteTrailObject(ITrailObject* trailObject) abstract;
 			virtual FQ_GRAPHICS void DeleteMeshEffectObject(IMeshEffectObject* meshEffectObject) abstract;
+			virtual FQ_GRAPHICS void DeleteProbeObject(IProbeObject* probeObject) abstract;
 
 			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
@@ -148,9 +150,12 @@ extern "C" {
 			virtual FQ_GRAPHICS void DrawRing(const debug::RingInfo& ringInfo) abstract;
 			virtual FQ_GRAPHICS void DrawRay(const debug::RayInfo& rayInfo) abstract;
 			virtual FQ_GRAPHICS void DrawPolygon(const debug::PolygonInfo& polygonInfo) abstract;
+			virtual FQ_GRAPHICS void DrawSphereEx(const debug::SphereInfoEx& sphereInfoEx) abstract;
+			virtual FQ_GRAPHICS void DrawRingEx(const debug::RingInfoEx& ringInfoEx) abstract;
 
 			/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
+			virtual FQ_GRAPHICS void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) abstract;
 
 			/// UI
 			// text
@@ -176,9 +181,19 @@ extern "C" {
 			virtual FQ_GRAPHICS void UseShadow(const unsigned int id, bool bUseShadow) abstract;
 
 			// Light Probe
+			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;
+			virtual FQ_GRAPHICS void DeleteLightProbe(int index) abstract;
+			virtual FQ_GRAPHICS void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) abstract;
+
+			virtual FQ_GRAPHICS void BakeLightProbe() abstract;
+			virtual FQ_GRAPHICS void SaveLightProbes(const std::string& fileName) abstract;
+			virtual FQ_GRAPHICS void LoadLightProbes(const std::string& fileName) abstract;
+
 			virtual FQ_GRAPHICS unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) abstract;
 			virtual FQ_GRAPHICS void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) abstract;
 			virtual FQ_GRAPHICS void DeleteCubeProbe(unsigned short index) abstract;
+
+			virtual FQ_GRAPHICS void SetLightProbeIntensity(float intensity) abstract;
 
 			/// Camera
 			virtual FQ_GRAPHICS void SetCamera(const CameraInfo& cameraInfo) abstract;
@@ -187,6 +202,10 @@ extern "C" {
 
 			/// Picking
 			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;
+
+			// PostProcessing
+			virtual FQ_GRAPHICS void  SetPostProcessingInfo(const PostProcessingInfo& info) abstract;
+			virtual FQ_GRAPHICS const PostProcessingInfo& GetPostProcessingInfo() const abstract;
 
 			/// For IMGUI(D3D11)
 			virtual FQ_GRAPHICS ID3D11Device* GetDivice() abstract;

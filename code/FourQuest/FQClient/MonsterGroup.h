@@ -7,6 +7,13 @@ namespace fq::client
 	class MonsterGroup :public game_module::Component
 	{
 	public:
+		/// <summary>
+		/// 몬스터객체에 그룹이 존재하면 그룹을 반환하고
+		/// 그렇지 않으면 nullptr을 반환합니다
+		/// </summary>
+		static MonsterGroup* GetMonsterGroup(fq::game_module::GameObject* monster);
+
+	public:
 		MonsterGroup();
 		~MonsterGroup();
 
@@ -16,9 +23,9 @@ namespace fq::client
 		void Register(fq::game_module::GameObject* monster);
 
 		/// <summary>
-		/// 타겟을 설정합니다
+		/// 몬스터들에게 타겟을 발견했다고 알립니다 
 		/// </summary>
-		void SetTarget(fq::game_module::GameObject* target);
+		void AnnounceFindedTarget(fq::game_module::GameObject* target);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

@@ -139,7 +139,7 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationHelper.h" />
-    <ClInclude Include="MeshEffectObject.h" />
+    <ClInclude Include="DebugLightProbePass.h" />
     <ClInclude Include="NodeHierarchy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
@@ -149,6 +149,8 @@
     <ClInclude Include="DecalObject.h" />
     <ClInclude Include="DeferredDecalPass.h" />
     <ClInclude Include="GeometryHelper.h" />
+    <ClInclude Include="LightProbeAddPass.h" />
+    <ClInclude Include="LightProbePass.h" />
     <ClInclude Include="OutLineAddPass.h" />
     <ClInclude Include="OutLineBlurPass.h" />
     <ClInclude Include="OutLinePass.h" />
@@ -197,6 +199,7 @@
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="D3D11ResourceManager.h" />
     <ClInclude Include="ShadowPass.h" />
+    <ClInclude Include="SHMath\DirectXSH.h" />
     <ClInclude Include="SingleColorPass.h" />
     <ClInclude Include="SkyBoxPass.h" />
     <ClInclude Include="SSAODepthPass.h" />
@@ -211,7 +214,7 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationHelper.cpp" />
-    <ClCompile Include="MeshEffectObject.cpp" />
+    <ClCompile Include="DebugLightProbePass.cpp" />
     <ClCompile Include="NodeHierarchy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConstantBufferStructure.cpp" />
@@ -248,6 +251,8 @@
     <ClCompile Include="IFQGraphics.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="D3D11ObjectManager.cpp" />
+    <ClCompile Include="LightProbeAddPass.cpp" />
+    <ClCompile Include="LightProbePass.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="OutLineAddPass.cpp" />
@@ -260,6 +265,9 @@
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="D3D11ResourceManager.cpp" />
     <ClCompile Include="ShadowPass.cpp" />
+    <ClCompile Include="SHMath\DirectXSH.cpp" />
+    <ClCompile Include="SHMath\DirectXSHD3D11.cpp" />
+    <ClCompile Include="SHMath\DirectXSHD3D12.cpp" />
     <ClCompile Include="SingleColorPass.cpp" />
     <ClCompile Include="SkyBoxPass.cpp" />
     <ClCompile Include="SSAODepthPass.cpp" />
@@ -280,6 +288,7 @@
     <None Include="Common.hlsli" />
     <None Include="DecalCommon.hlsli" />
     <None Include="ParticleCommon.hlsli" />
+    <None Include="Probe.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="DeferredDecalPS.hlsl">
@@ -564,6 +573,30 @@ fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="LightProbePS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /Od /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeVS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso
+fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso
+fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SKINNING.cso /D SKINNING=1</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="LightProbeAddPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /Od /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
@@ -574,6 +607,13 @@ fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="LightProbeAddVS.hlsl">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
@@ -623,6 +663,66 @@ fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="DebugLightProbePS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="DebugLightprobeVS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="PostProcessingPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="BloomAccumulateCS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="BloomDownSampleCS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="BloomExtractBrightAreasCS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="BlurHorzCS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="BlurVertCS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -22,6 +22,9 @@ namespace fq::graphics
 		, mParticlePass(std::make_shared<ParticlePass>())
 		, mDecalPass(std::make_shared<DeferredDecalPass>())
 		, mTrailRenderPass(std::make_shared<TrailRenderPass>())
+		, mLightProbePass(std::make_shared<LightProbePass>())
+		, mLightProbeAddPass(std::make_shared<LightProbeAddPass>())
+		, mDebugLightProbePass(std::make_shared<DebugLightProbePass>())
 	{
 	}
 
@@ -33,6 +36,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11ParticleManager> particleManager,
 		std::shared_ptr<D3D11ObjectManager> objectManager,
+		std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 		unsigned short width,
 		unsigned short height)
 	{
@@ -65,6 +69,9 @@ namespace fq::graphics
 		mParticlePass->Initialize(device, particleManager, objectManager, cameraManager, resourceManager, lightManager, width, height);
 		mDecalPass->Initialize(device, resourceManager, cameraManager, objectManager, debugDrawManager, width, height);
 		mTrailRenderPass->Initialize(device, objectManager, cameraManager, resourceManager, lightManager, width, height);
+		mLightProbePass->Initialize(device, jobManager, cameraManager, resourceManager, lightProbeManager, width, height);
+		mLightProbeAddPass->Initialize(device, resourceManager, width, height);
+		mDebugLightProbePass->Initialize(device, objectManager, cameraManager, resourceManager, lightProbeManager, width, height);
 
 		// 삽입 순서가 처리되는 순서
 		mPasses.push_back(mShadowPass);
@@ -74,6 +81,9 @@ namespace fq::graphics
 		mPasses.push_back(mShadingPass);
 		mPasses.push_back(mDebugRenderPass);
 		mPasses.push_back(mSkyBoxPass);
+		mPasses.push_back(mLightProbePass);
+		mPasses.push_back(mLightProbeAddPass);
+		mPasses.push_back(mOutLineAddPass);
 		mPasses.push_back(mTransparentRenderPass);
 		mPasses.push_back(mTransparentCompositePass);
 		mPasses.push_back(mTrailRenderPass);
@@ -82,6 +92,7 @@ namespace fq::graphics
 		mPasses.push_back(mOutLinePass);
 		mPasses.push_back(mOutLineBlurPass);
 		mPasses.push_back(mOutLineAddPass);
+		mPasses.push_back(mDebugLightProbePass);
 
 		mFullScreenLastPass = mFullScreenPass;
 		//mPasses.push_back(mFullScreenPass);

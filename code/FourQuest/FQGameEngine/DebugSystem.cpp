@@ -346,9 +346,6 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
-
-
-
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
 	if (!GetOnCapsuleCollider()) return;
@@ -384,17 +381,13 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 		}
 	}
 }
+
 void fq::game_engine::DebugSystem::renderTerrainCollider()
 {
 	if (!GetOnTerrainCollider()) return;
 
 	using namespace fq::game_module;
-
-
-
 }
-
-
 
 void fq::game_engine::DebugSystem::renderCharaterController()
 {
@@ -451,4 +444,5 @@ void fq::game_engine::DebugSystem::renderNavigationMesh()
 		mGameProcess->mGraphics->DrawSphere(info);
 	}
 }
+
 

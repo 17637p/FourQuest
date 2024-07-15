@@ -99,6 +99,20 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 
 		break;
 	}
+
+	case ED3D11SamplerState::LinearClamp:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+		break;
+	}
 	default:
 		break;
 	}

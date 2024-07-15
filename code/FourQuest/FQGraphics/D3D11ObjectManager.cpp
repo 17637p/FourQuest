@@ -24,7 +24,7 @@ namespace fq::graphics
 		for (auto* element : mDecalObjects) { deleteObject<DecalObject>(element); } mDecalObjects.clear();
 		for (auto* element : mTrailObjects) { deleteObject<TrailObject>(element); } mTrailObjects.clear();
 		for (auto* element : mMeshEffectObjects) { deleteObject<MeshEffectObject>(element); } mMeshEffectObjects.clear();
-
+		for (auto* element : mProbeObjects) { deleteObject<ProbeObject>(element); } mProbeObjects.clear();
 		ClearDeleteQueue();
 	}
 
@@ -37,6 +37,7 @@ namespace fq::graphics
 		while (!mDecalObjectDeleteQueue.empty()) { deleteObject<DecalObject>(mDecalObjectDeleteQueue.front()); mDecalObjectDeleteQueue.pop(); }
 		while (!mTrailObjectDeleteQueue.empty()) { deleteObject<TrailObject>(mTrailObjectDeleteQueue.front()); mTrailObjectDeleteQueue.pop(); }
 		while (!mMeshEffectObjectDeleteQueue.empty()) { deleteObject<MeshEffectObject>(mMeshEffectObjectDeleteQueue.front()); mMeshEffectObjectDeleteQueue.pop(); }
+		while (!mProbeObjectDeleteQueue.empty()) { deleteObject<ProbeObject>(mProbeObjectDeleteQueue.front()); mProbeObjectDeleteQueue.pop(); }
 	}
 
 	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
@@ -219,5 +220,24 @@ namespace fq::graphics
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);
 		terrainMeshObject->SetTerrainMaterial(device, material);
+	}
+
+	graphics::IProbeObject* D3D11ObjectManager::CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index)
+	{
+		IProbeObject* probeObject = new ProbeObject(staticMesh, transform, index);
+		mProbeObjects.insert(probeObject);
+
+		return probeObject;
+	}
+
+	void D3D11ObjectManager::DeleteProbeObject(IProbeObject* probeObject)
+	{
+		auto find = mProbeObjects.find(probeObject);
+
+		if (find != mProbeObjects.end())
+		{
+			mProbeObjects.erase(find);
+			mProbeObjectDeleteQueue.push(probeObject);
+		}
 	}
 }

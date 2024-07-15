@@ -11,6 +11,8 @@
 #include "D3D11Device.h"
 #include "Define.h"
 
+#include "SHMath/DirectXSH.h"
+
 fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& texturePath)
 	:ResourceBase(ResourceType::Texture)
 	, mTexture(nullptr)
@@ -133,7 +135,6 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	:ResourceBase(ResourceType::Texture)
 {
 	ID3D11Texture2D* cubeTexture = NULL;
-	ID3D11ShaderResourceView* shaderResourceView = NULL;
 
 	//Description of each face
 	D3D11_TEXTURE2D_DESC texDesc = {};
@@ -193,6 +194,8 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 
 	d3d11Device->GetDevice()->CreateShaderResourceView(cubeTexture, &SMViewDesc, mSRV.GetAddressOf());
+
+	cubeTexture->Release();
 
 	type = TextureType::CubeMap;
 }
@@ -419,7 +422,7 @@ void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11D
 		ID3D11Texture2D* cubeMapTexture;
 		//if (FAILED(hr))
 		//	return hr;
-		mSRV->GetResource(&resource);
+		//mTextureSRV->GetResource(&resource);
 
 		// Get the description of the texture
 		D3D11_TEXTURE2D_DESC desc;
@@ -436,14 +439,45 @@ void fq::graphics::D3D11Texture::Save(const std::shared_ptr<D3D11Device>& d3d11D
 		// Capture the texture into a ScratchImage
 		DirectX::ScratchImage scratchImage;
 		CaptureTexture(d3d11Device->GetDevice().Get(), d3d11Device->GetDeviceContext().Get(), cubeMapTexture, scratchImage);
+		DirectX::ScratchImage float16Image;
+		Convert(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DXGI_FORMAT_R16G16B16A16_FLOAT, DirectX::TEX_FILTER_DEFAULT, DirectX::TEX_THRESHOLD_DEFAULT, float16Image);
 		//if (FAILED(hr))
 		//	return hr;
 
 		// Save the ScratchImage to a DDS file
-		SaveToDDSFile(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DirectX::DDS_FLAGS_NONE, savePath.c_str());
+		SaveToDDSFile(float16Image.GetImages(), float16Image.GetImageCount(), float16Image.GetMetadata(), DirectX::DDS_FLAGS_NONE, savePath.c_str());
+
+		resource->Release();
+		cubeMapTexture->Release();
+		scratchImage.Release();
+		float16Image.Release();
 	}
 	break;
 	default:
 		break;
 	}
+}
+
+void fq::graphics::D3D11Texture::GetSHCoefficientRGB(const std::shared_ptr<D3D11Device>& d3d11Device, float* R, float* G, float* B)
+{
+	//if (type == TextureType::Default)
+	//{
+	//	return;
+	//}
+
+	ID3D11Resource* resource = nullptr;
+	mSRV->GetResource(&resource);
+	assert(resource);
+
+	// Query the resource for the ID3D11Texture2D interface
+	ID3D11Texture2D* cubeMapTexture = nullptr;
+	resource->QueryInterface<ID3D11Texture2D>(&cubeMapTexture);
+	assert(cubeMapTexture);
+
+	DirectX::SHProjectCubeMap(d3d11Device->GetDeviceContext().Get(), 3, cubeMapTexture, R, G, B);
+
+	resource->Release();
+	cubeMapTexture->Release();
+
+	return;
 }

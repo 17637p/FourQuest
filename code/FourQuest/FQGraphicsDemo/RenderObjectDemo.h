@@ -79,6 +79,5 @@ private:
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
 	std::vector<SkinnedMeshRender> mSkinnedMeshRenderers;
 	std::vector<StaticMeshRenderer> mStaticMeshRenderers;
-
 };
 

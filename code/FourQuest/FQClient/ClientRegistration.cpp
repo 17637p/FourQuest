@@ -31,6 +31,8 @@
 #include "MeleeMonsterChaseState.h"
 #include "MeleeMonsterPatrolState.h"
 #include "MeleeMonsterDeadState.h"
+#include "MeleeMonsterWaitAttackState.h"
+#include "MeleeMonsterFindTargetState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -42,6 +44,7 @@
 
 // MonsterSpawner
 #include "MonsterSpawner.h"
+#include "MonsterGroup.h"
 
 #include "Attack.h"
 
@@ -231,6 +234,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Hp")
 		.data<&MeleeMonster::mAttackPower>("AttackPower"_hs)
 		.prop(fq::reflect::prop::Name, "AttackPower")
+		.data<&MeleeMonster::mAttackCoolTime>("AttackCoolTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackCoolTime")
+		.data<&MeleeMonster::mAttackOffset>("AttackOffset"_hs)
+		.prop(fq::reflect::prop::Name, "AttackOffset")
 		.data<&MeleeMonster::mAcceleration>("Acceleration"_hs)
 		.prop(fq::reflect::prop::Name, "Acceleration")
 		.data<&MeleeMonster::mMoveSpeed>("MoveSpeed"_hs)
@@ -239,6 +246,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackRange")
 		.data<&MeleeMonster::mAttackPrefab>("AttackPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "AttackPrefab")
+		.data<&MeleeMonster::mPatrolRange>("PatrolRange"_hs)
+		.prop(fq::reflect::prop::Name, "PatrolRange")
+		.prop(fq::reflect::prop::Comment, u8"순찰 범위")
+		.data<&MeleeMonster::mDetectRange>("DetectRange"_hs)
+		.prop(fq::reflect::prop::Name, "DetectRange")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.base<fq::game_module::Component>();
 	
 	//////////////////////////////////////////////////////////////////////////
@@ -253,6 +266,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterAttackState>()
 		.type("MeleeMonsterAttackState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterAttackState")
+		.data<&MeleeMonsterAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTiming")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterChaseState>()
@@ -268,6 +283,16 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterDeadState>()
 		.type("MeleeMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterDeadState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterWaitAttackState>()
+		.type("MeleeMonsterWaitAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterWaitAttackState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterFindTargetState>()
+		.type("MeleeMonsterFindTargetState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterFindTargetState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -324,6 +349,16 @@ void fq::client::RegisterMetaData()
 		.type("PlantMonsterIdleState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterIdleState")
 		.base<fq::game_module::IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             몬스터 그룹	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<MonsterGroup>()
+		.type("MonsterGroup"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroup")
+		.prop(reflect::prop::Label, "Monster")
+		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터 스포너	 							//

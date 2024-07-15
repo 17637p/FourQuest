@@ -47,6 +47,7 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> GetSRV() const { return mSRV; }
 
 		void Save(const std::shared_ptr<D3D11Device>& d3d11Device, const std::wstring& savePath);
+		void GetSHCoefficientRGB(const std::shared_ptr<D3D11Device>& d3d11Device, float* R, float* G, float* B);
 
 	private:
 		UINT mWidth;
