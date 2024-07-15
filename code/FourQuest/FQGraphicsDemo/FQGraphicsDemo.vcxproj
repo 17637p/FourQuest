@@ -139,6 +139,7 @@
     <ClInclude Include="DemoUtils.h" />
     <ClInclude Include="EffectDemo.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="PostProcessingDemo.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="RenderObjectDemo.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -160,6 +161,7 @@
     <ClCompile Include="EffectDemo.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PostProcessingDemo.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="RenderObjectDemo.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

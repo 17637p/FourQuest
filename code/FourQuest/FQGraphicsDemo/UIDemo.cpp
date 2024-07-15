@@ -49,7 +49,7 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	fq::common::Model modelData = mTestGraphics->ConvertModel("./resource/Graphics/TerrainDemo/Plane.fbx");
 	mTestGraphics->WriteModel(planeModelPath, modelData);
 	const std::string textureBasePath = "./resource/Graphics/TerrainDemo";
-	mTestGraphics->CreateModelResource(planeModelPath, textureBasePath);
+	mTestGraphics->CreateModelResource(std::hash<std::string>{}(planeModelPath), planeModelPath, textureBasePath);
 
 	/// camera √ ±‚»≠
 	AddDefaultCamera(mTestGraphics);
@@ -122,26 +122,26 @@ LRESULT UIDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg)
 	{
-		case WM_SIZE:
-		{
-			mScreenWidth = LOWORD(lParam);
-			mScreenHeight = HIWORD(lParam);
-			mScreenWidth = max(200, mScreenWidth);
-			mScreenHeight = max(200, mScreenHeight);
+	case WM_SIZE:
+	{
+		mScreenWidth = LOWORD(lParam);
+		mScreenHeight = HIWORD(lParam);
+		mScreenWidth = max(200, mScreenWidth);
+		mScreenHeight = max(200, mScreenHeight);
 
-			break;
-		}
-		case WM_PAINT:
-		{
-			hdc = BeginPaint(mHwnd, &ps);
-			EndPaint(mHwnd, &ps);
-			break;
-		}
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			break;
-		}
+		break;
+	}
+	case WM_PAINT:
+	{
+		hdc = BeginPaint(mHwnd, &ps);
+		EndPaint(mHwnd, &ps);
+		break;
+	}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		break;
+	}
 	}
 
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);

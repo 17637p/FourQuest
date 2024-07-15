@@ -98,7 +98,7 @@ void fq::game_engine::LightProbeSystem::SaveLightProbes(std::string fileName)
 	}
 
 	// ¼º°ø
-	//spdlog::info("Navigation Mesh Save Successful");
+	spdlog::info("LightProbe Save Successful");
 }
 
 void fq::game_engine::LightProbeSystem::LoadLightProbes(std::string fileName)
@@ -151,6 +151,8 @@ void fq::game_engine::LightProbeSystem::LoadLightProbes(std::string fileName)
 
 		lightProbeFile.close();
 	}
+
+	spdlog::info("LightProbe Load Successful");
 }
 
 void fq::game_engine::LightProbeSystem::Clear()

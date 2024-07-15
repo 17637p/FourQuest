@@ -114,6 +114,7 @@
       <PrecompiledHeaderFile>GameModulePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -171,6 +172,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="PrefabResource.h" />
     <ClInclude Include="PrefabTest.h" />
     <ClInclude Include="ScreenManager.h" />
@@ -236,6 +238,7 @@
     <ClCompile Include="NavigationMeshLoader.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />
     <ClCompile Include="ScreenManager.cpp" />

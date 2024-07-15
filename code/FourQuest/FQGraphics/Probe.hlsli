@@ -9,6 +9,8 @@ struct LightProbe
     float4 cBg;
     float4 cBb;
     float4 cC;
+    float cIntensity;
+    float3 pad;
 };
 
 float3 ShadeIrad(float4 vNormal, LightProbe probe)

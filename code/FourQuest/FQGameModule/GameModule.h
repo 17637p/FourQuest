@@ -50,6 +50,7 @@
 #include "LinkData.h"
 #include "ArticulationData.h"
 #include "SkyBox.h"
+#include "PostProcessing.h"
 
 // Animation
 #include "AnimatorControllerLoader.h"

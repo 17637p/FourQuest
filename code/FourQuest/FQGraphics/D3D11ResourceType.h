@@ -79,7 +79,8 @@ namespace fq::graphics
 		AnisotropicClamp,
 		Shadow,
 		LinearWrap,
-		PointClamp
+		PointClamp,
+		LinearClamp,
 	};
 
 	enum class ED3D11RasterizerState

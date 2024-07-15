@@ -16,6 +16,7 @@ namespace fq::graphics
 	class D3D11RenderTargetView;
 	class D3D11DebugDrawManager;
 	class D3D11DepthStencilView;
+	class D3D11LightProbeManager;
 
 	class DeferredPipeline : public RenderPipeline
 	{
@@ -31,6 +32,7 @@ namespace fq::graphics
 			std::shared_ptr<D3D11DebugDrawManager> dbugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
 			std::shared_ptr<D3D11ObjectManager> objectManager,
+			std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 			unsigned short width,
 			unsigned short height);
 		void Finalize() override;
@@ -53,6 +55,9 @@ namespace fq::graphics
 		std::shared_ptr<class ParticlePass> mParticlePass;
 		std::shared_ptr<class DeferredDecalPass> mDecalPass;
 		std::shared_ptr<class TrailRenderPass> mTrailRenderPass;
+		std::shared_ptr<class LightProbePass> mLightProbePass;
+		std::shared_ptr<class LightProbeAddPass> mLightProbeAddPass;
+		std::shared_ptr<class DebugLightProbePass> mDebugLightProbePass;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
 		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;

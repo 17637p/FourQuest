@@ -18,11 +18,11 @@ namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
 
-class RenderObjectDemo : public BaseWindow<RenderObjectDemo>
+class PostProcessingDemo : public BaseWindow<PostProcessingDemo>
 {
 public:
-	RenderObjectDemo();
-	~RenderObjectDemo();
+	PostProcessingDemo();
+	~PostProcessingDemo();
 
 	bool Init(HINSTANCE hInstance);
 	void Loop();
@@ -61,15 +61,7 @@ private:
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
-	struct SkinnedMeshRender
-	{
-		fq::graphics::ISkinnedMeshObject* SkinnedMeshObject;
-		std::map<std::string, std::shared_ptr<fq::graphics::IAnimation>> Animations;
-		std::shared_ptr<fq::graphics::INodeHierarchyInstance> NodeHierarchyInstance;
-	};
-
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
-	std::vector<SkinnedMeshRender> mSkinnedMeshRenderers;
 };
 

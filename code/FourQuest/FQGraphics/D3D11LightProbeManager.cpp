@@ -10,6 +10,8 @@
 #include "D3D11Device.h"
 #include "D3D11Texture.h"
 
+#include <cmath> // std::isnan, std::isinf
+
 using namespace fq::graphics;
 
 fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
@@ -20,7 +22,9 @@ fq::graphics::D3D11LightProbeManager::D3D11LightProbeManager()
 	mCubeProbes{},
 	mLightProbes{},
 	mTetrahedrons{},
-	mIsUsedLightProbe(false)
+	mIsUsedLightProbe(false),
+	mIsDrawDebugLightProbe(true),
+	mIntensity(1)
 {
 
 }
@@ -124,6 +128,7 @@ int D3D11LightProbeManager::GetProbeRealIndex(int index)
 
 void D3D11LightProbeManager::SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position)
 {
+	mLightProbes[mLightProbePair[index]]->isBaked = false;
 	mLightProbes[mLightProbePair[index]]->position = position;
 }
 
@@ -157,6 +162,7 @@ bool D3D11LightProbeManager::LoadLightProbes(const std::string& fileName)
 		for (int i = 0; i < lightProbeSize; i++)
 		{
 			LightProbe* newLightProbe = new LightProbe;
+			newLightProbe->isBaked = true;
 
 			lightProbeFile >> newLightProbe->index;
 
@@ -297,7 +303,16 @@ void D3D11LightProbeManager::SaveLightProbes(const std::string& fileName)
 			{
 				for (int k = 0; k < 3; k++)
 				{
-					lightProbeFile << mTetrahedrons[i]->matrix.m[j][k] << " ";
+					bool isNan = std::isnan(mTetrahedrons[i]->matrix.m[j][k]);
+					bool isInf = std::isinf(mTetrahedrons[i]->matrix.m[j][k]);
+					if (isNan || isInf)
+					{
+						lightProbeFile << 0 << " ";
+					}
+					else
+					{
+						lightProbeFile << mTetrahedrons[i]->matrix.m[j][k] << " ";
+					}
 				}
 			}
 			lightProbeFile << "\n";
@@ -397,6 +412,11 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 
 	for (int i = 0; i < mLightProbes.size(); i++)
 	{
+		if (mLightProbes[i]->isBaked)
+		{
+			continue;
+		}
+
 		auto cubeMap = mResourceManager->Create<D3D11Texture>(L"LightProbe" + std::to_wstring(i) + L".dds");
 
 		cubeMap->GetSHCoefficientRGB(mDevice, r, g, b);
@@ -413,6 +433,7 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 		{
 			mLightProbes[i]->coefficient[j + 18] = b[j];
 		}
+		mLightProbes[i]->isBaked = true;
 	}
 
 	delete[] r;
@@ -431,20 +452,27 @@ void D3D11LightProbeManager::DeleteLightProbe(int index)
 	int deleteIndex = mLightProbePair[index];
 	delete mLightProbes[deleteIndex];
 
-	for (auto& pair : mLightProbePair) 
+	if (deleteIndex == mLightProbes.size() - 1)
 	{
-		if (pair.second == mLightProbes[mLightProbes.size() - 1]->index) 
-		{
-			pair.second = deleteIndex;
-			break;
-		}
+		mLightProbes.erase(mLightProbes.begin() + mLightProbes.size() - 1);
 	}
+	else
+	{
+		for (auto& pair : mLightProbePair)
+		{
+			if (pair.second == mLightProbes[mLightProbes.size() - 1]->index)
+			{
+				pair.second = deleteIndex;
+				break;
+			}
+		}
 
-	// 삭제하고 맨 뒤에 있던 라이트 프로브를 그 자리에 넣어주기
-	mLightProbes[deleteIndex] = mLightProbes[mLightProbes.size() - 1];
-	mLightProbes[deleteIndex]->index = deleteIndex;
+		// 삭제하고 맨 뒤에 있던 라이트 프로브를 그 자리에 넣어주기
+		mLightProbes[deleteIndex] = mLightProbes[mLightProbes.size() - 1];
+		mLightProbes[deleteIndex]->index = deleteIndex;
 
-	mLightProbes.erase(mLightProbes.begin() + mLightProbes.size() - 1);
+		mLightProbes.erase(mLightProbes.begin() + mLightProbes.size() - 1);
+	}
 }
 
 int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& position)
@@ -453,6 +481,7 @@ int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& po
 
 	newLightProbe->position = position;
 	newLightProbe->index = mLightProbes.size();
+	newLightProbe->isBaked = false;
 
 	mLightProbePair[mLightProbeIndex] = mLightProbes.size();
 	mLightProbes.push_back(newLightProbe);
@@ -479,7 +508,10 @@ void D3D11LightProbeManager::MakeTetrahedron()
 	}
 
 	tetgenbehavior tetOption;
+	//tetOption.neighout = true;
 	tetOption.parse_commandline((char*)"n");  // 원하는 옵션 설정 n은 neighbors 만들기
+	//tetOption.maxvolume = 0.1f;                                               // '-a', -1.0.
+	//tetOption.maxvolume_length = 0.1f;
 
 	tetrahedralize(&tetOption, &in, &out);
 
@@ -527,6 +559,11 @@ void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector
 		// temp
 		if (tetIndex < 0)
 		{
+			weights.x = 0;
+			weights.y = 0;
+			weights.z = 0;
+			weights.w = 0;
+
 			break;
 		}
 

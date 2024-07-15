@@ -35,16 +35,16 @@ namespace fq::graphics
 		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
 
 		// Model Resource Control
-		virtual const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") override;
-		virtual bool TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
-		virtual const fq::common::Model& GetModel(const std::string& path) override;
-		virtual void DeleteModelResource(const std::string& path) override;
+		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;
+		virtual bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
+		virtual const fq::common::Model& GetModel(unsigned int key) override;
+		virtual void DeleteModelResource(unsigned int key) override;
 
-		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath) override;
-		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName) override;
-		virtual std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName) override;
-		virtual std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName) override;
-		virtual std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName) override;
+		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key) override;
+		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName) override;
+		virtual std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName) override;
+		virtual std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName) override;
+		virtual std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName) override;
 
 		// Render Resource Control
 		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData) override;
@@ -123,6 +123,7 @@ namespace fq::graphics
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
+		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
@@ -160,6 +161,8 @@ namespace fq::graphics
 		virtual void DeleteCubeProbe(unsigned short index) override;
 		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;
 
+		virtual void SetLightProbeIntensity(float intensity) override;
+
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
 		virtual void UpdateCamera(const fq::common::Transform& cameraTransform) override;
@@ -167,6 +170,10 @@ namespace fq::graphics
 
 		/// Picking
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
+
+		// PostProcessing
+		virtual void  SetPostProcessingInfo(const PostProcessingInfo& info) override;
+		virtual const PostProcessingInfo& GetPostProcessingInfo() const override;
 
 		/// For IMGUI(D3D11)
 		ID3D11Device* GetDivice() override;
@@ -193,6 +200,8 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;
 		std::shared_ptr<class UIManager> mUIManager;
+
+		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
 	};
 }
 

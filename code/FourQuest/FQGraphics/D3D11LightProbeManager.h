@@ -30,6 +30,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 position;
 
 		float coefficient[27]; // 0~8 Red, 9~17 Green, 18~26 Blue
+		bool isBaked;
 	};
 
 	struct Tetrahedron
@@ -93,6 +94,11 @@ namespace fq::graphics
 		bool GetIsUsedLightProbe() const { return mIsUsedLightProbe; }
 		void SetIsUsedLightProbe(bool val) { mIsUsedLightProbe = val; }
 
+		bool GetIsDrawDebugLightProbe() const { return mIsDrawDebugLightProbe; }
+		void SetIsDrawDebugLightProbe(bool val) { mIsDrawDebugLightProbe = val; }
+
+		float GetIntensity() const { return mIntensity; }
+		void SetIntensity(float val) { mIntensity = val; }
 		//void GetBarycentricCoordinates(const std::vector<DirectX::SimpleMath::Vector3> vertices, const std::vector<DirectX::SimpleMath::Vector3>& hullRays,
 		//	const DirectX::SimpleMath::Vector3& p, const Tetrahedron& tet, DirectX::SimpleMath::Vector4& coords, float& t);
 		/// Outer Cells에 관련된 거라 일단 보류 
@@ -127,6 +133,10 @@ namespace fq::graphics
 		std::vector<LightProbe*> mLightProbes;
 		std::unordered_map<int, int> mLightProbePair; // 게임 엔진에서 가지고 있는 라이트 프로브 인덱스를 실제 라이트 프로브 인덱스와 연결해주는 것
 		std::vector<Tetrahedron*> mTetrahedrons;
+
+		bool mIsDrawDebugLightProbe;
+
+		float mIntensity;
 	};
 }
 

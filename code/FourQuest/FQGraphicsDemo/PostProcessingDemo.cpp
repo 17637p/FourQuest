@@ -1,4 +1,4 @@
-#include "RenderObjectDemo.h"
+#include "PostProcessingDemo.h"
 
 #include <IFQGraphics.h>
 #include <set>
@@ -9,11 +9,11 @@
 
 using namespace fq::utils;
 
-RenderObjectDemo::RenderObjectDemo()
+PostProcessingDemo::PostProcessingDemo()
 	:mWindowPosX(0),
 	mWindowPosY(0),
-	mScreenWidth(1920),
-	mScreenHeight(1080),
+	mScreenWidth(800),
+	mScreenHeight(600),
 	mResizing(false),
 	mTestGraphics(nullptr)
 {
@@ -25,81 +25,36 @@ RenderObjectDemo::RenderObjectDemo()
 	mEngineExporter = std::make_shared<fq::graphics::EngineExporter>();
 }
 
-RenderObjectDemo::~RenderObjectDemo()
+PostProcessingDemo::~PostProcessingDemo()
 {
 	mEngineExporter->DeleteEngine(mTestGraphics);
 
 	CoUninitialize();
 }
 
-bool RenderObjectDemo::Init(HINSTANCE hInstance)
+bool PostProcessingDemo::Init(HINSTANCE hInstance)
 {
 	/// 기본적인 초기화
 	InputManager::GetInstance().Init(mHwnd);
 	mTimeManager.Init();
 
 	mTestGraphics = mEngineExporter->GetEngine();
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	/// RenderObject 생성
-	mTestGraphics->WriteModel("./resource/Graphics/RenderObjectDemo/gun.model", mTestGraphics->ConvertModel("./resource/Graphics/RenderObjectDemo/gun.fbx"));
-	mTestGraphics->WriteModel("./resource/Graphics/RenderObjectDemo/SkinningTest.model", mTestGraphics->ConvertModel("./resource/Graphics/RenderObjectDemo/SkinningTest.fbx"));
+	const std::string textureBasePath = "./resource/Graphics/PostProcessingDemo/";
+	mTestGraphics->WriteModel("./resource/Graphics/PostProcessingDemo/gun.model", mTestGraphics->ConvertModel("./resource/Graphics/PostProcessingDemo/gun.fbx"));
+	createModel("./resource/Graphics/PostProcessingDemo/gun.model", textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(0.1f));
+	createModel("./resource/Graphics/PostProcessingDemo/gun.model", textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(0.1f) * DirectX::SimpleMath::Matrix::CreateTranslation(0, 5, 0));
 
-	const std::string textureBasePath = "./resource/Graphics/RenderObjectDemo/";
-	std::vector<std::string> modelPaths;
-	modelPaths.reserve(32);
-	std::vector<std::string> fbxPaths;
-	modelPaths.reserve(32);
-
-	auto addPath = [&modelPaths, &fbxPaths](std::string path)
-		{
-			modelPaths.push_back(path + ".model");
-			fbxPaths.push_back(path + ".fbx");
-		};
-
-	addPath("./resource/Graphics/RenderObjectDemo/gun");
-	addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
-	addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
-	addPath("./resource/Graphics/RenderObjectDemo/player01");
-	addPath("./resource/Graphics/RenderObjectDemo/playerani7");
-	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
-
-	for (size_t i = 0; i < modelPaths.size(); ++i)
-	{
-		mTestGraphics->WriteModel(modelPaths[i], mTestGraphics->ConvertModel(fbxPaths[i]));
-	}
-
-	for (size_t i = 0; i < modelPaths.size(); ++i)
-	{
-		for (int j = -5; j < 5; ++j)
-		{
-			createModel(modelPaths[i], textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(j * 1, i * 2, 0));
-		}
-	}
-
-	for (size_t i = 0; i < mSkinnedMeshObjects.size(); ++i)
-	{
-		SkinnedMeshRender renderer;
-
-		renderer.SkinnedMeshObject = mSkinnedMeshObjects[i];
-		renderer.NodeHierarchyInstance = mSkinnedMeshObjects[i]->GetNodeHierarchyInstance();
-
-		const auto& nodeHierarchy = renderer.NodeHierarchyInstance->GetNodeHierarchy();
-		const std::set<std::shared_ptr<fq::graphics::IAnimation>>& animations = nodeHierarchy->GetRegisterAnimations();
-
-		for (auto animation : animations)
-		{
-			renderer.Animations.insert({ "Anim" + i, animation });
-		}
-
-		mSkinnedMeshRenderers.push_back(renderer);
-	}
+	// Skybox
+	mTestGraphics->SetSkyBox(L"./resource/Graphics/PostProcessingDemo/123EnvHDR.dds", true);
 
 	/// camera 초기화
 	AddDefaultCamera(mTestGraphics);
 
 	// Camera Transform 설정
-	mCameraTransform.worldPosition = { 0, 0, 0 };
+	mCameraTransform.worldPosition = { 0, 10, -20 };
 	mCameraTransform.worldRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f));
 	mCameraTransform.worldScale = { 1, 1, 1 };
 
@@ -113,23 +68,16 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 
 	directionalLightInfo.type = fq::graphics::ELightType::Directional;
 	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 2;
-	directionalLightInfo.direction = { 0, -0.7, -0.7 };
+	directionalLightInfo.intensity = 100;
+	directionalLightInfo.direction = { 0, -1, -1 };
 	directionalLightInfo.direction.Normalize();
-
 	mTestGraphics->AddLight(1, directionalLightInfo);
+	mTestGraphics->UseShadow(1, true);
 
-	directionalLightInfo.type = fq::graphics::ELightType::Directional;
-	directionalLightInfo.color = { 1, 1, 1, 1 };
-	directionalLightInfo.intensity = 2;
-	directionalLightInfo.direction = { 0, -0.7, 0.7 };
-	directionalLightInfo.direction.Normalize();
-
-	mTestGraphics->AddLight(2, directionalLightInfo);
 	return true;
 }
 
-void RenderObjectDemo::Loop()
+void PostProcessingDemo::Loop()
 {
 	MSG msg;
 
@@ -153,12 +101,12 @@ void RenderObjectDemo::Loop()
 	}
 }
 
-void RenderObjectDemo::Finalize()
+void PostProcessingDemo::Finalize()
 {
 
 }
 
-LRESULT RenderObjectDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT PostProcessingDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC			hdc;
 	PAINTSTRUCT ps;
@@ -193,7 +141,7 @@ LRESULT RenderObjectDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(mHwnd, uMsg, wParam, lParam);
 }
 
-void RenderObjectDemo::Update()
+void PostProcessingDemo::Update()
 {
 	mTimeManager.Update();
 	InputManager::GetInstance().Update();
@@ -209,21 +157,19 @@ void RenderObjectDemo::Update()
 		PostQuitMessage(0);
 	}
 
+	auto info = mTestGraphics->GetPostProcessingInfo();
+	info.bUseBloom = true;
+	info.BloomIntensity = 0.9f;
+	info.bUseColorAdjustment = true;
+	info.bUseToneMapping = true;
+	info.bUseColorAdjustment = true;
+	info.Exposure = 2.f;
+	info.Saturation = 2.f;
+	info.Contrast = 10.f;
+
+	mTestGraphics->SetPostProcessingInfo(info);
+
 	using namespace fq::graphics;
-
-	// animation
-
-	static float s_animTime = 0.f;
-	s_animTime += mTimeManager.GetDeltaTime();
-	for (SkinnedMeshRender& skinnedMeshRenderer : mSkinnedMeshRenderers)
-	{
-		if (!skinnedMeshRenderer.Animations.empty())
-		{
-			auto anim = skinnedMeshRenderer.Animations.begin()->second;
-			skinnedMeshRenderer.NodeHierarchyInstance->Update(fmod(s_animTime, anim->GetAnimationClip().Duration), anim);
-		}
-	}
-
 	// 카메라 조작
 	float speed = mTimeManager.GetDeltaTime();
 	if (InputManager::GetInstance().IsGetKey(VK_SHIFT))
@@ -272,7 +218,7 @@ void RenderObjectDemo::Update()
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }
 
-void RenderObjectDemo::Render()
+void PostProcessingDemo::Render()
 {
 	mTestGraphics->BeginRender();
 	debugRender();
@@ -280,7 +226,7 @@ void RenderObjectDemo::Render()
 	mTestGraphics->EndRender();
 }
 
-void RenderObjectDemo::debugRender()
+void PostProcessingDemo::debugRender()
 {
 	using namespace fq::graphics::debug;
 
@@ -295,7 +241,7 @@ void RenderObjectDemo::debugRender()
 	mTestGraphics->DrawGrid(gridInfo);
 }
 
-void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform)
+void PostProcessingDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform)
 {
 	using namespace fq::graphics;
 	unsigned int key = std::hash<std::string>{}(modelPath);
@@ -345,8 +291,7 @@ void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path 
 	}
 }
 
-
-void RenderObjectDemo::calculateFrameStats()
+void PostProcessingDemo::calculateFrameStats()
 {
 	float fps = (float)mTimeManager.GetFps();
 	float mspf = 1000.0f / fps;

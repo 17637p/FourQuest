@@ -44,6 +44,11 @@ void fq::graphics::DebugLightProbePass::OnResize(unsigned short width, unsigned 
 
 void fq::graphics::DebugLightProbePass::Render()
 {
+	if (!mLightProbeManager->GetIsDrawDebugLightProbe())
+	{
+		return;
+	}
+
 	// Update
 	{
 		SceneTrnasform sceneTransform;
@@ -73,7 +78,7 @@ void fq::graphics::DebugLightProbePass::Render()
 			float* g = coefficient + 9;
 			float* b = coefficient + 18;
 
-			ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, coefficient, g, b);
+			ConstantBufferHelper::UpdateLightProbeCB(mDevice, mLightProbeCB, coefficient, g, b, 1);
 
 			std::shared_ptr<graphics::IStaticMesh> iStaticMesh = probeObject->GetStaticMesh();
 			std::shared_ptr<graphics::StaticMesh> staticMesh = std::static_pointer_cast<StaticMesh>(iStaticMesh);
