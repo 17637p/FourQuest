@@ -88,7 +88,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 
 bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::GameObject* object)
 {
-       	auto animator = object->GetComponent<fq::game_module::Animator>();
+	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto controllerPath = animator->GetControllerPath();
 	auto nodeHierarchyPath = animator->GetNodeHierarchyPath();
 
@@ -97,19 +97,12 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 		spdlog::warn("{} animation controller load fail", object->GetName());
 		return false;
 	}
-
-	unsigned int modelKey = mGameProcess->mRenderingSystem->GetModelKey(animator->GetNodeHierarchyModelPath(), {});
-
-	// 애니메이션 리소스 로딩
-	if (!mGameProcess->mGraphics->TryCreateModelResource( modelKey,animator->GetNodeHierarchyModelPath())) // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
 	if (!std::filesystem::exists(nodeHierarchyPath))
 	{
 		spdlog::warn("{} nodeHierarchy load fail", object->GetName());
 		return false;
 	}
 
-	// 계층구조와 인스턴스 생성 및 바인딩
-	auto nodeHierarchy = mGameProcess->mGraphics->GetNodeHierarchyByModelPathOrNull(modelKey);
 	// 컨트롤러 로드
 	auto controller = mLoader.Load(controllerPath);
 
@@ -131,28 +124,14 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	// 애니메이션 리소스 로딩 및 계층 구조 캐시 생성
 	for (auto& [stateName, animationStateNode] : controller->GetStateMap())
 	{
-		const auto & modelPath = animationStateNode.GetModelPath();
-		const auto& animName = animationStateNode.GetAnimationName();
-		unsigned int key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, {});
-
-		if (!modelPath.empty() && !animName.empty())
-		{
-			mGameProcess->mGraphics->CreateModelResource(key,animationStateNode.GetModelPath()); // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
-			auto animationInterface = mGameProcess->mGraphics->GetAnimationByModelPathOrNull(key, animationStateNode.GetAnimationName());
-
-			if (animationInterface != nullptr)
-			{
-				animationStateNode.SetAnimation(animationInterface);
-				nodeHierarchy->RegisterAnimation(animationInterface);
-			}
 		const auto& animationPath = animationStateNode.GetAnimationPath();
-		
+
 		if (!std::filesystem::exists(animationPath))
 		{
 			spdlog::warn("{} animation load fail", object->GetName());
 			continue;
 		}
-		
+
 		auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
 
 		if (animationInterfaceOrNull = nullptr)

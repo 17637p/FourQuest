@@ -1072,20 +1072,21 @@ void fq::game_engine::Inspector::beginTransitionCondition(fq::game_module::Trans
 
 void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::AnimationStateNode& stateNode)
 {
+	// 도움 필요
 	if (stateNode.GetType() != game_module::AnimationStateNode::Type::State)
 		return;
 
 	// ModelPath GUI
-	std::string modelPath = stateNode.GetModelPath();
+	std::string animationPath = stateNode.GetAnimationPath();
 
-	bool isModelExist = std::filesystem::exists(modelPath);
+	bool isModelExist = std::filesystem::exists(animationPath);
 
 	if (!isModelExist)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImGuiColor::RED);
 	}
 
-	ImGui::InputText("ModelPath", &modelPath);
+	ImGui::InputText("AnimationPath", &animationPath);
 
 	if (!isModelExist)
 	{
@@ -1102,39 +1103,34 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 			std::filesystem::path* dropPath
 				= static_cast<std::filesystem::path*>(pathPayLoad->Data);
 
-			if (dropPath->extension() == ".model")
+			if (dropPath->extension() == ".animation")
 			{
-				stateNode.SetModelPath(dropPath->string());
+				stateNode.SetAnimationPath(dropPath->string());
 			}
 		}
 	}
 
-	modelPath = stateNode.GetModelPath();
-	unsigned int key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, {});
+	animationPath = stateNode.GetAnimationPath();
+	auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
+	// unsigned int key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, {});
 
-	if (modelPath.empty() || !isModelExist) return;
+	if (animationPath.empty() || animationInterfaceOrNull != nullptr) return;
 
-	if (!mGameProcess->mRenderingSystem->IsLoadedModel(key))
-	{
-		mGameProcess->mRenderingSystem->LoadModel(modelPath);
-	}
-
-	const auto& model = mGameProcess->mGraphics->GetModel(key);
 	// Animation Name 선택 
-	auto aniName = stateNode.GetAnimationName();
+	auto aniName = stateNode.GetAnimationPath();
 
-	if (ImGui::BeginCombo("AnimationName", aniName.c_str()))
-	{
-		for (const auto& animationClip : model.Animations)
-		{
-			const auto& clipName = animationClip.Name;
-			if (ImGui::Selectable(clipName.c_str()))
-			{
-				stateNode.SetAnimationName(clipName);
-			}
-		}
-		ImGui::EndCombo();
-	}
+	// if (ImGui::BeginCombo("AnimationName", aniName.c_str()))
+	// {
+	// 	for (const auto& animationClip : model.Animations)
+	// 	{
+	// 		const auto& clipName = animationClip.Name;
+	// 		if (ImGui::Selectable(clipName.c_str()))
+	// 		{
+	// 			stateNode.SetAnimationName(clipName);
+	// 		}
+	// 	}
+	// 	ImGui::EndCombo();
+	// }
 
 	// PlayBackSpeed
 	float playBackSpeed = stateNode.GetPlayBackSpeed();
@@ -1146,14 +1142,14 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	float maxDuration = 0.f;
 
-	for (const auto& animationClip : model.Animations)
-	{
-		const auto& clipName = animationClip.Name;
-		if (clipName == stateNode.GetAnimationName())
-		{
-			maxDuration = animationClip.Duration;
-		}
-	}
+	// for (const auto& animationClip : model.Animations)
+	// {
+	// 	const auto& clipName = animationClip.Name;
+	// 	if (clipName == stateNode.GetAnimationName())
+	// 	{
+	// 		maxDuration = animationClip.Duration;
+	// 	}
+	// }
 
 	float duration = stateNode.GetDuration();
 	if (ImGui::InputFloat("Duration", &duration))

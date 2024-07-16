@@ -693,8 +693,14 @@
     <CustomBuild Include="BlurVertCS.hlsl">
       <Filter>Shader\CS</Filter>
     </CustomBuild>
-    <CustomBuild Include="BloomAccumulateCS.hlsl" />
-    <CustomBuild Include="BloomDownSampleCS.hlsl" />
-    <CustomBuild Include="BlurHorzCS.hlsl" />
+    <CustomBuild Include="BloomAccumulateCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BloomDownSampleCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="BlurHorzCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

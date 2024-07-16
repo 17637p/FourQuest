@@ -546,7 +546,7 @@ namespace fq::loader
 			return matrix;
 			};
 
-		std::vector<fq::common::Node>nodeHierarchy;
+		std::vector<fq::common::Node> nodeHierarchy;
 
 		for (const auto& nodeJson : nodeHierarchyJson["nodes"]) {
 			fq::common::Node node;
@@ -557,6 +557,8 @@ namespace fq::loader
 			node.OffsetMatrix = ReadMatrix(nodeJson["OffsetMatrix"]);
 			nodeHierarchy.push_back(node);
 		}
+
+		return nodeHierarchy;
 	}
 
 	void NodeHierarchyLoader::Write(const  std::vector<fq::common::Node>& nodeHierarchy, const std::string& filePath)
@@ -599,5 +601,5 @@ namespace fq::loader
 		{
 			assert(!"파일 쓰기 실패");
 		}
-
 	}
+}
