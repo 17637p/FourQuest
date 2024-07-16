@@ -363,7 +363,10 @@ namespace fq::physics
 	{
 		return mCharacterPhysicsManager->CreateCharacterphysics(info);
 	}
-
+	bool FQPhysics::RemoveArticulation(const unsigned int& id)
+	{
+		return mCharacterPhysicsManager->RemoveArticulation(id);
+	}
 	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);

@@ -10,7 +10,7 @@ namespace fq::physics
 	CharacterPhysics::CharacterPhysics()
 		: mPxArticulation(nullptr)
 		, mMaterial(nullptr)
-		, mRootLink(std::make_shared<CharacterLink>())
+		, mRootLink(nullptr)
 		, mModelPath()
 		, mID()
 		, mLayerNumber()
@@ -31,21 +31,14 @@ namespace fq::physics
 		mPxArticulation = physics->createArticulationReducedCoordinate();
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, true);
-		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eCOMPUTE_JOINT_FORCES, true);
-		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDRIVE_LIMITS_ARE_FORCES, true);
 		mPxArticulation->setSolverIterationCounts(4);
-		mPxArticulation->setMaxCOMAngularVelocity(100.f);
+		mPxArticulation->setMaxCOMLinearVelocity(10.f);
+		mPxArticulation->setMaxCOMAngularVelocity(5.f);
 
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
 		mWorldTransform = info.worldTransform;
-
-		LinkInfo linkInfo;
-		std::string str = "root";
-		linkInfo.boneName = "root";
-		linkInfo.parentBoneName = "";
-		mRootLink->Initialize(linkInfo, nullptr, mPxArticulation);
 
 		return true;
 	}
@@ -58,13 +51,12 @@ namespace fq::physics
 		if (parentLink == mLinkContainer.end())
 		{
 			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
-		}
+		} 
 		else
 		{
 			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
 		}
 
-		mLinkContainer.insert(std::make_pair(info.boneName, link));
 		physx::PxShape* shape = link->CreateShape(mMaterial, extent, mCollisionData);
 		assert(shape);
 
@@ -72,6 +64,8 @@ namespace fq::physics
 		filterdata.word0 = mLayerNumber;
 		filterdata.word1 = collisionMatrix[mLayerNumber];
 		shape->setSimulationFilterData(filterdata);
+
+		mLinkContainer.insert(std::make_pair(info.boneName, link));
 
 		return true;
 	}

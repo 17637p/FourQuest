@@ -81,6 +81,9 @@ namespace fq::physics
 		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))
 			return;
 
+		if (scale.x < 0 || scale.y < 0 || scale.z < 0)
+			return;
+
 		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)
 			return;
 

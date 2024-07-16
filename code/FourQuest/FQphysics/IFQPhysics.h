@@ -184,6 +184,11 @@ extern "C" {
 			virtual FQ_PHYSICS bool CreateCharacterphysics(const ArticulationInfo& info) abstract;
 
 			/// <summary>
+			/// 캐릭터 파직스 삭제
+			/// </summary>
+			virtual FQ_PHYSICS bool RemoveArticulation(const unsigned int& id) abstract;
+
+			/// <summary>
 			/// 가지고 있는 관절 중, 링크 및 조인트 추가
 			/// </summary>
 			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;

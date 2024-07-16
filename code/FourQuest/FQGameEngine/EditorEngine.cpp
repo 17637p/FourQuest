@@ -160,7 +160,6 @@ void fq::game_engine::EditorEngine::Process()
 				{
 					accmulator -= fixedDeltaTime;
 					onFixedUpdtae = true;
-
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysics->Update(fixedDeltaTime);
@@ -189,7 +188,6 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
-
 			}
 			else
 			{
@@ -234,6 +232,7 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
 
+
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;
@@ -276,20 +275,22 @@ void fq::game_engine::EditorEngine::Finalize()
 
 void fq::game_engine::EditorEngine::RenderEditorWinodw()
 {
+	
 	mEditor->mHierarchy->Render();
 	mEditor->mInspector->Render();
 	mEditor->mLogWindow->Render();
 	mEditor->mFileDialog->Render();
 	mEditor->mMainMenuBar->Render();
-	mEditor->mCollisionMatrixWindow->Render();
-	mEditor->mPhysicsAnimatorWindow->Render();
+	mEditor->mCollisionMatrixWindow->Render(); 
+	mEditor->mPhysicsAnimatorWindow->Render(); 
 	mEditor->mSkyBoxWindow->Render();
 	mEditor->mAnimatorWindow->Render();
 	mEditor->mSettingWindow->Render();
 	mEditor->mNavMeshWindow->Render();
-	mEditor->mArticulationHierarchy->Render();
-	mEditor->mArticulationInspector->Render();
-	mEditor->mLightProbeWindow->Render();
+	mEditor->mArticulationHierarchy->Render(); 
+	mEditor->mArticulationInspector->Render(); 
+	mEditor->mLightProbeWindow->Render(); 
+
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();

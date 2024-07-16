@@ -77,7 +77,7 @@ namespace fq::game_engine
 		void beginArticulationHierarchy();
 
 		/// <summary>
-		/// 
+		/// 만든 관절 데이터를 저장하는 버튼
 		/// </summary>
 		void beginArticulationSaveButton();
 
@@ -127,6 +127,11 @@ namespace fq::game_engine
 		void drawLinkDebug(std::shared_ptr<fq::game_module::LinkData> linkData, float& jointAxisScale);
 
 		/// <summary>
+		/// 본(Bone) 디버깅
+		/// </summary>
+		void drawBoneDebug(fq::game_module::GameObject& object);
+
+		/// <summary>
 		/// 조인트 회전축 디버깅
 		/// </summary>
 		void drawJointAxisDebug(std::shared_ptr<fq::game_module::LinkData> linkData, const float& jointAxisScale);
@@ -135,6 +140,7 @@ namespace fq::game_engine
 		GameProcess*	mGameProcess;
 		EditorProcess*	mEditorProcess;
 
+		std::string mFileName;
 		unsigned int mLinkID;
 		bool			mbIsOpen;
 		bool			mbIsBoneHierarchy;

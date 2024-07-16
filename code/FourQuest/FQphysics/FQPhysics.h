@@ -162,6 +162,11 @@ namespace fq::physics
 		virtual bool CreateCharacterphysics(const ArticulationInfo& info) override;
 
 		/// <summary>
+		/// 캐릭터 파직스 삭제
+		/// </summary>
+		virtual bool RemoveArticulation(const unsigned int& id) override;
+
+		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;

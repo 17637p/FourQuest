@@ -53,7 +53,7 @@ namespace fq::physics
 
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		auto pxArticulation = articulationIter->second->GetPxArticulation();
-		mCharacterPhysicsContainer.erase(mCharacterPhysicsContainer.find(id));
+		mCharacterPhysicsContainer.erase(articulationIter);
 
 		mScene->removeArticulation(*pxArticulation);
 

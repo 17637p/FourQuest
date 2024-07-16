@@ -493,10 +493,9 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				}
 			};
 
-		for (auto& [name, childLink] : articulationData->GetRootLinkData().lock()->GetChildrenLinkData())
-		{
-			loadFunction(childLink, id);
-		}
+		auto rootLinkData = articulationData->GetRootLinkData().lock();
+
+		loadFunction(rootLinkData, id);
 	}
 }
 
@@ -848,7 +847,9 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 	{
 		if (info.bIsDestroyed)
 		{
-			if (info.enttID == mCharactorControllerTypeID)
+			if (info.enttID == mArticulationTypeID)
+				mPhysicsEngine->RemoveArticulation(colliderID);
+			else if (info.enttID == mCharactorControllerTypeID)
 				mPhysicsEngine->RemoveController(colliderID);
 			else
 				mPhysicsEngine->RemoveRigidBody(colliderID);

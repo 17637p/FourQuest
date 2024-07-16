@@ -280,7 +280,7 @@ namespace fq::game_module
 	}
 	void LinkData::SetJointMaxForce(const float& maxForce)
 	{
-		mLinkInfo.jointInfo.maxForce;
+		mLinkInfo.jointInfo.maxForce = maxForce;
 	}
 		
 	void LinkData::SetSwing1AxisMotion(const fq::physics::EArticulationMotion& motion)

@@ -29,6 +29,7 @@ namespace fq::game_engine
 		, mbIsBoneHierarchy(true)
 		, mbIsArticulationHierarchy(false)
 		, mLinkID(1)
+		, mFileName("Articulation File Name")
 	{
 	}
 
@@ -70,6 +71,9 @@ namespace fq::game_engine
 			ImGui::BeginChild("Articulation Hierarchy");
 
 			beginHierarchyButton();
+
+			ImGui::Separator();
+
 			beginBoneHierarchy();
 			beginArticulationHierarchy();
 			beginGizmo();
@@ -105,20 +109,21 @@ namespace fq::game_engine
 
 		beginPopupContextWindow_HierarchyChild();
 		beginArticulationSaveButton();
+
+		ImGui::Separator();
+
 		beginLinkDataBar(mArticulationData->GetRootLinkData().lock());
 	}
 
 	void ArticulationHierarchy::beginArticulationSaveButton()
 	{
-		static std::string articulationName = "Articulation File Name";
-
-		ImGui::InputText("###", &articulationName);
+		ImGui::InputText("###", &mFileName);
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("Save"))
 		{
-			std::string articulationPath = articulationName + ".articulation";
+			std::string articulationPath = mFileName + ".articulation";
 
 			auto path = fq::path::GetResourcePath() / "Articulation" / articulationPath;
 			mArticulationLoader.Save(mArticulationData, path.c_str());
@@ -235,6 +240,8 @@ namespace fq::game_engine
 
 		// 오브젝트 이름
 		beginGameObjectNameBar(object);
+		// 오브젝트(본) 디버그 드로우
+		drawBoneDebug(object);
 
 		// Hierarchy 토글
 		auto children = object.GetChildren();
@@ -266,7 +273,19 @@ namespace fq::game_engine
 	void ArticulationHierarchy::beginGameObjectNameBar(fq::game_module::GameObject& object)
 	{
 		if (object.GetComponent<fq::game_module::Light>() != nullptr
-			|| object.GetComponent<fq::game_module::SkinnedMeshRenderer>() != nullptr)
+			|| object.GetComponent<fq::game_module::SkinnedMeshRenderer>() != nullptr
+			|| object.GetComponent<fq::game_module::BoxCollider>() != nullptr
+			|| object.GetComponent<fq::game_module::CapsuleCollider>() != nullptr
+			|| object.GetComponent<fq::game_module::Camera>() != nullptr
+			|| object.GetComponent<fq::game_module::Particle>() != nullptr
+			|| object.GetComponent<fq::game_module::Decal>() != nullptr
+			|| object.GetComponent<fq::game_module::StaticMeshRenderer>() != nullptr
+			|| object.GetComponent<fq::game_module::Terrain>() != nullptr
+			|| object.GetComponent<fq::game_module::CharacterController>() != nullptr
+			|| object.GetComponent<fq::game_module::MeshCollider>() != nullptr
+			|| object.GetComponent<fq::game_module::SoundClip>() != nullptr
+			|| object.GetComponent<fq::game_module::Articulation>() != nullptr
+			|| object.GetComponent<fq::game_module::Trail>() != nullptr)
 			return;
 
 		std::string id = "##" + std::to_string(object.GetID());
@@ -544,6 +563,74 @@ namespace fq::game_engine
 		}
 	}
 
+	void ArticulationHierarchy::drawBoneDebug(fq::game_module::GameObject& object)
+	{
+		if (object.GetComponent<fq::game_module::Animator>() == nullptr)
+			return;
+
+		auto animatorMesh = object.GetComponent<fq::game_module::Animator>();
+		
+
+		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+			return;
+
+		auto objectTransform = object.GetComponent<fq::game_module::Transform>();
+		auto objectScale = objectTransform->GetWorldScale();
+
+		auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+		// 본 디버그 렌더링
+		for (int i = 0; i < nodeHierarchy.GetRootTransforms().size(); i++)
+		{
+			unsigned int parentIndex = boneHierarchy.GetBones()[i].ParentIndex;
+
+			auto& rootTransform = nodeHierarchy.GetRootTransforms()[i];
+
+			fq::graphics::debug::SphereInfo sphereInfo;
+			fq::graphics::debug::RayInfo rayInfo1;
+			fq::graphics::debug::RayInfo rayInfo2;
+			fq::graphics::debug::RayInfo rayInfo3;
+			fq::graphics::debug::RayInfo rayInfo4;
+
+			// 선 ( 자식 본에서 부모 본까지 이어지는 선 )
+			rayInfo1.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
+			rayInfo2.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
+			rayInfo3.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
+			rayInfo4.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
+			rayInfo1.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(1.f, 0.f, 0.f)) * objectScale;
+			rayInfo2.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(-1.f, 0.f, 0.f)) * objectScale;
+			rayInfo3.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f)) * objectScale;
+			rayInfo4.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.f, 0.f, -1.f)) * objectScale;
+
+			if (parentIndex <= nodeHierarchy.GetRootTransforms().size())
+			{
+				auto& parentTransform = nodeHierarchy.GetRootTransforms()[parentIndex];
+				DirectX::SimpleMath::Vector3 direction = (parentTransform.Translation() - rootTransform.Translation()) * objectScale;
+
+				rayInfo1.Direction = direction;
+				rayInfo2.Direction = direction;
+				rayInfo3.Direction = direction;
+				rayInfo4.Direction = direction;
+			}
+			rayInfo1.Normalize = false;
+			rayInfo2.Normalize = false;
+			rayInfo3.Normalize = false;
+			rayInfo4.Normalize = false;
+			
+			// 동그라미 ( 자기 자신의 본 )
+			sphereInfo.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
+			sphereInfo.Sphere.Radius = 0.01f;
+			sphereInfo.Sphere.Center = rootTransform.Translation() * objectScale;
+
+			mGameProcess->mGraphics->DrawSphere(sphereInfo);
+			mGameProcess->mGraphics->DrawRay(rayInfo1);
+			mGameProcess->mGraphics->DrawRay(rayInfo2);
+			mGameProcess->mGraphics->DrawRay(rayInfo3);
+			mGameProcess->mGraphics->DrawRay(rayInfo4);
+		}
+	}
+
 	void ArticulationHierarchy::drawJointAxisDebug(std::shared_ptr<fq::game_module::LinkData> linkData, const float& jointAxisScale)
 	{
 		DirectX::SimpleMath::Matrix jointTransform = linkData->GetJointLocalTransform() * linkData->GetWorldTransform();
@@ -673,6 +760,7 @@ namespace fq::game_engine
 				if (path->extension() == ".articulation")
 				{
 					mArticulationData = mArticulationLoader.LoadArticulationData(*path, mLinkID);
+					mFileName = path->stem().string();
 				}
 			}
 			ImGui::EndDragDropTarget();
