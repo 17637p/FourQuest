@@ -215,6 +215,9 @@
     <ClInclude Include="DamageCalculation.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="RazerAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -338,6 +341,9 @@
       <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="AOEAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="RazerAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>

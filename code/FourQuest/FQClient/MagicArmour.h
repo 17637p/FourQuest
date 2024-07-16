@@ -37,7 +37,7 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;
 		void OnUpdate(float dt) override;
-		void checkInput();
+		void checkInput(float dt);
 		void checkCoolTime(float dt);
 
 	private:
@@ -52,6 +52,9 @@ namespace fq::client
 		float mAOEElapsedTime;
 		float mRazerCoolTime;
 		float mRazerElapsedTime;
+		float mRStickNoInputTime;
+
+		bool mbOnRazer;
 
 		game_module::PrefabResource mMagicBall;
 		game_module::PrefabResource mAttackWarningUI;

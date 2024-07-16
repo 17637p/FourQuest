@@ -21,6 +21,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mAOEElapsedTime(0.f)
 	, mRazerCoolTime(5.f)
 	, mRazerElapsedTime(0.f)
+	, mRStickNoInputTime(0.f)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -118,21 +119,46 @@ void fq::client::MagicArmour::OnStart()
 
 void fq::client::MagicArmour::OnUpdate(float dt)
 {
-	checkInput();
+	checkInput(dt);
 	checkCoolTime(dt);
 }
 
-void fq::client::MagicArmour::checkInput()
+void fq::client::MagicArmour::checkInput(float dt)
 {
-	auto input = GetScene()->GetInputManager();
 
-	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	auto input = GetScene()->GetInputManager();
+	auto padID = mController->GetControllerID();
+
+	// AOE
+	if (input->IsPadKeyState(padID, EPadKey::A, EKeyState::Tap))
 	{
 		mAnimator->SetParameterBoolean("PushA", true);
 	}
-	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Away))
+	else if (input->IsPadKeyState(padID, EPadKey::A, EKeyState::Away))
 	{
 		mAnimator->SetParameterBoolean("PushA", false);
+	}
+
+	// Razer R Stick 조작
+	DirectX::SimpleMath::Vector2 r;
+	r.x = input->GetStickInfomation(padID, EPadStick::rightX);
+	r.y = input->GetStickInfomation(padID, EPadStick::rightY);
+
+	if (r.Length() > 0.f)
+	{
+		mAnimator->SetParameterBoolean("OnRazer", true);
+	
+		// R Stick의 갑작스러운 방향전환으로 입력이 0이 되는
+		// 순간에 스킬이 캔슬되는 것을 방지하는 값입니다
+		constexpr float RStickInputCorrectTime = 0.1f;
+		mRStickNoInputTime = RStickInputCorrectTime;
+	}
+	else 
+	{
+		mRStickNoInputTime = std::max(0.f, mRStickNoInputTime - dt);
+		
+		if (mRStickNoInputTime == 0.f)
+			mAnimator->SetParameterBoolean("OnRazer", false);
 	}
 }
 
@@ -143,6 +169,6 @@ void fq::client::MagicArmour::checkCoolTime(float dt)
 	mAnimator->SetParameterFloat("AOECoolTime", mAOEElapsedTime);
 
 	// Razer
-	mRazerElapsedTime = std::max(0.f, mRazerCoolTime - dt);
+	mRazerElapsedTime = std::max(0.f, mRazerElapsedTime - dt);
 	mAnimator->SetParameterFloat("RazerCoolTime", mRazerElapsedTime);
 }
