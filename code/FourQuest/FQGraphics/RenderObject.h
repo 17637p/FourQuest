@@ -58,16 +58,11 @@ namespace fq::graphics
 		virtual void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) override { mNodeHierarchyInstance = nodeHierarchyInstance; }
 		virtual std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const override { return mNodeHierarchyInstance; }
 		virtual void SetReferenceBoneIndex(size_t index) override { mIndex = index; }
-		virtual size_t GetReferenceBoneIndex() const override {
-			return mIndex;
-		}
+		virtual size_t GetReferenceBoneIndex() const override { return mIndex; }
 
-		void SetTexTransform(const DirectX::SimpleMath::Matrix& texTransform) {
-			mTexTransform = texTransform;
-		}
-		const DirectX::SimpleMath::Matrix& GetTexTransform() const {
-			return mTexTransform;
-		}
+		// UVAnimInstance
+		virtual void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) { mIUVAnimationInstance = uvAnimationInstance; }
+		virtual std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const { return mIUVAnimationInstance; }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
@@ -76,7 +71,7 @@ namespace fq::graphics
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
-		DirectX::SimpleMath::Matrix mTexTransform;
+		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject

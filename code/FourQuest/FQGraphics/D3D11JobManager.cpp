@@ -2,7 +2,6 @@
 #include "RenderObject.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "MeshEffectObject.h"
 #include "../FQCommon/FQCommonLoader.h"
 
 namespace fq::graphics
@@ -63,14 +62,6 @@ namespace fq::graphics
 			job.TerrainMeshObject = static_cast<TerrainMeshObject*>(terrainMeshObject);
 
 			mTerrainMeshJobs.push_back(job);
-		}
-	}
-
-	void D3D11JobManager::CreateMeshEffectJob(IMeshEffectObject* iMeshEffectObject)
-	{
-		for (const auto& node : static_cast<MeshEffectObject*>(iMeshEffectObject)->GetNodes())
-		{
-			CreateStaticMeshJob(node.StaticMeshObject.get());
 		}
 	}
 

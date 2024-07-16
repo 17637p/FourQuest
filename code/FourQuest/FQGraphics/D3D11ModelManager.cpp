@@ -45,6 +45,7 @@ namespace fq::graphics
 
 		fq::common::Model model = fq::loader::ModelLoader::Read(path);
 
+
 		for (const auto& material : model.Materials)
 		{
 			if (material.Name.empty())
@@ -96,7 +97,7 @@ namespace fq::graphics
 		return mModels[path];
 	}
 
-	bool D3D11ModelManager::TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath , fq::common::Model* outDataOrNull)
+	bool D3D11ModelManager::TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
 	{
 		auto find = mModels.find(path);
 
@@ -297,6 +298,11 @@ namespace fq::graphics
 		std::shared_ptr<IAnimation> animation = std::make_shared<Animation>(animationClip);
 		return animation;
 	}
+	std::shared_ptr<IUVAnimation> D3D11ModelManager::CreateUVAnimation(const fq::common::UVAnimationClip& animationClip)
+	{
+		std::shared_ptr<IUVAnimation> animation = std::make_shared<UVAnimation>(animationClip);
+		return animation;
+	}
 	std::shared_ptr<IMaterial> D3D11ModelManager::CreateMaterial(const MaterialInfo& materialInfo)
 	{
 		std::shared_ptr<IMaterial> material = std::make_shared<Material>(mResourceManager, materialInfo);
@@ -333,6 +339,10 @@ namespace fq::graphics
 	{
 		return create<IAnimation, Animation>(mAnimations, key, animationData);
 	}
+	std::shared_ptr<IUVAnimation> D3D11ModelManager::CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip)
+	{
+		return create<IUVAnimation, UVAnimation>(mUVAnimations, key, animationClip);
+	}
 	std::shared_ptr<IMaterial> D3D11ModelManager::CreateMaterial(const std::string& key, const MaterialInfo& materialInfo)
 	{
 		return create<IMaterial, Material>(mMaterials, key, mResourceManager, materialInfo);
@@ -361,6 +371,10 @@ namespace fq::graphics
 	std::vector<std::shared_ptr<IAnimation>> D3D11ModelManager::GetAnimations()
 	{
 		return getElementInVector(mAnimations);
+	}
+	std::vector<std::shared_ptr<IUVAnimation>> D3D11ModelManager::GetUVAnimations()
+	{
+		return getElementInVector(mUVAnimations);
 	}
 	std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials()
 	{
@@ -395,6 +409,11 @@ namespace fq::graphics
 		return findOrNull(mAnimations, key);
 	}
 
+	std::shared_ptr<IUVAnimation> D3D11ModelManager::GetUVAnimationOrNull(std::string key)
+	{
+		return findOrNull(mUVAnimations, key);
+	}
+
 	std::shared_ptr<IMaterial> D3D11ModelManager::GetMaterialOrNull(const std::string& key)
 	{
 		return findOrNull(mMaterials, key);
@@ -425,6 +444,10 @@ namespace fq::graphics
 	void D3D11ModelManager::DeleteAnimation(const std::string& key)
 	{
 		mAnimations.erase(key);
+	}
+	void D3D11ModelManager::DeleteUVAnimation(const std::string& key)
+	{
+		mUVAnimations.erase(key);
 	}
 	void D3D11ModelManager::DeleteMaterial(const std::string& key)
 	{

@@ -422,6 +422,18 @@ namespace fq::graphics
 		};
 	};
 
+	enum ESampleMode
+	{
+		Clamp,
+		Wrap,
+	};
+
+	enum ERasterizeMode
+	{
+		BackFaceClip,
+		TwoSide,
+	};
+
 	// material
 	struct MaterialInfo
 	{
@@ -451,6 +463,9 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 		float AlphaCutoff = 0.1f;
+
+		ESampleMode SampleType = ESampleMode::Clamp;
+		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
 	};
 
 	struct ParticleMaterialInfo

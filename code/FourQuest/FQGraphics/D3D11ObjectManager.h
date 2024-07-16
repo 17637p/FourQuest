@@ -37,7 +37,6 @@ namespace fq::graphics
 		IParticleObject* CreateParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
 		IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform);
 		ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform);
-		IMeshEffectObject* CreateMeshEffectObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ModelManager> modelManager, const std::string& modelPath, const std::string& uvAnimationPath, const std::string& transformAnimationPath, const std::string& texturebasePath, const DirectX::SimpleMath::Matrix& transform);
 		IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index);
 
 		void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject);
@@ -46,7 +45,6 @@ namespace fq::graphics
 		void DeleteParticleObject(IParticleObject* particleObject);
 		void DeleteDecalObject(IDecalObject* decalObject);
 		void DeleteTrailObject(ITrailObject* trailObject);
-		void DeleteMeshEffectObject(IMeshEffectObject* meshEffectObject);
 		void DeleteProbeObject(IProbeObject* probeObject);
 
 		void SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material);
@@ -57,7 +55,6 @@ namespace fq::graphics
 		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
 		const std::set<IDecalObject*>& GetDecalObjects() const { return mDecalObjects; }
 		const std::set<ITrailObject*>& GetTrailObjects() const { return mTrailObjects; }
-		const std::set<IMeshEffectObject*>& GetMeshEffectObjects() const { return mMeshEffectObjects; }
 		const std::set<IProbeObject*>& GetProbeObjects() const { return mProbeObjects; }
 
 	private:
@@ -75,11 +72,7 @@ namespace fq::graphics
 		std::set<IParticleObject*> mParticleObjects;
 		std::set<IDecalObject*> mDecalObjects;
 		std::set<ITrailObject*> mTrailObjects;
-<<<<<<< HEAD
-		std::set<IMeshEffectObject*> mMeshEffectObjects;
-=======
 		std::set<IProbeObject*> mProbeObjects;
->>>>>>> main
 
 		std::queue<IStaticMeshObject*> mStaticMeshObjectDeleteQueue;
 		std::queue<ISkinnedMeshObject*> mSkinnedMeshObjectDeleteQueue;
@@ -87,10 +80,6 @@ namespace fq::graphics
 		std::queue<IParticleObject*> mParticleObjectDeleteQueue;
 		std::queue<IDecalObject*> mDecalObjectDeleteQueue;
 		std::queue<ITrailObject*> mTrailObjectDeleteQueue;
-<<<<<<< HEAD
-		std::queue<IMeshEffectObject*> mMeshEffectObjectDeleteQueue;
-=======
 		std::queue<IProbeObject*> mProbeObjectDeleteQueue;
->>>>>>> main
 	};
 }

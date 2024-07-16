@@ -50,6 +50,9 @@ namespace fq::graphics
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
+		std::shared_ptr<D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;

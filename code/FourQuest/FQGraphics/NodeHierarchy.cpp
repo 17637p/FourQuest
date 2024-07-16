@@ -123,19 +123,14 @@ namespace fq::graphics
 		: mNodeHierarchy(nodeHierarchy)
 	{
 		size_t boneCount = mNodeHierarchy->GetBones().size();
+		mLocalTransforms.resize(boneCount, DirectX::SimpleMath::Matrix::Identity);
 		mRootTransforms.resize(boneCount, DirectX::SimpleMath::Matrix::Identity);
 		mTransposedFinalTransforms.resize(boneCount, DirectX::SimpleMath::Matrix::Identity);
 	}
 
 	void NodeHierarchyInstance::SetBindPose()
 	{
-		const auto& bones = mNodeHierarchy->GetBones();
-
-		for (const auto& bone : bones)
-		{
-			mRootTransforms[bone.Index] = bone.ToParentMatrix;
-		}
-
+		setBindPoseLocal();
 		calculateRootTransform();
 	}
 
@@ -146,7 +141,7 @@ namespace fq::graphics
 		const auto& find = animationCache.find(animation);
 		const auto& animClip = animation->GetAnimationClip();
 
-		SetBindPose();
+		setBindPoseLocal();
 
 		if (find != animationCache.end())
 		{
@@ -165,7 +160,7 @@ namespace fq::graphics
 
 				AnimationHelper::FindKeyframe(nodeClip->Keyframes, animClip, timePos, &lhs, &rhs, &weight);
 				fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
-				mRootTransforms[bone->Index] = AnimationHelper::CreateMatrix(keyframe);
+				mLocalTransforms[bone->Index] = AnimationHelper::CreateMatrix(keyframe);
 			}
 		}
 		else
@@ -193,7 +188,7 @@ namespace fq::graphics
 
 				AnimationHelper::FindKeyframe(nodeClip.Keyframes, animClip, timePos, &lhs, &rhs, &weight);
 				fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
-				mRootTransforms[findedBone->second.Index] = AnimationHelper::CreateMatrix(keyframe);
+				mLocalTransforms[findedBone->second.Index] = AnimationHelper::CreateMatrix(keyframe);
 			}
 		}
 
@@ -211,7 +206,7 @@ namespace fq::graphics
 			return;
 		}
 
-		clear();
+		setBindPoseLocal();
 
 		const size_t BONE_COUNT = mNodeHierarchy->GetBones().size();
 
@@ -247,14 +242,38 @@ namespace fq::graphics
 			}
 
 			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);
-			mRootTransforms[lhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
+			mLocalTransforms[lhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
 		}
 
 		calculateRootTransform();
 	}
 
+	void NodeHierarchyInstance::UpdateByLocalTransform()
+	{
+		calculateRootTransform();
+	}
+
+	void NodeHierarchyInstance::SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform)
+	{
+		assert(index < mLocalTransforms.size());
+		mLocalTransforms[index] = transform;
+	}
+
+	bool NodeHierarchyInstance::TrySetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform)
+	{
+		if (index >= mLocalTransforms.size())
+		{
+			return false;
+		}
+
+		mLocalTransforms[index] = transform;
+
+		return true;
+	}
+
 	void NodeHierarchyInstance::clear()
 	{
+		std::fill(mLocalTransforms.begin(), mLocalTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
 		std::fill(mRootTransforms.begin(), mRootTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
 		std::fill(mTransposedFinalTransforms.begin(), mTransposedFinalTransforms.end(), DirectX::SimpleMath::Matrix::Identity);
 	}
@@ -262,15 +281,28 @@ namespace fq::graphics
 	void NodeHierarchyInstance::calculateRootTransform()
 	{
 		const std::vector<fq::common::Bone>& bones = mNodeHierarchy->GetBones();
+
+		mRootTransforms[0] = mLocalTransforms[0];
+
 		for (size_t i = 1; i < bones.size(); ++i)
 		{
 			assert(bones[i].Index == i);
-			mRootTransforms[i] = mRootTransforms[i] * mRootTransforms[bones[i].ParentIndex];
+			mRootTransforms[i] = mLocalTransforms[i] * mRootTransforms[bones[i].ParentIndex];
 		}
 		for (size_t i = 0; i < bones.size(); ++i)
 		{
 			assert(bones[i].Index == i);
 			mTransposedFinalTransforms[i] = (bones[i].OffsetMatrix * mRootTransforms[i]).Transpose();
+		}
+	}
+
+	void NodeHierarchyInstance::setBindPoseLocal()
+	{
+		const auto& bones = mNodeHierarchy->GetBones();
+
+		for (const auto& bone : bones)
+		{
+			mLocalTransforms[bone.Index] = bone.ToParentMatrix;
 		}
 	}
 }

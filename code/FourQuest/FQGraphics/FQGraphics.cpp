@@ -294,10 +294,10 @@ void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
 
 void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
-	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, 
-		mObjectManager->GetStaticMeshObjects(), 
-		mObjectManager->GetSkinnedMeshObjects(), 
-		mObjectManager->GetTerrainMeshObjects(), 
+	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager,
+		mObjectManager->GetStaticMeshObjects(),
+		mObjectManager->GetSkinnedMeshObjects(),
+		mObjectManager->GetTerrainMeshObjects(),
 		mObjectManager->GetProbeObjects());
 }
 
@@ -374,7 +374,6 @@ bool FQGraphics::Render()
 	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
 	for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
 	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
-	for (auto element : mObjectManager->GetMeshEffectObjects()) { mJobManager->CreateMeshEffectJob(element); }
 
 	mRenderManager->Render();
 
@@ -505,6 +504,11 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(const fq::
 	return mModelManager->CreateAnimation(animationClip);
 }
 
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::CreateUVAnimation(const fq::common::UVAnimationClip& animationClip)
+{
+	return mModelManager->CreateUVAnimation(animationClip);
+}
+
 std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
 {
 	return mModelManager->CreateMaterial(materialInfo);
@@ -537,6 +541,10 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(std::strin
 {
 	return mModelManager->CreateAnimation(key, animationClip);
 }
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip)
+{
+	return mModelManager->CreateUVAnimation(key, animationClip);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::CreateMaterial(const std::string& key, const MaterialInfo& materialInfo)
 {
 	return mModelManager->CreateMaterial(key, materialInfo);
@@ -564,6 +572,10 @@ std::vector<std::shared_ptr<INodeHierarchy>> fq::graphics::FQGraphics::GetNodeHi
 std::vector<std::shared_ptr<IAnimation>> fq::graphics::FQGraphics::GetAnimations()
 {
 	return mModelManager->GetAnimations();
+}
+std::vector<std::shared_ptr<IUVAnimation>> fq::graphics::FQGraphics::GetUVAnimations()
+{
+	return mModelManager->GetUVAnimations();
 }
 std::vector<std::shared_ptr<IMaterial>> fq::graphics::FQGraphics::GetMaterials()
 {
@@ -593,6 +605,10 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationOrNull(std::st
 {
 	return mModelManager->GetAnimationOrNull(key);
 }
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::GetUVAnimationOrNull(std::string key)
+{
+	return mModelManager->GetUVAnimationOrNull(key);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialOrNull(const std::string& key)
 {
 	return mModelManager->GetMaterialOrNull(key);
@@ -621,6 +637,10 @@ void fq::graphics::FQGraphics::DeleteNodeHierarchy(std::string key)
 void fq::graphics::FQGraphics::DeleteAnimation(std::string key)
 {
 	mModelManager->DeleteAnimation(key);
+}
+void fq::graphics::FQGraphics::DeleteUVAnimation(std::string key)
+{
+	mModelManager->DeleteUVAnimation(key);
 }
 void fq::graphics::FQGraphics::DeleteMaterial(const std::string& key)
 {
@@ -662,10 +682,7 @@ ITrailObject* fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParti
 {
 	return mObjectManager->CreateTrailObject(iParticleMaterial, trailInfo, transform);
 }
-IMeshEffectObject* fq::graphics::FQGraphics::CreateMeshEffectObject(const std::string& modelPath, const std::string& uvAnimationPath, const std::string& transformAnimationPath, const std::string& texturebasePath, const DirectX::SimpleMath::Matrix& transform)
-{
-	return mObjectManager->CreateMeshEffectObject(mDevice, mModelManager, modelPath, uvAnimationPath, transformAnimationPath, texturebasePath, transform);
-}
+
 void fq::graphics::FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
 {
 	mObjectManager->DeleteStaticMeshObject(staticMeshObject);
@@ -689,10 +706,6 @@ void fq::graphics::FQGraphics::DeleteDecalObject(IDecalObject* decalObject)
 void fq::graphics::FQGraphics::DeleteTrailObject(ITrailObject* trailObject)
 {
 	mObjectManager->DeleteTrailObject(trailObject);
-}
-void fq::graphics::FQGraphics::DeleteMeshEffectObject(IMeshEffectObject* meshEffectObject)
-{
-	mObjectManager->DeleteMeshEffectObject(meshEffectObject);
 }
 
 void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)

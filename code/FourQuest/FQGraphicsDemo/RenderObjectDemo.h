@@ -38,7 +38,7 @@ private:
 
 	void calculateFrameStats();
 
-	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity, bool bIsCreateHierarchy = false);
 
 private:
 	/// 기본적으로 필요한 변수들 

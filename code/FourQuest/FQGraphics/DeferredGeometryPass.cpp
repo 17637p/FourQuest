@@ -47,6 +47,9 @@ namespace fq::graphics
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
+		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
+		mDefaultRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
+		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -171,38 +174,73 @@ namespace fq::graphics
 			{
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
 
-				job.StaticMesh->Bind(mDevice);
-
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
 				{
-					job.Material->Bind(mDevice);
-
-					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 0);
-					}
-					else
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 1);
-					}
-
-					if (job.NodeHierarchyInstnace != nullptr)
-					{
-						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
-						// ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-
-						//auto transform = job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex());
-						//ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()));
-					}
-					else
-					{
-						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					}
-
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetTexTransform());
-
-					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
+					continue;
 				}
+
+				job.StaticMesh->Bind(mDevice);
+				job.Material->Bind(mDevice);
+
+				switch (materialInfo.RasterizeType)
+				{
+				case ERasterizeMode::TwoSide:
+					mCullOffRasterizer->Bind(mDevice);
+					break;
+				case ERasterizeMode::BackFaceClip:
+					mDefaultRasterizer->Bind(mDevice);
+					break;
+				default:
+					assert(false);
+				}
+
+				switch (materialInfo.SampleType)
+				{
+				case ESampleMode::Clamp:
+					mAnisotropicClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				case ESampleMode::Wrap:
+					mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				default:
+					assert(false);
+				}
+
+				if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+				{
+					mLessEqualStencilReplaceState->Bind(mDevice, 0);
+				}
+				else
+				{
+					mLessEqualStencilReplaceState->Bind(mDevice, 1);
+				}
+
+				if (job.NodeHierarchyInstnace != nullptr)
+				{
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
+					// ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					//auto transform = job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex());
+					//ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()));
+				}
+				else
+				{
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+				}
+
+				const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
+
+				if (uvAnimInstnace != nullptr)
+				{
+					const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
+					const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
+				}
+				else
+				{
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+				}
+
+				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
 
 			mSkinnedMeshShaderProgram->Bind(mDevice);
@@ -213,36 +251,37 @@ namespace fq::graphics
 			{
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
 
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Opaque)
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
 				{
-					job.SkinnedMesh->Bind(mDevice);
-					job.Material->Bind(mDevice);
-
-					if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 0);
-					}
-					else
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 1);
-					}
-
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-
-					if (job.NodeHierarchyInstnace != nullptr)
-					{
-						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
-					}
-					else
-					{
-						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
-					}
-
-					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
+					continue;
 				}
+
+				job.SkinnedMesh->Bind(mDevice);
+				job.Material->Bind(mDevice);
+
+				if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+				{
+					mLessEqualStencilReplaceState->Bind(mDevice, 0);
+				}
+				else
+				{
+					mLessEqualStencilReplaceState->Bind(mDevice, 1);
+				}
+
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
+				ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+
+				if (job.NodeHierarchyInstnace != nullptr)
+				{
+					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
+				}
+				else
+				{
+					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
+				}
+
+				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
-
 	}
 }

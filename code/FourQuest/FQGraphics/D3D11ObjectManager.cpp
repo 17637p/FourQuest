@@ -5,7 +5,6 @@
 #include "ParticleObject.h"
 #include "DecalObject.h"
 #include "TrailObject.h"
-#include "MeshEffectObject.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "NodeHierarchy.h"
@@ -23,7 +22,6 @@ namespace fq::graphics
 		for (auto* element : mParticleObjects) { deleteObject<ParticleObject>(element); } mParticleObjects.clear();
 		for (auto* element : mDecalObjects) { deleteObject<DecalObject>(element); } mDecalObjects.clear();
 		for (auto* element : mTrailObjects) { deleteObject<TrailObject>(element); } mTrailObjects.clear();
-		for (auto* element : mMeshEffectObjects) { deleteObject<MeshEffectObject>(element); } mMeshEffectObjects.clear();
 		for (auto* element : mProbeObjects) { deleteObject<ProbeObject>(element); } mProbeObjects.clear();
 		ClearDeleteQueue();
 	}
@@ -36,7 +34,6 @@ namespace fq::graphics
 		while (!mParticleObjectDeleteQueue.empty()) { deleteObject<ParticleObject>(mParticleObjectDeleteQueue.front()); mParticleObjectDeleteQueue.pop(); }
 		while (!mDecalObjectDeleteQueue.empty()) { deleteObject<DecalObject>(mDecalObjectDeleteQueue.front()); mDecalObjectDeleteQueue.pop(); }
 		while (!mTrailObjectDeleteQueue.empty()) { deleteObject<TrailObject>(mTrailObjectDeleteQueue.front()); mTrailObjectDeleteQueue.pop(); }
-		while (!mMeshEffectObjectDeleteQueue.empty()) { deleteObject<MeshEffectObject>(mMeshEffectObjectDeleteQueue.front()); mMeshEffectObjectDeleteQueue.pop(); }
 		while (!mProbeObjectDeleteQueue.empty()) { deleteObject<ProbeObject>(mProbeObjectDeleteQueue.front()); mProbeObjectDeleteQueue.pop(); }
 	}
 
@@ -81,67 +78,6 @@ namespace fq::graphics
 		mTrailObjects.insert(trailObject);
 
 		return trailObject;
-	}
-
-	IMeshEffectObject* D3D11ObjectManager::CreateMeshEffectObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ModelManager> modelManager, const std::string& modelPath, const std::string& uvAnimationPath, const std::string& transformAnimationPath, const std::string& texturebasePath, const DirectX::SimpleMath::Matrix& transform)
-	{
-		// 로딩만해서 전달하자 
-		MeshEffectObject* meshEffectObject = new MeshEffectObject();
-		meshEffectObject->SetTransform(transform);
-
-		const auto& modelData = modelManager->CreateModelResource(device, modelPath, texturebasePath);
-		const auto transformAnimationData = fq::loader::AnimationLoader::Read(transformAnimationPath);
-		const auto uvAnimationData = fq::loader::UVAnimationLoader::Read(uvAnimationPath);
-
-		meshEffectObject->setAnimInfo(transformAnimationData.FrameCount, transformAnimationData.FramePerSecond, transformAnimationData.Duration);
-		meshEffectObject->setUVAnimInfo(uvAnimationData.FrameCount, uvAnimationData.FramePerSecond, uvAnimationData.Duration);
-
-		for (const auto& [node, mesh] : modelData.Meshes)
-		{
-			auto meshResource = modelManager->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
-
-			if (meshResource == nullptr)
-			{
-				continue;
-			}
-
-			std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
-			materialInterfaces.reserve(mesh.Subsets.size());
-
-			for (const auto& subset : mesh.Subsets)
-			{
-				auto materialResource = modelManager->GetMaterialByModelPathOrNull(modelPath, subset.MaterialName);
-
-				if (materialResource != nullptr)
-				{
-					materialInterfaces.push_back(materialResource);
-				}
-			}
-
-			MeshEffectObject::Node meshEffectNode;
-			MeshObjectInfo defaultInfo;
-			meshEffectNode.StaticMeshObject = std::make_unique<StaticMeshObject>(meshResource, materialInterfaces, defaultInfo, node.ToParentMatrix);
-
-			for (const auto& transformAnimNode : transformAnimationData.NodeClips)
-			{
-				if (transformAnimNode.NodeName == node.Name)
-				{
-					meshEffectNode.Keyframes = transformAnimNode.Keyframes;
-				}
-			}
-
-			auto unAnimFind = uvAnimationData.NodeClips.find(node.Name);
-
-			if (unAnimFind != uvAnimationData.NodeClips.end())
-			{
-				meshEffectNode.UVKeyframes = unAnimFind->second.UVData;
-			}
-
-			meshEffectObject->addNode(std::move(meshEffectNode));
-		}
-
-		mMeshEffectObjects.insert(meshEffectObject);
-		return meshEffectObject;
 	}
 
 	void D3D11ObjectManager::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
@@ -204,18 +140,7 @@ namespace fq::graphics
 			mTrailObjectDeleteQueue.push(trailObject);
 		}
 	}
-
-	void D3D11ObjectManager::DeleteMeshEffectObject(IMeshEffectObject* meshEffectObject)
-	{
-		auto find = mMeshEffectObjects.find(meshEffectObject);
-
-		if (find != mMeshEffectObjects.end())
-		{
-			mMeshEffectObjects.erase(find);
-			mMeshEffectObjectDeleteQueue.push(meshEffectObject);
-		}
-	}
-
+	
 	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material)
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);

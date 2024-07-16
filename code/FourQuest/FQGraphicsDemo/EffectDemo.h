@@ -37,7 +37,7 @@ private:
 
 	void calculateFrameStats();
 
-	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
+	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity, bool bIsCreateHierarchy = false);
 
 	void materialInit();
 	void particleInit();
@@ -74,6 +74,6 @@ private:
 	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
 	std::vector<fq::graphics::ITrailObject*> mTrailObjects;
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
-	std::vector<fq::graphics::IMeshEffectObject*> mMeshEffectObjects;
+	std::shared_ptr<fq::graphics::IUVAnimationInstance> mUVAnimInstance;
 };
 

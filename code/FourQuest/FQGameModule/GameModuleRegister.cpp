@@ -1202,6 +1202,22 @@ void fq::game_module::RegisterMetaData()
 	//                             머테리얼									//
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<fq::graphics::ESampleMode>()
+		.prop(fq::reflect::prop::Name, "MaterialSampleMode")
+		.conv<std::underlying_type_t<fq::graphics::ESampleMode>>()
+		.data<fq::graphics::ESampleMode::Clamp>("Clamp"_hs)
+		.prop(fq::reflect::prop::Name, "Clamp")
+		.data<fq::graphics::ESampleMode::Wrap>("Wrap"_hs)
+		.prop(fq::reflect::prop::Name, "Wrap");
+
+	entt::meta<fq::graphics::ERasterizeMode>()
+		.prop(fq::reflect::prop::Name, "MaterialRasterizeMode")
+		.conv<std::underlying_type_t<fq::graphics::ParticleMaterialInfo::ERenderMode>>()
+		.data<fq::graphics::ERasterizeMode::BackFaceClip>("BackFaceClip"_hs)
+		.prop(fq::reflect::prop::Name, "BackFaceClip")
+		.data<fq::graphics::ERasterizeMode::TwoSide>("TwoSide"_hs)
+		.prop(fq::reflect::prop::Name, "TwoSide");
+
 	entt::meta<fq::graphics::MaterialInfo::ERenderMode>()
 		.prop(fq::reflect::prop::Name, "MaterialInfoERenderMode")
 		.conv<std::underlying_type_t<fq::graphics::ParticleMaterialInfo::ERenderMode>>()
@@ -1255,7 +1271,11 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Offset")
 		.data<&fq::graphics::MaterialInfo::AlphaCutoff>("AlphaCutoff"_hs)
 		.prop(fq::reflect::prop::Comment, u8"알파 클립(알파 테스팅)에 사용할 알파값")
-		.prop(fq::reflect::prop::Name, "AlphaCutoff");
+		.prop(fq::reflect::prop::Name, "AlphaCutoff")
+		.data<&fq::graphics::MaterialInfo::RasterizeType>("RasterizeType"_hs)
+		.prop(fq::reflect::prop::Name, "RasterizeType")
+		.data<&fq::graphics::MaterialInfo::SampleType>("SampleType"_hs)
+		.prop(fq::reflect::prop::Name, "SampleType");
 
 	entt::meta<fq::graphics::ParticleMaterialInfo::ERenderMode>()
 		.prop(fq::reflect::prop::Name, "ParticleMaterialInfoERenderMode")
