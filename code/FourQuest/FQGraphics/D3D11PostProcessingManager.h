@@ -84,6 +84,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11RenderTargetView> mPostProcessingRTV[2];
 		std::shared_ptr<class D3D11ShaderResourceView> mPostProcessingSRV[2];
 		std::shared_ptr<class D3D11ShaderResourceView> mOffscreenSRV;
+		std::shared_ptr<class D3D11ShaderResourceView> mDSVSRV;
 		std::shared_ptr<class D3D11RenderTargetView> mOffscreenRTV;
 		std::shared_ptr<class D3D11RenderTargetView> mSwapChainRTV;
 		unsigned int mRTVIndex = 0;

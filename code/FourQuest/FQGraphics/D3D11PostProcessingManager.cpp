@@ -13,6 +13,9 @@ namespace fq::graphics
 		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(D3D11IndexBuffer::CreateFullScreenIndexBuffer(device));
 		mNoneDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
 
+		auto defaultDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDSVSRV = std::make_shared<D3D11ShaderResourceView>(device, defaultDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+
 		mPointClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
 		mLinearClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearClamp);
 
@@ -71,6 +74,9 @@ namespace fq::graphics
 			mDownScaleSRVs[i][0] = std::make_shared<D3D11ShaderResourceView>(device, mDownScaleUAVs[i][0], true);
 			mDownScaleSRVs[i][1] = std::make_shared<D3D11ShaderResourceView>(device, mDownScaleUAVs[i][1], true);
 		}
+
+		auto defaultDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDSVSRV = std::make_shared<D3D11ShaderResourceView>(device, defaultDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
 	}
 
 	// 이런 함수는 그냥 버퍼 받게끔 풀어버리는 게 더 나을 거 같긴 하네
@@ -147,6 +153,7 @@ namespace fq::graphics
 
 		mPostProcessingSRV[mSRVIndex]->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mExtractBrightSRV[mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::PixelShader);
+		mDSVSRV->Bind(device, 3, ED3D11ShaderType::PixelShader);
 		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mLinearClampSS->Bind(device, 1, ED3D11ShaderType::PixelShader);
 

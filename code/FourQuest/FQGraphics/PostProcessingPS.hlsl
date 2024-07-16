@@ -98,6 +98,7 @@ cbuffer cColorAdjustment : register(b0)
 Texture2D gSrcTexture : register(t0);
 Texture2D gBloomTexture : register(t1);
 Texture1D gHutVsSatCurveTexture : register(t2);
+Texture2D gDepth : register(t3);
 SamplerState gSamplerPoint : register(s0);
 SamplerState gSamplerLinear : register(s1);
 
@@ -159,8 +160,14 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
     {
         color = AdjustVignetting(color, gVignettRadius, gVignettSmoothness, uv, gVignettColor);
     }
-    
-    float3 retColor = pow(color, 1 / gGamma);
+
+    float depth = gDepth.Sample(gSamplerPoint, uv);
+    //float fogFactor = saturate((fogEnd - cameraPosition.z) / (fogEnd - fogStart));
+    float fogFactor = 1 - ((depth - 0.98) / (1 - 0.98));
+    float4 fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
+    float3 finalColor = fogFactor * color + (1.0 - fogFactor) * fogColor;
+
+    float3 retColor = pow(finalColor, 1 / gGamma);
     
     return float4(retColor, 1.0);
 }
