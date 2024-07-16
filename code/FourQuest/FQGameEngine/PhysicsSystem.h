@@ -115,6 +115,9 @@ namespace fq::game_engine
 
 		void AddTerrainCollider(fq::game_module::GameObject* object);
 
+		/// <summary>
+		/// Raycast 이벤트 처리
+		/// </summary>
 		void Raycast(const fq::event::RayCast& event);
 
 	private:

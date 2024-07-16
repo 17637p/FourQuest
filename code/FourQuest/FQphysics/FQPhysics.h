@@ -18,6 +18,7 @@ namespace fq::physics
 	class PhysicsCollisionDataManager;
 	class PhysicsClothManager;
 
+
 	class FQPhysics : public IFQPhysics
 	{
 	public:

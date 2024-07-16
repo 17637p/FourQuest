@@ -173,6 +173,7 @@
     <ClInclude Include="PhysicsRigidBodyManager.h" />
     <ClInclude Include="PhysicsSimulationEventCallback.h" />
     <ClInclude Include="PlayerCharacterController.h" />
+    <ClInclude Include="RaycastQueryFileter.h" />
     <ClInclude Include="ResourceBase.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="StaticRigidBody.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="PhysicsRigidBodyManager.cpp" />
     <ClCompile Include="PhysicsSimulationEventCallback.cpp" />
     <ClCompile Include="PlayerCharacterController.cpp" />
+    <ClCompile Include="RaycastQueryFileter.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="StaticRigidBody.cpp" />

@@ -8,12 +8,13 @@
 #include "PhysicsCollisionDataManager.h"
 #include "PhysicsClothManager.h"
 #include "PhysicsSimulationEventCallback.h"
+#include "RaycastQueryFileter.h"
 
 #include "ConvexMeshResource.h"
 #include "EngineDataConverter.h"
 
 namespace fq::physics
-{ 
+{
 	/// <summary>
 	/// 충돌 콜백 함수
 	/// <summary>
@@ -191,26 +192,49 @@ namespace fq::physics
 
 	RayCastOutput FQPhysics::RayCast(const RayCastInput& info)
 	{
+		// 기본 설정 
 		physx::PxVec3 pxOrigin;
 		physx::PxVec3 pxDirection;
 		CopyDxVec3ToPxVec3(info.origin, pxOrigin);
 		CopyDxVec3ToPxVec3(info.direction, pxDirection);
 
+		// 결과 저장 버퍼
 		const physx::PxU32 maxHits = 20;
-		RayCastOutput output;
 		physx::PxRaycastHit hitBuffer[maxHits];
 		physx::PxRaycastBuffer hitBufferStruct(hitBuffer, maxHits);
-		output.myLayerNumber = info.layerNumber;
 
+		// 쿼리 정보 설정
+		physx::PxQueryFilterData qfd;
+		qfd.data.word0 = info.layerNumber;
+		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
+		qfd.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC
+			| physx::PxQueryFlag::ePREFILTER
+			| physx::PxQueryFlag::eANY_HIT
+			| physx::PxQueryFlag::eDISABLE_HARDCODED_FILTER; // Physx 핕터형식 적용 X
 
-		bool isBlock = mScene->raycast(pxOrigin
+		RaycastQueryFileter queryfilter;
+
+		bool isAnyHit = mScene->raycast(pxOrigin
 			, pxDirection
 			, info.distance
-			, hitBufferStruct);
+			, hitBufferStruct
+			, physx::PxHitFlag::eDEFAULT
+			, qfd
+			, &queryfilter);
 
-		if (isBlock)
+		RayCastOutput output;
+
+		if (isAnyHit)
 		{
+			// Block 정보 저장 
+			output.hasBlock = hitBufferStruct.hasBlock;
+			output.blockID = static_cast<CollisionData*>(hitBufferStruct.block.shape->userData)->myId;
+			hitBufferStruct.block.position;
+			CopyPxVec3ToDxVec3(hitBufferStruct.block.position ,output.blockPosition);
+
+			// Hit정보 저장
 			unsigned int hitSize = hitBufferStruct.nbTouches;
+			hitBufferStruct.block;
 			output.hitSize = hitSize;
 
 			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
@@ -225,7 +249,6 @@ namespace fq::physics
 
 				output.contectPoints.push_back(position);
 				output.id.push_back(id);
-				output.layerNumber.push_back(layerNumber);
 			}
 		}
 

@@ -216,9 +216,13 @@ namespace fq::event
 	{
 		struct ResultData
 		{
+			bool hasBlock = false;
+			game_module::GameObject* blockObject;
+			DirectX::SimpleMath::Vector3 blockPosition;
+
 			unsigned int hitCount = -1;
-			std::vector<game_module::GameObject*> objects;
-			std::vector<DirectX::SimpleMath::Vector3> contactPoints;
+			std::vector<game_module::GameObject*> hitObjects;
+			std::vector<DirectX::SimpleMath::Vector3> hitContactPoints;
 		};
 
 		DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;

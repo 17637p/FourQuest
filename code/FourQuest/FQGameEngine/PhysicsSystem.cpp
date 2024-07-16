@@ -814,15 +814,23 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 	rayCastInfo.origin = event.origin;
 
 	auto result = mPhysicsEngine->RayCast(rayCastInfo);
-	event.result->hitCount = result.hitSize;
-	event.result->contactPoints.reserve(result.hitSize);
-	event.result->objects.reserve(result.hitSize);
+	// Block 정보
+	if (result.hasBlock)
+	{
+		event.result->hasBlock = result.hasBlock;
+		event.result->blockObject = mColliderContainer.find(result.blockID)->second.gameObject.get();
+		event.result->blockPosition = result.blockPosition;
+	}
 
+	// Hit 정보
+	event.result->hitCount = result.hitSize;
+	event.result->hitContactPoints.reserve(result.hitSize);
+	event.result->hitObjects.reserve(result.hitSize);
 	for (unsigned int i = 0; i < result.hitSize; ++i)
 	{
-		event.result->contactPoints.push_back(result.contectPoints[i]);
+		event.result->hitContactPoints.push_back(result.contectPoints[i]);
 		auto object = mColliderContainer.find(result.id[i])->second.gameObject.get();
-		event.result->objects.push_back(object);
+		event.result->hitObjects.push_back(object);
 	}
 
 	if (event.bUseDebugDraw)
@@ -830,7 +838,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 		auto renderer = mGameProcess->mGraphics;
 
 		fq::graphics::debug::RayInfo  ray;
-		ray.Color = (result.hitSize == 0) ? DirectX::SimpleMath::Color{ 0.f,1.f,0.f,1.f } : DirectX::SimpleMath::Color{ 1.f,0.f,0.f,1.f };
+		ray.Color = (result.hasBlock == 0) ? DirectX::SimpleMath::Color{ 0.f,1.f,0.f,1.f } : DirectX::SimpleMath::Color{ 1.f,0.f,0.f,1.f };
 		ray.Direction = event.direction * event.distance;
 		ray.Origin = event.origin;
 		ray.Normalize = false;

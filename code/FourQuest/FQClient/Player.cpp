@@ -63,19 +63,16 @@ void fq::client::Player::OnUpdate(float dt)
     auto direction = tf->GetLookAtVector();
 	auto distance = 5.f;
 	bool bUseDebugDraw = true;
-	auto tag = game_module::ETag::Untagged;
+	auto tag = GetGameObject()->GetTag();
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
 		fq::event::RayCast {origin, direction, distance, tag, &data , bUseDebugDraw}
 	);
 
-	spdlog::debug("hit count {}",data.hitCount);
-
-	for (auto object : data.objects)
+	if (data.hasBlock)
 	{
-		spdlog::debug("name {}", object->GetName());
+		spdlog::debug("{}", data.blockObject->GetName());
 	}
-
 }
 
 void fq::client::Player::OnStart()
