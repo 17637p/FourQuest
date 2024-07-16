@@ -387,11 +387,11 @@ bool FQGraphics::Render()
 			mPostProcessingManager->Excute(mDevice);
 		}
 	}
-	mUIManager->Render();
 	if (mIsOnPostProcessing)
 	{
 		mPostProcessingManager->RenderFullScreen(mDevice);
 	}
+	mUIManager->Render();
 	mRenderManager->RenderFullScreen();
 
 	return true;
