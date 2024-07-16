@@ -92,7 +92,7 @@ namespace fq::game_module
 		/// 노드 계층 구조 리스소 경로 Getter/Setter
 		/// </summary>
 		std::string GetNodeHierarchyPath() const { return mNodeHierarchyPath; }
-		void SetNodeHierarchyPath(const std::string& modelPath) { mNodeHierarchyPath = modelPath; }
+		void SetNodeHierarchyPath(const std::string& path);
 
 		/// <summary>
 		/// 현재 애니메이션 전환중인지 반환합니다.

@@ -72,8 +72,13 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		AnimationStateNode stateNode(controller.get());
 		std::string stateName = key;
 
-		std::string path = value.at("animationPath");
-		path = fq::path::GetAbsolutePath(path).string();
+		std::string path;
+		if (value.find("animationPath") != value.end())
+		{
+			path = value.at("animationPath");
+			path = fq::path::GetAbsolutePath(path).string();
+		}
+
 		float playbackSpeed = value.at("playbackSpeed").get<float>();
 		float duration = value.at("duration").get<float>();
 		bool isLoof = value.at("isLoof").get<bool>();
