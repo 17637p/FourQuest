@@ -166,6 +166,12 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 
 void fq::client::MeleeMonster::ChaseTarget()
 {
+	if (mTarget == nullptr || mTarget->IsDestroyed())
+	{
+		SetTarget(nullptr);
+		return;
+	}
+
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
 	auto targetPos = targetT->GetWorldPosition();
 	Move(targetPos);

@@ -32,6 +32,12 @@ namespace fq::client
 		fq::game_module::PrefabResource GetAttackWarningUI() const { return mAttackWarningUI; }
 
 		float GetAOEMoveRange() const { return mAOEMoveRange; }
+
+		/// <summary>
+		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
+		/// </summary>
+		void SetLookAtRStickInput();
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -53,13 +59,15 @@ namespace fq::client
 		float mRazerCoolTime;
 		float mRazerElapsedTime;
 		float mRStickNoInputTime;
-
-		bool mbOnRazer;
+		float mRazerDistance;
+		float mRazerHiTick;
+		float mRazerHitElapsedTime;
 
 		game_module::PrefabResource mMagicBall;
 		game_module::PrefabResource mAttackWarningUI;
 		game_module::PrefabResource mAOE;
 		game_module::PrefabResource mRazer;
+		game_module::PrefabResource mRazerAttackBox;
 
 		friend void RegisterMetaData();
 	};

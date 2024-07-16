@@ -17,6 +17,7 @@
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
+#include "RazerAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -128,6 +129,10 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "MagicBallSpeed")
 		.data<&MagicArmour::mAOEMoveRange>("AOEMoveRange"_hs)
 		.prop(reflect::prop::Name, "AOEMoveRange")
+		.data<&MagicArmour::mRazerDistance>("RazerDistance"_hs)
+		.prop(reflect::prop::Name, "RazerDistance")
+		.data<&MagicArmour::mRazerHiTick>("RazerHiTick"_hs)
+		.prop(reflect::prop::Name, "RazerHiTick")
 		.data<&MagicArmour::mMagicBall>("MagicBall"_hs)
 		.prop(reflect::prop::Name, "MagicBall")
 		.data<&MagicArmour::mAOE>("AOE"_hs)
@@ -136,6 +141,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AttackWarningUI")
 		.data<&MagicArmour::mRazer>("Razer"_hs)
 		.prop(reflect::prop::Name, "Razer")
+		.data<&MagicArmour::mRazerAttackBox>("RazerAttackBox"_hs)
+		.prop(reflect::prop::Name, "RazerAttackBox")
 		.base<game_module::Component>();
 
 	entt::meta<Soul>()
@@ -193,6 +200,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<AOEAttackState>()
 		.type("AOEAttackState"_hs)
 		.prop(reflect::prop::Name, "AOEAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<RazerAttackState>()
+		.type("RazerAttackState"_hs)
+		.prop(reflect::prop::Name, "RazerAttackState")
 		.base<game_module::IStateBehaviour>();
 
 
