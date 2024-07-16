@@ -38,6 +38,7 @@ namespace fq::graphics
 		virtual void WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& uvAnimationClip) override;
 		virtual fq::common::UVAnimationClip ReadUVAnimation(const std::string& path) override;
 		virtual void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) override;
+		virtual void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) override;
 		virtual std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) override;
 
 		// Model Resource Control

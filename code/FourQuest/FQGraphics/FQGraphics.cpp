@@ -454,6 +454,10 @@ void fq::graphics::FQGraphics::WriteNodeHierarchy(const std::string& path, const
 {
 	fq::loader::NodeHierarchyLoader::Write(nodeHierarchy, path);
 }
+void fq::graphics::FQGraphics::WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData)
+{
+	fq::loader::NodeHierarchyLoader::Write(modelData, path);
+}
 std::vector<fq::common::Node> fq::graphics::FQGraphics::ReadNodeHierarchy(const std::string& path)
 {
 	return fq::loader::NodeHierarchyLoader::Read(path);
