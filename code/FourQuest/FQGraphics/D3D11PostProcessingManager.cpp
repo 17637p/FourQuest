@@ -7,11 +7,18 @@
 
 namespace fq::graphics
 {
-	void D3D11PostProcessingManager::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, unsigned short width, unsigned short height)
+	void D3D11PostProcessingManager::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, 
+		std::shared_ptr<D3D11CameraManager> cameraManager, 
+		unsigned short width, unsigned short height)
 	{
+		mCameraManager = cameraManager;
+
 		mFullScreenVB = std::make_shared<D3D11VertexBuffer>(D3D11VertexBuffer::CreateFullScreenVertexBuffer(device));
 		mFullScreenIB = std::make_shared<D3D11IndexBuffer>(D3D11IndexBuffer::CreateFullScreenIndexBuffer(device));
 		mNoneDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::None);
+
+		auto defaultDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDSVSRV = std::make_shared<D3D11ShaderResourceView>(device, defaultDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
 
 		mPointClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
 		mLinearClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearClamp);
@@ -38,6 +45,7 @@ namespace fq::graphics
 		// constantBuffer
 		mBloomParamsCB = std::make_shared<D3D11ConstantBuffer<BloomParams>>(device, ED3D11ConstantBuffer::Transform);
 		mPostProcessingCB = std::make_shared<D3D11ConstantBuffer<PostProcessingBuffer>>(device, ED3D11ConstantBuffer::Transform);
+		mFogCB = std::make_shared<D3D11ConstantBuffer<Fog>>(device, ED3D11ConstantBuffer::Transform);
 		OnResize(device, resourceManager, width, height);
 	}
 
@@ -71,6 +79,9 @@ namespace fq::graphics
 			mDownScaleSRVs[i][0] = std::make_shared<D3D11ShaderResourceView>(device, mDownScaleUAVs[i][0], true);
 			mDownScaleSRVs[i][1] = std::make_shared<D3D11ShaderResourceView>(device, mDownScaleUAVs[i][1], true);
 		}
+
+		auto defaultDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
+		mDSVSRV = std::make_shared<D3D11ShaderResourceView>(device, defaultDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
 	}
 
 	// 이런 함수는 그냥 버퍼 받게끔 풀어버리는 게 더 나을 거 같긴 하네
@@ -140,6 +151,17 @@ namespace fq::graphics
 
 		postProcessingBuffer.bUseVignett = mPostProcessingInfo.bUseVignett;
 		postProcessingBuffer.bUseToneMapping = mPostProcessingInfo.bUseToneMapping;
+		postProcessingBuffer.bUseFog = true;
+
+		// Fog
+		Fog fog;
+		fog.nearPlane = mCameraManager->GetNearPlane(ECameraType::Player);
+		fog.farPlane = mCameraManager->GetFarPlane(ECameraType::Player);
+		fog.visibleArea = mPostProcessingInfo.fogVisibleArea;
+		fog.color = mPostProcessingInfo.fogColor;
+		mFogCB->Update(device, fog);
+		mFogCB->Bind(device, ED3D11ShaderType::PixelShader, 1);
+		//
 
 		mPostProcessingProgram->Bind(device);
 
@@ -147,6 +169,7 @@ namespace fq::graphics
 
 		mPostProcessingSRV[mSRVIndex]->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mExtractBrightSRV[mDownScaleUAVIndex]->Bind(device, 1, ED3D11ShaderType::PixelShader);
+		mDSVSRV->Bind(device, 3, ED3D11ShaderType::PixelShader);
 		mPointClampSS->Bind(device, 0, ED3D11ShaderType::PixelShader);
 		mLinearClampSS->Bind(device, 1, ED3D11ShaderType::PixelShader);
 

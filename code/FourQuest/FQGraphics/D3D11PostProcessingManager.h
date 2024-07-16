@@ -10,6 +10,8 @@ namespace fq::graphics
 {
 	class D3D11Device;
 	class D3D11ResourceManager;
+	class D3D11CameraManager;
+
 	template <typename T>
 	class D3D11ConstantBuffer;
 
@@ -19,7 +21,7 @@ namespace fq::graphics
 		D3D11PostProcessingManager() = default;
 		~D3D11PostProcessingManager() = default;
 
-		void Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, unsigned short width, unsigned short height);
+		void Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager, unsigned short width, unsigned short height);
 		void OnResize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, unsigned short width, unsigned short height);
 
 		void Excute(std::shared_ptr<D3D11Device> device);
@@ -65,7 +67,7 @@ namespace fq::graphics
 			int bUseVignett;
 			int bUseToneMapping;
 			int bUseHueVsSatCurve;
-			float unused[1];
+			int bUseFog;
 		};
 
 		struct BloomParams
@@ -76,7 +78,18 @@ namespace fq::graphics
 			float unused[1];
 		} mBloomParams;
 
+		struct Fog
+		{
+			DirectX::SimpleMath::Vector4 color;
+			float nearPlane;
+			float farPlane;
+			float visibleArea;
+			float unused[1]; // 아마도 함수 타입 들어갈듯 일단은 선형 함수!
+		};
+
 	private:
+		std::shared_ptr<D3D11CameraManager> mCameraManager;
+
 		std::shared_ptr<class D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<class D3D11IndexBuffer> mFullScreenIB;
 		std::shared_ptr<class D3D11DepthStencilView> mNoneDSV;
@@ -84,6 +97,7 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11RenderTargetView> mPostProcessingRTV[2];
 		std::shared_ptr<class D3D11ShaderResourceView> mPostProcessingSRV[2];
 		std::shared_ptr<class D3D11ShaderResourceView> mOffscreenSRV;
+		std::shared_ptr<class D3D11ShaderResourceView> mDSVSRV;
 		std::shared_ptr<class D3D11RenderTargetView> mOffscreenRTV;
 		std::shared_ptr<class D3D11RenderTargetView> mSwapChainRTV;
 		unsigned int mRTVIndex = 0;
@@ -96,6 +110,7 @@ namespace fq::graphics
 		std::unique_ptr<class ShaderProgram> mPostProcessingProgram;
 		PostProcessingInfo mPostProcessingInfo;
 		std::shared_ptr<D3D11ConstantBuffer<PostProcessingBuffer>> mPostProcessingCB;
+		std::shared_ptr<D3D11ConstantBuffer<Fog>> mFogCB;
 
 		// bloom
 		// downScaledBuffer4
