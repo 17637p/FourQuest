@@ -8,6 +8,8 @@
 #include "NodeHierarchy.h"
 #include "RenderObject.h"
 
+#include <random>
+
 void fq::graphics::SSAODepthPass::Initialize(std::shared_ptr<D3D11Device> device,
 	std::shared_ptr<D3D11JobManager> jobManager,
 	std::shared_ptr<D3D11CameraManager> cameraManager,
@@ -137,5 +139,46 @@ void fq::graphics::SSAODepthPass::Render()
 				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
+	}
+}
+
+void fq::graphics::SSAODepthPass::BuildOffsetVectors()
+{
+	// 입방체 꼭짓점 여덟 개
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{1.0f, 1.0f, 1.0f, 0.0f});
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{-1.0f, -1.0f, -1.0f, 0.0f});
+
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ -1.0f, 1.0f, 1.0f, 0.0f });
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 1.0f, -1.0f, -1.0f, 0.0f });
+
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 1.0f, 1.0f, -1.0f, 0.0f });
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ -1.0f, -1.0f, 1.0f, 0.0f });
+
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ -1.0f, 1.0f, -1.0f, 0.0f });
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 1.0f, -1.0f, 1.0f, 0.0f });
+
+	// 입방체 면 중점 여섯 개
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ -1.0f, 0.0f, 0.0f, 0.0f });
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 1.0f, 0.0f, 0.0f, 0.0f });
+
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 0.0f, -1.0f, 0.0f, 0.0f });
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 0.0f, 1.0f, 0.0f, 0.0f });
+
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 0.0f, 0.0f, -1.0f, 0.0f });
+	mOffsets.push_back(DirectX::SimpleMath::Vector4{ 0.0f, 0.0f, 1.0f, 0.0f });
+
+	// 랜덤 값 생성
+	std::random_device rd;  // 시드 값을 얻기 위한 random_device
+	std::mt19937 gen(rd()); // Mersenne Twister 엔진을 시드로 초기화
+
+	// 0.0에서 1.0 사이의 float 값을 생성하기 위한 균등 분포 정의
+	std::uniform_real_distribution<> dis(0.25f, 1.0f);
+
+	for (int i = 0; i < 14; i++)
+	{
+		float s = dis(gen);
+		
+		mOffsets[i].Normalize();
+		mOffsets[i] = s * mOffsets[i];
 	}
 }
