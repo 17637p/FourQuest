@@ -370,13 +370,13 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
 			auto meshName = staticMeshRenderer->GetMeshName();
 			auto modelPath = staticMeshRenderer->GetModelPath();
+			auto texturePath = staticMeshRenderer->GetTexturePath();
+			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, texturePath);
 
-			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(modelPath);
+			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(key);
 			assert(check);
 
-			mGameProcess->mGraphics->GetModel(modelPath);
-
-			const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
+			const auto& model = mGameProcess->mGraphics->GetModel(key);
 			const auto& mesh = ModelSystem::GetMesh(model, meshName);
 			convexMeshInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
 			convexMeshInfo.vertexSize = mesh.Vertices.size();
@@ -390,12 +390,14 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			auto skinnedMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
 			auto modelPath = skinnedMeshRenderer->GetModelPath();
+			auto texturePath = skinnedMeshRenderer->GetTexturePath();
+			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, texturePath);
 			auto meshName = skinnedMeshRenderer->GetMeshName();
 
-			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(modelPath);
+			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(key);
 			assert(check);
 
-			const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
+			const auto& model = mGameProcess->mGraphics->GetModel(key);
 
 		}
 		meshCollider->SetConvexMeshInfomation(convexMeshInfo);

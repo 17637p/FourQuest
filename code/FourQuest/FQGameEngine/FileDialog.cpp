@@ -500,12 +500,42 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 			if (ImGui::MenuItem("Convert"))
 			{
 				std::wstring fileName = path.filename();
+				// .fbx 확장자 제거
 				fileName = fileName.substr(0, fileName.size() - 4);
-
 				fs::path directory = path.parent_path() / fileName;
 
+				// model 생성
 				auto modelData = mGameProcess->mGraphics->ConvertModel(path.string());
 				mGameProcess->mGraphics->WriteModel(directory.string(), modelData);
+
+				// model 폴더 생성 
+				if (!fs::exists(directory))
+				{
+					fs::create_directory(directory);
+				}
+
+				// anmation 생성
+				for (const auto& animation : modelData.Animations)
+				{
+					auto path = directory / removeInvalidCharacters(animation.Name);
+					path += ".animation";
+					mGameProcess->mGraphics->WriteAnimation(path.string(), animation);
+				}
+
+				// nodeHierachy 생성
+				
+				auto path = directory / fileName;
+				path += ".nodeHierachy";
+
+				mGameProcess->mGraphics->WriteNodeHierarchy(path.string(), modelData);
+			}
+		}
+
+		if (path.extension() == ".model")
+		{
+			if (ImGui::MenuItem("ConvertAnimation"))
+			{
+
 			}
 		}
 
@@ -693,5 +723,20 @@ void fq::game_engine::FileDialog::changeDirectoryPath(Path prev, Path current)
 
 	auto currentSceneName = mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
 	mGameProcess->mEventManager->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
+}
+
+std::string fq::game_engine::FileDialog::removeInvalidCharacters(const std::string& input)
+{
+	// 금지된 문자 리스트
+	const std::string invalidChars = "\\/:*?\"<>|";
+	std::string result = input;
+
+	// std::remove_if와 lambda를 사용하여 금지된 문자 제거
+	result.erase(std::remove_if(result.begin(), result.end(),
+		[&invalidChars](char c) {
+			return invalidChars.find(c) != std::string::npos;
+		}), result.end());
+
+	return result;
 }
 

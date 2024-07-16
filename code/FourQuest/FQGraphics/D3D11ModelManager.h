@@ -31,23 +31,24 @@ namespace fq::graphics
 		fq::common::Model ReadModel(const std::string& path);
 		fq::common::Model ConvertModel(const std::string& fbxFilePath);
 
-		const fq::common::Model& CreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath = "");
-		bool TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr);
-		const fq::common::Model& GetModel(const std::string& path);
-		bool TryGetModel(const std::string& path, fq::common::Model* model);
-		void DeleteModelResource(const std::string& path);
+		const fq::common::Model& CreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "");
+		bool TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr);
+		const fq::common::Model& GetModel(unsigned int key);
+		bool TryGetModel(unsigned int key, fq::common::Model* model);
+		void DeleteModelResource(unsigned int key);
 
-		std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath);
-		std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName);
-		std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName);
-		std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName);
-		std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName);
+		std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key);
+		std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName);
+		std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName);
+		std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName);
+		std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName);
 
 		std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData);
 		std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(const fq::common::Mesh& meshData);
 		std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const fq::common::Model& model);
 		std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const std::vector<fq::common::Node> nodes);
 		std::shared_ptr<IAnimation> CreateAnimation(const fq::common::AnimationClip& animationClip);
+		std::shared_ptr<IUVAnimation> CreateUVAnimation(const fq::common::UVAnimationClip& animationClip);
 		std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo);
 		std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo);
 		std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo);
@@ -57,6 +58,7 @@ namespace fq::graphics
 		std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const fq::common::Model& model);
 		std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes);
 		std::shared_ptr<IAnimation> CreateAnimation(std::string key, const fq::common::AnimationClip& animationClip);
+		std::shared_ptr<IUVAnimation> CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip);
 		std::shared_ptr<IMaterial> CreateMaterial(const std::string& key, const MaterialInfo& materialInfo);
 		std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo);
 		std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo);
@@ -65,6 +67,7 @@ namespace fq::graphics
 		std::vector<std::shared_ptr<ISkinnedMesh>> GetSkinnedMeshes();
 		std::vector<std::shared_ptr<INodeHierarchy>> GetNodeHierarchies();
 		std::vector<std::shared_ptr<IAnimation>> GetAnimations();
+		std::vector<std::shared_ptr<IUVAnimation>> GetUVAnimations();
 		std::vector<std::shared_ptr<IMaterial>> GetMaterials();
 		std::vector<std::shared_ptr<IParticleMaterial>> GetParticleMaterials();
 		std::vector<std::shared_ptr<IDecalMaterial>> GetDecalMaterials();
@@ -73,6 +76,7 @@ namespace fq::graphics
 		std::shared_ptr<ISkinnedMesh> GetSkinnedMeshOrNull(std::string key);
 		std::shared_ptr<INodeHierarchy> GetNodeHierarchyOrNull(std::string key);
 		std::shared_ptr<IAnimation> GetAnimationOrNull(std::string key);
+		std::shared_ptr<IUVAnimation> GetUVAnimationOrNull(std::string key);
 		std::shared_ptr<IMaterial> GetMaterialOrNull(const std::string& key);
 		std::shared_ptr<IParticleMaterial> GetParticleMaterialOrNull(const std::string& key);
 		std::shared_ptr<IDecalMaterial> GetDecalMaterialOrNull(const std::string& key);
@@ -81,6 +85,7 @@ namespace fq::graphics
 		void DeleteSkinnedMesh(const std::string& key);
 		void DeleteNodeHierarchy(const std::string& key);
 		void DeleteAnimation(const std::string& key);
+		void DeleteUVAnimation(const std::string& key);
 		void DeleteMaterial(const std::string& key);
 		void DeleteParticleMaterial(const std::string& key);
 		void DeleteDecalMaterial(const std::string& key);
@@ -139,11 +144,12 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
-		std::map<std::string, fq::common::Model> mModels;
+		std::map<unsigned int, fq::common::Model> mModels;
 		std::map<std::string, std::shared_ptr<IStaticMesh>> mStaticMeshes;
 		std::map<std::string, std::shared_ptr<ISkinnedMesh>> mSkinnedMeshes;
 		std::map<std::string, std::shared_ptr<INodeHierarchy>> mNodeHierarchies;
 		std::map<std::string, std::shared_ptr<IAnimation>> mAnimations;
+		std::map<std::string, std::shared_ptr<IUVAnimation>> mUVAnimations;
 		std::map<std::string, std::shared_ptr<IMaterial>> mMaterials;
 		std::map<std::string, std::shared_ptr<IParticleMaterial>> mParticleMaterials;
 		std::map<std::string, std::shared_ptr<IDecalMaterial>> mDecalMaterials;

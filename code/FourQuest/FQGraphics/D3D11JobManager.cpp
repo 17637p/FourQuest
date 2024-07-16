@@ -25,6 +25,7 @@ namespace fq::graphics
 			job.StaticMesh = std::static_pointer_cast<StaticMesh>(iStaticMeshObject->GetStaticMesh());
 			job.Material = std::static_pointer_cast<Material>(material[i]);
 			job.StaticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
+			job.NodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(iStaticMeshObject->GetNodeHierarchyInstance());
 
 			mStaticMeshJobs.push_back(job);
 		}

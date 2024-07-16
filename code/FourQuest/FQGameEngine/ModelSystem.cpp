@@ -29,9 +29,10 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
 	std::filesystem::path modelPath = path;
 	std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
+	auto key = mGameProcess->mRenderingSystem->GetModelKey(path.string(), texturePath.string());
 
 	auto& graphics = mGameProcess->mGraphics;
-	const auto& model = graphics->CreateModelResource(modelPath.string(), texturePath);
+	const auto& model = graphics->CreateModelResource(key, modelPath.string(), texturePath);
 
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> modelObjects;
 

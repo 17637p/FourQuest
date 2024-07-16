@@ -4,6 +4,8 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/IFQRenderObject.h"
 
+#include "RenderingSystem.h"
+
 #include <fstream>
 
 fq::game_engine::LightProbeSystem::LightProbeSystem(GameProcess* tempProcess)
@@ -23,7 +25,10 @@ void fq::game_engine::LightProbeSystem::AddLightProbe(DirectX::SimpleMath::Vecto
 
 	// Probe Object ¸¸µé±â
 	const std::string sphereModel = "./resource/internal/lightProbe/sphere.model";
-	const fq::common::Model& modelData = mGameProcess->mGraphics->CreateModelResource(sphereModel, "./resource/");
+	const std::string texturePath = "./resource/";
+	auto key = mGameProcess->mRenderingSystem->GetModelKey(sphereModel, texturePath);
+
+	const fq::common::Model& modelData = mGameProcess->mGraphics->CreateModelResource( key,sphereModel, texturePath);
 	for (const auto& [node, mesh] : modelData.Meshes)
 	{
 		if (mesh.Vertices.empty())
@@ -31,7 +36,7 @@ void fq::game_engine::LightProbeSystem::AddLightProbe(DirectX::SimpleMath::Vecto
 			continue;
 		}
 
-		auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(sphereModel, mesh.Name);
+		auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull( key, mesh.Name);
 
 		DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::CreateScale({ 
 			mLightProbeDefaultScale * mLightProbeScale, 
@@ -111,7 +116,9 @@ void fq::game_engine::LightProbeSystem::LoadLightProbes(std::string fileName)
 	std::ifstream lightProbeFile("./resource/LightProbe/" + fileName + ".Lpo");
 
 	const std::string sphereModel = "./resource/internal/lightProbe/sphere.model";
-	const fq::common::Model& modelData = mGameProcess->mGraphics->CreateModelResource(sphereModel, "./resource/");
+	const std::string texturePath = "./resource/";
+	auto key = mGameProcess->mRenderingSystem->GetModelKey(sphereModel, texturePath);
+	const fq::common::Model& modelData = mGameProcess->mGraphics->CreateModelResource( key,sphereModel, texturePath);
 
 	if (lightProbeFile.is_open())
 	{
@@ -142,7 +149,7 @@ void fq::game_engine::LightProbeSystem::LoadLightProbes(std::string fileName)
 					continue;
 				}
 
-				auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(sphereModel, mesh.Name);
+				auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, mesh.Name);
 
 				fq::graphics::IProbeObject* iProbeObject = mGameProcess->mGraphics->CreateProbeObject(meshInterface, mat, index);
 				mProbeObjects.push_back(iProbeObject);

@@ -89,3 +89,9 @@ void fq::game_module::Animator::OnUpdate(float dt)
 		mController->Update(dt);
 }
 
+void fq::game_module::Animator::SetNodeHierarchyPath(const std::string& path)
+{
+	if (std::filesystem::path(path).extension() == ".nodeHierachy")
+		mNodeHierarchyPath = path;
+}
+

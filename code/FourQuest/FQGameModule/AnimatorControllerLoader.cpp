@@ -72,9 +72,13 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		AnimationStateNode stateNode(controller.get());
 		std::string stateName = key;
 
-		std::string path = value.at("modelPath");
-		path = fq::path::GetAbsolutePath(path).string();
-		std::string name = value.at("animationName");
+		std::string path;
+		if (value.find("animationPath") != value.end())
+		{
+			path = value.at("animationPath");
+			path = fq::path::GetAbsolutePath(path).string();
+		}
+
 		float playbackSpeed = value.at("playbackSpeed").get<float>();
 		float duration = value.at("duration").get<float>();
 		bool isLoof = value.at("isLoof").get<bool>();
@@ -82,8 +86,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		stateNode.SetType(AnimationStateNode::Type::State);
 		stateNode.SetAnimationKey(stateName);
 		stateNode.SetPlayBackSpeed(playbackSpeed);
-		stateNode.SetModelPath(path);
-		stateNode.SetAnimationName(name);
+		stateNode.SetAnimationPath(path);
 		stateNode.SetDuration(duration);
 		stateNode.SetLoof(isLoof);
 
@@ -215,8 +218,7 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		if (stateNode.GetType() != AnimationStateNode::Type::State) continue;
 
 		ordered_json stateJson;
-		stateJson["modelPath"] = fq::path::GetRelativePath(stateNode.GetModelPath()).string();
-		stateJson["animationName"] = stateNode.GetAnimationName();
+		stateJson["animationPath"] = fq::path::GetRelativePath(stateNode.GetAnimationPath()).string();
 		stateJson["playbackSpeed"] = stateNode.GetPlayBackSpeed();
 		stateJson["duration"] = stateNode.GetDuration();
 		stateJson["isLoof"] = stateNode.IsLoof();

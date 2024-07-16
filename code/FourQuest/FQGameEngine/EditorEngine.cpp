@@ -69,7 +69,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	HWND hwnd = mGameProcess->mWindowSystem->GetHWND();
 	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
 	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
-	mGameProcess->mGraphics->Initialize(hwnd, width, height, fq::graphics::EPipelineType::Forward);
+	mGameProcess->mGraphics->Initialize(hwnd, width, height, fq::graphics::EPipelineType::Deferred);
 
 	// 물리 엔진 초기화
 	mGameProcess->mPhysics = fq::physics::EngineExporter().GetEngine();

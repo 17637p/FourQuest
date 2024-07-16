@@ -422,7 +422,7 @@ fq::graphics::D3D11ShaderResourceView::D3D11ShaderResourceView(const std::shared
 	else
 	{
 		ComPtr<ID3D11Texture2D> texture;
-		unorderedAccessView->mView->GetResource(reinterpret_cast<ID3D11Resource**>(texture.GetAddressOf()));
+ 		unorderedAccessView->mView->GetResource(reinterpret_cast<ID3D11Resource**>(texture.GetAddressOf()));
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		texture->GetDesc(&textureDesc);

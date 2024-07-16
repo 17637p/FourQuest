@@ -20,7 +20,7 @@ namespace fq::game_engine
 	/// </summary>
 	class RenderingSystem
 	{
-		using ModelPath = std::string;
+		using Path = std::string;
 		using EventHandler = fq::game_module::EventHandler;
 	public:
 		RenderingSystem();
@@ -66,17 +66,19 @@ namespace fq::game_engine
 		/// <summary>
 		/// 모델이 로드된지 확인합니다
 		/// </summary>
-		bool IsLoadedModel(const ModelPath& path);
+		bool IsLoadedModel(unsigned int key);
 
 		/// <summary>
 		/// 모델을 로드합니다 
 		/// </summary>
-		void LoadModel(const ModelPath& path, const std::string& texturePath = {});
+		void LoadModel(const Path& path, const std::string& texturePath = {});
 
 		/// <summary>
 		/// 애니메이션을 작동합니다.
 		/// </summary>
 		void WriteAnimation(const fq::event::WriteAnimation& event);
+
+		unsigned int GetModelKey(const Path& modelPath, const Path& texturePath)const;
 
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
@@ -92,6 +94,8 @@ namespace fq::game_engine
 
 		void unloadAllModel();
 
+
+
 	private:
 		GameProcess* mGameProcess;
 		EventHandler mOnLoadSceneHandler;
@@ -106,6 +110,6 @@ namespace fq::game_engine
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;
 
-		std::set<ModelPath> mLoadModels;
+		std::set<unsigned int> mLoadModels;
 	};
 }

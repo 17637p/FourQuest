@@ -3,6 +3,7 @@
 #include "ManagementCommon.h"
 #include "D3D11Shader.h"
 #include "D3D11Texture.h"
+#include "../FQLoader/ModelLoader.h"
 
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
@@ -14,6 +15,8 @@ using namespace fq::graphics;
 FQGraphics::~FQGraphics()
 {
 	mRenderManager = nullptr;
+	mObjectManager = nullptr;
+	mModelManager = nullptr;
 }
 
 FQGraphics::FQGraphics()
@@ -297,10 +300,10 @@ void FQGraphics::UpdateColCamera(const fq::common::Transform& cameraTransform)
 
 void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 {
-	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager, 
-		mObjectManager->GetStaticMeshObjects(), 
-		mObjectManager->GetSkinnedMeshObjects(), 
-		mObjectManager->GetTerrainMeshObjects(), 
+	return mPickingManager->GetPickedObject(mouseX, mouseY, mDevice, mCameraManager, mJobManager,
+		mObjectManager->GetStaticMeshObjects(),
+		mObjectManager->GetSkinnedMeshObjects(),
+		mObjectManager->GetTerrainMeshObjects(),
 		mObjectManager->GetProbeObjects());
 }
 
@@ -440,52 +443,80 @@ fq::common::Model fq::graphics::FQGraphics::ReadModel(const std::string& path)
 {
 	return mModelManager->ReadModel(path);
 }
+void fq::graphics::FQGraphics::WriteAnimation(const std::string& path, const fq::common::AnimationClip& animationClip)
+{
+	return fq::loader::AnimationLoader::Write(animationClip, path);
+}
+fq::common::AnimationClip fq::graphics::FQGraphics::ReadAnimation(const std::string& path)
+{
+	return fq::loader::AnimationLoader::Read(path);
+}
+void fq::graphics::FQGraphics::WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& uvAnimationClip)
+{
+	fq::loader::UVAnimationLoader::Write(uvAnimationClip, path);
+}
+fq::common::UVAnimationClip fq::graphics::FQGraphics::ReadUVAnimation(const std::string& path)
+{
+	return fq::loader::UVAnimationLoader::Read(path);
+}
+void fq::graphics::FQGraphics::WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy)
+{
+	fq::loader::NodeHierarchyLoader::Write(nodeHierarchy, path);
+}
+void fq::graphics::FQGraphics::WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData)
+{
+	fq::loader::NodeHierarchyLoader::Write(modelData, path);
+}
+std::vector<fq::common::Node> fq::graphics::FQGraphics::ReadNodeHierarchy(const std::string& path)
+{
+	return fq::loader::NodeHierarchyLoader::Read(path);
+}
 fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxFile)
 {
 	return mModelManager->ConvertModel(fbxFile);
 }
 
-const fq::common::Model& FQGraphics::CreateModelResource(const std::string& path, std::filesystem::path textureBasePath)
+const fq::common::Model& FQGraphics::CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath)
 {
-	return mModelManager->CreateModelResource(mDevice, path, textureBasePath);
+	return mModelManager->CreateModelResource(mDevice, key, path, textureBasePath);
 }
 
-bool FQGraphics::TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
+bool FQGraphics::TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
 {
-	return mModelManager->TryCreateModelResource(mDevice, path, textureBasePath, outDataOrNull);
+	return mModelManager->TryCreateModelResource(mDevice, key, path, textureBasePath, outDataOrNull);
 }
 
-const fq::common::Model& FQGraphics::GetModel(const std::string& path)
+const fq::common::Model& FQGraphics::GetModel(unsigned int key)
 {
-	return mModelManager->GetModel(path);
+	return mModelManager->GetModel(key);
 }
 
-void FQGraphics::DeleteModelResource(const std::string& path)
+void FQGraphics::DeleteModelResource(unsigned int key)
 {
-	mModelManager->DeleteModelResource(path);
+	mModelManager->DeleteModelResource(key);
 }
 
-std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::GetNodeHierarchyByModelPathOrNull(std::string modelPath)
+std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::GetNodeHierarchyByModelPathOrNull(unsigned int key)
 {
-	return mModelManager->GetNodeHierarchyByModelPathOrNull(modelPath);
+	return mModelManager->GetNodeHierarchyByModelPathOrNull(key);
 }
 
-std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName)
+std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName)
 {
-	return mModelManager->GetStaticMeshByModelPathOrNull(modelPath, meshName);
+	return mModelManager->GetStaticMeshByModelPathOrNull(key, meshName);
 }
-std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName)
+std::shared_ptr<ISkinnedMesh> fq::graphics::FQGraphics::GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName)
 {
-	return mModelManager->GetSkinnedMeshByModelPathOrNull(modelPath, meshName);
+	return mModelManager->GetSkinnedMeshByModelPathOrNull(key, meshName);
 }
-std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName)
+std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialByModelPathOrNull(unsigned int key, std::string materialName)
 {
-	return mModelManager->GetMaterialByModelPathOrNull(modelPath, materialName);
+	return mModelManager->GetMaterialByModelPathOrNull(key, materialName);
 }
 
-std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName)
+std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationByModelPathOrNull(unsigned int key, std::string animationName)
 {
-	return mModelManager->GetAnimationByModelPathOrNull(modelPath, animationName);
+	return mModelManager->GetAnimationByModelPathOrNull(key, animationName);
 }
 
 std::shared_ptr<IStaticMesh> fq::graphics::FQGraphics::CreateStaticMesh(const fq::common::Mesh& meshData)
@@ -511,6 +542,11 @@ std::shared_ptr<INodeHierarchy> fq::graphics::FQGraphics::CreateNodeHierarchy(co
 std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(const fq::common::AnimationClip& animationClip)
 {
 	return mModelManager->CreateAnimation(animationClip);
+}
+
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::CreateUVAnimation(const fq::common::UVAnimationClip& animationClip)
+{
+	return mModelManager->CreateUVAnimation(animationClip);
 }
 
 std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
@@ -545,6 +581,10 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(std::strin
 {
 	return mModelManager->CreateAnimation(key, animationClip);
 }
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip)
+{
+	return mModelManager->CreateUVAnimation(key, animationClip);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::CreateMaterial(const std::string& key, const MaterialInfo& materialInfo)
 {
 	return mModelManager->CreateMaterial(key, materialInfo);
@@ -572,6 +612,10 @@ std::vector<std::shared_ptr<INodeHierarchy>> fq::graphics::FQGraphics::GetNodeHi
 std::vector<std::shared_ptr<IAnimation>> fq::graphics::FQGraphics::GetAnimations()
 {
 	return mModelManager->GetAnimations();
+}
+std::vector<std::shared_ptr<IUVAnimation>> fq::graphics::FQGraphics::GetUVAnimations()
+{
+	return mModelManager->GetUVAnimations();
 }
 std::vector<std::shared_ptr<IMaterial>> fq::graphics::FQGraphics::GetMaterials()
 {
@@ -601,6 +645,10 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationOrNull(std::st
 {
 	return mModelManager->GetAnimationOrNull(key);
 }
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::GetUVAnimationOrNull(std::string key)
+{
+	return mModelManager->GetUVAnimationOrNull(key);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialOrNull(const std::string& key)
 {
 	return mModelManager->GetMaterialOrNull(key);
@@ -629,6 +677,10 @@ void fq::graphics::FQGraphics::DeleteNodeHierarchy(std::string key)
 void fq::graphics::FQGraphics::DeleteAnimation(std::string key)
 {
 	mModelManager->DeleteAnimation(key);
+}
+void fq::graphics::FQGraphics::DeleteUVAnimation(std::string key)
+{
+	mModelManager->DeleteUVAnimation(key);
 }
 void fq::graphics::FQGraphics::DeleteMaterial(const std::string& key)
 {

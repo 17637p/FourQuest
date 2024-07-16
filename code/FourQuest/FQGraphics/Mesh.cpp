@@ -14,6 +14,11 @@ namespace fq::graphics
 		mVertexBuffer->Bind(d3d11Device);
 		mIndexBuffer->Bind(d3d11Device);
 	}
+	void MeshBase::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11VertexBuffer> uvBuffer)
+	{
+		D3D11VertexBuffer::Bind(d3d11Device, { mVertexBuffer, uvBuffer });
+		mIndexBuffer->Bind(d3d11Device);
+	}
 	void MeshBase::Draw(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex)
 	{
 		const fq::common::Mesh::Subset& subset = mMeshData.Subsets[subsetIndex];

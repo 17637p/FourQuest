@@ -60,21 +60,28 @@ extern "C" {
 			virtual FQ_GRAPHICS bool SetViewportSize(const unsigned short width, const unsigned short height) abstract; // 툴에서 씬을 그리는 영역
 
 			// Model Data Helper
+			virtual FQ_GRAPHICS fq::common::Model ConvertModel(const std::string& fbxFile) abstract;
 			virtual FQ_GRAPHICS void WriteModel(const std::string& path, const fq::common::Model& modelData) abstract;
 			virtual FQ_GRAPHICS fq::common::Model ReadModel(const std::string& path) abstract;
-			virtual FQ_GRAPHICS fq::common::Model ConvertModel(const std::string& fbxFile) abstract;
+			virtual FQ_GRAPHICS void WriteAnimation(const std::string& path, const fq::common::AnimationClip& modelData) abstract;
+			virtual FQ_GRAPHICS fq::common::AnimationClip ReadAnimation(const std::string& path) abstract;
+			virtual FQ_GRAPHICS void WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& modelData) abstract;
+			virtual FQ_GRAPHICS fq::common::UVAnimationClip ReadUVAnimation(const std::string& path) abstract;
+			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) abstract;
+			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) abstract;
+			virtual FQ_GRAPHICS std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) abstract;
 
 			// Model Resource Control
-			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "") abstract;
-			virtual FQ_GRAPHICS bool TryCreateModelResource(const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr) abstract;
-			virtual FQ_GRAPHICS const fq::common::Model& GetModel(const std::string& path) abstract;
-			virtual FQ_GRAPHICS void DeleteModelResource(const std::string& path) abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") abstract;
+			virtual FQ_GRAPHICS bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr) abstract;
+			virtual FQ_GRAPHICS const fq::common::Model& GetModel(unsigned int key) abstract;
+			virtual FQ_GRAPHICS void DeleteModelResource(unsigned int key) abstract;
 
-			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(std::string modelPath) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(std::string modelPath, std::string meshName) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(std::string modelPath, std::string materialName) abstract;
-			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(std::string modelPath, std::string animationName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName) abstract;
 
 			// Render Resource Control
 			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData) abstract;
@@ -82,6 +89,7 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const fq::common::Model& model) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const std::vector<fq::common::Node> nodes) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> CreateAnimation(const fq::common::AnimationClip& animationClip) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimation> CreateUVAnimation(const fq::common::UVAnimationClip& animationClip) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo) abstract;
@@ -91,6 +99,7 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const fq::common::Model& model) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> CreateAnimation(std::string key, const fq::common::AnimationClip& animationClip) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimation> CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> CreateMaterial(const std::string& key, const MaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) abstract;
@@ -99,6 +108,7 @@ extern "C" {
 			virtual FQ_GRAPHICS std::vector<std::shared_ptr<ISkinnedMesh>> GetSkinnedMeshes() abstract;
 			virtual FQ_GRAPHICS std::vector<std::shared_ptr<INodeHierarchy>> GetNodeHierarchies() abstract;
 			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IAnimation>> GetAnimations() abstract;
+			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IUVAnimation>> GetUVAnimations() abstract;
 			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IMaterial>> GetMaterials() abstract;
 			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IParticleMaterial>> GetParticleMaterials() abstract;
 			virtual FQ_GRAPHICS std::vector<std::shared_ptr<IDecalMaterial>> GetDecalMaterials() abstract;
@@ -107,6 +117,7 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMeshOrNull(std::string key) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchyOrNull(std::string key) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IAnimation> GetAnimationOrNull(std::string key) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimation> GetUVAnimationOrNull(std::string key) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IMaterial> GetMaterialOrNull(const std::string& key) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetParticleMaterialOrNull(const std::string& key) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetDecalMaterialOrNull(const std::string& key) abstract;
@@ -115,6 +126,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteSkinnedMesh(std::string key) abstract;
 			virtual FQ_GRAPHICS void DeleteNodeHierarchy(std::string key) abstract;
 			virtual FQ_GRAPHICS void DeleteAnimation(std::string key) abstract;
+			virtual FQ_GRAPHICS void DeleteUVAnimation(std::string key) abstract;
 			virtual FQ_GRAPHICS void DeleteMaterial(const std::string& key) abstract;
 			virtual FQ_GRAPHICS void DeleteParticleMaterial(const std::string& key) abstract;
 			virtual FQ_GRAPHICS void DeleteDecalMaterial(const std::string& key) abstract;
