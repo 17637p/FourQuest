@@ -59,7 +59,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
-	mPostProcessingManager->Initialize(mDevice, mResourceManager, width, height);
+	mPostProcessingManager->Initialize(mDevice, mResourceManager, mCameraManager, width, height);
 
 	return true;
 }

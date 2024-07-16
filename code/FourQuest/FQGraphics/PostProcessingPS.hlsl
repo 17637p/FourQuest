@@ -68,6 +68,15 @@ float3 AdjustVignetting(float3 color, float radius, float smoothness, float2 uv,
     return lerp(color, color * vignette, vigentteColor.a);
 }
 
+float3 AdjustFog(float3 color, float near, float far, float depth, float visibleArea, float3 fogColor)
+{
+    float linearDepth = (near * far) / (far - depth * (far - near)); // Depth를 near ~ far 값으로 변환 
+    float fogFactor = 1 - (linearDepth / visibleArea); // 보이는 영역을 0~1 값으로 전환, 보이는 영역 이후로는 다 1 
+    fogFactor = clamp(fogFactor, 0, 1); // 안보이는 영역 다 1만큼 주기 
+    color = fogFactor * color + (1.0 - fogFactor) * fogColor; // 일단 선형으로 적용 
+    return color;
+}
+
 cbuffer cColorAdjustment : register(b0)
 {
     float4 gBloomColorTint;
@@ -93,7 +102,16 @@ cbuffer cColorAdjustment : register(b0)
     int bUseVignett;
     int bUseToneMapping;
     int bUseHueVsSatCurve;
+    int bUseFog;
 };
+
+cbuffer cFog : register(b1)
+{
+    float4 cFogColor;
+    float cNearPlane;
+    float cFarPlane;
+    float cVisibleArea;
+}
 
 Texture2D gSrcTexture : register(t0);
 Texture2D gBloomTexture : register(t1);
@@ -160,14 +178,14 @@ float4 main(float2 uv : Texcoord) : SV_TARGET
     {
         color = AdjustVignetting(color, gVignettRadius, gVignettSmoothness, uv, gVignettColor);
     }
+    
+    if (bUseFog)
+    {
+        float depth = gDepth.Sample(gSamplerPoint, uv);
+        color = AdjustFog(color, cNearPlane, cFarPlane, depth, cVisibleArea, cFogColor);
+    }
 
-    float depth = gDepth.Sample(gSamplerPoint, uv);
-    //float fogFactor = saturate((fogEnd - cameraPosition.z) / (fogEnd - fogStart));
-    float fogFactor = 1 - ((depth - 0.98) / (1 - 0.98));
-    float4 fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
-    float3 finalColor = fogFactor * color + (1.0 - fogFactor) * fogColor;
-
-    float3 retColor = pow(finalColor, 1 / gGamma);
+    float3 retColor = pow(color, 1 / gGamma);
     
     return float4(retColor, 1.0);
 }
