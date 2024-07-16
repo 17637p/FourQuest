@@ -112,7 +112,10 @@ float3 ComputeDirectionLight(
     float3 kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), material.metallic);
     float3 diffuse = kd * material.albedo / PI;
         
-    return (diffuse + specular) * NdotL * directionLight.color * directionLight.intensity;
+    //Todo: 터레인 노말은 멀쩡한데 라이팅 연산을 하면 값이 inf가 나올 때가 있다 확인해봐야 하는 것
+    float3 result = (diffuse + specular) * NdotL * directionLight.color * directionLight.intensity;
+    result = clamp(result, 0.0, 1.0);
+    return result;
 }
 
 float3 ComputePointLight(
@@ -163,6 +166,7 @@ float3 ComputePointLight(
     float att = 1.0f / dot(pointLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
+    resultColor = clamp(resultColor, 0.0, 1.0);
     return resultColor;
 }
 
@@ -215,6 +219,7 @@ float3 ComputeSpotLight(
     float att = spot / dot(spotLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
+    resultColor = clamp(resultColor, 0.0, 1.0);
     return resultColor;
 }
 
