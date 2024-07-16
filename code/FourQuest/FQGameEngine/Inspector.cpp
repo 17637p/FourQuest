@@ -1113,6 +1113,12 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	animationPath = stateNode.GetAnimationPath();
 	auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
 
+	if (animationInterfaceOrNull == nullptr && std::filesystem::exists(animationPath))
+	{
+		const auto animationData = mGameProcess->mGraphics->ReadAnimation(animationPath);
+		animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(animationPath, animationData);
+	}
+
 	if (animationPath.empty() || animationInterfaceOrNull == nullptr) return;
 	
 	// PlayBackSpeed
@@ -1126,10 +1132,14 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	float maxDuration = animationInterfaceOrNull->GetAnimationClip().Duration;
 
 	float duration = stateNode.GetDuration();
-	if (ImGui::InputFloat("Duration", &duration))
+	if (ImGui::SliderFloat("Duration", &duration, 0.f, maxDuration))
+	{
+		stateNode.SetDuration(duration);
+	}
+	/*if (ImGui::InputFloat("Duration", &duration))
 	{
 		stateNode.SetDuration(std::min(maxDuration, duration));
-	}
+	}*/
 
 	bool IsLoof = stateNode.IsLoof();
 	if (ImGui::Checkbox("IsLoof", &IsLoof))
