@@ -45,16 +45,20 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	mTestGraphics->WriteModel("./resource/Graphics/EffectDemo/Sprite.model", mTestGraphics->ConvertModel("./resource/Graphics/EffectDemo/Sprite.fbx"));
 	mTestGraphics->WriteModel("./resource/Graphics/EffectDemo/aaaaaa.model", mTestGraphics->ConvertModel("./resource/Graphics/EffectDemo/aaaaaa.fbx"));
 
-	// createModel("./resource/Graphics/EffectDemo/untitled.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::Identity, true);
+	createModel("./resource/Graphics/EffectDemo/untitled.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::Identity, true);
 	// auto animInterface = mTestGraphics->CreateAnimation("anim", animation);
 	// mStaticMeshObjects.back()->GetNodeHierarchyInstance()->GetNodeHierarchy()->RegisterAnimation(animInterface);
 
 	createModel("./resource/Graphics/EffectDemo/aaaaaa.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(10) * DirectX::SimpleMath::Matrix::CreateRotationX(-3.14 * 0.5f), false);
 
 	auto uvAnimation = fq::loader::UVAnimationLoader::Read("./resource/Graphics/EffectDemo/aaaaaUVAnim.txt");
-	fq::loader::UVAnimationLoader::Write(uvAnimation, "./resource/Graphics/EffectDemo/aaaaaUVAnim.txt");
-	auto animation = fq::loader::AnimationLoader::Read("./resource/Graphics/EffectDemo/TestTransformAnim.txt");
-	fq::loader::AnimationLoader::Write(animation, "./resource/Graphics/EffectDemo/TestTransformAnim.txt");
+	fq::loader::UVAnimationLoader::Write(uvAnimation, "./resource/Graphics/EffectDemo/aaaaaUVAnim.uvAnimation");
+	auto animation = mTestGraphics->ReadAnimation("./resource/Graphics/EffectDemo/TestTransformAnim.txt");
+	mTestGraphics->WriteAnimation("./resource/Graphics/EffectDemo/TestTransformAnim.animation", animation);
+	auto modelData = mTestGraphics->GetModel(std::hash<std::string>{}("./resource/Graphics/EffectDemo/untitled.model"));
+	mTestGraphics->WriteNodeHierarchy("./resource/Graphics/EffectDemo/TestTransformAnim.nodeHierarchy", modelData);
+	auto nodeHierarchyData = mTestGraphics->ReadNodeHierarchy("./resource/Graphics/EffectDemo/TestTransformAnim.nodeHierarchy");
+	mTestGraphics->CreateNodeHierarchy(nodeHierarchyData);
 
 	auto uvAnimResource = mTestGraphics->CreateUVAnimation("uvAnim", uvAnimation);
 	mUVAnimInstance = uvAnimResource->CreateUVAnimationInstance();

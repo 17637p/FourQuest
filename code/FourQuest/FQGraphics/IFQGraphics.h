@@ -68,6 +68,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& modelData) abstract;
 			virtual FQ_GRAPHICS fq::common::UVAnimationClip ReadUVAnimation(const std::string& path) abstract;
 			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) abstract;
+			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) abstract;
 			virtual FQ_GRAPHICS std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) abstract;
 
 			// Model Resource Control

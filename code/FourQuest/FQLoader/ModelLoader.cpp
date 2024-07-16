@@ -548,7 +548,8 @@ namespace fq::loader
 
 		std::vector<fq::common::Node> nodeHierarchy;
 
-		for (const auto& nodeJson : nodeHierarchyJson["nodes"]) {
+		for (const auto& nodeJson : nodeHierarchyJson["nodes"])
+		{
 			fq::common::Node node;
 			node.Name = nodeJson["Name"].get<std::string>();
 			node.Index = nodeJson["Index"].get<int>();
@@ -569,22 +570,72 @@ namespace fq::loader
 
 			for (const auto& node : nodeHierarchy)
 			{
-				nodesJson["Name"] = node.Name;
-				nodesJson["Index"] = node.Index;
-				nodesJson["ParentIndex"] = node.ParentIndex;
-				nodesJson["ToParentMatrix"] = {
+				nlohmann::ordered_json nodeJson;
+
+				nodeJson["Name"] = node.Name;
+				nodeJson["Index"] = node.Index;
+				nodeJson["ParentIndex"] = node.ParentIndex;
+				nodeJson["ToParentMatrix"] = {
 					node.ToParentMatrix.m[0][0], node.ToParentMatrix.m[0][1],  node.ToParentMatrix.m[0][2], node.ToParentMatrix.m[0][3],
 					node.ToParentMatrix.m[1][0], node.ToParentMatrix.m[1][1],  node.ToParentMatrix.m[1][2], node.ToParentMatrix.m[1][3],
 					node.ToParentMatrix.m[2][0], node.ToParentMatrix.m[2][1],  node.ToParentMatrix.m[2][2], node.ToParentMatrix.m[2][3],
 					node.ToParentMatrix.m[3][0], node.ToParentMatrix.m[3][1],  node.ToParentMatrix.m[3][2], node.ToParentMatrix.m[3][3],
 				};
-				nodesJson["OffsetMatrix"] =
+				nodeJson["OffsetMatrix"] =
 				{
 					node.OffsetMatrix.m[0][0], node.OffsetMatrix.m[0][1],  node.OffsetMatrix.m[0][2], node.OffsetMatrix.m[0][3],
 					node.OffsetMatrix.m[1][0], node.OffsetMatrix.m[1][1],  node.OffsetMatrix.m[1][2], node.OffsetMatrix.m[1][3],
 					node.OffsetMatrix.m[2][0], node.OffsetMatrix.m[2][1],  node.OffsetMatrix.m[2][2], node.OffsetMatrix.m[2][3],
 					node.OffsetMatrix.m[3][0], node.OffsetMatrix.m[3][1],  node.OffsetMatrix.m[3][2], node.OffsetMatrix.m[3][3],
 				};
+
+				nodesJson.push_back(nodeJson);
+			}
+
+			nodeHierarchyJson["nodes"] = nodesJson;
+		}
+
+		// JSON 파일로 쓰기
+		std::ofstream writeData(filePath);
+		if (writeData.is_open())
+		{
+			writeData << nodeHierarchyJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	void NodeHierarchyLoader::Write(const fq::common::Model& modeData, const std::string& filePath)
+	{
+		nlohmann::ordered_json nodeHierarchyJson;
+		{
+			nlohmann::ordered_json nodesJson;
+
+			for (const auto& [node, mesh] : modeData.Meshes)
+			{
+				nlohmann::ordered_json nodeJson;
+
+				nodeJson["Name"] = node.Name;
+				nodeJson["Index"] = node.Index;
+				nodeJson["ParentIndex"] = node.ParentIndex;
+				nodeJson["ToParentMatrix"] = {
+					node.ToParentMatrix.m[0][0], node.ToParentMatrix.m[0][1],  node.ToParentMatrix.m[0][2], node.ToParentMatrix.m[0][3],
+					node.ToParentMatrix.m[1][0], node.ToParentMatrix.m[1][1],  node.ToParentMatrix.m[1][2], node.ToParentMatrix.m[1][3],
+					node.ToParentMatrix.m[2][0], node.ToParentMatrix.m[2][1],  node.ToParentMatrix.m[2][2], node.ToParentMatrix.m[2][3],
+					node.ToParentMatrix.m[3][0], node.ToParentMatrix.m[3][1],  node.ToParentMatrix.m[3][2], node.ToParentMatrix.m[3][3],
+				};
+				nodeJson["OffsetMatrix"] =
+				{
+					node.OffsetMatrix.m[0][0], node.OffsetMatrix.m[0][1],  node.OffsetMatrix.m[0][2], node.OffsetMatrix.m[0][3],
+					node.OffsetMatrix.m[1][0], node.OffsetMatrix.m[1][1],  node.OffsetMatrix.m[1][2], node.OffsetMatrix.m[1][3],
+					node.OffsetMatrix.m[2][0], node.OffsetMatrix.m[2][1],  node.OffsetMatrix.m[2][2], node.OffsetMatrix.m[2][3],
+					node.OffsetMatrix.m[3][0], node.OffsetMatrix.m[3][1],  node.OffsetMatrix.m[3][2], node.OffsetMatrix.m[3][3],
+				};
+
+				nodesJson.push_back(nodeJson);
 			}
 
 			nodeHierarchyJson["nodes"] = nodesJson;

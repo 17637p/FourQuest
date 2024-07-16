@@ -47,7 +47,8 @@ namespace fq::loader
 	{
 	public:
 		static std::vector<fq::common::Node> Read(const std::filesystem::path& animFileName);
-		static void Write(const  std::vector<fq::common::Node>& nodeHierarchy, const std::string& fileName);
+		static void Write(const std::vector<fq::common::Node>& nodeHierarchy, const std::string& fileName);
+		static void Write(const fq::common::Model& modeData, const std::string& fileName);
 
 	private:
 		fq::reflect::Converter mConverter;
