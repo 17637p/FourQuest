@@ -27,6 +27,7 @@ namespace fq::loader
 	{
 	public:
 		static fq::common::UVAnimationClip Read(const std::filesystem::path& animFileName);
+		static void Write(const fq::common::UVAnimationClip& uvAnimationClip, const std::string& fileName);
 
 	private:
 		fq::reflect::Converter mConverter;
@@ -36,6 +37,17 @@ namespace fq::loader
 	{
 	public:
 		static fq::common::AnimationClip Read(const std::filesystem::path& animFileName);
+		static void Write(const fq::common::AnimationClip& animationClip, const std::string& fileName);
+
+	private:
+		fq::reflect::Converter mConverter;
+	};
+
+	class NodeHierarchyLoader
+	{
+	public:
+		static std::vector<fq::common::Node> Read(const std::filesystem::path& animFileName);
+		static void Write(const  std::vector<fq::common::Node>& nodeHierarchy, const std::string& fileName);
 
 	private:
 		fq::reflect::Converter mConverter;

@@ -40,10 +40,8 @@ namespace fq::game_module
 		void SetType(Type val) { mType = val; }
 		float GetPlayBackSpeed() const { return mPlayBackSpeed; }
 		void SetPlayBackSpeed(float speed) { mPlayBackSpeed = speed; }
-		std::string GetModelPath() const { return mModelPath; }
-		void SetModelPath(std::string val) { mModelPath = val; }
-		std::string GetAnimationName() const { return mAnimationName; }
-		void SetAnimationName(std::string val) { mAnimationName = val; }
+		std::string GetAnimationPath() const { return mAnimationPath; }
+		void SetAnimationPath(std::string val) { mAnimationPath = val; }
 		std::string GetAnimationKey() const { return mAnimationKey; }
 		void SetAnimationKey(std::string val) { mAnimationKey = val; }
 		float GetDuration() const { return mDuration; }
@@ -67,8 +65,7 @@ namespace fq::game_module
 	private:
 		AnimatorController* mController;
 		Type mType;
-		std::string mModelPath;
-		std::string mAnimationName;
+		std::string mAnimationPath;
 		std::string mAnimationKey;
 		float mPlayBackSpeed;
 		float mDuration;

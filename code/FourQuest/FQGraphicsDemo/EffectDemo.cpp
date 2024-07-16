@@ -46,13 +46,16 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	mTestGraphics->WriteModel("./resource/Graphics/EffectDemo/aaaaaa.model", mTestGraphics->ConvertModel("./resource/Graphics/EffectDemo/aaaaaa.fbx"));
 
 	// createModel("./resource/Graphics/EffectDemo/untitled.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::Identity, true);
-	// auto animation = fq::loader::AnimationLoader::Read("./resource/Graphics/EffectDemo/TestTransformAnim.txt");
 	// auto animInterface = mTestGraphics->CreateAnimation("anim", animation);
 	// mStaticMeshObjects.back()->GetNodeHierarchyInstance()->GetNodeHierarchy()->RegisterAnimation(animInterface);
 
 	createModel("./resource/Graphics/EffectDemo/aaaaaa.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(10) * DirectX::SimpleMath::Matrix::CreateRotationX(-3.14 * 0.5f), false);
 
 	auto uvAnimation = fq::loader::UVAnimationLoader::Read("./resource/Graphics/EffectDemo/aaaaaUVAnim.txt");
+	fq::loader::UVAnimationLoader::Write(uvAnimation, "./resource/Graphics/EffectDemo/aaaaaUVAnim.txt");
+	auto animation = fq::loader::AnimationLoader::Read("./resource/Graphics/EffectDemo/TestTransformAnim.txt");
+	fq::loader::AnimationLoader::Write(animation, "./resource/Graphics/EffectDemo/TestTransformAnim.txt");
+
 	auto uvAnimResource = mTestGraphics->CreateUVAnimation("uvAnim", uvAnimation);
 	mUVAnimInstance = uvAnimResource->CreateUVAnimationInstance();
 	mStaticMeshObjects.back()->SetUVAnimationInstance(mUVAnimInstance);
@@ -720,14 +723,15 @@ void EffectDemo::trailInit()
 void EffectDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool bIsCreateHierarchy)
 {
 	using namespace fq::graphics;
+	unsigned int key = std::hash<std::string>{}(modelPath);
 
-	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(modelPath, textureBasePath);
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(key, modelPath, textureBasePath);
 
-	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(modelPath);
+	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(key);
 
 	for (auto animation : modelData.Animations)
 	{
-		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(modelPath, animation.Name);
+		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(key, animation.Name);
 		boneHierarchy->RegisterAnimation(animationInterface);
 	}
 
@@ -746,13 +750,13 @@ void EffectDemo::createModel(std::string modelPath, std::filesystem::path textur
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(modelPath, subset.MaterialName);
+			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(key, subset.MaterialName);
 			materialInterfaces.push_back(materialInterface);
 		}
 
 		if (mesh.BoneVertices.empty())
 		{
-			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
+			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(key, mesh.Name);
 			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
 
 			if (bIsCreateHierarchy)

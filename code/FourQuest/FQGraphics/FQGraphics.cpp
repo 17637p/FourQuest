@@ -3,6 +3,7 @@
 #include "ManagementCommon.h"
 #include "D3D11Shader.h"
 #include "D3D11Texture.h"
+#include "../FQLoader/ModelLoader.h"
 
 // temp - 컬링 테스트할 때 transform 잠깐 쓰려고
 #include "../FQCommon/FQCommon.h"
@@ -432,6 +433,30 @@ void FQGraphics::WriteModel(const std::string& path, const fq::common::Model& mo
 fq::common::Model fq::graphics::FQGraphics::ReadModel(const std::string& path)
 {
 	return mModelManager->ReadModel(path);
+}
+void fq::graphics::FQGraphics::WriteAnimation(const std::string& path, const fq::common::AnimationClip& animationClip)
+{
+	return fq::loader::AnimationLoader::Write(animationClip, path);
+}
+fq::common::AnimationClip fq::graphics::FQGraphics::ReadAnimation(const std::string& path)
+{
+	return fq::loader::AnimationLoader::Read(path);
+}
+void fq::graphics::FQGraphics::WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& uvAnimationClip)
+{
+	fq::loader::UVAnimationLoader::Write(uvAnimationClip, path);
+}
+fq::common::UVAnimationClip fq::graphics::FQGraphics::ReadUVAnimation(const std::string& path)
+{
+	return fq::loader::UVAnimationLoader::Read(path);
+}
+void fq::graphics::FQGraphics::WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy)
+{
+	fq::loader::NodeHierarchyLoader::Write(nodeHierarchy, path);
+}
+std::vector<fq::common::Node> fq::graphics::FQGraphics::ReadNodeHierarchy(const std::string& path)
+{
+	return fq::loader::NodeHierarchyLoader::Read(path);
 }
 fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxFile)
 {

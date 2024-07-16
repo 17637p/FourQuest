@@ -30,9 +30,15 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// Model Data Helper
+		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
 		virtual void WriteModel(const std::string& path, const fq::common::Model& modelData) override;
 		virtual fq::common::Model ReadModel(const std::string& path) override;
-		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
+		virtual void WriteAnimation(const std::string& path, const fq::common::AnimationClip& animationClip) override;
+		virtual fq::common::AnimationClip ReadAnimation(const std::string& path) override;
+		virtual void WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& uvAnimationClip) override;
+		virtual fq::common::UVAnimationClip ReadUVAnimation(const std::string& path) override;
+		virtual void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) override;
+		virtual std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) override;
 
 		// Model Resource Control
 		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;

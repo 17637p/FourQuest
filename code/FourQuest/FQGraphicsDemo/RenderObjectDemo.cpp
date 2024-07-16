@@ -339,14 +339,15 @@ void RenderObjectDemo::debugRender()
 void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool bIsCreateHierarchy)
 {
 	using namespace fq::graphics;
+	unsigned int key = std::hash<std::string>{}(modelPath);
 
-	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(modelPath, textureBasePath);
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(key, modelPath, textureBasePath);
 
-	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(modelPath);
+	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(key);
 
 	for (auto animation : modelData.Animations)
 	{
-		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(modelPath, animation.Name);
+		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(key, animation.Name);
 		boneHierarchy->RegisterAnimation(animationInterface);
 	}
 
@@ -365,13 +366,13 @@ void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path 
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(modelPath, subset.MaterialName);
+			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(key, subset.MaterialName);
 			materialInterfaces.push_back(materialInterface);
 		}
 
 		if (mesh.BoneVertices.empty())
 		{
-			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
+			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(key, mesh.Name);
 			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
 			if (bIsCreateHierarchy)
 				iStaticMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
@@ -379,7 +380,7 @@ void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path 
 		}
 		else
 		{
-			auto meshInterface = mTestGraphics->GetSkinnedMeshByModelPathOrNull(modelPath, mesh.Name);
+			auto meshInterface = mTestGraphics->GetSkinnedMeshByModelPathOrNull(key, mesh.Name);
 			ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
 			if (bIsCreateHierarchy)
 				iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);

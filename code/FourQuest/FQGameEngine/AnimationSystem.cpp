@@ -50,7 +50,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		{
 			animator.UpdateAnimation(dt);
 
-			if (!animator.GetHasController() )
+			if (!animator.GetHasController())
 			{
 				spdlog::warn("{} does not have a controller", object.GetName());
 				return;
@@ -89,46 +89,59 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 {
 	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto controllerPath = animator->GetControllerPath();
+	auto nodeHierarchyPath = animator->GetNodeHierarchyPath();
 
 	if (!std::filesystem::exists(controllerPath))
 	{
 		spdlog::warn("{} animation controller load fail", object->GetName());
 		return false;
 	}
-
-	// 애니메이션 리소스 로딩
-	if (!mGameProcess->mGraphics->TryCreateModelResource(animator->GetNodeHierarchyModelPath())) // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
+	if (!std::filesystem::exists(nodeHierarchyPath))
 	{
+		spdlog::warn("{} nodeHierarchy load fail", object->GetName());
 		return false;
 	}
 
-	// 계층구조와 인스턴스 생성 및 바인딩
-	auto nodeHierarchy = mGameProcess->mGraphics->GetNodeHierarchyByModelPathOrNull(animator->GetNodeHierarchyModelPath());
+	// 컨트롤러 로드
+	auto controller = mLoader.Load(controllerPath);
 
-	auto nodeHierarchyInstance = nodeHierarchy->CreateNodeHierarchyInstance();
-	animator->SetNodeHierarchy(nodeHierarchy);
+	// 계층 구조 로드
+	auto nodeHierarchyOrNull = mGameProcess->mGraphics->GetNodeHierarchyOrNull(nodeHierarchyPath);
+
+	if (nodeHierarchyOrNull == nullptr)
+	{
+		const auto& nodeHierarchyData = mGameProcess->mGraphics->ReadNodeHierarchy(nodeHierarchyPath);
+		nodeHierarchyOrNull = mGameProcess->mGraphics->CreateNodeHierarchy(nodeHierarchyPath, nodeHierarchyData);
+	}
+	assert(nodeHierarchyOrNull != nullptr);
+
+	auto nodeHierarchyInstance = nodeHierarchyOrNull->CreateNodeHierarchyInstance();
+	animator->SetNodeHierarchy(nodeHierarchyOrNull);
 	animator->SetNodeHierarchyInstance(nodeHierarchyInstance);
 	nodeHierarchyInstance->SetBindPose();
 
-	auto controller = mLoader.Load(controllerPath);
-
-	// 애니메이션 노드에 애니메이션 리소스 바인딩
+	// 애니메이션 리소스 로딩 및 계층 구조 캐시 생성
 	for (auto& [stateName, animationStateNode] : controller->GetStateMap())
 	{
-		const auto& modelPath = animationStateNode.GetModelPath();
-		const auto& animName = animationStateNode.GetAnimationName();
-
-		if (!modelPath.empty() && !animName.empty())
+		const auto& animationPath = animationStateNode.GetAnimationPath();
+		
+		if (!std::filesystem::exists(animationPath))
 		{
-			mGameProcess->mGraphics->CreateModelResource(animationStateNode.GetModelPath()); // to do : 이 부분 renderSystem의 Load 함수 활용하고 싶음
-			auto animationInterface = mGameProcess->mGraphics->GetAnimationByModelPathOrNull(animationStateNode.GetModelPath(), animationStateNode.GetAnimationName());
-
-			if (animationInterface != nullptr)
-			{
-				animationStateNode.SetAnimation(animationInterface);
-				nodeHierarchy->RegisterAnimation(animationInterface);
-			}
+			spdlog::warn("{} animation load fail", object->GetName());
+			continue;
 		}
+		
+		auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
+
+		if (animationInterfaceOrNull = nullptr)
+		{
+			const auto animationData = mGameProcess->mGraphics->ReadAnimation(animationPath);
+			animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(animationPath, animationData);
+		}
+		assert(animationInterfaceOrNull != nullptr);
+
+		animationStateNode.SetAnimation(animationInterfaceOrNull);
+		nodeHierarchyOrNull->RegisterAnimation(animationInterfaceOrNull);
 	}
 
 	controller->SetAnimator(animator);
