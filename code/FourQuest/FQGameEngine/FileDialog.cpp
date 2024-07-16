@@ -32,6 +32,7 @@ fq::game_engine::FileDialog::FileDialog()
 	, mGameProcess(nullptr)
 	, mbIsFindAllDirectory(false)
 	, mImageSystem(nullptr)
+	, mFileSearch{}
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -164,7 +165,8 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		beginPopupContextWindow_FileList();
 
 		// 현재 폴더 경로 
-		ImGui::Text(mSelectPath.string().c_str());
+		ImGui::InputText("Search", &mFileSearch);
+
 		ImGui::Separator();
 
 		// ignore 파일 제거
@@ -199,6 +201,7 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 					}
 					return true;
 				}), directoryList.end());
+
 		}
 		else // 폴더 
 		{
@@ -224,6 +227,20 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 
 					return false;
 				});
+		}
+
+		// 파일 검색 쿼리 
+		if (!mFileSearch.empty())
+		{
+			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+				[this](const auto path)
+				{
+					if (path.string().find(mFileSearch) == std::string::npos)
+					{
+						return true;
+					}
+					return false;
+				}), directoryList.end());
 		}
 
 		float fileSpaceX = mIconSize.x * 1.25f;
