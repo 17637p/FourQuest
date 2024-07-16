@@ -67,6 +67,29 @@ namespace fq::graphics
 
 		mBatch->End();
 
+		mBatch->Begin();
+
+		device->GetDeviceContext()->OMSetDepthStencilState(mStates->DepthNone(), 0);
+
+		{
+			while (!mDepthOffSphereInfos.empty()) { Draw(device, mDepthOffSphereInfos.front()); mDepthOffSphereInfos.pop(); }
+			while (!mDepthOffAABBInfos.empty()) { Draw(device, mDepthOffAABBInfos.front()); mDepthOffAABBInfos.pop(); }
+			while (!mDepthOffOBBInfos.empty()) { Draw(device, mDepthOffOBBInfos.front()); mDepthOffOBBInfos.pop(); }
+			while (!mDepthOffFrustumInfos.empty()) { Draw(device, mDepthOffFrustumInfos.front()); mDepthOffFrustumInfos.pop(); }
+			while (!mDepthOffGridInfos.empty()) { DrawGrid(device, mDepthOffGridInfos.front()); mDepthOffGridInfos.pop(); }
+			while (!mDepthOffRingInfos.empty()) { DrawRing(device, mDepthOffRingInfos.front()); mDepthOffRingInfos.pop(); }
+			while (!mDepthOffRayInfos.empty()) { DrawRay(device, mDepthOffRayInfos.front()); mDepthOffRayInfos.pop(); }
+			while (!mDepthOffPolygonInfos.empty()) { DrawLineStrip(device, mDepthOffPolygonInfos.front()); mDepthOffPolygonInfos.pop(); }
+			while (!mDepthOffHemisphereInfos.empty()) { Draw(device, mDepthOffHemisphereInfos.front()); mDepthOffHemisphereInfos.pop(); }
+			while (!mDepthOffConeInfos.empty()) { Draw(device, mDepthOffConeInfos.front()); mDepthOffConeInfos.pop(); }
+			while (!mDepthOffDountInfos.empty()) { Draw(device, mDepthOffDountInfos.front()); mDepthOffDountInfos.pop(); }
+			while (!mDepthOffSphereInfoExInfos.empty()) { Draw(device, mDepthOffSphereInfoExInfos.front()); mDepthOffSphereInfoExInfos.pop(); }
+			while (!mDepthOffRingInfoExInfos.empty()) { Draw(device, mDepthOffRingInfoExInfos.front()); mDepthOffRingInfoExInfos.pop(); }
+		}
+
+		mBatch->End();
+
+
 		device->GetDeviceContext()->OMSetBlendState(NULL, nullptr, 0xFFFFFFFF);
 		device->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
 		device->GetDeviceContext()->RSSetState(NULL);
@@ -74,55 +97,146 @@ namespace fq::graphics
 
 	void D3D11DebugDrawManager::Submit(const debug::SphereInfo& info)
 	{
-		mSphereInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mSphereInfos.push(info);
+		}
+		else
+		{
+			mDepthOffSphereInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::AABBInfo& info)
 	{
-		mAABBInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mAABBInfos.push(info);
+		}
+		else
+		{
+			mDepthOffAABBInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::OBBInfo& info)
 	{
-		mOBBInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mOBBInfos.push(info);
+		}
+		else
+		{
+			mDepthOffOBBInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::FrustumInfo& info)
 	{
-		mFrustumInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mFrustumInfos.push(info);
+		}
+		else
+		{
+			mDepthOffFrustumInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::GridInfo& info)
 	{
-		mGridInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mGridInfos.push(info);
+		}
+		else
+		{
+			mDepthOffGridInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::RingInfo& info)
 	{
-		mRingInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mRingInfos.push(info);
+		}
+		else
+		{
+			mDepthOffRingInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::RayInfo& info)
 	{
-		mRayInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mRayInfos.push(info);
+		}
+		else
+		{
+			mDepthOffRayInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::PolygonInfo& info)
 	{
-		mPolygonInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mPolygonInfos.push(info);
+		}
+		else
+		{
+			mDepthOffPolygonInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::HemisphereInfo& info)
 	{
-		mHemisphereInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mHemisphereInfos.push(info);
+		}
+		else
+		{
+			mDepthOffHemisphereInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::ConeInfo& info)
 	{
-		mConeInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mConeInfos.push(info);
+		}
+		else
+		{
+			mDepthOffConeInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::DountInfo& info)
 	{
-		mDountInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mDountInfos.push(info);
+		}
+		else
+		{
+			mDepthOffDountInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::SphereInfoEx& info)
 	{
-		mSphereInfoExInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mSphereInfoExInfos.push(info);
+		}
+		else
+		{
+			mDepthOffSphereInfoExInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::RingInfoEx& info)
 	{
-		mRingInfoExInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mRingInfoExInfos.push(info);
+		}
+		else
+		{
+			mDepthOffRingInfoExInfos.push(info);
+		}
 	}
 
 	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfo& info)
