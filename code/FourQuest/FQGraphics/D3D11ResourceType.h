@@ -80,7 +80,9 @@ namespace fq::graphics
 		Shadow,
 		LinearWrap,
 		PointClamp,
+		PointWrap,
 		LinearClamp,
+		SSAONormalDepth,
 	};
 
 	enum class ED3D11RasterizerState
