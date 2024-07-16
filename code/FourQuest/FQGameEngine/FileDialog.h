@@ -71,6 +71,8 @@ namespace fq::game_engine
 
 		void changeDirectoryPath(Path prev, Path current);	
 
+		std::string removeInvalidCharacters(const std::string& input);
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;

@@ -134,7 +134,7 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 
 		auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
 
-		if (animationInterfaceOrNull = nullptr)
+		if (animationInterfaceOrNull == nullptr)
 		{
 			const auto animationData = mGameProcess->mGraphics->ReadAnimation(animationPath);
 			animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(animationPath, animationData);

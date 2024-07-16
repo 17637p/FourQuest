@@ -1112,26 +1112,9 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	animationPath = stateNode.GetAnimationPath();
 	auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
-	// unsigned int key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, {});
 
-	if (animationPath.empty() || animationInterfaceOrNull != nullptr) return;
-
-	// Animation Name ¼±ÅÃ 
-	auto aniName = stateNode.GetAnimationPath();
-
-	// if (ImGui::BeginCombo("AnimationName", aniName.c_str()))
-	// {
-	// 	for (const auto& animationClip : model.Animations)
-	// 	{
-	// 		const auto& clipName = animationClip.Name;
-	// 		if (ImGui::Selectable(clipName.c_str()))
-	// 		{
-	// 			stateNode.SetAnimationName(clipName);
-	// 		}
-	// 	}
-	// 	ImGui::EndCombo();
-	// }
-
+	if (animationPath.empty() || animationInterfaceOrNull == nullptr) return;
+	
 	// PlayBackSpeed
 	float playBackSpeed = stateNode.GetPlayBackSpeed();
 
@@ -1140,16 +1123,7 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 		stateNode.SetPlayBackSpeed(playBackSpeed);
 	}
 
-	float maxDuration = 0.f;
-
-	// for (const auto& animationClip : model.Animations)
-	// {
-	// 	const auto& clipName = animationClip.Name;
-	// 	if (clipName == stateNode.GetAnimationName())
-	// 	{
-	// 		maxDuration = animationClip.Duration;
-	// 	}
-	// }
+	float maxDuration = animationInterfaceOrNull->GetAnimationClip().Duration;
 
 	float duration = stateNode.GetDuration();
 	if (ImGui::InputFloat("Duration", &duration))
