@@ -159,7 +159,7 @@ namespace fq::graphics
 
 		int bUseRoughnessMap;
 		int bUseNormalMap;
-		int bUseEmissiveMap;		
+		int bUseEmissiveMap;
 		float AlphaCutoff;
 	};
 
@@ -336,7 +336,8 @@ namespace fq::graphics
 			const DirectX::SimpleMath::Matrix& transform);
 		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
-			const std::shared_ptr<Material>& material);
+			const std::shared_ptr<Material>& material,
+			const DirectX::SimpleMath::Matrix& texTransform = DirectX::SimpleMath::Matrix::Identity);
 		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
 			const std::shared_ptr<TerrainMaterial>& material,

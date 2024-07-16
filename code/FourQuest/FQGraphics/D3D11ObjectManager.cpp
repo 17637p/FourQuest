@@ -23,7 +23,6 @@ namespace fq::graphics
 		for (auto* element : mDecalObjects) { deleteObject<DecalObject>(element); } mDecalObjects.clear();
 		for (auto* element : mTrailObjects) { deleteObject<TrailObject>(element); } mTrailObjects.clear();
 		for (auto* element : mProbeObjects) { deleteObject<ProbeObject>(element); } mProbeObjects.clear();
-
 		ClearDeleteQueue();
 	}
 
@@ -141,7 +140,7 @@ namespace fq::graphics
 			mTrailObjectDeleteQueue.push(trailObject);
 		}
 	}
-
+	
 	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material)
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);

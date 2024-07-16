@@ -52,7 +52,10 @@ namespace fq::graphics
 		virtual void SetBindPose() override;
 		virtual void Update(float timePos, const std::shared_ptr<IAnimation>& animation) override;
 		virtual void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
+		virtual void UpdateByLocalTransform();
 
+		virtual void SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform);
+		virtual bool TrySetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform);
 		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchy() const override { return mNodeHierarchy; }
 		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const override { size_t index = mNodeHierarchy->GetBoneIndex(boneName); return mRootTransforms[index]; }
 		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const override { return mRootTransforms[index]; }
@@ -63,9 +66,11 @@ namespace fq::graphics
 	private:
 		void clear();
 		void calculateRootTransform();
+		void setBindPoseLocal();
 
 	private:
 		std::shared_ptr<INodeHierarchy> mNodeHierarchy;
+		std::vector<DirectX::SimpleMath::Matrix> mLocalTransforms;
 		std::vector<DirectX::SimpleMath::Matrix> mRootTransforms;
 		std::vector<DirectX::SimpleMath::Matrix> mTransposedFinalTransforms;
 	};

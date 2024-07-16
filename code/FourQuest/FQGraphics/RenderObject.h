@@ -25,6 +25,7 @@ namespace fq::graphics
 	class TerrainMaterial;
 	struct TerrainMaterialInfo;
 	class D3D11JobManager;
+	class D3D11VertexBuffer;
 
 	class StaticMeshObject : public IStaticMeshObject
 	{
@@ -37,7 +38,9 @@ namespace fq::graphics
 
 		// Transform
 		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override {
+			return mTransform;
+		}
 
 		// Info
 		virtual void SetMeshObjectInfo(const MeshObjectInfo& info) override { mInfo = info; }
@@ -57,6 +60,10 @@ namespace fq::graphics
 		virtual void SetReferenceBoneIndex(size_t index) override { mIndex = index; }
 		virtual size_t GetReferenceBoneIndex() const override { return mIndex; }
 
+		// UVAnimInstance
+		virtual void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) { mIUVAnimationInstance = uvAnimationInstance; }
+		virtual std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const { return mIUVAnimationInstance; }
+
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		size_t mIndex;
@@ -64,6 +71,7 @@ namespace fq::graphics
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
+		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject

@@ -47,6 +47,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetReferenceBoneIndex(size_t index) abstract;
 			virtual FQ_GRAPHICS size_t GetReferenceBoneIndex() const abstract;
 
+			// UVAnimInstance
+			virtual FQ_GRAPHICS void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};
@@ -171,6 +175,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetIDecalMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetDecalMaterial() const abstract;
 
+			// UVAnimInstance
+			virtual FQ_GRAPHICS void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
+
 		protected:
 			virtual ~IDecalObject() = default;
 		};
@@ -216,7 +224,7 @@ extern "C" {
 		protected:
 			virtual ~IProbeObject() = default;
 		};
-	}
 #ifdef __cplusplus
-}
+	}
 #endif
+}

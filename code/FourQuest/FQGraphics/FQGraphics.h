@@ -30,9 +30,15 @@ namespace fq::graphics
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
 		// Model Data Helper
+		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
 		virtual void WriteModel(const std::string& path, const fq::common::Model& modelData) override;
 		virtual fq::common::Model ReadModel(const std::string& path) override;
-		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
+		virtual void WriteAnimation(const std::string& path, const fq::common::AnimationClip& animationClip) override;
+		virtual fq::common::AnimationClip ReadAnimation(const std::string& path) override;
+		virtual void WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& uvAnimationClip) override;
+		virtual fq::common::UVAnimationClip ReadUVAnimation(const std::string& path) override;
+		virtual void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) override;
+		virtual std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) override;
 
 		// Model Resource Control
 		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;
@@ -52,6 +58,7 @@ namespace fq::graphics
 		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const fq::common::Model& model) override;
 		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const std::vector<fq::common::Node> nodes) override;
 		virtual std::shared_ptr<IAnimation> CreateAnimation(const fq::common::AnimationClip& animationClip) override;
+		virtual std::shared_ptr<IUVAnimation> CreateUVAnimation(const fq::common::UVAnimationClip& animationClip) override;
 		virtual std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) override;
 		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo) override;
 		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo) override;
@@ -61,6 +68,7 @@ namespace fq::graphics
 		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const fq::common::Model& model) override;
 		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes) override;
 		virtual std::shared_ptr<IAnimation> CreateAnimation(std::string key, const fq::common::AnimationClip& animationClip) override;
+		virtual std::shared_ptr<IUVAnimation> CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip) override;
 		virtual std::shared_ptr<IMaterial> CreateMaterial(const std::string& key, const MaterialInfo& materialInfo) override;
 		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) override;
 		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) override;
@@ -69,6 +77,7 @@ namespace fq::graphics
 		virtual std::vector<std::shared_ptr<ISkinnedMesh>> GetSkinnedMeshes() override;
 		virtual std::vector<std::shared_ptr<INodeHierarchy>> GetNodeHierarchies() override;
 		virtual std::vector<std::shared_ptr<IAnimation>> GetAnimations() override;
+		virtual std::vector<std::shared_ptr<IUVAnimation>> GetUVAnimations() override;
 		virtual std::vector<std::shared_ptr<IMaterial>> GetMaterials() override;
 		virtual std::vector<std::shared_ptr<IParticleMaterial>> GetParticleMaterials() override;
 		virtual std::vector<std::shared_ptr<IDecalMaterial>> GetDecalMaterials() override;
@@ -77,6 +86,7 @@ namespace fq::graphics
 		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshOrNull(std::string key) override;
 		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyOrNull(std::string key) override;
 		virtual std::shared_ptr<IAnimation> GetAnimationOrNull(std::string key) override;
+		virtual std::shared_ptr<IUVAnimation> GetUVAnimationOrNull(std::string key) override;
 		virtual std::shared_ptr<IMaterial> GetMaterialOrNull(const std::string& key) override;
 		virtual std::shared_ptr<IParticleMaterial> GetParticleMaterialOrNull(const std::string& key) override;
 		virtual std::shared_ptr<IDecalMaterial> GetDecalMaterialOrNull(const std::string& key) override;
@@ -85,6 +95,7 @@ namespace fq::graphics
 		virtual void DeleteSkinnedMesh(std::string key) override;
 		virtual void DeleteNodeHierarchy(std::string key) override;
 		virtual void DeleteAnimation(std::string key) override;
+		virtual void DeleteUVAnimation(std::string key) override;
 		virtual void DeleteMaterial(const std::string& key) override;
 		virtual void DeleteParticleMaterial(const std::string& key) override;
 		virtual void DeleteDecalMaterial(const std::string& key) override;

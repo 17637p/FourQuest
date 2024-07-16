@@ -199,7 +199,6 @@
     <ClInclude Include="TrailRenderPass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11PostProcessingManager.h" />
     <ClInclude Include="GeometryHelper.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -217,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="DebugLightProbePass.h">
       <Filter>Pass\PipelineIndependentPass</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11PostProcessingManager.h">
+      <Filter>Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -492,7 +494,6 @@
     <ClCompile Include="TrailObject.cpp">
       <Filter>Object\Source</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11PostProcessingManager.cpp" />
     <ClCompile Include="GeometryHelper.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
@@ -516,6 +517,9 @@
     </ClCompile>
     <ClCompile Include="DebugLightProbePass.cpp">
       <Filter>Pass\PipelineIndependentPass\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11PostProcessingManager.cpp">
+      <Filter>Management\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -689,16 +693,8 @@
     <CustomBuild Include="BlurVertCS.hlsl">
       <Filter>Shader\CS</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="BloomAccumulateCS.hlsl">
-      <Filter>Shader\CS</Filter>
-    </FxCompile>
-    <FxCompile Include="BloomDownSampleCS.hlsl">
-      <Filter>Shader\CS</Filter>
-    </FxCompile>
-    <FxCompile Include="BlurHorzCS.hlsl">
-      <Filter>Shader\CS</Filter>
-    </FxCompile>
+    <CustomBuild Include="BloomAccumulateCS.hlsl" />
+    <CustomBuild Include="BloomDownSampleCS.hlsl" />
+    <CustomBuild Include="BlurHorzCS.hlsl" />
   </ItemGroup>
 </Project>

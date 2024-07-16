@@ -86,7 +86,7 @@ void fq::utils::AddDefaultCamera(fq::graphics::IFQGraphics* graphcis)
 	cameraInfo.isPerspective = true;
 	cameraInfo.fieldOfView = 0.25f * 3.1415f;
 	cameraInfo.nearPlain = 3.f;
-	cameraInfo.farPlain = 100.f;
+	cameraInfo.farPlain = 10000.f;
 
 	graphcis->SetCamera(cameraInfo);
 }
