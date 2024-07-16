@@ -115,6 +115,11 @@ namespace fq::game_engine
 
 		void AddTerrainCollider(fq::game_module::GameObject* object);
 
+		/// <summary>
+		/// Raycast 이벤트 처리
+		/// </summary>
+		void Raycast(const fq::event::RayCast& event);
+
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
@@ -139,6 +144,7 @@ namespace fq::game_engine
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddInputMoveHandler;
+		EventHandler mRaycastHandler;
 
 		entt::id_type mBoxTypeID;
 		entt::id_type mSphereTypeID;

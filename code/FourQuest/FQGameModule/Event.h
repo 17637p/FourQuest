@@ -7,6 +7,7 @@
 
 #include "../FQReflect/entt.hpp"
 #include "../FQCommon/IFQRenderResource.h"
+#include "GameModuleEnum.h"
 
 namespace fq::game_module
 {
@@ -204,6 +205,33 @@ namespace fq::event
 	{
 		unsigned int colliderID;
 		DirectX::SimpleMath::Vector3 input;
+	};
+
+
+	/// <summary>
+	/// RayCast 이벤트를 보내면 
+	/// result에 결과값을 전달합니다 
+	/// </summary>
+	struct RayCast
+	{
+		struct ResultData
+		{
+			bool hasBlock = false;
+			game_module::GameObject* blockObject;
+			DirectX::SimpleMath::Vector3 blockPosition;
+
+			unsigned int hitCount = -1;
+			std::vector<game_module::GameObject*> hitObjects;
+			std::vector<DirectX::SimpleMath::Vector3> hitContactPoints;
+		};
+
+		DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+		DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::Zero;
+		float distance = 0.f;
+		game_module::ETag tag = game_module::ETag::Untagged;
+
+		ResultData* result = nullptr;
+		bool bUseDebugDraw = false;
 	};
 
 	//////////////////////////////////////////////////////////////////////////

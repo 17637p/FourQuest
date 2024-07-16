@@ -22,9 +22,9 @@ fq::client::Attack::Attack()
 	,mElapsedTime(0.f)
 	,mAttackTime(0.1f)
 	,mAttackDirection(NoDirection)
-{
-
-}
+	,mRemainingAttackCount(1)
+	,mbIsInfinite(true)
+{}
 
 fq::client::Attack::~Attack()
 {
@@ -36,6 +36,21 @@ void fq::client::Attack::OnUpdate(float dt)
 	mElapsedTime += dt;
 
 	if (mElapsedTime >= mAttackTime)
+	{
+		GetScene()->DestroyGameObject(GetGameObject());
+	}
+}
+
+void fq::client::Attack::OnTriggerEnter(const game_module::Collision& collision)
+{
+	if (mbIsInfinite)
+	{
+		return;
+	}
+
+	mRemainingAttackCount--;
+
+	if (mRemainingAttackCount == 0)
 	{
 		GetScene()->DestroyGameObject(GetGameObject());
 	}

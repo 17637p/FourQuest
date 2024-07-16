@@ -24,11 +24,12 @@ namespace fq::client
 		ESoulType SoulType; // øµ»•≈∏¿‘
 	};
 
-	enum class PlayerType
+	enum class EPlayerType
 	{
 		Soul,
 		LivingArmour
 	};
+
 
 
 }

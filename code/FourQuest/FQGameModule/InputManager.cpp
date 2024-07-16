@@ -252,7 +252,7 @@ void fq::game_module::InputManager::updateGamePad(float dt)
 						padKeyInfo.state = EKeyState::Tap;
 					else if (isPressed && padKeyInfo.prevPush)
 						padKeyInfo.state = EKeyState::Hold;
-					else if (isPressed && padKeyInfo.prevPush)
+					else if (!isPressed && padKeyInfo.prevPush)
 						padKeyInfo.state = EKeyState::Away;
 					else
 						padKeyInfo.state = EKeyState::None;

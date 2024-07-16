@@ -117,6 +117,7 @@ namespace fq::physics
 			float maxValue = std::max<float>(scale.y, scale.z);
 
 			capsuleGeometry.radius = mRadius * maxValue;
+
 			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
 			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);

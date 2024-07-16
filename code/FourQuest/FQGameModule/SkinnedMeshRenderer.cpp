@@ -1,5 +1,6 @@
 #include "SkinnedMeshRenderer.h"
 
+
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
 	,mSkinnedMeshObject(nullptr)

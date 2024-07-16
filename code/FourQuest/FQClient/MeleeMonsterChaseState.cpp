@@ -4,14 +4,10 @@
 #include "MeleeMonster.h"
 
 fq::client::MeleeMonsterChaseState::~MeleeMonsterChaseState()
-{
-
-}
+{}
 
 fq::client::MeleeMonsterChaseState::MeleeMonsterChaseState()
-{
-
-}
+{}
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterChaseState::Clone()
 {

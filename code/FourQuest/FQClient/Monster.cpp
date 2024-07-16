@@ -177,7 +177,7 @@ void fq::client::Monster::OnStart()
 
 	agent->SetSpeed(mMoveSpeed);
 	agent->SetAcceleration(mAcceleration);
-	agent->SetRadius(0.3);
+	agent->SetRadius(0.3f);
 
 	mMaxHP = mHP;
 }

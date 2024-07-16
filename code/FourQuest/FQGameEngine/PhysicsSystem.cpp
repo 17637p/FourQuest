@@ -26,6 +26,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mCharactorControllerTypeID(0)
 	, mTerrainTypeID(0)
 	, mRigidTypeID(0)
+	, mRaycastHandler{}
 	, mAddInputMoveHandler{}
 {}
 
@@ -63,6 +64,8 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::AddInputMove>(this, &PhysicsSystem::AddInputMove);
 	mOnCleanUpSceneHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnCleanUp>(this, &PhysicsSystem::CleanUp);
+	mRaycastHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::RayCast>(this, &PhysicsSystem::Raycast);
 
 	mBoxTypeID = entt::resolve<fq::game_module::BoxCollider>().id();
 	mSphereTypeID = entt::resolve<fq::game_module::SphereCollider>().id();
@@ -170,7 +173,7 @@ void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObj
 	info.height = terrain->GetTerrainMeshObject()->GetHeightData();
 
 	info.heightScale = terrain->GetHeightScale() / 255.f;
-	info.numCols = terrain->GetWidth() ;
+	info.numCols = terrain->GetWidth();
 	info.numRows = terrain->GetHeight();
 	info.rowScale = terrain->GetTextureWidth() / 300.f;
 	info.colScale = terrain->GetTextureHeight() / 300.f;
@@ -558,7 +561,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			{
 				Vector3 pos, scale;
 				Quaternion rotation;
-				
+
 				matrix.Decompose(scale, rotation, pos);
 				matrix._41 = 0.f;
 				matrix._42 = 0.f;
@@ -799,4 +802,47 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 	}
 
 	mCallbacks.clear();
+}
+
+void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
+{
+	physics::RayCastInput rayCastInfo;
+
+	rayCastInfo.direction = event.direction;
+	rayCastInfo.distance = event.distance;
+	rayCastInfo.layerNumber = static_cast<int>(event.tag);
+	rayCastInfo.origin = event.origin;
+
+	auto result = mPhysicsEngine->RayCast(rayCastInfo);
+	// Block 정보
+	if (result.hasBlock)
+	{
+		event.result->hasBlock = result.hasBlock;
+		event.result->blockObject = mColliderContainer.find(result.blockID)->second.gameObject.get();
+		event.result->blockPosition = result.blockPosition;
+	}
+
+	// Hit 정보
+	event.result->hitCount = result.hitSize;
+	event.result->hitContactPoints.reserve(result.hitSize);
+	event.result->hitObjects.reserve(result.hitSize);
+	for (unsigned int i = 0; i < result.hitSize; ++i)
+	{
+		event.result->hitContactPoints.push_back(result.contectPoints[i]);
+		auto object = mColliderContainer.find(result.id[i])->second.gameObject.get();
+		event.result->hitObjects.push_back(object);
+	}
+
+	if (event.bUseDebugDraw)
+	{
+		auto renderer = mGameProcess->mGraphics;
+
+		fq::graphics::debug::RayInfo  ray;
+		ray.Color = (result.hasBlock == 0) ? DirectX::SimpleMath::Color{ 0.f,1.f,0.f,1.f } : DirectX::SimpleMath::Color{ 1.f,0.f,0.f,1.f };
+		ray.Direction = event.direction * event.distance;
+		ray.Origin = event.origin;
+		ray.Normalize = false;
+
+		renderer->DrawRay(ray);
+	}
 }
