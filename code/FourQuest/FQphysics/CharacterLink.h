@@ -31,6 +31,11 @@ namespace fq::physics
 		physx::PxShape* CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData);
 		physx::PxShape* CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData);
 
+		/// <summary>
+		/// 레이어 넘버 바꾸기
+		/// </summary>
+		bool ChangeLayerNumber(const physx::PxFilterData& filterData, CollisionData* collisionData);
+
 		inline physx::PxArticulationLink* GetPxLink();
 		inline const std::string& GetName();
 		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();

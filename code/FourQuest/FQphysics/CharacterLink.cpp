@@ -9,7 +9,7 @@ namespace fq::physics
 		: mName()
 		, mDensity()
 		, mLocalTransform()
-		, mMyJoint(nullptr)
+		, mMyJoint(std::make_shared<CharacterJoint>())
 		, mParentLink()
 		, mMyChildrenLink()
 		, mPxLink(nullptr)
@@ -18,14 +18,13 @@ namespace fq::physics
 
 	CharacterLink::~CharacterLink()
 	{
-
 	}
 
 	bool CharacterLink::Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation)
 	{
 		mName = info.boneName;
 		mDensity = info.density;
-		mLocalTransform = info.localTransform;
+		mLocalTransform = info.localTransform.Invert();
 		mParentLink = parentLink;
 
 		physx::PxTransform pxLocalTransform;
@@ -41,9 +40,12 @@ namespace fq::physics
 			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}
 
+		mPxLink->setMaxAngularVelocity(5.f);
+		mPxLink->setMaxLinearVelocity(5.f);
+
 		return true;
 	}
-
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData)
 	{
 		physx::PxVec3 pxExtent;
@@ -53,7 +55,8 @@ namespace fq::physics
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.2f);
+		shape->setContactOffset(0.02f);
+		shape->setRestOffset(0.01f);
 		return shape;
 	}
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData)
@@ -62,7 +65,8 @@ namespace fq::physics
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.2f);
+		shape->setContactOffset(0.02f);
+		shape->setRestOffset(0.01f);
 		return shape;
 	}
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData)
@@ -71,7 +75,19 @@ namespace fq::physics
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.2f);
+		shape->setContactOffset(0.02f);
+		shape->setRestOffset(0.01f);
 		return shape;
+	}
+
+	bool CharacterLink::ChangeLayerNumber(const physx::PxFilterData& filterData, CollisionData* collisionData)
+	{
+		physx::PxShape* shape;
+		mPxLink->getShapes(&shape, 1);
+
+		shape->setSimulationFilterData(filterData);
+		shape->userData = collisionData;
+
+		return true;
 	}
 }

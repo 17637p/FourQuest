@@ -10,6 +10,7 @@
 namespace fq::physics
 {
 	class CharacterLink;
+	class PhysicsCollisionDataManager;
 
 	class CharacterPhysics
 	{
@@ -29,19 +30,29 @@ namespace fq::physics
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& radius);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius);
 
+		/// <summary>
+		/// 레이어 넘버 바꾸기
+		/// </summary>
+		bool ChangeLayerNumber(const int& newLayerNumber, int* collisionMatrix, std::shared_ptr<PhysicsCollisionDataManager> mPhysicsCollisionDataManager);
+
 		inline const std::string& GetModelPath();
 		inline const unsigned int GetID();
 		inline const unsigned int GetLayerNumber();
+		inline const bool GetIsRagdoll();
 		inline const std::shared_ptr<CharacterLink> GetRootLink();
 		inline const std::shared_ptr<CharacterLink> FindLink(std::string name);
 		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		inline physx::PxArticulationReducedCoordinate* GetPxArticulation();
 		inline const physx::PxMaterial* GetMaterial();
 
+		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform);
+		inline void SetIsRagdoll(const bool& isRagdoll);
+
 	private:
 		std::string  mModelPath;
 		unsigned int mID;
 		unsigned int mLayerNumber;
+		bool mbIsRagdoll;
 
 		std::shared_ptr<CharacterLink> mRootLink;
 		std::shared_ptr<CollisionData> mCollisionData;
@@ -67,6 +78,10 @@ namespace fq::physics
 	{
 		return mLayerNumber;
 	}
+	const bool CharacterPhysics::GetIsRagdoll()
+	{
+		return mbIsRagdoll;
+	}
 	const std::shared_ptr<CharacterLink> CharacterPhysics::GetRootLink()
 	{
 		return mRootLink;
@@ -86,6 +101,15 @@ namespace fq::physics
 	const physx::PxMaterial* CharacterPhysics::GetMaterial()
 	{
 		return mMaterial;
+	}
+
+	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)
+	{
+		mWorldTransform = trnasform;
+	}
+	void CharacterPhysics::SetIsRagdoll(const bool& isRagdoll)
+	{
+		mbIsRagdoll = isRagdoll;
 	}
 #pragma endregion
 }

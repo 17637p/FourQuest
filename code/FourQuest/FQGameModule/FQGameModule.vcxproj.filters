@@ -307,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="PostProcessing.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
+	</ClInclude>
+    <ClInclude Include="ArticulationLoader.h">
+      <Filter>include\07.Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -489,6 +492,9 @@
     </ClCompile>
     <ClCompile Include="PostProcessing.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
+	</ClCompile>
+    <ClCompile Include="ArticulationLoader.cpp">
+      <Filter>src\07.Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

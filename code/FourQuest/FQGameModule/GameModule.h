@@ -49,6 +49,7 @@
 #include "Articulation.h"
 #include "LinkData.h"
 #include "ArticulationData.h"
+#include "ArticulationLoader.h"
 #include "SkyBox.h"
 #include "PostProcessing.h"
 

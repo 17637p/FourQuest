@@ -1,6 +1,7 @@
 #include "PhysicsCharacterPhysicsManager.h"
 
 #include "CharacterPhysics.h"
+#include "EngineDataConverter.h"
 
 namespace fq::physics
 {
@@ -43,12 +44,20 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsCharacterPhysicsManager::SimulationCharacter(unsigned int id)
+	bool PhysicsCharacterPhysicsManager::RemoveArticulation(const unsigned int& id)
 	{
-		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
+		if (mCharacterPhysicsContainer.find(id) == mCharacterPhysicsContainer.end())
+		{
+			return false;
+		}
 
-		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
-		return mScene->addArticulation(*characterPhysics->GetPxArticulation());
+		auto articulationIter = mCharacterPhysicsContainer.find(id);
+		auto pxArticulation = articulationIter->second->GetPxArticulation();
+		mCharacterPhysicsContainer.erase(articulationIter);
+
+		mScene->removeArticulation(*pxArticulation);
+
+		return true;
 	}
 
 	bool PhysicsCharacterPhysicsManager::ChangeScene()
@@ -56,5 +65,44 @@ namespace fq::physics
 
 
 		return true;
+	}
+	
+	void PhysicsCharacterPhysicsManager::GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData)
+	{
+		auto articulationIter = mCharacterPhysicsContainer.find(id);
+		auto articulation = articulationIter->second;
+
+		physx::PxTransform pxTransform = articulation->GetPxArticulation()->getRootGlobalPose();
+		DirectX::SimpleMath::Matrix dxTransform; 
+		CopyPxTransformToDirectXMatrix(pxTransform, dxTransform);
+
+		articulationData.worldTransform = dxTransform;
+		articulationData.bIsRagdollSimulation = articulation->GetIsRagdoll();
+	}
+
+	void PhysicsCharacterPhysicsManager::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData, int* collisionMatrix)
+	{
+		auto articulationIter = mCharacterPhysicsContainer.find(id);
+		auto articulation = articulationIter->second;
+
+		physx::PxTransform pxTransform;
+		CopyDirectXMatrixToPxTransform(articulationData.worldTransform, pxTransform);
+		articulation->GetPxArticulation()->setRootGlobalPose(pxTransform);
+		articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
+
+		if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
+		{
+			articulation->SetIsRagdoll(articulationData.bIsRagdollSimulation);
+
+			if (articulationData.bIsRagdollSimulation)
+			{
+				bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
+				assert(isCheck);
+			}
+			else
+			{
+				mScene->removeArticulation(*articulation->GetPxArticulation());
+			}
+		}
 	}
 }

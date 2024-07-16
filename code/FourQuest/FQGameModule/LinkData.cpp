@@ -1,11 +1,20 @@
 #include "LinkData.h"
 
+#include "../FQCommon/FQCommonGraphics.h"
+
+
+
 namespace fq::game_module
 {
 	LinkData::LinkData()
 		: mbIsDead(false)
+		, mShapeType(EShapeType::BOX)
 		, mChildrenLinkData()
 		, mID(0)
+		, mSphereRadius(1.f)
+		, mCapsuleHalfHeight(1.f)
+		, mCapsuleRadius(1.f)
+		, mExtent{1.f, 1.f, 1.f}
 	{
 	}
 
@@ -13,8 +22,11 @@ namespace fq::game_module
 	{
 	}
 
-	void LinkData::Update()
+	void LinkData::Update(const DirectX::SimpleMath::Matrix& parentWorldTransform)
 	{
+		mParentWorldTransform = parentWorldTransform;
+		mWorldTransform = mLinkInfo.localTransform * parentWorldTransform;
+
 		for (auto it = mChildrenLinkData.begin(); it != mChildrenLinkData.end(); )
 		{
 			if (it->second->GetIsDead())
@@ -25,7 +37,7 @@ namespace fq::game_module
 			else
 			{
 				// 요소를 업데이트하고 다음 요소로 이동합니다.
-				it->second->Update();
+				it->second->Update(mWorldTransform);
 				++it;
 			}
 		}

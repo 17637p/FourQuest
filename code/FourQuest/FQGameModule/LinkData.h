@@ -8,6 +8,14 @@ namespace fq::game_module
 {
 	using LinkName = std::string;
 
+	enum class EShapeType
+	{
+		BOX,
+		SPHERE,
+		CAPSULE,
+
+		END
+	};
 
 	class LinkData
 	{
@@ -15,18 +23,30 @@ namespace fq::game_module
 		LinkData();
 		~LinkData();
 
-		void Update();
+		void Update(const DirectX::SimpleMath::Matrix& parentWorldTransform);
 
+		// Link
 		inline const std::string& GetBoneName();
 		inline const std::string& GetParentBoneName();
 		inline const float& GetDensity();
-		inline const DirectX::SimpleMath::Matrix GetLocalTransform();
+		inline const DirectX::SimpleMath::Matrix& GetParentTransform();
+		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();
+		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		
+		// Shape
+		inline const EShapeType& GetShapeType();
+		inline const DirectX::SimpleMath::Vector3& GetBoxExtent();
+		inline const float& GetSphereRadius();
+		inline const float& GetCapsuleRadius();
+		inline const float& GetCapsuleHalfHeight();
+		
+		// Joint
 		inline const DirectX::SimpleMath::Matrix& GetJointLocalTransform();
 		inline const float& GetJointStiffness();
 		inline const float& GetJointDamping();
 		inline const float& GetJointMaxForce();
 
+		// Joint Axis
 		inline const fq::physics::EArticulationMotion& GetSwing1AxisMotion();
 		inline const float& GetSwing1LimitLow();
 		inline const float& GetSwing1LimitHigh();
@@ -40,16 +60,27 @@ namespace fq::game_module
 		inline const bool& GetIsDead();
 		inline const unsigned int& GetID();
 
+		// Link
 		inline void SetBoneName(const std::string& name);
 		inline void SetParentBoneName(const std::string& parentName);
 		inline void SetDensity(const float& density);
-		inline void SetLocalTransform(const DirectX::SimpleMath::Matrix localTransform);
-					
+		inline void SetLocalTransform(const DirectX::SimpleMath::Matrix& localTransform);
+		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& worldTransform);
+
+		// Shape
+		inline void SetShapeType(const EShapeType& type);
+		inline void SetBoxExtent(const DirectX::SimpleMath::Vector3& extent);
+		inline void SetSphereRadius(const float& radius);
+		inline void SetCapsuleRadius(const float& radius);
+		inline void SetCapsuleHalfHeight(const float& halfHeight);
+				
+		// Joint
 		inline void SetJointLocalTransform(const DirectX::SimpleMath::Matrix& localTransform);
 		inline void SetJointStiffness(const float& stiffness);
 		inline void SetJointDamping(const float& damping);
 		inline void SetJointMaxForce(const float& maxForce);
-					
+				
+		// Joint Axis
 		inline void SetSwing1AxisMotion(const fq::physics::EArticulationMotion& motion);
 		inline void SetSwing1LimitLow(const float& limitsLow);
 		inline void SetSwing1LimitHigh(const float& limitsHigh);
@@ -73,6 +104,15 @@ namespace fq::game_module
 		bool mbIsDead;
 		unsigned int mID;
 
+		DirectX::SimpleMath::Matrix mParentWorldTransform;
+		DirectX::SimpleMath::Matrix mWorldTransform;
+		DirectX::SimpleMath::Vector3 mExtent;
+
+		EShapeType mShapeType;
+		float mSphereRadius;
+		float mCapsuleHalfHeight;
+		float mCapsuleRadius;
+
 		std::unordered_map<LinkName, std::shared_ptr<LinkData>> mChildrenLinkData;
 	};
 
@@ -88,9 +128,38 @@ namespace fq::game_module
 	{
 		return mLinkInfo.density;
 	}
-	const DirectX::SimpleMath::Matrix LinkData::GetLocalTransform()
+	const DirectX::SimpleMath::Matrix& LinkData::GetParentTransform()
+	{
+		return mParentWorldTransform;
+	}
+	const DirectX::SimpleMath::Matrix& LinkData::GetLocalTransform()
 	{
 		return mLinkInfo.localTransform;
+	}
+	const DirectX::SimpleMath::Matrix& LinkData::GetWorldTransform()
+	{
+		return mWorldTransform;
+	}
+
+	const EShapeType& LinkData::GetShapeType()
+	{
+		return mShapeType;
+	}
+	const DirectX::SimpleMath::Vector3& LinkData::GetBoxExtent()
+	{
+		return mExtent;
+	}
+	const float& LinkData::GetSphereRadius()
+	{
+		return mSphereRadius;
+	}
+	const float& LinkData::GetCapsuleRadius()
+	{
+		return mCapsuleRadius;
+	}
+	const float& LinkData::GetCapsuleHalfHeight()
+	{
+		return mCapsuleHalfHeight;
 	}
 
 	const DirectX::SimpleMath::Matrix& LinkData::GetJointLocalTransform()
@@ -167,9 +236,34 @@ namespace fq::game_module
 	{
 		mLinkInfo.density = density;
 	}
-	void LinkData::SetLocalTransform(const DirectX::SimpleMath::Matrix localTransform)
+	void LinkData::SetLocalTransform(const DirectX::SimpleMath::Matrix& localTransform)
 	{
 		mLinkInfo.localTransform = localTransform;
+	}
+	void LinkData::SetWorldTransform(const DirectX::SimpleMath::Matrix& worldTransform)
+	{
+		mWorldTransform = worldTransform;
+	}
+
+	void LinkData::SetShapeType(const EShapeType& type)
+	{
+		mShapeType = type;
+	}
+	void LinkData::SetBoxExtent(const DirectX::SimpleMath::Vector3& extent)
+	{
+		mExtent = extent;
+	}
+	void LinkData::SetSphereRadius(const float& radius)
+	{
+		mSphereRadius = radius;
+	}
+	void LinkData::SetCapsuleRadius(const float& radius)
+	{
+		mCapsuleRadius = radius;
+	}
+	void LinkData::SetCapsuleHalfHeight(const float& halfHeight)
+	{
+		mCapsuleHalfHeight = halfHeight;
 	}
 		 
 	void LinkData::SetJointLocalTransform(const DirectX::SimpleMath::Matrix& localTransform)
@@ -186,7 +280,7 @@ namespace fq::game_module
 	}
 	void LinkData::SetJointMaxForce(const float& maxForce)
 	{
-		mLinkInfo.jointInfo.maxForce;
+		mLinkInfo.jointInfo.maxForce = maxForce;
 	}
 		
 	void LinkData::SetSwing1AxisMotion(const fq::physics::EArticulationMotion& motion)
@@ -255,4 +349,6 @@ namespace fq::game_module
 		if (mChildrenLinkData.find(name) != mChildrenLinkData.end())
 			mChildrenLinkData.erase(mChildrenLinkData.find(name));
 	}
+
+	
 }
