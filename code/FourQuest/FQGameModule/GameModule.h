@@ -59,4 +59,5 @@
 #include "AnimationStateNode.h"
 #include "AnimationTransition.h"
 #include "LogStateBehaviour.h"
+#include "UVAnimator.h"
 #endif 

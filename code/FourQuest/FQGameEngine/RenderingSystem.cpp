@@ -129,6 +129,7 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	for (auto& object : scene->GetObjectView(true))
 	{
 		loadAnimation(&object);
+		loadUVAnimation(&object);
 	}
 
 	// 2. PrefabInstance를 로드
@@ -181,6 +182,9 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 4. Terrain
 	loadTerrain(gameObject);
+
+	// 5. UVAnimation
+	loadUVAnimation(gameObject);
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
@@ -349,6 +353,52 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 		if (meshObject != nullptr)
 		{
 			meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+		}
+	}
+}
+
+void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::UVAnimator>())
+	{
+		return;
+	}
+
+	auto animator = object->GetComponent<fq::game_module::UVAnimator>();
+
+	const auto uvAnimationPath = animator->GetUVAnimationPath();
+
+	if (!std::filesystem::exists(uvAnimationPath))
+	{
+		spdlog::warn("{} uv animation controller load fail", object->GetName());
+		return;
+	}
+
+	auto uvAnimationInterfaceOrNull = mGameProcess->mGraphics->GetUVAnimationOrNull(uvAnimationPath);
+
+	if (uvAnimationInterfaceOrNull == nullptr)
+	{
+		const auto& uvAnimationData = mGameProcess->mGraphics->ReadUVAnimation(uvAnimationPath);
+		uvAnimationInterfaceOrNull = mGameProcess->mGraphics->CreateUVAnimation(uvAnimationPath, uvAnimationData);
+	}
+	assert(uvAnimationInterfaceOrNull != nullptr);
+
+	auto uvAnimationInstanceInterface = uvAnimationInterfaceOrNull->CreateUVAnimationInstance();
+	animator->SetIUVAnimation(uvAnimationInterfaceOrNull);
+	animator->SetIUVAnimationInstance(uvAnimationInstanceInterface);
+
+	// 자식 계층에 애니메이션 인스턴스 연결
+	for (auto& child : object->GetChildren())
+	{
+		if (child->HasComponent<game_module::StaticMeshRenderer>())
+		{
+			auto staticMeshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
+			staticMeshRenderer->GetStaticMeshObject()->SetUVAnimationInstance(uvAnimationInstanceInterface);
+		}
+		if (child->HasComponent<game_module::Decal>())
+		{
+			auto decal = child->GetComponent<fq::game_module::Decal>();
+			decal->GetDecalObjectInterface()->SetUVAnimationInstance(uvAnimationInstanceInterface);
 		}
 	}
 }
