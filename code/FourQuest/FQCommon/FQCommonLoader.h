@@ -4,6 +4,7 @@
 #include <string>
 #include <directxtk/SimpleMath.h>
 #include <DirectXCollision.h>
+#include <map>
 
 class aiMesh;
 
@@ -141,5 +142,27 @@ namespace fq::common
 		std::vector<Material> Materials;
 		DirectX::BoundingBox RenderBoundingBox;
 		DirectX::BoundingSphere GetRenderBoundingSphere;
+	};
+
+	struct UVKeyframe
+	{
+		float TimePos;
+		DirectX::SimpleMath::Vector2 Translation = { 0.f, 0.f };
+		DirectX::SimpleMath::Vector2 Scale = { 1.f, 1.f };
+		float Rotation;
+	};
+
+	struct UVNodeClip
+	{
+		std::string NodeName;
+		std::vector<UVKeyframe> UVData;
+	};
+
+	struct UVAnimationClip
+	{
+		unsigned int FrameCount;
+		float FramePerSecond;
+		float Duration;
+		std::map<std::string, UVNodeClip> NodeClips;
 	};
 }

@@ -46,15 +46,36 @@ extern "C" {
 		class IAnimation
 		{
 		public:
-			virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
+			// virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
 			// virtual FQ_GRAPHICS void SetName(const std::string& name) abstract;
 			// virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
-			virtual const fq::common::AnimationClip& GetAnimationClip() const abstract;
+			virtual FQ_GRAPHICS const fq::common::AnimationClip& GetAnimationClip() const abstract;
 
 		protected:
 			virtual ~IAnimation() = default;
 		};
+
+		class IUVAnimationInstance
+		{
+		public:
+			virtual FQ_GRAPHICS void SetTimePos(float timePos) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTexTransform(const std::string& nodeName) const abstract;
+
+		protected:
+			virtual ~IUVAnimationInstance() = default;
+		};
+
+		class IUVAnimation
+		{
+		public:
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> CreateUVAnimationInstance() abstract;
+			virtual FQ_GRAPHICS const fq::common::UVAnimationClip& GetUVAnimationClip() const abstract;
+
+		protected:
+			virtual ~IUVAnimation() = default;
+		};
+
 
 		class INodeHierarchyInstance;
 
@@ -88,7 +109,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetBindPose() abstract;
 			virtual FQ_GRAPHICS void Update(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
 			virtual FQ_GRAPHICS void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
+			virtual FQ_GRAPHICS void UpdateByLocalTransform() abstract;
 
+			virtual FQ_GRAPHICS void SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS bool TrySetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchy() const abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;

@@ -506,6 +506,11 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(const fq::
 	return mModelManager->CreateAnimation(animationClip);
 }
 
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::CreateUVAnimation(const fq::common::UVAnimationClip& animationClip)
+{
+	return mModelManager->CreateUVAnimation(animationClip);
+}
+
 std::shared_ptr<IMaterial> FQGraphics::CreateMaterial(const MaterialInfo& materialInfo)
 {
 	return mModelManager->CreateMaterial(materialInfo);
@@ -538,6 +543,10 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::CreateAnimation(std::strin
 {
 	return mModelManager->CreateAnimation(key, animationClip);
 }
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip)
+{
+	return mModelManager->CreateUVAnimation(key, animationClip);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::CreateMaterial(const std::string& key, const MaterialInfo& materialInfo)
 {
 	return mModelManager->CreateMaterial(key, materialInfo);
@@ -565,6 +574,10 @@ std::vector<std::shared_ptr<INodeHierarchy>> fq::graphics::FQGraphics::GetNodeHi
 std::vector<std::shared_ptr<IAnimation>> fq::graphics::FQGraphics::GetAnimations()
 {
 	return mModelManager->GetAnimations();
+}
+std::vector<std::shared_ptr<IUVAnimation>> fq::graphics::FQGraphics::GetUVAnimations()
+{
+	return mModelManager->GetUVAnimations();
 }
 std::vector<std::shared_ptr<IMaterial>> fq::graphics::FQGraphics::GetMaterials()
 {
@@ -594,6 +607,10 @@ std::shared_ptr<IAnimation> fq::graphics::FQGraphics::GetAnimationOrNull(std::st
 {
 	return mModelManager->GetAnimationOrNull(key);
 }
+std::shared_ptr<IUVAnimation> fq::graphics::FQGraphics::GetUVAnimationOrNull(std::string key)
+{
+	return mModelManager->GetUVAnimationOrNull(key);
+}
 std::shared_ptr<IMaterial> fq::graphics::FQGraphics::GetMaterialOrNull(const std::string& key)
 {
 	return mModelManager->GetMaterialOrNull(key);
@@ -622,6 +639,10 @@ void fq::graphics::FQGraphics::DeleteNodeHierarchy(std::string key)
 void fq::graphics::FQGraphics::DeleteAnimation(std::string key)
 {
 	mModelManager->DeleteAnimation(key);
+}
+void fq::graphics::FQGraphics::DeleteUVAnimation(std::string key)
+{
+	mModelManager->DeleteUVAnimation(key);
 }
 void fq::graphics::FQGraphics::DeleteMaterial(const std::string& key)
 {

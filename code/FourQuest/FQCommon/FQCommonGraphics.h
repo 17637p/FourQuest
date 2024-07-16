@@ -422,6 +422,18 @@ namespace fq::graphics
 		};
 	};
 
+	enum ESampleMode
+	{
+		Clamp,
+		Wrap,
+	};
+
+	enum ERasterizeMode
+	{
+		BackFaceClip,
+		TwoSide,
+	};
+
 	// material
 	struct MaterialInfo
 	{
@@ -451,6 +463,9 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 		float AlphaCutoff = 0.1f;
+
+		ESampleMode SampleType = ESampleMode::Clamp;
+		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
 	};
 
 	struct ParticleMaterialInfo
@@ -510,6 +525,7 @@ namespace fq::graphics
 		float NormalBlend = 0.5f; // 0 ~ 1, srcNormal의 가중치, 1이라면 decal의 노말이 전부 적용된다.
 		float AlphaCutoff = 0.1f;
 	};
+
 	//// ---------------------------------------------------------------------
 	////							Light Probe
 	//// ---------------------------------------------------------------------

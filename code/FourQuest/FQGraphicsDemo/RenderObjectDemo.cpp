@@ -3,6 +3,7 @@
 #include <IFQGraphics.h>
 #include <set>
 #include <map>
+#include "../FQLoader/ModelLoader.h"
 
 #include "InputManager.h"
 #include "DemoUtils.h"
@@ -39,11 +40,7 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 	mTimeManager.Init();
 
 	mTestGraphics = mEngineExporter->GetEngine();
-	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Forward);
-
-	/// RenderObject 생성
-	mTestGraphics->WriteModel("./resource/Graphics/RenderObjectDemo/gun.model", mTestGraphics->ConvertModel("./resource/Graphics/RenderObjectDemo/gun.fbx"));
-	mTestGraphics->WriteModel("./resource/Graphics/RenderObjectDemo/SkinningTest.model", mTestGraphics->ConvertModel("./resource/Graphics/RenderObjectDemo/SkinningTest.fbx"));
+	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	const std::string textureBasePath = "./resource/Graphics/RenderObjectDemo/";
 	std::vector<std::string> modelPaths;
@@ -57,12 +54,14 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 			fbxPaths.push_back(path + ".fbx");
 		};
 
-	addPath("./resource/Graphics/RenderObjectDemo/gun");
-	addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
-	addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
-	addPath("./resource/Graphics/RenderObjectDemo/player01");
-	addPath("./resource/Graphics/RenderObjectDemo/playerani7");
-	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	////addPath("./resource/Graphics/RenderObjectDemo/gun");
+	//addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
+	//addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
+	//addPath("./resource/Graphics/RenderObjectDemo/player01");
+	//addPath("./resource/Graphics/RenderObjectDemo/playerani7");
+	//addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	//addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	//addPath("./resource/Graphics/RenderObjectDemo/Holland_Test");
 
 	for (size_t i = 0; i < modelPaths.size(); ++i)
 	{
@@ -71,12 +70,13 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 
 	for (size_t i = 0; i < modelPaths.size(); ++i)
 	{
-		for (int j = -5; j < 5; ++j)
+		for (int j = 0; j < 10; ++j)
 		{
-			createModel(modelPaths[i], textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(j * 1, i * 2, 0));
+			createModel(modelPaths[i], textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(1.f) * DirectX::SimpleMath::Matrix::CreateTranslation(j * 10, i * 10, 0));
 		}
 	}
 
+	// 스킨 매쉬 랜더러
 	for (size_t i = 0; i < mSkinnedMeshObjects.size(); ++i)
 	{
 		SkinnedMeshRender renderer;
@@ -89,10 +89,37 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 
 		for (auto animation : animations)
 		{
-			renderer.Animations.insert({ "Anim" + i, animation });
+			{
+				renderer.Animations.insert({ "Anim" + i, animation });
+			}
 		}
 
 		mSkinnedMeshRenderers.push_back(renderer);
+	}
+
+	//auto animation = fq::loader::AnimationLoader::Read("./resource/Graphics/RenderObjectDemo/TransformAnim.txt");
+	//auto animationInterface = mTestGraphics->CreateAnimation(animation);
+
+	// 스태틱 매쉬 렌더러
+	for (size_t i = 0; i < mStaticMeshObjects.size(); ++i)
+	{
+		StaticMeshRenderer renderer;
+
+		renderer.StaticMeshObject = mStaticMeshObjects[i];
+		renderer.NodeHierarchyInstance = mStaticMeshObjects[i]->GetNodeHierarchyInstance();
+
+		if (renderer.NodeHierarchyInstance != nullptr)
+		{
+			const auto nodeHierarchy = renderer.NodeHierarchyInstance->GetNodeHierarchy();
+			const std::set<std::shared_ptr<fq::graphics::IAnimation>>& animations = nodeHierarchy->GetRegisterAnimations();
+
+			auto nodeName = mStaticMeshObjects[i]->GetStaticMesh()->GetMeshData().NodeName;
+			mStaticMeshObjects[i]->SetReferenceBoneIndex(nodeHierarchy->GetBoneIndex(nodeName));
+
+			//renderer.Animations.insert({ "Anim" + i, animationInterface });
+
+			mStaticMeshRenderers.push_back(renderer);
+		}
 	}
 
 	/// camera 초기화
@@ -214,13 +241,27 @@ void RenderObjectDemo::Update()
 	// animation
 
 	static float s_animTime = 0.f;
-	s_animTime += mTimeManager.GetDeltaTime();
+
+	if (GetAsyncKeyState('O') & 0x8000)
+	{
+		s_animTime += mTimeManager.GetDeltaTime();
+	}
+
 	for (SkinnedMeshRender& skinnedMeshRenderer : mSkinnedMeshRenderers)
 	{
 		if (!skinnedMeshRenderer.Animations.empty())
 		{
 			auto anim = skinnedMeshRenderer.Animations.begin()->second;
 			skinnedMeshRenderer.NodeHierarchyInstance->Update(fmod(s_animTime, anim->GetAnimationClip().Duration), anim);
+		}
+	}
+
+	for (StaticMeshRenderer& staticMeshRenderer : mStaticMeshRenderers)
+	{
+		if (!staticMeshRenderer.Animations.empty())
+		{
+			auto anim = staticMeshRenderer.Animations.begin()->second;
+			staticMeshRenderer.NodeHierarchyInstance->Update(fmod(s_animTime, anim->GetAnimationClip().Duration), anim);
 		}
 	}
 
@@ -295,18 +336,17 @@ void RenderObjectDemo::debugRender()
 	mTestGraphics->DrawGrid(gridInfo);
 }
 
-void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform)
+void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform, bool bIsCreateHierarchy)
 {
 	using namespace fq::graphics;
-	unsigned int key = std::hash<std::string>{}(modelPath);
 
-	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(key, modelPath, textureBasePath);
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(modelPath, textureBasePath);
 
-	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(key);
+	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(modelPath);
 
 	for (auto animation : modelData.Animations)
 	{
-		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(key, animation.Name);
+		auto animationInterface = mTestGraphics->GetAnimationByModelPathOrNull(modelPath, animation.Name);
 		boneHierarchy->RegisterAnimation(animationInterface);
 	}
 
@@ -325,21 +365,24 @@ void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path 
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(key, subset.MaterialName);
+			auto materialInterface = mTestGraphics->GetMaterialByModelPathOrNull(modelPath, subset.MaterialName);
 			materialInterfaces.push_back(materialInterface);
 		}
 
 		if (mesh.BoneVertices.empty())
 		{
-			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(key, mesh.Name);
-			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, node.ToParentMatrix * transform);
+			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(modelPath, mesh.Name);
+			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
+			if (bIsCreateHierarchy)
+				iStaticMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
 			mStaticMeshObjects.push_back(iStaticMeshObject);
 		}
 		else
 		{
-			auto meshInterface = mTestGraphics->GetSkinnedMeshByModelPathOrNull(key, mesh.Name);
+			auto meshInterface = mTestGraphics->GetSkinnedMeshByModelPathOrNull(modelPath, mesh.Name);
 			ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
-			iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
+			if (bIsCreateHierarchy)
+				iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
 	}

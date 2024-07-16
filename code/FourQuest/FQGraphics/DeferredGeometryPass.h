@@ -44,10 +44,15 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
+		
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mStaticMeshnputLayouts;
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
+		std::shared_ptr<D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
