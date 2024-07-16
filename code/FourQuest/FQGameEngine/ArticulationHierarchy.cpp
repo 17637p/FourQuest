@@ -617,11 +617,16 @@ namespace fq::game_engine
 			rayInfo2.Normalize = false;
 			rayInfo3.Normalize = false;
 			rayInfo4.Normalize = false;
+			rayInfo1.bUseDepthTest = false;
+			rayInfo2.bUseDepthTest = false;
+			rayInfo3.bUseDepthTest = false;
+			rayInfo4.bUseDepthTest = false;
 			
 			// 동그라미 ( 자기 자신의 본 )
 			sphereInfo.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
 			sphereInfo.Sphere.Radius = 0.01f;
 			sphereInfo.Sphere.Center = rootTransform.Translation() * objectScale;
+			sphereInfo.bUseDepthTest = false;
 
 			mGameProcess->mGraphics->DrawSphere(sphereInfo);
 			mGameProcess->mGraphics->DrawRay(rayInfo1);
