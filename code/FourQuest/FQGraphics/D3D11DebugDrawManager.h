@@ -81,5 +81,19 @@ namespace fq::graphics
 		std::queue<debug::DountInfo> mDountInfos;
 		std::queue<debug::SphereInfoEx> mSphereInfoExInfos;
 		std::queue<debug::RingInfoEx> mRingInfoExInfos;
+
+		std::queue<debug::SphereInfo> mDepthOffSphereInfos;
+		std::queue<debug::AABBInfo> mDepthOffAABBInfos;
+		std::queue<debug::OBBInfo> mDepthOffOBBInfos;
+		std::queue<debug::FrustumInfo> mDepthOffFrustumInfos;
+		std::queue<debug::GridInfo> mDepthOffGridInfos;
+		std::queue<debug::RingInfo> mDepthOffRingInfos;
+		std::queue<debug::RayInfo> mDepthOffRayInfos;
+		std::queue<debug::PolygonInfo> mDepthOffPolygonInfos;
+		std::queue<debug::HemisphereInfo> mDepthOffHemisphereInfos;
+		std::queue<debug::ConeInfo> mDepthOffConeInfos;
+		std::queue<debug::DountInfo> mDepthOffDountInfos;
+		std::queue<debug::SphereInfoEx> mDepthOffSphereInfoExInfos;
+		std::queue<debug::RingInfoEx> mDepthOffRingInfoExInfos;
 	};
 }

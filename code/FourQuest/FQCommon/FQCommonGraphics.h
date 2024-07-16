@@ -316,6 +316,7 @@ namespace fq::graphics
 		{
 			DirectX::BoundingSphere Sphere;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct SphereInfoEx
@@ -326,6 +327,7 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 ZAxis = DirectX::SimpleMath::Vector3::UnitZ;
 			float ArcInRadian = DirectX::XM_2PI;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct HemisphereInfo
@@ -336,6 +338,7 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 ZAxis = DirectX::SimpleMath::Vector3::UnitZ;
 			float ArcInRadian = DirectX::XM_2PI;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct ConeInfo
@@ -348,6 +351,7 @@ namespace fq::graphics
 			float ArcInRadian = DirectX::XM_2PI;
 			float Height;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct DountInfo
@@ -359,24 +363,28 @@ namespace fq::graphics
 			float ArcInRadian = DirectX::XM_2PI;
 			float DountRadius;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct AABBInfo
 		{
 			DirectX::BoundingBox AABB;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct OBBInfo
 		{
 			DirectX::BoundingOrientedBox OBB;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct FrustumInfo
 		{
 			DirectX::BoundingFrustum Frustum;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct GridInfo
@@ -388,6 +396,7 @@ namespace fq::graphics
 			size_t YDivision;
 			float GridSize;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct RingInfo
@@ -396,6 +405,7 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 MajorAxis;
 			DirectX::SimpleMath::Vector3 MinorAxis;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct RingInfoEx
@@ -405,6 +415,7 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 MinorAxis;
 			float ArcInRadian = DirectX::XM_2PI;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct RayInfo
@@ -413,12 +424,14 @@ namespace fq::graphics
 			DirectX::SimpleMath::Vector3 Direction;
 			bool Normalize = true;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 
 		struct PolygonInfo
 		{
 			std::vector<DirectX::SimpleMath::Vector3> Points;
 			DirectX::SimpleMath::Color Color = { 1.f, 1.f, 1.f, 1.f };
+			bool bUseDepthTest = true;
 		};
 	};
 
@@ -568,5 +581,10 @@ namespace fq::graphics
 		// toneMapping
 		// operator
 		bool bUseToneMapping = true;
+
+		// Fog
+		bool bUseFog = false;
+		DirectX::SimpleMath::Vector4 fogColor = {0.5f, 0.5f, 0.5f, 1.0f}; // 안개 색상 
+		float fogVisibleArea = 200.0f; // 가시 영역 near ~ far 기준으로 값을 넣어야 함 near가 1 far가 100이면 20일때 20퍼 보인다는 뜻
 	};
 };
