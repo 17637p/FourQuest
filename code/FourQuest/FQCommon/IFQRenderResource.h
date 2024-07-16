@@ -60,6 +60,8 @@ extern "C" {
 		{
 		public:
 			virtual FQ_GRAPHICS void SetTimePos(float timePos) abstract;
+			virtual FQ_GRAPHICS float GetTimePos() const abstract;
+
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTexTransform(const std::string& nodeName) const abstract;
 
 		protected:

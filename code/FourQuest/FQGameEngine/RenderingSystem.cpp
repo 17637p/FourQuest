@@ -351,6 +351,32 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 	}
 }
 
+void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::UVAnimator>())
+	{
+		return;
+	}
+
+	auto animator = object->GetComponent<fq::game_module::UVAnimator>();
+	auto uvAnimationInstance = animator->GetIUVAnimationInstance();
+
+	// 자식 계층에 애니메이션 인스턴스 연결
+	for (auto& child : object->GetChildren())
+	{
+		if (child->HasComponent<game_module::StaticMeshRenderer>())
+		{
+			auto staticMeshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
+			staticMeshRenderer->GetStaticMeshObject()->SetUVAnimationInstance(uvAnimationInstance);
+		}
+		if (child->HasComponent<game_module::Decal>())
+		{
+			auto decal = child->GetComponent<fq::game_module::Decal>();
+			decal->GetDecalObjectInterface()->SetUVAnimationInstance(uvAnimationInstance);
+		}
+	}
+}
+
 void fq::game_engine::RenderingSystem::LoadModel(const ModelPath& path, const std::string& texturePath /*= {}*/)
 {
 	if (!std::filesystem::exists(path))

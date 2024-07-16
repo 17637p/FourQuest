@@ -33,6 +33,7 @@
 #include "PrefabTest.h"
 #include "AnimationStateNode.h"
 #include "Animator.h"
+#include "UVAnimator.h"
 #include "LogStateBehaviour.h"
 
 // PathFinding
@@ -710,6 +711,16 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"애니메이션 처리 시 참조할 본 계층 구조")
 		.prop(fq::reflect::prop::DragDrop, ".model")
 		.prop(fq::reflect::prop::Name, "NodeHierarchyModelPath")
+		.prop(fq::reflect::prop::RelativePath)
+		.base<Component>();
+
+	entt::meta<UVAnimator>()
+		.type("UVAnimator"_hs)
+		.prop(fq::reflect::prop::Name, "UVAnimator")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&UVAnimator::SetUVAnimationPath, &UVAnimator::GetUVAnimationPath>("UVAnimationPath"_hs)
+		.prop(fq::reflect::prop::Name, "UVAnimationPath")
+		.prop(fq::reflect::prop::DragDrop, ".uvAnimation")
 		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 

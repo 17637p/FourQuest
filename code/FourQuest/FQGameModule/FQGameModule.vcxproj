@@ -217,6 +217,7 @@
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Trail.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UVAnimator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimatorControllerLoader.cpp" />
@@ -279,6 +280,7 @@
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Trail.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UVAnimator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">

@@ -56,6 +56,7 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 	auto uvAnimResource = mTestGraphics->CreateUVAnimation("uvAnim", uvAnimation);
 	mUVAnimInstance = uvAnimResource->CreateUVAnimationInstance();
 	mStaticMeshObjects.back()->SetUVAnimationInstance(mUVAnimInstance);
+
 	for (auto& materialInterface : mStaticMeshObjects.back()->GetMaterials())
 	{
 		auto info = materialInterface->GetInfo();
