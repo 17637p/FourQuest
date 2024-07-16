@@ -206,7 +206,6 @@ namespace fq::graphics
 				directioanlShadows[i]->GetData().direction);
 			assert(shadowTransforms.size() == 3);
 
-
 			size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
 
 			directionalShadowTransformData.ShadowViewProj[shaodwIndex + 0] = shadowTransforms[0].Transpose();

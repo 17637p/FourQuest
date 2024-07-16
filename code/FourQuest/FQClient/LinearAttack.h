@@ -7,11 +7,11 @@ namespace fq::client
 	/// <summary>
 	/// 원거리 몬스터가 발사하는 투사체 설정 
 	/// </summary>
-	class PlantAttack :public game_module::Component 
+	class LinearAttack :public game_module::Component 
  	{
 	public:
-		PlantAttack();
-		~PlantAttack();
+		LinearAttack();
+		~LinearAttack();
 
 		DirectX::SimpleMath::Vector3 GetMoveDirection() const { return mMoveDirection; }
 		void SetMoveDirection(DirectX::SimpleMath::Vector3 val) { mMoveDirection = val; }
@@ -27,6 +27,4 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mMoveDirection;
 		float mMoveSpeed;
 	};
-
-
 }

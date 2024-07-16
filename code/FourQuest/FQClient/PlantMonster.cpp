@@ -2,7 +2,7 @@
 #include "PlantMonster.h"
 
 #include "GameManager.h"
-#include "PlantAttack.h"
+#include "LinearAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
 
@@ -10,7 +10,7 @@ fq::client::PlantMonster::PlantMonster()
 	:mMaxHp(0.f)
 	, mHp(0.f)
 	, mProjectileSpeed(1.f)
-	, mAttackPower(1.f)
+	, mAttackPower(100.f)
 	, mAttackPrefab{}
 	, mTarget(nullptr)
 	, mAnimator(nullptr)
@@ -71,7 +71,7 @@ void fq::client::PlantMonster::EmitAttack()
 	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
 
 	// 공격 방향 설정
-	auto plantAttack = attackObj->GetComponent<client::PlantAttack>();
+	auto plantAttack = attackObj->GetComponent<client::LinearAttack>();
 	plantAttack->SetMoveSpeed(mProjectileSpeed);
 
 	DirectX::SimpleMath::Vector3 dir = transform->GetWorldMatrix().Forward();

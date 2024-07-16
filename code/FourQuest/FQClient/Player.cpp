@@ -21,6 +21,7 @@ fq::client::Player::Player()
 	, mSoulStack(0.f)
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
+	, mAttackPositionOffset{}
 {}
 
 fq::client::Player::~Player()
@@ -52,6 +53,27 @@ void fq::client::Player::OnUpdate(float dt)
 	processInput();
 	processFeverTime(dt);
 	processCoolTime(dt);
+
+	// RayCastTest
+	
+	//fq::event::RayCast::ResultData data;
+
+	// auto tf =  GetComponent<game_module::Transform>();
+	// auto origin =  tf->GetWorldPosition();
+	// origin.y += 1.f;
+	// auto direction = tf->GetLookAtVector();
+	// auto distance = 5.f;
+	// bool bUseDebugDraw = true;
+	// auto tag = GetGameObject()->GetTag();
+
+	// GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
+	//	fq::event::RayCast {origin, direction, distance, tag, &data , bUseDebugDraw}
+	// );
+
+	// if (data.hasBlock)
+	// {
+	//	 spdlog::debug("{}", data.blockObject->GetName());
+	// }
 }
 
 void fq::client::Player::OnStart()
@@ -65,7 +87,7 @@ void fq::client::Player::OnStart()
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
-		{GetGameObject(), PlayerType::LivingArmour});
+		{GetGameObject(), EPlayerType::LivingArmour});
 
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)

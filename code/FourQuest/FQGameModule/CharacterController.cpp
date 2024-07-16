@@ -89,11 +89,11 @@ void fq::game_module::CharacterController::OnUpdate(float dt)
 
 		if (input == Vector3::Backward)
 		{
-			mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+			mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
 		}
 		else if (input != Vector3::Zero)
 		{
-			mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+			mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
 		}
 	}
 }

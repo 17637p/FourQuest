@@ -197,7 +197,6 @@ namespace fq::game_module
 		float mBlendWeight;
 		float mBlendElapsedTime;
 
-
 		// animation ref Map
 		// animation cache
 	};

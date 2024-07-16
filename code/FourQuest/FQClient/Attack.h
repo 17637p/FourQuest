@@ -21,7 +21,6 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void OnUpdate(float dt) override;
 	
 		float GetAttackPower() const { return mAttackPower; }
 		void SetAttackPower(float val) { mAttackPower = val; }
@@ -31,9 +30,11 @@ namespace fq::client
 
 		DirectX::SimpleMath::Vector3 GetAttackDirection() const { return mAttackDirection; }
 		void SetAttackDirection(DirectX::SimpleMath::Vector3 val) { mAttackDirection = val; }
-		entt::meta_handle GetHandle() override { return *this; }
-	private:
 
+	private:
+		entt::meta_handle GetHandle() override { return *this; }
+		void OnUpdate(float dt) override;
+		void OnTriggerEnter(const game_module::Collision& collision)override;
 	public:
 		// 공경 방향이 없는 경우
 		inline static DirectX::SimpleMath::Vector3 NoDirection = DirectX::SimpleMath::Vector3::Zero;
@@ -43,6 +44,11 @@ namespace fq::client
 		float mAttackPower;
 		float mAttackTime;
 		float mElapsedTime;
+
+		// 공격횟수가 무한한지 
+		bool mbIsInfinite;
+		unsigned int mRemainingAttackCount;
+
 		DirectX::SimpleMath::Vector3 mAttackDirection;
 
 		fq::game_module::GameObject* mAttacker;

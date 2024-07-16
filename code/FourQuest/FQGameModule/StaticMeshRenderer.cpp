@@ -1,12 +1,12 @@
 #include "StaticMeshRenderer.h"
 
-
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
 	, mIsNavigationMeshUsed(true)
 	, mTexturePath{}
-{}
+{
+}
 
 fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
 {

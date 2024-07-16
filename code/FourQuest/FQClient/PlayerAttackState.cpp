@@ -49,8 +49,6 @@ void fq::client::PlayerAttackState::OnStateUpdate(game_module::Animator& animato
 	{
 		animator.GetComponent<Player>()->Attack();
 		mElapsedTime = mAttackTiming;
-
-
 	}
 }
 
