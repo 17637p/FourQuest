@@ -17,6 +17,7 @@
 #include "AOEAttackState.h"
 #include "RazerAttackState.h"
 #include "ShiedlDashState.h"
+#include "KnightArmour.h"
 
 // Monster
 #include "Monster.h"
@@ -140,6 +141,16 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "Razer")
 		.data<&MagicArmour::mRazerAttackBox>("RazerAttackBox"_hs)
 		.prop(reflect::prop::Name, "RazerAttackBox")
+		.base<game_module::Component>();
+
+	entt::meta<KnightArmour>()
+		.type("KnightArmour"_hs)
+		.prop(reflect::prop::Name, "KnightArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&KnightArmour::mDashCoolTime>("DashCoolTime"_hs)
+		.prop(reflect::prop::Name, "DashCoolTime")
+		.data<&KnightArmour::mDashPower>("DashPower"_hs)
+		.prop(reflect::prop::Name, "DashPower")
 		.base<game_module::Component>();
 
 	entt::meta<Soul>()

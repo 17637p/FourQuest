@@ -1,6 +1,7 @@
 #include "ShiedlDashState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "KnightArmour.h"
 
 fq::client::ShiedlDashState::~ShiedlDashState()
 {
@@ -8,7 +9,6 @@ fq::client::ShiedlDashState::~ShiedlDashState()
 }
 
 fq::client::ShiedlDashState::ShiedlDashState()
-	:mDashPower(10.f)
 {}
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::ShiedlDashState::Clone()
@@ -18,6 +18,8 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::ShiedlDashState::C
 
 void fq::client::ShiedlDashState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	float dashPower = animator.GetComponent<KnightArmour>()->GetDashPower();
+
 	// 컨트롤러 입력방향을 바라봅니다
 	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
 
@@ -27,8 +29,8 @@ void fq::client::ShiedlDashState::OnStateEnter(fq::game_module::Animator& animat
 	auto foward = transform->GetWorldMatrix().Forward();
 
 	foward.Normalize();
-	foward.x *= mDashPower;
-	foward.z *= mDashPower;
+	foward.x *= dashPower;
+	foward.z *= dashPower;
 
 	rigid->SetLinearVelocity(foward);
 }
