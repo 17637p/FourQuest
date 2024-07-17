@@ -318,6 +318,17 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		ImGui::Image(mImageSystem->GetIcon(L"controller.png"), mIconSize);
 	}
+	else if (extension == ".animation")
+	{
+		if (path.string().find("5") == std::string::npos)
+			ImGui::Image(mImageSystem->GetIcon(L"animation.png"), mIconSize);
+		else
+			ImGui::Image(mImageSystem->GetIcon(L"animation2.jpg"), mIconSize);
+	}
+	else if (extension == ".nodeHierachy")
+	{
+		ImGui::Image(mImageSystem->GetIcon(L"nodeHierachy.png"), mIconSize);
+	}
 	else
 	{
 		ImGui::Image(mImageSystem->GetIcon(L"error.png"), mIconSize);
@@ -523,7 +534,7 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 				}
 
 				// nodeHierachy »ý¼º
-				
+
 				auto path = directory / fileName;
 				path += ".nodeHierachy";
 
