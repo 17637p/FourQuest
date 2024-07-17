@@ -145,21 +145,25 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 	// 플레이어 공격 피격 처리
 	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
-		mAnimator->SetParameterTrigger("OnHit");
 		auto playerAttack = collision.other->GetComponent<Attack>();
-		float attackPower = playerAttack->GetAttackPower();
 
-		mHp -= attackPower;
-
-		GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
-		// 타겟은 자신을 때린 사람으로 바꿉니다 
-		SetTarget(playerAttack->GetAttacker());
-
-		// 사망처리 
-		if (mHp <= 0.f)
+		if (playerAttack->ProcessAttack())
 		{
-			mAnimator->SetParameterBoolean("IsDead", true);
+			mAnimator->SetParameterTrigger("OnHit");
+			float attackPower = playerAttack->GetAttackPower();
+
+			mHp -= attackPower;
+
+			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+
+			// 타겟은 자신을 때린 사람으로 바꿉니다 
+			SetTarget(playerAttack->GetAttacker());
+
+			// 사망처리 
+			if (mHp <= 0.f)
+			{
+				mAnimator->SetParameterBoolean("IsDead", true);
+			}
 		}
 	}
 }

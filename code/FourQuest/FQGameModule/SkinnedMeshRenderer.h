@@ -46,7 +46,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 텍스터 폴더 경로를 반환합니다
 		/// </summary>
-		void SetTexturePath(std::string path) { mTexturePath = path; }
+		void SetTexturePath(std::string path);
 
 		/// <summary>
 		/// 메쉬 이름을 반환합니다

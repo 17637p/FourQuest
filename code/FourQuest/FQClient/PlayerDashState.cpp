@@ -9,9 +9,7 @@ fq::client::PlayerDashState::~PlayerDashState()
 
 fq::client::PlayerDashState::PlayerDashState()
 	:mDashPower(0.f)
-{
-
-}
+{}
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlayerDashState::Clone()
 {
