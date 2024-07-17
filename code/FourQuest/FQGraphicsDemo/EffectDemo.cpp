@@ -202,6 +202,15 @@ void EffectDemo::Update()
 		PostQuitMessage(0);
 	}
 
+	if (GetAsyncKeyState('L') & 0x8000)
+	{
+		mTestGraphics->SetIsRenderDebug(false);
+	}
+	else
+	{
+		mTestGraphics->SetIsRenderDebug(true);
+	}
+	
 	using namespace fq::graphics;
 
 	// particle
@@ -213,8 +222,7 @@ void EffectDemo::Update()
 
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
 	}
-
-
+	s
 	static float s_time = 0.f;
 	s_time += mTimeManager.GetDeltaTime();
 
