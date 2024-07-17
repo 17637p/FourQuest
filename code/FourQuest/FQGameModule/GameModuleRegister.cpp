@@ -73,7 +73,17 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Floor>("Floor"_hs) // 9
 		.prop(fq::reflect::prop::Name, "Floor")
 		.data<ETag::Soul>("Soul"_hs) // 10
-		.prop(fq::reflect::prop::Name, "Soul");
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<ETag::Dash>("Dash"_hs) // 11
+		.prop(fq::reflect::prop::Name, "Dash")
+		.data<ETag::Dash>("Tag12"_hs) // 12
+		.prop(fq::reflect::prop::Name, "Tag12")
+		.data<ETag::Dash>("Tag13"_hs) // 13
+		.prop(fq::reflect::prop::Name, "Tag13")
+		.data<ETag::Dash>("Tag14"_hs) // 14
+		.prop(fq::reflect::prop::Name, "Tag14")
+		.data<ETag::Dash>("Tag15"_hs) // 15
+		.prop(fq::reflect::prop::Name, "Tag15");
 
 
 	// GameObject

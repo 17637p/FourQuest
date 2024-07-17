@@ -16,7 +16,6 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void Attack();
 		void SummonSoul();
 
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
@@ -46,11 +45,9 @@ namespace fq::client
 		float mSoulStack; // 소울 게이지
 		float mAttackPower; // 공격력
 		
-		float mDashElapsedTime; // 대쉬 경과시간
 		float mInvincibleElapsedTime; // 무적 경과 시간
 
 		float mInvincibleTime; // 무적시간 
-		float mDashCoolTime; // 대쉬쿨타임
 
 		float mFeverTime; // 갑옷 버프 시간
 

@@ -11,13 +11,12 @@
 #include "Soul.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
-#include "PlayerDashState.h"
-#include "PlayerAttackState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
 #include "RazerAttackState.h"
+#include "ShiedlDashState.h"
 
 // Monster
 #include "Monster.h"
@@ -97,8 +96,6 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::mAttackPower>("AttackPower"_hs)
 		.prop(reflect::prop::Name, "AttackPower")
-		.data<&Player::mDashCoolTime>("DashCoolTime"_hs)
-		.prop(reflect::prop::Name, "DashCoolTime")
 		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
 		.prop(reflect::prop::Name, "InvincibleTime")
 		.prop(reflect::prop::Comment, u8"무적시간")
@@ -171,24 +168,6 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<PlayerDashState>()
-		.type("PlayerDashState"_hs)
-		.prop(reflect::prop::Name, "PlayerDashState")
-		.data<&PlayerDashState::SetDashPower, &PlayerDashState::GetDashPower>("DashPower"_hs)
-		.prop(reflect::prop::Name, "DashPower")
-		.base<game_module::IStateBehaviour>();
-
-	entt::meta<PlayerAttackState>()
-		.type("PlayerAttackState"_hs)
-		.prop(reflect::prop::Name, "PlayerAttackState")
-		.data<&PlayerAttackState::mAttackRebound>("AttackRebound"_hs)
-		.prop(reflect::prop::Name, "AttackRebound")
-		.prop(reflect::prop::Comment, u8"공격 반동")
-		.data<&PlayerAttackState::mAttackTiming>("AttackTiming"_hs)
-		.prop(reflect::prop::Name, "AttackTiming")
-		.prop(reflect::prop::Comment, u8"공격 시간")
-		.base<game_module::IStateBehaviour>();
-
 	entt::meta<MagicBallAttackState>()
 		.type("MagicAttackState"_hs)
 		.prop(reflect::prop::Name, "MagicAttackState")
@@ -207,6 +186,10 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "RazerAttackState")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<ShiedlDashState>()
+		.type("ShiedlDashState"_hs)
+		.prop(reflect::prop::Name, "ShiedlDashState")
+		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터									//

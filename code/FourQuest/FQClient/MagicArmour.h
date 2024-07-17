@@ -6,7 +6,7 @@ namespace fq::client
 	class Player;
 
 	/// <summary>
-	/// 마법 공격에 대한 처리를 합니다 
+	/// 마법 갑옷 
 	/// </summary>
 	class MagicArmour : public fq::game_module::Component
 	{

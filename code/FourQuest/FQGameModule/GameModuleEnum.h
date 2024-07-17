@@ -16,7 +16,7 @@ namespace fq::game_module
 		Armour = 8,
 		Floor = 9,
 		Soul = 10,
-		Tag11 = 11,
+		Dash = 11,
 		Tag12 = 12,
 		Tag13 = 13,
 		Tag14 = 14,
