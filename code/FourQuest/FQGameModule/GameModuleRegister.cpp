@@ -1463,7 +1463,13 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::PostProcessingInfo::bUseVignett>("bUseVignett"_hs)
 		.prop(fq::reflect::prop::Name, "bUseVignett")
 		.data<&fq::graphics::PostProcessingInfo::bUseToneMapping>("bUseToneMapping"_hs)
-		.prop(fq::reflect::prop::Name, "bUseToneMapping");
+		.prop(fq::reflect::prop::Name, "bUseToneMapping")
+		.data<&fq::graphics::PostProcessingInfo::fogVisibleArea>("FogVisibleArea"_hs)
+		.prop(fq::reflect::prop::Name, "FogVisibleArea")
+		.data<&fq::graphics::PostProcessingInfo::fogColor>("FogColor"_hs)
+		.prop(fq::reflect::prop::Name, "FogColor")
+		.data<&fq::graphics::PostProcessingInfo::bUseFog>("bUseFog"_hs)
+		.prop(fq::reflect::prop::Name, "bUseFog");;
 
 	entt::meta<PostProcessing>()
 		.type("PostProcessing"_hs)
