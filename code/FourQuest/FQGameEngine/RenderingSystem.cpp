@@ -66,13 +66,35 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	scene->ViewComponents<Transform, Animator>(
+		[dt](GameObject& object, Transform& transform, Animator& animator)
+		{
+			// staticMeshRenderer에서 애니메이터를 사용 시 애니메이터의 toWorld를 사용하기 위해서 추가
+			auto nodeHierarchyInstance = animator.GetSharedNodeHierarchyInstance();
+
+			if (nodeHierarchyInstance != nullptr)
+			{
+				nodeHierarchyInstance->SetTransform(transform.GetWorldMatrix());
+			}
+		});
+
 	scene->ViewComponents<Transform, StaticMeshRenderer>
 		([](GameObject& object, Transform& transform, StaticMeshRenderer& mesh)
 			{
 				auto meshObject = mesh.GetStaticMeshObject();
+
 				if (meshObject)
 				{
-					meshObject->SetTransform(transform.GetWorldMatrix());
+					auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
+
+					if (nodeHierarchyInstanceOrNull == nullptr)
+					{
+						meshObject->SetTransform(transform.GetWorldMatrix());
+					}
+					else
+					{
+						meshObject->SetTransform(nodeHierarchyInstanceOrNull->GetTransform());
+					}
 				}
 			});
 
@@ -343,39 +365,46 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 	auto nodeHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
 	auto nodeHierarchy = nodeHierarchyInstance->GetNodeHierarchy();
 
-	// 메쉬에 계층구조 연결
-	for (auto& child : object->GetChildren())
-	{
-		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+	std::function<void(fq::game_module::GameObject*)> setNodeHierarchyRecursive = [&nodeHierarchyInstance, &nodeHierarchy, &setNodeHierarchyRecursive](fq::game_module::GameObject* object)
 		{
-			auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
-			auto meshObject = meshRenderer->GetSkinnedMeshObject();
-
-			if (meshObject != nullptr)
+			for (auto& child : object->GetChildren())
 			{
-				meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
-			}
-		}
-		if (child->HasComponent<game_module::StaticMeshRenderer>())
-		{
-			auto meshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
-			auto meshObject = meshRenderer->GetStaticMeshObject();
-
-			if (meshObject != nullptr)
-			{
-				meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
-				const auto& nodeName = meshObject->GetStaticMesh()->GetMeshData().NodeName;
-				unsigned int index = 0;
-
-				if (nodeHierarchy->TryGetBoneIndex(nodeName, &index))
+				if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 				{
-					spdlog::warn("ObjectName : {}, Not a valid hierarchy for the mash", object->GetName());
+					auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+					auto meshObject = meshRenderer->GetSkinnedMeshObject();
+
+					if (meshObject != nullptr)
+					{
+						meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+					}
 				}
-				
-				meshObject->SetReferenceBoneIndex(index);
+				if (child->HasComponent<game_module::StaticMeshRenderer>())
+				{
+					auto meshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
+					auto meshObject = meshRenderer->GetStaticMeshObject();
+
+					if (meshObject != nullptr)
+					{
+						meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+						const auto& nodeName = meshObject->GetStaticMesh()->GetMeshData().NodeName;
+						unsigned int index = 0;
+
+						if (nodeHierarchy->TryGetBoneIndex(nodeName, &index))
+						{
+							spdlog::warn("ObjectName : {}, Not a valid hierarchy for the mash", object->GetName());
+						}
+
+						meshObject->SetReferenceBoneIndex(index);
+					}
+				}
+
+				setNodeHierarchyRecursive(child);
 			}
-		}
-	}
+		};
+
+	// 메쉬에 계층구조 연결
+	setNodeHierarchyRecursive(object);
 }
 
 void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObject* object)

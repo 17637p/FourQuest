@@ -95,8 +95,6 @@ namespace fq::game_engine
 
 		void unloadAllModel();
 
-
-
 	private:
 		GameProcess* mGameProcess;
 		EventHandler mOnLoadSceneHandler;
