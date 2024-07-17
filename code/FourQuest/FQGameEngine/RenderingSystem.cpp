@@ -341,18 +341,39 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 
 	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto nodeHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
+	auto nodeHierarchy = nodeHierarchyInstance->GetNodeHierarchy();
 
-	// 자식 계층의 메쉬들을 연결합니다.
+	// 메쉬에 계층구조 연결
 	for (auto& child : object->GetChildren())
 	{
-		if (!child->HasComponent<game_module::SkinnedMeshRenderer>()) continue;
-
-		auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
-		auto meshObject = meshRenderer->GetSkinnedMeshObject();
-
-		if (meshObject != nullptr)
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 		{
-			meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+			auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+			auto meshObject = meshRenderer->GetSkinnedMeshObject();
+
+			if (meshObject != nullptr)
+			{
+				meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+			}
+		}
+		if (child->HasComponent<game_module::StaticMeshRenderer>())
+		{
+			auto meshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
+			auto meshObject = meshRenderer->GetStaticMeshObject();
+
+			if (meshObject != nullptr)
+			{
+				meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+				const auto& nodeName = meshObject->GetStaticMesh()->GetMeshData().NodeName;
+				unsigned int index = 0;
+
+				if (nodeHierarchy->TryGetBoneIndex(nodeName, &index))
+				{
+					spdlog::warn("ObjectName : {}, Not a valid hierarchy for the mash", object->GetName());
+				}
+				
+				meshObject->SetReferenceBoneIndex(index);
+			}
 		}
 	}
 }
@@ -530,7 +551,7 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 
 	mPlaneMatrix = mesh.first.ToParentMatrix;
 
-	auto staticMeshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull( key, mesh.second.Name); ;
+	auto staticMeshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, mesh.second.Name); ;
 
 	fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mGameProcess->mGraphics->CreateTerrainMeshObject(staticMeshInterface, mesh.first.ToParentMatrix * transform->GetWorldMatrix());
 	terrain->SetTerrainMeshObject(iTerrainMeshObject);
