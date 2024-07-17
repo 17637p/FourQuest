@@ -47,6 +47,7 @@ namespace fq::game_engine
 		bool& GetOnCharaterController() { return mbOnCharaterController; }
 		bool& GetOnNavigationMesh() { return mbOnNavigationMesh; }
 		bool& GetOnTerrainCollider() { return mbOnTerrainCollider; }
+		bool& GetOnUseRenderDebug() { return mbUseRenderDebug; }
 
 	private:
 		void renderGrid();
@@ -72,6 +73,7 @@ namespace fq::game_engine
 		bool mbOnCharaterController;
 		bool mbOnTerrainCollider;
 		bool mbOnNavigationMesh;
+		bool mbUseRenderDebug;
 
 		fq::graphics::debug::GridInfo mGridInfo;
 	};

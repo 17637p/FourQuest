@@ -817,6 +817,10 @@ void FQGraphics::SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe)
 {
 	mLightProbeManager->SetIsDrawDebugLightProbe(isDrawDebugLightProbe);
 }
+void FQGraphics::SetIsRenderDebug(bool bIsRenderDebug)
+{
+	mDebugDrawManager->SetIsRenderDebug(bIsRenderDebug);
+}
 
 void FQGraphics::SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position)
 {

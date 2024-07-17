@@ -136,6 +136,7 @@ namespace fq::graphics
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
 		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
+		virtual void SetIsRenderDebug(bool bIsRenderDebug) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;

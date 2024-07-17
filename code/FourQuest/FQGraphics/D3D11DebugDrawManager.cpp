@@ -35,6 +35,39 @@ namespace fq::graphics
 	void D3D11DebugDrawManager::Excute(const std::shared_ptr<D3D11Device>& device,
 		const std::shared_ptr<D3D11CameraManager>& cameraManager)
 	{
+		if (!mbIsRenderDebug)
+		{
+			while (!mSphereInfos.empty()) { mSphereInfos.pop(); }
+			while (!mAABBInfos.empty()) { mAABBInfos.pop(); }
+			while (!mOBBInfos.empty()) { mOBBInfos.pop(); }
+			while (!mFrustumInfos.empty()) { mFrustumInfos.pop(); }
+			while (!mGridInfos.empty()) { mGridInfos.pop(); }
+			while (!mRingInfos.empty()) { mRingInfos.pop(); }
+			while (!mRayInfos.empty()) { mRayInfos.pop(); }
+			while (!mPolygonInfos.empty()) { mPolygonInfos.pop(); }
+			while (!mHemisphereInfos.empty()) { mHemisphereInfos.pop(); }
+			while (!mConeInfos.empty()) { mConeInfos.pop(); }
+			while (!mDountInfos.empty()) { mDountInfos.pop(); }
+			while (!mSphereInfoExInfos.empty()) { mSphereInfoExInfos.pop(); }
+			while (!mRingInfoExInfos.empty()) { mRingInfoExInfos.pop(); }
+
+			while (!mDepthOffSphereInfos.empty()) { mDepthOffSphereInfos.pop(); }
+			while (!mDepthOffAABBInfos.empty()) { mDepthOffAABBInfos.pop(); }
+			while (!mDepthOffOBBInfos.empty()) {  mDepthOffOBBInfos.pop(); }
+			while (!mDepthOffFrustumInfos.empty()) {  mDepthOffFrustumInfos.pop(); }
+			while (!mDepthOffGridInfos.empty()) {  mDepthOffGridInfos.pop(); }
+			while (!mDepthOffRingInfos.empty()) { mDepthOffRingInfos.pop(); }
+			while (!mDepthOffRayInfos.empty()) {  mDepthOffRayInfos.pop(); }
+			while (!mDepthOffPolygonInfos.empty()) { mDepthOffPolygonInfos.pop(); }
+			while (!mDepthOffHemisphereInfos.empty()) { mDepthOffHemisphereInfos.pop(); }
+			while (!mDepthOffConeInfos.empty()) { mDepthOffConeInfos.pop(); }
+			while (!mDepthOffDountInfos.empty()) { mDepthOffDountInfos.pop(); }
+			while (!mDepthOffSphereInfoExInfos.empty()) { mDepthOffSphereInfoExInfos.pop(); }
+			while (!mDepthOffRingInfoExInfos.empty()) { mDepthOffRingInfoExInfos.pop(); }
+
+			return;
+		}
+
 		device->GetDeviceContext()->OMSetBlendState(mStates->Opaque(), nullptr, 0xFFFFFFFF);
 		device->GetDeviceContext()->OMSetDepthStencilState(mStates->DepthDefault(), 0);
 		device->GetDeviceContext()->RSSetState(mStates->CullNone());

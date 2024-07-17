@@ -331,6 +331,9 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 		bool& onNavMesh = debug->GetOnNavigationMesh();
 		ImGui::Checkbox("NavigationMesh", &onNavMesh);
 
+		bool& onUseRenderDebug = debug->GetOnUseRenderDebug();
+		ImGui::Checkbox("UseDebugRender", &onUseRenderDebug);
+
 		ImGui::EndMenu();
 	}
 }
