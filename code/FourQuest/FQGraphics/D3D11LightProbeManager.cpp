@@ -134,6 +134,13 @@ void D3D11LightProbeManager::SetLightProbe(int index, const DirectX::SimpleMath:
 
 float* D3D11LightProbeManager::GetLightProbeCoefficient(int lightProbeIndex)
 {
+	//Todo: 임시 처리가 아니라 Delete 처리를 제대로 해야함, 딜리트할 때 바꾸고 나서 
+	// size랑 똑같은 애일 때 디버깅 해보던가
+	// 저장하고 불러올 때 문제가 생기는 건가 싶기도 하고 ?
+	if (mLightProbePair[lightProbeIndex] >= mLightProbes.size())
+	{
+		mLightProbePair[lightProbeIndex] = 0;
+	}
 	return mLightProbes[mLightProbePair[lightProbeIndex]]->coefficient;
 }
 
