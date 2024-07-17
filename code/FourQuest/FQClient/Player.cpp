@@ -53,29 +53,6 @@ void fq::client::Player::OnUpdate(float dt)
 	processInput();
 	processFeverTime(dt);
 	processCoolTime(dt);
-
-	// RayCastTest
-	fq::event::RayCast::ResultData data;
-
-  	auto tf =  GetComponent<game_module::Transform>();
-	auto origin =  tf->GetWorldPosition();
-	origin.y += 1.f;
-    auto direction = tf->GetLookAtVector();
-	auto distance = 5.f;
-	bool bUseDebugDraw = true;
-	auto tag = game_module::ETag::Untagged;
-
-	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
-		fq::event::RayCast {origin, direction, distance, tag, &data , bUseDebugDraw}
-	);
-
-	spdlog::debug("hit count {}",data.hitCount);
-
-	for (auto object : data.objects)
-	{
-		spdlog::debug("name {}", object->GetName());
-	}
-
 }
 
 void fq::client::Player::OnStart()

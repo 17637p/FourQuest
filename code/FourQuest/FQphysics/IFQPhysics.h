@@ -181,19 +181,22 @@ extern "C" {
 			/// <summary>
 			/// 캐릭터 파직스 (관절) 추가
 			/// </summary>
-			virtual bool CreateCharacterphysics(const ArticulationInfo& info) abstract;
+			virtual FQ_PHYSICS bool CreateCharacterphysics(const ArticulationInfo& info) abstract;
+
+			/// <summary>
+			/// 캐릭터 파직스 삭제
+			/// </summary>
+			virtual FQ_PHYSICS bool RemoveArticulation(const unsigned int& id) abstract;
 
 			/// <summary>
 			/// 가지고 있는 관절 중, 링크 및 조인트 추가
 			/// </summary>
-			virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
-			virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius) abstract;
-			virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) abstract;
 
-			/// <summary>
-			/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
-			/// </summary>
-			virtual bool SimulationCharacter(unsigned int id) abstract;
+			virtual FQ_PHYSICS ArticulationGetData GetArticulationData(const unsigned int& id) abstract;
+			virtual FQ_PHYSICS void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) abstract;
 #pragma endregion
 
 #pragma region PhysicsClothManager

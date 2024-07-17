@@ -18,6 +18,7 @@ namespace fq::physics
 	class PhysicsCollisionDataManager;
 	class PhysicsClothManager;
 
+
 	class FQPhysics : public IFQPhysics
 	{
 	public:
@@ -162,6 +163,11 @@ namespace fq::physics
 		virtual bool CreateCharacterphysics(const ArticulationInfo& info) override;
 
 		/// <summary>
+		/// 캐릭터 파직스 삭제
+		/// </summary>
+		virtual bool RemoveArticulation(const unsigned int& id) override;
+
+		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
@@ -169,9 +175,10 @@ namespace fq::physics
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) override;
 
 		/// <summary>
-		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
+		/// 관절 (Articulation) Get/Set 데이터 입니다.
 		/// </summary>
-		virtual bool SimulationCharacter(unsigned int id) override;
+		virtual ArticulationGetData GetArticulationData(const unsigned int& id) override;
+		virtual void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) override;
 #pragma endregion
 
 #pragma region PhysicsClothManager
@@ -195,7 +202,6 @@ namespace fq::physics
 		/// </summary>
 		virtual bool RemoveCloth(unsigned int id) override;
 #pragma endregion
-
 
 		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
 

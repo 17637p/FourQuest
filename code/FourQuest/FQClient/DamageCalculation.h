@@ -17,6 +17,6 @@ namespace fq::client::dc
 
 	inline float GetRazerDamage(float attackPower)
 	{
-		return attackPower;
+		return attackPower / 4.f;
 	}
 }

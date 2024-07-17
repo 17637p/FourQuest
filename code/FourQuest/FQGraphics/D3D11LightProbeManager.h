@@ -73,7 +73,7 @@ namespace fq::graphics
 		// size 를 vector에서 가져가지 말고 꼭 이 함수를 써야 함 
 
 		std::wstring SaveProbe1DirectionTexture(const int index, const std::wstring& direction); //return path Name
-		void BakeAllLightProbeCoefficient();
+		void BakeAllLightProbeCoefficient(bool isAll);
 
 		void MakeTetrahedron();
 

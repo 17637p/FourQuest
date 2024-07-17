@@ -383,7 +383,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
 		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
 	{
-		ImGuizmo::Enable(false);
+		//ImGuizmo::Enable(false);
 		return;
 	}
 

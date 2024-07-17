@@ -115,6 +115,9 @@ namespace fq::game_engine
 
 		void AddTerrainCollider(fq::game_module::GameObject* object);
 
+		/// <summary>
+		/// Raycast 이벤트 처리
+		/// </summary>
 		void Raycast(const fq::event::RayCast& event);
 
 	private:
@@ -149,12 +152,16 @@ namespace fq::game_engine
 		entt::id_type mMeshTypeID;
 		entt::id_type mCharactorControllerTypeID;
 		entt::id_type mTerrainTypeID;
+		entt::id_type mArticulationTypeID;
 		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;
 		ColliderContainer mColliderContainer;
 		ColliderID mLastColliderID;
 		CallbackContainer mCallbacks;
+
+		// Articulation
+		fq::game_module::ArticulationLoader mArticulationLoader;
 	};
 
 

@@ -18,6 +18,9 @@ namespace fq::graphics
 		void Render() override;
 
 	private:
+		void BuildOffsetVectors();
+
+	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
@@ -32,6 +35,9 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<ViewProjectionMatrix>> mViewProjectionMatrix;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+
+	private:
+		std::vector<DirectX::SimpleMath::Vector4> mOffsets;
 	};
 }
 

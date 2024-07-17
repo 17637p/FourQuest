@@ -73,6 +73,19 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 
 		break;
 	}
+	case ED3D11SamplerState::PointWrap:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MinLOD = -FLT_MAX;
+		samplerDesc.MaxLOD = FLT_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+		break;
+	}
 	case ED3D11SamplerState::Shadow:
 	{
 		samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
@@ -110,6 +123,23 @@ fq::graphics::D3D11SamplerState::D3D11SamplerState(const std::shared_ptr<D3D11De
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 		samplerDesc.MipLODBias = 0.f;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+		break;
+	}
+	case ED3D11SamplerState::SSAONormalDepth:
+	{
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+		samplerDesc.MinLOD = 0;
+		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDesc.MipLODBias = 0.f;
+		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		samplerDesc.BorderColor[0] = 0.0f;
+		samplerDesc.BorderColor[1] = 0.0f;
+		samplerDesc.BorderColor[2] = 0.0f;
+		samplerDesc.BorderColor[3] = 1e5f;
 
 		break;
 	}

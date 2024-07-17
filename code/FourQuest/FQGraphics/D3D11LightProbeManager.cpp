@@ -51,7 +51,7 @@ int fq::graphics::D3D11LightProbeManager::AddCubeProbe(const DirectX::SimpleMath
 
 	newCubeProbe->position = position;
 	newCubeProbe->index = mCubeProbeIndex;
-	
+
 	mCubeProbes.push_back(newCubeProbe);
 
 	mCubeProbeIndex++;
@@ -404,7 +404,7 @@ int D3D11LightProbeManager::GetTetIndex(int& tetIndex, const DirectX::SimpleMath
 	return tetIndex;
 }
 
-void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
+void D3D11LightProbeManager::BakeAllLightProbeCoefficient(bool isAll)
 {
 	float* r = new float[9];
 	float* g = new float[9];
@@ -412,7 +412,7 @@ void D3D11LightProbeManager::BakeAllLightProbeCoefficient()
 
 	for (int i = 0; i < mLightProbes.size(); i++)
 	{
-		if (mLightProbes[i]->isBaked)
+		if (mLightProbes[i]->isBaked && !isAll)
 		{
 			continue;
 		}
@@ -482,6 +482,10 @@ int D3D11LightProbeManager::AddLightProbe(const DirectX::SimpleMath::Vector3& po
 	newLightProbe->position = position;
 	newLightProbe->index = mLightProbes.size();
 	newLightProbe->isBaked = false;
+	for (int i = 0; i < 27; i++)
+	{
+		newLightProbe->coefficient[i] = 0;
+	}
 
 	mLightProbePair[mLightProbeIndex] = mLightProbes.size();
 	mLightProbes.push_back(newLightProbe);

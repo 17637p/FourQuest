@@ -127,7 +127,6 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 
 		if (!std::filesystem::exists(animationPath))
 		{
-			spdlog::warn("{} animation load fail", object->GetName());
 			continue;
 		}
 

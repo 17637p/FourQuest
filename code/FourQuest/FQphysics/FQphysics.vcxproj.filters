@@ -55,6 +55,9 @@
     <Filter Include="Tool\Header">
       <UniqueIdentifier>{f1976975-5348-49c9-862d-fd5d9c8c4d5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Filter">
+      <UniqueIdentifier>{e26831ee-a1d6-4cee-8c33-9fa37a8e23d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Physics.h">
@@ -147,6 +150,9 @@
     <ClInclude Include="PhysicsCookingMeshTool.h">
       <Filter>Tool\Header</Filter>
     </ClInclude>
+    <ClInclude Include="RaycastQueryFileter.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IFQPhysics.cpp">
@@ -235,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="DebugData.cpp">
       <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="RaycastQueryFileter.cpp">
+      <Filter>Filter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

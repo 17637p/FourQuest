@@ -159,6 +159,7 @@
     <ClInclude Include="AnimatorController.h" />
     <ClInclude Include="Articulation.h" />
     <ClInclude Include="ArticulationData.h" />
+    <ClInclude Include="ArticulationLoader.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="Decal.h" />
     <ClInclude Include="ICollider.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="AnimatorController.cpp" />
     <ClCompile Include="Articulation.cpp" />
     <ClCompile Include="ArticulationData.cpp" />
+    <ClCompile Include="ArticulationLoader.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="Decal.cpp" />
     <ClCompile Include="ICollider.cpp" />

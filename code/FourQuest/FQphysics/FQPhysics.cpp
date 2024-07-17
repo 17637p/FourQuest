@@ -8,12 +8,13 @@
 #include "PhysicsCollisionDataManager.h"
 #include "PhysicsClothManager.h"
 #include "PhysicsSimulationEventCallback.h"
+#include "RaycastQueryFileter.h"
 
 #include "ConvexMeshResource.h"
 #include "EngineDataConverter.h"
 
 namespace fq::physics
-{ 
+{
 	/// <summary>
 	/// 충돌 콜백 함수
 	/// <summary>
@@ -139,6 +140,7 @@ namespace fq::physics
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
 		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
@@ -191,26 +193,49 @@ namespace fq::physics
 
 	RayCastOutput FQPhysics::RayCast(const RayCastInput& info)
 	{
+		// 기본 설정 
 		physx::PxVec3 pxOrigin;
 		physx::PxVec3 pxDirection;
 		CopyDxVec3ToPxVec3(info.origin, pxOrigin);
 		CopyDxVec3ToPxVec3(info.direction, pxDirection);
 
+		// 결과 저장 버퍼
 		const physx::PxU32 maxHits = 20;
-		RayCastOutput output;
 		physx::PxRaycastHit hitBuffer[maxHits];
 		physx::PxRaycastBuffer hitBufferStruct(hitBuffer, maxHits);
-		output.myLayerNumber = info.layerNumber;
 
+		// 쿼리 정보 설정
+		physx::PxQueryFilterData qfd;
+		qfd.data.word0 = info.layerNumber;
+		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
+		qfd.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC
+			| physx::PxQueryFlag::ePREFILTER
+			| physx::PxQueryFlag::eANY_HIT
+			| physx::PxQueryFlag::eDISABLE_HARDCODED_FILTER; // Physx 핕터형식 적용 X
 
-		bool isBlock = mScene->raycast(pxOrigin
+		RaycastQueryFileter queryfilter;
+
+		bool isAnyHit = mScene->raycast(pxOrigin
 			, pxDirection
 			, info.distance
-			, hitBufferStruct);
+			, hitBufferStruct
+			, physx::PxHitFlag::eDEFAULT
+			, qfd
+			, &queryfilter);
 
-		if (isBlock)
+		RayCastOutput output;
+
+		if (isAnyHit)
 		{
+			// Block 정보 저장 
+			output.hasBlock = hitBufferStruct.hasBlock;
+			output.blockID = static_cast<CollisionData*>(hitBufferStruct.block.shape->userData)->myId;
+			hitBufferStruct.block.position;
+			CopyPxVec3ToDxVec3(hitBufferStruct.block.position ,output.blockPosition);
+
+			// Hit정보 저장
 			unsigned int hitSize = hitBufferStruct.nbTouches;
+			hitBufferStruct.block;
 			output.hitSize = hitSize;
 
 			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
@@ -225,7 +250,6 @@ namespace fq::physics
 
 				output.contectPoints.push_back(position);
 				output.id.push_back(id);
-				output.layerNumber.push_back(layerNumber);
 			}
 		}
 
@@ -367,7 +391,10 @@ namespace fq::physics
 	{
 		return mCharacterPhysicsManager->CreateCharacterphysics(info);
 	}
-
+	bool FQPhysics::RemoveArticulation(const unsigned int& id)
+	{
+		return mCharacterPhysicsManager->RemoveArticulation(id);
+	}
 	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
@@ -381,9 +408,16 @@ namespace fq::physics
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
 	}
 
-	bool FQPhysics::SimulationCharacter(unsigned int id)
+	ArticulationGetData FQPhysics::GetArticulationData(const unsigned int& id)
 	{
-		return mCharacterPhysicsManager->SimulationCharacter(id);
+		ArticulationGetData data;
+		mCharacterPhysicsManager->GetArticulationData(id, data);
+		return data;
+	}
+
+	void FQPhysics::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData)
+	{
+		mCharacterPhysicsManager->SetArticulationData(id, articulationData, mCollisionMatrix);
 	}
 #pragma endregion
 

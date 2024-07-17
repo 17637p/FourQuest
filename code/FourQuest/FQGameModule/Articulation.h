@@ -9,6 +9,9 @@ namespace fq::game_module
 	using ArticulationInfo = fq::physics::ArticulationInfo;
 	using ArticulationPath = std::string;
 
+	class ArticulationData;
+	class ArticulationLoader;
+
 	class Articulation : public Component, public ICollider
 	{
 	public:
@@ -19,6 +22,17 @@ namespace fq::game_module
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+
+		/// <summary>
+		/// 가지고 있는 경로를 통해 ArticulationData를 로드합니다.
+		/// </summary>
+		void Load();
+
+		/// <summary>
+		/// 로드 한 ArticulationData를 반환합니다.
+		/// </summary>
+		/// <returns></returns>
+		std::shared_ptr<ArticulationData> GetArticulationData() const { return mArticulationData; };
 
 		/// <summary>
 		/// 로드할 관절의 경로를 반환합니다.
@@ -39,6 +53,16 @@ namespace fq::game_module
 		/// 관절의 아이디를  설정합니다.
 		/// </summary>
 		void SetArticulationID(unsigned int id) { mID = id; }
+
+		/// <summary>
+		/// 레그돌 상태를 반환합니다.
+		/// </summary>
+		bool GetIsRagdoll() const { return mbIsRagdoll; }
+
+		/// <summary>
+		/// 레그돌 상태를 세팅합니다.
+		/// </summary>
+		void SetIsRagdoll(const bool isRagdoll) { mbIsRagdoll = isRagdoll; }
 
 		/// <summary>
 		/// 현재 충돌중이 콜라이더의 갯수를 반환합니다 
@@ -65,10 +89,12 @@ namespace fq::game_module
 
 	private:
 		unsigned int mID;
-		ArticulationPath mArticulationPath;
-		DirectX::SimpleMath::Vector3 mOffset;
-
 		unsigned int mCollisionCount;
+		DirectX::SimpleMath::Vector3 mOffset;
+		bool mbIsRagdoll;
+
+		ArticulationPath mArticulationPath;
+		std::shared_ptr<ArticulationData> mArticulationData;
 	};
 	
 	void Articulation::OnCollisionEnter(const Collision& collision)
@@ -89,7 +115,4 @@ namespace fq::game_module
 		assert(mCollisionCount != 0);
 		mCollisionCount--;
 	}
-
-
-
 }

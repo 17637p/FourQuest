@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <imgui.h>
+#include <ImGuizmo.h>
 
 #include "IEditorWindow.h"
 
@@ -44,7 +46,12 @@ namespace fq::game_engine
 
 	private:
 		/// <summary>
-		/// 드래그 드랍 게임오브젝트 처리
+		/// 계층구조 버튼 함수 (본과 Articulation 계층구조 분리)
+		/// </summary>
+		void beginHierarchyButton();
+
+		/// <summary>
+		/// 드래그 드랍 게임오브젝트 처리 (model 데이터를 로드해서 본 데이터 추가)
 		/// </summary>
 		void dragDropGameWindow();
 
@@ -68,6 +75,11 @@ namespace fq::game_engine
 		/// 관절의 계층구조(Articulation)를 표시하는 창
 		/// </summary>
 		void beginArticulationHierarchy();
+
+		/// <summary>
+		/// 만든 관절 데이터를 저장하는 버튼
+		/// </summary>
+		void beginArticulationSaveButton();
 
 		/// <summary>
 		/// Articulation의 Link들을 표시하는 창
@@ -95,15 +107,41 @@ namespace fq::game_engine
 		void beginPopupContextItem_Link(std::shared_ptr<fq::game_module::LinkData> link);
 
 		/// <summary>
-		/// 
+		/// 링크 데이터를 드래그 드랍하여 계층구조를 고치는 함수
 		/// </summary>
 		void dragDropLinkBar(std::shared_ptr<fq::game_module::LinkData> link);
 
+		/// <summary>
+		/// 선택된 Link와 Joint에 Guizmo를 입히는 함수
+		/// </summary>
+		void beginGizmo();
+
+		/// <summary>
+		/// Articulation(관절) 디버깅
+		/// </summary>
+		void drawArticulationDebug(std::shared_ptr<fq::game_module::LinkData> linkData);
+
+		/// <summary>
+		/// 링크 디버깅
+		/// </summary>
+		void drawLinkDebug(std::shared_ptr<fq::game_module::LinkData> linkData, float& jointAxisScale);
+
+		/// <summary>
+		/// 본(Bone) 디버깅
+		/// </summary>
+		void drawBoneDebug(fq::game_module::GameObject& object);
+
+		/// <summary>
+		/// 조인트 회전축 디버깅
+		/// </summary>
+		void drawJointAxisDebug(std::shared_ptr<fq::game_module::LinkData> linkData, const float& jointAxisScale);
 
 	private:
 		GameProcess*	mGameProcess;
 		EditorProcess*	mEditorProcess;
 
+		std::string mFileName;
+		unsigned int mLinkID;
 		bool			mbIsOpen;
 		bool			mbIsBoneHierarchy;
 		bool			mbIsArticulationHierarchy;
@@ -112,18 +150,21 @@ namespace fq::game_engine
 		fq::game_module::EventManager* mEventManager;
 		fq::game_module::InputManager* mInputManager;
 		
+		// 본 관련 ( 그래픽스 )
 		std::filesystem::path* mPath;
 		std::shared_ptr<fq::game_module::GameObject> mObject;
 		fq::game_module::SkinnedMeshRenderer* mSkinnedMeshRenderer;
 		std::vector<fq::common::Bone> mBones;
 
+		// 관절 관련
 		std::shared_ptr<fq::game_module::ArticulationData> mArticulationData;
 		std::shared_ptr<fq::game_module::LinkData> mSelectLinkData;
 
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectLinkHandle;
 
-
-		unsigned int mLinkID;
+		// Articulation
+		fq::game_module::ArticulationLoader mArticulationLoader;
+		std::filesystem::path mFilePath;
 	};
 }

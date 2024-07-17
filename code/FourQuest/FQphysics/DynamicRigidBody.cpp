@@ -39,8 +39,8 @@ namespace fq::physics
 		data->myId = mID;
 		data->myLayerNumber = mLayerNumber;
 		shape->userData = data.get();
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
+		shape->setContactOffset(0.002f);
+		shape->setRestOffset(0.001f);
 
 		DirectX::SimpleMath::Matrix dxTransform = colliderInfo.collisionTransform.worldMatrix;
 		DirectX::SimpleMath::Vector3 position;
@@ -79,6 +79,9 @@ namespace fq::physics
 	void DynamicRigidBody::SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix)
 	{
 		if (std::isnan(mScale.x) || std::isnan(mScale.y) || std::isnan(mScale.z))
+			return;
+
+		if (scale.x < 0 || scale.y < 0 || scale.z < 0)
 			return;
 
 		if (fabs(mScale.x - scale.x) < 0.001f && fabs(mScale.y - scale.y) < 0.001f && fabs(mScale.z - scale.z) < 0.001f)

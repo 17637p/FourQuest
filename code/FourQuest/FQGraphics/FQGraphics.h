@@ -165,13 +165,13 @@ namespace fq::graphics
 		virtual void DeleteLightProbe(int index) override;
 		virtual void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) override;
 
-		virtual void BakeLightProbe() override;
+		virtual void BakeLightProbe(bool isAll) override;
 		virtual void SaveLightProbes(const std::string& fileName) override;
 		virtual void LoadLightProbes(const std::string& fileName) override;
 
 		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
 		virtual void DeleteCubeProbe(unsigned short index) override;
-		virtual void SaveCubeProbeTexture(const unsigned short width, const unsigned short height) override;
+		virtual void SaveCubeProbeTexture(bool isAll, const unsigned short width, const unsigned short height) override;
 
 		virtual void SetLightProbeIntensity(float intensity) override;
 
@@ -214,6 +214,9 @@ namespace fq::graphics
 		std::shared_ptr<class UIManager> mUIManager;
 
 		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
+
+		// temp
+		bool mIsOnPostProcessing;
 	};
 }
 

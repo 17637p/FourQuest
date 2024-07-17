@@ -121,8 +121,11 @@ namespace fq::physics
 			CopyDxVec3ToPxVec3(rigidBodyData.angularVelocity, pxangularVelocity);
 
 			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
-			pxBody->setLinearVelocity(pxLinearVelocity);
-			pxBody->setAngularVelocity(pxangularVelocity);
+			if (!(pxBody->getRigidBodyFlags() && physx::PxRigidBodyFlag::eKINEMATIC))
+			{
+				pxBody->setLinearVelocity(pxLinearVelocity);
+				pxBody->setAngularVelocity(pxangularVelocity);
+			}
 
 			Vector3 position;
 			Vector3 scale;

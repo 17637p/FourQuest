@@ -21,6 +21,10 @@ fq::client::MagicArmour::MagicArmour()
 	, mAOEElapsedTime(0.f)
 	, mRazerCoolTime(5.f)
 	, mRazerElapsedTime(0.f)
+	, mRStickNoInputTime(0.f)
+	, mRazerDistance(30.f)
+	, mRazerHiTick(0.25f)
+	, mRazerHitElapsedTime(0.f)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -89,14 +93,13 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 
 	// 공격 위치 설정
-	attackT->SetLocalPosition(attackPoint);
+	attackT->SetWorldPosition(attackPoint);
 
 	// AOE 공격력 계산 
 	float attackPower = mPlayer->GetAttackPower();
 	attackComponent->SetAttackPower(dc::GetAOEDamage(attackPower));
 
 	// TODO:: AOE Sound 추가
-
 	GetScene()->AddGameObject(attackObj);
 
 	// CoolTime
@@ -105,7 +108,48 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 
 void fq::client::MagicArmour::EmitRazer()
 {
+	// RayCastTest
+	fq::event::RayCast::ResultData data;
 
+	auto tf = GetComponent<game_module::Transform>();
+	auto origin = tf->GetWorldPosition();
+	origin.y += 1.f;
+	auto direction = tf->GetLookAtVector();
+	auto distance = mRazerDistance;
+	bool bUseDebugDraw = true;
+	auto tag = GetGameObject()->GetTag();
+
+	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
+		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
+	);
+
+	if (data.hasBlock)
+	{
+		if (mRazerHitElapsedTime == 0.f)
+		{
+			// RazerAttckBox 소환
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRazerAttackBox);
+			auto& attackObj = *(instance.begin());
+
+			// 공격 설정
+			auto attackComponent = attackObj->GetComponent<client::Attack>();
+			attackComponent->SetAttacker(GetGameObject());
+			auto attackT = attackObj->GetComponent<game_module::Transform>();
+			
+			// 공격 위치 설정
+			attackT->SetWorldPosition(data.blockPosition);
+
+			// Razer 공격력 계산 
+			float attackPower = mPlayer->GetAttackPower();
+			attackComponent->SetAttackPower(dc::GetRazerDamage(attackPower));
+
+			// TODO :: Razer HitSound 추가
+			GetScene()->AddGameObject(attackObj);
+
+			mRazerHitElapsedTime = mRazerHiTick;
+		}
+
+	}
 }
 
 void fq::client::MagicArmour::OnStart()
@@ -118,21 +162,45 @@ void fq::client::MagicArmour::OnStart()
 
 void fq::client::MagicArmour::OnUpdate(float dt)
 {
-	checkInput();
+	checkInput(dt);
 	checkCoolTime(dt);
 }
 
-void fq::client::MagicArmour::checkInput()
+void fq::client::MagicArmour::checkInput(float dt)
 {
 	auto input = GetScene()->GetInputManager();
+	auto padID = mController->GetControllerID();
 
-	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
+	// AOE
+	if (input->IsPadKeyState(padID, EPadKey::A, EKeyState::Tap))
 	{
 		mAnimator->SetParameterBoolean("PushA", true);
 	}
-	else if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Away))
+	else if (input->IsPadKeyState(padID, EPadKey::A, EKeyState::Away))
 	{
 		mAnimator->SetParameterBoolean("PushA", false);
+	}
+
+	// Razer R Stick 조작
+	DirectX::SimpleMath::Vector2 r;
+	r.x = input->GetStickInfomation(padID, EPadStick::rightX);
+	r.y = input->GetStickInfomation(padID, EPadStick::rightY);
+
+	if (r.Length() > 0.f)
+	{
+		mAnimator->SetParameterBoolean("OnRazer", true);
+
+		// R Stick의 갑작스러운 방향전환으로 입력이 0이 되는
+		// 순간에 스킬이 캔슬되는 것을 방지하는 값입니다
+		constexpr float RStickInputCorrectTime = 0.1f;
+		mRStickNoInputTime = RStickInputCorrectTime;
+	}
+	else
+	{
+		mRStickNoInputTime = std::max(0.f, mRStickNoInputTime - dt);
+
+		if (mRStickNoInputTime == 0.f)
+			mAnimator->SetParameterBoolean("OnRazer", false);
 	}
 }
 
@@ -143,6 +211,43 @@ void fq::client::MagicArmour::checkCoolTime(float dt)
 	mAnimator->SetParameterFloat("AOECoolTime", mAOEElapsedTime);
 
 	// Razer
-	mRazerElapsedTime = std::max(0.f, mRazerCoolTime - dt);
+	mRazerElapsedTime = std::max(0.f, mRazerElapsedTime - dt);
 	mAnimator->SetParameterFloat("RazerCoolTime", mRazerElapsedTime);
+
+	// Razer Hit Tick
+	mRazerHitElapsedTime = std::max(0.f, mRazerHitElapsedTime - dt);
+}
+
+void fq::client::MagicArmour::SetLookAtRStickInput()
+{
+	using namespace DirectX::SimpleMath;
+
+	auto inputMgr = GetScene()->GetInputManager();
+	Vector3 input = Vector3::Zero;
+
+	// 컨트롤러 입력
+	input.x = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
+	input.z = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
+
+	float lengthSq = input.LengthSquared();
+
+	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
+	constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+	// 캐릭터 컨트롤러 회전 처리
+	if (lengthSq >= rotationOffsetSq)
+	{
+		// 바라보는 방향 설정 
+		input.Normalize();
+
+		if (input == Vector3::Backward)
+		{
+			mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+		}
+		else if (input != Vector3::Zero)
+		{
+			mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+		}
+	}
+
 }

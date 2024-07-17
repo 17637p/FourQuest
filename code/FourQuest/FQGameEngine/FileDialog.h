@@ -82,6 +82,7 @@ namespace fq::game_engine
 		Path mSelectPath;
 		Path mDragDropPath;
 		Path mSearchBar;
+		std::string mFileSearch;
 
 		ID3D11Device* mDevice;
 		ImVec2 mIconSize;

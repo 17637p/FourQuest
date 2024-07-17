@@ -35,6 +35,7 @@ FQGraphics::FQGraphics()
 	, mUIManager(std::make_shared<UIManager>())
 	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
+	, mIsOnPostProcessing(true)
 {
 }
 
@@ -61,7 +62,7 @@ bool fq::graphics::FQGraphics::Initialize(const HWND hWnd, const unsigned short 
 	mParticleManager->Initialize(mDevice, mResourceManager, mCameraManager);
 	mLightProbeManager->Initialize(mDevice, mResourceManager);
 	mUIManager->Initialize(hWnd, mDevice, mResourceManager, width, height);
-	mPostProcessingManager->Initialize(mDevice, mResourceManager, width, height);
+	mPostProcessingManager->Initialize(mDevice, mResourceManager, mCameraManager, width, height);
 
 	return true;
 }
@@ -111,9 +112,9 @@ void FQGraphics::DeleteLightProbe(int index)
 	mLightProbeManager->SetIsUsedLightProbe(false);
 }
 
-void FQGraphics::BakeLightProbe()
+void FQGraphics::BakeLightProbe(bool isAll)
 {
-	mLightProbeManager->BakeAllLightProbeCoefficient();
+	mLightProbeManager->BakeAllLightProbeCoefficient(isAll);
 	mLightProbeManager->MakeTetrahedron();
 	mLightProbeManager->SetIsUsedLightProbe(true);
 }
@@ -128,7 +129,7 @@ void FQGraphics::DeleteCubeProbe(unsigned short index)
 
 }
 
-void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned short height)
+void FQGraphics::SaveCubeProbeTexture(bool isAll, const unsigned short width, const unsigned short height)
 {
 	mLightProbeManager->SetIsUsedLightProbe(false);
 
@@ -165,7 +166,7 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 
 	// 프로브를 가져와서 카메라 위치 설정 하나당 6방향으로
 	std::vector<std::wstring> paths{};
-
+	mIsOnPostProcessing = false;
 	//std::vector<CubeProbe*> cubeProbes = mLightProbeManager->GetCubeProbes();
 	//for (const auto& cubeProbe : cubeProbes)
 	//{
@@ -202,7 +203,7 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 	std::vector<LightProbe*> lightProbes = mLightProbeManager->GetLightProbes();
 	for (int lightProbeIndex = 0; lightProbeIndex < lightProbes.size(); lightProbeIndex++)
 	{
-		if (lightProbes[lightProbeIndex]->isBaked)
+		if (lightProbes[lightProbeIndex]->isBaked && !isAll)
 		{
 			continue;
 		}
@@ -243,6 +244,8 @@ void FQGraphics::SaveCubeProbeTexture(const unsigned short width, const unsigned
 
 	SetCamera(cameraInfo);
 	SetWindowSize(curWidth, curHeight);
+
+	mIsOnPostProcessing = true;
 }
 
 unsigned short FQGraphics::AddCubeProbe(const DirectX::SimpleMath::Vector3& position)
@@ -380,12 +383,18 @@ bool FQGraphics::Render()
 
 	mRenderManager->Render();
 
-	mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+	if (mIsOnPostProcessing)
 	{
-		mPostProcessingManager->Excute(mDevice);
+		mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+		{
+			mPostProcessingManager->Excute(mDevice);
+		}
+	}
+	if (mIsOnPostProcessing)
+	{
+		mPostProcessingManager->RenderFullScreen(mDevice);
 	}
 	mUIManager->Render();
-	mPostProcessingManager->RenderFullScreen(mDevice);
 	mRenderManager->RenderFullScreen();
 
 	return true;

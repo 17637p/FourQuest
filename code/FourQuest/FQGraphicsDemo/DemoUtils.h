@@ -18,6 +18,7 @@ namespace fq::utils
 #pragma endregion camera
 
 	void AddDefaultCamera(fq::graphics::IFQGraphics* graphcis);
+	void AddLittleNearCamera(fq::graphics::IFQGraphics* graphcis);
 	void AddDefaultLight();
 }
 

@@ -6,8 +6,12 @@
 #include "EditorEvent.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
+#include "../FQGameModule/LinkData.h"
+
 #include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/ArticulationData.h"
+#include "../FQGraphics/IFQGraphics.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::game_engine
 {
@@ -46,7 +50,7 @@ namespace fq::game_engine
 		ImGui::End();
 	}
 
-	void beginCombo(fq::physics::EArticulationMotion& motion, const std::string& comboName)
+	bool beginJointCombo(fq::physics::EArticulationMotion& motion, const std::string& comboName)
 	{
 		const char* items[] = { "Lock", "Limit", "Free" };
 		int itemCurrentIdx = (int)motion;
@@ -61,6 +65,42 @@ namespace fq::game_engine
 				if (ImGui::Selectable(items[i], isSelected))
 				{
 					motion = (fq::physics::EArticulationMotion)i;
+				}
+
+				// 현재 선택된 항목을 강조합니다.
+				if (isSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		if (itemCurrentIdx == 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	void beginShapeCombo(const std::string& comboName, fq::game_module::EShapeType& shapeType)
+	{
+		const char* items[] = { "Box", "Sphere", "Capsule" };
+		if (ImGui::BeginCombo(comboName.c_str(), items[(int)shapeType]))
+		{
+			// 콤보 박스와 각 항목을 추가합니다.
+			for (int i = 0; i < 3; i++)
+			{
+				const bool isSelected = (shapeType == (fq::game_module::EShapeType)i);
+
+				// 항목이 선택되었을 때 인덱스를 업데이트합니다.
+				if (ImGui::Selectable(items[i], isSelected))
+				{
+					shapeType = (fq::game_module::EShapeType)i;
 				}
 
 				// 현재 선택된 항목을 강조합니다.
@@ -97,6 +137,8 @@ namespace fq::game_engine
 			ImGui::TreePop();
 		}
 
+		ImGui::Separator();
+
 		// Link
 		if (ImGui::TreeNode("Link"))
 		{
@@ -107,15 +149,47 @@ namespace fq::game_engine
 				float density = mSelectLink->GetDensity();
 				DirectX::SimpleMath::Matrix localTransform = mSelectLink->GetLocalTransform();
 
+				fq::game_module::EShapeType shapeType = mSelectLink->GetShapeType();
+				DirectX::SimpleMath::Vector3 extent = mSelectLink->GetBoxExtent();
+				float sphereRadius = mSelectLink->GetSphereRadius();
+				float capsuleHalfHeight = mSelectLink->GetCapsuleHalfHeight();
+				float capsuleRadius = mSelectLink->GetCapsuleRadius();
+
 				DirectX::SimpleMath::Vector3 linkPosition;
 				DirectX::SimpleMath::Quaternion linkRotation;
 				DirectX::SimpleMath::Vector3 linkScale;
-				localTransform.Decompose(linkPosition, linkRotation, linkScale);
+				localTransform.Decompose(linkScale, linkRotation, linkPosition);
 
 				ImGui::InputFloat3("LinkScale", (float*)&linkScale);
 				ImGui::InputFloat4("LinkRotation", (float*)&linkRotation);
 				ImGui::InputFloat3("LinkPosition", (float*)&linkPosition);
 				ImGui::InputFloat("Density", &density);
+
+				ImGui::Separator();
+
+				beginShapeCombo("Link Shape", shapeType);
+
+				switch (shapeType)
+				{
+				case fq::game_module::EShapeType::BOX:
+				{
+					ImGui::InputFloat3("Extent", (float*)&extent);
+				}
+				break;
+				case fq::game_module::EShapeType::SPHERE:
+				{
+					ImGui::InputFloat("Radius", &sphereRadius);
+				}
+				break;
+				case fq::game_module::EShapeType::CAPSULE:
+				{
+					ImGui::InputFloat("Half Height", &capsuleHalfHeight);
+					ImGui::InputFloat("Radius", &capsuleRadius);
+				}
+				break;
+				default:
+					break;
+				}
 
 				localTransform = DirectX::SimpleMath::Matrix::CreateScale(linkScale)
 					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(linkRotation)
@@ -125,10 +199,17 @@ namespace fq::game_engine
 				mSelectLink->SetBoneName(boneName);
 				mSelectLink->SetDensity(density);
 				mSelectLink->SetLocalTransform(localTransform);
+				mSelectLink->SetShapeType(shapeType);
+				mSelectLink->SetBoxExtent(extent);
+				mSelectLink->SetSphereRadius(sphereRadius);
+				mSelectLink->SetCapsuleHalfHeight(capsuleHalfHeight);
+				mSelectLink->SetCapsuleRadius(capsuleRadius);
 			}
 
 			ImGui::TreePop();
 		}
+
+		ImGui::Separator();
 
 		// Joint
 		if (ImGui::TreeNode("Joint"))
@@ -143,7 +224,7 @@ namespace fq::game_engine
 				DirectX::SimpleMath::Vector3 jointPosition;
 				DirectX::SimpleMath::Quaternion jointRotation;
 				DirectX::SimpleMath::Vector3 jointScale;
-				jointLocalTransform.Decompose(jointPosition, jointRotation, jointScale);
+				jointLocalTransform.Decompose(jointScale, jointRotation, jointPosition);
 
 				ImGui::InputFloat3("JointScale", (float*)&jointScale);
 				ImGui::InputFloat4("JointRotation", (float*)&jointRotation);
@@ -161,6 +242,8 @@ namespace fq::game_engine
 				mSelectLink->SetJointMaxForce(jointMaxForce);
 				mSelectLink->SetJointStiffness(jointStiffness);
 
+				ImGui::Separator();
+
 				// JointAxis
 				if (ImGui::TreeNode("JointAxis"))
 				{
@@ -174,15 +257,23 @@ namespace fq::game_engine
 					float twistLimitHigh = mSelectLink->GetTwistLimitHigh();
 					float twistLimitLow = mSelectLink->GetTwistLimitLow();
 
-					beginCombo(swing1Motion, "Swing1 Motion");
-					ImGui::InputFloat("Swing1 Limit High", &swing1LimitHigh);
-					ImGui::InputFloat("Swing1 Limit Low", &swing1LimitLow);
-					beginCombo(swing2Motion, "Swing2 Motion");
-					ImGui::InputFloat("Swing2 Limit High", &swing2LimitHigh);
-					ImGui::InputFloat("Swing2 Limit Low", &swing2LimitLow);
-					beginCombo(twistMotion, "Twist Motion");
-					ImGui::InputFloat("Twist Limit High", &twistLimitHigh);
-					ImGui::InputFloat("Twist Limit Low", &twistLimitLow);
+					if (beginJointCombo(swing1Motion, "Swing1 Motion"))
+					{
+						ImGui::InputFloat("Swing1 Limit High", &swing1LimitHigh);
+						ImGui::InputFloat("Swing1 Limit Low", &swing1LimitLow);
+					}
+					ImGui::Separator();
+					if (beginJointCombo(swing2Motion, "Swing2 Motion"))
+					{
+						ImGui::InputFloat("Swing2 Limit High", &swing2LimitHigh);
+						ImGui::InputFloat("Swing2 Limit Low", &swing2LimitLow);
+					}
+					ImGui::Separator();
+					if (beginJointCombo(twistMotion, "Twist Motion"))
+					{
+						ImGui::InputFloat("Twist Limit High", &twistLimitHigh);
+						ImGui::InputFloat("Twist Limit Low", &twistLimitLow);
+					}
 
 					mSelectLink->SetSwing1AxisMotion(swing1Motion);
 					mSelectLink->SetSwing1LimitHigh(swing1LimitHigh);

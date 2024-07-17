@@ -27,6 +27,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mTerrainTypeID(0)
 	, mRigidTypeID(0)
 	, mRaycastHandler{}
+	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
 {}
 
@@ -74,6 +75,7 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 	mCharactorControllerTypeID = entt::resolve<fq::game_module::CharacterController>().id();
 	mRigidTypeID = entt::resolve<game_module::RigidBody>().id();
 	mTerrainTypeID = entt::resolve<game_module::TerrainCollider>().id();
+	mArticulationTypeID = entt::resolve<game_module::Articulation>().id();
 }
 
 
@@ -320,7 +322,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 	}
 
-	// 5.CharacterController
+	// 4.CharacterController
 	if (object->HasComponent<CharacterController>())
 	{
 		auto controller = object->GetComponent<CharacterController>();
@@ -422,6 +424,83 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				,object->shared_from_this()
 				,meshCollider,false} });
 		}
+	}
+
+	// 6. Articulation
+	if (object->HasComponent<Articulation>())
+	{
+		ColliderID id = ++mLastColliderID;
+		
+		auto articulation = object->GetComponent<Articulation>();
+		articulation->Load();
+		auto articulationData = articulation->GetArticulationData();
+
+		ArticulationInfo articulationInfo;
+		articulationInfo.id = id;
+		articulationInfo.layerNumber = static_cast<int>(object->GetTag());
+		articulationInfo.density = articulationData->GetDensity();
+		articulationInfo.dynamicFriction = articulationData->GetDynamicFriction();
+		articulationInfo.restitution = articulationData->GetRestitution();
+		articulationInfo.staticFriction = articulationData->GetStaticFriction();
+
+		bool check = mPhysicsEngine->CreateCharacterphysics(articulationInfo);
+		assert(check);
+		mColliderContainer.insert({ id,
+			{mArticulationTypeID
+			, articulation->shared_from_this()
+			, object->shared_from_this()
+			, articulation, false} });
+
+		std::function<void(std::shared_ptr<LinkData>, ColliderID)> loadFunction = [&](std::shared_ptr<LinkData> linkData, ColliderID id)
+			{
+				fq::physics::LinkInfo linkInfo;
+
+				linkInfo.boneName = linkData->GetBoneName();
+				linkInfo.parentBoneName = linkData->GetParentBoneName();
+				linkInfo.density = linkData->GetDensity();
+				linkInfo.localTransform = linkData->GetLocalTransform();
+				linkInfo.jointInfo.damping = linkData->GetJointDamping();
+				linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
+				linkInfo.jointInfo.maxForce = linkData->GetJointMaxForce();
+				linkInfo.jointInfo.stiffness = linkData->GetJointStiffness();
+				linkInfo.jointInfo.Swing1AxisInfo.motion = linkData->GetSwing1AxisMotion();
+				linkInfo.jointInfo.Swing1AxisInfo.limitsHigh = linkData->GetSwing1LimitHigh();
+				linkInfo.jointInfo.Swing1AxisInfo.limitsLow = linkData->GetSwing1LimitLow();
+				linkInfo.jointInfo.Swing2AxisInfo.motion = linkData->GetSwing2AxisMotion();
+				linkInfo.jointInfo.Swing2AxisInfo.limitsHigh = linkData->GetSwing2LimitHigh();
+				linkInfo.jointInfo.Swing2AxisInfo.limitsLow = linkData->GetSwing2LimitLow();
+				linkInfo.jointInfo.TwistAxisInfo.motion = linkData->GetTwistAxisMotion();
+				linkInfo.jointInfo.TwistAxisInfo.limitsHigh = linkData->GetTwistLimitHigh();
+				linkInfo.jointInfo.TwistAxisInfo.limitsLow = linkData->GetTwistLimitLow();
+
+				switch (linkData->GetShapeType())
+				{
+				case EShapeType::BOX:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
+				}
+				break;
+				case EShapeType::SPHERE:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
+				}
+				break;
+				case EShapeType::CAPSULE:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
+				}
+				break;
+				}
+
+				for (auto& [name, childLinkData] : linkData->GetChildrenLinkData())
+				{
+					loadFunction(childLinkData, id);
+				}
+			};
+
+		auto rootLinkData = articulationData->GetRootLinkData().lock();
+
+		loadFunction(rootLinkData, id);
 	}
 }
 
@@ -577,6 +656,14 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			}
 			transform->SetWorldMatrix(matrix);
 		}
+		else if (colliderInfo.enttID == mArticulationTypeID)
+		{
+			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
+			auto data = mPhysicsEngine->GetArticulationData(id);
+
+			articulation->SetIsRagdoll(data.bIsRagdollSimulation);
+			transform->SetWorldMatrix(data.worldTransform);
+		}
 		else
 		{
 			auto data = mPhysicsEngine->GetRigidBodyData(id);
@@ -676,6 +763,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
+		else if (colliderInfo.enttID == mArticulationTypeID)
+		{
+			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
+
+			fq::physics::ArticulationSetData data;
+
+			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
+			data.worldTransform = transform->GetWorldMatrix();
+
+			mPhysicsEngine->SetArticulationData(id, data);
+		}
 		else
 		{
 			fq::physics::RigidBodyGetSetData data;
@@ -754,7 +852,9 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 	{
 		if (info.bIsDestroyed)
 		{
-			if (info.enttID == mCharactorControllerTypeID)
+			if (info.enttID == mArticulationTypeID)
+				mPhysicsEngine->RemoveArticulation(colliderID);
+			else if (info.enttID == mCharactorControllerTypeID)
 				mPhysicsEngine->RemoveController(colliderID);
 			else
 				mPhysicsEngine->RemoveRigidBody(colliderID);
@@ -816,15 +916,23 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 	rayCastInfo.origin = event.origin;
 
 	auto result = mPhysicsEngine->RayCast(rayCastInfo);
-	event.result->hitCount = result.hitSize;
-	event.result->contactPoints.reserve(result.hitSize);
-	event.result->objects.reserve(result.hitSize);
+	// Block 정보
+	if (result.hasBlock)
+	{
+		event.result->hasBlock = result.hasBlock;
+		event.result->blockObject = mColliderContainer.find(result.blockID)->second.gameObject.get();
+		event.result->blockPosition = result.blockPosition;
+	}
 
+	// Hit 정보
+	event.result->hitCount = result.hitSize;
+	event.result->hitContactPoints.reserve(result.hitSize);
+	event.result->hitObjects.reserve(result.hitSize);
 	for (unsigned int i = 0; i < result.hitSize; ++i)
 	{
-		event.result->contactPoints.push_back(result.contectPoints[i]);
+		event.result->hitContactPoints.push_back(result.contectPoints[i]);
 		auto object = mColliderContainer.find(result.id[i])->second.gameObject.get();
-		event.result->objects.push_back(object);
+		event.result->hitObjects.push_back(object);
 	}
 
 	if (event.bUseDebugDraw)
@@ -832,7 +940,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 		auto renderer = mGameProcess->mGraphics;
 
 		fq::graphics::debug::RayInfo  ray;
-		ray.Color = (result.hitSize == 0) ? DirectX::SimpleMath::Color{ 0.f,1.f,0.f,1.f } : DirectX::SimpleMath::Color{ 1.f,0.f,0.f,1.f };
+		ray.Color = (result.hasBlock == 0) ? DirectX::SimpleMath::Color{ 0.f,1.f,0.f,1.f } : DirectX::SimpleMath::Color{ 1.f,0.f,0.f,1.f };
 		ray.Direction = event.direction * event.distance;
 		ray.Origin = event.origin;
 		ray.Normalize = false;
