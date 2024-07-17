@@ -98,6 +98,8 @@ PixelOut main(VertexOut pin) : SV_TARGET
     {
         pout.Normal.xyz = normalize(pin.NormalW);
     }
+    // SSR ReflectionMask
+    pout.Normal.w = pout.Metalness * (1 - pout.Roughness);
 
     pout.SourceNormal.xyz = pin.NormalW.xyz;
     pout.SourceTangent.xyz = pin.TangentW.xyz;

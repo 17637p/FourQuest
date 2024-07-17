@@ -485,7 +485,9 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 				{
 			
 				}
-			
+				
+				matData.Metalness = 0.7f;
+				matData.Roughness = 0.2f;
 				mat[i]->SetInfo(matData);
 			}
 			iStaticMeshObject->SetMaterials(mat);

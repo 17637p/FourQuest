@@ -692,5 +692,8 @@
     <CustomBuild Include="BloomAccumulateCS.hlsl" />
     <CustomBuild Include="BloomDownSampleCS.hlsl" />
     <CustomBuild Include="BlurHorzCS.hlsl" />
+    <CustomBuild Include="SSRCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
