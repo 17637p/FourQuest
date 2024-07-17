@@ -52,19 +52,37 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 
 	if (mHasNavigationMesh)
 	{
-		//if (mGameProcess->mInputManager->GetKeyState(EKey::T) == EKeyState::Tap)
-		//{
-		//	for (auto& agent : mAgents)
-		//	{
-		//		agent->MoveTo({ -1.631, 0.884, -14.869 });
-		//	}
-		//}
+		// Navimesh로 에이전트 위치 갱신
+		for (auto& agentComponent : mAgents)
+		{
+			int agentIndex = agentComponent->GetAgentIndex();
+			if (agentIndex == -1)
+			{
+				continue;
+			}
 
+			auto dtCrowdAgent = mBuilder->GetCrowd()->getEditableAgent(agentComponent->GetAgentIndex());
+			if (dtCrowdAgent == nullptr)
+			{
+				continue;
+			}
+
+			fq::game_module::Transform* agentT = agentComponent->GetComponent<fq::game_module::Transform>();
+			auto worldPosition = agentT->GetWorldPosition();
+
+			dtCrowdAgent->npos[0] = worldPosition.x;
+			dtCrowdAgent->npos[1] = worldPosition.y;
+			dtCrowdAgent->npos[2] = worldPosition.z;
+		}
+
+		// 네비게이션 메쉬 업데이트 
 		mBuilder->Update(dt);
 
+
+		// 에이전트 위치 및 회전 업데이트 
 		for (auto& agent : mAgents)
 		{
-			fq::game_module::Transform* agentT = agent->GetGameObject()->GetComponent<fq::game_module::Transform>();
+			fq::game_module::Transform* agentT = agent->GetComponent<fq::game_module::Transform>();
 
 			// 등록 안된 Agent
 			if (agent->GetAgentIndex() == -1)
@@ -73,15 +91,14 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 			}
 
 			auto npos = mBuilder->GetCrowd()->getAgent(agent->GetAgentIndex())->npos;
-
 			DirectX::SimpleMath::Vector3 nowPosition{ npos[0], npos[1], npos[2] };
-			auto rotation = agentT->GetLocalRotation();
-			auto scale = agentT->GetLocalScale();
+			auto rotation = agentT->GetWorldRotation();
+			auto scale = agentT->GetWorldScale();
 
 			// 7.9 Giatae : 회전 동기화 설정 추가 
 			if (agent->IsSyncRotationWithMovementDirection() && !agent->IsStopAgent())
 			{
-				DirectX::SimpleMath::Vector3 PrevPosition = agentT->GetLocalPosition();
+				DirectX::SimpleMath::Vector3 PrevPosition = agentT->GetWorldPosition();
 
 				auto moveDir = nowPosition - PrevPosition;
 				moveDir.y = 0.f;
@@ -91,11 +108,11 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, -1, 0 });
 				else if (moveDir != DirectX::SimpleMath::Vector3::Zero)
 					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, 1, 0 });
-				
+
 				rotation.Normalize();
 			}
-				
-			agentT->GenerateLocal(nowPosition, rotation, scale);
+
+			agentT->GenerateWorld(nowPosition, rotation, scale);
 		}
 	}
 }

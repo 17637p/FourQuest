@@ -1,6 +1,5 @@
 #include "SkinnedMeshRenderer.h"
 
-
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
 	,mSkinnedMeshObject(nullptr)
@@ -60,4 +59,10 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SkinnedMeshRenderer
 
 	return cloneMesh;
 }
+
+void fq::game_module::SkinnedMeshRenderer::SetTexturePath(std::string path)
+{
+	mTexturePath = path;
+}
+
 

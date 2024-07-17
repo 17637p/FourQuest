@@ -46,7 +46,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlantMonster::Clone(std:
 void fq::client::PlantMonster::OnStart()
 {
 	mAnimator = GetComponent<game_module::Animator>();
-	mGameManager =GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
+	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 
 	mMaxHp = mHp;
 }
@@ -106,27 +106,30 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 	// 플레이어 피격 처리 
 	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
-		mAnimator->SetParameterTrigger("OnHit");
 		auto playerAttack = collision.other->GetComponent<client::Attack>();
-		float attackPower = playerAttack->GetAttackPower();
-		mHp -= attackPower;
-
-		GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
-		// 타겟을 자신을 때린 사람으로 바꿉니다 
-		SetTarget(playerAttack->GetAttacker());
-
-		// TODO : (이건 필요하면) 공격방향의 반대방향으로 몬스터가 바라봅니다
-		auto attackDir = playerAttack->GetAttackDirection();
-		if (attackDir != client::Attack::NoDirection)
+		if (playerAttack->ProcessAttack())
 		{
+			mAnimator->SetParameterTrigger("OnHit");
+			float attackPower = playerAttack->GetAttackPower();
+			mHp -= attackPower;
 
-		}
+			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
 
-		// PlantMonster 사망 처리 
-		if (mHp <= 0.f)
-		{
-			mAnimator->SetParameterBoolean("IsDead", true);
+			// 타겟을 자신을 때린 사람으로 바꿉니다 
+			SetTarget(playerAttack->GetAttacker());
+
+			// TODO : (이건 필요하면) 공격방향의 반대방향으로 몬스터가 바라봅니다
+			auto attackDir = playerAttack->GetAttackDirection();
+			if (attackDir != client::Attack::NoDirection)
+			{
+
+			}
+
+			// PlantMonster 사망 처리 
+			if (mHp <= 0.f)
+			{
+				mAnimator->SetParameterBoolean("IsDead", true);
+			}
 		}
 	}
 }
@@ -225,7 +228,7 @@ void fq::client::PlantMonster::FindTarget()
 		auto playerPos = playerT->GetWorldPosition();
 
 		float distance = (playerPos - monsterPos).Length();
-	
+
 		if (distance <= minDistance)
 		{
 			target = player.get();

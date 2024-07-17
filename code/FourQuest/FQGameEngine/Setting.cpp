@@ -5,7 +5,9 @@
 
 #include "GameProcess.h"
 #include "RenderingSystem.h"
+#include "../FQGameModule/GameModule.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQCommon/FQPath.h"
 
 fq::game_engine::Setting::Setting()
 	:mbUseSnap(false)
@@ -102,6 +104,35 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
+
+			// 임시적용
+			if (ImGui::Button("Change TexturePath"))
+			{
+				auto scene =  mGameProcess->mSceneManager->GetCurrentScene();
+
+				auto texturePath = fq::path::GetResourcePath() / "Texture";
+
+				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+					[texturePath](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					{
+						if (renderer.GetTexturePath().empty())
+						{
+							renderer.SetTexturePath(texturePath.string());
+						}
+					}
+				);
+
+				scene->ViewComponents<game_module::StaticMeshRenderer>(
+					[texturePath](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					{
+						if (renderer.GetTexturePath().empty())
+						{
+							renderer.SetTexturePath(texturePath.string());
+						}
+					}
+				);
+
+			}
 		}
 		ImGui::EndChild();
 	}

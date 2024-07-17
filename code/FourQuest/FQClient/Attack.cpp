@@ -19,11 +19,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::Attack::Clone(std::share
 
 fq::client::Attack::Attack()
 	:mAttackPower(-1)
-	,mElapsedTime(0.f)
-	,mAttackTime(0.1f)
-	,mAttackDirection(NoDirection)
-	,mRemainingAttackCount(1)
-	,mbIsInfinite(true)
+	, mDestroyElapsedTime(0.f)
+	, mDestroyTime(0.1f)
+	, mAttackDirection(NoDirection)
+	, mRemainingAttackCount(1)
+	, mbIsInfinite(true)
+	, mPushPower(0.f)
 {}
 
 fq::client::Attack::~Attack()
@@ -33,25 +34,32 @@ fq::client::Attack::~Attack()
 
 void fq::client::Attack::OnUpdate(float dt)
 {
-	mElapsedTime += dt;
+	mDestroyElapsedTime += dt;
 
-	if (mElapsedTime >= mAttackTime)
+	if (mDestroyElapsedTime >= mDestroyTime)
 	{
 		GetScene()->DestroyGameObject(GetGameObject());
 	}
 }
 
-void fq::client::Attack::OnTriggerEnter(const game_module::Collision& collision)
+
+bool fq::client::Attack::ProcessAttack() 
 {
-	if (mbIsInfinite)
+	// 삭제된 공격은 처리하지 않습니다 
+	if (GetGameObject()->IsDestroyed())
 	{
-		return;
+		return false;
 	}
 
-	mRemainingAttackCount--;
-
-	if (mRemainingAttackCount == 0)
+	if (!mbIsInfinite)
 	{
-		GetScene()->DestroyGameObject(GetGameObject());
+		mRemainingAttackCount--;
+
+		if (mRemainingAttackCount == 0)
+		{
+			GetScene()->DestroyGameObject(GetGameObject());
+		}
 	}
+
+	return true;
 }

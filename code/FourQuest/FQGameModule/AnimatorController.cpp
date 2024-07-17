@@ -199,8 +199,6 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 	// 애니메이션 전환 종료
 	else if (EndTransitionWeight == mBlendWeight)
 	{
-		auto eventMgr = mAnimator->GetScene()->GetEventManager();
-
 		mCurrentState->second.OnStateExit();
 		mCurrentState = mNextState;
 		mNextState = mStates.end();
@@ -445,8 +443,6 @@ fq::game_module::AnimatorController::TransitionIterator fq::game_module::Animato
 
 void fq::game_module::AnimatorController::emitChangeState()
 {
-	auto eventMgr = mAnimator->GetScene()->GetEventManager();
-
 	bool isBlend = (mNextState != mStates.end());
 
 	if (isBlend)
