@@ -25,6 +25,8 @@ std::shared_ptr<IUVAnimationInstance> fq::graphics::UVAnimation::CreateUVAnimati
 
 fq::graphics::UVAnimationInstance::UVAnimationInstance(std::shared_ptr<UVAnimation> uvAnimation)
 	: mUVAnimation(uvAnimation)
+	, mTexTransform{}
+	, mTimePos(0.f)
 {
 	const auto& animData = mUVAnimation->GetUVAnimationClip();
 

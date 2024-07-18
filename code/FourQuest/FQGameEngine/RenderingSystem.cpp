@@ -66,13 +66,35 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
+	scene->ViewComponents<Transform, Animator>(
+		[dt](GameObject& object, Transform& transform, Animator& animator)
+		{
+			// staticMeshRenderer에서 애니메이터를 사용 시 애니메이터의 toWorld를 사용하기 위해서 추가
+			auto nodeHierarchyInstance = animator.GetSharedNodeHierarchyInstance();
+
+			if (nodeHierarchyInstance != nullptr)
+			{
+				nodeHierarchyInstance->SetTransform(transform.GetWorldMatrix());
+			}
+		});
+
 	scene->ViewComponents<Transform, StaticMeshRenderer>
 		([](GameObject& object, Transform& transform, StaticMeshRenderer& mesh)
 			{
 				auto meshObject = mesh.GetStaticMeshObject();
+
 				if (meshObject)
 				{
-					meshObject->SetTransform(transform.GetWorldMatrix());
+					auto nodeHierarchyInstanceOrNull = meshObject->GetNodeHierarchyInstance();
+
+					if (nodeHierarchyInstanceOrNull == nullptr)
+					{
+						meshObject->SetTransform(transform.GetWorldMatrix());
+					}
+					else
+					{
+						meshObject->SetTransform(nodeHierarchyInstanceOrNull->GetTransform());
+					}
 				}
 			});
 
@@ -129,6 +151,7 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	for (auto& object : scene->GetObjectView(true))
 	{
 		loadAnimation(&object);
+		loadUVAnimation(&object);
 	}
 
 	// 2. PrefabInstance를 로드
@@ -181,6 +204,9 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 4. Terrain
 	loadTerrain(gameObject);
+
+	// 5. UVAnimation
+	loadUVAnimation(gameObject);
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
@@ -337,18 +363,89 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 
 	auto animator = object->GetComponent<fq::game_module::Animator>();
 	auto nodeHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
+	auto nodeHierarchy = nodeHierarchyInstance->GetNodeHierarchy();
 
-	// 자식 계층의 메쉬들을 연결합니다.
+	std::function<void(fq::game_module::GameObject*)> setNodeHierarchyRecursive = [&nodeHierarchyInstance, &nodeHierarchy, &setNodeHierarchyRecursive](fq::game_module::GameObject* object)
+		{
+			for (auto& child : object->GetChildren())
+			{
+				if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+				{
+					auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
+					auto meshObject = meshRenderer->GetSkinnedMeshObject();
+
+					if (meshObject != nullptr)
+					{
+						meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+					}
+				}
+				if (child->HasComponent<game_module::StaticMeshRenderer>())
+				{
+					auto meshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
+					auto meshObject = meshRenderer->GetStaticMeshObject();
+
+					const auto& nodeName = meshObject->GetStaticMesh()->GetMeshData().NodeName;
+					unsigned int index = 0;
+
+					/* 소켓과 같은 스태틱 매쉬는 연결되지 않도록 하기 위해
+					메쉬의 노드 이름과 계층 구조에 포함된 노드 이름이 동일할 경우에만 연결됨 */
+					if (meshObject != nullptr && nodeHierarchy->TryGetBoneIndex(nodeName, &index))
+					{
+						meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+						meshObject->SetReferenceBoneIndex(index);
+					}
+				}
+
+				setNodeHierarchyRecursive(child);
+			}
+		};
+
+	// 메쉬에 계층구조 연결
+	setNodeHierarchyRecursive(object);
+}
+
+void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::UVAnimator>())
+	{
+		return;
+	}
+
+	auto animator = object->GetComponent<fq::game_module::UVAnimator>();
+
+	const auto uvAnimationPath = animator->GetUVAnimationPath();
+
+	if (!std::filesystem::exists(uvAnimationPath))
+	{
+		spdlog::warn("{} uv animation controller load fail", object->GetName());
+		return;
+	}
+
+	auto uvAnimationInterfaceOrNull = mGameProcess->mGraphics->GetUVAnimationOrNull(uvAnimationPath);
+
+	if (uvAnimationInterfaceOrNull == nullptr)
+	{
+		const auto& uvAnimationData = mGameProcess->mGraphics->ReadUVAnimation(uvAnimationPath);
+		uvAnimationInterfaceOrNull = mGameProcess->mGraphics->CreateUVAnimation(uvAnimationPath, uvAnimationData);
+	}
+	assert(uvAnimationInterfaceOrNull != nullptr);
+
+	auto uvAnimationInstanceInterface = uvAnimationInterfaceOrNull->CreateUVAnimationInstance();
+	animator->SetIUVAnimation(uvAnimationInterfaceOrNull);
+	animator->SetIUVAnimationInstance(uvAnimationInstanceInterface);
+
+	// 자식 계층에 애니메이션 인스턴스 연결
 	for (auto& child : object->GetChildren())
 	{
-		if (!child->HasComponent<game_module::SkinnedMeshRenderer>()) continue;
-
-		auto meshRenderer = child->GetComponent<fq::game_module::SkinnedMeshRenderer>();
-		auto meshObject = meshRenderer->GetSkinnedMeshObject();
-
-		if (meshObject != nullptr)
+		if (child->HasComponent<game_module::StaticMeshRenderer>())
 		{
-			meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
+			auto staticMeshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
+			staticMeshRenderer->GetStaticMeshObject()->SetUVAnimationInstance(uvAnimationInstanceInterface);
+		}
+		if (child->HasComponent<game_module::Decal>())
+		{
+			auto decal = child->GetComponent<fq::game_module::Decal>();
+			decal->GetDecalObjectInterface()->SetUVAnimationInstance(uvAnimationInstanceInterface);
 		}
 	}
 }
@@ -480,7 +577,7 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 
 	mPlaneMatrix = mesh.first.ToParentMatrix;
 
-	auto staticMeshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull( key, mesh.second.Name); ;
+	auto staticMeshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, mesh.second.Name); ;
 
 	fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mGameProcess->mGraphics->CreateTerrainMeshObject(staticMeshInterface, mesh.first.ToParentMatrix * transform->GetWorldMatrix());
 	terrain->SetTerrainMeshObject(iTerrainMeshObject);

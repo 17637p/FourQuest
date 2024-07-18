@@ -126,6 +126,7 @@ namespace fq::graphics
 		mLocalTransforms.resize(boneCount, DirectX::SimpleMath::Matrix::Identity);
 		mRootTransforms.resize(boneCount, DirectX::SimpleMath::Matrix::Identity);
 		mTransposedFinalTransforms.resize(boneCount, DirectX::SimpleMath::Matrix::Identity);
+		SetBindPose();
 	}
 
 	void NodeHierarchyInstance::SetBindPose()
