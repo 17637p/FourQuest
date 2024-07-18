@@ -384,17 +384,14 @@ void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject
 					auto meshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
 					auto meshObject = meshRenderer->GetStaticMeshObject();
 
-					if (meshObject != nullptr)
+					const auto& nodeName = meshObject->GetStaticMesh()->GetMeshData().NodeName;
+					unsigned int index = 0;
+
+					/* 소켓과 같은 스태틱 매쉬는 연결되지 않도록 하기 위해
+					메쉬의 노드 이름과 계층 구조에 포함된 노드 이름이 동일할 경우에만 연결됨 */
+					if (meshObject != nullptr && nodeHierarchy->TryGetBoneIndex(nodeName, &index))
 					{
 						meshObject->SetNodeHierarchyInstance(nodeHierarchyInstance);
-						const auto& nodeName = meshObject->GetStaticMesh()->GetMeshData().NodeName;
-						unsigned int index = 0;
-
-						if (nodeHierarchy->TryGetBoneIndex(nodeName, &index))
-						{
-							spdlog::warn("ObjectName : {}, Not a valid hierarchy for the mash", object->GetName());
-						}
-
 						meshObject->SetReferenceBoneIndex(index);
 					}
 				}
