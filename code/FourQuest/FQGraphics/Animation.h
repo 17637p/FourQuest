@@ -41,6 +41,8 @@ namespace fq::graphics
 		virtual ~UVAnimationInstance() = default;
 
 		virtual void SetTimePos(float timePos) override;
+		virtual float GetTimePos() const override { return mTimePos; }
+
 		virtual const DirectX::SimpleMath::Matrix& GetTexTransform(const std::string& nodeName) const override;
 
 	private:

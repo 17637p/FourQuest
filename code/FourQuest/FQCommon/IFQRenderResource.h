@@ -60,6 +60,8 @@ extern "C" {
 		{
 		public:
 			virtual FQ_GRAPHICS void SetTimePos(float timePos) abstract;
+			virtual FQ_GRAPHICS float GetTimePos() const abstract;
+
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTexTransform(const std::string& nodeName) const abstract;
 
 		protected:
@@ -106,6 +108,9 @@ extern "C" {
 		class INodeHierarchyInstance
 		{
 		public:
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
 			virtual FQ_GRAPHICS void SetBindPose() abstract;
 			virtual FQ_GRAPHICS void Update(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
 			virtual FQ_GRAPHICS void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
