@@ -61,7 +61,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	float attackPower = mPlayer->GetAttackPower();
 	attackInfo.damage = dc::GetMagicBallDamage(attackPower);
 	attackInfo.bIsInfinite = false;
@@ -93,7 +93,7 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	// 공격 설정
 	AttackInfo attackInfo{};
 
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	float attackPower = mPlayer->GetAttackPower();
@@ -142,7 +142,7 @@ void fq::client::MagicArmour::EmitRazer()
 			
 			float attackPower = mPlayer->GetAttackPower();
 			attackInfo.damage = dc::GetRazerDamage(attackPower);
-			attackInfo.attacker = attackObj.get();
+			attackInfo.attacker = GetGameObject();
 			attackInfo.remainingAttackCount = 1;
 			attackInfo.bIsInfinite = false;
 			attackComponent->Set(attackInfo);

@@ -52,7 +52,7 @@ void fq::client::KnightArmour::EmitSwordAttack()
 
 	// 공격 설정
 	AttackInfo attackInfo{};
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = dc::GetSwordDamage(mPlayer->GetAttackPower());
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
@@ -89,7 +89,7 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	// 공격 설정
 	AttackInfo attackInfo{};
 	attackInfo.damage = dc::GetShieldDamage(mPlayer->GetAttackPower());
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::TargetPosition;
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = mShieldKnockPower;
@@ -114,7 +114,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	// 공격 설정
 	AttackInfo attackInfo{};
 	attackInfo.damage = dc::GetShieldDashDamage(mPlayer->GetAttackPower());
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = mShieldKnockPower;
