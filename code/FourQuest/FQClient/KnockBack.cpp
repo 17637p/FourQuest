@@ -1,5 +1,7 @@
 #include "KnockBack.h"
 
+#include "Attack.h"
+
 fq::client::KnockBack::KnockBack()
 	:mTransform(nullptr)
 	, mVelocity{}
@@ -62,3 +64,9 @@ void fq::client::KnockBack::OnStart()
 {
 	mTransform = GetComponent<game_module::Transform>();
 }
+
+void fq::client::KnockBack::Set(float power, DirectX::SimpleMath::Vector3 direction)
+{
+	mVelocity += direction * power;
+}
+

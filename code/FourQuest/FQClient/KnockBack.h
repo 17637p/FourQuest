@@ -11,12 +11,13 @@ namespace fq::client
 		KnockBack();
 		~KnockBack();
 
+		void Set(float power, DirectX::SimpleMath::Vector3 direction);
+
 	private:
 		void OnStart() override;
 		void OnFixedUpdate(float dt) override;
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
-
 		void updateVelocity(float dt);
 
 	private:

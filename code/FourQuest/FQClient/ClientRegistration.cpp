@@ -18,6 +18,8 @@
 #include "RazerAttackState.h"
 #include "ShiedlDashState.h"
 #include "KnightArmour.h"
+#include "SwordAttackState.h"
+#include "ShieldAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -150,8 +152,29 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&KnightArmour::mDashCoolTime>("DashCoolTime"_hs)
 		.prop(reflect::prop::Name, "DashCoolTime")
-		.data<&KnightArmour::mDashPower>("DashPower"_hs)
-		.prop(reflect::prop::Name, "DashPower")
+		.data<&KnightArmour::mAttackOffset>("AttackOffset"_hs)
+		.prop(reflect::prop::Name, "AttackOffset")
+		.data<&KnightArmour::mShieldDashPower>("ShieldDashPushPower"_hs)
+		.prop(reflect::prop::Name, "ShieldDashPushPower")
+		.prop(reflect::prop::Comment, u8"A대쉬 전진하는 힘")
+		.data<&KnightArmour::mXAttackDashPower>("XAttackPushPower"_hs)
+		.prop(reflect::prop::Name, "XAttackPushPower")
+		.prop(reflect::prop::Comment, u8"X공격 전진하는 힘")
+		.data<&KnightArmour::mXAttackDashPower>("XAttackPushPower"_hs)
+		.prop(reflect::prop::Name, "XAttackPushPower")
+		.prop(reflect::prop::Comment, u8"X공격 전진하는 힘")
+		.data<&KnightArmour::mSwordKnockBackPower>("SwordKnockBackPower"_hs)
+		.prop(reflect::prop::Name, "SwordKnockBackPower")
+		.prop(reflect::prop::Comment, u8"검 공격 넉백")
+		.data<&KnightArmour::mShieldKnockPower>("ShieldKnockPower"_hs)
+		.prop(reflect::prop::Name, "ShieldKnockPower")
+		.prop(reflect::prop::Comment, u8"방패 공격 넉백")
+		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
+		.prop(reflect::prop::Name, "SwordAttack")
+		.data<&KnightArmour::mShieldAttack>("ShieldAttack"_hs)
+		.prop(reflect::prop::Name, "ShieldAttack")
+		.data<&KnightArmour::mDashAttack>("DashAttack"_hs)
+		.prop(reflect::prop::Name, "DashAttack")
 		.base<game_module::Component>();
 
 	entt::meta<Soul>()
@@ -202,6 +225,21 @@ void fq::client::RegisterMetaData()
 		.type("ShiedlDashState"_hs)
 		.prop(reflect::prop::Name, "ShiedlDashState")
 		.base<game_module::IStateBehaviour>();
+
+	entt::meta<SwordAttackState>()
+		.type("SwordAttackState"_hs)
+		.prop(reflect::prop::Name, "SwordAttackState")
+		.data<&SwordAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<ShieldAttackState>()
+		.type("ShieldAttackState"_hs)
+		.prop(reflect::prop::Name, "ShieldAttackState")
+		.data<&ShieldAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터									//
@@ -450,11 +488,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Attack")
 		.data<&Attack::mDestroyTime>("DestroyTime"_hs)
 		.prop(fq::reflect::prop::Name, "DestroyTime")
-		.data<&Attack::mbIsInfinite>("IsInfinite"_hs)
-		.prop(fq::reflect::prop::Name, "IsInfinite")
-		.prop(reflect::prop::Comment, u8"공격횟수가 정해진 경우 false")
-		.data<&Attack::mRemainingAttackCount>("RemainingAttackCount"_hs)
-		.prop(fq::reflect::prop::Name, "RemainingAttackCount")
 		.base<fq::game_module::Component>();
 
 	entt::meta<LinearAttack>()

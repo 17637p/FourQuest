@@ -221,6 +221,15 @@
     <ClInclude Include="KnockBack.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="ShieldAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="SwordAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -351,6 +360,12 @@
     </ClCompile>
     <ClCompile Include="KnockBack.cpp">
       <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="SwordAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

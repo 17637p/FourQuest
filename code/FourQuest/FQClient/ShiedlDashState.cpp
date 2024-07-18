@@ -18,7 +18,9 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::ShiedlDashState::C
 
 void fq::client::ShiedlDashState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-	float dashPower = animator.GetComponent<KnightArmour>()->GetDashPower();
+	auto knightArmour = animator.GetComponent<KnightArmour>();
+
+	knightArmour->EmitShieldDashAttack();
 
 	// 컨트롤러 입력방향을 바라봅니다
 	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
@@ -29,10 +31,14 @@ void fq::client::ShiedlDashState::OnStateEnter(fq::game_module::Animator& animat
 	auto foward = transform->GetWorldMatrix().Forward();
 
 	foward.Normalize();
+	float dashPower = knightArmour->GetShieldDashPower();
 	foward.x *= dashPower;
 	foward.z *= dashPower;
 
 	rigid->SetLinearVelocity(foward);
+
+	// 플레이어 태그를 변경
+	animator.GetGameObject()->SetTag(game_module::ETag::Dash);
 }
 
 void fq::client::ShiedlDashState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -42,5 +48,6 @@ void fq::client::ShiedlDashState::OnStateUpdate(game_module::Animator& animator,
 
 void fq::client::ShiedlDashState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
+	animator.GetGameObject()->SetTag(game_module::ETag::Player);
 
 }

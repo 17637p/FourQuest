@@ -57,18 +57,21 @@ void fq::client::MagicArmour::EmitMagicBall()
 	auto& attackObj = *(instance.begin());
 
 	// 공격 설정
+	AttackInfo attackInfo;
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
+
+	attackInfo.attacker = attackObj.get();
+	float attackPower = mPlayer->GetAttackPower();
+	attackInfo.damage = dc::GetMagicBallDamage(attackPower);
+	attackInfo.bIsInfinite = false;
+	attackInfo.remainingAttackCount = 1;
+	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
 	DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
 	pos.y += 1.f;
 	attackT->SetLocalPosition(pos);
-
-	// 매직볼 공격력 계산 
-	float attackPower = mPlayer->GetAttackPower();
-	attackComponent->SetAttackPower(dc::GetMagicBallDamage(attackPower));
 
 	// 공격 방향 설정
 	auto linearAttack = attackObj->GetComponent<LinearAttack>();
@@ -88,16 +91,17 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	auto& attackObj = *(instance.begin());
 
 	// 공격 설정
+	AttackInfo attackInfo{};
+
+	attackInfo.attacker = attackObj.get();
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	float attackPower = mPlayer->GetAttackPower();
+	attackInfo.damage = dc::GetAOEDamage(attackPower);
+	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
 	attackT->SetWorldPosition(attackPoint);
-
-	// AOE 공격력 계산 
-	float attackPower = mPlayer->GetAttackPower();
-	attackComponent->SetAttackPower(dc::GetAOEDamage(attackPower));
 
 	// TODO:: AOE Sound 추가
 	GetScene()->AddGameObject(attackObj);
@@ -132,16 +136,19 @@ void fq::client::MagicArmour::EmitRazer()
 			auto& attackObj = *(instance.begin());
 
 			// 공격 설정
+			AttackInfo attackInfo{};
 			auto attackComponent = attackObj->GetComponent<client::Attack>();
-			attackComponent->SetAttacker(GetGameObject());
 			auto attackT = attackObj->GetComponent<game_module::Transform>();
 			
+			float attackPower = mPlayer->GetAttackPower();
+			attackInfo.damage = dc::GetRazerDamage(attackPower);
+			attackInfo.attacker = attackObj.get();
+			attackInfo.remainingAttackCount = 1;
+			attackInfo.bIsInfinite = false;
+			attackComponent->Set(attackInfo);
+
 			// 공격 위치 설정
 			attackT->SetWorldPosition(data.blockPosition);
-
-			// Razer 공격력 계산 
-			float attackPower = mPlayer->GetAttackPower();
-			attackComponent->SetAttackPower(dc::GetRazerDamage(attackPower));
 
 			// TODO :: Razer HitSound 추가
 			GetScene()->AddGameObject(attackObj);
