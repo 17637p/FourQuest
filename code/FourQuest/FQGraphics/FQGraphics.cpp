@@ -109,7 +109,8 @@ void FQGraphics::SaveLightProbes(const std::string& fileName)
 void FQGraphics::DeleteLightProbe(int index)
 {
 	mLightProbeManager->DeleteLightProbe(index);
-	mLightProbeManager->SetIsUsedLightProbe(false);
+	// 삭제하면 바로 사면체를 만들기 때문에 안 꺼도 됨
+	//mLightProbeManager->SetIsUsedLightProbe(false);
 }
 
 void FQGraphics::BakeLightProbe(bool isAll)
@@ -816,6 +817,10 @@ void FQGraphics::SetLightProbeIntensity(float intensity)
 void FQGraphics::SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe)
 {
 	mLightProbeManager->SetIsDrawDebugLightProbe(isDrawDebugLightProbe);
+}
+void FQGraphics::SetIsRenderDebug(bool bIsRenderDebug)
+{
+	mDebugDrawManager->SetIsRenderDebug(bIsRenderDebug);
 }
 
 void FQGraphics::SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position)

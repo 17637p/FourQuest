@@ -311,6 +311,9 @@
     <ClInclude Include="ArticulationLoader.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
+    <ClInclude Include="UVAnimator.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -495,6 +498,9 @@
 	</ClCompile>
     <ClCompile Include="ArticulationLoader.cpp">
       <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="UVAnimator.cpp">
+      <Filter>src\09.Animation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

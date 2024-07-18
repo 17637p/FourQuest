@@ -106,7 +106,7 @@ namespace fq::game_module
 		ControllerPath mControllerPath;
 		std::shared_ptr<AnimatorController> mController;
 
-		std::string mNodeHierarchyPath; 
+		std::string mNodeHierarchyPath;
 		std::shared_ptr<fq::graphics::INodeHierarchy> mNodeHierarchy;
 		std::shared_ptr<fq::graphics::INodeHierarchyInstance> mNodeHierarchyInstance;
 	};

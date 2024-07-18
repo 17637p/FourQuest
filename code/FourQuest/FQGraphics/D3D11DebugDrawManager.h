@@ -42,6 +42,9 @@ namespace fq::graphics
 		void Submit(const debug::SphereInfoEx& info);
 		void Submit(const debug::RingInfoEx& info);
 
+		void SetIsRenderDebug(bool bIsRenderDebug) { mbIsRenderDebug = bIsRenderDebug; }
+		bool GetIsRenderDebug() const { return mbIsRenderDebug; }
+
 	private:
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfo& info);
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::AABBInfo& info);
@@ -57,12 +60,15 @@ namespace fq::graphics
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfoEx& info);
 		void Draw(const std::shared_ptr<D3D11Device>& device, const debug::RingInfoEx& info);
 
+
 	private:
 		void drawCube(const std::shared_ptr<D3D11Device>& device,
 			const DirectX::SimpleMath::Matrix& worldTransform,
 			const DirectX::SimpleMath::Color& color);
 
 	private:
+		bool mbIsRenderDebug = true;
+
 		std::unique_ptr<DirectX::DX11::CommonStates> mStates;
 		std::unique_ptr<DirectX::DX11::BasicEffect> mBatchEffect;
 		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::DX11::VertexPositionColor>> mBatch;

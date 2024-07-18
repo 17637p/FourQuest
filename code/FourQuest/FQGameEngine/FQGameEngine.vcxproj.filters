@@ -197,9 +197,6 @@
     <ClInclude Include="NavigationMeshWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
-    <ClInclude Include="PathFindingSystem.h">
-      <Filter>include\03.GameSystem\PathFindingSystem</Filter>
-    </ClInclude>
     <ClInclude Include="NavigationMesh.h">
       <Filter>include\03.GameSystem\PathFindingSystem</Filter>
     </ClInclude>
@@ -226,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="LightProbeWindow.h">
       <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFindingSystem.h">
+      <Filter>include\03.GameSystem\PathFindingSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,8 @@
 
 namespace fq::graphics
 {
-	void D3D11PostProcessingManager::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, 
-		std::shared_ptr<D3D11CameraManager> cameraManager, 
+	void D3D11PostProcessingManager::Initialize(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager,
+		std::shared_ptr<D3D11CameraManager> cameraManager,
 		unsigned short width, unsigned short height)
 	{
 		mCameraManager = cameraManager;
@@ -59,20 +59,18 @@ namespace fq::graphics
 		mOffscreenRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mOffscreenSRV = std::make_shared<D3D11ShaderResourceView>(device, mOffscreenRTV);
 
-		mExtractBrightUAV[0] = std::make_shared<D3D11UnorderedAccessView>(device, width / 2, height / 2);
-		mExtractBrightUAV[1] = std::make_shared<D3D11UnorderedAccessView>(device, width / 2, height / 2);
+		unsigned short extractBrightWidth = std::max<unsigned short>(1, width / 2);
+		unsigned short extractBrightHeight = std::max<unsigned short>(1, height / 2);
+
+		mExtractBrightUAV[0] = std::make_shared<D3D11UnorderedAccessView>(device, extractBrightWidth, extractBrightHeight);
+		mExtractBrightUAV[1] = std::make_shared<D3D11UnorderedAccessView>(device, extractBrightWidth, extractBrightHeight);
 		mExtractBrightSRV[0] = std::make_shared<D3D11ShaderResourceView>(device, mExtractBrightUAV[0], true);
 		mExtractBrightSRV[1] = std::make_shared<D3D11ShaderResourceView>(device, mExtractBrightUAV[1], true);
 
 		for (int i = 0; i < DOWN_SCALE_BUFFER_COUNT; ++i)
 		{
-			float downBufferWidth = width / mDownScaleBufferDenominators[i];
-			float downBufferHeight = height / mDownScaleBufferDenominators[i];
-
-			if (downBufferWidth <= 0 || downBufferHeight <= 0)
-			{
-				break;
-			}
+			unsigned short downBufferWidth = std::max<unsigned short>(1, width / mDownScaleBufferDenominators[i]);
+			unsigned short downBufferHeight = std::max<unsigned short>(1, height / mDownScaleBufferDenominators[i]);
 
 			mDownScaleUAVs[i][0] = std::make_shared<D3D11UnorderedAccessView>(device, downBufferWidth, downBufferHeight);
 			mDownScaleUAVs[i][1] = std::make_shared<D3D11UnorderedAccessView>(device, downBufferWidth, downBufferHeight);
@@ -193,8 +191,8 @@ namespace fq::graphics
 				return (value + aligment - 1) / aligment * aligment;
 			};
 
-		unsigned short width = device->GetWidth() / 2;
-		unsigned short height = device->GetHeight() / 2;
+		unsigned short width = std::max<unsigned short>(1, device->GetWidth() / 2);
+		unsigned short height = std::max<unsigned short>(1, device->GetHeight() / 2);
 		mBloomParams.Threshold = mPostProcessingInfo.BloomThreshold;
 		mBloomParams.Scatter = mPostProcessingInfo.BloomScatter;
 		mBloomParams.bUseScatter = mPostProcessingInfo.bUseBloomScatter;
@@ -213,8 +211,8 @@ namespace fq::graphics
 		mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
 
 		{
-			width = device->GetWidth() / mDownScaleBufferDenominators[0];
-			height = device->GetHeight() / mDownScaleBufferDenominators[0];
+			width = std::max<unsigned short>(1, device->GetWidth() / mDownScaleBufferDenominators[0]);
+			height = std::max<unsigned short>(1, device->GetHeight() / mDownScaleBufferDenominators[0]);
 
 			// ´Ù¿î »ùÇÃ¸µ
 			mBloomDownSampleCS->Bind(device);
@@ -258,8 +256,8 @@ namespace fq::graphics
 				break;
 			}
 
-			width = device->GetWidth() / mDownScaleBufferDenominators[i + 1];
-			height = device->GetHeight() / mDownScaleBufferDenominators[i + 1];
+			width = std::max<unsigned short>(1, device->GetWidth() / mDownScaleBufferDenominators[i + 1]);
+			height = std::max<unsigned short>(1, device->GetHeight() / mDownScaleBufferDenominators[i + 1]);
 
 			// ´Ù¿î »ùÇÃ¸µ
 			mBloomDownSampleCS->Bind(device);
@@ -297,8 +295,8 @@ namespace fq::graphics
 		}
 
 		{
-			width = device->GetWidth() / mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT - 2];
-			height = device->GetHeight() / mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT - 2];
+			width = std::max<unsigned short>(1, device->GetWidth() / mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT - 2]);
+			height = std::max<unsigned short>(1, device->GetHeight() / mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT - 2]);
 
 			// ¾÷»ùÇÃ¸µ
 			mBloomAccumulateCS->Bind(device);
@@ -339,8 +337,8 @@ namespace fq::graphics
 
 		for (int i = DOWN_SCALE_BUFFER_COUNT - 2; i >= 1; --i)
 		{
-			width = device->GetWidth() / mDownScaleBufferDenominators[i - 1];
-			height = device->GetHeight() / mDownScaleBufferDenominators[i - 1];
+			width = std::max<unsigned short>(1, device->GetWidth() / mDownScaleBufferDenominators[i - 1]);
+			height = std::max<unsigned short>(1, device->GetHeight() / mDownScaleBufferDenominators[i - 1]);
 
 			if (width <= 0 || height <= 0)
 			{
@@ -384,8 +382,8 @@ namespace fq::graphics
 			std::swap(mDownScaleSRVIndex, mDownScaleUAVIndex);
 		}
 
-		width = device->GetWidth() / 2;
-		height = device->GetHeight() / 2;
+		width = std::max<unsigned short>(1, device->GetWidth() / 2);
+		height = std::max<unsigned short>(1, device->GetHeight() / 2);
 
 		// ¾÷»ùÇÃ¸µ
 		mBloomAccumulateCS->Bind(device);

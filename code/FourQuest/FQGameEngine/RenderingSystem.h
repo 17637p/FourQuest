@@ -91,10 +91,9 @@ namespace fq::game_engine
 		void unloadTerrain(fq::game_module::GameObject* object);
 
 		void loadAnimation(fq::game_module::GameObject * object);
+		void loadUVAnimation(fq::game_module::GameObject * object);
 
 		void unloadAllModel();
-
-
 
 	private:
 		GameProcess* mGameProcess;

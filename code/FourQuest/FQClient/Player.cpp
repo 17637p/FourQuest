@@ -140,6 +140,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 	if (isHitAble && collision.other->GetTag() == game_module::ETag::MonsterAttack)
 	{
 		mAnimator->SetParameterTrigger("OnHit");
+
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
 		float attackPower = monsterAtk->GetAttackPower();
 		mHp -= attackPower;
