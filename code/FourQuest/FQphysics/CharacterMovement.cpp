@@ -98,7 +98,6 @@ namespace fq::physics
 	{
 		mVelocity.x = std::clamp(mVelocity.x, -mMaxSpeed, mMaxSpeed);
 		mVelocity.z = std::clamp(mVelocity.z, -mMaxSpeed, mMaxSpeed);
-
 	}
 
 	void CharacterMovement::Compute(float deltaTime)

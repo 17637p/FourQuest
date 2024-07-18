@@ -52,6 +52,7 @@
 #include "MonsterGroup.h"
 
 #include "Attack.h"
+#include "KnockBack.h"
 
 // UI
 #include "HpBar.h"
@@ -461,6 +462,14 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "LinearAttack")
 		.base<fq::game_module::Component>();
 
+	entt::meta<KnockBack>()
+		.type("KnockBack"_hs)
+		.prop(fq::reflect::prop::Name, "KnockBack")
+		.data<&KnockBack::mVelocity>("Velocity"_hs)
+		.prop(fq::reflect::prop::Name, "Velocity")
+		.data<&KnockBack::mFriction>("Friction"_hs)
+		.prop(fq::reflect::prop::Name, "Friction")
+		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//

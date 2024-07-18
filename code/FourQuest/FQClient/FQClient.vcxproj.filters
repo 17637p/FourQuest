@@ -218,6 +218,9 @@
     <ClInclude Include="ShiedlDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="KnockBack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -292,9 +295,6 @@
     <ClCompile Include="PlantMonster.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
-    <ClCompile Include="LinearAttack.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
-    </ClCompile>
     <ClCompile Include="MeleeMonsterIdleState.cpp">
       <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
@@ -345,6 +345,12 @@
     </ClCompile>
     <ClCompile Include="ShiedlDashState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="LinearAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="KnockBack.cpp">
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

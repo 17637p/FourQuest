@@ -40,6 +40,7 @@
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="HpBar.h" />
     <ClInclude Include="KnightArmour.h" />
+    <ClInclude Include="KnockBack.h" />
     <ClInclude Include="MagicArmour.h" />
     <ClInclude Include="MagicBallAttackState.h" />
     <ClInclude Include="MeleeMonster.h" />
@@ -87,6 +88,7 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="KnightArmour.cpp" />
+    <ClCompile Include="KnockBack.cpp" />
     <ClCompile Include="MagicArmour.cpp" />
     <ClCompile Include="MagicBallAttackState.cpp" />
     <ClCompile Include="MeleeMonster.cpp" />
