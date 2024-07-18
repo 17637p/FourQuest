@@ -662,7 +662,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
 			articulation->SetIsRagdoll(data.bIsRagdollSimulation);
-			transform->SetWorldMatrix(data.worldTransform);
+			//transform->SetWorldMatrix(data.worldTransform);
 		}
 		else
 		{
@@ -770,7 +770,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			fq::physics::ArticulationSetData data;
 
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
-			data.worldTransform = transform->GetWorldMatrix();
+			//data.worldTransform = transform->GetWorldMatrix();
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}

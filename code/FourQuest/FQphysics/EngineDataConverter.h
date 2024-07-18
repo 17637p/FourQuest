@@ -17,6 +17,13 @@ void CopyPxTransformToDirectXMatrix(const physx::PxTransform& pxTransform, Direc
 /// <param name="pxTransform"> 전환된 매트릭스 정보 값을 받을 매개 변수입니다. </param>
 void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform);
 
+/// <summary>
+/// 왼손 좌표계 (DirectX)를 오른손 좌표계 (physX)로 x, y축 전환을 통해 변경해줍니다.
+/// </summary>
+/// <param name="dxMatrix"></param>
+/// <param name="pxTransform"></param>
+void CopyDirectXMatrixToPxTransformXYZ(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform);
+
 
 
 void CopyPxVec3ToDxVec3(const physx::PxVec3& pxVector, DirectX::SimpleMath::Vector3& dxVector);

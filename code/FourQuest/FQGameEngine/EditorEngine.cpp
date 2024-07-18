@@ -152,7 +152,7 @@ void fq::game_engine::EditorEngine::Process()
 				//////////////////////////////////////////////////////////////////////////
 
 				static float accmulator = 0.f;
-				constexpr float fixedDeltaTime = 1.f / 60.f;
+				constexpr float fixedDeltaTime = 1.f / 600.f;
 				accmulator += deltaTime;
 
 				bool onFixedUpdtae = false;

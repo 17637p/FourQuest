@@ -161,7 +161,7 @@ namespace fq::game_module
 	{
 		assert(fs::exists(path));
 		assert(path.extension() == ".articulation");
-		number = 0;
+		number = 1;
 
 		std::ifstream readData(path);
 		ordered_json articulationJson;

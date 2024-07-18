@@ -31,9 +31,9 @@ namespace fq::physics
 		mPxArticulation = physics->createArticulationReducedCoordinate();
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, true);
-		mPxArticulation->setSolverIterationCounts(4);
+		mPxArticulation->setSolverIterationCounts(8);
 		mPxArticulation->setMaxCOMLinearVelocity(10.f);
-		mPxArticulation->setMaxCOMAngularVelocity(5.f);
+		mPxArticulation->setMaxCOMAngularVelocity(10.f);
 
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
 		mID = info.id;
@@ -144,4 +144,3 @@ namespace fq::physics
 		mPhysicsCollisionDataManager->Create(mID, collisionData);
 	}
 }
-

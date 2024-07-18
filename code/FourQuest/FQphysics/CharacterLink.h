@@ -48,6 +48,7 @@ namespace fq::physics
 		std::string mName;
 		float mDensity;
 		DirectX::SimpleMath::Matrix mLocalTransform;
+		physx::PxTransform mPxLocalTransform;
 
 		std::shared_ptr<CharacterJoint> mMyJoint;
 		std::weak_ptr<CharacterLink> mParentLink;
