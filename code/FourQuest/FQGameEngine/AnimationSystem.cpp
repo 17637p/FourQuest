@@ -72,17 +72,16 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 				float blendWeight = controller.GetBlendWeight();
 				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
 			}
-			else
+			else if (controller.GetHasCurrentStateAnimation())
 			{
-				if (controller.GetHasCurrentStateAnimation())
-				{
-					nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
-				}
-				else
-				{
-					int a = 0;
-				}
+				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
 			}
+		});
+
+	mScene->ViewComponents<UVAnimator>(
+		[dt](GameObject& object, UVAnimator& animator)
+		{
+			animator.UpdateTimePos(dt);
 		});
 }
 

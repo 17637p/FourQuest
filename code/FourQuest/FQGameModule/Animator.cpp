@@ -8,7 +8,6 @@ fq::game_module::Animator::Animator()
 
 }
 
-
 fq::game_module::Animator::~Animator()
 {
 

@@ -56,6 +56,7 @@ void fq::game_engine::EditorHelper::UpdateEditorMode(GameProcess* game, float dt
 	}
 }
 
+
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 

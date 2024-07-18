@@ -22,6 +22,7 @@ fq::game_engine::DebugSystem::DebugSystem()
 	, mbOnCharaterController(false)
 	, mbOnNavigationMesh(false)
 	, mbOnTerrainCollider(false)
+	, mbUseRenderDebug(true)
 {}
 
 fq::game_engine::DebugSystem::~DebugSystem()
@@ -48,6 +49,8 @@ void fq::game_engine::DebugSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::DebugSystem::Render()
 {
+	mGameProcess->mGraphics->SetIsRenderDebug(mbUseRenderDebug);
+
 	renderGrid();
 	renderBoxCollider();
 	renderSphereCollider();

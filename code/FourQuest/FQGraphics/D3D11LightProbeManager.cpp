@@ -134,6 +134,13 @@ void D3D11LightProbeManager::SetLightProbe(int index, const DirectX::SimpleMath:
 
 float* D3D11LightProbeManager::GetLightProbeCoefficient(int lightProbeIndex)
 {
+	//Todo: 임시 처리가 아니라 Delete 처리를 제대로 해야함, 딜리트할 때 바꾸고 나서 
+	// size랑 똑같은 애일 때 디버깅 해보던가
+	// 저장하고 불러올 때 문제가 생기는 건가 싶기도 하고 ?
+	if (mLightProbePair[lightProbeIndex] >= mLightProbes.size())
+	{
+		mLightProbePair[lightProbeIndex] = 0;
+	}
 	return mLightProbes[mLightProbePair[lightProbeIndex]]->coefficient;
 }
 
@@ -387,7 +394,8 @@ void D3D11LightProbeManager::lerpLightProbe(Tetrahedron* tet, const DirectX::Sim
 
 void D3D11LightProbeManager::GetCoefficientTetrahedronWeight(const DirectX::SimpleMath::Vector4& weights, int TetIndex, float* r, float* g, float* b)
 {
-	if(TetIndex > mTetrahedrons.size())
+	int size = mTetrahedrons.size();
+	if(TetIndex > size || TetIndex < 0)
 	{
 		return;
 	}
@@ -519,6 +527,47 @@ void D3D11LightProbeManager::MakeTetrahedron()
 
 	tetrahedralize(&tetOption, &in, &out);
 
+	//for (int i = 0; i < out.numberoftetrahedra; i++)
+	//{
+	//	Tetrahedron* newTet = new Tetrahedron;
+	//
+	//	for (int j = 0; j < 4; j++)
+	//	{
+	//		int point_index = out.tetrahedronlist[i * 4 + j];
+	//		int neighbor_index = out.neighborlist[i * 4 + j];
+	//		
+	//		newTet->probes[j] = mLightProbes[point_index];
+	//		newTet->neighbors[j] = neighbor_index;
+	//	}
+	//	newTet->matrix = DirectX::SimpleMath::Matrix{
+	//		newTet->probes[0]->position.x - newTet->probes[3]->position.x, newTet->probes[1]->position.x - newTet->probes[3]->position.x, newTet->probes[2]->position.x - newTet->probes[3]->position.x, 0,
+	//		newTet->probes[0]->position.y - newTet->probes[3]->position.y, newTet->probes[1]->position.y - newTet->probes[3]->position.y, newTet->probes[2]->position.y - newTet->probes[3]->position.y, 0,
+	//		newTet->probes[0]->position.z - newTet->probes[3]->position.z, newTet->probes[1]->position.z - newTet->probes[3]->position.z, newTet->probes[2]->position.z - newTet->probes[3]->position.z, 0,
+	//		0, 0, 0, 1
+	//	};
+	//	newTet->matrix = newTet->matrix.Transpose();
+	//	newTet->matrix = newTet->matrix.Invert();
+	//
+	//	mTetrahedrons.push_back(newTet);
+	//}
+
+	out.save_elements("output");
+	out.save_nodes("output");
+
+	tetgenio reIn, reOut;
+
+	std::string nodeName = "output";
+	std::string eleName = "output";
+	reIn.load_node(const_cast<char*>(nodeName.c_str()));
+	reIn.load_tet(const_cast<char*>(eleName.c_str()));
+
+	tetOption.refine = 1;
+	tetOption.quality = 1;      // '-q' 품질 개선을 활성화합니다.
+	tetOption.steinerleft = 0;
+	tetOption.nobisect = 1;
+
+	tetrahedralize(&tetOption, &reIn, &reOut);
+
 	for (int i = 0; i < out.numberoftetrahedra; i++)
 	{
 		Tetrahedron* newTet = new Tetrahedron;
@@ -527,7 +576,7 @@ void D3D11LightProbeManager::MakeTetrahedron()
 		{
 			int point_index = out.tetrahedronlist[i * 4 + j];
 			int neighbor_index = out.neighborlist[i * 4 + j];
-			
+
 			newTet->probes[j] = mLightProbes[point_index];
 			newTet->neighbors[j] = neighbor_index;
 		}
@@ -542,9 +591,6 @@ void D3D11LightProbeManager::MakeTetrahedron()
 
 		mTetrahedrons.push_back(newTet);
 	}
-
-	out.save_elements("output");
-	out.save_nodes("output");
 }
 
 void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector<Tetrahedron*> tets, const DirectX::SimpleMath::Vector3& position, int& tetIndex, DirectX::SimpleMath::Vector4& weights, int& steps)
@@ -571,7 +617,7 @@ void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector
 			break;
 		}
 
-		const Tetrahedron& tet = *tets[tetIndex];
+		const Tetrahedron& tet = *tets[steps];
 		getBarycentriCoordinateForInnerTetrahedron(position, tet, weights);
 		if (weights.x >= 0.0f && weights.y >= 0.0f && weights.z >= 0.0f && weights.w >= 0.0f)
 		{
@@ -580,27 +626,35 @@ void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector
 		}
 
 		// Otherwise find the smallest barycentric coord and move in that direction
-		// 그렇지 않으면 가장 작은 이심좌표를 찾아 그 방향으로 이동합니다.
-		if (weights.x < weights.y && weights.x < weights.z && weights.x < weights.w)
-		{
-			tetIndex = tet.neighbors[0];
-		}
-		else if (weights.y < weights.z && weights.y < weights.w)
-		{
-			tetIndex = tet.neighbors[1];
-		}
-		else if (weights.z < weights.w)
-		{
-			tetIndex = tet.neighbors[2];
-		}
-		else
-		{
-			tetIndex = tet.neighbors[3];
-		}
+		//// 그렇지 않으면 가장 작은 이심좌표를 찾아 그 방향으로 이동합니다.
+		//if (weights.x < weights.y && weights.x < weights.z && weights.x < weights.w)
+		//{
+		//	tetIndex = tet.neighbors[0];
+		//}
+		//else if (weights.y < weights.z && weights.y < weights.w)
+		//{
+		//	tetIndex = tet.neighbors[1];
+		//}
+		//else if (weights.z < weights.w)
+		//{
+		//	tetIndex = tet.neighbors[2];
+		//}
+		//else
+		//{
+		//	tetIndex = tet.neighbors[3];
+		//}
 
 		// There's a chance the position lies "between" two tetrahedra, i.e. both return a slightly negative weight
 		// due to numerical errors and we ping-pong between them. We could be detecting if the next tet index
 		// is the one we came from. But we can also let it reach the max steps count and see if that ever happens in practice.
+		if (steps == tetCount - 1)
+		{
+			int a = 3;
+			weights.x = 0;
+			weights.y = 0;
+			weights.z = 0;
+			weights.w = 0;
+		}
 	}
 }
 
