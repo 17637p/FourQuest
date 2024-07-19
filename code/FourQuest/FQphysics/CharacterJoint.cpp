@@ -28,7 +28,7 @@ namespace fq::physics
 	{
 		mParentLink = parentLink;
 		mOwnerLink = ownerLink;
-		mLocalTransform = info.localTransform.Invert();
+		mLocalTransform = info.localTransform;
 		mSwing1Limit.high = info.Swing1AxisInfo.limitsHigh;
 		mSwing1Limit.low = info.Swing1AxisInfo.limitsLow;
 		mSwing2Limit.high = info.Swing2AxisInfo.limitsHigh;
@@ -41,16 +41,16 @@ namespace fq::physics
 		mDrive.driveType = physx::PxArticulationDriveType::eFORCE;
 
 		mPxJoint = ownerLink->GetPxLink()->getInboundJoint();
-		mPxJoint->setMaxJointVelocity(1.f);
-		mPxJoint->setFrictionCoefficient(0.5f);
+		//mPxJoint->setMaxJointVelocity(0.001f);
+		mPxJoint->setFrictionCoefficient(0.1f);
 
 		physx::PxTransform pxlocalTransform;
 		DirectX::SimpleMath::Matrix parentLocalTransform = mLocalTransform * ownerLink->GetLocalTransform();
 
-		CopyDirectXMatrixToPxTransform(mLocalTransform, pxlocalTransform);
+		CopyDirectXMatrixToPxTransformXYZ(mLocalTransform, pxlocalTransform);
  		mPxJoint->setChildPose(pxlocalTransform);
 
-		CopyDirectXMatrixToPxTransform(parentLocalTransform, pxlocalTransform);
+		CopyDirectXMatrixToPxTransformXYZ(parentLocalTransform, pxlocalTransform);
 		mPxJoint->setParentPose(pxlocalTransform);
 
 		mPxJoint->setJointType(physx::PxArticulationJointType::eSPHERICAL);

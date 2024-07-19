@@ -101,6 +101,24 @@ namespace fq::physics
 		}
 	}
 
+	bool areTransformsDifferent(const physx::PxTransform& transform1, const physx::PxTransform& transform2, float positionTolerance, float rotationTolerance) 
+	{
+		// Compare positions
+		if (!(transform1.p).isFinite() || !(transform2.p).isFinite() || (transform1.p - transform2.p).magnitude() > positionTolerance) {
+			return true;
+		}
+
+		// Compare rotations
+		if (!(transform1.q).isFinite() || !(transform2.q).isFinite() || (physx::PxAbs(transform1.q.w - transform2.q.w) > rotationTolerance) ||
+			(physx::PxAbs(transform1.q.x - transform2.q.x) > rotationTolerance) ||
+			(physx::PxAbs(transform1.q.y - transform2.q.y) > rotationTolerance) ||
+			(physx::PxAbs(transform1.q.z - transform2.q.z) > rotationTolerance)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	bool PhysicsRigidBodyManager::SetRigidBodyData(const unsigned int& id, const RigidBodyGetSetData& rigidBodyData, int* collisionMatrix)
 	{
 		using namespace DirectX::SimpleMath;
@@ -146,9 +164,10 @@ namespace fq::physics
 		std::shared_ptr<StaticRigidBody> staticBody = std::dynamic_pointer_cast<StaticRigidBody>(body);
 		if (staticBody)
 		{
-			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
-			physx::PxTransform pxTransform;
 			physx::PxRigidStatic* pxBody = staticBody->GetPxRigidStatic();
+			DirectX::SimpleMath::Matrix dxTransform = rigidBodyData.transform;
+			physx::PxTransform pxPrevTransform = pxBody->getGlobalPose();
+			physx::PxTransform pxCurrentTransform;
 
 			DirectX::SimpleMath::Vector3 position;
 			DirectX::SimpleMath::Vector3 scale;
@@ -161,8 +180,12 @@ namespace fq::physics
 				* Matrix::CreateTranslation(position)
 				* staticBody->GetOffsetTranslation().Invert();
 
-			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
-			pxBody->setGlobalPose(pxTransform);
+			CopyDirectXMatrixToPxTransform(dxTransform, pxCurrentTransform);
+
+			if (areTransformsDifferent(pxPrevTransform, pxCurrentTransform, 0.001f, 0.001f))
+			{
+				pxBody->setGlobalPose(pxCurrentTransform);
+			}
 			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 			staticBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 

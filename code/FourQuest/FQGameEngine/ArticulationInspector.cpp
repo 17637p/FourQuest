@@ -45,7 +45,11 @@ namespace fq::game_engine
 
 		if (ImGui::Begin("Articulation Inspector", &mbIsOpen))
 		{
+			beginArticulationData();
+			ImGui::Separator();
 			beginLinkData();
+			ImGui::Separator();
+			beginJointData();
 		}
 		ImGui::End();
 	}
@@ -89,11 +93,11 @@ namespace fq::game_engine
 
 	void beginShapeCombo(const std::string& comboName, fq::game_module::EShapeType& shapeType)
 	{
-		const char* items[] = { "Box", "Sphere", "Capsule" };
+		const char* items[] = { "Box", "Sphere", "Capsule", "None"};
 		if (ImGui::BeginCombo(comboName.c_str(), items[(int)shapeType]))
 		{
 			// 콤보 박스와 각 항목을 추가합니다.
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 4; i++)
 			{
 				const bool isSelected = (shapeType == (fq::game_module::EShapeType)i);
 
@@ -114,7 +118,7 @@ namespace fq::game_engine
 		}
 	}
 
-	void game_engine::ArticulationInspector::beginLinkData()
+	void ArticulationInspector::beginArticulationData()
 	{
 		// Articulation
 		if (ImGui::TreeNode("Articulation"))
@@ -136,9 +140,10 @@ namespace fq::game_engine
 
 			ImGui::TreePop();
 		}
+	}
 
-		ImGui::Separator();
-
+	void game_engine::ArticulationInspector::beginLinkData()
+	{
 		// Link
 		if (ImGui::TreeNode("Link"))
 		{
@@ -208,9 +213,10 @@ namespace fq::game_engine
 
 			ImGui::TreePop();
 		}
+	}
 
-		ImGui::Separator();
-
+	void ArticulationInspector::beginJointData()
+	{
 		// Joint
 		if (ImGui::TreeNode("Joint"))
 		{
@@ -229,16 +235,48 @@ namespace fq::game_engine
 				ImGui::InputFloat3("JointScale", (float*)&jointScale);
 				ImGui::InputFloat4("JointRotation", (float*)&jointRotation);
 				ImGui::InputFloat3("JointPosition", (float*)&jointPosition);
+				if (ImGui::Button("Bone Transform Connect"))
+				{
+					auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+					// GameObject를 순회하면서 Bar를 생성합니다
+					for (auto& object : scene->GetObjectView(true))
+					{
+						if (object.GetComponent<fq::game_module::Animator>() != nullptr)
+						{
+							auto animatorMesh = object.GetComponent<fq::game_module::Animator>();
+
+							if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+								return;
+
+							auto objectTransform = object.GetComponent<fq::game_module::Transform>();
+							auto objectScale = objectTransform->GetWorldScale();
+
+							auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+
+							DirectX::SimpleMath::Matrix boneRootTransform = nodeHierarchy.GetRootTransform(mSelectLink->GetBoneName()) 
+								* DirectX::SimpleMath::Matrix::CreateScale(objectTransform->GetWorldScale());
+
+							DirectX::SimpleMath::Matrix linkWorldTransform = mSelectLink->GetWorldTransform();
+
+							mSelectLink->SetJointLocalTransform(boneRootTransform * linkWorldTransform.Invert());
+						}
+					}
+				}
+				else
+				{
+					jointLocalTransform = DirectX::SimpleMath::Matrix::CreateScale(jointScale)
+						* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation)
+						* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition);
+
+					mSelectLink->SetJointLocalTransform(jointLocalTransform);
+				}
+
 				ImGui::InputFloat("JointDamping", &jointDamping);
 				ImGui::InputFloat("JointMaxForce", &jointMaxForce);
 				ImGui::InputFloat("JointStiffness", &jointStiffness);
 
-				jointLocalTransform = DirectX::SimpleMath::Matrix::CreateScale(jointScale)
-					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation)
-					* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition);
-
 				mSelectLink->SetJointDamping(jointDamping);
-				mSelectLink->SetJointLocalTransform(jointLocalTransform);
 				mSelectLink->SetJointMaxForce(jointMaxForce);
 				mSelectLink->SetJointStiffness(jointStiffness);
 

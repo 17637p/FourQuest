@@ -24,11 +24,16 @@ namespace fq::physics
 	{
 		mName = info.boneName;
 		mDensity = info.density;
-		mLocalTransform = info.localTransform.Invert();
+		mLocalTransform = info.localTransform;
 		mParentLink = parentLink;
 
 		physx::PxTransform pxLocalTransform;
-		CopyDirectXMatrixToPxTransform(mLocalTransform, pxLocalTransform);
+		CopyDirectXMatrixToPxTransformXYZ(mLocalTransform, pxLocalTransform);
+
+		DirectX::SimpleMath::Vector3 scale;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 position;
+		mLocalTransform.Decompose(scale, rotation, position);
 
 		if (parentLink == nullptr)
 		{
@@ -40,8 +45,9 @@ namespace fq::physics
 			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}
 
-		mPxLink->setMaxAngularVelocity(5.f);
-		mPxLink->setMaxLinearVelocity(5.f);
+		mPxLink->setMaxAngularVelocity(4.f);
+		mPxLink->setMaxLinearVelocity(4.f);
+		mPxLink->setMaxDepenetrationVelocity(2.0f);
 
 		return true;
 	}
@@ -55,8 +61,8 @@ namespace fq::physics
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
+		shape->setContactOffset(0.002f);
+		shape->setRestOffset(0.001f);
 		return shape;
 	}
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, const float& halfHeight, std::shared_ptr<CollisionData> collisionData)
@@ -65,18 +71,18 @@ namespace fq::physics
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
 
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
+		shape->setContactOffset(0.002f);
+		shape->setRestOffset(0.001f);
 		return shape;
 	}
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const float& radius, std::shared_ptr<CollisionData> collisionData)
 	{
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxSphereGeometry(radius), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
-
+		
 		shape->userData = collisionData.get();
-		shape->setContactOffset(0.02f);
-		shape->setRestOffset(0.01f);
+		shape->setContactOffset(0.002f);
+		shape->setRestOffset(0.001f);
 		return shape;
 	}
 

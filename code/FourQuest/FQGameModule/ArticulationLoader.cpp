@@ -120,6 +120,11 @@ namespace fq::game_module
 		number++;
 		auto linkData = std::make_shared<LinkData>();
 
+		if (number < linkJson["id"])
+		{
+			number = linkJson["id"] + 1;
+		}
+
 		linkData->SetID(linkJson["id"]);
 		linkData->SetBoneName(linkJson["boneName"]);
 		linkData->SetParentBoneName(linkJson["parentBoneName"]);
@@ -161,7 +166,6 @@ namespace fq::game_module
 	{
 		assert(fs::exists(path));
 		assert(path.extension() == ".articulation");
-		number = 0;
 
 		std::ifstream readData(path);
 		ordered_json articulationJson;

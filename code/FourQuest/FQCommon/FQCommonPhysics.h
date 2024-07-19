@@ -122,24 +122,23 @@ namespace fq::physics
 		bool isFall = false;									// 캐릭터가 떨어지고 있는지 체크 변수
 	};
 
-	struct ArticulationLinkData
+	struct ArticulationJointData
 	{
 		std::string name;
-		DirectX::SimpleMath::Matrix worldTransform = {};
+		DirectX::SimpleMath::Matrix localTransform = {};
 	};
 
 	struct ArticulationGetData
 	{
 		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
-		std::vector<ArticulationLinkData> linkData;
+		std::vector<ArticulationJointData> linkData;
 		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
 		unsigned int myLayerNumber = UINT_MAX;
 	};
 
 	struct ArticulationSetData
 	{
-		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
-		std::vector<ArticulationLinkData> linkData;
+		std::vector<ArticulationJointData> linkData;
 		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
 		unsigned int myLayerNumber = UINT_MAX;
 	};

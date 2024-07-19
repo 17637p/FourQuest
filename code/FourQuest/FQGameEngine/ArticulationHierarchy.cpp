@@ -63,12 +63,12 @@ namespace fq::game_engine
 	{
 		if (!mbIsOpen) return;
 
-		mArticulationData->Update();
-		drawArticulationDebug(mArticulationData->GetRootLinkData().lock());
-
 		if (ImGui::Begin("Articulation Hierarchy", &mbIsOpen))
 		{
 			ImGui::BeginChild("Articulation Hierarchy");
+
+			mArticulationData->Update();
+			drawArticulationDebug(mArticulationData->GetRootLinkData().lock());
 
 			beginHierarchyButton();
 
@@ -86,6 +86,11 @@ namespace fq::game_engine
 
 	void ArticulationHierarchy::beginBoneHierarchy()
 	{
+		for (auto& object : mScene->GetObjectView(true))
+		{
+			drawBoneDebug(object);
+		}
+
 		if (!mbIsBoneHierarchy)
 			return;
 
@@ -241,7 +246,6 @@ namespace fq::game_engine
 		// 오브젝트 이름
 		beginGameObjectNameBar(object);
 		// 오브젝트(본) 디버그 드로우
-		drawBoneDebug(object);
 
 		// Hierarchy 토글
 		auto children = object.GetChildren();
@@ -439,12 +443,27 @@ namespace fq::game_engine
 			return;
 		}
 
+		static bool isLink = true;
+		if (mInputManager->IsKeyState(EKey::Tab, EKeyState::Tap))
+			isLink = !isLink;
+
 		DirectX::SimpleMath::Matrix linkMatrix = mSelectLinkData->GetWorldTransform();
+		DirectX::SimpleMath::Matrix jointMatrix = mSelectLinkData->GetJointLocalTransform() * linkMatrix;
 
-		mEditorProcess->mGamePlayWindow->DrawGizumo(linkMatrix);
+		if (isLink)
+		{
+			mEditorProcess->mGamePlayWindow->DrawGizumo(linkMatrix);
 
-		linkMatrix = linkMatrix * mSelectLinkData->GetParentTransform().Invert();
-		mSelectLinkData->SetLocalTransform(linkMatrix);
+			linkMatrix = linkMatrix * mSelectLinkData->GetParentTransform().Invert();
+			mSelectLinkData->SetLocalTransform(linkMatrix);
+		}
+		else
+		{
+			mEditorProcess->mGamePlayWindow->DrawGizumo(jointMatrix);
+
+			jointMatrix = jointMatrix * linkMatrix.Invert();
+			mSelectLinkData->SetJointLocalTransform(jointMatrix);
+		}
 	}
 
 	void ArticulationHierarchy::drawArticulationDebug(std::shared_ptr<fq::game_module::LinkData> linkData)
@@ -482,6 +501,7 @@ namespace fq::game_engine
 			info.OBB.Center = position;
 			info.OBB.Orientation = rotation;
 			info.OBB.Extents = linkData->GetBoxExtent();
+			info.bUseDepthTest = false;
 
 			jointAxisScale = std::min(info.OBB.Extents.x, std::min(info.OBB.Extents.y, info.OBB.Extents.z));
 
@@ -502,6 +522,7 @@ namespace fq::game_engine
 			info.Color = color;
 			info.Sphere.Center = position;
 			info.Sphere.Radius = linkData->GetSphereRadius();
+			info.bUseDepthTest = false;
 
 			jointAxisScale = info.Sphere.Radius;
 
@@ -535,10 +556,16 @@ namespace fq::game_engine
 			sphereinfo2.Sphere.Center = position - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
 			sphereinfo1.Sphere.Radius = linkData->GetCapsuleRadius();
 			sphereinfo2.Sphere.Radius = linkData->GetCapsuleRadius();
+			sphereinfo1.bUseDepthTest = false;
+			sphereinfo2.bUseDepthTest = false;
 			rayInfo1.Normalize = false;
 			rayInfo2.Normalize = false;
 			rayInfo3.Normalize = false;
 			rayInfo4.Normalize = false;
+			rayInfo1.bUseDepthTest = false;
+			rayInfo2.bUseDepthTest = false;
+			rayInfo3.bUseDepthTest = false;
+			rayInfo4.bUseDepthTest = false;
 			rayInfo1.Origin = position + worldTransform.Forward() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
 			rayInfo2.Origin = position - worldTransform.Forward() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
 			rayInfo3.Origin = position + worldTransform.Up() * linkData->GetCapsuleRadius() - worldTransform.Right() * linkData->GetCapsuleHalfHeight();
@@ -651,12 +678,15 @@ namespace fq::game_engine
 			fq::graphics::debug::RingInfoEx swing1Info;
 
 			float swing1LimitLow = linkData->GetSwing1LimitLow() * (DirectX::XM_PI / 180.0);
-			DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(-swing1LimitLow);
+			DirectX::SimpleMath::Matrix limitRotation = DirectX::SimpleMath::Matrix::CreateRotationY(-swing1LimitLow)
+				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation);
+
 			swing1Info.Origin = jointPosition;
 			swing1Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
 			swing1Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
 			swing1Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
 			swing1Info.ArcInRadian = (linkData->GetSwing1LimitHigh() - linkData->GetSwing1LimitLow()) / 180.f * 3.14f;
+			swing1Info.bUseDepthTest = false;
 
 			mGameProcess->mGraphics->DrawRingEx(swing1Info);
 		}
@@ -668,12 +698,15 @@ namespace fq::game_engine
 			DirectX::SimpleMath::Matrix limitRotation =
 				DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
 				* DirectX::SimpleMath::Matrix::CreateRotationY(90.f * DirectX::XM_PI / 180.0)
-				* DirectX::SimpleMath::Matrix::CreateRotationZ(swing2LimitLow);
+				* DirectX::SimpleMath::Matrix::CreateRotationZ(swing2LimitLow)
+				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation);
+
 			swing2Info.Origin = jointPosition;
 			swing2Info.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
 			swing2Info.MinorAxis = -limitRotation.Forward() / 3.f * jointAxisScale;
 			swing2Info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
 			swing2Info.ArcInRadian = (linkData->GetSwing2LimitHigh() - linkData->GetSwing2LimitLow()) / 180.f * 3.14f;
+			swing2Info.bUseDepthTest = false;
 
 			mGameProcess->mGraphics->DrawRingEx(swing2Info);
 		}
@@ -684,12 +717,15 @@ namespace fq::game_engine
 			float twistLimitLow = linkData->GetTwistLimitLow() * (DirectX::XM_PI / 180.0);
 			DirectX::SimpleMath::Matrix limitRotation =
 				DirectX::SimpleMath::Matrix::CreateRotationZ(90.f * DirectX::XM_PI / 180.0)
-				* DirectX::SimpleMath::Matrix::CreateRotationX(-twistLimitLow);
+				* DirectX::SimpleMath::Matrix::CreateRotationX(-twistLimitLow)
+				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation);
+
 			twistInfo.Origin = jointPosition;
 			twistInfo.MajorAxis = limitRotation.Right() / 3.f * jointAxisScale;
 			twistInfo.MinorAxis = limitRotation.Forward() / 3.f * jointAxisScale;
 			twistInfo.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
 			twistInfo.ArcInRadian = (linkData->GetTwistLimitHigh() - linkData->GetTwistLimitLow()) / 180.f * 3.14f;
+			twistInfo.bUseDepthTest = false;
 
 			mGameProcess->mGraphics->DrawRingEx(twistInfo);
 		}

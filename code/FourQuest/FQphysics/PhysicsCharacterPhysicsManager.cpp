@@ -85,9 +85,6 @@ namespace fq::physics
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		auto articulation = articulationIter->second;
 
-		physx::PxTransform pxTransform;
-		CopyDirectXMatrixToPxTransform(articulationData.worldTransform, pxTransform);
-		articulation->GetPxArticulation()->setRootGlobalPose(pxTransform);
 		articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
 
 		if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
