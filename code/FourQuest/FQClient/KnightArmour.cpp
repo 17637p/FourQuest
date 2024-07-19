@@ -110,6 +110,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	auto foward = mTransform->GetLookAtVector();
 	mTransform->AddChild(attackT);
+	attackT->SetLocalPosition({ 0.f,1.f,0.f });
 
 	// 공격 설정
 	AttackInfo attackInfo{};
@@ -117,7 +118,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.attacker = GetGameObject();
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
-	attackInfo.knocBackPower = mShieldKnockPower;
+	attackInfo.knocBackPower = 20.f;
 	attackComponent->Set(attackInfo);
 
 	// TODO:: Dash 소리 추가
