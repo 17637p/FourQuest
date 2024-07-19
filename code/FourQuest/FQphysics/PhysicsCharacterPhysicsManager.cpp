@@ -85,32 +85,21 @@ namespace fq::physics
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		auto articulation = articulationIter->second;
 
-		physx::PxTransform pxTransform;
-		CopyDirectXMatrixToPxTransform(articulationData.worldTransform, pxTransform);
-		//articulation->GetPxArticulation()->setRootGlobalPose(pxTransform);
 		articulation->ChangeLayerNumber(articulationData.myLayerNumber, collisionMatrix, mCollisionDataManager.lock());
 
-		static bool isOnce = true;
-
-		if (isOnce)
+		if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
 		{
-			isOnce = false;
-			mScene->addArticulation(*articulation->GetPxArticulation());
+			articulation->SetIsRagdoll(articulationData.bIsRagdollSimulation);
+
+			if (articulationData.bIsRagdollSimulation)
+			{
+				bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
+				assert(isCheck);
+			}
+			else
+			{
+				mScene->removeArticulation(*articulation->GetPxArticulation());
+			}
 		}
-
-		//if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
-		//{
-		//	articulation->SetIsRagdoll(articulationData.bIsRagdollSimulation);
-
-		//	if (articulationData.bIsRagdollSimulation)
-		//	{
-		//		bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
-		//		assert(isCheck);
-		//	}
-		//	else
-		//	{
-		//		mScene->removeArticulation(*articulation->GetPxArticulation());
-		//	}
-		//}
 	}
 }

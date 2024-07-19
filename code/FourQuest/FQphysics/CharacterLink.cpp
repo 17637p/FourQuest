@@ -45,12 +45,9 @@ namespace fq::physics
 			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}
 
-		mPxLink->setMaxAngularVelocity(1.f);
-		mPxLink->setMaxLinearVelocity(2.f);
-		mPxLink->setLinearDamping(2.f);
-		mPxLink->setAngularDamping(2.f);
-		mPxLink->setMaxDepenetrationVelocity(1.0f);
-		mPxLink->setMassSpaceInertiaTensor(physx::PxVec3(0.01f, 0.01f, 0.01f));
+		mPxLink->setMaxAngularVelocity(4.f);
+		mPxLink->setMaxLinearVelocity(4.f);
+		mPxLink->setMaxDepenetrationVelocity(2.0f);
 
 		return true;
 	}

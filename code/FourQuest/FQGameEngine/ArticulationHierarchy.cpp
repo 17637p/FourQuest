@@ -63,12 +63,12 @@ namespace fq::game_engine
 	{
 		if (!mbIsOpen) return;
 
-		mArticulationData->Update();
-		drawArticulationDebug(mArticulationData->GetRootLinkData().lock());
-
 		if (ImGui::Begin("Articulation Hierarchy", &mbIsOpen))
 		{
 			ImGui::BeginChild("Articulation Hierarchy");
+
+			mArticulationData->Update();
+			drawArticulationDebug(mArticulationData->GetRootLinkData().lock());
 
 			beginHierarchyButton();
 
