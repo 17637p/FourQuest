@@ -72,7 +72,7 @@ namespace fq::graphics
 		virtual const std::vector<DirectX::SimpleMath::Vector2>& GetLightMapUV() const override { return mLightMapUV; }
 
 		void SetLightMapVertexBuffer(std::shared_ptr<D3D11VertexBuffer> vertexBuffer) { mLightMapUV_VB = vertexBuffer; }
-		std::shared_ptr<D3D11VertexBuffer> GetLightMapVertexBuffer() const { return mLightMapUV_VB; }
+		const std::shared_ptr<D3D11VertexBuffer>& GetLightMapVertexBuffer() const { return mLightMapUV_VB; }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;

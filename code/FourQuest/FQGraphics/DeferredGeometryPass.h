@@ -35,18 +35,19 @@ namespace fq::graphics
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
-		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
-		std::shared_ptr<D3D11RenderTargetView> mRoughnessRTV;
+		std::shared_ptr<D3D11RenderTargetView> mMetalnessRoughnessRTV;
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
 		std::shared_ptr<D3D11RenderTargetView> mSourceNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
+		std::shared_ptr<D3D11RenderTargetView> mPreCalculatedLightRTV;
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
-		
+
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> mStaticMeshnputLayouts;
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<ShaderProgram> mStaticMeshStaticShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;

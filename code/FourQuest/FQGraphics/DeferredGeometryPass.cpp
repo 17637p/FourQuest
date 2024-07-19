@@ -28,22 +28,25 @@ namespace fq::graphics
 		OnResize(width, height);
 
 		mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
-		mMetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
-		mRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);
+		mMetalnessRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::MetalnessRoughness);
 		mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
 		mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
 		mPositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
 		mSourceNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal);
 		mSourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
+		mPreCalculatedLightRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PreCalculatedLight);
 		mDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto staticMeshStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_STATIC.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
 		auto geometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY.cso");
+		auto geometryStaticPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY_STATIC.cso");
 		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
 		auto skinningPipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, geometryPS, pipelieState);
+		mStaticMeshStaticShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshStaticVS, nullptr, geometryStaticPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
 
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
@@ -60,15 +63,16 @@ namespace fq::graphics
 		{
 			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TANGENT", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "UV", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "UV", 1, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
 		HR(mDevice->GetDevice()->CreateInputLayout(
 			inputLayoutDesc,
 			ARRAYSIZE(inputLayoutDesc),
-			staticMeshVS->GetBlob()->GetBufferPointer(),
-			staticMeshVS->GetBlob()->GetBufferSize(),
+			staticMeshStaticVS->GetBlob()->GetBufferPointer(),
+			staticMeshStaticVS->GetBlob()->GetBufferSize(),
 			mStaticMeshnputLayouts.GetAddressOf()
 		));
 	}
@@ -83,8 +87,7 @@ namespace fq::graphics
 		mDSV = nullptr;
 
 		mAlbedoRTV = nullptr;
-		mMetalnessRTV = nullptr;
-		mRoughnessRTV = nullptr;
+		mMetalnessRoughnessRTV = nullptr;
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
@@ -132,8 +135,7 @@ namespace fq::graphics
 
 			mDSV->Clear(mDevice);
 			mAlbedoRTV->Clear(mDevice);
-			mMetalnessRTV->Clear(mDevice);
-			mRoughnessRTV->Clear(mDevice);
+			mMetalnessRoughnessRTV->Clear(mDevice);
 			mNormalRTV->Clear(mDevice, { 1000, 0, 0, 0 });
 			mEmissiveRTV->Clear(mDevice);
 			mPositionRTV->Clear(mDevice);
@@ -146,13 +148,13 @@ namespace fq::graphics
 			std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
 			renderTargetViews.reserve(8u);
 			renderTargetViews.push_back(mAlbedoRTV);
-			renderTargetViews.push_back(mMetalnessRTV);
-			renderTargetViews.push_back(mRoughnessRTV);
+			renderTargetViews.push_back(mMetalnessRoughnessRTV);
 			renderTargetViews.push_back(mNormalRTV);
 			renderTargetViews.push_back(mEmissiveRTV);
 			renderTargetViews.push_back(mPositionRTV);
 			renderTargetViews.push_back(mSourceNormalRTV);
 			renderTargetViews.push_back(mSourceTangentRTV);
+			renderTargetViews.push_back(mPreCalculatedLightRTV);
 			D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDSV);
 
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
@@ -164,15 +166,20 @@ namespace fq::graphics
 
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+
+			const std::shared_ptr<D3D11Texture>& lightMapTexture = mLightManager->GetLightMapTexture();
+			if (lightMapTexture != nullptr)
+			{
+				lightMapTexture->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			}
 		}
 
 		// Draw
 		{
-			mStaticMeshShaderProgram->Bind(mDevice);
-
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
+				const MeshObjectInfo& meshObjectInfo = job.StaticMeshObject->GetMeshObjectInfo();
 
 				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
 				{
@@ -180,7 +187,32 @@ namespace fq::graphics
 				}
 
 				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
+
+				switch (meshObjectInfo.ObjectType)
+				{
+				case MeshObjectInfo::EObjectType::Static:
+				{
+					mStaticMeshStaticShaderProgram->Bind(mDevice);
+					mDevice->GetDeviceContext()->IASetInputLayout(mStaticMeshnputLayouts.Get());
+					const std::shared_ptr<D3D11VertexBuffer>& lightMapUVVertexBuffer = job.StaticMeshObject->GetLightMapVertexBuffer();
+
+					if (lightMapUVVertexBuffer != nullptr)
+					{
+						lightMapUVVertexBuffer->Bind(mDevice, 1);
+					}
+
+					break;
+				}
+				case MeshObjectInfo::EObjectType::Dynamic:
+				{
+					mStaticMeshShaderProgram->Bind(mDevice);
+					job.Material->Bind(mDevice);
+
+					break;
+				}
+				default:
+					assert(false);
+				}
 
 				switch (materialInfo.RasterizeType)
 				{

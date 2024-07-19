@@ -55,8 +55,8 @@ namespace fq::graphics
 		mBackBufferRTV = nullptr;
 
 		mAlbedoSRV = nullptr;
-		mMetalnessSRV = nullptr;
-		mRoughnessSRV = nullptr;
+		mMetalnessRoughnessSRV = nullptr;
+		mPreCalculatedSRV = nullptr;
 		mNormalSRV = nullptr;
 		mEmissiveSRV = nullptr;
 		mPositionSRV = nullptr;
@@ -83,18 +83,18 @@ namespace fq::graphics
 		mViewport.TopLeftY = 0.f;
 
 		auto AlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
-		auto MetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
-		auto RoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);
+		auto MetalnessRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::MetalnessRoughness);
 		auto NormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
 		auto EmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
 		auto PositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
+		auto preCalculatedLightRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PreCalculatedLight);
 
 		mAlbedoSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, AlbedoRTV);
-		mMetalnessSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, MetalnessRTV);
-		mRoughnessSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, RoughnessRTV);
+		mMetalnessRoughnessSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, MetalnessRoughnessRTV);
 		mNormalSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, NormalRTV);
 		mEmissiveSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, EmissiveRTV);
 		mPositionSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, PositionRTV);
+		mPreCalculatedSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, preCalculatedLightRTV);
 	}
 	void DeferredShadingPass::Render()
 	{
@@ -161,11 +161,11 @@ namespace fq::graphics
 			mFullScreenIB->Bind(mDevice);
 
 			mAlbedoSRV->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
-			mMetalnessSRV->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
-			mRoughnessSRV->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
-			mNormalSRV->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
-			mEmissiveSRV->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
-			mPositionSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			mMetalnessRoughnessSRV->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mNormalSRV->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mEmissiveSRV->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
+			mPositionSRV->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
+			mPreCalculatedSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
 			
 			const auto& iblTexture = mLightManager->GetIBLTexture();
 			if (iblTexture.DiffuseIrradiance != nullptr)

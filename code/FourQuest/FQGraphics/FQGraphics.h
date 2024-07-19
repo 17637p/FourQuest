@@ -162,6 +162,7 @@ namespace fq::graphics
 		virtual void DeleteLight(const unsigned int id) override;
 
 		virtual void UseShadow(const unsigned int id, bool bUseShadow);
+		virtual void SetLightMapTexture(const std::filesystem::path& path);
 
 		// Light Probe
 		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;

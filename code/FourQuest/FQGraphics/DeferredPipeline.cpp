@@ -45,13 +45,13 @@ namespace fq::graphics
 		RenderPipeline::Initialize(device, resourceManager, width, height);
 
 		mAlbedoRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo, width, height);
-		mMetalnessRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness, width, height);
-		mRoughnessRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness, width, height);
+		mMetalnessRoughnessRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::MetalnessRoughness, width, height);
 		mNormalRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal, width, height);
 		mEmissiveRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive, width, height);
 		mPositionRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 		mSourceNormalRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal, width, height);
 		mSourceTangentRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent, width, height);
+		mPreCalculatedLightRTV = mResourceManager->Create<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PreCalculatedLight, width, height);
 
 		mShadowPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager);
 		mGeometryPass->Initialize(device, jobManager, cameraManager, resourceManager, lightManager, width, height);
@@ -103,25 +103,25 @@ namespace fq::graphics
 		RenderPipeline::Finalize();
 
 		mAlbedoRTV = nullptr;
-		mMetalnessRTV = nullptr;
-		mRoughnessRTV = nullptr;
+		mMetalnessRoughnessRTV = nullptr;
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
 		mSourceNormalRTV = nullptr;
 		mSourceTangentRTV = nullptr;
+		mPreCalculatedLightRTV = nullptr;
 	}
 
 	void DeferredPipeline::OnResize(unsigned short width, unsigned short height)
 	{
 		mAlbedoRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Albedo, width, height);
-		mMetalnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Metalness, width, height);
-		mRoughnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Roughness, width, height);
+		mMetalnessRoughnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::MetalnessRoughness, width, height);
 		mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Normal, width, height);
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Emissive, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 		mSourceNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 		mSourceTangentRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
+		mPreCalculatedLightRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PreCalculatedLight, width, height);
 
 		RenderPipeline::OnResize(width, height);
 	}

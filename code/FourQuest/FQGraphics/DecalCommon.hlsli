@@ -25,13 +25,12 @@ cbuffer cbDecalMaterial : register(b1)
 {
     float4 gBaseColor;
     float4 gEmissiveColor;
-    bool gUseAlbedoMap;
-    bool gUseMetalnessMap;
-    bool gUseRoughnessMap;
-    bool gUseNormalMap;
     
+    bool gUseAlbedoMap;
+    bool gUseNormalMap;
     bool gUseEmissiveMap;
     float gNormalBlend;
+    
     float gAlphaCutoff;
 }
 

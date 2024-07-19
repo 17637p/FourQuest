@@ -40,13 +40,13 @@ namespace fq::graphics
 
 		// Deferred
 		Albedo,
-		Metalness,
-		Roughness,
+		MetalnessRoughness,
 		Normal,
 		Emissive,
 		PositionWClipZ,
 		SourceNormal,
 		SourceTangent,
+		PreCalculatedLight,
 
 		LightProbeIrr,
 		DebugLightProbeIrr,

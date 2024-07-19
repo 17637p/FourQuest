@@ -11,6 +11,9 @@ struct VertexIn
 #elif defined INSTANCING
     float4x4 World : WORLD;
 #endif
+#ifdef STATIC
+    float2 UV1 : UV1;
+#endif
 };
 
 struct VertexOut
@@ -24,6 +27,9 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+#ifdef STATIC
+    float2 UV1 : TEXCOORD6;
+#endif
 };
 
 cbuffer cbModelTransform : register(b0)
@@ -94,6 +100,10 @@ VertexOut main(VertexIn vin)
     vout.UV = mul(float4(vin.UV, 0, 1), gTexTransform);
     
     vout.ClipSpacePosZ = vout.PositionH.z;
+    
+#ifdef STATIC
+    vout.UV1 = vin.UV1;
+#endif
     
     return vout;
 }

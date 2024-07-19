@@ -182,14 +182,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color EmissiveColor;
 
 		int bUseBaseColor;
-		int bUseMetalness;
-		int bUseRoughness;
 		int bUseNormalness;
-
 		int bIsUsedEmissive;
 		float NormalBlend;
+	
 		float AlphaCutoff;
-		float unused[1];
+		float unused[3];
 	};
 
 	struct ParticleFrameData

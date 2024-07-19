@@ -100,7 +100,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> mSpecularBRDF;
 		std::shared_ptr<D3D11CubeTexture> mSkyBox;
 
-
 		std::shared_ptr<D3D11Texture> mLightMapTexture;
 	};
 

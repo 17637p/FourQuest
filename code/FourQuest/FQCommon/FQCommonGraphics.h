@@ -531,14 +531,10 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
 
 		std::wstring BaseColorFileName;
-		std::wstring MetalnessFileName;
-		std::wstring RoughnessFileName;
 		std::wstring NormalFileName;
 		std::wstring EmissiveFileName;
 
 		bool bUseBaseColor = true;
-		bool bUseMetalness = true;
-		bool bUseRoughness = true;
 		bool bUseNormalness = true;
 		bool bIsUsedEmissive = true;
 

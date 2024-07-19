@@ -45,8 +45,7 @@ namespace fq::graphics
 
 		// deferred
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
-		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
-		std::shared_ptr<D3D11RenderTargetView> mRoughnessRTV;
+		std::shared_ptr<D3D11RenderTargetView> mMetalnessRoughnessRTV;
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;

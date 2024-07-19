@@ -192,6 +192,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteLight(const unsigned int id) abstract;
 
 			virtual FQ_GRAPHICS void UseShadow(const unsigned int id, bool bUseShadow) abstract;
+			virtual FQ_GRAPHICS void SetLightMapTexture(const std::filesystem::path& path) abstract;
 
 			// Light Probe
 			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;
