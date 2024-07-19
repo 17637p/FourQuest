@@ -70,6 +70,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) abstract;
 			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) abstract;
 			virtual FQ_GRAPHICS std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) abstract;
+			virtual FQ_GRAPHICS void WriteMaterialInfo(const std::string& path, const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS MaterialInfo ReadMaterialInfo(const std::string& path) abstract;
 
 			// Model Resource Control
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") abstract;

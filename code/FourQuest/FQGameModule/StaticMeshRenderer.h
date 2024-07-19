@@ -49,7 +49,7 @@ namespace fq::game_module
 		/// 텍스처 폴더 경로를 설정합니다 
 		/// </summary>
 		std::string GetTexturePath() const { return mTexturePath; }
-		
+
 		/// <summary>
 		/// 텍스터 폴더 경로를 반환합니다
 		/// </summary>
@@ -101,6 +101,9 @@ namespace fq::game_module
 		bool GetIsNavigationMeshUsed() const { return mIsNavigationMeshUsed; }
 		void SetIsNavigationMeshUsed(bool val) { mIsNavigationMeshUsed = val; }
 
+		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths;  }
+		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -114,8 +117,11 @@ namespace fq::game_module
 		std::string mTexturePath;
 		std::string mMeshName;
 		std::vector<std::string> mMaterialNames;
-		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;
+		std::vector<fq::graphics::MaterialInfo> mMaterialInfos; // 필요 없음
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> mMaterialInterfaces;
+
+		// 추가
+		std::vector<std::string> mMaterialPaths;
 	};
 
 }

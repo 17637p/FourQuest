@@ -173,6 +173,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
 		.data<&StaticMeshRenderer::SetIsNavigationMeshUsed, &StaticMeshRenderer::GetIsNavigationMeshUsed>("isUsedNavigationMesh"_hs)
 		.prop(fq::reflect::prop::Name, "isUsedNavigationMesh")
+		.data<&StaticMeshRenderer::SetMaterialPaths, &StaticMeshRenderer::GetMaterialPaths>("MaterialPaths"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialPaths")
+		.prop(fq::reflect::prop::DragDrop, ".material")
 		.base<Component>();
 
 	// SkinnedMeshRenderer

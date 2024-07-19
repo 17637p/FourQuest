@@ -353,3 +353,13 @@ fq::graphics::IBLTexture fq::graphics::D3D11LightManager::CreateIBLTexture(const
 
 	return result;
 }
+
+void fq::graphics::D3D11LightManager::SetLightMapTexture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::filesystem::path& path)
+{
+	if (!std::filesystem::exists(path))
+	{
+		return;
+	}
+
+	mLightMapTexture = std::make_shared<D3D11Texture>(d3d11Device, path);
+}

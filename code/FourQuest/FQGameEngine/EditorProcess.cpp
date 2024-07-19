@@ -23,6 +23,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mArticulationHierarchy(std::make_unique<ArticulationHierarchy>())
 	, mArticulationInspector(std::make_unique<ArticulationInspector>())
 	, mLightProbeWindow(std::make_unique<LightProbeWindow>())
+	, mMaterialWindow(std::make_unique<MaterialWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

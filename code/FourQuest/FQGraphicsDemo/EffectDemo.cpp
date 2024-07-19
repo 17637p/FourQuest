@@ -51,6 +51,10 @@ bool EffectDemo::Init(HINSTANCE hInstance)
 
 	createModel("./resource/Graphics/EffectDemo/aaaaaa.model", "./resource/Graphics/EffectDemo/", DirectX::SimpleMath::Matrix::CreateScale(10) * DirectX::SimpleMath::Matrix::CreateRotationX(-3.14 * 0.5f), false);
 
+	auto materialInfo = mTestGraphics->GetMaterials()[0]->GetInfo();
+	fq::loader::MaterialLoader::Write("./material.material", materialInfo);
+	auto materialInfoRead = fq::loader::MaterialLoader::Read("./material.material");
+
 	auto uvAnimation = fq::loader::UVAnimationLoader::Read("./resource/Graphics/EffectDemo/aaaaaUVAnim.txt");
 	fq::loader::UVAnimationLoader::Write(uvAnimation, "./resource/Graphics/EffectDemo/aaaaaUVAnim.uvAnimation");
 	auto animation = mTestGraphics->ReadAnimation("./resource/Graphics/EffectDemo/TestTransformAnim.txt");
@@ -211,7 +215,7 @@ void EffectDemo::Update()
 	{
 		mTestGraphics->SetIsRenderDebug(true);
 	}
-	
+
 	using namespace fq::graphics;
 
 	// particle
@@ -223,8 +227,7 @@ void EffectDemo::Update()
 
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
 	}
-	s
-	static float s_time = 0.f;
+		static float s_time = 0.f;
 	s_time += mTimeManager.GetDeltaTime();
 
 	std::vector<DirectX::SimpleMath::Matrix> transforms;

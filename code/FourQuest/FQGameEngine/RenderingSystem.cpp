@@ -324,20 +324,51 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	}
 
 	using namespace fq::graphics;
-	// SkinnedMesh 생성
 	std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
 	materialInterfaces.reserve(materialNames.size());
 	MeshObjectInfo meshObjectInfo;
 
-	for (const auto& materialName : materialNames)
-	{
-		auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(key, materialName);
+	// // 기존 방식 데이터 변환
+	// std::filesystem::path modelDirectory = std::filesystem::path(modelPath).parent_path();
+	// 
+	// for (const auto& materialName : materialNames)
+	// {
+	// 	auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(key, materialName);
+	// 
+	// 	
+	// }
 
-		if (materialInterface != nullptr)
+
+	// 새로운 방식의 로드
+	for (const auto& materialPath : staticMeshRenderer->GetMaterialPaths())
+	{
+		if (!std::filesystem::exists(materialPath))
 		{
-			materialInterfaces.push_back(materialInterface);
+			spdlog::warn("{} materialPath is invalid", object->GetName());
+			continue;
 		}
+
+		std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
+
+		if (materialInterfaceOrNull == nullptr)
+		{
+			const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(materialPath);
+			materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+		}
+		assert(materialInterfaceOrNull != nullptr);
+		
+		materialInterfaces.push_back(materialInterfaceOrNull);
 	}
+
+	// for (const auto& materialName : materialNames)
+	// {
+	// 	auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(key, materialName);
+	// 
+	// 	if (materialInterface != nullptr)
+	// 	{
+	// 		materialInterfaces.push_back(materialInterface);
+	// 	}
+	// }
 
 	auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, meshName);
 

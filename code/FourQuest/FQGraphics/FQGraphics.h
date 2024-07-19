@@ -40,7 +40,9 @@ namespace fq::graphics
 		virtual void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) override;
 		virtual void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) override;
 		virtual std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) override;
-
+		virtual void WriteMaterialInfo(const std::string& path, const MaterialInfo& materialInfo) override;
+		virtual MaterialInfo ReadMaterialInfo(const std::string& path) override;
+		
 		// Model Resource Control
 		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;
 		virtual bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;

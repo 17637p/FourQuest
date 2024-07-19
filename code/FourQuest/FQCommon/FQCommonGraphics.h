@@ -41,12 +41,19 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 direction;
 	};
 
+
 	struct MeshObjectInfo
 	{
 		bool bUseShadow = true;
 		bool bUseLightProbe;
 		DirectX::SimpleMath::Color OutlineColor;
 		bool bIsAppliedDecal;
+
+		enum class EObjectType
+		{
+			Static,
+			Dynamic
+		} ObjectType = EObjectType::Dynamic;
 	};
 
 	struct UIInfo
@@ -584,7 +591,7 @@ namespace fq::graphics
 
 		// Fog
 		bool bUseFog = false;
-		DirectX::SimpleMath::Vector4 fogColor = {0.5f, 0.5f, 0.5f, 1.0f}; // 안개 색상 
+		DirectX::SimpleMath::Vector4 fogColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 안개 색상 
 		float fogVisibleArea = 200.0f; // 가시 영역 near ~ far 기준으로 값을 넣어야 함 near가 1 far가 100이면 20일때 20퍼 보인다는 뜻
 	};
 };
