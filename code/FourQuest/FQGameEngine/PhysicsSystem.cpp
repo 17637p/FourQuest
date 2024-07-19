@@ -490,6 +490,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
 				}
 				break;
+				case EShapeType::END:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo);
+				}
+				break;
 				}
 
 				for (auto& [name, childLinkData] : linkData->GetChildrenLinkData())
@@ -662,7 +667,28 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
 			articulation->SetIsRagdoll(data.bIsRagdollSimulation);
-			//transform->SetWorldMatrix(data.worldTransform);
+
+			// Animator의 본에 LocalTransform을 수정하기
+			{
+				if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
+					return;
+
+				auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
+
+				if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+					return;
+
+				auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+				auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+				for (auto& linkData : data.linkData)
+				{
+					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform * linkData.localTransform;
+
+					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
+					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
+				}
+			}
 		}
 		else
 		{
@@ -770,7 +796,6 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			fq::physics::ArticulationSetData data;
 
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
-			//data.worldTransform = transform->GetWorldMatrix();
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}

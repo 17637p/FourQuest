@@ -47,6 +47,8 @@ namespace fq::physics
 
 		mPxLink->setMaxAngularVelocity(4.f);
 		mPxLink->setMaxLinearVelocity(4.f);
+		mPxLink->setAngularDamping(0.3f);
+		mPxLink->setLinearDamping(0.3f);
 		mPxLink->setMaxDepenetrationVelocity(2.0f);
 
 		return true;
@@ -59,7 +61,7 @@ namespace fq::physics
 
 		physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*mPxLink, physx::PxBoxGeometry(pxExtent), *material);
 		physx::PxRigidBodyExt::updateMassAndInertia(*mPxLink, mDensity);
-
+		
 		shape->userData = collisionData.get();
 		shape->setContactOffset(0.002f);
 		shape->setRestOffset(0.001f);

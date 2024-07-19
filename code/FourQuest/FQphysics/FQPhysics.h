@@ -173,6 +173,7 @@ namespace fq::physics
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius) override;
 		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info) override;
 
 		/// <summary>
 		/// 관절 (Articulation) Get/Set 데이터 입니다.

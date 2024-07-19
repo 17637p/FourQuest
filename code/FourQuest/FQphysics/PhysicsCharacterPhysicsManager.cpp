@@ -2,6 +2,8 @@
 
 #include "CharacterPhysics.h"
 #include "EngineDataConverter.h"
+#include "CharacterLink.h"
+#include "CharacterJoint.h"
 
 namespace fq::physics
 {
@@ -78,6 +80,17 @@ namespace fq::physics
 
 		articulationData.worldTransform = dxTransform;
 		articulationData.bIsRagdollSimulation = articulation->GetIsRagdoll();
+		
+		for (auto& [name, link] : articulation->GetLinkContainer())
+		{
+			fq::physics::ArticulationLinkData data;
+
+			data.localTransform = link->GetLocalTransform();
+			data.jointLocalTransform = link->GetCharacterJoint()->GetLocalTransform();
+			data.name = link->GetName();
+
+			articulationData.linkData.push_back(data);
+		}
 	}
 
 	void PhysicsCharacterPhysicsManager::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData, int* collisionMatrix)

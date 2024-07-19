@@ -41,7 +41,7 @@ namespace fq::physics
 		mDrive.driveType = physx::PxArticulationDriveType::eFORCE;
 
 		mPxJoint = ownerLink->GetPxLink()->getInboundJoint();
-		//mPxJoint->setMaxJointVelocity(0.001f);
+		mPxJoint->setMaxJointVelocity(10.f);
 		mPxJoint->setFrictionCoefficient(0.1f);
 
 		physx::PxTransform pxlocalTransform;

@@ -32,8 +32,8 @@ namespace fq::physics
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
 		mPxArticulation->setSolverIterationCounts(8);
-		//mPxArticulation->setMaxCOMLinearVelocity(10.f);
-		//mPxArticulation->setMaxCOMAngularVelocity(10.f); 
+		mPxArticulation->setMaxCOMLinearVelocity(10.f);
+		mPxArticulation->setMaxCOMAngularVelocity(10.f); 
 
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
 		mID = info.id;
@@ -51,7 +51,6 @@ namespace fq::physics
 		if (parentLink == mLinkContainer.end())
 		{
 			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
-			mWorldTransform = info.localTransform;
 		} 
 		else
 		{
@@ -117,6 +116,15 @@ namespace fq::physics
 		filterdata.word0 = mLayerNumber;
 		filterdata.word1 = collisionMatrix[mLayerNumber];
 		shape->setSimulationFilterData(filterdata);
+
+		return true;
+	}
+	bool CharacterPhysics::AddArticulationLink(const LinkInfo& info, int* collisionMatrix)
+	{
+		mRootLink = std::make_shared<CharacterLink>();
+
+		mRootLink->Initialize(info, nullptr, mPxArticulation);
+		mWorldTransform = info.localTransform;
 
 		return true;
 	}

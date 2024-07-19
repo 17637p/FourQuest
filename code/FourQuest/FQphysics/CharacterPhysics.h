@@ -29,6 +29,7 @@ namespace fq::physics
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& radius);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius);
+		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix);
 
 		/// <summary>
 		/// 레이어 넘버 바꾸기
@@ -44,6 +45,7 @@ namespace fq::physics
 		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		inline physx::PxArticulationReducedCoordinate* GetPxArticulation();
 		inline const physx::PxMaterial* GetMaterial();
+		inline const std::unordered_map<std::string, std::shared_ptr<CharacterLink>>& GetLinkContainer();
 
 		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform);
 		inline void SetIsRagdoll(const bool& isRagdoll);
@@ -101,6 +103,10 @@ namespace fq::physics
 	const physx::PxMaterial* CharacterPhysics::GetMaterial()
 	{
 		return mMaterial;
+	}
+	const std::unordered_map<std::string, std::shared_ptr<CharacterLink>>& CharacterPhysics::GetLinkContainer()
+	{
+		return mLinkContainer;
 	}
 
 	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)

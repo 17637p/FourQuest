@@ -123,7 +123,6 @@ namespace fq::physics
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
-		//sceneDesc.flags |= physx::PxSceneFlag::eENABLE_DIRECT_GPU_API;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 		sceneDesc.solverType = physx::PxSolverType::ePGS;
@@ -407,6 +406,10 @@ namespace fq::physics
 	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
+	}
+	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix);
 	}
 
 	ArticulationGetData FQPhysics::GetArticulationData(const unsigned int& id)
