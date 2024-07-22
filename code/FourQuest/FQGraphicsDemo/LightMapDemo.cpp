@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "DemoUtils.h"
 #include "../FQLoader/ModelLoader.h"
+#include "../FQLoader/ModelConverter.h"
 
 using namespace fq::utils;
 
@@ -42,11 +43,12 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	// 랜더링 오브젝트 생성
-	mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/untitled.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/untitled.fbx"));
-	createModel("./resource/Graphics/LightMapDemo/untitled.model", "./resource/Graphics/LightMapDemo/", DirectX::SimpleMath::Matrix::Identity);
+	// mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/untitled.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/untitled.fbx"));
+	// mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/untitled1.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/untitled1.fbx"));
+	createModel("./resource/Graphics/LightMapDemo/untitled.fbx", "./resource/Graphics/LightMapDemo/", DirectX::SimpleMath::Matrix::Identity);
 	mTestGraphics->SetLightMapTexture("./resource/Graphics/LightMapDemo/Lightmap-0_comp_light.dds");
 
-	std::map<std::string, std::vector<DirectX::SimpleMath::Vector2>> lightMapUVMap;
+	std::map<std::string, DirectX::SimpleMath::Vector4> lightMapUVMap;
 	// load
 	std::ifstream readData("./resource/Graphics/LightMapDemo/LightmapUVs.json");
 	nlohmann::ordered_json nodeUVsJson;
@@ -72,19 +74,7 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 		lightmapScaleOffset.z = nodeUVJson["lightmapScaleOffset"][2].get<float>();
 		lightmapScaleOffset.w = nodeUVJson["lightmapScaleOffset"][3].get<float>();
 
-		for (const auto& uv : nodeUVJson["uvs1"])
-		{
-			float x = uv["x"].get<float>();
-			x *= lightmapScaleOffset.x;
-			x += lightmapScaleOffset.z;
-			float y = uv["y"].get<float>();
-			y *= lightmapScaleOffset.y;
-			y += lightmapScaleOffset.w;
-
-			uvs.push_back({ x, y });
-		}
-
-		lightMapUVMap.insert({ name, std::move(uvs) });
+		lightMapUVMap.insert({ name, std::move(lightmapScaleOffset) });
 	}
 
 	for (fq::graphics::IStaticMeshObject* staticMeshObject : mStaticMeshObjects)
@@ -105,7 +95,7 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 
 		if (find != lightMapUVMap.end())
 		{
-			staticMeshObject->SetLightMapUV(find->second);
+			staticMeshObject->SetUVScaleOffset(find->second);
 		}
 	}
 
@@ -114,7 +104,7 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 	AddDefaultCamera(mTestGraphics);
 
 	// Camera Transform 설정
-	mCameraTransform.worldPosition = { 0, 0, -50 };
+	mCameraTransform.worldPosition = { 0, 0, -100 };
 	mCameraTransform.worldRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f));
 	mCameraTransform.worldScale = { 1, 1, 1 };
 
@@ -289,7 +279,10 @@ void LightMapDemo::createModel(std::string modelPath, std::filesystem::path text
 	using namespace fq::graphics;
 	unsigned int key = std::hash<std::string>{}(modelPath);
 
-	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(key, modelPath, textureBasePath);
+	fq::loader::ModelConverter modelConverter;
+	modelConverter.ReadFBXFile(modelPath);
+	const fq::common::Model& modelData = modelConverter.Convert();
+	mTestGraphics->CreateModelResource(key, modelData, textureBasePath);
 
 	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(key);
 
@@ -307,6 +300,14 @@ void LightMapDemo::createModel(std::string modelPath, std::filesystem::path text
 		{
 			continue;
 		}
+
+		auto tempMatrix = node.ToParentMatrix;
+
+		DirectX::SimpleMath::Vector3 pos;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 scale;
+		tempMatrix.Decompose(scale, rotation, pos);
+		auto rotationAxis = rotation.ToEuler();
 
 		std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
 		materialInterfaces.reserve(mesh.Subsets.size());

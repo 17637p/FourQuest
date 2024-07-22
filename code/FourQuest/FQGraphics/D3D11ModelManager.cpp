@@ -96,6 +96,64 @@ namespace fq::graphics
 		return mModels[key];
 	}
 
+	void D3D11ModelManager::CreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath)
+	{
+		auto find = mModels.find(key);
+
+		if (find != mModels.end())
+		{
+			return;
+		}
+
+		for (const auto& material : modelData.Materials)
+		{
+			if (material.Name.empty())
+			{
+				continue;
+			}
+
+			MaterialInfo materialInfo;
+
+			materialInfo.BaseColor = material.BaseColor;
+			materialInfo.Metalness = material.Metalness;
+			materialInfo.Roughness = material.Roughness;
+
+			if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = textureBasePath / material.BaseColorFileName;
+			if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = textureBasePath / material.MetalnessFileName;
+			if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = textureBasePath / material.RoughnessFileName;
+			if (material.NormalFileName != L"") materialInfo.NormalFileName = textureBasePath / material.NormalFileName;
+			if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = textureBasePath / material.EmissiveFileName;
+
+			CreateMaterial(GenerateMaterialKey(std::to_string(key), material.Name), materialInfo);
+		}
+
+		for (const auto& [node, mesh] : modelData.Meshes)
+		{
+			if (mesh.Vertices.empty())
+			{
+				continue;
+			}
+
+			if (mesh.BoneVertices.empty())
+			{
+				CreateStaticMesh(GenerateStaticMeshKey(std::to_string(key), mesh.Name), mesh);
+			}
+			else
+			{
+				CreateSkinnedMesh(GenerateSkinnedMeshKey(std::to_string(key), mesh.Name), mesh);
+			}
+		}
+
+		CreateNodeHierarchy(GenerateBoneHierarachyKey(std::to_string(key)), modelData);
+
+		for (const auto& animation : modelData.Animations)
+		{
+			CreateAnimation(GenerateAnimationKey(std::to_string(key), animation.Name), animation);
+		}
+
+		mModels.insert({ key, std::move(modelData) });
+	}
+
 	bool D3D11ModelManager::TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
 	{
 		auto find = mModels.find(key);

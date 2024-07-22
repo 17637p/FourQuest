@@ -65,14 +65,8 @@ namespace fq::graphics
 		virtual std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const { return mIUVAnimationInstance; }
 
 		// LightmapUV
-		void SetIsUpdateLightMapUV(bool bIsUpdateLightMapUV) { mbIsUpdateLightMapUV = bIsUpdateLightMapUV; }
-		bool GetIsUpdateLightMapUV() const { return mbIsUpdateLightMapUV; }
-
-		virtual void SetLightMapUV(std::vector<DirectX::SimpleMath::Vector2> uvs) override { mLightMapUV = uvs; mbIsUpdateLightMapUV = true; }
-		virtual const std::vector<DirectX::SimpleMath::Vector2>& GetLightMapUV() const override { return mLightMapUV; }
-
-		void SetLightMapVertexBuffer(std::shared_ptr<D3D11VertexBuffer> vertexBuffer) { mLightMapUV_VB = vertexBuffer; }
-		const std::shared_ptr<D3D11VertexBuffer>& GetLightMapVertexBuffer() const { return mLightMapUV_VB; }
+		virtual void SetUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) override { mScaleOffset = scaleOffset; }
+		virtual const DirectX::SimpleMath::Vector4& GetUVScaleOffset() const override { return mScaleOffset; }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
@@ -84,9 +78,7 @@ namespace fq::graphics
 		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
 
 		// lightMap
-		bool mbIsUpdateLightMapUV;
-		std::vector<DirectX::SimpleMath::Vector2> mLightMapUV;
-		std::shared_ptr<D3D11VertexBuffer> mLightMapUV_VB;
+		DirectX::SimpleMath::Vector4 mScaleOffset;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject

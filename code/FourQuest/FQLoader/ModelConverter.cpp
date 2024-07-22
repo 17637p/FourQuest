@@ -291,6 +291,7 @@ namespace fq::loader
 		for (aiMesh* aiMeshPtr : aiSubMeshes)
 		{
 			std::vector<Mesh::Vertex> vertices;
+			std::vector<DirectX::SimpleMath::Vector2> uv1s;
 			std::vector<unsigned int> indices;
 
 			vertices.reserve(aiMeshPtr->mNumVertices);
@@ -333,6 +334,11 @@ namespace fq::loader
 					vertex.Tex.y = (float)aiMeshPtr->mTextureCoords[0][i].y;
 				}
 
+				if (aiMeshPtr->HasTextureCoords(1))
+				{
+					uv1s.push_back({ (float)aiMeshPtr->mTextureCoords[1][i].x, (float)aiMeshPtr->mTextureCoords[1][i].y });
+				}
+
 				vertices.push_back(vertex);
 			}
 
@@ -357,6 +363,7 @@ namespace fq::loader
 			resultMesh.Subsets.push_back(subset);
 			resultMesh.Vertices.insert(resultMesh.Vertices.end(), vertices.begin(), vertices.end());
 			resultMesh.Indices.insert(resultMesh.Indices.end(), indices.begin(), indices.end());
+			resultMesh.Tex1.insert(resultMesh.Tex1.end(), uv1s.begin(), uv1s.end());
 		}
 
 		DirectX::BoundingBox::CreateFromPoints(resultMesh.RenderBoundingBox, min, max);

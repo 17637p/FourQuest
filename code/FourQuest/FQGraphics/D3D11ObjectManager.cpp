@@ -40,19 +40,6 @@ namespace fq::graphics
 
 	void D3D11ObjectManager::UpdateModifiedResources(std::shared_ptr<D3D11Device> device)
 	{
-		for (IStaticMeshObject* iStaticMeshObject : mStaticMeshObjects)
-		{
-			StaticMeshObject* staticMeshObject = static_cast<StaticMeshObject*>(iStaticMeshObject);
-
-			if (staticMeshObject->GetIsUpdateLightMapUV())
-			{
-				const std::vector<DirectX::SimpleMath::Vector2> uvs = staticMeshObject->GetLightMapUV();
-				std::shared_ptr<D3D11VertexBuffer> vertexBuffer = std::make_shared<D3D11VertexBuffer>(device, uvs);
-				
-				staticMeshObject->SetLightMapVertexBuffer(vertexBuffer);
-				staticMeshObject->SetIsUpdateLightMapUV(false);
-			}
-		}
 	}
 
 	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)

@@ -36,6 +36,10 @@ cbuffer cbModelTransform : register(b0)
 {
     float4x4 cWorld;
     float4x4 cWorldInvTranspose;
+    
+#ifdef STATIC
+    float4 uv1ScaleOffset;
+#endif
 };
 
 cbuffer cbSceneTransform : register(b1)
@@ -102,7 +106,9 @@ VertexOut main(VertexIn vin)
     vout.ClipSpacePosZ = vout.PositionH.z;
     
 #ifdef STATIC
-    vout.UV1 = vin.UV1;
+    vin.UV1.y = 1 - vin.UV1.y; 
+    vout.UV1 = vin.UV1 * uv1ScaleOffset.xy + uv1ScaleOffset.zw;
+    vout.UV1.y = 1 - vout.UV1.y; 
 #endif
     
     return vout;

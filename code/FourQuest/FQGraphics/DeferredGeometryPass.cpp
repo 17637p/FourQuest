@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "NodeHierarchy.h"
 #include "RenderObject.h"
+#include "D3D11Util.h"
 
 namespace fq::graphics
 {
@@ -55,6 +56,7 @@ namespace fq::graphics
 		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mStaticModelTransformCB = std::make_shared<D3D11ConstantBuffer<StaticModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -160,7 +162,6 @@ namespace fq::graphics
 			mDevice->GetDeviceContext()->RSSetViewports(1, &mViewport);
 
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 3);
 
@@ -194,12 +195,19 @@ namespace fq::graphics
 				{
 					mStaticMeshStaticShaderProgram->Bind(mDevice);
 					mDevice->GetDeviceContext()->IASetInputLayout(mStaticMeshnputLayouts.Get());
-					const std::shared_ptr<D3D11VertexBuffer>& lightMapUVVertexBuffer = job.StaticMeshObject->GetLightMapVertexBuffer();
+					mStaticModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 
-					if (lightMapUVVertexBuffer != nullptr)
+					if (job.StaticMesh->GetUV1Buffer() != nullptr)
 					{
-						lightMapUVVertexBuffer->Bind(mDevice, 1);
+						job.StaticMesh->GetUV1Buffer()->Bind(mDevice, 1);
 					}
+
+					StaticModelTransform staticModelTransform;
+					staticModelTransform.WorldMat = job.StaticMeshObject->GetTransform().Transpose();
+					staticModelTransform.WorldInvTransposeMat = D3D11Util::InverseTranspose(job.StaticMeshObject->GetTransform()).Transpose();
+					staticModelTransform.UV1ScaleOffset = job.StaticMeshObject->GetUVScaleOffset();
+
+					mStaticModelTransformCB->Update(mDevice, staticModelTransform);
 
 					break;
 				}
@@ -207,6 +215,16 @@ namespace fq::graphics
 				{
 					mStaticMeshShaderProgram->Bind(mDevice);
 					job.Material->Bind(mDevice);
+					mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
+
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					}
 
 					break;
 				}
@@ -245,18 +263,6 @@ namespace fq::graphics
 				else
 				{
 					mLessEqualStencilReplaceState->Bind(mDevice, 1);
-				}
-
-				if (job.NodeHierarchyInstnace != nullptr)
-				{
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
-					// ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					//auto transform = job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex());
-					//ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()));
-				}
-				else
-				{
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
 				}
 
 				const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();

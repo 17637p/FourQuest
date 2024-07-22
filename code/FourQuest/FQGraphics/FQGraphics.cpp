@@ -498,6 +498,11 @@ const fq::common::Model& FQGraphics::CreateModelResource(unsigned int key, const
 	return mModelManager->CreateModelResource(mDevice, key, path, textureBasePath);
 }
 
+void fq::graphics::FQGraphics::CreateModelResource(unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath)
+{
+	mModelManager->CreateModelResource(mDevice, key, modelData, textureBasePath);
+}
+
 bool FQGraphics::TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
 {
 	return mModelManager->TryCreateModelResource(mDevice, key, path, textureBasePath, outDataOrNull);

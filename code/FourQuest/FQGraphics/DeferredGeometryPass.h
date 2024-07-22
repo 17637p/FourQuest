@@ -56,6 +56,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<StaticModelTransform>> mStaticModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;

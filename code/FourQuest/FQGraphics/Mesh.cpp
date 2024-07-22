@@ -25,7 +25,6 @@ namespace fq::graphics
 		d3d11Device->GetDeviceContext()->DrawIndexed(subset.IndexCount, subset.IndexStart, subset.VertexStart);
 	}
 
-
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device)
 		: MeshBase()
 		, mDevice(device)
@@ -34,14 +33,22 @@ namespace fq::graphics
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
 		: MeshBase()
 		, mDevice(device)
+		, mUV1VertexBuffer(nullptr)
 	{
 		Create(meshData);
+
+
 	}
 	void StaticMesh::Create(const fq::common::Mesh& meshData)
 	{
 		mMeshData = meshData;
 		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(mDevice, meshData.Indices);
 		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
+
+		if (!meshData.Tex1.empty())
+		{
+			mUV1VertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Tex1);
+		}
 	}
 	void* StaticMesh::GetVertexBuffer()
 	{

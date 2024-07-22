@@ -83,6 +83,7 @@ namespace fq::common
 
 		std::string Name;
 		std::vector<Vertex> Vertices;
+		std::vector<DirectX::SimpleMath::Vector2> Tex1;
 		std::vector<BoneVertex> BoneVertices;
 		std::vector<BoundsYVertex> BoundsYVertices;
 		std::vector<unsigned int> Indices;
