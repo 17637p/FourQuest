@@ -55,6 +55,7 @@
 
 // UI
 #include "HpBar.h"
+#include "PlayerUI.h"
 #include "CameraMoving.h"
 
 void fq::client::RegisterMetaData()
@@ -493,6 +494,35 @@ void fq::client::RegisterMetaData()
 		.data<&HpBar::mInnerOffset>("InnerOffset"_hs)
 		.prop(fq::reflect::prop::Name, "InnerOffset")
 		.prop(fq::reflect::prop::Comment, u8"Bar 외부와 내부의 크기 차이")
+		.base<fq::game_module::Component>();
+
+	entt::meta<PlayerUI>()
+		.type("PlayerUI"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerUI::mPlayerID>("PlayerID"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerID")
+		.prop(fq::reflect::prop::Comment, u8"ControllerID와 맞춰줄 것 0~3")
+		.data<&PlayerUI::mWeaponIcons>("WeaponIcons"_hs)
+		.prop(fq::reflect::prop::Name, "WeaponIcons")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png")
+		.prop(fq::reflect::prop::Comment, u8"검방, 완드, 활, 해머 순서")
+		.data<&PlayerUI::mSkillIconsXs>("XSkillIcons"_hs)
+		.prop(fq::reflect::prop::Name, "XSkillIcons")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png")
+		.prop(fq::reflect::prop::Comment, u8"검방, 완드, 활, 해머 순서")
+		.data<&PlayerUI::mSkillIconsAs>("ASkillIcons"_hs)
+		.prop(fq::reflect::prop::Name, "ASkillIcons")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png")
+		.prop(fq::reflect::prop::Comment, u8"검방, 완드, 활, 해머 순서")
+		.data<&PlayerUI::mSkillIconsRs>("RSkillIcons"_hs)
+		.prop(fq::reflect::prop::Name, "RSkillIcons")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png")
+		.prop(fq::reflect::prop::Comment, u8"검방, 완드, 활, 해머 순서")
 		.base<fq::game_module::Component>();
 }
 
