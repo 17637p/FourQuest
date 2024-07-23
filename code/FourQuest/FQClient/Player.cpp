@@ -19,6 +19,7 @@ fq::client::Player::Player()
 	, mSoulStack(0.f)
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
+	, mArmourType(EArmourType::Knight)
 	, mAttackPositionOffset{}
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
@@ -62,6 +63,9 @@ void fq::client::Player::OnStart()
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	mController = GetComponent<fq::game_module::CharacterController>();
 	mTransform = GetComponent<fq::game_module::Transform>();
+
+	// 사운드 가져오기 
+	mSoundClip = GetScene()->GetObjectByName("SoundManager")->GetComponent<game_module::SoundClip>();
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
@@ -125,6 +129,8 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				if (radian >= DirectX::XM_PIDIV2)
 				{
 					// TODO :: Shield Block 소리 , 이펙트  추가
+					mSoundClip->Play("ShieldBlock", false, 0);
+
 					return;
 				}
 			}

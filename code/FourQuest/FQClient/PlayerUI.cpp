@@ -1,6 +1,7 @@
 #include "PlayerUI.h"
 
 fq::client::PlayerUI::PlayerUI()
+	:mImageUI(nullptr)
 {
 
 }

@@ -89,6 +89,17 @@ void fq::client::RegisterMetaData()
 		.data<ESoulType::Staff>("Staff"_hs) // 3
 		.prop(fq::reflect::prop::Name, "Staff");
 
+	entt::meta<EArmourType>()
+		.prop(fq::reflect::prop::Name, "ArmourType")
+		.conv<std::underlying_type_t<EArmourType>>()
+		.data<EArmourType::Knight>("Knight"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Knight")
+		.data<EArmourType::Magic>("Magic"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Magic")
+		.data<EArmourType::Warrior>("Warrior"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Warrior")
+		.data<EArmourType::Archer>("Archer"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Archer");
 
 	entt::meta<Player>()
 		.type("Player"_hs)
@@ -96,6 +107,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Player::SetSoulType, &Player::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Player::mArmourType>("ArmourType"_hs)
+		.prop(reflect::prop::Name, "ArmourType")
 		.data<&Player::mHp>("Hp"_hs)
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::mAttackPower>("AttackPower"_hs)

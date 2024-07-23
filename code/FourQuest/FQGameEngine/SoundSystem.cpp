@@ -29,7 +29,7 @@ void fq::game_engine::SoundSystem::OnLoadScene(const fq::event::OnLoadScene even
 			auto sounds = clip.GetSounds();
 			for (auto& sound : sounds)
 			{
-				mSoundManager->LoadSound(sound);
+				mSoundManager->LoadSound(sound.path);
 			}
 		}
 	);

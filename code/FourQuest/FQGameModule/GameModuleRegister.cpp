@@ -666,6 +666,17 @@ void fq::game_module::RegisterMetaData()
 	//                              Sound                                   //
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<SoundClip::SoundInfo>()
+		.type("ClipSoundInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ClipSoundInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&SoundClip::SoundInfo::key>("Key"_hs)
+		.prop(fq::reflect::prop::Name, "Key")
+		.data<&SoundClip::SoundInfo::path>("Path"_hs)
+		.prop(fq::reflect::prop::Name, "Path")
+		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
+		.prop(fq::reflect::prop::RelativePath);
+
 	entt::meta<SoundClip>()
 		.type("SoundClip"_hs)
 		.prop(fq::reflect::prop::Name, "SoundClip")
@@ -673,8 +684,6 @@ void fq::game_module::RegisterMetaData()
 		.data<&SoundClip::SetSounds, &SoundClip::GetSounds>("Sounds"_hs)
 		.prop(fq::reflect::prop::Name, "Sounds")
 		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
-		.prop(fq::reflect::prop::RelativePath)
-		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
 		.base<Component>();
 
 

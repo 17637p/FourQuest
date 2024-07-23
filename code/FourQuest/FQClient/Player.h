@@ -23,6 +23,12 @@ namespace fq::client
 	
 		float GetAttackPower() const { return mAttackPower; }
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
+
+		/// <summary>
+		/// 갑옷타입을 반환합니다
+		/// </summary>
+		fq::client::EArmourType GetArmourType() const { return mArmourType; }
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);
@@ -39,8 +45,10 @@ namespace fq::client
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
 		game_module::Transform* mTransform;
+		game_module::SoundClip* mSoundClip;
 
 		ESoulType mSoulType; // 영혼 타입
+		EArmourType mArmourType; 
 
 		float mMaxHp; // 최대 체력
 		float mHp; // 현재 체력

@@ -16,7 +16,26 @@ fq::game_module::SoundClip::SoundClip()
 
 void fq::game_module::SoundClip::Play(SoundIndex soundIndex, bool bIsLoop, ChannelIndex channelIndex)
 {
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSounds[soundIndex], bIsLoop, channelIndex });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSounds[soundIndex].path, bIsLoop, channelIndex });
+}
+
+void fq::game_module::SoundClip::Play(std::string key, bool bIsLoop, ChannelIndex channelIndex)
+{
+	auto iter = std::lower_bound(mSounds.begin(), mSounds.end(), key, [](const SoundInfo& info, const std::string& key)
+		{
+			return  info.key < key;
+		});
+
+	if (iter != mSounds.end() && iter->key == key)
+	{
+		int index = std::distance(mSounds.begin(), iter);
+		Play(index, bIsLoop, channelIndex);
+		spdlog::warn("[SoundClip] playe sound");
+	}
+	else
+	{
+		spdlog::warn("[SoundClip] {} can't find key");
+	}
 }
 
 void fq::game_module::SoundClip::StopChannel(ChannelIndex index)
@@ -44,5 +63,13 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SoundClip::Clone(st
 	}
 
 	return cloneSoundClip;
+}
+
+void fq::game_module::SoundClip::OnStart()
+{
+	std::sort(mSounds.begin(), mSounds.end(), [](const SoundInfo& lhs, const SoundInfo& rhs)
+		{
+			return lhs.key < rhs.key;
+		});
 }
 
