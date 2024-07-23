@@ -316,6 +316,21 @@ void fq::graphics::UIManager::DeleteImage(IImageObject* imageObject)
 		mBitmaps.erase(imagePath);
 	}
 
+	// mask 도
+	stringToWstringPath = imageObject->GetMaskPath();
+	std::wstring maskPath = stringToWstringPath.wstring();
+
+	if (maskPath != L"")
+	{
+		mBitmaps[maskPath]->refCount--;
+		if (mBitmaps[maskPath]->refCount == 0)
+		{
+			mBitmaps[maskPath]->bitmap->Release();
+			delete mBitmaps[maskPath];
+			mBitmaps.erase(maskPath);
+		}
+	}
+
 	mImages.erase(remove(mImages.begin(), mImages.end(), imageObject), mImages.end());
 
 	delete imageObject;
@@ -385,12 +400,59 @@ void fq::graphics::UIManager::drawAllImage()
 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 		D2D1_RECT_F screenRect = { image->GetStartX(), image->GetStartY(), image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
 
-		mRenderTarget->SetTransform(
-			D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-			* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-		);
+		if (image->GetMaskPath() != "")
+		{
+			stringToWstringPath = image->GetMaskPath();
+			std::wstring maskPath = stringToWstringPath.wstring();
 
-		mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+			D2D1_BITMAP_BRUSH_PROPERTIES propertiesXClampYClamp =
+				D2D1::BitmapBrushProperties(
+					D2D1_EXTEND_MODE_CLAMP,
+					D2D1_EXTEND_MODE_CLAMP,
+					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR
+				);
+
+			ID2D1BitmapBrush* bitmapBrush;
+
+			mRenderTarget->CreateBitmapBrush(
+				mBitmaps[imagePath]->bitmap,
+				propertiesXClampYClamp,
+				&bitmapBrush
+			);
+
+			D2D_SIZE_U bitmapSize = mBitmaps[imagePath]->bitmap->GetPixelSize();
+			float scaleX = image->GetWidth() / bitmapSize.width;
+			float scaleY = image->GetHeight() / bitmapSize.height;
+
+			D2D1_MATRIX_3X2_F scaleT = D2D1::Matrix3x2F::Scale(scaleX, scaleY);
+			D2D1_MATRIX_3X2_F translateT = D2D1::Matrix3x2F::Translation(image->GetStartX(), image->GetStartY());
+
+			D2D1_MATRIX_3X2_F totalT = D2D1::Matrix3x2F::Translation(image->GetStartX(), image->GetStartY());
+
+			bitmapBrush->SetTransform(scaleT * translateT);
+
+			// D2D1_ANTIALIAS_MODE_ALIASED must be set for FillOpacityMask to function properly
+			mRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
+			mRenderTarget->FillOpacityMask(
+				mBitmaps[maskPath]->bitmap,
+				bitmapBrush,
+				D2D1_OPACITY_MASK_CONTENT_GRAPHICS,
+				&screenRect,
+				&imageRect
+			);
+			mRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+
+			bitmapBrush->Release();
+		}
+		else
+		{
+			mRenderTarget->SetTransform(
+				D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+				* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+			);
+
+			mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+		}
 	}
 }
 
@@ -411,6 +473,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetAlpha(uiInfo.Alpha);
 
 	newImageObject->SetImagePath(uiInfo.ImagePath);
+	newImageObject->SetMaskPath(uiInfo.MaskPath);
 
 	newImageObject->SetScaleX(uiInfo.ScaleX);
 	newImageObject->SetScaleY(uiInfo.ScaleY);
@@ -428,6 +491,23 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	else
 	{
 		mBitmaps[imagePath]->refCount++;
+	}
+
+	// mask도
+	if (uiInfo.MaskPath != "")
+	{
+		stringToWstringPath = uiInfo.MaskPath;
+		imagePath = stringToWstringPath.wstring();
+
+		auto maskBitmap = mBitmaps.find(imagePath);
+		if (maskBitmap == mBitmaps.end())
+		{
+			loadBitmap(imagePath);
+		}
+		else
+		{
+			mBitmaps[imagePath]->refCount++;
+		}
 	}
 
 	AddImage(newImageObject);

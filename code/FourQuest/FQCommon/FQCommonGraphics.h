@@ -63,7 +63,8 @@ namespace fq::graphics
 		float XRatio = 1.f; // 1이 전부다 출력
 		float YRatio = 1.f; // 1이 전부다 출력
 
-		std::string ImagePath;
+		std::string ImagePath = "";
+		std::string MaskPath = ""; // "" 이면 마스크 없음, 아니면 마스크 있음으로 처리
 
 		// 선택 사항
 		float RotationAngle = 0.f;

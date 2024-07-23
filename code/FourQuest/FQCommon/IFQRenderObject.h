@@ -134,6 +134,9 @@ extern "C" {
 
 			virtual FQ_GRAPHICS void SetImagePath(const std::string& texturePath) abstract;
 			virtual FQ_GRAPHICS std::string GetImagePath() abstract;
+
+			virtual FQ_GRAPHICS std::string GetMaskPath() const abstract;
+			virtual FQ_GRAPHICS void SetMaskPath(const std::string& val) abstract;
 		};
 
 		class IParticleObject
