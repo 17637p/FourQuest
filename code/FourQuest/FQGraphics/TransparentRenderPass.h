@@ -38,9 +38,13 @@ namespace fq::graphics
 		std::unique_ptr<class ShaderProgram> mStaticMeshShaderProgram;
 		std::unique_ptr<class ShaderProgram> mSkinnedMeshShaderProgram;
 
+		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 		std::shared_ptr<D3D11SamplerState> mDefualtSampler;
+		std::shared_ptr<D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 
 		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;

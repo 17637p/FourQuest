@@ -41,9 +41,14 @@ namespace fq::graphics
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, transparentRenderPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, transparentRenderPS, pipelieState);
 
+		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
+		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mDefualtSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
+		mDefaultRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
+		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
+
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -74,9 +79,12 @@ namespace fq::graphics
 		mStaticMeshShaderProgram = nullptr;
 		mSkinnedMeshShaderProgram = nullptr;
 
+		mLessEqualStencilReplaceState = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
+		mAnisotropicClampSamplerState = nullptr;
 		mShadowSampler = nullptr;
 		mDefualtSampler = nullptr;
+		mCullOffRasterizer = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
@@ -179,6 +187,7 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
+			mMaterialCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 3);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
@@ -188,6 +197,33 @@ namespace fq::graphics
 			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
 			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 		}
+
+		auto bindingState = [this](const MaterialInfo& materialInfo)
+			{
+				switch (materialInfo.RasterizeType)
+				{
+				case ERasterizeMode::TwoSide:
+					mCullOffRasterizer->Bind(mDevice);
+					break;
+				case ERasterizeMode::BackFaceClip:
+					mDefaultRasterizer->Bind(mDevice);
+					break;
+				default:
+					assert(false);
+				}
+
+				switch (materialInfo.SampleType)
+				{
+				case ESampleMode::Clamp:
+					mAnisotropicClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				case ESampleMode::Wrap:
+					mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				default:
+					assert(false);
+				}
+			};
 
 		// Draw
 		{
@@ -202,13 +238,42 @@ namespace fq::graphics
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					bindingState(materialInfo);
+
+					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					}
+					else
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					}
+
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					}
+
+					const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
+
+					if (uvAnimInstnace != nullptr)
+					{
+						const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
+						const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					}
 
 					AlphaData alphaData;
 					alphaData.bUseAlphaConstant = true;
 					alphaData.Alpha = materialInfo.BaseColor.A();
-
 					mAlphaDataCB->Update(mDevice, alphaData);
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
@@ -228,8 +293,19 @@ namespace fq::graphics
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
+					bindingState(materialInfo);
+
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+
+					if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					}
+					else
+					{
+						mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					}
 
 					if (job.NodeHierarchyInstnace != nullptr)
 					{
@@ -243,7 +319,6 @@ namespace fq::graphics
 					AlphaData alphaData;
 					alphaData.bUseAlphaConstant = true;
 					alphaData.Alpha = materialInfo.BaseColor.A();
-
 					mAlphaDataCB->Update(mDevice, alphaData);
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);

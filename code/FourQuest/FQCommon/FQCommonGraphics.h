@@ -47,6 +47,7 @@ namespace fq::graphics
 		bool bUseLightProbe;
 		DirectX::SimpleMath::Color OutlineColor;
 		bool bIsAppliedDecal;
+		bool bAppliedLight = true; // 이펙트 오브젝트 조명 연산 끄기 위해 사용
 	};
 
 	struct UIInfo

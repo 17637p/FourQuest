@@ -146,7 +146,11 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "OutlineColor")
 		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
 		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
-		.prop(fq::reflect::prop::Name, "IsAppliedDecal");
+		.prop(fq::reflect::prop::Name, "IsAppliedDecal")
+	.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
+		.prop(fq::reflect::prop::Comment, u8"조명 적용 여부")
+		.prop(fq::reflect::prop::Name, "IsAppliedLight");
+
 
 	// StaticMeshRenderer
 	entt::meta<StaticMeshRenderer>()
