@@ -41,7 +41,7 @@ namespace fq::physics
 		mDrive.driveType = physx::PxArticulationDriveType::eFORCE;
 
 		mPxJoint = ownerLink->GetPxLink()->getInboundJoint();
-		mPxJoint->setMaxJointVelocity(5.f);
+		mPxJoint->setMaxJointVelocity(1.f);
 		mPxJoint->setFrictionCoefficient(0.5f);
 
 		physx::PxTransform pxlocalTransform;
@@ -49,6 +49,7 @@ namespace fq::physics
 
 		CopyDirectXMatrixToPxTransform(mLocalTransform, pxlocalTransform);
  		mPxJoint->setChildPose(pxlocalTransform);
+
 		CopyDirectXMatrixToPxTransform(parentLocalTransform, pxlocalTransform);
 		mPxJoint->setParentPose(pxlocalTransform);
 

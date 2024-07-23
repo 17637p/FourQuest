@@ -51,6 +51,7 @@ namespace fq::physics
 		if (parentLink == mLinkContainer.end())
 		{
 			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+			mWorldTransform = info.localTransform;
 		} 
 		else
 		{
