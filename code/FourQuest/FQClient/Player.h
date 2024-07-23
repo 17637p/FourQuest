@@ -22,6 +22,7 @@ namespace fq::client
 		void SetSoulType(fq::client::ESoulType val) { mSoulType = val; }
 	
 		float GetAttackPower() const { return mAttackPower; }
+		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 	private:
 		void processInput();
 		void processCoolTime(float dt);
@@ -37,6 +38,7 @@ namespace fq::client
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
+		game_module::Transform* mTransform;
 
 		ESoulType mSoulType; // 영혼 타입
 
@@ -46,7 +48,6 @@ namespace fq::client
 		float mAttackPower; // 공격력
 		
 		float mInvincibleElapsedTime; // 무적 경과 시간
-
 		float mInvincibleTime; // 무적시간 
 
 		float mFeverTime; // 갑옷 버프 시간
@@ -55,6 +56,8 @@ namespace fq::client
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 
 		float mAttackPositionOffset; 
+
+		bool mbOnShieldBlock;
 
 		friend void RegisterMetaData();
 	};

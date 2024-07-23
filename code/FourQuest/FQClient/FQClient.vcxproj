@@ -78,6 +78,7 @@
     <ClInclude Include="PlayerUI.h" />
     <ClInclude Include="RazerAttackState.h" />
     <ClInclude Include="ShieldAttackState.h" />
+    <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="UILayerDefine.h" />
@@ -126,6 +127,7 @@
     <ClCompile Include="PlayerUI.cpp" />
     <ClCompile Include="RazerAttackState.cpp" />
     <ClCompile Include="ShieldAttackState.cpp" />
+    <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
   </ItemGroup>

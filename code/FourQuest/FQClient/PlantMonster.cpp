@@ -73,7 +73,6 @@ void fq::client::PlantMonster::EmitAttack()
 	dir.Normalize();
 	plantAttack->SetMoveDirection(dir);
 
-
 	// 공격 설정
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 	AttackInfo info{};
@@ -83,7 +82,6 @@ void fq::client::PlantMonster::EmitAttack()
 	info.remainingAttackCount = 1;
 	info.attackDirection = dir;
 	attackComponent->Set(info);
-
 
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;

@@ -133,6 +133,8 @@ void fq::client::KnightArmour::OnUpdate(float dt)
 
 void fq::client::KnightArmour::checkInput()
 {
+	using namespace DirectX::SimpleMath;
+
 	auto input = GetScene()->GetInputManager();
 
 	// Dash
@@ -141,6 +143,40 @@ void fq::client::KnightArmour::checkInput()
 	{
 		mAnimator->SetParameterTrigger("OnDash");
 		mDashElapsedTime = mDashCoolTime;
+	}
+
+	// Shield 
+	DirectX::SimpleMath::Vector3 rightInput{};
+	rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
+	rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
+
+	// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
+	constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+	if (rightInput.LengthSquared() >= rotationOffsetSq)
+	{
+		rightInput.Normalize();
+
+		if (rightInput == Vector3::Backward)
+		{
+			mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,-1.f,0.f }));
+		}
+		else
+		{
+			mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,1.f,0.f }));
+		}
+
+		mAnimator->SetParameterBoolean("OnShield", true);
+		mPlayer->SetOnShieldBlock(true);
+
+		// 방패 움직임 판단 
+
+
+	}
+	else
+	{
+		mAnimator->SetParameterBoolean("OnShield", false);
+		mPlayer->SetOnShieldBlock(false);
 	}
 }
 

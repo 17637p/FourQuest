@@ -230,6 +230,9 @@
     <ClInclude Include="AttackDefine.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="ShieldBlockState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -365,6 +368,9 @@
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="SwordAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldBlockState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>

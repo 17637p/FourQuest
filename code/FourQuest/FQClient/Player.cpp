@@ -20,6 +20,8 @@ fq::client::Player::Player()
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
 	, mAttackPositionOffset{}
+	, mbOnShieldBlock(false)
+	, mTransform(nullptr)
 {}
 
 fq::client::Player::~Player()
@@ -58,9 +60,8 @@ void fq::client::Player::OnStart()
 	mMaxHp = mHp;
 
 	mAnimator = GetComponent<fq::game_module::Animator>();
-	assert(mAnimator);
-
 	mController = GetComponent<fq::game_module::CharacterController>();
+	mTransform = GetComponent<fq::game_module::Transform>();
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
@@ -82,7 +83,7 @@ void fq::client::Player::processInput()
 {
 	auto input = GetScene()->GetInputManager();
 
-	
+
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
 		SummonSoul();
@@ -109,6 +110,25 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
 		if (monsterAtk->ProcessAttack())
 		{
+			// 플레이어 방패 막기 처리 
+			if (mbOnShieldBlock)
+			{
+				auto attackDir = monsterAtk->GetAttackDirection();
+				auto lookAtDir = mTransform->GetLookAtVector();
+
+				attackDir.Normalize();
+				lookAtDir.Normalize();
+
+				float dotProduct = lookAtDir.Dot(attackDir);
+				float radian = std::acos(dotProduct);
+
+				if (radian >= DirectX::XM_PIDIV2)
+				{
+					// TODO :: Shield Block 소리 , 이펙트  추가
+					return;
+				}
+			}
+
 			mAnimator->SetParameterTrigger("OnHit");
 			float attackPower = monsterAtk->GetAttackPower();
 			mHp -= attackPower;

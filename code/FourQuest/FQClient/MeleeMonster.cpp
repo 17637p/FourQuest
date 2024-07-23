@@ -92,14 +92,7 @@ void fq::client::MeleeMonster::EmitAttack()
 
 	auto attackT = attackObj->GetComponent<Transform>();
 
-	// 공격 설정
-	AttackInfo attackInfo{};
-	auto attackComponent = attackObj->GetComponent<client::Attack>();
-
-	attackInfo.attacker = attackObj.get();
-	attackInfo.damage = mAttackPower;
-	attackComponent->Set(attackInfo);
-
+	// 공격 트랜스폼 설정
 	auto attackPos = mTransform->GetWorldPosition();
 	auto scale = attackT->GetWorldScale();
 	auto rotation = mTransform->GetWorldRotation();
@@ -107,8 +100,16 @@ void fq::client::MeleeMonster::EmitAttack()
 	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
 	auto foward = rotationMat.Forward();
 	attackPos += foward * mAttackOffset;
-
 	attackT->GenerateWorld(attackPos, rotation, scale);
+
+	// 공격 정보 설정
+	AttackInfo attackInfo{};
+	auto attackComponent = attackObj->GetComponent<client::Attack>();
+
+	attackInfo.attacker = attackObj.get();
+	attackInfo.damage = mAttackPower;
+	attackInfo.attackDirection = foward;
+	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
 
