@@ -12,6 +12,23 @@ fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
 {
 }
 
+const std::vector<fq::graphics::MaterialInfo>& fq::game_module::StaticMeshRenderer::GetMaterialInfos()
+{
+	if (mMaterialInterfaces.empty())
+	{
+		return mMaterialInfos;
+	}
+
+	mMaterialInfos.clear();
+
+	for (std::shared_ptr<fq::graphics::IMaterial>& materialInterface : mMaterialInterfaces)
+	{
+		mMaterialInfos.push_back(materialInterface->GetInfo());
+	}
+	
+	return mMaterialInfos;
+}
+
 void fq::game_module::StaticMeshRenderer::SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos)
 {
 	mMaterialInfos = std::move(materialInfos);

@@ -239,15 +239,25 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
 	materialInterfaces.reserve(materialNames.size());
 	MeshObjectInfo meshObjectInfo;
-
+	
+	size_t i = 0;
 	for (const auto& materialName : materialNames)
 	{
 		auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(key, materialName);
 
 		if (materialInterface != nullptr)
 		{
+			const auto& materialInfos = skinnedMeshRenderer->GetMaterialInfos();
+
+			if (materialInfos.size() > i)
+			{
+				materialInterface->SetInfo(materialInfos[i]);
+			}
+
 			materialInterfaces.push_back(materialInterface);
 		}
+
+		++i;
 	}
 
 	auto meshInterface = mGameProcess->mGraphics->GetSkinnedMeshByModelPathOrNull(key, meshName);
@@ -329,14 +339,25 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	materialInterfaces.reserve(materialNames.size());
 	MeshObjectInfo meshObjectInfo;
 
+	size_t i = 0;
+
 	for (const auto& materialName : materialNames)
 	{
 		auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(key, materialName);
 
 		if (materialInterface != nullptr)
 		{
+			const auto& materialInfos = staticMeshRenderer->GetMaterialInfos();
+
+			if (materialInfos.size() > i)
+			{
+				materialInterface->SetInfo(materialInfos[i]);
+			}
+
 			materialInterfaces.push_back(materialInterface);
 		}
+
+		++i;
 	}
 
 	auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, meshName);

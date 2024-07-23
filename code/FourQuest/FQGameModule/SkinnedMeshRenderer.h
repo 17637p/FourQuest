@@ -71,7 +71,7 @@ namespace fq::game_module
 		/// </summary>
 		void SetMaterials(std::vector<std::string> materials) { mMaterialNames = std::move(materials); }
 
-		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos()const { return mMaterialInfos; }
+		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos();
 		void SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos);
 
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }

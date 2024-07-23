@@ -2,15 +2,32 @@
 
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
-	,mSkinnedMeshObject(nullptr)
-	,mTexturePath{}
-	,mModelPath{}
+	, mSkinnedMeshObject(nullptr)
+	, mTexturePath{}
+	, mModelPath{}
 {
 }
 
 fq::game_module::SkinnedMeshRenderer::~SkinnedMeshRenderer()
 {
 
+}
+
+const std::vector<fq::graphics::MaterialInfo>& fq::game_module::SkinnedMeshRenderer::GetMaterialInfos()
+{
+	if (mMaterialInterfaces.empty())
+	{
+		return mMaterialInfos;
+	}
+
+	mMaterialInfos.clear();
+
+	for (std::shared_ptr<fq::graphics::IMaterial>& materialInterface : mMaterialInterfaces)
+	{
+		mMaterialInfos.push_back(materialInterface->GetInfo());
+	}
+
+	return mMaterialInfos;
 }
 
 void fq::game_module::SkinnedMeshRenderer::SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos)
