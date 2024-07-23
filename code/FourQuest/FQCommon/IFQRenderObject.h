@@ -137,6 +137,9 @@ extern "C" {
 
 			virtual FQ_GRAPHICS std::string GetMaskPath() const abstract;
 			virtual FQ_GRAPHICS void SetMaskPath(const std::string& val) abstract;
+
+			virtual FQ_GRAPHICS void SetFillDegree(float Degree) abstract;
+			virtual FQ_GRAPHICS float GetFillDegree() const abstract;
 		};
 
 		class IParticleObject

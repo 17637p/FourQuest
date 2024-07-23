@@ -446,12 +446,78 @@ void fq::graphics::UIManager::drawAllImage()
 		}
 		else
 		{
-			mRenderTarget->SetTransform(
-				D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-				* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-			);
+			float degree = image->GetFillDegree();
+			if (degree >= 0)
+			{
+				float radian = DirectX::XMConvertToRadians(degree - 90);
 
-			mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+				float radiusX = image->GetWidth() / 2;
+				float radiusY = image->GetHeight() / 2;
+
+				float startX = image->GetStartX();
+				float startY = image->GetStartY();
+
+				// 경로 기하학을 생성하여 반원 모양을 정의합니다.
+				ID2D1PathGeometry* pPathGeometry = nullptr;
+
+				mDirect2DFactory->CreatePathGeometry(&pPathGeometry);
+				ID2D1GeometrySink* pSink = nullptr;
+				pPathGeometry->Open(&pSink);
+
+				// 반원을 정의합니다 (예: 100x100 크기의 반원)
+				pSink->BeginFigure(D2D1::Point2F(startX + radiusX, startY), D2D1_FIGURE_BEGIN_FILLED);
+
+				D2D1_ARC_SIZE arcSize = D2D1_ARC_SIZE_SMALL;
+				if (degree >= 180)
+				{
+					arcSize = D2D1_ARC_SIZE_LARGE;
+				}
+
+				float cos = std::cosf(radian) * radiusX;
+				float sin = std::sinf(radian) * radiusY;
+
+				pSink->AddArc(D2D1::ArcSegment(
+					D2D1::Point2F(startX + radiusX + cos, startY + radiusY + sin),
+					D2D1::SizeF(radiusX, radiusY),
+					0.f,
+					D2D1_SWEEP_DIRECTION_CLOCKWISE,
+					arcSize
+				));
+
+				pSink->AddLine(D2D1::Point2F(startX + radiusX, startY + radiusY)); // 원의 끝 점에서 수직 하단으로 선을 추가
+				pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
+
+				pSink->Close();
+				pSink->Release();
+
+				// 클리핑 영역을 설정합니다.
+				mRenderTarget->PushLayer(
+					D2D1::LayerParameters(
+						D2D1::InfiniteRect(),
+						pPathGeometry
+					),
+					nullptr
+				);
+
+				// 이미지를 그립니다.
+				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+
+				// 클리핑 영역을 해제합니다.
+				mRenderTarget->PopLayer();
+
+				// 리소스를 해제합니다.
+				pPathGeometry->Release();
+			}
+			else
+			{
+				mRenderTarget->SetTransform
+				(
+					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+				);
+
+				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
+			}
 		}
 	}
 }
@@ -478,6 +544,8 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetScaleX(uiInfo.ScaleX);
 	newImageObject->SetScaleY(uiInfo.ScaleY);
 	newImageObject->SetRotation(uiInfo.RotationAngle);
+
+	newImageObject->SetFillDegree(uiInfo.fillDegree);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;

@@ -268,15 +268,16 @@ void UIDemo::createImage()
 	uiInfo.Alpha = 0.5;
 	uiInfo.Layer = 1;
 	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
-	uiInfo.MaskPath = "./resource/Graphics/UIDemo/bitmapmask.png";
+	//uiInfo.MaskPath = "./resource/Graphics/UIDemo/bitmapmask.png";
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
+	uiInfo.fillDegree = 45;
 	uiInfo.RotationAngle = 0;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 
-	uiInfo.StartX = 450;
+	uiInfo.StartX = 500;
 	uiInfo.StartY = 500;
 	uiInfo.Width = 100;
 	uiInfo.Height = 50;
@@ -288,7 +289,8 @@ void UIDemo::createImage()
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
 	uiInfo.RotationAngle = 0;
-
+	uiInfo.fillDegree = 90;
+	
 	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 }
