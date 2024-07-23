@@ -47,18 +47,20 @@ cbuffer cbMaterial : register(b0)
     float cAlphaCutoff;
 };
 
-cbuffer cbSceneTransform : register(b1)
+#ifdef STATIC
+cbuffer cbLightmapInformation : register(b1)
 {
-    float4x4 cView;
-    float4x4 cViewProj;
+    float4 cUVOffsetScale;
+    uint cUVIndex;
 };
+#endif
 
 Texture2D gAlbedoMap : register(t0);
 Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
-Texture2D gLightMap : register(t5);
+Texture2DArray gLightMapArray : register(t5);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 
@@ -117,7 +119,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
     }
 
 #ifdef STATIC
-    pout.Light = gLightMap.Sample(gSamplerAnisotropic, pin.UV1);
+    pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
 #endif
 
     return pout;

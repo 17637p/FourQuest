@@ -37,9 +37,6 @@ cbuffer cbModelTransform : register(b0)
     float4x4 cWorld;
     float4x4 cWorldInvTranspose;
     
-#ifdef STATIC
-    float4 uv1ScaleOffset;
-#endif
 };
 
 cbuffer cbSceneTransform : register(b1)
@@ -70,6 +67,14 @@ cbuffer cbMaterial : register(b3)
     bool cUseNormalMap;
     bool cUseEmissiveMap;
 };
+
+#ifdef STATIC
+cbuffer cbLightmapInformation : register(b4)
+{
+    float4 cUVOffsetScale;
+    uint cUVIndex;
+};
+#endif
 
 VertexOut main(VertexIn vin)
 {
@@ -107,7 +112,7 @@ VertexOut main(VertexIn vin)
     
 #ifdef STATIC
     vin.UV1.y = 1 - vin.UV1.y; 
-    vout.UV1 = vin.UV1 * uv1ScaleOffset.xy + uv1ScaleOffset.zw;
+    vout.UV1 = vin.UV1 * cUVOffsetScale.xy + cUVOffsetScale.zw;
     vout.UV1.y = 1 - vout.UV1.y; 
 #endif
     

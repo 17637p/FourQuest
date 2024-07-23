@@ -45,9 +45,8 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> mStaticMeshnputLayouts;
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mStaticMeshStaticShaderProgram;
+		std::unique_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
@@ -56,7 +55,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
-		std::shared_ptr<D3D11ConstantBuffer<StaticModelTransform>> mStaticModelTransformCB;
+		std::shared_ptr<D3D11ConstantBuffer<LightMapInfomation>> mLightMapInformationCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;

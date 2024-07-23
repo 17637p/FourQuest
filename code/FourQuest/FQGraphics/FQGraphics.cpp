@@ -348,9 +348,9 @@ void FQGraphics::UseShadow(const unsigned int id, bool bUseShadow)
 	mLightManager->UseShadow(id, bUseShadow);
 }
 
-void fq::graphics::FQGraphics::SetLightMapTexture(const std::filesystem::path& path)
+void fq::graphics::FQGraphics::SetLightMapTexture(const std::vector<std::filesystem::path>& paths)
 {
-	mLightManager->SetLightMapTexture(mDevice, path);
+	mLightManager->CreateLightMapTextureArray(mDevice, paths);
 }
 
 void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)

@@ -489,3 +489,134 @@ void fq::graphics::D3D11Texture::GetSHCoefficientRGB(const std::shared_ptr<D3D11
 
 	return;
 }
+
+fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& texturePaths)
+{
+	const UINT TEXTURE_COUNT = texturePaths.size();
+	std::vector<ID3D11Texture2D*> srcTextures(TEXTURE_COUNT);
+
+	for (UINT i = 0; i < texturePaths.size(); ++i) {
+		const std::wstring& texturePath = texturePaths[i];
+		std::wstring fileExtension = texturePath.substr(texturePath.find_last_of(L".") + 1, texturePath.length() - texturePath.find_last_of(L".") + 1);
+
+		if (!std::filesystem::exists(texturePath))
+		{
+			spdlog::warn("[D3D11Texture] \"{}\" not exist", std::filesystem::path(texturePath).string());
+		}
+
+		if (fileExtension == L"dds")
+		{
+			HR(DirectX::CreateDDSTextureFromFileEx(
+				d3d11Device->GetDevice().Get(),
+				texturePath.c_str(),
+				0,
+				D3D11_USAGE_STAGING,
+				0,
+				D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ,
+				0,
+				DirectX::DDS_LOADER_FORCE_SRGB,
+				reinterpret_cast<ID3D11Resource**>(&srcTextures[i]),
+				nullptr
+			));
+		}
+		else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
+		{
+			HR(DirectX::CreateWICTextureFromFileEx(
+				d3d11Device->GetDevice().Get(),
+				texturePath.c_str(),
+				0,
+				D3D11_USAGE_STAGING,
+				0,
+				D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ,
+				0,
+				DirectX::DX11::WIC_LOADER_FORCE_SRGB,
+				reinterpret_cast<ID3D11Resource**>(&srcTextures[i]),
+				nullptr
+			));
+		}
+		else
+		{
+			MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff, gif 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
+		}
+	}
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	srcTextures[0]->GetDesc(&textureDesc);
+
+	D3D11_TEXTURE2D_DESC texArrayDesc = {};
+	texArrayDesc.Width = textureDesc.Width;
+	texArrayDesc.Height = textureDesc.Height;
+	texArrayDesc.MipLevels = textureDesc.MipLevels;
+	texArrayDesc.ArraySize = TEXTURE_COUNT;
+	texArrayDesc.Format = textureDesc.Format;
+	texArrayDesc.SampleDesc.Count = 1;
+	texArrayDesc.Usage = D3D11_USAGE_DEFAULT;
+	texArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	ID3D11Texture2D* texArray = nullptr;
+	HR(d3d11Device->GetDevice()->CreateTexture2D(&texArrayDesc, nullptr, &texArray));
+
+	for (UINT i = 0; i < TEXTURE_COUNT; ++i) {
+		for (UINT mipLevel = 0; mipLevel < textureDesc.MipLevels; ++mipLevel) {
+			D3D11_MAPPED_SUBRESOURCE mappedResource;
+			HR(d3d11Device->GetDeviceContext()->Map(srcTextures[i], mipLevel, D3D11_MAP_READ, 0, &mappedResource));
+
+			d3d11Device->GetDeviceContext()->UpdateSubresource(
+				texArray,
+				D3D11CalcSubresource(mipLevel, i, textureDesc.MipLevels),
+				nullptr,
+				mappedResource.pData,
+				mappedResource.RowPitch,
+				mappedResource.DepthPitch
+			);
+
+			d3d11Device->GetDeviceContext()->Unmap(srcTextures[i], mipLevel);
+		}
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = texArrayDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+	srvDesc.Texture2DArray.MostDetailedMip = 0;
+	srvDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
+	srvDesc.Texture2DArray.FirstArraySlice = 0;
+	srvDesc.Texture2DArray.ArraySize = TEXTURE_COUNT;
+
+	assert(texArray != nullptr);
+	HR(d3d11Device->GetDevice()->CreateShaderResourceView(texArray, &srvDesc, mSRV.GetAddressOf()));
+
+	texArray->Release();
+
+	for (UINT i = 0; i < TEXTURE_COUNT; ++i) {
+		srcTextures[i]->Release();
+	}
+}
+
+void fq::graphics::D3D11TextureArray::Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType)
+{
+	switch (eShaderType)
+	{
+	case ED3D11ShaderType::VertexShader:
+	{
+		d3d11Device->GetDeviceContext()->VSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::PixelShader:
+	{
+		d3d11Device->GetDeviceContext()->PSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::GeometryShader:
+	{
+		d3d11Device->GetDeviceContext()->GSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+		break;
+	}
+	case ED3D11ShaderType::DomainShader:
+	{
+		d3d11Device->GetDeviceContext()->DSSetShaderResources(startSlot, 1, mSRV.GetAddressOf());
+		break;
+	}
+	default:
+		break;
+	}
+}

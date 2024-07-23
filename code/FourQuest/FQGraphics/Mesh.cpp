@@ -33,21 +33,41 @@ namespace fq::graphics
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
 		: MeshBase()
 		, mDevice(device)
-		, mUV1VertexBuffer(nullptr)
 	{
 		Create(meshData);
-
-
 	}
 	void StaticMesh::Create(const fq::common::Mesh& meshData)
 	{
 		mMeshData = meshData;
 		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(mDevice, meshData.Indices);
-		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
 
-		if (!meshData.Tex1.empty())
+		if (meshData.Tex1.empty())
 		{
-			mUV1VertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Tex1);
+			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
+		}
+		else
+		{
+			struct Vertex
+			{
+				DirectX::SimpleMath::Vector3 Pos;
+				DirectX::SimpleMath::Vector3 Normal;
+				DirectX::SimpleMath::Vector3 Tangent;
+				DirectX::SimpleMath::Vector2 Tex;
+				DirectX::SimpleMath::Vector2 Tex1;
+			};
+
+			std::vector<Vertex> vertices(meshData.Vertices.size());
+
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				vertices[i].Pos = meshData.Vertices[i].Pos;
+				vertices[i].Normal = meshData.Vertices[i].Normal;
+				vertices[i].Tangent = meshData.Vertices[i].Tangent;
+				vertices[i].Tex = meshData.Vertices[i].Tex;
+				vertices[i].Tex1 = meshData.Tex1[i];
+			}
+
+			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
 		}
 	}
 	void* StaticMesh::GetVertexBuffer()

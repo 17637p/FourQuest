@@ -354,12 +354,7 @@ fq::graphics::IBLTexture fq::graphics::D3D11LightManager::CreateIBLTexture(const
 	return result;
 }
 
-void fq::graphics::D3D11LightManager::SetLightMapTexture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::filesystem::path& path)
+void fq::graphics::D3D11LightManager::CreateLightMapTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths)
 {
-	if (!std::filesystem::exists(path))
-	{
-		return;
-	}
-
-	mLightMapTexture = std::make_shared<D3D11Texture>(d3d11Device, path);
+	mLightMapTextureArray = std::make_shared<D3D11TextureArray>(d3d11Device, paths);
 }

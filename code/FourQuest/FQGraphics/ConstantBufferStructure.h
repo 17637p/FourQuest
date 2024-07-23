@@ -10,11 +10,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldMat;
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
-	struct StaticModelTransform
+
+	struct LightMapInfomation
 	{
-		DirectX::SimpleMath::Matrix WorldMat;
-		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
-		DirectX::SimpleMath::Vector4 UV1ScaleOffset;
+		DirectX::SimpleMath::Vector4 UVScaleOffset;
+		unsigned int UVIndex;
+		float unused[3];
 	};
 
 	struct ViewProjectionMatrix

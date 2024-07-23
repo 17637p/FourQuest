@@ -49,11 +49,8 @@ namespace fq::graphics
 
 		virtual const fq::common::Mesh& GetMeshData() const override { return mMeshData; }
 
-		std::shared_ptr<D3D11VertexBuffer> GetUV1Buffer() { return mUV1VertexBuffer; }
-
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
-		std::shared_ptr<D3D11VertexBuffer> mUV1VertexBuffer;
 	};
 
 	class SkinnedMesh : public ISkinnedMesh, public MeshBase

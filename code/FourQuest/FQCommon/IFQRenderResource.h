@@ -19,6 +19,13 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
+		class IMesh
+		{
+		public:
+
+		protected:
+		};
+
 		class IStaticMesh
 		{
 		public:

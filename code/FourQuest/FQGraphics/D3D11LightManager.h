@@ -15,6 +15,7 @@ namespace fq::graphics
 	struct LightInfo;
 	class D3D11Texture;
 	class D3D11CubeTexture;
+	class D3D11TextureArray;
 	template <typename T>
 	class D3D11ConstantBuffer;
 
@@ -71,8 +72,8 @@ namespace fq::graphics
 
 		IBLTexture CreateIBLTexture(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11CubeTexture> cubemapTexture, EEnvironmentFormat envFormat = EEnvironmentFormat::RGBA32, EEnvironmentResoulution specularResolution = EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution diffuseResolution = EEnvironmentResoulution::Size32x32, float envScale = 1.f);
 
-		void SetLightMapTexture(const std::shared_ptr<D3D11Device>& d3d11Device, const std::filesystem::path& path);
-		const std::shared_ptr<D3D11Texture>& GetLightMapTexture() const { return mLightMapTexture; }
+		void CreateLightMapTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths);
+		const std::shared_ptr<D3D11TextureArray>& GetLightMapTextureArray() const { return mLightMapTextureArray; }
 
 	private:
 		std::shared_ptr<D3D11ConstantBuffer<LightData>> mLightConstantBuffer;
@@ -99,8 +100,7 @@ namespace fq::graphics
 		IBLTexture mIBLTexture;
 		std::shared_ptr<D3D11Texture> mSpecularBRDF;
 		std::shared_ptr<D3D11CubeTexture> mSkyBox;
-
-		std::shared_ptr<D3D11Texture> mLightMapTexture;
+		std::shared_ptr<D3D11TextureArray> mLightMapTextureArray;
 	};
 
 	inline std::shared_ptr<D3D11ConstantBuffer<LightData>> D3D11LightManager::GetLightConstnatBuffer()

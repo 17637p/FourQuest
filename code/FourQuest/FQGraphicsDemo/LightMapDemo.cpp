@@ -43,12 +43,17 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
 	// 랜더링 오브젝트 생성
-	// mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/untitled.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/untitled.fbx"));
-	// mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/untitled1.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/untitled1.fbx"));
-	createModel("./resource/Graphics/LightMapDemo/untitled.fbx", "./resource/Graphics/LightMapDemo/", DirectX::SimpleMath::Matrix::Identity);
-	mTestGraphics->SetLightMapTexture("./resource/Graphics/LightMapDemo/Lightmap-0_comp_light.dds");
+	mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/LightMapTest.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/LightMapTest.fbx"));
+	createModel("./resource/Graphics/LightMapDemo/LightMapTest.model", "./resource/Graphics/LightMapDemo/", DirectX::SimpleMath::Matrix::Identity);
+	mTestGraphics->SetLightMapTexture({ "./resource/Graphics/LightMapDemo/Lightmap-0_comp_light.dds" });
 
-	std::map<std::string, DirectX::SimpleMath::Vector4> lightMapUVMap;
+	struct LightMapInfo
+	{
+		DirectX::SimpleMath::Vector4 OffsetScale;
+		unsigned int Index;
+	};
+
+	std::map<std::string, LightMapInfo> lightMapUVMap;
 	// load
 	std::ifstream readData("./resource/Graphics/LightMapDemo/LightmapUVs.json");
 	nlohmann::ordered_json nodeUVsJson;
@@ -67,14 +72,16 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 
 		std::vector<DirectX::SimpleMath::Vector2> uvs;
 
-		DirectX::SimpleMath::Vector4 lightmapScaleOffset;
+		LightMapInfo lightmapInfo;
 
-		lightmapScaleOffset.x = nodeUVJson["lightmapScaleOffset"][0].get<float>();
-		lightmapScaleOffset.y = nodeUVJson["lightmapScaleOffset"][1].get<float>();
-		lightmapScaleOffset.z = nodeUVJson["lightmapScaleOffset"][2].get<float>();
-		lightmapScaleOffset.w = nodeUVJson["lightmapScaleOffset"][3].get<float>();
+		lightmapInfo.OffsetScale.x = nodeUVJson["lightmapScaleOffset"][0].get<float>();
+		lightmapInfo.OffsetScale.y = nodeUVJson["lightmapScaleOffset"][1].get<float>();
+		lightmapInfo.OffsetScale.z = nodeUVJson["lightmapScaleOffset"][2].get<float>();
+		lightmapInfo.OffsetScale.w = nodeUVJson["lightmapScaleOffset"][3].get<float>();
 
-		lightMapUVMap.insert({ name, std::move(lightmapScaleOffset) });
+		lightmapInfo.Index = nodeUVJson["lightmapIndex"].get<unsigned int>();
+
+		lightMapUVMap.insert({ name, std::move(lightmapInfo) });
 	}
 
 	for (fq::graphics::IStaticMeshObject* staticMeshObject : mStaticMeshObjects)
@@ -95,10 +102,10 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 
 		if (find != lightMapUVMap.end())
 		{
-			staticMeshObject->SetUVScaleOffset(find->second);
+			staticMeshObject->SetLightmapUVScaleOffset(find->second.OffsetScale);
+			staticMeshObject->SetLightmapIndex(find->second.Index);
 		}
 	}
-
 
 	/// camera 초기화
 	AddDefaultCamera(mTestGraphics);
@@ -279,10 +286,7 @@ void LightMapDemo::createModel(std::string modelPath, std::filesystem::path text
 	using namespace fq::graphics;
 	unsigned int key = std::hash<std::string>{}(modelPath);
 
-	fq::loader::ModelConverter modelConverter;
-	modelConverter.ReadFBXFile(modelPath);
-	const fq::common::Model& modelData = modelConverter.Convert();
-	mTestGraphics->CreateModelResource(key, modelData, textureBasePath);
+	const fq::common::Model& modelData = mTestGraphics->CreateModelResource(key, modelPath, textureBasePath);
 
 	auto boneHierarchy = mTestGraphics->GetNodeHierarchyByModelPathOrNull(key);
 

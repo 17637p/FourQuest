@@ -65,8 +65,11 @@ namespace fq::graphics
 		virtual std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const { return mIUVAnimationInstance; }
 
 		// LightmapUV
-		virtual void SetUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) override { mScaleOffset = scaleOffset; }
-		virtual const DirectX::SimpleMath::Vector4& GetUVScaleOffset() const override { return mScaleOffset; }
+		virtual void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) override { mScaleOffset = scaleOffset; }
+		virtual const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const override { return mScaleOffset; }
+
+		virtual void SetLightmapIndex(unsigned int lightmapIndex) override { mLightmapIndex = lightmapIndex; }
+		virtual unsigned int GetLightmapIndex() const override { return mLightmapIndex; }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
@@ -79,6 +82,7 @@ namespace fq::graphics
 
 		// lightMap
 		DirectX::SimpleMath::Vector4 mScaleOffset;
+		unsigned int mLightmapIndex;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject

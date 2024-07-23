@@ -52,8 +52,11 @@ extern "C" {
 			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
 
 			// LightmapUV
-			virtual FQ_GRAPHICS void SetUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) abstract;
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Vector4& GetUVScaleOffset() const abstract;
+			virtual FQ_GRAPHICS void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const abstract;
+
+			virtual FQ_GRAPHICS void SetLightmapIndex(unsigned int lightmapIndex) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLightmapIndex() const abstract;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
