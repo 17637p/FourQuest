@@ -17,7 +17,7 @@ namespace fq::game_module
 		Floor = 9,
 		Soul = 10,
 		Dash = 11,
-		Tag12 = 12,
+		Spawner = 12,
 		Tag13 = 13,
 		Tag14 = 14,
 		Tag15 = 15,

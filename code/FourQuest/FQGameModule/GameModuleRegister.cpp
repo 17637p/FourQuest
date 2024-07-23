@@ -77,8 +77,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Soul")
 		.data<ETag::Dash>("Dash"_hs) // 11
 		.prop(fq::reflect::prop::Name, "Dash")
-		.data<ETag::Dash>("Tag12"_hs) // 12
-		.prop(fq::reflect::prop::Name, "Tag12")
+		.data<ETag::Spawner>("Spawner"_hs) // 12
+		.prop(fq::reflect::prop::Name, "Spawner")
 		.data<ETag::Dash>("Tag13"_hs) // 13
 		.prop(fq::reflect::prop::Name, "Tag13")
 		.data<ETag::Dash>("Tag14"_hs) // 14

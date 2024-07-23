@@ -52,6 +52,8 @@
 // MonsterSpawner
 #include "MonsterSpawner.h"
 #include "MonsterGroup.h"
+#include "SpawnerDeadState.h"
+#include "SpawnerOpenState.h"
 
 #include "Attack.h"
 #include "KnockBack.h"
@@ -465,7 +467,21 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MonsterPrefab")
 		.data<&MonsterSpawner::mSpawnCoolTime>("SpwanCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "SpwanCoolTime")
+		.data<&MonsterSpawner::mSpawnOffset>("SpawnOffeset"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnOffeset")
 		.base<fq::game_module::Component>();
+
+	entt::meta<SpawnerOpenState>()
+		.type("SpawnerOpenState"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerOpenState")
+		.data<&SpawnerOpenState::mSpwanTiming>("SpwanTiming"_hs)
+		.prop(fq::reflect::prop::Name, "SpwanTiming")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<SpawnerDeadState>()
+		.type("SpawnerDeadState"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerDeadState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             Ä«¸Þ¶ó									//

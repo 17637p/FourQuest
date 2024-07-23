@@ -75,6 +75,12 @@
     <Filter Include="src\06.GameManager">
       <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\02.Monster\Spawner">
+      <UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Spawner">
+      <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -148,9 +154,6 @@
     </ClInclude>
     <ClInclude Include="Monster.h">
       <Filter>include\02.Monster\Prototype</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterSpawner.h">
-      <Filter>include\02.Monster</Filter>
     </ClInclude>
     <ClInclude Include="PlantMonster.h">
       <Filter>include\02.Monster\Plant</Filter>
@@ -233,6 +236,15 @@
     <ClInclude Include="ShieldBlockState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterSpawner.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerDeadState.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerOpenState.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -300,9 +312,6 @@
     </ClCompile>
     <ClCompile Include="Monster.cpp">
       <Filter>src\02.Monster\Prototype</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterSpawner.cpp">
-      <Filter>src\02.Monster</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonster.cpp">
       <Filter>src\02.Monster\Plant</Filter>
@@ -372,6 +381,15 @@
     </ClCompile>
     <ClCompile Include="ShieldBlockState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawner.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerDeadState.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerOpenState.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

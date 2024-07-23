@@ -169,7 +169,7 @@ void fq::game_module::Transform::SetLocalScale(Vector3 scale)
 void fq::game_module::Transform::updateWorldMatrix()
 {
 	mFQTransform.worldMatrix = HasParent() ?
-		mFQTransform.localMatrix * mParent->mFQTransform.worldMatrix
+		mFQTransform.localMatrix * mParent->mFQTransform.                                                                                                                                                                                                                               worldMatrix
 		: mFQTransform.localMatrix;
 
 	decomposeWorldMatrix();

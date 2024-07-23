@@ -80,6 +80,8 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SpawnerDeadState.h" />
+    <ClInclude Include="SpawnerOpenState.h" />
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
@@ -129,6 +131,8 @@
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
+    <ClCompile Include="SpawnerDeadState.cpp" />
+    <ClCompile Include="SpawnerOpenState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -16,7 +16,7 @@ fq::game_module::SoundClip::SoundClip()
 
 void fq::game_module::SoundClip::Play(SoundIndex soundIndex, bool bIsLoop, ChannelIndex channelIndex)
 {
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSounds[soundIndex].path, bIsLoop, channelIndex });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSounds[soundIndex].key, bIsLoop, channelIndex });
 }
 
 void fq::game_module::SoundClip::Play(std::string key, bool bIsLoop, ChannelIndex channelIndex)
