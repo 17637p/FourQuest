@@ -42,7 +42,7 @@ namespace fq::game_module
 		/// 텍스처 폴더 경로를 설정합니다 
 		/// </summary>
 		std::string GetTexturePath() const { return mTexturePath; }
-		
+
 		/// <summary>
 		/// 텍스터 폴더 경로를 반환합니다
 		/// </summary>
@@ -64,14 +64,15 @@ namespace fq::game_module
 		/// 소유하고있는 메테리얼 이름들을 반환합니다
 		/// </summary>
 		/// <returns></returns>
-		const std::vector<std::string>& GetMaterials()const { return mMaterialNames; }
+		const std::vector<std::string>& GetMaterials()const;
 
 		/// <summary>
 		/// 메테리얼을 설정합니다
 		/// </summary>
-		void SetMaterials(std::vector<std::string> materials) { mMaterialNames = std::move(materials); }
+		void SetMaterials(std::vector<std::string> materials);
 
-		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos();
+		void UpdateMaterialInfoByMaterialInterface();
+		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos() const;
 		void SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos);
 
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }

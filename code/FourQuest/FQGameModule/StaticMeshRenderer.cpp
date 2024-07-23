@@ -1,5 +1,9 @@
 #include "StaticMeshRenderer.h"
 
+#include "Scene.h"
+#include "EventManager.h"
+#include "Event.h"
+
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
@@ -12,20 +16,18 @@ fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
 {
 }
 
-const std::vector<fq::graphics::MaterialInfo>& fq::game_module::StaticMeshRenderer::GetMaterialInfos()
+void fq::game_module::StaticMeshRenderer::UpdateMaterialInfoByMaterialInterface()
 {
-	if (mMaterialInterfaces.empty())
-	{
-		return mMaterialInfos;
-	}
-
 	mMaterialInfos.clear();
 
 	for (std::shared_ptr<fq::graphics::IMaterial>& materialInterface : mMaterialInterfaces)
 	{
 		mMaterialInfos.push_back(materialInterface->GetInfo());
 	}
-	
+}
+
+const std::vector<fq::graphics::MaterialInfo>& fq::game_module::StaticMeshRenderer::GetMaterialInfos() const 
+{
 	return mMaterialInfos;
 }
 
@@ -39,17 +41,19 @@ void fq::game_module::StaticMeshRenderer::SetMaterialInfos(std::vector<fq::graph
 	{
 		mMaterialInterfaces[i]->SetInfo(mMaterialInfos[i]);
 	}
+
+	fq::game_module::Scene* scene = GetScene();
+	
+	if (scene != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::UpdateMaterialInfo>({});
+	}
 }
 
 void fq::game_module::StaticMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces)
 {
 	mMaterialInterfaces = materialInterfaces;
-	mMaterialInfos.clear();
-
-	for (auto& materialInterface : materialInterfaces)
-	{
-		mMaterialInfos.push_back(materialInterface->GetInfo());
-	}
+	UpdateMaterialInfoByMaterialInterface();
 }
 
 entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()

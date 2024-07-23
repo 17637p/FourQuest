@@ -58,6 +58,9 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 			{
 				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);
 			});
+
+	mUpdateMaterialInfosHandler = eventMgr->
+		RegisterHandle<fq::event::UpdateMaterialInfo>(this, &RenderingSystem::OnUpdateMaterialInfos);
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)
@@ -239,7 +242,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 	std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
 	materialInterfaces.reserve(materialNames.size());
 	MeshObjectInfo meshObjectInfo;
-	
+
 	size_t i = 0;
 	for (const auto& materialName : materialNames)
 	{
@@ -631,6 +634,25 @@ void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject
 	auto terrainMeshObject = terrain->GetTerrainMeshObject();
 	mGameProcess->mGraphics->DeleteTerrainMeshObject(terrainMeshObject);
 	terrain->SetTerrainMeshObject(nullptr);
+}
+
+void fq::game_engine::RenderingSystem::OnUpdateMaterialInfos(const fq::event::UpdateMaterialInfo& event)
+{
+	using namespace fq::game_module;
+
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	scene->ViewComponents<StaticMeshRenderer>
+		([](GameObject& object, StaticMeshRenderer& mesh)
+			{
+				mesh.UpdateMaterialInfoByMaterialInterface();
+			});
+
+	scene->ViewComponents<SkinnedMeshRenderer>
+		([](GameObject& object, SkinnedMeshRenderer& mesh)
+			{
+				mesh.UpdateMaterialInfoByMaterialInterface();
+			});
 }
 
 unsigned int fq::game_engine::RenderingSystem::GetModelKey(const Path& modelPath, const Path& texturePath) const
