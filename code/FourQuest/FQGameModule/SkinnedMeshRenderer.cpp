@@ -1,16 +1,45 @@
 #include "SkinnedMeshRenderer.h"
 
+#include "Scene.h"
+#include "EventManager.h"
+#include "Event.h"
+
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
-	,mSkinnedMeshObject(nullptr)
-	,mTexturePath{}
-	,mModelPath{}
+	, mSkinnedMeshObject(nullptr)
+	, mTexturePath{}
+	, mModelPath{}
 {
 }
 
 fq::game_module::SkinnedMeshRenderer::~SkinnedMeshRenderer()
 {
 
+}
+
+const std::vector<std::string>& fq::game_module::SkinnedMeshRenderer::GetMaterials() const
+{
+	return mMaterialNames;
+}
+
+void fq::game_module::SkinnedMeshRenderer::SetMaterials(std::vector<std::string> materials)
+{
+	mMaterialNames = std::move(materials);
+}
+
+void fq::game_module::SkinnedMeshRenderer::UpdateMaterialInfoByMaterialInterface()
+{
+	mMaterialInfos.clear();
+
+	for (std::shared_ptr<fq::graphics::IMaterial>& materialInterface : mMaterialInterfaces)
+	{
+		mMaterialInfos.push_back(materialInterface->GetInfo());
+	}
+}
+
+const std::vector<fq::graphics::MaterialInfo>& fq::game_module::SkinnedMeshRenderer::GetMaterialInfos() const
+{
+	return mMaterialInfos;
 }
 
 void fq::game_module::SkinnedMeshRenderer::SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos)
@@ -23,17 +52,19 @@ void fq::game_module::SkinnedMeshRenderer::SetMaterialInfos(std::vector<fq::grap
 	{
 		mMaterialInterfaces[i]->SetInfo(mMaterialInfos[i]);
 	}
+
+	fq::game_module::Scene* scene = GetScene();
+
+	if (scene != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::UpdateMaterialInfo>({});
+	}
 }
 
 void fq::game_module::SkinnedMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces)
 {
 	mMaterialInterfaces = materialInterfaces;
-	mMaterialInfos.clear();
-
-	for (auto& materialInterface : materialInterfaces)
-	{
-		mMaterialInfos.push_back(materialInterface->GetInfo());
-	}
+	UpdateMaterialInfoByMaterialInterface();
 }
 
 entt::meta_handle fq::game_module::SkinnedMeshRenderer::GetHandle()

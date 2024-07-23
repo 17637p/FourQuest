@@ -244,5 +244,17 @@ namespace fq::event
 		std::shared_ptr<fq::game_module::LinkData> linkData;
 	};
 
+
+	//////////////////////////////////////////////////////////////////////////
+	//							Material Event							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	/// <summary>
+	/// 모든 랜더러의 머터리얼 정보를 갱신합니다.
+	/// </summary>
+	struct UpdateMaterialInfo
+	{
+	};
+
 }
 
