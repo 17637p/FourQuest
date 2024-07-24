@@ -457,6 +457,9 @@ void fq::graphics::UIManager::drawAllImage()
 				float startX = image->GetStartX();
 				float startY = image->GetStartY();
 
+				float maxLength = (radiusX > radiusY) ? radiusX : radiusY;
+				float halfDiagonal = (maxLength) * std::sqrt(2);
+
 				// 경로 기하학을 생성하여 반원 모양을 정의합니다.
 				ID2D1PathGeometry* pPathGeometry = nullptr;
 
@@ -465,6 +468,15 @@ void fq::graphics::UIManager::drawAllImage()
 				pPathGeometry->Open(&pSink);
 
 				// 반원을 정의합니다 (예: 100x100 크기의 반원)
+				startX = startX + radiusX - halfDiagonal;
+				startY = startY + radiusY - halfDiagonal;
+
+				radiusX = halfDiagonal;
+				radiusY = halfDiagonal;
+
+				float cos = std::cosf(radian) * radiusX;
+				float sin = std::sinf(radian) * radiusY;
+
 				pSink->BeginFigure(D2D1::Point2F(startX + radiusX, startY), D2D1_FIGURE_BEGIN_FILLED);
 
 				D2D1_ARC_SIZE arcSize = D2D1_ARC_SIZE_SMALL;
@@ -472,9 +484,6 @@ void fq::graphics::UIManager::drawAllImage()
 				{
 					arcSize = D2D1_ARC_SIZE_LARGE;
 				}
-
-				float cos = std::cosf(radian) * radiusX;
-				float sin = std::sinf(radian) * radiusY;
 
 				pSink->AddArc(D2D1::ArcSegment(
 					D2D1::Point2F(startX + radiusX + cos, startY + radiusY + sin),

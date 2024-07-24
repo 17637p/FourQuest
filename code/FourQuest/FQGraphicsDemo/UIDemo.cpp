@@ -271,7 +271,7 @@ void UIDemo::createImage()
 	//uiInfo.MaskPath = "./resource/Graphics/UIDemo/bitmapmask.png";
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
-	uiInfo.fillDegree = 45;
+	uiInfo.fillDegree = 315;
 	uiInfo.RotationAngle = 0;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
