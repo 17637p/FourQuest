@@ -123,3 +123,20 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 		}
 	}
 }
+
+void fq::client::MonsterSpawner::Destroy()
+{
+	for (const auto& monster : mMonsterGroup->GetMonsters())
+	{
+		auto transform = monster->GetComponent<game_module::Transform>();
+
+		auto matrix = transform->GetWorldMatrix();
+
+		transform->SetParent(nullptr);
+
+		transform->SetWorldMatrix(matrix);
+	}
+
+
+	GetScene()->DestroyGameObject(GetGameObject());
+}

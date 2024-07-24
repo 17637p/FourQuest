@@ -49,7 +49,7 @@ void fq::client::KnockBack::updateVelocity(float dt)
 		distance.y = mVelocity.y * dt;
 		distance.z = mVelocity.z * dt;
 
-		auto position = mTransform->GetWorldPosition();
+		auto position = mTransform->GetWorldPosition ();
 		position += distance;
 		mTransform->SetWorldPosition(position);
 	}
