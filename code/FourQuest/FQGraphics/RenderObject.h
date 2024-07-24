@@ -252,6 +252,12 @@ namespace fq::graphics
 		virtual void SetImagePath(const std::string& texturePath) override;
 		virtual std::string GetImagePath() override;
 
+		virtual std::string GetMaskPath() const override { return mMaskPath; }
+		virtual void SetMaskPath(const std::string& val) override { mMaskPath = val; }
+
+		virtual void SetFillDegree(float Degree) override { mFillDegree = Degree; };
+		virtual float GetFillDegree() const override { return mFillDegree; };
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -270,6 +276,9 @@ namespace fq::graphics
 		float mScaleY;
 
 		std::string mImagePath;
+		std::string mMaskPath;
+
+		float mFillDegree;
 	};
 
 	class ProbeObject : public IProbeObject

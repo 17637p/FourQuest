@@ -25,6 +25,7 @@ UIDemo::UIDemo()
 
 UIDemo::~UIDemo()
 {
+	mTestGraphics->Finalize();
 	for (fq::graphics::IImageObject* iobj : mImageObjects)
 	{
 		mTestGraphics->DeleteImageObject(iobj);
@@ -258,8 +259,8 @@ void UIDemo::debugRender()
 void UIDemo::createImage()
 {
 	fq::graphics::UIInfo uiInfo;
-	uiInfo.StartX = 500;
-	uiInfo.StartY = 500;
+	uiInfo.StartX = 0;
+	uiInfo.StartY = 0;
 	uiInfo.Width = 100;
 	uiInfo.Height = 100;
 	uiInfo.XRatio = 1;
@@ -267,14 +268,16 @@ void UIDemo::createImage()
 	uiInfo.Alpha = 0.5;
 	uiInfo.Layer = 1;
 	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	//uiInfo.MaskPath = "./resource/Graphics/UIDemo/bitmapmask.png";
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
+	uiInfo.fillDegree = 270;
 	uiInfo.RotationAngle = 0;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 
-	uiInfo.StartX = 450;
+	uiInfo.StartX = 500;
 	uiInfo.StartY = 500;
 	uiInfo.Width = 100;
 	uiInfo.Height = 50;
@@ -286,7 +289,8 @@ void UIDemo::createImage()
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
 	uiInfo.RotationAngle = 0;
-
+	uiInfo.fillDegree = 359;
+	
 	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 }
