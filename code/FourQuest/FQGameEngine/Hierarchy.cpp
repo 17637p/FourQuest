@@ -131,6 +131,7 @@ void fq::game_engine::Hierarchy::beginHierarchyOfSearch()
 			continue;
 		}
 
+		begineGameObectSelectButton(object);
 		beginGameObjectNameBar(object);
 	}
 }

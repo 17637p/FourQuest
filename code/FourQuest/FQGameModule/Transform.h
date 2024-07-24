@@ -192,7 +192,7 @@ namespace fq::game_module
 		/// 계층구조의 자식들을 반환합니다
 		/// </summary>
 		/// <returns>계층구조의 자식들</returns>
-		const std::vector<Transform*>& GetChildren()const { return mChidren; }
+		const std::vector<Transform*>& GetChildren()const { return mChildren; }
 
 		/// <summary>
 		/// transform이 자식계층에 속하고 있는지 확인합니다
@@ -224,6 +224,6 @@ namespace fq::game_module
 		FQTransform mFQTransform;
 
 		Transform* mParent;
-		std::vector<Transform*> mChidren;
+		std::vector<Transform*> mChildren;
 	};
 }

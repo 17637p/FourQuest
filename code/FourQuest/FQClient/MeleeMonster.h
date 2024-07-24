@@ -5,6 +5,7 @@
 
 namespace fq::client
 {
+	class KnockBack;
 	class GameManager;
 
 	/// <summary>
@@ -47,11 +48,11 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
-
 	private:
 		GameManager* mGameManager;
 		fq::game_module::Transform* mTransform;
 		fq::game_module::Animator* mAnimator;
+		KnockBack* mKnockBack;
 		std::shared_ptr<game_module::GameObject> mTarget;
 
 		float mMaxHp;

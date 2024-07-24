@@ -148,7 +148,7 @@ namespace fq::event
 
 	struct OnPlaySound
 	{
-		std::string path;
+		std::string key;
 		bool bIsLoop;
 		unsigned int channelIndex;
 	};

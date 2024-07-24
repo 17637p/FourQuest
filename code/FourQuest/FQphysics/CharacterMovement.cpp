@@ -98,7 +98,6 @@ namespace fq::physics
 	{
 		mVelocity.x = std::clamp(mVelocity.x, -mMaxSpeed, mMaxSpeed);
 		mVelocity.z = std::clamp(mVelocity.z, -mMaxSpeed, mMaxSpeed);
-
 	}
 
 	void CharacterMovement::Compute(float deltaTime)
@@ -108,7 +107,7 @@ namespace fq::physics
 			mVelocity.y -= mGravityWeight * deltaTime;
 
 		// 현재 속도 계산
-		mSpeed = sqrt(abs(mVelocity.x * mVelocity.x) + abs(mVelocity.z * mVelocity.z));
+		mSpeed = sqrt(mVelocity.x * mVelocity.x + mVelocity.z * mVelocity.z);
 
 		// 최대 속도 제한
 		if (mSpeed > mMaxSpeed)

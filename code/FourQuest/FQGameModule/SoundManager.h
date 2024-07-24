@@ -12,8 +12,9 @@ namespace fq::game_module
 	/// </summary>
 	class SoundManager
 	{
+		using SoundKey = std::string;
 		using SoundPath = std::string;
-		using SoundList = std::unordered_map<SoundPath, FMOD::Sound*>;
+		using SoundList = std::unordered_map<SoundKey, FMOD::Sound*>;
 		using SoundSystem = FMOD::System;
 		using SoundChannel = FMOD::Channel;
 		using ChannelIndex = unsigned int;
@@ -41,12 +42,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 사운드를 로드합니다 
 		/// </summary>
-		void LoadSound(const SoundPath& path);
+		void LoadSound(const SoundKey& key , const SoundPath& path);
 
 		/// <summary>
 		/// 사운드를 언로드합니다 
 		/// </summary>
-		void UnloadSound(const SoundPath& path);
+		void UnloadSound( const SoundKey& key);
 
 		/// <summary>
 		/// 모든사운드를 언로드합니다 
@@ -61,7 +62,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 사운드를 재생합니다 
 		/// </summary>
-		void Play(const SoundPath& path, bool bIsLoop, ChannelIndex index);
+		void Play(const SoundKey& key, bool bIsLoop, ChannelIndex index);
 
 	private:
 		static constexpr ChannelIndex MaxChannel = 32;

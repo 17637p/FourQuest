@@ -39,9 +39,10 @@ void fq::game_module::SoundManager::Finalize()
 	mSoundSystem->release();
 }
 
-void fq::game_module::SoundManager::LoadSound(const SoundPath& path)
+
+void fq::game_module::SoundManager::LoadSound(const SoundKey& key, const SoundPath& path)
 {
-	if (mSoundList.find(path) != mSoundList.end()) return;
+	if (mSoundList.find(key) != mSoundList.end()) return;
 
 	FMOD::Sound* sound = nullptr;
 
@@ -54,7 +55,7 @@ void fq::game_module::SoundManager::LoadSound(const SoundPath& path)
 		return;
 	}
 
-	mSoundList.insert({ path, sound });
+	mSoundList.insert({ key, sound });
 }
 
 void fq::game_module::SoundManager::UnloadAllSound()
@@ -72,18 +73,19 @@ void fq::game_module::SoundManager::UnloadAllSound()
 	mSoundList.clear();
 }
 
-void fq::game_module::SoundManager::UnloadSound(const SoundPath& path)
+
+void fq::game_module::SoundManager::UnloadSound(const SoundKey& key)
 {
-	auto iter = mSoundList.find(path);
+		auto iter = mSoundList.find(key);
 
-	if (iter == mSoundList.end())
-	{
-		return;
-	}
+		if (iter == mSoundList.end())
+		{
+			return;
+		}
 
-	auto sound = iter->second;
-	sound->release();
-	mSoundList.erase(iter);
+		auto sound = iter->second;
+		sound->release();
+		mSoundList.erase(iter);
 }
 
 void fq::game_module::SoundManager::StopChannel(ChannelIndex index)
@@ -96,13 +98,13 @@ void fq::game_module::SoundManager::StopChannel(ChannelIndex index)
 	}
 }
 
-void fq::game_module::SoundManager::Play(const SoundPath& path, bool bIsLoop, ChannelIndex index)
+void fq::game_module::SoundManager::Play(const SoundKey& key, bool bIsLoop, ChannelIndex index)
 {
-	auto iter = mSoundList.find(path);
-	
+	auto iter = mSoundList.find(key);
+
 	if (iter == mSoundList.end())
 	{
-		SPDLOG_WARN("{} can't found sound ", path);
+		SPDLOG_WARN("{} can't found sound ", key);
 		return;
 	}
 
@@ -114,7 +116,7 @@ void fq::game_module::SoundManager::Play(const SoundPath& path, bool bIsLoop, Ch
 	}
 	else
 	{
-		SPDLOG_WARN(" play sound failed", path);
+		SPDLOG_WARN(" play sound failed", key);
 	}
 }
 

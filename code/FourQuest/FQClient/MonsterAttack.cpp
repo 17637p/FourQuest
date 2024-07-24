@@ -107,6 +107,7 @@ void fq::client::MonsterAttack::attack(fq::game_module::Animator& animator)
 	Monster* monster = animator.GetComponent<Monster>();
 	fq::game_module::Transform* monsterTransform = monster->GetComponent<fq::game_module::Transform>();
 
+
 	// Attack 수치 설정 (공격력, Attackter, 공격 콜라이더 크기, 태그, 회전, 위치)
 	auto instance = monster->GetScene()->GetPrefabManager()->InstantiatePrefabResoure(monster->GetAttack());
 	auto& object = *(instance.begin());
@@ -115,8 +116,8 @@ void fq::client::MonsterAttack::attack(fq::game_module::Animator& animator)
 	fq::client::Attack* attack = object->GetComponent<fq::client::Attack>();
 
 	// 공격 위한 세팅 
-	attack->SetAttackPower(20);
-	attack->SetAttacker(monster->GetGameObject());
+//	attack->SetAttackPower(20);
+//	attack->SetAttacker(monster->GetGameObject());
 	collider->SetExtent({ 0.4f, 0.2f, 0.4f });
 	object->SetTag(fq::game_module::ETag::MonsterAttack);
 

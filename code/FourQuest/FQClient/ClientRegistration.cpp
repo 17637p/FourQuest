@@ -11,13 +11,15 @@
 #include "Soul.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
-#include "PlayerDashState.h"
-#include "PlayerAttackState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
 #include "RazerAttackState.h"
+#include "ShiedlDashState.h"
+#include "KnightArmour.h"
+#include "SwordAttackState.h"
+#include "ShieldAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -50,8 +52,11 @@
 // MonsterSpawner
 #include "MonsterSpawner.h"
 #include "MonsterGroup.h"
+#include "SpawnerDeadState.h"
+#include "SpawnerOpenState.h"
 
 #include "Attack.h"
+#include "KnockBack.h"
 
 // UI
 #include "HpBar.h"
@@ -87,6 +92,17 @@ void fq::client::RegisterMetaData()
 		.data<ESoulType::Staff>("Staff"_hs) // 3
 		.prop(fq::reflect::prop::Name, "Staff");
 
+	entt::meta<EArmourType>()
+		.prop(fq::reflect::prop::Name, "ArmourType")
+		.conv<std::underlying_type_t<EArmourType>>()
+		.data<EArmourType::Knight>("Knight"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Knight")
+		.data<EArmourType::Magic>("Magic"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Magic")
+		.data<EArmourType::Warrior>("Warrior"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Warrior")
+		.data<EArmourType::Archer>("Archer"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Archer");
 
 	entt::meta<Player>()
 		.type("Player"_hs)
@@ -94,12 +110,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Player::SetSoulType, &Player::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Player::mArmourType>("ArmourType"_hs)
+		.prop(reflect::prop::Name, "ArmourType")
 		.data<&Player::mHp>("Hp"_hs)
 		.prop(reflect::prop::Name, "Hp")
 		.data<&Player::mAttackPower>("AttackPower"_hs)
 		.prop(reflect::prop::Name, "AttackPower")
-		.data<&Player::mDashCoolTime>("DashCoolTime"_hs)
-		.prop(reflect::prop::Name, "DashCoolTime")
 		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
 		.prop(reflect::prop::Name, "InvincibleTime")
 		.prop(reflect::prop::Comment, u8"무적시간")
@@ -146,6 +162,37 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "RazerAttackBox")
 		.base<game_module::Component>();
 
+	entt::meta<KnightArmour>()
+		.type("KnightArmour"_hs)
+		.prop(reflect::prop::Name, "KnightArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&KnightArmour::mDashCoolTime>("DashCoolTime"_hs)
+		.prop(reflect::prop::Name, "DashCoolTime")
+		.data<&KnightArmour::mAttackOffset>("AttackOffset"_hs)
+		.prop(reflect::prop::Name, "AttackOffset")
+		.data<&KnightArmour::mShieldDashPower>("ShieldDashPushPower"_hs)
+		.prop(reflect::prop::Name, "ShieldDashPushPower")
+		.prop(reflect::prop::Comment, u8"A대쉬 전진하는 힘")
+		.data<&KnightArmour::mXAttackDashPower>("XAttackPushPower"_hs)
+		.prop(reflect::prop::Name, "XAttackPushPower")
+		.prop(reflect::prop::Comment, u8"X공격 전진하는 힘")
+		.data<&KnightArmour::mXAttackDashPower>("XAttackPushPower"_hs)
+		.prop(reflect::prop::Name, "XAttackPushPower")
+		.prop(reflect::prop::Comment, u8"X공격 전진하는 힘")
+		.data<&KnightArmour::mSwordKnockBackPower>("SwordKnockBackPower"_hs)
+		.prop(reflect::prop::Name, "SwordKnockBackPower")
+		.prop(reflect::prop::Comment, u8"검 공격 넉백")
+		.data<&KnightArmour::mShieldKnockPower>("ShieldKnockPower"_hs)
+		.prop(reflect::prop::Name, "ShieldKnockPower")
+		.prop(reflect::prop::Comment, u8"방패 공격 넉백")
+		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
+		.prop(reflect::prop::Name, "SwordAttack")
+		.data<&KnightArmour::mShieldAttack>("ShieldAttack"_hs)
+		.prop(reflect::prop::Name, "ShieldAttack")
+		.data<&KnightArmour::mDashAttack>("DashAttack"_hs)
+		.prop(reflect::prop::Name, "DashAttack")
+		.base<game_module::Component>();
+
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
@@ -172,24 +219,6 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<PlayerDashState>()
-		.type("PlayerDashState"_hs)
-		.prop(reflect::prop::Name, "PlayerDashState")
-		.data<&PlayerDashState::SetDashPower, &PlayerDashState::GetDashPower>("DashPower"_hs)
-		.prop(reflect::prop::Name, "DashPower")
-		.base<game_module::IStateBehaviour>();
-
-	entt::meta<PlayerAttackState>()
-		.type("PlayerAttackState"_hs)
-		.prop(reflect::prop::Name, "PlayerAttackState")
-		.data<&PlayerAttackState::mAttackRebound>("AttackRebound"_hs)
-		.prop(reflect::prop::Name, "AttackRebound")
-		.prop(reflect::prop::Comment, u8"공격 반동")
-		.data<&PlayerAttackState::mAttackTiming>("AttackTiming"_hs)
-		.prop(reflect::prop::Name, "AttackTiming")
-		.prop(reflect::prop::Comment, u8"공격 시간")
-		.base<game_module::IStateBehaviour>();
-
 	entt::meta<MagicBallAttackState>()
 		.type("MagicAttackState"_hs)
 		.prop(reflect::prop::Name, "MagicAttackState")
@@ -206,6 +235,25 @@ void fq::client::RegisterMetaData()
 	entt::meta<RazerAttackState>()
 		.type("RazerAttackState"_hs)
 		.prop(reflect::prop::Name, "RazerAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<ShiedlDashState>()
+		.type("ShiedlDashState"_hs)
+		.prop(reflect::prop::Name, "ShiedlDashState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<SwordAttackState>()
+		.type("SwordAttackState"_hs)
+		.prop(reflect::prop::Name, "SwordAttackState")
+		.data<&SwordAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<ShieldAttackState>()
+		.type("ShieldAttackState"_hs)
+		.prop(reflect::prop::Name, "ShieldAttackState")
+		.data<&ShieldAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
 		.base<game_module::IStateBehaviour>();
 
 
@@ -420,7 +468,21 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MonsterPrefab")
 		.data<&MonsterSpawner::mSpawnCoolTime>("SpwanCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "SpwanCoolTime")
+		.data<&MonsterSpawner::mSpawnOffset>("SpawnOffeset"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnOffeset")
 		.base<fq::game_module::Component>();
+
+	entt::meta<SpawnerOpenState>()
+		.type("SpawnerOpenState"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerOpenState")
+		.data<&SpawnerOpenState::mSpwanTiming>("SpwanTiming"_hs)
+		.prop(fq::reflect::prop::Name, "SpwanTiming")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<SpawnerDeadState>()
+		.type("SpawnerDeadState"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerDeadState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             카메라									//
@@ -456,11 +518,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Attack")
 		.data<&Attack::mDestroyTime>("DestroyTime"_hs)
 		.prop(fq::reflect::prop::Name, "DestroyTime")
-		.data<&Attack::mbIsInfinite>("IsInfinite"_hs)
-		.prop(fq::reflect::prop::Name, "IsInfinite")
-		.prop(reflect::prop::Comment, u8"공격횟수가 정해진 경우 false")
-		.data<&Attack::mRemainingAttackCount>("RemainingAttackCount"_hs)
-		.prop(fq::reflect::prop::Name, "RemainingAttackCount")
 		.base<fq::game_module::Component>();
 
 	entt::meta<LinearAttack>()
@@ -468,6 +525,14 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "LinearAttack")
 		.base<fq::game_module::Component>();
 
+	entt::meta<KnockBack>()
+		.type("KnockBack"_hs)
+		.prop(fq::reflect::prop::Name, "KnockBack")
+		.data<&KnockBack::mVelocity>("Velocity"_hs)
+		.prop(fq::reflect::prop::Name, "Velocity")
+		.data<&KnockBack::mFriction>("Friction"_hs)
+		.prop(fq::reflect::prop::Name, "Friction")
+		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//

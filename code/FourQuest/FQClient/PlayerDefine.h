@@ -30,6 +30,15 @@ namespace fq::client
 		LivingArmour
 	};
 
-
+	/// <summary>
+	/// °©¿Ê Å¸ÀÔ 
+	/// </summary>
+	enum class EArmourType
+	{
+		Knight, // °Ë ¹æÆÐ
+		Magic, // ¸¶¹ý 
+		Warrior, // µµ³¢ ?
+		Archer // ±Ã¼ö 
+	};
 
 }

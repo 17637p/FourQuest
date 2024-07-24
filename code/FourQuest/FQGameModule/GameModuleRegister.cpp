@@ -74,7 +74,17 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Floor>("Floor"_hs) // 9
 		.prop(fq::reflect::prop::Name, "Floor")
 		.data<ETag::Soul>("Soul"_hs) // 10
-		.prop(fq::reflect::prop::Name, "Soul");
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<ETag::Dash>("Dash"_hs) // 11
+		.prop(fq::reflect::prop::Name, "Dash")
+		.data<ETag::Spawner>("Spawner"_hs) // 12
+		.prop(fq::reflect::prop::Name, "Spawner")
+		.data<ETag::Dash>("Tag13"_hs) // 13
+		.prop(fq::reflect::prop::Name, "Tag13")
+		.data<ETag::Dash>("Tag14"_hs) // 14
+		.prop(fq::reflect::prop::Name, "Tag14")
+		.data<ETag::Dash>("Tag15"_hs) // 15
+		.prop(fq::reflect::prop::Name, "Tag15");
 
 
 	// GameObject
@@ -660,6 +670,17 @@ void fq::game_module::RegisterMetaData()
 	//                              Sound                                   //
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<SoundClip::SoundInfo>()
+		.type("ClipSoundInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ClipSoundInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&SoundClip::SoundInfo::key>("Key"_hs)
+		.prop(fq::reflect::prop::Name, "Key")
+		.data<&SoundClip::SoundInfo::path>("Path"_hs)
+		.prop(fq::reflect::prop::Name, "Path")
+		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
+		.prop(fq::reflect::prop::RelativePath);
+
 	entt::meta<SoundClip>()
 		.type("SoundClip"_hs)
 		.prop(fq::reflect::prop::Name, "SoundClip")
@@ -667,8 +688,6 @@ void fq::game_module::RegisterMetaData()
 		.data<&SoundClip::SetSounds, &SoundClip::GetSounds>("Sounds"_hs)
 		.prop(fq::reflect::prop::Name, "Sounds")
 		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
-		.prop(fq::reflect::prop::RelativePath)
-		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
 		.base<Component>();
 
 

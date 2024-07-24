@@ -27,6 +27,11 @@ namespace fq::client
 		/// </summary>
 		void AnnounceFindedTarget(fq::game_module::GameObject* target);
 
+		/// <summary>
+		/// 타겟을 반환합니다
+		/// </summary>
+		fq::game_module::GameObject* GetTarget()const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

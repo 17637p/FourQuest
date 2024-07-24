@@ -8,10 +8,17 @@ namespace fq::game_module
 	/// </summary>
 	class SoundClip : public Component
 	{
+	public:
+		using SoundPath = std::string;
+		struct SoundInfo
+		{
+			std::string key;
+			SoundPath path;
+		};
 		using SoundIndex = unsigned int;
 		using ChannelIndex = unsigned int;
-		using SoundPath = std::string;
-		using SoundContainer = std::vector<SoundPath>;
+		using SoundContainer = std::vector<SoundInfo>;
+
 	public:
 		SoundClip();
 		~SoundClip();
@@ -27,7 +34,7 @@ namespace fq::game_module
 		SoundContainer GetSounds()const { return mSounds; }
 
 		/// <summary>
-		/// 사운드들을 설정합니다 
+		/// 사`	운드들을 설정합니다 
 		/// </summary>
 		void SetSounds(SoundContainer sounds) { mSounds = sounds; }
 
@@ -42,8 +49,15 @@ namespace fq::game_module
 		/// </summary>
 		void StopChannel(ChannelIndex index);
 
+		/// <summary>
+		/// Key 값으로 사운드를 재생합니다 
+		/// </summary>
+		void Play(std::string key, bool bIsLoop, ChannelIndex channelIndex);
+
 	private:
 		entt::meta_handle GetHandle() override;
+
+		void OnStart() override;
 
 	private:
 		SoundContainer mSounds;
