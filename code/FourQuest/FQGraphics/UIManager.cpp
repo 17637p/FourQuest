@@ -449,7 +449,7 @@ void fq::graphics::UIManager::drawAllImage()
 			float degree = image->GetFillDegree();
 			if (degree >= 0)
 			{
-				float radian = DirectX::XMConvertToRadians(degree - 90);
+				float radian = DirectX::XMConvertToRadians(degree - 270);
 
 				float radiusX = image->GetWidth() / 2;
 				float radiusY = image->GetHeight() / 2;
@@ -467,7 +467,6 @@ void fq::graphics::UIManager::drawAllImage()
 				ID2D1GeometrySink* pSink = nullptr;
 				pPathGeometry->Open(&pSink);
 
-				// 반원을 정의합니다 (예: 100x100 크기의 반원)
 				startX = startX + radiusX - halfDiagonal;
 				startY = startY + radiusY - halfDiagonal;
 
@@ -477,7 +476,8 @@ void fq::graphics::UIManager::drawAllImage()
 				float cos = std::cosf(radian) * radiusX;
 				float sin = std::sinf(radian) * radiusY;
 
-				pSink->BeginFigure(D2D1::Point2F(startX + radiusX, startY), D2D1_FIGURE_BEGIN_FILLED);
+				D2D1_POINT_2F BeginPoint = D2D1::Point2F(startX + radiusX, startY + radiusY + radiusY);
+				pSink->BeginFigure(BeginPoint, D2D1_FIGURE_BEGIN_FILLED);
 
 				D2D1_ARC_SIZE arcSize = D2D1_ARC_SIZE_SMALL;
 				if (degree >= 180)
