@@ -245,6 +245,9 @@
     <ClInclude Include="SpawnerOpenState.h">
       <Filter>include\02.Monster\Spawner</Filter>
     </ClInclude>
+    <ClInclude Include="SoundDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">

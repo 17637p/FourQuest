@@ -81,7 +81,9 @@ void fq::client::MagicArmour::EmitMagicBall()
 	linearAttack->SetMoveSpeed(mMagicBallSpeed);
 	linearAttack->SetMoveDirection(direction);
 
-	// TODO:: MagicBall 사운드 추가 
+	// MagicBall Attack 사운드  
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "EnergyBallAttack", false , 0 });
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -103,14 +105,16 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	// 공격 위치 설정
 	attackT->SetWorldPosition(attackPoint);
 
-	// TODO:: AOE Sound 추가
+	// AOE Sound
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "AOEAttack", false , 0 });
+
 	GetScene()->AddGameObject(attackObj);
 
 	// CoolTime
 	mAOEElapsedTime = mAOECoolTime;
 }
 
-void fq::client::MagicArmour::EmitRazer()
+void fq::client::MagicArmour::EmitLazer()
 {
 	// RayCastTest
 	fq::event::RayCast::ResultData data;
@@ -126,6 +130,7 @@ void fq::client::MagicArmour::EmitRazer()
 	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
 		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
 	);
+
 
 	if (data.hasBlock)
 	{

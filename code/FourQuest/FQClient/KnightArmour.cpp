@@ -66,7 +66,9 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	pos += foward * mAttackOffset;
 	attackT->GenerateWorld(pos, rotation, attackT->GetWorldScale());
 
-	// TODO:: Sword 家府 眠啊
+	// Sword 家府
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "SwordAttack", false , 0 });
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -96,7 +98,9 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackComponent->Set(attackInfo);
 
-	// TODO:: Shield 家府 眠啊
+	// ShieldAttack 家府
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "ShieldAttack", false , 0 });
+
 	GetScene()->AddGameObject(attackObj);
 }
 

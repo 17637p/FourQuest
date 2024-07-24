@@ -19,14 +19,17 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::RazerAttackState::
 
 void fq::client::RazerAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-
+	// Razer ¼Ò¸® 
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "LaserAttack", false , 0 });
 }
 
 void fq::client::RazerAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
 	auto magic = animator.GetComponent<MagicArmour>();
 	magic->SetLookAtRStickInput();
-	magic->EmitRazer();
+	magic->EmitLazer();
+
+
 }
 
 void fq::client::RazerAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

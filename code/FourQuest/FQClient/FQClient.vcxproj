@@ -80,6 +80,7 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
     <ClInclude Include="SpawnerOpenState.h" />
     <ClInclude Include="SwordAttackState.h" />
