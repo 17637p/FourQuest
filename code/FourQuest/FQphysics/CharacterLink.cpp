@@ -18,22 +18,28 @@ namespace fq::physics
 
 	CharacterLink::~CharacterLink()
 	{
+		int shapeCount = mPxLink->getNbShapes();
+
+		physx::PxShape* shape;
+		mPxLink->getShapes(&shape, shapeCount);
+
+		for (int i = 0; i < shapeCount; i++)
+		{
+			mPxLink->detachShape(*shape);
+			PX_ASSERT(shape);
+		}
 	}
 
-	bool CharacterLink::Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation)
+	bool CharacterLink::Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation, physx::PxScene* scene)
 	{
 		mName = info.boneName;
 		mDensity = info.density;
 		mLocalTransform = info.localTransform;
 		mParentLink = parentLink;
+		mScene = scene;
 
 		physx::PxTransform pxLocalTransform;
-		CopyDirectXMatrixToPxTransformXYZ(mLocalTransform, pxLocalTransform);
-
-		DirectX::SimpleMath::Vector3 scale;
-		DirectX::SimpleMath::Quaternion rotation;
-		DirectX::SimpleMath::Vector3 position;
-		mLocalTransform.Decompose(scale, rotation, position);
+		CopyDirectXMatrixToPxTransform(mLocalTransform, pxLocalTransform);
 
 		if (parentLink == nullptr)
 		{
@@ -47,11 +53,20 @@ namespace fq::physics
 
 		mPxLink->setMaxAngularVelocity(4.f);
 		mPxLink->setMaxLinearVelocity(4.f);
-		mPxLink->setAngularDamping(0.3f);
-		mPxLink->setLinearDamping(0.3f);
-		mPxLink->setMaxDepenetrationVelocity(2.0f);
+		mPxLink->setAngularDamping(0.2f);
+		mPxLink->setLinearDamping(0.2f);
 
 		return true;
+	}
+
+	bool CharacterLink::Update()
+	{
+		physx::PxTransform pxTransform;
+		pxTransform = mPxLink->getGlobalPose();
+
+		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
+
+		return mMyJoint->Update(mParentLink.lock()->GetPxLink());
 	}
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 	physx::PxShape* CharacterLink::CreateShape(const physx::PxMaterial* material, const DirectX::SimpleMath::Vector3& extent, std::shared_ptr<CollisionData> collisionData)

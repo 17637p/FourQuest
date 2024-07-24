@@ -114,15 +114,8 @@ namespace fq::physics
 		shape->setSimulationFilterData(*newFilterData.get());
 
 		CollisionData* data = (CollisionData*)mPxController->getActor()->userData;
-		data->isDead = true;
-
-		std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
-		newData->myId = mID;
-		newData->myLayerNumber = mLayerNumber;
-
-		mPxController->getActor()->userData = newData.get();
-
-		collisionDataManager.lock()->Create(mID, newData);
+		data->myId = mID;
+		data->myLayerNumber = mLayerNumber;
 
 		return true;
 	}

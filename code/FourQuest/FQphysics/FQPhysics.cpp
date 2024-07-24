@@ -125,7 +125,7 @@ namespace fq::physics
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
-		sceneDesc.solverType = physx::PxSolverType::ePGS;
+		sceneDesc.solverType = physx::PxSolverType::eTGS;
 
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
@@ -156,6 +156,8 @@ namespace fq::physics
 		if (!mCCTManager->Update(deltaTime))
 			return false;
 		if (!mCollisionDataManager->Update())
+			return false;
+		if (!mCharacterPhysicsManager->Update())
 			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;

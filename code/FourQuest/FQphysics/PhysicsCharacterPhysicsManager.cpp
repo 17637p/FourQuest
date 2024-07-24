@@ -28,6 +28,16 @@ namespace fq::physics
 		return true;
 	}
 
+	bool PhysicsCharacterPhysicsManager::Update()
+	{
+		for (auto& [name, link] : mCharacterPhysicsContainer)
+		{
+			if (!link->Update()) return false;
+		}
+
+		return true;
+	}
+
 	bool PhysicsCharacterPhysicsManager::CreateCharacterphysics(const ArticulationInfo& info)
 	{
 		if (mCharacterPhysicsContainer.find(info.id) != mCharacterPhysicsContainer.end())
@@ -40,7 +50,7 @@ namespace fq::physics
 		collisionData->myLayerNumber = info.layerNumber;
 		mCollisionDataManager.lock()->Create(info.id, collisionData);
 
-		characterPhysics->Initialize(info, mPhysics, collisionData);
+		characterPhysics->Initialize(info, mPhysics, collisionData, mScene);
 		mCharacterPhysicsContainer.insert(std::make_pair(info.id, characterPhysics));
 
 		return true;
@@ -55,9 +65,21 @@ namespace fq::physics
 
 		auto articulationIter = mCharacterPhysicsContainer.find(id);
 		auto pxArticulation = articulationIter->second->GetPxArticulation();
-		mCharacterPhysicsContainer.erase(articulationIter);
+		
+		if (articulationIter->second->GetIsRagdoll() == true)
+		{
+			// 컨테이너에서 해당 Articulation을 삭제합니다.
+			mCharacterPhysicsContainer.erase(articulationIter);
 
-		mScene->removeArticulation(*pxArticulation);
+			// Articulation의 모든 링크를 가져옵니다.
+			physx::PxU32 linkCount = pxArticulation->getNbLinks();
+			std::vector<physx::PxArticulationLink*> links(linkCount);
+			pxArticulation->getLinks(links.data(), linkCount);
+
+			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
+			mScene->removeArticulation(*pxArticulation);
+			PX_RELEASE(pxArticulation);
+		}
 
 		return true;
 	}
@@ -75,7 +97,7 @@ namespace fq::physics
 		auto articulation = articulationIter->second;
 
 		physx::PxTransform pxTransform = articulation->GetPxArticulation()->getRootGlobalPose();
-		DirectX::SimpleMath::Matrix dxTransform; 
+		DirectX::SimpleMath::Matrix dxTransform;
 		CopyPxTransformToDirectXMatrix(pxTransform, dxTransform);
 
 		articulationData.worldTransform = dxTransform;
@@ -85,8 +107,7 @@ namespace fq::physics
 		{
 			fq::physics::ArticulationLinkData data;
 
-			data.localTransform = link->GetLocalTransform();
-			data.jointLocalTransform = link->GetCharacterJoint()->GetLocalTransform();
+			data.jointLocalTransform = link->GetCharacterJoint()->GetSimulationTransform();
 			data.name = link->GetName();
 
 			articulationData.linkData.push_back(data);

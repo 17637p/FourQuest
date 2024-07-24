@@ -125,7 +125,6 @@ namespace fq::physics
 	struct ArticulationLinkData
 	{
 		std::string name;
-		DirectX::SimpleMath::Matrix localTransform = {};
 		DirectX::SimpleMath::Matrix jointLocalTransform = {};
 	};
 
@@ -139,6 +138,7 @@ namespace fq::physics
 
 	struct ArticulationSetData
 	{
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
 		std::vector<ArticulationLinkData> linkData;
 		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
 		unsigned int myLayerNumber = UINT_MAX;

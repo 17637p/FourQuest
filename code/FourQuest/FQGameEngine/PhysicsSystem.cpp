@@ -442,6 +442,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		articulationInfo.dynamicFriction = articulationData->GetDynamicFriction();
 		articulationInfo.restitution = articulationData->GetRestitution();
 		articulationInfo.staticFriction = articulationData->GetStaticFriction();
+		articulationInfo.worldTransform = transform->GetWorldMatrix();
 
 		bool check = mPhysicsEngine->CreateCharacterphysics(articulationInfo);
 		assert(check);
@@ -681,13 +682,37 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 				auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
+				nodeHierarchy.SetBindPose();
+
 				for (auto& linkData : data.linkData)
 				{
-					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform * linkData.localTransform;
+					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform;
+
+					boneTransform._41 = boneTransform._41 * 100.f;
+					boneTransform._42 = boneTransform._42 * 100.f;
+					boneTransform._43 = boneTransform._43 * 100.f;
 
 					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
 					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
+
+					fq::graphics::debug::SphereInfo sphereInfo1;
+					sphereInfo1.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+					sphereInfo1.Sphere.Center = boneTransform.Translation();
+					sphereInfo1.Sphere.Radius = 0.02f;
+					sphereInfo1.bUseDepthTest = false;
+
+					mGameProcess->mGraphics->DrawSphere(sphereInfo1);
 				}
+
+				DirectX::SimpleMath::Vector3 scale;
+				DirectX::SimpleMath::Quaternion rotation;
+				DirectX::SimpleMath::Vector3 position;
+				data.worldTransform.Decompose(scale, rotation, position);
+
+				transform->SetLocalPosition(position);
+				transform->SetLocalRotation(rotation);
+
+				nodeHierarchy.UpdateByLocalTransform();
 			}
 		}
 		else

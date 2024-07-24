@@ -165,8 +165,14 @@ namespace fq::game_engine
 				DirectX::SimpleMath::Vector3 linkScale;
 				localTransform.Decompose(linkScale, linkRotation, linkPosition);
 
+				DirectX::SimpleMath::Vector3 euler = linkRotation.ToEuler();
+
+				float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+					,DirectX::XMConvertToDegrees(euler.y)
+					,DirectX::XMConvertToDegrees(euler.z) };
+
 				ImGui::InputFloat3("LinkScale", (float*)&linkScale);
-				ImGui::InputFloat4("LinkRotation", (float*)&linkRotation);
+				ImGui::InputFloat3("LinkRotation", f);
 				ImGui::InputFloat3("LinkPosition", (float*)&linkPosition);
 				ImGui::InputFloat("Density", &density);
 
@@ -195,6 +201,11 @@ namespace fq::game_engine
 				default:
 					break;
 				}
+
+				euler.x = DirectX::XMConvertToRadians(f[0]);
+				euler.y = DirectX::XMConvertToRadians(f[1]);
+				euler.z = DirectX::XMConvertToRadians(f[2]);
+				linkRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(euler);
 
 				localTransform = DirectX::SimpleMath::Matrix::CreateScale(linkScale)
 					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(linkRotation)
@@ -227,14 +238,21 @@ namespace fq::game_engine
 				float jointMaxForce = mSelectLink->GetJointMaxForce();
 				float jointStiffness = mSelectLink->GetJointStiffness();
 
-				DirectX::SimpleMath::Vector3 jointPosition;
-				DirectX::SimpleMath::Quaternion jointRotation;
-				DirectX::SimpleMath::Vector3 jointScale;
-				jointLocalTransform.Decompose(jointScale, jointRotation, jointPosition);
+				//DirectX::SimpleMath::Vector3 jointPosition;
+				//DirectX::SimpleMath::Quaternion jointRotation;
+				//DirectX::SimpleMath::Vector3 jointScale;
+				//jointLocalTransform.Decompose(jointScale, jointRotation, jointPosition);
 
-				ImGui::InputFloat3("JointScale", (float*)&jointScale);
-				ImGui::InputFloat4("JointRotation", (float*)&jointRotation);
-				ImGui::InputFloat3("JointPosition", (float*)&jointPosition);
+				//DirectX::SimpleMath::Vector3 euler = jointRotation.ToEuler();
+
+				//float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+				//	,DirectX::XMConvertToDegrees(euler.y)
+				//	,DirectX::XMConvertToDegrees(euler.z) };
+
+				//ImGui::InputFloat3("JointScale", (float*)&jointScale);
+				//ImGui::InputFloat3("JointRotation", f);
+				//ImGui::InputFloat3("JointPosition", (float*)&jointPosition);
+
 				if (ImGui::Button("Bone Transform Connect"))
 				{
 					auto scene = mGameProcess->mSceneManager->GetCurrentScene();
@@ -255,22 +273,33 @@ namespace fq::game_engine
 							auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 
 							DirectX::SimpleMath::Matrix boneRootTransform = nodeHierarchy.GetRootTransform(mSelectLink->GetBoneName()) 
-								* DirectX::SimpleMath::Matrix::CreateScale(objectTransform->GetWorldScale());
+								* DirectX::SimpleMath::Matrix::CreateScale(objectScale);
 
 							DirectX::SimpleMath::Matrix linkWorldTransform = mSelectLink->GetWorldTransform();
+							linkWorldTransform._11 = 1.f;
+							linkWorldTransform._22 = 1.f;
+							linkWorldTransform._33 = 1.f;
 
-							mSelectLink->SetJointLocalTransform(boneRootTransform * linkWorldTransform.Invert());
+							DirectX::SimpleMath::Vector3 position;
+							DirectX::SimpleMath::Quaternion rotation;
+							DirectX::SimpleMath::Vector3 scale;
+
+							boneRootTransform = boneRootTransform * linkWorldTransform.Invert();
+							boneRootTransform.Decompose(scale, rotation, position);
+
+							mSelectLink->SetJointLocalTransform(position, rotation);
 						}
 					}
 				}
-				else
-				{
-					jointLocalTransform = DirectX::SimpleMath::Matrix::CreateScale(jointScale)
-						* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation)
-						* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition);
+				//else
+				//{
+				//	euler.x = DirectX::XMConvertToRadians(f[0]);
+				//	euler.y = DirectX::XMConvertToRadians(f[1]);
+				//	euler.z = DirectX::XMConvertToRadians(f[2]);
+				//	jointRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(euler);
 
-					mSelectLink->SetJointLocalTransform(jointLocalTransform);
-				}
+				//	mSelectLink->SetJointLocalTransform(jointPosition, jointRotation);
+				//}
 
 				ImGui::InputFloat("JointDamping", &jointDamping);
 				ImGui::InputFloat("JointMaxForce", &jointMaxForce);

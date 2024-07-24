@@ -21,7 +21,12 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 파직스(관절) 초기화 함수
 		/// </summary>
-		bool Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData);
+		bool Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData, physx::PxScene* scene);
+
+		/// <summary>
+		/// 업데이트
+		/// </summary>
+		bool Update();
 
 		/// <summary>
 		/// 캐릭터 파직스(관절) 링크 추가 함수
@@ -62,6 +67,7 @@ namespace fq::physics
 		DirectX::SimpleMath::Matrix mWorldTransform;
 
 	private:
+		physx::PxScene* mScene;
 		physx::PxArticulationReducedCoordinate* mPxArticulation;
 		physx::PxMaterial* mMaterial;
 	};

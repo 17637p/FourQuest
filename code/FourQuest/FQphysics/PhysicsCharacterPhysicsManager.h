@@ -25,6 +25,11 @@ namespace fq::physics
 		bool initialize(physx::PxPhysics* physics, physx::PxScene* scene, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
+		/// 업데이트
+		/// </summary>
+		bool Update();
+
+		/// <summary>
 		/// 캐릭터 파직스 (관절) 추가
 		/// </summary>
 		bool CreateCharacterphysics(const ArticulationInfo& info);

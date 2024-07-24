@@ -75,7 +75,8 @@ namespace fq::game_module
 		inline void SetCapsuleHalfHeight(const float& halfHeight);
 				
 		// Joint
-		inline void SetJointLocalTransform(const DirectX::SimpleMath::Matrix& localTransform);
+		inline void SetJointLocalTransform(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion& rotation);
+		inline void SetJointLocalTransform(const DirectX::SimpleMath::Matrix& transform);
 		inline void SetJointStiffness(const float& stiffness);
 		inline void SetJointDamping(const float& damping);
 		inline void SetJointMaxForce(const float& maxForce);
@@ -266,9 +267,16 @@ namespace fq::game_module
 		mCapsuleHalfHeight = halfHeight;
 	}
 		 
-	void LinkData::SetJointLocalTransform(const DirectX::SimpleMath::Matrix& localTransform)
+	void LinkData::SetJointLocalTransform(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion& rotation)
 	{
-		mLinkInfo.jointInfo.localTransform = localTransform;
+		DirectX::SimpleMath::Matrix dxTranslation = DirectX::SimpleMath::Matrix::CreateTranslation(position);
+		DirectX::SimpleMath::Matrix dxRotation = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+
+		mLinkInfo.jointInfo.localTransform = dxRotation * dxTranslation;
+	}
+	void LinkData::SetJointLocalTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mLinkInfo.jointInfo.localTransform = transform;
 	}
 	void LinkData::SetJointStiffness(const float& stiffness)
 	{

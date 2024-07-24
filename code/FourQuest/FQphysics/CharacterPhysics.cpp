@@ -25,20 +25,39 @@ namespace fq::physics
 		mCollisionData->isDead = true;
 	}
 
-	bool CharacterPhysics::Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData)
+	bool CharacterPhysics::Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData, physx::PxScene* scene)
 	{
 		mCollisionData = collisionData;
 		mPxArticulation = physics->createArticulationReducedCoordinate();
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
-		mPxArticulation->setSolverIterationCounts(8);
+		mPxArticulation->setSolverIterationCounts(16);
 		mPxArticulation->setMaxCOMLinearVelocity(10.f);
 		mPxArticulation->setMaxCOMAngularVelocity(10.f); 
 
+		mScene = scene;
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
 		mWorldTransform = info.worldTransform;
+
+		physx::PxTransform pxTransform;
+		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
+		pxTransform.q.x = 0.f;
+		pxTransform.q.y = 0.f;
+		pxTransform.q.z = 0.f;
+		pxTransform.q.w = 1.f;
+		mPxArticulation->setRootGlobalPose(pxTransform);
+
+		return true;
+	}
+
+	bool CharacterPhysics::Update()
+	{
+		for (auto& [name, link] : mLinkContainer)
+		{
+			if (!link->Update()) return false;
+		}
 
 		return true;
 	}
@@ -50,11 +69,11 @@ namespace fq::physics
 		auto parentLink = mLinkContainer.find(info.parentBoneName);
 		if (parentLink == mLinkContainer.end())
 		{
-			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+			if (!link->Initialize(info, mRootLink, mPxArticulation, mScene)) return false;
 		} 
 		else
 		{
-			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+			if (!link->Initialize(info, parentLink->second, mPxArticulation, mScene)) return false;
 		}
 
 		physx::PxShape* shape = link->CreateShape(mMaterial, extent, mCollisionData);
@@ -76,11 +95,11 @@ namespace fq::physics
 		auto parentLink = mLinkContainer.find(info.parentBoneName);
 		if (parentLink == mLinkContainer.end())
 		{
-			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+			if (!link->Initialize(info, mRootLink, mPxArticulation, mScene)) return false;
 		}
 		else
 		{
-			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+			if (!link->Initialize(info, parentLink->second, mPxArticulation, mScene)) return false;
 		}
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
@@ -101,11 +120,11 @@ namespace fq::physics
 		auto parentLink = mLinkContainer.find(info.parentBoneName);
 		if (parentLink == mLinkContainer.end())
 		{
-			if (!link->Initialize(info, mRootLink, mPxArticulation)) return false;
+			if (!link->Initialize(info, mRootLink, mPxArticulation, mScene)) return false;
 		}
 		else
 		{
-			if (!link->Initialize(info, parentLink->second, mPxArticulation)) return false;
+			if (!link->Initialize(info, parentLink->second, mPxArticulation, mScene)) return false;
 		}
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
@@ -123,7 +142,7 @@ namespace fq::physics
 	{
 		mRootLink = std::make_shared<CharacterLink>();
 
-		mRootLink->Initialize(info, nullptr, mPxArticulation);
+		mRootLink->Initialize(info, nullptr, mPxArticulation, mScene);
 		mWorldTransform = info.localTransform;
 
 		return true;
