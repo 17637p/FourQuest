@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../FQGameModule/GameModule.h"
+#include "PlayerDefine.h"
 
 namespace fq::client
 {
@@ -26,15 +27,11 @@ namespace fq::client
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
 		float mHPWidth;
 
-		game_module::ImageUI* mWeaponIcon; // 무기 아이콘
-		std::vector<std::string> mWeaponIcons;
+		std::vector<game_module::ImageUI*> mWeaponIcons; // 무기 아이콘
 
-		game_module::ImageUI* mSkillIconX; // 스킬 아이콘
-		std::vector<std::string> mSkillIconsXs;
-		game_module::ImageUI* mSkillIconA; // 스킬 아이콘 
-		std::vector<std::string> mSkillIconsAs;
-		game_module::ImageUI* mSkillIconR; // 스킬 아이콘 
-		std::vector<std::string> mSkillIconsRs;
+		std::vector<game_module::ImageUI*> mSkillIconXs; // 스킬 아이콘
+		std::vector<game_module::ImageUI*> mSkillIconAs; // 스킬 아이콘 
+		std::vector<game_module::ImageUI*> mSkillIconRs; // 스킬 아이콘 
 
 		friend void RegisterMetaData();
 	};

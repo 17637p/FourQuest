@@ -37,10 +37,26 @@ void fq::client::PlayerUI::OnStart()
 
 	mHPBarGauge = scene->GetObjectByName("StaminaGauge")->GetComponent<fq::game_module::ImageUI>();
 	mHPWidth = mHPBarGauge->GetUIInfomations()[0].Width;
-	mWeaponIcon = scene->GetObjectByName("WeaponIcon")->GetComponent<fq::game_module::ImageUI>();
-	mSkillIconX = scene->GetObjectByName("SkillIconX")->GetComponent<fq::game_module::ImageUI>();
-	mSkillIconA = scene->GetObjectByName("SkillIconA")->GetComponent<fq::game_module::ImageUI>();
-	mSkillIconR = scene->GetObjectByName("SkillIconR")->GetComponent<fq::game_module::ImageUI>();
+
+	mWeaponIcons.push_back(scene->GetObjectByName("KnightWeaponIcon")->GetComponent<fq::game_module::ImageUI>());
+	mWeaponIcons.push_back(scene->GetObjectByName("ArcherWeaponIcon")->GetComponent<fq::game_module::ImageUI>());
+	mWeaponIcons.push_back(scene->GetObjectByName("MagicWeaponIcon")->GetComponent<fq::game_module::ImageUI>());
+	mWeaponIcons.push_back(scene->GetObjectByName("WarriorWeaponIcon")->GetComponent<fq::game_module::ImageUI>());
+
+	mSkillIconXs.push_back(scene->GetObjectByName("KnightSkillIconX")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconXs.push_back(scene->GetObjectByName("ArcherSkillIconX")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconXs.push_back(scene->GetObjectByName("MagicSkillIconX")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconXs.push_back(scene->GetObjectByName("WarriorSkillIconX")->GetComponent<fq::game_module::ImageUI>());
+
+	mSkillIconAs.push_back(scene->GetObjectByName("KnightSkillIconA")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconAs.push_back(scene->GetObjectByName("ArcherSkillIconA")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconAs.push_back(scene->GetObjectByName("MagicSkillIconA")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconAs.push_back(scene->GetObjectByName("WarriorSkillIconA")->GetComponent<fq::game_module::ImageUI>());
+
+	mSkillIconRs.push_back(scene->GetObjectByName("KnightSkillIconR")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconRs.push_back(scene->GetObjectByName("ArcherSkillIconR")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconRs.push_back(scene->GetObjectByName("MagicSkillIconR")->GetComponent<fq::game_module::ImageUI>());
+	mSkillIconRs.push_back(scene->GetObjectByName("WarriorSkillIconR")->GetComponent<fq::game_module::ImageUI>());
 
 	for (auto& object : scene->GetComponentView<fq::client::Player>())
 	{
@@ -58,15 +74,31 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 	// 플레이어한테 HP 받아와서 Ratio 조절하기
 	if (mPlayer != nullptr)
 	{
+		// HP 바 조정
 		float hpRatio = mPlayer->GetHPRatio();
 		std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
 		uiInfos[0].XRatio = hpRatio;
 		uiInfos[0].Width = mHPWidth * hpRatio;
 		mHPBarGauge->SetUIInfomations(uiInfos);
-	}
 
-	// 갑옷 타입 받아오기 
-	// 무기 아이콘, 스킬 아이콘 변화
+		// 갑옷 타입 받아오기 
+		// 무기 아이콘, 스킬 아이콘 변화
+		fq::client::EArmourType armourType = mPlayer->GetArmourType();
+
+		switch (armourType)
+		{
+			case fq::client::EArmourType::Knight:
+				break;
+			case fq::client::EArmourType::Magic:
+				break;
+			case fq::client::EArmourType::Warrior:
+				break;
+			case fq::client::EArmourType::Archer:
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 // HP 줄어들면 반응하기

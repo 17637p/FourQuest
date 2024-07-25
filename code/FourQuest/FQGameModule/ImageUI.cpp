@@ -4,6 +4,8 @@
 #include "EventManager.h"
 #include "Event.h"
 
+#include "Transform.h"
+
 fq::game_module::ImageUI::ImageUI()
 	:mUIInfomations{}
 {}
@@ -51,8 +53,6 @@ void fq::game_module::ImageUI::SetUIInfomations(std::vector<fq::graphics::UIInfo
 	}
 }
 
-
-
 void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics::UIInfo& infomation)
 {
 	if (mImageObjects[index] == nullptr) return;
@@ -74,3 +74,16 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 
 	mUIInfomations[index] = infomation;
 }
+
+void fq::game_module::ImageUI::SetUIPosition(size_t index, float StartX, float StartY)
+{
+	mImageObjects[index]->SetStartX(StartX);
+	mImageObjects[index]->SetStartY(StartY);
+}
+
+void fq::game_module::ImageUI::OnUpdate(float dt)
+{
+	Transform* myTransform = GetComponent<Transform>();
+	SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+}
+

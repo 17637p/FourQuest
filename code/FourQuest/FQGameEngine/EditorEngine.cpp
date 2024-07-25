@@ -213,6 +213,9 @@ void fq::game_engine::EditorEngine::Process()
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
 
+			// UI 트랜스폼 위치 설정 
+			mGameProcess->mUISystem->Update();
+
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
 			mEditor->mDebugSystem->Render();
