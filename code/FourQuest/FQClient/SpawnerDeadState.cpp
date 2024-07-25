@@ -1,6 +1,7 @@
 #include "SpawnerDeadState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "MonsterSpawner.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::SpawnerDeadState::Clone()
 {
@@ -16,6 +17,5 @@ fq::client::SpawnerDeadState::~SpawnerDeadState()
 
 void fq::client::SpawnerDeadState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	auto object = animator.GetGameObject();
-	object->GetScene()->DestroyGameObject(object);
+	animator.GetComponent<MonsterSpawner>()->Destroy();
 }

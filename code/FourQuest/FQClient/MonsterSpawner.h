@@ -20,6 +20,11 @@ namespace fq::client
 		/// </summary>
 		void Spawn();
 
+		/// <summary>
+		/// 몬스터 스포너는 파괴합니다
+		/// </summary>
+		void Destroy();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -27,6 +32,7 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnStart() override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
+
 
 	private:
 		fq::game_module::Animator* mAnimator;

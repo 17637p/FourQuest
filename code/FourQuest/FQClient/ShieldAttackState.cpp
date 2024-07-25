@@ -51,7 +51,7 @@ void fq::client::ShieldAttackState::OnStateUpdate(game_module::Animator& animato
 		return;
 	}
 
-	mElapsedTime = std::max(mElapsedTime + dt * state.GetPlayBackSpeed(), mAttackTiming);
+	mElapsedTime = std::min(mElapsedTime + dt * state.GetPlayBackSpeed(), mAttackTiming);
 
 	if (mElapsedTime == mAttackTiming)
 	{

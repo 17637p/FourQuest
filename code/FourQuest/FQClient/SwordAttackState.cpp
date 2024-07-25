@@ -41,7 +41,7 @@ void fq::client::SwordAttackState::OnStateUpdate(game_module::Animator& animator
 		return;
 	}
 
-	mElapsedTime = std::max(mElapsedTime + dt * state.GetPlayBackSpeed(), mAttackTiming);
+	mElapsedTime = std::min(mElapsedTime + dt * state.GetPlayBackSpeed(), mAttackTiming);
 
 	if (mElapsedTime == mAttackTiming)
 	{
