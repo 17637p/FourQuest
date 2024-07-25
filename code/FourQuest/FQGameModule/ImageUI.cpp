@@ -87,3 +87,8 @@ void fq::game_module::ImageUI::OnUpdate(float dt)
 	SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
 }
 
+void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)
+{
+	mImageObjects[index]->SetIsRender(isRender);
+}
+

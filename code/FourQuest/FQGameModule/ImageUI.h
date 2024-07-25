@@ -28,6 +28,7 @@ namespace fq::game_module
 		void SetUIInfomation(size_t index, const fq::graphics::UIInfo& infomation);
 
 		void SetUIPosition(size_t index, float StartX, float StartY);
+		void SetIsRender(size_t index, bool isRender);
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

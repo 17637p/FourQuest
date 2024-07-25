@@ -392,6 +392,11 @@ void fq::graphics::UIManager::drawAllImage()
 
 	for (const auto& image : mImages)
 	{
+		if (!image->GetIsRender())
+		{
+			continue;
+		}
+
 		// ±×¸®±â
 		std::filesystem::path stringToWstringPath = image->GetImagePath();
 		std::wstring imagePath = stringToWstringPath.wstring();

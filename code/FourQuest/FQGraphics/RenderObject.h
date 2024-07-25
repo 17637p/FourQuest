@@ -258,6 +258,9 @@ namespace fq::graphics
 		virtual void SetFillDegree(float Degree) override { mFillDegree = Degree; };
 		virtual float GetFillDegree() const override { return mFillDegree; };
 
+		virtual bool GetIsRender() const override { return mIsRender; }
+		virtual void SetIsRender(bool val) override { mIsRender = val; }
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -279,6 +282,8 @@ namespace fq::graphics
 		std::string mMaskPath;
 
 		float mFillDegree;
+
+		bool mIsRender;
 	};
 
 	class ProbeObject : public IProbeObject

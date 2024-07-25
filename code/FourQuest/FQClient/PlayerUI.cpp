@@ -67,6 +67,14 @@ void fq::client::PlayerUI::OnStart()
 			mPlayer = player;
 		}
 	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		mWeaponIcons[i]->SetIsRender(0, false);
+		mSkillIconXs[i]->SetIsRender(0, false);
+		mSkillIconAs[i]->SetIsRender(0, false);
+		mSkillIconRs[i]->SetIsRender(0, false);
+	}
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
@@ -81,23 +89,41 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		uiInfos[0].Width = mHPWidth * hpRatio;
 		mHPBarGauge->SetUIInfomations(uiInfos);
 
+		for (int i = 0; i < 4; i++)
+		{
+			mWeaponIcons[i]->SetIsRender(0, false);
+			mSkillIconXs[i]->SetIsRender(0, false);
+			mSkillIconAs[i]->SetIsRender(0, false);
+			mSkillIconRs[i]->SetIsRender(0, false);
+		}
+
 		// 갑옷 타입 받아오기 
 		// 무기 아이콘, 스킬 아이콘 변화
 		fq::client::EArmourType armourType = mPlayer->GetArmourType();
+		int armourTypeIndex = -1;
 
 		switch (armourType)
 		{
 			case fq::client::EArmourType::Knight:
+				armourTypeIndex = 0;
 				break;
 			case fq::client::EArmourType::Magic:
+				armourTypeIndex = 1;
 				break;
 			case fq::client::EArmourType::Warrior:
+				armourTypeIndex = 3;
 				break;
 			case fq::client::EArmourType::Archer:
+				armourTypeIndex = 2;
 				break;
 			default:
 				break;
 		}
+
+		mWeaponIcons[armourTypeIndex]->SetIsRender(0, true);
+		mSkillIconXs[armourTypeIndex]->SetIsRender(0, true);
+		mSkillIconAs[armourTypeIndex]->SetIsRender(0, true);
+		mSkillIconRs[armourTypeIndex]->SetIsRender(0, true);
 	}
 }
 

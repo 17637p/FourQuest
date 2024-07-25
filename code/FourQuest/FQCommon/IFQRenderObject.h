@@ -140,6 +140,9 @@ extern "C" {
 
 			virtual FQ_GRAPHICS void SetFillDegree(float Degree) abstract;
 			virtual FQ_GRAPHICS float GetFillDegree() const abstract;
+
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
+			virtual FQ_GRAPHICS void SetIsRender(bool val) abstract;
 		};
 
 		class IParticleObject
