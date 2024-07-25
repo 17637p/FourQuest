@@ -174,6 +174,22 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						renderer.SetMaterialInfos(materialInfos);
 					}
 				);
+
+				scene->ViewComponents<game_module::Decal>(
+					[](game_module::GameObject& object, game_module::Decal& decal)
+					{
+						const auto& texturePath = fq::path::GetResourcePath() / "Texture";
+						auto materialInfo = decal.GetDecalMaterialInfo();
+
+						if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+
+						decal.SetDecalMaterialInfo(materialInfo);
+					}
+				);
 			}
 		}
 
