@@ -13,16 +13,22 @@ namespace fq::game_module
 		ImageUI();
 		~ImageUI();
 
+		virtual void OnUpdate(float dt) override;
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 	
 		std::vector<fq::graphics::IImageObject*>& GetImageObjects() { return mImageObjects; }
+
 		std::vector<fq::graphics::UIInfo> GetUIInfomations() const { return mUIInfomations; }
-		
+		fq::graphics::UIInfo GetUIInfomation(int index) const { return mUIInfomations[index]; }
+
 		void SetUIInfomations(std::vector<fq::graphics::UIInfo> infomations);
 		void SetUIInfomation(size_t index, const fq::graphics::UIInfo& infomation);
+
+		void SetUIPosition(size_t index, float StartX, float StartY);
+		void SetIsRender(size_t index, bool isRender);
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

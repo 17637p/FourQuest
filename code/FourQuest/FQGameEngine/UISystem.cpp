@@ -4,6 +4,8 @@
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 
+//#include "../FQGameModule/Transform.h"
+
 fq::game_engine::UISystem::UISystem()
 	:mGameProcess(nullptr)
 	, mbIsGameLoaded(false)
@@ -155,4 +157,17 @@ void fq::game_engine::UISystem::SetUIInfomations(const fq::event::SetUIInfomatio
 {
 	unloadImageUI(event.object);
 	loadImageUI(event.object);
+}
+
+void fq::game_engine::UISystem::Update()
+{
+	auto componentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::ImageUI>();
+
+	float distMin = FLT_MAX;
+
+	for (auto& imageUI : componentView)
+	{
+		game_module::Transform* transform = imageUI.GetComponent<game_module::Transform>();
+		imageUI.GetComponent<game_module::ImageUI>()->SetUIPosition(0, transform->GetWorldPosition().x, transform->GetWorldPosition().y);
+	}
 }
