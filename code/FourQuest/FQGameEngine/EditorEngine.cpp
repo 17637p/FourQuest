@@ -195,7 +195,6 @@ void fq::game_engine::EditorEngine::Process()
 				//							Edit, Pause Mode							//
 				//////////////////////////////////////////////////////////////////////////
 				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
-
 				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
 			}
 
@@ -231,7 +230,6 @@ void fq::game_engine::EditorEngine::Process()
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
-
 
 			if (mGameProcess->mSceneManager->IsEnd())
 			{

@@ -32,6 +32,10 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 	rigid->SetLinearVelocity(foward);
 
 	mElapsedTime = 0.f;
+
+	// 검 공격 이펙트 생성
+	auto knightArmour = animator.GetComponent<KnightArmour>();
+	mEffect = knightArmour->EmitSwordEffect();
 }
 
 void fq::client::SwordAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -45,14 +49,15 @@ void fq::client::SwordAttackState::OnStateUpdate(game_module::Animator& animator
 
 	if (mElapsedTime == mAttackTiming)
 	{
-		auto magicArmour = animator.GetComponent<KnightArmour>();
-		magicArmour->EmitSwordAttack();
+		auto knightArmour = animator.GetComponent<KnightArmour>();
+		knightArmour->EmitSwordAttack();
 	}
 }
 
 void fq::client::SwordAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-
+	mEffect->GetScene()->DestroyGameObject(mEffect.get());
+	mEffect = nullptr;
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::SwordAttackState::Clone()

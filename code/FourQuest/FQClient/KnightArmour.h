@@ -15,6 +15,8 @@ namespace fq::client
 		~KnightArmour();
 
 		void EmitSwordAttack();
+		std::shared_ptr<game_module::GameObject> EmitSwordEffect();
+
 		void EmitShieldAttack();
 		void EmitShieldDashAttack();
 
@@ -45,6 +47,8 @@ namespace fq::client
 		float mAttackOffset;
 
 		game_module::PrefabResource mSwordAttack;
+		game_module::PrefabResource mSwordAttackEffect1;
+		game_module::PrefabResource mSwordAttackEffect2;
 		game_module::PrefabResource mShieldAttack;
 		game_module::PrefabResource mDashAttack;
 

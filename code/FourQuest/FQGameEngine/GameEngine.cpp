@@ -156,9 +156,8 @@ void fq::game_engine::GameEngine::Process()
 			{
 				accmulator -= fixedDeltaTime;
 				onFixedUpdtae = true;
-
-				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 				mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 				mGameProcess->mPhysics->Update(fixedDeltaTime);
 				mGameProcess->mPhysics->FinalUpdate();
 				mGameProcess->mPhysicsSystem->SinkToGameScene();
@@ -179,6 +178,9 @@ void fq::game_engine::GameEngine::Process()
 
 			// Animation Update
 			mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+
+			// PathFindingSystem Update
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
@@ -209,6 +211,7 @@ void fq::game_engine::GameEngine::Process()
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
+
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;
