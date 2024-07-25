@@ -67,6 +67,8 @@ namespace fq::graphics
 		mDirectionalShadowTransformCB = nullptr;
 	}
 
+	float scale = 2.f;
+
 	std::vector<float> ShadowPass::CalculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ)
 	{
 		std::vector<float> cascadeEnds;
@@ -74,7 +76,7 @@ namespace fq::graphics
 
 		cascadeEnds.push_back(nearZ);
 
-		float distanceZ = farZ - nearZ;
+		float distanceZ = (farZ - nearZ) * TEMP_SCALE;
 
 		for (float ratio : ratios)
 		{
@@ -94,7 +96,18 @@ namespace fq::graphics
 		assert(cascadeEnds.size() >= 4);
 
 		DirectX::BoundingFrustum frustum(cameraProj);
+
+		float frustumDistnace = (frustum.Far - frustum.Near) ;
 		Matrix viewInverse = cameraView.Invert();
+		frustum.Transform(frustum, DirectX::SimpleMath::Matrix::CreateScale(TEMP_SCALE));
+		frustum.RightSlope *= TEMP_SCALE;
+		frustum.LeftSlope *= TEMP_SCALE;
+		frustum.TopSlope *= TEMP_SCALE;
+		frustum.BottomSlope *= TEMP_SCALE;
+
+		DirectX::SimpleMath::Vector3 forwardVec;
+		cameraView.Forward(forwardVec);
+		DirectX::SimpleMath::Vector3 adjustTranslate = forwardVec * frustumDistnace;
 
 		std::array<std::array<Vector3, 8>, CASCADE_COUNT> sliceFrustums;
 
@@ -104,15 +117,15 @@ namespace fq::graphics
 			float curEnd = cascadeEnds[i];
 			float nextEnd = cascadeEnds[i + 1];
 
-			sliceFrustum[0] = Vector3::Transform({ frustum.RightSlope * curEnd, frustum.TopSlope * curEnd, curEnd }, viewInverse);
-			sliceFrustum[1] = Vector3::Transform({ frustum.RightSlope * curEnd, frustum.BottomSlope * curEnd, curEnd }, viewInverse);
-			sliceFrustum[2] = Vector3::Transform({ frustum.LeftSlope * curEnd, frustum.TopSlope * curEnd, curEnd }, viewInverse);
-			sliceFrustum[3] = Vector3::Transform({ frustum.LeftSlope * curEnd, frustum.BottomSlope * curEnd, curEnd }, viewInverse);
+			sliceFrustum[0] = Vector3::Transform({ frustum.RightSlope * curEnd, frustum.TopSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+			sliceFrustum[1] = Vector3::Transform({ frustum.RightSlope * curEnd, frustum.BottomSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+			sliceFrustum[2] = Vector3::Transform({ frustum.LeftSlope * curEnd, frustum.TopSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+			sliceFrustum[3] = Vector3::Transform({ frustum.LeftSlope * curEnd, frustum.BottomSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
 
-			sliceFrustum[4] = Vector3::Transform({ frustum.RightSlope * nextEnd, frustum.TopSlope * nextEnd, nextEnd }, viewInverse);
-			sliceFrustum[5] = Vector3::Transform({ frustum.RightSlope * nextEnd, frustum.BottomSlope * nextEnd, nextEnd }, viewInverse);
-			sliceFrustum[6] = Vector3::Transform({ frustum.LeftSlope * nextEnd, frustum.TopSlope * nextEnd, nextEnd }, viewInverse);
-			sliceFrustum[7] = Vector3::Transform({ frustum.LeftSlope * nextEnd, frustum.BottomSlope * nextEnd, nextEnd }, viewInverse);
+			sliceFrustum[4] = Vector3::Transform({ frustum.RightSlope * nextEnd, frustum.TopSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+			sliceFrustum[5] = Vector3::Transform({ frustum.RightSlope * nextEnd, frustum.BottomSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+			sliceFrustum[6] = Vector3::Transform({ frustum.LeftSlope * nextEnd, frustum.TopSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+			sliceFrustum[7] = Vector3::Transform({ frustum.LeftSlope * nextEnd, frustum.BottomSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
 		}
 
 		std::vector<DirectX::SimpleMath::Matrix> result;

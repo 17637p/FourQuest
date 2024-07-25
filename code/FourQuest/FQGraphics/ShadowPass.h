@@ -27,6 +27,7 @@ namespace fq::graphics
 	public:
 		enum { SHADOW_SIZE = 1024 };
 		enum { Point_LIGHT_SHADOW_SIZE = 256 };
+		enum {  TEMP_SCALE = 2 };
 
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
