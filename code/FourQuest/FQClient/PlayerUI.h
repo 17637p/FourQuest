@@ -20,6 +20,9 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		// 무기랑 스킬아이콘 어떤 것을 렌더하거나 안할지 
+		void SetWeaponAndSkillIcons(int index, bool isRender);
+
 	private:
 		int mPlayerID;
 		fq::client::Player* mPlayer;
