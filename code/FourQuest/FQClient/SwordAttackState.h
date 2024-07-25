@@ -2,6 +2,11 @@
 
 #include "../FQGameModule/IStateBehaviour.h"
 
+namespace fq::game_module
+{
+	class GameObject;
+}
+
 namespace fq::client
 {
 	class SwordAttackState : public game_module::IStateBehaviour
@@ -20,6 +25,8 @@ namespace fq::client
 	private:
 		float mAttackTiming;
 		float mElapsedTime;
+
+		std::shared_ptr<fq::game_module::GameObject> mEffect;
 
 		friend void RegisterMetaData();
 	};

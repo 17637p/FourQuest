@@ -43,6 +43,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::KnightArmour::Clone(std:
 
 void fq::client::KnightArmour::EmitSwordAttack()
 {
+	// 공격 생성
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSwordAttack);
 	auto& attackObj = *(instance.begin());
 
@@ -175,7 +176,6 @@ void fq::client::KnightArmour::checkInput()
 
 		// 방패 움직임 판단 
 
-
 	}
 	else
 	{
@@ -195,4 +195,23 @@ void fq::client::KnightArmour::OnStart()
 void fq::client::KnightArmour::checkSkillCoolTime(float dt)
 {
 	mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSwordEffect()
+{
+	// 공격 이펙트 생성
+	auto name = mAnimator->GetController().GetCurrentStateName();
+
+	game_module::PrefabResource& res = (name == "Swing1") ? mSwordAttackEffect1
+		: mSwordAttackEffect2; 
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
+	auto& effectObj = *(instance.begin());
+	auto effectT = effectObj->GetComponent<game_module::Transform>();
+
+	effectT->SetParent(mTransform);
+
+	GetScene()->AddGameObject(effectObj);
+
+	return effectObj;  
 }

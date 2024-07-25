@@ -64,8 +64,8 @@ void fq::client::Player::OnStart()
 	mController = GetComponent<fq::game_module::CharacterController>();
 	mTransform = GetComponent<fq::game_module::Transform>();
 
-	// 사운드 가져오기 
-	//mSoundClip = GetScene()->GetObjectByName("SoundManager")->GetComponent<game_module::SoundClip>();
+	// 사운드 가져오기  
+	mSoundClip = GetScene()->GetObjectByName("SoundManager")->GetComponent<game_module::SoundClip>();
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
