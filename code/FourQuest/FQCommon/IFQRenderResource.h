@@ -122,6 +122,7 @@ extern "C" {
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;
 			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;
 			virtual FQ_GRAPHICS const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransposedFinalTransform(size_t index) const abstract;
 
 		protected:
 			virtual ~INodeHierarchyInstance() = default;

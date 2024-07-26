@@ -191,10 +191,10 @@ extern "C" {
 			/// <summary>
 			/// 가지고 있는 관절 중, 링크 및 조인트 추가
 			/// </summary>
-			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
-			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius) abstract;
-			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) abstract;
-			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, const LinkInfo& info) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, LinkInfo& info, const float& radius) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, LinkInfo& info, const float& halfHeight, const float& radius) abstract;
+			virtual FQ_PHYSICS bool AddArticulationLink(unsigned int id, LinkInfo& info) abstract;
 
 			virtual FQ_PHYSICS ArticulationGetData GetArticulationData(const unsigned int& id) abstract;
 			virtual FQ_PHYSICS void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) abstract;

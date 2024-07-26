@@ -49,6 +49,7 @@ namespace fq::physics
 		inline const std::vector<std::weak_ptr<CharacterLink>>& GetChildrenCharacterLink();
 		inline const std::weak_ptr<CharacterLink> GetChildCharacterLink(std::string linkName);
 		inline const void AddChildCharacterLink(std::shared_ptr<CharacterLink> childLink);
+		void SetWorldTransform(const DirectX::SimpleMath::Matrix& boneWorldTransform);
 
 	private:
 		std::string mName;

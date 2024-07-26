@@ -39,7 +39,16 @@ namespace fq::physics
 		mScene = scene;
 
 		physx::PxTransform pxLocalTransform;
-		CopyDirectXMatrixToPxTransform(mLocalTransform, pxLocalTransform);
+		DirectX::SimpleMath::Vector3 scale;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 position;
+		mLocalTransform.Decompose(scale, rotation, position);
+
+		DirectX::SimpleMath::Matrix dxTransform = 
+			DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation) 
+			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+
+		CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
 
 		if (parentLink == nullptr)
 		{
@@ -112,5 +121,23 @@ namespace fq::physics
 		shape->userData = collisionData;
 
 		return true;
+	}
+
+	void CharacterLink::SetWorldTransform(const DirectX::SimpleMath::Matrix& boneWorldTransform)
+	{
+		DirectX::SimpleMath::Matrix objectTransform = boneWorldTransform;
+		DirectX::SimpleMath::Vector3 scale;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 position;
+		objectTransform.Decompose(scale, rotation, position);
+
+		DirectX::SimpleMath::Matrix dxTransform = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation) 
+			* DirectX::SimpleMath::Matrix::CreateTranslation(position)
+			* mMyJoint->GetLocalTransform().Invert();
+
+		physx::PxTransform pxTransform;
+		CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
+
+		mPxLink->setGlobalPose(pxTransform);
 	}
 }

@@ -5,7 +5,9 @@
 #include <PxPhysicsAPI.h>
 #include <directxtk\SimpleMath.h>
 
+#include "EngineDataConverter.h"
 #include "FQCommonPhysics.h"
+#include "CharacterLink.h"
 
 namespace fq::physics
 {
@@ -34,7 +36,7 @@ namespace fq::physics
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& radius);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius);
-		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix);
+		bool AddArticulationLink(LinkInfo& info, int* collisionMatrix);
 
 		/// <summary>
 		/// 레이어 넘버 바꾸기
@@ -54,6 +56,7 @@ namespace fq::physics
 
 		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform);
 		inline void SetIsRagdoll(const bool& isRagdoll);
+		bool SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform);
 
 	private:
 		std::string  mModelPath;
@@ -118,10 +121,22 @@ namespace fq::physics
 	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)
 	{
 		mWorldTransform = trnasform;
+
+		physx::PxTransform pxWorldTransform;
+		CopyDirectXMatrixToPxTransform(mWorldTransform, pxWorldTransform);
+		mPxArticulation->setRootGlobalPose(pxWorldTransform);
 	}
 	void CharacterPhysics::SetIsRagdoll(const bool& isRagdoll)
 	{
 		mbIsRagdoll = isRagdoll;
+	}
+	inline bool CharacterPhysics::SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform)
+	{
+		auto link = mLinkContainer.find(name);
+
+		link->second->SetWorldTransform(boneWorldTransform);
+
+		return true;
 	}
 #pragma endregion
 }

@@ -105,7 +105,7 @@ namespace fq::physics
 		
 		for (auto& [name, link] : articulation->GetLinkContainer())
 		{
-			fq::physics::ArticulationLinkData data;
+			fq::physics::ArticulationLinkGetData data;
 
 			data.jointLocalTransform = link->GetCharacterJoint()->GetSimulationTransform();
 			data.name = link->GetName();
@@ -129,6 +129,11 @@ namespace fq::physics
 			{
 				bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
 				assert(isCheck);
+
+				for (const auto& linkData : articulationData.linkData)
+				{
+					articulation->SetLinkTransformUpdate(linkData.name, linkData.boneWorldTransform);
+				}
 			}
 			else
 			{

@@ -452,6 +452,22 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			, object->shared_from_this()
 			, articulation, false} });
 
+		if (object->GetComponent<fq::game_module::Animator>() == nullptr)
+			return;
+
+		auto animatorMesh = object->GetComponent<fq::game_module::Animator>();
+
+
+		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+			return;
+
+		auto objectTransform = object->GetComponent<fq::game_module::Transform>();
+		auto objectScale = objectTransform->GetWorldScale();
+
+		auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+
 		std::function<void(std::shared_ptr<LinkData>, ColliderID)> loadFunction = [&](std::shared_ptr<LinkData> linkData, ColliderID id)
 			{
 				fq::physics::LinkInfo linkInfo;
@@ -460,6 +476,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				linkInfo.parentBoneName = linkData->GetParentBoneName();
 				linkInfo.density = linkData->GetDensity();
 				linkInfo.localTransform = linkData->GetLocalTransform();
+
 				linkInfo.jointInfo.damping = linkData->GetJointDamping();
 				linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
 				linkInfo.jointInfo.maxForce = linkData->GetJointMaxForce();
@@ -694,14 +711,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
 					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
-
-					fq::graphics::debug::SphereInfo sphereInfo1;
-					sphereInfo1.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
-					sphereInfo1.Sphere.Center = boneTransform.Translation();
-					sphereInfo1.Sphere.Radius = 0.02f;
-					sphereInfo1.bUseDepthTest = false;
-
-					mGameProcess->mGraphics->DrawSphere(sphereInfo1);
 				}
 
 				DirectX::SimpleMath::Vector3 scale;
@@ -818,9 +827,46 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		{
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 
+			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
+				return;
+
+			auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
+
+
+			if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+				return;
+
+			auto objectTransform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
+			auto objectScale = objectTransform->GetWorldScale();
+
+			auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
 			fq::physics::ArticulationSetData data;
 
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
+
+			std::vector<std::string> nameContainer;
+			
+			std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
+				{
+					fq::physics::ArticulationLinkSetData linkData;
+
+					linkData.name = link->GetBoneName();
+					linkData.boneWorldTransform = nodeHierarchy.GetRootTransform(boneHierarchy.GetBoneIndex(link->GetBoneName()));
+					data.linkData.push_back(linkData);
+
+					for (const auto& [name, childLink] : link->GetChildrenLinkData())
+					{
+						linkDataUpdate(childLink);
+					}
+				};
+
+
+			for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
+			{
+				linkDataUpdate(link);
+			}
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}

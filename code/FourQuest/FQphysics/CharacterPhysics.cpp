@@ -31,7 +31,7 @@ namespace fq::physics
 		mPxArticulation = physics->createArticulationReducedCoordinate();
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eFIX_BASE, false);
 		mPxArticulation->setArticulationFlag(physx::PxArticulationFlag::eDISABLE_SELF_COLLISION, false);
-		mPxArticulation->setSolverIterationCounts(16);
+		mPxArticulation->setSolverIterationCounts(32);
 		mPxArticulation->setMaxCOMLinearVelocity(10.f);
 		mPxArticulation->setMaxCOMAngularVelocity(10.f); 
 
@@ -40,14 +40,6 @@ namespace fq::physics
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
 		mWorldTransform = info.worldTransform;
-
-		physx::PxTransform pxTransform;
-		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
-		pxTransform.q.x = 0.f;
-		pxTransform.q.y = 0.f;
-		pxTransform.q.z = 0.f;
-		pxTransform.q.w = 1.f;
-		mPxArticulation->setRootGlobalPose(pxTransform);
 
 		return true;
 	}
@@ -138,12 +130,12 @@ namespace fq::physics
 
 		return true;
 	}
-	bool CharacterPhysics::AddArticulationLink(const LinkInfo& info, int* collisionMatrix)
+	bool CharacterPhysics::AddArticulationLink(LinkInfo& info, int* collisionMatrix)
 	{
 		mRootLink = std::make_shared<CharacterLink>();
 
+		info.localTransform = DirectX::SimpleMath::Matrix::CreateRotationZ(3.14f) * mWorldTransform * info.localTransform;
 		mRootLink->Initialize(info, nullptr, mPxArticulation, mScene);
-		mWorldTransform = info.localTransform;
 
 		return true;
 	}

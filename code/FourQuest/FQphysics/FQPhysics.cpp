@@ -397,19 +397,19 @@ namespace fq::physics
 	{
 		return mCharacterPhysicsManager->RemoveArticulation(id);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const float& halfHeight, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix);
 	}
