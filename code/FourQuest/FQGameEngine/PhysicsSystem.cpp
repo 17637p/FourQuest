@@ -705,9 +705,9 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				{
 					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform;
 
-					boneTransform._41 = boneTransform._41 * 100.f;
-					boneTransform._42 = boneTransform._42 * 100.f;
-					boneTransform._43 = boneTransform._43 * 100.f;
+					boneTransform._41 = boneTransform._41 / transform->GetWorldScale().x;
+					boneTransform._42 = boneTransform._42 / transform->GetWorldScale().y;
+					boneTransform._43 = boneTransform._43 / transform->GetWorldScale().z;
 
 					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
 					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
@@ -832,12 +832,8 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
 
-
 			if (animatorMesh->GetHasNodeHierarchyInstance() == false)
 				return;
-
-			auto objectTransform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
-			auto objectScale = objectTransform->GetWorldScale();
 
 			auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
