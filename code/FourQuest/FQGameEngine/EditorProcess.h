@@ -22,6 +22,7 @@
 #include "ArticulationInspector.h"
 #include "LightProbeWindow.h"
 #include "ExportWindow.h"
+#include "ImportWindow.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -60,6 +61,7 @@ namespace fq::game_engine
 		std::unique_ptr<ArticulationInspector> mArticulationInspector;
 		std::unique_ptr<LightProbeWindow> mLightProbeWindow;
 		std::unique_ptr<ExportWindow> mExportWindow;
+		std::unique_ptr<ImportWindow> mImportWindow;
 
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;

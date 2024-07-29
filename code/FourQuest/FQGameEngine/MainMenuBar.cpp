@@ -303,6 +303,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onExpotWindow = mEditorProcess->mExportWindow->IsWindowOpen();
 		ImGui::Checkbox("ExportWindow", &onExpotWindow);
 
+		bool& onImportWindow = mEditorProcess->mImportWindow->IsWindowOpen();
+		ImGui::Checkbox("ImportWindow", &onImportWindow);
+
 		ImGui::EndMenu();
 	}
 }
