@@ -47,6 +47,7 @@ namespace fq::graphics
 		bool bUseLightProbe;
 		DirectX::SimpleMath::Color OutlineColor;
 		bool bIsAppliedDecal;
+		bool bAppliedLight = true; // 이펙트 오브젝트 조명 연산 끄기 위해 사용
 	};
 
 	struct UIInfo
@@ -63,7 +64,11 @@ namespace fq::graphics
 		float XRatio = 1.f; // 1이 전부다 출력
 		float YRatio = 1.f; // 1이 전부다 출력
 
-		std::string ImagePath;
+		std::string ImagePath = "";
+
+		// 둘 중 하나만 사용할 것
+		std::string MaskPath = ""; // "" 이면 마스크 없음, 아니면 마스크 있음으로 처리
+		float fillDegree = -1; // 0 보다 크면 사용 
 
 		// 선택 사항
 		float RotationAngle = 0.f;

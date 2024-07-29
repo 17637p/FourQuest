@@ -5,6 +5,7 @@
 
 namespace fq::client
 {
+	class KnockBack;
 	class GameManager;
 
 	/// <summary>
@@ -18,6 +19,7 @@ namespace fq::client
 
 		void SetTarget(game_module::GameObject* target) override;
 		void EmitAttack();
+		std::shared_ptr<game_module::GameObject> EmitAttackEffect();
 		void ChaseTarget();
 
 		/// <summary>
@@ -26,7 +28,7 @@ namespace fq::client
 		void DetectTarget();
 
 		/// <summary>
-		/// 타겟이 감지되어 다른 그룹에게 알립니다
+		/// 타겟이 감지되어 다른 그룹에게 알립니다	
 		/// </summary>
 		void AnnounceFindedTarget();
 
@@ -47,11 +49,11 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
-
 	private:
 		GameManager* mGameManager;
 		fq::game_module::Transform* mTransform;
 		fq::game_module::Animator* mAnimator;
+		KnockBack* mKnockBack;
 		std::shared_ptr<game_module::GameObject> mTarget;
 
 		float mMaxHp;
@@ -67,6 +69,7 @@ namespace fq::client
 		float mAttackOffset;
 
 		fq::game_module::PrefabResource mAttackPrefab;
+		fq::game_module::PrefabResource mAttackEffect;
 
 		DirectX::SimpleMath::Vector3 mStartPosition;
 		DirectX::SimpleMath::Vector3 mPatrolDestination;

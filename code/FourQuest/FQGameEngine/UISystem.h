@@ -25,6 +25,8 @@ namespace fq::game_engine
 
 		void Initialize(GameProcess* gameProcess);
 
+		void Update();
+
 		/// <summary>
 		/// 씬을 로드할때 랜더링에 관련된 리소스를 로드합니다
 		/// </summary>

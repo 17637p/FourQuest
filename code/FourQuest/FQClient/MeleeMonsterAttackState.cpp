@@ -22,6 +22,9 @@ void fq::client::MeleeMonsterAttackState::OnStateEnter(game_module::Animator& an
 {
 	mElapsedTime = 0.f;
 
+	// 공격 Effect
+	//mEffect = animator.GetComponent<MeleeMonster>()->EmitAttackEffect();
+
 	// 공격 즉시 발동
 	if (mAttackTiming == mElapsedTime)
 	{
@@ -43,4 +46,10 @@ void fq::client::MeleeMonsterAttackState::OnStateUpdate(game_module::Animator& a
 		animator.GetComponent<MeleeMonster>()->EmitAttack();
 		mElapsedTime = mAttackTiming;
 	}
+}
+
+void fq::client::MeleeMonsterAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
+{/*
+	mEffect->GetScene()->DestroyGameObject(mEffect.get());
+	mEffect = nullptr;*/
 }

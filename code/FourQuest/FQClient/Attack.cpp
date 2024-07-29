@@ -21,10 +21,13 @@ fq::client::Attack::Attack()
 	:mAttackPower(-1)
 	, mDestroyElapsedTime(0.f)
 	, mDestroyTime(0.1f)
-	, mAttackDirection(NoDirection)
+	, mAttackDirection()
 	, mRemainingAttackCount(1)
 	, mbIsInfinite(true)
-	, mPushPower(0.f)
+	, mKnockBackPower(0.f)
+	, mKnockBackType(EKnockBackType::None)
+	, mAttackPosition{}
+	, mAttacker(nullptr)
 {}
 
 fq::client::Attack::~Attack()
@@ -62,4 +65,21 @@ bool fq::client::Attack::ProcessAttack()
 	}
 
 	return true;
+}
+
+void fq::client::Attack::Set(const AttackInfo& info)
+{
+	mAttacker = info.attacker;
+	mAttackPower = info.damage;
+	mbIsInfinite = info.bIsInfinite;
+	mRemainingAttackCount = info.remainingAttackCount;
+	mKnockBackType = info.type;
+	mKnockBackPower = info.knocBackPower;
+	mAttackDirection = info.attackDirection;
+	mAttackPosition = info.attackPosition;
+}
+
+bool fq::client::Attack::HasKnockBack() const
+{
+	return mKnockBackType != EKnockBackType::None;
 }

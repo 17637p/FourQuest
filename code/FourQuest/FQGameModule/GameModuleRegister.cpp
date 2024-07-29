@@ -74,7 +74,17 @@ void fq::game_module::RegisterMetaData()
 		.data<ETag::Floor>("Floor"_hs) // 9
 		.prop(fq::reflect::prop::Name, "Floor")
 		.data<ETag::Soul>("Soul"_hs) // 10
-		.prop(fq::reflect::prop::Name, "Soul");
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<ETag::Dash>("Dash"_hs) // 11
+		.prop(fq::reflect::prop::Name, "Dash")
+		.data<ETag::Spawner>("Spawner"_hs) // 12
+		.prop(fq::reflect::prop::Name, "Spawner")
+		.data<ETag::Dash>("Tag13"_hs) // 13
+		.prop(fq::reflect::prop::Name, "Tag13")
+		.data<ETag::Dash>("Tag14"_hs) // 14
+		.prop(fq::reflect::prop::Name, "Tag14")
+		.data<ETag::Dash>("Tag15"_hs) // 15
+		.prop(fq::reflect::prop::Name, "Tag15");
 
 
 	// GameObject
@@ -146,7 +156,11 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "OutlineColor")
 		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
 		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
-		.prop(fq::reflect::prop::Name, "IsAppliedDecal");
+		.prop(fq::reflect::prop::Name, "IsAppliedDecal")
+	.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
+		.prop(fq::reflect::prop::Comment, u8"조명 적용 여부")
+		.prop(fq::reflect::prop::Name, "IsAppliedLight");
+
 
 	// StaticMeshRenderer
 	entt::meta<StaticMeshRenderer>()
@@ -226,6 +240,10 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "YRatio")
 		.data<&graphics::UIInfo::ImagePath>("ImagePath"_hs)
 		.prop(fq::reflect::prop::Name, "ImagePath")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&graphics::UIInfo::MaskPath>("MaskPath"_hs)
+		.prop(fq::reflect::prop::Name, "MaskPath")
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
 		.data<&graphics::UIInfo::RotationAngle>("RotationAngle"_hs)
@@ -656,6 +674,17 @@ void fq::game_module::RegisterMetaData()
 	//                              Sound                                   //
 	//////////////////////////////////////////////////////////////////////////
 
+	entt::meta<SoundClip::SoundInfo>()
+		.type("ClipSoundInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ClipSoundInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&SoundClip::SoundInfo::key>("Key"_hs)
+		.prop(fq::reflect::prop::Name, "Key")
+		.data<&SoundClip::SoundInfo::path>("Path"_hs)
+		.prop(fq::reflect::prop::Name, "Path")
+		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
+		.prop(fq::reflect::prop::RelativePath);
+
 	entt::meta<SoundClip>()
 		.type("SoundClip"_hs)
 		.prop(fq::reflect::prop::Name, "SoundClip")
@@ -663,8 +692,6 @@ void fq::game_module::RegisterMetaData()
 		.data<&SoundClip::SetSounds, &SoundClip::GetSounds>("Sounds"_hs)
 		.prop(fq::reflect::prop::Name, "Sounds")
 		.prop(fq::reflect::prop::Comment, u8"로드하는 사운드를 드래그드랍으로 추가합니다")
-		.prop(fq::reflect::prop::RelativePath)
-		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
 		.base<Component>();
 
 
@@ -1258,18 +1285,23 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::MaterialInfo::BaseColorFileName>("BaseColorFileName"_hs)
 		.prop(fq::reflect::prop::Name, "BaseColorFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::MaterialInfo::MetalnessFileName>("MetalnessFileName"_hs)
 		.prop(fq::reflect::prop::Name, "MetalnessFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::MaterialInfo::RoughnessFileName>("RoughnessFileName"_hs)
 		.prop(fq::reflect::prop::Name, "RoughnessFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::MaterialInfo::NormalFileName>("NormalFileName"_hs)
 		.prop(fq::reflect::prop::Name, "NormalFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::MaterialInfo::EmissiveFileName>("EmissiveFileName"_hs)
 		.prop(fq::reflect::prop::Name, "EmissiveFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::MaterialInfo::bUseBaseColor>("bUseBaseColor"_hs)
 		.prop(fq::reflect::prop::Name, "bUseBaseColor")
 		.data<&fq::graphics::MaterialInfo::bUseMetalness>("bUseMetalness"_hs)
@@ -1379,18 +1411,23 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::DecalMaterialInfo::BaseColorFileName>("BaseColorFileName"_hs)
 		.prop(fq::reflect::prop::Name, "BaseColorFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::MetalnessFileName>("MetalnessFileName"_hs)
 		.prop(fq::reflect::prop::Name, "MetalnessFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::RoughnessFileName>("RoughnessFileName"_hs)
 		.prop(fq::reflect::prop::Name, "RoughnessFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::NormalFileName>("NormalFileName"_hs)
 		.prop(fq::reflect::prop::Name, "NormalFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::EmissiveFileName>("EmissiveFileName"_hs)
 		.prop(fq::reflect::prop::Name, "EmissiveFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
+		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::bUseBaseColor>("bUseBaseColor"_hs)
 		.prop(fq::reflect::prop::Name, "bUseBaseColor")
 		.data<&fq::graphics::DecalMaterialInfo::bUseMetalness>("bUseMetalness"_hs)

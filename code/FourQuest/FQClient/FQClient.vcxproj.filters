@@ -75,6 +75,12 @@
     <Filter Include="src\06.GameManager">
       <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\02.Monster\Spawner">
+      <UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Spawner">
+      <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -87,12 +93,6 @@
       <Filter>include\03.Attack</Filter>
     </ClInclude>
     <ClInclude Include="PlayerInputState.h">
-      <Filter>include\01.Player\State</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerDashState.h">
-      <Filter>include\01.Player\State</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerAttackState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="CameraMoving.h">
@@ -155,9 +155,6 @@
     <ClInclude Include="Monster.h">
       <Filter>include\02.Monster\Prototype</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterSpawner.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
     <ClInclude Include="PlantMonster.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
@@ -218,6 +215,39 @@
     <ClInclude Include="RazerAttackState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="KnightArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ShiedlDashState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="KnockBack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ShieldAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="SwordAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="ShieldBlockState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterSpawner.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerDeadState.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerOpenState.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -234,12 +264,6 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>src\01.Player</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerDashState.cpp">
-      <Filter>src\01.Player\State</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerAttackState.cpp">
-      <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="CameraMoving.cpp">
       <Filter>src\04.Camera</Filter>
@@ -292,13 +316,7 @@
     <ClCompile Include="Monster.cpp">
       <Filter>src\02.Monster\Prototype</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterSpawner.cpp">
-      <Filter>src\02.Monster</Filter>
-    </ClCompile>
     <ClCompile Include="PlantMonster.cpp">
-      <Filter>src\02.Monster\Plant</Filter>
-    </ClCompile>
-    <ClCompile Include="LinearAttack.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="MeleeMonsterIdleState.cpp">
@@ -345,6 +363,36 @@
     </ClCompile>
     <ClCompile Include="RazerAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ShiedlDashState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="LinearAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="KnockBack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="SwordAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldBlockState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawner.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerDeadState.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerOpenState.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

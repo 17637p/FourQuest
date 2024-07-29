@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -39,6 +40,8 @@
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="HpBar.h" />
+    <ClInclude Include="KnightArmour.h" />
+    <ClInclude Include="KnockBack.h" />
     <ClInclude Include="MagicArmour.h" />
     <ClInclude Include="MagicBallAttackState.h" />
     <ClInclude Include="MeleeMonster.h" />
@@ -67,15 +70,20 @@
     <ClInclude Include="PlantMonsterDeadState.h" />
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
-    <ClInclude Include="PlayerAttackState.h" />
-    <ClInclude Include="PlayerDashState.h" />
+    <ClInclude Include="ShiedlDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMovementState.h" />
     <ClInclude Include="PlayerUI.h" />
     <ClInclude Include="RazerAttackState.h" />
+    <ClInclude Include="ShieldAttackState.h" />
+    <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SoundDefine.h" />
+    <ClInclude Include="SpawnerDeadState.h" />
+    <ClInclude Include="SpawnerOpenState.h" />
+    <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +94,8 @@
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HpBar.cpp" />
+    <ClCompile Include="KnightArmour.cpp" />
+    <ClCompile Include="KnockBack.cpp" />
     <ClCompile Include="MagicArmour.cpp" />
     <ClCompile Include="MagicBallAttackState.cpp" />
     <ClCompile Include="MeleeMonster.cpp" />
@@ -113,14 +123,18 @@
     <ClCompile Include="PlantMonsterDeadState.cpp" />
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
-    <ClCompile Include="PlayerAttackState.cpp" />
-    <ClCompile Include="PlayerDashState.cpp" />
+    <ClCompile Include="ShiedlDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />
     <ClCompile Include="PlayerUI.cpp" />
     <ClCompile Include="RazerAttackState.cpp" />
+    <ClCompile Include="ShieldAttackState.cpp" />
+    <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
+    <ClCompile Include="SpawnerDeadState.cpp" />
+    <ClCompile Include="SpawnerOpenState.cpp" />
+    <ClCompile Include="SwordAttackState.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

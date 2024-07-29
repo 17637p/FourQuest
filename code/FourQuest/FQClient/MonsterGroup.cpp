@@ -77,3 +77,8 @@ void fq::client::MonsterGroup::AnnounceFindedTarget(fq::game_module::GameObject*
 	}
 }
 
+fq::game_module::GameObject* fq::client::MonsterGroup::GetTarget() const
+{
+	return mTarget.get();
+}
+

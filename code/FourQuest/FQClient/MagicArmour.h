@@ -6,7 +6,7 @@ namespace fq::client
 	class Player;
 
 	/// <summary>
-	/// 마법 공격에 대한 처리를 합니다 
+	/// 마법 갑옷 
 	/// </summary>
 	class MagicArmour : public fq::game_module::Component
 	{
@@ -19,7 +19,7 @@ namespace fq::client
 		/// </summary>
 		void EmitMagicBall();
 
-		/// <summary>
+		/// <summary>r
 		/// A 버튼 장판 마법 공격을 발사합니다
 		/// </summary>
 		void EmitAOE(DirectX::SimpleMath::Vector3 attackPoint);
@@ -27,7 +27,7 @@ namespace fq::client
 		/// <summary>
 		/// R 스틱으로 Razer를 쏩니다
 		/// </summary>
-		void EmitRazer();
+		void EmitLazer();
 
 		fq::game_module::PrefabResource GetAttackWarningUI() const { return mAttackWarningUI; }
 

@@ -390,6 +390,12 @@ void D3D11LightProbeManager::GetCoefficientTetrahedronWeight(const DirectX::Simp
 	int size = mTetrahedrons.size();
 	if(TetIndex > size || TetIndex < 0)
 	{
+		for (int i = 0; i < 9; i++)
+		{
+			r[i] = 1;
+			//g[i] = 1;
+			b[i] = 1;
+		}
 		return;
 	}
 	lerpLightProbe(mTetrahedrons[TetIndex], weights, r, g, b);
@@ -645,6 +651,7 @@ void D3D11LightProbeManager::getLightProbeInterpolationWeights(const std::vector
 		// is the one we came from. But we can also let it reach the max steps count and see if that ever happens in practice.
 		if (steps == tetCount - 1)
 		{
+			tetIndex = -1;
 			int a = 3;
 			weights.x = 0;
 			weights.y = 0;

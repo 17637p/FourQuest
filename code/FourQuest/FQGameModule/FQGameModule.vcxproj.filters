@@ -307,7 +307,7 @@
     </ClInclude>
     <ClInclude Include="PostProcessing.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="ArticulationLoader.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
@@ -495,7 +495,7 @@
     </ClCompile>
     <ClCompile Include="PostProcessing.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ArticulationLoader.cpp">
       <Filter>src\07.Physics</Filter>
     </ClCompile>

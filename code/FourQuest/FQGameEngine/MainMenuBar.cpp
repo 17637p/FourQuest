@@ -300,6 +300,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onLightProbe = mEditorProcess->mLightProbeWindow->IsWindowOpen();
 		ImGui::Checkbox("LightProbe", &onLightProbe);
 
+		bool& onExpotWindow = mEditorProcess->mExportWindow->IsWindowOpen();
+		ImGui::Checkbox("ExportWindow", &onExpotWindow);
+
 		ImGui::EndMenu();
 	}
 }

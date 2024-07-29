@@ -108,7 +108,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 			// 임시적용
 			if (ImGui::Button("Change TexturePath"))
 			{
-				auto scene =  mGameProcess->mSceneManager->GetCurrentScene();
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
 				auto texturePath = fq::path::GetResourcePath() / "Texture";
 
@@ -131,9 +131,68 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						}
 					}
 				);
+			}
 
+			if (ImGui::Button("Reload Texture(TexturePath + TextureName)"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+					[](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					{
+						const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
+						auto materialInfos = renderer.GetMaterialInfos();
+
+						for (auto& materialInfo : materialInfos)
+						{
+							if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+						}
+
+						renderer.SetMaterialInfos(materialInfos);
+					}
+				);
+
+				scene->ViewComponents<game_module::StaticMeshRenderer>(
+					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					{
+						const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
+						auto materialInfos = renderer.GetMaterialInfos();
+
+						for (auto& materialInfo : materialInfos)
+						{
+							if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+						}
+
+						renderer.SetMaterialInfos(materialInfos);
+					}
+				);
+
+				scene->ViewComponents<game_module::Decal>(
+					[](game_module::GameObject& object, game_module::Decal& decal)
+					{
+						const auto& texturePath = fq::path::GetResourcePath() / "Texture";
+						auto materialInfo = decal.GetDecalMaterialInfo();
+
+						if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+
+						decal.SetDecalMaterialInfo(materialInfo);
+					}
+				);
 			}
 		}
+
 		ImGui::EndChild();
 	}
 }

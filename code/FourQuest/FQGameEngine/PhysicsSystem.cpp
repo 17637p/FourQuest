@@ -430,7 +430,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	if (object->HasComponent<Articulation>())
 	{
 		ColliderID id = ++mLastColliderID;
-		
+
 		auto articulation = object->GetComponent<Articulation>();
 		articulation->Load();
 		auto articulationData = articulation->GetArticulationData();
@@ -623,20 +623,23 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		if (colliderInfo.bIsDestroyed)
 			continue;
 
-		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
+		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto offset = colliderInfo.collider->GetOffset();
+
+		if (rigid->GetBodyType() == game_module::RigidBody::EBodyType::Static)
+			continue;
 
 		if (colliderInfo.enttID == mCharactorControllerTypeID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
 			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
-			auto localPos = controll.position - controller->GetOffset();
+			auto position = controll.position - controller->GetOffset();
 
 			controller->SetFalling(movement.isFall);
 			rigid->SetLinearVelocity(movement.velocity);
-			transform->SetLocalPosition(localPos);
+			transform->SetWorldPosition(position);
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{
@@ -775,6 +778,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.position = transform->GetWorldPosition() + controller->GetOffset();
 			data.rotation = transform->GetWorldRotation();
 			data.scale = transform->GetWorldScale();
+
+			// Tag가 변경된 경우
+			auto controllerInfo = controller->GetControllerInfo();
+			auto prevLayer = controllerInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				controllerInfo.layerNumber = currentLayer;
+				controller->SetControllerInfo(controllerInfo);
+			}
 
 			mPhysicsEngine->SetCharacterControllerData(id, data);
 

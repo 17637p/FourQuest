@@ -14,7 +14,6 @@ namespace fq::client
 		~Soul();
 		
 		void DestorySoul();
-
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType type) { mSoulType = type; }
 	

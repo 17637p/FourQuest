@@ -104,6 +104,8 @@ namespace fq::physics
 			return false;
 		}
 
+		mLayerNumber = newLayerNumber;
+
 		std::shared_ptr<physx::PxFilterData> newFilterData = std::make_shared<physx::PxFilterData>();
 		newFilterData->word0 = mLayerNumber;
 		newFilterData->word1 = collisionMatrix[mLayerNumber];

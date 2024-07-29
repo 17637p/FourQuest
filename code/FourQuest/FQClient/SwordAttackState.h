@@ -1,33 +1,34 @@
 #pragma once
 
 #include "../FQGameModule/IStateBehaviour.h"
-#include "PlayerDefine.h"
+
+namespace fq::game_module
+{
+	class GameObject;
+}
 
 namespace fq::client
 {
-	/// <summary>
-	/// 플레이어 공격상태에 대한 처리를 담당합니다
-	/// </summary>
-	class PlayerAttackState : public game_module::IStateBehaviour
+	class SwordAttackState : public game_module::IStateBehaviour
 	{
 	public:
-		PlayerAttackState();
-		~PlayerAttackState();
+		SwordAttackState();
+		~SwordAttackState();
 
+	private:
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
-
-	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		float mAttackRebound; // 공격 반동
-		float mAttackTiming; // 공격 발동 시간
+		float mAttackTiming;
 		float mElapsedTime;
+
+		std::shared_ptr<fq::game_module::GameObject> mEffect;
 
 		friend void RegisterMetaData();
 	};
-}
 
+}

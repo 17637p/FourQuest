@@ -57,18 +57,21 @@ void fq::client::MagicArmour::EmitMagicBall()
 	auto& attackObj = *(instance.begin());
 
 	// 공격 설정
+	AttackInfo attackInfo;
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
+
+	attackInfo.attacker = GetGameObject();
+	float attackPower = mPlayer->GetAttackPower();
+	attackInfo.damage = dc::GetMagicBallDamage(attackPower);
+	attackInfo.bIsInfinite = false;
+	attackInfo.remainingAttackCount = 1;
+	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
 	DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
 	pos.y += 1.f;
 	attackT->SetLocalPosition(pos);
-
-	// 매직볼 공격력 계산 
-	float attackPower = mPlayer->GetAttackPower();
-	attackComponent->SetAttackPower(dc::GetMagicBallDamage(attackPower));
 
 	// 공격 방향 설정
 	auto linearAttack = attackObj->GetComponent<LinearAttack>();
@@ -78,7 +81,9 @@ void fq::client::MagicArmour::EmitMagicBall()
 	linearAttack->SetMoveSpeed(mMagicBallSpeed);
 	linearAttack->SetMoveDirection(direction);
 
-	// TODO:: MagicBall 사운드 추가 
+	// MagicBall Attack 사운드  
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "EnergyBallAttack", false , 0 });
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -88,25 +93,28 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	auto& attackObj = *(instance.begin());
 
 	// 공격 설정
+	AttackInfo attackInfo{};
+
+	attackInfo.attacker = GetGameObject();
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	float attackPower = mPlayer->GetAttackPower();
+	attackInfo.damage = dc::GetAOEDamage(attackPower);
+	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
 	attackT->SetWorldPosition(attackPoint);
 
-	// AOE 공격력 계산 
-	float attackPower = mPlayer->GetAttackPower();
-	attackComponent->SetAttackPower(dc::GetAOEDamage(attackPower));
+	// AOE Sound
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "AOEAttack", false , 0 });
 
-	// TODO:: AOE Sound 추가
 	GetScene()->AddGameObject(attackObj);
 
 	// CoolTime
 	mAOEElapsedTime = mAOECoolTime;
 }
 
-void fq::client::MagicArmour::EmitRazer()
+void fq::client::MagicArmour::EmitLazer()
 {
 	// RayCastTest
 	fq::event::RayCast::ResultData data;
@@ -123,6 +131,7 @@ void fq::client::MagicArmour::EmitRazer()
 		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
 	);
 
+
 	if (data.hasBlock)
 	{
 		if (mRazerHitElapsedTime == 0.f)
@@ -132,16 +141,19 @@ void fq::client::MagicArmour::EmitRazer()
 			auto& attackObj = *(instance.begin());
 
 			// 공격 설정
+			AttackInfo attackInfo{};
 			auto attackComponent = attackObj->GetComponent<client::Attack>();
-			attackComponent->SetAttacker(GetGameObject());
 			auto attackT = attackObj->GetComponent<game_module::Transform>();
 			
+			float attackPower = mPlayer->GetAttackPower();
+			attackInfo.damage = dc::GetRazerDamage(attackPower);
+			attackInfo.attacker = GetGameObject();
+			attackInfo.remainingAttackCount = 1;
+			attackInfo.bIsInfinite = false;
+			attackComponent->Set(attackInfo);
+
 			// 공격 위치 설정
 			attackT->SetWorldPosition(data.blockPosition);
-
-			// Razer 공격력 계산 
-			float attackPower = mPlayer->GetAttackPower();
-			attackComponent->SetAttackPower(dc::GetRazerDamage(attackPower));
 
 			// TODO :: Razer HitSound 추가
 			GetScene()->AddGameObject(attackObj);
