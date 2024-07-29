@@ -52,6 +52,7 @@ namespace fq::client
 		game_module::CharacterController* mController;
 		Player* mPlayer;
 
+		unsigned int mMagicBallPenetrationCount;
 		float mMagicBallSpeed;
 		float mAOEMoveRange;
 		float mAOECoolTime;
