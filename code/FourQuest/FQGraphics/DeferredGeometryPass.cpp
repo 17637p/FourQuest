@@ -160,16 +160,21 @@ namespace fq::graphics
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 3);
 			mLightMapInformationCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 4);
-			
+
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightMapInformationCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 
 			const std::shared_ptr<D3D11TextureArray>& lightMapTexture = mLightManager->GetLightMapTextureArray();
+			const std::shared_ptr<D3D11TextureArray>& lightmapDirectionTexture = mLightManager->GetLightMapDirectionTextureArray();
 
 			if (lightMapTexture != nullptr)
 			{
 				lightMapTexture->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+			}
+			if (lightmapDirectionTexture != nullptr)
+			{
+				lightmapDirectionTexture->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
 			}
 		}
 
@@ -196,6 +201,7 @@ namespace fq::graphics
 					LightMapInfomation lightmapInfo;
 					lightmapInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
 					lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
+					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
 					break;
 				}

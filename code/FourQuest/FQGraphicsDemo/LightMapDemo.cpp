@@ -45,7 +45,9 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 	// 랜더링 오브젝트 생성
 	mTestGraphics->WriteModel("./resource/Graphics/LightMapDemo/LightMapTest.model", mTestGraphics->ConvertModel("./resource/Graphics/LightMapDemo/LightMapTest.fbx"));
 	createModel("./resource/Graphics/LightMapDemo/LightMapTest.model", "./resource/Graphics/LightMapDemo/", DirectX::SimpleMath::Matrix::Identity);
-	mTestGraphics->SetLightMapTexture({ "./resource/Graphics/LightMapDemo/Lightmap-0_comp_light.dds" });
+	mTestGraphics->SetLightMapTexture({ "./resource/Graphics/LightMapDemo/Lightmap-0_comp_light.png" });
+	mTestGraphics->SetLightMapDirectionTexture({ "./resource/Graphics/LightMapDemo/Lightmap-0_comp_dir.png" });
+	//mTestGraphics->SetSkyBox(L"./resource/Graphics/LightMapDemo/123EnvHDR.dds", true);
 
 	struct LightMapInfo
 	{
@@ -93,6 +95,7 @@ bool LightMapDemo::Init(HINSTANCE hInstance)
 		for (auto material : staticMeshObject->GetMaterials())
 		{
 			auto materialInfo = material->GetInfo();
+			materialInfo.Roughness = 0.f;
 			materialInfo.RasterizeType = fq::graphics::ERasterizeMode::TwoSide;
 			material->SetInfo(materialInfo);
 		}

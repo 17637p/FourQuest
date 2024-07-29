@@ -15,7 +15,8 @@ namespace fq::graphics
 	{
 		DirectX::SimpleMath::Vector4 UVScaleOffset;
 		unsigned int UVIndex;
-		float unused[3];
+		int bUseDirection;
+		float unused[2];
 	};
 
 	struct ViewProjectionMatrix
@@ -107,6 +108,7 @@ namespace fq::graphics
 		unsigned int numOfDirectionalLight;
 		unsigned int numOfPointLight;
 		unsigned int numOfSpotLight;
+
 		unsigned int isUseIBL;
 
 		DirectX::SimpleMath::Vector3 eyePosition;
@@ -192,7 +194,7 @@ namespace fq::graphics
 		int bUseNormalness;
 		int bIsUsedEmissive;
 		float NormalBlend;
-	
+
 		float AlphaCutoff;
 		float unused[3];
 	};

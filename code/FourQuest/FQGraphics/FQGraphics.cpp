@@ -353,6 +353,11 @@ void fq::graphics::FQGraphics::SetLightMapTexture(const std::vector<std::filesys
 	mLightManager->CreateLightMapTextureArray(mDevice, paths);
 }
 
+void fq::graphics::FQGraphics::SetLightMapDirectionTexture(const std::vector<std::filesystem::path>& paths)
+{
+	mLightManager->CreateLightMapDirectionTextureArray(mDevice, paths);
+}
+
 void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)
 {
 	mCameraManager->Update(ECameraType::Player, cameraTransform);

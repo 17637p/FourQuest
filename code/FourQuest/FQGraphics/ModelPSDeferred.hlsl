@@ -52,6 +52,7 @@ cbuffer cbLightmapInformation : register(b1)
 {
     float4 cUVOffsetScale;
     uint cUVIndex;
+    bool bUseDirectMap;
 };
 #endif
 
@@ -61,8 +62,17 @@ Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
 Texture2DArray gLightMapArray : register(t5);
+Texture2DArray gDirectionArray : register(t6);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
+
+float3 DecodeDirectionalLightmap(float4 directionalLightmap)
+{
+    float3 direction = directionalLightmap.rgb * 2.0 - 1.0;
+    float intensity = directionalLightmap.a;
+
+    return direction * intensity;
+}
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
@@ -120,8 +130,15 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
 #ifdef STATIC
     pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
-#endif
 
+   //if (bUseDirectMap)
+   //{
+   //    float4 direction = gDirectionArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
+   //    float3 lightDirection = DecodeDirectionalLightmap(direction);
+   //    float lambert = saturate(dot(pout.Normal.xyz, normalize(lightDirection)));
+   //    pout.Light.rgb = lightDirection.xyz;// lambert / max(0.00001, direction.w);
+   //}
+#endif 
     return pout;
 }
 
@@ -258,7 +275,10 @@ float4 main(VertexOut pin) : SV_TARGET
         ambientLighting = diffuseIBL + specularIBL;
     }
      
+
+
     float3 preCaculatedLight = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
+
 
     return float4(directLighting + ambientLighting + emissive + preCaculatedLight, 1.f);
 }
