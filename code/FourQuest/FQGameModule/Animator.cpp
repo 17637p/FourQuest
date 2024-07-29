@@ -4,6 +4,7 @@
 #include "AnimatorController.h"
 
 fq::game_module::Animator::Animator()
+	:mDefaultPlaySpeed(1.f)
 {
 
 }
@@ -74,7 +75,7 @@ void fq::game_module::Animator::UpdateState(float dt)
 void fq::game_module::Animator::UpdateAnimation(float dt)
 {
 	if (mController)
-		mController->UpdateAnimation(dt);
+		mController->UpdateAnimation(dt, mDefaultPlaySpeed);
 }
 
 bool fq::game_module::Animator::IsInTransition() const

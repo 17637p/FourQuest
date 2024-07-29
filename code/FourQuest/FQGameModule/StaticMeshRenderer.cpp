@@ -7,7 +7,7 @@
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
-	, mIsNavigationMeshUsed(true)
+	, mIsNavigationMeshUsed(false)
 	, mTexturePath{}
 {
 }

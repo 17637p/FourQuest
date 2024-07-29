@@ -724,7 +724,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
 
-	entt::meta<Animator>()
+	entt::meta<Animator>()  
 		.type("Animator"_hs)
 		.prop(fq::reflect::prop::Name, "Animator")
 		.prop(fq::reflect::prop::Label, "Miscellaneous")

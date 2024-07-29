@@ -53,7 +53,7 @@ void fq::game_module::CharacterController::SetControllerInfo(fq::physics::Charac
 	mControllerInfo.contactOffset = std::max(mControllerInfo.contactOffset, 0.0001f);
 }
 
-void fq::game_module::CharacterController::OnUpdate(float dt)
+void fq::game_module::CharacterController::OnFixedUpdate(float dt)
 {
 	using namespace DirectX::SimpleMath;
 
@@ -68,12 +68,18 @@ void fq::game_module::CharacterController::OnUpdate(float dt)
 	if (!mbCanMoveCharater)
 	{
 		mbOnMove = false;
+
+		if (mbHasDashInput)
+		{
+			GetScene()->GetEventManager()
+				->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, Vector3::Zero , true });
+		}
 	}
 	else
 	{
 		mbOnMove = input != Vector3::Zero;
 		GetScene()->GetEventManager()
-			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input });
+			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input , true});
 	}
 
 	float lengthSq = input.LengthSquared();
@@ -97,6 +103,7 @@ void fq::game_module::CharacterController::OnUpdate(float dt)
 		}
 	}
 }
+
 
 void fq::game_module::CharacterController::SetControllerID(ControllerID id)
 {

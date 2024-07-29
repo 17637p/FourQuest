@@ -1,7 +1,16 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
 #include "PlayerDefine.h"
+
+namespace fq::game_module
+{
+	class Animator;
+	class CharacterController;
+	class Transform;
+	class SoundClip;
+}
 
 namespace fq::client
 {
@@ -23,7 +32,7 @@ namespace fq::client
 	
 		float GetAttackPower() const { return mAttackPower; }
 		float GetHPRatio() const { return mHp / mMaxHp; }
-		float GetPlayerID() const { return mController->GetControllerID(); }
+		float GetPlayerID() const;
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 
 		/// <summary>
@@ -56,6 +65,7 @@ namespace fq::client
 		float mHp; // 현재 체력
 		float mSoulStack; // 소울 게이지
 		float mAttackPower; // 공격력
+		float mAttackSpeed; // 공격속도
 		
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 

@@ -16,6 +16,7 @@ namespace fq::physics
 		, mFilters(nullptr)
 		, mFilterData(nullptr)
 		, mCharacterQueryFilterCallback(nullptr)
+		, mbIsDynamic(false)
 	{
 	}
 
@@ -59,7 +60,7 @@ namespace fq::physics
 		physx::PxVec3 dispVector;
 
 		// 캐릭터 무브먼트 업데이트로 속도 계산 후 
-		mCharacterMovement->Update(deltaTime, mInputMove);
+		mCharacterMovement->Update(deltaTime, mInputMove, mbIsDynamic);
 		mCharacterMovement->CopyDirectionToPxVec3(dispVector);
 
 		// physx CCT 이동
@@ -77,11 +78,12 @@ namespace fq::physics
 
 		// 입력받은 값 초기화
 		mInputMove = {};
+		mbIsDynamic = false;
 
 		return true;
 	}
 
-	void CharacterController::AddMovementInput(const DirectX::SimpleMath::Vector3& input)
+	void CharacterController::AddMovementInput(const DirectX::SimpleMath::Vector3& input, bool isDynamic)
 	{
 		if (std::abs(input.x) > 0)
 		{
@@ -95,6 +97,8 @@ namespace fq::physics
 		{
 			mInputMove.z = input.z;
 		}
+
+		mbIsDynamic = isDynamic;
 	}
 
 	bool CharacterController::ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager)

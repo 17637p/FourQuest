@@ -23,7 +23,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="deltaTime"> 경과 시간 </param>
 		/// <param name="input"> 입력 받은 키값 </param>
-		void Update(float deltaTime, const DirectX::SimpleMath::Vector3& input);
+		void Update(float deltaTime, const DirectX::SimpleMath::Vector3& input, bool isDynamic);
 
 		/// <summary>
 		/// 점프하는 함수

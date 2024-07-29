@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "Player.h"
 
+
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -23,6 +24,7 @@ fq::client::Player::Player()
 	, mAttackPositionOffset{}
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
+	, mAttackSpeed(1.f)
 {}
 
 fq::client::Player::~Player()
@@ -192,5 +194,10 @@ void fq::client::Player::processFeverTime(float dt)
 		// TODO : 갑옷 해제에 대한 버프를 진행
 		mAttackPower = mAttackPower * 0.5f;
 	}
+}
+
+float fq::client::Player::GetPlayerID() const
+{
+	return mController->GetControllerID();
 }
 

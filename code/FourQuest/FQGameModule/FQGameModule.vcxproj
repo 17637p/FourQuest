@@ -162,6 +162,8 @@
     <ClInclude Include="ArticulationLoader.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="Decal.h" />
+    <ClInclude Include="GameModuleComponent.h" />
+    <ClInclude Include="GameModuleManagerh.h" />
     <ClInclude Include="ICollider.h" />
     <ClInclude Include="ImageUI.h" />
     <ClInclude Include="InstantiatePrefab.h" />

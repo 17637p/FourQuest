@@ -4,6 +4,7 @@
 
 #include "../FQClient/Client.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
 

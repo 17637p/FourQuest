@@ -131,9 +131,7 @@ void fq::client::MonsterSpawner::Destroy()
 		auto transform = monster->GetComponent<game_module::Transform>();
 
 		auto matrix = transform->GetWorldMatrix();
-
 		transform->SetParent(nullptr);
-
 		transform->SetWorldMatrix(matrix);
 	}
 

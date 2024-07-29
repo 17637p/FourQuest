@@ -205,8 +205,8 @@ namespace fq::event
 	{
 		unsigned int colliderID;
 		DirectX::SimpleMath::Vector3 input;
+		bool isDynamic;
 	};
-
 
 	/// <summary>
 	/// RayCast 이벤트를 보내면 

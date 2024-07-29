@@ -8,6 +8,7 @@ fq::game_module::UVAnimator::UVAnimator()
 	, mIUVAnimationInstance{ nullptr }
 	, mbIsUpdate(true)
 	, mbIsRecursive(true)
+	, mPlaySpeed(1.f)
 {
 }
 

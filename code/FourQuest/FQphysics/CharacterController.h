@@ -44,7 +44,7 @@ namespace fq::physics
 		/// 무브 키를 입력 받으면 mInputMove에 저장하는 함수
 		/// </summary>
 		/// <param name="input"> 이동하거나 점프를 하기 위해 입력 받는 키 값 (x,y,z) </param>
-		void AddMovementInput(const DirectX::SimpleMath::Vector3& input);
+		void AddMovementInput(const DirectX::SimpleMath::Vector3& input, bool isDynamic);
 
 		bool ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
@@ -61,6 +61,7 @@ namespace fq::physics
 		unsigned int mLayerNumber;
 
 		DirectX::SimpleMath::Vector3 mInputMove;
+		bool mbIsDynamic;
 
 		std::shared_ptr<CharacterMovement> mCharacterMovement;
 

@@ -63,9 +63,6 @@
     <Filter Include="src\02.Monster\Plant">
       <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\03.Attack">
-      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\04.Camera">
       <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
     </Filter>
@@ -80,6 +77,9 @@
     </Filter>
     <Filter Include="include\02.Monster\Spawner">
       <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\03.Attack">
+      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -254,7 +254,7 @@
       <Filter>src\00.Define</Filter>
     </ClCompile>
     <ClCompile Include="Attack.cpp">
-      <Filter>src\03.Attack</Filter>
+      <Filter>src\02.Monster\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInputState.cpp">
       <Filter>src\01.Player\State</Filter>
@@ -371,10 +371,10 @@
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="LinearAttack.cpp">
-      <Filter>src\03.Attack</Filter>
+      <Filter>src\02.Monster\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="KnockBack.cpp">
-      <Filter>src\03.Attack</Filter>
+      <Filter>src\02.Monster\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="ShieldAttackState.cpp">
       <Filter>src\01.Player\State</Filter>

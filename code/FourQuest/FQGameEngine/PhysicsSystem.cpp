@@ -823,7 +823,12 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 
 void fq::game_engine::PhysicsSystem::AddInputMove(const fq::event::AddInputMove& event)
 {
-	mPhysicsEngine->AddInputMove(event.colliderID, event.input);
+	physics::CharacterControllerInputInfo info;
+	info.id = event.colliderID;
+	info.input = event.input;
+	info.isDynamic = event.isDynamic;
+
+	mPhysicsEngine->AddInputMove(info);
 }
 
 void fq::game_engine::PhysicsSystem::calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset)

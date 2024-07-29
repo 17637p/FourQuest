@@ -3,6 +3,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "KnightArmour.h"
+#include "Player.h"
 
 fq::client::SwordAttackState::SwordAttackState()
 	:mAttackTiming(1.f)
@@ -20,15 +21,13 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 	// 컨트롤러 입력방향을 바라봅니다
 	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
 
+	// 공격 전진 
 	auto transform = animator.GetComponent<game_module::Transform>();
 	auto rigid = animator.GetComponent<game_module::RigidBody>();
-
 	auto foward = transform->GetWorldMatrix().Forward();
-
 	foward.Normalize();
 	foward.x *= dashPower;
 	foward.z *= dashPower;
-
 	rigid->SetLinearVelocity(foward);
 
 	mElapsedTime = 0.f;
@@ -36,6 +35,12 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 	// 검 공격 이펙트 생성
 	auto knightArmour = animator.GetComponent<KnightArmour>();
 	mEffect = knightArmour->EmitSwordEffect();
+	auto uvAnimator = mEffect->GetComponent<game_module::UVAnimator>();
+
+	// UV 재생속도 
+	float statePlayebackSpeed = state.GetPlayBackSpeed();
+	float defaultSpeed = animator.GetPlaySpeed();
+  	uvAnimator->SetPlaySpeed(statePlayebackSpeed * defaultSpeed);
 }
 
 void fq::client::SwordAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)

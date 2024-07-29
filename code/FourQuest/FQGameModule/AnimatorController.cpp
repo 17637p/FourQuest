@@ -277,7 +277,7 @@ bool fq::game_module::AnimatorController::checkConditions(const AnimationTransit
 	return true;
 }
 
-void fq::game_module::AnimatorController::UpdateAnimation(float dt)
+void fq::game_module::AnimatorController::UpdateAnimation(float dt , float defaultSpeed)
 {
 	if (IsInTransition())
 	{
@@ -286,17 +286,18 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt)
 		float currentPlayBackSpeed = mCurrentState->second.GetPlayBackSpeed();
 		bool currentLoof = mCurrentState->second.IsLoof();
 
-		mTimePos = std::min(mTimePos + dt * currentPlayBackSpeed, currentDuration);
+		mTimePos = std::min(mTimePos + dt * currentPlayBackSpeed * defaultSpeed, currentDuration);
 
 		// next
 		float nextDuration = mNextState->second.GetDuration();
 		float nextPlayBackSpeed = mNextState->second.GetPlayBackSpeed();
 		bool nextLoof = mNextState->second.IsLoof();
 
-		mBlendTimePos = std::min(mBlendTimePos + dt * nextPlayBackSpeed, nextDuration);
+		mBlendTimePos = std::min(mBlendTimePos + dt * nextPlayBackSpeed * defaultSpeed, nextDuration);
 
 		float transitionDuration = mCurrentTransition->second.GetTransitionDuration();
-		mBlendElapsedTime = std::min(mBlendElapsedTime + dt, transitionDuration);
+		
+		mBlendElapsedTime = std::min(mBlendElapsedTime + dt * defaultSpeed, transitionDuration);
 		mBlendWeight = mBlendElapsedTime / transitionDuration;
 
 		if (mBlendElapsedTime == transitionDuration)
@@ -310,9 +311,9 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt)
 		bool isLoof = state.IsLoof();
 
 		if (isLoof)
-			mTimePos = std::fmod(mTimePos + dt * playbackSpeed, duration);
+			mTimePos = std::fmod(mTimePos + dt * playbackSpeed * defaultSpeed, duration);
 		else
-			mTimePos = std::min(mTimePos + dt * playbackSpeed, duration);
+			mTimePos = std::min(mTimePos + dt * playbackSpeed * defaultSpeed, duration);
 	}
 }
 

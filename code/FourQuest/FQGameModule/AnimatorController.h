@@ -57,7 +57,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 애니메이션의 프레임을 업데이트합니다
 		/// </summary>
-		void UpdateAnimation(float dt);
+		void UpdateAnimation(float dt, float defaultSpeed);
 
 		/// <summary>
 		/// 파라미터 값을 설정합니다 
