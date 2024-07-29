@@ -31,6 +31,7 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	auto gameObject = animator.GetGameObject();
 
+	gameObject->RemoveComponent<game_module::RigidBody>();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::NavigationAgent>();
 }

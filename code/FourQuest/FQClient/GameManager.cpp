@@ -63,6 +63,5 @@ void fq::client::GameManager::OnStart()
 void fq::client::GameManager::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mRegisterPlayerHandler);
-
 }
 

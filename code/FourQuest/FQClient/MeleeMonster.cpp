@@ -140,7 +140,9 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonster::EmitAttac
 void fq::client::MeleeMonster::Move(DirectX::SimpleMath::Vector3 destination)
 {
 	fq::game_module::NavigationAgent* agent = GetComponent<fq::game_module::NavigationAgent>();
-	agent->MoveTo(destination);
+
+	if (agent)
+		agent->MoveTo(destination);
 }
 
 void fq::client::MeleeMonster::Patrol()

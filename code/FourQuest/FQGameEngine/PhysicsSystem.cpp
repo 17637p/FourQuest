@@ -635,6 +635,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				Quaternion rotation;
 				matrix.Decompose(scale, rotation, pos);
 				rotation = game_module::CapsuleCollider::YtoXRoation * rotation;
+				rotation.Normalize();
 
 				matrix = Matrix::CreateScale(scale)
 					* Matrix::CreateFromQuaternion(rotation)
@@ -752,6 +753,8 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			{
 				Quaternion rotation = game_module::CapsuleCollider::XtoYRoation
 					* transform->GetWorldRotation();
+				rotation.Normalize();
+
 				Vector3 pos = transform->GetWorldPosition();
 				Vector3 scale = transform->GetWorldScale();
 

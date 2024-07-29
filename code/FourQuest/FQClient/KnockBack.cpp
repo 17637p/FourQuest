@@ -29,6 +29,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::KnockBack::Clone(std::sh
 		*cloneComponent = *this;
 	}
 
+	cloneComponent->mTransform = nullptr;
+
 	return cloneComponent;
 }
 
