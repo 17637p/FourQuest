@@ -68,6 +68,7 @@
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
+    <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
     <ClInclude Include="PlantMonsterAttckState.h" />
     <ClInclude Include="PlantMonsterDeadState.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="MonsterIdle.cpp" />
     <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="LinearAttack.cpp" />
+    <ClCompile Include="PauseUI.cpp" />
     <ClCompile Include="PlantMonster.cpp" />
     <ClCompile Include="PlantMonsterAttckState.cpp" />
     <ClCompile Include="PlantMonsterDeadState.cpp" />

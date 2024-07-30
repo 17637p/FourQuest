@@ -84,15 +84,21 @@ void fq::game_module::ImageUI::SetUIPosition(size_t index, float StartX, float S
 		return;
 	}
 
-	mImageObjects[index]->SetStartX(StartX);
-	mImageObjects[index]->SetStartY(StartY);
+	if (mImageObjects[index] != nullptr)
+	{
+		mImageObjects[index]->SetStartX(StartX);
+		mImageObjects[index]->SetStartY(StartY);
+	}
 }
 
 void fq::game_module::ImageUI::OnUpdate(float dt)
 {
-	Transform* myTransform = GetComponent<Transform>();
-	SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
-	SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+	if (mImageObjects.size() != 0)
+	{
+		Transform* myTransform = GetComponent<Transform>();
+		SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+		SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+	}
 }
 
 void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)
@@ -102,7 +108,10 @@ void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)
 
 void fq::game_module::ImageUI::SetUIScale(size_t index, float scaleX, float scaleY)
 {
-	mImageObjects[index]->SetScaleX(scaleX);
-	mImageObjects[index]->SetScaleY(scaleY);
+	if (mImageObjects[index] != nullptr)
+	{
+		mImageObjects[index]->SetScaleX(scaleX);
+		mImageObjects[index]->SetScaleY(scaleY);
+	}
 }
 
