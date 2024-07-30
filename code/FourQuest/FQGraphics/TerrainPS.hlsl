@@ -49,7 +49,7 @@ cbuffer cbLight : register(b1)
 
 cbuffer cbDirectionalShadow : register(b2)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 }
@@ -269,7 +269,9 @@ PixelOut main(DomainOut pin)
                 }
  
                 uint shadowIndex = i * CascadeCount + index;
-                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[shadowIndex]);
+                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[shadowIndex]);
+                shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+                shadowPos.y = shadowPos.y * -0.5f + 0.5f;
                 shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, shadowIndex, ShadowMapWidth);
                 
                 currentDirectLighting *= shadowRatio;

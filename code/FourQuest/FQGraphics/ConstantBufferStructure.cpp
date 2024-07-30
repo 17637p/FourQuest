@@ -40,6 +40,8 @@ namespace fq::graphics
 		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive();
 		CBMaterialData.AlphaCutoff = info.AlphaCutoff;
 
+		CBMaterialData.EmissiveIntensity = info.EmissiveIntensity;
+
 		cbuffer->Update(device, CBMaterialData);
 	}
 	void ConstantBufferHelper::UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
