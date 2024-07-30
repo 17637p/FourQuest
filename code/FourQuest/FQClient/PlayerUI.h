@@ -6,6 +6,7 @@
 namespace fq::game_module
 {
 	class ImageUI;
+	class ScreenManager;
 }
 
 namespace fq::client

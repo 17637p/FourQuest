@@ -1,6 +1,9 @@
 #include "PlayerUIManager.h"
 #include "PlayerUI.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/GameModule.h"
+
 std::shared_ptr<fq::game_module::Component> fq::client::PlayerUIManager::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
 	auto clonePlayerUIManager = std::dynamic_pointer_cast<PlayerUIManager>(clone);

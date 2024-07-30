@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Transform.h"
 #include "Player.h"
 
 fq::client::PlayerUI::PlayerUI()
