@@ -35,20 +35,13 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix FinalTransforms[MAX_BOND_COUNT];
 	};
 
-	struct DirectionalShadowTransform
+	struct DirectionalShadowInfo
 	{
 		enum { CASCADE_COUNT = 3 };
 		enum { MAX_SHADOW_COUNT = 3 };
 
 		DirectX::SimpleMath::Matrix ShadowViewProj[CASCADE_COUNT * MAX_SHADOW_COUNT];
-		int ShadowCount;
-		int unused[3];
-	};
-
-	struct DirectionalShadowInfo
-	{
-		DirectX::SimpleMath::Matrix ShadowViewProj[DirectionalShadowTransform::CASCADE_COUNT * DirectionalShadowTransform::MAX_SHADOW_COUNT];
-		DirectX::SimpleMath::Vector4 CascadeEnds[DirectionalShadowTransform::MAX_SHADOW_COUNT];
+		DirectX::SimpleMath::Vector4 CascadeEnds[MAX_SHADOW_COUNT];
 		int ShadowCount;
 		float unused[3];
 	};
@@ -145,7 +138,6 @@ namespace fq::graphics
 		float unused[2];
 	};
 
-	// 타일링이랑 알파 컷오프 처리 추가해두기
 	struct CBMaterial
 	{
 		DirectX::SimpleMath::Color BaseColor;
@@ -161,6 +153,9 @@ namespace fq::graphics
 		int bUseNormalMap;
 		int bUseEmissiveMap;
 		float AlphaCutoff;
+
+		float EmissiveIntensity;
+		float unused[3];
 	};
 
 	struct CBDecalObject

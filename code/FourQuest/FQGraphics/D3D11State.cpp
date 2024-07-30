@@ -222,6 +222,7 @@ fq::graphics::D3D11RasterizerState::D3D11RasterizerState(const std::shared_ptr<D
 		rasterizerDesc.DepthBias = 100000; // 고정된 편향치
 		rasterizerDesc.SlopeScaledDepthBias = 1.f; // 기울기 편형치 비례계수
 		rasterizerDesc.DepthBiasClamp = 0.0f; // 허용되는 최대 깊이 편향치
+		rasterizerDesc.DepthClipEnable = false;
 		break;
 	}
 	case ED3D11RasterizerState::CullFront:

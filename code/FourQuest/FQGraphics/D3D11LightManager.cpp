@@ -4,6 +4,7 @@
 #include "D3D11Shader.h"
 #include "D3D11State.h"
 #include "FQCommon.h"
+#include "D3D11CameraManager.h"
 
 fq::graphics::D3D11LightManager::D3D11LightManager()
 	:mDirectionalLights{},
@@ -22,6 +23,7 @@ void fq::graphics::D3D11LightManager::Initialize(const std::shared_ptr<D3D11Devi
 	mSpecularBRDFCS = std::make_shared<D3D11ComputeShader>(d3d11Device, L"SpecularBRDFCS.cso");
 	mSpecularMapFilterSettingsCB = std::make_shared<D3D11ConstantBuffer<SpecularMapFilterSettingsCB>>(d3d11Device, ED3D11ConstantBuffer::Transform);
 	mLinearWrapSampler = std::make_shared<D3D11SamplerState>(d3d11Device, ED3D11SamplerState::LinearWrap);
+	mDirectioanlShadowInfoCB = std::make_shared<D3D11ConstantBuffer<DirectionalShadowInfo>>(d3d11Device, ED3D11ConstantBuffer::Transform);
 }
 
 void fq::graphics::D3D11LightManager::AddLight(const unsigned int id, const LightInfo& lightInfo)
@@ -142,7 +144,7 @@ void fq::graphics::D3D11LightManager::UseShadow(const unsigned int id, bool bUse
 {
 	if (bUseShadow)
 	{
-		if (mDirectionalShadows.size() < DirectionalShadowTransform::MAX_SHADOW_COUNT)
+		if (mDirectionalShadows.size() < DirectionalShadowInfo::MAX_SHADOW_COUNT)
 		{
 			auto find = mDirectionalLights.find(id);
 
@@ -211,6 +213,44 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	lightData.isUseIBL = mIBLTexture.DiffuseIrradiance != nullptr && mIBLTexture.SpecularBRDF != nullptr && mIBLTexture.SpecularIBL != nullptr;
 
 	mLightConstantBuffer->Update(d3d11Device, lightData);
+}
+
+void fq::graphics::D3D11LightManager::UpdateShadowConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11CameraManager>& cameraManager)
+{
+	using namespace DirectX::SimpleMath;
+
+	const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = GetDirectionalShadows();
+	size_t currentDirectionaShadowCount = directioanlShadows.size();
+	DirectionalShadowInfo directionalShadowData;
+	directionalShadowData.ShadowCount = currentDirectionaShadowCount;
+
+	if (currentDirectionaShadowCount > 0)
+	{
+		for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
+		{
+			std::vector<float> cascadeEnds = calculateCascadeEnds({ 0.33, 0.5 },
+				cameraManager->GetNearPlane(ECameraType::Player),
+				cameraManager->GetFarPlane(ECameraType::Player));
+
+			std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = calculateCascadeShadowTransform(cascadeEnds,
+				cameraManager->GetViewMatrix(ECameraType::Player),
+				cameraManager->GetProjectionMatrix(ECameraType::Player),
+				directioanlShadows[i]->GetData().direction);
+			assert(shadowTransforms.size() == 3);
+
+			auto cameraProj = cameraManager->GetProjectionMatrix(ECameraType::Player);
+			size_t shaodwIndex = i * DirectionalShadowInfo::MAX_SHADOW_COUNT;
+
+			directionalShadowData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0]).Transpose();
+			directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
+			directionalShadowData.ShadowViewProj[shaodwIndex + 1] = (shadowTransforms[1]).Transpose();
+			directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
+			directionalShadowData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2]).Transpose();
+			directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
+		}
+	}
+
+	mDirectioanlShadowInfoCB->Update(d3d11Device, directionalShadowData);
 }
 
 fq::graphics::IBLTexture fq::graphics::D3D11LightManager::CreateIBLTexture(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11CubeTexture> cubemapTexture, EEnvironmentFormat envFormat, EEnvironmentResoulution specularResolution, EEnvironmentResoulution diffuseResolution, float envScale)
@@ -350,6 +390,97 @@ fq::graphics::IBLTexture fq::graphics::D3D11LightManager::CreateIBLTexture(const
 	}
 
 	result.SpecularBRDF = mSpecularBRDF;
+
+	return result;
+}
+
+std::vector<float> fq::graphics::D3D11LightManager::calculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ)
+{
+	std::vector<float> cascadeEnds;
+	cascadeEnds.reserve(ratios.size() + 2);
+
+	cascadeEnds.push_back(nearZ);
+
+	float distanceZ = farZ - nearZ;
+
+	for (float ratio : ratios)
+	{
+		cascadeEnds.push_back(ratio * distanceZ);
+	}
+
+	cascadeEnds.push_back(farZ);
+
+	return cascadeEnds;
+}
+
+std::vector<DirectX::SimpleMath::Matrix> fq::graphics::D3D11LightManager::calculateCascadeShadowTransform(std::vector<float> cascadeEnds, DirectX::SimpleMath::Matrix cameraView, DirectX::SimpleMath::Matrix cameraProj, DirectX::SimpleMath::Vector3 lightDirection)
+{
+	using namespace DirectX::SimpleMath;
+
+	const size_t CASCADE_COUNT = 3u;
+	assert(cascadeEnds.size() >= 4);
+
+	DirectX::BoundingFrustum frustum(cameraProj);
+
+	float frustumDistnace = (frustum.Far - frustum.Near);
+	Matrix viewInverse = cameraView.Invert();
+	
+	DirectX::SimpleMath::Vector3 forwardVec;
+	cameraView.Forward(forwardVec);
+	DirectX::SimpleMath::Vector3 adjustTranslate = forwardVec * frustumDistnace;
+
+	std::array<std::array<Vector3, 8>, CASCADE_COUNT> sliceFrustums;
+
+	for (size_t i = 0; i < sliceFrustums.size(); ++i)
+	{
+		std::array<Vector3, 8>& sliceFrustum = sliceFrustums[i];
+		float curEnd = cascadeEnds[i];
+		float nextEnd = cascadeEnds[i + 1];
+
+		sliceFrustum[0] = Vector3::Transform({ frustum.RightSlope * curEnd, frustum.TopSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+		sliceFrustum[1] = Vector3::Transform({ frustum.RightSlope * curEnd, frustum.BottomSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+		sliceFrustum[2] = Vector3::Transform({ frustum.LeftSlope * curEnd, frustum.TopSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+		sliceFrustum[3] = Vector3::Transform({ frustum.LeftSlope * curEnd, frustum.BottomSlope * curEnd, curEnd }, viewInverse) + adjustTranslate;
+
+		sliceFrustum[4] = Vector3::Transform({ frustum.RightSlope * nextEnd, frustum.TopSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+		sliceFrustum[5] = Vector3::Transform({ frustum.RightSlope * nextEnd, frustum.BottomSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+		sliceFrustum[6] = Vector3::Transform({ frustum.LeftSlope * nextEnd, frustum.TopSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+		sliceFrustum[7] = Vector3::Transform({ frustum.LeftSlope * nextEnd, frustum.BottomSlope * nextEnd, nextEnd }, viewInverse) + adjustTranslate;
+	}
+
+	std::vector<DirectX::SimpleMath::Matrix> result;
+	result.reserve(CASCADE_COUNT);
+
+	for (size_t i = 0; i < CASCADE_COUNT; ++i)
+	{
+		const std::array<Vector3, 8>& sliceFrustum = sliceFrustums[i];
+
+		DirectX::SimpleMath::Vector3 centerPos = { 0.f, 0.f, 0.f };
+		for (const DirectX::SimpleMath::Vector3& pos : sliceFrustum)
+		{
+			centerPos += pos;
+		}
+		centerPos /= 8.f;
+
+		float radius = 0.f;
+		for (const DirectX::SimpleMath::Vector3& pos : sliceFrustum)
+		{
+			float distance = DirectX::SimpleMath::Vector3::Distance(centerPos, pos);
+			radius = std::max<float>(radius, distance);
+		}
+
+		radius = std::ceil(radius * 16.f) / 16.f;
+
+		DirectX::SimpleMath::Vector3 maxExtents = { radius, radius, radius };
+		DirectX::SimpleMath::Vector3 minExtents = -maxExtents;
+		DirectX::SimpleMath::Vector3 shadowPos = centerPos + lightDirection * minExtents.z;
+
+		DirectX::SimpleMath::Vector3 cascadeExtents = maxExtents - minExtents;
+		DirectX::SimpleMath::Matrix lightView = DirectX::XMMatrixLookAtLH(shadowPos, centerPos, { 0, 1, 0 });
+		DirectX::SimpleMath::Matrix lightProj = DirectX::XMMatrixOrthographicOffCenterLH(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.f, cascadeExtents.z);
+
+		result.push_back(lightView * lightProj);
+	}
 
 	return result;
 }

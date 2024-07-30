@@ -42,6 +42,8 @@ cbuffer cbMaterial : register(b0)
     bool cUseNormalMap;
     bool cUseEmissiveMap;
     float cAlphaCutoff;
+    
+    float cEmissiveIntensity;
 };
 
 cbuffer cbSceneTransform : register(b1)
@@ -106,6 +108,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
     pout.PositionW.w = pin.ClipSpacePosZ;
 
     pout.Emissive.rgb = cEmissiveColor.rgb;
+    pout.Emissive.a = cEmissiveIntensity / 255;
 
     if (cUseEmissiveMap)
     {
@@ -125,7 +128,7 @@ struct VertexOut
 
 cbuffer cbDirectionalShadow : register(b0)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 };
@@ -164,7 +167,8 @@ SamplerComparisonState gShadowSampler : register(s3);
 float4 main(VertexOut pin) : SV_TARGET
 {
     float3 albedo = gAlbedoMap.Sample(gPointClampSampler, pin.uv).xyz;
-    float3 emissive = gEmissiveMap.Sample(gPointClampSampler, pin.uv).xyz;
+    float4 sampledEmissive = gEmissiveMap.Sample(gPointClampSampler, pin.uv);
+    float3 emissive = sampledEmissive.rgb * sampledEmissive.a * 255;
     float3 normal = gNormalMap.Sample(gPointClampSampler, pin.uv).xyz;
 
     if (normal.x > 100.f)
@@ -207,9 +211,23 @@ float4 main(VertexOut pin) : SV_TARGET
                     break;
                 }
             }
- 
+            //if (index == 0)
+            //{
+            //    emissive = float3(0.1f, 0.f, 0.f);
+            //}
+            //else if (index == 1)
+            //{
+            //    emissive = float3(0, 0.1f, 0);
+            //}
+            //else if (index == 2)
+            //{
+            //    emissive = float3(0, 0, 0.1f);
+            //}
+            index = 2;
             uint shadowIndex = i * CascadeCount + index;
-            float4 shadowPos = mul(float4(positionW, 1.f), cLightViewProjTex[shadowIndex]);
+            float4 shadowPos = mul(float4(positionW, 1.f), cLightViewProj[shadowIndex]);
+            shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+            shadowPos.y = shadowPos.y * -0.5f + 0.5f;
             shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, shadowIndex, ShadowMapWidth);
             
             currentDirectLighting *= shadowRatio;

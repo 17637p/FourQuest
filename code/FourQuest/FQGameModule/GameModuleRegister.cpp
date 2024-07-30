@@ -157,7 +157,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
 		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
 		.prop(fq::reflect::prop::Name, "IsAppliedDecal")
-	.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
+		.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
 		.prop(fq::reflect::prop::Comment, u8"조명 적용 여부")
 		.prop(fq::reflect::prop::Name, "IsAppliedLight");
 
@@ -726,7 +726,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
 
-	entt::meta<Animator>()  
+	entt::meta<Animator>()
 		.type("Animator"_hs)
 		.prop(fq::reflect::prop::Name, "Animator")
 		.prop(fq::reflect::prop::Label, "Miscellaneous")
@@ -1324,7 +1324,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::MaterialInfo::RasterizeType>("RasterizeType"_hs)
 		.prop(fq::reflect::prop::Name, "RasterizeType")
 		.data<&fq::graphics::MaterialInfo::SampleType>("SampleType"_hs)
-		.prop(fq::reflect::prop::Name, "SampleType");
+		.prop(fq::reflect::prop::Name, "SampleType")
+		.data<&fq::graphics::MaterialInfo::EmissiveIntensity>("EmissiveIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveIntensity");
 
 	entt::meta<fq::graphics::ParticleMaterialInfo::ERenderMode>()
 		.prop(fq::reflect::prop::Name, "ParticleMaterialInfoERenderMode")

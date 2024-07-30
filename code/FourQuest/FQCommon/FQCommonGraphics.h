@@ -486,6 +486,8 @@ namespace fq::graphics
 
 		ESampleMode SampleType = ESampleMode::Clamp;
 		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
+
+		float EmissiveIntensity = 1.f;
 	};
 
 	struct ParticleMaterialInfo
