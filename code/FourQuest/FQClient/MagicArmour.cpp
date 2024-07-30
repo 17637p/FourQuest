@@ -25,6 +25,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mRazerDistance(30.f)
 	, mRazerHiTick(0.25f)
 	, mRazerHitElapsedTime(0.f)
+	, mMagicBallPenetrationCount(1)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -65,7 +66,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	float attackPower = mPlayer->GetAttackPower();
 	attackInfo.damage = dc::GetMagicBallDamage(attackPower);
 	attackInfo.bIsInfinite = false;
-	attackInfo.remainingAttackCount = 1;
+	attackInfo.remainingAttackCount = mMagicBallPenetrationCount;
 	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정

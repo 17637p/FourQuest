@@ -64,6 +64,7 @@ namespace fq::client
 		float mProjectileSpeed;
 		float mAttackRange;
 		float mAttackCoolTime;
+		float mRotationSpeed; 
 		fq::game_module::PrefabResource mAttackPrefab;
 
 		friend void RegisterMetaData();

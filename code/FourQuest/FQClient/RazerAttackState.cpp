@@ -28,8 +28,6 @@ void fq::client::RazerAttackState::OnStateUpdate(game_module::Animator& animator
 	auto magic = animator.GetComponent<MagicArmour>();
 	magic->SetLookAtRStickInput();
 	magic->EmitLazer();
-
-
 }
 
 void fq::client::RazerAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

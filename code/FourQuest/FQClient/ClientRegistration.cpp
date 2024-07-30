@@ -70,7 +70,7 @@ void fq::client::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                             GameManager								//
 	//////////////////////////////////////////////////////////////////////////
-	
+
 	entt::meta<GameManager>()
 		.type("GameManager"_hs)
 		.prop(reflect::prop::Name, "GameManager")
@@ -144,6 +144,9 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&MagicArmour::mMagicBallSpeed>("MagicBallSpeed"_hs)
 		.prop(reflect::prop::Name, "MagicBallSpeed")
+		.data<&MagicArmour::mMagicBallPenetrationCount>("mMagicBallPenetrationCount"_hs)
+		.prop(reflect::prop::Name, "mMagicBallPenetrationCount")
+		.prop(reflect::prop::Comment, u8"매직볼트 관통횟수")
 		.data<&MagicArmour::mAOEMoveRange>("AOEMoveRange"_hs)
 		.prop(reflect::prop::Name, "AOEMoveRange")
 		.data<&MagicArmour::mRazerDistance>("RazerDistance"_hs)
@@ -356,7 +359,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DetectRange")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.base<fq::game_module::Component>();
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             근접 몬스터 상태  							//
 	//////////////////////////////////////////////////////////////////////////
@@ -406,7 +409,7 @@ void fq::client::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
 	//////////////////////////////////////////////////////////////////////////
-	
+
 	entt::meta<PlantMonster>()
 		.type("PlantMonster"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonster")
@@ -423,8 +426,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackPrefab")
 		.data<&PlantMonster::mAttackCoolTime>("AttackCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "AttackCoolTime")
+		.data<&PlantMonster::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회전 속도 0 < x <= 1.f")
 		.base<fq::game_module::Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                         원거리 몬스터 상태								//
@@ -435,6 +440,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PlantMonsterAttckState")
 		.data<&PlantMonsterAttckState::mAttackTiming>("AttackTiming"_hs)
 		.prop(fq::reflect::prop::Name, "AttackTiming")
+		.data<&PlantMonsterAttckState::mLookAtTime>("LookAtTime"_hs)
+		.prop(fq::reflect::prop::Name, "LookAtTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterStareState>()
