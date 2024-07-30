@@ -13,18 +13,21 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+#ifdef STATIC
+    float2 UV1 : TEXCOORD6;
+#endif
 };
 
 struct PixelOut
 {
     float4 Albedo : SV_Target0;
-    float Metalness : SV_Target1;
-    float Roughness : SV_Target2;
-    float4 Normal : SV_Target3;
-    float4 Emissive : SV_Target4;
-    float4 PositionW : SV_Target5;
-    float4 SourceNormal : SV_Target6;
-    float4 SourceTangent : SV_Target7;
+    float2 MetalnessRoughness : SV_Target1;
+    float4 Normal : SV_Target2;
+    float4 Emissive : SV_Target3;
+    float4 PositionW : SV_Target4;
+    float4 SourceNormal : SV_Target5;
+    float4 SourceTangent : SV_Target6;
+    float4 Light : SV_Target7;
 };
 
 cbuffer cbMaterial : register(b0)
@@ -46,19 +49,32 @@ cbuffer cbMaterial : register(b0)
     float cEmissiveIntensity;
 };
 
-cbuffer cbSceneTransform : register(b1)
+#ifdef STATIC
+cbuffer cbLightmapInformation : register(b1)
 {
-    float4x4 cView;
-    float4x4 cViewProj;
+    float4 cUVOffsetScale;
+    uint cUVIndex;
+    bool bUseDirectMap;
 };
+#endif
 
 Texture2D gAlbedoMap : register(t0);
 Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
+Texture2DArray gLightMapArray : register(t5);
+Texture2DArray gDirectionArray : register(t6);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
+
+float3 DecodeDirectionalLightmap(float4 directionalLightmap)
+{
+    float3 direction = directionalLightmap.rgb * 2.0 - 1.0;
+    float intensity = directionalLightmap.a;
+
+    return direction * intensity;
+}
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
@@ -75,20 +91,20 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
     if (cUseMetalnessMap)
     {
-        pout.Metalness = gMetalnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
+        pout.MetalnessRoughness.x = gMetalnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     else
     {
-        pout.Metalness = cMetalness;
+        pout.MetalnessRoughness.x = cMetalness;
     }
 
     if (cUseRoughnessMap)
     {
-        pout.Roughness = gRoughnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
+        pout.MetalnessRoughness.y = gRoughnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     else
     {
-        pout.Roughness = cRoughness;
+        pout.MetalnessRoughness.y = cRoughness;
     }
 
     if (cUseNormalMap)
@@ -115,6 +131,17 @@ PixelOut main(VertexOut pin) : SV_TARGET
         pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
 
+#ifdef STATIC
+    pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
+
+   //if (bUseDirectMap)
+   //{
+   //    float4 direction = gDirectionArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
+   //    float3 lightDirection = DecodeDirectionalLightmap(direction);
+   //    float lambert = saturate(dot(pout.Normal.xyz, normalize(lightDirection)));
+   //    pout.Light.rgb = lightDirection.xyz;// lambert / max(0.00001, direction.w);
+   //}
+#endif 
     return pout;
 }
 
@@ -149,16 +176,16 @@ cbuffer cbLight : register(b1)
 };
 
 Texture2D gAlbedoMap : register(t0);
-Texture2D gMetalnessMap : register(t1);
-Texture2D gRoughnessMap : register(t2);
-Texture2D gNormalMap : register(t3);
-Texture2D gEmissiveMap : register(t4);
-Texture2D gPositionWorldMap : register(t5);
+Texture2D gMetalnessRoughnessMap : register(t1);
+Texture2D gNormalMap : register(t2);
+Texture2D gEmissiveMap : register(t3);
+Texture2D gPositionWorldMap : register(t4);
+Texture2D gPreCalculatedLightMap : register(t5);
 TextureCube gDiffuseCubMap : register(t6);
 TextureCube gSpecularCubeMap : register(t7);
 Texture2D gSpecularBRDF_LUT : register(t8);
-Texture2DArray gDirectionalShadowMap : register(t9);
 
+Texture2DArray gDirectionalShadowMap : register(t9);
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gSP_BRDF_LUT_Sampler : register(s1); // D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP
 SamplerState gPointClampSampler : register(s2);
@@ -177,20 +204,19 @@ float4 main(VertexOut pin) : SV_TARGET
     }
 
     normal = normalize(normal);
-    float metalness = gMetalnessMap.Sample(gPointClampSampler, pin.uv).x;
-    float roughness = gRoughnessMap.Sample(gPointClampSampler, pin.uv).x;
+    float2 metalnessRoughness = gMetalnessRoughnessMap.Sample(gPointClampSampler, pin.uv).xy;
     float4 position = gPositionWorldMap.Sample(gPointClampSampler, pin.uv);
     float3 positionW = position.xyz;
     float clipSpacePosZ = position.w;
     float3 toEye = normalize(eyePosition - positionW);
     float ndotv = max(0.f, dot(normal, normalize(toEye)));
-    float3 F0 = lerp(Fdielectric, albedo, metalness);
+    float3 F0 = lerp(Fdielectric, albedo, metalnessRoughness.x);
     
     float3 directLighting = 0.0;
     Material material;
     material.albedo = albedo;
-    material.roughness = roughness;
-    material.metallic = metalness;
+    material.roughness = metalnessRoughness.y;
+    material.metallic = metalnessRoughness.x;
     
     // DirectionalLight Ã³¸®
     for (uint i = 0; i < numOfDirectionalLight; ++i)
@@ -255,19 +281,24 @@ float4 main(VertexOut pin) : SV_TARGET
     {
         float3 irradiance = gDiffuseCubMap.Sample(gSamplerAnisotropic, normal).rgb;
         float3 F = fresnelSchlick(F0, ndotv);
-        float3 kd = lerp(1.0 - F, 0.0, metalness);
+        float3 kd = lerp(1.0 - F, 0.0, metalnessRoughness.x);
         float3 diffuseIBL = kd * albedo * irradiance;
         
         float3 viewReflect = 2.0 * ndotv * normal - toEye;
         uint specularTextureLevels = QueryTextureLevels(gSpecularCubeMap);
-        float3 specularIrradiance = gSpecularCubeMap.SampleLevel(gSamplerAnisotropic, viewReflect, roughness * specularTextureLevels).rgb;
-        float2 specularBRDF = gSpecularBRDF_LUT.Sample(gSP_BRDF_LUT_Sampler, float2(ndotv, roughness)).rg;
+        float3 specularIrradiance = gSpecularCubeMap.SampleLevel(gSamplerAnisotropic, viewReflect, metalnessRoughness.y * specularTextureLevels).rgb;
+        float2 specularBRDF = gSpecularBRDF_LUT.Sample(gSP_BRDF_LUT_Sampler, float2(ndotv, metalnessRoughness.y)).rg;
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
         ambientLighting = diffuseIBL + specularIBL;
     }
-    
-    return float4(directLighting + ambientLighting + emissive, 1.f);
+     
+
+
+    float3 preCaculatedLight = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
+
+
+    return float4(directLighting + ambientLighting + emissive + preCaculatedLight, 1.f);
 }
 
 #endif

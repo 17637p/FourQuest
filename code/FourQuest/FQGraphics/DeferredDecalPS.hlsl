@@ -2,10 +2,8 @@
 #include "DecalCommon.hlsli"
 
 Texture2D gAlbedoMap : register(t0);
-Texture2D gMetalnessMap : register(t1);
-Texture2D gRoughnessMap : register(t2);
-Texture2D gNormalMap : register(t3);
-Texture2D gEmissiveMap : register(t4);
+Texture2D gNormalMap : register(t1);
+Texture2D gEmissiveMap : register(t2);
 
 Texture2D gPositionWTexture : register(t5);
 Texture2D gNormalTexture : register(t6);
@@ -19,10 +17,8 @@ SamplerState gSamplerAnisotropic : register(s2); //	D3D11_FILTER_ANISOTROPIC, D3
 struct PixelOut
 {
     float4 Albedo : SV_Target0;
-    float Metalness : SV_Target1;
-    float Roughness : SV_Target2;
-    float4 Normal : SV_Target3;
-    float4 Emissive : SV_Target4;
+    float4 Normal : SV_Target1;
+    float4 Emissive : SV_Target2;
 };
 
 PixelOut main(VertexOut pin) : SV_Target
@@ -59,24 +55,6 @@ PixelOut main(VertexOut pin) : SV_Target
     }
   
     clip(pout.Albedo.a - gAlphaCutoff);
-    
-    if (gUseMetalnessMap)
-    {
-        pout.Metalness = gMetalnessMap.Sample(gSamplerAnisotropic, uv).x;
-    }
-    else
-    {
-        pout.Metalness = 0;
-    }
-    
-    if (gUseRoughnessMap)
-    {
-        pout.Roughness = gRoughnessMap.Sample(gSamplerAnisotropic, uv).x;
-    }
-    else
-    {
-        pout.Roughness = 0;
-    }
     
     if (gUseNormalMap)
     {

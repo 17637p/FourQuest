@@ -33,11 +33,11 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mRoughnessSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mMetalnessRoughnessSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mPreCalculatedSRV;
 
 		std::unique_ptr<class ShaderProgram> mShaderProgram;
 

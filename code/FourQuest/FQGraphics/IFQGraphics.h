@@ -70,9 +70,12 @@ extern "C" {
 			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) abstract;
 			virtual FQ_GRAPHICS void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) abstract;
 			virtual FQ_GRAPHICS std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) abstract;
+			virtual FQ_GRAPHICS void WriteMaterialInfo(const std::string& path, const MaterialInfo& materialInfo) abstract;
+			virtual FQ_GRAPHICS MaterialInfo ReadMaterialInfo(const std::string& path) abstract;
 
 			// Model Resource Control
 			virtual FQ_GRAPHICS const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") abstract;
+			virtual FQ_GRAPHICS void CreateModelResource(unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath = "") abstract;
 			virtual FQ_GRAPHICS bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "", fq::common::Model* outDataOrNull = nullptr) abstract;
 			virtual FQ_GRAPHICS const fq::common::Model& GetModel(unsigned int key) abstract;
 			virtual FQ_GRAPHICS void DeleteModelResource(unsigned int key) abstract;
@@ -190,6 +193,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void DeleteLight(const unsigned int id) abstract;
 
 			virtual FQ_GRAPHICS void UseShadow(const unsigned int id, bool bUseShadow) abstract;
+			virtual FQ_GRAPHICS void SetLightMapTexture(const std::vector<std::filesystem::path>& paths) abstract;
+			virtual FQ_GRAPHICS void SetLightMapDirectionTexture(const std::vector<std::filesystem::path>& paths) abstract;
 
 			// Light Probe
 			virtual FQ_GRAPHICS int AddLightProbe(const DirectX::SimpleMath::Vector3& position) abstract;

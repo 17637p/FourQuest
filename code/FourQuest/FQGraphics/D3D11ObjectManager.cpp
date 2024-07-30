@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "NodeHierarchy.h"
+#include "D3D11Buffer.h"
 
 #include "../FQLoader/ModelLoader.h"
 #include "../FQLoader/ModelConverter.h"
@@ -35,6 +36,10 @@ namespace fq::graphics
 		while (!mDecalObjectDeleteQueue.empty()) { deleteObject<DecalObject>(mDecalObjectDeleteQueue.front()); mDecalObjectDeleteQueue.pop(); }
 		while (!mTrailObjectDeleteQueue.empty()) { deleteObject<TrailObject>(mTrailObjectDeleteQueue.front()); mTrailObjectDeleteQueue.pop(); }
 		while (!mProbeObjectDeleteQueue.empty()) { deleteObject<ProbeObject>(mProbeObjectDeleteQueue.front()); mProbeObjectDeleteQueue.pop(); }
+	}
+
+	void D3D11ObjectManager::UpdateModifiedResources(std::shared_ptr<D3D11Device> device)
+	{
 	}
 
 	IStaticMeshObject* D3D11ObjectManager::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
@@ -140,7 +145,7 @@ namespace fq::graphics
 			mTrailObjectDeleteQueue.push(trailObject);
 		}
 	}
-	
+
 	void D3D11ObjectManager::SetTerrainMeshObject(const std::shared_ptr<D3D11Device>& device, ITerrainMeshObject* iTerrainMeshObject, const TerrainMaterialInfo& material)
 	{
 		TerrainMeshObject* terrainMeshObject = static_cast<TerrainMeshObject*>(iTerrainMeshObject);

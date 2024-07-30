@@ -15,7 +15,6 @@ namespace fq::graphics
 	// 1. 쉐이더 종류가 많지 않으면 그에 대응되는 재질이랑 1대1로 늘린다.
 	// 2. 쉐이더 리플렉션 처리를 해서 재질도 범용적으로 다룬다.?
 
-
 	class Material : public IMaterial
 	{
 	public:

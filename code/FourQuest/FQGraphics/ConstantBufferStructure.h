@@ -11,6 +11,14 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
+	struct LightMapInfomation
+	{
+		DirectX::SimpleMath::Vector4 UVScaleOffset;
+		unsigned int UVIndex;
+		int bUseDirection;
+		float unused[2];
+	};
+
 	struct ViewProjectionMatrix
 	{
 		DirectX::SimpleMath::Matrix ViewMatrix;
@@ -93,6 +101,7 @@ namespace fq::graphics
 		unsigned int numOfDirectionalLight;
 		unsigned int numOfPointLight;
 		unsigned int numOfSpotLight;
+
 		unsigned int isUseIBL;
 
 		DirectX::SimpleMath::Vector3 eyePosition;
@@ -177,14 +186,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color EmissiveColor;
 
 		int bUseBaseColor;
-		int bUseMetalness;
-		int bUseRoughness;
 		int bUseNormalness;
-
 		int bIsUsedEmissive;
 		float NormalBlend;
+
 		float AlphaCutoff;
-		float unused[1];
+		float unused[3];
 	};
 
 	struct ParticleFrameData

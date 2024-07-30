@@ -139,6 +139,7 @@
     <ClInclude Include="DemoUtils.h" />
     <ClInclude Include="EffectDemo.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LightMapDemo.h" />
     <ClInclude Include="PostProcessingDemo.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="RenderObjectDemo.h">
@@ -160,6 +161,7 @@
     <ClCompile Include="DemoUtils.cpp" />
     <ClCompile Include="EffectDemo.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LightMapDemo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PostProcessingDemo.cpp" />
     <ClCompile Include="Process.cpp" />

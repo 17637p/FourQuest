@@ -16,6 +16,7 @@ namespace fq::graphics
 	struct LightInfo;
 	class D3D11Texture;
 	class D3D11CubeTexture;
+	class D3D11TextureArray;
 	template <typename T>
 	class D3D11ConstantBuffer;
 	class D3D11CameraManager;
@@ -63,17 +64,20 @@ namespace fq::graphics
 		inline std::shared_ptr<D3D11ConstantBuffer<LightData>> GetLightConstnatBuffer();
 		inline std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> GetShadowConstnatBuffer();
 
-		// 임시 추가
 		inline std::vector<std::shared_ptr<Light<DirectionalLight>>> GetDirectionalShadows() const;
 
+		IBLTexture CreateIBLTexture(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11CubeTexture> cubemapTexture, EEnvironmentFormat envFormat = EEnvironmentFormat::RGBA32, EEnvironmentResoulution specularResolution = EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution diffuseResolution = EEnvironmentResoulution::Size32x32, float envScale = 1.f);
 		void SetIBLTexture(IBLTexture IBLTexture) { mIBLTexture = IBLTexture; }
 		const IBLTexture& GetIBLTexture() const { return mIBLTexture; }
 
-		// 임시 추가, 스카이 박스도 매니저에서 관리 대상이 되는 게 수정하기 편할 거 같아서 추가
 		void SetSkybox(std::shared_ptr<D3D11CubeTexture> skyBox) { mSkyBox = skyBox; }
 		const std::shared_ptr<D3D11CubeTexture>& GetSkybox() const { return mSkyBox; }
 
-		IBLTexture CreateIBLTexture(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11CubeTexture> cubemapTexture, EEnvironmentFormat envFormat = EEnvironmentFormat::RGBA32, EEnvironmentResoulution specularResolution = EEnvironmentResoulution::Size1024x1024, EEnvironmentResoulution diffuseResolution = EEnvironmentResoulution::Size32x32, float envScale = 1.f);
+		void CreateLightMapTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths);
+		const std::shared_ptr<D3D11TextureArray>& GetLightMapTextureArray() const { return mLightMapTextureArray; }
+
+		void CreateLightMapDirectionTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths);
+		const std::shared_ptr<D3D11TextureArray>& GetLightMapDirectionTextureArray() const { return mLightMapDirectionTextureArray; }
 
 	private:
 		std::vector<float> calculateCascadeEnds(std::vector<float> ratios, float nearZ, float farZ);
@@ -104,8 +108,9 @@ namespace fq::graphics
 		IBLTexture mIBLTexture;
 		std::shared_ptr<D3D11Texture> mSpecularBRDF;
 		std::shared_ptr<D3D11CubeTexture> mSkyBox;
-
 		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
+		std::shared_ptr<D3D11TextureArray> mLightMapTextureArray;
+		std::shared_ptr<D3D11TextureArray> mLightMapDirectionTextureArray;
 	};
 
 	inline std::shared_ptr<D3D11ConstantBuffer<LightData>> D3D11LightManager::GetLightConstnatBuffer()

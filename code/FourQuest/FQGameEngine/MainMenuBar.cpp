@@ -238,6 +238,8 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 3.SkyBox ÀúÀå
 	mEditorProcess->mSkyBoxWindow->SaveSkyBox(scenePath);
 
+	mEditorProcess->mMaterialWindow->SaveMaterial();
+
 	//  ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);
 }
@@ -305,6 +307,8 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		bool& onImportWindow = mEditorProcess->mImportWindow->IsWindowOpen();
 		ImGui::Checkbox("ImportWindow", &onImportWindow);
+		bool& onMaterialWindow = mEditorProcess->mMaterialWindow->IsWindowOpen();
+		ImGui::Checkbox("MaterialWindow", &onMaterialWindow);
 
 		ImGui::EndMenu();
 	}

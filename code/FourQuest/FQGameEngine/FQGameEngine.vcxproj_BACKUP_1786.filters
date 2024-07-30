@@ -227,8 +227,11 @@
     <ClInclude Include="PathFindingSystem.h">
       <Filter>include\03.GameSystem\PathFindingSystem</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="ExportWindow.h">
+=======
     <ClInclude Include="MaterialWindow.h">
+>>>>>>> ModelResource
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
   </ItemGroup>
@@ -383,10 +386,13 @@
     <ClCompile Include="LightProbeWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="ExportWindow.cpp">
       <Filter>src\11.Window</Filter>
+=======
     <ClCompile Include="MaterialWindow.cpp">
       <Filter>src</Filter>
+>>>>>>> ModelResource
     </ClCompile>
   </ItemGroup>
 </Project>

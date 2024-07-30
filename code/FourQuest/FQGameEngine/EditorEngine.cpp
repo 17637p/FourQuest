@@ -294,6 +294,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mArticulationInspector->Render(); 
 	mEditor->mExportWindow->Render(); 
 	mEditor->mImportWindow->Render(); 
+	mEditor->mMaterialWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
@@ -330,6 +331,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mLightProbeWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mExportWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mImportWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mMaterialWindow->Initialize(mGameProcess.get(), mEditor.get());
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());

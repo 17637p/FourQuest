@@ -67,8 +67,7 @@ namespace fq::graphics
 			mTerrainPS = std::make_shared<D3D11PixelShader>(mDevice, L"TerrainPS_DEFERRED.cso");
 
 			mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
-			mMetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
-			mRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);
+			mMetalnessRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::MetalnessRoughness);
 			mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
 			mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
 			mPositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
@@ -128,8 +127,7 @@ namespace fq::graphics
 		mTerrainTextureCB = nullptr;
 
 		mAlbedoRTV = nullptr;
-		mMetalnessRTV = nullptr;
-		mRoughnessRTV = nullptr;
+		mMetalnessRoughnessRTV = nullptr;
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 		mPositionRTV = nullptr;
@@ -170,8 +168,7 @@ namespace fq::graphics
 				std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
 				renderTargetViews.reserve(7u);
 				renderTargetViews.push_back(mAlbedoRTV);
-				renderTargetViews.push_back(mMetalnessRTV);
-				renderTargetViews.push_back(mRoughnessRTV);
+				renderTargetViews.push_back(mMetalnessRoughnessRTV);
 				renderTargetViews.push_back(mNormalRTV);
 				renderTargetViews.push_back(mEmissiveRTV);
 				renderTargetViews.push_back(mPositionRTV);

@@ -21,8 +21,6 @@ namespace fq::graphics
 		mDebugDrawManager = debugDrawManager;
 
 		mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
-		mMetalnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Metalness);
-		mRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Roughness);
 		mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
 		mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
 
@@ -85,8 +83,6 @@ namespace fq::graphics
 		mDebugDrawManager = nullptr;
 
 		mAlbedoRTV = nullptr;
-		mMetalnessRTV = nullptr;
-		mRoughnessRTV = nullptr;
 		mNormalRTV = nullptr;
 		mEmissiveRTV = nullptr;
 
@@ -152,8 +148,6 @@ namespace fq::graphics
 			std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
 			renderTargetViews.reserve(5u);
 			renderTargetViews.push_back(mAlbedoRTV);
-			renderTargetViews.push_back(mMetalnessRTV);
-			renderTargetViews.push_back(mRoughnessRTV);
 			renderTargetViews.push_back(mNormalRTV);
 			renderTargetViews.push_back(mEmissiveRTV);
 			D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDefualtDSV);
@@ -202,15 +196,13 @@ namespace fq::graphics
 			decalMaterialCB.BaseColor = materialInfo.BaseColor;
 			decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor;
 			decalMaterialCB.bUseBaseColor = materialInfo.bUseBaseColor && material->GetHasBaseColor();
-			decalMaterialCB.bUseMetalness = materialInfo.bUseMetalness && material->GetHasMetalness();
-			decalMaterialCB.bUseRoughness = materialInfo.bUseRoughness && material->GetHasRoughness();
 			decalMaterialCB.bUseNormalness = materialInfo.bUseNormalness && material->GetHasNormal();
 			decalMaterialCB.bIsUsedEmissive = materialInfo.bIsUsedEmissive && material->GetHasEmissive();
 			decalMaterialCB.NormalBlend = materialInfo.NormalBlend;
 			decalMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
 			mDecalMaterialCB->Update(mDevice, decalMaterialCB);
 
-			int index = decalMaterialCB.bIsUsedEmissive << 4 | decalMaterialCB.bUseNormalness << 3 | decalMaterialCB.bUseRoughness << 2 | decalMaterialCB.bUseMetalness << 1 | decalMaterialCB.bUseBaseColor << 0;
+			int index = decalMaterialCB.bIsUsedEmissive << 2 | decalMaterialCB.bUseNormalness << 1 | decalMaterialCB.bUseBaseColor << 0;
 			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
 
 			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
@@ -261,20 +253,12 @@ namespace fq::graphics
 			{
 				for (int k = 0; k < 2; ++k)
 				{
-					for (int l = 0; l < 2; ++l)
-					{
-						for (int m = 0; m < 2; ++m)
-						{
-							blendDesc.RenderTarget[0].RenderTargetWriteMask = i == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
-							blendDesc.RenderTarget[1].RenderTargetWriteMask = j == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
-							blendDesc.RenderTarget[2].RenderTargetWriteMask = k == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
-							blendDesc.RenderTarget[3].RenderTargetWriteMask = l == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
-							blendDesc.RenderTarget[4].RenderTargetWriteMask = m == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+					blendDesc.RenderTarget[0].RenderTargetWriteMask = i == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+					blendDesc.RenderTarget[1].RenderTargetWriteMask = j == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
+					blendDesc.RenderTarget[2].RenderTargetWriteMask = k == 0 ? 0 : D3D11_COLOR_WRITE_ENABLE_ALL;
 
-							size_t index = m << 4 | l << 3 | k << 2 | j << 1 | i << 0;
-							HR(mDevice->GetDevice()->CreateBlendState(&blendDesc, mBlendStates[index].GetAddressOf()));
-						}
-					}
+					size_t index = k << 2 | j << 1 | i << 0;
+					HR(mDevice->GetDevice()->CreateBlendState(&blendDesc, mBlendStates[index].GetAddressOf()));
 				}
 			}
 		}
