@@ -61,6 +61,9 @@
 // UI
 #include "HpBar.h"
 #include "PlayerUI.h"
+#include "PlayerUIManager.h"
+#include "AutoPositionToScale.h"
+
 #include "CameraMoving.h"
 
 void fq::client::RegisterMetaData()
@@ -581,6 +584,20 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerUI::mPlayerID>("PlayerID"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerID")
 		.prop(fq::reflect::prop::Comment, u8"ControllerID¿Í ¸ÂÃçÁÙ °Í 0~3")
+		.base<fq::game_module::Component>();
+
+	entt::meta<PlayerUIManager>()
+		.type("PlayerUIManager"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerUIManager")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerUIManager::mPlayerUIPrefab>("PlayerUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<AutoPositionToScale>()
+		.type("AutoPositionToScale"_hs)
+		.prop(fq::reflect::prop::Name, "AutoPositionToScale")
+		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 }
 

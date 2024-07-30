@@ -74,6 +74,8 @@ namespace fq::graphics
 		float RotationAngle = 0.f;
 		float ScaleX = 1.f;
 		float ScaleY = 1.f;
+
+		bool isCenter = false;
 	};
 
 	struct TerrainLayer

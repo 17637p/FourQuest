@@ -72,6 +72,8 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 	mImageObjects[index]->SetScaleX(infomation.ScaleX);
 	mImageObjects[index]->SetScaleY(infomation.ScaleY);
 
+	mImageObjects[index]->SetRenderMode(infomation.isCenter);
+
 	mUIInfomations[index] = infomation;
 }
 
@@ -85,10 +87,17 @@ void fq::game_module::ImageUI::OnUpdate(float dt)
 {
 	Transform* myTransform = GetComponent<Transform>();
 	SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+	SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
 }
 
 void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)
 {
 	mImageObjects[index]->SetIsRender(isRender);
+}
+
+void fq::game_module::ImageUI::SetUIScale(size_t index, float scaleX, float scaleY)
+{
+	mImageObjects[index]->SetScaleX(scaleX);
+	mImageObjects[index]->SetScaleY(scaleY);
 }
 

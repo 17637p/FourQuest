@@ -168,6 +168,7 @@ void fq::game_engine::UISystem::Update()
 	for (auto& imageUI : componentView)
 	{
 		game_module::Transform* transform = imageUI.GetComponent<game_module::Transform>();
-		imageUI.GetComponent<game_module::ImageUI>()->SetUIPosition(0, transform->GetWorldPosition().x, transform->GetWorldPosition().y);
+		imageUI.GetComponent<game_module::ImageUI>()->OnUpdate(0);
+		//imageUI.GetComponent<game_module::ImageUI>()->SetUIPosition(0, transform->GetWorldPosition().x, transform->GetWorldPosition().y);
 	}
 }

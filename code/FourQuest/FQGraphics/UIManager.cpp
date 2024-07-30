@@ -403,7 +403,17 @@ void fq::graphics::UIManager::drawAllImage()
 
 		D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
-		D2D1_RECT_F screenRect = { image->GetStartX(), image->GetStartY(), image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
+		D2D1_RECT_F screenRect{};
+		if (image->GetRenderMode()) // true가 isCenter
+		{
+			screenRect = { image->GetStartX() - image->GetWidth() / 2, image->GetStartY() - image->GetHeight() / 2,
+			image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2 }; // 그릴 크기 (화면 좌표)
+		}
+		else
+		{
+			screenRect = { image->GetStartX(), image->GetStartY(),
+			image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
+		}
 
 		if (image->GetMaskPath() != "")
 		{
@@ -560,6 +570,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetRotation(uiInfo.RotationAngle);
 
 	newImageObject->SetFillDegree(uiInfo.fillDegree);
+	newImageObject->SetRenderMode(uiInfo.isCenter);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;

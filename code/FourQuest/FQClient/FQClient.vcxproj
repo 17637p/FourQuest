@@ -32,6 +32,7 @@
   <ItemGroup>
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackDefine.h" />
+    <ClInclude Include="AutoPositionToScale.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -70,6 +71,7 @@
     <ClInclude Include="PlantMonsterDeadState.h" />
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
+    <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="ShiedlDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
@@ -88,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="AutoPositionToScale.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
@@ -123,6 +126,7 @@
     <ClCompile Include="PlantMonsterDeadState.cpp" />
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
+    <ClCompile Include="PlayerUIManager.cpp" />
     <ClCompile Include="ShiedlDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />

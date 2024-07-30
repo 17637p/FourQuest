@@ -248,6 +248,12 @@
     <ClInclude Include="SoundDefine.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerUIManager.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoPositionToScale.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -393,6 +399,12 @@
     </ClCompile>
     <ClCompile Include="SpawnerOpenState.cpp">
       <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerUIManager.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoPositionToScale.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

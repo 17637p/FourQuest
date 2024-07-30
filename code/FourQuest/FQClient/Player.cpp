@@ -7,6 +7,7 @@
 #include "HpBar.h"
 #include "Soul.h"
 #include "ClientEvent.h"
+#include "PlayerUIManager.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -83,6 +84,9 @@ void fq::client::Player::OnStart()
 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// TODO : °©¿Ê ¹öÇÁ Àû¿ë
+
+	// Player HUD µî·Ï
+	GetScene()->GetObjectByName("PlayerUIManager")->GetComponent<PlayerUIManager>()->AddPlayer(GetPlayerID());
 }
 
 void fq::client::Player::processInput()
