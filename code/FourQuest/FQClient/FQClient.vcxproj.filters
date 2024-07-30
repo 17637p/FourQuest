@@ -81,6 +81,12 @@
     <Filter Include="src\03.Attack">
       <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\07.Quest">
+      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\07.Quest">
+      <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -253,11 +259,23 @@
     </ClInclude>
     <ClInclude Include="MeleeMonsterExplosionState.h">
       <Filter>include\02.Monster\Melee</Filter>
-	</ClInclude>
-	<ClInclude Include="PlayerUIManager.h">
+    </ClInclude>
+    <ClInclude Include="PlayerUIManager.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="AutoPositionToScale.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Quest.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestManager.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -411,11 +429,23 @@
     </ClCompile>
     <ClCompile Include="MeleeMonsterExplosionState.cpp">
       <Filter>src\02.Monster\Melee</Filter>
-	</ClCompile>
-	<ClCompile Include="PlayerUIManager.cpp">
+    </ClCompile>
+    <ClCompile Include="PlayerUIManager.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="AutoPositionToScale.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PauseUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestManager.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="Quest.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
