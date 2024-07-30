@@ -31,4 +31,7 @@ void fq::client::PauseUI::OnStart()
 void fq::client::PauseUI::OnUpdate(float dt)
 {
 	// 선택UI의 자식으로 영혼 넣고 위치 옮기기 
+	
+	// UI 조작 (일시정지 On, 선택 옮기기 등)
+	// 아마 텍스트도 넣어야 할듯?
 }
