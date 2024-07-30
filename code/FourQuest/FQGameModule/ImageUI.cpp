@@ -91,6 +91,12 @@ void fq::game_module::ImageUI::SetUIPosition(size_t index, float StartX, float S
 void fq::game_module::ImageUI::OnUpdate(float dt)
 {
 	Transform* myTransform = GetComponent<Transform>();
+
+	if (mImageObjects.empty())
+	{
+		return;
+	}
+
 	SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
 	SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
 }

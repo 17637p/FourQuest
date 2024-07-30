@@ -78,6 +78,7 @@ namespace fq::game_engine
 		std::multimap< std::string, entt::meta_type> mComponentTypes;
 		std::vector<entt::meta_type> mStateBehaviourTypes;
 		DirectX::SimpleMath::Color mPrevColor;
+		DirectX::SimpleMath::Vector3 mPrevVector3;
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSelectAnimationStateName;

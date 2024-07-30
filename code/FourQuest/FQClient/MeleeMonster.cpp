@@ -25,7 +25,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
-	, mAnimator(nullptr)
+	, mAnimator(nullptr)	
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mStartPosition{}

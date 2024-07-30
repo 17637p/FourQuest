@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Transform.h"
 #include "Attack.h"
+#include "KnockBack.h"
 
 fq::client::MeleeMonsterExplosion::MeleeMonsterExplosion()
 	:mExplosionRadius(1.f)
@@ -65,10 +66,17 @@ void fq::client::MeleeMonsterExplosion::Explode()
 
 	// 자기 자신을 사라집니다
 	GetScene()->DestroyGameObject(GetGameObject());
+
+	// 폭발 소리 
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MonsterExplosion", false , 0 });
+
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonsterExplosion::EmitExplosionWaringUI()
 {
+	// 넉백 삭제
+	GetGameObject()->RemoveComponent<KnockBack>();
+
 	using namespace game_module;
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mWarningUI);
 	auto& warningObj = *(instance.begin());
