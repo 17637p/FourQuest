@@ -315,11 +315,18 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 
 	ImGui::InputText(memberName.c_str(), &name);
 
-	if (ImGui::IsItemDeactivatedAfterEdit()
-		&& !data.prop(fq::reflect::prop::DragDrop))
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		mEditorProcess->mCommandSystem->Push<SetMetaData>(
-			data, mSelectObject, handle, name);
+		if (!data.prop(fq::reflect::prop::DragDrop))
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, name);
+		}
+		else if (mEditorProcess->mSettingWindow->CanEditPath())
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, name);
+		}
 	}
 
 	// DragDrop 받기
@@ -1132,7 +1139,7 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	if (animationPath.empty() || animationInterfaceOrNull == nullptr) return;
-	
+
 	// PlayBackSpeed
 	float playBackSpeed = stateNode.GetPlayBackSpeed();
 
@@ -1372,11 +1379,18 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					std::string val = data.get(pod).cast<std::string>();
 
 					ImGui::InputText(memberName.c_str(), &val);
-					if (ImGui::IsItemDeactivatedAfterEdit()
-						&& !data.prop(fq::reflect::prop::DragDrop))
+					if (ImGui::IsItemDeactivatedAfterEdit())
 					{
-						data.set(pod, val);
-						changedData = true;
+						if (!data.prop(fq::reflect::prop::DragDrop))
+						{
+							data.set(pod, val);
+							changedData = true;
+						}
+						else if (mEditorProcess->mSettingWindow->CanEditPath())
+						{
+							data.set(pod, val);
+							changedData = true;
+						}
 					}
 
 					// DragDrop 받기
@@ -1423,12 +1437,20 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 
 					ImGui::InputText(memberName.c_str(), &sVal);
 
-					if (ImGui::IsItemDeactivatedAfterEdit()
-						&& !data.prop(fq::reflect::prop::DragDrop))
+					if (ImGui::IsItemDeactivatedAfterEdit())
 					{
-						val = std::filesystem::path(sVal).wstring();
-						data.set(pod, val);
-						changedData = true;
+						if (!data.prop(fq::reflect::prop::DragDrop))
+						{
+							val = std::filesystem::path(sVal).wstring();
+							data.set(pod, val);
+							changedData = true;
+						}
+						else if (mEditorProcess->mSettingWindow->CanEditPath())
+						{
+							val = std::filesystem::path(sVal).wstring();
+							data.set(pod, val);
+							changedData = true;
+						}
 					}
 
 					// DragDrop 받기

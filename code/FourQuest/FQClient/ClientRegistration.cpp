@@ -15,7 +15,7 @@
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
-#include "RazerAttackState.h"
+#include "LaserAttackState.h"
 #include "ShiedlDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
@@ -164,10 +164,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AOE")
 		.data<&MagicArmour::mAttackWarningUI>("AttackWarningUI"_hs)
 		.prop(reflect::prop::Name, "AttackWarningUI")
-		.data<&MagicArmour::mRazer>("Razer"_hs)
-		.prop(reflect::prop::Name, "Razer")
-		.data<&MagicArmour::mRazerAttackBox>("RazerAttackBox"_hs)
-		.prop(reflect::prop::Name, "RazerAttackBox")
+		.data<&MagicArmour::mLaserEffect>("LaserEffect"_hs)
+		.prop(reflect::prop::Name, "LaserEffect")
+		.data<&MagicArmour::mLaserGatherEffect>("LaserGatherEffect"_hs)
+		.prop(reflect::prop::Name, "LaserGatherEffect")
+		.data<&MagicArmour::mLaserAttackBox>("LaserAttackBox"_hs)
+		.prop(reflect::prop::Name, "LaserAttackBox")
 		.base<game_module::Component>();
 
 	entt::meta<KnightArmour>()
@@ -244,9 +246,11 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AOEAttackState")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<RazerAttackState>()
+	entt::meta<LaserAttackState>()
 		.type("RazerAttackState"_hs)
 		.prop(reflect::prop::Name, "RazerAttackState")
+		.data<&LaserAttackState::mLaserEmitTime>("LaserEmitTime"_hs)
+		.prop(reflect::prop::Name, "LaserEmitTime")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<ShiedlDashState>()

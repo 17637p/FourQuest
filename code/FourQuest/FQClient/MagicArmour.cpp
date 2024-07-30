@@ -17,7 +17,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mController(nullptr)
 	, mMagicBall{}
 	, mAOE{}
-	, mRazer{}
+	, mLaserEffect{}
 	, mAttackWarningUI{}
 	, mMagicBallSpeed(10.f)
 	, mAOEMoveRange(10.f)
@@ -119,7 +119,7 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	mAOEElapsedTime = mAOECoolTime;
 }
 
-void fq::client::MagicArmour::EmitLazer()
+void fq::client::MagicArmour::EmitLaser()
 {
 	// RayCastTest
 	fq::event::RayCast::ResultData data;
@@ -136,13 +136,12 @@ void fq::client::MagicArmour::EmitLazer()
 		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
 	);
 
-
 	if (data.hasBlock)
 	{
 		if (mRazerHitElapsedTime == 0.f)
 		{
 			// RazerAttckBox 소환
-			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRazerAttackBox);
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserAttackBox);
 			auto& attackObj = *(instance.begin());
 
 			// 공격 설정
@@ -267,4 +266,17 @@ void fq::client::MagicArmour::SetLookAtRStickInput()
 		}
 	}
 
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserGatherEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserGatherEffect);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	attackT->SetParent(mTransform);
+
+	GetScene()->AddGameObject(attackObj);
+
+	return attackObj;
 }

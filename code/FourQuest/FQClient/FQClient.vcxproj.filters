@@ -218,7 +218,7 @@
     <ClInclude Include="DamageCalculation.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
-    <ClInclude Include="RazerAttackState.h">
+    <ClInclude Include="LaserAttackState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="KnightArmour.h">
@@ -391,7 +391,7 @@
     <ClCompile Include="AOEAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
-    <ClCompile Include="RazerAttackState.cpp">
+    <ClCompile Include="LaserAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="KnightArmour.cpp">

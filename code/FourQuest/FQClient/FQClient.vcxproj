@@ -84,7 +84,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMovementState.h" />
     <ClInclude Include="PlayerUI.h" />
-    <ClInclude Include="RazerAttackState.h" />
+    <ClInclude Include="LaserAttackState.h" />
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
@@ -144,7 +144,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />
     <ClCompile Include="PlayerUI.cpp" />
-    <ClCompile Include="RazerAttackState.cpp" />
+    <ClCompile Include="LaserAttackState.cpp" />
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
