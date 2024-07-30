@@ -50,5 +50,11 @@ void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator
 
 void fq::client::LaserAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	if (mGatherEffect != nullptr)
+	{
+		animator.GetScene()->DestroyGameObject(mGatherEffect.get());
+		mGatherEffect = nullptr;
+	}
+
 
 }

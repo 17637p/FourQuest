@@ -274,7 +274,9 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserG
 	auto& attackObj = *(instance.begin());
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
-	attackT->SetParent(mTransform);
+	
+	// 스태프 트랜스폼 가져오기
+	attackT->SetParent(mTransform->GetChildren()[1]);
 
 	GetScene()->AddGameObject(attackObj);
 
