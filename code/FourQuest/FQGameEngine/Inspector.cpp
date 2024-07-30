@@ -364,10 +364,19 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 
 	float f[3]{ v.x,v.y,v.z };
 
-	ImGui::InputFloat3(memberName.c_str(), f);
+	if (ImGui::DragFloat3(memberName.c_str(), f))
+	{
+		data.set(handle->GetHandle(), DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
+	}
+
+	if (ImGui::IsItemActivated())
+	{
+		mPrevVector3 = DirectX::SimpleMath::Vector3(f[0], f[1], f[2]);
+	}
 
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
+		data.set(handle->GetHandle(), mPrevVector3);
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
 	}
@@ -375,34 +384,6 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 	beginIsItemHovered_Comment(data);
 }
 
-void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle)
-{
-	using namespace DirectX::SimpleMath;
-
-	Quaternion quatarnion = data.get(handle->GetHandle()).cast<DirectX::SimpleMath::Quaternion>();
-	std::string memberName = fq::reflect::GetName(data);
-
-	Vector3 euler = quatarnion.ToEuler();
-
-	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
-		,DirectX::XMConvertToDegrees(euler.y)
-		,DirectX::XMConvertToDegrees(euler.z) };
-
-	ImGui::InputFloat3(memberName.c_str(), f);
-
-	if (ImGui::IsItemDeactivatedAfterEdit())
-	{
-		euler.x = DirectX::XMConvertToRadians(f[0]);
-		euler.y = DirectX::XMConvertToRadians(f[1]);
-		euler.z = DirectX::XMConvertToRadians(f[2]);
-		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
-
-		mEditorProcess->mCommandSystem->Push<SetMetaData>(
-			data, mSelectObject, handle, quatarnion);
-	}
-
-	beginIsItemHovered_Comment(data);
-}
 
 void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle)
 {
@@ -436,6 +417,36 @@ void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq:
 			data, mSelectObject, handle, color);
 	}
 }
+
+void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle)
+{
+	using namespace DirectX::SimpleMath;
+
+	Quaternion quatarnion = data.get(handle->GetHandle()).cast<DirectX::SimpleMath::Quaternion>();
+	std::string memberName = fq::reflect::GetName(data);
+
+	Vector3 euler = quatarnion.ToEuler();
+
+	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+		,DirectX::XMConvertToDegrees(euler.y)
+		,DirectX::XMConvertToDegrees(euler.z) };
+
+	ImGui::InputFloat3(memberName.c_str(), f);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
+	{
+		euler.x = DirectX::XMConvertToRadians(f[0]);
+		euler.y = DirectX::XMConvertToRadians(f[1]);
+		euler.z = DirectX::XMConvertToRadians(f[2]);
+		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
+
+		mEditorProcess->mCommandSystem->Push<SetMetaData>(
+			data, mSelectObject, handle, quatarnion);
+	}
+
+	beginIsItemHovered_Comment(data);
+}
+
 
 
 void fq::game_engine::Inspector::getScriptTypes()

@@ -3,6 +3,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/NavigationAgent.h"
 #include "MeleeMonsterExplosion.h"
+#include "KnockBack.h"
 
 fq::client::MeleeMonsterExplosionState::MeleeMonsterExplosionState()
 {
