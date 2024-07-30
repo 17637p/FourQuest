@@ -143,6 +143,9 @@ extern "C" {
 
 			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
 			virtual FQ_GRAPHICS void SetIsRender(bool val) abstract;
+
+			virtual FQ_GRAPHICS bool GetRenderMode() const abstract;
+			virtual FQ_GRAPHICS void SetRenderMode(bool isCenter) abstract; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
 		};
 
 		class IParticleObject

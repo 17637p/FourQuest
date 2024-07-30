@@ -51,13 +51,13 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconXs.push_back(skillXs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconXs.push_back(skillXs[3]->GetComponent<fq::game_module::ImageUI>());
 
-	std::vector<fq::game_module::GameObject*> skillAs = GetGameObject()->GetChildren()[0]->GetChildren()[5]->GetChildren();
+	std::vector<fq::game_module::GameObject*> skillAs = GetGameObject()->GetChildren()[0]->GetChildren()[1]->GetChildren();
 	mSkillIconAs.push_back(skillAs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[3]->GetComponent<fq::game_module::ImageUI>());
 
-	std::vector<fq::game_module::GameObject*> skillRs = GetGameObject()->GetChildren()[0]->GetChildren()[4]->GetChildren();
+	std::vector<fq::game_module::GameObject*> skillRs = GetGameObject()->GetChildren()[0]->GetChildren()[2]->GetChildren();
 	mSkillIconRs.push_back(skillRs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[2]->GetComponent<fq::game_module::ImageUI>());
@@ -67,7 +67,7 @@ void fq::client::PlayerUI::OnStart()
 	{
 		auto player = object.GetComponent<fq::client::Player>();
 
-		if (mPlayerID == player->GetPlayerID())
+		if (GetPlayerID() == player->GetPlayerID())
 		{
 			mPlayer = player;
 		}
@@ -77,6 +77,8 @@ void fq::client::PlayerUI::OnStart()
 	{
 		SetWeaponAndSkillIcons(i, false);
 	}
+
+	mScreenManager = GetScene()->GetScreenManager();
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
@@ -129,6 +131,15 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			SetWeaponAndSkillIcons(armourTypeIndex, true);
 		}
 	}
+
+	// Scale 자동 조정 
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+	UINT screenWidth = mScreenManager->GetScreenWidth();
+	UINT screenHeight = mScreenManager->GetScreenHeight();
+	{
+		myTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
+	}
+
 }
 
 void fq::client::PlayerUI::SetWeaponAndSkillIcons(int index, bool isRender)

@@ -21,6 +21,9 @@ namespace fq::client
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
+		int GetPlayerID() const { return mPlayerID; }
+		void SetPlayerID(int val) { mPlayerID = val; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -40,6 +43,8 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mSkillIconXs; // 스킬 아이콘
 		std::vector<game_module::ImageUI*> mSkillIconAs; // 스킬 아이콘 
 		std::vector<game_module::ImageUI*> mSkillIconRs; // 스킬 아이콘 
+
+		game_module::ScreenManager* mScreenManager;
 
 		friend void RegisterMetaData();
 	};

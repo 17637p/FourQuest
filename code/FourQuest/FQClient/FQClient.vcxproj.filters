@@ -253,6 +253,12 @@
     </ClInclude>
     <ClInclude Include="MeleeMonsterExplosionState.h">
       <Filter>include\02.Monster\Melee</Filter>
+	</ClInclude>
+	<ClInclude Include="PlayerUIManager.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoPositionToScale.h">
+      <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -405,6 +411,12 @@
     </ClCompile>
     <ClCompile Include="MeleeMonsterExplosionState.cpp">
       <Filter>src\02.Monster\Melee</Filter>
+	</ClCompile>
+	<ClCompile Include="PlayerUIManager.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoPositionToScale.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
