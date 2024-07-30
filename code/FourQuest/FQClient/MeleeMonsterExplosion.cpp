@@ -48,7 +48,7 @@ void fq::client::MeleeMonsterExplosion::Explode()
 	auto& attackObj = *(instance.begin());
 	auto attackT = attackObj->GetComponent<Transform>();
 	auto monsterT = GetComponent<Transform>();
-
+	
 	// 폭발 트랜스폼 설정
 	auto attackPos = monsterT->GetWorldPosition();
 	DirectX::SimpleMath::Vector3 scale = { mExplosionRadius, mExplosionRadius, mExplosionRadius };
@@ -64,12 +64,15 @@ void fq::client::MeleeMonsterExplosion::Explode()
 	attackComponent->Set(attackInfo);
 	GetScene()->AddGameObject(attackObj);
 
+	// 자식에는 몬스터를 공격하는 콜라이더가 있어서 함께 설정 
+	auto& child = *(instance.begin()+1);
+	child->GetComponent<Attack>()->Set(attackInfo);
+
 	// 자기 자신을 사라집니다
 	GetScene()->DestroyGameObject(GetGameObject());
 
 	// 폭발 소리 
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MonsterExplosion", false , 0 });
-
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonsterExplosion::EmitExplosionWaringUI()
