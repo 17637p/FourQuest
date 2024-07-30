@@ -19,7 +19,9 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 	float dashPower = animator.GetComponent<KnightArmour>()->GetXAttackDashPower();
 
 	// 컨트롤러 입력방향을 바라봅니다
-	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
+	auto controller = animator.GetComponent<game_module::CharacterController>();
+	controller->SetPadInputRotation();
+	controller->SetDashInput(true);
 
 	// 공격 전진 
 	auto transform = animator.GetComponent<game_module::Transform>();
@@ -29,6 +31,7 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 	foward.x *= dashPower;
 	foward.z *= dashPower;
 	rigid->SetLinearVelocity(foward);
+	
 
 	mElapsedTime = 0.f;
 
@@ -63,6 +66,9 @@ void fq::client::SwordAttackState::OnStateExit(game_module::Animator& animator, 
 {
 	mEffect->GetScene()->DestroyGameObject(mEffect.get());
 	mEffect = nullptr;
+
+	auto controller = animator.GetComponent<game_module::CharacterController>();
+	controller->SetDashInput(false);
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::SwordAttackState::Clone()

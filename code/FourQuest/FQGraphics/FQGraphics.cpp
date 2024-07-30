@@ -363,6 +363,9 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
+	mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
+	mLightManager->UpdateShadowConstantBuffer(mDevice, mCameraManager);
+
 	mRenderManager->BeginRender();
 
 	return true;

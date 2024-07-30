@@ -55,7 +55,6 @@ namespace fq::physics
 		{
 			// 동적 상태인 경우 동적 마찰력에 의해 속도를 감소시킨다.
 			// 정지 상태인 경우 정적 마찰력에 의해 속도를 감소시킨다.
-
 			if (input.x == 0 && !isDynamic)
 				mVelocity.x = std::lerp(mVelocity.x, 0.f, mStaticFriction);
 			else

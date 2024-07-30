@@ -16,7 +16,6 @@ namespace fq::game_module
 		CharacterController();
 		~CharacterController();
 
-
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>

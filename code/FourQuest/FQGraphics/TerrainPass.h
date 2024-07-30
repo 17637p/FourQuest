@@ -63,6 +63,5 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainHull>> mTerrainHullCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>> mTerrainTextureCB;
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 	};
 }

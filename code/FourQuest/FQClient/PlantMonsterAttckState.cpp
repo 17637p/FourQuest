@@ -12,6 +12,8 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlantMonsterAttckS
 fq::client::PlantMonsterAttckState::PlantMonsterAttckState()
 	:mAttackTiming(0.f)
 	, mElapsedTime(0.f)
+	, mLookAtTime(0.5f)
+	, mLookAtElapsedTime(0.f)
 {}
 
 fq::client::PlantMonsterAttckState::~PlantMonsterAttckState()
@@ -19,7 +21,7 @@ fq::client::PlantMonsterAttckState::~PlantMonsterAttckState()
 
 void fq::client::PlantMonsterAttckState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-
+	mLookAtElapsedTime = 0.f;
 	mElapsedTime = 0.f;
 
 	// 공격 즉시 발동
@@ -27,12 +29,23 @@ void fq::client::PlantMonsterAttckState::OnStateEnter(game_module::Animator& ani
 	{
 		animator.GetComponent<PlantMonster>()->EmitAttack();
 		mElapsedTime = mAttackTiming;
-
 	}
 }
 
 void fq::client::PlantMonsterAttckState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
+	if (mLookAtElapsedTime != mLookAtTime)
+	{
+		mLookAtElapsedTime += dt;
+		animator.GetComponent<PlantMonster>()->LookAtTarget();
+
+		if (mLookAtElapsedTime >= mLookAtTime)
+		{
+			mLookAtElapsedTime = mLookAtTime;
+		}
+	}
+
+
 	if (mElapsedTime == mAttackTiming)
 		return;
 

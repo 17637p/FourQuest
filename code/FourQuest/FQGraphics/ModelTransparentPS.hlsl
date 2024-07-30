@@ -32,6 +32,8 @@ cbuffer cbMaterial : register(b0)
     bool cUseNormalMap;
     bool cUseEmissiveMap;
     float cAlphaCutoff;
+
+    float cEmissiveIntensity;
 };
 
 cbuffer cbLight : register(b1)
@@ -57,7 +59,7 @@ cbuffer cbAlpha : register(b2)
 
 cbuffer cbDirectionalShadow : register(b3)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 }
@@ -125,7 +127,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
     
     if (cUseEmissiveMap)
     {
-        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb * cEmissiveIntensity;
     }
 
     float3 directLighting = 0.0;
@@ -157,7 +159,9 @@ PixelOut main(VertexOut pin) : SV_TARGET
                     }
                 }
  
-                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[index]);
+                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[index]);
+                shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+                shadowPos.y = shadowPos.y * -0.5f + 0.5f;
                 shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, i * CascadeCount + index, ShadowMapWidth);
                 
                 directLighting *= shadowRatio;

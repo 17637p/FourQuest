@@ -135,6 +135,5 @@ void fq::client::MonsterSpawner::Destroy()
 		transform->SetWorldMatrix(matrix);
 	}
 
-
 	GetScene()->DestroyGameObject(GetGameObject());
 }
