@@ -6,6 +6,13 @@
 #include <fstream>
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/Decal.h"
+#include "../FQGameModule/PostProcessing.h"
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "AnimationSystem.h"

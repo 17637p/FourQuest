@@ -1,6 +1,8 @@
 #define  NOMINMAX
 #include "PlantMonster.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "GameManager.h"
 #include "LinearAttack.h"
 #include "Attack.h"

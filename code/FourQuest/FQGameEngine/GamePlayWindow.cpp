@@ -6,7 +6,14 @@
 #include <algorithm>
 #include <queue>
 
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/InputManager.h"
+#include "../FQGameModule/Light.h"
+#include "../FQGameModule/Particle.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Terrain.h"
 #include "../FQGraphics/IFQGraphics.h"
 
 #include "EditorProcess.h"

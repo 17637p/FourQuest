@@ -6,6 +6,9 @@
 #include "GameProcess.h"
 #include "RenderingSystem.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Decal.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 
@@ -19,7 +22,6 @@ fq::game_engine::Setting::Setting()
 {
 
 }
-
 
 void fq::game_engine::Setting::Initialize(GameProcess* game, EditorProcess* editor)
 {

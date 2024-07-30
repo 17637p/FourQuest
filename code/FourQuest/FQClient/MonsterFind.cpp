@@ -1,6 +1,9 @@
 #include "MonsterFind.h"
+
+#include "../FQGameModule/GameModule.h"
 #include "Monster.h"
 #include "Player.h"
+
 
 fq::client::MonsterFind::MonsterFind()
 {

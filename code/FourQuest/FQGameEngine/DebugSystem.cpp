@@ -5,6 +5,13 @@
 
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Light.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SphereCollider.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/CharacterController.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"

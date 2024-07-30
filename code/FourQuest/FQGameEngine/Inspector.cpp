@@ -6,6 +6,7 @@
 
 #include "../FQReflect/FQReflect.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "EditorEvent.h"

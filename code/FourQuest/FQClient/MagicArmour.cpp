@@ -1,6 +1,10 @@
 #define NOMINMAX
 #include "MagicArmour.h"
 
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
+
 #include "LinearAttack.h"
 #include "Attack.h"
 #include "Player.h"

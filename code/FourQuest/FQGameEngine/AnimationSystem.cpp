@@ -3,6 +3,9 @@
 #include "GameProcess.h"
 #include "RenderingSystem.h"
 
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/UVAnimator.h"
+
 fq::game_engine::AnimationSystem::AnimationSystem()
 	:mGameProcess(nullptr)
 	, mScene(nullptr)

@@ -48,6 +48,8 @@
     <ClInclude Include="MeleeMonsterAttackState.h" />
     <ClInclude Include="MeleeMonsterChaseState.h" />
     <ClInclude Include="MeleeMonsterDeadState.h" />
+    <ClInclude Include="MeleeMonsterExplosion.h" />
+    <ClInclude Include="MeleeMonsterExplosionState.h" />
     <ClInclude Include="MeleeMonsterFindTargetState.h" />
     <ClInclude Include="MeleeMonsterHitState.h" />
     <ClInclude Include="MeleeMonsterIdleState.h" />
@@ -102,6 +104,8 @@
     <ClCompile Include="MeleeMonsterAttackState.cpp" />
     <ClCompile Include="MeleeMonsterChaseState.cpp" />
     <ClCompile Include="MeleeMonsterDeadState.cpp" />
+    <ClCompile Include="MeleeMonsterExplosion.cpp" />
+    <ClCompile Include="MeleeMonsterExplosionState.cpp" />
     <ClCompile Include="MeleeMonsterFindTargetState.cpp" />
     <ClCompile Include="MeleeMonsterHitState.cpp" />
     <ClCompile Include="MeleeMonsterIdleState.cpp" />

@@ -1,7 +1,9 @@
 #define NOMINMAX
 #include "Player.h"
 
-
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SoundClip.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"

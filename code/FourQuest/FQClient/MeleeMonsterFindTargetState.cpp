@@ -2,6 +2,7 @@
 #include "MeleeMonsterFindTargetState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Animator.h"
 #include "MeleeMonster.h"
 
 fq::client::MeleeMonsterFindTargetState::MeleeMonsterFindTargetState()

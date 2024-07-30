@@ -1,6 +1,8 @@
 #define  NOMINMAX
 #include "MonsterSpawner.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "Attack.h"
 #include "MonsterGroup.h"
 #include "MeleeMonster.h"

@@ -314,9 +314,6 @@
     <ClInclude Include="UVAnimator.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
-    <ClInclude Include="GameModuleComponent.h">
-      <Filter>include\00.Define</Filter>
-    </ClInclude>
     <ClInclude Include="GameModuleManagerh.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>

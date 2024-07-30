@@ -1,5 +1,14 @@
 #pragma once
-#include "../FQGameModule/GameModule.h"
+
+#include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
+
+namespace fq::game_module
+{
+	class Animator;
+	class Transform;
+	class CharacterController;
+}
 
 namespace fq::client
 {

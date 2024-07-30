@@ -1,8 +1,9 @@
 #include "Monster.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/NavigationAgent.h"
 #include "Attack.h"
 
-#include "../FQGameModule/NavigationAgent.h"
 
 fq::client::Monster::Monster()
 	:mTarget(nullptr),

@@ -11,7 +11,6 @@
 #include "PrefabResource.h"
 #include "InstantiatePrefab.h"
 
-#include "GameModuleComponent.h"
 #include "GameModuleManagerh.h"
 
 #include "ICollider.h"

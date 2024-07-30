@@ -4,6 +4,9 @@
 #include <random>
 #include <algorithm>
 
+#include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "Attack.h"
 #include "GameManager.h"
 #include "HpBar.h"
@@ -106,7 +109,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = mAttackPower;
 	attackInfo.attackDirection = foward;
 	attackComponent->Set(attackInfo);

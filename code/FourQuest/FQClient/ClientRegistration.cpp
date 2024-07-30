@@ -40,6 +40,8 @@
 #include "MeleeMonsterWaitAttackState.h"
 #include "MeleeMonsterFindTargetState.h"
 #include "MeleeMonsterHitState.h"
+#include "MeleeMonsterExplosion.h"
+#include "MeleeMonsterExplosionState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -360,6 +362,22 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.base<fq::game_module::Component>();
 
+	entt::meta<MeleeMonsterExplosion>()
+		.type("MeleeMonsterExplosion"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterExplosion")
+		.prop(reflect::prop::Label, "Monster")
+		.data<&MeleeMonsterExplosion::mExplosionRadius>("ExplosionRadius"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionRadius")
+		.data<&MeleeMonsterExplosion::mExplosionDamage>("ExplosionDamage"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionDamage")
+		.data<&MeleeMonsterExplosion::mExplosionTime>("ExplosionTime"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionTime")
+		.data<&MeleeMonsterExplosion::mWarningUI>("WarningUI"_hs)
+		.prop(fq::reflect::prop::Name, "WarningUI")
+		.data<&MeleeMonsterExplosion::mExplosion>("Explosion"_hs)
+		.prop(fq::reflect::prop::Name, "Explosion")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             근접 몬스터 상태  							//
 	//////////////////////////////////////////////////////////////////////////
@@ -405,6 +423,12 @@ void fq::client::RegisterMetaData()
 		.type("MeleeMonsterHitState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterHitState")
 		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<MeleeMonsterExplosionState>()
+		.type("MeleeMonsterExplosionState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterExplosionState")
+		.base<fq::game_module::IStateBehaviour>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//

@@ -2,6 +2,8 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
 
 //#include "../FQGameModule/Transform.h"

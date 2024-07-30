@@ -10,6 +10,10 @@
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQGameModule/TimeManager.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/IFQRenderObject.h"
 

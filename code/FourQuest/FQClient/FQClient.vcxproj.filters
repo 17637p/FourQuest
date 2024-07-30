@@ -248,6 +248,12 @@
     <ClInclude Include="SoundDefine.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="MeleeMonsterExplosion.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterExplosionState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -393,6 +399,12 @@
     </ClCompile>
     <ClCompile Include="SpawnerOpenState.cpp">
       <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterExplosion.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterExplosionState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

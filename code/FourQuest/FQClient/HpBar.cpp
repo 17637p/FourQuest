@@ -1,6 +1,11 @@
 #define NOMINMAX
-
 #include "HpBar.h"
+
+#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/Transform.h"
+
 #include "UILayerDefine.h"
 
 fq::client::HpBar::~HpBar()

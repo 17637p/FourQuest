@@ -1,6 +1,9 @@
 #include "MeleeMonsterDeadState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/RigidBody.h"
 
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 {

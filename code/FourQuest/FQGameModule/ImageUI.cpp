@@ -77,6 +77,11 @@ void fq::game_module::ImageUI::SetUIInfomation(size_t index, const fq::graphics:
 
 void fq::game_module::ImageUI::SetUIPosition(size_t index, float StartX, float StartY)
 {
+	if (mImageObjects.empty())
+	{
+		return;
+	}
+
 	mImageObjects[index]->SetStartX(StartX);
 	mImageObjects[index]->SetStartY(StartY);
 }

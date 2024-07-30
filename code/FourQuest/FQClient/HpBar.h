@@ -1,6 +1,13 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
+
+namespace fq::game_module
+{
+	class Transform;
+	class ImageUI;
+	class Camera;
+}
 
 namespace fq::client
 {

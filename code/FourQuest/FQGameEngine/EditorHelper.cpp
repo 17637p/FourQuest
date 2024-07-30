@@ -7,6 +7,7 @@
 #include "../FQReflect/FQReflect.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Socket.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 

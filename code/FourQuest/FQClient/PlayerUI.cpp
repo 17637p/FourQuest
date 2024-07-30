@@ -1,5 +1,6 @@
 #include "PlayerUI.h"
 
+#include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/ImageUI.h"
 #include "Player.h"
 

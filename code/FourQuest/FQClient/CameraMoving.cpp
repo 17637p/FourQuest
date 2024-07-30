@@ -1,5 +1,7 @@
 #include "CameraMoving.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Camera.h"
 #include "Player.h"
 
 fq::client::CameraMoving::CameraMoving()

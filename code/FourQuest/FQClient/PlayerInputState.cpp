@@ -1,6 +1,7 @@
 #include "PlayerInputState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlayerInputState::Clone()
 {
