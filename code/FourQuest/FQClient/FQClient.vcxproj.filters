@@ -87,6 +87,12 @@
     <Filter Include="src\07.Quest">
       <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\02.Monster\Boss">
+      <UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Boss">
+      <UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -278,6 +284,24 @@
     <ClInclude Include="QuestUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="BossMonster.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="AimAssist.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterIdleState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterChaseState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterRushState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterAttackState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -447,6 +471,24 @@
     </ClCompile>
     <ClCompile Include="QuestUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AimAssist.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonster.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterIdleState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterChaseState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterRushState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
