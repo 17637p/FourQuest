@@ -62,6 +62,7 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MonsterDamaged.h" />
+    <ClInclude Include="MonsterDefine.h" />
     <ClInclude Include="MonsterDie.h" />
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterGroup.h" />

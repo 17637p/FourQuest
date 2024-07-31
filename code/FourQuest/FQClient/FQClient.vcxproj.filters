@@ -278,6 +278,9 @@
     <ClInclude Include="QuestUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">

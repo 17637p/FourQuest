@@ -68,6 +68,10 @@
 
 #include "CameraMoving.h"
 
+// Quest
+#include "Quest.h"
+#include "QuestManager.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -623,6 +627,112 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AutoPositionToScale")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             Quest									//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PreQuest>()
+		.type("PreQuest"_hs)
+		.prop(fq::reflect::prop::Name, "PreQuest")
+		.data<&PreQuest::preIndex>("PreIndex"_hs)
+		.prop(fq::reflect::prop::Name, "PreIndex")
+		.data<&PreQuest::preIsMain>("PreIsMain"_hs)
+		.prop(fq::reflect::prop::Name, "PreIsMain");
+
+	entt::meta<QuestColliderTrigger>()
+		.type("QuestColliderTrigger"_hs)
+		.prop(fq::reflect::prop::Name, "QuestColliderTrigger")
+		.data<&QuestColliderTrigger::colliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName")
+		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름");
+
+	entt::meta<MonsterKill>()
+		.type("MonsterKill"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterKill")
+		.data<&MonsterKill::monsterType>("MonsterType"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.data<&MonsterKill::requestsNumber>("RequestsNumber"_hs)
+		.prop(fq::reflect::prop::Name, "RequestsNumber");
+
+	entt::meta<MonsterGroupKill>()
+		.type("MonsterGroupKill"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupKill")
+		.data<&MonsterGroupKill::groupIndex>("GroupIndex"_hs)
+		.prop(fq::reflect::prop::Name, "GroupIndex");
+
+	entt::meta<Defence>()
+		.type("Defence"_hs)
+		.prop(fq::reflect::prop::Name, "Defence")
+		.data<&Defence::colliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName")
+		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
+		.data<&Defence::seconds>("Seconds"_hs)
+		.prop(fq::reflect::prop::Name, "Seconds");
+
+	entt::meta<ClearQuest>()
+		.type("ClearQuest"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuest")
+		.data<&ClearQuest::clearIndex>("ClearQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestIndex")
+		.data<&ClearQuest::clearIsMain>("ClearQuestIsMain"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestIsMain");
+
+/*
+	entt::meta<QuestJoinCondition>()
+		.type("QuestJoinCondition"_hs)
+		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
+		.data<&QuestJoinCondition::preQuestList>("PreQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "PreQuestList")
+		.data<&QuestJoinCondition::colliderTriggerList>("ColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderTriggerList");
+
+	entt::meta<QuestClearCondition>()
+		.type("QuestClearCondition"_hs)
+		.prop(fq::reflect::prop::Name, "QuestClearCondition")
+		.data<&QuestClearCondition::monsterKillList>("MonsterKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterKillList")
+		.data<&QuestClearCondition::monsterGroupKillList>("MonsterGroupKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupKillList")
+		.data<&QuestClearCondition::defenceList>("DefenceList"_hs)
+		.prop(fq::reflect::prop::Name, "DefenceList")
+		.data<&QuestClearCondition::clearQuestList>("ClearQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestList");*/
+
+	entt::meta<Quest>()
+		.type("Quest"_hs)
+		.prop(fq::reflect::prop::Name, "Quest")
+		.prop(fq::reflect::prop::POD)
+		.data<&Quest::mIndex>("Index"_hs)
+		.prop(fq::reflect::prop::Name, "Index")
+		.data<&Quest::mIsMain>("IsMain"_hs)
+		.prop(fq::reflect::prop::Name, "IsMain")
+		.data<&Quest::preQuestList>("PreQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "PreQuestList")
+		.data<&Quest::colliderTriggerList>("ColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
+		.data<&Quest::monsterKillList>("MonsterKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterKillList")
+		.data<&Quest::monsterGroupKillList>("MonsterGroupKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupKillList")
+		.data<&Quest::defenceList>("DefenceList"_hs)
+		.prop(fq::reflect::prop::Name, "DefenceList")
+		.data<&Quest::clearQuestList>("ClearQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestList")
+		.data<&Quest::mIndex>("Index"_hs)
+		.prop(fq::reflect::prop::Name, "Index");
+
+	entt::meta<QuestManager>()
+		.type("QuestManager"_hs)
+		.prop(fq::reflect::prop::Name, "QuestManager")
+		//.prop(fq::reflect::prop::Label, "UI")
+		.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
+		.prop(fq::reflect::prop::Name, "CurMainQuest")
+		.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
+		.prop(fq::reflect::prop::Name, "CurSubQuest")
+		.data<&QuestManager::mMainQuests>("MainQuest"_hs)
+		.prop(fq::reflect::prop::Name, "MainQuest")
+		.data<&QuestManager::mSubQuests>("SubQuest"_hs)
+		.prop(fq::reflect::prop::Name, "SubQuest")
+		.base<fq::game_module::Component>();
 }
-
-
