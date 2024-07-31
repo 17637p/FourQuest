@@ -263,9 +263,6 @@
     <ClInclude Include="PlayerUIManager.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
-    <ClInclude Include="AutoPositionToScale.h">
-      <Filter>include\05.UI</Filter>
-    </ClInclude>
     <ClInclude Include="PauseUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
@@ -434,9 +431,6 @@
       <Filter>src\02.Monster\Melee</Filter>
     </ClCompile>
     <ClCompile Include="PlayerUIManager.cpp">
-      <Filter>src\05.UI</Filter>
-    </ClCompile>
-    <ClCompile Include="AutoPositionToScale.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="PauseUI.cpp">

@@ -32,7 +32,6 @@
   <ItemGroup>
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackDefine.h" />
-    <ClInclude Include="AutoPositionToScale.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -97,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AOEAttackState.cpp" />
-    <ClCompile Include="AutoPositionToScale.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />

@@ -64,7 +64,6 @@
 #include "HpBar.h"
 #include "PlayerUI.h"
 #include "PlayerUIManager.h"
-#include "AutoPositionToScale.h"
 
 #include "CameraMoving.h"
 
@@ -624,12 +623,6 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&PlayerUIManager::mPlayerUIPrefab>("PlayerUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerUIPrefab")
-		.base<fq::game_module::Component>();
-
-	entt::meta<AutoPositionToScale>()
-		.type("AutoPositionToScale"_hs)
-		.prop(fq::reflect::prop::Name, "AutoPositionToScale")
-		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
