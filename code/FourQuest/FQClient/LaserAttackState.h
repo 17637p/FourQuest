@@ -4,11 +4,11 @@
 
 namespace fq::client
 {
-	class RazerAttackState : public fq::game_module::IStateBehaviour
+	class LaserAttackState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		RazerAttackState();
-		~RazerAttackState();
+		LaserAttackState();
+		~LaserAttackState();
 
 	private:
 		std::shared_ptr<IStateBehaviour> Clone() override;
@@ -17,6 +17,12 @@ namespace fq::client
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 	private:
+		float mLaserEmitTime;
+		float mElapsedTime;
+
+		std::shared_ptr<game_module::GameObject> mGatherEffect;
+
+		friend void RegisterMetaData();
 	};
 
 
