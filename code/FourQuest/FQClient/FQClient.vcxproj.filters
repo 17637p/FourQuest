@@ -197,9 +197,6 @@
     <ClInclude Include="MeleeMonsterFindTargetState.h">
       <Filter>include\02.Monster\Melee</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterGroup.h">
-      <Filter>include\02.Monster</Filter>
-    </ClInclude>
     <ClInclude Include="DeadArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
@@ -296,11 +293,23 @@
     <ClInclude Include="BossMonsterRushState.h">
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
-    <ClInclude Include="BossMonsterAttackState.h">
-	<Filter>include\02.Monster\Boss</Filter>
-	</ClInclude>
+    <ClInclude Include="BossMonsterSmashDownState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
     <ClInclude Include="MonsterDefine.h">
       <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterFindTargetState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGroup.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterWaitAttackState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterDeadState.h">
+      <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -484,7 +493,16 @@
     <ClCompile Include="BossMonsterRushState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
-    <ClCompile Include="BossMonsterAttackState.cpp">
+    <ClCompile Include="BossMonsterSmashDownState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterFindTargetState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterWaitAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterDeadState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>

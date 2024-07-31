@@ -24,6 +24,43 @@ namespace fq::client
 		BossMonster();
 		~BossMonster();
 
+		/// <summary>
+		/// 타겟이 감지 범위에 있는지 확인합니다 
+		/// </summary>
+		void DetectTarget();
+
+		/// <summary>
+		/// 타겟을 설정합니다 
+		/// </summary>
+		void SetTarget(game_module::GameObject* target);
+
+		/// <summary>
+		/// 타겟을 추적합니다 
+		/// </summary>
+		void ChaseTarget();
+
+		/// <summary>
+		/// 타겟이 공격범위에 있는지 확인합니다
+		/// </summary>
+		void CheckTargetInAttackRange();
+
+		/// <summary>
+		/// 내려찍기 공격 
+		/// </summary>
+		void SmashDown();
+
+		/// <summary>
+		/// 내려찍기 공격 이펙트를 방출합니다 
+		/// </summary>
+		std::shared_ptr<game_module::GameObject> EmitSmashDownEffect();
+
+		void Move(DirectX::SimpleMath::Vector3 destination);
+
+		/// <summary>
+		/// 돌진합니다 
+		/// </summary>
+		void Rush();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -46,9 +83,17 @@ namespace fq::client
 		float mAttackRange;
 		float mAttackCoolTime;
 		float mAttackElapsedTime;	
-		float mAttackOffset;
+		float mSmashDownOffset;
+		float mRushPower;
+		float mDetectRange;
 
-		
+		fq::game_module::PrefabResource mSmashDownAttack;
+		fq::game_module::PrefabResource mSmashDownEffect;
+		fq::game_module::PrefabResource mRushAttack;
+		fq::game_module::PrefabResource mRushEffect;
+
+
+
 		friend void RegisterMetaData();
 	};
 }

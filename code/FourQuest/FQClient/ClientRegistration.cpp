@@ -43,6 +43,16 @@
 #include "MeleeMonsterExplosion.h"
 #include "MeleeMonsterExplosionState.h"
 
+// MeleeBossMonster;
+#include "BossMonster.h"
+#include "BossMonsterSmashDownState.h"
+#include "BossMonsterChaseState.h"
+#include "BossMonsterIdleState.h"
+#include "BossMonsterRushState.h"
+#include "BossMonsterFindTargetState.h"
+#include "BossMonsterWaitAttackState.h"
+#include "BossMonsterDeadState.h"
+
 // PlantMoster
 #include "PlantMonster.h"
 #include "LinearAttack.h"
@@ -437,6 +447,82 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterExplosionState>()
 		.type("MeleeMonsterExplosionState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterExplosionState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             보스 몬스터 	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<BossMonster>()
+		.type("BossMonster"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonster")
+		.prop(reflect::prop::Label, "Monster")
+		.data<&BossMonster::mHp>("Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Hp")
+		.data<&BossMonster::mAttackPower>("AttackPower"_hs)
+		.prop(fq::reflect::prop::Name, "AttackPower")
+		.data<&BossMonster::mAttackCoolTime>("AttackCoolTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackCoolTime")
+		.data<&BossMonster::mSmashDownOffset>("SmashDownOffset"_hs)
+		.prop(fq::reflect::prop::Name, "SmashDownOffset")
+		.data<&BossMonster::mAcceleration>("Acceleration"_hs)
+		.prop(fq::reflect::prop::Name, "Acceleration")
+		.data<&BossMonster::mMoveSpeed>("MoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.data<&BossMonster::mRushPower>("RushPower"_hs)
+		.prop(fq::reflect::prop::Name, "RushPower")
+		.data<&BossMonster::mAttackRange>("AttackRange"_hs)
+		.prop(fq::reflect::prop::Name, "AttackRange")
+		.data<&BossMonster::mDetectRange>("DetectRange"_hs)
+		.prop(fq::reflect::prop::Name, "DetectRange")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
+		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
+		.prop(fq::reflect::prop::Name, "SmashDownAttack")
+		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
+		.prop(fq::reflect::prop::Name, "SmashDownEffect")
+		.data<&BossMonster::mRushAttack>("RushAttack"_hs)
+		.prop(fq::reflect::prop::Name, "RushAttack")
+		.data<&BossMonster::mRushEffect>("RushEffect"_hs)
+		.prop(fq::reflect::prop::Name, "RushEffect")
+		.base<fq::game_module::Component>();
+
+	entt::meta<BossMonsterIdleState>()
+		.type("BossMonsterIdleState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterIdleState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterSmashDownState>()
+		.type("BossMonsterSmashDownState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterSmashDownState")
+		.data<&BossMonsterSmashDownState::mAttackEmitTime>("AttackEmitTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackEmitTime")
+		.data<&BossMonsterSmashDownState::mEffectEmitTime>("EffectEmitTime"_hs)
+		.prop(fq::reflect::prop::Name, "EffectEmitTime")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterChaseState>()
+		.type("BossMonsterChaseState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterChaseState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterRushState>()
+		.type("BossMonsterRushState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterRushState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterFindTargetState>()
+		.type("BossMonsterFindTargetState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterFindTargetState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterWaitAttackState>()
+		.type("BossMonsterWaitAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterWaitAttackState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterDeadState>()
+		.type("BossMonsterDeadState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterDeadState")
 		.base<fq::game_module::IStateBehaviour>();
 
 

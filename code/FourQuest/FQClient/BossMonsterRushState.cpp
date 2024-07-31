@@ -1,5 +1,7 @@
 #include "BossMonsterRushState.h"
 
+#include "BossMonster.h"
+
 fq::client::BossMonsterRushState::BossMonsterRushState()
 {
 
@@ -12,7 +14,7 @@ fq::client::BossMonsterRushState::~BossMonsterRushState()
 
 void fq::client::BossMonsterRushState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-
+	animator.GetComponent<BossMonster>()->Rush();
 }
 
 void fq::client::BossMonsterRushState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

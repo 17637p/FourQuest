@@ -35,4 +35,11 @@ namespace fq::client::dc
 		return attackPower / 4.f;
 	}
 
+	// 보스 몬스터 내려찍기 공격 
+	inline float GetMonsterSmashDownDamage(float attackPower)
+	{
+		return attackPower ;
+	}
+
+
 }

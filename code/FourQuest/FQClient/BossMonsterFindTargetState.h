@@ -4,11 +4,11 @@
 
 namespace fq::client
 {
-	class BossMonsterAttackState : public fq::game_module::IStateBehaviour
+	class BossMonsterFindTargetState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		BossMonsterAttackState();
-		~BossMonsterAttackState();
+		BossMonsterFindTargetState();
+		~BossMonsterFindTargetState();
 
 	private:
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
@@ -16,5 +16,6 @@ namespace fq::client
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		entt::meta_handle GetHandle() override { return *this; }
 	};
-}
 
+
+}

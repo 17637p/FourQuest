@@ -1,5 +1,6 @@
 #include "BossMonsterIdleState.h"
 
+#include "BossMonster.h"
 
 fq::client::BossMonsterIdleState::~BossMonsterIdleState()
 {
@@ -23,6 +24,7 @@ void fq::client::BossMonsterIdleState::OnStateEnter(game_module::Animator& anima
 
 void fq::client::BossMonsterIdleState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-
+	auto boss = animator.GetComponent<BossMonster>();
+	boss->DetectTarget();
 }
 
