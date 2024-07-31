@@ -437,6 +437,26 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 			loader.Save(controller, controllerPath);
 		}
 
+		if (ImGui::MenuItem("Create Material"))
+		{
+			auto materialPath = mSelectPath;
+			materialPath /= "NewMaterial.material";
+
+			fq::game_module::AnimatorController controller;
+			fq::game_module::AnimatorControllerLoader loader;
+
+			int index = 0;
+			while (fs::exists(materialPath))
+			{
+				++index;
+				Path newFileName = "NewMaterial";
+				newFileName += std::to_string(index) + ".material";
+				materialPath.replace_filename(newFileName);
+			}
+
+			mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), {});
+		}
+
 
 		ImGui::EndPopup();
 	}
@@ -508,68 +528,106 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 
 		if (path.extension() == ".fbx")
 		{
-			if (ImGui::MenuItem("Convert"))
+			auto createDirectory = [&path]()
+				{
+					std::wstring fileName = path.filename();
+					fileName = fileName.substr(0, fileName.size() - 4);
+					fs::path directory = path.parent_path() / fileName;
+
+					// model 弃歹 积己 
+					if (!fs::exists(directory))
+					{
+						fs::create_directory(directory);
+					}
+
+					return std::tuple{ directory, fileName };
+				};
+
+			auto gameProcess = mGameProcess;
+
+			auto createModel = [&gameProcess, &path](auto directory, auto fileName, const auto& modelData)
+				{
+					gameProcess->mGraphics->WriteModel((directory / fileName).string(), modelData);
+				};
+
+			auto createAnimation = [&gameProcess, &path, this](auto directory, const auto& modelData)
+				{
+					for (const auto& animation : modelData.Animations)
+					{
+						auto path = directory / removeInvalidCharacters(animation.Name);
+						path += ".animation";
+						gameProcess->mGraphics->WriteAnimation(path.string(), animation);
+					}
+				};
+
+			auto createNodeHierarchy = [&gameProcess, &path, this](auto directory, auto fileName, const auto& modelData)
+				{
+					for (const auto& animation : modelData.Animations)
+					{
+						auto path = directory / fileName;
+						path += ".nodeHierachy";
+						mGameProcess->mGraphics->WriteNodeHierarchy(path.string(), modelData);
+					}
+				};
+
+			auto createMaterial = [&gameProcess](auto directory, const auto& modelData)
+				{
+					// material 积己
+					for (const auto& material : modelData.Materials)
+					{
+						using namespace fq::graphics;
+
+						MaterialInfo materialInfo;
+
+						materialInfo.BaseColor = material.BaseColor;
+						materialInfo.Metalness = material.Metalness;
+						materialInfo.Roughness = material.Roughness;
+
+						std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
+
+						if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = texturePath / material.BaseColorFileName;
+						if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = texturePath / material.MetalnessFileName;
+						if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = texturePath / material.RoughnessFileName;
+						if (material.NormalFileName != L"") materialInfo.NormalFileName = texturePath / material.NormalFileName;
+						if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = texturePath / material.EmissiveFileName;
+
+						auto materialPath = (directory / material.Name).string() + ".material";
+						gameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
+					}
+				};
+
+			if (ImGui::MenuItem("ConvertAll"))
 			{
-				std::wstring fileName = path.filename();
-				// .fbx 犬厘磊 力芭
-				fileName = fileName.substr(0, fileName.size() - 4);
-				fs::path directory = path.parent_path() / fileName;
-
-				// model 弃歹 积己 
-				if (!fs::exists(directory))
-				{
-					fs::create_directory(directory);
-				}
-
-				// model 积己
-				auto modelData = mGameProcess->mGraphics->ConvertModel(path.string());
-				mGameProcess->mGraphics->WriteModel((directory / fileName).string(), modelData);
-
-				// anmation 积己
-				for (const auto& animation : modelData.Animations)
-				{
-					auto path = directory / removeInvalidCharacters(animation.Name);
-					path += ".animation";
-					mGameProcess->mGraphics->WriteAnimation(path.string(), animation);
-				}
-
-				// nodeHierachy 积己
-
-				auto path = directory / fileName;
-				path += ".nodeHierachy";
-
-				mGameProcess->mGraphics->WriteNodeHierarchy(path.string(), modelData);
-
-				// material 积己
-				for (const auto& material : modelData.Materials)
-				{
-					using namespace fq::graphics;
-
-					MaterialInfo materialInfo;
-
-					materialInfo.BaseColor = material.BaseColor;
-					materialInfo.Metalness = material.Metalness;
-					materialInfo.Roughness = material.Roughness;
-
-					std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
-
-					if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = texturePath / material.BaseColorFileName;
-					if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = texturePath / material.MetalnessFileName;
-					if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = texturePath / material.RoughnessFileName;
-					if (material.NormalFileName != L"") materialInfo.NormalFileName = texturePath / material.NormalFileName;
-					if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = texturePath / material.EmissiveFileName;
-
-					auto materialPath = (directory / material.Name).string() + ".material";
-					mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
-				}
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createAnimation(directory, modelData);
+				createModel(directory, filename, modelData);
+				createNodeHierarchy(directory, filename, modelData);
+				createMaterial(directory, modelData);
 			}
-		}
-
-		if (path.extension() == ".model")
-		{
 			if (ImGui::MenuItem("ConvertAnimation"))
 			{
-
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createAnimation(directory, modelData);
+			}
+			if (ImGui::MenuItem("ConvertMaterial"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createMaterial(directory, modelData);
+			}
+			if (ImGui::MenuItem("ConvertModel"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createModel(directory, filename, modelData);
+			}
+			if (ImGui::MenuItem("ConvertNodeHierarchy"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createNodeHierarchy(directory, filename, modelData);
 			}
 		}
 

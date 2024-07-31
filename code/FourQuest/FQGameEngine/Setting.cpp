@@ -190,6 +190,25 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				);
 			}
 
+			std::string materialDirectory = mMaterialDirectory.string();
+			ImGui::InputText("MaterialDirectoryPath", &materialDirectory);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* path
+						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+					if (std::filesystem::exists(*path) && std::filesystem::is_directory(*path))
+					{
+						mMaterialDirectory = *path;
+					}
+				}
+			}
+
 			if (ImGui::Button("Generate Material File"))
 			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();

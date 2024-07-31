@@ -503,7 +503,7 @@ void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObje
 
 	if (!std::filesystem::exists(uvAnimationPath))
 	{
-		spdlog::warn("{} uv animation controller load fail", object->GetName());
+		spdlog::warn("{} uv animation file not exist", object->GetName());
 		return;
 	}
 
