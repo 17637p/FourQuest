@@ -219,6 +219,7 @@ namespace fq::physics
 	private:
 		// ¾À
 		physx::PxScene* mScene;
+		physx::PxScene* mGpuScene;
 		physx::PxCudaContextManager* mCudaContextManager;
 
 		std::shared_ptr<Physics> mPhysics;

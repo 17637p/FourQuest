@@ -68,17 +68,22 @@ namespace fq::physics
 		
 		if (articulationIter->second->GetIsRagdoll() == true)
 		{
-			// 컨테이너에서 해당 Articulation을 삭제합니다.
-			mCharacterPhysicsContainer.erase(articulationIter);
-
 			// Articulation의 모든 링크를 가져옵니다.
 			physx::PxU32 linkCount = pxArticulation->getNbLinks();
 			std::vector<physx::PxArticulationLink*> links(linkCount);
 			pxArticulation->getLinks(links.data(), linkCount);
 
+			for (int i = 0; i < linkCount; i++)
+			{
+				links[i]->release();
+			}
+
 			// 모든 링크가 제거된 후 Articulation을 Scene에서 제거합니다.
 			mScene->removeArticulation(*pxArticulation);
 			PX_RELEASE(pxArticulation);
+
+			// 컨테이너에서 해당 Articulation을 삭제합니다.
+			mCharacterPhysicsContainer.erase(articulationIter);
 		}
 
 		return true;

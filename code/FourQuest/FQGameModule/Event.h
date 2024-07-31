@@ -244,6 +244,12 @@ namespace fq::event
 		std::shared_ptr<fq::game_module::LinkData> linkData;
 	};
 
+	struct SetSimulationPhysics
+	{
+		unsigned int colliderID;
+		bool bIsRagdoll;
+	};
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//							Material Event							// 

@@ -171,7 +171,6 @@ namespace fq::game_engine
 					,DirectX::XMConvertToDegrees(euler.y)
 					,DirectX::XMConvertToDegrees(euler.z) };
 
-				ImGui::InputFloat3("LinkScale", (float*)&linkScale);
 				ImGui::InputFloat3("LinkRotation", f);
 				ImGui::InputFloat3("LinkPosition", (float*)&linkPosition);
 				ImGui::InputFloat("Density", &density);
@@ -276,10 +275,6 @@ namespace fq::game_engine
 								* DirectX::SimpleMath::Matrix::CreateScale(objectScale);
 
 							DirectX::SimpleMath::Matrix linkWorldTransform = mSelectLink->GetWorldTransform();
-							linkWorldTransform._11 = 1.f;
-							linkWorldTransform._22 = 1.f;
-							linkWorldTransform._33 = 1.f;
-
 							DirectX::SimpleMath::Vector3 position;
 							DirectX::SimpleMath::Quaternion rotation;
 							DirectX::SimpleMath::Vector3 scale;

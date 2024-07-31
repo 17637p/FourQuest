@@ -71,6 +71,7 @@ namespace fq::physics
 		, mCollisionDataManager(std::make_shared<PhysicsCollisionDataManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
+		, mGpuScene(nullptr)
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 	{
@@ -81,6 +82,7 @@ namespace fq::physics
 		mCCTManager = nullptr;
 		mRigidBodyManager = nullptr;
 		PX_RELEASE(mScene);
+		PX_RELEASE(mGpuScene);
 		PX_RELEASE(mCudaContextManager);
 	}
 
@@ -119,13 +121,13 @@ namespace fq::physics
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
-		sceneDesc.cudaContextManager = mCudaContextManager;
+		//sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
-		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
-		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
-		sceneDesc.solverType = physx::PxSolverType::eTGS;
+		//sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::ePABP;
+		sceneDesc.solverType = physx::PxSolverType::ePGS;
 
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);

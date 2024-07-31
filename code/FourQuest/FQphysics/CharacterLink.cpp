@@ -18,16 +18,7 @@ namespace fq::physics
 
 	CharacterLink::~CharacterLink()
 	{
-		int shapeCount = mPxLink->getNbShapes();
 
-		physx::PxShape* shape;
-		mPxLink->getShapes(&shape, shapeCount);
-
-		for (int i = 0; i < shapeCount; i++)
-		{
-			mPxLink->detachShape(*shape);
-			PX_ASSERT(shape);
-		}
 	}
 
 	bool CharacterLink::Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation, physx::PxScene* scene)
@@ -47,6 +38,7 @@ namespace fq::physics
 		DirectX::SimpleMath::Matrix dxTransform = 
 			DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation) 
 			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+		mLocalTransform = dxTransform;
 
 		CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
 

@@ -44,6 +44,15 @@ namespace fq::physics
 		mPxJoint->setMaxJointVelocity(5.f);
 		mPxJoint->setFrictionCoefficient(0.1f);
 
+		DirectX::SimpleMath::Vector3 scale;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 position;
+		mLocalTransform.Decompose(scale, rotation, position);
+		mLocalTransform =
+			DirectX::SimpleMath::Matrix::CreateScale(1.f)
+			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation) 
+			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+
 		physx::PxTransform pxlocalTransform;
 		DirectX::SimpleMath::Matrix parentLocalTransform = mLocalTransform * ownerLink->GetLocalTransform();
 
@@ -79,6 +88,8 @@ namespace fq::physics
 
 	bool CharacterJoint::Update(const physx::PxArticulationLink* parentLink)
 	{
+		using namespace DirectX::SimpleMath;
+
 		if (!mPxJoint)
 			return true;
 
@@ -108,8 +119,8 @@ namespace fq::physics
 		physx::PxTransform jointGlobalPose = childGlobalPose * jointLocalPoseInChild;
 
 		// 부모 joint와 자식 joint를 DxMatrix로 변환합니다.
-		DirectX::SimpleMath::Matrix dxParentJointGlobalTransform;
-		DirectX::SimpleMath::Matrix dxChildJointGlobalTransform;
+		Matrix dxParentJointGlobalTransform;
+		Matrix dxChildJointGlobalTransform;
 		CopyPxTransformToDirectXMatrix(parentJointGlobalPose, dxParentJointGlobalTransform);
 		CopyPxTransformToDirectXMatrix(jointGlobalPose, dxChildJointGlobalTransform);
 

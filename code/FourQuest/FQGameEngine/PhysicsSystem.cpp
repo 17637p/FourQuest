@@ -687,9 +687,12 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
-			articulation->SetIsRagdoll(data.bIsRagdollSimulation);
+			bool bIsRagdoll = data.bIsRagdollSimulation;
+
+			articulation->SetIsRagdoll(bIsRagdoll);
 
 			// Animator의 본에 LocalTransform을 수정하기
+			if (bIsRagdoll)
 			{
 				if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
 					return;
@@ -707,19 +710,33 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				for (auto& linkData : data.linkData)
 				{
 					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform;
+					DirectX::SimpleMath::Vector3 position;
+					DirectX::SimpleMath::Quaternion rotation;
+					DirectX::SimpleMath::Vector3 scale;
+					boneTransform.Decompose(scale, rotation, position);
 
-					boneTransform._41 = boneTransform._41 / transform->GetWorldScale().x;
-					boneTransform._42 = boneTransform._42 / transform->GetWorldScale().y;
-					boneTransform._43 = boneTransform._43 / transform->GetWorldScale().z;
+					position.x = position.x / transform->GetLocalScale().x;
+					position.y = position.y / transform->GetLocalScale().y;
+					position.z = position.z / transform->GetLocalScale().z;
+					boneTransform = 
+						DirectX::SimpleMath::Matrix::CreateScale(1.f)
+						* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+						* DirectX::SimpleMath::Matrix::CreateTranslation(position);
 
 					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
 					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
 				}
 
+				DirectX::SimpleMath::Matrix dxTransform =
+					DirectX::SimpleMath::Matrix::CreateRotationX(articulation->GetRotationOffset().x / 180.f * 3.14f)
+					* DirectX::SimpleMath::Matrix::CreateRotationY(articulation->GetRotationOffset().y / 180.f * 3.14f)
+					* DirectX::SimpleMath::Matrix::CreateRotationZ(articulation->GetRotationOffset().z / 180.f * 3.14f)
+					* data.worldTransform;
+
 				DirectX::SimpleMath::Vector3 scale;
 				DirectX::SimpleMath::Quaternion rotation;
 				DirectX::SimpleMath::Vector3 position;
-				data.worldTransform.Decompose(scale, rotation, position);
+				dxTransform.Decompose(scale, rotation, position);
 
 				transform->SetLocalPosition(position);
 				transform->SetLocalRotation(rotation);
@@ -853,10 +870,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
 			fq::physics::ArticulationSetData data;
-
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
-
-			std::vector<std::string> nameContainer;
 			
 			std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
 				{
