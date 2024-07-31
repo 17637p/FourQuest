@@ -202,6 +202,8 @@ void fq::game_engine::MaterialWindow::Render()
 		{
 			materialInfo.RasterizeType = static_cast<ERasterizeMode>(currentRasterizeMode);
 		}
+
+		ImGui::InputFloat("EmissiveIntensity", reinterpret_cast<float*>(&materialInfo.EmissiveIntensity));
 	}
 
 	if (mMaterialInterface != nullptr)

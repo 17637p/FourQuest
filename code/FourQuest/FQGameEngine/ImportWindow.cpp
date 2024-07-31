@@ -150,7 +150,7 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 	std::map<int, std::shared_ptr<fq::game_module::GameObject>> gameObjectsMap;
 
 	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadGameObjectInfosByJson(mImportFileName);
-	
+
 	std::shared_ptr<fq::game_module::GameObject> sceneRootObject = std::make_shared<fq::game_module::GameObject>();
 	sceneRootObject->SetName("staticSceneRoot");
 
@@ -231,6 +231,31 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 			}
 
 			// 라이트
+
+			const auto& lightType = gameObjectInfo.LightData.Type;
+
+			if (!lightType.empty())
+			{
+				auto& light = gameObject->AddComponent<fq::game_module::Light>();
+
+				if (lightType == "Spot")
+				{
+					light.SetLightType(fq::graphics::ELightType::Spot);
+				}
+				else if (lightType == "Directional")
+				{
+					light.SetLightType(fq::graphics::ELightType::Directional);
+				}
+				else if (lightType == "Point")
+				{
+					light.SetLightType(fq::graphics::ELightType::Point);
+				}
+
+				light.SetIntensity(gameObjectInfo.LightData.Intensity);
+				light.SetRange(gameObjectInfo.LightData.Range);
+				light.SetLightColor(gameObjectInfo.LightData.Color);
+				light.SetSpot(gameObjectInfo.LightData.SpotAngle); // 맞춰서 처리
+			}
 
 			gameObjectsMap.insert({ gameObjectInfo.ID, gameObject });
 		}
@@ -361,6 +386,9 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 			gameObjectJson["Light"]["Color"]["z"].get<float>(),
 			gameObjectJson["Light"]["Color"]["w"].get<float>()
 		};
+		info.LightData.Intensity = gameObjectJson["Light"]["Intensity"].get<float>();
+		info.LightData.Range = gameObjectJson["Light"]["Range"].get<float>();
+		info.LightData.SpotAngle = gameObjectJson["Light"]["SpotAngle"].get<float>();
 
 		objectInfos.push_back(info);
 	}
