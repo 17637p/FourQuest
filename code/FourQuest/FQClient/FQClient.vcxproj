@@ -68,6 +68,7 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MonsterDamaged.h" />
+    <ClInclude Include="MonsterDefine.h" />
     <ClInclude Include="MonsterDie.h" />
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterGroup.h" />
@@ -103,7 +104,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
-    <ClCompile Include="AutoPositionToScale.cpp" />
+   <ClCompile Include="AutoPositionToScale.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterAttackState.cpp" />
     <ClCompile Include="BossMonsterChaseState.cpp" />
