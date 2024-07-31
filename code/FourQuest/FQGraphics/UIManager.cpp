@@ -415,6 +415,7 @@ void fq::graphics::UIManager::drawAllImage()
 			image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
 		}
 
+		//  마스크 있을 때
 		if (image->GetMaskPath() != "")
 		{
 			stringToWstringPath = image->GetMaskPath();
@@ -445,6 +446,12 @@ void fq::graphics::UIManager::drawAllImage()
 			D2D1_MATRIX_3X2_F totalT = D2D1::Matrix3x2F::Translation(image->GetStartX(), image->GetStartY());
 
 			bitmapBrush->SetTransform(scaleT * translateT);
+
+			mRenderTarget->SetTransform
+			(
+				D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+				* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
+			);
 
 			// D2D1_ANTIALIAS_MODE_ALIASED must be set for FillOpacityMask to function properly
 			mRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
@@ -534,10 +541,11 @@ void fq::graphics::UIManager::drawAllImage()
 			}
 			else
 			{
+				// 왜 스케일 위치가 중앙점이 아니라 시작점이지...?
 				mRenderTarget->SetTransform
 				(
 					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
 				);
 
 				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
