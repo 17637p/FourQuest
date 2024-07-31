@@ -54,7 +54,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	std::string startSceneName = EditorHelper::GetStartSceneName();
+	std::string startSceneName = "DefaultSceneObjectTest";// EditorHelper::GetStartSceneName();
 
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()

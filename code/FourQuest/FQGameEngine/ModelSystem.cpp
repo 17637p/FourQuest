@@ -25,6 +25,7 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* 
 	mEditorProcess = editor;
 }
 
+
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
 	std::filesystem::path modelPath = path;
@@ -73,14 +74,16 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			continue;
 		}
 
-		// 재질 데이터 저장
-		std::vector<std::string> materialNames;
-		materialNames.reserve(mesh.Subsets.size());
+
+		// 재질 경로
+		std::vector<std::string> materialPaths;
+		materialPaths.reserve(mesh.Subsets.size());
 		fq::graphics::MeshObjectInfo meshObjectInfo;
+		std::filesystem::path directory = path.parent_path();
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			materialNames.push_back(subset.MaterialName);
+			materialPaths.push_back((directory / subset.MaterialName).string() + ".material");
 		}
 
 		// StaticMeshObject 생성
@@ -91,7 +94,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			//fq::graphics::IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
 			//staticMeshRenderer.SetStaticMeshObject(iStaticMeshObject);
 			staticMeshRenderer.SetModelPath(modelPath.string());
-			staticMeshRenderer.SetMaterials(materialNames);
+			staticMeshRenderer.SetMaterialPaths(materialPaths);
 			staticMeshRenderer.SetMeshName(mesh.Name);
 			staticMeshRenderer.SetTexturePath(texturePath.string());
 		}
@@ -103,7 +106,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			//iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
 			//skinnedMeshRenderer.SetSkinnedMeshObject(iSkinnedMeshObject);
 			skinnedMeshRenderer.SetModelPath(modelPath.string());
-			skinnedMeshRenderer.SetMaterials(materialNames);
+			skinnedMeshRenderer.SetMaterialPaths(materialPaths);
 			skinnedMeshRenderer.SetMeshName(mesh.Name);
 			skinnedMeshRenderer.SetTexturePath(texturePath.string());
 		}

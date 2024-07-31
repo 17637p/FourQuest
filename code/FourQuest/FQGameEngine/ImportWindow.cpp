@@ -99,6 +99,25 @@ void fq::game_engine::ImportWindow::Render()
 			}
 		}
 
+		std::string materialDirectory = mMaterialDirectory.string();
+		ImGui::InputText("MaterialDirectoryPath", &materialDirectory);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+			if (pathPayLoad)
+			{
+				std::filesystem::path* path
+					= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+				if (std::filesystem::exists(*path) && std::filesystem::is_directory(*path))
+				{
+					mMaterialDirectory = *path;
+				}
+			}
+		}
+
 		if (ImGui::Button("Import", ImVec2{ 133,25 }))
 		{
 			loadGameObjectsForUnityByDirectory();
@@ -122,11 +141,18 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 	{
 		return;
 	}
+	if (!std::filesystem::exists(mMaterialDirectory) && !std::filesystem::is_directory(mMaterialDirectory))
+	{
+		return;
+	}
 
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> rootObjects;
 	std::map<int, std::shared_ptr<fq::game_module::GameObject>> gameObjectsMap;
 
 	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadGameObjectInfosByJson(mImportFileName);
+	
+	std::shared_ptr<fq::game_module::GameObject> sceneRootObject = std::make_shared<fq::game_module::GameObject>();
+	sceneRootObject->SetName("staticSceneRoot");
 
 	for (const auto& gameObjectInfo : gameObjectInfos)
 	{
@@ -142,20 +168,15 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 			transform->SetLocalRotation(gameObjectInfo.TransformData.Rotation);
 			transform->SetLocalScale(gameObjectInfo.TransformData.Scale);
 
-			// 메쉬 랜더러
-			std::vector<std::string> materialNames;
-			materialNames.reserve(gameObjectInfo.MeshData.Materials.size());
 			std::vector<fq::graphics::MaterialInfo> materialInfos;
 			materialInfos.reserve(gameObjectInfo.MeshData.Materials.size());
+			std::vector<std::string> materialPaths;
+			materialPaths.reserve(gameObjectInfo.MeshData.Materials.size());
 
 			for (const auto& material : gameObjectInfo.MeshData.Materials)
 			{
-				std::string materialName = material.Name;
-				std::string::size_type n = material.Name.find(" (Instance)");
-				materialName.erase(n);
-				materialNames.push_back(materialName);
-
 				fq::graphics::MaterialInfo materialInfo;
+
 				materialInfo.BaseColor = material.Albedo;
 				materialInfo.Metalness = material.Metallic;
 				materialInfo.Roughness = 1 - material.Smoothness;
@@ -179,13 +200,16 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 					materialInfo.EmissiveFileName = mTextureDirectory / fq::common::StringUtil::ToWide(material.EmissionMap);
 				}
 
-				materialInfos.push_back(materialInfo);
+				std::string materialPath = (mMaterialDirectory / material.Name).string() + ".material";
+				materialPaths.push_back(materialPath);
+
+				mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
 			}
 
 			const auto& modelName = gameObjectInfo.MeshData.ModelPath;
 			const auto& meshName = gameObjectInfo.MeshData.Name;
 
-			if (!modelName.empty() || !meshName.empty() || !materialNames.empty())
+			if (!modelName.empty() || !meshName.empty())
 			{
 				std::filesystem::path modelPath = (mFBXDirectory / modelName);
 
@@ -201,8 +225,7 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 
 				auto& staticMeshRenderer = gameObject->AddComponent<fq::game_module::StaticMeshRenderer>();
 				staticMeshRenderer.SetModelPath(modelPath.string());
-				staticMeshRenderer.SetMaterials(materialNames);
-				staticMeshRenderer.SetMaterialInfos(materialInfos);
+				staticMeshRenderer.SetMaterialPaths(materialPaths);
 				staticMeshRenderer.SetMeshName(meshName);
 				staticMeshRenderer.SetTexturePath(mTextureDirectory.string());
 			}
@@ -228,14 +251,13 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 		{
 			auto transform = gameObject->GetComponent<game_module::Transform>();
 			transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateScale(0.01) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14) * transform->GetLocalMatrix());
-			rootObjects.push_back(gameObject);
+
+			auto sceneRootTransform = sceneRootObject->GetComponent<game_module::Transform>();
+			sceneRootTransform->AddChild(transform);
 		}
 	}
 
-	for (auto& gameObject : rootObjects)
-	{
-		mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene, gameObject);
-	}
+	mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene, sceneRootObject);
 }
 
 std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::ImportWindow::loadGameObjectInfosByJson(const std::filesystem::path& filePath)

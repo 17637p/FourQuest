@@ -93,6 +93,7 @@ namespace fq::game_engine
 		std::filesystem::path mImportFileName;
 		std::filesystem::path mFBXDirectory;
 		std::filesystem::path mTextureDirectory;
+		std::filesystem::path mMaterialDirectory;
 
 		bool mbIsOpen;
 	};

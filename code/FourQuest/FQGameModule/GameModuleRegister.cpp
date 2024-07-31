@@ -212,6 +212,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MaterialInfo")
 		.data<&SkinnedMeshRenderer::SetMeshObjectInfomation, &SkinnedMeshRenderer::GetMeshObjectInfomation>("MeshObjectInfo"_hs)
 		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
+		.data<&SkinnedMeshRenderer::SetMaterialPaths, &SkinnedMeshRenderer::GetMaterialPaths>("MaterialPaths"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialPaths")
+		.prop(fq::reflect::prop::DragDrop, ".material")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

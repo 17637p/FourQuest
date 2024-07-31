@@ -92,13 +92,13 @@ Texture2DArray gDirectionalShadowMap : register(t18);
 struct PixelOut
 {
     float4 Albedo : SV_Target0;
-    float Metalness : SV_Target1;
-    float Roughness : SV_Target2;
-    float4 Normal : SV_Target3;
-    float4 Emissive : SV_Target4;
-    float4 PositionW : SV_Target5;
-    float4 SourceNormal : SV_Target6;
-    float4 SourceTangent : SV_Target7;
+    float2 MetalnessRoughness : SV_Target1;
+    float4 Normal : SV_Target2;
+    float4 Emissive : SV_Target3;
+    float4 PositionW : SV_Target4;
+    float4 SourceNormal : SV_Target5;
+    float4 SourceTangent : SV_Target6;
+    // float4 Light : SV_Target7;
 };
 
 #else
@@ -224,8 +224,8 @@ PixelOut main(DomainOut pin)
     pout.Normal.xyz = resultNormal;
     pout.Albedo.xyz = resultAlbedo;
     pout.Albedo.w = 1.f;
-    pout.Metalness = resultMetalic;
-    pout.Roughness = resultRoughness;
+    pout.MetalnessRoughness.x = resultMetalic;
+    pout.MetalnessRoughness.y = resultRoughness;
     pout.Emissive = float4(0.f, 0.f, 0.f, 0.f);
     pout.SourceNormal.xyz = pin.NormalW;
     pout.SourceTangent.xyz = pin.TangentW;

@@ -117,12 +117,12 @@ namespace fq::game_module
 		std::string mModelPath;
 		std::string mTexturePath;
 		std::string mMeshName;
-		std::vector<std::string> mMaterialNames;
-		std::vector<fq::graphics::MaterialInfo> mMaterialInfos; // 필요 없음
+		std::vector<std::string> mMaterialNames; // 컨버트 완료 후 지울 예정
+		std::vector<fq::graphics::MaterialInfo> mMaterialInfos; // 컨버트 완료 후 지울 예정
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> mMaterialInterfaces;
 
 		// 추가
-		std::vector<std::string> mMaterialPaths;
+		std::vector<std::string> mMaterialPaths; // 별도로 직렬화된 데이터로 인터페이스 가져올 예정
 	};
 
 }

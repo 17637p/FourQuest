@@ -182,12 +182,71 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						auto materialInfo = decal.GetDecalMaterialInfo();
 
 						if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
-						if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
-						if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
 						if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
 						if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
 
 						decal.SetDecalMaterialInfo(materialInfo);
+					}
+				);
+			}
+
+			if (ImGui::Button("Generate Material File"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+				auto graphics = mGameProcess->mGraphics;
+				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+					[&graphics](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					{
+						if (!renderer.GetMaterialPaths().empty())
+						{
+							return;
+						}
+
+						const auto& materialDirectory = fq::path::GetResourcePath() / "Material";
+						std::vector<std::string> materialPaths;
+						materialPaths.reserve(renderer.GetMaterialInfos().size());
+						const auto& materialInfos = renderer.GetMaterialInfos();
+						const auto& materialNames = renderer.GetMaterials();
+
+						const size_t COUNT = std::min<size_t>(materialInfos.size(), materialNames.size());
+
+						for (size_t i = 0; i < COUNT; ++i)
+						{
+							std::string materialPath = (materialDirectory / materialNames[i]).string() + ".material";
+							materialPaths.push_back(materialPath);
+
+							graphics->WriteMaterialInfo(materialPath, materialInfos[i]);
+						}
+
+						renderer.SetMaterialPaths(materialPaths);
+					}
+				);
+
+				scene->ViewComponents<game_module::StaticMeshRenderer>(
+					[&graphics](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					{
+						if (!renderer.GetMaterialPaths().empty())
+						{
+							return;
+						}
+
+						const auto& materialDirectory = fq::path::GetResourcePath() / "Material";
+						std::vector<std::string> materialPaths;
+						materialPaths.reserve(renderer.GetMaterialInfos().size());
+						const auto& materialInfos = renderer.GetMaterialInfos();
+						const auto& materialNames = renderer.GetMaterials();
+
+						const size_t COUNT = std::min<size_t>(materialInfos.size(), materialNames.size());
+
+						for (size_t i = 0; i < COUNT; ++i)
+						{
+							std::string materialPath = (materialDirectory / materialNames[i]).string() + ".material";
+							materialPaths.push_back(materialPath);
+
+							graphics->WriteMaterialInfo(materialPath, materialInfos[i]);
+						}
+
+						renderer.SetMaterialPaths(materialPaths);
 					}
 				);
 			}
