@@ -1150,16 +1150,19 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	float maxDuration = animationInterfaceOrNull->GetAnimationClip().Duration;
 
+	float startTimePos = stateNode.GetStartTimePos();
 	float duration = stateNode.GetDuration();
+
+	if (ImGui::SliderFloat("StartTimePos", &startTimePos, 0.f, duration))
+	{
+		stateNode.SetStartTimePos(startTimePos);
+	}
+
 	if (ImGui::SliderFloat("Duration", &duration, 0.f, maxDuration))
 	{
 		stateNode.SetDuration(duration);
 	}
-	/*if (ImGui::InputFloat("Duration", &duration))
-	{
-		stateNode.SetDuration(std::min(maxDuration, duration));
-	}*/
-
+	
 	bool IsLoof = stateNode.IsLoof();
 	if (ImGui::Checkbox("IsLoof", &IsLoof))
 	{

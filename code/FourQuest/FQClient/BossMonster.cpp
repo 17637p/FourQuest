@@ -94,9 +94,6 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			}
 		}
 	}
-
-
-
 }
 
 void fq::client::BossMonster::DetectTarget()
@@ -217,5 +214,38 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 	GetScene()->AddGameObject(effectObj);
 
 	return effectObj;
+}
+
+void fq::client::BossMonster::HomingTarget()
+{
+	if (mTarget == nullptr || mTarget->IsDestroyed())
+	{
+		SetTarget(nullptr);
+		return;
+	}
+
+	//auto targetT = mTarget->GetComponent<game_module::Transform>();
+
+	//auto targetPos = targetT->GetWorldPosition();
+	//auto myPos = mTransform->GetWorldPosition();
+
+	//auto directV = targetPos - myPos;
+	//directV.y = 0.f;
+	//directV.Normalize();
+
+	//auto currentRotation = mTransform->GetWorldRotation();
+	//DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	//directionQuaternion.Normalize();
+	//DirectX::SimpleMath::Quaternion result =
+	//	DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
+
+	//DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
+
+	//// UpVector가 뒤집힌 경우
+	//if (rotationMatrix._22 <= -0.9f)
+	//{
+	//	rotationMatrix._22 = 1.f;
+	//}
+	//mTransform->SetLocalRotationToMatrix(rotationMatrix);
 }
 

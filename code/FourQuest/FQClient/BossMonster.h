@@ -40,6 +40,11 @@ namespace fq::client
 		void ChaseTarget();
 
 		/// <summary>
+		/// 플레이어를 위치에 맞게 
+		/// </summary>
+		void HomingTarget();
+
+		/// <summary>
 		/// 타겟이 공격범위에 있는지 확인합니다
 		/// </summary>
 		void CheckTargetInAttackRange();

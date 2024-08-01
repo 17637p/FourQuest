@@ -183,7 +183,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 				mCurrentState = mStates.find(transition->second.GetEnterState());
 				mCurrentState->second.OnStateEnter();
 				mCurrentTransition = mTransitions.end();
-				mTimePos = 0.f;
+				mTimePos = mCurrentState->second.GetStartTimePos();
 				emitChangeState();
 			}
 			else
@@ -191,6 +191,10 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 				mNextState = mStates.find(transition->second.GetEnterState());
 				mNextState->second.OnStateEnter();
 				mCurrentTransition = transition;
+				mBlendTimePos = mNextState->second.GetStartTimePos();
+				mBlendWeight = 0.f;
+				mBlendElapsedTime = 0.f;
+
 				emitChangeState();
 			}
 		}
@@ -277,7 +281,7 @@ bool fq::game_module::AnimatorController::checkConditions(const AnimationTransit
 	return true;
 }
 
-void fq::game_module::AnimatorController::UpdateAnimation(float dt , float defaultSpeed)
+void fq::game_module::AnimatorController::UpdateAnimation(float dt, float defaultSpeed)
 {
 	if (IsInTransition())
 	{
@@ -296,7 +300,7 @@ void fq::game_module::AnimatorController::UpdateAnimation(float dt , float defau
 		mBlendTimePos = std::min(mBlendTimePos + dt * nextPlayBackSpeed * defaultSpeed, nextDuration);
 
 		float transitionDuration = mCurrentTransition->second.GetTransitionDuration();
-		
+
 		mBlendElapsedTime = std::min(mBlendElapsedTime + dt * defaultSpeed, transitionDuration);
 		mBlendWeight = mBlendElapsedTime / transitionDuration;
 
@@ -361,7 +365,7 @@ fq::game_module::AnimatorController::StateName fq::game_module::AnimatorControll
 	{
 		return {};
 	}
-		
+
 	return mNextState->first;
 }
 
@@ -446,15 +450,10 @@ void fq::game_module::AnimatorController::emitChangeState()
 {
 	bool isBlend = (mNextState != mStates.end());
 
-	if (isBlend)
+	if (isBlend && mCurrentState->first == "Entry")
 	{
-		// Entry는 바로 전환합니다 
-		if (mCurrentState->first == "Entry")
-		{
-			mCurrentState = mNextState;
-			mNextState = mStates.end();
-			isBlend = false;
-		}
+		mCurrentState = mNextState;
+		mNextState = mStates.end();
 	}
 }
 
@@ -474,7 +473,7 @@ bool fq::game_module::AnimatorController::checkNextStateTransition()
 			mCurrentState = mStates.find(transition->second.GetEnterState());
 			mCurrentState->second.OnStateEnter();
 
-			mTimePos = 0.f;
+			mTimePos = mCurrentState->second.GetStartTimePos();
 			mBlendTimePos = 0.f;
 			mBlendWeight = 0.f;
 			mBlendElapsedTime = 0.f;
@@ -488,7 +487,7 @@ bool fq::game_module::AnimatorController::checkNextStateTransition()
 			mNextState->second.OnStateEnter();
 
 			mTimePos = mBlendTimePos;
-			mBlendTimePos = 0.f;
+			mBlendTimePos = mNextState->second.GetStartTimePos();
 			mBlendWeight = 0.f;
 			mBlendElapsedTime = 0.f;
 			mCurrentTransition = transition;
@@ -515,7 +514,7 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 			mCurrentState->second.OnStateExit();
 			mCurrentState = mStates.find(transition->second.GetEnterState());
 
-			mTimePos = 0.f;
+			mTimePos = mCurrentState->second.GetStartTimePos();
 			mBlendTimePos = 0.f;
 			mBlendWeight = 0.f;
 			mBlendElapsedTime = 0.f;
@@ -527,7 +526,7 @@ bool fq::game_module::AnimatorController::checkCurrentStateTransition()
 			mNextState = mStates.find(transition->second.GetEnterState());
 			mNextState->second.OnStateEnter();
 
-			mBlendTimePos = 0.f;
+			mBlendTimePos = mNextState->second.GetStartTimePos();
 			mBlendWeight = 0.f;
 			mBlendElapsedTime = 0.f;
 			mCurrentTransition = transition;
