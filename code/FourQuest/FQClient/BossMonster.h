@@ -30,6 +30,11 @@ namespace fq::client
 		void DetectTarget();
 
 		/// <summary>
+		/// 무작위로 타겟을 설정합니다 
+		/// </summary>
+		void SetRandomTarget();
+
+		/// <summary>
 		/// 타겟을 설정합니다 
 		/// </summary>
 		void SetTarget(game_module::GameObject* target);
@@ -52,7 +57,12 @@ namespace fq::client
 		/// <summary>
 		/// 내려찍기 공격 
 		/// </summary>
-		void SmashDown();
+		void EmitSmashDown();
+
+		/// <summary>
+		/// 콤보 공격 
+		/// </summary>
+		void EmitComboAttack();
 
 		/// <summary>
 		/// 내려찍기 공격 이펙트를 방출합니다 
@@ -65,6 +75,18 @@ namespace fq::client
 		/// 돌진합니다 
 		/// </summary>
 		void Rush();
+
+		float GetHPRatio()const;
+
+		/// <summary>
+		/// HPBar를 생성합니다
+		/// </summary>
+		void CreateHpBar();
+
+		/// <summary>
+		/// HpBar를 제거합니다
+		/// </summary>
+		void DestroryHpBar();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -89,15 +111,20 @@ namespace fq::client
 		float mAttackCoolTime;
 		float mAttackElapsedTime;	
 		float mSmashDownOffset;
+		float mComboAttackOffset;
 		float mRushPower;
 		float mDetectRange;
+		float mRotationSpeed;
 
 		fq::game_module::PrefabResource mSmashDownAttack;
 		fq::game_module::PrefabResource mSmashDownEffect;
+		fq::game_module::PrefabResource mComboAttack;
+		fq::game_module::PrefabResource mComboEffect;
 		fq::game_module::PrefabResource mRushAttack;
 		fq::game_module::PrefabResource mRushEffect;
 
-
+		std::shared_ptr<game_module::GameObject> mHpBar;
+		fq::game_module::PrefabResource mHpBarPrefab;
 
 		friend void RegisterMetaData();
 	};

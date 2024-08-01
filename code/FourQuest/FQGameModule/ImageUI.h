@@ -31,6 +31,8 @@ namespace fq::game_module
 		void SetUIScale(size_t index, float scaleX, float scaleY);
 		void SetIsRender(size_t index, bool isRender);
 		void SetFillDegree(size_t index, float degree);
+
+		bool IsBindTransform() const { return mbIsBindTransform; }
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -40,6 +42,8 @@ namespace fq::game_module
 	private:
 		std::vector<graphics::UIInfo> mUIInfomations;
 		std::vector<graphics::IImageObject*> mImageObjects;
+
+		bool mbIsBindTransform;
 
 		friend void RegisterMetaData();
 	};

@@ -35,6 +35,8 @@
     <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
+    <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterHomingRushState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
     <ClInclude Include="BossMonsterChaseState.h" />
     <ClInclude Include="BossMonsterDeadState.h" />
@@ -42,6 +44,7 @@
     <ClInclude Include="BossMonsterRushState.h" />
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
+    <ClInclude Include="BossMonsterWaitTargetState.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -109,6 +112,8 @@
     <ClCompile Include="AOEAttackState.cpp" />
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
+    <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterHomingRushState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />
     <ClCompile Include="BossMonsterChaseState.cpp" />
     <ClCompile Include="BossMonsterDeadState.cpp" />
@@ -116,6 +121,7 @@
     <ClCompile Include="BossMonsterRushState.cpp" />
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
+    <ClCompile Include="BossMonsterWaitTargetState.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />

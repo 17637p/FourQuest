@@ -309,10 +309,19 @@
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
     <ClInclude Include="BossMonsterDeadState.h">
-	<Filter>include\02.Monster\Boss</Filter>
-	</ClInclude>
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
     <ClInclude Include="BossHP.h">
       <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterHomingRushState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterWaitTargetState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterComboAttackState.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -483,7 +492,7 @@
     </ClCompile>
     <ClCompile Include="BossHP.cpp">
       <Filter>src\05.UI</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="AimAssist.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
@@ -510,6 +519,15 @@
     </ClCompile>
     <ClCompile Include="BossMonsterDeadState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterWaitTargetState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterHomingRushState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterComboAttackState.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

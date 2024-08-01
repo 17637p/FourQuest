@@ -46,7 +46,7 @@ void fq::client::BossMonsterSmashDownState::OnStateUpdate(game_module::Animator&
 		if (mAttackElapsedTime >= mAttackEmitTime)
 		{
 			mAttackElapsedTime = mAttackEmitTime;
-			animator.GetComponent<BossMonster>()->SmashDown();
+			animator.GetComponent<BossMonster>()->EmitSmashDown();
 		}
 	}
 }
@@ -64,6 +64,7 @@ void fq::client::BossMonsterSmashDownState::OnStateExit(game_module::Animator& a
 		animator.GetScene()->DestroyGameObject(mEffect.get());
 		mEffect = nullptr;
 	}
-
-
+	
+	// 공격이 끝나면 타겟을 무작위 설정
+	animator.GetComponent<BossMonster>()->SetRandomTarget();
 }

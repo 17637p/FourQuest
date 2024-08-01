@@ -1,6 +1,7 @@
 #include "BossMonsterIdleState.h"
 
 #include "BossMonster.h"
+#include "../FQGameModule/NavigationAgent.h"
 
 fq::client::BossMonsterIdleState::~BossMonsterIdleState()
 {
@@ -19,6 +20,8 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterIdleSta
 
 void fq::client::BossMonsterIdleState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
+	animator.GetComponent<game_module::NavigationAgent>()->Stop();
+
 
 }
 

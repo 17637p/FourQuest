@@ -7,7 +7,8 @@
 #include "GameManager.h"
 #include "DamageCalculation.h"
 #include "KnockBack.h"
-
+#include "BossHP.h"
+#include "ClientHelper.h"
 
 fq::client::BossMonster::BossMonster()
 	:mMaxHp(0.f)
@@ -115,6 +116,24 @@ void fq::client::BossMonster::DetectTarget()
 	}
 }
 
+void fq::client::BossMonster::SetRandomTarget()
+{
+	const auto& players = mGameManager->GetPlayers();
+
+	if (!players.empty())
+	{
+		int size = players.size();
+		int index = helper::RandomGenerator::GetInstance().GetRandomNumber(0, size-1);
+		SetTarget(players[index].get());
+	}
+	else
+	{
+		SetTarget(nullptr);
+	}
+}
+
+
+
 void fq::client::BossMonster::SetTarget(game_module::GameObject* target)
 {
 	if (target == nullptr)
@@ -153,6 +172,7 @@ void fq::client::BossMonster::CheckTargetInAttackRange()
 	if (mTarget == nullptr || mTarget->IsDestroyed())
 	{
 		SetTarget(nullptr);
+		mAnimator->SetParameterBoolean("InAttackRange", false);
 		return;
 	}
 
@@ -174,7 +194,7 @@ void fq::client::BossMonster::Rush()
 	mKnockBack->Set(mRushPower, look);
 }
 
-void fq::client::BossMonster::SmashDown()
+void fq::client::BossMonster::EmitSmashDown()
 {
 	using namespace game_module;
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSmashDownAttack);
@@ -224,28 +244,79 @@ void fq::client::BossMonster::HomingTarget()
 		return;
 	}
 
-	//auto targetT = mTarget->GetComponent<game_module::Transform>();
+	auto targetT = mTarget->GetComponent<game_module::Transform>();
 
-	//auto targetPos = targetT->GetWorldPosition();
-	//auto myPos = mTransform->GetWorldPosition();
+	auto targetPos = targetT->GetWorldPosition();
+	auto myPos = mTransform->GetWorldPosition();
 
-	//auto directV = targetPos - myPos;
-	//directV.y = 0.f;
-	//directV.Normalize();
+	auto directV = targetPos - myPos;
+	directV.y = 0.f;
+	directV.Normalize();
 
-	//auto currentRotation = mTransform->GetWorldRotation();
-	//DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
-	//directionQuaternion.Normalize();
-	//DirectX::SimpleMath::Quaternion result =
-	//	DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
+	auto currentRotation = mTransform->GetWorldRotation();
+	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	directionQuaternion.Normalize();
+	DirectX::SimpleMath::Quaternion result =
+		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
 
-	//DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
 
-	//// UpVector가 뒤집힌 경우
-	//if (rotationMatrix._22 <= -0.9f)
-	//{
-	//	rotationMatrix._22 = 1.f;
-	//}
-	//mTransform->SetLocalRotationToMatrix(rotationMatrix);
+	// UpVector가 뒤집힌 경우
+	if (rotationMatrix._22 <= -0.9f)
+	{
+		rotationMatrix._22 = 1.f;
+	}
+	mTransform->SetLocalRotationToMatrix(rotationMatrix);
+}
+
+float fq::client::BossMonster::GetHPRatio() const
+{
+	return mHp / mMaxHp;
+}
+
+void fq::client::BossMonster::CreateHpBar()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mHpBarPrefab);
+	mHpBar = *(instance.begin());
+	mHpBar->GetComponent<BossHP>()->SetBoss(this);
+	GetScene()->AddGameObject(mHpBar);
+}
+
+void fq::client::BossMonster::DestroryHpBar()
+{
+	if (mHpBar)
+	{
+		GetScene()->DestroyGameObject(mHpBar.get());
+		mHpBar = nullptr;
+	}
+}
+
+void fq::client::BossMonster::EmitComboAttack()
+{
+	using namespace game_module;
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mComboAttack);
+	auto& attackObj = *(instance.begin());
+	auto attackT = attackObj->GetComponent<Transform>();
+
+	// 공격 트랜스폼 설정
+	auto attackPos = mTransform->GetWorldPosition();
+	auto scale = attackT->GetWorldScale();
+	auto rotation = mTransform->GetWorldRotation();
+
+	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+	auto foward = rotationMat.Forward();
+	attackPos += foward * mComboAttackOffset;
+	attackT->GenerateWorld(attackPos, rotation, scale);
+
+	// 공격 정보 설정
+	AttackInfo attackInfo{};
+	auto attackComponent = attackObj->GetComponent<Attack>();
+
+	attackInfo.attacker = GetGameObject();
+	attackInfo.damage = dc::GetMonsterComboAttackDamage(mAttackPower);
+	attackInfo.attackDirection = foward;
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(attackObj);
 }
 

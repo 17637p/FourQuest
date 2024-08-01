@@ -52,8 +52,8 @@ void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
 
 	// 위치 설정
-	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
-	livingArmour->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
+	auto world = GetComponent<game_module::Transform>()->GetWorldMatrix();
+	livingArmour->GetComponent<game_module::Transform>()->SetWorldMatrix(world);
 
 	GetScene()->AddGameObject(livingArmour);
 

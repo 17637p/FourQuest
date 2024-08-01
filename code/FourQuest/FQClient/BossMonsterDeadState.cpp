@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/NavigationAgent.h"
+#include "BossMonster.h"
 
 fq::client::BossMonsterDeadState::BossMonsterDeadState()
 {
@@ -23,6 +24,7 @@ void fq::client::BossMonsterDeadState::OnStateExit(game_module::Animator& animat
 {
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
+	animator.GetComponent<BossMonster>()->DestroryHpBar();
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterDeadState::Clone()

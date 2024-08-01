@@ -52,6 +52,8 @@
 #include "BossMonsterFindTargetState.h"
 #include "BossMonsterWaitAttackState.h"
 #include "BossMonsterDeadState.h"
+#include "BossMonsterWaitTargetState.h"
+#include "BossMonsterHomingRushState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -485,6 +487,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "RushAttack")
 		.data<&BossMonster::mRushEffect>("RushEffect"_hs)
 		.prop(fq::reflect::prop::Name, "RushEffect")
+		.data<&BossMonster::mHpBarPrefab>("HpBarPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "HpBarPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<BossMonsterIdleState>()
@@ -526,6 +530,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossMonsterDeadState")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<BossMonsterWaitTargetState>()
+		.type("BossMonsterWaitTargetState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterWaitTargetState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterHomingRushState>()
+		.type("BossMonsterHomingRushState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterHomingRushState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
