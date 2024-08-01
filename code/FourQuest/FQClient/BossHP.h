@@ -9,6 +9,8 @@ namespace fq::game_module
 
 namespace fq::client
 {
+	class BossMonster;
+
 	class BossHP : public fq::game_module::Component
 	{
 	public:
@@ -18,6 +20,8 @@ namespace fq::client
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
+		void SetBoss(BossMonster* boss) { mBoss = boss; };
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -25,6 +29,8 @@ namespace fq::client
 	private:
 		float mHPWidth;
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
+
+		BossMonster* mBoss;
 
 		game_module::ScreenManager* mScreenManager;
 	};

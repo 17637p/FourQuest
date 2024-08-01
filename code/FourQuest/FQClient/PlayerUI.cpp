@@ -1,13 +1,25 @@
 #include "PlayerUI.h"
 
-#include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Scene.h"
+#include "../FQGameModule/ScreenManager.h"
+
 #include "Player.h"
 
 fq::client::PlayerUI::PlayerUI()
 	:mPlayerID(0),
-	mSoulGaugeDegree(230)
+	mPlayer(nullptr),
+	mHPWidth(0),
+	mHPBarGauge(nullptr),
+	mSoulGaugeDegree(230),
+	mSoulGauge(nullptr),
+	mSoulIcon(nullptr),
+	mWeaponIcons(),
+	mSkillIconXs(),
+	mSkillIconAs(),
+	mSkillIconRs(),
+	mScreenManager(nullptr)
 {
 
 }
