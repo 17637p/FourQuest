@@ -118,3 +118,8 @@ void fq::game_module::ImageUI::SetUIScale(size_t index, float scaleX, float scal
 	}
 }
 
+void fq::game_module::ImageUI::SetFillDegree(size_t index, float degree)
+{
+	mImageObjects[index]->SetFillDegree(degree);
+}
+

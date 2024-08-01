@@ -278,6 +278,9 @@
     <ClInclude Include="MonsterDefine.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
+    <ClInclude Include="BossHP.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -443,6 +446,9 @@
       <Filter>src\07.Quest</Filter>
     </ClCompile>
     <ClCompile Include="QuestUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHP.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>

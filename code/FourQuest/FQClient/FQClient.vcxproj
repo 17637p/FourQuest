@@ -32,6 +32,7 @@
   <ItemGroup>
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackDefine.h" />
+    <ClInclude Include="BossHP.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -96,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
