@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.SceneManagement;
 using static UnityEditor.Progress;
 
@@ -66,6 +67,8 @@ public class EngineMesh
     public string ModelPath;
     public string Name;
     public List<EngineMaterial> Materials;
+    public EngineVector4 LightmapScaleOffset;
+    public int LightmapIndex;
 }
 
 [System.Serializable]
@@ -76,6 +79,7 @@ public class EngineLight
     public float Intensity;
     public float Range;
     public float SpotAngle; // 우리는 그냥 Spot 으로 되어있어서 바꿔야 할지도 
+    public string Mode;
 }
 
 [System.Serializable]
@@ -87,6 +91,7 @@ public class EngineGameObject
     public EngineTransform Transform;
     public EngineMesh Mesh;
     public EngineLight Light;
+    public bool isStatic;
 }
 
 [System.Serializable]
@@ -106,10 +111,12 @@ public class Exporter : MonoBehaviour
             engineGameObject.Name = go.name;
             engineGameObject.ID = go.GetInstanceID();
             engineGameObject.ParentID = 0;
-            if(go.transform.parent != null)
+            if (go.transform.parent != null)
             {
                 engineGameObject.ParentID = go.transform.parent.GetInstanceID();
             }
+
+            engineGameObject.isStatic = go.isStatic;
         }
 
         // Transform 컴포넌트
@@ -146,8 +153,19 @@ public class Exporter : MonoBehaviour
             engineGameObject.Mesh.ModelPath = modelPath;
 
             MeshRenderer meshRenderer = go.GetComponent<MeshRenderer>();
-            if(meshRenderer != null )
+
+            if (meshRenderer != null)
             {
+
+
+                engineGameObject.Mesh.LightmapScaleOffset = new EngineVector4();
+                engineGameObject.Mesh.LightmapScaleOffset.x = meshRenderer.lightmapScaleOffset.x;
+                engineGameObject.Mesh.LightmapScaleOffset.y = meshRenderer.lightmapScaleOffset.y;
+                engineGameObject.Mesh.LightmapScaleOffset.z = meshRenderer.lightmapScaleOffset.z;
+                engineGameObject.Mesh.LightmapScaleOffset.w = meshRenderer.lightmapScaleOffset.w;
+
+                engineGameObject.Mesh.LightmapIndex = meshRenderer.lightmapIndex;
+
                 engineGameObject.Mesh.Materials = new List<EngineMaterial>();
 
                 Material[] materials = meshRenderer.materials;
@@ -162,10 +180,10 @@ public class Exporter : MonoBehaviour
                     // RenderMode
                     int renderMode = (int)mat.GetFloat("_Mode");
                     string modeString = "Unknown";
-                    if(renderMode == 0) modeString = "Opaque";
-                    else if(renderMode == 1) modeString = "Cutout";
-                    else if(renderMode == 2) modeString = "Fade";
-                    else if(renderMode == 3) modeString = "Transparent";
+                    if (renderMode == 0) modeString = "Opaque";
+                    else if (renderMode == 1) modeString = "Cutout";
+                    else if (renderMode == 2) modeString = "Fade";
+                    else if (renderMode == 3) modeString = "Transparent";
                     newMaterial.renderMode = modeString;
 
                     // Albedo
@@ -236,12 +254,12 @@ public class Exporter : MonoBehaviour
         if (light != null)
         {
             // LightType
-            LightType lightType = light.type;
+            UnityEngine.LightType lightType = light.type;
             engineGameObject.Light = new EngineLight();
             string lightTypeString = "Unknown";
-            if (lightType == LightType.Spot) lightTypeString = "Spot";
-            else if (lightType == LightType.Directional) lightTypeString = "Directional";
-            else if (lightType == LightType.Point) lightTypeString = "Point";
+            if (lightType == UnityEngine.LightType.Spot) lightTypeString = "Spot";
+            else if (lightType == UnityEngine.LightType.Directional) lightTypeString = "Directional";
+            else if (lightType == UnityEngine.LightType.Point) lightTypeString = "Point";
             engineGameObject.Light.Type = lightTypeString;
 
             // Color
@@ -260,6 +278,11 @@ public class Exporter : MonoBehaviour
 
             // SpotAngle
             engineGameObject.Light.SpotAngle = light.spotAngle;
+
+            LightmapBakeType lightMode = light.lightmapBakeType;
+            if (lightMode == LightmapBakeType.Realtime) lightTypeString = "Realtime";
+            else if (lightMode == LightmapBakeType.Mixed) lightTypeString = "Mixed";
+            else if (lightMode == LightmapBakeType.Baked) lightTypeString = "Baked";
         }
 
         // Collider 컴포넌트 
@@ -281,7 +304,7 @@ public class Exporter : MonoBehaviour
         Scene scene = SceneManager.GetActiveScene();
         GameObject[] rootObjects = scene.GetRootGameObjects();
 
-        if(!Directory.Exists(Application.dataPath + "/EngineData/"))
+        if (!Directory.Exists(Application.dataPath + "/EngineData/"))
         {
             Directory.CreateDirectory(Application.dataPath + "/EngineData/");
         }

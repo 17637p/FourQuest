@@ -43,6 +43,7 @@ namespace fq::graphics
 		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
 		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
+		mPointWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointWrap);
 		mDefaultRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
 		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
 
@@ -136,6 +137,7 @@ namespace fq::graphics
 			mPositionRTV->Clear(mDevice);
 			mSourceNormalRTV->Clear(mDevice, { 1000,0,0,0 });
 			mSourceTangentRTV->Clear(mDevice, { 1000,0,0,0 });
+			mPreCalculatedLightRTV->Clear(mDevice);
 		}
 
 		// Bind
@@ -165,6 +167,7 @@ namespace fq::graphics
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightMapInformationCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+			mPointWrapSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 
 			const std::shared_ptr<D3D11TextureArray>& lightMapTexture = mLightManager->GetLightMapTextureArray();
 			const std::shared_ptr<D3D11TextureArray>& lightmapDirectionTexture = mLightManager->GetLightMapDirectionTextureArray();

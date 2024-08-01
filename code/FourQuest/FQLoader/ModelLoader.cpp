@@ -117,20 +117,20 @@ namespace fq::loader
 			fileUtil.Read<DirectX::BoundingBox>(&mesh.RenderBoundingBox);
 			fileUtil.Read<DirectX::BoundingSphere>(&mesh.RenderBoundingSphere);
 
-			// unsigned int tex1Count;
-			// fileUtil.Read<unsigned int>(&tex1Count);
-			// mesh.Tex1.reserve(tex1Count);
-			// 
-			// for (unsigned int j = 0; j < tex1Count; ++j)
-			// {
-			// 	DirectX::SimpleMath::Vector2 tex1;
-			// 
-			// 	fileUtil.Read<DirectX::SimpleMath::Vector2>(&tex1);
-			// 
-			// 	mesh.Tex1.push_back(tex1);
-			// }
-			// 
-			 modelData.push_back({ std::move(node), std::move(mesh) });
+			unsigned int tex1Count;
+			fileUtil.Read<unsigned int>(&tex1Count);
+			mesh.Tex1.reserve(tex1Count);
+
+			for (unsigned int j = 0; j < tex1Count; ++j)
+			{
+				DirectX::SimpleMath::Vector2 tex1;
+
+				fileUtil.Read<DirectX::SimpleMath::Vector2>(&tex1);
+
+				mesh.Tex1.push_back(tex1);
+			}
+
+			modelData.push_back({ std::move(node), std::move(mesh) });
 		}
 
 		return modelData;
@@ -272,11 +272,11 @@ namespace fq::loader
 			fileUtil.Write<DirectX::BoundingBox>(mesh.RenderBoundingBox);
 			fileUtil.Write<DirectX::BoundingSphere>(mesh.RenderBoundingSphere);
 
-		 // fileUtil.Write<unsigned int>(mesh.Tex1.size());
-		 // for (const DirectX::SimpleMath::Vector2& tex1 : mesh.Tex1)
-		 // {
-		 // 	fileUtil.Write<DirectX::SimpleMath::Vector2>(tex1);
-		 // }
+			fileUtil.Write<unsigned int>(mesh.Tex1.size());
+			for (const DirectX::SimpleMath::Vector2& tex1 : mesh.Tex1)
+			{
+				fileUtil.Write<DirectX::SimpleMath::Vector2>(tex1);
+			}
 		}
 	}
 	void ModelLoader::WriteMaterialByData(const std::vector<fq::common::Material>& materialData, FileUtil& fileUtil)

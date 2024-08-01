@@ -67,14 +67,7 @@ Texture2DArray gLightMapArray : register(t5);
 Texture2DArray gDirectionArray : register(t6);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
-
-float3 DecodeDirectionalLightmap(float4 directionalLightmap)
-{
-    float3 direction = directionalLightmap.rgb * 2.0 - 1.0;
-    float intensity = directionalLightmap.a;
-
-    return direction * intensity;
-}
+SamplerState gPointWrap : register(s1); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
@@ -132,15 +125,18 @@ PixelOut main(VertexOut pin) : SV_TARGET
     }
 
 #ifdef STATIC
+    // 현재 레거시로 라이트맵 적용, 추후에 PBR 방식으로 GI 연산 수정 예정
     pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
 
-   //if (bUseDirectMap)
-   //{
-   //    float4 direction = gDirectionArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
-   //    float3 lightDirection = DecodeDirectionalLightmap(direction);
-   //    float lambert = saturate(dot(pout.Normal.xyz, normalize(lightDirection)));
-   //    pout.Light.rgb = lightDirection.xyz;// lambert / max(0.00001, direction.w);
-   //}
+   if (bUseDirectMap)
+   {
+       float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, cUVIndex));
+       direction.xyz = direction.xyz * 2 - 1;
+       direction.x = -direction.x;
+       direction.z = -direction.z;
+       float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
+       pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
+   }
 #endif 
     return pout;
 }
@@ -293,10 +289,7 @@ float4 main(VertexOut pin) : SV_TARGET
         ambientLighting = diffuseIBL + specularIBL;
     }
      
-
-
-    float3 preCaculatedLight = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
-
+    float3 preCaculatedLight = albedo * gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
 
     return float4(directLighting + ambientLighting + emissive + preCaculatedLight, 1.f);
 }

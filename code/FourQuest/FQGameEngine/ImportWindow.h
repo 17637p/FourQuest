@@ -48,6 +48,8 @@ namespace fq::game_engine
 			std::string ModelPath;
 			std::string Name;
 			std::vector<Material> Materials;
+			DirectX::SimpleMath::Vector4 LightmapScaleOffset;
+			int LightmapIndex;
 		};
 
 		struct Light
@@ -57,6 +59,7 @@ namespace fq::game_engine
 			float Intensity;
 			float Range;
 			float SpotAngle;
+			std::string Mode;
 		};
 
 		struct GameObjectLoadInfo
@@ -67,6 +70,7 @@ namespace fq::game_engine
 			Transform TransformData;
 			Mesh MeshData;
 			Light LightData;
+			bool isStatic;
 		};
 	}
 
@@ -82,8 +86,8 @@ namespace fq::game_engine
 		bool& IsWindowOpen() { return mbIsOpen; }
 
 	private:
-		void loadGameObjectsForUnityByDirectory();
-		std::vector<importData::GameObjectLoadInfo> loadGameObjectInfosByJson(const std::filesystem::path& filePath);
+		void createGameObject();
+		std::vector<importData::GameObjectLoadInfo> loadData(const std::filesystem::path& filePath);
 
 	private:
 		GameProcess* mGameProcess;

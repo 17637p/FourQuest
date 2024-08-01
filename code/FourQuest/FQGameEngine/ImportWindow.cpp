@@ -120,14 +120,14 @@ void fq::game_engine::ImportWindow::Render()
 
 		if (ImGui::Button("Import", ImVec2{ 133,25 }))
 		{
-			loadGameObjectsForUnityByDirectory();
+			createGameObject();
 		}
 	}
 
 	ImGui::End();
 }
 
-void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
+void fq::game_engine::ImportWindow::createGameObject()
 {
 	if (!std::filesystem::exists(mImportFileName) || mImportFileName.extension() != ".json")
 	{
@@ -149,7 +149,7 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> rootObjects;
 	std::map<int, std::shared_ptr<fq::game_module::GameObject>> gameObjectsMap;
 
-	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadGameObjectInfosByJson(mImportFileName);
+	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadData(mImportFileName);
 
 	std::shared_ptr<fq::game_module::GameObject> sceneRootObject = std::make_shared<fq::game_module::GameObject>();
 	sceneRootObject->SetName("staticSceneRoot");
@@ -228,10 +228,21 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 				staticMeshRenderer.SetMaterialPaths(materialPaths);
 				staticMeshRenderer.SetMeshName(meshName);
 				staticMeshRenderer.SetTexturePath(mTextureDirectory.string());
+
+				if (gameObjectInfo.isStatic)
+				{
+					fq::graphics::IStaticMeshObject* iStaticMeshObject = staticMeshRenderer.GetStaticMeshObject();
+					fq::graphics::MeshObjectInfo staticMeshInfo = iStaticMeshObject->GetMeshObjectInfo();
+
+					staticMeshInfo.ObjectType = fq::graphics::MeshObjectInfo::EObjectType::Static;
+
+					iStaticMeshObject->SetMeshObjectInfo(staticMeshInfo);
+					iStaticMeshObject->SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
+					iStaticMeshObject->SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
+				}
 			}
 
 			// ¶óÀÌÆ®
-
 			const auto& lightType = gameObjectInfo.LightData.Type;
 
 			if (!lightType.empty())
@@ -255,6 +266,19 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 				light.SetRange(gameObjectInfo.LightData.Range);
 				light.SetLightColor(gameObjectInfo.LightData.Color);
 				light.SetSpot(gameObjectInfo.LightData.SpotAngle); // ¸ÂÃç¼­ Ã³¸®
+
+				if (lightType == "Realtime")
+				{
+					light.SetLightMode(fq::graphics::ELightMode::Realtime);
+				}
+				else if (lightType == "Mixed")
+				{
+					light.SetLightMode(fq::graphics::ELightMode::Mixed);
+				}
+				else if (lightType == "Baked")
+				{
+					light.SetLightMode(fq::graphics::ELightMode::Baked);
+				}
 			}
 
 			gameObjectsMap.insert({ gameObjectInfo.ID, gameObject });
@@ -285,7 +309,7 @@ void fq::game_engine::ImportWindow::loadGameObjectsForUnityByDirectory()
 	mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene, sceneRootObject);
 }
 
-std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::ImportWindow::loadGameObjectInfosByJson(const std::filesystem::path& filePath)
+std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::ImportWindow::loadData(const std::filesystem::path& filePath)
 {
 	assert(std::filesystem::exists(filePath));
 
@@ -323,6 +347,7 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 		info.Name = gameObjectJson["Name"].get<std::string>();
 		info.ID = gameObjectJson["ID"].get<int>();
 		info.ParentID = gameObjectJson["ParentID"].get<int>();
+		info.isStatic = gameObjectJson["isStatic"].get<bool>();
 
 		// Transform ÆÄ½Ì
 		info.TransformData.Position = {
@@ -345,6 +370,14 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 		// Mesh ÆÄ½Ì
 		info.MeshData.ModelPath = getFileName(gameObjectJson["Mesh"]["ModelPath"].get<std::string>());
 		info.MeshData.Name = gameObjectJson["Mesh"]["Name"].get<std::string>();
+		info.MeshData.LightmapScaleOffset = {
+				gameObjectJson["Mesh"]["LightmapScaleOffset"]["x"].get<float>(),
+				gameObjectJson["Mesh"]["LightmapScaleOffset"]["y"].get<float>(),
+				gameObjectJson["Mesh"]["LightmapScaleOffset"]["z"].get<float>(),
+				gameObjectJson["Mesh"]["LightmapScaleOffset"]["w"].get<float>()
+		};
+		info.MeshData.LightmapIndex = gameObjectJson["Mesh"]["LightmapIndex"].get<int>();
+
 		for (const auto& materialJson : gameObjectJson["Mesh"]["Materials"]) {
 			Material material;
 			material.Name = materialJson["Name"].get<std::string>();
@@ -376,6 +409,7 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 				materialJson["Offset"]["y"].get<float>()
 			};
 			info.MeshData.Materials.push_back(material);
+
 		}
 
 		// Light ÆÄ½Ì
@@ -389,6 +423,7 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 		info.LightData.Intensity = gameObjectJson["Light"]["Intensity"].get<float>();
 		info.LightData.Range = gameObjectJson["Light"]["Range"].get<float>();
 		info.LightData.SpotAngle = gameObjectJson["Light"]["SpotAngle"].get<float>();
+		info.LightData.Mode = gameObjectJson["Light"]["Mode"].get<std::string>();
 
 		objectInfos.push_back(info);
 	}

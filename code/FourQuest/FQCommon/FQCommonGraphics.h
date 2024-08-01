@@ -22,6 +22,13 @@ namespace fq::graphics
 		Spot
 	};
 
+	enum class ELightMode
+	{
+		Realtime,
+		Mixed,
+		Baked
+	};
+
 	struct LightInfo
 	{
 		// Common
