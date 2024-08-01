@@ -81,6 +81,34 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	// Font 추가
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 
+	///////////////////////////////////////////////////////////////
+	// --------------------font Test-------------------------------
+	///////////////////////////////////////////////////////////////
+
+	fq::graphics::TextInfo textInfo{};
+	DirectX::SimpleMath::Rectangle drawRect{};
+	drawRect.x = 600;
+	drawRect.y = 600;
+	drawRect.width = 1000;
+	drawRect.height = 1000;
+	textInfo.Text = L"집가고싶당";
+	textInfo.DrawRect = drawRect;
+	textInfo.FontColor = { 0.1,0.8,0.4,1 };
+	textInfo.FontSize = 32;
+	textInfo.FontPath = L"DungGeunMo";
+	mTestGraphics->DrawText(textInfo);
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+
+	drawRect.x = 600;
+	drawRect.y = 700;
+	textInfo.DrawRect = drawRect;
+	textInfo.FontSize = 50;
+	textInfo.FontColor = { 0.8,0.8,0.4,1 };
+	mTestGraphics->DrawText(textInfo);
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+
+	// -----------------------------------------------------------
+
 	return true;
 }
 
@@ -215,22 +243,28 @@ void UIDemo::Update()
 		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
 	}
 
-	///////////////////////////////////////////////////////////////
-	// --------------------font Test-------------------------------
-	///////////////////////////////////////////////////////////////
+	if (InputManager::GetInstance().IsGetKeyDown('V'))
+	{
+		fq::graphics::TextInfo textInfo{};
+		DirectX::SimpleMath::Rectangle drawRect{};
+		drawRect.x = 600;
+		drawRect.y = 600;
+		drawRect.width = 1000;
+		drawRect.height = 1000;
+		textInfo.Text = L"집가고싶당";
+		textInfo.DrawRect = drawRect;
+		textInfo.FontColor = { 0.1,0.8,0.4,1 };
+		textInfo.FontSize = 32;
+		textInfo.FontPath = L"DungGeunMo";
+		mTestGraphics->DeleteText(textInfo);
 
-	DirectX::SimpleMath::Rectangle drawRect;
-	drawRect.x = 600;
-	drawRect.y = 600;
-	drawRect.width = 1000;
-	drawRect.height = 1000;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
-
-	drawRect.x = 600;
-	drawRect.y = 700;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
-
-	// -----------------------------------------------------------
+		drawRect.x = 600;
+		drawRect.y = 700;
+		textInfo.DrawRect = drawRect;
+		textInfo.FontSize = 50;
+		textInfo.FontColor = { 0.8,0.8,0.4,1 };
+		mTestGraphics->DeleteText(textInfo);
+	}
 }
 
 void UIDemo::Render()
