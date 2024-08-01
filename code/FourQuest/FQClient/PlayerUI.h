@@ -36,8 +36,12 @@ namespace fq::client
 		int mPlayerID;
 		fq::client::Player* mPlayer;
 
-		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
 		float mHPWidth;
+		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
+
+		int mSoulGaugeDegree;
+		game_module::ImageUI* mSoulGauge; // Soul Gauge 조정 25 - 255
+		game_module::ImageUI* mSoulIcon; // Soul Gauge 끝에 넣기
 
 		std::vector<game_module::ImageUI*> mWeaponIcons; // 무기 아이콘
 

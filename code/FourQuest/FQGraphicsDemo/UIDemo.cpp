@@ -267,11 +267,11 @@ void UIDemo::createImage()
 	uiInfo.YRatio = 1;
 	uiInfo.Alpha = 0.5;
 	uiInfo.Layer = 1;
-	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	uiInfo.ImagePath = "./resource/Graphics/UIDemo/soul_bar_gauge.png";
 	//uiInfo.MaskPath = "./resource/Graphics/UIDemo/bitmapmask.png";
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
-	uiInfo.fillDegree = 270;
+	uiInfo.fillDegree = 180;
 	uiInfo.RotationAngle = 0;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);

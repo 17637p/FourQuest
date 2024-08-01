@@ -253,7 +253,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::UIInfo::ScaleY>("ScaleY"_hs)
 		.prop(fq::reflect::prop::Name, "ScaleY")
 		.data<&graphics::UIInfo::isCenter>("IsCenter"_hs)
-		.prop(fq::reflect::prop::Name, "IsCenter");
+		.prop(fq::reflect::prop::Name, "IsCenter")
+		.data<&graphics::UIInfo::fillDegree>("FillDegree"_hs)
+		.prop(fq::reflect::prop::Name, "FillDegree");
 
 	entt::meta<ImageUI>()
 		.type("ImageUI"_hs)

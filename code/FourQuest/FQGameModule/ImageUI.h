@@ -30,6 +30,7 @@ namespace fq::game_module
 		void SetUIPosition(size_t index, float StartX, float StartY);
 		void SetUIScale(size_t index, float scaleX, float scaleY);
 		void SetIsRender(size_t index, bool isRender);
+		void SetFillDegree(size_t index, float degree);
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

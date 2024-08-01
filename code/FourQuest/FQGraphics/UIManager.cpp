@@ -473,8 +473,8 @@ void fq::graphics::UIManager::drawAllImage()
 			{
 				float radian = DirectX::XMConvertToRadians(degree - 270);
 
-				float radiusX = image->GetWidth() / 2;
-				float radiusY = image->GetHeight() / 2;
+				float radiusX = (image->GetWidth() / 2) * image->GetScaleX();
+				float radiusY = (image->GetHeight() / 2) * image->GetScaleY();
 
 				float startX = image->GetStartX();
 				float startY = image->GetStartY();
@@ -528,6 +528,12 @@ void fq::graphics::UIManager::drawAllImage()
 						pPathGeometry
 					),
 					nullptr
+				);
+
+				mRenderTarget->SetTransform
+				(
+					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
 				);
 
 				// 이미지를 그립니다.

@@ -74,6 +74,7 @@
 #include "HpBar.h"
 #include "PlayerUI.h"
 #include "PlayerUIManager.h"
+#include "BossHP.h"
 
 #include "CameraMoving.h"
 
@@ -709,6 +710,12 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&PlayerUIManager::mPlayerUIPrefab>("PlayerUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<BossHP>()
+		.type("BossHP"_hs)
+		.prop(fq::reflect::prop::Name, "BossHP")
+		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
