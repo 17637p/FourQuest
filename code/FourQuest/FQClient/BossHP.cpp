@@ -2,6 +2,8 @@
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Scene.h"
+#include "../FQGameModule/ScreenManager.h"
 
 #include "BossMonster.h"
 
@@ -27,10 +29,32 @@ void fq::client::BossHP::OnStart()
 	game_module::Transform* myTransform = GetGameObject()->GetComponent<game_module::Transform>();
 	mHPBarGauge = myTransform->GetChildren()[0]->GetComponent<fq::game_module::ImageUI>();
 	mHPWidth = mHPBarGauge->GetUIInfomations()[0].Width;
+
+	// screenManager 등록
+	fq::game_module::Scene* scene = GetScene();
+	mScreenManager = GetScene()->GetScreenManager();
 }
 
 void fq::client::BossHP::OnUpdate(float dt)
 {
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	// Scale 자동 조정 
+	UINT screenWidth = mScreenManager->GetScreenWidth();
+	UINT screenHeight = mScreenManager->GetScreenHeight();
+	float scaleX = screenWidth / (float)1920;
+	float scaleY = screenHeight / (float)1080;
+	{
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+	}
+
+	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
+	// Position 자동 조정
+	{
+		myTransform->SetLocalPosition({ (screenWidth / 2) - ((myImage->GetUIInfomation(0).Width / 2) * scaleX), 
+			screenHeight / (float)1080, 1 });
+	}
+
 	// HP 바 조정
 	//float hpRatio = mBoss->GetHPRatio();
 	float hpRatio = 0.2f;
