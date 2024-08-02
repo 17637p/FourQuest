@@ -92,7 +92,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 					if (nodeHierarchyInstanceOrNull == nullptr)
 					{
-						meshObject->SetTransform(transform.GetWorldMatrix());
+						meshObject->SetTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14) * transform.GetWorldMatrix());
 					}
 					else
 					{
@@ -357,11 +357,10 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	if (!std::filesystem::exists(modelPath))
 	{
 		SPDLOG_WARN("[RenderingSystem] Model Path \"{}\" does not exist", modelPath);
+		return;
 	}
-	else
-	{
-		LoadModel(modelPath, texturePath);
-	}
+
+	LoadModel(modelPath, texturePath);
 
 	auto key = GetModelKey(modelPath, texturePath);
 	auto meshName = staticMeshRenderer->GetMeshName();
@@ -526,12 +525,22 @@ void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObje
 		if (child->HasComponent<game_module::StaticMeshRenderer>())
 		{
 			auto staticMeshRenderer = child->GetComponent<fq::game_module::StaticMeshRenderer>();
-			staticMeshRenderer->GetStaticMeshObject()->SetUVAnimationInstance(uvAnimationInstanceInterface);
+			auto staticMeshObject = staticMeshRenderer->GetStaticMeshObject();
+
+			if (staticMeshObject != nullptr)
+			{
+				staticMeshObject->SetUVAnimationInstance(uvAnimationInstanceInterface);
+			}
 		}
 		if (child->HasComponent<game_module::Decal>())
 		{
 			auto decal = child->GetComponent<fq::game_module::Decal>();
-			decal->GetDecalObjectInterface()->SetUVAnimationInstance(uvAnimationInstanceInterface);
+			auto decalObject = decal->GetDecalObjectInterface();
+
+			if (decalObject != nullptr)
+			{
+				decalObject->SetUVAnimationInstance(uvAnimationInstanceInterface);
+			}
 		}
 	}
 }

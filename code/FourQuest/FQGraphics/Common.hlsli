@@ -78,6 +78,51 @@ struct Material
     float metallic;
 };
 
+// unity attenuation func
+float DistanceAttenuation(float distanceSqr, float2 distanceAttenuation)
+{
+    // Calculate the basic distance attenuation
+    float lightAtten = 1.0 / distanceSqr; // Using reciprocal function to avoid division
+
+    // Extract the attenuation parameters from the float2 vector
+    float distanceAttenuationX = distanceAttenuation.x;
+    float distanceAttenuationY = distanceAttenuation.y;
+
+    // Compute the factor and smoothFactor for distance attenuation
+    float factor = distanceSqr * distanceAttenuationX;
+    float smoothFactor = saturate(1.0 - factor * factor);
+    smoothFactor = smoothFactor * smoothFactor;
+
+    // Apply the smooth factor to the basic distance attenuation
+    return lightAtten * smoothFactor;
+}
+
+float AngleAttenuation(float3 spotDirection, float3 lightDirection, float2 spotAngles)
+{
+    // Calculate the dot product between the spotlight direction and light direction
+    float SdotL = dot(spotDirection, lightDirection);
+    
+    // Convert the spotAngles from degrees to radians
+    float innerAngleRad = spotAngles.x * 3.141592 / 180; //0.0174532925; // Degrees to radians (PI/180)
+    float outerAngleRad = spotAngles.y * 3.141592 / 180; //0.0174532925; // Degrees to radians (PI/180)
+
+    // Compute the cosines of the inner and outer angles
+    float cosInnerAngle = cos(innerAngleRad);
+    float cosOuterAngle = cos(outerAngleRad);
+
+    // Calculate the inverse angle range
+    float invAngleRange = 1.0 / (cosInnerAngle - cosOuterAngle);
+
+    // Calculate the attenuation based on the dot product and angle range
+    float attenuation = (SdotL - cosOuterAngle); // * invAngleRange;
+
+    // Clamp the attenuation between 0 and 1
+    float clampedAtten = saturate(attenuation);
+
+    // Square the clamped attenuation for smooth falloff
+    return clampedAtten * clampedAtten;
+}
+
 float3 ComputeDirectionLight(
     DirectionalLight directionLight,
     Material material,
@@ -163,6 +208,7 @@ float3 ComputePointLight(
     // PointLight attenuation
     float3 resultColor = (diffuse + specular) * NdotL * pointLight.color * pointLight.intensity;
 
+    // float att = DistanceAttenuation(d * d, float2(pointLight.attenuation.yz));
     float att = 1.0f / dot(pointLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
@@ -190,6 +236,7 @@ float3 ComputeSpotLight(
     }
     
     lightVector = normalize(lightVector);
+    spotLight.direction = normalize(spotLight.direction);
 
     // Half vector
     const float3 halfVector = normalize(lightVector + toEye);
@@ -215,8 +262,14 @@ float3 ComputeSpotLight(
     // SpotLight attenuation
     float3 resultColor = (diffuse + specular) * NdotL * spotLight.color * spotLight.intensity;
 
-    float spot = pow(max(dot(-lightVector, spotLight.direction), 0.0f), spotLight.spot);
-    float att = spot / dot(spotLight.attenuation, float3(1.0f, d, d * d));
+    // 이전 방식
+    // float spot = pow(max(dot(-lightVector, spotLight.direction), 0.0f), spotLight.spot);
+    //float att = spot / dot(spotLight.attenuation, float3(1.0f, d, d * d));
+    
+    // 유니티 방식
+    float angleAttenuation = AngleAttenuation(spotLight.direction, -lightVector, float2(spotLight.spot, spotLight.spot + 1));
+    // float distanceAttenuation = DistanceAttenuation(d * d, spotLight.attenuation.yz); // 함수 형태 이상해서 일단 보류
+    float att = angleAttenuation * 1 / dot(spotLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
     resultColor = clamp(resultColor, 0.0, 1.0);
@@ -503,4 +556,24 @@ struct ParticleMaterial
     
     int bUseMultiplyAlpha;
     float AlphaCutoff;
+};
+
+struct ModelMaterial
+{
+    float4 BaseColor;
+    float4 EmissiveColor;
+    float4x4 TexTransform;
+    
+    float Metalness;
+    float Roughness;
+    bool UseAlbedoMap;
+    bool UseMetalnessMap;
+  
+    bool UseRoughnessMap;
+    bool UseNormalMap;
+    bool UseEmissiveMap;
+    float AlphaCutoff;
+    
+    float EmissiveIntensity;
+    bool UseMetalnessSmoothness;
 };

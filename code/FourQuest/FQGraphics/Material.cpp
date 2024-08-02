@@ -25,6 +25,7 @@ namespace fq::graphics
 		if (!mInfo.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mInfo.RoughnessFileName);
 		if (!mInfo.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mInfo.NormalFileName);
 		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
+		if (!mInfo.MetalnessSmoothnessFileName.empty()) mMetalnessSmoothness = mResourceManager->Create<D3D11Texture>(mInfo.MetalnessSmoothnessFileName);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -50,8 +51,8 @@ namespace fq::graphics
 		mMetalics{},
 		mRoughnesses{},
 		mAlpha{ nullptr },
-		mWidth{width},
-		mHeight{height},
+		mWidth{ width },
+		mHeight{ height },
 		mHeightscale(materialData.HeightScale)
 	{
 		mBasePath = basePath;
@@ -207,12 +208,12 @@ namespace fq::graphics
 	{
 		loadTexture();
 	}
-	void ParticleMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device) 
+	void ParticleMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
 	{
 		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 1, ED3D11ShaderType::PixelShader);
 	}
-	void ParticleMaterial::loadTexture() 
+	void ParticleMaterial::loadTexture()
 	{
 		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
 		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);

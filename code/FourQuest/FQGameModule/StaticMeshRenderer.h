@@ -102,7 +102,7 @@ namespace fq::game_module
 		bool GetIsNavigationMeshUsed() const { return mIsNavigationMeshUsed; }
 		void SetIsNavigationMeshUsed(bool val) { mIsNavigationMeshUsed = val; }
 
-		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths;  }
+		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
 		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
 
 	private:

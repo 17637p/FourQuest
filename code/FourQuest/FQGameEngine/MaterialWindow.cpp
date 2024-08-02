@@ -173,12 +173,27 @@ void fq::game_engine::MaterialWindow::Render()
 			}
 		}
 
+		char metalnessSmoothnessFileName[256];
+		wcstombs(metalnessSmoothnessFileName, materialInfo.MetalnessSmoothnessFileName.c_str(), 256);
+		ImGui::InputText("MetalnessSmoothness File", emissiveFileName, 256);
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+			if (pathPayLoad)
+			{
+				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
+				materialInfo.MetalnessSmoothnessFileName = path->c_str();
+			}
+		}
+
 		// Usage booleans
 		ImGui::Checkbox("Use Base Color", &materialInfo.bUseBaseColor);
 		ImGui::Checkbox("Use Metalness", &materialInfo.bUseMetalness);
 		ImGui::Checkbox("Use Roughness", &materialInfo.bUseRoughness);
 		ImGui::Checkbox("Use Normal", &materialInfo.bUseNormalness);
 		ImGui::Checkbox("Use Emissive", &materialInfo.bIsUsedEmissive);
+		ImGui::Checkbox("Use MetalnessSmoothness", &materialInfo.bIsUsedMetalnessSmoothness);
 
 		// Tiling and Offset
 		ImGui::InputFloat2("Tiling", reinterpret_cast<float*>(&materialInfo.Tiling));

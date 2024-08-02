@@ -32,6 +32,7 @@ namespace fq::graphics
 		inline bool GetHasNormal() const { return mNormal != nullptr; }
 		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
 		inline bool GetHasOpacity() const { return mOpacity != nullptr; }
+		inline bool GetHasMetalnessSmoothness() const { return mMetalnessSmoothness != nullptr; }
 
 		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
 		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
@@ -39,6 +40,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
 		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
+		std::shared_ptr<D3D11Texture> GetMetalnessSmoothness() const { return mMetalnessSmoothness; }
 
 		const std::string& GetName() const override { return mName; }
 
@@ -56,6 +58,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> mNormal;
 		std::shared_ptr<D3D11Texture> mEmissive;
 		std::shared_ptr<D3D11Texture> mOpacity;
+		std::shared_ptr<D3D11Texture> mMetalnessSmoothness;
 	};
 
 	class TerrainMaterial

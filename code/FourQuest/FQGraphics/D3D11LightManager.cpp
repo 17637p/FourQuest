@@ -182,6 +182,11 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	}
 	for (const auto& directionalLight : mDirectionalLights)
 	{
+		if (ARRAYSIZE(lightData.directionalLight) <= count)
+		{
+			break;
+		}
+
 		auto find = idSet.find(directionalLight.first);
 
 		if (find == idSet.end())
@@ -196,14 +201,26 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	count = 0;
 	for (const auto& pointLight : mPointLights)
 	{
+		if (ARRAYSIZE(lightData.pointLight) <= count)
+		{
+			break;
+		}
+
 		lightData.pointLight[count] = pointLight.second->GetData();
 		count++;
 	}
 	lightData.numOfPointLight = count;
 	// Spot Light
+
+
 	count = 0;
 	for (const auto& spotLight : mSpotLight)
 	{
+		if (ARRAYSIZE(lightData.spotLight) <= count)
+		{
+			break;
+		}
+
 		lightData.spotLight[count] = spotLight.second->GetData();
 		count++;
 	}

@@ -171,6 +171,7 @@
     <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
     <ClInclude Include="ImportWindow.h" />
+    <ClInclude Include="LightmapWindow.h" />
     <ClInclude Include="LightProbeSystem.h" />
     <ClInclude Include="LightProbeWindow.h" />
     <ClInclude Include="LightSystem.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
     <ClCompile Include="ImportWindow.cpp" />
+    <ClCompile Include="LightmapWindow.cpp" />
     <ClCompile Include="LightProbeSystem.cpp" />
     <ClCompile Include="LightProbeWindow.cpp" />
     <ClCompile Include="LightSystem.cpp" />

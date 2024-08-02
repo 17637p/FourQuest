@@ -32,21 +32,7 @@ struct PixelOut
 
 cbuffer cbMaterial : register(b0)
 {
-    float4 cBaseColor;
-    float4 cEmissiveColor;
-    float4x4 TexTransform;
-    
-    float cMetalness;
-    float cRoughness;
-    bool cUseAlbedoMap;
-    bool cUseMetalnessMap;
-  
-    bool cUseRoughnessMap;
-    bool cUseNormalMap;
-    bool cUseEmissiveMap;
-    float cAlphaCutoff;
-    
-    float cEmissiveIntensity;
+    ModelMaterial gModelMaterial;
 };
 
 #ifdef STATIC
@@ -63,8 +49,10 @@ Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
-Texture2DArray gLightMapArray : register(t5);
-Texture2DArray gDirectionArray : register(t6);
+Texture2D gMetalnessSmoothness : register(t5);
+
+Texture2DArray gLightMapArray : register(t6);
+Texture2DArray gDirectionArray : register(t7);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gPointWrap : register(s1); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
@@ -73,34 +61,34 @@ PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
-    pout.Albedo = cBaseColor;
+    pout.Albedo = gModelMaterial.BaseColor;
 
-    if (cUseAlbedoMap)
+    if (gModelMaterial.UseAlbedoMap)
     {
         pout.Albedo *= pow(gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV), 2.2f);
     }
     
-    clip(pout.Albedo.a - cAlphaCutoff);
+    clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
 
-    if (cUseMetalnessMap)
+    if (gModelMaterial.UseMetalnessMap)
     {
         pout.MetalnessRoughness.x = gMetalnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     else
     {
-        pout.MetalnessRoughness.x = cMetalness;
+        pout.MetalnessRoughness.x = gModelMaterial.Metalness;
     }
 
-    if (cUseRoughnessMap)
+    if (gModelMaterial.UseRoughnessMap)
     {
         pout.MetalnessRoughness.y = gRoughnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     else
     {
-        pout.MetalnessRoughness.y = cRoughness;
+        pout.MetalnessRoughness.y = gModelMaterial.Roughness;
     }
 
-    if (cUseNormalMap)
+    if (gModelMaterial.UseNormalMap)
     {
         pout.Normal = gNormalMap.Sample(gSamplerAnisotropic, pin.UV);
         pout.Normal.xyz = normalize(NormalSampleToWorldSpace(pout.Normal.xyz, pin.NormalW, pin.TangentW));
@@ -110,16 +98,23 @@ PixelOut main(VertexOut pin) : SV_TARGET
         pout.Normal.xyz = normalize(pin.NormalW);
     }
 
+    if (gModelMaterial.UseMetalnessSmoothness)
+    {
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xy;
+        pout.MetalnessRoughness.x = metalnessSmoothness.x;
+        pout.MetalnessRoughness.y = 1 - metalnessSmoothness.y;
+    }
+
     pout.SourceNormal.xyz = pin.NormalW.xyz;
     pout.SourceTangent.xyz = pin.TangentW.xyz;
 
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;
 
-    pout.Emissive.rgb = cEmissiveColor.rgb;
-    pout.Emissive.a = cEmissiveIntensity / 255;
+    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
+    pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
 
-    if (cUseEmissiveMap)
+    if (gModelMaterial.UseEmissiveMap)
     {
         pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }

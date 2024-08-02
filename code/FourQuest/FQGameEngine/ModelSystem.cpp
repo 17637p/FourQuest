@@ -74,7 +74,6 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			continue;
 		}
 
-
 		// 재질 경로
 		std::vector<std::string> materialPaths;
 		materialPaths.reserve(mesh.Subsets.size());

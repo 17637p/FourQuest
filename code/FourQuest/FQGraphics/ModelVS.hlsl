@@ -1,3 +1,4 @@
+#include "Common.hlsli"
 
 struct VertexIn
 {
@@ -54,18 +55,7 @@ cbuffer cbBoneTransform : register(b2)
 
 cbuffer cbMaterial : register(b3)
 {
-    float4 cBaseColor;
-    float4 cEmissiveColor;
-    float4x4 gTexTransform;
-    
-    float cMetalness;
-    float cRoughness;
-    bool cUseAlbedoMap;
-    bool cUseMetalnessMap;
-  
-    bool cUseRoughnessMap;
-    bool cUseNormalMap;
-    bool cUseEmissiveMap;
+    ModelMaterial gModelMaterial;
 };
 
 #ifdef STATIC
@@ -106,7 +96,7 @@ VertexOut main(VertexIn vin)
     vout.TangentW = normalize(mul(vin.TangentL, (float3x3) worldMat));
     vout.TangentV = normalize(mul(vout.TangentW, (float3x3) cView));
     
-    vout.UV = mul(float4(vin.UV, 0, 1), gTexTransform);
+    vout.UV = mul(float4(vin.UV, 0, 1), gModelMaterial.TexTransform);
     
     vout.ClipSpacePosZ = vout.PositionH.z;
     

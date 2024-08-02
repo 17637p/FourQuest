@@ -19,21 +19,7 @@ struct PixelOut
 
 cbuffer cbMaterial : register(b0)
 {
-    float4 cBaseColor;
-    float4 cEmissiveColor;
-    float4x4 TexTransform;
-    
-    float cMetalness;
-    float cRoughness;
-    bool cUseAlbedoMap;
-    bool cUseMetalnessMap;
-  
-    bool cUseRoughnessMap;
-    bool cUseNormalMap;
-    bool cUseEmissiveMap;
-    float cAlphaCutoff;
-
-    float cEmissiveIntensity;
+    ModelMaterial gModelMaterial;
 };
 
 cbuffer cbLight : register(b1)
@@ -69,6 +55,7 @@ Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
+
 TextureCube gDiffuseCubMap : register(t6);
 TextureCube gSpecularCubeMap : register(t7);
 Texture2D gSpecularBRDF_LUT : register(t8);
@@ -82,52 +69,52 @@ PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
-    float4 baseColor = cBaseColor;
+    float4 baseColor = gModelMaterial.BaseColor;
     
-    if (cUseAlbedoMap)
+    if (gModelMaterial.UseAlbedoMap)
     {
         baseColor *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
     }
 
     float3 albedo = baseColor.rgb;
     float opacity = baseColor.a;
-    clip(opacity - cAlphaCutoff);
+    clip(opacity - gModelMaterial.AlphaCutoff);
     
     float metalness = 0.f;
 
-    if (cUseMetalnessMap)
+    if (gModelMaterial.UseMetalnessMap)
     {
         metalness = gMetalnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     else
     {
-        metalness = cMetalness;
+        metalness = gModelMaterial.Metalness;
     }
 
     float roughness = 0.f;
 
-    if (cUseRoughnessMap)
+    if (gModelMaterial.UseRoughnessMap)
     {
         roughness = gRoughnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     else
     {
-        roughness = cRoughness;
+        roughness = gModelMaterial.Roughness;
     }
 
     float3 normal = normalize(pin.NormalW);
     
-    if (cUseNormalMap)
+    if (gModelMaterial.UseNormalMap)
     {
         normal = gNormalMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
         normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
-    float3 emissive = cEmissiveColor.rgb;
+    float3 emissive = gModelMaterial.EmissiveColor.rgb;
     
-    if (cUseEmissiveMap)
+    if (gModelMaterial.UseEmissiveMap)
     {
-        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb * cEmissiveIntensity;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb * gModelMaterial.EmissiveIntensity;
     }
 
     float3 directLighting = 0.0;

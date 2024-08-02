@@ -19,7 +19,7 @@ cbuffer perFrame : register(b0)
     float4x4 gViewProj;
 }
 
-cbuffer cbMaterial : register(b1)
+cbuffer cbParticleMaterial : register(b1)
 {
     ParticleMaterial gParticleMaterial;
 };

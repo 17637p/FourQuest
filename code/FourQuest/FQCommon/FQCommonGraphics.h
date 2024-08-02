@@ -46,6 +46,8 @@ namespace fq::graphics
 
 		// Directional, Spot
 		DirectX::SimpleMath::Vector3 direction;
+
+		ELightMode mode;
 	};
 
 
@@ -484,18 +486,20 @@ namespace fq::graphics
 		std::wstring RoughnessFileName;
 		std::wstring NormalFileName;
 		std::wstring EmissiveFileName;
+		std::wstring MetalnessSmoothnessFileName;
 
 		bool bUseBaseColor = true;
 		bool bUseMetalness = true;
 		bool bUseRoughness = true;
 		bool bUseNormalness = true;
 		bool bIsUsedEmissive = true;
+		bool bIsUsedMetalnessSmoothness = true;
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 		float AlphaCutoff = 0.1f;
 
-		ESampleMode SampleType = ESampleMode::Clamp;
+		ESampleMode SampleType = ESampleMode::Wrap;
 		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
 
 		float EmissiveIntensity = 1.f;

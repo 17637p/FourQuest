@@ -148,11 +148,13 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> rootObjects;
 	std::map<int, std::shared_ptr<fq::game_module::GameObject>> gameObjectsMap;
+	std::set<std::string> objectNames;
 
 	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadData(mImportFileName);
 
 	std::shared_ptr<fq::game_module::GameObject> sceneRootObject = std::make_shared<fq::game_module::GameObject>();
 	sceneRootObject->SetName("staticSceneRoot");
+
 
 	for (const auto& gameObjectInfo : gameObjectInfos)
 	{
@@ -160,7 +162,21 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 		// 오브젝트 생성
 		{
-			gameObject->SetName(gameObjectInfo.Name);
+			auto find = objectNames.find(gameObjectInfo.Name);
+			std::string newFileName = gameObjectInfo.Name;
+
+			int index = 0;
+			while (find != objectNames.end())
+			{
+				++index;
+				newFileName = gameObjectInfo.Name;
+				newFileName += std::to_string(index);
+
+				find = objectNames.find(newFileName);
+			}
+
+			gameObject->SetName(newFileName);
+			objectNames.insert(newFileName);
 
 			// 트랜스폼
 			auto transform = gameObject->GetComponent<game_module::Transform>();
@@ -190,6 +206,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 				}
 				if (!material.MetallicAndSmoothnessMap.empty())
 				{
+					materialInfo.MetalnessSmoothnessFileName = mTextureDirectory / fq::common::StringUtil::ToWide(material.MetallicAndSmoothnessMap);
 				}
 				if (!material.NormalMap.empty())
 				{
@@ -209,7 +226,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 			const auto& modelName = gameObjectInfo.MeshData.ModelPath;
 			const auto& meshName = gameObjectInfo.MeshData.Name;
 
-			if (!modelName.empty() || !meshName.empty())
+			if (!modelName.empty() && !meshName.empty())
 			{
 				std::filesystem::path modelPath = (mFBXDirectory / modelName);
 
@@ -228,18 +245,17 @@ void fq::game_engine::ImportWindow::createGameObject()
 				staticMeshRenderer.SetMaterialPaths(materialPaths);
 				staticMeshRenderer.SetMeshName(meshName);
 				staticMeshRenderer.SetTexturePath(mTextureDirectory.string());
-
-				if (gameObjectInfo.isStatic)
-				{
-					fq::graphics::IStaticMeshObject* iStaticMeshObject = staticMeshRenderer.GetStaticMeshObject();
-					fq::graphics::MeshObjectInfo staticMeshInfo = iStaticMeshObject->GetMeshObjectInfo();
-
-					staticMeshInfo.ObjectType = fq::graphics::MeshObjectInfo::EObjectType::Static;
-
-					iStaticMeshObject->SetMeshObjectInfo(staticMeshInfo);
-					iStaticMeshObject->SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
-					iStaticMeshObject->SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
-				}
+				// if (gameObjectInfo.isStatic)
+				// {
+				// 	fq::graphics::IStaticMeshObject* iStaticMeshObject = staticMeshRenderer.GetStaticMeshObject();
+				// 	fq::graphics::MeshObjectInfo staticMeshInfo = iStaticMeshObject->GetMeshObjectInfo();
+				// 
+				// 	staticMeshInfo.ObjectType = fq::graphics::MeshObjectInfo::EObjectType::Static;
+				// 
+				// 	iStaticMeshObject->SetMeshObjectInfo(staticMeshInfo);
+				// 	iStaticMeshObject->SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
+				// 	iStaticMeshObject->SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
+				// }
 			}
 
 			// 라이트
@@ -294,15 +310,12 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 			parentTransform->AddChild(childTransform);
 		}
-
-		// 루트 오브젝트 체크
-		if (gameObjectInfo.ParentID == 0)
+		else
 		{
 			auto transform = gameObject->GetComponent<game_module::Transform>();
-			transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateScale(0.01) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14) * transform->GetLocalMatrix());
-
 			auto sceneRootTransform = sceneRootObject->GetComponent<game_module::Transform>();
 			sceneRootTransform->AddChild(transform);
+			rootObjects.push_back(gameObject);
 		}
 	}
 

@@ -164,7 +164,8 @@ namespace fq::graphics
 		float AlphaCutoff;
 
 		float EmissiveIntensity;
-		float unused[3];
+		int bUseMetalnessSmoothnessMap;
+		float unused[2];
 	};
 
 	struct CBDecalObject
