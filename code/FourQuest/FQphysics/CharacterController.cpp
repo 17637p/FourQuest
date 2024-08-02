@@ -63,7 +63,7 @@ namespace fq::physics
 		mCharacterMovement->CopyDirectionToPxVec3(dispVector);
 
 		// physx CCT 이동
-		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, *mFilters.get());
+		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector * deltaTime, 0.01f, deltaTime, *mFilters.get());
 
 		// 바닥과 충돌을 안한다면 떨어짐 상태로 체크
 		if (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)

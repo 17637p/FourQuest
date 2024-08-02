@@ -8,7 +8,8 @@ namespace fq::physics
 	CharacterLink::CharacterLink()
 		: mName()
 		, mDensity()
-		, mLocalTransform()
+		, mLocalTransform(DirectX::SimpleMath::Matrix::Identity)
+		, mWorldTransform(DirectX::SimpleMath::Matrix::Identity)
 		, mMyJoint(std::make_shared<CharacterJoint>())
 		, mParentLink()
 		, mMyChildrenLink()
@@ -30,24 +31,52 @@ namespace fq::physics
 		mScene = scene;
 
 		physx::PxTransform pxLocalTransform;
-		DirectX::SimpleMath::Vector3 scale;
-		DirectX::SimpleMath::Quaternion rotation;
-		DirectX::SimpleMath::Vector3 position;
-		mLocalTransform.Decompose(scale, rotation, position);
-
-		DirectX::SimpleMath::Matrix dxTransform = 
-			DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation) 
-			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
-		mLocalTransform = dxTransform;
-
-		CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
 
 		if (parentLink == nullptr)
 		{
+			pxLocalTransform.p.x = 0.f;
+			pxLocalTransform.p.y = 0.f;
+			pxLocalTransform.p.z = 0.f;
+			pxLocalTransform.q.x = 0.f;
+			pxLocalTransform.q.y = 0.f;
+			pxLocalTransform.q.z = 0.f;
+			pxLocalTransform.q.w = 1.f;
+
 			mPxLink = pxArticulation->createLink(nullptr, pxLocalTransform);
 		}
 		else
 		{
+			DirectX::SimpleMath::Matrix boneTransform = info.boneWorldTransform;
+			DirectX::SimpleMath::Matrix jointTransform = info.jointInfo.localTransform;
+			DirectX::SimpleMath::Matrix rootTransform = info.rootWorldTransform;
+			DirectX::SimpleMath::Matrix parentTransform = parentLink->GetWorldTransform();
+
+			DirectX::SimpleMath::Vector3 boneScale;
+			DirectX::SimpleMath::Quaternion boneRotation;
+			DirectX::SimpleMath::Vector3 bonePosition;
+			boneTransform.Decompose(boneScale, boneRotation, bonePosition);
+			DirectX::SimpleMath::Vector3 jointScale;
+			DirectX::SimpleMath::Quaternion jointRotation;
+			DirectX::SimpleMath::Vector3 jointPosition;
+			jointTransform.Decompose(jointScale, jointRotation, jointPosition);
+
+			mWorldTransform =
+				DirectX::SimpleMath::Matrix::CreateFromQuaternion(boneRotation)
+				//* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation).Invert()
+				* DirectX::SimpleMath::Matrix::CreateTranslation(bonePosition);
+				//* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition).Invert();
+
+			DirectX::SimpleMath::Matrix dxTransform =
+				DirectX::SimpleMath::Matrix::CreateFromQuaternion(boneRotation)
+				//* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation).Invert()
+				* DirectX::SimpleMath::Matrix::CreateTranslation(bonePosition)
+				//* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition).Invert()
+				* parentLink->GetWorldTransform().Invert();
+
+			mLocalTransform = dxTransform;
+
+			CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
+
 			mPxLink = pxArticulation->createLink(parentLink->GetPxLink(), pxLocalTransform);
 			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}
@@ -130,6 +159,7 @@ namespace fq::physics
 		physx::PxTransform pxTransform;
 		CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 
+		physx::PxTransform prevTransform = mPxLink->getGlobalPose();
 		mPxLink->setGlobalPose(pxTransform);
 	}
 }

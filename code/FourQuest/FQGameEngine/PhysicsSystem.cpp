@@ -467,6 +467,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
+		nodeHierarchy.SetBindPose();
 
 		std::function<void(std::shared_ptr<LinkData>, ColliderID)> loadFunction = [&](std::shared_ptr<LinkData> linkData, ColliderID id)
 			{
@@ -477,8 +478,14 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				linkInfo.density = linkData->GetDensity();
 				linkInfo.localTransform = linkData->GetLocalTransform();
 
+				if (linkData->GetBoneName() != "root")
+				{
+					linkInfo.boneWorldTransform = nodeHierarchy.GetTransposedFinalTransform(boneHierarchy.GetBoneIndex(linkData->GetBoneName())).Transpose();
+					linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
+				}
+				linkInfo.rootWorldTransform = transform->GetWorldMatrix();
+
 				linkInfo.jointInfo.damping = linkData->GetJointDamping();
-				linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
 				linkInfo.jointInfo.maxForce = linkData->GetJointMaxForce();
 				linkInfo.jointInfo.stiffness = linkData->GetJointStiffness();
 				linkInfo.jointInfo.Swing1AxisInfo.motion = linkData->GetSwing1AxisMotion();
@@ -869,6 +876,8 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
+			nodeHierarchy.SetBindPose();
+
 			fq::physics::ArticulationSetData data;
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
 			
@@ -885,7 +894,6 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 						linkDataUpdate(childLink);
 					}
 				};
-
 
 			for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
 			{

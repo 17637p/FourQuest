@@ -136,6 +136,10 @@ namespace fq::physics
 
 		link->second->SetWorldTransform(boneWorldTransform);
 
+		physx::PxTransform pxTransform;
+		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
+		mPxArticulation->setRootGlobalPose(pxTransform);
+
 		return true;
 	}
 #pragma endregion

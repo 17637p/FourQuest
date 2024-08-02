@@ -136,4 +136,3 @@ namespace fq::physics
 		direction.z = -mDisplacementVector.z;
 	}
 }
-

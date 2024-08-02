@@ -132,13 +132,13 @@ namespace fq::physics
 
 			if (articulationData.bIsRagdollSimulation)
 			{
-				bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
-				assert(isCheck);
-
 				for (const auto& linkData : articulationData.linkData)
 				{
 					articulation->SetLinkTransformUpdate(linkData.name, linkData.boneWorldTransform);
 				}
+
+				bool isCheck = mScene->addArticulation(*articulation->GetPxArticulation());
+				assert(isCheck);
 			}
 			else
 			{

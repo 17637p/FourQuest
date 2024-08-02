@@ -44,6 +44,7 @@ namespace fq::physics
 		inline physx::PxArticulationLink* GetPxLink();
 		inline const std::string& GetName();
 		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();
+		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		inline const std::shared_ptr<CharacterJoint> GetCharacterJoint();
 		inline const std::weak_ptr<CharacterLink> GetParentLink();
 		inline const std::vector<std::weak_ptr<CharacterLink>>& GetChildrenCharacterLink();
@@ -79,6 +80,10 @@ namespace fq::physics
 	const DirectX::SimpleMath::Matrix& CharacterLink::GetLocalTransform()
 	{
 		return mLocalTransform;
+	}
+	const DirectX::SimpleMath::Matrix& CharacterLink::GetWorldTransform()
+	{
+		return mWorldTransform;
 	}
 	const std::shared_ptr<CharacterJoint> CharacterLink::GetCharacterJoint()
 	{
