@@ -130,6 +130,22 @@ namespace fq::loader
 				mesh.Tex1.push_back(tex1);
 			}
 
+
+			unsigned int dynamicDataCount = 0;
+			fileUtil.Read<unsigned int>(&tex1Count);
+
+			for (unsigned int j = 0; j < dynamicDataCount; ++j)
+			{
+				Mesh::DynamicData dynamicData;
+
+				fileUtil.Read<string>(&dynamicData.Name);
+				fileUtil.Read<unsigned int>(&dynamicData.Size);
+				fileUtil.Read<unsigned int>(&dynamicData.Count);
+				fileUtil.Read(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+
+				mesh.DynamicInfos.insert({ dynamicData.Name, dynamicData });
+			}
+
 			modelData.push_back({ std::move(node), std::move(mesh) });
 		}
 
@@ -276,6 +292,15 @@ namespace fq::loader
 			for (const DirectX::SimpleMath::Vector2& tex1 : mesh.Tex1)
 			{
 				fileUtil.Write<DirectX::SimpleMath::Vector2>(tex1);
+			}
+
+			fileUtil.Write<unsigned int>(mesh.DynamicInfos.size());
+			for (const auto& [key, dynamicData] : mesh.DynamicInfos)
+			{
+				fileUtil.Write<string>(dynamicData.Name);
+				fileUtil.Write<unsigned int>(dynamicData.Size);
+				fileUtil.Write<unsigned int>(dynamicData.Count);
+				fileUtil.Write(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
 			}
 		}
 	}

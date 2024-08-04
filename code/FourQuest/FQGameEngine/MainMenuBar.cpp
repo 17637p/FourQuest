@@ -238,7 +238,11 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 3.SkyBox 저장
 	mEditorProcess->mSkyBoxWindow->SaveSkyBox(scenePath);
 
+	// 머터리얼 저장
 	mEditorProcess->mMaterialWindow->SaveMaterial();
+
+	// 라이트맵 저장
+	mEditorProcess->mLightmapWindow->SaveLightmap(scenePath);
 
 	//  ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);

@@ -29,56 +29,15 @@ namespace fq::graphics
 	public:
 		template<typename T>
 		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<T>& vertices, bool bUseCPUWrite = false);
-		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, UINT size, UINT stride, UINT offset)
-			: mStride(stride)
-			, mOffset(offset)
-			, mbUseCPUWrite(true)
-		{
-			D3D11_BUFFER_DESC bd = {};
-			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bd.Usage = D3D11_USAGE_DYNAMIC;
-			bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			bd.MiscFlags = 0u;
-			bd.ByteWidth = size;
-			bd.StructureByteStride = 0;
-
-			device->GetDevice().Get()->CreateBuffer(&bd, nullptr, mVertexBuffer.GetAddressOf());
-		}
+		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, unsigned int size, unsigned int count, void* ptr, bool bUseCPUWrite = false);
+		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, UINT size, UINT stride, UINT offset);
 
 		static void Bind(const std::shared_ptr<D3D11Device>& device, const std::vector<std::shared_ptr<D3D11VertexBuffer>>& buffers, UINT startSlot = 0);
-
-		static D3D11VertexBuffer CreateFullScreenVertexBuffer(const std::shared_ptr<D3D11Device>& device)
-		{
-			std::vector<DirectX::SimpleMath::Vector2> positions =
-			{
-				{ -1, 1 },
-				{ 1, 1 },
-				{ -1, -1 },
-				{ 1, -1 }
-			};
-
-			return D3D11VertexBuffer(device, positions);
-		}
+		static D3D11VertexBuffer CreateFullScreenVertexBuffer(const std::shared_ptr<D3D11Device>& device);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot = 0);
-
 		template <typename Vertex>
-		void Update(std::shared_ptr<D3D11Device> device, const std::deque<Vertex>& vertices)
-		{
-			assert(mbUseCPUWrite);
-
-			D3D11_MAPPED_SUBRESOURCE mappedData;
-			device->GetDeviceContext()->Map(mVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-
-			Vertex* vertexPtr = reinterpret_cast<Vertex*>(mappedData.pData);
-
-			for (UINT i = 0; i < vertices.size(); ++i)
-			{
-				vertexPtr[i] = vertices[i];
-			}
-
-			device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
-		}
+		void Update(std::shared_ptr<D3D11Device> device, const std::deque<Vertex>& vertices);
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
@@ -107,6 +66,24 @@ namespace fq::graphics
 		sd.pSysMem = vertices.data();
 
 		device->GetDevice().Get()->CreateBuffer(&bd, &sd, mVertexBuffer.GetAddressOf());
+	}
+
+	template <typename Vertex>
+	void D3D11VertexBuffer::Update(std::shared_ptr<D3D11Device> device, const std::deque<Vertex>& vertices)
+	{
+		assert(mbUseCPUWrite);
+
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		device->GetDeviceContext()->Map(mVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+		Vertex* vertexPtr = reinterpret_cast<Vertex*>(mappedData.pData);
+
+		for (UINT i = 0; i < vertices.size(); ++i)
+		{
+			vertexPtr[i] = vertices[i];
+		}
+
+		device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
 	}
 
 	/*=============================================================================

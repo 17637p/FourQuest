@@ -95,6 +95,16 @@ namespace fq::common
 
 		DirectX::BoundingBox RenderBoundingBox;
 		DirectX::BoundingSphere RenderBoundingSphere;
+
+		struct DynamicData
+		{
+			std::string Name;
+			unsigned int Size;
+			unsigned int Count;
+			void* DataPtr;
+		};
+		std::map<std::string, DynamicData> DynamicInfos;
+
 	};
 
 	struct Material

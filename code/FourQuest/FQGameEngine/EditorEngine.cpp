@@ -332,6 +332,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mExportWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mImportWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mMaterialWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mLightmapWindow->Initialize(mGameProcess.get());
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());

@@ -24,6 +24,7 @@
 #include "ExportWindow.h"
 #include "ImportWindow.h"
 #include "MaterialWindow.h"
+#include "LightmapWindow.h"
 
 // system
 #include "ImGuiSystem.h"
@@ -64,6 +65,7 @@ namespace fq::game_engine
 		std::unique_ptr<ExportWindow> mExportWindow;
 		std::unique_ptr<ImportWindow> mImportWindow;
 		std::unique_ptr<MaterialWindow> mMaterialWindow;
+		std::unique_ptr<LightmapWindow> mLightmapWindow;
 
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;

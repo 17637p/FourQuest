@@ -38,11 +38,8 @@ namespace fq::graphics
 	class StaticMesh : public IStaticMesh, public MeshBase
 	{
 	public:
-		StaticMesh(std::shared_ptr<D3D11Device> device);
 		StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData);
 		virtual ~StaticMesh() = default;
-
-		virtual void Create(const fq::common::Mesh& meshData);
 
 		virtual void* GetVertexBuffer() override;
 		virtual void* GetIndexBuffer() override;
