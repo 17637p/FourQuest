@@ -3,6 +3,8 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Trail.h"
+#include "../FQGameModule/Transform.h"
 
 fq::game_engine::TrailSystem::TrailSystem()
 	:mGameProcess(nullptr)

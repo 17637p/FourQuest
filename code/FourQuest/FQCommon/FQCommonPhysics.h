@@ -277,6 +277,13 @@ namespace fq::physics
 		float slopeLimit = 0.3f;									// 캐릭터가 걸어 올라갈 수 있는 최대 기울기
 		float contactOffset = 0.001f;								// 컨트롤러의 접촉 오프셋 : 수치 정밀도 문제를 방지하기 위해 사용합니다.
 	};
+
+	struct CharacterControllerInputInfo
+	{
+		unsigned int id ;
+		DirectX::SimpleMath::Vector3 input;
+		bool isDynamic; 
+	};
 #pragma endregion
 
 #pragma region CharacterPhysics

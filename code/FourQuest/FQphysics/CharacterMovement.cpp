@@ -49,17 +49,18 @@ namespace fq::physics
 		mMinDistance = 0.1f;
 	}
 
-	void CharacterMovement::Update(float deltaTime, const DirectX::SimpleMath::Vector3& input)
+	void CharacterMovement::Update(float deltaTime, const DirectX::SimpleMath::Vector3& input, bool isDynamic)
 	{
 		if (!mIsFall)
 		{
 			// 동적 상태인 경우 동적 마찰력에 의해 속도를 감소시킨다.
 			// 정지 상태인 경우 정적 마찰력에 의해 속도를 감소시킨다.
-			if (input.x == 0)
+			if (input.x == 0 && !isDynamic)
 				mVelocity.x = std::lerp(mVelocity.x, 0.f, mStaticFriction);
 			else
 				mVelocity.x = std::lerp(mVelocity.x, 0.f, mDynamicFriction);
-			if (input.z == 0)
+			
+			if (input.z == 0 && !isDynamic)
 				mVelocity.z = std::lerp(mVelocity.z, 0.f, mStaticFriction);
 			else
 				mVelocity.z = std::lerp(mVelocity.z, 0.f, mDynamicFriction);

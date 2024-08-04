@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include "EditorEvent.h"
+#include "../FQGameModule/Transform.h"
 
 void fq::game_engine::AddObjectCommand::Excute()
 {

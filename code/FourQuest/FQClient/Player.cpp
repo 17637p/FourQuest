@@ -1,11 +1,15 @@
 #define NOMINMAX
 #include "Player.h"
 
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SoundClip.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
 #include "Soul.h"
 #include "ClientEvent.h"
+#include "PlayerUIManager.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -23,6 +27,7 @@ fq::client::Player::Player()
 	, mAttackPositionOffset{}
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
+	, mAttackSpeed(1.f)
 {}
 
 fq::client::Player::~Player()
@@ -81,6 +86,9 @@ void fq::client::Player::OnStart()
 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// TODO : °©¿Ê ¹öÇÁ Àû¿ë
+
+	// Player HUD µî·Ï
+	GetScene()->GetObjectByName("PlayerUIManager")->GetComponent<PlayerUIManager>()->AddPlayer(GetPlayerID());
 }
 
 void fq::client::Player::processInput()
@@ -192,5 +200,10 @@ void fq::client::Player::processFeverTime(float dt)
 		// TODO : °©¿Ê ÇØÁ¦¿¡ ´ëÇÑ ¹öÇÁ¸¦ ÁøÇà
 		mAttackPower = mAttackPower * 0.5f;
 	}
+}
+
+float fq::client::Player::GetPlayerID() const
+{
+	return mController->GetControllerID();
 }
 

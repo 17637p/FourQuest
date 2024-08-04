@@ -1,7 +1,7 @@
 #include "PlantMonsterDeadState.h"
 
 #include "../FQGameModule/GameModule.h"
-
+#include "../FQGameModule/CapsuleCollider.h"
 
 fq::client::PlantMonsterDeadState::PlantMonsterDeadState()
 {}

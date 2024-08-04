@@ -338,16 +338,15 @@ namespace fq::graphics
 		mLayer(0),
 		mImagePath(""),
 		mRotationAngle(0),
-		mScaleX(1),
+		mScaleX(1), 
 		mScaleY(1),
-		mAlpha(1.f)
-	{
-	}
+		mAlpha(1.f),
+		mIsRender(true),
+		mIsCenter(false)
+	{}
 
 	ImageObject::~ImageObject()
-	{
-
-	}
+	{}
 
 	void ImageObject::SetStartX(float startX)
 	{

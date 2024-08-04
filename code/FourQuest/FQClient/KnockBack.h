@@ -1,7 +1,12 @@
 #pragma once
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
+
+namespace fq::game_module
+{
+	class Transform;
+}
 
 namespace fq::client
 {
@@ -19,7 +24,6 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void updateVelocity(float dt);
-
 	private:
 		game_module::Transform* mTransform;
 

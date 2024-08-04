@@ -2,6 +2,9 @@
 #include "ShieldAttackState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/Transform.h"
 #include "KnightArmour.h"
 
 fq::client::ShieldAttackState::ShieldAttackState()

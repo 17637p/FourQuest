@@ -1,5 +1,6 @@
 #include "KnockBack.h"
 
+#include "../FQGameModule/Transform.h"
 #include "Attack.h"
 
 fq::client::KnockBack::KnockBack()
@@ -29,6 +30,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::KnockBack::Clone(std::sh
 		*cloneComponent = *this;
 	}
 
+	cloneComponent->mTransform = nullptr;
+
 	return cloneComponent;
 }
 
@@ -49,7 +52,7 @@ void fq::client::KnockBack::updateVelocity(float dt)
 		distance.y = mVelocity.y * dt;
 		distance.z = mVelocity.z * dt;
 
-		auto position = mTransform->GetWorldPosition ();
+		auto position = mTransform->GetWorldPosition();
 		position += distance;
 		mTransform->SetWorldPosition(position);
 	}

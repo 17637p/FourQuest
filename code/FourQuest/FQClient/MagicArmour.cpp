@@ -1,6 +1,10 @@
 #define NOMINMAX
 #include "MagicArmour.h"
 
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
+
 #include "LinearAttack.h"
 #include "Attack.h"
 #include "Player.h"
@@ -13,7 +17,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mController(nullptr)
 	, mMagicBall{}
 	, mAOE{}
-	, mRazer{}
+	, mLaserEffect{}
 	, mAttackWarningUI{}
 	, mMagicBallSpeed(10.f)
 	, mAOEMoveRange(10.f)
@@ -25,6 +29,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mRazerDistance(30.f)
 	, mRazerHiTick(0.25f)
 	, mRazerHitElapsedTime(0.f)
+	, mMagicBallPenetrationCount(1)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -65,7 +70,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	float attackPower = mPlayer->GetAttackPower();
 	attackInfo.damage = dc::GetMagicBallDamage(attackPower);
 	attackInfo.bIsInfinite = false;
-	attackInfo.remainingAttackCount = 1;
+	attackInfo.remainingAttackCount = mMagicBallPenetrationCount;
 	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
@@ -114,7 +119,7 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	mAOEElapsedTime = mAOECoolTime;
 }
 
-void fq::client::MagicArmour::EmitLazer()
+void fq::client::MagicArmour::EmitLaser()
 {
 	// RayCastTest
 	fq::event::RayCast::ResultData data;
@@ -131,13 +136,12 @@ void fq::client::MagicArmour::EmitLazer()
 		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
 	);
 
-
 	if (data.hasBlock)
 	{
 		if (mRazerHitElapsedTime == 0.f)
 		{
 			// RazerAttckBox 소환
-			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRazerAttackBox);
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserAttackBox);
 			auto& attackObj = *(instance.begin());
 
 			// 공격 설정
@@ -262,4 +266,19 @@ void fq::client::MagicArmour::SetLookAtRStickInput()
 		}
 	}
 
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserGatherEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserGatherEffect);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	
+	// 스태프 트랜스폼 가져오기
+	attackT->SetParent(mTransform->GetChildren()[1]);
+
+	GetScene()->AddGameObject(attackObj);
+
+	return attackObj;
 }

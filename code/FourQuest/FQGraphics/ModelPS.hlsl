@@ -44,7 +44,7 @@ cbuffer cbLight : register(b1)
 
 cbuffer cbShadowTransformCascaseEnd : register(b2)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 }
@@ -134,7 +134,9 @@ float4 main(VertexOut pin) : SV_TARGET
                 }
  
                 uint shadowIndex = i * CascadeCount + index;
-                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[shadowIndex]);
+                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[shadowIndex]);
+                shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+                shadowPos.y = shadowPos.y * -0.5f + 0.5f;
                 shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, shadowIndex, ShadowMapWidth);
                 
                 currentDirectLighting *= shadowRatio;
@@ -185,7 +187,7 @@ float4 main(VertexOut pin) : SV_TARGET
     // // 이게 뒤에 짤린 절두체에는 들어오고 그려질 때 처리하는 건데 이러면 어차피 벗어나는 건 어차피 생기진 않나...?!?!?! ㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹ
     // if (index < 2)
     // {
-    //     shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[index + 1]);
+    //     shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[index + 1]);
     //     float shadowRatio1 = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, index + 1, 2048.f);
     //     shadowRatio = min(shadowRatio, shadowRatio1);
     // }

@@ -3,6 +3,8 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Decal.h"
+#include "../FQGameModule/Transform.h"
 
 fq::game_engine::DecalSystem::DecalSystem()
 	:mGameProcess(nullptr)

@@ -4,6 +4,7 @@
 
 #include "../FQClient/Client.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
 
@@ -59,7 +60,8 @@ void fq::game_engine::EditorEngine::Initialize()
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get()
-		, mGameProcess->mScreenManager.get());
+		, mGameProcess->mScreenManager.get()
+		, mGameProcess->mTimeManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
 	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());

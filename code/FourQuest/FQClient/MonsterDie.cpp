@@ -1,4 +1,6 @@
 #include "MonsterDie.h"
+
+#include "../FQGameModule/GameModule.h"
 #include "Monster.h"
 
 fq::client::MonsterDie::MonsterDie()

@@ -261,6 +261,9 @@ namespace fq::graphics
 		virtual bool GetIsRender() const override { return mIsRender; }
 		virtual void SetIsRender(bool val) override { mIsRender = val; }
 
+		virtual bool GetRenderMode() const override { return mIsCenter; };
+		virtual void SetRenderMode(bool isCenter) override { mIsCenter = isCenter; }; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -284,6 +287,7 @@ namespace fq::graphics
 		float mFillDegree;
 
 		bool mIsRender;
+		bool mIsCenter;
 	};
 
 	class ProbeObject : public IProbeObject

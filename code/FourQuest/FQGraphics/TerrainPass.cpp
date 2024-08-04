@@ -96,7 +96,6 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mTerrainTextureCB = std::make_shared<D3D11ConstantBuffer<TerrainTexture>>(mDevice, ED3D11ConstantBuffer::TerrainTexture);
 		mTerrainHullCB = std::make_shared<D3D11ConstantBuffer<TerrainHull>>(mDevice, ED3D11ConstantBuffer::TerrainTexture);
-		mDirectioanlShadowInfoCB = resourceManager->Get<D3D11ConstantBuffer<DirectionalShadowInfo>>(ED3D11ConstantBuffer::DirectionalShadowInfo);
 	}
 
 	void TerrainPass::Finalize()
@@ -127,7 +126,6 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mTerrainHullCB = nullptr;
 		mTerrainTextureCB = nullptr;
-		mDirectioanlShadowInfoCB = nullptr;
 
 		mAlbedoRTV = nullptr;
 		mMetalnessRTV = nullptr;
@@ -245,7 +243,7 @@ namespace fq::graphics
 			mTerrainHullCB->Bind(mDevice, ED3D11ShaderType::HullShader, 0);
 			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
 
 			mTerrainVS->Bind(mDevice);
 			mTerrainPS->Bind(mDevice);

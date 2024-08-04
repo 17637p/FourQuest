@@ -10,6 +10,7 @@
 #include "PrefabManager.h"
 #include "InputManager.h"
 #include "EventManager.h"
+#include "TimeManager.h"
 #include "GameObject.h"
 
 fq::game_module::SceneManager::SceneManager()
@@ -32,13 +33,15 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	, EventManager* eventMgr
 	, InputManager* inputMgr
 	, PrefabManager* prefabMgr
-	, ScreenManager* screenMgr)
+	, ScreenManager* screenMgr
+	, TimeManager* timeMgr)
 {
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
 	mPrefabManager = prefabMgr;
+	mTimeManager = timeMgr;
 
-	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr, screenMgr);
+	mCurrentScene->Initialize(startSceneName, eventMgr, inputMgr, prefabMgr, screenMgr, timeMgr);
 
 	mRequestExitGameHadler =
 		mEventManager->RegisterHandle<fq::event::RequestExitGame>(this, &SceneManager::RequestExitGame);
@@ -55,6 +58,8 @@ void fq::game_module::SceneManager::Finalize()
 
 void fq::game_module::SceneManager::ChangeScene(const std::string& nextSceneName)
 {
+	mTimeManager->SetTimeScale(1);
+
 	UnloadScene();
 
 	mCurrentScene->mSceneName = nextSceneName;

@@ -9,6 +9,8 @@
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
 
+#include "../FQCommon/FQCommonGraphics.h"
+
 struct ID2D1Factory;
 struct ID2D1HwndRenderTarget;
 struct IDWriteFactory;
@@ -33,8 +35,6 @@ namespace fq::graphics
 	class D3D11ResourceManager;
 
 	class IImageObject;
-
-	struct UIInfo;
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
 	/// 다른 게 필요하다면 그 때 만들어야지
@@ -42,15 +42,6 @@ namespace fq::graphics
 	class UIManager
 	{
 	private:
-		struct DrawTextInformation
-		{
-			std::wstring text;
-			DirectX::SimpleMath::Rectangle drawRect;
-			short fontSize;
-			std::wstring fontPath;
-			DirectX::SimpleMath::Color color;
-		};
-
 		struct FQBitmap
 		{
 			unsigned short refCount;
@@ -78,7 +69,8 @@ namespace fq::graphics
 		void SetDefaultFontColor(const DirectX::SimpleMath::Color& color);
 		void SetDefaultFontSize(const unsigned short fontSize);
 
-		void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize, const std::wstring& fontPath, const DirectX::SimpleMath::Color& color);
+		void DrawText(TextInfo textInfo);
+		void DeleteText(TextInfo textInfo);
 
 		// Image
 		IImageObject* CreateImageObject(const UIInfo& uiInfo);
@@ -116,7 +108,7 @@ namespace fq::graphics
 		unsigned short mDefaultFontSize;
 		DirectX::SimpleMath::Color mDefaultFontColor;
 
-		std::vector<DrawTextInformation> mDrawTextInformations;
+		std::vector<TextInfo> mDrawTextInformations;
 
 		// Image
 		// 레퍼런스 카운팅이 되게 해야함

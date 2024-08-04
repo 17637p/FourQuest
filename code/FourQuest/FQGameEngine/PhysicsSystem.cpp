@@ -7,6 +7,19 @@
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQReflect/entt.hpp"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/SphereCollider.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/TerrainCollider.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/Articulation.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+
 #include "GameProcess.h"
 #include "ModelSystem.h"
 #include "RenderingSystem.h"
@@ -665,6 +678,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				Quaternion rotation;
 				matrix.Decompose(scale, rotation, pos);
 				rotation = game_module::CapsuleCollider::YtoXRoation * rotation;
+				rotation.Normalize();
 
 				matrix = Matrix::CreateScale(scale)
 					* Matrix::CreateFromQuaternion(rotation)
@@ -836,6 +850,8 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			{
 				Quaternion rotation = game_module::CapsuleCollider::XtoYRoation
 					* transform->GetWorldRotation();
+				rotation.Normalize();
+
 				Vector3 pos = transform->GetWorldPosition();
 				Vector3 scale = transform->GetWorldScale();
 
@@ -937,7 +953,12 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 
 void fq::game_engine::PhysicsSystem::AddInputMove(const fq::event::AddInputMove& event)
 {
-	mPhysicsEngine->AddInputMove(event.colliderID, event.input);
+	physics::CharacterControllerInputInfo info;
+	info.id = event.colliderID;
+	info.input = event.input;
+	info.isDynamic = event.isDynamic;
+
+	mPhysicsEngine->AddInputMove(info);
 }
 
 void fq::game_engine::PhysicsSystem::calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset)

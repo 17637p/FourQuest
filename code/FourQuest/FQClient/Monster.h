@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
 
 namespace fq::client
 {

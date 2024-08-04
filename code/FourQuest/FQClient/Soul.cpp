@@ -1,5 +1,8 @@
 #include "Soul.h"
 
+#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
 #include "DeadArmour.h"
 #include "CameraMoving.h"
 

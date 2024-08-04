@@ -1,5 +1,12 @@
 #include "DeadArmour.h"
 
+#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/CharacterController.h"
+
 #include "Soul.h"
 #include "Player.h"
 
@@ -144,8 +151,8 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 			});
 		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
 
-		float height = GetScene()->GetScreenManager()->GetScreenHeight();
-		float width = GetScene()->GetScreenManager()->GetScreenWidth();
+		float height = static_cast<float>(GetScene()->GetScreenManager()->GetScreenHeight());
+		float width = static_cast<float>(GetScene()->GetScreenManager()->GetScreenWidth());
 
 		auto viewProj = mainCamera->GetViewProjection();
 		Vector3 screenPos = Vector3::Transform(pos, viewProj);

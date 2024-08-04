@@ -3,6 +3,9 @@
 #include "GameProcess.h"
 #include "RenderingSystem.h"
 
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/UVAnimator.h"
+
 fq::game_engine::AnimationSystem::AnimationSystem()
 	:mGameProcess(nullptr)
 	, mScene(nullptr)
@@ -81,7 +84,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 	mScene->ViewComponents<UVAnimator>(
 		[dt](GameObject& object, UVAnimator& animator)
 		{
-			animator.UpdateTimePos(dt);
+			animator.UpdateTimePos(dt * animator.GetPlaySpeed());
 		});
 }
 

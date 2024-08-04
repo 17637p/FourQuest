@@ -1,6 +1,6 @@
 #include "MeleeMonsterWaitAttackState.h"
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/NavigationAgent.h"
 #include "MeleeMonster.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterWaitAttackState::Clone()

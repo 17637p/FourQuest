@@ -1,6 +1,9 @@
 #include "MeleeMonsterDeadState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/RigidBody.h"
 
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 {
@@ -31,6 +34,8 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	auto gameObject = animator.GetGameObject();
 
-	gameObject->RemoveComponent<game_module::NavigationAgent>();
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MeleeMonsterDead", false , 0 });
+	gameObject->RemoveComponent<game_module::RigidBody>();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
+	gameObject->RemoveComponent<game_module::NavigationAgent>();
 }

@@ -1,7 +1,9 @@
 #include "MonsterAttack.h"
-#include "Monster.h"
-#include "Attack.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "Attack.h"
+#include "Monster.h"
 fq::client::MonsterAttack::MonsterAttack()
 	:mWaitTime(0),
 	mIsTransition(false)

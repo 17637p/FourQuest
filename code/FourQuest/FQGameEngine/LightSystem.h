@@ -2,6 +2,13 @@
 
 #include "../FQGameModule/GameModule.h"
 
+namespace fq::game_module
+{
+	class GameObject;
+	class Transform;
+	class Light;
+}
+
 namespace fq::game_engine
 {
 	class GameProcess;

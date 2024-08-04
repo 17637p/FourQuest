@@ -184,7 +184,7 @@ void fq::game_module::Transform::updateWorldMatrix()
 void fq::game_module::Transform::updateLocalMatrix()
 {
 	mFQTransform.localMatrix = HasParent() ?
-		mParent->mFQTransform.worldMatrix.Invert() * mFQTransform.worldMatrix
+		 mFQTransform.worldMatrix * mParent->mFQTransform.worldMatrix.Invert() 
 		: mFQTransform.worldMatrix;
 
 	decomposeLocalMatrix();
@@ -232,6 +232,8 @@ void fq::game_module::Transform::GenerateLocal(Vector3 position, Quaternion rota
 
 void fq::game_module::Transform::GenerateWorld(Vector3 position, Quaternion rotation, Vector3 scale)
 {
+	rotation.Normalize();
+
 	mFQTransform.worldMatrix = Matrix::CreateScale(scale)
 		* Matrix::CreateFromQuaternion(rotation)
 		* Matrix::CreateTranslation(position);

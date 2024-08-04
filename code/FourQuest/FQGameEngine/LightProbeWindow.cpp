@@ -12,6 +12,8 @@
 #include "../FQGameModule/InputManager.h"
 #include "../FQCommon/IFQRenderObject.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 
 #include "PathFindingSystem.h"
 

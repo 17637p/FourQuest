@@ -157,7 +157,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
 		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
 		.prop(fq::reflect::prop::Name, "IsAppliedDecal")
-	.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
+		.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
 		.prop(fq::reflect::prop::Comment, u8"조명 적용 여부")
 		.prop(fq::reflect::prop::Name, "IsAppliedLight");
 
@@ -251,7 +251,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::UIInfo::ScaleX>("ScaleX"_hs)
 		.prop(fq::reflect::prop::Name, "ScaleX")
 		.data<&graphics::UIInfo::ScaleY>("ScaleY"_hs)
-		.prop(fq::reflect::prop::Name, "ScaleY");
+		.prop(fq::reflect::prop::Name, "ScaleY")
+		.data<&graphics::UIInfo::isCenter>("IsCenter"_hs)
+		.prop(fq::reflect::prop::Name, "IsCenter")
+		.data<&graphics::UIInfo::fillDegree>("FillDegree"_hs)
+		.prop(fq::reflect::prop::Name, "FillDegree");
 
 	entt::meta<ImageUI>()
 		.type("ImageUI"_hs)
@@ -1328,7 +1332,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::graphics::MaterialInfo::RasterizeType>("RasterizeType"_hs)
 		.prop(fq::reflect::prop::Name, "RasterizeType")
 		.data<&fq::graphics::MaterialInfo::SampleType>("SampleType"_hs)
-		.prop(fq::reflect::prop::Name, "SampleType");
+		.prop(fq::reflect::prop::Name, "SampleType")
+		.data<&fq::graphics::MaterialInfo::EmissiveIntensity>("EmissiveIntensity"_hs)
+		.prop(fq::reflect::prop::Name, "EmissiveIntensity");
 
 	entt::meta<fq::graphics::ParticleMaterialInfo::ERenderMode>()
 		.prop(fq::reflect::prop::Name, "ParticleMaterialInfoERenderMode")

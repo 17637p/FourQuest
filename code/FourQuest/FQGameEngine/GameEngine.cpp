@@ -5,6 +5,7 @@
 
 #include "../FQClient/Client.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQphysics/IFQPhysics.h"
 #include "FQGameEngineRegister.h"
@@ -52,13 +53,14 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess ÃÊ±âÈ­
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* StartSceneName = "GitaeTest";
+	constexpr const char* StartSceneName = "Scene4";
 
 	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get()
-		, mGameProcess->mScreenManager.get());
+		, mGameProcess->mScreenManager.get()
+		, mGameProcess->mTimeManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
 	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());

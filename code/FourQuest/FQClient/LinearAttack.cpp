@@ -1,5 +1,7 @@
 #include "LinearAttack.h"
 
+#include "../FQGameModule/Transform.h"
+
 fq::client::LinearAttack::LinearAttack()
 	:mMoveDirection{ DirectX::SimpleMath::Vector3::Up }
 	, mMoveSpeed(1.f)

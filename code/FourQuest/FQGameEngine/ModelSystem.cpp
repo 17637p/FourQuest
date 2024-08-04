@@ -6,6 +6,9 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/IFQRenderObject.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/Transform.h"
 
 #include "EditorProcess.h"
 #include "GameProcess.h"

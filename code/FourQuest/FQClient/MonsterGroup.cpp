@@ -70,7 +70,7 @@ void fq::client::MonsterGroup::AnnounceFindedTarget(fq::game_module::GameObject*
 	for (const auto& monster : mMonsters)
 	{
 		// Melee
-		if (monster->HasComponent<MeleeMonster>())
+		if (monster->HasComponent<MeleeMonster>() && !monster->IsDestroyed())
 		{
 			monster->GetComponent<MeleeMonster>()->SetTarget(target);
 		}

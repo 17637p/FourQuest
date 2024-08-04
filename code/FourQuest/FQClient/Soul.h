@@ -1,7 +1,12 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
 #include "PlayerDefine.h"
+
+namespace fq::game_module
+{
+	class CharacterController;
+}
 
 namespace fq::client
 {

@@ -46,7 +46,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>
 		/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
-		bool AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input);
+		bool AddInputMove(const CharacterControllerInputInfo& info);
 
 		/// <summary>
 		/// 캐릭터 컨트롤러 삭제 함수

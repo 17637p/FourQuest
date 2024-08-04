@@ -57,14 +57,8 @@
     <Filter Include="src\02.Monster\Prototype">
       <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\02.Monster\Melee">
-      <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\02.Monster\Plant">
       <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\03.Attack">
-      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\04.Camera">
       <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
@@ -80,6 +74,24 @@
     </Filter>
     <Filter Include="include\02.Monster\Spawner">
       <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Melee">
+      <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.Attack">
+      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\07.Quest">
+      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\07.Quest">
+      <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Boss">
+      <UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Boss">
+      <UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -212,7 +224,7 @@
     <ClInclude Include="DamageCalculation.h">
       <Filter>include\00.Define</Filter>
     </ClInclude>
-    <ClInclude Include="RazerAttackState.h">
+    <ClInclude Include="LaserAttackState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="KnightArmour.h">
@@ -247,6 +259,51 @@
     </ClInclude>
     <ClInclude Include="SoundDefine.h">
       <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterExplosion.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterExplosionState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerUIManager.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Quest.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestManager.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonster.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="AimAssist.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterIdleState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterChaseState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterRushState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterAttackState.h">
+	<Filter>include\02.Monster\Boss</Filter>
+	</ClInclude>
+    <ClInclude Include="MonsterDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="BossHP.h">
+      <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -361,7 +418,7 @@
     <ClCompile Include="AOEAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
-    <ClCompile Include="RazerAttackState.cpp">
+    <ClCompile Include="LaserAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="KnightArmour.cpp">
@@ -393,6 +450,48 @@
     </ClCompile>
     <ClCompile Include="SpawnerOpenState.cpp">
       <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterExplosion.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterExplosionState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerUIManager.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PauseUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestManager.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="Quest.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHP.cpp">
+      <Filter>src\05.UI</Filter>
+	</ClCompile>
+    <ClCompile Include="AimAssist.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonster.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterIdleState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterChaseState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterRushState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

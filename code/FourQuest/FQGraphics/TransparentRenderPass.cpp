@@ -53,7 +53,6 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mAlphaDataCB = std::make_shared<D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
@@ -90,7 +89,6 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
-		mDirectioanlShadowInfoCB = nullptr;
 		mAlphaDataCB = nullptr;
 	}
 	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
@@ -112,56 +110,10 @@ namespace fq::graphics
 		// Particle
 		// update
 		{
-			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
-			DirectionalShadowInfo directionalShadowData;
-			directionalShadowData.ShadowCount = currentDirectionaShadowCount;
-
-			if (currentDirectionaShadowCount > 0)
-			{
-				const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = mLightManager->GetDirectionalShadows();
-				DirectionalShadowTransform directionalShadowTransformData;
-				directionalShadowTransformData.ShadowCount = currentDirectionaShadowCount;
-
-
-				for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
-				{
-					std::vector<float> cascadeEnds = ShadowPass::CalculateCascadeEnds({ 0.33, 0.66 },
-						mCameraManager->GetNearPlane(ECameraType::Player),
-						mCameraManager->GetFarPlane(ECameraType::Player));
-
-					std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = ShadowPass::CalculateCascadeShadowTransform(cascadeEnds,
-						mCameraManager->GetViewMatrix(ECameraType::Player),
-						mCameraManager->GetProjectionMatrix(ECameraType::Player),
-						directioanlShadows[i]->GetData().direction);
-					assert(shadowTransforms.size() == 3);
-
-					DirectX::SimpleMath::Matrix texTransform =
-					{
-						 0.5f, 0.0f, 0.0f, 0.0f,
-						 0.0f, -0.5f, 0.0f, 0.0f,
-						 0.0f, 0.0f, 1.0f, 0.0f,
-						 0.5f, 0.5f, 0.0f, 1.0f
-					};
-					auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
-					size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
-
-					directionalShadowTransformData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
-					directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
-					directionalShadowTransformData.ShadowViewProj[shaodwIndex + 1] = (shadowTransforms[1] * texTransform).Transpose();
-					directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
-					directionalShadowTransformData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2] * texTransform).Transpose();
-					directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
-				}
-			}
-
-			mDirectioanlShadowInfoCB->Update(mDevice, directionalShadowData);
-
 			SceneTrnasform sceneTransform;
 			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
-
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
 		}
 
 		// init
@@ -195,7 +147,7 @@ namespace fq::graphics
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
 			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
+			mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 		}
 
 		auto bindingState = [this](const MaterialInfo& materialInfo)

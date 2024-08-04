@@ -1,7 +1,9 @@
 #define NOMINMAX
 #include "MagicBallAttackState.h"
 
-#include "../FQGameModule/GameModule.h"
+#include <algorithm>
+
+#include "../FQGameModule/CharacterController.h"
 #include "MagicArmour.h"
 
 fq::client::MagicBallAttackState::MagicBallAttackState()

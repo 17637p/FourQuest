@@ -1,6 +1,9 @@
 #define NOMINMAX
 #include "KnightArmour.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/CharacterController.h"
 #include "Player.h"
 #include "Attack.h"
 #include "DamageCalculation.h"

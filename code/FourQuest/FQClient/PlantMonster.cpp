@@ -1,6 +1,8 @@
 #define  NOMINMAX
 #include "PlantMonster.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "GameManager.h"
 #include "LinearAttack.h"
 #include "Attack.h"
@@ -18,6 +20,7 @@ fq::client::PlantMonster::PlantMonster()
 	, mGameManager(nullptr)
 	, mAttackCoolTime(0.f)
 	, mAttackElapsedTime(0.f)
+	, mRotationSpeed(0.1f)
 {
 }
 
@@ -62,7 +65,7 @@ void fq::client::PlantMonster::EmitAttack()
 	auto attackT = attackObj->GetComponent<Transform>();
 	auto transform = GetComponent<Transform>();
 
-	
+
 	DirectX::SimpleMath::Vector3 offset = { 0.f,1.f,0.f };
 	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
 
@@ -160,17 +163,19 @@ void fq::client::PlantMonster::LookAtTarget()
 	directV.y = 0.f;
 	directV.Normalize();
 
+	auto currentRotation = transform->GetWorldRotation();
 	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
 	directionQuaternion.Normalize();
-
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
+	DirectX::SimpleMath::Quaternion result =
+		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
+	
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
 
 	// UpVector가 뒤집힌 경우
 	if (rotationMatrix._22 <= -0.9f)
 	{
 		rotationMatrix._22 = 1.f;
 	}
-
 	transform->SetLocalRotationToMatrix(rotationMatrix);
 }
 

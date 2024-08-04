@@ -52,13 +52,13 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsCharactorControllerManager::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
+	bool PhysicsCharactorControllerManager::AddInputMove(const CharacterControllerInputInfo& info)
 	{
-		if (mCCTmap.find(id) == mCCTmap.end())
+		if (mCCTmap.find(info.id) == mCCTmap.end())
 			return false;
 
-		std::shared_ptr<CharacterController>& characterController = mCCTmap.find(id)->second;
-		characterController->AddMovementInput(input);
+		std::shared_ptr<CharacterController>& characterController = mCCTmap.find(info.id)->second;
+		characterController->AddMovementInput(info.input, info.isDynamic);
 		return true;
 	}
 

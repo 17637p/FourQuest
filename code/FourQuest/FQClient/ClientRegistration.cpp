@@ -15,7 +15,7 @@
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
-#include "RazerAttackState.h"
+#include "LaserAttackState.h"
 #include "ShiedlDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
@@ -40,6 +40,8 @@
 #include "MeleeMonsterWaitAttackState.h"
 #include "MeleeMonsterFindTargetState.h"
 #include "MeleeMonsterHitState.h"
+#include "MeleeMonsterExplosion.h"
+#include "MeleeMonsterExplosionState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -61,7 +63,15 @@
 // UI
 #include "HpBar.h"
 #include "PlayerUI.h"
+#include "PlayerUIManager.h"
+#include "BossHP.h"
+#include "PauseUI.h"
+
 #include "CameraMoving.h"
+
+// Quest
+#include "Quest.h"
+#include "QuestManager.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -70,10 +80,12 @@ void fq::client::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                             GameManager								//
 	//////////////////////////////////////////////////////////////////////////
-	
+
 	entt::meta<GameManager>()
 		.type("GameManager"_hs)
 		.prop(reflect::prop::Name, "GameManager")
+		.data<&GameManager::mPauseUI>("PauseUI"_hs)
+		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -144,6 +156,9 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&MagicArmour::mMagicBallSpeed>("MagicBallSpeed"_hs)
 		.prop(reflect::prop::Name, "MagicBallSpeed")
+		.data<&MagicArmour::mMagicBallPenetrationCount>("mMagicBallPenetrationCount"_hs)
+		.prop(reflect::prop::Name, "mMagicBallPenetrationCount")
+		.prop(reflect::prop::Comment, u8"매직볼트 관통횟수")
 		.data<&MagicArmour::mAOEMoveRange>("AOEMoveRange"_hs)
 		.prop(reflect::prop::Name, "AOEMoveRange")
 		.data<&MagicArmour::mRazerDistance>("RazerDistance"_hs)
@@ -156,10 +171,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AOE")
 		.data<&MagicArmour::mAttackWarningUI>("AttackWarningUI"_hs)
 		.prop(reflect::prop::Name, "AttackWarningUI")
-		.data<&MagicArmour::mRazer>("Razer"_hs)
-		.prop(reflect::prop::Name, "Razer")
-		.data<&MagicArmour::mRazerAttackBox>("RazerAttackBox"_hs)
-		.prop(reflect::prop::Name, "RazerAttackBox")
+		.data<&MagicArmour::mLaserEffect>("LaserEffect"_hs)
+		.prop(reflect::prop::Name, "LaserEffect")
+		.data<&MagicArmour::mLaserGatherEffect>("LaserGatherEffect"_hs)
+		.prop(reflect::prop::Name, "LaserGatherEffect")
+		.data<&MagicArmour::mLaserAttackBox>("LaserAttackBox"_hs)
+		.prop(reflect::prop::Name, "LaserAttackBox")
 		.base<game_module::Component>();
 
 	entt::meta<KnightArmour>()
@@ -236,9 +253,11 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AOEAttackState")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<RazerAttackState>()
+	entt::meta<LaserAttackState>()
 		.type("RazerAttackState"_hs)
 		.prop(reflect::prop::Name, "RazerAttackState")
+		.data<&LaserAttackState::mLaserEmitTime>("LaserEmitTime"_hs)
+		.prop(reflect::prop::Name, "LaserEmitTime")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<ShiedlDashState>()
@@ -356,7 +375,23 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DetectRange")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.base<fq::game_module::Component>();
-	
+
+	entt::meta<MeleeMonsterExplosion>()
+		.type("MeleeMonsterExplosion"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterExplosion")
+		.prop(reflect::prop::Label, "Monster")
+		.data<&MeleeMonsterExplosion::mExplosionRadius>("ExplosionRadius"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionRadius")
+		.data<&MeleeMonsterExplosion::mExplosionDamage>("ExplosionDamage"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionDamage")
+		.data<&MeleeMonsterExplosion::mExplosionTime>("ExplosionTime"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionTime")
+		.data<&MeleeMonsterExplosion::mWarningUI>("WarningUI"_hs)
+		.prop(fq::reflect::prop::Name, "WarningUI")
+		.data<&MeleeMonsterExplosion::mExplosion>("Explosion"_hs)
+		.prop(fq::reflect::prop::Name, "Explosion")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             근접 몬스터 상태  							//
 	//////////////////////////////////////////////////////////////////////////
@@ -403,10 +438,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeleeMonsterHitState")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<MeleeMonsterExplosionState>()
+		.type("MeleeMonsterExplosionState"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterExplosionState")
+		.base<fq::game_module::IStateBehaviour>();
+
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
 	//////////////////////////////////////////////////////////////////////////
-	
+
 	entt::meta<PlantMonster>()
 		.type("PlantMonster"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonster")
@@ -423,8 +464,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackPrefab")
 		.data<&PlantMonster::mAttackCoolTime>("AttackCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "AttackCoolTime")
+		.data<&PlantMonster::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회전 속도 0 < x <= 1.f")
 		.base<fq::game_module::Component>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                         원거리 몬스터 상태								//
@@ -435,6 +478,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PlantMonsterAttckState")
 		.data<&PlantMonsterAttckState::mAttackTiming>("AttackTiming"_hs)
 		.prop(fq::reflect::prop::Name, "AttackTiming")
+		.data<&PlantMonsterAttckState::mLookAtTime>("LookAtTime"_hs)
+		.prop(fq::reflect::prop::Name, "LookAtTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterStareState>()
@@ -575,6 +620,132 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PlayerID")
 		.prop(fq::reflect::prop::Comment, u8"ControllerID와 맞춰줄 것 0~3")
 		.base<fq::game_module::Component>();
+
+	entt::meta<PlayerUIManager>()
+		.type("PlayerUIManager"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerUIManager")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PlayerUIManager::mPlayerUIPrefab>("PlayerUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<BossHP>()
+		.type("BossHP"_hs)
+		.prop(fq::reflect::prop::Name, "BossHP")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<PauseUI>()
+		.type("PauseUI"_hs)
+		.prop(fq::reflect::prop::Name, "PauseUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                             Quest									//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PreQuest>()
+		.type("PreQuest"_hs)
+		.prop(fq::reflect::prop::Name, "PreQuest")
+		.data<&PreQuest::preIndex>("PreIndex"_hs)
+		.prop(fq::reflect::prop::Name, "PreIndex")
+		.data<&PreQuest::preIsMain>("PreIsMain"_hs)
+		.prop(fq::reflect::prop::Name, "PreIsMain");
+
+	entt::meta<QuestColliderTrigger>()
+		.type("QuestColliderTrigger"_hs)
+		.prop(fq::reflect::prop::Name, "QuestColliderTrigger")
+		.data<&QuestColliderTrigger::colliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName")
+		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름");
+
+	entt::meta<MonsterKill>()
+		.type("MonsterKill"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterKill")
+		.data<&MonsterKill::monsterType>("MonsterType"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.data<&MonsterKill::requestsNumber>("RequestsNumber"_hs)
+		.prop(fq::reflect::prop::Name, "RequestsNumber");
+
+	entt::meta<MonsterGroupKill>()
+		.type("MonsterGroupKill"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupKill")
+		.data<&MonsterGroupKill::groupIndex>("GroupIndex"_hs)
+		.prop(fq::reflect::prop::Name, "GroupIndex");
+
+	entt::meta<Defence>()
+		.type("Defence"_hs)
+		.prop(fq::reflect::prop::Name, "Defence")
+		.data<&Defence::colliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName")
+		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
+		.data<&Defence::seconds>("Seconds"_hs)
+		.prop(fq::reflect::prop::Name, "Seconds");
+
+	entt::meta<ClearQuest>()
+		.type("ClearQuest"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuest")
+		.data<&ClearQuest::clearIndex>("ClearQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestIndex")
+		.data<&ClearQuest::clearIsMain>("ClearQuestIsMain"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestIsMain");
+
+/*
+	entt::meta<QuestJoinCondition>()
+		.type("QuestJoinCondition"_hs)
+		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
+		.data<&QuestJoinCondition::preQuestList>("PreQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "PreQuestList")
+		.data<&QuestJoinCondition::colliderTriggerList>("ColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderTriggerList");
+
+	entt::meta<QuestClearCondition>()
+		.type("QuestClearCondition"_hs)
+		.prop(fq::reflect::prop::Name, "QuestClearCondition")
+		.data<&QuestClearCondition::monsterKillList>("MonsterKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterKillList")
+		.data<&QuestClearCondition::monsterGroupKillList>("MonsterGroupKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupKillList")
+		.data<&QuestClearCondition::defenceList>("DefenceList"_hs)
+		.prop(fq::reflect::prop::Name, "DefenceList")
+		.data<&QuestClearCondition::clearQuestList>("ClearQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestList");*/
+
+	entt::meta<Quest>()
+		.type("Quest"_hs)
+		.prop(fq::reflect::prop::Name, "Quest")
+		.prop(fq::reflect::prop::POD)
+		.data<&Quest::mIndex>("Index"_hs)
+		.prop(fq::reflect::prop::Name, "Index")
+		.data<&Quest::mIsMain>("IsMain"_hs)
+		.prop(fq::reflect::prop::Name, "IsMain")
+		.data<&Quest::preQuestList>("PreQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "PreQuestList")
+		.data<&Quest::colliderTriggerList>("ColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
+		.data<&Quest::monsterKillList>("MonsterKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterKillList")
+		.data<&Quest::monsterGroupKillList>("MonsterGroupKillList"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupKillList")
+		.data<&Quest::defenceList>("DefenceList"_hs)
+		.prop(fq::reflect::prop::Name, "DefenceList")
+		.data<&Quest::clearQuestList>("ClearQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearQuestList")
+		.data<&Quest::mIndex>("Index"_hs)
+		.prop(fq::reflect::prop::Name, "Index");
+
+	entt::meta<QuestManager>()
+		.type("QuestManager"_hs)
+		.prop(fq::reflect::prop::Name, "QuestManager")
+		//.prop(fq::reflect::prop::Label, "UI")
+		.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
+		.prop(fq::reflect::prop::Name, "CurMainQuest")
+		.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
+		.prop(fq::reflect::prop::Name, "CurSubQuest")
+		.data<&QuestManager::mMainQuests>("MainQuest"_hs)
+		.prop(fq::reflect::prop::Name, "MainQuest")
+		.data<&QuestManager::mSubQuests>("SubQuest"_hs)
+		.prop(fq::reflect::prop::Name, "SubQuest")
+		.base<fq::game_module::Component>();
 }
-
-

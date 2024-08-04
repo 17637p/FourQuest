@@ -3,6 +3,9 @@
 #include <spdlog/spdlog.h>
 
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 
 fq::game_engine::CameraSystem::CameraSystem()

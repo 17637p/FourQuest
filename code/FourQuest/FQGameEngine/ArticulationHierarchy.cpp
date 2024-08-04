@@ -1,5 +1,4 @@
 #include "ArticulationHierarchy.h"
-
 #include "imgui_stdlib.h"
 
 #include "EditorProcess.h"
@@ -10,6 +9,21 @@
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/ArticulationData.h"
 #include "../FQGameModule/LinkData.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/Light.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/Decal.h"
+#include "../FQGameModule/Particle.h"
+#include "../FQGameModule/Trail.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/SoundClip.h"
+#include "../FQGameModule/Articulation.h"
 #include "../FQGraphics/IFQGraphics.h"
 
 namespace fq::game_engine
