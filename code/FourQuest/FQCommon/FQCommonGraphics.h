@@ -78,6 +78,16 @@ namespace fq::graphics
 		bool isCenter = false;
 	};
 
+	struct TextInfo
+	{
+		std::wstring Text; // 실제 띄울 내용
+		DirectX::SimpleMath::Rectangle DrawRect; // 그릴 영역
+
+		std::wstring FontPath;
+		short FontSize;
+		DirectX::SimpleMath::Color FontColor;
+	};
+
 	struct TerrainLayer
 	{
 		std::string BaseColor;

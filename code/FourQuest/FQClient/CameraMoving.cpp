@@ -50,7 +50,7 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 	chaseCenter(dt);
 	if (GetAsyncKeyState('O') & 0x8000)
 	{
-		mIsFixed = !mIsFixed;
+		//mIsFixed = !mIsFixed;
 	}
 }
 

@@ -14,6 +14,7 @@ namespace fq::game_module
 	class InputManager;
 	class EventManager;
 	class ScreenManager;
+	class TimeManager;
 
 	/// <summary>
 	/// 씬을 관리하는 클래스 
@@ -33,7 +34,8 @@ namespace fq::game_module
 			, EventManager* eventMgr
 			, InputManager* inputMgr
 			, PrefabManager* prefabMgr
-			, ScreenManager* screenMgr);
+			, ScreenManager* screenMgr
+			, TimeManager* timeMgr);
 
 		/// <summary>
 		/// 씬 매니져를 종료합니다
@@ -113,6 +115,7 @@ namespace fq::game_module
 		
 		EventManager* mEventManager;
 		PrefabManager* mPrefabManager;
+		TimeManager* mTimeManager;
 
 		EventHandler mRequestChangeSceneHandler;
 		EventHandler mRequestExitGameHadler;

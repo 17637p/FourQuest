@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/PrefabResource.h"
+
 #include "ClientEvent.h"
 
 namespace fq::client
@@ -31,6 +33,12 @@ namespace fq::client
 		EventHandler mRegisterPlayerHandler;
 
 		std::vector<std::shared_ptr<game_module::GameObject>> mPlayers;
+
+		// pause Ã³¸®
+		bool mIsStop;
+		fq::game_module::PrefabResource mPauseUI;
+
+		friend void RegisterMetaData();
 	};
 
 

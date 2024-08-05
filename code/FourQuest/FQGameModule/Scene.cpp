@@ -31,13 +31,15 @@ void fq::game_module::Scene::Initialize(std::string sceneName
 	, EventManager* eventMgr
 	, InputManager* inputMgr
 	, PrefabManager* prefabMgr
-	, ScreenManager* screenMgr)
+	, ScreenManager* screenMgr
+	, TimeManager* timeMgr)
 {
 	mSceneName = std::move(sceneName);
 	mEventManager = eventMgr;
 	mInputManager = inputMgr;
 	mPrefabManager = prefabMgr;
 	mScreenManager = screenMgr;
+	mTimeManager = timeMgr;
 }
 
 

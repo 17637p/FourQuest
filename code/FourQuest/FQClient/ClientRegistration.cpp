@@ -77,6 +77,7 @@
 #include "PlayerUI.h"
 #include "PlayerUIManager.h"
 #include "BossHP.h"
+#include "PauseUI.h"
 
 #include "CameraMoving.h"
 
@@ -95,6 +96,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<GameManager>()
 		.type("GameManager"_hs)
 		.prop(reflect::prop::Name, "GameManager")
+		.data<&GameManager::mPauseUI>("PauseUI"_hs)
+		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -728,6 +731,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossHP>()
 		.type("BossHP"_hs)
 		.prop(fq::reflect::prop::Name, "BossHP")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<PauseUI>()
+		.type("PauseUI"_hs)
+		.prop(fq::reflect::prop::Name, "PauseUI")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 

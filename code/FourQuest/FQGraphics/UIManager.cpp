@@ -207,41 +207,9 @@ void fq::graphics::UIManager::DeleteFont(const std::wstring& path)
 	}
 }
 
-void fq::graphics::UIManager::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= {1, 0, 0, 1}*/)
+void fq::graphics::UIManager::DrawText(TextInfo textInfo)
 {
-	DrawTextInformation drawTextInformation;
-
-	drawTextInformation.text = text;
-	drawTextInformation.drawRect = drawRect;
-
-	if (fontSize == 50)
-	{
-		drawTextInformation.fontSize = mDefaultFontSize;
-	}
-	else
-	{
-		drawTextInformation.fontSize = fontSize;
-	}
-
-	if (fontPath == L"Verdana")
-	{
-		drawTextInformation.fontPath = mDefaultFontPath;
-	}
-	else
-	{
-		drawTextInformation.fontPath = fontPath;
-	}
-
-	if (color == DirectX::SimpleMath::Color{ 0, 1, 1, 1 })
-	{
-		drawTextInformation.color = mDefaultFontColor;
-	}
-	else
-	{
-		drawTextInformation.color = color;
-	}
-
-	mDrawTextInformations.emplace_back(drawTextInformation);
+	mDrawTextInformations.emplace_back(textInfo);
 }
 
 void fq::graphics::UIManager::OnResize(std::shared_ptr<D3D11Device> device, const short width, const short height)
@@ -345,33 +313,32 @@ void fq::graphics::UIManager::drawAllText()
 		ID2D1SolidColorBrush* tempBrush = nullptr;
 		for (const auto& drawTextInformation : mDrawTextInformations)
 		{
-			auto brush = mBrushes.find(drawTextInformation.color);
+			auto brush = mBrushes.find(drawTextInformation.FontColor);
 			if (brush == mBrushes.end())
 			{
 				// 브러시 제작 
 				// Create a black brush.
 				mRenderTarget->CreateSolidColorBrush(
-					D2D1::ColorF(drawTextInformation.color.R(),
-						drawTextInformation.color.G(),
-						drawTextInformation.color.B(),
-						drawTextInformation.color.A()),
+					D2D1::ColorF(drawTextInformation.FontColor.R(),
+						drawTextInformation.FontColor.G(),
+						drawTextInformation.FontColor.B(),
+						drawTextInformation.FontColor.A()),
 					&tempBrush);
 
-				mBrushes[drawTextInformation.color] = tempBrush;
+				mBrushes[drawTextInformation.FontColor] = tempBrush;
 			}
 
 			mRenderTarget->DrawText(
-				drawTextInformation.text.c_str(),
-				drawTextInformation.text.length(),
-				mFonts[drawTextInformation.fontPath + std::to_wstring(drawTextInformation.fontSize)],
+				drawTextInformation.Text.c_str(),
+				drawTextInformation.Text.length(),
+				mFonts[drawTextInformation.FontPath + std::to_wstring(drawTextInformation.FontSize)],
 				D2D1::RectF(
-					drawTextInformation.drawRect.x - drawTextInformation.drawRect.width / 2,
-					drawTextInformation.drawRect.y - drawTextInformation.drawRect.height / 2,
-					drawTextInformation.drawRect.x + drawTextInformation.drawRect.width / 2,
-					drawTextInformation.drawRect.y + drawTextInformation.drawRect.height / 2),
-				mBrushes[drawTextInformation.color]);
+					drawTextInformation.DrawRect.x - drawTextInformation.DrawRect.width / 2,
+					drawTextInformation.DrawRect.y - drawTextInformation.DrawRect.height / 2,
+					drawTextInformation.DrawRect.x + drawTextInformation.DrawRect.width / 2,
+					drawTextInformation.DrawRect.y + drawTextInformation.DrawRect.height / 2),
+				mBrushes[drawTextInformation.FontColor]);
 		}
-		mDrawTextInformations.clear();
 	}
 }
 
@@ -620,4 +587,16 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	AddImage(newImageObject);
 
 	return newImageObject;
+}
+
+void fq::graphics::UIManager::DeleteText(TextInfo textInfo)
+{
+	mDrawTextInformations.erase(std::remove_if(mDrawTextInformations.begin(), mDrawTextInformations.end(), [textInfo](TextInfo textInfoIter)
+		{
+			return (textInfoIter.Text == textInfo.Text
+				&& textInfoIter.DrawRect == textInfo.DrawRect
+				&& textInfoIter.FontColor == textInfo.FontColor
+				&& textInfoIter.FontPath == textInfo.FontPath
+				&& textInfoIter.FontSize == textInfo.FontSize);
+		}));
 }
