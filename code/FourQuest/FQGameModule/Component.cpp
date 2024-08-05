@@ -1,6 +1,7 @@
 #include "Component.h"
 #include "Scene.h"
 
+#include "Transform.h"
 
 FQ_REGISTRATION
 {
@@ -36,5 +37,10 @@ fq::game_module::Component& fq::game_module::Component::operator=(const Componen
 	mGameObject = nullptr;
 
 	return *this;
+}
+
+fq::game_module::Transform* fq::game_module::Component::GetTransform()
+{
+	return GetComponent<fq::game_module::Transform>();
 }
 

@@ -28,9 +28,9 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 		*cloneQuestManager = *this;
 	}
 
-	cloneQuestManager->mCurSubQuest.clear();
+	/*cloneQuestManager->mCurSubQuest.clear();
 	cloneQuestManager->mMainQuests.clear();
-	cloneQuestManager->mSubQuests.clear();
+	cloneQuestManager->mSubQuests.clear();*/
 
 	return cloneQuestManager;
 }

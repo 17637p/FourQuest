@@ -28,7 +28,6 @@ namespace fq::game_module
 			AnyState,
 		};
 
-	public:
 		AnimationStateNode(AnimatorController* controller);
 		~AnimationStateNode();
 
@@ -48,7 +47,10 @@ namespace fq::game_module
 		void SetDuration(float val) { mDuration = val; }
 		bool IsLoof() const { return mbIsLoof; }
 		void SetLoof(bool val) { mbIsLoof = val; }
+		float GetStartTimePos() const { return mStartTimePos; }
+		void SetStartTimePos(float val) { mStartTimePos = val; }
 
+	public:
 		// 局聪皋捞记 府家胶 包访
 		void SetAnimation(std::shared_ptr<fq::graphics::IAnimation> animation) { mAnimation = animation; }
 		fq::graphics::IAnimation& GetAnimation() { return *mAnimation; }
@@ -68,6 +70,7 @@ namespace fq::game_module
 		std::string mAnimationPath;
 		std::string mAnimationKey;
 		float mPlayBackSpeed;
+		float mStartTimePos;
 		float mDuration;
 		bool mbIsLoof;
 

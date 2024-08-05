@@ -9,14 +9,10 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterWaitAt
 }
 
 fq::client::MeleeMonsterWaitAttackState::MeleeMonsterWaitAttackState()
-{
-
-}
+{}
 
 fq::client::MeleeMonsterWaitAttackState::~MeleeMonsterWaitAttackState()
-{
-
-}
+{}
 
 void fq::client::MeleeMonsterWaitAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {

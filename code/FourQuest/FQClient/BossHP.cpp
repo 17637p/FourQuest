@@ -56,8 +56,7 @@ void fq::client::BossHP::OnUpdate(float dt)
 	}
 
 	// HP ¹Ù Á¶Á¤
-	//float hpRatio = mBoss->GetHPRatio();
-	float hpRatio = 0.2f;
+	float hpRatio = mBoss->GetHPRatio();
 	std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
 	uiInfos[0].XRatio = hpRatio;
 	uiInfos[0].Width = mHPWidth * hpRatio;
