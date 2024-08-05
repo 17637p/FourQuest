@@ -38,6 +38,7 @@ namespace fq::game_module
 		json["boneName"] = linkData->GetBoneName();
 		json["parentBoneName"] = linkData->GetParentBoneName();
 		json["localTransform"] = MatrixToJson(linkData->GetLocalTransform());
+		json["worldTransform"] = MatrixToJson(linkData->GetWorldTransform());
 		json["density"] = linkData->GetDensity();
 		json["ShapeType"] = linkData->GetShapeType();
 		json["boxExtent"] = Vector3ToJson(linkData->GetBoxExtent());
@@ -129,6 +130,7 @@ namespace fq::game_module
 		linkData->SetBoneName(linkJson["boneName"]);
 		linkData->SetParentBoneName(linkJson["parentBoneName"]);
 		linkData->SetLocalTransform(JsonToMatrix(linkJson["localTransform"]));
+		linkData->SetWorldTransform(JsonToMatrix(linkJson["worldTransform"]));
 		linkData->SetDensity(linkJson["density"]);
 		linkData->SetShapeType(linkJson["ShapeType"]);
 		linkData->SetBoxExtent(JsonToVector3(linkJson["boxExtent"]));

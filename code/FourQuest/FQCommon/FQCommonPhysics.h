@@ -312,8 +312,9 @@ namespace fq::physics
 		std::string parentBoneName = {};														// 부모 본(링크)의 이름
 		float density = 1.f;																	// 밀도 ( 0.f ~ 1.f )
 		DirectX::SimpleMath::Matrix localTransform = DirectX::SimpleMath::Matrix::Identity;		// 로컬 좌표
-		DirectX::SimpleMath::Matrix boneWorldTransform = DirectX::SimpleMath::Matrix::Identity;	// 본 월드 좌표
-		DirectX::SimpleMath::Matrix rootWorldTransform = DirectX::SimpleMath::Matrix::Identity;	// 루트 월드 트랜스폼
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;		// 로컬 좌표
+		DirectX::SimpleMath::Matrix boneTransform = DirectX::SimpleMath::Matrix::Identity;		// 본 월드 좌표
+		DirectX::SimpleMath::Matrix rootTransform = DirectX::SimpleMath::Matrix::Identity;		// 루트 월드 트랜스폼
 		JointInfo jointInfo;																	// 조인트 정보
 	};
 

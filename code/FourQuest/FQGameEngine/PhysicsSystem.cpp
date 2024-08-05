@@ -481,6 +481,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
 		nodeHierarchy.SetBindPose();
+		nodeHierarchy.UpdateByLocalTransform();
 
 		std::function<void(std::shared_ptr<LinkData>, ColliderID)> loadFunction = [&](std::shared_ptr<LinkData> linkData, ColliderID id)
 			{
@@ -490,13 +491,16 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				linkInfo.parentBoneName = linkData->GetParentBoneName();
 				linkInfo.density = linkData->GetDensity();
 				linkInfo.localTransform = linkData->GetLocalTransform();
+				linkInfo.worldTransform = linkData->GetWorldTransform();
 
 				if (linkData->GetBoneName() != "root")
 				{
-					linkInfo.boneWorldTransform = nodeHierarchy.GetTransposedFinalTransform(boneHierarchy.GetBoneIndex(linkData->GetBoneName())).Transpose();
+					int boneIndex = boneHierarchy.GetBoneIndex(linkData->GetBoneName());
+					int parentBoneIndex = boneHierarchy.GetBones()[boneIndex].ParentIndex;
+					linkInfo.boneTransform = nodeHierarchy.GetRootTransform(boneIndex);
 					linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
 				}
-				linkInfo.rootWorldTransform = transform->GetWorldMatrix();
+				linkInfo.rootTransform = transform->GetWorldMatrix();
 
 				linkInfo.jointInfo.damping = linkData->GetJointDamping();
 				linkInfo.jointInfo.maxForce = linkData->GetJointMaxForce();

@@ -627,7 +627,9 @@ namespace fq::game_engine
 		{
 			unsigned int parentIndex = boneHierarchy.GetBones()[i].ParentIndex;
 
-			auto& rootTransform = nodeHierarchy.GetRootTransforms()[i];
+			auto rootTransform = nodeHierarchy.GetRootTransforms()[i];
+			auto objectWorldTransform = objectTransform->GetWorldMatrix();
+			rootTransform = rootTransform * objectWorldTransform;
 
 			fq::graphics::debug::SphereInfo sphereInfo;
 			fq::graphics::debug::RayInfo rayInfo1;
@@ -647,7 +649,8 @@ namespace fq::game_engine
 
 			if (parentIndex <= nodeHierarchy.GetRootTransforms().size())
 			{
-				auto& parentTransform = nodeHierarchy.GetRootTransforms()[parentIndex];
+				auto parentTransform = nodeHierarchy.GetRootTransforms()[parentIndex];
+				parentTransform = parentTransform * objectWorldTransform;
 				DirectX::SimpleMath::Vector3 direction = (parentTransform.Translation() - rootTransform.Translation()) * objectScale;
 
 				rayInfo1.Direction = direction;

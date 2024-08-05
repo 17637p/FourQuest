@@ -11,6 +11,7 @@
 #include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/ArticulationData.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Transform.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::game_engine
