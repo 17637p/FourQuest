@@ -89,6 +89,8 @@ namespace fq::graphics
 
 		void registerFont(const std::wstring& path);
 
+		std::wstring stringToWstring(std::string str);
+
 	private:
 		HWND mHWnd;
 

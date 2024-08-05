@@ -18,6 +18,8 @@
 #include "D3D11ResourceManager.h"
 #include "D3D11View.h"
 
+#include <boost/locale.hpp>
+
 fq::graphics::UIManager::UIManager()
 	:mHWnd{ NULL },
 	mDirect2DFactory{ nullptr },
@@ -319,7 +321,7 @@ void fq::graphics::UIManager::drawAllText()
 		for (const auto& textObject : mTexts)
 		{
 			TextInfo drawTextInformation = textObject->GetTextInformation();
-			if (drawTextInformation.Text == L"")
+			if (drawTextInformation.Text == "")
 			{
 				continue;
 			}
@@ -344,10 +346,13 @@ void fq::graphics::UIManager::drawAllText()
 				mBrushes[drawTextInformation.FontColor] = tempBrush;
 			}
 
+			std::wstring text = stringToWstring(drawTextInformation.Text);
+			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
+
 			mRenderTarget->DrawText(
-				drawTextInformation.Text.c_str(),
-				drawTextInformation.Text.length(),
-				mFonts[drawTextInformation.FontPath + std::to_wstring(drawTextInformation.FontSize)],
+				text.c_str(),
+				text.length(),
+				mFonts[fontPath],
 				D2D1::RectF(
 					drawTextInformation.CenterX - drawTextInformation.Width / 2,
 					drawTextInformation.CenterY - drawTextInformation.Height / 2,
@@ -610,4 +615,17 @@ void fq::graphics::UIManager::DeleteText(fq::graphics::ITextObject* textObject)
 	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject));
 	delete textObject;
 }
-	
+
+std::wstring fq::graphics::UIManager::stringToWstring(std::string str)
+{
+	boost::locale::generator gen;
+	std::locale loc = gen("en_US.UTF-8");
+	std::locale::global(loc);
+
+	// 문자열 변환
+	std::string narrow_str = str;
+	std::wstring wide_str = boost::locale::conv::to_utf<wchar_t>(narrow_str, "UTF-8");
+
+	return wide_str;
+}
+
