@@ -101,6 +101,16 @@ extern "C" {
 			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
 			virtual FQ_GRAPHICS int* GetHeightData() const abstract;
 
+			// Lightmap
+			virtual FQ_GRAPHICS void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const abstract;
+
+			virtual FQ_GRAPHICS void SetLightmapIndex(unsigned int lightmapIndex) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLightmapIndex() const abstract;
+
+			virtual FQ_GRAPHICS void SetIsStatic(bool bIsStatic) abstract;
+			virtual FQ_GRAPHICS bool GetIsStatic() const abstract;
+
 		protected:
 			virtual ~ITerrainMeshObject() = default;
 		};

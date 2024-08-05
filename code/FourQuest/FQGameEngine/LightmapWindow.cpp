@@ -12,11 +12,11 @@ fq::game_engine::LightmapWindow::LightmapWindow()
 	, mbIsOpen(false)
 	, mSkyBoxInfo{}
 	, mGameProcess(nullptr)
-{}
+{
+}
 
 fq::game_engine::LightmapWindow::~LightmapWindow()
 {
-
 }
 
 void fq::game_engine::LightmapWindow::Initialize(GameProcess* game)
@@ -33,15 +33,18 @@ void fq::game_engine::LightmapWindow::Initialize(GameProcess* game)
 			if (std::filesystem::exists(scenePath))
 			{
 				LoadLightmap(scenePath);
+				ApplyLightmap();
 			}
 		}
 	);
-
 }
 
 void fq::game_engine::LightmapWindow::Render()
 {
-	if (!mbIsOpen) return;
+	if (!mbIsOpen)
+	{
+		return;
+	}
 
 	if (ImGui::Begin("Lightmap", &mbIsOpen))
 	{
@@ -50,7 +53,7 @@ void fq::game_engine::LightmapWindow::Render()
 		for (std::filesystem::path& path : mLightmapArrayPath)
 		{
 			std::string stringPath = path.string();
-			std::string label = std::string("LightMap") + std::to_string(index);
+			std::string label = std::string("LightMap") + std::to_string(index++);
 
 			ImGui::InputText(label.c_str(), &stringPath);
 
@@ -63,7 +66,7 @@ void fq::game_engine::LightmapWindow::Render()
 					std::filesystem::path* inputPath
 						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
 
-					if (inputPath->extension() == ".dds") // 모델 생성
+					if (inputPath->extension() == ".dds" || inputPath->extension() == ".png")
 					{
 						path = *inputPath;
 					}
@@ -89,7 +92,7 @@ void fq::game_engine::LightmapWindow::Render()
 		for (std::filesystem::path& path : mDirectionArrayPath)
 		{
 			std::string stringPath = path.string();
-			std::string label = std::string("DirectionMap") + std::to_string(index);
+			std::string label = std::string("DirectionMap") + std::to_string(index++);
 
 			ImGui::InputText(label.c_str(), &stringPath);
 
@@ -102,7 +105,7 @@ void fq::game_engine::LightmapWindow::Render()
 					std::filesystem::path* inputPath
 						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
 
-					if (inputPath->extension() == ".dds" || inputPath->extension() == ".png") // 모델 생성
+					if (inputPath->extension() == ".dds" || inputPath->extension() == ".png")
 					{
 						path = *inputPath;
 					}
@@ -125,8 +128,7 @@ void fq::game_engine::LightmapWindow::Render()
 
 		if (ImGui::Button("Apply", ImVec2{ 133,25 }))
 		{
-			mGameProcess->mGraphics->SetLightMapTexture(mLightmapArrayPath);
-			mGameProcess->mGraphics->SetLightMapDirectionTexture(mDirectionArrayPath);
+			ApplyLightmap();
 		}
 	}
 
@@ -165,6 +167,9 @@ void fq::game_engine::LightmapWindow::SaveLightmap(std::filesystem::path path)
 
 void fq::game_engine::LightmapWindow::LoadLightmap(std::filesystem::path path)
 {
+	mLightmapArrayPath.clear();
+	mDirectionArrayPath.clear();
+
 	auto filePath = path / "lightmap.txt";
 
 	std::ifstream readData(filePath);
@@ -173,19 +178,31 @@ void fq::game_engine::LightmapWindow::LoadLightmap(std::filesystem::path path)
 	if (readData.is_open())
 	{
 		readData >> lightmapJson;
+
+		for (auto& element : lightmapJson["Lightmap"])
+		{
+			mLightmapArrayPath.push_back(element);
+		}
+		for (auto& element : lightmapJson["Directionmap"])
+		{
+			mDirectionArrayPath.push_back(element);
+		}
+
 		readData.close();
 	}
-	else
+}
+
+void fq::game_engine::LightmapWindow::ApplyLightmap()
+{
+	if (mLightmapArrayPath.empty())
 	{
-		assert(!"파일 열기 실패");
+		return;
+	}
+	if (mDirectionArrayPath.empty())
+	{
+		return;
 	}
 
-	for (auto& element : lightmapJson["Lightmap"])
-	{
-		mLightmapArrayPath.push_back(element);
-	}
-	for (auto& element : lightmapJson["Directionmap"])
-	{
-		mDirectionArrayPath.push_back(element);
-	}
+	mGameProcess->mGraphics->SetLightMapTexture(mLightmapArrayPath);
+	mGameProcess->mGraphics->SetLightMapDirectionTexture(mDirectionArrayPath);
 }

@@ -126,7 +126,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 				auto meshObject = mesh.GetTerrainMeshObject();
 				if (meshObject)
 				{
-					meshObject->SetTransform(mPlaneMatrix * transform.GetWorldMatrix());
+					meshObject->SetTransform( mPlaneMatrix * transform.GetWorldMatrix());
 				}
 			});
 
@@ -692,6 +692,11 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 
 	// Terrain Collider 생성요청 
 	mGameProcess->mPhysicsSystem->AddTerrainCollider(object);
+
+	// 터레인 라이트맵 관련 매개변수 세팅
+	iTerrainMeshObject->SetIsStatic(terrain->GetIsStatic());
+	iTerrainMeshObject->SetLightmapUVScaleOffset(terrain->GetLightmapUVScaleOffset());
+	iTerrainMeshObject->SetLightmapIndex(terrain->GetLightmapIndex());
 }
 
 void fq::game_engine::RenderingSystem::unloadTerrain(fq::game_module::GameObject* object)

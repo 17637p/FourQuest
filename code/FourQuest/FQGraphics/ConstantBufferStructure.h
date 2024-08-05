@@ -15,8 +15,9 @@ namespace fq::graphics
 	{
 		DirectX::SimpleMath::Vector4 UVScaleOffset;
 		unsigned int UVIndex;
+		int bUseLightmap;
 		int bUseDirection;
-		float unused[2];
+		float unused[1];
 	};
 
 	struct ViewProjectionMatrix
@@ -92,6 +93,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 FrustumFarCorners[4];
 	};
 
+	// 리얼타임 데이터만 여기에 저장
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];
@@ -106,6 +108,12 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector3 eyePosition;
 		float pad2;
+	};
+
+	// 감쇄와 조명 연산의 차이로 인해 DirectionalLight 하나만 지원
+	struct MixedLightData
+	{
+		DirectionalLight directionalLight; 
 	};
 
 	struct OutLineColor
@@ -322,6 +330,13 @@ namespace fq::graphics
 		DirectX::XMFLOAT4 C;
 		float Intensity;
 		DirectX::XMFLOAT3 pad;
+	};
+
+	struct SpecularMapFilterSettingsCB
+	{
+		float roughness;
+		float EnvScale;
+		float padding[2];
 	};
 
 	template <typename T>

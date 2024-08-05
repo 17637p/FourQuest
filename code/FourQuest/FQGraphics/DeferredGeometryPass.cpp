@@ -174,11 +174,11 @@ namespace fq::graphics
 
 			if (lightMapTexture != nullptr)
 			{
-				lightMapTexture->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
+				lightMapTexture->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
 			}
 			if (lightmapDirectionTexture != nullptr)
 			{
-				lightmapDirectionTexture->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
+				lightmapDirectionTexture->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
 			}
 		}
 

@@ -35,7 +35,7 @@ namespace fq::graphics
 		if (GetHasRoughness()) mRoughness->Bind(d3d11Device, 2, ED3D11ShaderType::PixelShader);
 		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
-		if (GetHasOpacity()) mOpacity->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
+		if (GetHasMetalnessSmoothness()) mMetalnessSmoothness->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
@@ -145,6 +145,18 @@ namespace fq::graphics
 		{
 			mHeightMapRawData[i] = in[i];
 			mHeightMapData[i] = (in[i] / 255.0f) * mHeightscale;
+		}
+
+		// flip y
+		for (UINT i = 0; i < mHeight / 2; ++i)
+		{
+			for (UINT j = 0; j < mWidth; ++j)
+			{
+				UINT front = i * mWidth + j;
+				UINT back = (mHeight - i - 1) * mWidth + j;
+				std::swap(mHeightMapRawData[front], mHeightMapRawData[back]);
+				std::swap(mHeightMapData[front], mHeightMapData[back]);
+			}
 		}
 	}
 

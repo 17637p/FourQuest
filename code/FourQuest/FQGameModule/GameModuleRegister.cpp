@@ -361,6 +361,12 @@ void fq::game_module::RegisterMetaData()
 		.data<&Terrain::SetTerrainLayers, &Terrain::GetTerrainLayers>("Layers"_hs)
 		.prop(fq::reflect::prop::Name, "Layers")
 		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
+		.data<&Terrain::SetLightmapUVScaleOffset, &Terrain::GetLightmapUVScaleOffset>("LightmapUVScaleOffset"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapUVScaleOffset")
+		.data<&Terrain::SetLightmapIndex, &Terrain::GetLightmapIndex>("LightmapIndex"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapIndex")
+		.data<&Terrain::SetIsStatic, &Terrain::GetIsStatic>("IsStatic"_hs)
+		.prop(fq::reflect::prop::Name, "IsStatic")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

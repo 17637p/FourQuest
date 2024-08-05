@@ -14,7 +14,6 @@ namespace fq::graphics
 	class MeshBase
 	{
 	public:
-		MeshBase() = default;
 		MeshBase(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
 		virtual ~MeshBase() = 0 {};
 
@@ -53,11 +52,8 @@ namespace fq::graphics
 	class SkinnedMesh : public ISkinnedMesh, public MeshBase
 	{
 	public:
-		SkinnedMesh(std::shared_ptr<D3D11Device> device);
 		SkinnedMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData);
 		virtual ~SkinnedMesh() = default;
-
-		virtual void Create(const fq::common::Mesh& meshData);
 
 		virtual void* GetVertexBuffer() override;
 		virtual void* GetIndexBuffer() override;

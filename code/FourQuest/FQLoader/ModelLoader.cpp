@@ -130,7 +130,6 @@ namespace fq::loader
 				mesh.Tex1.push_back(tex1);
 			}
 
-
 			unsigned int dynamicDataCount = 0;
 			fileUtil.Read<unsigned int>(&tex1Count);
 

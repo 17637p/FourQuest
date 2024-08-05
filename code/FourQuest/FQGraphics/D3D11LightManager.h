@@ -59,7 +59,8 @@ namespace fq::graphics
 		void UpdateConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device,
 			const DirectX::SimpleMath::Vector3& eyePosition,
 			const unsigned int isUseIBL);
-		void UpdateShadowConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device, const std::shared_ptr<D3D11CameraManager>& cameraManager);
+		void UpdateShadowConstantBuffer(const std::shared_ptr<D3D11Device>& d3d11Device,
+			const std::shared_ptr<D3D11CameraManager>& cameraManager);
 
 		inline std::shared_ptr<D3D11ConstantBuffer<LightData>> GetLightConstnatBuffer();
 		inline std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> GetShadowConstnatBuffer();
@@ -85,19 +86,11 @@ namespace fq::graphics
 
 	private:
 		std::shared_ptr<D3D11ConstantBuffer<LightData>> mLightConstantBuffer;
-
 		std::unordered_map<unsigned int, std::shared_ptr<Light<DirectionalLight>>>	mDirectionalLights;
 		std::unordered_map<unsigned int, std::shared_ptr<Light<PointLight>>>		mPointLights;
 		std::unordered_map<unsigned int, std::shared_ptr<Light<SpotLight>>>			mSpotLight;
-
-		struct SpecularMapFilterSettingsCB
-		{
-			float roughness;
-			float EnvScale;
-			float padding[2];
-		};
-
 		std::unordered_map<unsigned int, std::shared_ptr<Light<DirectionalLight>>> mDirectionalShadows;
+
 		std::shared_ptr<class D3D11ComputeShader> mResizeCubemapCS;
 		std::shared_ptr<class D3D11ComputeShader> mDiffuseIrradianceCS;
 		std::shared_ptr<class D3D11ComputeShader> mSpecularIBLCS;

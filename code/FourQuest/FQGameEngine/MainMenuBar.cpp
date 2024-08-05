@@ -311,8 +311,12 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		bool& onImportWindow = mEditorProcess->mImportWindow->IsWindowOpen();
 		ImGui::Checkbox("ImportWindow", &onImportWindow);
+
 		bool& onMaterialWindow = mEditorProcess->mMaterialWindow->IsWindowOpen();
 		ImGui::Checkbox("MaterialWindow", &onMaterialWindow);
+
+		bool& onLightmapWindow = mEditorProcess->mLightmapWindow->IsWindowOpen();
+		ImGui::Checkbox("LightmapWindow", &onLightmapWindow);
 
 		ImGui::EndMenu();
 	}

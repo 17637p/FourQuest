@@ -26,6 +26,7 @@ namespace fq::game_engine
 
 		void SaveLightmap(std::filesystem::path path);
 		void LoadLightmap(std::filesystem::path path);
+		void ApplyLightmap();
 
 		inline bool& IsWindowOpen();
 

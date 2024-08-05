@@ -120,6 +120,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
     }
 
 #ifdef STATIC
+    // 여기서 UV 값만 저장해두는 식으로 하고 Shading에서 연산하게 수정하는 게 더 저렴할듯
     // 현재 레거시로 라이트맵 적용, 추후에 PBR 방식으로 GI 연산 수정 예정
     pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
 
@@ -188,6 +189,7 @@ float4 main(VertexOut pin) : SV_TARGET
     float4 sampledEmissive = gEmissiveMap.Sample(gPointClampSampler, pin.uv);
     float3 emissive = sampledEmissive.rgb * sampledEmissive.a * 255;
     float3 normal = gNormalMap.Sample(gPointClampSampler, pin.uv).xyz;
+    float3 preCaculatedLight = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
 
     if (normal.x > 100.f)
     {
@@ -209,9 +211,20 @@ float4 main(VertexOut pin) : SV_TARGET
     material.roughness = metalnessRoughness.y;
     material.metallic = metalnessRoughness.x;
     
+
+    // bool bIsMixed;
+    // 유효하지 않은 데이터라면
+    //if (preCaculatedLight)
+    //{
+      // mixedLight 조명 연산 처리
+    //}     
+
     // DirectionalLight 처리
     for (uint i = 0; i < numOfDirectionalLight; ++i)
     {
+        // subtractive 모드일 경우 mixed는 연산 처리를 안함
+        // if (bIsMixed) continue; 
+
         float3 currentDirectLighting = ComputeDirectionLight(directionalLights[i], material, toEye, normal);
       
         if (i < cShadowCount)
@@ -240,6 +253,7 @@ float4 main(VertexOut pin) : SV_TARGET
             //{
             //    emissive = float3(0, 0, 0.1f);
             //}
+
             index = 2;
             uint shadowIndex = i * CascadeCount + index;
             float4 shadowPos = mul(float4(positionW, 1.f), cLightViewProj[shadowIndex]);
@@ -256,12 +270,17 @@ float4 main(VertexOut pin) : SV_TARGET
     // PointLight 처리
     for (uint i = 0; i < numOfPointLight; ++i)
     {
+        // subtractive 모드일 경우 mixed는 연산 처리를 안함
+        // if (bIsMixed) continue; 
         directLighting += ComputePointLight(pointLights[i], material, toEye, normal, positionW);
     }
     
     // SpotLight 처리
     for (uint i = 0; i < numOfSpotLight; ++i)
     {
+        // subtractive 모드일 경우 mixed는 연산 처리를 안함
+        // if (bIsMixed) continue; 
+
         directLighting += ComputeSpotLight(spotLights[i], material, toEye, normal, positionW);
     }
     
@@ -284,7 +303,8 @@ float4 main(VertexOut pin) : SV_TARGET
         ambientLighting = diffuseIBL + specularIBL;
     }
      
-    float3 preCaculatedLight = albedo * gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
+    preCaculatedLight *= albedo;
+
 
     return float4(directLighting + ambientLighting + emissive + preCaculatedLight, 1.f);
 }

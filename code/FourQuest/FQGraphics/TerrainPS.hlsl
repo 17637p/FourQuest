@@ -54,6 +54,14 @@ cbuffer cbDirectionalShadow : register(b2)
     int cShadowCount;
 }
 
+cbuffer cbLightmapInformation : register(b3)
+{
+    float4 cUVOffsetScale;
+    uint cUVIndex;
+    bool bUseLightmap;
+    bool bUseDirectMap;
+};
+
 float gTexelCellSpaceU;
 float gTexelCellSpaceV;
 
@@ -86,7 +94,11 @@ Texture2D gNormalMap[4] : register(t12);
 Texture2D gAlphaMap : register(t16);
 Texture2D gHeightMap : register(t17);
 Texture2DArray gDirectionalShadowMap : register(t18);
- 
+
+Texture2DArray gLightMapArray : register(t19);
+Texture2DArray gDirectionArray : register(t20);
+
+
 #ifdef DEFERRED
 
 struct PixelOut
@@ -98,7 +110,7 @@ struct PixelOut
     float4 PositionW : SV_Target4;
     float4 SourceNormal : SV_Target5;
     float4 SourceTangent : SV_Target6;
-    // float4 Light : SV_Target7;
+    float4 Light : SV_Target7;
 };
 
 #else
@@ -220,7 +232,6 @@ PixelOut main(DomainOut pin)
      
     
 #ifdef DEFERRED
-
     pout.Normal.xyz = resultNormal;
     pout.Albedo.xyz = resultAlbedo;
     pout.Albedo.w = 1.f;
@@ -232,6 +243,27 @@ PixelOut main(DomainOut pin)
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;
  
+    if (bUseLightmap)
+    {
+        float2 lightmapUV = pin.UV;
+        
+        lightmapUV.y = 1 - lightmapUV.y;
+        lightmapUV = lightmapUV * cUVOffsetScale.xy + cUVOffsetScale.zw;
+        lightmapUV.y = 1 - lightmapUV.y;
+        
+        pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(lightmapUV, cUVIndex));
+
+        if (bUseDirectMap)
+        {
+            float4 direction = gDirectionArray.Sample(gSamplerAnisotropic, float3(lightmapUV, cUVIndex));
+            direction.xyz = direction.xyz * 2 - 1;
+            direction.x = -direction.x;
+            direction.z = -direction.z;
+            float halfLambert = dot(resultNormal.xyz, direction.xyz) * 0.5 + 0.5;
+            pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
+        }
+    }
+    
     return pout;
 #else
     

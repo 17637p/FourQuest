@@ -7,29 +7,27 @@ namespace fq::graphics
 	MeshBase::MeshBase(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData)
 		: mMeshData(meshData)
 	{
-		// 어떤 인자가 존재하는지 체크해서 동적으로 상수버퍼 생성
-		unsigned int bufferSize = 0;
-		std::vector<unsigned int> offsets;
-
-		if (meshData.Vertices.empty())
-		{
-			bufferSize += sizeof(meshData.Vertices[0]);
-		}
-		if (meshData.BoneVertices.empty())
-		{
-			bufferSize += sizeof(meshData.BoneVertices[0]);
-		}
-		if (meshData.Tex1.empty())
-		{
-			bufferSize += sizeof(meshData.Tex1[0]);
-		}
-		for (const auto& [key, dynamicData] : meshData.DynamicInfos)
-		{
-			bufferSize += dynamicData.Size;
-		}
-
-
-
+		// // 어떤 인자가 존재하는지 체크해서 동적으로 상수버퍼 생성
+		// unsigned int bufferSize = 0;
+		// std::vector<unsigned int> offsets;
+		// 
+		// if (meshData.Vertices.empty())
+		// {
+		// 	bufferSize += sizeof(meshData.Vertices[0]);
+		// }
+		// if (meshData.BoneVertices.empty())
+		// {
+		// 	bufferSize += sizeof(meshData.BoneVertices[0]);
+		// }
+		// if (meshData.Tex1.empty())
+		// {
+		// 	bufferSize += sizeof(meshData.Tex1[0]);
+		// }
+		// for (const auto& [key, dynamicData] : meshData.DynamicInfos)
+		// {
+		// 	bufferSize += dynamicData.Size;
+		// }
+		// 
 		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(device, meshData.Indices);
 	}
 	void MeshBase::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -49,9 +47,11 @@ namespace fq::graphics
 	}
 
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
-		: MeshBase()
+		: MeshBase(device, meshData)
 		, mDevice(device)
 	{
+		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(device, meshData.Indices);
+
 		if (meshData.Tex1.empty())
 		{
 			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
@@ -104,23 +104,10 @@ namespace fq::graphics
 		return indexBuffer.Get();
 	}
 
-	SkinnedMesh::SkinnedMesh(std::shared_ptr<D3D11Device> device)
-		: MeshBase()
-		, mDevice(device)
-	{
-	}
-
 	SkinnedMesh::SkinnedMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
-		: MeshBase()
+		: MeshBase(device, meshData)
 		, mDevice(device)
 	{
-		Create(meshData);
-	}
-
-	void SkinnedMesh::Create(const fq::common::Mesh& meshData)
-	{
-		mMeshData = meshData;
-
 		struct Vertex
 		{
 			DirectX::SimpleMath::Vector3 Pos;
@@ -152,9 +139,9 @@ namespace fq::graphics
 			vertices.push_back(std::move(vertex));
 		}
 
-		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(mDevice, meshData.Indices);
 		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
 	}
+	
 	void* SkinnedMesh::GetVertexBuffer()
 	{
 		auto vertexBuffer = mVertexBuffer->GetVertexBuffer();

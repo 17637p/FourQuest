@@ -42,6 +42,17 @@ namespace fq::game_module
 		void SetTextureWidth(float val) { mTextureWidth = val; }
 		float GetTextureHeight() const { return mTextureHeight; }
 		void SetTextureHeight(float val) { mTextureHeight = val; }
+
+		// 라이트맵 사용 유무 및 데이터
+		void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset);
+		const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const;
+
+		void SetLightmapIndex(unsigned int lightmapIndex);
+		int GetLightmapIndex() const;
+
+		void SetIsStatic(bool bIsStatic);
+		bool GetIsStatic() const;
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -51,13 +62,18 @@ namespace fq::game_module
 		bool mIsUseNavMesh;
 		std::vector<fq::graphics::TerrainLayer> mTerrainLayers; // 최대 4
 		std::string mAlPhaMapPath; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
-		std::string mHeightMapPath; 
+		std::string mHeightMapPath;
 
 		float mHeightScale;
 		float mWidth;
 		float mHeight;
 		float mTextureWidth;
 		float mTextureHeight;
+
+		// 라이트맵 관련 인자
+		DirectX::SimpleMath::Vector4 mLightmapScaleOffset;
+		int mLightmapIndex;
+		bool mbIsStatic;
 	};
 
 

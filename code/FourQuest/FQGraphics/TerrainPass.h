@@ -51,6 +51,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
 		std::shared_ptr<D3D11RenderTargetView> mSourceNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
+		std::shared_ptr<D3D11RenderTargetView> mPreCalculatedLightRTV;
 
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSS;
@@ -62,5 +63,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainHull>> mTerrainHullCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>> mTerrainTextureCB;
+		std::shared_ptr<D3D11ConstantBuffer<LightMapInfomation>> mLightMapInfomationCB;
 	};
 }

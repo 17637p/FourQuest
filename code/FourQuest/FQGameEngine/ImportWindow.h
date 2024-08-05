@@ -61,6 +61,37 @@ namespace fq::game_engine
 			float SpotAngle;
 			std::string Mode;
 		};
+		
+		struct TerrainLayer
+		{
+			std::string BaseColor;
+			std::string NormalMap;
+
+			float Metalic;
+			float Roughness;
+
+			float TileSizeX;
+			float TileSizeY;
+			float TileOffsetX;
+			float TileOffsetY;
+		};
+
+		struct Terrain
+		{
+			std::vector<TerrainLayer> Layers;
+			std::string AlphaFileName; // R에는 BaseColor1, G에는 2, B에는 3, A에는 4
+
+			std::string HeightFileName; // Raw 파일
+			float TextureWidth;
+			float TextureHeight;
+
+			float HeightScale; // 전체 높이 (Length)
+			float TerrainWidth; // 가로 크기
+			float TerrainHeight; // 세로 크기
+
+			DirectX::SimpleMath::Vector4 LightmapScaleOffset;
+			int LightmapIndex;
+		};
 
 		struct GameObjectLoadInfo
 		{
@@ -70,6 +101,7 @@ namespace fq::game_engine
 			Transform TransformData;
 			Mesh MeshData;
 			Light LightData;
+			Terrain TerrainData;
 			bool isStatic;
 		};
 	}

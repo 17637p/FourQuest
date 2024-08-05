@@ -26,7 +26,7 @@ namespace fq::graphics
 	{
 		Realtime,
 		Mixed,
-		Baked
+		Baked //
 	};
 
 	struct LightInfo
@@ -493,7 +493,7 @@ namespace fq::graphics
 		bool bUseRoughness = true;
 		bool bUseNormalness = true;
 		bool bIsUsedEmissive = true;
-		bool bIsUsedMetalnessSmoothness = true;
+		bool bIsUsedMetalnessSmoothness = false;
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };

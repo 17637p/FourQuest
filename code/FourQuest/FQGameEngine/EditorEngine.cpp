@@ -295,6 +295,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mExportWindow->Render(); 
 	mEditor->mImportWindow->Render(); 
 	mEditor->mMaterialWindow->Render();
+	mEditor->mLightmapWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
