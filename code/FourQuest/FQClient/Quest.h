@@ -41,19 +41,19 @@ namespace fq::client
 		bool clearIsMain; // QuestType
 	};
 	
-	//struct QuestJoinCondition
-	//{
-	//	std::vector<PreQuest> preQuestList;
-	//	std::vector<QuestColliderTrigger> colliderTriggerList;
-	//};
-	//
-	//struct QuestClearCondition
-	//{
-	//	std::vector<MonsterKill> monsterKillList;
-	//	std::vector<MonsterGroupKill> monsterGroupKillList;
-	//	std::vector<Defence> defenceList;
-	//	std::vector<ClearQuest> clearQuestList;
-	//};
+	struct QuestJoinCondition
+	{
+		std::vector<PreQuest> preQuestList;
+		std::vector<QuestColliderTrigger> colliderTriggerList;
+	};
+	
+	struct QuestClearCondition
+	{
+		std::vector<MonsterKill> monsterKillList;
+		std::vector<MonsterGroupKill> monsterGroupKillList;
+		std::vector<Defence> defenceList;
+		std::vector<ClearQuest> clearQuestList;
+	};
 
 	class Quest
 	{
@@ -73,9 +73,9 @@ namespace fq::client
 		std::vector<Defence> defenceList;
 		std::vector<ClearQuest> clearQuestList;
 
-		//std::vector<QuestJoinCondition> mJoinConditionList;
-		//std::vector<QuestClearCondition> mclearConditionList;
-		//
+		std::vector<QuestJoinCondition> mJoinConditionList;
+		std::vector<QuestClearCondition> mclearConditionList;
+		
 		friend void RegisterMetaData();
 	};
 }
