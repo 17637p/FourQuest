@@ -8,6 +8,7 @@
 
 fq::game_module::ImageUI::ImageUI()
 	:mUIInfomations{}
+	, mbIsBindTransform(true)
 {}
 
 fq::game_module::ImageUI::~ImageUI()
@@ -41,7 +42,7 @@ void fq::game_module::ImageUI::setUIInfomations(std::vector<fq::graphics::UIInfo
 	auto scene = GetScene();
 	if (scene != nullptr)
 	{
-		scene->GetEventManager()->FireEvent<fq::event::SetUIInfomations>({GetGameObject()});
+		scene->GetEventManager()->FireEvent<fq::event::SetUIInfomations>({ GetGameObject() });
 	}
 }
 
@@ -93,15 +94,17 @@ void fq::game_module::ImageUI::SetUIPosition(size_t index, float StartX, float S
 
 void fq::game_module::ImageUI::OnUpdate(float dt)
 {
-	Transform* myTransform = GetComponent<Transform>();
-
 	if (mImageObjects.empty())
 	{
 		return;
 	}
 
-	SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
-	SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+	if (mbIsBindTransform)
+	{
+		Transform* myTransform = GetComponent<Transform>();
+		SetUIPosition(0, myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+		SetUIScale(0, myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+	}
 }
 
 void fq::game_module::ImageUI::SetIsRender(size_t index, bool isRender)

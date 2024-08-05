@@ -55,7 +55,6 @@ std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::Prefa
 
 		// 이름 설정
 		const auto& object = instanceVector.back();
-
 		std::string key = element.key();
 
 		// Tag 설정

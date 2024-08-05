@@ -1150,15 +1150,18 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	float maxDuration = animationInterfaceOrNull->GetAnimationClip().Duration;
 
+	float startTimePos = stateNode.GetStartTimePos();
 	float duration = stateNode.GetDuration();
+
+	if (ImGui::SliderFloat("StartTimePos", &startTimePos, 0.f, duration))
+	{
+		stateNode.SetStartTimePos(startTimePos);
+	}
+
 	if (ImGui::SliderFloat("Duration", &duration, 0.f, maxDuration))
 	{
 		stateNode.SetDuration(duration);
 	}
-	/*if (ImGui::InputFloat("Duration", &duration))
-	{
-		stateNode.SetDuration(std::min(maxDuration, duration));
-	}*/
 
 	bool IsLoof = stateNode.IsLoof();
 	if (ImGui::Checkbox("IsLoof", &IsLoof))
@@ -1173,8 +1176,8 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 	auto metaType = pod.type();
 
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
-	// POD 이름 표시 
 
+	// POD 이름 표시 
 	std::string podName = fq::reflect::GetName(metaType);
 
 	if (index != -1)
@@ -1190,7 +1193,14 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 			{
 				std::string memberName = fq::reflect::GetName(data);
 
-				if (data.type() == entt::resolve<int>())
+				if (data.type().is_sequence_container())
+				{
+					if (beginSequenceContainerPOD(data, pod))
+					{
+						changedData = true;
+					}
+				}
+				else if (data.type() == entt::resolve<int>())
 				{
 					int val = data.get(pod).cast<int>();
 					ImGui::InputInt(memberName.c_str(), &val);
@@ -1281,7 +1291,6 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					}
 
 					beginIsItemHovered_Comment(data);
-
 				}
 				else if (data.type() == entt::resolve<DirectX::SimpleMath::Vector3>())
 				{
@@ -1564,5 +1573,70 @@ void fq::game_engine::Inspector::beginStateBehaviour(fq::game_module::AnimationS
 
 		behaviourMap.insert({ id, clone });
 	}
+}
+
+bool fq::game_engine::Inspector::beginSequenceContainerPOD(entt::meta_data data, entt::meta_any& pod)
+{
+	bool isChanged = false;
+
+	//// 컨테이너의 복사복은 가져옵니다.
+	entt::meta_any val = data.get(pod);
+	auto view = val.as_sequence_container();
+	assert(view);
+
+	ImGui::Text(fq::reflect::GetName(data).c_str());
+	beginIsItemHovered_Comment(data);
+
+	ImGui::SameLine();
+
+	// Add element
+	std::string addText = "Add##AddButton" + std::to_string(mImguiID++);
+	if (ImGui::Button(addText.c_str()))
+	{
+		isChanged = true;
+		auto baseValue = view.value_type().construct();
+		auto last = view.end();
+		view.insert(last, baseValue);
+
+		bool check = data.set(pod, val);
+		assert(check);
+	}
+
+	ImGui::SameLine();
+
+	// Delete element
+	std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
+
+	if (ImGui::Button(deleteText.c_str()))
+	{
+		auto last = view.begin();
+
+		if (last != view.end())
+		{
+			isChanged = true;
+			view.erase(last);
+			data.set(pod, val);
+		}
+	}
+
+	auto valueType = view.value_type();
+
+	// POD Data 
+	if (valueType.prop(fq::reflect::prop::POD))
+	{
+		int index = 0;
+		for (auto element : view)
+		{
+			entt::meta_any podVal = element.as_ref();
+
+			if (beginPOD(podVal, index++))
+			{
+				data.set(pod, val);
+				isChanged = true;
+			}
+		}
+	}
+
+	return isChanged;
 }
 

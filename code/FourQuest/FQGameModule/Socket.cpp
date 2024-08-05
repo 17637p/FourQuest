@@ -48,6 +48,10 @@ void fq::game_module::Socket::OnUpdate(float dt)
 
 		mTransform->GenerateLocal(pos, rotation, mTransform->GetLocalScale());
 	}
+	else
+	{
+		BindBone();
+	}
 }
 
 void fq::game_module::Socket::OnStart()

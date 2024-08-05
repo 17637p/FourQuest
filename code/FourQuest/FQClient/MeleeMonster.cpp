@@ -119,8 +119,6 @@ void fq::client::MeleeMonster::EmitAttack()
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
-	// TODO : 근접 몬스터 공격사운드 추가 
-
 }
 
 
@@ -128,7 +126,6 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonster::EmitAttac
 {
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackEffect);
 	auto& effentObj = *(instance.begin());
-
 
 	auto effectT = effentObj->GetComponent<game_module::Transform>();
 	effectT->SetParent(mTransform);
