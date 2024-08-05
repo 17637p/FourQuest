@@ -13,6 +13,7 @@
 #include "Decal.h"
 #include "Trail.h"
 #include "ImageUI.h"
+#include "TextUI.h"
 #include "Socket.h"
 #include "PostProcessing.h"
 
@@ -263,6 +264,33 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&ImageUI::setUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
 		.prop(fq::reflect::prop::Name, "UIInfomations")
+		.base<Component>();
+
+	entt::meta<graphics::TextInfo>()
+		.type("TextInformation"_hs)
+		.prop(fq::reflect::prop::Name, "TextInformation")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::TextInfo::Text>("Text"_hs)
+		.prop(fq::reflect::prop::Name, "Text")
+		.data<&graphics::TextInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::TextInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::TextInfo::FontPath>("FontPath"_hs)
+		.prop(fq::reflect::prop::Name, "FontPath")
+		.data<&graphics::TextInfo::FontSize>("FontSize"_hs)
+		.prop(fq::reflect::prop::Name, "FontSize")
+		.data<&graphics::TextInfo::FontColor>("FontColor"_hs)
+		.prop(fq::reflect::prop::Name, "FontColor")
+		.data<&graphics::TextInfo::IsRender>("IsRender"_hs)
+		.prop(fq::reflect::prop::Name, "IsRender");
+
+	entt::meta<TextUI>()
+		.type("TextUI"_hs)
+		.prop(fq::reflect::prop::Name, "TextUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&TextUI::SetTextInfo, &TextUI::GetTextInfo>("TextInformation"_hs)
+		.prop(fq::reflect::prop::Name, "TextInformation")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

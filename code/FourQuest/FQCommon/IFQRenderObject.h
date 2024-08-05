@@ -236,6 +236,16 @@ extern "C" {
 		protected:
 			virtual ~IProbeObject() = default;
 		};
+
+		class ITextObject
+		{
+		public:
+			virtual ~ITextObject() = default;
+
+			virtual FQ_GRAPHICS void SetTextInformation(TextInfo textInfo) abstract;
+			virtual FQ_GRAPHICS TextInfo GetTextInformation() abstract;
+		};
+
 #ifdef __cplusplus
 	}
 #endif

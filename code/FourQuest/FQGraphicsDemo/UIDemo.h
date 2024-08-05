@@ -12,6 +12,7 @@ namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 
 namespace fq::graphics { class IImageObject; }
+namespace fq::graphics { class ITextObject; }
 
 class UIDemo : public BaseWindow<UIDemo>
 {
@@ -56,5 +57,8 @@ private:
 
 	// Image
 	std::vector<fq::graphics::IImageObject*> mImageObjects;
+
+	fq::graphics::ITextObject* mTextObject1;
+	fq::graphics::ITextObject* mTextObject2;
 };
 

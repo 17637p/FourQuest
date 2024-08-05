@@ -35,6 +35,7 @@ namespace fq::graphics
 	class D3D11ResourceManager;
 
 	class IImageObject;
+	class ITextObject;
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
 	/// 다른 게 필요하다면 그 때 만들어야지
@@ -69,8 +70,8 @@ namespace fq::graphics
 		void SetDefaultFontColor(const DirectX::SimpleMath::Color& color);
 		void SetDefaultFontSize(const unsigned short fontSize);
 
-		void DrawText(TextInfo textInfo);
-		void DeleteText(TextInfo textInfo);
+		ITextObject* CreateText(TextInfo textInfo);
+		void DeleteText(fq::graphics::ITextObject* textObject);
 
 		// Image
 		IImageObject* CreateImageObject(const UIInfo& uiInfo);
@@ -108,14 +109,13 @@ namespace fq::graphics
 		unsigned short mDefaultFontSize;
 		DirectX::SimpleMath::Color mDefaultFontColor;
 
-		std::vector<TextInfo> mDrawTextInformations;
-
 		// Image
 		// 레퍼런스 카운팅이 되게 해야함
 		std::unordered_map<std::wstring, FQBitmap*> mBitmaps;
 		IWICImagingFactory* mWICFactory;
 
 		std::vector<IImageObject*> mImages;
+		std::vector<ITextObject*> mTexts;
 		bool mIsSorted;
 	};
 }

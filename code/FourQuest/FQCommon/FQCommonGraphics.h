@@ -80,12 +80,18 @@ namespace fq::graphics
 
 	struct TextInfo
 	{
-		std::wstring Text; // 실제 띄울 내용
-		DirectX::SimpleMath::Rectangle DrawRect; // 그릴 영역
+		std::wstring Text = L"텍스트"; // 실제 띄울 내용
 
-		std::wstring FontPath;
-		short FontSize;
-		DirectX::SimpleMath::Color FontColor;
+		int CenterX = 50;
+		int CenterY = 50;
+		int Width = 100;
+		int Height = 100;
+
+		std::wstring FontPath = L"Verdana";
+		int FontSize = 10;
+		DirectX::SimpleMath::Color FontColor = {0, 0, 0, 1};
+
+		bool IsRender = true;
 	};
 
 	struct TerrainLayer

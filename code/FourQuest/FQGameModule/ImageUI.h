@@ -1,7 +1,6 @@
 #pragma once
 #include "Component.h"
 
-
 #include "../FQCommon/FQCommonGraphics.h"
 #include "../FQCommon/IFQRenderObject.h"
 
