@@ -254,6 +254,53 @@ namespace fq::graphics
 		calculateRootTransform();
 	}
 
+	void NodeHierarchyInstance::UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight)
+	{
+		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
+		const auto& animationCache = nodeHierarchy->GetAnimationCaches();
+		const auto& rhsFind = animationCache.find(rhsAnimation);
+
+		if (rhsFind == animationCache.end())
+		{
+			return;
+		}
+
+		setBindPoseLocal();
+
+		const size_t BONE_COUNT = mNodeHierarchy->GetBones().size();
+
+		const auto& rhsBoneNodeClipCache = rhsFind->second;
+		const auto& rhsAnimationClip = rhsAnimation->GetAnimationClip();
+
+		for (size_t i = 0; i < BONE_COUNT; ++i)
+		{
+			const auto& [rhsBone, rhsNodeClip] = rhsBoneNodeClipCache[i];
+
+			if (rhsNodeClip == nullptr)
+			{
+				continue;
+			}
+
+			fq::common::Keyframe lhsKeyframe;
+			fq::common::Keyframe rhsKeyframe;
+
+			mLocalTransforms[rhsBone->Index].Decompose(lhsKeyframe.Scale, lhsKeyframe.Rotation, lhsKeyframe.Translation);
+
+			{
+				fq::common::Keyframe localLhs;
+				fq::common::Keyframe localRhs;
+				float localWeight;
+				AnimationHelper::FindKeyframe(rhsNodeClip->Keyframes, rhsAnimationClip, timePos, &localLhs, &localRhs, &localWeight);
+				rhsKeyframe = AnimationHelper::Interpolate(localLhs, localRhs, localWeight);
+			}
+
+			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);
+			mLocalTransforms[rhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
+		}
+
+		calculateRootTransform();
+	}
+
 	void NodeHierarchyInstance::SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform)
 	{
 		assert(index < mLocalTransforms.size());

@@ -115,6 +115,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void Update(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
 			virtual FQ_GRAPHICS void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
 			virtual FQ_GRAPHICS void UpdateByLocalTransform() abstract;
+			virtual FQ_GRAPHICS void UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
 
 			virtual FQ_GRAPHICS void SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform) abstract;
 			virtual FQ_GRAPHICS bool TrySetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform) abstract;
