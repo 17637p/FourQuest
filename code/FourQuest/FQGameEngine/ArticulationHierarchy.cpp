@@ -610,7 +610,6 @@ namespace fq::game_engine
 			return;
 
 		auto animatorMesh = object.GetComponent<fq::game_module::Animator>();
-		
 
 		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
 			return;
@@ -621,12 +620,16 @@ namespace fq::game_engine
 		auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
+		nodeHierarchy.SetBindPose();
+
 		// 본 디버그 렌더링
 		for (int i = 0; i < nodeHierarchy.GetRootTransforms().size(); i++)
 		{
 			unsigned int parentIndex = boneHierarchy.GetBones()[i].ParentIndex;
 
-			auto& rootTransform = nodeHierarchy.GetRootTransforms()[i];
+			auto rootTransform = nodeHierarchy.GetRootTransforms()[i];
+			auto objectWorldTransform = objectTransform->GetWorldMatrix();
+			rootTransform = rootTransform * objectWorldTransform;
 
 			fq::graphics::debug::SphereInfo sphereInfo;
 			fq::graphics::debug::RayInfo rayInfo1;
@@ -639,14 +642,15 @@ namespace fq::game_engine
 			rayInfo2.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
 			rayInfo3.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
 			rayInfo4.Color = DirectX::SimpleMath::Color(1.f, 1.f, 1.f, 1.f);
-			rayInfo1.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(1.f, 0.f, 0.f)) * objectScale;
-			rayInfo2.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(-1.f, 0.f, 0.f)) * objectScale;
-			rayInfo3.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f)) * objectScale;
-			rayInfo4.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.f, 0.f, -1.f)) * objectScale;
+			rayInfo1.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.01f, 0.f, 0.f)) * objectScale;
+			rayInfo2.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(-0.01f, 0.f, 0.f)) * objectScale;
+			rayInfo3.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.f, 0.f, 0.01f)) * objectScale;
+			rayInfo4.Origin = (rootTransform.Translation() + DirectX::SimpleMath::Vector3(0.f, 0.f, -0.01f)) * objectScale;
 
 			if (parentIndex <= nodeHierarchy.GetRootTransforms().size())
 			{
-				auto& parentTransform = nodeHierarchy.GetRootTransforms()[parentIndex];
+				auto parentTransform = nodeHierarchy.GetRootTransforms()[parentIndex];
+				parentTransform = parentTransform * objectWorldTransform;
 				DirectX::SimpleMath::Vector3 direction = (parentTransform.Translation() - rootTransform.Translation()) * objectScale;
 
 				rayInfo1.Direction = direction;

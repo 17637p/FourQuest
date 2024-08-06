@@ -701,6 +701,12 @@ void fq::game_module::RegisterMetaData()
 		.data<&Articulation::SetArticulationPath, &Articulation::GetArticulationPath>("ArticulationPath"_hs)
 		.prop(fq::reflect::prop::Name, "ArticulationPath")
 		.prop(fq::reflect::prop::DragDrop, ".articulation")
+		.data<&Articulation::SetRotationOffset, &Articulation::GetRotationOffset>("RotationOffset"_hs)
+		.prop(fq::reflect::prop::Name, "RotationOffset")
+		.prop(fq::reflect::prop::Comment, u8"Ragdoll에 보정된 회전 값을 적용합니다.")
+		.data<&Articulation::SetIsRagdoll, &Articulation::GetIsRagdoll>("bIsRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRagdoll")
+		.prop(fq::reflect::prop::Comment, u8"Ragdoll 시뮬레이션을 진행하는지 여부입니다.")
 		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 

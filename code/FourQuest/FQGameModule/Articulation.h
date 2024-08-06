@@ -79,6 +79,16 @@ namespace fq::game_module
 		/// </summary>
 		void SetOffset(DirectX::SimpleMath::Vector3 offset)override { mOffset = offset; }
 
+		/// <summary>
+		/// 콜라이더의 오프셋을 반환합니다.
+		/// </summary>
+		const DirectX::SimpleMath::Vector3& GetRotationOffset() const { return rotationOffset; }
+
+		/// <summary>
+		/// 콜라이더의 오프셋을 설정합니다.
+		/// </summary>
+		void SetRotationOffset(const DirectX::SimpleMath::Vector3& offset) { rotationOffset = offset; }
+
 	private:
 		inline void OnCollisionEnter(const Collision& collision) override;
 		inline void OnCollisionExit(const Collision& collision) override;
@@ -91,6 +101,7 @@ namespace fq::game_module
 		unsigned int mID;
 		unsigned int mCollisionCount;
 		DirectX::SimpleMath::Vector3 mOffset;
+		DirectX::SimpleMath::Vector3 rotationOffset;
 		bool mbIsRagdoll;
 
 		ArticulationPath mArticulationPath;
