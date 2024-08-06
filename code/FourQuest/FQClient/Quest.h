@@ -39,9 +39,9 @@ namespace fq::client
 	struct Defence
 	{
 		std::string colliderName;
-		float seconds;
+		float count;
 
-		float curSeconds = 0;
+		float curCount = 0;
 	};
 
 	// UI ¾øÀ½ 

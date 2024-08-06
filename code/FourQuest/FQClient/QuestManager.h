@@ -29,6 +29,7 @@ namespace fq::client
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
+		virtual void OnDestroy() override;
 
 		std::vector<Quest> GetMainQuests() const { return mMainQuests; }
 		std::vector<Quest> GetSubQuests() const { return mSubQuests; }
@@ -38,10 +39,20 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		void EventProcessKillMonster();
+		void EventProcessPlayerCollideTrigger();
+		void EventProcessCompleteDefence();
+		void EventProcessClearQuest();
+		void EventProcessAllColliderTrigger();
+		void EventProcessObjectInteraction();
 
 	private:
 		// 각종 이벤트 처리
 		game_module::EventHandler mKillMonsterHandler;
+		game_module::EventHandler mPlayerCollideTriggerHandler;
+		game_module::EventHandler mCompleteDefenceHandler;
+		game_module::EventHandler mClearQuestHandler;
+		game_module::EventHandler mAllCollideTriggerHandler;
+		game_module::EventHandler mObjectInteractionHandler;
 
 		// 인스펙터 용
 		StartQuests mStartQuests;
@@ -51,8 +62,8 @@ namespace fq::client
 
 		// 스크립트 용
 		Quest mCurMainQuest;
-
 		std::vector<Quest> mCurSubQuest;
+
 		friend void RegisterMetaData();
 	};
 }
