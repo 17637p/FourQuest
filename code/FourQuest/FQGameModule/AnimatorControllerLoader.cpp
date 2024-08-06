@@ -82,9 +82,9 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		float playbackSpeed = value.at("playbackSpeed").get<float>();
 		float duration = value.at("duration").get<float>();
 		float startTimepos = 0.f;
-		if (value.find("startTimepos") != value.end())
+		if (value.find("startTimePos") != value.end())
 		{
-			startTimepos = value.at("startTimepos").get<float>();
+			startTimepos = value.at("startTimePos").get<float>();
 		}
 		bool isLoof = value.at("isLoof").get<bool>();
 

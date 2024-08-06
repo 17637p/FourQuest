@@ -8,7 +8,7 @@ namespace fq::client
 	{
 	public:
 		BossMonsterComboAttackState();
-		~BossMonsterComboAttackState();
+		~BossMonsterComboAttackState();	
 
 	private:
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
@@ -19,6 +19,7 @@ namespace fq::client
 
 	private:
 		float mEmitAttackTime;
+		float mAttackElapsedTime;
 
 		friend void RegisterMetaData();
 	};

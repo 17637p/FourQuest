@@ -18,6 +18,7 @@ namespace fq::client::helper
 
 		float GetRandomNumber(float min, float max);
 		int GetRandomNumber(int min, int max);
+	
 	private:
 		RandomGenerator();
 		~RandomGenerator();

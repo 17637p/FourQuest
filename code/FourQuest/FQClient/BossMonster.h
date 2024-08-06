@@ -35,6 +35,11 @@ namespace fq::client
 		void SetRandomTarget();
 
 		/// <summary>
+		/// 다음 보스의 공격을 설정합니다 
+		/// </summary>
+		void SetNextAttack();
+
+		/// <summary>
 		/// 타겟을 설정합니다 
 		/// </summary>
 		void SetTarget(game_module::GameObject* target);
@@ -63,6 +68,11 @@ namespace fq::client
 		/// 콤보 공격 
 		/// </summary>
 		void EmitComboAttack();
+
+		/// <summary>
+		/// 콤보 공격 앞으로 밀려나는 반동
+		/// </summary>
+		void ReboundComboAttack();
 
 		/// <summary>
 		/// 내려찍기 공격 이펙트를 방출합니다 
@@ -113,6 +123,7 @@ namespace fq::client
 		float mSmashDownOffset;
 		float mComboAttackOffset;
 		float mRushPower;
+		float mComboAttackReboundPower;
 		float mDetectRange;
 		float mRotationSpeed;
 

@@ -9,6 +9,7 @@
 #include "KnockBack.h"
 #include "BossHP.h"
 #include "ClientHelper.h"
+#include "MonsterDefine.h"
 
 fq::client::BossMonster::BossMonster()
 	:mMaxHp(0.f)
@@ -21,6 +22,8 @@ fq::client::BossMonster::BossMonster()
 	, mAttackElapsedTime(0.f)
 	, mDetectRange(5.f)
 	, mRushPower(10.f)
+	, mComboAttackReboundPower(5.f)
+	, mRotationSpeed(0.1f)
 	, mGameManager(nullptr)
 	, mAnimator(nullptr)
 	, mTarget(nullptr)
@@ -123,7 +126,7 @@ void fq::client::BossMonster::SetRandomTarget()
 	if (!players.empty())
 	{
 		int size = players.size();
-		int index = helper::RandomGenerator::GetInstance().GetRandomNumber(0, size-1);
+		int index = helper::RandomGenerator::GetInstance().GetRandomNumber(0, size - 1);
 		SetTarget(players[index].get());
 	}
 	else
@@ -318,5 +321,43 @@ void fq::client::BossMonster::EmitComboAttack()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+}
+
+void fq::client::BossMonster::ReboundComboAttack()
+{
+	auto look = mTransform->GetLookAtVector();
+	mKnockBack->Set(mComboAttackReboundPower, look);
+}
+
+void fq::client::BossMonster::SetNextAttack()
+{
+	int index = helper::RandomGenerator::GetInstance()
+		.GetRandomNumber(0, static_cast<int>(EBossMonsterAttackType::Grawl));
+
+	auto type = static_cast<EBossMonsterAttackType>(index);
+
+	switch (type)
+	{
+		case fq::client::EBossMonsterAttackType::Rush:
+		{
+			mAnimator->SetParameterTrigger("OnRush");
+		}
+		break;
+		case fq::client::EBossMonsterAttackType::SmashDown:
+		{
+			mAnimator->SetParameterTrigger("OnSmashDown");
+		}
+		break;
+		case fq::client::EBossMonsterAttackType::Combo:
+		{
+		}
+		break;
+		case fq::client::EBossMonsterAttackType::Grawl:
+		{
+
+		}
+		break;
+	}
+
 }
 

@@ -305,6 +305,7 @@ void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_data data, fq::
 		}
 		ImGui::EndCombo();
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 
