@@ -15,5 +15,8 @@ namespace fq::client
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		entt::meta_handle GetHandle() override { return *this; }
+
+	private:
+		std::shared_ptr<game_module::GameObject> mRushHitBox;
 	};
 }	
