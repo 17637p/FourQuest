@@ -75,6 +75,7 @@ void fq::client::QuestManager::OnStart()
 	EventProcessCompleteDefence();
 	EventProcessClearQuest();
 	EventProcessAllColliderTrigger();
+	EventProcessObjectInteraction();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -91,6 +92,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mCompleteDefenceHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mClearQuestHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mAllCollideTriggerHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mObjectInteractionHandler);
 }
 
 void fq::client::QuestManager::EventProcessKillMonster()
