@@ -46,7 +46,8 @@ namespace fq::graphics
 		bool bUseShadow = true;
 		bool bUseLightProbe;
 		DirectX::SimpleMath::Color OutlineColor;
-		bool bIsAppliedDecal;
+		bool bIsAppliedDecal = false;
+		bool bAppliedLight = true; // 이펙트 오브젝트 조명 연산 끄기 위해 사용
 	};
 
 	struct UIInfo
@@ -63,12 +64,34 @@ namespace fq::graphics
 		float XRatio = 1.f; // 1이 전부다 출력
 		float YRatio = 1.f; // 1이 전부다 출력
 
-		std::string ImagePath;
+		std::string ImagePath = "";
+
+		// 둘 중 하나만 사용할 것
+		std::string MaskPath = ""; // "" 이면 마스크 없음, 아니면 마스크 있음으로 처리
+		float fillDegree = -1; // 0 보다 크면 사용 
 
 		// 선택 사항
 		float RotationAngle = 0.f;
 		float ScaleX = 1.f;
 		float ScaleY = 1.f;
+
+		bool isCenter = false;
+	};
+
+	struct TextInfo
+	{
+		std::string Text = ""; // 실제 띄울 내용
+
+		int CenterX = 50;
+		int CenterY = 50;
+		int Width = 100;
+		int Height = 100;
+
+		std::string FontPath = "Verdana";
+		int FontSize = 10;
+		DirectX::SimpleMath::Color FontColor = {0, 0, 0, 1};
+
+		bool IsRender = true;
 	};
 
 	struct TerrainLayer
@@ -479,6 +502,8 @@ namespace fq::graphics
 
 		ESampleMode SampleType = ESampleMode::Clamp;
 		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
+
+		float EmissiveIntensity = 1.f;
 	};
 
 	struct ParticleMaterialInfo

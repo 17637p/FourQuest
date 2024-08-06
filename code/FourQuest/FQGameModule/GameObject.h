@@ -12,6 +12,7 @@ namespace fq::game_module
 {
 	class Scene;
 	class Component;
+	class Transform;
 
 	/// <summary>
 	/// Component들을 저장하고 관리하는 컨테이너
@@ -46,7 +47,6 @@ namespace fq::game_module
 		~GameObject();
 
 		GameObject(const GameObject&& other) = delete;
-
 
 
 		//////////////////////////////////////////////////////////////////////////
@@ -245,6 +245,11 @@ namespace fq::game_module
 		/// 제거 예정인 컴포넌트를 제거합니다
 		/// </summary>
 		void CleanUpComponent();
+
+		/// <summary>
+		/// 트랜스폼 컴포넌트를 반환합니다 
+		/// </summary>
+		Transform* GetTransform();
 
 	private:
 		entt::meta_handle GetHandle()override;

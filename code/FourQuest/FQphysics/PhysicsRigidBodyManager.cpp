@@ -139,7 +139,7 @@ namespace fq::physics
 			CopyDxVec3ToPxVec3(rigidBodyData.angularVelocity, pxangularVelocity);
 
 			physx::PxRigidDynamic* pxBody = dynamicBody->GetPxRigidDynamic();
-			if (!(pxBody->getRigidBodyFlags() && physx::PxRigidBodyFlag::eKINEMATIC))
+			if (!(pxBody->getRigidBodyFlags() & physx::PxRigidBodyFlag::eKINEMATIC))
 			{
 				pxBody->setLinearVelocity(pxLinearVelocity);
 				pxBody->setAngularVelocity(pxangularVelocity);

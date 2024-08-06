@@ -14,7 +14,6 @@ namespace fq::game_module
 			Kinematic,
 		};
 
-	
 	public:
 		RigidBody();
 		~RigidBody();

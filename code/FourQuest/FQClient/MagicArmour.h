@@ -1,12 +1,21 @@
 #pragma once
-#include "../FQGameModule/GameModule.h"
+
+#include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
+
+namespace fq::game_module
+{
+	class Animator;
+	class Transform;
+	class CharacterController;
+}
 
 namespace fq::client
 {
 	class Player;
 
 	/// <summary>
-	/// 마법 공격에 대한 처리를 합니다 
+	/// 마법 갑옷 
 	/// </summary>
 	class MagicArmour : public fq::game_module::Component
 	{
@@ -19,15 +28,20 @@ namespace fq::client
 		/// </summary>
 		void EmitMagicBall();
 
-		/// <summary>
+		/// <summary>r
 		/// A 버튼 장판 마법 공격을 발사합니다
 		/// </summary>
 		void EmitAOE(DirectX::SimpleMath::Vector3 attackPoint);
 
 		/// <summary>
+		/// 레이저 기모으기 이펙트를 발산합니다 
+		/// </summary>
+		std::shared_ptr<fq::game_module::GameObject> EmitLaserGatherEffect();
+
+		/// <summary>
 		/// R 스틱으로 Razer를 쏩니다
 		/// </summary>
-		void EmitRazer();
+		void EmitLaser();
 
 		fq::game_module::PrefabResource GetAttackWarningUI() const { return mAttackWarningUI; }
 
@@ -52,6 +66,7 @@ namespace fq::client
 		game_module::CharacterController* mController;
 		Player* mPlayer;
 
+		unsigned int mMagicBallPenetrationCount;
 		float mMagicBallSpeed;
 		float mAOEMoveRange;
 		float mAOECoolTime;
@@ -66,8 +81,9 @@ namespace fq::client
 		game_module::PrefabResource mMagicBall;
 		game_module::PrefabResource mAttackWarningUI;
 		game_module::PrefabResource mAOE;
-		game_module::PrefabResource mRazer;
-		game_module::PrefabResource mRazerAttackBox;
+		game_module::PrefabResource mLaserEffect;
+		game_module::PrefabResource mLaserGatherEffect;
+		game_module::PrefabResource mLaserAttackBox;
 
 		friend void RegisterMetaData();
 	};

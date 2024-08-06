@@ -1,6 +1,8 @@
 #define  NOMINMAX
 #include "PlantMonster.h"
 
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "GameManager.h"
 #include "LinearAttack.h"
 #include "Attack.h"
@@ -18,6 +20,7 @@ fq::client::PlantMonster::PlantMonster()
 	, mGameManager(nullptr)
 	, mAttackCoolTime(0.f)
 	, mAttackElapsedTime(0.f)
+	, mRotationSpeed(0.1f)
 {
 }
 
@@ -62,10 +65,6 @@ void fq::client::PlantMonster::EmitAttack()
 	auto attackT = attackObj->GetComponent<Transform>();
 	auto transform = GetComponent<Transform>();
 
-	// 공격 설정
-	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
-	attackComponent->SetAttackPower(mAttackPower);
 
 	DirectX::SimpleMath::Vector3 offset = { 0.f,1.f,0.f };
 	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
@@ -73,19 +72,26 @@ void fq::client::PlantMonster::EmitAttack()
 	// 공격 방향 설정
 	auto plantAttack = attackObj->GetComponent<client::LinearAttack>();
 	plantAttack->SetMoveSpeed(mProjectileSpeed);
-
 	DirectX::SimpleMath::Vector3 dir = transform->GetWorldMatrix().Forward();
 	dir.Normalize();
-
 	plantAttack->SetMoveDirection(dir);
 
-	GetScene()->AddGameObject(attackObj);
+	// 공격 설정
+	auto attackComponent = attackObj->GetComponent<client::Attack>();
+	AttackInfo info{};
+	info.attacker = attackObj.get();
+	info.damage = mAttackPower;
+	info.bIsInfinite = false;
+	info.remainingAttackCount = 1;
+	info.attackDirection = dir;
+	attackComponent->Set(info);
 
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
 	// TODO :  원거리 공격사운드 추가 
 
+	GetScene()->AddGameObject(attackObj);
 }
 
 void fq::client::PlantMonster::OnUpdate(float dt)
@@ -117,13 +123,6 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 
 			// 타겟을 자신을 때린 사람으로 바꿉니다 
 			SetTarget(playerAttack->GetAttacker());
-
-			// TODO : (이건 필요하면) 공격방향의 반대방향으로 몬스터가 바라봅니다
-			auto attackDir = playerAttack->GetAttackDirection();
-			if (attackDir != client::Attack::NoDirection)
-			{
-
-			}
 
 			// PlantMonster 사망 처리 
 			if (mHp <= 0.f)
@@ -164,17 +163,19 @@ void fq::client::PlantMonster::LookAtTarget()
 	directV.y = 0.f;
 	directV.Normalize();
 
+	auto currentRotation = transform->GetWorldRotation();
 	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
 	directionQuaternion.Normalize();
-
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
+	DirectX::SimpleMath::Quaternion result =
+		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
+	
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
 
 	// UpVector가 뒤집힌 경우
 	if (rotationMatrix._22 <= -0.9f)
 	{
 		rotationMatrix._22 = 1.f;
 	}
-
 	transform->SetLocalRotationToMatrix(rotationMatrix);
 }
 

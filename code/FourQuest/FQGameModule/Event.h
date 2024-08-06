@@ -148,7 +148,7 @@ namespace fq::event
 
 	struct OnPlaySound
 	{
-		std::string path;
+		std::string key;
 		bool bIsLoop;
 		unsigned int channelIndex;
 	};
@@ -163,6 +163,11 @@ namespace fq::event
 	//////////////////////////////////////////////////////////////////////////
 
 	struct SetUIInfomations
+	{
+		fq::game_module::GameObject* object;
+	};
+
+	struct SetTextInformation
 	{
 		fq::game_module::GameObject* object;
 	};
@@ -205,8 +210,8 @@ namespace fq::event
 	{
 		unsigned int colliderID;
 		DirectX::SimpleMath::Vector3 input;
+		bool isDynamic;
 	};
-
 
 	/// <summary>
 	/// RayCast 이벤트를 보내면 
@@ -242,6 +247,18 @@ namespace fq::event
 	{
 		std::shared_ptr<fq::game_module::ArticulationData> articulationData;
 		std::shared_ptr<fq::game_module::LinkData> linkData;
+	};
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//							Material Event							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	/// <summary>
+	/// 모든 랜더러의 머터리얼 정보를 갱신합니다.
+	/// </summary>
+	struct UpdateMaterialInfo
+	{
 	};
 
 }

@@ -4,6 +4,7 @@
 
 #include "../FQClient/Client.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
 
@@ -59,7 +60,8 @@ void fq::game_engine::EditorEngine::Initialize()
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get()
-		, mGameProcess->mScreenManager.get());
+		, mGameProcess->mScreenManager.get()
+		, mGameProcess->mTimeManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
 	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
@@ -160,8 +162,10 @@ void fq::game_engine::EditorEngine::Process()
 				{
 					accmulator -= fixedDeltaTime;
 					onFixedUpdtae = true;
-					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
+					// PathFindingSystem Update
+					mGameProcess->mPathFindgingSystem->Update(fixedDeltaTime);
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 					mGameProcess->mPhysics->Update(fixedDeltaTime);
 					mGameProcess->mPhysics->FinalUpdate();
 					mGameProcess->mPhysicsSystem->SinkToGameScene();
@@ -182,10 +186,7 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Animation Update
 				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
-
-				// PathFindingSystem Update
-				mGameProcess->mPathFindgingSystem->Update(deltaTime);
-
+				
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
@@ -195,7 +196,6 @@ void fq::game_engine::EditorEngine::Process()
 				//							Edit, Pause Mode							//
 				//////////////////////////////////////////////////////////////////////////
 				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
-
 				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
 			}
 
@@ -212,6 +212,9 @@ void fq::game_engine::EditorEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
+
+			// UI 트랜스폼 위치 설정 
+			mGameProcess->mUISystem->Update();
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
@@ -231,7 +234,6 @@ void fq::game_engine::EditorEngine::Process()
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
-
 
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
@@ -290,6 +292,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mNavMeshWindow->Render();
 	mEditor->mArticulationHierarchy->Render(); 
 	mEditor->mArticulationInspector->Render(); 
+	mEditor->mExportWindow->Render(); 
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
@@ -324,7 +327,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mArticulationHierarchy->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLightProbeWindow->Initialize(mGameProcess.get(), mEditor.get());
-
+	mEditor->mExportWindow->Initialize(mGameProcess.get(), mEditor.get());
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());

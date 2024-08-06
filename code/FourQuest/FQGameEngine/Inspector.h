@@ -58,7 +58,9 @@ namespace fq::game_engine
 		void beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginSequenceContainer(entt::meta_data data, fq::reflect::IHandle* handle);
+		bool beginSequenceContainerPOD(entt::meta_data data, entt::meta_any& pod);
 		void beginInputText_PrefabResource(entt::meta_data data, fq::reflect::IHandle* handle);
+		
 
 		void beginPopupContextItem_Component(fq::reflect::IHandle* handle);
 		void beginIsItemHovered_Comment(entt::meta_data data);
@@ -78,6 +80,7 @@ namespace fq::game_engine
 		std::multimap< std::string, entt::meta_type> mComponentTypes;
 		std::vector<entt::meta_type> mStateBehaviourTypes;
 		DirectX::SimpleMath::Color mPrevColor;
+		DirectX::SimpleMath::Vector3 mPrevVector3;
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSelectAnimationStateName;

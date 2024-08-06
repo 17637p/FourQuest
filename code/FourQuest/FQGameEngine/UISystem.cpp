@@ -2,7 +2,12 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/TextUI.h"
+#include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
+
+//#include "../FQGameModule/Transform.h"
 
 fq::game_engine::UISystem::UISystem()
 	:mGameProcess(nullptr)
@@ -46,6 +51,9 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 	mSetUIInfomationsHandler = eventMgr->
 		RegisterHandle<fq::event::SetUIInfomations>(this, &UISystem::SetUIInfomations);
 
+	mSetTextInformationHandler = eventMgr->
+		RegisterHandle<fq::event::SetTextInformation>(this, &UISystem::SetTextInformation);
+
 	mSetScreenSizeHandler = eventMgr->
 		RegisterHandle<fq::event::SetScreenSize>([this](fq::event::SetScreenSize event)
 			{
@@ -68,9 +76,12 @@ void fq::game_engine::UISystem::OnLoadScene()
 	for (auto& object : scene->GetObjectView(true))
 	{
 		loadImageUI(&object);
+		loadTextUI(&object);
 	}
 
 	mbIsGameLoaded = true;
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnUnLoadScene()
@@ -83,11 +94,13 @@ void fq::game_engine::UISystem::OnAddGameObject(const fq::event::AddGameObject& 
 	if (!mbIsGameLoaded) return;
 
 	loadImageUI(event.object);
+	loadTextUI(event.object);
 }
 
 void fq::game_engine::UISystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
 	unloadImageUI(event.object);
+	unloadTextUI(event.object);
 }
 
 void fq::game_engine::UISystem::AddComponent(const fq::event::AddComponent& event)
@@ -96,6 +109,10 @@ void fq::game_engine::UISystem::AddComponent(const fq::event::AddComponent& even
 	{
 		loadImageUI(event.component->GetGameObject());
 	}
+	if (event.id == entt::resolve<fq::game_module::TextUI>().id())
+	{
+		loadTextUI(event.component->GetGameObject());
+	}
 }
 
 void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent& event)
@@ -103,6 +120,10 @@ void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent
 	if (event.id == entt::resolve<fq::game_module::ImageUI>().id())
 	{
 		unloadImageUI(event.component->GetGameObject());
+	}
+	if (event.id == entt::resolve<fq::game_module::TextUI>().id())
+	{
+		unloadTextUI(event.component->GetGameObject());
 	}
 }
 
@@ -155,4 +176,55 @@ void fq::game_engine::UISystem::SetUIInfomations(const fq::event::SetUIInfomatio
 {
 	unloadImageUI(event.object);
 	loadImageUI(event.object);
+}
+
+void fq::game_engine::UISystem::Update()
+{
+	auto componentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::ImageUI>();
+
+	for (auto& imageUI : componentView)
+	{
+		imageUI.GetComponent<game_module::ImageUI>()->OnUpdate(0);
+	}
+
+	auto textComponentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::TextUI>();
+
+	for (auto& textUI : textComponentView)
+	{
+		game_module::Transform* transform = textUI.GetComponent<game_module::Transform>();
+		textUI.GetComponent<game_module::TextUI>()->OnUpdate(0);
+	}
+}
+
+void fq::game_engine::UISystem::loadTextUI(game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::TextUI>())
+	{
+		return;
+	}
+
+	game_module::TextUI* textUI = object->GetComponent<game_module::TextUI>();
+	graphics::TextInfo textInfo = textUI->GetTextInfo();
+
+	graphics::ITextObject* textObject = mGameProcess->mGraphics->CreateText(textInfo);
+	textUI->SetTextObject(textObject);
+}
+
+void fq::game_engine::UISystem::unloadTextUI(game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::TextUI>())
+	{
+		return;
+	}
+
+	game_module::TextUI* textUI = object->GetComponent<game_module::TextUI>();
+	graphics::ITextObject* textObject = textUI->GetTextObject();
+
+	mGameProcess->mGraphics->DeleteText(textObject);
+}
+
+void fq::game_engine::UISystem::SetTextInformation(const fq::event::SetTextInformation& event)
+{
+	unloadTextUI(event.object);
+	loadTextUI(event.object);
 }

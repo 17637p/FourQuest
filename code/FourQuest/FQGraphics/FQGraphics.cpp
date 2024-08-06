@@ -264,11 +264,6 @@ fq::graphics::IImageObject* FQGraphics::CreateImageObject(const UIInfo& uiInfo)
 	return mUIManager->CreateImageObject(uiInfo);
 }
 
-void FQGraphics::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/)
-{
-	mUIManager->DrawText(text, drawRect, fontSize, fontPath, color);
-}
-
 void FQGraphics::SetDefaultFontSize(const unsigned short fontSize)
 {
 	mUIManager->SetDefaultFontSize(fontSize);
@@ -363,6 +358,9 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
+	mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
+	mLightManager->UpdateShadowConstantBuffer(mDevice, mCameraManager);
+
 	mRenderManager->BeginRender();
 
 	return true;
@@ -807,6 +805,16 @@ void fq::graphics::FQGraphics::DrawSphereEx(const debug::SphereInfoEx& sphereInf
 void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 {
 	mDebugDrawManager->Submit(ringInfoEx);
+}
+
+void FQGraphics::DeleteText(fq::graphics::ITextObject* textObject)
+{
+	mUIManager->DeleteText(textObject);
+}
+
+ITextObject* FQGraphics::CreateText(TextInfo textInfo)
+{
+	return mUIManager->CreateText(textInfo);
 }
 
 void FQGraphics::SetLightProbeIntensity(float intensity)

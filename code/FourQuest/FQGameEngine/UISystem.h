@@ -25,6 +25,8 @@ namespace fq::game_engine
 
 		void Initialize(GameProcess* gameProcess);
 
+		void Update();
+
 		/// <summary>
 		/// 씬을 로드할때 랜더링에 관련된 리소스를 로드합니다
 		/// </summary>
@@ -60,9 +62,17 @@ namespace fq::game_engine
 		/// </summary>
 		void SetUIInfomations(const fq::event::SetUIInfomations& event);
 
+		/// <summary>
+		/// Text정보 변경 이벤트
+		/// </summary>
+		void SetTextInformation(const fq::event::SetTextInformation& event);
+
 	private:
 		void loadImageUI(game_module::GameObject* object);
 		void unloadImageUI(game_module::GameObject* object);
+
+		void loadTextUI(game_module::GameObject* object);
+		void unloadTextUI(game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;
@@ -74,6 +84,7 @@ namespace fq::game_engine
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
 		EventHandler mSetUIInfomationsHandler;
+		EventHandler mSetTextInformationHandler;
 		EventHandler mSetScreenSizeHandler;
 		EventHandler mSetViewportSizeHandler;
 

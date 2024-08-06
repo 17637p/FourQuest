@@ -244,10 +244,9 @@ entt::meta_any fq::reflect::Converter::ParseClassFromJson(const std::string& cla
 		const std::string& memberName = element.key();
 		entt::id_type id = entt::hashed_string(memberName.c_str());
 		entt::meta_data memberMetaData = classMetaType.data(id);
-
 		if (memberMetaData)
 		{
-			entt::meta_any val = ParseMemberFromJson(element.value(), memberMetaData.type(),memberMetaData);
+			entt::meta_any val = ParseMemberFromJson(element.value(), memberMetaData.type(), memberMetaData);
 			memberMetaData.set(instance, val);
 		}
 		else
@@ -381,6 +380,7 @@ entt::meta_any fq::reflect::Converter::ParseMemberFromJson(const nlohmann::json&
 	// 연관 컨테이너 ex) std::map, std::set, std::unordered_map
 	else if (metaType.is_associative_container())
 	{
+
 	}
 	// class
 	else if (metaType.is_class())

@@ -16,13 +16,6 @@ namespace fq::game_module
 		CharacterController();
 		~CharacterController();
 
-		void OnStart() override;
-
-		/// <summary>
-		/// 캐릭터 이동처리를 수행합니다 
-		/// </summary>
-		void OnUpdate(float dt) override;
-
 		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
@@ -117,7 +110,12 @@ namespace fq::game_module
 		/// 컨트롤러 입력방향을 바라봅니다
 		/// </summary>
 		void SetPadInputRotation();
+
+
+		void SetDashInput(bool val) { mbHasDashInput = val; }
 	private:
+		void OnStart() override;
+		void OnFixedUpdate(float dt) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnCollisionEnter(const Collision& collision) override;
@@ -138,6 +136,8 @@ namespace fq::game_module
 		bool mbOnMove;
 		bool mbCanMoveCharater;
 		bool mbOnRotation;
+		bool mbHasInput;
+		bool mbHasDashInput;
 	};
 
 }

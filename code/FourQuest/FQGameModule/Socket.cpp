@@ -48,6 +48,10 @@ void fq::game_module::Socket::OnUpdate(float dt)
 
 		mTransform->GenerateLocal(pos, rotation, mTransform->GetLocalScale());
 	}
+	else
+	{
+		BindBone();
+	}
 }
 
 void fq::game_module::Socket::OnStart()
@@ -64,13 +68,18 @@ void fq::game_module::Socket::BindBone()
 	if (parent && parent->HasComponent<game_module::Animator>())
 	{
 		auto animator = parent->GetComponent<game_module::Animator>();
-		auto boneHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
-		auto boneHierarchy = boneHierarchyInstance->GetNodeHierarchy();
-		bool check = boneHierarchy->TryGetBoneIndex(GetBoneName(), &mBoneIndex);
 
-		if (check)
+		auto boneHierarchyInstance = animator->GetSharedNodeHierarchyInstance();
+	
+		if (boneHierarchyInstance != nullptr)
 		{
-			mNodeHierarchyInstance = boneHierarchyInstance;
+			auto boneHierarchy = boneHierarchyInstance->GetNodeHierarchy();
+			bool check = boneHierarchy->TryGetBoneIndex(GetBoneName(), &mBoneIndex);
+
+			if (check)
+			{
+				mNodeHierarchyInstance = boneHierarchyInstance;
+			}
 		}
 	}
 }

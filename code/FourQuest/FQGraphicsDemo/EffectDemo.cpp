@@ -223,7 +223,6 @@ void EffectDemo::Update()
 
 		obj->SetFrameTime(mTimeManager.GetDeltaTime());
 	}
-	s
 	static float s_time = 0.f;
 	s_time += mTimeManager.GetDeltaTime();
 

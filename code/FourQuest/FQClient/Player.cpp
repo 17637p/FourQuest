@@ -1,11 +1,15 @@
 #define NOMINMAX
 #include "Player.h"
 
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SoundClip.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
 #include "Soul.h"
 #include "ClientEvent.h"
+#include "PlayerUIManager.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -13,15 +17,17 @@ fq::client::Player::Player()
 	, mController(nullptr)
 	, mHp(0.f)
 	, mMaxHp(0.f)
-	, mDashCoolTime(1.f)
-	, mDashElapsedTime(0.f)
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(0.f)
 	, mAnimator(nullptr)
 	, mSoulStack(0.f)
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
+	, mArmourType(EArmourType::Knight)
 	, mAttackPositionOffset{}
+	, mbOnShieldBlock(false)
+	, mTransform(nullptr)
+	, mAttackSpeed(1.f)
 {}
 
 fq::client::Player::~Player()
@@ -47,7 +53,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::Player::Clone(std::share
 }
 
 void fq::client::Player::OnUpdate(float dt)
-{ 
+{
 	mAnimator->SetParameterBoolean("OnMove", mController->OnMove());
 
 	processInput();
@@ -60,13 +66,15 @@ void fq::client::Player::OnStart()
 	mMaxHp = mHp;
 
 	mAnimator = GetComponent<fq::game_module::Animator>();
-	assert(mAnimator);
-
 	mController = GetComponent<fq::game_module::CharacterController>();
+	mTransform = GetComponent<fq::game_module::Transform>();
+
+	// 사운드 가져오기  
+	mSoundClip = GetScene()->GetObjectByName("SoundManager")->GetComponent<game_module::SoundClip>();
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
-		{GetGameObject(), EPlayerType::LivingArmour});
+		{ GetGameObject(), EPlayerType::LivingArmour });
 
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
@@ -78,18 +86,15 @@ void fq::client::Player::OnStart()
 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// TODO : 갑옷 버프 적용
+
+	// Player HUD 등록
+	GetScene()->GetObjectByName("PlayerUIManager")->GetComponent<PlayerUIManager>()->AddPlayer(GetPlayerID());
 }
 
 void fq::client::Player::processInput()
 {
 	auto input = GetScene()->GetInputManager();
 
-	bool isDashAble = mDashElapsedTime == 0.f;
-	if (isDashAble && input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap))
-	{
-		mAnimator->SetParameterTrigger("OnDash");
-		mDashElapsedTime = mDashCoolTime;
-	}
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
@@ -97,31 +102,6 @@ void fq::client::Player::processInput()
 	}
 }
 
-
-void fq::client::Player::Attack()
-{
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackPrafab);
-	auto& attackObj = *(instance.begin());
-
-	auto attackT = attackObj->GetComponent<game_module::Transform>();
-	auto transform = GetComponent<game_module::Transform>();
-
-	// 공격 설정
-	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
-	attackComponent->SetAttackPower(100.f);
-
-	auto forward = transform->GetWorldMatrix().Forward();
-	auto up = transform->GetWorldMatrix().Up();
-	forward.Normalize();
-	up.Normalize();
-
-	attackObj->SetTag(game_module::ETag::PlayerAttack);
-
-	attackT->SetLocalPosition(transform->GetWorldPosition() + (forward * mAttackPositionOffset) + (up * 1));
-
-	GetScene()->AddGameObject(attackObj);
-}
 
 void fq::client::Player::OnDestroy()
 {
@@ -139,23 +119,50 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 	// 플레이어 피격
 	if (isHitAble && collision.other->GetTag() == game_module::ETag::MonsterAttack)
 	{
-		mAnimator->SetParameterTrigger("OnHit");
-
 		auto monsterAtk = collision.other->GetComponent<client::Attack>();
-		float attackPower = monsterAtk->GetAttackPower();
-		mHp -= attackPower;
-
-		mInvincibleElapsedTime = mInvincibleTime;
-
-		// UI 설정
-		GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
-		// 플레이어 사망처리 
-		if (mHp <= 0.f)
+		if (monsterAtk->ProcessAttack())
 		{
-			SummonSoul();
+			// 플레이어 방패 막기 처리 
+			if (mbOnShieldBlock)
+			{
+				auto attackDir = monsterAtk->GetAttackDirection();
+				auto lookAtDir = mTransform->GetLookAtVector();
+
+				attackDir.Normalize();
+				lookAtDir.Normalize();
+
+				float dotProduct = lookAtDir.Dot(attackDir);
+				float radian = std::acos(dotProduct);
+
+				if (radian >= DirectX::XM_PIDIV2)
+				{
+					// TODO :: Shield Block 소리 , 이펙트  추가
+					mSoundClip->Play("ShieldBlock", false, 0);
+
+					return;
+				}
+			}
+
+			mAnimator->SetParameterTrigger("OnHit");
+			float attackPower = monsterAtk->GetAttackPower();
+			mHp -= attackPower;
+
+			mInvincibleElapsedTime = mInvincibleTime;
+
+			// UI 설정
+			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
+
+			// 플레이어 사망처리 
+			if (mHp <= 0.f)
+			{
+				SummonSoul();
+			}
 		}
 	}
+
+	// Quest Event 처리
+	GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideTrigger>(
+		{ (int)GetPlayerID(), collision.other->GetName() });
 }
 
 void fq::client::Player::SummonSoul()
@@ -181,7 +188,6 @@ void fq::client::Player::SummonSoul()
 
 void fq::client::Player::processCoolTime(float dt)
 {
-	mDashElapsedTime = std::max(mDashElapsedTime - dt, 0.f);
 	mInvincibleElapsedTime = std::max(mInvincibleElapsedTime - dt, 0.f);
 }
 
@@ -198,5 +204,10 @@ void fq::client::Player::processFeverTime(float dt)
 		// TODO : 갑옷 해제에 대한 버프를 진행
 		mAttackPower = mAttackPower * 0.5f;
 	}
+}
+
+float fq::client::Player::GetPlayerID() const
+{
+	return mController->GetControllerID();
 }
 

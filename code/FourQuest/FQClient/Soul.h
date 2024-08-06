@@ -1,7 +1,12 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
 #include "PlayerDefine.h"
+
+namespace fq::game_module
+{
+	class CharacterController;
+}
 
 namespace fq::client
 {
@@ -14,7 +19,6 @@ namespace fq::client
 		~Soul();
 		
 		void DestorySoul();
-
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType type) { mSoulType = type; }
 	

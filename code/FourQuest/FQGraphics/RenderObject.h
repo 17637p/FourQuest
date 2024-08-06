@@ -252,6 +252,18 @@ namespace fq::graphics
 		virtual void SetImagePath(const std::string& texturePath) override;
 		virtual std::string GetImagePath() override;
 
+		virtual std::string GetMaskPath() const override { return mMaskPath; }
+		virtual void SetMaskPath(const std::string& val) override { mMaskPath = val; }
+
+		virtual void SetFillDegree(float Degree) override { mFillDegree = Degree; };
+		virtual float GetFillDegree() const override { return mFillDegree; };
+
+		virtual bool GetIsRender() const override { return mIsRender; }
+		virtual void SetIsRender(bool val) override { mIsRender = val; }
+
+		virtual bool GetRenderMode() const override { return mIsCenter; };
+		virtual void SetRenderMode(bool isCenter) override { mIsCenter = isCenter; }; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -270,6 +282,12 @@ namespace fq::graphics
 		float mScaleY;
 
 		std::string mImagePath;
+		std::string mMaskPath;
+
+		float mFillDegree;
+
+		bool mIsRender;
+		bool mIsCenter;
 	};
 
 	class ProbeObject : public IProbeObject
@@ -296,6 +314,16 @@ namespace fq::graphics
 		std::shared_ptr<IStaticMesh> mStaticMesh;
 		int mIndex;
 		DirectX::SimpleMath::Matrix mTransform;
+	};
+
+	class TextObject : public ITextObject
+	{
+	public:
+		virtual void SetTextInformation(TextInfo textInfo) override { mTextInfo = textInfo; };
+		virtual TextInfo GetTextInformation() override { return mTextInfo; };
+
+	private:
+		TextInfo mTextInfo;
 	};
 }
 

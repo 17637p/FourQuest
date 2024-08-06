@@ -6,6 +6,9 @@
 #include "GameProcess.h"
 #include "RenderingSystem.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Decal.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 
@@ -14,12 +17,12 @@ fq::game_engine::Setting::Setting()
 	, mbIsOpen(false)
 	, mbUseGrayScale(false)
 	, mbUseRootPicking(false)
+	, mbCanEditPath(false)
 	, mSnap{}
 	, mMode(ImGuizmo::WORLD)
 {
 
 }
-
 
 void fq::game_engine::Setting::Initialize(GameProcess* game, EditorProcess* editor)
 {
@@ -34,6 +37,7 @@ void fq::game_engine::Setting::Render()
 	{
 		beginChild_GizumoSetting();
 		beginChild_GraphicsSetting();
+		beginChild_InspectorSetting();
 	}
 
 	ImGui::End();
@@ -108,7 +112,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 			// 임시적용
 			if (ImGui::Button("Change TexturePath"))
 			{
-				auto scene =  mGameProcess->mSceneManager->GetCurrentScene();
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
 				auto texturePath = fq::path::GetResourcePath() / "Texture";
 
@@ -131,9 +135,68 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						}
 					}
 				);
+			}
 
+			if (ImGui::Button("Reload Texture(TexturePath + TextureName)"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+					[](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					{
+						const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
+						auto materialInfos = renderer.GetMaterialInfos();
+
+						for (auto& materialInfo : materialInfos)
+						{
+							if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+						}
+
+						renderer.SetMaterialInfos(materialInfos);
+					}
+				);
+
+				scene->ViewComponents<game_module::StaticMeshRenderer>(
+					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					{
+						const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
+						auto materialInfos = renderer.GetMaterialInfos();
+
+						for (auto& materialInfo : materialInfos)
+						{
+							if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+							if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+						}
+
+						renderer.SetMaterialInfos(materialInfos);
+					}
+				);
+
+				scene->ViewComponents<game_module::Decal>(
+					[](game_module::GameObject& object, game_module::Decal& decal)
+					{
+						const auto& texturePath = fq::path::GetResourcePath() / "Texture";
+						auto materialInfo = decal.GetDecalMaterialInfo();
+
+						if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+						if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+
+						decal.SetDecalMaterialInfo(materialInfo);
+					}
+				);
 			}
 		}
+
 		ImGui::EndChild();
 	}
 }
@@ -141,5 +204,21 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 ImGuizmo::MODE fq::game_engine::Setting::GetMode()
 {
 	return mMode;
+}
+
+void fq::game_engine::Setting::beginChild_InspectorSetting()
+{
+	if (ImGui::CollapsingHeader("Insepctor"))
+	{
+		if (ImGui::BeginChild("Insepctor"), ImVec2(0, 0), ImGuiChildFlags_AutoResizeY)
+		{
+			ImGui::Checkbox("CanEditDargDropPath", &mbCanEditPath);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip(reinterpret_cast<const char*>(u8"드래그 드랍하는 경로들을 수정 가능하게 합니다"));
+			}
+		}
+		ImGui::EndChild();
+	}
 }
 

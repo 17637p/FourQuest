@@ -8,7 +8,7 @@ using namespace DirectX::SimpleMath;
 fq::game_module::Transform::Transform()
 	: mFQTransform{}
 	, mParent(nullptr)
-	, mChidren{}
+	, mChildren{}
 {
 	mFQTransform.localMatrix = Matrix::Identity;
 	mFQTransform.worldMatrix = Matrix::Identity;
@@ -33,7 +33,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Transform::Clone(st
 	}
 
 	cloneTransform->mParent = nullptr;
-	cloneTransform->mChidren.clear();
+	cloneTransform->mChildren.clear();
 
 	return cloneTransform;
 }
@@ -80,7 +80,7 @@ void fq::game_module::Transform::AddChild(Transform* inChild)
 {
 	assert(inChild != this || inChild != nullptr);
 
-	for (Transform* child : mChidren)
+	for (Transform* child : mChildren)
 	{
 		if (inChild == child)
 		{
@@ -95,14 +95,14 @@ void fq::game_module::Transform::AddChild(Transform* inChild)
 		prevParent->RemoveChild(inChild);
 	}
 
-	mChidren.push_back(inChild);
+	mChildren.push_back(inChild);
 	inChild->SetParent(this);
 }
 
 void fq::game_module::Transform::RemoveChild(Transform* removeChild)
 {
-	mChidren.erase(std::remove(mChidren.begin(), mChidren.end(), removeChild)
-		, mChidren.end());
+	mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), removeChild)
+		, mChildren.end());
 
 	if (removeChild->GetParentTransform() == this)
 	{
@@ -141,7 +141,7 @@ bool fq::game_module::Transform::IsDescendant(Transform* transfrom) const
 
 bool fq::game_module::Transform::IsLeaf() const
 {
-	return mChidren.empty();
+	return mChildren.empty();
 }
 
 void fq::game_module::Transform::SetLocalRotation(Quaternion rotation)
@@ -175,7 +175,7 @@ void fq::game_module::Transform::updateWorldMatrix()
 	decomposeWorldMatrix();
 
 	// children
-	for (auto child : mChidren)
+	for (auto child : mChildren)
 	{
 		child->updateWorldMatrix();
 	}
@@ -184,13 +184,13 @@ void fq::game_module::Transform::updateWorldMatrix()
 void fq::game_module::Transform::updateLocalMatrix()
 {
 	mFQTransform.localMatrix = HasParent() ?
-		mFQTransform.worldMatrix * mParent->mFQTransform.worldMatrix.Invert()
+		 mFQTransform.worldMatrix * mParent->mFQTransform.worldMatrix.Invert() 
 		: mFQTransform.worldMatrix;
 
 	decomposeLocalMatrix();
 
 	// children
-	for (auto child : mChidren)
+	for (auto child : mChildren)
 	{
 		child->updateWorldMatrix();
 	}
@@ -232,6 +232,8 @@ void fq::game_module::Transform::GenerateLocal(Vector3 position, Quaternion rota
 
 void fq::game_module::Transform::GenerateWorld(Vector3 position, Quaternion rotation, Vector3 scale)
 {
+	rotation.Normalize();
+
 	mFQTransform.worldMatrix = Matrix::CreateScale(scale)
 		* Matrix::CreateFromQuaternion(rotation)
 		* Matrix::CreateTranslation(position);

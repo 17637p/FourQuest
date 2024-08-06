@@ -27,9 +27,11 @@ namespace fq::game_engine
 
 		ImGuizmo::MODE GetMode();
 
+		bool CanEditPath() const { return mbCanEditPath; }
 	private:
 		void beginChild_GizumoSetting();
 		void beginChild_GraphicsSetting();
+		void beginChild_InspectorSetting();
 
 	private:
 		GameProcess* mGameProcess;
@@ -44,6 +46,9 @@ namespace fq::game_engine
 
 		//  피킹 옵션
 		bool mbUseRootPicking;
+
+		// 인스펙터
+		bool mbCanEditPath;// 드래그 드랍이 아닌 입력을 받을 수 있음
 	};
 
 

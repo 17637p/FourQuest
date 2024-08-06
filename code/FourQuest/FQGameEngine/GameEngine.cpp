@@ -5,6 +5,7 @@
 
 #include "../FQClient/Client.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQphysics/IFQPhysics.h"
 #include "FQGameEngineRegister.h"
@@ -52,13 +53,14 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess ÃÊ±âÈ­
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* StartSceneName = "GitaeTest";
+	constexpr const char* StartSceneName = "Scene4";
 
 	mGameProcess->mSceneManager->Initialize(StartSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get()
-		, mGameProcess->mScreenManager.get());
+		, mGameProcess->mScreenManager.get()
+		, mGameProcess->mTimeManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
 	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
@@ -156,9 +158,8 @@ void fq::game_engine::GameEngine::Process()
 			{
 				accmulator -= fixedDeltaTime;
 				onFixedUpdtae = true;
-
-				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 				mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
+				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 				mGameProcess->mPhysics->Update(fixedDeltaTime);
 				mGameProcess->mPhysics->FinalUpdate();
 				mGameProcess->mPhysicsSystem->SinkToGameScene();
@@ -179,6 +180,9 @@ void fq::game_engine::GameEngine::Process()
 
 			// Animation Update
 			mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
+
+			// PathFindingSystem Update
+			mGameProcess->mPathFindgingSystem->Update(deltaTime);
 
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
@@ -209,6 +213,7 @@ void fq::game_engine::GameEngine::Process()
 
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
+
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;

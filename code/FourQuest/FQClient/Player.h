@@ -1,7 +1,16 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
 #include "PlayerDefine.h"
+
+namespace fq::game_module
+{
+	class Animator;
+	class CharacterController;
+	class Transform;
+	class SoundClip;
+}
 
 namespace fq::client
 {
@@ -16,13 +25,21 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void Attack();
 		void SummonSoul();
 
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
 		void SetSoulType(fq::client::ESoulType val) { mSoulType = val; }
 	
 		float GetAttackPower() const { return mAttackPower; }
+		float GetHPRatio() const { return mHp / mMaxHp; }
+		float GetPlayerID() const;
+		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
+
+		/// <summary>
+		/// 갑옷타입을 반환합니다
+		/// </summary>
+		fq::client::EArmourType GetArmourType() const { return mArmourType; }
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);
@@ -38,19 +55,20 @@ namespace fq::client
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
+		game_module::Transform* mTransform;
+		game_module::SoundClip* mSoundClip;
 
 		ESoulType mSoulType; // 영혼 타입
+		EArmourType mArmourType; 
 
 		float mMaxHp; // 최대 체력
 		float mHp; // 현재 체력
 		float mSoulStack; // 소울 게이지
 		float mAttackPower; // 공격력
+		float mAttackSpeed; // 공격속도
 		
-		float mDashElapsedTime; // 대쉬 경과시간
 		float mInvincibleElapsedTime; // 무적 경과 시간
-
 		float mInvincibleTime; // 무적시간 
-		float mDashCoolTime; // 대쉬쿨타임
 
 		float mFeverTime; // 갑옷 버프 시간
 
@@ -58,6 +76,8 @@ namespace fq::client
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 
 		float mAttackPositionOffset; 
+
+		bool mbOnShieldBlock;
 
 		friend void RegisterMetaData();
 	};

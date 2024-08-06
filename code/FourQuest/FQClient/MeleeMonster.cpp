@@ -4,10 +4,14 @@
 #include <random>
 #include <algorithm>
 
+#include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "Attack.h"
 #include "GameManager.h"
 #include "HpBar.h"
 #include "MonsterGroup.h"
+#include "KnockBack.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -21,8 +25,9 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
-	, mAnimator(nullptr)
+	, mAnimator(nullptr)	
 	, mTarget(nullptr)
+	, mKnockBack(nullptr)
 	, mStartPosition{}
 	, mPatrolDestination{}
 	, mTransform(nullptr)
@@ -67,6 +72,7 @@ void fq::client::MeleeMonster::OnStart()
 	mTransform = GetComponent<game_module::Transform>();
 	mStartPosition = mTransform->GetWorldPosition();
 	mAnimator = GetComponent<game_module::Animator>();
+	mKnockBack = GetComponent<KnockBack>();
 
 	mMaxHp = mHp;
 
@@ -89,11 +95,7 @@ void fq::client::MeleeMonster::EmitAttack()
 
 	auto attackT = attackObj->GetComponent<Transform>();
 
-	// 공격 설정
-	auto attackComponent = attackObj->GetComponent<client::Attack>();
-	attackComponent->SetAttacker(GetGameObject());
-	attackComponent->SetAttackPower(mAttackPower);
-
+	// 공격 트랜스폼 설정
 	auto attackPos = mTransform->GetWorldPosition();
 	auto scale = attackT->GetWorldScale();
 	auto rotation = mTransform->GetWorldRotation();
@@ -101,22 +103,46 @@ void fq::client::MeleeMonster::EmitAttack()
 	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
 	auto foward = rotationMat.Forward();
 	attackPos += foward * mAttackOffset;
-
 	attackT->GenerateWorld(attackPos, rotation, scale);
+
+	// 공격 정보 설정
+	AttackInfo attackInfo{};
+	auto attackComponent = attackObj->GetComponent<client::Attack>();
+
+	attackInfo.attacker = GetGameObject();
+	attackInfo.damage = mAttackPower;
+	attackInfo.attackDirection = foward;
+	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
 
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
-	// TODO : 근접 몬스터 공격사운드 추가 
 }
+
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonster::EmitAttackEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackEffect);
+	auto& effentObj = *(instance.begin());
+
+	auto effectT = effentObj->GetComponent<game_module::Transform>();
+	effectT->SetParent(mTransform);
+
+	GetScene()->AddGameObject(effentObj);
+
+	return effentObj;
+}
+
 
 
 void fq::client::MeleeMonster::Move(DirectX::SimpleMath::Vector3 destination)
 {
 	fq::game_module::NavigationAgent* agent = GetComponent<fq::game_module::NavigationAgent>();
-	agent->MoveTo(destination);
+
+	if (agent)
+		agent->MoveTo(destination);
 }
 
 void fq::client::MeleeMonster::Patrol()
@@ -152,12 +178,37 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			mAnimator->SetParameterTrigger("OnHit");
 			float attackPower = playerAttack->GetAttackPower();
 
-			mHp -= attackPower;
-
-			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
 			// 타겟은 자신을 때린 사람으로 바꿉니다 
 			SetTarget(playerAttack->GetAttacker());
+
+			// 넉백처리 
+			if (playerAttack->HasKnockBack())
+			{
+				auto type = playerAttack->GetKnockBackType();
+				float power = playerAttack->GetKnockBackPower();
+
+				if (type == EKnockBackType::Fixed)
+				{
+					DirectX::SimpleMath::Vector3 direction = playerAttack->GetAttackDirection();
+					mKnockBack->Set(power, direction);
+				}
+				else if (type == EKnockBackType::TargetPosition)
+				{
+					auto monsterPos = mTransform->GetWorldPosition();
+					monsterPos.y = 0.f;
+					auto attackPos = playerAttack->GetAttackPosition();
+					attackPos.y = 0.f;
+
+					auto knockBackDir = monsterPos - attackPos;
+					knockBackDir.Normalize();
+
+					mKnockBack->Set(power, knockBackDir);
+				}
+			}
+
+			// HP 설정
+			mHp -= attackPower;
+			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
 
 			// 사망처리 
 			if (mHp <= 0.f)

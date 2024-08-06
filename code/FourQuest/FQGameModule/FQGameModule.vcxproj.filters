@@ -307,12 +307,18 @@
     </ClInclude>
     <ClInclude Include="PostProcessing.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="ArticulationLoader.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
     <ClInclude Include="UVAnimator.h">
       <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleManagerh.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -495,12 +501,15 @@
     </ClCompile>
     <ClCompile Include="PostProcessing.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="ArticulationLoader.cpp">
       <Filter>src\07.Physics</Filter>
     </ClCompile>
     <ClCompile Include="UVAnimator.cpp">
       <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

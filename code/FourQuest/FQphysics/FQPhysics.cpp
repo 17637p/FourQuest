@@ -361,10 +361,11 @@ namespace fq::physics
 	{
 		return mCCTManager->RemoveAllController();
 	}
-	bool FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
+	bool FQPhysics::AddInputMove(const CharacterControllerInputInfo& info)
 	{
-		return mCCTManager->AddInputMove(id, input);
+		return mCCTManager->AddInputMove(info);
 	}
+
 	CharacterControllerGetSetData FQPhysics::GetCharacterControllerData(const unsigned int& id)
 	{
 		CharacterControllerGetSetData data;

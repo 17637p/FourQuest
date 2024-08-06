@@ -1,6 +1,9 @@
 #include "AOEAttackState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/CharacterController.h"
 #include "MagicArmour.h"
 
 fq::client::AOEAttackState::AOEAttackState()

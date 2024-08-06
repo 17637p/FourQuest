@@ -143,7 +143,8 @@ namespace fq::graphics
 		virtual void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) override;
 		virtual void SetDefaultFont(const std::wstring& path) override;
 		virtual void AddFont(const std::wstring& path) override;
-		virtual void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) override;
+		virtual ITextObject* CreateText(TextInfo textInfo) override;
+		virtual void DeleteText(fq::graphics::ITextObject* textObject) override;
 		virtual void DeleteFont(const std::wstring& path) override;
 		// image
 		virtual IImageObject* CreateImageObject(const UIInfo& uiInfo) override;

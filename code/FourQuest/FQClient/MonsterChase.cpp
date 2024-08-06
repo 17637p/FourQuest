@@ -2,6 +2,8 @@
 #include "Monster.h"
 
 #include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/Transform.h"
 
 fq::client::MonsterChase::MonsterChase()
 	:mMoveDistance(0)

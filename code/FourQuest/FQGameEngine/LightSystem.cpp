@@ -2,6 +2,8 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Light.h"
 #include "GameProcess.h"
 
 fq::game_engine::LightSystem::LightSystem()

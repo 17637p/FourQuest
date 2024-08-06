@@ -1,6 +1,8 @@
 #include "MeleeMonsterIdleState.h"
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/NavigationAgent.h"
+
 #include "MeleeMonster.h"
 #include "ClientHelper.h"
 
@@ -11,6 +13,7 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterIdleSt
 
 fq::client::MeleeMonsterIdleState::MeleeMonsterIdleState()
 	:mElapsedTime(0.f)
+	,mChangeStateTime(1.f)
 {
 
 }

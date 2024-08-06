@@ -6,6 +6,7 @@
 
 #include "../FQReflect/FQReflect.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "EditorEvent.h"
@@ -304,6 +305,7 @@ void fq::game_engine::Inspector::beginCombo_EnumClass(entt::meta_data data, fq::
 		}
 		ImGui::EndCombo();
 	}
+
 	beginIsItemHovered_Comment(data);
 }
 
@@ -314,11 +316,18 @@ void fq::game_engine::Inspector::beginInputText_String(entt::meta_data data, fq:
 
 	ImGui::InputText(memberName.c_str(), &name);
 
-	if (ImGui::IsItemDeactivatedAfterEdit()
-		&& !data.prop(fq::reflect::prop::DragDrop))
+	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
-		mEditorProcess->mCommandSystem->Push<SetMetaData>(
-			data, mSelectObject, handle, name);
+		if (!data.prop(fq::reflect::prop::DragDrop))
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, name);
+		}
+		else if (mEditorProcess->mSettingWindow->CanEditPath())
+		{
+			mEditorProcess->mCommandSystem->Push<SetMetaData>(
+				data, mSelectObject, handle, name);
+		}
 	}
 
 	// DragDrop 받기
@@ -363,10 +372,19 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 
 	float f[3]{ v.x,v.y,v.z };
 
-	ImGui::InputFloat3(memberName.c_str(), f);
+	if (ImGui::DragFloat3(memberName.c_str(), f))
+	{
+		data.set(handle->GetHandle(), DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
+	}
+
+	if (ImGui::IsItemActivated())
+	{
+		mPrevVector3 = DirectX::SimpleMath::Vector3(f[0], f[1], f[2]);
+	}
 
 	if (ImGui::IsItemDeactivatedAfterEdit())
 	{
+		data.set(handle->GetHandle(), mPrevVector3);
 		mEditorProcess->mCommandSystem->Push<SetMetaData>(
 			data, mSelectObject, handle, DirectX::SimpleMath::Vector3(f[0], f[1], f[2]));
 	}
@@ -374,34 +392,6 @@ void fq::game_engine::Inspector::beginInputFloat3_Vector3(entt::meta_data data, 
 	beginIsItemHovered_Comment(data);
 }
 
-void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle)
-{
-	using namespace DirectX::SimpleMath;
-
-	Quaternion quatarnion = data.get(handle->GetHandle()).cast<DirectX::SimpleMath::Quaternion>();
-	std::string memberName = fq::reflect::GetName(data);
-
-	Vector3 euler = quatarnion.ToEuler();
-
-	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
-		,DirectX::XMConvertToDegrees(euler.y)
-		,DirectX::XMConvertToDegrees(euler.z) };
-
-	ImGui::InputFloat3(memberName.c_str(), f);
-
-	if (ImGui::IsItemDeactivatedAfterEdit())
-	{
-		euler.x = DirectX::XMConvertToRadians(f[0]);
-		euler.y = DirectX::XMConvertToRadians(f[1]);
-		euler.z = DirectX::XMConvertToRadians(f[2]);
-		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
-
-		mEditorProcess->mCommandSystem->Push<SetMetaData>(
-			data, mSelectObject, handle, quatarnion);
-	}
-
-	beginIsItemHovered_Comment(data);
-}
 
 void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle)
 {
@@ -435,6 +425,36 @@ void fq::game_engine::Inspector::beginColorEdit4_Color(entt::meta_data data, fq:
 			data, mSelectObject, handle, color);
 	}
 }
+
+void fq::game_engine::Inspector::beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle)
+{
+	using namespace DirectX::SimpleMath;
+
+	Quaternion quatarnion = data.get(handle->GetHandle()).cast<DirectX::SimpleMath::Quaternion>();
+	std::string memberName = fq::reflect::GetName(data);
+
+	Vector3 euler = quatarnion.ToEuler();
+
+	float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+		,DirectX::XMConvertToDegrees(euler.y)
+		,DirectX::XMConvertToDegrees(euler.z) };
+
+	ImGui::InputFloat3(memberName.c_str(), f);
+
+	if (ImGui::IsItemDeactivatedAfterEdit())
+	{
+		euler.x = DirectX::XMConvertToRadians(f[0]);
+		euler.y = DirectX::XMConvertToRadians(f[1]);
+		euler.z = DirectX::XMConvertToRadians(f[2]);
+		quatarnion = Quaternion::CreateFromYawPitchRoll(euler);
+
+		mEditorProcess->mCommandSystem->Push<SetMetaData>(
+			data, mSelectObject, handle, quatarnion);
+	}
+
+	beginIsItemHovered_Comment(data);
+}
+
 
 
 void fq::game_engine::Inspector::getScriptTypes()
@@ -1120,7 +1140,7 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	if (animationPath.empty() || animationInterfaceOrNull == nullptr) return;
-	
+
 	// PlayBackSpeed
 	float playBackSpeed = stateNode.GetPlayBackSpeed();
 
@@ -1131,15 +1151,18 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 
 	float maxDuration = animationInterfaceOrNull->GetAnimationClip().Duration;
 
+	float startTimePos = stateNode.GetStartTimePos();
 	float duration = stateNode.GetDuration();
+
+	if (ImGui::SliderFloat("StartTimePos", &startTimePos, 0.f, duration))
+	{
+		stateNode.SetStartTimePos(startTimePos);
+	}
+
 	if (ImGui::SliderFloat("Duration", &duration, 0.f, maxDuration))
 	{
 		stateNode.SetDuration(duration);
 	}
-	/*if (ImGui::InputFloat("Duration", &duration))
-	{
-		stateNode.SetDuration(std::min(maxDuration, duration));
-	}*/
 
 	bool IsLoof = stateNode.IsLoof();
 	if (ImGui::Checkbox("IsLoof", &IsLoof))
@@ -1154,8 +1177,8 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 	auto metaType = pod.type();
 
 	ImGui::PushStyleColor(ImGuiCol_Border, ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f });
-	// POD 이름 표시 
 
+	// POD 이름 표시 
 	std::string podName = fq::reflect::GetName(metaType);
 
 	if (index != -1)
@@ -1171,7 +1194,14 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 			{
 				std::string memberName = fq::reflect::GetName(data);
 
-				if (data.type() == entt::resolve<int>())
+				if (data.type().is_sequence_container())
+				{
+					if (beginSequenceContainerPOD(data, pod))
+					{
+						changedData = true;
+					}
+				}
+				else if (data.type() == entt::resolve<int>())
 				{
 					int val = data.get(pod).cast<int>();
 					ImGui::InputInt(memberName.c_str(), &val);
@@ -1262,7 +1292,6 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					}
 
 					beginIsItemHovered_Comment(data);
-
 				}
 				else if (data.type() == entt::resolve<DirectX::SimpleMath::Vector3>())
 				{
@@ -1360,11 +1389,18 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					std::string val = data.get(pod).cast<std::string>();
 
 					ImGui::InputText(memberName.c_str(), &val);
-					if (ImGui::IsItemDeactivatedAfterEdit()
-						&& !data.prop(fq::reflect::prop::DragDrop))
+					if (ImGui::IsItemDeactivatedAfterEdit())
 					{
-						data.set(pod, val);
-						changedData = true;
+						if (!data.prop(fq::reflect::prop::DragDrop))
+						{
+							data.set(pod, val);
+							changedData = true;
+						}
+						else if (mEditorProcess->mSettingWindow->CanEditPath())
+						{
+							data.set(pod, val);
+							changedData = true;
+						}
 					}
 
 					// DragDrop 받기
@@ -1411,12 +1447,20 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 
 					ImGui::InputText(memberName.c_str(), &sVal);
 
-					if (ImGui::IsItemDeactivatedAfterEdit()
-						&& !data.prop(fq::reflect::prop::DragDrop))
+					if (ImGui::IsItemDeactivatedAfterEdit())
 					{
-						val = std::filesystem::path(sVal).wstring();
-						data.set(pod, val);
-						changedData = true;
+						if (!data.prop(fq::reflect::prop::DragDrop))
+						{
+							val = std::filesystem::path(sVal).wstring();
+							data.set(pod, val);
+							changedData = true;
+						}
+						else if (mEditorProcess->mSettingWindow->CanEditPath())
+						{
+							val = std::filesystem::path(sVal).wstring();
+							data.set(pod, val);
+							changedData = true;
+						}
 					}
 
 					// DragDrop 받기
@@ -1530,5 +1574,70 @@ void fq::game_engine::Inspector::beginStateBehaviour(fq::game_module::AnimationS
 
 		behaviourMap.insert({ id, clone });
 	}
+}
+
+bool fq::game_engine::Inspector::beginSequenceContainerPOD(entt::meta_data data, entt::meta_any& pod)
+{
+	bool isChanged = false;
+
+	//// 컨테이너의 복사복은 가져옵니다.
+	entt::meta_any val = data.get(pod);
+	auto view = val.as_sequence_container();
+	assert(view);
+
+	ImGui::Text(fq::reflect::GetName(data).c_str());
+	beginIsItemHovered_Comment(data);
+
+	ImGui::SameLine();
+
+	// Add element
+	std::string addText = "Add##AddButton" + std::to_string(mImguiID++);
+	if (ImGui::Button(addText.c_str()))
+	{
+		isChanged = true;
+		auto baseValue = view.value_type().construct();
+		auto last = view.end();
+		view.insert(last, baseValue);
+
+		bool check = data.set(pod, val);
+		assert(check);
+	}
+
+	ImGui::SameLine();
+
+	// Delete element
+	std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
+
+	if (ImGui::Button(deleteText.c_str()))
+	{
+		auto last = view.begin();
+
+		if (last != view.end())
+		{
+			isChanged = true;
+			view.erase(last);
+			data.set(pod, val);
+		}
+	}
+
+	auto valueType = view.value_type();
+
+	// POD Data 
+	if (valueType.prop(fq::reflect::prop::POD))
+	{
+		int index = 0;
+		for (auto element : view)
+		{
+			entt::meta_any podVal = element.as_ref();
+
+			if (beginPOD(podVal, index++))
+			{
+				data.set(pod, val);
+				isChanged = true;
+			}
+		}
+	}
+
+	return isChanged;
 }
 

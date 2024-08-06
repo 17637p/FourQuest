@@ -1,6 +1,6 @@
 #include "PlayerMovementState.h"
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
 
 fq::client::PlayerMovementState::PlayerMovementState()
 	:mbCanMovePlayer(false)

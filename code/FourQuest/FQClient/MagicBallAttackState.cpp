@@ -1,7 +1,9 @@
 #define NOMINMAX
 #include "MagicBallAttackState.h"
 
-#include "../FQGameModule/GameModule.h"
+#include <algorithm>
+
+#include "../FQGameModule/CharacterController.h"
 #include "MagicArmour.h"
 
 fq::client::MagicBallAttackState::MagicBallAttackState()
@@ -36,7 +38,7 @@ void fq::client::MagicBallAttackState::OnStateUpdate(game_module::Animator& anim
 		return;
 	}
 
-	mElapsedTime = std::max(mElapsedTime + dt * state.GetPlayBackSpeed(), mAttackTiming);
+	mElapsedTime = std::min(mElapsedTime + dt * state.GetPlayBackSpeed(), mAttackTiming);
 
 	if (mElapsedTime == mAttackTiming)
 	{

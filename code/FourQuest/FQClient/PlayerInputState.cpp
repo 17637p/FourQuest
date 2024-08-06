@@ -1,6 +1,7 @@
 #include "PlayerInputState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlayerInputState::Clone()
 {
@@ -17,7 +18,6 @@ void fq::client::PlayerInputState::OnStateUpdate(game_module::Animator& animator
 {
 	auto controller = animator.GetComponent<game_module::CharacterController>();
 	auto controllerID = controller->GetControllerID();
-
 	auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 
 	if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::Tap))

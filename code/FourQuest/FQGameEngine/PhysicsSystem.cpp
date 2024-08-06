@@ -7,6 +7,19 @@
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQReflect/entt.hpp"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/SphereCollider.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/TerrainCollider.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/Articulation.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+
 #include "GameProcess.h"
 #include "ModelSystem.h"
 #include "RenderingSystem.h"
@@ -430,7 +443,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 	if (object->HasComponent<Articulation>())
 	{
 		ColliderID id = ++mLastColliderID;
-		
+
 		auto articulation = object->GetComponent<Articulation>();
 		articulation->Load();
 		auto articulationData = articulation->GetArticulationData();
@@ -475,21 +488,21 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 				switch (linkData->GetShapeType())
 				{
-				case EShapeType::BOX:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
-				}
-				break;
-				case EShapeType::SPHERE:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
-				}
-				break;
-				case EShapeType::CAPSULE:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
-				}
-				break;
+					case EShapeType::BOX:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
+					}
+					break;
+					case EShapeType::SPHERE:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
+					}
+					break;
+					case EShapeType::CAPSULE:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
+					}
+					break;
 				}
 
 				for (auto& [name, childLinkData] : linkData->GetChildrenLinkData())
@@ -600,20 +613,23 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		if (colliderInfo.bIsDestroyed)
 			continue;
 
-		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
+		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto offset = colliderInfo.collider->GetOffset();
+
+		if (rigid->GetBodyType() == game_module::RigidBody::EBodyType::Static)
+			continue;
 
 		if (colliderInfo.enttID == mCharactorControllerTypeID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
 			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
-			auto localPos = controll.position - controller->GetOffset();
+			auto position = controll.position - controller->GetOffset();
 
 			controller->SetFalling(movement.isFall);
 			rigid->SetLinearVelocity(movement.velocity);
-			transform->SetLocalPosition(localPos);
+			transform->SetWorldPosition(position);
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{
@@ -632,6 +648,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				Quaternion rotation;
 				matrix.Decompose(scale, rotation, pos);
 				rotation = game_module::CapsuleCollider::YtoXRoation * rotation;
+				rotation.Normalize();
 
 				matrix = Matrix::CreateScale(scale)
 					* Matrix::CreateFromQuaternion(rotation)
@@ -716,6 +733,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.rotation = transform->GetWorldRotation();
 			data.scale = transform->GetWorldScale();
 
+			// Tag가 변경된 경우
+			auto controllerInfo = controller->GetControllerInfo();
+			auto prevLayer = controllerInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				controllerInfo.layerNumber = currentLayer;
+				controller->SetControllerInfo(controllerInfo);
+			}
+
 			mPhysicsEngine->SetCharacterControllerData(id, data);
 
 			fq::physics::CharacterMovementGetSetData moveData;
@@ -733,11 +761,24 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.angularVelocity = rigid->GetAngularVelocity();
 			data.linearVelocity = rigid->GetLinearVelocity();
 
+			// Tag가 변경된 경우
+			auto capsuleInfo = capsule->GetCapsuleInfomation();
+			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				capsuleInfo.colliderInfo.layerNumber = currentLayer;
+				capsule->SetCapsuleInfomation(capsuleInfo);
+			}
+
 			// 캡슐콜라이더 Y방향으로 수정 
 			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
 			{
 				Quaternion rotation = game_module::CapsuleCollider::XtoYRoation
 					* transform->GetWorldRotation();
+				rotation.Normalize();
+
 				Vector3 pos = transform->GetWorldPosition();
 				Vector3 scale = transform->GetWorldScale();
 
@@ -809,7 +850,12 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 
 void fq::game_engine::PhysicsSystem::AddInputMove(const fq::event::AddInputMove& event)
 {
-	mPhysicsEngine->AddInputMove(event.colliderID, event.input);
+	physics::CharacterControllerInputInfo info;
+	info.id = event.colliderID;
+	info.input = event.input;
+	info.isDynamic = event.isDynamic;
+
+	mPhysicsEngine->AddInputMove(info);
 }
 
 void fq::game_engine::PhysicsSystem::calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset)

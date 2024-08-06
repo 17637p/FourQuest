@@ -339,3 +339,8 @@ fq::game_module::GameObject* fq::game_module::GameObject::GetRootObject()
 	return mRoot;
 }
 
+fq::game_module::Transform* fq::game_module::GameObject::GetTransform()
+{
+	return GetComponent<game_module::Transform>();
+}
+

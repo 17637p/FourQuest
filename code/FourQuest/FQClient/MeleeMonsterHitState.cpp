@@ -1,6 +1,7 @@
 #include "MeleeMonsterHitState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/NavigationAgent.h"
 
 fq::client::MeleeMonsterHitState::MeleeMonsterHitState()
 {

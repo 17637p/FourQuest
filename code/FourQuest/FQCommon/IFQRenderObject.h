@@ -134,6 +134,18 @@ extern "C" {
 
 			virtual FQ_GRAPHICS void SetImagePath(const std::string& texturePath) abstract;
 			virtual FQ_GRAPHICS std::string GetImagePath() abstract;
+
+			virtual FQ_GRAPHICS std::string GetMaskPath() const abstract;
+			virtual FQ_GRAPHICS void SetMaskPath(const std::string& val) abstract;
+
+			virtual FQ_GRAPHICS void SetFillDegree(float Degree) abstract;
+			virtual FQ_GRAPHICS float GetFillDegree() const abstract;
+
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
+			virtual FQ_GRAPHICS void SetIsRender(bool val) abstract;
+
+			virtual FQ_GRAPHICS bool GetRenderMode() const abstract;
+			virtual FQ_GRAPHICS void SetRenderMode(bool isCenter) abstract; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
 		};
 
 		class IParticleObject
@@ -224,6 +236,16 @@ extern "C" {
 		protected:
 			virtual ~IProbeObject() = default;
 		};
+
+		class ITextObject
+		{
+		public:
+			virtual ~ITextObject() = default;
+
+			virtual FQ_GRAPHICS void SetTextInformation(TextInfo textInfo) abstract;
+			virtual FQ_GRAPHICS TextInfo GetTextInformation() abstract;
+		};
+
 #ifdef __cplusplus
 	}
 #endif

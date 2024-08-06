@@ -25,6 +25,7 @@ UIDemo::UIDemo()
 
 UIDemo::~UIDemo()
 {
+	mTestGraphics->Finalize();
 	for (fq::graphics::IImageObject* iobj : mImageObjects)
 	{
 		mTestGraphics->DeleteImageObject(iobj);
@@ -79,6 +80,31 @@ bool UIDemo::Init(HINSTANCE hInstance)
 
 	// Font 추가
 	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+
+	///////////////////////////////////////////////////////////////
+	// --------------------font Test-------------------------------
+	///////////////////////////////////////////////////////////////
+
+	fq::graphics::TextInfo textInfo{};
+	textInfo.CenterX = 500;
+	textInfo.CenterY = 500;
+	textInfo.Width = 1000;
+	textInfo.Height = 1000;
+	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
+	textInfo.FontColor = { 0.1,0.8,0.4,1 };
+	textInfo.FontSize = 32;
+	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
+	mTextObject1 = mTestGraphics->CreateText(textInfo);
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
+
+	textInfo.CenterX = 600;
+	textInfo.CenterY = 700;
+	textInfo.FontSize = 50;
+	textInfo.FontColor = { 0.8,0.8,0.4,1 };
+	mTextObject2 = mTestGraphics->CreateText(textInfo);
+	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
+
+	// -----------------------------------------------------------
 
 	return true;
 }
@@ -214,22 +240,11 @@ void UIDemo::Update()
 		mImageObjects[0]->SetScaleY(mImageObjects[0]->GetScaleY() + 0.5);
 	}
 
-	///////////////////////////////////////////////////////////////
-	// --------------------font Test-------------------------------
-	///////////////////////////////////////////////////////////////
-
-	DirectX::SimpleMath::Rectangle drawRect;
-	drawRect.x = 600;
-	drawRect.y = 600;
-	drawRect.width = 1000;
-	drawRect.height = 1000;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
-
-	drawRect.x = 600;
-	drawRect.y = 700;
-	mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
-
-	// -----------------------------------------------------------
+	if (InputManager::GetInstance().IsGetKeyDown('V'))
+	{
+		mTestGraphics->DeleteText(mTextObject1);
+		mTestGraphics->DeleteText(mTextObject2);
+	}
 }
 
 void UIDemo::Render()
@@ -258,23 +273,25 @@ void UIDemo::debugRender()
 void UIDemo::createImage()
 {
 	fq::graphics::UIInfo uiInfo;
-	uiInfo.StartX = 500;
-	uiInfo.StartY = 500;
+	uiInfo.StartX = 0;
+	uiInfo.StartY = 0;
 	uiInfo.Width = 100;
 	uiInfo.Height = 100;
 	uiInfo.XRatio = 1;
 	uiInfo.YRatio = 1;
 	uiInfo.Alpha = 0.5;
 	uiInfo.Layer = 1;
-	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	uiInfo.ImagePath = "./resource/Graphics/UIDemo/soul_bar_gauge.png";
+	//uiInfo.MaskPath = "./resource/Graphics/UIDemo/bitmapmask.png";
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
+	uiInfo.fillDegree = 180;
 	uiInfo.RotationAngle = 0;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 
-	uiInfo.StartX = 450;
+	uiInfo.StartX = 500;
 	uiInfo.StartY = 500;
 	uiInfo.Width = 100;
 	uiInfo.Height = 50;
@@ -286,7 +303,8 @@ void UIDemo::createImage()
 	uiInfo.ScaleX = 1;
 	uiInfo.ScaleY = 1;
 	uiInfo.RotationAngle = 0;
-
+	uiInfo.fillDegree = 359;
+	
 	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 }

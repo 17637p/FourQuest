@@ -55,23 +55,8 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
-
-		D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[] =
-		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "TANGENT", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "UV", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-
-		HR(mDevice->GetDevice()->CreateInputLayout(
-			inputLayoutDesc,
-			ARRAYSIZE(inputLayoutDesc),
-			staticMeshVS->GetBlob()->GetBufferPointer(),
-			staticMeshVS->GetBlob()->GetBufferSize(),
-			mStaticMeshnputLayouts.GetAddressOf()
-		));
 	}
+
 	void DeferredGeometryPass::Finalize()
 	{
 		mDevice = nullptr;
@@ -166,22 +151,8 @@ namespace fq::graphics
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 		}
 
-		// Draw
-		{
-			mStaticMeshShaderProgram->Bind(mDevice);
-
-			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+		auto bindingState = [this](const MaterialInfo& materialInfo)
 			{
-				const MaterialInfo& materialInfo = job.Material->GetInfo();
-
-				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
-				{
-					continue;
-				}
-
-				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
-
 				switch (materialInfo.RasterizeType)
 				{
 				case ERasterizeMode::TwoSide:
@@ -205,6 +176,25 @@ namespace fq::graphics
 				default:
 					assert(false);
 				}
+			};
+
+		// Draw
+		{
+			mStaticMeshShaderProgram->Bind(mDevice);
+
+			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+			{
+				const MaterialInfo& materialInfo = job.Material->GetInfo();
+
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
+				{
+					continue;
+				}
+
+				job.StaticMesh->Bind(mDevice);
+				job.Material->Bind(mDevice);
+
+				bindingState(materialInfo);
 
 				if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
 				{
@@ -218,9 +208,6 @@ namespace fq::graphics
 				if (job.NodeHierarchyInstnace != nullptr)
 				{
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
-					// ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					//auto transform = job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex());
-					//ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()));
 				}
 				else
 				{
@@ -258,6 +245,8 @@ namespace fq::graphics
 
 				job.SkinnedMesh->Bind(mDevice);
 				job.Material->Bind(mDevice);
+
+				bindingState(materialInfo);
 
 				if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
 				{
