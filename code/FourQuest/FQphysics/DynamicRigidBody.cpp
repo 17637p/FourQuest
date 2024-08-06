@@ -155,14 +155,14 @@ namespace fq::physics
 		newFilterData.word1 = collisionMatrix[newLayerNumber];
 		shape->setSimulationFilterData(newFilterData);
 
-		CollisionData* data = (CollisionData*)mRigidDynamic->userData;
-		data->isDead = true;
+		//CollisionData* data = (CollisionData*)mRigidDynamic->userData;
+		//data->isDead = true;
 
-		std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
-		newData->myId = mID;
-		newData->myLayerNumber = mLayerNumber;
-		collisionDataManager.lock()->Create(mID, newData);
-		shape->userData = newData.get();
+		//std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
+		//newData->myId = mID;
+		//newData->myLayerNumber = mLayerNumber;
+		//collisionDataManager.lock()->Create(mID, newData);
+		//shape->userData = newData.get();
 
 		return true;
 	}

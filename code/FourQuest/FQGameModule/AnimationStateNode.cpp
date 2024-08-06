@@ -12,6 +12,7 @@ fq::game_module::AnimationStateNode::AnimationStateNode(AnimatorController* cont
 	, mAnimationKey{}
 	, mbIsLoof(true)
 	, mDuration(0.f)
+	, mStartTimePos(0.f)
 	, mBehaviours{}
 {
 }

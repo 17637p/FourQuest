@@ -852,6 +852,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.angularVelocity = rigid->GetAngularVelocity();
 			data.linearVelocity = rigid->GetLinearVelocity();
 
+			// Tag가 변경된 경우
+			auto capsuleInfo = capsule->GetCapsuleInfomation();
+			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				capsuleInfo.colliderInfo.layerNumber = currentLayer;
+				capsule->SetCapsuleInfomation(capsuleInfo);
+			}
+
 			// 캡슐콜라이더 Y방향으로 수정 
 			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
 			{

@@ -43,6 +43,20 @@
 #include "MeleeMonsterExplosion.h"
 #include "MeleeMonsterExplosionState.h"
 
+// MeleeBossMonster;
+#include "BossMonster.h"
+#include "BossMonsterSmashDownState.h"
+#include "BossMonsterChaseState.h"
+#include "BossMonsterIdleState.h"
+#include "BossMonsterRushState.h"
+#include "BossMonsterFindTargetState.h"
+#include "BossMonsterWaitAttackState.h"
+#include "BossMonsterDeadState.h"
+#include "BossMonsterWaitTargetState.h"
+#include "BossMonsterHomingRushState.h"
+#include "BossMonsterComboAttackState.h"
+#include "BossMonsterPrepareAttackState.h"
+
 // PlantMoster
 #include "PlantMonster.h"
 #include "LinearAttack.h"
@@ -443,6 +457,119 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeleeMonsterExplosionState")
 		.base<fq::game_module::IStateBehaviour>();
 
+	//////////////////////////////////////////////////////////////////////////
+	//                             보스 몬스터 	 							//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<BossMonster>()
+		.type("BossMonster"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonster")
+		.prop(reflect::prop::Label, "Monster")
+		.data<&BossMonster::mHp>("Hp"_hs)
+		.prop(fq::reflect::prop::Name, "Hp")
+		.data<&BossMonster::mAttackPower>("AttackPower"_hs)
+		.prop(fq::reflect::prop::Name, "AttackPower")
+		.data<&BossMonster::mAttackCoolTime>("AttackCoolTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackCoolTime")
+		.data<&BossMonster::mSmashDownOffset>("SmashDownOffset"_hs)
+		.prop(fq::reflect::prop::Name, "SmashDownOffset")
+		.data<&BossMonster::mComboAttackOffset>("ComboAttackOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ComboAttackOffset")
+		.data<&BossMonster::mAcceleration>("Acceleration"_hs)
+		.prop(fq::reflect::prop::Name, "Acceleration")
+		.data<&BossMonster::mMoveSpeed>("MoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.data<&BossMonster::mRushPower>("RushPower"_hs)
+		.prop(fq::reflect::prop::Name, "RushPower")
+		.data<&BossMonster::mComboAttackReboundPower>("ComboAttackReboundPower"_hs)
+		.prop(fq::reflect::prop::Name, "ComboAttackReboundPower")
+		.data<&BossMonster::mAttackRange>("AttackRange"_hs)
+		.prop(fq::reflect::prop::Name, "AttackRange")
+		.data<&BossMonster::mDetectRange>("DetectRange"_hs)
+		.prop(fq::reflect::prop::Name, "DetectRange")
+		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
+		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
+		.prop(fq::reflect::prop::Name, "SmashDownAttack")
+		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
+		.prop(fq::reflect::prop::Name, "SmashDownEffect")
+		.data<&BossMonster::mRushAttack>("RushAttack"_hs)
+		.prop(fq::reflect::prop::Name, "RushAttack")
+		.data<&BossMonster::mRushEffect>("RushEffect"_hs)
+		.prop(fq::reflect::prop::Name, "RushEffect")
+		.data<&BossMonster::mComboAttack>("ComboAttack"_hs)
+		.prop(fq::reflect::prop::Name, "ComboAttack")
+		.data<&BossMonster::mComboEffect>("ComboEffect"_hs)
+		.prop(fq::reflect::prop::Name, "ComboEffect")
+		.data<&BossMonster::mHpBarPrefab>("HpBarPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "HpBarPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<BossMonsterIdleState>()
+		.type("BossMonsterIdleState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterIdleState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterSmashDownState>()
+		.type("BossMonsterSmashDownState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterSmashDownState")
+		.data<&BossMonsterSmashDownState::mAttackEmitTime>("AttackEmitTime"_hs)
+		.prop(fq::reflect::prop::Name, "AttackEmitTime")
+		.data<&BossMonsterSmashDownState::mEffectEmitTime>("EffectEmitTime"_hs)
+		.prop(fq::reflect::prop::Name, "EffectEmitTime")
+		.data<&BossMonsterSmashDownState::mHomingTime>("HomingTime"_hs)
+		.prop(fq::reflect::prop::Name, "HomingTime")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterChaseState>()
+		.type("BossMonsterChaseState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterChaseState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterRushState>()
+		.type("BossMonsterRushState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterRushState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterFindTargetState>()
+		.type("BossMonsterFindTargetState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterFindTargetState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterWaitAttackState>()
+		.type("BossMonsterWaitAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterWaitAttackState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterDeadState>()
+		.type("BossMonsterDeadState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterDeadState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterWaitTargetState>()
+		.type("BossMonsterWaitTargetState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterWaitTargetState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterHomingRushState>()
+		.type("BossMonsterHomingRushState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterHomingRushState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterComboAttackState>()
+		.type("BossMonsterComboAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterComboAttackState")
+		.data<&BossMonsterComboAttackState::mEmitAttackTime>("EmitAttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "EmitAttackTime")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterPrepareAttackState>()
+		.type("BossMonsterPrepareAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterPrepareAttackState")
+		.data<&BossMonsterPrepareAttackState::mHomingTime>("HomingTime"_hs)
+		.prop(fq::reflect::prop::Name, "HomingTime")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
@@ -642,12 +769,33 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             Monster Type								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<EMonsterType>()
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.conv<std::underlying_type_t<EMonsterType>>()
+		.data<EMonsterType::Melee>("Melee"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Melee")
+		.data<EMonsterType::Explosion>("Explosion"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Explosion")
+		.data<EMonsterType::Boss>("Boss"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Boss")
+		.data<EMonsterType::Plant>("Plant"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Plant")
+		.data<EMonsterType::Spawner>("Spawner"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Spawner")
+		.data<EMonsterType::All>("All"_hs) // 3
+		.prop(fq::reflect::prop::Name, "All");
+
+	//////////////////////////////////////////////////////////////////////////
 	//                             Quest									//
 	//////////////////////////////////////////////////////////////////////////
 
 	entt::meta<PreQuest>()
 		.type("PreQuest"_hs)
 		.prop(fq::reflect::prop::Name, "PreQuest")
+		.prop(fq::reflect::prop::POD)
 		.data<&PreQuest::preIndex>("PreIndex"_hs)
 		.prop(fq::reflect::prop::Name, "PreIndex")
 		.data<&PreQuest::preIsMain>("PreIsMain"_hs)
@@ -656,13 +804,17 @@ void fq::client::RegisterMetaData()
 	entt::meta<QuestColliderTrigger>()
 		.type("QuestColliderTrigger"_hs)
 		.prop(fq::reflect::prop::Name, "QuestColliderTrigger")
+		.prop(fq::reflect::prop::POD)
 		.data<&QuestColliderTrigger::colliderName>("ColliderName"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderName")
-		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름");
+		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
+		.data<&QuestColliderTrigger::isAll>("IsAll"_hs)
+		.prop(fq::reflect::prop::Name, "IsAll");
 
 	entt::meta<MonsterKill>()
 		.type("MonsterKill"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterKill")
+		.prop(fq::reflect::prop::POD)
 		.data<&MonsterKill::monsterType>("MonsterType"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterType")
 		.data<&MonsterKill::requestsNumber>("RequestsNumber"_hs)
@@ -671,12 +823,14 @@ void fq::client::RegisterMetaData()
 	entt::meta<MonsterGroupKill>()
 		.type("MonsterGroupKill"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterGroupKill")
+		.prop(fq::reflect::prop::POD)
 		.data<&MonsterGroupKill::groupIndex>("GroupIndex"_hs)
 		.prop(fq::reflect::prop::Name, "GroupIndex");
 
 	entt::meta<Defence>()
 		.type("Defence"_hs)
 		.prop(fq::reflect::prop::Name, "Defence")
+		.prop(fq::reflect::prop::POD)
 		.data<&Defence::colliderName>("ColliderName"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderName")
 		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
@@ -686,15 +840,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<ClearQuest>()
 		.type("ClearQuest"_hs)
 		.prop(fq::reflect::prop::Name, "ClearQuest")
+		.prop(fq::reflect::prop::POD)
 		.data<&ClearQuest::clearIndex>("ClearQuestIndex"_hs)
 		.prop(fq::reflect::prop::Name, "ClearQuestIndex")
 		.data<&ClearQuest::clearIsMain>("ClearQuestIsMain"_hs)
 		.prop(fq::reflect::prop::Name, "ClearQuestIsMain");
 
-/*
+	entt::meta<ObjectInteraction>()
+		.type("ObjectInteraction"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectInteraction")
+		.prop(fq::reflect::prop::POD)
+		.data<&ObjectInteraction::tag>("Tag"_hs)
+		.prop(fq::reflect::prop::Name, "Tag");
+
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestJoinCondition")
+		.prop(fq::reflect::prop::POD)
 		.data<&QuestJoinCondition::preQuestList>("PreQuestList"_hs)
 		.prop(fq::reflect::prop::Name, "PreQuestList")
 		.data<&QuestJoinCondition::colliderTriggerList>("ColliderTriggerList"_hs)
@@ -703,6 +865,7 @@ void fq::client::RegisterMetaData()
 	entt::meta<QuestClearCondition>()
 		.type("QuestClearCondition"_hs)
 		.prop(fq::reflect::prop::Name, "QuestClearCondition")
+		.prop(fq::reflect::prop::POD)
 		.data<&QuestClearCondition::monsterKillList>("MonsterKillList"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterKillList")
 		.data<&QuestClearCondition::monsterGroupKillList>("MonsterGroupKillList"_hs)
@@ -710,7 +873,11 @@ void fq::client::RegisterMetaData()
 		.data<&QuestClearCondition::defenceList>("DefenceList"_hs)
 		.prop(fq::reflect::prop::Name, "DefenceList")
 		.data<&QuestClearCondition::clearQuestList>("ClearQuestList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearQuestList");*/
+		.prop(fq::reflect::prop::Name, "ClearQuestList")
+		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
+		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectInteration");
 
 	entt::meta<Quest>()
 		.type("Quest"_hs)
@@ -718,31 +885,40 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::POD)
 		.data<&Quest::mIndex>("Index"_hs)
 		.prop(fq::reflect::prop::Name, "Index")
+		.data<&Quest::mName>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
 		.data<&Quest::mIsMain>("IsMain"_hs)
 		.prop(fq::reflect::prop::Name, "IsMain")
-		.data<&Quest::preQuestList>("PreQuestList"_hs)
-		.prop(fq::reflect::prop::Name, "PreQuestList")
-		.data<&Quest::colliderTriggerList>("ColliderTriggerList"_hs)
-		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
-		.data<&Quest::monsterKillList>("MonsterKillList"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterKillList")
-		.data<&Quest::monsterGroupKillList>("MonsterGroupKillList"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterGroupKillList")
-		.data<&Quest::defenceList>("DefenceList"_hs)
-		.prop(fq::reflect::prop::Name, "DefenceList")
-		.data<&Quest::clearQuestList>("ClearQuestList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearQuestList")
-		.data<&Quest::mIndex>("Index"_hs)
+		.data<&Quest::mJoinConditionList>("JoinConditionList"_hs)
+		.prop(fq::reflect::prop::Name, "JoinConditionList")
+		.data<&Quest::mclearConditionList>("ClearConditionList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearConditionList");
+
+	entt::meta<StartSubQuestIndex>()
+		.type("StartSubQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "StartSubQuestIndex")
+		.prop(fq::reflect::prop::POD)
+		.data<&StartSubQuestIndex::index>("Index"_hs)
 		.prop(fq::reflect::prop::Name, "Index");
+
+	entt::meta<StartQuests>()
+		.type("StartQuests"_hs)
+		.prop(fq::reflect::prop::Name, "StartQuests")
+		.prop(fq::reflect::prop::POD)
+		.data<&StartQuests::startMainQuestIndex>("StartMainQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "StartMainQuestIndex")
+		.data<&StartQuests::startSubQuestIndex>("StartSubQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "StartSubQuestIndex");
 
 	entt::meta<QuestManager>()
 		.type("QuestManager"_hs)
 		.prop(fq::reflect::prop::Name, "QuestManager")
-		//.prop(fq::reflect::prop::Label, "UI")
-		.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
-		.prop(fq::reflect::prop::Name, "CurMainQuest")
-		.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
-		.prop(fq::reflect::prop::Name, "CurSubQuest")
+		//.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
+		//.prop(fq::reflect::prop::Name, "CurMainQuest")
+		//.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
+		//.prop(fq::reflect::prop::Name, "CurSubQuest")
+		.data<&QuestManager::mStartQuests>("StartQuests"_hs)
+		.prop(fq::reflect::prop::Name, "StartQuests")
 		.data<&QuestManager::mMainQuests>("MainQuest"_hs)
 		.prop(fq::reflect::prop::Name, "MainQuest")
 		.data<&QuestManager::mSubQuests>("SubQuest"_hs)

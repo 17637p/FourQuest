@@ -315,5 +315,15 @@ namespace fq::graphics
 		int mIndex;
 		DirectX::SimpleMath::Matrix mTransform;
 	};
+
+	class TextObject : public ITextObject
+	{
+	public:
+		virtual void SetTextInformation(TextInfo textInfo) override { mTextInfo = textInfo; };
+		virtual TextInfo GetTextInformation() override { return mTextInfo; };
+
+	private:
+		TextInfo mTextInfo;
+	};
 }
 

@@ -62,9 +62,17 @@ namespace fq::game_engine
 		/// </summary>
 		void SetUIInfomations(const fq::event::SetUIInfomations& event);
 
+		/// <summary>
+		/// Text정보 변경 이벤트
+		/// </summary>
+		void SetTextInformation(const fq::event::SetTextInformation& event);
+
 	private:
 		void loadImageUI(game_module::GameObject* object);
 		void unloadImageUI(game_module::GameObject* object);
+
+		void loadTextUI(game_module::GameObject* object);
+		void unloadTextUI(game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;
@@ -76,6 +84,7 @@ namespace fq::game_engine
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
 		EventHandler mSetUIInfomationsHandler;
+		EventHandler mSetTextInformationHandler;
 		EventHandler mSetScreenSizeHandler;
 		EventHandler mSetViewportSizeHandler;
 

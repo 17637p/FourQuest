@@ -3,6 +3,10 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CapsuleCollider.h"
 
+#include "ClientEvent.h"
+#include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/Event.h"
+
 fq::client::PlantMonsterDeadState::PlantMonsterDeadState()
 {}
 
@@ -18,6 +22,10 @@ void fq::client::PlantMonsterDeadState::OnStateExit(game_module::Animator& anima
 {
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
+
+	// 몬스터 죽음 이벤트
+	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+		{ EMonsterType::Plant });
 }
 
 void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)

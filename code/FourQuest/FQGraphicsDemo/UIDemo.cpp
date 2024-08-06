@@ -86,25 +86,22 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	///////////////////////////////////////////////////////////////
 
 	fq::graphics::TextInfo textInfo{};
-	DirectX::SimpleMath::Rectangle drawRect{};
-	drawRect.x = 600;
-	drawRect.y = 600;
-	drawRect.width = 1000;
-	drawRect.height = 1000;
-	textInfo.Text = L"집가고싶당";
-	textInfo.DrawRect = drawRect;
+	textInfo.CenterX = 500;
+	textInfo.CenterY = 500;
+	textInfo.Width = 1000;
+	textInfo.Height = 1000;
+	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
 	textInfo.FontColor = { 0.1,0.8,0.4,1 };
 	textInfo.FontSize = 32;
-	textInfo.FontPath = L"DungGeunMo";
-	mTestGraphics->DrawText(textInfo);
+	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
+	mTextObject1 = mTestGraphics->CreateText(textInfo);
 	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
 
-	drawRect.x = 600;
-	drawRect.y = 700;
-	textInfo.DrawRect = drawRect;
+	textInfo.CenterX = 600;
+	textInfo.CenterY = 700;
 	textInfo.FontSize = 50;
 	textInfo.FontColor = { 0.8,0.8,0.4,1 };
-	mTestGraphics->DrawText(textInfo);
+	mTextObject2 = mTestGraphics->CreateText(textInfo);
 	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 50, L"Verdana", { 0.8,0.8,0.4,1 });
 
 	// -----------------------------------------------------------
@@ -245,25 +242,8 @@ void UIDemo::Update()
 
 	if (InputManager::GetInstance().IsGetKeyDown('V'))
 	{
-		fq::graphics::TextInfo textInfo{};
-		DirectX::SimpleMath::Rectangle drawRect{};
-		drawRect.x = 600;
-		drawRect.y = 600;
-		drawRect.width = 1000;
-		drawRect.height = 1000;
-		textInfo.Text = L"집가고싶당";
-		textInfo.DrawRect = drawRect;
-		textInfo.FontColor = { 0.1,0.8,0.4,1 };
-		textInfo.FontSize = 32;
-		textInfo.FontPath = L"DungGeunMo";
-		mTestGraphics->DeleteText(textInfo);
-
-		drawRect.x = 600;
-		drawRect.y = 700;
-		textInfo.DrawRect = drawRect;
-		textInfo.FontSize = 50;
-		textInfo.FontColor = { 0.8,0.8,0.4,1 };
-		mTestGraphics->DeleteText(textInfo);
+		mTestGraphics->DeleteText(mTextObject1);
+		mTestGraphics->DeleteText(mTextObject2);
 	}
 }
 

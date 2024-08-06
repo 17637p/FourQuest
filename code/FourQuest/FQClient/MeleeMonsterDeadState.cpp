@@ -5,6 +5,11 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/RigidBody.h"
 
+#include "ClientEvent.h"
+#include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/Event.h"
+#include "MeleeMonsterExplosion.h"
+
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 {
 
@@ -25,6 +30,19 @@ void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& anima
 {
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
+
+	// 몬스터 죽음 이벤트 발생
+	auto explosion = animator.GetComponent<MeleeMonsterExplosion>();
+	if (explosion)
+	{
+		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+			{ EMonsterType::Explosion });
+	}
+	else
+	{
+		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+			{ EMonsterType::Melee });
+	}
 }
 
 void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)

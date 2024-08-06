@@ -13,6 +13,7 @@
 #include "Decal.h"
 #include "Trail.h"
 #include "ImageUI.h"
+#include "TextUI.h"
 #include "Socket.h"
 #include "PostProcessing.h"
 
@@ -79,8 +80,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Dash")
 		.data<ETag::Spawner>("Spawner"_hs) // 12
 		.prop(fq::reflect::prop::Name, "Spawner")
-		.data<ETag::Dash>("Tag13"_hs) // 13
-		.prop(fq::reflect::prop::Name, "Tag13")
+		.data<ETag::Goddess>("Goddess"_hs) // 13
+		.prop(fq::reflect::prop::Name, "Goddess")
 		.data<ETag::Dash>("Tag14"_hs) // 14
 		.prop(fq::reflect::prop::Name, "Tag14")
 		.data<ETag::Dash>("Tag15"_hs) // 15
@@ -241,7 +242,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::UIInfo::ImagePath>("ImagePath"_hs)
 		.prop(fq::reflect::prop::Name, "ImagePath")
 		.prop(fq::reflect::prop::RelativePath)
-		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")	
 		.data<&graphics::UIInfo::MaskPath>("MaskPath"_hs)
 		.prop(fq::reflect::prop::Name, "MaskPath")
 		.prop(fq::reflect::prop::RelativePath)
@@ -263,6 +264,35 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&ImageUI::setUIInfomations, &ImageUI::GetUIInfomations>("UIInfomations"_hs)
 		.prop(fq::reflect::prop::Name, "UIInfomations")
+		.data<&ImageUI::mbIsBindTransform>("IsBindTransform"_hs)
+		.prop(fq::reflect::prop::Name, "IsBindTransform")
+		.base<Component>();
+
+	entt::meta<graphics::TextInfo>()
+		.type("TextInformation"_hs)
+		.prop(fq::reflect::prop::Name, "TextInformation")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::TextInfo::Text>("Text"_hs)
+		.prop(fq::reflect::prop::Name, "Text")
+		.data<&graphics::TextInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::TextInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::TextInfo::FontPath>("FontPath"_hs)
+		.prop(fq::reflect::prop::Name, "FontPath")
+		.data<&graphics::TextInfo::FontSize>("FontSize"_hs)
+		.prop(fq::reflect::prop::Name, "FontSize")
+		.data<&graphics::TextInfo::FontColor>("FontColor"_hs)
+		.prop(fq::reflect::prop::Name, "FontColor")
+		.data<&graphics::TextInfo::IsRender>("IsRender"_hs)
+		.prop(fq::reflect::prop::Name, "IsRender");
+
+	entt::meta<TextUI>()
+		.type("TextUI"_hs)
+		.prop(fq::reflect::prop::Name, "TextUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&TextUI::SetTextInfo, &TextUI::GetTextInfo>("TextInformation"_hs)
+		.prop(fq::reflect::prop::Name, "TextInformation")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

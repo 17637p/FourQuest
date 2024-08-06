@@ -807,14 +807,14 @@ void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 	mDebugDrawManager->Submit(ringInfoEx);
 }
 
-void FQGraphics::DeleteText(TextInfo textInfo)
+void FQGraphics::DeleteText(fq::graphics::ITextObject* textObject)
 {
-	mUIManager->DeleteText(textInfo);
+	mUIManager->DeleteText(textObject);
 }
 
-void FQGraphics::DrawText(TextInfo textInfo)
+ITextObject* FQGraphics::CreateText(TextInfo textInfo)
 {
-	mUIManager->DrawText(textInfo);
+	return mUIManager->CreateText(textInfo);
 }
 
 void FQGraphics::SetLightProbeIntensity(float intensity)
