@@ -26,7 +26,7 @@ void fq::game_module::StaticMeshRenderer::UpdateMaterialInfoByMaterialInterface(
 	}
 }
 
-const std::vector<fq::graphics::MaterialInfo>& fq::game_module::StaticMeshRenderer::GetMaterialInfos() const 
+const std::vector<fq::graphics::MaterialInfo>& fq::game_module::StaticMeshRenderer::GetMaterialInfos() const
 {
 	return mMaterialInfos;
 }
@@ -43,7 +43,7 @@ void fq::game_module::StaticMeshRenderer::SetMaterialInfos(std::vector<fq::graph
 	}
 
 	fq::game_module::Scene* scene = GetScene();
-	
+
 	if (scene != nullptr)
 	{
 		GetScene()->GetEventManager()->FireEvent<fq::event::UpdateMaterialInfo>({});
@@ -78,4 +78,52 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::StaticMeshRenderer:
 	cloneMesh->mStaticMeshObject = nullptr;
 
 	return cloneMesh;
+}
+
+void fq::game_module::StaticMeshRenderer::SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset)
+{
+	mLightmapScaleOffset = scaleOffset;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetLightmapUVScaleOffset(mLightmapScaleOffset);
+	}
+}
+
+const DirectX::SimpleMath::Vector4& fq::game_module::StaticMeshRenderer::GetLightmapUVScaleOffset() const
+{
+	return mLightmapScaleOffset;
+}
+
+void fq::game_module::StaticMeshRenderer::SetLightmapIndex(unsigned int lightmapIndex)
+{
+	mLightmapIndex = lightmapIndex;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetLightmapIndex(mLightmapIndex);
+	}
+}
+
+int fq::game_module::StaticMeshRenderer::GetLightmapIndex() const
+{
+	return mLightmapIndex;
+}
+
+void fq::game_module::StaticMeshRenderer::SetIsStatic(bool bIsStatic)
+{
+	using namespace fq::graphics;
+
+	mbIsStatic = bIsStatic;
+	mMeshInfomation.ObjectType = mbIsStatic ? MeshObjectInfo::EObjectType::Static : MeshObjectInfo::EObjectType::Dynamic;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMeshObjectInfo(mMeshInfomation);
+	}
+}
+
+bool fq::game_module::StaticMeshRenderer::GetIsStatic() const
+{
+	return mbIsStatic;
 }

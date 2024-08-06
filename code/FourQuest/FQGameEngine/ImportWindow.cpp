@@ -248,17 +248,9 @@ void fq::game_engine::ImportWindow::createGameObject()
 				staticMeshRenderer.SetMaterialPaths(materialPaths);
 				staticMeshRenderer.SetMeshName(meshName);
 				staticMeshRenderer.SetTexturePath(mTextureDirectory.string());
-				// if (gameObjectInfo.isStatic)
-				// {
-				// 	fq::graphics::IStaticMeshObject* iStaticMeshObject = staticMeshRenderer.GetStaticMeshObject();
-				// 	fq::graphics::MeshObjectInfo staticMeshInfo = iStaticMeshObject->GetMeshObjectInfo();
-				// 
-				// 	staticMeshInfo.ObjectType = fq::graphics::MeshObjectInfo::EObjectType::Static;
-				// 
-				// 	iStaticMeshObject->SetMeshObjectInfo(staticMeshInfo);
-				// 	iStaticMeshObject->SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
-				// 	iStaticMeshObject->SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
-				// }
+				staticMeshRenderer.SetIsStatic(gameObjectInfo.isStatic);
+				staticMeshRenderer.SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
+				staticMeshRenderer.SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
 			}
 
 			// ∂Û¿Ã∆Æ
@@ -479,39 +471,43 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 		info.LightData.Mode = gameObjectJson["Light"]["Mode"].get<std::string>();
 
 		// terrain ∆ƒΩÃ
-		info.TerrainData.Layers.reserve(4);
-		for (auto& layerJson : gameObjectJson["Terrain"]["Layers"])
+		auto find = gameObjectJson.find("Terrain");
+		if (find != gameObjectJson.end())
 		{
-			if (info.TerrainData.Layers.size() >= 4)
+			info.TerrainData.Layers.reserve(4);
+			for (auto& layerJson : gameObjectJson["Terrain"]["Layers"])
 			{
-				break;
+				if (info.TerrainData.Layers.size() >= 4)
+				{
+					break;
+				}
+
+				importData::TerrainLayer terrainLayer;
+				terrainLayer.BaseColor = layerJson["BaseColor"].get<std::string>();
+				terrainLayer.NormalMap = layerJson["NormalMap"].get<std::string>();
+				terrainLayer.Metalic = layerJson["Metalic"].get<float>();
+				terrainLayer.Roughness = layerJson["Roughness"].get<float>();
+				terrainLayer.TileSizeX = layerJson["TileSizeX"].get<float>();
+				terrainLayer.TileSizeY = layerJson["TileSizeY"].get<float>();
+				terrainLayer.TileOffsetX = layerJson["TileOffsetX"].get<float>();
+				terrainLayer.TileOffsetY = layerJson["TileOffsetY"].get<float>();
+
+				info.TerrainData.Layers.push_back(terrainLayer);
 			}
 
-			importData::TerrainLayer terrainLayer;
-			terrainLayer.BaseColor = layerJson["BaseColor"].get<std::string>();
-			terrainLayer.NormalMap = layerJson["NormalMap"].get<std::string>();
-			terrainLayer.Metalic = layerJson["Metalic"].get<float>();
-			terrainLayer.Roughness = layerJson["Roughness"].get<float>();
-			terrainLayer.TileSizeX = layerJson["TileSizeX"].get<float>();
-			terrainLayer.TileSizeY = layerJson["TileSizeY"].get<float>();
-			terrainLayer.TileOffsetX = layerJson["TileOffsetX"].get<float>();
-			terrainLayer.TileOffsetY = layerJson["TileOffsetY"].get<float>();
-
-			info.TerrainData.Layers.push_back(terrainLayer);
+			info.TerrainData.AlphaFileName = gameObjectJson["Terrain"]["AlphaFileName"].get<std::string>();
+			info.TerrainData.HeightFileName = gameObjectJson["Terrain"]["HeightFileName"].get<std::string>();
+			info.TerrainData.TextureWidth = gameObjectJson["Terrain"]["TextureWidth"].get<float>();
+			info.TerrainData.TextureHeight = gameObjectJson["Terrain"]["TextureHeight"].get<float>();
+			info.TerrainData.HeightScale = gameObjectJson["Terrain"]["HeightScale"].get<float>();
+			info.TerrainData.TerrainWidth = gameObjectJson["Terrain"]["TerrainWidth"].get<float>();
+			info.TerrainData.TerrainHeight = gameObjectJson["Terrain"]["TerrainHeight"].get<float>();
+			info.TerrainData.LightmapScaleOffset.x = gameObjectJson["Terrain"]["LightmapScaleOffset"]["x"].get<float>();
+			info.TerrainData.LightmapScaleOffset.y = gameObjectJson["Terrain"]["LightmapScaleOffset"]["y"].get<float>();
+			info.TerrainData.LightmapScaleOffset.z = gameObjectJson["Terrain"]["LightmapScaleOffset"]["z"].get<float>();
+			info.TerrainData.LightmapScaleOffset.w = gameObjectJson["Terrain"]["LightmapScaleOffset"]["w"].get<float>();
+			info.TerrainData.LightmapIndex = gameObjectJson["Terrain"]["LightmapIndex"].get<int>();
 		}
-
-		info.TerrainData.AlphaFileName = gameObjectJson["Terrain"]["AlphaFileName"].get<std::string>();
-		info.TerrainData.HeightFileName = gameObjectJson["Terrain"]["HeightFileName"].get<std::string>();
-		info.TerrainData.TextureWidth = gameObjectJson["Terrain"]["TextureWidth"].get<float>();
-		info.TerrainData.TextureHeight = gameObjectJson["Terrain"]["TextureHeight"].get<float>();
-		info.TerrainData.HeightScale = gameObjectJson["Terrain"]["HeightScale"].get<float>();
-		info.TerrainData.TerrainWidth = gameObjectJson["Terrain"]["TerrainWidth"].get<float>();
-		info.TerrainData.TerrainHeight = gameObjectJson["Terrain"]["TerrainHeight"].get<float>();
-		info.TerrainData.LightmapScaleOffset.x = gameObjectJson["Terrain"]["LightmapScaleOffset"]["x"].get<float>();
-		info.TerrainData.LightmapScaleOffset.y = gameObjectJson["Terrain"]["LightmapScaleOffset"]["y"].get<float>();
-		info.TerrainData.LightmapScaleOffset.z = gameObjectJson["Terrain"]["LightmapScaleOffset"]["z"].get<float>();
-		info.TerrainData.LightmapScaleOffset.w = gameObjectJson["Terrain"]["LightmapScaleOffset"]["w"].get<float>();
-		info.TerrainData.LightmapIndex = gameObjectJson["Terrain"]["LightmapIndex"].get<int>();
 
 		objectInfos.push_back(info);
 	}

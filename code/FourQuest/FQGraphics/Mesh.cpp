@@ -67,7 +67,7 @@ namespace fq::graphics
 				DirectX::SimpleMath::Vector2 Tex1;
 			};
 
-			std::vector<Vertex> vertices(meshData.Vertices.size());
+  			std::vector<Vertex> vertices(meshData.Vertices.size());
 
 			for (size_t i = 0; i < vertices.size(); ++i)
 			{

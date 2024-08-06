@@ -105,6 +105,16 @@ namespace fq::game_module
 		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
 		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
 
+		// 라이트맵 관련
+		void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset);
+		const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const;
+
+		void SetLightmapIndex(unsigned int lightmapIndex);
+		int GetLightmapIndex() const;
+
+		void SetIsStatic(bool bIsStatic);
+		bool GetIsStatic() const;
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -123,6 +133,11 @@ namespace fq::game_module
 
 		// 추가
 		std::vector<std::string> mMaterialPaths; // 별도로 직렬화된 데이터로 인터페이스 가져올 예정
+
+		// 라이트맵 관련 인자
+		DirectX::SimpleMath::Vector4 mLightmapScaleOffset;
+		int mLightmapIndex;
+		bool mbIsStatic;
 	};
 
 }

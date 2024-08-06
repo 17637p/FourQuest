@@ -187,6 +187,12 @@ void fq::game_module::RegisterMetaData()
 		.data<&StaticMeshRenderer::SetMaterialPaths, &StaticMeshRenderer::GetMaterialPaths>("MaterialPaths"_hs)
 		.prop(fq::reflect::prop::Name, "MaterialPaths")
 		.prop(fq::reflect::prop::DragDrop, ".material")
+		.data<&StaticMeshRenderer::SetLightmapUVScaleOffset, &StaticMeshRenderer::GetLightmapUVScaleOffset>("LightmapUVScaleOffset"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapUVScaleOffset")
+		.data<&StaticMeshRenderer::SetLightmapIndex, &StaticMeshRenderer::GetLightmapIndex>("LightmapIndex"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapIndex")
+		.data<&StaticMeshRenderer::SetIsStatic, &StaticMeshRenderer::GetIsStatic>("IsStatic"_hs)
+		.prop(fq::reflect::prop::Name, "IsStatic")
 		.base<Component>();
 
 	// SkinnedMeshRenderer

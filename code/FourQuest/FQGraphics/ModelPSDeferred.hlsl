@@ -133,6 +133,8 @@ PixelOut main(VertexOut pin) : SV_TARGET
        float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
        pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
    }
+#else
+    pout.Light = float4(0, 0, 0, -1000);
 #endif 
     return pout;
 }
@@ -189,7 +191,8 @@ float4 main(VertexOut pin) : SV_TARGET
     float4 sampledEmissive = gEmissiveMap.Sample(gPointClampSampler, pin.uv);
     float3 emissive = sampledEmissive.rgb * sampledEmissive.a * 255;
     float3 normal = gNormalMap.Sample(gPointClampSampler, pin.uv).xyz;
-    float3 preCaculatedLight = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv).xyz;
+    float4 preCaculatedLightData = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv);
+    float3 preCaculatedLight = preCaculatedLightData.xyz;
 
     if (normal.x > 100.f)
     {
@@ -213,7 +216,7 @@ float4 main(VertexOut pin) : SV_TARGET
     
     bool bIsBakedArea = false;
     
-    if (preCaculatedLight.x < -100)
+    if (preCaculatedLightData.a < -100)
     {
         bIsBakedArea = true;
         preCaculatedLight = 0.f;

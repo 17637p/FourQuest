@@ -49,7 +49,7 @@ void fq::game_engine::LightmapWindow::Render()
 	if (ImGui::Begin("Lightmap", &mbIsOpen))
 	{
 		unsigned int index = 0;
-
+		ImGui::Text("Lightmap Texture Path");
 		for (std::filesystem::path& path : mLightmapArrayPath)
 		{
 			std::string stringPath = path.string();
@@ -66,7 +66,7 @@ void fq::game_engine::LightmapWindow::Render()
 					std::filesystem::path* inputPath
 						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
 
-					if (inputPath->extension() == ".dds" || inputPath->extension() == ".png")
+					if (inputPath->extension() == ".exr" || inputPath->extension() == ".dds" || inputPath->extension() == ".png")
 					{
 						path = *inputPath;
 					}
@@ -74,19 +74,42 @@ void fq::game_engine::LightmapWindow::Render()
 			}
 		}
 
-		if (ImGui::Button("AddLightMap", ImVec2{ 133,25 }))
+		if (ImGui::Button("AddLightMap", ImVec2{ 255,25 }))
 		{
 			mLightmapArrayPath.push_back({});
 		}
-		if (ImGui::Button("DeleteLightMap", ImVec2{ 133,25 }))
+		if (ImGui::Button("DeleteLightMap", ImVec2{ 255,25 }))
 		{
 			mLightmapArrayPath.pop_back();
 		}
-		if (ImGui::Button("ClearLightMap", ImVec2{ 133,25 }))
+		if (ImGui::Button("ClearLightMap", ImVec2{ 255,25 }))
 		{
 			mLightmapArrayPath.clear();
 		}
+		if (ImGui::Button("Generate lightmap path by first arg", ImVec2{ 355,25 }))
+		{
+			if (!mLightmapArrayPath.empty())
+			{
+				std::string basePath = mLightmapArrayPath[0].string();
+				size_t numberIndex = basePath.find('0');
 
+				std::string lhsPath = basePath.substr(0, numberIndex);
+				std::string rhsPath = basePath.substr(numberIndex + 1, basePath.size() - numberIndex);
+
+				for (size_t i = 1; i < mLightmapArrayPath.size(); ++i)
+				{
+					std::string currentPath = lhsPath + std::to_string(i) + rhsPath;
+
+					if (std::filesystem::exists(currentPath))
+					{
+						mLightmapArrayPath[i] = currentPath;
+					}
+				}
+			}
+		}
+
+		ImGui::Spacing();
+		ImGui::Text("Lightmap Direction Texture Path");
 		index = 0;
 
 		for (std::filesystem::path& path : mDirectionArrayPath)
@@ -113,19 +136,41 @@ void fq::game_engine::LightmapWindow::Render()
 			}
 		}
 
-		if (ImGui::Button("AddDirectionMap", ImVec2{ 133,25 }))
+		if (ImGui::Button("AddDirectionMap", ImVec2{ 255,25 }))
 		{
 			mDirectionArrayPath.push_back({});
 		}
-		if (ImGui::Button("DeleteDirectionMap", ImVec2{ 133,25 }))
+		if (ImGui::Button("DeleteDirectionMap", ImVec2{ 255,25 }))
 		{
 			mDirectionArrayPath.pop_back();
 		}
-		if (ImGui::Button("ClearDirectionMap", ImVec2{ 133,25 }))
+		if (ImGui::Button("ClearDirectionMap", ImVec2{ 255,25 }))
 		{
 			mDirectionArrayPath.clear();
 		}
+		if (ImGui::Button("Generate directionmap path by first arg", ImVec2{ 355,25 }))
+		{
+			if (!mDirectionArrayPath.empty())
+			{
+				std::string basePath = mDirectionArrayPath[0].string();
+				size_t numberIndex = basePath.find('0');
 
+				std::string lhsPath = basePath.substr(0, numberIndex);
+				std::string rhsPath = basePath.substr(numberIndex + 1, basePath.size() - numberIndex);
+
+				for (size_t i = 1; i < mDirectionArrayPath.size(); ++i)
+				{
+					std::string currentPath = lhsPath + std::to_string(i) + rhsPath;
+
+					if (std::filesystem::exists(currentPath))
+					{
+						mDirectionArrayPath[i] = currentPath;
+					}
+				}
+			}
+		}
+
+		ImGui::Spacing();
 		if (ImGui::Button("Apply", ImVec2{ 133,25 }))
 		{
 			ApplyLightmap();

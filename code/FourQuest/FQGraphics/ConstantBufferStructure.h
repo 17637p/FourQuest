@@ -52,7 +52,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix ShadowViewProj[CASCADE_COUNT * MAX_SHADOW_COUNT];
 		DirectX::SimpleMath::Vector4 CascadeEnds[MAX_SHADOW_COUNT];
 		int ShadowCount;
-		float unused[3];
+		int LightModes[3];
 	};
 
 	struct AlphaData
@@ -113,7 +113,7 @@ namespace fq::graphics
 	// 감쇄와 조명 연산의 차이로 인해 DirectionalLight 하나만 지원
 	struct MixedLightData
 	{
-		DirectionalLight directionalLight; 
+		DirectionalLight directionalLight;
 	};
 
 	struct OutLineColor

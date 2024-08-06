@@ -68,6 +68,9 @@ namespace fq::graphics
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 
 	private:
+		std::vector<float> loadEXR(const std::filesystem::path& texturePath, int* outWidth, int* outHeight);
+
+	private:
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSRV;
 	};
 

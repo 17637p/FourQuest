@@ -137,7 +137,7 @@ namespace fq::graphics
 			mPositionRTV->Clear(mDevice);
 			mSourceNormalRTV->Clear(mDevice, { 1000,0,0,0 });
 			mSourceTangentRTV->Clear(mDevice, { 1000,0,0,0 });
-			mPreCalculatedLightRTV->Clear(mDevice, { -1000, 0,0, 0 });
+			mPreCalculatedLightRTV->Clear(mDevice, { 0, 0,0, -1000 });
 		}
 
 		// Bind

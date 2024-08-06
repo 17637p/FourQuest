@@ -210,7 +210,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 		}
 	}
 	lightData.numOfDirectionalLight = count;
-	
+
 	// Point Light
 	count = 0;
 	for (const auto& pointLight : mPointLights)
@@ -230,7 +230,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 		count++;
 	}
 	lightData.numOfPointLight = count;
-	
+
 	// Spot Light
 	count = 0;
 	for (const auto& spotLight : mSpotLight)
@@ -250,7 +250,7 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 		count++;
 	}
 	lightData.numOfSpotLight = count;
-	
+
 	lightData.eyePosition = eyePosition;
 	lightData.isUseIBL = mIBLTexture.DiffuseIrradiance != nullptr && mIBLTexture.SpecularBRDF != nullptr && mIBLTexture.SpecularIBL != nullptr;
 
@@ -289,6 +289,8 @@ void fq::graphics::D3D11LightManager::UpdateShadowConstantBuffer(const std::shar
 			directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
 			directionalShadowData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2]).Transpose();
 			directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
+
+			directionalShadowData.LightModes[i] = directioanlShadows[i]->GetData().lightMode;
 		}
 	}
 

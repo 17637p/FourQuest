@@ -7,6 +7,19 @@
 #include <DirectXPackedVector.h>
 
 #include <DirectXTex.h>
+#include <../FQCommon/StringUtil.h>
+
+#ifdef max
+#undef max
+#undef min
+
+#define IMATH_HALF_NO_LOOKUP_TABLE
+#include <Imath/half.h>
+#include <OpenEXR/ImfRgbaFile.h>
+#include <OpenEXR/ImfArray.h>
+#include <Imath/ImathBox.h>
+
+#endif // max
 
 #include "D3D11Device.h"
 #include "Define.h"
@@ -318,6 +331,10 @@ fq::graphics::D3D11CubeTexture::D3D11CubeTexture(const std::shared_ptr<D3D11Devi
 			(ID3D11Resource**)mTexture.GetAddressOf(),
 			mSRV.GetAddressOf()));
 	}
+	else if (fileExtension == L"exr")
+	{
+
+	}
 	else
 	{
 		MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff, gif 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
@@ -514,7 +531,7 @@ fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11De
 				0,
 				D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ,
 				0,
-				DirectX::DDS_LOADER_FORCE_SRGB,
+				DirectX::DDS_LOADER_DEFAULT,
 				reinterpret_cast<ID3D11Resource**>(&srcTextures[i]),
 				nullptr
 			));
@@ -529,10 +546,40 @@ fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11De
 				0,
 				D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ,
 				0,
-				DirectX::DX11::WIC_LOADER_FORCE_SRGB,
+				DirectX::DX11::WIC_LOADER_DEFAULT,
 				reinterpret_cast<ID3D11Resource**>(&srcTextures[i]),
 				nullptr
 			));
+		}
+		else if (fileExtension == L"exr")
+		{
+			int width;
+			int height;
+			std::vector<float> rawArray = loadEXR(texturePath, &width, &height);
+
+			D3D11_TEXTURE2D_DESC texDesc;
+			texDesc.Width = width;
+			texDesc.Height = height;
+			texDesc.MipLevels = 1;
+			texDesc.ArraySize = 1;
+			texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			texDesc.SampleDesc.Count = 1;
+			texDesc.SampleDesc.Quality = 0;
+			texDesc.Usage = D3D11_USAGE_STAGING;
+			texDesc.BindFlags = 0;
+			texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+			texDesc.MiscFlags = 0;
+
+			std::vector<DirectX::PackedVector::HALF> hmap(rawArray.size());
+			std::transform(rawArray.begin(), rawArray.end(), hmap.begin(), DirectX::PackedVector::XMConvertFloatToHalf);
+
+			D3D11_SUBRESOURCE_DATA data;
+			data.pSysMem = &hmap[0];
+			data.SysMemPitch = width * 4 * sizeof(DirectX::PackedVector::HALF);
+			data.SysMemSlicePitch = 0;
+
+			ID3D11Texture2D* hmapTex = 0;
+			HR(d3d11Device->GetDevice()->CreateTexture2D(&texDesc, &data, &srcTextures[i]));
 		}
 		else
 		{
@@ -619,4 +666,34 @@ void fq::graphics::D3D11TextureArray::Bind(const std::shared_ptr<D3D11Device>& d
 	default:
 		break;
 	}
+}
+
+std::vector<float> fq::graphics::D3D11TextureArray::loadEXR(const std::filesystem::path& texturePath, int* outWidth, int* outHeight)
+{
+	std::string filename = fq::common::StringUtil::ToMultiByte(texturePath.wstring());
+	Imf::RgbaInputFile file(filename.c_str());
+	Imath::Box2i dw = file.dataWindow();
+
+	const int& width = *outWidth = dw.max.x - dw.min.x + 1;
+	const int& height = *outHeight = dw.max.y - dw.min.y + 1;
+
+	Imf::Array2D<Imf::Rgba> pixels(height, width);
+	file.setFrameBuffer(&pixels[0][0], 1, width);
+	file.readPixels(dw.min.y, dw.max.y);
+
+	std::vector<float> result(width * height * 4);
+
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < width; ++x)
+		{
+			Imf::Rgba& pixel = pixels[y][x];
+			result[4 * (y * width + x) + 0] = pixel.r;
+			result[4 * (y * width + x) + 1] = pixel.g;
+			result[4 * (y * width + x) + 2] = pixel.b;
+			result[4 * (y * width + x) + 3] = pixel.a;
+		}
+	}
+
+	return result;
 }

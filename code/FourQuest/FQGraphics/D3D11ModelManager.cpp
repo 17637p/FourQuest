@@ -89,7 +89,8 @@ namespace fq::graphics
 
 			if (mesh.BoneVertices.empty())
 			{
-				CreateStaticMesh(GenerateStaticMeshKey(std::to_string(key), mesh.Name), mesh);
+				auto staticMesh = CreateStaticMesh(GenerateStaticMeshKey(std::to_string(key), mesh.Name), mesh);
+				mStaticMeshes.insert({ GenerateStaticMeshKey(std::to_string(key), node.Name), staticMesh });
 			}
 			else
 			{
