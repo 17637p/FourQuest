@@ -9,6 +9,7 @@
 
 #include "Soul.h"
 #include "Player.h"
+#include "ClientEvent.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
@@ -56,6 +57,10 @@ void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 	livingArmour->GetComponent<game_module::Transform>()->SetWorldMatrix(world);
 
 	GetScene()->AddGameObject(livingArmour);
+
+	// 상호작용 이벤트 발생
+	GetScene()->GetEventManager()->FireEvent<client::event::ObjectInteractionEvent>(
+		{ GetGameObject()->GetTag() });
 
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());

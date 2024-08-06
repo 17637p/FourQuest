@@ -326,6 +326,12 @@
     <ClInclude Include="BossMonsterPrepareAttackState.h">
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
+    <ClInclude Include="DefenceCounter.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestColliderTriggerChecker.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -534,6 +540,12 @@
     </ClCompile>
     <ClCompile Include="BossMonsterPrepareAttackState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="DefenceCounter.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestColliderTriggerChecker.cpp">
+      <Filter>src\07.Quest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
