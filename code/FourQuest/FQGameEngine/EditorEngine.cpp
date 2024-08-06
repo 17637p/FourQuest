@@ -25,6 +25,7 @@
 #include "TrailSystem.h"
 #include "UISystem.h"
 #include "PathFindingSystem.h"
+#include "LoadingSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -91,15 +92,16 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mTrailSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
+	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
 
 	// 모델 데이터 수정이 생긴경우
 	//mEditor->mModelSystem->ConvertAllModel();
-
+	
 	// Scene 로드 
-	mGameProcess->mSceneManager->LoadScene();
+	mGameProcess->mLoadingSystem->ProcessLoading();
 }
 
 void fq::game_engine::EditorEngine::Process()
@@ -235,6 +237,17 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
 
+			//////////////////////////////////////////////////////////////////////////
+			//							Scene 변경 처리								//
+			//////////////////////////////////////////////////////////////////////////
+			if (mGameProcess->mSceneManager->IsChangeScene())
+			{
+				mGameProcess->mSceneManager->ChangeScene();
+			}
+
+			//////////////////////////////////////////////////////////////////////////
+			//							게임 종료 처리								//
+			//////////////////////////////////////////////////////////////////////////
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;

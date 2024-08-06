@@ -78,8 +78,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 씬을 변경합니다.
 		/// </summary>
-		/// <param name="sceneName">다음 씬의 이름</param>
-		void ChangeScene(const std::string& nextSceneName);
+		void ChangeScene();
 
 		/// <summary>
 		/// 후처리 이벤트를 처리합니다
@@ -110,6 +109,8 @@ namespace fq::game_module
 		/// <param name="event">요청에 필요한 정보</param>
 		void RequestExitGame(fq::event::RequestExitGame event);
 		
+		bool IsChangeScene()const;
+
 	private:
 		std::unique_ptr<Scene> mCurrentScene;
 		

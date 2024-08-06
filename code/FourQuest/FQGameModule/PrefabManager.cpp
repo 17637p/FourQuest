@@ -196,7 +196,7 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 		q.push(&object);
 	}
 
-	// 2. 프리팹 리소스로드 
+	// 2. 프	리팹 리소스로드 
 	while (!q.empty())
 	{
 		GameObject* object = q.front();
