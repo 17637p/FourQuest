@@ -86,6 +86,8 @@
 // Quest
 #include "Quest.h"
 #include "QuestManager.h"
+#include "DefenceCounter.h"
+#include "QuestColliderTriggerChecker.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -834,8 +836,8 @@ void fq::client::RegisterMetaData()
 		.data<&Defence::colliderName>("ColliderName"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderName")
 		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
-		.data<&Defence::seconds>("Seconds"_hs)
-		.prop(fq::reflect::prop::Name, "Seconds");
+		.data<&Defence::count>("Count"_hs)
+		.prop(fq::reflect::prop::Name, "Count");
 
 	entt::meta<ClearQuest>()
 		.type("ClearQuest"_hs)
@@ -913,15 +915,27 @@ void fq::client::RegisterMetaData()
 	entt::meta<QuestManager>()
 		.type("QuestManager"_hs)
 		.prop(fq::reflect::prop::Name, "QuestManager")
-		//.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
-		//.prop(fq::reflect::prop::Name, "CurMainQuest")
-		//.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
-		//.prop(fq::reflect::prop::Name, "CurSubQuest")
 		.data<&QuestManager::mStartQuests>("StartQuests"_hs)
 		.prop(fq::reflect::prop::Name, "StartQuests")
 		.data<&QuestManager::mMainQuests>("MainQuest"_hs)
 		.prop(fq::reflect::prop::Name, "MainQuest")
 		.data<&QuestManager::mSubQuests>("SubQuest"_hs)
 		.prop(fq::reflect::prop::Name, "SubQuest")
+		.base<fq::game_module::Component>();
+
+	entt::meta<DefenceCounter>()
+		.type("DefenceCounter"_hs)
+		.prop(fq::reflect::prop::Name, "DefenceCounter")
+		.data<&DefenceCounter::mRequestCount>("RequestCount"_hs)
+		.prop(fq::reflect::prop::Name, "RequestCount")
+		.prop(reflect::prop::Comment, u8"퀘스트 클리어 요구 카운트")
+		.data<&DefenceCounter::mCountSpeed>("CountSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "CountSpeed")
+		.prop(reflect::prop::Comment, u8"게이지 차는 속도")
+		.base<fq::game_module::Component>();
+
+	entt::meta<QuestColliderTriggerChecker>()
+		.type("QuestColliderTriggerChecker"_hs)
+		.prop(fq::reflect::prop::Name, "QuestColliderTriggerChecker")
 		.base<fq::game_module::Component>();
 }

@@ -52,6 +52,7 @@
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
+    <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="HpBar.h" />
     <ClInclude Include="KnightArmour.h" />
@@ -90,6 +91,7 @@
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="Quest.h" />
+    <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
     <ClInclude Include="QuestUI.h" />
     <ClInclude Include="ShiedlDashState.h" />
@@ -128,6 +130,7 @@
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
+    <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="KnightArmour.cpp" />
@@ -164,6 +167,7 @@
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
     <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="QuestColliderTriggerChecker.cpp" />
     <ClCompile Include="QuestManager.cpp" />
     <ClCompile Include="QuestUI.cpp" />
     <ClCompile Include="ShiedlDashState.cpp" />
