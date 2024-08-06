@@ -40,7 +40,7 @@ namespace fq::physics
 			DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
 			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
 		
-		CopyDirectXMatrixToPxTransform(mLocalTransform, pxLocalTransform);
+		CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
 
 		if (parentLink == nullptr)
 		{
@@ -48,35 +48,6 @@ namespace fq::physics
 		}
 		else
 		{
-			//DirectX::SimpleMath::Matrix boneTransform = info.boneTransform;
-			//DirectX::SimpleMath::Matrix jointTransform = info.jointInfo.localTransform;
-			//DirectX::SimpleMath::Matrix rootTransform = info.rootTransform;
-			//DirectX::SimpleMath::Matrix parentTransform = parentLink->GetWorldTransform();
-
-			//DirectX::SimpleMath::Vector3 boneScale;
-			//DirectX::SimpleMath::Quaternion boneRotation;
-			//DirectX::SimpleMath::Vector3 bonePosition;
-			//boneTransform.Decompose(boneScale, boneRotation, bonePosition);
-			//DirectX::SimpleMath::Vector3 jointScale;
-			//DirectX::SimpleMath::Quaternion jointRotation;
-			//DirectX::SimpleMath::Vector3 jointPosition;
-			//jointTransform.Decompose(jointScale, jointRotation, jointPosition);
-
-			//mWorldTransform =
-			//	DirectX::SimpleMath::Matrix::CreateFromQuaternion(boneRotation)
-			//	//* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation).Invert()
-			//	* DirectX::SimpleMath::Matrix::CreateTranslation(bonePosition);
-			//	//* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition).Invert();
-
-			//DirectX::SimpleMath::Matrix dxTransform =
-			//	DirectX::SimpleMath::Matrix::CreateFromQuaternion(boneRotation)
-			//	//* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation).Invert()
-			//	* DirectX::SimpleMath::Matrix::CreateTranslation(bonePosition)
-			//	//* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition).Invert()
-			//	* parentLink->GetWorldTransform().Invert();
-
-			//mLocalTransform = dxTransform;
-
 			mPxLink = pxArticulation->createLink(parentLink->GetPxLink(), pxLocalTransform);
 			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}
@@ -85,7 +56,6 @@ namespace fq::physics
 		mPxLink->setMaxLinearVelocity(4.f);
 		mPxLink->setAngularDamping(0.2f);
 		mPxLink->setLinearDamping(0.2f);
-		mPxLink->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 
 		return true;
 	}
@@ -159,8 +129,6 @@ namespace fq::physics
 
 		physx::PxTransform pxTransform;
 		CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
-
-		mPxLink->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 
 		physx::PxTransform prevTransform = mPxLink->getGlobalPose();
 		mPxLink->setGlobalPose(pxTransform);

@@ -88,13 +88,6 @@ namespace fq::physics
 
 		return true;
 	}
-
-	bool PhysicsCharacterPhysicsManager::ChangeScene()
-	{
-
-
-		return true;
-	}
 	
 	void PhysicsCharacterPhysicsManager::GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData)
 	{
@@ -129,6 +122,7 @@ namespace fq::physics
 		if (articulationData.bIsRagdollSimulation != articulation->GetIsRagdoll())
 		{
 			articulation->SetIsRagdoll(articulationData.bIsRagdollSimulation);
+			articulation->SetWorldTransform(articulationData.worldTransform);
 
 			if (articulationData.bIsRagdollSimulation)
 			{

@@ -39,7 +39,7 @@ namespace fq::physics
 		mMaterial = physics->createMaterial(info.staticFriction, info.dynamicFriction, info.restitution);
 		mID = info.id;
 		mLayerNumber = info.layerNumber;
-		mWorldTransform = info.worldTransform;
+		mWorldTransform = DirectX::SimpleMath::Matrix::CreateRotationZ(180.f / 180.f * 3.14f) * info.worldTransform;
 
 		return true;
 	}
@@ -134,7 +134,7 @@ namespace fq::physics
 	{
 		mRootLink = std::make_shared<CharacterLink>();
 
-		info.localTransform = DirectX::SimpleMath::Matrix::CreateRotationZ(3.14f) * mWorldTransform * info.localTransform;
+		info.localTransform = mWorldTransform * info.localTransform ;
 		mRootLink->Initialize(info, nullptr, mPxArticulation, mScene);
 
 		return true;

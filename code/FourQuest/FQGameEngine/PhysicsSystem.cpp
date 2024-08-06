@@ -730,6 +730,9 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
 				auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
 
+				auto currentAnimation = animatorMesh->GetController().GetSharedCurrentStateAnimation();
+				auto currentAnimationTime = animatorMesh->GetController().GetTimePos();
+
 				nodeHierarchy.SetBindPose();
 
 				for (auto& linkData : data.linkData)
@@ -766,7 +769,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				transform->SetLocalPosition(position);
 				transform->SetLocalRotation(rotation);
 
-				nodeHierarchy.UpdateByLocalTransform();
+				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime, currentAnimation,1.f);
 			}
 		}
 		else
@@ -900,25 +903,26 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			fq::physics::ArticulationSetData data;
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
+			data.worldTransform = transform->GetWorldMatrix();
 			
-			std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
-				{
-					fq::physics::ArticulationLinkSetData linkData;
+			//std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
+			//	{
+			//		fq::physics::ArticulationLinkSetData linkData;
 
-					linkData.name = link->GetBoneName();
-					linkData.boneWorldTransform = nodeHierarchy.GetRootTransform(boneHierarchy.GetBoneIndex(link->GetBoneName()));
-					data.linkData.push_back(linkData);
+			//		linkData.name = link->GetBoneName();
+			//		linkData.boneWorldTransform = nodeHierarchy.GetRootTransform(boneHierarchy.GetBoneIndex(link->GetBoneName()));
+			//		data.linkData.push_back(linkData);
 
-					for (const auto& [name, childLink] : link->GetChildrenLinkData())
-					{
-						linkDataUpdate(childLink);
-					}
-				};
+			//		for (const auto& [name, childLink] : link->GetChildrenLinkData())
+			//		{
+			//			linkDataUpdate(childLink);
+			//		}
+			//	};
 
-			for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
-			{
-				linkDataUpdate(link);
-			}
+			//for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
+			//{
+			//	linkDataUpdate(link);
+			//}
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}
