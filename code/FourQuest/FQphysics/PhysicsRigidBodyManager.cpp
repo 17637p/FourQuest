@@ -155,7 +155,9 @@ namespace fq::physics
 
 			CopyDirectXMatrixToPxTransform(dxTransform, pxTransform);
 
+			auto data1 = pxBody->getGlobalPose();
 			pxBody->setGlobalPose(pxTransform);
+			auto data2 = pxBody->getGlobalPose();
 			dynamicBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 			dynamicBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 
@@ -184,7 +186,10 @@ namespace fq::physics
 
 			if (areTransformsDifferent(pxPrevTransform, pxCurrentTransform, 0.001f, 0.001f))
 			{
+				auto data1 = pxBody->getGlobalPose();
 				pxBody->setGlobalPose(pxCurrentTransform);
+				auto data2 = pxBody->getGlobalPose();
+				auto data3 = pxBody->getGlobalPose();
 			}
 			staticBody->SetConvertScale(scale, mPhysics, collisionMatrix);
 			staticBody->ChangeLayerNumber(rigidBodyData.myLayerNumber, collisionMatrix, mCollisionDataManager);

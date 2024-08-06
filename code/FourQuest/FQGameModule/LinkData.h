@@ -139,7 +139,7 @@ namespace fq::game_module
 	}
 	const DirectX::SimpleMath::Matrix& LinkData::GetWorldTransform()
 	{
-		return mWorldTransform;
+		return mLinkInfo.worldTransform;
 	}
 
 	const EShapeType& LinkData::GetShapeType()
@@ -243,7 +243,7 @@ namespace fq::game_module
 	}
 	void LinkData::SetWorldTransform(const DirectX::SimpleMath::Matrix& worldTransform)
 	{
-		mWorldTransform = worldTransform;
+		mLinkInfo.worldTransform = worldTransform;
 	}
 
 	void LinkData::SetShapeType(const EShapeType& type)

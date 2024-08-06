@@ -26,6 +26,7 @@ namespace fq::game_module
 	{
 		mParentWorldTransform = parentWorldTransform;
 		mWorldTransform = mLinkInfo.localTransform * parentWorldTransform;
+		mLinkInfo.worldTransform = mLinkInfo.localTransform * parentWorldTransform;
 
 		for (auto it = mChildrenLinkData.begin(); it != mChildrenLinkData.end(); )
 		{
