@@ -264,8 +264,13 @@ namespace fq::graphics
 		{
 			return;
 		}
-
-		setBindPoseLocal();
+		
+		const auto& bones = mNodeHierarchy->GetBones();
+		std::vector <DirectX::SimpleMath::Matrix> bindPoseTransform(bones.size());
+		for (const auto& bone : bones)
+		{
+			bindPoseTransform[bone.Index] = bone.ToParentMatrix;
+		}
 
 		const size_t BONE_COUNT = mNodeHierarchy->GetBones().size();
 
@@ -276,22 +281,22 @@ namespace fq::graphics
 		{
 			const auto& [rhsBone, rhsNodeClip] = rhsBoneNodeClipCache[i];
 
-			if (rhsNodeClip == nullptr)
-			{
-				continue;
-			}
-
 			fq::common::Keyframe lhsKeyframe;
 			fq::common::Keyframe rhsKeyframe;
 
 			mLocalTransforms[rhsBone->Index].Decompose(lhsKeyframe.Scale, lhsKeyframe.Rotation, lhsKeyframe.Translation);
-
+			
+			if (rhsNodeClip != nullptr)
 			{
 				fq::common::Keyframe localLhs;
 				fq::common::Keyframe localRhs;
 				float localWeight;
 				AnimationHelper::FindKeyframe(rhsNodeClip->Keyframes, rhsAnimationClip, timePos, &localLhs, &localRhs, &localWeight);
 				rhsKeyframe = AnimationHelper::Interpolate(localLhs, localRhs, localWeight);
+			}
+			else
+			{
+				bindPoseTransform[rhsBone->Index].Decompose(rhsKeyframe.Scale, rhsKeyframe.Rotation, rhsKeyframe.Translation);
 			}
 
 			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);

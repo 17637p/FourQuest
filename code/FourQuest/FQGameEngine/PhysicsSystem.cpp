@@ -716,9 +716,13 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 			articulation->SetIsRagdoll(bIsRagdoll);
 
+			static float durationTime = 0.f;
+
 			// Animator의 본에 LocalTransform을 수정하기
 			if (bIsRagdoll)
 			{
+				durationTime += 0.01f;
+
 				if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
 					return;
 
@@ -733,6 +737,8 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				auto currentAnimation = animatorMesh->GetController().GetSharedCurrentStateAnimation();
 				auto currentAnimationTime = animatorMesh->GetController().GetTimePos();
 
+				animatorMesh->SetStopAnimation(true);
+
 				nodeHierarchy.SetBindPose();
 
 				for (auto& linkData : data.linkData)
@@ -746,7 +752,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 					position.x = position.x / transform->GetLocalScale().x;
 					position.y = position.y / transform->GetLocalScale().y;
 					position.z = position.z / transform->GetLocalScale().z;
-					boneTransform = 
+					boneTransform =
 						DirectX::SimpleMath::Matrix::CreateScale(1.f)
 						* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
 						* DirectX::SimpleMath::Matrix::CreateTranslation(position);
@@ -755,10 +761,14 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
 				}
 
+				float rotationOffsetX = articulation->GetRotationOffset().x / 180.f * 3.14f;
+				float rotationOffsetY = articulation->GetRotationOffset().y / 180.f * 3.14f;
+				float rotationOffsetZ = articulation->GetRotationOffset().z / 180.f * 3.14f;
+
 				DirectX::SimpleMath::Matrix dxTransform =
-					DirectX::SimpleMath::Matrix::CreateRotationX(articulation->GetRotationOffset().x / 180.f * 3.14f)
-					* DirectX::SimpleMath::Matrix::CreateRotationY(articulation->GetRotationOffset().y / 180.f * 3.14f)
-					* DirectX::SimpleMath::Matrix::CreateRotationZ(articulation->GetRotationOffset().z / 180.f * 3.14f)
+					DirectX::SimpleMath::Matrix::CreateRotationX(std::lerp(0.f, rotationOffsetX, std::clamp(durationTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationY(std::lerp(0.f, rotationOffsetY, std::clamp(durationTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationZ(std::lerp(0.f, rotationOffsetZ, std::clamp(durationTime, 0.f, 1.f)))
 					* data.worldTransform;
 
 				DirectX::SimpleMath::Vector3 scale;
@@ -769,7 +779,13 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				transform->SetLocalPosition(position);
 				transform->SetLocalRotation(rotation);
 
-				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime, currentAnimation,1.f);
+				//nodeHierarchy.UpdateByLocalTransform();
+				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
+				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime + durationTime, currentAnimation, std::max<float>(1 - durationTime, 0));
+			}
+			else
+			{
+				durationTime = 0.0f;
 			}
 		}
 		else
@@ -852,17 +868,6 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.angularVelocity = rigid->GetAngularVelocity();
 			data.linearVelocity = rigid->GetLinearVelocity();
 
-			// Tag가 변경된 경우
-			auto capsuleInfo = capsule->GetCapsuleInfomation();
-			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
-			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
-			if (prevLayer != currentLayer)
-			{
-				data.myLayerNumber = currentLayer;
-				capsuleInfo.colliderInfo.layerNumber = currentLayer;
-				capsule->SetCapsuleInfomation(capsuleInfo);
-			}
-
 			// 캡슐콜라이더 Y방향으로 수정 
 			if (direct == game_module::CapsuleCollider::EDirection::YAxis)
 			{
@@ -915,7 +920,7 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			fq::physics::ArticulationSetData data;
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
 			data.worldTransform = transform->GetWorldMatrix();
-			
+
 			//std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
 			//	{
 			//		fq::physics::ArticulationLinkSetData linkData;
@@ -1050,24 +1055,24 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 
 		switch (type)
 		{
-			case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-				lhsObject->OnTriggerEnter(collision);
-				break;
-			case fq::physics::ECollisionEventType::ON_OVERLAP:
-				lhsObject->OnTriggerStay(collision);
-				break;
-			case fq::physics::ECollisionEventType::END_OVERLAP:
-				lhsObject->OnTriggerExit(collision);
-				break;
-			case fq::physics::ECollisionEventType::ENTER_COLLISION:
-				lhsObject->OnCollisionEnter(collision);
-				break;
-			case fq::physics::ECollisionEventType::ON_COLLISION:
-				lhsObject->OnCollisionStay(collision);
-				break;
-			case fq::physics::ECollisionEventType::END_COLLISION:
-				lhsObject->OnCollisionExit(collision);
-				break;
+		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+			lhsObject->OnTriggerEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_OVERLAP:
+			lhsObject->OnTriggerStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_OVERLAP:
+			lhsObject->OnTriggerExit(collision);
+			break;
+		case fq::physics::ECollisionEventType::ENTER_COLLISION:
+			lhsObject->OnCollisionEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_COLLISION:
+			lhsObject->OnCollisionStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_COLLISION:
+			lhsObject->OnCollisionExit(collision);
+			break;
 		}
 	}
 

@@ -28,7 +28,7 @@ void CopyPxTransformToDirectXMatrixXYZ(const physx::PxTransform& pxTransform, Di
 	dxMatrix = rotation * translation;
 }
 
-// 왼손 좌표계(DirectX11)에서 오른손 좌표계(PhysX)로 변환하기 ( z축 )
+// XYZ 반전
 void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform)
 {
 	DirectX::XMFLOAT4X4 dxMatrixData;

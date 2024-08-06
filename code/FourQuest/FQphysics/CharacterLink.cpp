@@ -40,14 +40,18 @@ namespace fq::physics
 			DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
 			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
 		
-		CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
 
 		if (parentLink == nullptr)
 		{
+			dxTransform *= DirectX::SimpleMath::Matrix::CreateRotationZ(3.14f);
+			CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
+
 			mPxLink = pxArticulation->createLink(nullptr, pxLocalTransform);
 		}
 		else
 		{
+			CopyDirectXMatrixToPxTransform(dxTransform, pxLocalTransform);
+
 			mPxLink = pxArticulation->createLink(parentLink->GetPxLink(), pxLocalTransform);
 			mMyJoint->Initialize(mParentLink.lock(), shared_from_this(), info.jointInfo);
 		}

@@ -120,7 +120,7 @@ namespace fq::physics
 
 	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)
 	{
-		mWorldTransform = DirectX::SimpleMath::Matrix::CreateRotationZ(180.f / 180.f * 3.14f) * trnasform;
+		mWorldTransform = trnasform;
 
 		physx::PxTransform pxWorldTransform;
 		CopyDirectXMatrixToPxTransform(mWorldTransform, pxWorldTransform);
