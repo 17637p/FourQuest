@@ -211,25 +211,22 @@ float4 main(VertexOut pin) : SV_TARGET
     material.roughness = metalnessRoughness.y;
     material.metallic = metalnessRoughness.x;
     
-
-    // bool bIsMixed;
-    // 유효하지 않은 데이터라면
-    //if (preCaculatedLight)
-    //{
-      // mixedLight 조명 연산 처리
-    //}     
+    bool bIsBakedArea = false;
+    
+    if (preCaculatedLight.x < -100)
+    {
+        bIsBakedArea = true;
+        preCaculatedLight = 0.f;
+    }
 
     // DirectionalLight 처리
     for (uint i = 0; i < numOfDirectionalLight; ++i)
     {
-        // subtractive 모드일 경우 mixed는 연산 처리를 안함
-        // if (bIsMixed) continue; 
-
         float3 currentDirectLighting = ComputeDirectionLight(directionalLights[i], material, toEye, normal);
+        float shadowRatio = 1.f;
       
         if (i < cShadowCount)
         {
-            float shadowRatio = 1.f;
     
             uint index = 2;
     
@@ -241,47 +238,82 @@ float4 main(VertexOut pin) : SV_TARGET
                     break;
                 }
             }
-            //if (index == 0)
-            //{
-            //    emissive = float3(0.1f, 0.f, 0.f);
-            //}
-            //else if (index == 1)
-            //{
-            //    emissive = float3(0, 0.1f, 0);
-            //}
-            //else if (index == 2)
-            //{
-            //    emissive = float3(0, 0, 0.1f);
-            //}
 
-            index = 2;
             uint shadowIndex = i * CascadeCount + index;
             float4 shadowPos = mul(float4(positionW, 1.f), cLightViewProj[shadowIndex]);
             shadowPos.x = shadowPos.x * 0.5f + 0.5f;
             shadowPos.y = shadowPos.y * -0.5f + 0.5f;
             shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, shadowIndex, ShadowMapWidth);
-            
-            currentDirectLighting *= shadowRatio;
         }
 
-        directLighting += currentDirectLighting;
+        switch (directionalLights[i].lightMode)
+        {
+            case LIGHT_MODE_REALTIME:
+                directLighting += currentDirectLighting * shadowRatio;
+                break;
+            case LIGHT_MODE_MIXED:
+                if (bIsBakedArea)
+                {
+                    directLighting += currentDirectLighting * shadowRatio;
+                }
+                else
+                {
+                    float3 realtimeShadow = preCaculatedLight - currentDirectLighting * (1 - shadowRatio);
+                    realtimeShadow = max(realtimeShadow, 0.001f); // 그림자 색상의 최솟값을 두어 부드럽게 표현
+                    realtimeShadow = lerp(preCaculatedLight, realtimeShadow, 1); // 그림자 세기로 보간, 현재는 상수로 적용
+
+                    preCaculatedLight = min(preCaculatedLight, realtimeShadow);
+                }
+                break;
+            case LIGHT_MODE_BAKED:
+                break;
+        }
+        
     }
     
     // PointLight 처리
     for (uint i = 0; i < numOfPointLight; ++i)
     {
-        // subtractive 모드일 경우 mixed는 연산 처리를 안함
-        // if (bIsMixed) continue; 
-        directLighting += ComputePointLight(pointLights[i], material, toEye, normal, positionW);
+        switch (pointLights[i].lightMode)
+        {
+            case LIGHT_MODE_REALTIME:
+                directLighting += ComputePointLight(pointLights[i], material, toEye, normal, positionW);
+                break;
+            case LIGHT_MODE_MIXED:
+                if (bIsBakedArea)
+                {
+                    directLighting += ComputePointLight(pointLights[i], material, toEye, normal, positionW);
+                }
+                else
+                {
+                }
+                break;
+            case LIGHT_MODE_BAKED:
+                break;
+        }
+
     }
     
     // SpotLight 처리
     for (uint i = 0; i < numOfSpotLight; ++i)
     {
-        // subtractive 모드일 경우 mixed는 연산 처리를 안함
-        // if (bIsMixed) continue; 
-
-        directLighting += ComputeSpotLight(spotLights[i], material, toEye, normal, positionW);
+        switch (spotLights[i].lightMode)
+        {
+            case LIGHT_MODE_REALTIME:
+                directLighting += ComputeSpotLight(spotLights[i], material, toEye, normal, positionW);
+                break;
+            case LIGHT_MODE_MIXED:
+                if (bIsBakedArea)
+                {
+                    directLighting += ComputeSpotLight(spotLights[i], material, toEye, normal, positionW);
+                }
+                else
+                {
+                }
+                break;
+            case LIGHT_MODE_BAKED:
+                break;
+        }
     }
     
     // ibl
@@ -304,7 +336,6 @@ float4 main(VertexOut pin) : SV_TARGET
     }
      
     preCaculatedLight *= albedo;
-
 
     return float4(directLighting + ambientLighting + emissive + preCaculatedLight, 1.f);
 }

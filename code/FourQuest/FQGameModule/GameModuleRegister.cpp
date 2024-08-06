@@ -278,6 +278,15 @@ void fq::game_module::RegisterMetaData()
 		.data<fq::graphics::ELightType::Spot>("Spot"_hs)
 		.prop(fq::reflect::prop::Name, "Spot");
 
+	entt::meta<fq::graphics::ELightMode>()
+		.prop(fq::reflect::prop::Name, "LightMode")
+		.data<fq::graphics::ELightMode::Realtime>("Realtime"_hs)
+		.prop(fq::reflect::prop::Name, "Realtime")
+		.data<fq::graphics::ELightMode::Mixed>("Mixed"_hs)
+		.prop(fq::reflect::prop::Name, "Mixed")
+		.data<fq::graphics::ELightMode::Baked>("Baked"_hs)
+		.prop(fq::reflect::prop::Name, "Baked");
+
 	// Light 
 	entt::meta<Light>()
 		.type("Light"_hs)
@@ -301,6 +310,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetShadow, &Light::OnShadow>("OnShadow"_hs)
 		.prop(fq::reflect::prop::Name, "OnShadow")
 		.prop(fq::reflect::prop::Comment, u8"Directional Light 3°³ Á¦ÇÑ")
+		.data<&Light::SetLightMode, &Light::GetLightMode>("LightMode"_hs)
+		.prop(fq::reflect::prop::Name, "LightMode")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

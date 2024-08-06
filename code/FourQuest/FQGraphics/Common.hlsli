@@ -46,7 +46,7 @@ struct DirectionalLight
     float3 color;
     float intensity;
     float3 direction;
-    float pad;
+    uint lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 };
 
 struct PointLight
@@ -56,7 +56,7 @@ struct PointLight
     float3 position;
     float range;
     float3 attenuation;
-    float pad;
+    uint lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 };
 
 struct SpotLight
@@ -68,7 +68,7 @@ struct SpotLight
     float3 direction;
     float spot;
     float3 attenuation;
-    float pad;
+    uint lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 };
 
 struct Material
@@ -577,3 +577,7 @@ struct ModelMaterial
     float EmissiveIntensity;
     bool UseMetalnessSmoothness;
 };
+
+#define LIGHT_MODE_REALTIME 0
+#define LIGHT_MODE_MIXED 1
+#define LIGHT_MODE_BAKED 2
