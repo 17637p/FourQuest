@@ -12,7 +12,7 @@ namespace fq::client
 		Explosion, // 폭탄 몬스터
 		Boss, // 보스
 		Plant, // 식물 몬스터
-		spawner, // 스포너
+		Spawner, // 스포너
 
 		All // Quest 용 
 	};

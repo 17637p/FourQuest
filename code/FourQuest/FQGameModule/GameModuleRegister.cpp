@@ -80,8 +80,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Dash")
 		.data<ETag::Spawner>("Spawner"_hs) // 12
 		.prop(fq::reflect::prop::Name, "Spawner")
-		.data<ETag::Dash>("Tag13"_hs) // 13
-		.prop(fq::reflect::prop::Name, "Tag13")
+		.data<ETag::Goddess>("Goddess"_hs) // 13
+		.prop(fq::reflect::prop::Name, "Goddess")
 		.data<ETag::Dash>("Tag14"_hs) // 14
 		.prop(fq::reflect::prop::Name, "Tag14")
 		.data<ETag::Dash>("Tag15"_hs) // 15

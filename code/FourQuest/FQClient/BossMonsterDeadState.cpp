@@ -4,6 +4,10 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "BossMonster.h"
 
+#include "ClientEvent.h"
+#include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/Event.h"
+
 fq::client::BossMonsterDeadState::BossMonsterDeadState()
 {
 
@@ -25,6 +29,10 @@ void fq::client::BossMonsterDeadState::OnStateExit(game_module::Animator& animat
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
 	animator.GetComponent<BossMonster>()->DestroryHpBar();
+
+	// 몬스터 처리 이벤트
+	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+		{ EMonsterType::Boss });
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterDeadState::Clone()

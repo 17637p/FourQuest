@@ -741,6 +741,26 @@ void fq::client::RegisterMetaData()
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
+	//                             Monster Type								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<EMonsterType>()
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.conv<std::underlying_type_t<EMonsterType>>()
+		.data<EMonsterType::Melee>("Melee"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Melee")
+		.data<EMonsterType::Explosion>("Explosion"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Explosion")
+		.data<EMonsterType::Boss>("Boss"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Boss")
+		.data<EMonsterType::Plant>("Plant"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Plant")
+		.data<EMonsterType::Spawner>("Spawner"_hs) // 3
+		.prop(fq::reflect::prop::Name, "Spawner")
+		.data<EMonsterType::All>("All"_hs) // 3
+		.prop(fq::reflect::prop::Name, "All");
+
+	//////////////////////////////////////////////////////////////////////////
 	//                             Quest									//
 	//////////////////////////////////////////////////////////////////////////
 
@@ -759,7 +779,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::POD)
 		.data<&QuestColliderTrigger::colliderName>("ColliderName"_hs)
 		.prop(fq::reflect::prop::Name, "ColliderName")
-		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름");
+		.prop(reflect::prop::Comment, u8"Collider를 가진 오브젝트 이름")
+		.data<&QuestColliderTrigger::isAll>("IsAll"_hs)
+		.prop(fq::reflect::prop::Name, "IsAll");
 
 	entt::meta<MonsterKill>()
 		.type("MonsterKill"_hs)
@@ -796,6 +818,12 @@ void fq::client::RegisterMetaData()
 		.data<&ClearQuest::clearIsMain>("ClearQuestIsMain"_hs)
 		.prop(fq::reflect::prop::Name, "ClearQuestIsMain");
 
+	entt::meta<ObjectInteraction>()
+		.type("ObjectInteraction"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectInteraction")
+		.prop(fq::reflect::prop::POD)
+		.data<&ObjectInteraction::tag>("Tag"_hs)
+		.prop(fq::reflect::prop::Name, "Tag");
 
 	entt::meta<QuestJoinCondition>()
 		.type("QuestJoinCondition"_hs)
@@ -817,7 +845,11 @@ void fq::client::RegisterMetaData()
 		.data<&QuestClearCondition::defenceList>("DefenceList"_hs)
 		.prop(fq::reflect::prop::Name, "DefenceList")
 		.data<&QuestClearCondition::clearQuestList>("ClearQuestList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearQuestList");
+		.prop(fq::reflect::prop::Name, "ClearQuestList")
+		.data<&QuestClearCondition::colliderTriggerList>("ColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
+		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectInteration");
 
 	entt::meta<Quest>()
 		.type("Quest"_hs)
@@ -825,31 +857,40 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::POD)
 		.data<&Quest::mIndex>("Index"_hs)
 		.prop(fq::reflect::prop::Name, "Index")
+		.data<&Quest::mName>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
 		.data<&Quest::mIsMain>("IsMain"_hs)
 		.prop(fq::reflect::prop::Name, "IsMain")
-		.data<&Quest::preQuestList>("PreQuestList"_hs)
-		.prop(fq::reflect::prop::Name, "PreQuestList")
-		.data<&Quest::colliderTriggerList>("ColliderTriggerList"_hs)
-		.prop(fq::reflect::prop::Name, "ColliderTriggerList")
-		.data<&Quest::monsterKillList>("MonsterKillList"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterKillList")
-		.data<&Quest::monsterGroupKillList>("MonsterGroupKillList"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterGroupKillList")
-		.data<&Quest::defenceList>("DefenceList"_hs)
-		.prop(fq::reflect::prop::Name, "DefenceList")
-		.data<&Quest::clearQuestList>("ClearQuestList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearQuestList")
-		.data<&Quest::mIndex>("Index"_hs)
+		.data<&Quest::mJoinConditionList>("JoinConditionList"_hs)
+		.prop(fq::reflect::prop::Name, "JoinConditionList")
+		.data<&Quest::mclearConditionList>("ClearConditionList"_hs)
+		.prop(fq::reflect::prop::Name, "ClearConditionList");
+
+	entt::meta<StartSubQuestIndex>()
+		.type("StartSubQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "StartSubQuestIndex")
+		.prop(fq::reflect::prop::POD)
+		.data<&StartSubQuestIndex::index>("Index"_hs)
 		.prop(fq::reflect::prop::Name, "Index");
+
+	entt::meta<StartQuests>()
+		.type("StartQuests"_hs)
+		.prop(fq::reflect::prop::Name, "StartQuests")
+		.prop(fq::reflect::prop::POD)
+		.data<&StartQuests::startMainQuestIndex>("StartMainQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "StartMainQuestIndex")
+		.data<&StartQuests::startSubQuestIndex>("StartSubQuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "StartSubQuestIndex");
 
 	entt::meta<QuestManager>()
 		.type("QuestManager"_hs)
 		.prop(fq::reflect::prop::Name, "QuestManager")
-		//.prop(fq::reflect::prop::Label, "UI")
-		.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
-		.prop(fq::reflect::prop::Name, "CurMainQuest")
-		.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
-		.prop(fq::reflect::prop::Name, "CurSubQuest")
+		//.data<&QuestManager::mCurMainQuest>("CurMainQuest"_hs)
+		//.prop(fq::reflect::prop::Name, "CurMainQuest")
+		//.data<&QuestManager::mCurSubQuest>("CurSubQuest"_hs)
+		//.prop(fq::reflect::prop::Name, "CurSubQuest")
+		.data<&QuestManager::mStartQuests>("StartQuests"_hs)
+		.prop(fq::reflect::prop::Name, "StartQuests")
 		.data<&QuestManager::mMainQuests>("MainQuest"_hs)
 		.prop(fq::reflect::prop::Name, "MainQuest")
 		.data<&QuestManager::mSubQuests>("SubQuest"_hs)
