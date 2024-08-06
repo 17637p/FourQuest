@@ -1,8 +1,10 @@
 #include "BossMonsterRushState.h"
 
+#include "../FQGameModule/GameModule.h"
 #include "BossMonster.h"
 
 fq::client::BossMonsterRushState::BossMonsterRushState()
+	:mRushHitBox(nullptr)
 {}
 
 fq::client::BossMonsterRushState::~BossMonsterRushState()
@@ -10,11 +12,23 @@ fq::client::BossMonsterRushState::~BossMonsterRushState()
 
 void fq::client::BossMonsterRushState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	animator.GetComponent<BossMonster>()->Rush();
+	animator.GetGameObject()->SetTag(game_module::ETag::Dash);
+
+	mRushHitBox = animator.GetComponent<BossMonster>()->Rush();
 }
 
 void fq::client::BossMonsterRushState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
-{}
+{
+	if (mRushHitBox)
+	{
+		animator.GetScene()->DestroyGameObject(mRushHitBox.get());
+		mRushHitBox = nullptr;
+	}
+
+	animator.GetGameObject()->SetTag(game_module::ETag::Monster);
+	animator.GetComponent<BossMonster>()->SetNextAttack();
+	animator.GetComponent<BossMonster>()->SetRandomTarget();
+}
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterRushState::Clone()
 {

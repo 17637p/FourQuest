@@ -23,7 +23,7 @@ void fq::client::BossMonsterHomingRushState::OnStateExit(game_module::Animator& 
 
 void fq::client::BossMonsterHomingRushState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-	animator.GetComponent<BossMonster>()->HomingTarget();
+
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterHomingRushState::Clone()

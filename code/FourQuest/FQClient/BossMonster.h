@@ -84,7 +84,7 @@ namespace fq::client
 		/// <summary>
 		/// 돌진합니다 
 		/// </summary>
-		void Rush();
+		std::shared_ptr<game_module::GameObject> Rush();
 
 		float GetHPRatio()const;
 
