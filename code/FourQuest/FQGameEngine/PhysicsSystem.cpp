@@ -716,12 +716,10 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 			articulation->SetIsRagdoll(bIsRagdoll);
 
-			static float durationTime = 0.f;
-
 			// Animator의 본에 LocalTransform을 수정하기
 			if (bIsRagdoll)
 			{
-				durationTime += 0.01f;
+				articulation->AddBlendTime(1.f / 60.f);
 
 				if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
 					return;
@@ -761,14 +759,15 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
 				}
 
+				float blendTime = articulation->GetBlendTime();
 				float rotationOffsetX = articulation->GetRotationOffset().x / 180.f * 3.14f;
 				float rotationOffsetY = articulation->GetRotationOffset().y / 180.f * 3.14f;
 				float rotationOffsetZ = articulation->GetRotationOffset().z / 180.f * 3.14f;
 
 				DirectX::SimpleMath::Matrix dxTransform =
-					DirectX::SimpleMath::Matrix::CreateRotationX(std::lerp(0.f, rotationOffsetX, std::clamp(durationTime, 0.f, 1.f)))
-					* DirectX::SimpleMath::Matrix::CreateRotationY(std::lerp(0.f, rotationOffsetY, std::clamp(durationTime, 0.f, 1.f)))
-					* DirectX::SimpleMath::Matrix::CreateRotationZ(std::lerp(0.f, rotationOffsetZ, std::clamp(durationTime, 0.f, 1.f)))
+					DirectX::SimpleMath::Matrix::CreateRotationX(std::lerp(0.f, rotationOffsetX, std::clamp(blendTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationY(std::lerp(0.f, rotationOffsetY, std::clamp(blendTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationZ(std::lerp(0.f, rotationOffsetZ, std::clamp(blendTime, 0.f, 1.f)))
 					* data.worldTransform;
 
 				DirectX::SimpleMath::Vector3 scale;
@@ -781,11 +780,11 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 
 				//nodeHierarchy.UpdateByLocalTransform();
 				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
-				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime + durationTime, currentAnimation, std::max<float>(1 - durationTime, 0));
+				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime + blendTime, currentAnimation, std::max<float>(1 - blendTime, 0));
 			}
 			else
 			{
-				durationTime = 0.0f;
+				articulation->SetBlendTime(0.f);
 			}
 		}
 		else

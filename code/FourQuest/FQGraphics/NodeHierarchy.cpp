@@ -102,7 +102,8 @@ namespace fq::graphics
 			}
 		}
 
-		assert(false);
+		return 0;
+		//assert(false);
 	}
 
 	bool NodeHierarchy::TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex) const
