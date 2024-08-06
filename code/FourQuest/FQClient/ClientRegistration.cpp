@@ -54,6 +54,8 @@
 #include "BossMonsterDeadState.h"
 #include "BossMonsterWaitTargetState.h"
 #include "BossMonsterHomingRushState.h"
+#include "BossMonsterComboAttackState.h"
+#include "BossMonsterPrepareAttackState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -471,16 +473,22 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackCoolTime")
 		.data<&BossMonster::mSmashDownOffset>("SmashDownOffset"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownOffset")
+		.data<&BossMonster::mComboAttackOffset>("ComboAttackOffset"_hs)
+		.prop(fq::reflect::prop::Name, "ComboAttackOffset")
 		.data<&BossMonster::mAcceleration>("Acceleration"_hs)
 		.prop(fq::reflect::prop::Name, "Acceleration")
 		.data<&BossMonster::mMoveSpeed>("MoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "MoveSpeed")
 		.data<&BossMonster::mRushPower>("RushPower"_hs)
 		.prop(fq::reflect::prop::Name, "RushPower")
+		.data<&BossMonster::mComboAttackReboundPower>("ComboAttackReboundPower"_hs)
+		.prop(fq::reflect::prop::Name, "ComboAttackReboundPower")
 		.data<&BossMonster::mAttackRange>("AttackRange"_hs)
 		.prop(fq::reflect::prop::Name, "AttackRange")
 		.data<&BossMonster::mDetectRange>("DetectRange"_hs)
 		.prop(fq::reflect::prop::Name, "DetectRange")
+		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownAttack")
@@ -490,6 +498,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "RushAttack")
 		.data<&BossMonster::mRushEffect>("RushEffect"_hs)
 		.prop(fq::reflect::prop::Name, "RushEffect")
+		.data<&BossMonster::mComboAttack>("ComboAttack"_hs)
+		.prop(fq::reflect::prop::Name, "ComboAttack")
+		.data<&BossMonster::mComboEffect>("ComboEffect"_hs)
+		.prop(fq::reflect::prop::Name, "ComboEffect")
 		.data<&BossMonster::mHpBarPrefab>("HpBarPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "HpBarPrefab")
 		.base<fq::game_module::Component>();
@@ -506,6 +518,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackEmitTime")
 		.data<&BossMonsterSmashDownState::mEffectEmitTime>("EffectEmitTime"_hs)
 		.prop(fq::reflect::prop::Name, "EffectEmitTime")
+		.data<&BossMonsterSmashDownState::mHomingTime>("HomingTime"_hs)
+		.prop(fq::reflect::prop::Name, "HomingTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterChaseState>()
@@ -541,6 +555,20 @@ void fq::client::RegisterMetaData()
 	entt::meta<BossMonsterHomingRushState>()
 		.type("BossMonsterHomingRushState"_hs)
 		.prop(fq::reflect::prop::Name, "BossMonsterHomingRushState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterComboAttackState>()
+		.type("BossMonsterComboAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterComboAttackState")
+		.data<&BossMonsterComboAttackState::mEmitAttackTime>("EmitAttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "EmitAttackTime")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterPrepareAttackState>()
+		.type("BossMonsterPrepareAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterPrepareAttackState")
+		.data<&BossMonsterPrepareAttackState::mHomingTime>("HomingTime"_hs)
+		.prop(fq::reflect::prop::Name, "HomingTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

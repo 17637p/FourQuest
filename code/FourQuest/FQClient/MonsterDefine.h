@@ -16,4 +16,13 @@ namespace fq::client
 
 		All // Quest ¿ë 
 	};
+	
+
+	enum class EBossMonsterAttackType
+	{
+		Rush,
+		SmashDown,
+		Combo,
+		Grawl,
+	};
 }

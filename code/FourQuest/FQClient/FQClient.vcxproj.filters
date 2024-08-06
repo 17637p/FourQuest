@@ -321,7 +321,10 @@
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
     <ClInclude Include="BossMonsterComboAttackState.h">
-      <Filter>include</Filter>
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterPrepareAttackState.h">
+      <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -527,7 +530,10 @@
       <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
     <ClCompile Include="BossMonsterComboAttackState.cpp">
-      <Filter>src</Filter>
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterPrepareAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

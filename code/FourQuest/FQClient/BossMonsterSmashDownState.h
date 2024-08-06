@@ -22,6 +22,8 @@ namespace fq::client
 		float mEffectElapsedTime;
 		float mAttackEmitTime;
 		float mAttackElapsedTime;
+		float mHomingTime;
+		float mHomingElapsedTime;
 
 		std::shared_ptr<game_module::GameObject> mEffect;
 
