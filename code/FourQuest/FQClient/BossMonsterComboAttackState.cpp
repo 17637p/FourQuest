@@ -32,7 +32,10 @@ void fq::client::BossMonsterComboAttackState::OnStateUpdate(game_module::Animato
 }
 
 void fq::client::BossMonsterComboAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
-{}
+{
+	animator.GetComponent<BossMonster>()->SetNextAttack();
+	animator.GetComponent<BossMonster>()->SetRandomTarget();
+}
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterComboAttackState::Clone()
 {

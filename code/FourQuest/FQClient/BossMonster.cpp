@@ -190,11 +190,32 @@ void fq::client::BossMonster::CheckTargetInAttackRange()
 	mAnimator->SetParameterBoolean("InAttackRange", isInAttackRange);
 }
 
-void fq::client::BossMonster::Rush()
+std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 {
+	using namespace game_module;
+
 	// 바라보는 방향으로 돌진합니다 
 	auto look = mTransform->GetLookAtVector();
 	mKnockBack->Set(mRushPower, look);
+
+	// 러쉬 히트 박스 생성
+	using namespace game_module;
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRushAttack);
+	auto& attackObj = *(instance.begin());
+	auto attackT = attackObj->GetComponent<Transform>();
+	attackT->SetParent(mTransform);
+
+	// 공격 정보 설정
+	AttackInfo attackInfo{};
+	auto attackComponent = attackObj->GetComponent<Attack>();
+
+	attackInfo.attacker = GetGameObject();
+	attackInfo.damage = dc::GetMonsterRushDamage(mAttackPower);
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(attackObj);
+
+	return attackObj;
 }
 
 void fq::client::BossMonster::EmitSmashDown()
@@ -332,32 +353,8 @@ void fq::client::BossMonster::ReboundComboAttack()
 void fq::client::BossMonster::SetNextAttack()
 {
 	int index = helper::RandomGenerator::GetInstance()
-		.GetRandomNumber(0, static_cast<int>(EBossMonsterAttackType::Grawl));
+		.GetRandomNumber(0, static_cast<int>(EBossMonsterAttackType::Combo));
 
-	auto type = static_cast<EBossMonsterAttackType>(index);
-
-	switch (type)
-	{
-		case fq::client::EBossMonsterAttackType::Rush:
-		{
-			mAnimator->SetParameterTrigger("OnRush");
-		}
-		break;
-		case fq::client::EBossMonsterAttackType::SmashDown:
-		{
-			mAnimator->SetParameterTrigger("OnSmashDown");
-		}
-		break;
-		case fq::client::EBossMonsterAttackType::Combo:
-		{
-		}
-		break;
-		case fq::client::EBossMonsterAttackType::Grawl:
-		{
-
-		}
-		break;
-	}
-
+	mAnimator->SetParameterInt("AttackType", index);
 }
 

@@ -1,6 +1,7 @@
 #include "BossMonsterSmashDownState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/NavigationAgent.h"
 #include "BossMonster.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterSmashDownState::Clone()
@@ -66,6 +67,8 @@ void fq::client::BossMonsterSmashDownState::OnStateEnter(game_module::Animator& 
 	mAttackElapsedTime = 0.f;
 	mEffectElapsedTime = 0.f;
 	mHomingElapsedTime = 0.f;
+
+	animator.GetComponent<game_module::NavigationAgent>()->Stop();
 }
 
 void fq::client::BossMonsterSmashDownState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -78,4 +81,5 @@ void fq::client::BossMonsterSmashDownState::OnStateExit(game_module::Animator& a
 
 	// 공격이 끝나면 타겟을 무작위 설정
 	animator.GetComponent<BossMonster>()->SetRandomTarget();
+	animator.GetComponent<BossMonster>()->SetNextAttack();
 }
