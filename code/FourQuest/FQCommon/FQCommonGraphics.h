@@ -80,14 +80,14 @@ namespace fq::graphics
 
 	struct TextInfo
 	{
-		std::wstring Text = L"텍스트"; // 실제 띄울 내용
+		std::string Text = ""; // 실제 띄울 내용
 
 		int CenterX = 50;
 		int CenterY = 50;
 		int Width = 100;
 		int Height = 100;
 
-		std::wstring FontPath = L"Verdana";
+		std::string FontPath = "Verdana";
 		int FontSize = 10;
 		DirectX::SimpleMath::Color FontColor = {0, 0, 0, 1};
 

@@ -80,6 +80,8 @@ void fq::game_engine::UISystem::OnLoadScene()
 	}
 
 	mbIsGameLoaded = true;
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnUnLoadScene()

@@ -90,10 +90,10 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	textInfo.CenterY = 500;
 	textInfo.Width = 1000;
 	textInfo.Height = 1000;
-	textInfo.Text = L"집가고싶당";
+	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
 	textInfo.FontColor = { 0.1,0.8,0.4,1 };
 	textInfo.FontSize = 32;
-	textInfo.FontPath = L"DungGeunMo";
+	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
 	mTextObject1 = mTestGraphics->CreateText(textInfo);
 	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
 
