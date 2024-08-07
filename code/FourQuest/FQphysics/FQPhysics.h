@@ -170,9 +170,10 @@ namespace fq::physics
 		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
-		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
-		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius) override;
-		virtual bool AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info, const float& halfHeight, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info) override;
 
 		/// <summary>
 		/// 관절 (Articulation) Get/Set 데이터 입니다.
@@ -218,6 +219,7 @@ namespace fq::physics
 	private:
 		// 씬
 		physx::PxScene* mScene;
+		physx::PxScene* mGpuScene;
 		physx::PxCudaContextManager* mCudaContextManager;
 
 		std::shared_ptr<Physics> mPhysics;

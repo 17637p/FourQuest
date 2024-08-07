@@ -69,13 +69,13 @@ void fq::game_module::Animator::SetParameterOffTrigger(const std::string& id)
 
 void fq::game_module::Animator::UpdateState(float dt)
 { 
-	if (mController && !mbIsStopAnimation)
+	if (mController)
 		mController->UpdateState(dt);
 }
 
 void fq::game_module::Animator::UpdateAnimation(float dt)
 {
-	if (mController && !mbIsStopAnimation)
+	if (mController)
 		mController->UpdateAnimation(dt, mDefaultPlaySpeed);
 }
 
@@ -86,7 +86,7 @@ bool fq::game_module::Animator::IsInTransition() const
 
 void fq::game_module::Animator::OnUpdate(float dt)
 {
-	if (mController && !mbIsStopAnimation)
+	if (mController)
 		mController->Update(dt);
 }
 

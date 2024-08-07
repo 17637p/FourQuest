@@ -56,14 +56,9 @@ void fq::game_module::SceneManager::Finalize()
 	mEventManager->RemoveHandle(mRequestExitGameHadler);
 }
 
-void fq::game_module::SceneManager::ChangeScene(const std::string& nextSceneName)
+void fq::game_module::SceneManager::ChangeScene()
 {
-	mTimeManager->SetTimeScale(1);
-
 	UnloadScene();
-
-	mCurrentScene->mSceneName = nextSceneName;
-
 	LoadScene();
 
 	if (mbIsInvokeStartScene)
@@ -113,14 +108,6 @@ void fq::game_module::SceneManager::PostUpdate()
 {
 	// 게임오브젝트 추가 처리 
 	mCurrentScene->processPedingObject();
-
-	// 씬변경 처리 
-	if (!mNextSceneName.empty())
-	{
-		ChangeScene(mNextSceneName);
-
-		mNextSceneName.clear();
-	}
 }
 
 void fq::game_module::SceneManager::LoadScene()
@@ -152,16 +139,20 @@ void fq::game_module::SceneManager::LoadScene()
 	// Event CallBack
 	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
 
+
 	spdlog::trace("[SceneManager] Load \"{}\" Scene [{}s]", mCurrentScene->GetSceneName(), sw);
 }
 
 void fq::game_module::SceneManager::UnloadScene()
 {
+	mTimeManager->SetTimeScale(1);
 	mEventManager->FireEvent<fq::event::OnUnloadScene>({});
 	mPrefabManager->UnloadPrefabResource();
 	mCurrentScene->DestroyAll();
 	mCurrentScene->CleanUp();
 	mCurrentScene->mIsStartScene = false;
+	mCurrentScene->mSceneName = mNextSceneName;
+	mNextSceneName.clear();
 }
 
 void fq::game_module::SceneManager::RequestChangeScene(fq::event::RequestChangeScene event)
@@ -179,4 +170,8 @@ void fq::game_module::SceneManager::RequestExitGame(fq::event::RequestExitGame e
 	mbIsEnd = true;
 }
 
+bool fq::game_module::SceneManager::IsChangeScene() const
+{
+	return !mNextSceneName.empty();
+}
 

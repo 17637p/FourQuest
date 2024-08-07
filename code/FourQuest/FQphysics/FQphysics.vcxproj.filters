@@ -230,9 +230,6 @@
     <ClCompile Include="CharacterLink.cpp">
       <Filter>Character\CharacterPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterJoint.cpp">
-      <Filter>Character\CharacterPhysics</Filter>
-    </ClCompile>
     <ClCompile Include="HeightFieldResource.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
@@ -244,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="RaycastQueryFileter.cpp">
       <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterJoint.cpp">
+      <Filter>Character\CharacterPhysics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

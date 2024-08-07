@@ -122,16 +122,22 @@ namespace fq::physics
 		bool isFall = false;									// 캐릭터가 떨어지고 있는지 체크 변수
 	};
 
-	struct ArticulationLinkData
+	struct ArticulationLinkGetData
 	{
 		std::string name;
-		DirectX::SimpleMath::Matrix worldTransform = {};
+		DirectX::SimpleMath::Matrix jointLocalTransform = {};
+	};
+
+	struct ArticulationLinkSetData
+	{
+		std::string name;
+		DirectX::SimpleMath::Matrix boneWorldTransform = {};
 	};
 
 	struct ArticulationGetData
 	{
 		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
-		std::vector<ArticulationLinkData> linkData;
+		std::vector<ArticulationLinkGetData> linkData;
 		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
 		unsigned int myLayerNumber = UINT_MAX;
 	};
@@ -139,7 +145,7 @@ namespace fq::physics
 	struct ArticulationSetData
 	{
 		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;
-		std::vector<ArticulationLinkData> linkData;
+		std::vector<ArticulationLinkSetData> linkData;
 		bool bIsRagdollSimulation = false;														// 레그돌 시뮬레이션 On/Off 입니다.
 		unsigned int myLayerNumber = UINT_MAX;
 	};
@@ -290,33 +296,37 @@ namespace fq::physics
 
 	struct JointInfo
 	{
-		JointAxisInfo Swing1AxisInfo;														// Swing1( X축을 중심으로 한 회전 )
-		JointAxisInfo Swing2AxisInfo;														// Swing2( Y축을 중심으로 한 회전 )
-		JointAxisInfo TwistAxisInfo;														// Twist( Z축을 중심으로 한 회전 )
-		DirectX::SimpleMath::Matrix localTransform = DirectX::SimpleMath::Matrix::Identity;	// 조인트의 로절 좌표
-		float stiffness = 0.f;																// 강성 : 관절이 목표 위치로 이동하려는 힘의 크기 ( 0.f ~ 1.f )
-		float damping = 1.f;																// 감쇠 계수 : 운동에 대한 저항력 ( 진동을 방지하고 부드럽게 움직이동 할 수 있게 ) ( 0.f ~ 1.f )
-		float maxForce = 1.f;																// 최대 힘 : 관절 드라이브가 적용할 수 있는 최대 힘 
+		JointAxisInfo Swing1AxisInfo;															// Swing1( X축을 중심으로 한 회전 )
+		JointAxisInfo Swing2AxisInfo;															// Swing2( Y축을 중심으로 한 회전 )
+		JointAxisInfo TwistAxisInfo;															// Twist( Z축을 중심으로 한 회전 )
+		DirectX::SimpleMath::Matrix localTransform = DirectX::SimpleMath::Matrix::Identity;		// 조인트의 로절 좌표
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;		// 조인트의 월드 좌표
+		float stiffness = 0.f;																	// 강성 : 관절이 목표 위치로 이동하려는 힘의 크기 ( 0.f ~ 1.f )
+		float damping = 1.f;																	// 감쇠 계수 : 운동에 대한 저항력 ( 진동을 방지하고 부드럽게 움직이동 할 수 있게 ) ( 0.f ~ 1.f )
+		float maxForce = 1.f;																	// 최대 힘 : 관절 드라이브가 적용할 수 있는 최대 힘 
 	};
 
 	struct LinkInfo
 	{
-		std::string boneName = {};															// 해당 본(링크)의 이름
-		std::string parentBoneName = {};													// 부모 본(링크)의 이름
-		float density = 1.f;																// 밀도 ( 0.f ~ 1.f )
-		DirectX::SimpleMath::Matrix localTransform = DirectX::SimpleMath::Matrix::Identity;	// 로컬 좌표
-		JointInfo jointInfo;																// 조인트 정보
+		std::string boneName = {};																// 해당 본(링크)의 이름
+		std::string parentBoneName = {};														// 부모 본(링크)의 이름
+		float density = 1.f;																	// 밀도 ( 0.f ~ 1.f )
+		DirectX::SimpleMath::Matrix localTransform = DirectX::SimpleMath::Matrix::Identity;		// 로컬 좌표
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;		// 로컬 좌표
+		DirectX::SimpleMath::Matrix boneTransform = DirectX::SimpleMath::Matrix::Identity;		// 본 월드 좌표
+		DirectX::SimpleMath::Matrix rootTransform = DirectX::SimpleMath::Matrix::Identity;		// 루트 월드 트랜스폼
+		JointInfo jointInfo;																	// 조인트 정보
 	};
 
 	struct ArticulationInfo
 	{
-		unsigned int id = unregisterID;														// 아이디
-		unsigned int layerNumber = 0;														// 충돌 레이어 넘버
-		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;	// 월드 좌표
-		float staticFriction = 1.f;															// 정적 마찰 계수 ( 0.f ~ 1.f )
-		float dynamicFriction = 1.f;														// 동적 마찰 계수 ( 0.f ~ 1.f )
-		float restitution = 1.f;															// 복원 계수 ( 0.f ~ 1.f )
-		float density = 1.f;																// 밀도 ( 0.f ~ 1.f )
+		unsigned int id = unregisterID;															// 아이디
+		unsigned int layerNumber = 0;															// 충돌 레이어 넘버
+		DirectX::SimpleMath::Matrix worldTransform = DirectX::SimpleMath::Matrix::Identity;		// 월드 좌표
+		float staticFriction = 1.f;																// 정적 마찰 계수 ( 0.f ~ 1.f )
+		float dynamicFriction = 1.f;															// 동적 마찰 계수 ( 0.f ~ 1.f )
+		float restitution = 1.f;																// 복원 계수 ( 0.f ~ 1.f )
+		float density = 1.f;																	// 밀도 ( 0.f ~ 1.f )
 	};
 #pragma endregion
 

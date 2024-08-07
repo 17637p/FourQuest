@@ -71,6 +71,7 @@ namespace fq::physics
 		, mCollisionDataManager(std::make_shared<PhysicsCollisionDataManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
+		, mGpuScene(nullptr)
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 	{
@@ -81,6 +82,7 @@ namespace fq::physics
 		mCCTManager = nullptr;
 		mRigidBodyManager = nullptr;
 		PX_RELEASE(mScene);
+		PX_RELEASE(mGpuScene);
 		PX_RELEASE(mCudaContextManager);
 	}
 
@@ -119,13 +121,13 @@ namespace fq::physics
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
-		sceneDesc.cudaContextManager = mCudaContextManager;
+		//sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
-		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
-		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
-		sceneDesc.solverType = physx::PxSolverType::eTGS;
+		//sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::ePABP;
+		sceneDesc.solverType = physx::PxSolverType::ePGS;
 
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
@@ -156,6 +158,8 @@ namespace fq::physics
 		if (!mCCTManager->Update(deltaTime))
 			return false;
 		if (!mCollisionDataManager->Update())
+			return false;
+		if (!mCharacterPhysicsManager->Update())
 			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
@@ -396,17 +400,21 @@ namespace fq::physics
 	{
 		return mCharacterPhysicsManager->RemoveArticulation(id);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const float& radius)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const LinkInfo& info, const float& halfHeight, const float& radius)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const float& halfHeight, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
+	}
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info)
+	{
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix);
 	}
 
 	ArticulationGetData FQPhysics::GetArticulationData(const unsigned int& id)

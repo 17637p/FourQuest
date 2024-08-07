@@ -11,10 +11,10 @@ namespace fq::game_module
 		, mShapeType(EShapeType::BOX)
 		, mChildrenLinkData()
 		, mID(0)
-		, mSphereRadius(1.f)
-		, mCapsuleHalfHeight(1.f)
-		, mCapsuleRadius(1.f)
-		, mExtent{1.f, 1.f, 1.f}
+		, mSphereRadius(0.1f)
+		, mCapsuleHalfHeight(0.1f)
+		, mCapsuleRadius(0.1f)
+		, mExtent{0.1f, 0.1f, 0.1f}
 	{
 	}
 
@@ -26,6 +26,7 @@ namespace fq::game_module
 	{
 		mParentWorldTransform = parentWorldTransform;
 		mWorldTransform = mLinkInfo.localTransform * parentWorldTransform;
+		mLinkInfo.worldTransform = mLinkInfo.localTransform * parentWorldTransform;
 
 		for (auto it = mChildrenLinkData.begin(); it != mChildrenLinkData.end(); )
 		{
