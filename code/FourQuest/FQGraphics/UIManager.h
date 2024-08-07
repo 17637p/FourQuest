@@ -78,6 +78,8 @@ namespace fq::graphics
 		void AddImage(IImageObject* imageObject);
 		void DeleteImage(IImageObject* imageObject);
 
+		void SetIsRenderObjects(bool isRenderObjects) { mIsRenderObjects = isRenderObjects; }
+
 	private:
 		void loadBitmap(const std::wstring& path);
 		HRESULT createRenderTarget(std::shared_ptr<D3D11Device> device, const short width, const short height);
@@ -93,6 +95,9 @@ namespace fq::graphics
 
 	private:
 		HWND mHWnd;
+
+		// RenderObject 여부 // false라면 UIManger에서 RenderTarget을 초기화해야함
+		bool mIsRenderObjects;
 
 		ID2D1Factory* mDirect2DFactory;
 		ID2D1RenderTarget* mRenderTarget;

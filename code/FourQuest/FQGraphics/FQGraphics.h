@@ -140,6 +140,7 @@ namespace fq::graphics
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
 		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
 		virtual void SetIsRenderDebug(bool bIsRenderDebug) override;
+		virtual void SetIsRenderObjects(bool isRenderObjects) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
@@ -221,6 +222,8 @@ namespace fq::graphics
 		std::shared_ptr<class UIManager> mUIManager;
 
 		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
+
+		bool mIsRenderObjects;
 
 		// temp
 		bool mIsOnPostProcessing;

@@ -36,6 +36,7 @@ FQGraphics::FQGraphics()
 	, mLightProbeManager(std::make_shared<D3D11LightProbeManager>())
 	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
 	, mIsOnPostProcessing(true)
+	, mIsRenderObjects(true)
 {
 }
 
@@ -368,8 +369,11 @@ void FQGraphics::SetCamera(const CameraInfo& cameraInfo)
 
 bool FQGraphics::BeginRender()
 {
-	mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
-	mLightManager->UpdateShadowConstantBuffer(mDevice, mCameraManager);
+	if (mIsRenderObjects)
+	{
+		mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), true);
+		mLightManager->UpdateShadowConstantBuffer(mDevice, mCameraManager);
+	}
 
 	mRenderManager->BeginRender();
 
@@ -378,34 +382,38 @@ bool FQGraphics::BeginRender()
 
 bool FQGraphics::Render()
 {
-	// 랜더링 오브젝트의 수정된 데이터를 기반으로 리소스 갱신
-	mObjectManager->UpdateModifiedResources(mDevice);
-
-	// 컬링 추가해야 됨 
-	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
-	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
-	std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
-
-	staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
-	skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
-
-	for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
-	for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
-	for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
-
-	mRenderManager->Render();
-
-	if (mIsOnPostProcessing)
+	if (mIsRenderObjects)
 	{
-		mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+		// 랜더링 오브젝트의 수정된 데이터를 기반으로 리소스 갱신
+		mObjectManager->UpdateModifiedResources(mDevice);
+
+		// 컬링 추가해야 됨 
+		std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
+		std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+		std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
+
+		staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
+		skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
+
+		for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
+		for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
+		for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
+
+		mRenderManager->Render();
+
+		if (mIsOnPostProcessing)
 		{
-			mPostProcessingManager->Excute(mDevice);
+			mPostProcessingManager->CopyOffscreenBuffer(mDevice);
+			{
+				mPostProcessingManager->Excute(mDevice);
+			}
+		}
+		if (mIsOnPostProcessing)
+		{
+			mPostProcessingManager->RenderFullScreen(mDevice);
 		}
 	}
-	if (mIsOnPostProcessing)
-	{
-		mPostProcessingManager->RenderFullScreen(mDevice);
-	}
+
 	mUIManager->Render();
 	mRenderManager->RenderFullScreen();
 
@@ -415,8 +423,12 @@ bool FQGraphics::Render()
 bool FQGraphics::EndRender()
 {
 	mRenderManager->EndRender();
-	mJobManager->ClearAll();
-	mObjectManager->ClearDeleteQueue();
+
+	if (mIsRenderObjects)
+	{
+		mJobManager->ClearAll();
+		mObjectManager->ClearDeleteQueue();
+	}
 
 	return true;
 }
@@ -832,6 +844,12 @@ void fq::graphics::FQGraphics::DrawSphereEx(const debug::SphereInfoEx& sphereInf
 void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 {
 	mDebugDrawManager->Submit(ringInfoEx);
+}
+
+void FQGraphics::SetIsRenderObjects(bool isRenderObjects)
+{
+	mUIManager->SetIsRenderObjects(isRenderObjects);
+	mIsRenderObjects = isRenderObjects;
 }
 
 void FQGraphics::DeleteText(fq::graphics::ITextObject* textObject)
