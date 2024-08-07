@@ -1,6 +1,7 @@
 #pragma once
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/TextUI.h"
 
 #include "Quest.h"
 
@@ -34,6 +35,8 @@ namespace fq::client
 		std::vector<Quest> GetMainQuests() const { return mMainQuests; }
 		std::vector<Quest> GetSubQuests() const { return mSubQuests; }
 
+		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -63,6 +66,12 @@ namespace fq::client
 		// 스크립트 용
 		Quest mCurMainQuest;
 		std::vector<Quest> mCurSubQuest;
+
+		game_module::TextUI* mMainQuestText;
+		std::vector<game_module::TextUI*> mSubQuestTexts;
+
+		// Gauge Width
+		int mGaugeMaxWidth;
 
 		friend void RegisterMetaData();
 	};

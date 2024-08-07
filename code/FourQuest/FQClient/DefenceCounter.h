@@ -13,6 +13,7 @@ namespace fq::client
 		virtual void OnTriggerExit(const game_module::Collision& collision) override;
 
 		void SetIsStart(bool isStart) { mIsStart = isStart; }
+		float GetCountRatio() { return mCurCount / mRequestCount; }
 
 		virtual void OnUpdate(float dt) override;
 
