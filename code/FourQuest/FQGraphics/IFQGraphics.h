@@ -170,6 +170,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetPipelineType(EPipelineType pipelineType) abstract;
 			virtual FQ_GRAPHICS void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) abstract;
 			virtual FQ_GRAPHICS void SetIsRenderDebug(bool bIsRenderDebug) abstract;
+			virtual FQ_GRAPHICS void SetIsRenderObjects(bool isRenderObjects) abstract;
 
 			/// UI
 			// text
