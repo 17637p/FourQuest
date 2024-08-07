@@ -68,6 +68,7 @@ void fq::graphics::D3D11LightManager::SetLight(const unsigned int id, const Ligh
 		directLight.color.z = lightInfo.color.z;
 		directLight.intensity = lightInfo.intensity;
 		directLight.direction = lightInfo.direction;
+		directLight.lightMode = static_cast<unsigned int>(lightInfo.mode);
 
 		mDirectionalLights[id]->SetData(directLight);
 		break;
@@ -82,6 +83,7 @@ void fq::graphics::D3D11LightManager::SetLight(const unsigned int id, const Ligh
 		pointLight.position = lightInfo.position;
 		pointLight.range = lightInfo.range;
 		pointLight.attenuation = lightInfo.attenuation;
+		pointLight.lightMode = static_cast<unsigned int>(lightInfo.mode);
 
 		mPointLights[id]->SetData(pointLight);
 		break;
@@ -98,6 +100,7 @@ void fq::graphics::D3D11LightManager::SetLight(const unsigned int id, const Ligh
 		spotLight.direction = lightInfo.direction;
 		spotLight.spot = lightInfo.spot;
 		spotLight.attenuation = lightInfo.attenuation;
+		spotLight.lightMode = static_cast<unsigned int>(lightInfo.mode);
 
 		mSpotLight[id]->SetData(spotLight);
 		break;
@@ -173,38 +176,77 @@ void fq::graphics::D3D11LightManager::UpdateConstantBuffer(
 	// 임의로 쉐도우를 사용하는 라이트가 먼저 추가되도록 함_홍지환
 	unsigned short count = 0;
 	std::set<unsigned int> idSet;
-	for (const auto& shadowDirectionalLight : mDirectionalShadows)
+	for (const auto& [key, directionalLight] : mDirectionalShadows)
 	{
-		idSet.insert(shadowDirectionalLight.first);
+		if (ARRAYSIZE(lightData.directionalLight) <= count)
+		{
+			break;
+		}
 
-		lightData.directionalLight[count] = shadowDirectionalLight.second->GetData();
+		idSet.insert(key);
+
+		lightData.directionalLight[count] = directionalLight->GetData();
 		count++;
 	}
 	for (const auto& directionalLight : mDirectionalLights)
 	{
+		DirectionalLight directionalLightData = directionalLight.second->GetData();
+
+		if (directionalLightData.lightMode == static_cast<unsigned int>(ELightMode::Baked))
+		{
+			continue;
+		}
+		if (ARRAYSIZE(lightData.directionalLight) <= count)
+		{
+			break;
+		}
+
 		auto find = idSet.find(directionalLight.first);
 
 		if (find == idSet.end())
 		{
-			lightData.directionalLight[count] = directionalLight.second->GetData();
+			lightData.directionalLight[count] = directionalLightData;
 			count++;
 		}
 	}
-
 	lightData.numOfDirectionalLight = count;
+
 	// Point Light
 	count = 0;
 	for (const auto& pointLight : mPointLights)
 	{
-		lightData.pointLight[count] = pointLight.second->GetData();
+		PointLight pointLightData = pointLight.second->GetData();
+
+		if (pointLightData.lightMode == static_cast<unsigned int>(ELightMode::Baked))
+		{
+			continue;
+		}
+		if (ARRAYSIZE(lightData.pointLight) <= count)
+		{
+			break;
+		}
+
+		lightData.pointLight[count] = pointLightData;
 		count++;
 	}
 	lightData.numOfPointLight = count;
+
 	// Spot Light
 	count = 0;
 	for (const auto& spotLight : mSpotLight)
 	{
-		lightData.spotLight[count] = spotLight.second->GetData();
+		SpotLight spotLightData = spotLight.second->GetData();
+
+		if (spotLightData.lightMode == static_cast<unsigned int>(ELightMode::Baked))
+		{
+			continue;
+		}
+		if (ARRAYSIZE(lightData.spotLight) <= count)
+		{
+			break;
+		}
+
+		lightData.spotLight[count] = spotLightData;
 		count++;
 	}
 	lightData.numOfSpotLight = count;
@@ -247,6 +289,8 @@ void fq::graphics::D3D11LightManager::UpdateShadowConstantBuffer(const std::shar
 			directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
 			directionalShadowData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2]).Transpose();
 			directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
+
+			directionalShadowData.LightModes[i] = directioanlShadows[i]->GetData().lightMode;
 		}
 	}
 
@@ -424,7 +468,7 @@ std::vector<DirectX::SimpleMath::Matrix> fq::graphics::D3D11LightManager::calcul
 
 	float frustumDistnace = (frustum.Far - frustum.Near);
 	Matrix viewInverse = cameraView.Invert();
-	
+
 	DirectX::SimpleMath::Vector3 forwardVec;
 	cameraView.Forward(forwardVec);
 	DirectX::SimpleMath::Vector3 adjustTranslate = forwardVec * frustumDistnace;
@@ -483,4 +527,16 @@ std::vector<DirectX::SimpleMath::Matrix> fq::graphics::D3D11LightManager::calcul
 	}
 
 	return result;
+}
+
+void fq::graphics::D3D11LightManager::CreateLightMapTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths)
+{
+	assert(!paths.empty());
+	mLightMapTextureArray = std::make_shared<D3D11TextureArray>(d3d11Device, paths);
+}
+
+void fq::graphics::D3D11LightManager::CreateLightMapDirectionTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths)
+{
+	assert(!paths.empty());
+	mLightMapDirectionTextureArray = std::make_shared<D3D11TextureArray>(d3d11Device, paths);
 }

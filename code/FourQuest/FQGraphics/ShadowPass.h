@@ -43,5 +43,13 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
+
+		struct cbLightCondition
+		{
+			int bIsStatic;
+			float unused[3];
+		};
+
+		std::shared_ptr<D3D11ConstantBuffer<cbLightCondition>> mLightConditionCB;
 	};
 }

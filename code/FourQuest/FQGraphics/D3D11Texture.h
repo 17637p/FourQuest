@@ -8,6 +8,7 @@
 #include <string>
 #include <d3d11.h>
 #include <vector>
+#include <filesystem>
 
 namespace fq::graphics
 {
@@ -57,6 +58,20 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSRV;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mUAV;
 		TextureType type;
+	};
+
+	class D3D11TextureArray
+	{
+	public:
+		D3D11TextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& texturePaths);
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
+
+	private:
+		std::vector<float> loadEXR(const std::filesystem::path& texturePath, int* outWidth, int* outHeight);
+
+	private:
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mSRV;
 	};
 
 	class D3D11CubeTexture : public ResourceBase

@@ -102,6 +102,22 @@ namespace fq::game_module
 		bool GetIsNavigationMeshUsed() const { return mIsNavigationMeshUsed; }
 		void SetIsNavigationMeshUsed(bool val) { mIsNavigationMeshUsed = val; }
 
+		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
+		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
+
+		// 라이트맵 관련
+		void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset);
+		const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const;
+
+		void SetLightmapIndex(unsigned int lightmapIndex);
+		int GetLightmapIndex() const;
+
+		void SetIsStatic(bool bIsStatic);
+		bool GetIsStatic() const;
+
+		void SetPrevApplyTransform(const DirectX::SimpleMath::Matrix& transform) { mPrevApplyTransform = transform; }
+		const DirectX::SimpleMath::Matrix& GetPrevApplyTransform() const { return mPrevApplyTransform; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -114,9 +130,18 @@ namespace fq::game_module
 		std::string mModelPath;
 		std::string mTexturePath;
 		std::string mMeshName;
-		std::vector<std::string> mMaterialNames;
-		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;
+		std::vector<std::string> mMaterialNames; // 컨버트 완료 후 지울 예정
+		std::vector<fq::graphics::MaterialInfo> mMaterialInfos; // 컨버트 완료 후 지울 예정
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> mMaterialInterfaces;
+
+		// 추가
+		std::vector<std::string> mMaterialPaths; // 별도로 직렬화된 데이터로 인터페이스 가져올 예정
+
+		// 라이트맵 관련 인자
+		DirectX::SimpleMath::Vector4 mLightmapScaleOffset;
+		int mLightmapIndex;
+		bool mbIsStatic;
+		DirectX::SimpleMath::Matrix mPrevApplyTransform; // 추후 모델 자체에서 처리할 예정
 	};
 
 }

@@ -1,3 +1,4 @@
+#include "Common.hlsli"
 
 struct VertexIn
 {
@@ -10,6 +11,9 @@ struct VertexIn
     float4 Weights : WEIGHTS;
 #elif defined INSTANCING
     float4x4 World : WORLD;
+#endif
+#ifdef STATIC
+    float2 UV1 : UV1;
 #endif
 };
 
@@ -24,12 +28,16 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+#ifdef STATIC
+    float2 UV1 : TEXCOORD6;
+#endif
 };
 
 cbuffer cbModelTransform : register(b0)
 {
     float4x4 cWorld;
     float4x4 cWorldInvTranspose;
+    
 };
 
 cbuffer cbSceneTransform : register(b1)
@@ -47,19 +55,16 @@ cbuffer cbBoneTransform : register(b2)
 
 cbuffer cbMaterial : register(b3)
 {
-    float4 cBaseColor;
-    float4 cEmissiveColor;
-    float4x4 gTexTransform;
-    
-    float cMetalness;
-    float cRoughness;
-    bool cUseAlbedoMap;
-    bool cUseMetalnessMap;
-  
-    bool cUseRoughnessMap;
-    bool cUseNormalMap;
-    bool cUseEmissiveMap;
+    ModelMaterial gModelMaterial;
 };
+
+#ifdef STATIC
+cbuffer cbLightmapInformation : register(b4)
+{
+    float4 cUVOffsetScale;
+    uint cUVIndex;
+};
+#endif
 
 VertexOut main(VertexIn vin)
 {
@@ -91,9 +96,15 @@ VertexOut main(VertexIn vin)
     vout.TangentW = normalize(mul(vin.TangentL, (float3x3) worldMat));
     vout.TangentV = normalize(mul(vout.TangentW, (float3x3) cView));
     
-    vout.UV = mul(float4(vin.UV, 0, 1), gTexTransform);
+    vout.UV = mul(float4(vin.UV, 0, 1), gModelMaterial.TexTransform);
     
     vout.ClipSpacePosZ = vout.PositionH.z;
+    
+#ifdef STATIC
+    vin.UV1.y = 1 - vin.UV1.y; 
+    vout.UV1 = vin.UV1 * cUVOffsetScale.xy + cUVOffsetScale.zw;
+    vout.UV1.y = 1 - vout.UV1.y; 
+#endif
     
     return vout;
 }

@@ -44,6 +44,7 @@ namespace fq::graphics
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mLightConditionCB = std::make_shared<D3D11ConstantBuffer<cbLightCondition>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 
 	void ShadowPass::Finalize()
@@ -63,6 +64,7 @@ namespace fq::graphics
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
+		mLightConditionCB = nullptr;
 	}
 
 	void ShadowPass::Render()
@@ -118,6 +120,8 @@ namespace fq::graphics
 
 		mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 		mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::GeometryShader);
+		mLightConditionCB->Bind(mDevice, ED3D11ShaderType::GeometryShader, 1);
+
 		mStaticMeshShaderProgram->Bind(mDevice);
 
 		for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
@@ -129,9 +133,17 @@ namespace fq::graphics
 
 				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
 
+				cbLightCondition lightCondition;
+				lightCondition.bIsStatic = job.StaticMeshObject->GetMeshObjectInfo().ObjectType == MeshObjectInfo::EObjectType::Static ? true : false;
+				mLightConditionCB->Update(mDevice, lightCondition);
+
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
 		}
+
+		cbLightCondition lightCondition;
+		lightCondition.bIsStatic = false;
+		mLightConditionCB->Update(mDevice, lightCondition);
 
 		mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
 		mSkinnedMeshShaderProgram->Bind(mDevice);

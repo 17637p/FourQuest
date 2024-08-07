@@ -2,6 +2,7 @@
 #include "ClientEvent.h"
 
 #include "DefenceCounter.h"
+#include "../FQGameModule/ImageUI.h"
 
 #include <spdlog/spdlog.h>
 
@@ -10,7 +11,8 @@ fq::client::QuestManager::QuestManager()
 	mMainQuests(),
 	mSubQuests(),
 	mCurMainQuest(),
-	mCurSubQuest()
+	mCurSubQuest(),
+	mGaugeMaxWidth(0)
 {
 }
 
@@ -57,6 +59,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 
 void fq::client::QuestManager::OnStart()
 {
+	// 시작 퀘스트 등록
 	mCurSubQuest.clear();
 
 	mCurMainQuest = mMainQuests[mStartQuests.startMainQuestIndex];
@@ -69,19 +72,43 @@ void fq::client::QuestManager::OnStart()
 		mCurSubQuest.push_back(*it);
 	}
 
+	// 
+	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
+	mMainQuestText = children[1]->GetComponent<game_module::TextUI>();
+	for (int i = 0; i < 3; i++)
+	{
+		mSubQuestTexts.push_back(children[3]->GetChildren()[i]->GetComponent<game_module::TextUI>());
+	}
+
+	// GaugeMaxWidth 설정
+	mGaugeMaxWidth = mMainQuestText->GetGameObject()->GetChildren()[2]->GetComponent<game_module::ImageUI>()->GetUIInfomation(0).Width;
+
 	// 이벤트 핸들러 등록
 	EventProcessKillMonster();
 	EventProcessPlayerCollideTrigger();
 	EventProcessCompleteDefence();
 	EventProcessClearQuest();
 	EventProcessAllColliderTrigger();
+	EventProcessObjectInteraction();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
 {
-	// Quest Clear
-	//if()
-	int a = 3;
+	// Main Quest Text Setting
+	auto textInfo = mMainQuestText->GetTextInfo();
+	textInfo.Text = mCurMainQuest.mName;
+	mMainQuestText->SetTextInfo(textInfo);
+
+	ViewQuestInformation(mCurMainQuest, mMainQuestText);
+
+	// Sub Quest Text Setting
+	for (int i = 0; i < mCurSubQuest.size(); i++)
+	{
+		auto textInfo = mSubQuestTexts[i]->GetTextInfo();
+		textInfo.Text = mCurSubQuest[i].mName;
+		mSubQuestTexts[i]->SetTextInfo(textInfo);
+		ViewQuestInformation(mCurSubQuest[i], mSubQuestTexts[i]);
+	}
 }
 
 void fq::client::QuestManager::OnDestroy()
@@ -91,6 +118,7 @@ void fq::client::QuestManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mCompleteDefenceHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mClearQuestHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mAllCollideTriggerHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mObjectInteractionHandler);
 }
 
 void fq::client::QuestManager::EventProcessKillMonster()
@@ -99,7 +127,7 @@ void fq::client::QuestManager::EventProcessKillMonster()
 		[this](const client::event::KillMonster& event)
 		{
 			// Main
-			std::vector<MonsterKill> monsterKillList = mCurMainQuest.mclearConditionList.monsterKillList;
+			std::vector<MonsterKill>& monsterKillList = mCurMainQuest.mclearConditionList.monsterKillList;
 			int monsterKillListSize = monsterKillList.size();
 			if (monsterKillListSize > 0)
 			{
@@ -134,7 +162,7 @@ void fq::client::QuestManager::EventProcessKillMonster()
 			// Sub
 			for (int j = 0; j < mCurSubQuest.size(); j++)
 			{
-				std::vector<MonsterKill> monsterKillList = mCurSubQuest[j].mclearConditionList.monsterKillList;
+				std::vector<MonsterKill>& monsterKillList = mCurSubQuest[j].mclearConditionList.monsterKillList;
 				int monsterKillListSize = monsterKillList.size();
 				if (monsterKillListSize > 0)
 				{
@@ -175,7 +203,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
 		[this](const client::event::PlayerCollideTrigger& event)
 		{
-			std::vector<Defence> defenceList = mCurMainQuest.mclearConditionList.defenceList;
+			std::vector<Defence>& defenceList = mCurMainQuest.mclearConditionList.defenceList;
 			if (defenceList.size() > 0)
 			{
 				if (defenceList[0].colliderName == event.colliderName)
@@ -187,7 +215,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<Defence> defenceList = mCurSubQuest[i].mclearConditionList.defenceList;
+				std::vector<Defence>& defenceList = mCurSubQuest[i].mclearConditionList.defenceList;
 				if (defenceList.size() > 0)
 				{
 					if (defenceList[0].colliderName == event.colliderName)
@@ -203,7 +231,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
 		[this](const client::event::PlayerCollideTrigger& event)
 		{
-			std::vector<QuestColliderTrigger> questColliderTriggerList = mCurMainQuest.mJoinConditionList.colliderTriggerList;
+			std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurMainQuest.mJoinConditionList.colliderTriggerList;
 			if (questColliderTriggerList.size() > 0)
 			{
 				if (questColliderTriggerList[0].colliderName == event.colliderName)
@@ -216,7 +244,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<QuestColliderTrigger> questColliderTriggerList = mCurSubQuest[i].mJoinConditionList.colliderTriggerList;
+				std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurSubQuest[i].mJoinConditionList.colliderTriggerList;
 				if (questColliderTriggerList.size() > 0)
 				{
 					if (questColliderTriggerList[0].colliderName == event.colliderName)
@@ -233,7 +261,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
 		[this](const client::event::PlayerCollideTrigger& event)
 		{
-			std::vector<QuestColliderTrigger> questColliderTriggerList = mCurMainQuest.mclearConditionList.colliderTriggerList;
+			std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurMainQuest.mclearConditionList.colliderTriggerList;
 			if (questColliderTriggerList.size() > 0)
 			{
 				if (questColliderTriggerList[0].colliderName == event.colliderName)
@@ -249,7 +277,7 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<QuestColliderTrigger> questColliderTriggerList = mCurSubQuest[i].mclearConditionList.colliderTriggerList;
+				std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurSubQuest[i].mclearConditionList.colliderTriggerList;
 				if (questColliderTriggerList.size() > 0)
 				{
 					if (questColliderTriggerList[0].colliderName == event.colliderName)
@@ -271,7 +299,7 @@ void fq::client::QuestManager::EventProcessCompleteDefence()
 	mCompleteDefenceHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::CompleteDefence>(
 		[this](const client::event::CompleteDefence& event)
 		{
-			std::vector<Defence> defenceList = mCurMainQuest.mclearConditionList.defenceList;
+			std::vector<Defence>& defenceList = mCurMainQuest.mclearConditionList.defenceList;
 			if (defenceList.size() > 0)
 			{
 				if (defenceList[0].colliderName == event.colliderName)
@@ -284,7 +312,7 @@ void fq::client::QuestManager::EventProcessCompleteDefence()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<Defence> defenceList = mCurSubQuest[i].mclearConditionList.defenceList;
+				std::vector<Defence>& defenceList = mCurSubQuest[i].mclearConditionList.defenceList;
 				if (defenceList.size() > 0)
 				{
 					if (defenceList[0].colliderName == event.colliderName)
@@ -306,7 +334,7 @@ void fq::client::QuestManager::EventProcessClearQuest()
 			// 방금 깬 퀘스트가 선행퀘스트라면 다음 퀘스트 추가하기
 			for (int i = 0; i < mMainQuests.size(); i++)
 			{
-				std::vector<PreQuest> preQuestList = mMainQuests[i].mJoinConditionList.preQuestList;
+				std::vector<PreQuest>& preQuestList = mMainQuests[i].mJoinConditionList.preQuestList;
 				if (preQuestList.size() > 0)
 				{
 					if (preQuestList[0].preIndex == event.clearQuest.mIndex &&
@@ -319,7 +347,7 @@ void fq::client::QuestManager::EventProcessClearQuest()
 			}
 			for (int i = 0; i < mSubQuests.size(); i++)
 			{
-				std::vector<PreQuest> preQuestList = mSubQuests[i].mJoinConditionList.preQuestList;
+				std::vector<PreQuest>& preQuestList = mSubQuests[i].mJoinConditionList.preQuestList;
 				if (preQuestList.size() > 0)
 				{
 					if (preQuestList[0].preIndex == event.clearQuest.mIndex &&
@@ -332,7 +360,7 @@ void fq::client::QuestManager::EventProcessClearQuest()
 			}
 
 			// 방금 깬 퀘스트가 클리어 조건으로 있는 퀘스트가 있다면 클리어 하기 
-			std::vector<ClearQuest> clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
+			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
 			if (clearQuestList.size() > 0)
 			{
 				if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
@@ -344,7 +372,7 @@ void fq::client::QuestManager::EventProcessClearQuest()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<ClearQuest> clearQuestList = mCurSubQuest[i].mclearConditionList.clearQuestList;
+				std::vector<ClearQuest>& clearQuestList = mCurSubQuest[i].mclearConditionList.clearQuestList;
 				if (clearQuestList.size() > 0)
 				{
 					if (clearQuestList[0].clearIndex == event.clearQuest.mIndex &&
@@ -363,7 +391,7 @@ void fq::client::QuestManager::EventProcessAllColliderTrigger()
 	mAllCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::AllCollideTrigger>(
 		[this](const client::event::AllCollideTrigger& event)
 		{
-			std::vector<QuestColliderTrigger> questColliderTriggerList = mCurMainQuest.mclearConditionList.colliderTriggerList;
+			std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurMainQuest.mclearConditionList.colliderTriggerList;
 			if (questColliderTriggerList.size() > 0)
 			{
 				if (questColliderTriggerList[0].colliderName == event.colliderName)
@@ -376,7 +404,7 @@ void fq::client::QuestManager::EventProcessAllColliderTrigger()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<QuestColliderTrigger> questColliderTriggerList = mCurSubQuest[i].mclearConditionList.colliderTriggerList;
+				std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurSubQuest[i].mclearConditionList.colliderTriggerList;
 				if (questColliderTriggerList.size() > 0)
 				{
 					if (questColliderTriggerList[0].colliderName == event.colliderName)
@@ -395,7 +423,7 @@ void fq::client::QuestManager::EventProcessObjectInteraction()
 	mObjectInteractionHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ObjectInteractionEvent>(
 		[this](const client::event::ObjectInteractionEvent& event)
 		{
-			std::vector<ObjectInteraction> objectInteractionList = mCurMainQuest.mclearConditionList.objectInteration;
+			std::vector<ObjectInteraction>& objectInteractionList = mCurMainQuest.mclearConditionList.objectInteration;
 			if (objectInteractionList.size() > 0)
 			{
 				if (objectInteractionList[0].tag == event.tag)
@@ -408,7 +436,7 @@ void fq::client::QuestManager::EventProcessObjectInteraction()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<ObjectInteraction> objectInteractionList = mCurSubQuest[i].mclearConditionList.objectInteration;
+				std::vector<ObjectInteraction>& objectInteractionList = mCurSubQuest[i].mclearConditionList.objectInteration;
 				if (objectInteractionList.size() > 0)
 				{
 					if (objectInteractionList[0].tag == event.tag)
@@ -420,5 +448,41 @@ void fq::client::QuestManager::EventProcessObjectInteraction()
 				}
 			}
 		});
+}
+
+void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::TextUI* textUI)
+{
+	// textUI children 0 - QuestBox, 1 - monsterKillText, 2 - GaugeBar
+	game_module::TextUI* monsterKillText =
+		textUI->GetGameObject()->GetChildren()[1]->GetComponent<game_module::TextUI>();
+	
+	auto text = monsterKillText->GetTextInfo();
+	text.IsRender = false;
+	monsterKillText->SetTextInfo(text);
+
+	game_module::ImageUI* gaugeBar = textUI->GetGameObject()->GetChildren()[2]->GetComponent<game_module::ImageUI>();
+	gaugeBar->SetIsRender(0, false);
+
+	// Monster Kill Setting
+	std::vector<MonsterKill>& monsterKillList = quest.mclearConditionList.monsterKillList;
+	if (monsterKillList.size() > 0)
+	{
+		text.Text = std::to_string(monsterKillList[0].curNumber) + " / " + std::to_string(monsterKillList[0].requestsNumber);
+		text.IsRender = true;
+		monsterKillText->SetTextInfo(text);
+	}
+
+	// DefenceGauge Setting
+	std::vector<Defence>& defence = quest.mclearConditionList.defenceList;
+	if (defence.size() > 0)
+	{
+		float ratio = GetScene()->GetObjectByName(defence[0].colliderName)->GetComponent<DefenceCounter>()->GetCountRatio();
+		auto imageInfo = gaugeBar->GetUIInfomation(0);
+		imageInfo.Width = mGaugeMaxWidth * ratio;
+		imageInfo.XRatio = ratio;
+		gaugeBar->SetUIInfomation(0, imageInfo);
+
+		gaugeBar->SetIsRender(0, true);
+	}
 }
 

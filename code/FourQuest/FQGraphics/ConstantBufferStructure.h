@@ -11,6 +11,15 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
+	struct LightMapInfomation
+	{
+		DirectX::SimpleMath::Vector4 UVScaleOffset;
+		unsigned int UVIndex;
+		int bUseLightmap;
+		int bUseDirection;
+		float unused[1];
+	};
+
 	struct ViewProjectionMatrix
 	{
 		DirectX::SimpleMath::Matrix ViewMatrix;
@@ -43,7 +52,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix ShadowViewProj[CASCADE_COUNT * MAX_SHADOW_COUNT];
 		DirectX::SimpleMath::Vector4 CascadeEnds[MAX_SHADOW_COUNT];
 		int ShadowCount;
-		float unused[3];
+		int LightModes[3];
 	};
 
 	struct AlphaData
@@ -84,6 +93,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 FrustumFarCorners[4];
 	};
 
+	// 리얼타임 데이터만 여기에 저장
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];
@@ -93,10 +103,17 @@ namespace fq::graphics
 		unsigned int numOfDirectionalLight;
 		unsigned int numOfPointLight;
 		unsigned int numOfSpotLight;
+
 		unsigned int isUseIBL;
 
 		DirectX::SimpleMath::Vector3 eyePosition;
 		float pad2;
+	};
+
+	// 감쇄와 조명 연산의 차이로 인해 DirectionalLight 하나만 지원
+	struct MixedLightData
+	{
+		DirectionalLight directionalLight;
 	};
 
 	struct OutLineColor
@@ -155,7 +172,8 @@ namespace fq::graphics
 		float AlphaCutoff;
 
 		float EmissiveIntensity;
-		float unused[3];
+		int bUseMetalnessSmoothnessMap;
+		float unused[2];
 	};
 
 	struct CBDecalObject
@@ -177,14 +195,12 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color EmissiveColor;
 
 		int bUseBaseColor;
-		int bUseMetalness;
-		int bUseRoughness;
 		int bUseNormalness;
-
 		int bIsUsedEmissive;
 		float NormalBlend;
+
 		float AlphaCutoff;
-		float unused[1];
+		float unused[3];
 	};
 
 	struct ParticleFrameData
@@ -314,6 +330,13 @@ namespace fq::graphics
 		DirectX::XMFLOAT4 C;
 		float Intensity;
 		DirectX::XMFLOAT3 pad;
+	};
+
+	struct SpecularMapFilterSettingsCB
+	{
+		float roughness;
+		float EnvScale;
+		float padding[2];
 	};
 
 	template <typename T>

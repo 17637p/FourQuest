@@ -90,6 +90,9 @@ namespace fq::game_module
 		/// <returns>메쉬 정보</returns>
 		fq::graphics::MeshObjectInfo GetMeshObjectInfomation() const { return mMeshInfomation; }
 
+		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
+		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -103,6 +106,8 @@ namespace fq::game_module
 		std::vector<std::string> mMaterialNames;
 		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> mMaterialInterfaces;
+
+		std::vector<std::string> mMaterialPaths; // 별도로 직렬화된 데이터로 인터페이스 가져올 예정
 	};
 
 

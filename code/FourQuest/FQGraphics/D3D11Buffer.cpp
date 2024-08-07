@@ -4,6 +4,41 @@
 
 namespace fq::graphics
 {
+	D3D11VertexBuffer::D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, unsigned int size, unsigned int count, void* ptr, bool bUseCPUWrite)
+		: mStride(size)
+		, mOffset(0u)
+		, mbUseCPUWrite(false)
+	{
+		D3D11_BUFFER_DESC bd = {};
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.Usage = bUseCPUWrite ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
+		bd.CPUAccessFlags = bUseCPUWrite ? D3D11_CPU_ACCESS_WRITE : 0u;
+		bd.MiscFlags = 0u;
+		bd.ByteWidth = (UINT)(size * count);
+		bd.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA sd = {};
+		sd.pSysMem = ptr;
+
+		device->GetDevice().Get()->CreateBuffer(&bd, &sd, mVertexBuffer.GetAddressOf());
+	}
+
+	D3D11VertexBuffer::D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, UINT size, UINT stride, UINT offset)
+		: mStride(stride)
+		, mOffset(offset)
+		, mbUseCPUWrite(true)
+	{
+		D3D11_BUFFER_DESC bd = {};
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.Usage = D3D11_USAGE_DYNAMIC;
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		bd.MiscFlags = 0u;
+		bd.ByteWidth = size;
+		bd.StructureByteStride = 0;
+
+		device->GetDevice().Get()->CreateBuffer(&bd, nullptr, mVertexBuffer.GetAddressOf());
+	}
+
 	void D3D11VertexBuffer::Bind(const std::shared_ptr<D3D11Device>& device, const std::vector<std::shared_ptr<D3D11VertexBuffer>>& buffers, UINT startSlot)
 	{
 		std::vector<ID3D11Buffer*> VBs;
@@ -29,6 +64,19 @@ namespace fq::graphics
 			strides.data(),
 			offsets.data()
 		);
+	}
+
+	D3D11VertexBuffer D3D11VertexBuffer::CreateFullScreenVertexBuffer(const std::shared_ptr<D3D11Device>& device)
+	{
+		std::vector<DirectX::SimpleMath::Vector2> positions =
+		{
+			{ -1, 1 },
+			{ 1, 1 },
+			{ -1, -1 },
+			{ 1, -1 }
+		};
+
+		return D3D11VertexBuffer(device, positions);
 	}
 
 	void D3D11VertexBuffer::Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot)

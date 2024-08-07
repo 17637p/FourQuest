@@ -51,6 +51,11 @@ void fq::graphics::UVAnimationInstance::SetTimePos(float timePos)
 const DirectX::SimpleMath::Matrix& fq::graphics::UVAnimationInstance::GetTexTransform(const std::string& nodeName) const
 {
 	auto find = mTexTransform.find(nodeName);
-	assert(find != mTexTransform.end());
+
+	if (find == mTexTransform.end())
+	{
+		return DirectX::SimpleMath::Matrix::Identity;
+	}
+	
 	return find->second;
 }

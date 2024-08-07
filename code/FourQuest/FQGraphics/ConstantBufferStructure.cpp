@@ -41,6 +41,7 @@ namespace fq::graphics
 		CBMaterialData.AlphaCutoff = info.AlphaCutoff;
 
 		CBMaterialData.EmissiveIntensity = info.EmissiveIntensity;
+		CBMaterialData.bUseMetalnessSmoothnessMap = info.bIsUsedMetalnessSmoothness;
 
 		cbuffer->Update(device, CBMaterialData);
 	}

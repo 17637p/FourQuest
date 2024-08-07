@@ -22,7 +22,12 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 링크 초기화 함수
 		/// </summary>
-		bool Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation);
+		bool Initialize(const LinkInfo& info, std::shared_ptr<CharacterLink> parentLink, physx::PxArticulationReducedCoordinate* pxArticulation, physx::PxScene*  scene);
+
+		/// <summary>
+		/// 링크 본(조인트) 위치 업데이트
+		/// </summary>
+		bool Update();
 
 		/// <summary>
 		/// 캐릭터 링크 지오메트리 추가 함수
@@ -39,21 +44,27 @@ namespace fq::physics
 		inline physx::PxArticulationLink* GetPxLink();
 		inline const std::string& GetName();
 		inline const DirectX::SimpleMath::Matrix& GetLocalTransform();
+		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		inline const std::shared_ptr<CharacterJoint> GetCharacterJoint();
 		inline const std::weak_ptr<CharacterLink> GetParentLink();
 		inline const std::vector<std::weak_ptr<CharacterLink>>& GetChildrenCharacterLink();
 		inline const std::weak_ptr<CharacterLink> GetChildCharacterLink(std::string linkName);
+		inline const void AddChildCharacterLink(std::shared_ptr<CharacterLink> childLink);
+		void SetWorldTransform(const DirectX::SimpleMath::Matrix& boneWorldTransform);
 
 	private:
 		std::string mName;
 		float mDensity;
 		DirectX::SimpleMath::Matrix mLocalTransform;
+		DirectX::SimpleMath::Matrix mWorldTransform;
+		physx::PxTransform mPxLocalTransform;
 
 		std::shared_ptr<CharacterJoint> mMyJoint;
 		std::weak_ptr<CharacterLink> mParentLink;
 		std::vector<std::weak_ptr<CharacterLink>> mMyChildrenLink;
 
 	private:
+		physx::PxScene* mScene;
 		physx::PxArticulationLink* mPxLink;
 	};
 
@@ -69,6 +80,10 @@ namespace fq::physics
 	const DirectX::SimpleMath::Matrix& CharacterLink::GetLocalTransform()
 	{
 		return mLocalTransform;
+	}
+	const DirectX::SimpleMath::Matrix& CharacterLink::GetWorldTransform()
+	{
+		return mWorldTransform;
 	}
 	const std::shared_ptr<CharacterJoint> CharacterLink::GetCharacterJoint()
 	{
@@ -91,6 +106,11 @@ namespace fq::physics
 				return childLink;
 			}
 		}
+	}
+
+	const void CharacterLink::AddChildCharacterLink(std::shared_ptr<CharacterLink> childLink)
+	{
+		mMyChildrenLink.push_back(childLink);
 	}
 #pragma endregion
 }

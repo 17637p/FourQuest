@@ -32,7 +32,21 @@ namespace fq::game_engine
 		inline bool& IsWindowOpen();
 
 	private:
+		/// <summary>
+		/// Articulation Data를 출력합니다.
+		/// </summary>
+		void beginArticulationData();
+
+		/// <summary>
+		/// Link Data를 출력합니다.
+		/// </summary>
 		void beginLinkData();
+
+		/// <summary>
+		/// Joint Data를 출력합니다.
+		/// </summary>
+		void beginJointData();
+
 
 	private:
 		GameProcess* mGameProcess;

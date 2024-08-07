@@ -19,7 +19,7 @@ struct VertexOut
 #define COLOR_MODE_COLOR 4
 #define COLOR_MODE_DIFFERENCE 5
 
-cbuffer cbMaterial : register(b0)
+cbuffer cbParticleMaterial : register(b0)
 {
     ParticleMaterial gParticleMaterial;
 };

@@ -23,7 +23,7 @@ void fq::game_engine::LoadingSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::LoadingSystem::Finalize()
 {
-
+	mGameProcess->mGraphics->DeleteImageObject(mLoadImage);
 }
 
 void fq::game_engine::LoadingSystem::loadUI()

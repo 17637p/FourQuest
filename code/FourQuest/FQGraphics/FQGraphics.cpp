@@ -344,6 +344,16 @@ void FQGraphics::UseShadow(const unsigned int id, bool bUseShadow)
 	mLightManager->UseShadow(id, bUseShadow);
 }
 
+void fq::graphics::FQGraphics::SetLightMapTexture(const std::vector<std::filesystem::path>& paths)
+{
+	mLightManager->CreateLightMapTextureArray(mDevice, paths);
+}
+
+void fq::graphics::FQGraphics::SetLightMapDirectionTexture(const std::vector<std::filesystem::path>& paths)
+{
+	mLightManager->CreateLightMapDirectionTextureArray(mDevice, paths);
+}
+
 void FQGraphics::UpdateCamera(const fq::common::Transform& cameraTransform)
 {
 	mCameraManager->Update(ECameraType::Player, cameraTransform);
@@ -368,6 +378,9 @@ bool FQGraphics::BeginRender()
 
 bool FQGraphics::Render()
 {
+	// 랜더링 오브젝트의 수정된 데이터를 기반으로 리소스 갱신
+	mObjectManager->UpdateModifiedResources(mDevice);
+
 	// 컬링 추가해야 됨 
 	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
 	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
@@ -470,6 +483,15 @@ std::vector<fq::common::Node> fq::graphics::FQGraphics::ReadNodeHierarchy(const 
 {
 	return fq::loader::NodeHierarchyLoader::Read(path);
 }
+void fq::graphics::FQGraphics::WriteMaterialInfo(const std::string& path, const MaterialInfo& materialInfo)
+{
+	fq::loader::MaterialLoader::Write(path, materialInfo);
+}
+MaterialInfo fq::graphics::FQGraphics::ReadMaterialInfo(const std::string& path)
+{
+	return fq::loader::MaterialLoader::Read(path);
+}
+
 fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxFile)
 {
 	return mModelManager->ConvertModel(fbxFile);
@@ -478,6 +500,11 @@ fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxF
 const fq::common::Model& FQGraphics::CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath)
 {
 	return mModelManager->CreateModelResource(mDevice, key, path, textureBasePath);
+}
+
+void fq::graphics::FQGraphics::CreateModelResource(unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath)
+{
+	mModelManager->CreateModelResource(mDevice, key, modelData, textureBasePath);
 }
 
 bool FQGraphics::TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)

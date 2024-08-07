@@ -17,7 +17,18 @@ void CopyPxTransformToDirectXMatrix(const physx::PxTransform& pxTransform, Direc
 	dxMatrix = DirectX::XMMatrixAffineTransformation(DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f), DirectX::XMVectorZero(), rotation, translation);
 }
 
-// 왼손 좌표계(DirectX11)에서 오른손 좌표계(PhysX)로 변환하기
+// 오른손 좌표계(PhysX)에서 왼손 좌표계(DirectX11)로 변환하기
+void CopyPxTransformToDirectXMatrixXYZ(const physx::PxTransform& pxTransform, DirectX::SimpleMath::Matrix& dxMatrix)
+{
+	DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion(pxTransform.q.x, pxTransform.q.y, pxTransform.q.z, pxTransform.q.w);
+	DirectX::SimpleMath::Matrix translation = DirectX::SimpleMath::Matrix::CreateTranslation(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z);
+	DirectX::SimpleMath::Matrix rotation = DirectX::SimpleMath::Matrix::CreateFromQuaternion(quaternion);
+
+	// z축 방향 반전
+	dxMatrix = rotation * translation;
+}
+
+// XYZ 반전
 void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform)
 {
 	DirectX::XMFLOAT4X4 dxMatrixData;
@@ -36,6 +47,26 @@ void CopyDirectXMatrixToPxTransform(const DirectX::SimpleMath::Matrix& dxMatrix,
 	pxTransform.q.y = DirectX::XMVectorGetY(quaternion);
 	pxTransform.q.z = DirectX::XMVectorGetZ(quaternion);
 	pxTransform.q.w = DirectX::XMVectorGetW(quaternion);
+}
+
+// 왼손 좌표계(DirectX11)에서 오른손 좌표계(PhysX)로 변환하기 ( x, y축 )
+void CopyDirectXMatrixToPxTransformXYZ(const DirectX::SimpleMath::Matrix& dxMatrix, physx::PxTransform& pxTransform)
+{
+	DirectX::SimpleMath::Matrix dxTransform = dxMatrix;
+
+	DirectX::SimpleMath::Vector3 position;
+	DirectX::SimpleMath::Quaternion rotation;
+	DirectX::SimpleMath::Vector3 scale;
+
+	dxTransform.Decompose(scale, rotation, position);
+
+	pxTransform.p.x = position.x;
+	pxTransform.p.y = position.y;
+	pxTransform.p.z = position.z;
+	pxTransform.q.x = rotation.x;
+	pxTransform.q.y = rotation.y;
+	pxTransform.q.z = rotation.z;
+	pxTransform.q.w = rotation.w;
 }
 
 #pragma endregion

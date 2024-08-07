@@ -50,7 +50,10 @@ namespace fq::graphics
 		mNumPatchVertices(0),
 		mNumPatchQuadFaces(0),
 		mIsBakeMesh(false),
-		mCellsPerPatch(64)
+		mCellsPerPatch(64),
+		mLightmapUVScaleOffset{},
+		mLightmapIndex{ -1 },
+		mbIsStatic{ false }
 	{
 	}
 
@@ -338,7 +341,7 @@ namespace fq::graphics
 		mLayer(0),
 		mImagePath(""),
 		mRotationAngle(0),
-		mScaleX(1), 
+		mScaleX(1),
 		mScaleY(1),
 		mAlpha(1.f),
 		mIsRender(true),

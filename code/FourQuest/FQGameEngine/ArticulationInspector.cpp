@@ -11,6 +11,7 @@
 #include "../FQGameModule/Articulation.h"
 #include "../FQGameModule/ArticulationData.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Transform.h"
 #include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::game_engine
@@ -45,7 +46,11 @@ namespace fq::game_engine
 
 		if (ImGui::Begin("Articulation Inspector", &mbIsOpen))
 		{
+			beginArticulationData();
+			ImGui::Separator();
 			beginLinkData();
+			ImGui::Separator();
+			beginJointData();
 		}
 		ImGui::End();
 	}
@@ -89,11 +94,11 @@ namespace fq::game_engine
 
 	void beginShapeCombo(const std::string& comboName, fq::game_module::EShapeType& shapeType)
 	{
-		const char* items[] = { "Box", "Sphere", "Capsule" };
+		const char* items[] = { "Box", "Sphere", "Capsule", "None"};
 		if (ImGui::BeginCombo(comboName.c_str(), items[(int)shapeType]))
 		{
 			// 콤보 박스와 각 항목을 추가합니다.
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 4; i++)
 			{
 				const bool isSelected = (shapeType == (fq::game_module::EShapeType)i);
 
@@ -114,7 +119,7 @@ namespace fq::game_engine
 		}
 	}
 
-	void game_engine::ArticulationInspector::beginLinkData()
+	void ArticulationInspector::beginArticulationData()
 	{
 		// Articulation
 		if (ImGui::TreeNode("Articulation"))
@@ -136,9 +141,10 @@ namespace fq::game_engine
 
 			ImGui::TreePop();
 		}
+	}
 
-		ImGui::Separator();
-
+	void game_engine::ArticulationInspector::beginLinkData()
+	{
 		// Link
 		if (ImGui::TreeNode("Link"))
 		{
@@ -160,8 +166,13 @@ namespace fq::game_engine
 				DirectX::SimpleMath::Vector3 linkScale;
 				localTransform.Decompose(linkScale, linkRotation, linkPosition);
 
-				ImGui::InputFloat3("LinkScale", (float*)&linkScale);
-				ImGui::InputFloat4("LinkRotation", (float*)&linkRotation);
+				DirectX::SimpleMath::Vector3 euler = linkRotation.ToEuler();
+
+				float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+					,DirectX::XMConvertToDegrees(euler.y)
+					,DirectX::XMConvertToDegrees(euler.z) };
+
+				ImGui::InputFloat3("LinkRotation", f);
 				ImGui::InputFloat3("LinkPosition", (float*)&linkPosition);
 				ImGui::InputFloat("Density", &density);
 
@@ -191,6 +202,11 @@ namespace fq::game_engine
 					break;
 				}
 
+				euler.x = DirectX::XMConvertToRadians(f[0]);
+				euler.y = DirectX::XMConvertToRadians(f[1]);
+				euler.z = DirectX::XMConvertToRadians(f[2]);
+				linkRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(euler);
+
 				localTransform = DirectX::SimpleMath::Matrix::CreateScale(linkScale)
 					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(linkRotation)
 					* DirectX::SimpleMath::Matrix::CreateTranslation(linkPosition);
@@ -208,9 +224,10 @@ namespace fq::game_engine
 
 			ImGui::TreePop();
 		}
+	}
 
-		ImGui::Separator();
-
+	void ArticulationInspector::beginJointData()
+	{
 		// Joint
 		if (ImGui::TreeNode("Joint"))
 		{
@@ -221,24 +238,70 @@ namespace fq::game_engine
 				float jointMaxForce = mSelectLink->GetJointMaxForce();
 				float jointStiffness = mSelectLink->GetJointStiffness();
 
-				DirectX::SimpleMath::Vector3 jointPosition;
-				DirectX::SimpleMath::Quaternion jointRotation;
-				DirectX::SimpleMath::Vector3 jointScale;
-				jointLocalTransform.Decompose(jointScale, jointRotation, jointPosition);
+				//DirectX::SimpleMath::Vector3 jointPosition;
+				//DirectX::SimpleMath::Quaternion jointRotation;
+				//DirectX::SimpleMath::Vector3 jointScale;
+				//jointLocalTransform.Decompose(jointScale, jointRotation, jointPosition);
 
-				ImGui::InputFloat3("JointScale", (float*)&jointScale);
-				ImGui::InputFloat4("JointRotation", (float*)&jointRotation);
-				ImGui::InputFloat3("JointPosition", (float*)&jointPosition);
+				//DirectX::SimpleMath::Vector3 euler = jointRotation.ToEuler();
+
+				//float f[3]{ DirectX::XMConvertToDegrees(euler.x)
+				//	,DirectX::XMConvertToDegrees(euler.y)
+				//	,DirectX::XMConvertToDegrees(euler.z) };
+
+				//ImGui::InputFloat3("JointScale", (float*)&jointScale);
+				//ImGui::InputFloat3("JointRotation", f);
+				//ImGui::InputFloat3("JointPosition", (float*)&jointPosition);
+
+				if (ImGui::Button("Bone Transform Connect"))
+				{
+					auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+					// GameObject를 순회하면서 Bar를 생성합니다
+					for (auto& object : scene->GetObjectView(true))
+					{
+						if (object.GetComponent<fq::game_module::Animator>() != nullptr)
+						{
+							auto animatorMesh = object.GetComponent<fq::game_module::Animator>();
+
+							if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+								return;
+
+							auto objectTransform = object.GetComponent<fq::game_module::Transform>();
+							auto objectScale = objectTransform->GetWorldScale();
+
+							auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+
+							DirectX::SimpleMath::Matrix boneRootTransform = nodeHierarchy.GetRootTransform(mSelectLink->GetBoneName()) 
+								* DirectX::SimpleMath::Matrix::CreateScale(objectScale);
+
+							DirectX::SimpleMath::Matrix linkWorldTransform = mSelectLink->GetWorldTransform();
+							DirectX::SimpleMath::Vector3 position;
+							DirectX::SimpleMath::Quaternion rotation;
+							DirectX::SimpleMath::Vector3 scale;
+
+							boneRootTransform = boneRootTransform * linkWorldTransform.Invert();
+							boneRootTransform.Decompose(scale, rotation, position);
+
+							mSelectLink->SetJointLocalTransform(position, rotation);
+						}
+					}
+				}
+				//else
+				//{
+				//	euler.x = DirectX::XMConvertToRadians(f[0]);
+				//	euler.y = DirectX::XMConvertToRadians(f[1]);
+				//	euler.z = DirectX::XMConvertToRadians(f[2]);
+				//	jointRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(euler);
+
+				//	mSelectLink->SetJointLocalTransform(jointPosition, jointRotation);
+				//}
+
 				ImGui::InputFloat("JointDamping", &jointDamping);
 				ImGui::InputFloat("JointMaxForce", &jointMaxForce);
 				ImGui::InputFloat("JointStiffness", &jointStiffness);
 
-				jointLocalTransform = DirectX::SimpleMath::Matrix::CreateScale(jointScale)
-					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(jointRotation)
-					* DirectX::SimpleMath::Matrix::CreateTranslation(jointPosition);
-
 				mSelectLink->SetJointDamping(jointDamping);
-				mSelectLink->SetJointLocalTransform(jointLocalTransform);
 				mSelectLink->SetJointMaxForce(jointMaxForce);
 				mSelectLink->SetJointStiffness(jointStiffness);
 

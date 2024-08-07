@@ -36,6 +36,4 @@ namespace fq::game_engine
 
 		fq::game_module::EventHandler mOnLoadSceneHandler;
 	};
-
-
 }

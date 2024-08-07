@@ -55,7 +55,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	std::string startSceneName = EditorHelper::GetStartSceneName();
+	std::string startSceneName =  EditorHelper::GetStartSceneName();
 
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
@@ -98,7 +98,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	InitializeEditor();
 
 	// 모델 데이터 수정이 생긴경우
-	//mEditor->mModelSystem->ConvertAllModel();
+	// mEditor->mModelSystem->ConvertAllModel();
 	
 	// Scene 로드 
 	mGameProcess->mLoadingSystem->ProcessLoading();
@@ -263,6 +263,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	EditorHelper::SaveEditorSetting(mEditor.get());
 
 	mGameProcess->mSceneManager->UnloadScene();
+	mGameProcess->mLoadingSystem->Finalize();
 
 	// Editor Process
 	mEditor->mImageSystem->Finalize();
@@ -307,6 +308,9 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mArticulationHierarchy->Render(); 
 	mEditor->mArticulationInspector->Render(); 
 	mEditor->mExportWindow->Render(); 
+	mEditor->mImportWindow->Render(); 
+	mEditor->mMaterialWindow->Render();
+	mEditor->mLightmapWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
@@ -342,6 +346,9 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mArticulationInspector->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLightProbeWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mExportWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mImportWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mMaterialWindow->Initialize(mGameProcess.get(), mEditor.get());
+	mEditor->mLightmapWindow->Initialize(mGameProcess.get());
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());

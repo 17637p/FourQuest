@@ -57,6 +57,9 @@
     <ClInclude Include="PostProcessingDemo.h">
       <Filter>Process</Filter>
     </ClInclude>
+    <ClInclude Include="LightMapDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -90,6 +93,9 @@
       <Filter>Process\Source</Filter>
     </ClCompile>
     <ClCompile Include="TerrainDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LightMapDemo.cpp">
       <Filter>Process\Source</Filter>
     </ClCompile>
   </ItemGroup>

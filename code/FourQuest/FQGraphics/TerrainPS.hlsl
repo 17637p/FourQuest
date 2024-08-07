@@ -54,6 +54,14 @@ cbuffer cbDirectionalShadow : register(b2)
     int cShadowCount;
 }
 
+cbuffer cbLightmapInformation : register(b3)
+{
+    float4 cUVOffsetScale;
+    uint cUVIndex;
+    bool bUseLightmap;
+    bool bUseDirectMap;
+};
+
 float gTexelCellSpaceU;
 float gTexelCellSpaceV;
 
@@ -62,6 +70,8 @@ float gWorldCellSpace;
 SamplerState gSamplerAnisotropic : register(s0);
 SamplerComparisonState gShadowSampler : register(s1);
 SamplerState samHeightmap : register(s2);
+SamplerState gPointWrap : register(s3); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
+SamplerState gLinearWrap : register(s4); //	D3D11_FILTER_Linear, D3D11_TEXTURE_ADDRESS_WRAP
 
 Texture2D gAlbedoMap[4] : register(t0);
 //Texture2D gAlbedoMap2 : register(t1);
@@ -86,19 +96,22 @@ Texture2D gNormalMap[4] : register(t12);
 Texture2D gAlphaMap : register(t16);
 Texture2D gHeightMap : register(t17);
 Texture2DArray gDirectionalShadowMap : register(t18);
- 
+
+Texture2DArray gLightMapArray : register(t19);
+Texture2DArray gDirectionArray : register(t20);
+
 #ifdef DEFERRED
 
 struct PixelOut
 {
     float4 Albedo : SV_Target0;
-    float Metalness : SV_Target1;
-    float Roughness : SV_Target2;
-    float4 Normal : SV_Target3;
-    float4 Emissive : SV_Target4;
-    float4 PositionW : SV_Target5;
-    float4 SourceNormal : SV_Target6;
-    float4 SourceTangent : SV_Target7;
+    float2 MetalnessRoughness : SV_Target1;
+    float4 Normal : SV_Target2;
+    float4 Emissive : SV_Target3;
+    float4 PositionW : SV_Target4;
+    float4 SourceNormal : SV_Target5;
+    float4 SourceTangent : SV_Target6;
+    float4 Light : SV_Target7;
 };
 
 #else
@@ -220,18 +233,38 @@ PixelOut main(DomainOut pin)
      
     
 #ifdef DEFERRED
-
     pout.Normal.xyz = resultNormal;
     pout.Albedo.xyz = resultAlbedo;
     pout.Albedo.w = 1.f;
-    pout.Metalness = resultMetalic;
-    pout.Roughness = resultRoughness;
+    pout.MetalnessRoughness.x = resultMetalic;
+    pout.MetalnessRoughness.y = resultRoughness;
     pout.Emissive = float4(0.f, 0.f, 0.f, 0.f);
     pout.SourceNormal.xyz = pin.NormalW;
     pout.SourceTangent.xyz = pin.TangentW;
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;
  
+    if (bUseLightmap)
+    {
+        float2 lightmapUV = pin.UV;
+        
+        lightmapUV.y = 1 - lightmapUV.y;
+        lightmapUV = lightmapUV * cUVOffsetScale.xy + cUVOffsetScale.zw;
+        lightmapUV.y = 1 - lightmapUV.y;
+        
+        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(lightmapUV, cUVIndex));
+
+        if (bUseDirectMap)
+        {
+            float4 direction = gDirectionArray.Sample(gPointWrap, float3(lightmapUV, cUVIndex));
+            direction.xyz = direction.xyz * 2 - 1;
+            direction.x = -direction.x;
+            direction.z = -direction.z;
+            float halfLambert = dot(resultNormal.xyz, direction.xyz) * 0.5 + 0.5;
+            pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
+        }
+    }
+    
     return pout;
 #else
     

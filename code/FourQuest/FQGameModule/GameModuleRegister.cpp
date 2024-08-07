@@ -157,10 +157,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "OutlineColor")
 		.data<&fq::graphics::MeshObjectInfo::bIsAppliedDecal>("IsAppliedDecal"_hs)
 		.prop(fq::reflect::prop::Comment, u8"데칼 적용 여부")
-		.prop(fq::reflect::prop::Name, "IsAppliedDecal")
-		.data<&fq::graphics::MeshObjectInfo::bAppliedLight>("IsAppliedLight"_hs)
-		.prop(fq::reflect::prop::Comment, u8"조명 적용 여부")
-		.prop(fq::reflect::prop::Name, "IsAppliedLight");
+		.prop(fq::reflect::prop::Name, "IsAppliedDecal");
 
 
 	// StaticMeshRenderer
@@ -188,6 +185,18 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
 		.data<&StaticMeshRenderer::SetIsNavigationMeshUsed, &StaticMeshRenderer::GetIsNavigationMeshUsed>("isUsedNavigationMesh"_hs)
 		.prop(fq::reflect::prop::Name, "isUsedNavigationMesh")
+		.data<&StaticMeshRenderer::SetMaterialPaths, &StaticMeshRenderer::GetMaterialPaths>("MaterialPaths"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialPaths")
+		.prop(fq::reflect::prop::DragDrop, ".material")
+		.data<&StaticMeshRenderer::SetLightmapUVScaleOffset, &StaticMeshRenderer::GetLightmapUVScaleOffset>("LightmapUVScaleOffset"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapUVScaleOffset")
+		.data<&StaticMeshRenderer::SetLightmapIndex, &StaticMeshRenderer::GetLightmapIndex>("LightmapIndex"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapIndex")
+		.data<&StaticMeshRenderer::SetIsStatic, &StaticMeshRenderer::GetIsStatic>("IsStatic"_hs)
+		.prop(fq::reflect::prop::Name, "IsStatic")
+		.data<&StaticMeshRenderer::SetPrevApplyTransform, &StaticMeshRenderer::GetPrevApplyTransform>("PrevApplyTransform"_hs)
+		.prop(fq::reflect::prop::Name, "PrevApplyTransform")
+		.prop(fq::reflect::prop::ReadOnly)
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -213,6 +222,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MaterialInfo")
 		.data<&SkinnedMeshRenderer::SetMeshObjectInfomation, &SkinnedMeshRenderer::GetMeshObjectInfomation>("MeshObjectInfo"_hs)
 		.prop(fq::reflect::prop::Name, "MeshObjectInfo")
+		.data<&SkinnedMeshRenderer::SetMaterialPaths, &SkinnedMeshRenderer::GetMaterialPaths>("MaterialPaths"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialPaths")
+		.prop(fq::reflect::prop::DragDrop, ".material")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -309,6 +321,15 @@ void fq::game_module::RegisterMetaData()
 		.data<fq::graphics::ELightType::Spot>("Spot"_hs)
 		.prop(fq::reflect::prop::Name, "Spot");
 
+	entt::meta<fq::graphics::ELightMode>()
+		.prop(fq::reflect::prop::Name, "LightMode")
+		.data<fq::graphics::ELightMode::Realtime>("Realtime"_hs)
+		.prop(fq::reflect::prop::Name, "Realtime")
+		.data<fq::graphics::ELightMode::Mixed>("Mixed"_hs)
+		.prop(fq::reflect::prop::Name, "Mixed")
+		.data<fq::graphics::ELightMode::Baked>("Baked"_hs)
+		.prop(fq::reflect::prop::Name, "Baked");
+
 	// Light 
 	entt::meta<Light>()
 		.type("Light"_hs)
@@ -332,6 +353,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&Light::SetShadow, &Light::OnShadow>("OnShadow"_hs)
 		.prop(fq::reflect::prop::Name, "OnShadow")
 		.prop(fq::reflect::prop::Comment, u8"Directional Light 3개 제한")
+		.data<&Light::SetLightMode, &Light::GetLightMode>("LightMode"_hs)
+		.prop(fq::reflect::prop::Name, "LightMode")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -392,6 +415,12 @@ void fq::game_module::RegisterMetaData()
 		.data<&Terrain::SetTerrainLayers, &Terrain::GetTerrainLayers>("Layers"_hs)
 		.prop(fq::reflect::prop::Name, "Layers")
 		.prop(fq::reflect::prop::Comment, u8"Layer는 4개 제한 그 이상 필요하다면 대화가 필요함")
+		.data<&Terrain::SetLightmapUVScaleOffset, &Terrain::GetLightmapUVScaleOffset>("LightmapUVScaleOffset"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapUVScaleOffset")
+		.data<&Terrain::SetLightmapIndex, &Terrain::GetLightmapIndex>("LightmapIndex"_hs)
+		.prop(fq::reflect::prop::Name, "LightmapIndex")
+		.data<&Terrain::SetIsStatic, &Terrain::GetIsStatic>("IsStatic"_hs)
+		.prop(fq::reflect::prop::Name, "IsStatic")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -701,6 +730,12 @@ void fq::game_module::RegisterMetaData()
 		.data<&Articulation::SetArticulationPath, &Articulation::GetArticulationPath>("ArticulationPath"_hs)
 		.prop(fq::reflect::prop::Name, "ArticulationPath")
 		.prop(fq::reflect::prop::DragDrop, ".articulation")
+		.data<&Articulation::SetRotationOffset, &Articulation::GetRotationOffset>("RotationOffset"_hs)
+		.prop(fq::reflect::prop::Name, "RotationOffset")
+		.prop(fq::reflect::prop::Comment, u8"Ragdoll에 보정된 회전 값을 적용합니다.")
+		.data<&Articulation::SetIsRagdoll, &Articulation::GetIsRagdoll>("bIsRagdoll"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRagdoll")
+		.prop(fq::reflect::prop::Comment, u8"Ragdoll 시뮬레이션을 진행하는지 여부입니다.")
 		.prop(fq::reflect::prop::RelativePath)
 		.base<Component>();
 
@@ -1448,14 +1483,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BaseColorFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
 		.prop(fq::reflect::prop::RelativePath)
-		.data<&fq::graphics::DecalMaterialInfo::MetalnessFileName>("MetalnessFileName"_hs)
-		.prop(fq::reflect::prop::Name, "MetalnessFileName")
-		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
-		.prop(fq::reflect::prop::RelativePath)
-		.data<&fq::graphics::DecalMaterialInfo::RoughnessFileName>("RoughnessFileName"_hs)
-		.prop(fq::reflect::prop::Name, "RoughnessFileName")
-		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
-		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::NormalFileName>("NormalFileName"_hs)
 		.prop(fq::reflect::prop::Name, "NormalFileName")
 		.prop(fq::reflect::prop::DragDrop, ".png/.jpg")
@@ -1466,10 +1493,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::RelativePath)
 		.data<&fq::graphics::DecalMaterialInfo::bUseBaseColor>("bUseBaseColor"_hs)
 		.prop(fq::reflect::prop::Name, "bUseBaseColor")
-		.data<&fq::graphics::DecalMaterialInfo::bUseMetalness>("bUseMetalness"_hs)
-		.prop(fq::reflect::prop::Name, "bUseMetalness")
-		.data<&fq::graphics::DecalMaterialInfo::bUseRoughness>("bUseRoughness"_hs)
-		.prop(fq::reflect::prop::Name, "bUseRoughness")
 		.data<&fq::graphics::DecalMaterialInfo::bUseNormalness>("bUseNormalness"_hs)
 		.prop(fq::reflect::prop::Name, "bUseNormalness")
 		.data<&fq::graphics::DecalMaterialInfo::bIsUsedEmissive>("bIsUsedEmissive"_hs)

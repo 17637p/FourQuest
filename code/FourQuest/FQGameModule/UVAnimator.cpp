@@ -40,6 +40,14 @@ void fq::game_module::UVAnimator::UpdateTimePos(float dt)
 	{
 		return;
 	}
+	if (mIUVAnimation == nullptr)
+	{
+		return;
+	}
+	if (mIUVAnimationInstance == nullptr)
+	{
+		return;
+	}
 
 	float duration = mIUVAnimation->GetUVAnimationClip().Duration;
 	float timePos = mIUVAnimationInstance->GetTimePos();

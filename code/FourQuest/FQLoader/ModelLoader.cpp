@@ -117,6 +117,34 @@ namespace fq::loader
 			fileUtil.Read<DirectX::BoundingBox>(&mesh.RenderBoundingBox);
 			fileUtil.Read<DirectX::BoundingSphere>(&mesh.RenderBoundingSphere);
 
+			unsigned int tex1Count;
+			fileUtil.Read<unsigned int>(&tex1Count);
+			mesh.Tex1.reserve(tex1Count);
+
+			for (unsigned int j = 0; j < tex1Count; ++j)
+			{
+				DirectX::SimpleMath::Vector2 tex1;
+
+				fileUtil.Read<DirectX::SimpleMath::Vector2>(&tex1);
+
+				mesh.Tex1.push_back(tex1);
+			}
+
+			unsigned int dynamicDataCount = 0;
+			fileUtil.Read<unsigned int>(&tex1Count);
+
+			for (unsigned int j = 0; j < dynamicDataCount; ++j)
+			{
+				Mesh::DynamicData dynamicData;
+
+				fileUtil.Read<string>(&dynamicData.Name);
+				fileUtil.Read<unsigned int>(&dynamicData.Size);
+				fileUtil.Read<unsigned int>(&dynamicData.Count);
+				fileUtil.Read(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+
+				mesh.DynamicInfos.insert({ dynamicData.Name, dynamicData });
+			}
+
 			modelData.push_back({ std::move(node), std::move(mesh) });
 		}
 
@@ -258,6 +286,21 @@ namespace fq::loader
 
 			fileUtil.Write<DirectX::BoundingBox>(mesh.RenderBoundingBox);
 			fileUtil.Write<DirectX::BoundingSphere>(mesh.RenderBoundingSphere);
+
+			fileUtil.Write<unsigned int>(mesh.Tex1.size());
+			for (const DirectX::SimpleMath::Vector2& tex1 : mesh.Tex1)
+			{
+				fileUtil.Write<DirectX::SimpleMath::Vector2>(tex1);
+			}
+
+			fileUtil.Write<unsigned int>(mesh.DynamicInfos.size());
+			for (const auto& [key, dynamicData] : mesh.DynamicInfos)
+			{
+				fileUtil.Write<string>(dynamicData.Name);
+				fileUtil.Write<unsigned int>(dynamicData.Size);
+				fileUtil.Write<unsigned int>(dynamicData.Count);
+				fileUtil.Write(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+			}
 		}
 	}
 	void ModelLoader::WriteMaterialByData(const std::vector<fq::common::Material>& materialData, FileUtil& fileUtil)
@@ -646,6 +689,118 @@ namespace fq::loader
 		if (writeData.is_open())
 		{
 			writeData << nodeHierarchyJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	fq::graphics::MaterialInfo MaterialLoader::Read(const std::filesystem::path& filePath)
+	{
+		std::ifstream readData(filePath);
+		nlohmann::ordered_json materialInfoJson;
+
+		if (readData.is_open())
+		{
+			readData >> materialInfoJson;
+			readData.close();
+		}
+		else
+			assert(!"파일 열기 실패");
+
+		using namespace fq::graphics;
+
+		fq::graphics::MaterialInfo materialInfo;
+
+		std::string renderModeStr, sampleTypeStr, rasterizeTypeStr;
+		materialInfoJson.at("RenderModeType").get_to(renderModeStr);
+		materialInfo.RenderModeType = (renderModeStr == "Opaque") ? MaterialInfo::ERenderMode::Opaque : MaterialInfo::ERenderMode::Transparent;
+
+		materialInfo.BaseColor.x = materialInfoJson.at("BaseColor")[0].get<float>();
+		materialInfo.BaseColor.y = materialInfoJson.at("BaseColor")[1].get<float>();
+		materialInfo.BaseColor.z = materialInfoJson.at("BaseColor")[2].get<float>();
+		materialInfo.BaseColor.w = materialInfoJson.at("BaseColor")[3].get<float>();
+		materialInfoJson.at("Metalness").get_to(materialInfo.Metalness);
+		materialInfoJson.at("Roughness").get_to(materialInfo.Roughness);
+		materialInfo.EmissiveColor.x = materialInfoJson.at("EmissiveColor")[0].get<float>();
+		materialInfo.EmissiveColor.y = materialInfoJson.at("EmissiveColor")[1].get<float>();
+		materialInfo.EmissiveColor.z = materialInfoJson.at("EmissiveColor")[2].get<float>();
+		materialInfo.EmissiveColor.w = materialInfoJson.at("EmissiveColor")[3].get<float>();
+
+		std::string temp;
+		materialInfoJson.at("BaseColorFileName").get_to(temp);
+		materialInfo.BaseColorFileName = std::wstring(temp.begin(), temp.end());
+
+		materialInfoJson.at("MetalnessFileName").get_to(temp);
+		materialInfo.MetalnessFileName = std::wstring(temp.begin(), temp.end());
+
+		materialInfoJson.at("RoughnessFileName").get_to(temp);
+		materialInfo.RoughnessFileName = std::wstring(temp.begin(), temp.end());
+
+		materialInfoJson.at("NormalFileName").get_to(temp);
+		materialInfo.NormalFileName = std::wstring(temp.begin(), temp.end());
+
+		materialInfoJson.at("EmissiveFileName").get_to(temp);
+		materialInfo.EmissiveFileName = std::wstring(temp.begin(), temp.end());
+
+		materialInfoJson.at("bUseBaseColor").get_to(materialInfo.bUseBaseColor);
+		materialInfoJson.at("bUseMetalness").get_to(materialInfo.bUseMetalness);
+		materialInfoJson.at("bUseRoughness").get_to(materialInfo.bUseRoughness);
+		materialInfoJson.at("bUseNormalness").get_to(materialInfo.bUseNormalness);
+		materialInfoJson.at("bIsUsedEmissive").get_to(materialInfo.bIsUsedEmissive);
+
+		materialInfo.Tiling.x = materialInfoJson.at("Tiling")[0].get<float>();
+		materialInfo.Tiling.y = materialInfoJson.at("Tiling")[1].get<float>();
+		materialInfo.Offset.x = materialInfoJson.at("Offset")[0].get<float>();
+		materialInfo.Offset.y = materialInfoJson.at("Offset")[1].get<float>();
+
+		materialInfoJson.at("AlphaCutoff").get_to(materialInfo.AlphaCutoff);
+
+		materialInfoJson.at("SampleType").get_to(sampleTypeStr);
+		materialInfo.SampleType = (sampleTypeStr == "Clamp") ? ESampleMode::Clamp : ESampleMode::Wrap;
+
+		materialInfoJson.at("RasterizeType").get_to(rasterizeTypeStr);
+		materialInfo.RasterizeType = (rasterizeTypeStr == "BackFaceClip") ? ERasterizeMode::BackFaceClip : ERasterizeMode::TwoSide;
+
+		return materialInfo;
+	}
+	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
+	{
+		using namespace fq::graphics;
+
+		nlohmann::ordered_json materialInfoJson;
+
+		materialInfoJson =
+		{
+			{"RenderModeType", material.RenderModeType == MaterialInfo::ERenderMode::Opaque ? "Opaque" : "Transparent"},
+			{"BaseColor", {material.BaseColor.x, material.BaseColor.y, material.BaseColor.z, material.BaseColor.w}},
+			{"Metalness", material.Metalness},
+			{"Roughness", material.Roughness},
+			{"EmissiveColor", {material.EmissiveColor.x, material.EmissiveColor.y, material.EmissiveColor.z, material.EmissiveColor.w}},
+			{"BaseColorFileName", std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())},
+			{"MetalnessFileName", std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())},
+			{"RoughnessFileName", std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())},
+			{"NormalFileName", std::string(material.NormalFileName.begin(), material.NormalFileName.end())},
+			{"EmissiveFileName", std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())},
+			{"bUseBaseColor", material.bUseBaseColor},
+			{"bUseMetalness", material.bUseMetalness},
+			{"bUseRoughness", material.bUseRoughness},
+			{"bUseNormalness", material.bUseNormalness},
+			{"bIsUsedEmissive", material.bIsUsedEmissive},
+			{"Tiling", {material.Tiling.x, material.Tiling.y}},
+			{"Offset", {material.Offset.x, material.Offset.y}},
+			{"AlphaCutoff", material.AlphaCutoff},
+			{"SampleType", material.SampleType == ESampleMode::Clamp ? "Clamp" : "Wrap"},
+			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"}
+		};
+
+		// JSON 파일로 쓰기
+		std::ofstream writeData(filePath);
+		if (writeData.is_open())
+		{
+			writeData << materialInfoJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
 			writeData.close();
 		}
 		else

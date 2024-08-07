@@ -24,6 +24,9 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mArticulationInspector(std::make_unique<ArticulationInspector>())
 	, mLightProbeWindow(std::make_unique<LightProbeWindow>())
 	, mExportWindow(std::make_unique<ExportWindow>())
+	, mImportWindow(std::make_unique<ImportWindow>())
+	, mMaterialWindow(std::make_unique<MaterialWindow>())
+	, mLightmapWindow(std::make_unique<LightmapWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

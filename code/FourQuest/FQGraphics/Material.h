@@ -15,7 +15,6 @@ namespace fq::graphics
 	// 1. 쉐이더 종류가 많지 않으면 그에 대응되는 재질이랑 1대1로 늘린다.
 	// 2. 쉐이더 리플렉션 처리를 해서 재질도 범용적으로 다룬다.?
 
-
 	class Material : public IMaterial
 	{
 	public:
@@ -33,6 +32,7 @@ namespace fq::graphics
 		inline bool GetHasNormal() const { return mNormal != nullptr; }
 		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
 		inline bool GetHasOpacity() const { return mOpacity != nullptr; }
+		inline bool GetHasMetalnessSmoothness() const { return mMetalnessSmoothness != nullptr; }
 
 		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
 		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
@@ -40,6 +40,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
 		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
+		std::shared_ptr<D3D11Texture> GetMetalnessSmoothness() const { return mMetalnessSmoothness; }
 
 		const std::string& GetName() const override { return mName; }
 
@@ -57,6 +58,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Texture> mNormal;
 		std::shared_ptr<D3D11Texture> mEmissive;
 		std::shared_ptr<D3D11Texture> mOpacity;
+		std::shared_ptr<D3D11Texture> mMetalnessSmoothness;
 	};
 
 	class TerrainMaterial

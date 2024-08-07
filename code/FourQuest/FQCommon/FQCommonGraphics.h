@@ -22,6 +22,13 @@ namespace fq::graphics
 		Spot
 	};
 
+	enum class ELightMode
+	{
+		Realtime,
+		Mixed,
+		Baked //
+	};
+
 	struct LightInfo
 	{
 		// Common
@@ -39,7 +46,10 @@ namespace fq::graphics
 
 		// Directional, Spot
 		DirectX::SimpleMath::Vector3 direction;
+
+		ELightMode mode;
 	};
+
 
 	struct MeshObjectInfo
 	{
@@ -47,7 +57,12 @@ namespace fq::graphics
 		bool bUseLightProbe;
 		DirectX::SimpleMath::Color OutlineColor;
 		bool bIsAppliedDecal = false;
-		bool bAppliedLight = true; // 이펙트 오브젝트 조명 연산 끄기 위해 사용
+
+		enum class EObjectType
+		{
+			Static,
+			Dynamic
+		} ObjectType = EObjectType::Dynamic;
 	};
 
 	struct UIInfo
@@ -489,18 +504,20 @@ namespace fq::graphics
 		std::wstring RoughnessFileName;
 		std::wstring NormalFileName;
 		std::wstring EmissiveFileName;
+		std::wstring MetalnessSmoothnessFileName;
 
 		bool bUseBaseColor = true;
 		bool bUseMetalness = true;
 		bool bUseRoughness = true;
 		bool bUseNormalness = true;
 		bool bIsUsedEmissive = true;
+		bool bIsUsedMetalnessSmoothness = false;
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 		float AlphaCutoff = 0.1f;
 
-		ESampleMode SampleType = ESampleMode::Clamp;
+		ESampleMode SampleType = ESampleMode::Wrap;
 		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
 
 		float EmissiveIntensity = 1.f;
@@ -549,14 +566,10 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
 
 		std::wstring BaseColorFileName;
-		std::wstring MetalnessFileName;
-		std::wstring RoughnessFileName;
 		std::wstring NormalFileName;
 		std::wstring EmissiveFileName;
 
 		bool bUseBaseColor = true;
-		bool bUseMetalness = true;
-		bool bUseRoughness = true;
 		bool bUseNormalness = true;
 		bool bIsUsedEmissive = true;
 
@@ -609,7 +622,7 @@ namespace fq::graphics
 
 		// Fog
 		bool bUseFog = false;
-		DirectX::SimpleMath::Vector4 fogColor = {0.5f, 0.5f, 0.5f, 1.0f}; // 안개 색상 
+		DirectX::SimpleMath::Vector4 fogColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 안개 색상 
 		float fogVisibleArea = 200.0f; // 가시 영역 near ~ far 기준으로 값을 넣어야 함 near가 1 far가 100이면 20일때 20퍼 보인다는 뜻
 	};
 };

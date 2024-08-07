@@ -83,6 +83,7 @@ namespace fq::common
 
 		std::string Name;
 		std::vector<Vertex> Vertices;
+		std::vector<DirectX::SimpleMath::Vector2> Tex1;
 		std::vector<BoneVertex> BoneVertices;
 		std::vector<BoundsYVertex> BoundsYVertices;
 		std::vector<unsigned int> Indices;
@@ -94,6 +95,16 @@ namespace fq::common
 
 		DirectX::BoundingBox RenderBoundingBox;
 		DirectX::BoundingSphere RenderBoundingSphere;
+
+		struct DynamicData
+		{
+			std::string Name;
+			unsigned int Size;
+			unsigned int Count;
+			void* DataPtr;
+		};
+		std::map<std::string, DynamicData> DynamicInfos;
+
 	};
 
 	struct Material

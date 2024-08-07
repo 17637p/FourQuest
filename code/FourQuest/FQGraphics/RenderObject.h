@@ -38,9 +38,7 @@ namespace fq::graphics
 
 		// Transform
 		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override {
-			return mTransform;
-		}
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
 		// Info
 		virtual void SetMeshObjectInfo(const MeshObjectInfo& info) override { mInfo = info; }
@@ -64,6 +62,13 @@ namespace fq::graphics
 		virtual void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) { mIUVAnimationInstance = uvAnimationInstance; }
 		virtual std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const { return mIUVAnimationInstance; }
 
+		// LightmapUV
+		virtual void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) override { mScaleOffset = scaleOffset; }
+		virtual const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const override { return mScaleOffset; }
+
+		virtual void SetLightmapIndex(unsigned int lightmapIndex) override { mLightmapIndex = lightmapIndex; }
+		virtual unsigned int GetLightmapIndex() const override { return mLightmapIndex; }
+
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		size_t mIndex;
@@ -72,6 +77,10 @@ namespace fq::graphics
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
+
+		// lightMap
+		DirectX::SimpleMath::Vector4 mScaleOffset;
+		unsigned int mLightmapIndex;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject
@@ -137,6 +146,16 @@ namespace fq::graphics
 
 		size_t GetNumIndices() const { return mNumIndices; }
 
+		// Lightmap
+		inline void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) override;
+		inline const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const override;
+
+		inline void SetLightmapIndex(unsigned int lightmapIndex) override;
+		inline unsigned int GetLightmapIndex() const override;
+
+		inline void SetIsStatic(bool bIsStatic) override;
+		inline bool GetIsStatic() const override;
+
 	private:
 		// Terrain Vertex, Index ¼öÁ¤
 		void BuildTerrainMesh(const std::shared_ptr<D3D11Device>& device, std::shared_ptr<StaticMesh> staticMesh);
@@ -177,6 +196,10 @@ namespace fq::graphics
 		bool mIsBakeMesh;
 
 		DirectX::SimpleMath::Matrix mTransform;
+
+		DirectX::SimpleMath::Vector4 mLightmapUVScaleOffset;
+		int mLightmapIndex;
+		bool mbIsStatic;
 	};
 
 #pragma region inlineFunc
@@ -212,6 +235,33 @@ namespace fq::graphics
 
 		return matrix;
 	}
+	inline void TerrainMeshObject::SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset)
+	{
+		mLightmapUVScaleOffset = scaleOffset;
+	}
+	inline const DirectX::SimpleMath::Vector4& TerrainMeshObject::GetLightmapUVScaleOffset() const
+	{
+		return mLightmapUVScaleOffset;
+	}
+
+	inline void TerrainMeshObject::SetLightmapIndex(unsigned int lightmapIndex)
+	{
+		mLightmapIndex = lightmapIndex;
+	}
+	inline unsigned int TerrainMeshObject::GetLightmapIndex() const
+	{
+		return mLightmapIndex;
+	}
+
+	inline void TerrainMeshObject::SetIsStatic(bool bIsStatic)
+	{
+		mbIsStatic = bIsStatic;
+	}
+	inline bool TerrainMeshObject::GetIsStatic() const
+	{
+		return mbIsStatic;
+	}
+
 #pragma endregion inlineFunc
 
 	class ImageObject : public IImageObject

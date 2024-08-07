@@ -10,7 +10,10 @@ fq::game_module::Terrain::Terrain()
 	mHeight(65),
 	mTextureWidth(513),
 	mTextureHeight(513),
-	mIsUseNavMesh(true)
+	mIsUseNavMesh(true),
+	mLightmapScaleOffset{},
+	mLightmapIndex(-1),
+	mbIsStatic(false)
 {
 
 }
@@ -18,6 +21,36 @@ fq::game_module::Terrain::Terrain()
 fq::game_module::Terrain::~Terrain()
 {
 
+}
+
+void fq::game_module::Terrain::SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset)
+{
+	mLightmapScaleOffset = scaleOffset;
+}
+
+const DirectX::SimpleMath::Vector4& fq::game_module::Terrain::GetLightmapUVScaleOffset() const
+{
+	return mLightmapScaleOffset;
+}
+
+void fq::game_module::Terrain::SetLightmapIndex(unsigned int lightmapIndex)
+{
+	mLightmapIndex = lightmapIndex;
+}
+
+int fq::game_module::Terrain::GetLightmapIndex() const
+{
+	return mLightmapIndex;
+}
+
+void fq::game_module::Terrain::SetIsStatic(bool bIsStatic)
+{
+	mbIsStatic = bIsStatic;
+}
+
+bool fq::game_module::Terrain::GetIsStatic() const
+{
+	return mbIsStatic;
 }
 
 entt::meta_handle fq::game_module::Terrain::GetHandle()

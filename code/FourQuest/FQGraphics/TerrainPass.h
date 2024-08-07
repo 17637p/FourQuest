@@ -45,17 +45,19 @@ namespace fq::graphics
 
 		// deferred
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
-		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
-		std::shared_ptr<D3D11RenderTargetView> mRoughnessRTV;
+		std::shared_ptr<D3D11RenderTargetView> mMetalnessRoughnessRTV;
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 		std::shared_ptr<D3D11RenderTargetView> mPositionRTV;
 		std::shared_ptr<D3D11RenderTargetView> mSourceNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mSourceTangentRTV;
+		std::shared_ptr<D3D11RenderTargetView> mPreCalculatedLightRTV;
 
 		std::shared_ptr<D3D11RasterizerState> mDefaultRS;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSS;
 		std::shared_ptr<D3D11SamplerState> mPointClampSS;
+		std::shared_ptr<D3D11SamplerState> mPointWrapSS;
+		std::shared_ptr<D3D11SamplerState> mLinearWrapSS;
 		std::shared_ptr<D3D11SamplerState> mShadowSS;
 		std::shared_ptr<D3D11DepthStencilState> mDefaultDS;
 
@@ -63,5 +65,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainHull>> mTerrainHullCB;
 		std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>> mTerrainTextureCB;
+		std::shared_ptr<D3D11ConstantBuffer<LightMapInfomation>> mLightMapInfomationCB;
 	};
 }

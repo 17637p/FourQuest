@@ -40,9 +40,12 @@ namespace fq::graphics
 		virtual void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) override;
 		virtual void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) override;
 		virtual std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) override;
+		virtual void WriteMaterialInfo(const std::string& path, const MaterialInfo& materialInfo) override;
+		virtual MaterialInfo ReadMaterialInfo(const std::string& path) override;
 
 		// Model Resource Control
 		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;
+		virtual void CreateModelResource(unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath = "") override;
 		virtual bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
 		virtual const fq::common::Model& GetModel(unsigned int key) override;
 		virtual void DeleteModelResource(unsigned int key) override;
@@ -160,7 +163,9 @@ namespace fq::graphics
 		virtual void UpdateLight(const unsigned int id, const LightInfo& lightInfo) override;
 		virtual void DeleteLight(const unsigned int id) override;
 
-		virtual void UseShadow(const unsigned int id, bool bUseShadow);
+		virtual void UseShadow(const unsigned int id, bool bUseShadow) override;
+		virtual void SetLightMapTexture(const std::vector<std::filesystem::path>& paths) override;
+		virtual void SetLightMapDirectionTexture(const std::vector<std::filesystem::path>& paths) override;
 
 		// Light Probe
 		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;

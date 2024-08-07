@@ -2,6 +2,7 @@
 
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQReflect/FQReflect.h"
+#include "../FQCommon/FQCommonGraphics.h"
 
 namespace fq::loader
 {
@@ -51,6 +52,16 @@ namespace fq::loader
 		static void Write(const fq::common::Model& modeData, const std::string& fileName);
 	private:
 
+		fq::reflect::Converter mConverter;
+	};
+
+	class MaterialLoader
+	{
+	public:
+		static fq::graphics::MaterialInfo Read(const std::filesystem::path& filePath);
+		static void Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material);
+
+	private:
 		fq::reflect::Converter mConverter;
 	};
 }

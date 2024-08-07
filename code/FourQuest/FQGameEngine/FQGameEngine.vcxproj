@@ -170,6 +170,8 @@
     <ClInclude Include="GamePlayWindow.h" />
     <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
+    <ClInclude Include="ImportWindow.h" />
+    <ClInclude Include="LightmapWindow.h" />
     <ClInclude Include="LightProbeSystem.h" />
     <ClInclude Include="LightProbeWindow.h" />
     <ClInclude Include="LightSystem.h" />
@@ -187,6 +189,7 @@
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
+    <ClInclude Include="MaterialWindow.h" />
     <ClInclude Include="NavigationMesh.h" />
     <ClInclude Include="NavigationMeshWindow.h" />
     <ClInclude Include="ParticleSystem.h" />
@@ -221,6 +224,8 @@
     <ClCompile Include="ExportWindow.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
+    <ClCompile Include="ImportWindow.cpp" />
+    <ClCompile Include="LightmapWindow.cpp" />
     <ClCompile Include="LightProbeSystem.cpp" />
     <ClCompile Include="LightProbeWindow.cpp" />
     <ClCompile Include="LightSystem.cpp" />
@@ -240,6 +245,7 @@
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
+    <ClCompile Include="MaterialWindow.cpp" />
     <ClCompile Include="NavigationMesh.cpp" />
     <ClCompile Include="NavigationMeshWindow.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />

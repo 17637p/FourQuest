@@ -12,7 +12,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 color;
 		float intensity;
 		DirectX::SimpleMath::Vector3 direction;
-		float pad;
+		unsigned int lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 	};
 
 	struct PointLight
@@ -22,7 +22,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 position;
 		float range;
 		DirectX::SimpleMath::Vector3 attenuation;
-		float pad;
+		unsigned int lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 	};
 
 	struct SpotLight
@@ -34,7 +34,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector3 direction;
 		float spot;
 		DirectX::SimpleMath::Vector3 attenuation;
-		float pad;
+		unsigned int lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 	};
 
 	template<typename LightData>
