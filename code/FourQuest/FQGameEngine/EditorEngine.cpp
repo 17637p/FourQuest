@@ -210,13 +210,12 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+			// UI 트랜스폼 위치 설정 
+			mGameProcess->mUISystem->Update();
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
-
-			// UI 트랜스폼 위치 설정 
-			mGameProcess->mUISystem->Update();
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
@@ -242,7 +241,9 @@ void fq::game_engine::EditorEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 			if (mGameProcess->mSceneManager->IsChangeScene())
 			{
-				mGameProcess->mSceneManager->ChangeScene();
+				mGameProcess->mSceneManager->UnloadScene();
+				mGameProcess->mLoadingSystem->ProcessLoading();
+				mGameProcess->mSceneManager->StartScene();
 			}
 
 			//////////////////////////////////////////////////////////////////////////

@@ -60,11 +60,7 @@ void fq::game_module::SceneManager::ChangeScene()
 {
 	UnloadScene();
 	LoadScene();
-
-	if (mbIsInvokeStartScene)
-	{
-		StartScene();
-	}
+	StartScene();
 }
 
 void fq::game_module::SceneManager::Update(float dt)
@@ -93,6 +89,8 @@ void fq::game_module::SceneManager::FixedUpdate(float dt)
 
 void fq::game_module::SceneManager::StartScene()
 {
+	if (!mbIsInvokeStartScene) return;
+
 	mCurrentScene->mIsStartScene = true;
 
 	for (auto& object : mCurrentScene->GetObjectView())
