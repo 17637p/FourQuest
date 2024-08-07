@@ -263,13 +263,13 @@ float3 ComputeSpotLight(
     float3 resultColor = (diffuse + specular) * NdotL * spotLight.color * spotLight.intensity;
 
     // 이전 방식
-    // float spot = pow(max(dot(-lightVector, spotLight.direction), 0.0f), spotLight.spot);
-    //float att = spot / dot(spotLight.attenuation, float3(1.0f, d, d * d));
+    float spot = pow(max(dot(-lightVector, spotLight.direction), 0.0f), spotLight.spot);
+    float att = spot / dot(spotLight.attenuation, float3(1.0f, d, d * d));
     
     // 유니티 방식
-    float angleAttenuation = AngleAttenuation(spotLight.direction, -lightVector, float2(spotLight.spot, spotLight.spot + 1));
-    // float distanceAttenuation = DistanceAttenuation(d * d, spotLight.attenuation.yz); // 함수 형태 이상해서 일단 보류
-    float att = angleAttenuation * 1 / dot(spotLight.attenuation, float3(1.0f, d, d * d));
+    //float angleAttenuation = AngleAttenuation(spotLight.direction, -lightVector, float2(spotLight.spot, spotLight.spot + 1));
+    //float distanceAttenuation = DistanceAttenuation(d * d, spotLight.attenuation.yz); // 함수 형태 이상해서 일단 보류
+    //float att = angleAttenuation * 1 / dot(spotLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
     resultColor = clamp(resultColor, 0.0, 1.0);
