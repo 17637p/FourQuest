@@ -1,4 +1,4 @@
-Texture2D tex_no    rmal_refl_mask : register(t0);
+Texture2D tex_normal_refl_mask : register(t0);
 Texture2D tex_depth : register(t1);
 Texture2D tex_scene_color : register(t2);
 
@@ -74,7 +74,7 @@ void ComputePosAndReflection(uint2 tid,
 Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
 {
     float3 vReflectionEndPosInTS = samplePosInTS + vReflDirInTS * maxTraceDistance;
-    float3 vReflectionEndPosInTS = posAndReflection.outSamplePosInTS + 
+    float3 vReflectionEndPosInTS = posAndReflection.outSamplePosInTS + posAndReflection.outReflDirInTS * posAndReflection.outMaxDistance;
     
     float3 dp = vReflectionEndPosInTS.xyz - samplePosInTS.xyz;
     int2 sampleScreenPos = int2(samplePosInTS.xy * sceneInfo.ViewSize.xy);
@@ -135,6 +135,16 @@ Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
     return intensity;
 }
 
+float4 ComputeReflectedColor(Inter inter,
+			                float4 skyColor)
+{
+    //constexpr sampler pointSampler(mip_filter::nearest);
+    //float4 ssr_color = float4(tex_scene_color.sample(pointSampler, intersection.xy));
+	float4 ssr_color = tex_scene_color.sample(pointSampler, inter.intersection.xy);
+
+    return mix(skyColor, ssr_color, intensity);
+}
+
 [numthreads(16, 16, 1)] //Todo: 다시 채워야 함
 void main(int3 tid : SV_GroupThreadID
     , int3 dispatchThreadID : SV_DispatchThreadID)
@@ -175,7 +185,7 @@ void main(int3 tid : SV_GroupThreadID
 	    Inter inter = FindIntersection_Linear(value);
 			
 	    // Compute reflection color if intersected
-	    //reflectionColor = ComputeReflectedColor(intensity, intersection, skyColor, tex_scene_color);
+	    reflectionColor = ComputeReflectedColor(inter, skyColor);
     }
 
     // Add the reflection color to the color of the sample.
