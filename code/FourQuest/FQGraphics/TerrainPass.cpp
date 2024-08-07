@@ -90,6 +90,8 @@ namespace fq::graphics
 		mAnisotropicWrapSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11SamplerState::AnisotropicWrap);
 		mShadowSS = resourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mPointClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+		mPointWrapSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointWrap);
+		mLinearWrapSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mDefaultDS = std::make_shared<D3D11DepthStencilState>(mDevice, ED3D11DepthStencilState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
@@ -120,6 +122,8 @@ namespace fq::graphics
 		mDefaultRS = nullptr;
 		mAnisotropicWrapSS = nullptr;
 		mPointClampSS = nullptr;
+		mPointWrapSS = nullptr;
+		mLinearWrapSS = nullptr;
 		mShadowSS = nullptr;
 		mDefaultDS = nullptr;
 
@@ -168,6 +172,8 @@ namespace fq::graphics
 			mDefaultRS->Bind(mDevice);
 			mAnisotropicWrapSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSS->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mPointWrapSS->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
+			mLinearWrapSS->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
 			mPointClampSS->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
 			mPointClampSS->Bind(mDevice, 0, ED3D11ShaderType::DomainShader);
 			mDefaultDS->Bind(mDevice);

@@ -52,6 +52,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mLinearWrapSamplerState;
 		std::shared_ptr<D3D11RasterizerState> mDefaultRasterizer;
 		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 

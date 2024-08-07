@@ -55,7 +55,8 @@ Texture2DArray gLightMapArray : register(t6);
 Texture2DArray gDirectionArray : register(t7);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
-SamplerState gPointWrap : register(s1); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
+SamplerState gPointWrap : register(s1); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
+SamplerState gLinearWrap : register(s2); //	D3D11_FILTER_Linear, D3D11_TEXTURE_ADDRESS_WRAP
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
@@ -122,7 +123,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #ifdef STATIC
     // 여기서 UV 값만 저장해두는 식으로 하고 Shading에서 연산하게 수정하는 게 더 저렴할듯
     // 현재 레거시로 라이트맵 적용, 추후에 PBR 방식으로 GI 연산 수정 예정
-    pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(pin.UV1, cUVIndex));
+    pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, cUVIndex));
 
    if (bUseDirectMap)
    {

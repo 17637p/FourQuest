@@ -70,6 +70,8 @@ float gWorldCellSpace;
 SamplerState gSamplerAnisotropic : register(s0);
 SamplerComparisonState gShadowSampler : register(s1);
 SamplerState samHeightmap : register(s2);
+SamplerState gPointWrap : register(s3); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
+SamplerState gLinearWrap : register(s4); //	D3D11_FILTER_Linear, D3D11_TEXTURE_ADDRESS_WRAP
 
 Texture2D gAlbedoMap[4] : register(t0);
 //Texture2D gAlbedoMap2 : register(t1);
@@ -97,7 +99,6 @@ Texture2DArray gDirectionalShadowMap : register(t18);
 
 Texture2DArray gLightMapArray : register(t19);
 Texture2DArray gDirectionArray : register(t20);
-
 
 #ifdef DEFERRED
 
@@ -251,11 +252,11 @@ PixelOut main(DomainOut pin)
         lightmapUV = lightmapUV * cUVOffsetScale.xy + cUVOffsetScale.zw;
         lightmapUV.y = 1 - lightmapUV.y;
         
-        pout.Light = gLightMapArray.Sample(gSamplerAnisotropic, float3(lightmapUV, cUVIndex));
+        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(lightmapUV, cUVIndex));
 
         if (bUseDirectMap)
         {
-            float4 direction = gDirectionArray.Sample(gSamplerAnisotropic, float3(lightmapUV, cUVIndex));
+            float4 direction = gDirectionArray.Sample(gPointWrap, float3(lightmapUV, cUVIndex));
             direction.xyz = direction.xyz * 2 - 1;
             direction.x = -direction.x;
             direction.z = -direction.z;
