@@ -31,13 +31,15 @@ void fq::game_module::Scene::Initialize(std::string sceneName
 	, EventManager* eventMgr
 	, InputManager* inputMgr
 	, PrefabManager* prefabMgr
-	, ScreenManager* screenMgr)
+	, ScreenManager* screenMgr
+	, TimeManager* timeMgr)
 {
 	mSceneName = std::move(sceneName);
 	mEventManager = eventMgr;
 	mInputManager = inputMgr;
 	mPrefabManager = prefabMgr;
 	mScreenManager = screenMgr;
+	mTimeManager = timeMgr;
 }
 
 
@@ -210,12 +212,12 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 
 void fq::game_module::Scene::processPedingObject()
 {
-	for (auto& object : mPedingObjects)
+	for (int i = 0; i < mPedingObjects.size(); ++i)	
 	{
+		auto object = mPedingObjects[i];
 		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
 		object->OnStart();
-
-		mObjects.push_back(object);
+		mObjects.push_back(std::move(object));
 	}
 
 	mPedingObjects.clear();

@@ -1,7 +1,15 @@
 #include "DeadArmour.h"
 
+#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/CharacterController.h"
+
 #include "Soul.h"
 #include "Player.h"
+#include "ClientEvent.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
@@ -45,10 +53,14 @@ void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
 
 	// 위치 설정
-	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
-	livingArmour->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
+	auto world = GetComponent<game_module::Transform>()->GetWorldMatrix();
+	livingArmour->GetComponent<game_module::Transform>()->SetWorldMatrix(world);
 
 	GetScene()->AddGameObject(livingArmour);
+
+	// 상호작용 이벤트 발생
+	GetScene()->GetEventManager()->FireEvent<client::event::ObjectInteractionEvent>(
+		{ GetGameObject()->GetTag() });
 
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());
@@ -144,8 +156,8 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 			});
 		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
 
-		float height = GetScene()->GetScreenManager()->GetScreenHeight();
-		float width = GetScene()->GetScreenManager()->GetScreenWidth();
+		float height = static_cast<float>(GetScene()->GetScreenManager()->GetScreenHeight());
+		float width = static_cast<float>(GetScene()->GetScreenManager()->GetScreenWidth());
 
 		auto viewProj = mainCamera->GetViewProjection();
 		Vector3 screenPos = Vector3::Transform(pos, viewProj);

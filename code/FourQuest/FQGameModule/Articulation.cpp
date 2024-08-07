@@ -8,7 +8,7 @@ namespace fq::game_module
 	Articulation::Articulation()
 		: mID()
 		, mCollisionCount()
-		, mbIsRagdoll(true)
+		, mbIsRagdoll(false)
 		, mArticulationData()
 		, mArticulationPath()
 		, mOffset{}

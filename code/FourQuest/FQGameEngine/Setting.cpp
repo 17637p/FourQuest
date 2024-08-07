@@ -6,6 +6,9 @@
 #include "GameProcess.h"
 #include "RenderingSystem.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Decal.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 
@@ -14,12 +17,12 @@ fq::game_engine::Setting::Setting()
 	, mbIsOpen(false)
 	, mbUseGrayScale(false)
 	, mbUseRootPicking(false)
+	, mbCanEditPath(false)
 	, mSnap{}
 	, mMode(ImGuizmo::WORLD)
 {
 
 }
-
 
 void fq::game_engine::Setting::Initialize(GameProcess* game, EditorProcess* editor)
 {
@@ -34,6 +37,7 @@ void fq::game_engine::Setting::Render()
 	{
 		beginChild_GizumoSetting();
 		beginChild_GraphicsSetting();
+		beginChild_InspectorSetting();
 	}
 
 	ImGui::End();
@@ -103,7 +107,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					material->SetInfo(materialInfo);
 				}
 			}
-
 
 			// 임시적용
 			if (ImGui::Button("Change TexturePath"))
@@ -278,5 +281,21 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 ImGuizmo::MODE fq::game_engine::Setting::GetMode()
 {
 	return mMode;
+}
+
+void fq::game_engine::Setting::beginChild_InspectorSetting()
+{
+	if (ImGui::CollapsingHeader("Insepctor"))
+	{
+		if (ImGui::BeginChild("Insepctor"), ImVec2(0, 0), ImGuiChildFlags_AutoResizeY)
+		{
+			ImGui::Checkbox("CanEditDargDropPath", &mbCanEditPath);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip(reinterpret_cast<const char*>(u8"드래그 드랍하는 경로들을 수정 가능하게 합니다"));
+			}
+		}
+		ImGui::EndChild();
+	}
 }
 

@@ -28,9 +28,11 @@ namespace fq::game_engine
 
 		ImGuizmo::MODE GetMode();
 
+		bool CanEditPath() const { return mbCanEditPath; }
 	private:
 		void beginChild_GizumoSetting();
 		void beginChild_GraphicsSetting();
+		void beginChild_InspectorSetting();
 
 	private:
 		GameProcess* mGameProcess;
@@ -48,5 +50,8 @@ namespace fq::game_engine
 
 		// 머터리얼 저장 경로
 		std::filesystem::path mMaterialDirectory;
+
+		// 인스펙터
+		bool mbCanEditPath;// 드래그 드랍이 아닌 입력을 받을 수 있음
 	};
 }

@@ -115,6 +115,9 @@ namespace fq::game_module
 		void SetIsStatic(bool bIsStatic);
 		bool GetIsStatic() const;
 
+		void SetPrevApplyTransform(const DirectX::SimpleMath::Matrix& transform) { mPrevApplyTransform = transform; }
+		const DirectX::SimpleMath::Matrix& GetPrevApplyTransform() const { return mPrevApplyTransform; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -138,6 +141,7 @@ namespace fq::game_module
 		DirectX::SimpleMath::Vector4 mLightmapScaleOffset;
 		int mLightmapIndex;
 		bool mbIsStatic;
+		DirectX::SimpleMath::Matrix mPrevApplyTransform; // 추후 모델 자체에서 처리할 예정
 	};
 
 }

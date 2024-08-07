@@ -1,6 +1,9 @@
 #include "NavigationMesh.h"
 
 #include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/Transform.h"
 
 #include <fstream>
 #include <filesystem>

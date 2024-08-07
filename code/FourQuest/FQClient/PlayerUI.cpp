@@ -1,10 +1,25 @@
 #include "PlayerUI.h"
 
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Scene.h"
+#include "../FQGameModule/ScreenManager.h"
+
 #include "Player.h"
 
 fq::client::PlayerUI::PlayerUI()
-	:mPlayerID(0)
+	:mPlayerID(0),
+	mPlayer(nullptr),
+	mHPWidth(0),
+	mHPBarGauge(nullptr),
+	mSoulGaugeDegree(230),
+	mSoulGauge(nullptr),
+	mSoulIcon(nullptr),
+	mWeaponIcons(),
+	mSkillIconXs(),
+	mSkillIconAs(),
+	mSkillIconRs(),
+	mScreenManager(nullptr)
 {
 
 }
@@ -33,40 +48,47 @@ std::shared_ptr<fq::game_module::Component> fq::client::PlayerUI::Clone(std::sha
 
 void fq::client::PlayerUI::OnStart()
 {
-	fq::game_module::Scene* scene = GetScene();
+	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
 
-	mHPBarGauge = scene->GetObjectByName("StaminaGauge")->GetComponent<fq::game_module::ImageUI>();
+	fq::game_module::GameObject* staminaGauge = GetGameObject()->GetChildren()[3]->GetChildren()[0];
+	mHPBarGauge = staminaGauge->GetComponent<fq::game_module::ImageUI>();
 	mHPWidth = mHPBarGauge->GetUIInfomations()[0].Width;
 
-	std::vector<fq::game_module::GameObject*> weapons = GetGameObject()->GetChildren()[2]->GetChildren();
+	std::vector<fq::game_module::GameObject*> souls = GetGameObject()->GetChildren()[1]->GetChildren();
+
+	mSoulGauge = souls[1]->GetComponent<fq::game_module::ImageUI>();
+	mSoulIcon = souls[2]->GetComponent<fq::game_module::ImageUI>();
+
+	std::vector<fq::game_module::GameObject*> weapons = children[2]->GetChildren();
 	mWeaponIcons.push_back(weapons[0]->GetComponent<fq::game_module::ImageUI>());
 	mWeaponIcons.push_back(weapons[1]->GetComponent<fq::game_module::ImageUI>());
 	mWeaponIcons.push_back(weapons[2]->GetComponent<fq::game_module::ImageUI>());
 	mWeaponIcons.push_back(weapons[3]->GetComponent<fq::game_module::ImageUI>());
 
-	std::vector<fq::game_module::GameObject*> skillXs = GetGameObject()->GetChildren()[0]->GetChildren()[0]->GetChildren();
+	std::vector<fq::game_module::GameObject*> skillXs = children[0]->GetChildren()[0]->GetChildren();
 	mSkillIconXs.push_back(skillXs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconXs.push_back(skillXs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconXs.push_back(skillXs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconXs.push_back(skillXs[3]->GetComponent<fq::game_module::ImageUI>());
 
-	std::vector<fq::game_module::GameObject*> skillAs = GetGameObject()->GetChildren()[0]->GetChildren()[5]->GetChildren();
+	std::vector<fq::game_module::GameObject*> skillAs = children[0]->GetChildren()[1]->GetChildren();
 	mSkillIconAs.push_back(skillAs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconAs.push_back(skillAs[3]->GetComponent<fq::game_module::ImageUI>());
 
-	std::vector<fq::game_module::GameObject*> skillRs = GetGameObject()->GetChildren()[0]->GetChildren()[4]->GetChildren();
+	std::vector<fq::game_module::GameObject*> skillRs = children[0]->GetChildren()[2]->GetChildren();
 	mSkillIconRs.push_back(skillRs[0]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[1]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[2]->GetComponent<fq::game_module::ImageUI>());
 	mSkillIconRs.push_back(skillRs[3]->GetComponent<fq::game_module::ImageUI>());
 
+	fq::game_module::Scene* scene = GetScene();
 	for (auto& object : scene->GetComponentView<fq::client::Player>())
 	{
 		auto player = object.GetComponent<fq::client::Player>();
 
-		if (mPlayerID == player->GetPlayerID())
+		if (GetPlayerID() == player->GetPlayerID())
 		{
 			mPlayer = player;
 		}
@@ -76,13 +98,24 @@ void fq::client::PlayerUI::OnStart()
 	{
 		SetWeaponAndSkillIcons(i, false);
 	}
+
+	mScreenManager = GetScene()->GetScreenManager();
 }
 
 void fq::client::PlayerUI::OnUpdate(float dt)
 {
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
 	for (int i = 0; i < 4; i++)
 	{
 		SetWeaponAndSkillIcons(i, false);
+	}
+
+	// Scale 자동 조정 
+	UINT screenWidth = mScreenManager->GetScreenWidth();
+	UINT screenHeight = mScreenManager->GetScreenHeight();
+	{
+		myTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
 	}
 
 	// 플레이어한테 HP 받아와서 Ratio 조절하기
@@ -126,6 +159,20 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			}
 
 			SetWeaponAndSkillIcons(armourTypeIndex, true);
+
+			// Soul Gauge 조정
+			float soulGauge = mPlayer->GetHPRatio(); // Test 용으로 일단 HP
+			float soulDegree = mSoulGaugeDegree * soulGauge + 25;
+			mSoulGauge->SetFillDegree(0, soulDegree);
+
+			// Soul Gauge 끝에 Icon 붙이기
+			float radian = DirectX::XMConvertToRadians(soulDegree + 90);
+			float radius = (mSoulGauge->GetUIInfomation(0).Width / 2) * myTransform->GetLocalScale().x;
+
+			float cos = std::cosf(radian) * radius;
+			float sin = std::sinf(radian) * radius;
+
+			mSoulIcon->GetComponent<game_module::Transform>()->SetLocalPosition({ cos, sin, 0 });
 		}
 	}
 }

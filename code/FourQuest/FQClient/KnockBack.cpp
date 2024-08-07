@@ -1,5 +1,6 @@
 #include "KnockBack.h"
 
+#include "../FQGameModule/Transform.h"
 #include "Attack.h"
 
 fq::client::KnockBack::KnockBack()

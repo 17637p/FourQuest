@@ -6,7 +6,6 @@
 #include "ComponentView.h"
 #include "GameObject.h"
 
-
 namespace fq::game_module
 {
 	class GameObject;
@@ -14,6 +13,7 @@ namespace fq::game_module
 	class InputManager;
 	class PrefabManager;
 	class ScreenManager;
+	class TimeManager;
 
 	class Scene
 	{
@@ -28,7 +28,8 @@ namespace fq::game_module
 			, EventManager* eventMgr
 			, InputManager* inputMgr
 			, PrefabManager* prefabMgr
-			, ScreenManager* screenMgr);
+			, ScreenManager* screenMgr
+			, TimeManager* timeManager);
 
 		/// <summary>
 		/// EventManager를 반환합니다 
@@ -39,6 +40,11 @@ namespace fq::game_module
 		/// InputManager를 반환합니다
 		/// </summary>
 		InputManager* GetInputManager()const { return mInputManager; }
+
+		/// <summary>
+		/// TimeManager를 반환합니다
+		/// </summary>
+		TimeManager* GetTimeManager()const { return mTimeManager; }
 
 		/// <summary>
 		/// PrefabManager를 반환합니다 
@@ -161,6 +167,7 @@ namespace fq::game_module
 		EventManager* mEventManager;
 		PrefabManager* mPrefabManager;
 		ScreenManager* mScreenManager;
+		TimeManager* mTimeManager;
 
 		bool mIsStartScene;
 

@@ -56,7 +56,7 @@ void fq::game_engine::MaterialWindow::Render()
 				{
 					if (!std::filesystem::exists(*path))
 					{
-						spdlog::warn("{} materialPath is invalid", mSelectMaterialPaths.string());
+						spdlog::warn("{} material path is invalid", mSelectMaterialPaths.string());
 					}
 					else
 					{

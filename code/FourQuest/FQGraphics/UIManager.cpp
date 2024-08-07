@@ -18,6 +18,8 @@
 #include "D3D11ResourceManager.h"
 #include "D3D11View.h"
 
+#include <boost/locale.hpp>
+
 fq::graphics::UIManager::UIManager()
 	:mHWnd{ NULL },
 	mDirect2DFactory{ nullptr },
@@ -28,7 +30,7 @@ fq::graphics::UIManager::UIManager()
 	mDefaultFontPath{ L"Verdana" },
 	mDefaultFontSize{ 50 },
 	mDefaultFontColor{ 0, 1, 1, 1 },
-	mDrawTextInformations{},
+	mTexts{},
 	mResourceManager(nullptr)
 {
 
@@ -207,41 +209,14 @@ void fq::graphics::UIManager::DeleteFont(const std::wstring& path)
 	}
 }
 
-void fq::graphics::UIManager::DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= {1, 0, 0, 1}*/)
+fq::graphics::ITextObject* fq::graphics::UIManager::CreateText(TextInfo textInfo)
 {
-	DrawTextInformation drawTextInformation;
+	TextObject* newTextObject = new TextObject;
+	newTextObject->SetTextInformation(textInfo);
 
-	drawTextInformation.text = text;
-	drawTextInformation.drawRect = drawRect;
+	mTexts.emplace_back(newTextObject);
 
-	if (fontSize == 50)
-	{
-		drawTextInformation.fontSize = mDefaultFontSize;
-	}
-	else
-	{
-		drawTextInformation.fontSize = fontSize;
-	}
-
-	if (fontPath == L"Verdana")
-	{
-		drawTextInformation.fontPath = mDefaultFontPath;
-	}
-	else
-	{
-		drawTextInformation.fontPath = fontPath;
-	}
-
-	if (color == DirectX::SimpleMath::Color{ 0, 1, 1, 1 })
-	{
-		drawTextInformation.color = mDefaultFontColor;
-	}
-	else
-	{
-		drawTextInformation.color = color;
-	}
-
-	mDrawTextInformations.emplace_back(drawTextInformation);
+	return newTextObject;
 }
 
 void fq::graphics::UIManager::OnResize(std::shared_ptr<D3D11Device> device, const short width, const short height)
@@ -343,35 +318,48 @@ void fq::graphics::UIManager::drawAllText()
 		mRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
 		ID2D1SolidColorBrush* tempBrush = nullptr;
-		for (const auto& drawTextInformation : mDrawTextInformations)
+		for (const auto& textObject : mTexts)
 		{
-			auto brush = mBrushes.find(drawTextInformation.color);
+			TextInfo drawTextInformation = textObject->GetTextInformation();
+			if (drawTextInformation.Text == "")
+			{
+				continue;
+			}
+
+			if (!drawTextInformation.IsRender)
+			{
+				continue;
+			}
+
+			auto brush = mBrushes.find(drawTextInformation.FontColor);
 			if (brush == mBrushes.end())
 			{
 				// 브러시 제작 
 				// Create a black brush.
 				mRenderTarget->CreateSolidColorBrush(
-					D2D1::ColorF(drawTextInformation.color.R(),
-						drawTextInformation.color.G(),
-						drawTextInformation.color.B(),
-						drawTextInformation.color.A()),
+					D2D1::ColorF(drawTextInformation.FontColor.R(),
+						drawTextInformation.FontColor.G(),
+						drawTextInformation.FontColor.B(),
+						drawTextInformation.FontColor.A()),
 					&tempBrush);
 
-				mBrushes[drawTextInformation.color] = tempBrush;
+				mBrushes[drawTextInformation.FontColor] = tempBrush;
 			}
 
+			std::wstring text = stringToWstring(drawTextInformation.Text);
+			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
+
 			mRenderTarget->DrawText(
-				drawTextInformation.text.c_str(),
-				drawTextInformation.text.length(),
-				mFonts[drawTextInformation.fontPath + std::to_wstring(drawTextInformation.fontSize)],
+				text.c_str(),
+				text.length(),
+				mFonts[fontPath],
 				D2D1::RectF(
-					drawTextInformation.drawRect.x - drawTextInformation.drawRect.width / 2,
-					drawTextInformation.drawRect.y - drawTextInformation.drawRect.height / 2,
-					drawTextInformation.drawRect.x + drawTextInformation.drawRect.width / 2,
-					drawTextInformation.drawRect.y + drawTextInformation.drawRect.height / 2),
-				mBrushes[drawTextInformation.color]);
+					drawTextInformation.CenterX - drawTextInformation.Width / 2,
+					drawTextInformation.CenterY - drawTextInformation.Height / 2,
+					drawTextInformation.CenterX + drawTextInformation.Width / 2,
+					drawTextInformation.CenterY + drawTextInformation.Height / 2),
+				mBrushes[drawTextInformation.FontColor]);
 		}
-		mDrawTextInformations.clear();
 	}
 }
 
@@ -403,8 +391,19 @@ void fq::graphics::UIManager::drawAllImage()
 
 		D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
-		D2D1_RECT_F screenRect = { image->GetStartX(), image->GetStartY(), image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
+		D2D1_RECT_F screenRect{};
+		if (image->GetRenderMode()) // true가 isCenter
+		{
+			screenRect = { image->GetStartX() - image->GetWidth() / 2, image->GetStartY() - image->GetHeight() / 2,
+			image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2 }; // 그릴 크기 (화면 좌표)
+		}
+		else
+		{
+			screenRect = { image->GetStartX(), image->GetStartY(),
+			image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
+		}
 
+		//  마스크 있을 때
 		if (image->GetMaskPath() != "")
 		{
 			stringToWstringPath = image->GetMaskPath();
@@ -436,6 +435,12 @@ void fq::graphics::UIManager::drawAllImage()
 
 			bitmapBrush->SetTransform(scaleT * translateT);
 
+			mRenderTarget->SetTransform
+			(
+				D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+				* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
+			);
+
 			// D2D1_ANTIALIAS_MODE_ALIASED must be set for FillOpacityMask to function properly
 			mRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
 			mRenderTarget->FillOpacityMask(
@@ -456,8 +461,8 @@ void fq::graphics::UIManager::drawAllImage()
 			{
 				float radian = DirectX::XMConvertToRadians(degree - 270);
 
-				float radiusX = image->GetWidth() / 2;
-				float radiusY = image->GetHeight() / 2;
+				float radiusX = (image->GetWidth() / 2) * image->GetScaleX();
+				float radiusY = (image->GetHeight() / 2) * image->GetScaleY();
 
 				float startX = image->GetStartX();
 				float startY = image->GetStartY();
@@ -513,6 +518,12 @@ void fq::graphics::UIManager::drawAllImage()
 					nullptr
 				);
 
+				mRenderTarget->SetTransform
+				(
+					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
+				);
+
 				// 이미지를 그립니다.
 				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
 
@@ -524,10 +535,11 @@ void fq::graphics::UIManager::drawAllImage()
 			}
 			else
 			{
+				// 왜 스케일 위치가 중앙점이 아니라 시작점이지...?
 				mRenderTarget->SetTransform
 				(
 					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
 				);
 
 				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
@@ -560,6 +572,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetRotation(uiInfo.RotationAngle);
 
 	newImageObject->SetFillDegree(uiInfo.fillDegree);
+	newImageObject->SetRenderMode(uiInfo.isCenter);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;
@@ -596,3 +609,23 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 
 	return newImageObject;
 }
+
+void fq::graphics::UIManager::DeleteText(fq::graphics::ITextObject* textObject)
+{
+	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject));
+	delete textObject;
+}
+
+std::wstring fq::graphics::UIManager::stringToWstring(std::string str)
+{
+	boost::locale::generator gen;
+	std::locale loc = gen("en_US.UTF-8");
+	std::locale::global(loc);
+
+	// 문자열 변환
+	std::string narrow_str = str;
+	std::wstring wide_str = boost::locale::conv::to_utf<wchar_t>(narrow_str, "UTF-8");
+
+	return wide_str;
+}
+

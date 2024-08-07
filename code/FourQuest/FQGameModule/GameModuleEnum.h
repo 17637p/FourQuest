@@ -18,7 +18,7 @@ namespace fq::game_module
 		Soul = 10,
 		Dash = 11,
 		Spawner = 12,
-		Tag13 = 13,
+		Goddess = 13,
 		Tag14 = 14,
 		Tag15 = 15,
 		End =16,

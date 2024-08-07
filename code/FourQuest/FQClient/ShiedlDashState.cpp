@@ -1,6 +1,8 @@
 #include "ShiedlDashState.h"
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/RigidBody.h"
 #include "KnightArmour.h"
 
 fq::client::ShiedlDashState::~ShiedlDashState()

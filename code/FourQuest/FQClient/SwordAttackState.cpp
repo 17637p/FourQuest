@@ -2,6 +2,11 @@
 #include "SwordAttackState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Animator.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/UVAnimator.h"
 #include "KnightArmour.h"
 #include "Player.h"
 
@@ -31,7 +36,6 @@ void fq::client::SwordAttackState::OnStateEnter(game_module::Animator& animator,
 	foward.x *= dashPower;
 	foward.z *= dashPower;
 	rigid->SetLinearVelocity(foward);
-	
 
 	mElapsedTime = 0.f;
 

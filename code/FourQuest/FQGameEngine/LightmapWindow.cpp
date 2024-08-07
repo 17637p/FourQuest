@@ -1,5 +1,6 @@
 #include "LightmapWindow.h"
 
+#include <spdlog/spdlog.h>
 #include <imgui.h>
 #include "imgui_stdlib.h"
 
@@ -246,6 +247,25 @@ void fq::game_engine::LightmapWindow::ApplyLightmap()
 	if (mDirectionArrayPath.empty())
 	{
 		return;
+	}
+
+	for (const auto& lightmap : mLightmapArrayPath)
+	{
+		if (!std::filesystem::exists(lightmap))
+		{
+			spdlog::warn("{}, lightmap texture path is invalid", lightmap.string());
+
+			return;
+		}
+	}
+	for (const auto& directionmap : mDirectionArrayPath)
+	{
+		if (!std::filesystem::exists(directionmap))
+		{
+			spdlog::warn("{}, directionmap texture path is invalid", directionmap.string());
+
+			return;
+		}
 	}
 
 	mGameProcess->mGraphics->SetLightMapTexture(mLightmapArrayPath);

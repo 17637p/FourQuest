@@ -9,6 +9,7 @@ fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	, mMeshInfomation{}
 	, mIsNavigationMeshUsed(false)
 	, mTexturePath{}
+	, mPrevApplyTransform{}
 {
 }
 

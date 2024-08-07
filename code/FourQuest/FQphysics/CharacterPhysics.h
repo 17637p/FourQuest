@@ -5,7 +5,9 @@
 #include <PxPhysicsAPI.h>
 #include <directxtk\SimpleMath.h>
 
+#include "EngineDataConverter.h"
 #include "FQCommonPhysics.h"
+#include "CharacterLink.h"
 
 namespace fq::physics
 {
@@ -21,7 +23,12 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 파직스(관절) 초기화 함수
 		/// </summary>
-		bool Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData);
+		bool Initialize(const ArticulationInfo& info, physx::PxPhysics* physics, std::shared_ptr<CollisionData> collisionData, physx::PxScene* scene);
+
+		/// <summary>
+		/// 업데이트
+		/// </summary>
+		bool Update();
 
 		/// <summary>
 		/// 캐릭터 파직스(관절) 링크 추가 함수
@@ -29,6 +36,7 @@ namespace fq::physics
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const DirectX::SimpleMath::Vector3& extent);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& radius);
 		bool AddArticulationLink(const LinkInfo& info, int* collisionMatrix, const float& halfHeight, const float& radius);
+		bool AddArticulationLink(LinkInfo& info, int* collisionMatrix);
 
 		/// <summary>
 		/// 레이어 넘버 바꾸기
@@ -44,9 +52,11 @@ namespace fq::physics
 		inline const DirectX::SimpleMath::Matrix& GetWorldTransform();
 		inline physx::PxArticulationReducedCoordinate* GetPxArticulation();
 		inline const physx::PxMaterial* GetMaterial();
+		inline const std::unordered_map<std::string, std::shared_ptr<CharacterLink>>& GetLinkContainer();
 
 		inline void SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform);
 		inline void SetIsRagdoll(const bool& isRagdoll);
+		bool SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform);
 
 	private:
 		std::string  mModelPath;
@@ -60,6 +70,7 @@ namespace fq::physics
 		DirectX::SimpleMath::Matrix mWorldTransform;
 
 	private:
+		physx::PxScene* mScene;
 		physx::PxArticulationReducedCoordinate* mPxArticulation;
 		physx::PxMaterial* mMaterial;
 	};
@@ -102,14 +113,34 @@ namespace fq::physics
 	{
 		return mMaterial;
 	}
+	const std::unordered_map<std::string, std::shared_ptr<CharacterLink>>& CharacterPhysics::GetLinkContainer()
+	{
+		return mLinkContainer;
+	}
 
 	void CharacterPhysics::SetWorldTransform(const DirectX::SimpleMath::Matrix& trnasform)
 	{
 		mWorldTransform = trnasform;
+
+		physx::PxTransform pxWorldTransform;
+		CopyDirectXMatrixToPxTransform(mWorldTransform, pxWorldTransform);
+		mPxArticulation->setRootGlobalPose(pxWorldTransform);
 	}
 	void CharacterPhysics::SetIsRagdoll(const bool& isRagdoll)
 	{
 		mbIsRagdoll = isRagdoll;
+	}
+	inline bool CharacterPhysics::SetLinkTransformUpdate(const std::string& name, const DirectX::SimpleMath::Matrix& boneWorldTransform)
+	{
+		auto link = mLinkContainer.find(name);
+
+		link->second->SetWorldTransform(boneWorldTransform);
+
+		physx::PxTransform pxTransform;
+		CopyDirectXMatrixToPxTransform(mWorldTransform, pxTransform);
+		mPxArticulation->setRootGlobalPose(pxTransform);
+
+		return true;
 	}
 #pragma endregion
 }

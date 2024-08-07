@@ -314,11 +314,11 @@
     <ClInclude Include="UVAnimator.h">
       <Filter>include\09.Animation</Filter>
     </ClInclude>
-    <ClInclude Include="GameModuleComponent.h">
-      <Filter>include\00.Define</Filter>
-    </ClInclude>
     <ClInclude Include="GameModuleManagerh.h">
       <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -507,6 +507,9 @@
     </ClCompile>
     <ClCompile Include="UVAnimator.cpp">
       <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -175,6 +175,7 @@
     <ClInclude Include="LightProbeSystem.h" />
     <ClInclude Include="LightProbeWindow.h" />
     <ClInclude Include="LightSystem.h" />
+    <ClInclude Include="LoadingSystem.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="LightProbeSystem.cpp" />
     <ClCompile Include="LightProbeWindow.cpp" />
     <ClCompile Include="LightSystem.cpp" />
+    <ClCompile Include="LoadingSystem.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />

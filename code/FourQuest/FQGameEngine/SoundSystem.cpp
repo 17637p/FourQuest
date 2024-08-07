@@ -1,6 +1,7 @@
 #include "SoundSystem.h"
 
 #include "GameProcess.h"
+#include "../FQGameModule/SoundClip.h"
 
 void fq::game_engine::SoundSystem::Initialize(fq::game_engine::GameProcess* game)
 {

@@ -10,6 +10,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Light.h"
 #include "../FQGameModule/GameObject.h"
+#include "../FQGameModule/Terrain.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQCommon/StringUtil.h"
@@ -251,6 +252,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 				staticMeshRenderer.SetIsStatic(gameObjectInfo.isStatic);
 				staticMeshRenderer.SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
 				staticMeshRenderer.SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
+				staticMeshRenderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
 			}
 
 			// ∂Û¿Ã∆Æ

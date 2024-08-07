@@ -1,7 +1,14 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
 #include "IMonster.h"
+
+namespace fq::game_module
+{
+	class Transform;
+	class Animator;
+}
 
 namespace fq::client
 {

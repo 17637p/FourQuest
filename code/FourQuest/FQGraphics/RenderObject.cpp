@@ -344,7 +344,8 @@ namespace fq::graphics
 		mScaleX(1),
 		mScaleY(1),
 		mAlpha(1.f),
-		mIsRender(true)
+		mIsRender(true),
+		mIsCenter(false)
 	{}
 
 	ImageObject::~ImageObject()

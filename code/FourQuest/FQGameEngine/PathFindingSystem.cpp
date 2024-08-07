@@ -1,5 +1,6 @@
 #include "PathFindingSystem.h"
 
+#include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/NavigationMeshLoader.h"

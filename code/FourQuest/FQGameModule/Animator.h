@@ -109,6 +109,18 @@ namespace fq::game_module
 		/// </summary>
 		void SetPlaySpeed(float speed) { mDefaultPlaySpeed = speed; }
 
+		/// <summary>
+		/// 애니메이션이 정지 상태인지 반환합니다 
+		/// </summary>
+		bool IsStopAnimation() const { return mbIsStopAnimation; }
+
+		/// <summary>
+		/// 애니메이션을 정지 여부를 설정합니다 
+		/// </summary>
+		void SetStopAnimation(bool isStop) { mbIsStopAnimation = isStop; }
+
+		bool GetStopAnimation() const { return mbIsStopAnimation; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -120,7 +132,8 @@ namespace fq::game_module
 		std::shared_ptr<fq::graphics::INodeHierarchy> mNodeHierarchy;
 		std::shared_ptr<fq::graphics::INodeHierarchyInstance> mNodeHierarchyInstance;
 
-		float mDefaultPlaySpeed; 
+		float mDefaultPlaySpeed;
+		bool mbIsStopAnimation;
 	};
 
 }

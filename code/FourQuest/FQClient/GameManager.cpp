@@ -26,18 +26,23 @@ fq::client::GameManager::~GameManager()
 }
 
 fq::client::GameManager::GameManager()
+	:mIsStop(false)
 //	:mRegisterPlayerHandler{}
 {}
 
 fq::client::GameManager::GameManager(const GameManager& other)
 	:mRegisterPlayerHandler{}
 	,mPlayers(other.mPlayers)
+	,mPauseUI(other.mPauseUI)
+	,mIsStop(false)
 {
 }
 
 fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& other)
 {
 	mPlayers = other.mPlayers;
+	mPauseUI = other.mPauseUI;
+	mIsStop = false;
 
 	return *this;
 }
@@ -49,6 +54,40 @@ void fq::client::GameManager::OnUpdate(float dt)
 		{
 			return object->IsDestroyed();
 		}), mPlayers.end());
+
+	// Pause 贸府
+	// P, O 绰 烙矫
+	auto input = GetScene()->GetInputManager();
+	if (!mIsStop)
+	{
+		if (input->IsPadKeyState(0, EPadKey::Start, EKeyState::Tap)
+			|| input->IsPadKeyState(1, EPadKey::Start, EKeyState::Tap)
+			|| input->IsPadKeyState(2, EPadKey::Start, EKeyState::Tap)
+			|| input->IsPadKeyState(3, EPadKey::Start, EKeyState::Tap)
+			|| input->IsKeyState(EKey::P, EKeyState::Tap))
+		{
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
+			auto pauseUIObject = *(instance.begin());
+
+			GetScene()->AddGameObject(pauseUIObject);
+
+			// 肛勉 贸府
+			GetScene()->GetTimeManager()->SetTimeScale(0);
+			mIsStop = true;
+		}
+	}
+	if (mIsStop)
+	{
+		if (input->IsPadKeyState(0, EPadKey::B, EKeyState::Tap)
+			|| input->IsPadKeyState(1, EPadKey::B, EKeyState::Tap)
+			|| input->IsPadKeyState(2, EPadKey::B, EKeyState::Tap)
+			|| input->IsPadKeyState(3, EPadKey::B, EKeyState::Tap)
+			|| input->IsKeyState(EKey::O, EKeyState::Tap))
+		{
+			GetScene()->GetTimeManager()->SetTimeScale(1);
+			mIsStop = false;
+		}
+	}
 }
 
 void fq::client::GameManager::OnStart()

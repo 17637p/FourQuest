@@ -177,7 +177,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) abstract;
 			virtual FQ_GRAPHICS void SetDefaultFont(const std::wstring& path) abstract;
 			virtual FQ_GRAPHICS void AddFont(const std::wstring& path) abstract; // ttf
-			virtual FQ_GRAPHICS void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) abstract;
+			virtual FQ_GRAPHICS ITextObject* CreateText(TextInfo textInfo) abstract;
+			virtual FQ_GRAPHICS void DeleteText(fq::graphics::ITextObject* textObject) abstract;
 			virtual FQ_GRAPHICS void DeleteFont(const std::wstring& path) abstract;
 			// image
 			virtual FQ_GRAPHICS IImageObject* CreateImageObject(const UIInfo& uiInfo) abstract;

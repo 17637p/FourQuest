@@ -5,6 +5,7 @@
 
 fq::game_module::Animator::Animator()
 	:mDefaultPlaySpeed(1.f)
+	,mbIsStopAnimation(false)
 {
 
 }
@@ -67,7 +68,7 @@ void fq::game_module::Animator::SetParameterOffTrigger(const std::string& id)
 }
 
 void fq::game_module::Animator::UpdateState(float dt)
-{
+{ 
 	if (mController)
 		mController->UpdateState(dt);
 }

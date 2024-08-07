@@ -29,7 +29,6 @@ namespace fq::client
 		float mAttackTiming; // 공격발동 시간
 		float mElapsedTime;
 
-
 		std::shared_ptr<game_module::GameObject> mEffect;
 
 		friend void RegisterMetaData();

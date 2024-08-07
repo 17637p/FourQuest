@@ -1,7 +1,13 @@
 #pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Component.h"
 #include "PlayerDefine.h"
+
+namespace fq::game_module
+{
+	class ImageUI;
+	class ScreenManager;
+}
 
 namespace fq::client
 {
@@ -16,6 +22,9 @@ namespace fq::client
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
+		int GetPlayerID() const { return mPlayerID; }
+		void SetPlayerID(int val) { mPlayerID = val; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -27,14 +36,20 @@ namespace fq::client
 		int mPlayerID;
 		fq::client::Player* mPlayer;
 
-		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
 		float mHPWidth;
+		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
+
+		int mSoulGaugeDegree;
+		game_module::ImageUI* mSoulGauge; // Soul Gauge 조정 25 - 255
+		game_module::ImageUI* mSoulIcon; // Soul Gauge 끝에 넣기
 
 		std::vector<game_module::ImageUI*> mWeaponIcons; // 무기 아이콘
 
 		std::vector<game_module::ImageUI*> mSkillIconXs; // 스킬 아이콘
 		std::vector<game_module::ImageUI*> mSkillIconAs; // 스킬 아이콘 
 		std::vector<game_module::ImageUI*> mSkillIconRs; // 스킬 아이콘 
+
+		game_module::ScreenManager* mScreenManager;
 
 		friend void RegisterMetaData();
 	};

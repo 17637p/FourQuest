@@ -4,6 +4,8 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Particle.h"
 
 fq::game_engine::ParticleSystem::ParticleSystem()
 	:mGameProcess(nullptr)

@@ -7,6 +7,19 @@
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQReflect/entt.hpp"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/SphereCollider.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/TerrainCollider.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/Articulation.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+
 #include "GameProcess.h"
 #include "ModelSystem.h"
 #include "RenderingSystem.h"
@@ -442,6 +455,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		articulationInfo.dynamicFriction = articulationData->GetDynamicFriction();
 		articulationInfo.restitution = articulationData->GetRestitution();
 		articulationInfo.staticFriction = articulationData->GetStaticFriction();
+		articulationInfo.worldTransform = transform->GetWorldMatrix();
 
 		bool check = mPhysicsEngine->CreateCharacterphysics(articulationInfo);
 		assert(check);
@@ -451,6 +465,24 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			, object->shared_from_this()
 			, articulation, false} });
 
+		if (object->GetComponent<fq::game_module::Animator>() == nullptr)
+			return;
+
+		auto animatorMesh = object->GetComponent<fq::game_module::Animator>();
+
+
+		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+			return;
+
+		auto objectTransform = object->GetComponent<fq::game_module::Transform>();
+		auto objectScale = objectTransform->GetWorldScale();
+
+		auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+		nodeHierarchy.SetBindPose();
+		nodeHierarchy.UpdateByLocalTransform();
+
 		std::function<void(std::shared_ptr<LinkData>, ColliderID)> loadFunction = [&](std::shared_ptr<LinkData> linkData, ColliderID id)
 			{
 				fq::physics::LinkInfo linkInfo;
@@ -459,8 +491,18 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 				linkInfo.parentBoneName = linkData->GetParentBoneName();
 				linkInfo.density = linkData->GetDensity();
 				linkInfo.localTransform = linkData->GetLocalTransform();
+				linkInfo.worldTransform = linkData->GetWorldTransform();
+
+				if (linkData->GetBoneName() != "root")
+				{
+					int boneIndex = boneHierarchy.GetBoneIndex(linkData->GetBoneName());
+					int parentBoneIndex = boneHierarchy.GetBones()[boneIndex].ParentIndex;
+					linkInfo.boneTransform = nodeHierarchy.GetRootTransform(boneIndex);
+					linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
+				}
+				linkInfo.rootTransform = transform->GetWorldMatrix();
+
 				linkInfo.jointInfo.damping = linkData->GetJointDamping();
-				linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
 				linkInfo.jointInfo.maxForce = linkData->GetJointMaxForce();
 				linkInfo.jointInfo.stiffness = linkData->GetJointStiffness();
 				linkInfo.jointInfo.Swing1AxisInfo.motion = linkData->GetSwing1AxisMotion();
@@ -475,21 +517,26 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 				switch (linkData->GetShapeType())
 				{
-					case EShapeType::BOX:
-					{
-						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
-					}
-					break;
-					case EShapeType::SPHERE:
-					{
-						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
-					}
-					break;
-					case EShapeType::CAPSULE:
-					{
-						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
-					}
-					break;
+				case EShapeType::BOX:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
+				}
+				break;
+				case EShapeType::SPHERE:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
+				}
+				break;
+				case EShapeType::CAPSULE:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
+				}
+				break;
+				case EShapeType::END:
+				{
+					mPhysicsEngine->AddArticulationLink(id, linkInfo);
+				}
+				break;
 				}
 
 				for (auto& [name, childLinkData] : linkData->GetChildrenLinkData())
@@ -665,8 +712,81 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
-			articulation->SetIsRagdoll(data.bIsRagdollSimulation);
-			transform->SetWorldMatrix(data.worldTransform);
+			bool bIsRagdoll = data.bIsRagdollSimulation;
+
+			articulation->SetIsRagdoll(bIsRagdoll);
+
+			static float durationTime = 0.f;
+
+			// Animator의 본에 LocalTransform을 수정하기
+			if (bIsRagdoll)
+			{
+				durationTime += 0.01f;
+
+				if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
+					return;
+
+				auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
+
+				if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+					return;
+
+				auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+				auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+				auto currentAnimation = animatorMesh->GetController().GetSharedCurrentStateAnimation();
+				auto currentAnimationTime = animatorMesh->GetController().GetTimePos();
+
+				animatorMesh->SetStopAnimation(true);
+
+				nodeHierarchy.SetBindPose();
+
+				for (auto& linkData : data.linkData)
+				{
+					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform;
+					DirectX::SimpleMath::Vector3 position;
+					DirectX::SimpleMath::Quaternion rotation;
+					DirectX::SimpleMath::Vector3 scale;
+					boneTransform.Decompose(scale, rotation, position);
+
+					position.x = position.x / transform->GetLocalScale().x;
+					position.y = position.y / transform->GetLocalScale().y;
+					position.z = position.z / transform->GetLocalScale().z;
+					boneTransform =
+						DirectX::SimpleMath::Matrix::CreateScale(1.f)
+						* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+						* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+
+					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
+					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
+				}
+
+				float rotationOffsetX = articulation->GetRotationOffset().x / 180.f * 3.14f;
+				float rotationOffsetY = articulation->GetRotationOffset().y / 180.f * 3.14f;
+				float rotationOffsetZ = articulation->GetRotationOffset().z / 180.f * 3.14f;
+
+				DirectX::SimpleMath::Matrix dxTransform =
+					DirectX::SimpleMath::Matrix::CreateRotationX(std::lerp(0.f, rotationOffsetX, std::clamp(durationTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationY(std::lerp(0.f, rotationOffsetY, std::clamp(durationTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationZ(std::lerp(0.f, rotationOffsetZ, std::clamp(durationTime, 0.f, 1.f)))
+					* data.worldTransform;
+
+				DirectX::SimpleMath::Vector3 scale;
+				DirectX::SimpleMath::Quaternion rotation;
+				DirectX::SimpleMath::Vector3 position;
+				dxTransform.Decompose(scale, rotation, position);
+
+				transform->SetLocalPosition(position);
+				transform->SetLocalRotation(rotation);
+
+				//nodeHierarchy.UpdateByLocalTransform();
+				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
+				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime + durationTime, currentAnimation, std::max<float>(1 - durationTime, 0));
+			}
+			else
+			{
+				durationTime = 0.0f;
+			}
 		}
 		else
 		{
@@ -784,10 +904,41 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		{
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 
-			fq::physics::ArticulationSetData data;
+			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
+				return;
 
+			auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
+
+			if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+				return;
+
+			auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+			nodeHierarchy.SetBindPose();
+
+			fq::physics::ArticulationSetData data;
 			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
 			data.worldTransform = transform->GetWorldMatrix();
+
+			//std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
+			//	{
+			//		fq::physics::ArticulationLinkSetData linkData;
+
+			//		linkData.name = link->GetBoneName();
+			//		linkData.boneWorldTransform = nodeHierarchy.GetRootTransform(boneHierarchy.GetBoneIndex(link->GetBoneName()));
+			//		data.linkData.push_back(linkData);
+
+			//		for (const auto& [name, childLink] : link->GetChildrenLinkData())
+			//		{
+			//			linkDataUpdate(childLink);
+			//		}
+			//	};
+
+			//for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
+			//{
+			//	linkDataUpdate(link);
+			//}
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}
@@ -904,24 +1055,24 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 
 		switch (type)
 		{
-			case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-				lhsObject->OnTriggerEnter(collision);
-				break;
-			case fq::physics::ECollisionEventType::ON_OVERLAP:
-				lhsObject->OnTriggerStay(collision);
-				break;
-			case fq::physics::ECollisionEventType::END_OVERLAP:
-				lhsObject->OnTriggerExit(collision);
-				break;
-			case fq::physics::ECollisionEventType::ENTER_COLLISION:
-				lhsObject->OnCollisionEnter(collision);
-				break;
-			case fq::physics::ECollisionEventType::ON_COLLISION:
-				lhsObject->OnCollisionStay(collision);
-				break;
-			case fq::physics::ECollisionEventType::END_COLLISION:
-				lhsObject->OnCollisionExit(collision);
-				break;
+		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+			lhsObject->OnTriggerEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_OVERLAP:
+			lhsObject->OnTriggerStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_OVERLAP:
+			lhsObject->OnTriggerExit(collision);
+			break;
+		case fq::physics::ECollisionEventType::ENTER_COLLISION:
+			lhsObject->OnCollisionEnter(collision);
+			break;
+		case fq::physics::ECollisionEventType::ON_COLLISION:
+			lhsObject->OnCollisionStay(collision);
+			break;
+		case fq::physics::ECollisionEventType::END_COLLISION:
+			lhsObject->OnCollisionExit(collision);
+			break;
 		}
 	}
 

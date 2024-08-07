@@ -6,6 +6,13 @@
 #include <fstream>
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/Decal.h"
+#include "../FQGameModule/PostProcessing.h"
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "AnimationSystem.h"
@@ -92,11 +99,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 					if (nodeHierarchyInstanceOrNull == nullptr)
 					{
-						meshObject->SetTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14) * transform.GetWorldMatrix());
+						meshObject->SetTransform(mesh.GetPrevApplyTransform() * transform.GetWorldMatrix());
 					}
 					else
 					{
-						meshObject->SetTransform(nodeHierarchyInstanceOrNull->GetTransform());
+						meshObject->SetTransform(mesh.GetPrevApplyTransform() * nodeHierarchyInstanceOrNull->GetTransform());
 					}
 				}
 			});

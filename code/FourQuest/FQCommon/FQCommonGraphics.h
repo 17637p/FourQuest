@@ -89,6 +89,24 @@ namespace fq::graphics
 		float RotationAngle = 0.f;
 		float ScaleX = 1.f;
 		float ScaleY = 1.f;
+
+		bool isCenter = false;
+	};
+
+	struct TextInfo
+	{
+		std::string Text = ""; // 실제 띄울 내용
+
+		int CenterX = 50;
+		int CenterY = 50;
+		int Width = 100;
+		int Height = 100;
+
+		std::string FontPath = "Verdana";
+		int FontSize = 10;
+		DirectX::SimpleMath::Color FontColor = {0, 0, 0, 1};
+
+		bool IsRender = true;
 	};
 
 	struct TerrainLayer

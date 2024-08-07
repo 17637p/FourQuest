@@ -38,6 +38,7 @@ namespace fq::game_engine
 	class PathFindingSystem;
 	class TrailSystem;
 	class LightProbeSystem;
+	class LoadingSystem;
 }
 
 namespace fq::game_engine
@@ -80,5 +81,6 @@ namespace fq::game_engine
 		std::unique_ptr<UISystem> mUISystem;
 		std::unique_ptr<PathFindingSystem> mPathFindgingSystem;
 		std::unique_ptr<LightProbeSystem> mLightProbeSystem;
+		std::unique_ptr<LoadingSystem> mLoadingSystem;
 	};
 }

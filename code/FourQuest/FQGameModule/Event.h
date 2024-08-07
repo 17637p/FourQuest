@@ -167,6 +167,11 @@ namespace fq::event
 		fq::game_module::GameObject* object;
 	};
 
+	struct SetTextInformation
+	{
+		fq::game_module::GameObject* object;
+	};
+
 	//////////////////////////////////////////////////////////////////////////
 	//							Light Event									// 
 	//////////////////////////////////////////////////////////////////////////
@@ -242,6 +247,12 @@ namespace fq::event
 	{
 		std::shared_ptr<fq::game_module::ArticulationData> articulationData;
 		std::shared_ptr<fq::game_module::LinkData> linkData;
+	};
+
+	struct SetSimulationPhysics
+	{
+		unsigned int colliderID;
+		bool bIsRagdoll;
 	};
 
 

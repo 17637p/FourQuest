@@ -162,7 +162,6 @@
     <ClInclude Include="ArticulationLoader.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="Decal.h" />
-    <ClInclude Include="GameModuleComponent.h" />
     <ClInclude Include="GameModuleManagerh.h" />
     <ClInclude Include="ICollider.h" />
     <ClInclude Include="ImageUI.h" />
@@ -216,6 +215,7 @@
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="LogStateBehaviour.h" />
     <ClInclude Include="TerrainCollider.h" />
+    <ClInclude Include="TextUI.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="Trail.h" />
@@ -280,6 +280,7 @@
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="LogStateBehaviour.cpp" />
     <ClCompile Include="TerrainCollider.cpp" />
+    <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="Trail.cpp" />

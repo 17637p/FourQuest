@@ -1,7 +1,11 @@
 #pragma once
-#pragma once
 
-#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/EventHandler.h"
+
+namespace fq::game_module
+{
+	class Camera;
+}
 
 namespace fq::game_engine
 {

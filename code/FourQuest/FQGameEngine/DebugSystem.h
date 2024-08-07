@@ -1,7 +1,17 @@
 #pragma once
 
 #include "../FQCommon/FQCommonGraphics.h"
-#include "../FQGameModule/GameModule.h"
+
+namespace fq::game_module
+{
+	class Transform;
+	class BoxCollider;
+	class CapsuleCollider;
+	class SphereCollider;
+	class CharacterController;
+	class Scene;
+	class Light;
+}
 
 namespace fq::game_engine
 {

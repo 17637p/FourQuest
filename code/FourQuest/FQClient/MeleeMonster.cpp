@@ -4,6 +4,9 @@
 #include <random>
 #include <algorithm>
 
+#include "../FQGameModule/NavigationAgent.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Animator.h"
 #include "Attack.h"
 #include "GameManager.h"
 #include "HpBar.h"
@@ -22,7 +25,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
-	, mAnimator(nullptr)
+	, mAnimator(nullptr)	
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mStartPosition{}
@@ -106,7 +109,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	AttackInfo attackInfo{};
 	auto attackComponent = attackObj->GetComponent<client::Attack>();
 
-	attackInfo.attacker = attackObj.get();
+	attackInfo.attacker = GetGameObject();
 	attackInfo.damage = mAttackPower;
 	attackInfo.attackDirection = foward;
 	attackComponent->Set(attackInfo);
@@ -116,8 +119,6 @@ void fq::client::MeleeMonster::EmitAttack()
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
-	// TODO : 근접 몬스터 공격사운드 추가 
-
 }
 
 
@@ -125,7 +126,6 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonster::EmitAttac
 {
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackEffect);
 	auto& effentObj = *(instance.begin());
-
 
 	auto effectT = effentObj->GetComponent<game_module::Transform>();
 	effectT->SetParent(mTransform);

@@ -38,6 +38,7 @@ namespace fq::game_module
 		json["boneName"] = linkData->GetBoneName();
 		json["parentBoneName"] = linkData->GetParentBoneName();
 		json["localTransform"] = MatrixToJson(linkData->GetLocalTransform());
+		json["worldTransform"] = MatrixToJson(linkData->GetWorldTransform());
 		json["density"] = linkData->GetDensity();
 		json["ShapeType"] = linkData->GetShapeType();
 		json["boxExtent"] = Vector3ToJson(linkData->GetBoxExtent());
@@ -120,10 +121,16 @@ namespace fq::game_module
 		number++;
 		auto linkData = std::make_shared<LinkData>();
 
+		if (number < linkJson["id"])
+		{
+			number = linkJson["id"] + 1;
+		}
+
 		linkData->SetID(linkJson["id"]);
 		linkData->SetBoneName(linkJson["boneName"]);
 		linkData->SetParentBoneName(linkJson["parentBoneName"]);
 		linkData->SetLocalTransform(JsonToMatrix(linkJson["localTransform"]));
+		linkData->SetWorldTransform(JsonToMatrix(linkJson["worldTransform"]));
 		linkData->SetDensity(linkJson["density"]);
 		linkData->SetShapeType(linkJson["ShapeType"]);
 		linkData->SetBoxExtent(JsonToVector3(linkJson["boxExtent"]));
@@ -161,7 +168,6 @@ namespace fq::game_module
 	{
 		assert(fs::exists(path));
 		assert(path.extension() == ".articulation");
-		number = 0;
 
 		std::ifstream readData(path);
 		ordered_json articulationJson;

@@ -38,9 +38,7 @@ namespace fq::graphics
 
 		// Transform
 		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
-		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override {
-			return mTransform;
-		}
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
 		// Info
 		virtual void SetMeshObjectInfo(const MeshObjectInfo& info) override { mInfo = info; }
@@ -313,6 +311,9 @@ namespace fq::graphics
 		virtual bool GetIsRender() const override { return mIsRender; }
 		virtual void SetIsRender(bool val) override { mIsRender = val; }
 
+		virtual bool GetRenderMode() const override { return mIsCenter; };
+		virtual void SetRenderMode(bool isCenter) override { mIsCenter = isCenter; }; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -336,6 +337,7 @@ namespace fq::graphics
 		float mFillDegree;
 
 		bool mIsRender;
+		bool mIsCenter;
 	};
 
 	class ProbeObject : public IProbeObject
@@ -362,6 +364,16 @@ namespace fq::graphics
 		std::shared_ptr<IStaticMesh> mStaticMesh;
 		int mIndex;
 		DirectX::SimpleMath::Matrix mTransform;
+	};
+
+	class TextObject : public ITextObject
+	{
+	public:
+		virtual void SetTextInformation(TextInfo textInfo) override { mTextInfo = textInfo; };
+		virtual TextInfo GetTextInformation() override { return mTextInfo; };
+
+	private:
+		TextInfo mTextInfo;
 	};
 }
 
