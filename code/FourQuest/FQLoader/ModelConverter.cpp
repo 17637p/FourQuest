@@ -342,6 +342,21 @@ namespace fq::loader
 				vertices.push_back(vertex);
 			}
 
+			if (aiMeshPtr->HasVertexColors(0))
+			{
+				Mesh::DynamicData colorData;
+
+ 				colorData.Name = "Color0";
+				colorData.Size = sizeof(aiColor4D);
+				colorData.Count = aiMeshPtr->mNumVertices;
+
+				size_t bufferSize = colorData.Size * colorData.Count;
+				colorData.Data.resize(bufferSize);
+				memcpy(colorData.Data.data(), &aiMeshPtr->mColors[0][0], bufferSize);
+				
+				resultMesh.DynamicInfos.insert({ colorData.Name, colorData });
+			}
+
 			for (unsigned int i = 0; i < aiMeshPtr->mNumFaces; ++i)
 			{
 				const auto& face = aiMeshPtr->mFaces[i];
@@ -364,6 +379,7 @@ namespace fq::loader
 			resultMesh.Vertices.insert(resultMesh.Vertices.end(), vertices.begin(), vertices.end());
 			resultMesh.Indices.insert(resultMesh.Indices.end(), indices.begin(), indices.end());
 			resultMesh.Tex1.insert(resultMesh.Tex1.end(), uv1s.begin(), uv1s.end());
+			
 		}
 
 		DirectX::BoundingBox::CreateFromPoints(resultMesh.RenderBoundingBox, min, max);

@@ -44,14 +44,6 @@
 //
 // }
 //
-// cbuffer cbLightmapInformation
-// {
-//
-//   float4 cUVOffsetScale;             // Offset:    0 Size:    16
-//   uint cUVIndex;                     // Offset:   16 Size:     4 [unused]
-//
-// }
-//
 //
 // Resource Bindings:
 //
@@ -60,7 +52,6 @@
 // cbModelTransform                  cbuffer      NA          NA            cb0      1 
 // cbSceneTransform                  cbuffer      NA          NA            cb1      1 
 // cbMaterial                        cbuffer      NA          NA            cb3      1 
-// cbLightmapInformation             cbuffer      NA          NA            cb4      1 
 //
 //
 //
@@ -72,7 +63,7 @@
 // NORMAL                   0   xyz         1     NONE   float   xyz 
 // TANGENT                  0   xyz         2     NONE   float   xyz 
 // UV                       0   xy          3     NONE   float   xy  
-// UV                       1   xy          4     NONE   float   xy  
+// COLOR                    0   xyzw        4     NONE   float   xyzw
 //
 //
 // Output signature:
@@ -88,19 +79,18 @@
 // TEXCOORD                 2     z         4     NONE   float     z 
 // TEXCOORD                 4   xyz         5     NONE   float   xyz 
 // TEXCOORD                 5   xyz         6     NONE   float   xyz 
-// TEXCOORD                 6   xy          7     NONE   float   xy  
+// COLOR                    0   xyzw        7     NONE   float   xyzw
 //
 vs_5_0
 dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[4], immediateIndexed
 dcl_constantbuffer CB1[8], immediateIndexed
 dcl_constantbuffer CB3[4], immediateIndexed
-dcl_constantbuffer CB4[1], immediateIndexed
 dcl_input v0.xyz
 dcl_input v1.xyz
 dcl_input v2.xyz
 dcl_input v3.xy
-dcl_input v4.xy
+dcl_input v4.xyzw
 dcl_output_siv o0.xyzw, position
 dcl_output o1.xyz
 dcl_output o1.w
@@ -110,7 +100,7 @@ dcl_output o4.xy
 dcl_output o4.z
 dcl_output o5.xyz
 dcl_output o6.xyz
-dcl_output o7.xy
+dcl_output o7.xyzw
 dcl_temps 3
 //
 // Initial variable locations:
@@ -118,8 +108,8 @@ dcl_temps 3
 //   v1.x <- vin.NormalL.x; v1.y <- vin.NormalL.y; v1.z <- vin.NormalL.z; 
 //   v2.x <- vin.TangentL.x; v2.y <- vin.TangentL.y; v2.z <- vin.TangentL.z; 
 //   v3.x <- vin.UV.x; v3.y <- vin.UV.y; 
-//   v4.x <- vin.UV1.x; v4.y <- vin.UV1.y; 
-//   o7.x <- <main return value>.UV1.x; o7.y <- <main return value>.UV1.y; 
+//   v4.x <- vin.Color.x; v4.y <- vin.Color.y; v4.z <- vin.Color.z; v4.w <- vin.Color.w; 
+//   o7.x <- <main return value>.Color.x; o7.y <- <main return value>.Color.y; o7.z <- <main return value>.Color.z; o7.w <- <main return value>.Color.w; 
 //   o6.x <- <main return value>.TangentV.x; o6.y <- <main return value>.TangentV.y; o6.z <- <main return value>.TangentV.z; 
 //   o5.x <- <main return value>.NormalV.x; o5.y <- <main return value>.NormalV.y; o5.z <- <main return value>.NormalV.z; 
 //   o4.x <- <main return value>.UV.x; o4.y <- <main return value>.UV.y; o4.z <- <main return value>.ClipSpacePosZ; 
@@ -128,7 +118,7 @@ dcl_temps 3
 //   o1.x <- <main return value>.PositionW.x; o1.y <- <main return value>.PositionW.y; o1.z <- <main return value>.PositionW.z; o1.w <- <main return value>.DepthView; 
 //   o0.x <- <main return value>.PositionH.x; o0.y <- <main return value>.PositionH.y; o0.z <- <main return value>.PositionH.z; o0.w <- <main return value>.PositionH.w
 //
-#line 87 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelVS.hlsl"
+#line 94 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelVS.hlsl"
 mov r0.xyz, v0.xyzx
 mov r0.w, l(1.000000)
 dp4 r1.w, r0.xyzw, cb0[3].xyzw  // r1.w <- vout.PositionH.w
@@ -136,26 +126,26 @@ dp4 r1.x, r0.xyzw, cb0[0].xyzw  // r1.x <- vout.PositionH.x
 dp4 r1.y, r0.xyzw, cb0[1].xyzw  // r1.y <- vout.PositionH.y
 dp4 r1.z, r0.xyzw, cb0[2].xyzw  // r1.z <- vout.PositionH.z
 
-#line 88
+#line 95
 dp4 r0.x, r1.xyzw, cb1[6].xyzw  // r0.x <- vout.PositionH.z
 
-#line 109
+#line 119
 mov o0.z, r0.x
 mov o4.z, r0.x
 
-#line 88
+#line 95
 dp4 o0.x, r1.xyzw, cb1[4].xyzw
 dp4 o0.y, r1.xyzw, cb1[5].xyzw
 dp4 o0.w, r1.xyzw, cb1[7].xyzw
 
-#line 91
+#line 98
 mov r1.w, l(1.000000)
 dp4 o1.w, r1.xyzw, cb1[2].xyzw
 
-#line 109
+#line 119
 mov o1.xyz, r1.xyzx
 
-#line 93
+#line 100
 dp3 r0.x, v1.xyzx, cb0[0].xyzx
 dp3 r0.y, v1.xyzx, cb0[1].xyzx
 dp3 r0.z, v1.xyzx, cb0[2].xyzx
@@ -163,10 +153,10 @@ dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul r0.xyz, r0.wwww, r0.xyzx  // r0.x <- vout.NormalW.x; r0.y <- vout.NormalW.y; r0.z <- vout.NormalW.z
 
-#line 109
+#line 119
 mov o2.xyz, r0.xyzx
 
-#line 96
+#line 103
 dp3 r1.x, v2.xyzx, cb0[0].xyzx
 dp3 r1.y, v2.xyzx, cb0[1].xyzx
 dp3 r1.z, v2.xyzx, cb0[2].xyzx
@@ -174,16 +164,16 @@ dp3 r0.w, r1.xyzx, r1.xyzx
 rsq r0.w, r0.w
 mul r1.xyz, r0.wwww, r1.xyzx  // r1.x <- vout.TangentW.x; r1.y <- vout.TangentW.y; r1.z <- vout.TangentW.z
 
-#line 109
+#line 119
 mov o3.xyz, r1.xyzx
 
-#line 99
+#line 106
 mov r2.xy, v3.xyxx
 mov r2.z, l(1.000000)
 dp3 o4.x, r2.xyzx, cb3[2].xywx
 dp3 o4.y, r2.xyzx, cb3[3].xywx
 
-#line 94
+#line 101
 dp3 r2.x, r0.xyzx, cb1[0].xyzx
 dp3 r2.y, r0.xyzx, cb1[1].xyzx
 dp3 r2.z, r0.xyzx, cb1[2].xyzx
@@ -191,7 +181,7 @@ dp3 r0.x, r2.xyzx, r2.xyzx
 rsq r0.x, r0.x
 mul o5.xyz, r0.xxxx, r2.xyzx
 
-#line 97
+#line 104
 dp3 r0.x, r1.xyzx, cb1[0].xyzx
 dp3 r0.y, r1.xyzx, cb1[1].xyzx
 dp3 r0.z, r1.xyzx, cb1[2].xyzx
@@ -199,12 +189,7 @@ dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul o6.xyz, r0.wwww, r0.xyzx
 
-#line 105
-mad r0.xy, v4.xyxx, l(1.000000, -1.000000, 0.000000, 0.000000), l(0.000000, 1.000000, 0.000000, 0.000000)
-mad r0.xy, r0.xyxx, cb4[0].xyxx, cb4[0].zwzz  // r0.x <- vout.UV1.x; r0.y <- vout.UV1.y
-
-#line 109
-add r0.z, -r0.y, l(1.000000)
-mov o7.xy, r0.xzxx
+#line 119
+mov o7.xyzw, v4.xyzw
 ret 
-// Approximately 50 instruction slots used
+// Approximately 47 instruction slots used

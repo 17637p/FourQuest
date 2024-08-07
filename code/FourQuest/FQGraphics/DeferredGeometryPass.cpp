@@ -51,13 +51,19 @@ namespace fq::graphics
 		// shader
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
 		auto staticMeshStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_STATIC.cso");
+		auto staticMeshVertexColorVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_VERTEX_COLOR.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
+
 		auto geometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY.cso");
 		auto geometryStaticPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY_STATIC.cso");
+		auto geometryVertexColorPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY_VERTEX_COLOR.cso");
+
 		auto skinningPipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, geometryPS, pipelieState);
 		mLightmapStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshStaticVS, nullptr, geometryStaticPS, pipelieState);
+		mVertexColorStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVertexColorVS, nullptr, geometryVertexColorPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
 
 		// constant buffer
@@ -96,6 +102,7 @@ namespace fq::graphics
 
 		mStaticMeshShaderProgram = nullptr;
 		mLightmapStaticMeshShaderProgram = nullptr;
+		mVertexColorStaticMeshShaderProgram = nullptr;
 		mSkinnedMeshShaderProgram = nullptr;
 
 		mModelTransformCB = nullptr;
@@ -241,7 +248,15 @@ namespace fq::graphics
 				}
 				case MeshObjectInfo::EObjectType::Dynamic:
 				{
-					mStaticMeshShaderProgram->Bind(mDevice);
+					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+					{
+						mVertexColorStaticMeshShaderProgram->Bind(mDevice);
+					}
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
+
 					break;
 				}
 				default:

@@ -47,6 +47,7 @@ namespace fq::graphics
 
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
+		std::unique_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;

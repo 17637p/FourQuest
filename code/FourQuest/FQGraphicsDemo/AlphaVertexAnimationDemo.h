@@ -17,11 +17,11 @@ namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
 
-class LightMapDemo : public BaseWindow<LightMapDemo>
+class AlphaVertexAnimationDemo : public BaseWindow<AlphaVertexAnimationDemo>
 {
 public:
-	LightMapDemo();
-	~LightMapDemo();
+	AlphaVertexAnimationDemo();
+	~AlphaVertexAnimationDemo();
 
 	bool Init(HINSTANCE hInstance);
 	void Loop();

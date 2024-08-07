@@ -131,7 +131,7 @@ namespace fq::loader
 			}
 
 			unsigned int dynamicDataCount = 0;
-			fileUtil.Read<unsigned int>(&tex1Count);
+			fileUtil.Read<unsigned int>(&dynamicDataCount);
 
 			for (unsigned int j = 0; j < dynamicDataCount; ++j)
 			{
@@ -140,7 +140,8 @@ namespace fq::loader
 				fileUtil.Read<string>(&dynamicData.Name);
 				fileUtil.Read<unsigned int>(&dynamicData.Size);
 				fileUtil.Read<unsigned int>(&dynamicData.Count);
-				fileUtil.Read(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+				dynamicData.Data.resize(dynamicData.Size * dynamicData.Count);
+				fileUtil.Read(dynamicData.Data.data(), dynamicData.Size * dynamicData.Count);
 
 				mesh.DynamicInfos.insert({ dynamicData.Name, dynamicData });
 			}
@@ -299,7 +300,7 @@ namespace fq::loader
 				fileUtil.Write<string>(dynamicData.Name);
 				fileUtil.Write<unsigned int>(dynamicData.Size);
 				fileUtil.Write<unsigned int>(dynamicData.Count);
-				fileUtil.Write(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+				fileUtil.Write(dynamicData.Data.data(), dynamicData.Size * dynamicData.Count);
 			}
 		}
 	}

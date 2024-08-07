@@ -19,13 +19,13 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
-		class IMesh
+		enum class EStaticMeshType
 		{
-		public:
-
-		protected:
+			Default,
+			Static,
+			VertexColor,
 		};
-
+		
 		class IStaticMesh
 		{
 		public:
@@ -33,6 +33,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void* GetIndexBuffer() abstract;
 
 			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+			virtual FQ_GRAPHICS EStaticMeshType GetStaticMeshType() const abstract;
 
 		protected:
 			virtual ~IStaticMesh() = default;

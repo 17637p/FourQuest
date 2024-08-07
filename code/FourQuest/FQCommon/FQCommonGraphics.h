@@ -47,7 +47,7 @@ namespace fq::graphics
 		// Directional, Spot
 		DirectX::SimpleMath::Vector3 direction;
 
-		ELightMode mode;
+		ELightMode mode = ELightMode::Realtime;
 	};
 
 

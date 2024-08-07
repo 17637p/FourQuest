@@ -60,6 +60,9 @@
     <ClInclude Include="LightMapDemo.h">
       <Filter>Process</Filter>
     </ClInclude>
+    <ClInclude Include="AlphaVertexAnimationDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -96,6 +99,9 @@
       <Filter>Process\Source</Filter>
     </ClCompile>
     <ClCompile Include="LightMapDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaVertexAnimationDemo.cpp">
       <Filter>Process\Source</Filter>
     </ClCompile>
   </ItemGroup>

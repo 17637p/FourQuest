@@ -333,7 +333,8 @@
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SHADING.cso /D SHADING=1
 fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_GEOMETRY.cso /D GEOMETRY=1
-fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_GEOMETRY_STATIC.cso /D GEOMETRY=1 /D STATIC=1</Command>
+fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_GEOMETRY_STATIC.cso /D GEOMETRY=1 /D STATIC=1
+fxc.exe %(FullPath) /Zi /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_GEOMETRY_VERTEX_COLOR.cso /D GEOMETRY=1 /D VERTEX_COLOR=1</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../CompiledShader/Release/%(FileName).cso</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SHADING.cso /D SHADING=1
@@ -372,6 +373,7 @@ fxc.exe %(FullPath) /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso
 fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_SKINNING.cso /D SKINNING=1
 fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_STATIC.cso /D STATIC=1
+fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName)_VERTEX_COLOR.cso /D VERTEX_COLOR=1
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName).cso
 fxc.exe %(FullPath) /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Release/%(FileName)_SKINNING.cso /D SKINNING=1

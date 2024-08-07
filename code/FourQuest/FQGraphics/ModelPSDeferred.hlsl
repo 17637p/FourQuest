@@ -16,6 +16,9 @@ struct VertexOut
 #ifdef STATIC
     float2 UV1 : TEXCOORD6;
 #endif
+#ifdef VERTEX_COLOR
+    float4 COLOR : COLOR0;
+#endif
 };
 
 struct PixelOut
@@ -60,9 +63,13 @@ SamplerState gLinearWrap : register(s2); //	D3D11_FILTER_Linear, D3D11_TEXTURE_A
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
-    PixelOut pout;
+    PixelOut pout = (PixelOut)0;
 
+#ifdef VERTEX_COLOR
+    pout.Albedo =  pin.COLOR;// gModelMaterial.BaseColor * pin.COLOR;
+#else
     pout.Albedo = gModelMaterial.BaseColor;
+#endif
 
     if (gModelMaterial.UseAlbedoMap)
     {

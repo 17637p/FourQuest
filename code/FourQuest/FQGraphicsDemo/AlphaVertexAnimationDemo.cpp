@@ -42,73 +42,13 @@ bool AlphaVertexAnimationDemo::Init(HINSTANCE hInstance)
 	mTestGraphics = mEngineExporter->GetEngine();
 	mTestGraphics->Initialize(mHwnd, mScreenWidth, mScreenHeight, fq::graphics::EPipelineType::Deferred);
 
+	const std::string fbxPath = "./resource/Graphics/AlphaVertexAnimationDemo/E_Slash_Blade01.fbx";
+	const std::string modelPath = "./resource/Graphics/AlphaVertexAnimationDemo/E_Slash_Blade01.model";
+	const std::string directoryPath = "./resource/Graphics/AlphaVertexAnimationDemo/";
+
 	// 랜더링 오브젝트 생성
-	mTestGraphics->WriteModel("./resource/Graphics/AlphaVertexAnimationDemo/LightMapTest.model", mTestGraphics->ConvertModel("./resource/Graphics/AlphaVertexAnimationDemo/LightMapTest.fbx"));
-	createModel("./resource/Graphics/AlphaVertexAnimationDemo/LightMapTest.model", "./resource/Graphics/AlphaVertexAnimationDemo/", DirectX::SimpleMath::Matrix::Identity);
-	mTestGraphics->SetLightMapTexture({ "./resource/Graphics/AlphaVertexAnimationDemo/Lightmap-0_comp_light.png" });
-	mTestGraphics->SetLightMapDirectionTexture({ "./resource/Graphics/AlphaVertexAnimationDemo/Lightmap-0_comp_dir.png" });
-	//mTestGraphics->SetSkyBox(L"./resource/Graphics/AlphaVertexAnimationDemo/123EnvHDR.dds", true);
-
-	struct LightMapInfo
-	{
-		DirectX::SimpleMath::Vector4 OffsetScale;
-		unsigned int Index;
-	};
-
-	std::map<std::string, LightMapInfo> lightMapUVMap;
-	// load
-	std::ifstream readData("./resource/Graphics/AlphaVertexAnimationDemo/LightmapUVs.json");
-	nlohmann::ordered_json nodeUVsJson;
-
-	if (readData.is_open())
-	{
-		readData >> nodeUVsJson;
-		readData.close();
-	}
-	else
-		assert(!"파일 열기 실패");
-
-	for (const auto& nodeUVJson : nodeUVsJson["lightmapUVs"])
-	{
-		auto name = nodeUVJson["objectName"].get<std::string>();
-
-		std::vector<DirectX::SimpleMath::Vector2> uvs;
-
-		LightMapInfo lightmapInfo;
-
-		lightmapInfo.OffsetScale.x = nodeUVJson["lightmapScaleOffset"][0].get<float>();
-		lightmapInfo.OffsetScale.y = nodeUVJson["lightmapScaleOffset"][1].get<float>();
-		lightmapInfo.OffsetScale.z = nodeUVJson["lightmapScaleOffset"][2].get<float>();
-		lightmapInfo.OffsetScale.w = nodeUVJson["lightmapScaleOffset"][3].get<float>();
-
-		lightmapInfo.Index = nodeUVJson["lightmapIndex"].get<unsigned int>();
-
-		lightMapUVMap.insert({ name, std::move(lightmapInfo) });
-	}
-
-	for (fq::graphics::IStaticMeshObject* staticMeshObject : mStaticMeshObjects)
-	{
-		auto staticMeshObjectInf = staticMeshObject->GetMeshObjectInfo();
-		staticMeshObjectInf.ObjectType = fq::graphics::MeshObjectInfo::EObjectType::Static;
-		staticMeshObject->SetMeshObjectInfo(staticMeshObjectInf);
-
-		for (auto material : staticMeshObject->GetMaterials())
-		{
-			auto materialInfo = material->GetInfo();
-			materialInfo.Roughness = 0.f;
-			materialInfo.RasterizeType = fq::graphics::ERasterizeMode::TwoSide;
-			material->SetInfo(materialInfo);
-		}
-
-		auto meshData = staticMeshObject->GetStaticMesh()->GetMeshData();
-		auto find = lightMapUVMap.find(meshData.NodeName);
-
-		if (find != lightMapUVMap.end())
-		{
-			staticMeshObject->SetLightmapUVScaleOffset(find->second.OffsetScale);
-			staticMeshObject->SetLightmapIndex(find->second.Index);
-		}
-	}
+	mTestGraphics->WriteModel(modelPath, mTestGraphics->ConvertModel(fbxPath));
+	createModel(modelPath, directoryPath, DirectX::SimpleMath::Matrix::CreateScale(100));
 
 	/// camera 초기화
 	AddDefaultCamera(mTestGraphics);
@@ -122,6 +62,46 @@ bool AlphaVertexAnimationDemo::Init(HINSTANCE hInstance)
 		DirectX::SimpleMath::Matrix::CreateScale(mCameraTransform.worldScale) *
 		DirectX::SimpleMath::Matrix::CreateFromQuaternion(mCameraTransform.worldRotation) *
 		DirectX::SimpleMath::Matrix::CreateTranslation(mCameraTransform.worldPosition);
+
+	/// Light 초기화 
+	fq::graphics::LightInfo directionalLightInfo;
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1, 1, 1 };
+	directionalLightInfo.intensity = 2;
+	directionalLightInfo.direction = { 0, -0.7, -0.7 };
+	directionalLightInfo.direction.Normalize();
+	directionalLightInfo.mode = fq::graphics::ELightMode::Realtime;
+
+	mTestGraphics->AddLight(1, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1, 1, 1 };
+	directionalLightInfo.intensity = 2;
+	directionalLightInfo.direction = { 0, -0.7, 0.7 };
+	directionalLightInfo.direction.Normalize();
+	directionalLightInfo.mode = fq::graphics::ELightMode::Realtime;
+
+	mTestGraphics->AddLight(2, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1, 1, 1 };
+	directionalLightInfo.intensity = 2;
+	directionalLightInfo.direction = { 0, 0.7, -0.7 };
+	directionalLightInfo.direction.Normalize();
+	directionalLightInfo.mode = fq::graphics::ELightMode::Realtime;
+
+	mTestGraphics->AddLight(3, directionalLightInfo);
+
+	directionalLightInfo.type = fq::graphics::ELightType::Directional;
+	directionalLightInfo.color = { 1, 1, 1, 1 };
+	directionalLightInfo.intensity = 2;
+	directionalLightInfo.direction = { 0, 0.7, 0.7 };
+	directionalLightInfo.direction.Normalize();
+	directionalLightInfo.mode = fq::graphics::ELightMode::Realtime;
+
+	mTestGraphics->AddLight(4, directionalLightInfo);
+
 	return true;
 }
 
