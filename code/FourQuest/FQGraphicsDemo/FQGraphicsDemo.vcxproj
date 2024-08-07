@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlphaVertexAnimationDemo.h" />
     <ClInclude Include="BaseWindow.h" />
     <ClInclude Include="DemoUtils.h" />
     <ClInclude Include="EffectDemo.h" />
@@ -158,6 +159,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlphaVertexAnimationDemo.cpp" />
     <ClCompile Include="DemoUtils.cpp" />
     <ClCompile Include="EffectDemo.cpp" />
     <ClCompile Include="InputManager.cpp" />

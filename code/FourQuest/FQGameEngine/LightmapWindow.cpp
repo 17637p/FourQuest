@@ -187,11 +187,12 @@ void fq::game_engine::LightmapWindow::SaveLightmap(std::filesystem::path path)
 
 	for (const std::filesystem::path texturePath : mLightmapArrayPath)
 	{
-		lightmapJson["Lightmap"].push_back(texturePath);
+		auto relativePath = fq::path::GetRelativePath(texturePath);
+		lightmapJson["Lightmap"].push_back(relativePath);
 	}
 	for (const std::filesystem::path texturePath : mDirectionArrayPath)
 	{
-		lightmapJson["Directionmap"].push_back(texturePath);
+		lightmapJson["Directionmap"].push_back(fq::path::GetRelativePath(texturePath));
 	}
 
 	std::filesystem::path filePath = path / "lightmap.txt";
@@ -227,11 +228,11 @@ void fq::game_engine::LightmapWindow::LoadLightmap(std::filesystem::path path)
 
 		for (auto& element : lightmapJson["Lightmap"])
 		{
-			mLightmapArrayPath.push_back(element);
+			mLightmapArrayPath.push_back(fq::path::GetAbsolutePath(element));
 		}
 		for (auto& element : lightmapJson["Directionmap"])
 		{
-			mDirectionArrayPath.push_back(element);
+			mDirectionArrayPath.push_back(fq::path::GetAbsolutePath(element));
 		}
 
 		readData.close();
