@@ -320,6 +320,11 @@ void fq::graphics::UIManager::drawAllText()
 		ID2D1SolidColorBrush* tempBrush = nullptr;
 		for (const auto& textObject : mTexts)
 		{
+			if (!textObject->GetTextInformation().IsRender)
+			{
+				continue;
+			}
+
 			TextInfo drawTextInformation = textObject->GetTextInformation();
 			if (drawTextInformation.Text == "")
 			{
