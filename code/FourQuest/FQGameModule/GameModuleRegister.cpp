@@ -16,6 +16,7 @@
 #include "TextUI.h"
 #include "Socket.h"
 #include "PostProcessing.h"
+#include "Sequence.h"
 
 // Physics
 #include "Terrain.h"
@@ -711,6 +712,95 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "bIsRagdoll")
 		.prop(fq::reflect::prop::Comment, u8"Ragdoll 시뮬레이션을 진행하는지 여부입니다.")
 		.prop(fq::reflect::prop::RelativePath)
+		.base<Component>();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//                              Sequence                                //
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<CameraChangeTrackInfo>()
+		.type("CameraChangeTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "CameraChangeTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::CameraChangeTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::CameraChangeTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::CameraChangeTrackInfo::prevCameraName>("PrevCameraName"_hs)
+		.prop(fq::reflect::prop::Name, "PrevCameraName")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 실행하기 전에 포커스가 되어 있는 메인 카메라 이름")
+		.data<&fq::game_module::CameraChangeTrackInfo::targetCameraName>("TargetCameraName"_hs)
+		.prop(fq::reflect::prop::Name, "TargetCameraName")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 실행하고 난 후에 포커스를 할 카메라 이름");
+
+	entt::meta<ObjectMoveTrackInfo>()
+		.type("ObjectMoveTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectMoveTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::ObjectMoveTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::ObjectMoveTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::ObjectMoveTrackInfo::targetObjectName>("TargetObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "TargetObjectName")
+		.prop(fq::reflect::prop::Comment, u8"움직일 오브젝트 이름")
+		.data<&fq::game_module::ObjectMoveTrackInfo::targetScale>("TargetScale"_hs)
+		.prop(fq::reflect::prop::Name, "TargetScale")
+		.prop(fq::reflect::prop::Comment, u8"위치")
+		.data<&fq::game_module::ObjectMoveTrackInfo::targetRotation>("TargetRotation"_hs)
+		.prop(fq::reflect::prop::Name, "TargetRotation")
+		.prop(fq::reflect::prop::Comment, u8"회전")
+		.data<&fq::game_module::ObjectMoveTrackInfo::targetPosition>("TargetPosition"_hs)
+		.prop(fq::reflect::prop::Name, "TargetPosition")
+		.prop(fq::reflect::prop::Comment, u8"크기");
+
+	entt::meta<ObjectTeleportTrackInfo>()
+		.type("ObjectTeleportTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectTeleportTrackInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&fq::game_module::ObjectTeleportTrackInfo::startTime>("StartTime"_hs)
+		.prop(fq::reflect::prop::Name, "StartTime")
+		.prop(fq::reflect::prop::Comment, u8"시퀀스가 시작되고 난 뒤에 시작할 시간")
+		.data<&fq::game_module::ObjectTeleportTrackInfo::totalPlayTime>("TotalPlayTime"_hs)
+		.prop(fq::reflect::prop::Name, "TotalPlayTime")
+		.prop(fq::reflect::prop::Comment, u8"해당 트랙이 실행되고 난 뒤에 실행할 총 시간")
+		.data<&fq::game_module::ObjectTeleportTrackInfo::targetObjectName>("TargetObjectName"_hs)
+		.prop(fq::reflect::prop::Name, "TargetObjectName")
+		.prop(fq::reflect::prop::Comment, u8"움직일 오브젝트 이름")
+		.data<&fq::game_module::ObjectTeleportTrackInfo::targetScale>("TargetScale"_hs)
+		.prop(fq::reflect::prop::Name, "TargetScale")
+		.prop(fq::reflect::prop::Comment, u8"위치")
+		.data<&fq::game_module::ObjectTeleportTrackInfo::targetRotation>("TargetRotation"_hs)
+		.prop(fq::reflect::prop::Name, "TargetRotation")
+		.prop(fq::reflect::prop::Comment, u8"회전")
+		.data<&fq::game_module::ObjectTeleportTrackInfo::targetPosition>("TargetPosition"_hs)
+		.prop(fq::reflect::prop::Name, "TargetPosition")
+		.prop(fq::reflect::prop::Comment, u8"크기");
+
+	entt::meta<Sequence>()
+		.type("Sequence"_hs)
+		.prop(fq::reflect::prop::Name, "Sequence")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&Sequence::SetIsPlay, &Sequence::GetIsPlay>("bIsPlay"_hs)
+		.prop(fq::reflect::prop::Name, "bIsPlay")
+		.prop(fq::reflect::prop::Comment, u8"시작할 지 설정합니다.")
+		.data<&Sequence::SetIsLoop, &Sequence::GetIsLoop>("bIsLoop"_hs)
+		.prop(fq::reflect::prop::Name, "bIsLoop")
+		.prop(fq::reflect::prop::Comment, u8"루프를 설정합니다.")
+		.data<&Sequence::SetCameraChangeTrackInfo, &Sequence::GetCameraChangeTrackInfo>("CameraChangeTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "CameraChangeTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 카메라 변경 트랙이 있다면 추가하면 됩니다.")
+		.data<&Sequence::SetObjectMoveTrackInfo, &Sequence::GetObjectMoveTrackInfo>("ObjectMoveTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectMoveTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 오브젝트 이동 트랙이 있다면 추가하면 됩니다.")
+		.data<&Sequence::SetObjectTeleportTrackInfo, &Sequence::GetObjectTeleportTrackInfo>("ObjectTeleportTrackInfo"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectTeleportTrackInfo")
+		.prop(fq::reflect::prop::Comment, u8"만들고 싶은 오브젝트 순간이동 트랙이 있다면 추가하면 됩니다.")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

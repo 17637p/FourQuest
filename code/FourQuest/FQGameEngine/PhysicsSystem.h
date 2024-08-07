@@ -163,6 +163,4 @@ namespace fq::game_engine
 		// Articulation
 		fq::game_module::ArticulationLoader mArticulationLoader;
 	};
-
-
 }

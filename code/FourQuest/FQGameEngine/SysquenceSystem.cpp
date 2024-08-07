@@ -13,6 +13,4 @@ namespace fq::game_engine
 	void SysquenceSystem::Initialize(GameProcess* gameProcess)
 	{
 	}
-
-
 }
