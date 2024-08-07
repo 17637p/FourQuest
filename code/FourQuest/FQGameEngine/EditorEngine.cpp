@@ -262,6 +262,7 @@ void fq::game_engine::EditorEngine::Finalize()
 	EditorHelper::SaveEditorSetting(mEditor.get());
 
 	mGameProcess->mSceneManager->UnloadScene();
+	mGameProcess->mLoadingSystem->Finalize();
 
 	// Editor Process
 	mEditor->mImageSystem->Finalize();
