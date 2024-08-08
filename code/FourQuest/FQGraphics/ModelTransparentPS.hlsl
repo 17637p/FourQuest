@@ -9,6 +9,12 @@ struct VertexOut
     float3 TangentW : TEXCOORD0;
     float2 UV : TEXCOORD1;
     float ClipSpacePosZ : TEXCOORD2;
+    float DepthView : TEXCOORD3;
+    float3 NormalV : TEXCOORD4;
+    float3 TangentV : TEXCOORD5;
+#ifdef VERTEX_COLOR
+    float4 Color : COLOR0;
+#endif
 };
 
 struct PixelOut
@@ -69,7 +75,12 @@ PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
+#ifdef VERTEX_COLOR
     float4 baseColor = gModelMaterial.BaseColor;
+    baseColor.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용
+#else
+    float4 baseColor = gModelMaterial.BaseColor;
+#endif
     
     if (gModelMaterial.UseAlbedoMap)
     {

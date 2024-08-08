@@ -36,6 +36,7 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 
 		std::unique_ptr<class ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<class ShaderProgram> mStaticMeshVertexColorShaderProgram;
 		std::unique_ptr<class ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;

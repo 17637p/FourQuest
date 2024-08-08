@@ -17,7 +17,7 @@ struct VertexOut
     float2 UV1 : TEXCOORD6;
 #endif
 #ifdef VERTEX_COLOR
-    float4 COLOR : COLOR0;
+    float4 Color : COLOR0;
 #endif
 };
 
@@ -66,7 +66,8 @@ PixelOut main(VertexOut pin) : SV_TARGET
     PixelOut pout = (PixelOut)0;
 
 #ifdef VERTEX_COLOR
-    pout.Albedo = gModelMaterial.BaseColor * pin.COLOR;
+    pout.Albedo = gModelMaterial.BaseColor;
+    pout.Albedo.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용
 #else
     pout.Albedo = gModelMaterial.BaseColor;
 #endif

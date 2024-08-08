@@ -33,12 +33,16 @@ namespace fq::graphics
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto staticMeshVertexColorVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_VERTEX_COLOR.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
+
 		auto transparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER.cso");
+		auto transparentRenderVertexColorPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER_VERTEX_COLOR.cso");
 		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, disableDepthWriteState, OITRenderState);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, transparentRenderPS, pipelieState);
+		mStaticMeshVertexColorShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVertexColorVS, nullptr, transparentRenderVertexColorPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, transparentRenderPS, pipelieState);
 
 		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
@@ -179,8 +183,6 @@ namespace fq::graphics
 
 		// Draw
 		{
-			mStaticMeshShaderProgram->Bind(mDevice);
-
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
@@ -191,6 +193,15 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					bindingState(materialInfo);
+
+					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+					{
+						mStaticMeshVertexColorShaderProgram->Bind(mDevice);
+					}
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
 
 					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
 					{

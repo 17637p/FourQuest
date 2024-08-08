@@ -20,7 +20,7 @@ namespace fq::graphics
 
 	void Material::loadTexture()
 	{
-		auto createTextureOrNull = [](const std::wstring& filePath, const std::shared_ptr<D3D11ResourceManager>& resourceManager) -> std::shared_ptr<D3D11Texture>
+		auto createTextureOrNull = [](std::wstring& filePath, const std::shared_ptr<D3D11ResourceManager>& resourceManager) -> std::shared_ptr<D3D11Texture>
 			{
 				if (filePath.empty())
 				{
@@ -29,6 +29,7 @@ namespace fq::graphics
 				if (!std::filesystem::exists(filePath))
 				{
 					spdlog::warn("[Material] \"{}\" not exist", std::filesystem::path(filePath).string());
+					filePath = L"";
 					return nullptr;
 				}
 

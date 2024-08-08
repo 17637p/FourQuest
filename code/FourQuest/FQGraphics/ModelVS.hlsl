@@ -31,12 +31,12 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
-    float4 Color : COLOR0;
     
 #ifdef STATIC
     float2 UV1 : TEXCOORD6;
 #endif
 #ifdef VERTEX_COLOR
+    float4 Color : COLOR0;
 #endif
 };
 
