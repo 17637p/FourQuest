@@ -36,6 +36,7 @@ namespace fq::graphics
 		mBloomAccumulateCS = std::make_shared<D3D11ComputeShader>(device, L"BloomAccumulateCS.cso");
 		mBlurHorzCS = std::make_shared<D3D11ComputeShader>(device, L"BlurHorzCS.cso");
 		mBlurVertCS = std::make_shared<D3D11ComputeShader>(device, L"BlurVertCS.cso");
+		mSSRCS = std::make_shared<D3D11ComputeShader>(device, L"SSRCS.cso");
 
 		// shaderProgram
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
@@ -45,6 +46,7 @@ namespace fq::graphics
 		// constantBuffer
 		mBloomParamsCB = std::make_shared<D3D11ConstantBuffer<BloomParams>>(device, ED3D11ConstantBuffer::Transform);
 		mPostProcessingCB = std::make_shared<D3D11ConstantBuffer<PostProcessingBuffer>>(device, ED3D11ConstantBuffer::Transform);
+		mSSRCB = std::make_shared<D3D11ConstantBuffer<SceneInfoInfo>>(device, ED3D11ConstantBuffer::Transform);
 		mFogCB = std::make_shared<D3D11ConstantBuffer<Fog>>(device, ED3D11ConstantBuffer::Transform);
 		OnResize(device, resourceManager, width, height);
 	}
@@ -53,16 +55,21 @@ namespace fq::graphics
 	{
 		mPostProcessingRTV[0] = std::make_shared<D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mPostProcessingRTV[1] = std::make_shared<D3D11RenderTargetView>(device, ED3D11RenderTargetViewType::Offscreen, width, height);
-		mPostProcessingSRV[0] = std::make_shared<D3D11ShaderResourceView>(device, mPostProcessingRTV[0]);
-		mPostProcessingSRV[1] = std::make_shared<D3D11ShaderResourceView>(device, mPostProcessingRTV[1]);
+		mSSRUAV = std::make_shared<D3D11UnorderedAccessView>(device, width, height);
+		mPostProcessingSRV[0] = std::make_shared<D3D11ShaderResourceView>(device, mSSRUAV, true);
+		mPostProcessingSRV[1] = std::make_shared<D3D11ShaderResourceView>(device, mSSRUAV, true);
+		//mPostProcessingSRV[0] = std::make_shared<D3D11ShaderResourceView>(device, mPostProcessingRTV[0]);
+		//mPostProcessingSRV[1] = std::make_shared<D3D11ShaderResourceView>(device, mPostProcessingRTV[1]);
 		mSwapChainRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Default);
 		mOffscreenRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
 		mOffscreenSRV = std::make_shared<D3D11ShaderResourceView>(device, mOffscreenRTV);
+		mColorSSRSRV = std::make_shared<D3D11ShaderResourceView>(device, mOffscreenRTV);
 
 		mExtractBrightUAV[0] = std::make_shared<D3D11UnorderedAccessView>(device, width / 2, height / 2);
 		mExtractBrightUAV[1] = std::make_shared<D3D11UnorderedAccessView>(device, width / 2, height / 2);
 		mExtractBrightSRV[0] = std::make_shared<D3D11ShaderResourceView>(device, mExtractBrightUAV[0], true);
 		mExtractBrightSRV[1] = std::make_shared<D3D11ShaderResourceView>(device, mExtractBrightUAV[1], true);
+
 
 		for (int i = 0; i < DOWN_SCALE_BUFFER_COUNT; ++i)
 		{
@@ -82,6 +89,9 @@ namespace fq::graphics
 
 		auto defaultDSV = resourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
 		mDSVSRV = std::make_shared<D3D11ShaderResourceView>(device, defaultDSV, DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+
+		auto normalRTV = resourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
+		mNormalSSRSRV = std::make_shared<D3D11ShaderResourceView>(device, normalRTV);
 	}
 
 	// 이런 함수는 그냥 버퍼 받게끔 풀어버리는 게 더 나을 거 같긴 하네
@@ -127,6 +137,26 @@ namespace fq::graphics
 		{
 			excuteBloom(device);
 		}
+
+		//Temp SSR
+		SceneInfoInfo sceneInfoInfo;
+		sceneInfoInfo.viewMat = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
+		sceneInfoInfo.projMat = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
+		sceneInfoInfo.invProjMat = mCameraManager->GetProjectionMatrix(ECameraType::Player).Invert().Transpose();
+		sceneInfoInfo.viewSizeX = 1920;
+		sceneInfoInfo.viewSizeY = 1080;
+		mSSRCB->Update(device, sceneInfoInfo);
+
+		mPointClampSS->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+		mSSRCB->Bind(device, ED3D11ShaderType::ComputeShader, 0);
+		mSSRCS->Bind(device);
+		mNormalSSRSRV->Bind(device, 0, ED3D11ShaderType::ComputeShader);
+		mDSVSRV->Bind(device, 1, ED3D11ShaderType::ComputeShader);
+		mColorSSRSRV->Bind(device, 2, ED3D11ShaderType::ComputeShader);
+		mSSRUAV->Bind(device, 0);
+		device->GetDeviceContext()->Dispatch(128, 128, 1);
+		mColorSSRSRV->UnBind(device, 0, ED3D11ShaderType::ComputeShader);
+		mSSRUAV->UnBind(device, 0);
 
 		PostProcessingBuffer postProcessingBuffer;
 		postProcessingBuffer.BloomColorTint = mPostProcessingInfo.BloomColorTint;
@@ -183,7 +213,6 @@ namespace fq::graphics
 		mPostProcessingRTV[mRTVIndex]->UnBind(device);
 		mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::PixelShader);
 		swapPostProcessingBuffer();
-
 	}
 
 	void D3D11PostProcessingManager::excuteBloom(std::shared_ptr<D3D11Device> device)

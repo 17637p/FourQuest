@@ -6,6 +6,10 @@ RWTexture2D<float4> tex_output : register(u0);
 
 SamplerState pointSampler : register(s0);
 
+#define MAX_ITERATION 160
+#define MAX_THICKNESS 0.00001
+
+// Scene 정보들 
 struct SceneInfo
 {
     float4x4 ViewMat;
@@ -14,17 +18,18 @@ struct SceneInfo
     uint2 ViewSize; // 화면 해상도
 };
 
+
 struct ComputePosAndReflectionOutput
 {
-    float3 outSamplePosInTS;
-    float3 outReflDirInTS;
-    float outMaxDistance;
+    float3 outSamplePosInTS; // 텍스트 공간에서 샘플링하는 위치
+    float3 outReflDirInTS; // 텍스트 공간에서 ReflectionVector 방향
+    float outMaxDistance; // 최대 이동 거리 (화면 밖으로 벗어나지 않는? Todo: 더 공부하기)
 };
 
 struct Inter
 {
-    float3 intersection;
-    float intensity;
+    float3 intersection; // 교차점
+    float intensity; // 일단 bool 값임. 메탈 있 없
 };
 
 cbuffer cbSceneInfo
@@ -33,10 +38,12 @@ cbuffer cbSceneInfo
 };
 
 // Compute the position, the reflection direction, maxTraceDistance of the sample in texture space.
-void ComputePosAndReflection(uint2 tid,
-                             const SceneInfo sceneInfo,
-                             float3 vSampleNormalInVS,
-                             ComputePosAndReflectionOutput output)
+// 반사 방향 계산, 위치 계산, 텍스트 공간에서 샘플의 최대추적거리 계산
+ComputePosAndReflectionOutput ComputePosAndReflection(
+                                uint2 tid,
+                                const SceneInfo sceneInfo,
+                                float3 vSampleNormalInVS,
+                                ComputePosAndReflectionOutput output)
 {
     float sampleDepth = tex_depth[tid].r;
     float4 samplePosInCS =  float4(((float2(tid)+0.5)/sceneInfo.ViewSize)*2-1.0f, sampleDepth, 1);
@@ -48,7 +55,7 @@ void ComputePosAndReflection(uint2 tid,
     float3 vCamToSampleInVS = normalize(samplePosInVS.xyz);
     float4 vReflectionInVS = float4(reflect(vCamToSampleInVS.xyz, vSampleNormalInVS.xyz),0);
 
-    float4 vReflectionEndPosInVS = samplePosInVS + vReflectionInVS * 1000;
+    float4 vReflectionEndPosInVS = samplePosInVS + vReflectionInVS;
     vReflectionEndPosInVS /= (vReflectionEndPosInVS.z < 0 ? vReflectionEndPosInVS.z : 1);
     float4 vReflectionEndPosInCS = mul(float4(vReflectionEndPosInVS.xyz, 1), sceneInfo.ProjMat);
     vReflectionEndPosInCS /= vReflectionEndPosInCS.w;
@@ -69,42 +76,43 @@ void ComputePosAndReflection(uint2 tid,
                             output.outReflDirInTS.y<0 ? (-output.outSamplePosInTS.y/output.outReflDirInTS.y)  : ((1-output.outSamplePosInTS.y)/output.outReflDirInTS.y));
     output.outMaxDistance = min(output.outMaxDistance, 
                             output.outReflDirInTS.z<0 ? (-output.outSamplePosInTS.z/output.outReflDirInTS.z) : ((1-output.outSamplePosInTS.z)/output.outReflDirInTS.z));
+
+    return output;
 }
 
 Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
 {
-    float3 vReflectionEndPosInTS = samplePosInTS + vReflDirInTS * maxTraceDistance;
     float3 vReflectionEndPosInTS = posAndReflection.outSamplePosInTS + posAndReflection.outReflDirInTS * posAndReflection.outMaxDistance;
     
-    float3 dp = vReflectionEndPosInTS.xyz - samplePosInTS.xyz;
-    int2 sampleScreenPos = int2(samplePosInTS.xy * sceneInfo.ViewSize.xy);
+    float3 dp = vReflectionEndPosInTS.xyz - posAndReflection.outSamplePosInTS.xyz;
+    int2 sampleScreenPos = int2(posAndReflection.outSamplePosInTS.xy * sceneInfo.ViewSize.xy);
     int2 endPosScreenPos = int2(vReflectionEndPosInTS.xy * sceneInfo.ViewSize.xy);
     int2 dp2 = endPosScreenPos - sampleScreenPos;
     const int max_dist = max(abs(dp2.x), abs(dp2.y));
     dp /= max_dist;
     
-    float4 rayPosInTS = float4(samplePosInTS.xyz + dp, 0);
+    float4 rayPosInTS = float4(posAndReflection.outSamplePosInTS.xyz + dp, 0);
     float4 vRayDirInTS = float4(dp.xyz, 0);
 	float4 rayStartPos = rayPosInTS;
 
-    int32_t hitIndex = -1;
+    int hitIndex = -1;
     for(int i = 0;i<=max_dist && i<MAX_ITERATION;i += 4)
     {
         float depth0 = 0;
         float depth1 = 0;
         float depth2 = 0;
         float depth3 = 0;
-
+        
         float4 rayPosInTS0 = rayPosInTS+vRayDirInTS*0;
         float4 rayPosInTS1 = rayPosInTS+vRayDirInTS*1;
         float4 rayPosInTS2 = rayPosInTS+vRayDirInTS*2;
         float4 rayPosInTS3 = rayPosInTS+vRayDirInTS*3;
-
-        depth3 = tex_depth.sample(pointSampler, rayPosInTS3.xy).x;
-        depth2 = tex_depth.sample(pointSampler, rayPosInTS2.xy).x;
-        depth1 = tex_depth.sample(pointSampler, rayPosInTS1.xy).x;
-        depth0 = tex_depth.sample(pointSampler, rayPosInTS0.xy).x;
-
+        
+        depth3 = tex_depth.SampleLevel(pointSampler, rayPosInTS3.xy, 0).x;
+        depth2 = tex_depth.SampleLevel(pointSampler, rayPosInTS2.xy, 0).x;
+        depth1 = tex_depth.SampleLevel(pointSampler, rayPosInTS1.xy, 0).x;
+        depth0 = tex_depth.SampleLevel(pointSampler, rayPosInTS0.xy, 0).x;
+        
         {
             float thickness = rayPosInTS3.z - depth3;
             hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+3) : hitIndex;
@@ -121,28 +129,27 @@ Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
             float thickness = rayPosInTS0.z - depth0;
             hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+0) : hitIndex;
         }
-
+        
         if(hitIndex != -1) break;
-
+        
         rayPosInTS = rayPosInTS3 + vRayDirInTS;
     }
 
     bool intersected = hitIndex >= 0;
-    intersection = rayStartPos.xyz + vRayDirInTS.xyz * hitIndex;
+    Inter resultInter; 
+    resultInter.intersection = rayStartPos.xyz + vRayDirInTS.xyz * hitIndex;
 	
-    float intensity = intersected ? 1 : 0;
+    resultInter.intensity = intersected ? 1 : 0;
 	
-    return intensity;
+    return resultInter;
 }
 
 float4 ComputeReflectedColor(Inter inter,
 			                float4 skyColor)
 {
-    //constexpr sampler pointSampler(mip_filter::nearest);
-    //float4 ssr_color = float4(tex_scene_color.sample(pointSampler, intersection.xy));
-	float4 ssr_color = tex_scene_color.sample(pointSampler, inter.intersection.xy);
+	float4 ssr_color = tex_scene_color.SampleLevel(pointSampler, inter.intersection.xy, 0);
 
-    return mix(skyColor, ssr_color, intensity);
+    return lerp(skyColor, ssr_color, inter.intensity);
 }
 
 [numthreads(16, 16, 1)] //Todo: 다시 채워야 함
@@ -161,120 +168,38 @@ void main(int3 tid : SV_GroupThreadID
     float3 normal = mul(normalInWS, sceneInfo.ViewMat).xyz;
     float reflection_mask = NormalAndReflectionMask.w;
 
-    float4 skyColor = float4(0,0,1,1);
+    float4 skyColor = float4(0,0,0,1);
 	
     float4 reflectionColor = 0;
+    Inter inter;
+    ComputePosAndReflectionOutput value;
     if(reflection_mask != 0)
     {
 	    reflectionColor = skyColor; // skybox에서 sampling 해야할 듯
-        ComputePosAndReflectionOutput value;
         value.outReflDirInTS = 0;
         value.outSamplePosInTS = 0;
         value.outMaxDistance = 0;
-        
-        //float3 samplePosInTS = 0;
-        //float3 vReflDirInTS = 0;
-        //float maxTraceDistance = 0;
 
         // Compute the position, the reflection vector, maxTraceDistance of this sample in texture space.
-        ComputePosAndReflection(uint2(x, y), sceneInfo, normal, value);
+        value = ComputePosAndReflection(uint2(x, y), sceneInfo, normal, value);
 
         // Find intersection in texture space by tracing the reflection ray
         //float3 intersection = 0;
 	    //float intensity = FindIntersection_Linear(value, intersection);
-	    Inter inter = FindIntersection_Linear(value);
+	    inter = FindIntersection_Linear(value);
 			
 	    // Compute reflection color if intersected
 	    reflectionColor = ComputeReflectedColor(inter, skyColor);
     }
 
     // Add the reflection color to the color of the sample.
-    finalColor = color + reflectionColor;
+    finalColor = lerp(color, reflectionColor, reflection_mask);// color + reflectionColor;
 
     //tex_output.write(color, tid);
+    tex_output[dispatchThreadID.xy] = finalColor;
+    //tex_output[dispatchThreadID.xy] = color;
+    //tex_output[dispatchThreadID.xy] = reflectionColor;
+    //tex_output[dispatchThreadID.xy] = float4(inter.intersection, inter.intensity);
+    //tex_output[dispatchThreadID.xy] = float4(value.outReflDirInTS, inter.intensity);
 }
 
-
-/*
-kernel void kernel_screen_space_reflection_linear(texture2d<float, access::sample> tex_normal_refl_mask [[texture(0)]],
-                                                  texture2d<float, access::sample> tex_depth [[texture(1)]],
-                                                  texture2d<float, access::sample> tex_scene_color [[texture(2)]],
-                                                  texture2d<float, access::write> tex_output [[texture(3)]],
-                                                  const constant SceneInfo& sceneInfo [[buffer(0)]],
-                                                  uint2 tid [[thread_position_in_grid]])
-{
-    float4 finalColor = 0;
-
-    float4 NormalAndReflectionMask = tex_normal_refl_mask.read(tid);
-    float4 color = tex_scene_color.read(tid);
-    float4 normalInWS = float4(normalize(NormalAndReflectionMask.xyz), 0);
-    float3 normal = (sceneInfo.ViewMat * normalInWS).xyz;
-    float reflection_mask = NormalAndReflectionMask.w;
-
-    float4 skyColor = float4(0,0,1,1);
-	
-    float4 reflectionColor = 0;
-    if(reflection_mask != 0)
-    {
-	reflectionColor = skyColor;
-        float3 samplePosInTS = 0;
-        float3 vReflDirInTS = 0;
-        float maxTraceDistance = 0;
-
-        // Compute the position, the reflection vector, maxTraceDistance of this sample in texture space.
-        ComputePosAndReflection(tid, sceneInfo, normal, tex_depth, samplePosInTS, vReflDirInTS, maxTraceDistance);
-
-        // Find intersection in texture space by tracing the reflection ray
-        float3 intersection = 0;
-	float intensity = FindIntersection_Linear(samplePosInTS, vReflDirInTS, maxTraceDistance, tex_depth, sceneInfo, intersection);
-			
-	// Compute reflection color if intersected
-	reflectionColor = ComputeReflectedColor(intensity, intersection, skyColor, tex_scene_color);
-    }
-
-    // Add the reflection color to the color of the sample.
-    finalColor = color + reflectionColor;
-
-    tex_output.write(color, tid);
-}*/
-
-/*
-// Compute the position, the reflection direction, maxTraceDistance of the sample in texture space.
-void ComputePosAndReflection(uint2 tid,
-                             const constant SceneInfo& sceneInfo,
-                             float3 vSampleNormalInVS,
-                             texture2d<float, access::sample> tex_depth,
-                             thread float3& outSamplePosInTS,
-                             thread float3& outReflDirInTS,
-                             thread float& outMaxDistance)
-{
-    float sampleDepth = tex_depth.read(tid).x;
-    float4 samplePosInCS =  float4(((float2(tid)+0.5)/sceneInfo.ViewSize)*2-1.0f, sampleDepth, 1);
-    samplePosInCS.y *= -1;
-
-    float4 samplePosInVS = sceneInfo.InvProjMat * samplePosInCS;
-    samplePosInVS /= samplePosInVS.w;
-
-    float3 vCamToSampleInVS = normalize(samplePosInVS.xyz);
-    float4 vReflectionInVS = float4(reflect(vCamToSampleInVS.xyz, vSampleNormalInVS.xyz),0);
-
-    float4 vReflectionEndPosInVS = samplePosInVS + vReflectionInVS * 1000;
-    vReflectionEndPosInVS /= (vReflectionEndPosInVS.z < 0 ? vReflectionEndPosInVS.z : 1);
-    float4 vReflectionEndPosInCS = sceneInfo.ProjMat * float4(vReflectionEndPosInVS.xyz, 1);
-    vReflectionEndPosInCS /= vReflectionEndPosInCS.w;
-    float3 vReflectionDir = normalize((vReflectionEndPosInCS - samplePosInCS).xyz);
-
-    // Transform to texture space
-    samplePosInCS.xy *= float2(0.5f, -0.5f);
-    samplePosInCS.xy += float2(0.5f, 0.5f);
-    
-    vReflectionDir.xy *= float2(0.5f, -0.5f);
-    
-    outSamplePosInTS = samplePosInCS.xyz;
-    outReflDirInTS = vReflectionDir;
-    
-	// Compute the maximum distance to trace before the ray goes outside of the visible area.
-    outMaxDistance = outReflDirInTS.x>=0 ? (1 - outSamplePosInTS.x)/outReflDirInTS.x  : -outSamplePosInTS.x/outReflDirInTS.x;
-    outMaxDistance = min(outMaxDistance, outReflDirInTS.y<0 ? (-outSamplePosInTS.y/outReflDirInTS.y)  : ((1-outSamplePosInTS.y)/outReflDirInTS.y));
-    outMaxDistance = min(outMaxDistance, outReflDirInTS.z<0 ? (-outSamplePosInTS.z/outReflDirInTS.z) : ((1-outSamplePosInTS.z)/outReflDirInTS.z));
-}*/
