@@ -69,6 +69,12 @@
     <Filter Include="src\03.GameSystem\PathFindingSystem">
       <UniqueIdentifier>{3728426b-3c6b-40e6-bcfb-65d184a34d79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\03.GameSystem\Resouce">
+      <UniqueIdentifier>{d06c8611-cae6-4146-b802-440928ce2cf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem\Resouce">
+      <UniqueIdentifier>{79c7fb9d-8b1f-49cb-b836-aaeb5baaa089}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditorEngine.h">
@@ -230,8 +236,23 @@
     <ClInclude Include="ExportWindow.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
+    <ClInclude Include="ImportWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="LightmapWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
     <ClInclude Include="LoadingSystem.h">
       <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceSystem.h">
+      <Filter>include\03.GameSystem\Resouce</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneResourceList.h">
+      <Filter>include\03.GameSystem\Resouce</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -388,8 +409,23 @@
     <ClCompile Include="ExportWindow.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
+    <ClCompile Include="ImportWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LightmapWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
     <ClCompile Include="LoadingSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceSystem.cpp">
+      <Filter>src\03.GameSystem\Resouce</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneResourceList.cpp">
+      <Filter>src\03.GameSystem\Resouce</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

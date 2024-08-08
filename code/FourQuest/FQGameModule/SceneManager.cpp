@@ -135,6 +135,7 @@ void fq::game_module::SceneManager::LoadScene()
 	mPrefabManager->LoadPrefabResource(mCurrentScene.get());
 
 	// Event CallBack
+	mEventManager->FireEvent<fq::event::PreOnLoadScene>({ mCurrentScene->GetSceneName() });
 	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
 
 

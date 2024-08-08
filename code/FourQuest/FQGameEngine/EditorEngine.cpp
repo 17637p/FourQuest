@@ -26,6 +26,7 @@
 #include "UISystem.h"
 #include "PathFindingSystem.h"
 #include "LoadingSystem.h"
+#include "ResourceSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -93,6 +94,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
+	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
 
 	// Editor √ ±‚»≠
 	InitializeEditor();

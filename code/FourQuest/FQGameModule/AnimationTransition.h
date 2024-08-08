@@ -177,6 +177,4 @@ namespace fq::game_module
 
 		std::vector<TransitionCondition> mConditions;
 	};
-
-
 }

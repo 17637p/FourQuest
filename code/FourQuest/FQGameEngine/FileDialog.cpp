@@ -748,73 +748,73 @@ void fq::game_engine::FileDialog::beginFavorite()
 
 void fq::game_engine::FileDialog::changeDirectoryPath(Path prev, Path current)
 {
-	mEditorProcess->mMainMenuBar->SaveScene();
-
 	fs::rename(prev, current);
 
-	// 리소스 경로의 prefab을 가져옵니다
-	auto fileList = fq::path::GetFileListRecursive(fq::path::GetResourcePath());
+	//mEditorProcess->mMainMenuBar->SaveScene();
 
-	fileList.erase(std::remove_if(fileList.begin(), fileList.end(),
-		[](Path path)
-		{
-			if (path.extension() == ".prefab"
-				|| path.extension() == ".controller")
-			{
-				return false;
-			}
-			return true;
+	//// 리소스 경로의 prefab을 가져옵니다
+	//auto fileList = fq::path::GetFileListRecursive(fq::path::GetResourcePath());
 
-		}), fileList.end());
+	//fileList.erase(std::remove_if(fileList.begin(), fileList.end(),
+	//	[](Path path)
+	//	{
+	//		if (path.extension() == ".prefab"
+	//			|| path.extension() == ".controller")
+	//		{
+	//			return false;
+	//		}
+	//		return true;
 
-	auto prevRelativePath = fq::path::GetRelativePath(prev).string();
-	auto currntRelativePath = fq::path::GetRelativePath(current).string();
+	//	}), fileList.end());
 
-	// 문자열 변환
-	size_t pos = 0;
+	//auto prevRelativePath = fq::path::GetRelativePath(prev).string();
+	//auto currntRelativePath = fq::path::GetRelativePath(current).string();
 
-	while ((pos = prevRelativePath.find("\\", pos)) != std::string::npos)
-	{
-		prevRelativePath.replace(pos, std::string("\\").length(), "\\\\");
-		pos += std::string("\\\\").length();
-	}
-	pos = 0;
+	//// 문자열 변환
+	//size_t pos = 0;
 
-	while ((pos = currntRelativePath.find("\\", pos)) != std::string::npos)
-	{
-		currntRelativePath.replace(pos, std::string("\\").length(), "\\\\");
-		pos += std::string("\\\\").length();
-	}
+	//while ((pos = prevRelativePath.find("\\", pos)) != std::string::npos)
+	//{
+	//	prevRelativePath.replace(pos, std::string("\\").length(), "\\\\");
+	//	pos += std::string("\\\\").length();
+	//}
+	//pos = 0;
 
-	// 파일 쓰기
-	for (auto& file : fileList)
-	{
-		// 파일 읽기
-		std::ifstream inFille(file);
+	//while ((pos = currntRelativePath.find("\\", pos)) != std::string::npos)
+	//{
+	//	currntRelativePath.replace(pos, std::string("\\").length(), "\\\\");
+	//	pos += std::string("\\\\").length();
+	//}
 
-		std::stringstream buffer;
-		buffer << inFille.rdbuf();
-		std::string fileContent = buffer.str();
+	//// 파일 쓰기
+	//for (auto& file : fileList)
+	//{
+	//	// 파일 읽기
+	//	std::ifstream inFille(file);
 
-		inFille.close();
+	//	std::stringstream buffer;
+	//	buffer << inFille.rdbuf();
+	//	std::string fileContent = buffer.str();
 
-		// 문자열 변환
-		size_t pos = 0;
+	//	inFille.close();
 
-		while ((pos = fileContent.find(prevRelativePath, pos)) != std::string::npos)
-		{
-			fileContent.replace(pos, prevRelativePath.length(), currntRelativePath);
-			pos += currntRelativePath.length();
-		}
+	//	// 문자열 변환
+	//	size_t pos = 0;
 
-		// 파일 쓰기
-		std::ofstream outFile(file);
-		outFile << fileContent;
-		outFile.close();
-	}
+	//	while ((pos = fileContent.find(prevRelativePath, pos)) != std::string::npos)
+	//	{
+	//		fileContent.replace(pos, prevRelativePath.length(), currntRelativePath);
+	//		pos += currntRelativePath.length();
+	//	}
 
-	auto currentSceneName = mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
-	mGameProcess->mEventManager->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
+	//	// 파일 쓰기
+	//	std::ofstream outFile(file);
+	//	outFile << fileContent;
+	//	outFile.close();
+	//}
+
+	//auto currentSceneName = mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
+	//mGameProcess->mEventManager->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
 }
 
 std::string fq::game_engine::FileDialog::removeInvalidCharacters(const std::string& input)

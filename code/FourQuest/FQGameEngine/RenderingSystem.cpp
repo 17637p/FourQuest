@@ -17,6 +17,7 @@
 #include "GameProcess.h"
 #include "AnimationSystem.h"
 #include "PhysicsSystem.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::RenderingSystem::RenderingSystem()
 	:mGameProcess(nullptr)
