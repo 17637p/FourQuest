@@ -43,7 +43,7 @@ cbuffer cbLight : register(b1)
     float pad2;
 };
 
-cbuffer cbAlpha : register(b2)
+cbuffer cbMaterialInstance : register(b2)
 {
     bool cUseAlpha;
     float cAlpha;
@@ -82,6 +82,11 @@ PixelOut main(VertexOut pin) : SV_TARGET
     float4 baseColor = gModelMaterial.BaseColor;
 #endif
     
+    if (cUseAlpha)
+    {
+        baseColor.a *= cAlpha;
+    }
+
     if (gModelMaterial.UseAlbedoMap)
     {
         baseColor *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
@@ -121,11 +126,11 @@ PixelOut main(VertexOut pin) : SV_TARGET
         normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
-    float3 emissive = gModelMaterial.EmissiveColor.rgb;
+    float3 emissive = gModelMaterial.EmissiveColor.rgb * gModelMaterial.EmissiveIntensity;
     
     if (gModelMaterial.UseEmissiveMap)
     {
-        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb * gModelMaterial.EmissiveIntensity;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
 
     float3 directLighting = 0.0;

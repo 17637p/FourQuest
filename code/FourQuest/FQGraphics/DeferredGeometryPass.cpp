@@ -72,6 +72,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialInstanceCB = std::make_shared<D3D11ConstantBuffer<CBMaterialInstance>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 
 	void DeferredGeometryPass::Finalize()
@@ -110,7 +111,7 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
-
+		mMaterialInstanceCB = nullptr;
 	}
 	void DeferredGeometryPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -176,6 +177,8 @@ namespace fq::graphics
 
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightMapInformationCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
+			mMaterialInstanceCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mPointWrapSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mLinearWrapSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
@@ -295,6 +298,11 @@ namespace fq::graphics
 				{
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 				}
+
+				CBMaterialInstance materialInstance;
+				materialInstance.bUseAlphaConstant = job.StaticMeshObject->GetUseInstanceAlpha();
+				materialInstance.Alpha = job.StaticMeshObject->GetAlpha();
+				mMaterialInstanceCB->Update(mDevice, materialInstance);
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}

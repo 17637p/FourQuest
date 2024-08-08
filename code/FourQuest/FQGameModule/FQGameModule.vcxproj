@@ -152,6 +152,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AlphaAnimator.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
     <ClInclude Include="AnimationStateNode.h" />
     <ClInclude Include="AnimationTransition.h" />
@@ -223,6 +224,7 @@
     <ClInclude Include="UVAnimator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AlphaAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
     <ClCompile Include="AnimationStateNode.cpp" />
     <ClCompile Include="AnimationTransition.cpp" />

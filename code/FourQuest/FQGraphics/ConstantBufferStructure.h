@@ -55,7 +55,7 @@ namespace fq::graphics
 		int LightModes[3];
 	};
 
-	struct AlphaData
+	struct CBMaterialInstance
 	{
 		int bUseAlphaConstant;
 		float Alpha;

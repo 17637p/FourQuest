@@ -320,6 +320,9 @@
     <ClInclude Include="TextUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
+    <ClInclude Include="AlphaAnimator.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -510,6 +513,9 @@
     </ClCompile>
     <ClCompile Include="TextUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaAnimator.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -11,6 +11,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Terrain.h"
 #include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/AlphaAnimator.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/PostProcessing.h"
 #include "../FQCommon/FQPath.h"
@@ -105,6 +106,21 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					{
 						meshObject->SetTransform(mesh.GetPrevApplyTransform() * nodeHierarchyInstanceOrNull->GetTransform());
 					}
+				}
+
+				// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함
+				auto* alphaAnimator = object.GetComponent<AlphaAnimator>();
+
+				if (alphaAnimator != nullptr)
+				{
+					const auto& info = alphaAnimator->GetAlphaAnimatorInfo();
+
+					meshObject->SetUseInstanceAlpha(true);
+					meshObject->SetAlpha(info.Alpha);
+				}
+				else
+				{
+					meshObject->SetUseInstanceAlpha(false);
 				}
 			});
 

@@ -47,6 +47,12 @@ cbuffer cbLightmapInformation : register(b1)
 };
 #endif
 
+cbuffer cbMaterialInstance : register(b2)
+{
+    bool cUseAlpha;
+    float cAlpha;
+};
+
 Texture2D gAlbedoMap : register(t0);
 Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
@@ -72,11 +78,16 @@ PixelOut main(VertexOut pin) : SV_TARGET
     pout.Albedo = gModelMaterial.BaseColor;
 #endif
 
+    if (cUseAlpha)
+    {
+        pout.Albedo.a *= cAlpha;
+    }
+
     if (gModelMaterial.UseAlbedoMap)
     {
         pout.Albedo *= pow(gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV), 2.2f);
     }
-    
+
     clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
 
     if (gModelMaterial.UseMetalnessMap)

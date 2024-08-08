@@ -57,7 +57,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mAlphaDataCB = std::make_shared<D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialInstanceCB = std::make_shared<D3D11ConstantBuffer<CBMaterialInstance>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -93,7 +93,7 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
-		mAlphaDataCB = nullptr;
+		mMaterialInstanceCB = nullptr;
 	}
 	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -150,7 +150,7 @@ namespace fq::graphics
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
-			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mMaterialInstanceCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
 			mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 		}
 
@@ -234,10 +234,10 @@ namespace fq::graphics
 						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 					}
 
-					AlphaData alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
-					mAlphaDataCB->Update(mDevice, alphaData);
+					CBMaterialInstance materialInstance;
+					materialInstance.bUseAlphaConstant = job.StaticMeshObject->GetUseInstanceAlpha();
+					materialInstance.Alpha = job.StaticMeshObject->GetAlpha();
+					mMaterialInstanceCB->Update(mDevice, materialInstance);
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -279,10 +279,10 @@ namespace fq::graphics
 						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
 					}
 
-					AlphaData alphaData;
+					CBMaterialInstance alphaData;
 					alphaData.bUseAlphaConstant = true;
 					alphaData.Alpha = materialInfo.BaseColor.A();
-					mAlphaDataCB->Update(mDevice, alphaData);
+					mMaterialInstanceCB->Update(mDevice, alphaData);
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

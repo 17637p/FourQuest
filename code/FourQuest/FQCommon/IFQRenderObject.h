@@ -58,6 +58,13 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetLightmapIndex(unsigned int lightmapIndex) abstract;
 			virtual FQ_GRAPHICS unsigned int GetLightmapIndex() const abstract;
 
+			// instance alpha, 일단 단순하게 매쉬에 데이터 붙여두고 머터리얼 인스턴싱 어떻게 처리할지 고민해보자
+			virtual FQ_GRAPHICS void SetUseInstanceAlpha(bool bIsUseInstanceAlpha) abstract;
+			virtual FQ_GRAPHICS bool GetUseInstanceAlpha() const abstract;
+
+			virtual FQ_GRAPHICS void SetAlpha(float alpha) abstract;
+			virtual FQ_GRAPHICS float GetAlpha() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};

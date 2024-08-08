@@ -35,6 +35,7 @@
 #include "AnimationStateNode.h"
 #include "Animator.h"
 #include "UVAnimator.h"
+#include "AlphaAnimator.h"
 #include "LogStateBehaviour.h"
 
 // PathFinding
@@ -254,7 +255,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::UIInfo::ImagePath>("ImagePath"_hs)
 		.prop(fq::reflect::prop::Name, "ImagePath")
 		.prop(fq::reflect::prop::RelativePath)
-		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")	
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
 		.data<&graphics::UIInfo::MaskPath>("MaskPath"_hs)
 		.prop(fq::reflect::prop::Name, "MaskPath")
 		.prop(fq::reflect::prop::RelativePath)
@@ -832,6 +833,50 @@ void fq::game_module::RegisterMetaData()
 		.data<&LogStateBehaviour::SetEnterCount, &LogStateBehaviour::GetEnterCount>("EnterCount"_hs)
 		.prop(fq::reflect::prop::Name, "EnterCount")
 		.base<IStateBehaviour>();
+
+	entt::meta<EAlphaAnimationMode>()
+		.type("AlphaAnimationMode"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimationMode")
+		.data<EAlphaAnimationMode::Increase>("Increase"_hs)
+		.prop(fq::reflect::prop::Name, "Increase")
+		.data<EAlphaAnimationMode::Decrease>("Decrease"_hs)
+		.prop(fq::reflect::prop::Name, "Decrease");
+
+	entt::meta<AlphaAnimatorInfo>()
+		.type("AlphaAnimatorInfo"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimatorInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&AlphaAnimatorInfo::Alpha>("Alpha"_hs)
+		.prop(fq::reflect::prop::Name, "Alpha")
+		.data<&AlphaAnimatorInfo::TimePos>("TimePos"_hs)
+		.prop(fq::reflect::prop::Name, "TimePos")
+		.data<&AlphaAnimatorInfo::bIsRecursive>("bIsRecursive"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRecursive")
+		.data<&AlphaAnimatorInfo::bIsUpdate>("bIsUpdate"_hs)
+		.prop(fq::reflect::prop::Name, "bIsUpdate")
+		.data<&AlphaAnimatorInfo::Duration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&AlphaAnimatorInfo::Speed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.data<&AlphaAnimatorInfo::DelayTime>("DelayTime"_hs)
+		.prop(fq::reflect::prop::Name, "DelayTime")
+		.data<&AlphaAnimatorInfo::InitAlpha>("InitAlpha"_hs)
+		.prop(fq::reflect::prop::Name, "InitAlpha")
+		.data<&AlphaAnimatorInfo::MaxAlpha>("MaxAlpha"_hs)
+		.prop(fq::reflect::prop::Name, "MaxAlpha")
+		.data<&AlphaAnimatorInfo::MinAlpha>("MinAlpha"_hs)
+		.prop(fq::reflect::prop::Name, "MinAlpha")
+		.data<&AlphaAnimatorInfo::AlphaAnimationMode>("AlphaAnimationMode"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimationMode");
+
+	entt::meta<AlphaAnimator>()
+		.type("AlphaAnimator"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimator")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&AlphaAnimator::SetAlphaAnimatorInfo, &AlphaAnimator::GetAlphaAnimatorInfo>("AlphaAnimatorInfo"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimatorInfo")
+		.base<Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            Socket	                                 //
