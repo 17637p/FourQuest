@@ -1,5 +1,6 @@
 #include "ObjectMoveTrack.h"
 
+#include "Scene.h"
 #include "Transform.h"
 
 DirectX::SimpleMath::Vector3 LerpVector3(const DirectX::SimpleMath::Vector3& a, const DirectX::SimpleMath::Vector3& b, float t)
@@ -22,12 +23,38 @@ DirectX::SimpleMath::Quaternion LerpQuaternion(const DirectX::SimpleMath::Quater
 
 namespace fq::game_module
 {
-	ObjectMoveTrack::ObjectMoveTrack(ETrackType type)
+	ObjectMoveTrack::ObjectMoveTrack()
 		: Track(ETrackType::OBJECT_MOVE)
+		, mTargetObject()
+		, mTargetPosition{}
+		, mTargetRotation{}
+		, mTargetScale{}
 	{
 	}
 	ObjectMoveTrack::~ObjectMoveTrack()
 	{
+	}
+
+	bool ObjectMoveTrack::Initialize(ObjectMoveTrackInfo info, Scene* scene)
+	{
+		mStartTime = info.startTime;
+		mTotalPlayTime = info.totalPlayTime;
+
+		mTargetObject = scene->GetObjectByName(info.targetObjectName);
+
+		if (mTargetObject.expired())
+			return false;
+
+		mTargetPosition = info.targetPosition;
+		mTargetRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(info.targetRotation);
+		mTargetScale = info.targetScale;
+
+		auto transform = mTargetObject.lock()->GetComponent<Transform>();
+		mPrevPosition = transform->GetWorldPosition();
+		mPrevRotation = transform->GetWorldRotation();
+		mPrevScale = transform->GetWorldScale();
+
+		return true;
 	}
 
 	void ObjectMoveTrack::PlayEnter()
@@ -36,7 +63,7 @@ namespace fq::game_module
 
 	void ObjectMoveTrack::PlayOn()
 	{
-		if (mTargetObject.expired())
+		if (!mTargetObject.expired())
 		{
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
 
@@ -58,5 +85,19 @@ namespace fq::game_module
 
 	void ObjectMoveTrack::PlayExit()
 	{
+	}
+	void ObjectMoveTrack::End()
+	{
+		if (!mTargetObject.expired())
+		{
+			auto transform = mTargetObject.lock()->GetComponent<Transform>();
+
+			DirectX::SimpleMath::Matrix prevTransform =
+				DirectX::SimpleMath::Matrix::CreateScale(mPrevScale)
+				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(mPrevRotation)
+				* DirectX::SimpleMath::Matrix::CreateTranslation(mPrevPosition);
+
+			transform->SetWorldMatrix(prevTransform);
+		}
 	}
 }

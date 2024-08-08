@@ -347,6 +347,15 @@
     <ClInclude Include="CameraChangeTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
+    <ClInclude Include="TextPrintTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectAnimationTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -551,6 +560,15 @@
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
     <ClCompile Include="CameraChangeTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="TextPrintTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectAnimationTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Sequence.h"
 #include "Track.h"
 #include "GameObject.h"
 
@@ -8,13 +9,15 @@ namespace fq::game_module
 	class ObjectMoveTrack : public Track
 	{
 	public:
-		ObjectMoveTrack(ETrackType type);
+		ObjectMoveTrack();
 		~ObjectMoveTrack();
+
+		bool Initialize(ObjectMoveTrackInfo info, Scene* scene);
 
 		virtual void PlayEnter() override;
 		virtual void PlayOn() override;
 		virtual void PlayExit() override;
-
+		virtual void End() override;
 
 		std::weak_ptr<GameObject> GetTargetObject() { return mTargetObject; }
 		const DirectX::SimpleMath::Vector3& GetPrevPosition() { return mPrevPosition; }

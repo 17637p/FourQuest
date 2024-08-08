@@ -15,13 +15,18 @@ namespace fq::game_module
 	{
 		mElapsedTime = durationTime - mStartTime;
 
-		if (mCurrentState != ETrackState::ON && mElapsedTime >= mTotalPlayTime)
+		if (mCurrentState == ETrackState::END || mElapsedTime < 0.f)
 			return ETrackState::OFF;
 
 		handleState();
 		nodeUpdate();
 
 		return mCurrentState;
+	}
+
+	void Track::WakeUp()
+	{
+		mCurrentState = fq::game_module::ETrackState::OFF;
 	}
 
 	void Track::handleState()
@@ -38,11 +43,10 @@ namespace fq::game_module
 			if (mTotalPlayTime <= mElapsedTime)
 			{
 				mCurrentState = ETrackState::EXIT;
-				mElapsedTime = 0.f;
 			}
 			break;
 		case fq::game_module::ETrackState::EXIT:
-			mCurrentState = ETrackState::OFF;
+			mCurrentState = ETrackState::END;
 			break;
 		default:
 			assert(false);

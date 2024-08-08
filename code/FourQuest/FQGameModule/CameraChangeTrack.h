@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Sequence.h"
 #include "Track.h"
 #include "Camera.h"
 
@@ -10,20 +11,23 @@ namespace fq::game_module
 	class CameraChangeTrack : public Track
 	{
 	public:
-		CameraChangeTrack(ETrackType type);
+		CameraChangeTrack();
 		~CameraChangeTrack();
+
+		bool Initialize(CameraChangeTrackInfo info, Scene* scene);
 
 		virtual void PlayEnter() override;
 		virtual void PlayOn() override;
 		virtual void PlayExit() override;
+		virtual void End() override;
 
-		std::weak_ptr<Camera> GetCurrentCamera() { return mCurrentCamera; }
-		std::weak_ptr<Camera> GetTargetCamera() { return mTargetCamera; }
-		void SetCurrentCamera(std::weak_ptr<Camera> camera) { mCurrentCamera = camera; }
-		void SetTargetCamera(std::weak_ptr<Camera> camera) { mTargetCamera = camera; }
+		std::weak_ptr<GameObject> GetCurrentCamera() { return mCurrentCameraObject; }
+		std::weak_ptr<GameObject> GetTargetCamera() { return mTargetCameraObject; }
+		void SetCurrentCamera(std::weak_ptr<GameObject> camera) { mCurrentCameraObject = camera; }
+		void SetTargetCamera(std::weak_ptr<GameObject> camera) { mTargetCameraObject = camera; }
 
 	private:
-		std::weak_ptr<Camera> mCurrentCamera;
-		std::weak_ptr<Camera> mTargetCamera;
+		std::weak_ptr<GameObject> mCurrentCameraObject;
+		std::weak_ptr<GameObject> mTargetCameraObject;
 	};
 }

@@ -6,13 +6,14 @@ namespace fq::game_module
 {
 	enum class ETrackType
 	{
-		SCRIPT = 0,			// 대사 출력
+		TEXT_PRINT = 0,		// 대사 출력
 		TIME_STOP,			// 시간 멈춤
 		TIME_START,			// 시간 재생
 		CAMERA_CHANGE,		// 카메라 변경
 		OBJECT_TELEPORT,	// 오브젝트 순간이동
 		OBJECT_MOVE,		// 오브젝트 이동
-		TIME_WAIT,			// 시간 대기
+		ANIMAITON,			// 애니메이션
+		EFFECT,				// 이펙트
 
 		END
 	};
@@ -27,6 +28,8 @@ namespace fq::game_module
 		END
 	};
 
+	class Scene;
+
 	class Track
 	{
 	public:
@@ -34,6 +37,8 @@ namespace fq::game_module
 		virtual ~Track() {}
 
 		ETrackState Play(float deltaTime);
+		virtual void End() abstract;
+		void WakeUp();
 
 		const ETrackType& GetType() { return mType; }
 		const ETrackState& GetCurrentState() { return mCurrentState; }
