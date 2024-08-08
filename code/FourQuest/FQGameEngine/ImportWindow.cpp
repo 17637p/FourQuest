@@ -222,9 +222,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				}
 
 				std::string materialPath = (mMaterialDirectory / material.Name).string() + ".material";
-				materialPaths.push_back(materialPath);
-
 				mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
+				materialPaths.push_back(materialPath);
 			}
 
 			const auto& modelName = gameObjectInfo.MeshData.ModelPath;

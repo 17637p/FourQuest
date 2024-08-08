@@ -30,6 +30,7 @@ public:
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 private:
+
 	// Default Framework
 	void Update();
 	void Render();

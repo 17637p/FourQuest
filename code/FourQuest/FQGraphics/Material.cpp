@@ -20,12 +20,27 @@ namespace fq::graphics
 
 	void Material::loadTexture()
 	{
-		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
-		if (!mInfo.MetalnessFileName.empty()) mMetalness = mResourceManager->Create<D3D11Texture>(mInfo.MetalnessFileName);
-		if (!mInfo.RoughnessFileName.empty()) mRoughness = mResourceManager->Create<D3D11Texture>(mInfo.RoughnessFileName);
-		if (!mInfo.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mInfo.NormalFileName);
-		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
-		if (!mInfo.MetalnessSmoothnessFileName.empty()) mMetalnessSmoothness = mResourceManager->Create<D3D11Texture>(mInfo.MetalnessSmoothnessFileName);
+		auto createTextureOrNull = [](const std::wstring& filePath, const std::shared_ptr<D3D11ResourceManager>& resourceManager) -> std::shared_ptr<D3D11Texture>
+			{
+				if (filePath.empty())
+				{
+					return nullptr;
+				}
+				if (!std::filesystem::exists(filePath))
+				{
+					spdlog::warn("[Material] \"{}\" not exist", std::filesystem::path(filePath).string());
+					return nullptr;
+				}
+
+				return resourceManager->Create<D3D11Texture>(filePath);
+			};
+
+		mBaseColor = createTextureOrNull(mInfo.BaseColorFileName, mResourceManager);
+		mMetalness = createTextureOrNull(mInfo.MetalnessFileName, mResourceManager);
+		mRoughness = createTextureOrNull(mInfo.RoughnessFileName, mResourceManager);
+		mNormal = createTextureOrNull(mInfo.NormalFileName, mResourceManager);
+		mEmissive = createTextureOrNull(mInfo.EmissiveFileName, mResourceManager);
+		mMetalnessSmoothness = createTextureOrNull(mInfo.MetalnessSmoothnessFileName, mResourceManager);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)

@@ -392,7 +392,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 
 			if (!std::filesystem::exists(materialPath))
 			{
-				spdlog::warn("{} materialPath is invalid", object->GetName());
+				spdlog::warn("{} material path is invalid", object->GetName());
 
 				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
 				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);

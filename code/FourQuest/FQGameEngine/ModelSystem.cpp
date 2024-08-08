@@ -85,7 +85,17 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			materialPaths.push_back((directory / subset.MaterialName).string() + ".material");
+			const std::filesystem::path materialPath  = (directory / subset.MaterialName).string() + ".material";
+			
+			if (!std::filesystem::exists(materialPath))
+			{
+				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
+				materialPaths.push_back(DEFAULT_MATERIAL);
+			}
+			else
+			{
+				materialPaths.push_back(materialPath.string());
+			}
 		}
 
 		// StaticMeshObject »ý¼º

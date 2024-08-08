@@ -66,7 +66,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
     PixelOut pout = (PixelOut)0;
 
 #ifdef VERTEX_COLOR
-    pout.Albedo =  pin.COLOR;// gModelMaterial.BaseColor * pin.COLOR;
+    pout.Albedo = gModelMaterial.BaseColor * pin.COLOR;
 #else
     pout.Albedo = gModelMaterial.BaseColor;
 #endif
