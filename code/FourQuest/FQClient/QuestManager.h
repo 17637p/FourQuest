@@ -72,6 +72,7 @@ namespace fq::client
 
 		// Gauge Width
 		int mGaugeMaxWidth;
+		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
 
 		friend void RegisterMetaData();
