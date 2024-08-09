@@ -11,7 +11,7 @@ namespace fq::game_module
 		TextPrintTrack();
 		~TextPrintTrack();
 
-		bool Initialize(TextPrintTrackInfo info, Scene* scene);
+		bool Initialize(const TextPrintTrackInfo& info, Scene* scene);
 
 	private:
 		virtual void PlayEnter() override;
@@ -31,8 +31,8 @@ namespace fq::game_module
 		std::string mText = {};
 
 		Scene* mScene;
-		GameObject* mNameObject;
-		GameObject* mTextObject;
+		std::shared_ptr<GameObject> mNameObject;
+		std::shared_ptr<GameObject> mTextObject;
 	};
 }
 

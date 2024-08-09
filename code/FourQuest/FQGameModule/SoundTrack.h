@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Sequence.h"
 #include "Track.h"
+#include "Sequence.h"
 
 namespace fq::game_module
 {
-	class ObjectAnimationTrack : public Track
+	class SoundTrack : public Track
 	{
 	public:
-		ObjectAnimationTrack();
-		~ObjectAnimationTrack();
+		SoundTrack();
+		~SoundTrack();
 
-		bool Initialize(const ObjectAnimationInfo& info, Scene* scene);
+		void Initialize(const SoundTrackInfo& info, Scene* scene);
 
 	private:
 		virtual void PlayEnter() override;
@@ -20,8 +20,9 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
-
+		std::string mKeyName;
+		std::string mSoundPath;
+		bool mbIsLoop = false;
 	};
 }
-
 

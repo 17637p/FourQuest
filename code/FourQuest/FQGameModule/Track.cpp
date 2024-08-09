@@ -68,4 +68,13 @@ namespace fq::game_module
 			break;
 		}
 	}
+
+	DirectX::SimpleMath::Vector3 Track::LerpVector3(const DirectX::SimpleMath::Vector3& a, const DirectX::SimpleMath::Vector3& b, float t)
+	{
+		return DirectX::SimpleMath::Vector3(
+			std::lerp(a.x, b.x, t),
+			std::lerp(a.y, b.y, t),
+			std::lerp(a.z, b.z, t)
+		);
+	}
 }

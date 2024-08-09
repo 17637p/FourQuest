@@ -24,7 +24,7 @@ namespace fq::game_module
 	TextPrintTrack::~TextPrintTrack()
 	{
 	}
-	bool TextPrintTrack::Initialize(TextPrintTrackInfo info, Scene* scene)
+	bool TextPrintTrack::Initialize(const TextPrintTrackInfo& info, Scene* scene)
 	{
 		mScene = scene;
 
@@ -46,18 +46,15 @@ namespace fq::game_module
 
 	void TextPrintTrack::PlayEnter()
 	{
-		std::shared_ptr<GameObject> nameObject = std::make_shared<GameObject>();
-		auto name = nameObject->AddComponent<TextUI>();
-		auto nameTransform = nameObject->GetComponent<Transform>();
-		std::shared_ptr<GameObject> textObject = std::make_shared<GameObject>();
-		auto text = textObject->AddComponent<TextUI>();
-		auto textTransform = textObject->GetComponent<Transform>();
+		mNameObject = std::make_shared<GameObject>();
+		auto name = mNameObject->AddComponent<TextUI>();
+		auto nameTransform = mNameObject->GetComponent<Transform>();
+		mTextObject = std::make_shared<GameObject>();
+		auto text = mTextObject->AddComponent<TextUI>();
+		auto textTransform = mTextObject->GetComponent<Transform>();
 
-		mScene->AddGameObject(nameObject);
-		mScene->AddGameObject(textObject);
-
-		mNameObject = nameObject.get();
-		mTextObject = textObject.get();
+		mScene->AddGameObject(mNameObject);
+		mScene->AddGameObject(mTextObject);
 
 		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, mNameFontCenterY, 0.f));
 		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, mTextFontCenterY, 0.f));
@@ -88,11 +85,29 @@ namespace fq::game_module
 
 	void TextPrintTrack::PlayExit()
 	{
-		mScene->DestroyGameObject(mNameObject);
-		mScene->DestroyGameObject(mTextObject);
+		if (mNameObject != nullptr)
+		{
+			mScene->DestroyGameObject(mNameObject.get());
+			mNameObject = nullptr;
+		}
+		if (mTextObject != nullptr)
+		{
+			mScene->DestroyGameObject(mTextObject.get());
+			mTextObject = nullptr;
+		}
 	}
 
 	void TextPrintTrack::End()
 	{
+		if (mNameObject != nullptr)
+		{
+			mScene->DestroyGameObject(mNameObject.get());
+			mNameObject = nullptr;
+		}
+		if (mTextObject != nullptr)
+		{
+			mScene->DestroyGameObject(mTextObject.get());
+			mTextObject = nullptr;
+		}
 	}
 }

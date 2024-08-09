@@ -11,37 +11,31 @@ namespace fq::game_module
 		ObjectTeleportTrack();
 		~ObjectTeleportTrack();
 
-		bool Initialize(ObjectTeleportTrackInfo info, Scene* scene);
+		bool Initialize(const ObjectTeleportTrackInfo& info, Scene* scene);
 
 		virtual void PlayEnter() override;
 		virtual void PlayOn() override;
 		virtual void PlayExit() override;
 		virtual void End() override;
 
-		std::weak_ptr<GameObject> GetGameObject() { return mTargetObject; }
+		std::weak_ptr<GameObject> GetTargetObject() { return mTargetObject; }
 		const DirectX::SimpleMath::Vector3& GetPrevPosition() { return mPrevPosition; }
 		const DirectX::SimpleMath::Quaternion& GetPrevRotation() { return mPrevRotation; }
 		const DirectX::SimpleMath::Vector3& GetPrevPScale() { return mPrevScale; }
-		const DirectX::SimpleMath::Vector3& GetTargetPosition() { return mTargetPosition; }
-		const DirectX::SimpleMath::Quaternion& GetTargetRotation() { return mTargetRotation; }
-		const DirectX::SimpleMath::Vector3& GetPTargetScale() { return mTargetScale; }
+		const std::vector<TrackKey>& GetTargetPosition() { return mKeys; }
 
 		void SetTargetObject(std::weak_ptr<GameObject> object) { mTargetObject = object; }
 		void SetPrevPosition(const DirectX::SimpleMath::Vector3& position) { mPrevPosition = position; }
 		void SetPrevRotation(const DirectX::SimpleMath::Quaternion& rotation) { mPrevRotation = rotation; }
 		void SetPrevScale(const DirectX::SimpleMath::Vector3& scale) { mPrevScale = scale; }
-		void SetTargetPosition(const DirectX::SimpleMath::Vector3& position) { mTargetPosition = position; }
-		void SetTargetRotation(const DirectX::SimpleMath::Quaternion& rotation) { mTargetRotation = rotation; }
-		void SetTargetScale(const DirectX::SimpleMath::Vector3& scale) { mTargetScale = scale; }
+		void SetTargetPosition(const std::vector<TrackKey>& keys) { mKeys = keys; }
 
 	private:
 		std::weak_ptr<GameObject> mTargetObject;
+		std::vector<TrackKey> mKeys;
 
 		DirectX::SimpleMath::Vector3 mPrevPosition;
 		DirectX::SimpleMath::Quaternion mPrevRotation;
 		DirectX::SimpleMath::Vector3 mPrevScale;
-		DirectX::SimpleMath::Vector3 mTargetPosition;
-		DirectX::SimpleMath::Quaternion mTargetRotation;
-		DirectX::SimpleMath::Vector3 mTargetScale;
 	};
 }

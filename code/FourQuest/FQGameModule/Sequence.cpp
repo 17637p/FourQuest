@@ -7,6 +7,8 @@
 #include "ObjectMoveTrack.h"
 #include "ObjectTeleportTrack.h"
 #include "TextPrintTrack.h"
+#include "EffectTrack.h"
+#include "ObjectAnimationTrack.h"
 
 namespace fq::game_module
 {
@@ -73,6 +75,21 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
+		for (const auto& trackInfo : mEffectTrackInfo)
+		{
+			std::shared_ptr<EffectTrack> track = std::make_shared<EffectTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
 		for (const auto& trackInfo : mTextPrintTrackInfo)
 		{
 			std::shared_ptr<TextPrintTrack> track = std::make_shared<TextPrintTrack>();
@@ -98,6 +115,9 @@ namespace fq::game_module
 
 			for (const auto& track : mTracks)
 			{
+				if (dt == 0.f && track->GetType() == ETrackType::TEXT_PRINT)
+					continue;
+
 				track->Play(mDurationTime);
 			}
 
@@ -150,5 +170,21 @@ namespace fq::game_module
 		}
 
 		return cloneSequence;
+	}
+
+	void Sequence::SetDurationTime(float durationTime)
+	{
+		mDurationTime = durationTime;
+
+		for (const auto track : mTracks)
+		{
+			track->WakeUp();
+			track->End();
+
+			mbIsPlay = true;
+			OnUpdate(0.0f);
+			OnUpdate(0.0f);
+			mbIsPlay = false;
+		}
 	}
 }

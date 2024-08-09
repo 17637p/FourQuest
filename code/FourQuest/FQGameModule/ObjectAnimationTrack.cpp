@@ -14,9 +14,11 @@ namespace fq::game_module
 	{
 	}
 
-	void ObjectAnimationTrack::Initialize(ObjectAnimationInfo info, Scene* scene)
+	bool ObjectAnimationTrack::Initialize(const ObjectAnimationInfo& info, Scene* scene)
 	{
 		auto object = scene->GetObjectByName(info.targetObjectName);
+
+		return true;
 	}
 
 	void ObjectAnimationTrack::PlayEnter()

@@ -14,7 +14,7 @@ namespace fq::game_module
 		CameraChangeTrack();
 		~CameraChangeTrack();
 
-		bool Initialize(CameraChangeTrackInfo info, Scene* scene);
+		bool Initialize(const CameraChangeTrackInfo& info, Scene* scene);
 
 		virtual void PlayEnter() override;
 		virtual void PlayOn() override;
@@ -29,5 +29,7 @@ namespace fq::game_module
 	private:
 		std::weak_ptr<GameObject> mCurrentCameraObject;
 		std::weak_ptr<GameObject> mTargetCameraObject;
+
+		std::vector<TrackKey> mKeys;
 	};
 }

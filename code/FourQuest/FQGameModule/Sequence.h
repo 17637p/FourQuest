@@ -10,6 +10,14 @@ namespace fq::game_module
 {
 	class Track;
 
+	struct TrackKey
+	{
+		float time = 0.f;
+		DirectX::SimpleMath::Vector3 position = { 0.f, 0.f, 0.f };
+		DirectX::SimpleMath::Vector3 rotation = { 0.f, 0.f, 0.f };
+		DirectX::SimpleMath::Vector3 scale = { 1.f, 1.f, 1.f };
+	};
+
 	struct CameraChangeTrackInfo
 	{
 		float startTime = 0.f;
@@ -17,6 +25,7 @@ namespace fq::game_module
 
 		std::string targetCameraName = {};
 		std::string prevCameraName = {};
+		std::vector<TrackKey> keys;
 	};
 
 	struct ObjectMoveTrackInfo
@@ -25,9 +34,7 @@ namespace fq::game_module
 		float totalPlayTime = 1.f;
 
 		std::string targetObjectName = {};
-		DirectX::SimpleMath::Vector3 targetPosition = { 0.f, 0.f, 0.f };
-		DirectX::SimpleMath::Vector3 targetRotation = { 0.f, 0.f, 0.f };
-		DirectX::SimpleMath::Vector3 targetScale	= { 1.f, 1.f, 1.f };
+		std::vector<TrackKey> keys;
 	};
 
 	struct ObjectTeleportTrackInfo
@@ -36,9 +43,7 @@ namespace fq::game_module
 		float totalPlayTime = 1.f;
 
 		std::string targetObjectName = {};
-		DirectX::SimpleMath::Vector3 targetPosition= { 0.f, 0.f, 0.f };
-		DirectX::SimpleMath::Vector3 targetRotation= { 0.f, 0.f, 0.f };
-		DirectX::SimpleMath::Vector3 targetScale = { 1.f, 1.f, 1.f };
+		std::vector<TrackKey> keys;
 	};
 
 	struct ObjectAnimationInfo
@@ -54,7 +59,18 @@ namespace fq::game_module
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
+		std::string effectPath = {};
+		std::vector<TrackKey> keys;
+	};
 
+	struct SoundTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		std::string keyName = {};
+		std::string soundPath = {};
+		bool bIsLoop = false;
 	};
 	
 	struct TextPrintTrackInfo
@@ -87,6 +103,8 @@ namespace fq::game_module
 		void SetIsPlay(bool isPlay) { mbIsPlay = isPlay; }
 		bool GetIsLoop() const { return mbIsLoop; }
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
+		float GetDurationTime() const { return mDurationTime; }
+		void SetDurationTime(float durationTime);
 
 		const std::vector<CameraChangeTrackInfo>& GetCameraChangeTrackInfo() const { return mCameraChangeTrackInfo; }
 		void SetCameraChangeTrackInfo(const std::vector<CameraChangeTrackInfo>& info) { mCameraChangeTrackInfo = info; }
@@ -96,6 +114,12 @@ namespace fq::game_module
 		void SetObjectTeleportTrackInfo(const std::vector<ObjectTeleportTrackInfo>& info) { mObjectTeleportTrackInfo = info; }
 		const std::vector<TextPrintTrackInfo>& GetTextPrintTrackInfo() const { return mTextPrintTrackInfo; }
 		void SetTextPrintTrackInfo(const std::vector<TextPrintTrackInfo>& info) { mTextPrintTrackInfo = info; }
+		const std::vector<EffectTrackInfo>& GetEffectTrackInfo() const { return mEffectTrackInfo; }
+		void SetEffectTrackInfo(const std::vector<EffectTrackInfo>& info) { mEffectTrackInfo = info; }
+		const std::vector<SoundTrackInfo>& GetSoundTrackInfo() const { return mSoundTrackInfo; }
+		void SetSoundTrackInfo(const std::vector<SoundTrackInfo>& info) { mSoundTrackInfo = info; }
+		const std::vector<ObjectAnimationInfo>& GetObjectAnimationInfo() const { return mObjectAnimationInfo; }
+		void SetObjectAnimationInfo(const std::vector<ObjectAnimationInfo>& info) { mObjectAnimationInfo = info; }
 		  
 	private:
 		virtual entt::meta_handle GetHandle() override;
@@ -114,8 +138,7 @@ namespace fq::game_module
 		std::vector<ObjectTeleportTrackInfo> mObjectTeleportTrackInfo;
 		std::vector<ObjectAnimationInfo> mObjectAnimationInfo;
 		std::vector<EffectTrackInfo> mEffectTrackInfo;
+		std::vector<SoundTrackInfo> mSoundTrackInfo;
 		std::vector<TextPrintTrackInfo> mTextPrintTrackInfo;
 	};
-
-
 }

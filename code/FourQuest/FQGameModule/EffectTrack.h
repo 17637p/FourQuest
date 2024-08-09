@@ -11,7 +11,7 @@ namespace fq::game_module
 		EffectTrack();
 		~EffectTrack();
 
-		void Initialize(EffectTrackInfo info, Scene* scene);
+		bool Initialize(const EffectTrackInfo& info, Scene* scene);
 
 	private:
 		virtual void End() override;
@@ -20,7 +20,12 @@ namespace fq::game_module
 		virtual void PlayExit() override;
 
 	private:
-		GameObject* mEffectObject;
+		Scene* mScene;
+		std::weak_ptr<GameObject> mEffectObject;
+		std::vector<std::shared_ptr<GameObject>> mObjects;
+
+		std::string mPrefebPath;
+		std::vector<TrackKey> mKeys;
 	};
 }
 

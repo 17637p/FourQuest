@@ -14,6 +14,7 @@ namespace fq::game_module
 		OBJECT_MOVE,		// 오브젝트 이동
 		ANIMAITON,			// 애니메이션
 		EFFECT,				// 이펙트
+		SOUND,				// 사운드
 
 		END
 	};
@@ -49,6 +50,8 @@ namespace fq::game_module
 		void SetTotalPlayTime(const float& playTime) { mTotalPlayTime = playTime; }
 
 	protected:
+		DirectX::SimpleMath::Vector3 LerpVector3(const DirectX::SimpleMath::Vector3& a, const DirectX::SimpleMath::Vector3& b, float t);
+
 		virtual void PlayEnter() abstract;
 		virtual void PlayOn() abstract;
 		virtual void PlayExit() abstract;

@@ -3,39 +3,23 @@
 #include "Scene.h"
 #include "Transform.h"
 
-DirectX::SimpleMath::Vector3 LerpVector3(const DirectX::SimpleMath::Vector3& a, const DirectX::SimpleMath::Vector3& b, float t)
-{
-	return DirectX::SimpleMath::Vector3(
-		std::lerp(a.x, b.x, t),
-		std::lerp(a.y, b.y, t),
-		std::lerp(a.z, b.z, t)
-	);
-}
-DirectX::SimpleMath::Quaternion LerpQuaternion(const DirectX::SimpleMath::Quaternion& a, const DirectX::SimpleMath::Quaternion& b, float t)
-{
-	return DirectX::SimpleMath::Quaternion(
-		std::lerp(a.x, b.x, t),
-		std::lerp(a.y, b.y, t),
-		std::lerp(a.z, b.z, t),
-		std::lerp(a.w, b.w, t)
-	);
-}
 
 namespace fq::game_module
 {
 	ObjectMoveTrack::ObjectMoveTrack()
 		: Track(ETrackType::OBJECT_MOVE)
 		, mTargetObject()
-		, mTargetPosition{}
-		, mTargetRotation{}
-		, mTargetScale{}
+		, mKeys{}
+		, mPrevPosition{}
+		, mPrevRotation{}
+		, mPrevScale{}
 	{
 	}
 	ObjectMoveTrack::~ObjectMoveTrack()
 	{
 	}
 
-	bool ObjectMoveTrack::Initialize(ObjectMoveTrackInfo info, Scene* scene)
+	bool ObjectMoveTrack::Initialize(const ObjectMoveTrackInfo& info, Scene* scene)
 	{
 		mStartTime = info.startTime;
 		mTotalPlayTime = info.totalPlayTime;
@@ -45,9 +29,7 @@ namespace fq::game_module
 		if (mTargetObject.expired())
 			return false;
 
-		mTargetPosition = info.targetPosition;
-		mTargetRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(info.targetRotation);
-		mTargetScale = info.targetScale;
+		mKeys = info.keys;
 
 		auto transform = mTargetObject.lock()->GetComponent<Transform>();
 		mPrevPosition = transform->GetWorldPosition();
@@ -59,27 +41,62 @@ namespace fq::game_module
 
 	void ObjectMoveTrack::PlayEnter()
 	{
+		// time 값에 따라 TrackKey 벡터를 오름차순으로 정렬
+		std::sort(mKeys.begin(), mKeys.end(), [](const TrackKey& a, const TrackKey& b) 
+			{
+			return a.time < b.time;
+			});
 	}
 
 	void ObjectMoveTrack::PlayOn()
 	{
+		int keyNumber = 0;
+		float checkPointTime = 0.f;
+
 		if (!mTargetObject.expired())
 		{
 			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
 
 			auto transform = mTargetObject.lock()->GetComponent<Transform>();
 
-			float lerpValue = mElapsedTime / mTotalPlayTime;
-			DirectX::SimpleMath::Vector3 scale = LerpVector3(mPrevScale, mTargetScale, lerpValue);
-			DirectX::SimpleMath::Quaternion rotation = LerpQuaternion(mPrevRotation, mTargetRotation, lerpValue);
-			DirectX::SimpleMath::Vector3 position = LerpVector3(mPrevPosition, mTargetPosition, lerpValue);
+			for (int i = 0; i < mKeys.size(); i++)
+			{
+				if (mElapsedTime >= mKeys[i].time && checkPointTime < mKeys[i].time)
+				{
+					checkPointTime = mKeys[i].time;
+					keyNumber = i;
+				}
+			}
 
-			DirectX::SimpleMath::Matrix newTransform =
-				DirectX::SimpleMath::Matrix::CreateScale(scale)
-				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
-				* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+			if (keyNumber + 1 < mKeys.size())
+			{
+				float divisionValue = mKeys[keyNumber + 1].time - mKeys[keyNumber].time;
+				float lerpValue = (mElapsedTime - mKeys[keyNumber].time) / divisionValue;
 
-			transform->SetWorldMatrix(newTransform);
+				DirectX::SimpleMath::Vector3 scale = LerpVector3(mKeys[keyNumber].scale, mKeys[keyNumber + 1].scale, lerpValue);
+				DirectX::SimpleMath::Vector3 rotation = LerpVector3(mKeys[keyNumber].rotation, mKeys[keyNumber + 1].rotation, lerpValue);
+				DirectX::SimpleMath::Vector3 position = LerpVector3(mKeys[keyNumber].position, mKeys[keyNumber + 1].position, lerpValue);
+
+				DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rotation / 180.f * 3.14f);
+
+				DirectX::SimpleMath::Matrix newTransform =
+					DirectX::SimpleMath::Matrix::CreateScale(scale)
+					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(quaternion)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+
+				transform->SetWorldMatrix(newTransform);
+			}
+			else
+			{
+				DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(mKeys[mKeys.size() - 1].rotation / 180.f * 3.14f);
+
+				DirectX::SimpleMath::Matrix newTransform =
+					DirectX::SimpleMath::Matrix::CreateScale(mKeys[mKeys.size() - 1].scale)
+					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(quaternion)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(mKeys[mKeys.size() - 1].position);
+
+				transform->SetWorldMatrix(newTransform);
+			}
 		}
 	}
 
