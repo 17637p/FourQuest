@@ -11,7 +11,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     if (DTid.x < width && DTid.y < height)
     {
-        float2 uv = DTid.xy / float2(width, height);
+        float2 uv = (DTid.xy + 0.5) / float2(width, height);
         float4 color = gInputTexture.SampleLevel(linearSampler, uv, 0);
         gOutputTexture[DTid.xy] = color;
     }
