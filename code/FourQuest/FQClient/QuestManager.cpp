@@ -3,6 +3,7 @@
 
 #include "DefenceCounter.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Transform.h"
 
 #include <spdlog/spdlog.h>
 
@@ -90,6 +91,8 @@ void fq::client::QuestManager::OnStart()
 	EventProcessClearQuest();
 	EventProcessAllColliderTrigger();
 	EventProcessObjectInteraction();
+
+	mScreenManager = GetScene()->GetScreenManager();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -108,6 +111,23 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		textInfo.Text = mCurSubQuest[i].mName;
 		mSubQuestTexts[i]->SetTextInfo(textInfo);
 		ViewQuestInformation(mCurSubQuest[i], mSubQuestTexts[i]);
+	}
+
+	// Scale 자동 조정 
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	UINT screenWidth = mScreenManager->GetScreenWidth();
+	UINT screenHeight = mScreenManager->GetScreenHeight();
+	float scaleX = screenWidth / (float)1920;
+	float scaleY = screenHeight / (float)1080;
+	{
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+	}
+
+	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
+	// Position 자동 조정
+	{
+		myTransform->SetLocalPosition({ 0.85f * screenWidth, 0.45f * screenHeight, 1 });
 	}
 }
 
