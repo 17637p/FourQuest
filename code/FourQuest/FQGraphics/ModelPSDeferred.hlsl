@@ -51,6 +51,8 @@ cbuffer cbMaterialInstance : register(b2)
 {
     bool cUseAlpha;
     float cAlpha;
+    bool cUseDissolveCutoff;
+    float cDissolveCutoff;
 };
 
 Texture2D gAlbedoMap : register(t0);
@@ -62,6 +64,8 @@ Texture2D gMetalnessSmoothness : register(t5);
 
 Texture2DArray gLightMapArray : register(t6);
 Texture2DArray gDirectionArray : register(t7);
+
+Texture2D gNoiseMap : register(t8);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gPointWrap : register(s1); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
@@ -77,6 +81,29 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #else
     pout.Albedo = gModelMaterial.BaseColor;
 #endif
+    
+    if (gModelMaterial.UseDissolve)
+    {
+        float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
+        float dissolveCutoff = gModelMaterial.DissolveCutoff;
+
+        if (cUseDissolveCutoff)
+        {
+            dissolveCutoff = cDissolveCutoff;
+        }
+
+        clip(noise.x - dissolveCutoff);
+
+        float outlineWeight = saturate(noise.r - dissolveCutoff * gModelMaterial.OutlineThickness);
+        float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
+        
+        if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
+            outlineColor *= 0;
+        else
+            outlineColor *= 1;
+
+        pout.Albedo.rgb += outlineColor;
+    }
 
     if (cUseAlpha)
     {

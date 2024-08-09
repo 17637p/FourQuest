@@ -5,7 +5,7 @@
 
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/UVAnimator.h"
-#include "../FQGameModule/AlphaAnimator.h"
+#include "../FQGameModule/MaterialAnimator.h"
 
 fq::game_engine::AnimationSystem::AnimationSystem()
 	:mGameProcess(nullptr)
@@ -93,8 +93,8 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 			animator.UpdateTimePos(dt * animator.GetPlaySpeed());
 		});
 
-	mScene->ViewComponents<AlphaAnimator>(
-		[dt](GameObject& object,AlphaAnimator& animator)
+	mScene->ViewComponents<MaterialAnimator>(
+		[dt](GameObject& object,MaterialAnimator& animator)
 		{
 			animator.UpdateTimePos(dt);
 		});

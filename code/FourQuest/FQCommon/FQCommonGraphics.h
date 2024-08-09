@@ -65,6 +65,14 @@ namespace fq::graphics
 		} ObjectType = EObjectType::Dynamic;
 	};
 
+	struct MaterialInstanceInfo
+	{
+		bool bUseInstanceAlpha;
+		float Alpha;
+		bool bUseDissolveCutoff;
+		float DissolveCutoff;
+	};
+
 	struct UIInfo
 	{
 		float StartX = 0.f; // 좌상단 점 위치 
@@ -104,7 +112,7 @@ namespace fq::graphics
 
 		std::string FontPath = "Verdana";
 		int FontSize = 10;
-		DirectX::SimpleMath::Color FontColor = {0, 0, 0, 1};
+		DirectX::SimpleMath::Color FontColor = { 0, 0, 0, 1 };
 
 		bool IsRender = true;
 	};
@@ -485,42 +493,62 @@ namespace fq::graphics
 		TwoSide,
 	};
 
+	enum class EDissolveOperator
+	{
+		Additive,
+		Subtractive,
+		Modulate
+	};
+
 	// material
 	struct MaterialInfo
 	{
+		// 쉐이더 외부 분기
 		enum class ERenderMode
 		{
 			Opaque,
 			Transparent
 		} RenderModeType = ERenderMode::Opaque;
 
-		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
-		float Metalness = 0.f;
-		float Roughness = 0.f;
-		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+		ESampleMode SampleType = ESampleMode::Wrap;
+		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
 
-		std::wstring BaseColorFileName;
-		std::wstring MetalnessFileName;
-		std::wstring RoughnessFileName;
-		std::wstring NormalFileName;
-		std::wstring EmissiveFileName;
-		std::wstring MetalnessSmoothnessFileName;
-
+		// 쉐이더 내의 분기
 		bool bUseBaseColor = true;
+		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
+		std::wstring BaseColorFileName;
+
 		bool bUseMetalness = true;
+		float Metalness = 0.f;
+		std::wstring MetalnessFileName;
+
 		bool bUseRoughness = true;
-		bool bUseNormalness = true;
+		float Roughness = 0.f;
+		std::wstring RoughnessFileName;
+
 		bool bIsUsedEmissive = true;
+		DirectX::SimpleMath::Color EmissiveColor = { 0.f, 0.f, 0.f, 0.f };
+		std::wstring EmissiveFileName;
+		float EmissiveIntensity = 1.f;
+
+		bool bUseNormalness = true;
+		std::wstring NormalFileName;
+
 		bool bIsUsedMetalnessSmoothness = false;
+		std::wstring MetalnessSmoothnessFileName;
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
 		DirectX::SimpleMath::Vector2 Offset = { 0, 0 };
 		float AlphaCutoff = 0.1f;
 
-		ESampleMode SampleType = ESampleMode::Wrap;
-		ERasterizeMode RasterizeType = ERasterizeMode::BackFaceClip;
-
-		float EmissiveIntensity = 1.f;
+		// 인자 자체가 구체 타입으로 늘어난다면?
+		bool bUseDissolve = false;
+		std::wstring NoiseFileName;
+		float OutlineThickness = 1.15;
+		float DissolveCutoff = 0;
+		EDissolveOperator DissolveOperator;
+		DirectX::SimpleMath::Color DissolveStartColor = { 1, 1, 1, 1 };
+		DirectX::SimpleMath::Color DissolveEndColor = { 0, 0, 0, 0 };
 	};
 
 	struct ParticleMaterialInfo

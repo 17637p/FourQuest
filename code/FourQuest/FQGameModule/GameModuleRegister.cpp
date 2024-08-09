@@ -35,7 +35,7 @@
 #include "AnimationStateNode.h"
 #include "Animator.h"
 #include "UVAnimator.h"
-#include "AlphaAnimator.h"
+#include "MaterialAnimator.h"
 #include "LogStateBehaviour.h"
 
 // PathFinding
@@ -834,24 +834,26 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "EnterCount")
 		.base<IStateBehaviour>();
 
-	entt::meta<EAlphaAnimationMode>()
+	entt::meta<EAnimationMode>()
 		.type("AlphaAnimationMode"_hs)
 		.prop(fq::reflect::prop::Name, "AlphaAnimationMode")
-		.data<EAlphaAnimationMode::Increase>("Increase"_hs)
+		.data<EAnimationMode::Increase>("Increase"_hs)
 		.prop(fq::reflect::prop::Name, "Increase")
-		.data<EAlphaAnimationMode::Decrease>("Decrease"_hs)
+		.data<EAnimationMode::Decrease>("Decrease"_hs)
 		.prop(fq::reflect::prop::Name, "Decrease");
 
 	entt::meta<AlphaAnimatorInfo>()
 		.type("AlphaAnimatorInfo"_hs)
 		.prop(fq::reflect::prop::Name, "AlphaAnimatorInfo")
 		.prop(fq::reflect::prop::POD)
+		.data<&AlphaAnimatorInfo::bIsUsed>("bIsUsed"_hs)
+		.prop(fq::reflect::prop::Name, "bIsUsed")
 		.data<&AlphaAnimatorInfo::Alpha>("Alpha"_hs)
 		.prop(fq::reflect::prop::Name, "Alpha")
 		.data<&AlphaAnimatorInfo::TimePos>("TimePos"_hs)
 		.prop(fq::reflect::prop::Name, "TimePos")
-		.data<&AlphaAnimatorInfo::bIsRecursive>("bIsRecursive"_hs)
-		.prop(fq::reflect::prop::Name, "bIsRecursive")
+		.data<&AlphaAnimatorInfo::bIsLooping>("bIsLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bIsLooping")
 		.data<&AlphaAnimatorInfo::bIsUpdate>("bIsUpdate"_hs)
 		.prop(fq::reflect::prop::Name, "bIsUpdate")
 		.data<&AlphaAnimatorInfo::Duration>("Duration"_hs)
@@ -866,15 +868,52 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MaxAlpha")
 		.data<&AlphaAnimatorInfo::MinAlpha>("MinAlpha"_hs)
 		.prop(fq::reflect::prop::Name, "MinAlpha")
-		.data<&AlphaAnimatorInfo::AlphaAnimationMode>("AlphaAnimationMode"_hs)
-		.prop(fq::reflect::prop::Name, "AlphaAnimationMode");
+		.data<&AlphaAnimatorInfo::AnimationMode>("AlphaAnimationMode"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimationMode")
+		.data<&AlphaAnimatorInfo::bIsRecursive>("bIsRecursive"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRecursive")
+		.prop(fq::reflect::prop::Comment, u8"자식 오브젝트 전달 여부");
 
-	entt::meta<AlphaAnimator>()
-		.type("AlphaAnimator"_hs)
-		.prop(fq::reflect::prop::Name, "AlphaAnimator")
+	entt::meta<DissolveAnimatorInfo>()
+		.type("DissolveAnimatorInfo"_hs)
+		.prop(fq::reflect::prop::Name, "DissolveAnimatorInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&DissolveAnimatorInfo::bIsUsed>("bIsUsed"_hs)
+		.prop(fq::reflect::prop::Name, "bIsUsed")
+		.data<&DissolveAnimatorInfo::DissolveCutoff>("DissolveCutoff"_hs)
+		.prop(fq::reflect::prop::Name, "DissolveCutoff")
+		.data<&DissolveAnimatorInfo::TimePos>("TimePos"_hs)
+		.prop(fq::reflect::prop::Name, "TimePos")
+		.data<&DissolveAnimatorInfo::bIsLooping>("bIsLooping"_hs)
+		.prop(fq::reflect::prop::Name, "bIsLooping")
+		.data<&DissolveAnimatorInfo::bIsUpdate>("bIsUpdate"_hs)
+		.prop(fq::reflect::prop::Name, "bIsUpdate")
+		.data<&DissolveAnimatorInfo::Duration>("Duration"_hs)
+		.prop(fq::reflect::prop::Name, "Duration")
+		.data<&DissolveAnimatorInfo::Speed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.data<&DissolveAnimatorInfo::DelayTime>("DelayTime"_hs)
+		.prop(fq::reflect::prop::Name, "DelayTime")
+		.data<&DissolveAnimatorInfo::InitDissolveCutoff>("InitDissolveCutoff"_hs)
+		.prop(fq::reflect::prop::Name, "InitDissolveCutoff")
+		.data<&DissolveAnimatorInfo::MaxDissolveCutoff>("MaxDissolveCutoff"_hs)
+		.prop(fq::reflect::prop::Name, "MaxDissolveCutoff")
+		.data<&DissolveAnimatorInfo::MinDissolveCutoff>("MinDissolveCutoff"_hs)
+		.prop(fq::reflect::prop::Name, "MinDissolveCutoff")
+		.data<&DissolveAnimatorInfo::AnimationMode>("AlphaAnimationMode"_hs)
+		.prop(fq::reflect::prop::Name, "AlphaAnimationMode")
+		.data<&DissolveAnimatorInfo::bIsRecursive>("bIsRecursive"_hs)
+		.prop(fq::reflect::prop::Name, "bIsRecursive")
+		.prop(fq::reflect::prop::Comment, u8"자식 오브젝트 전달 여부");
+
+	entt::meta<MaterialAnimator>()
+		.type("MaterialAnimator"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialAnimator")
 		.prop(fq::reflect::prop::Label, "Miscellaneous")
-		.data<&AlphaAnimator::SetAlphaAnimatorInfo, &AlphaAnimator::GetAlphaAnimatorInfo>("AlphaAnimatorInfo"_hs)
+		.data<&MaterialAnimator::SetAlphaAnimatorInfo, &MaterialAnimator::GetAlphaAnimatorInfo>("AlphaAnimatorInfo"_hs)
 		.prop(fq::reflect::prop::Name, "AlphaAnimatorInfo")
+		.data<&MaterialAnimator::SetDissolveAnimatorInfo, &MaterialAnimator::GetDissolveAnimatorInfo>("DissolveAnimatorInfo"_hs)
+		.prop(fq::reflect::prop::Name, "DissolveAnimatorInfo")
 		.base<Component>();
 
 

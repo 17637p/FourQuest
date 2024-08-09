@@ -57,9 +57,10 @@ namespace fq::graphics
 
 	struct CBMaterialInstance
 	{
-		int bUseAlphaConstant;
+		int bUseInstanceAlpha;
 		float Alpha;
-		float unused[2];
+		int bUseDissolveCutoff;
+		float DissolveCutoff;
 	};
 
 	struct ViewRotationProjectionMatrix
@@ -93,7 +94,6 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 FrustumFarCorners[4];
 	};
 
-	// 리얼타임 데이터만 여기에 저장
 	struct LightData
 	{
 		DirectionalLight directionalLight[3];
@@ -108,12 +108,6 @@ namespace fq::graphics
 
 		DirectX::SimpleMath::Vector3 eyePosition;
 		float pad2;
-	};
-
-	// 감쇄와 조명 연산의 차이로 인해 DirectionalLight 하나만 지원
-	struct MixedLightData
-	{
-		DirectionalLight directionalLight;
 	};
 
 	struct OutLineColor
@@ -157,9 +151,11 @@ namespace fq::graphics
 
 	struct CBMaterial
 	{
-		DirectX::SimpleMath::Color BaseColor;
-		DirectX::SimpleMath::Color EmissiveColor;
 		DirectX::SimpleMath::Matrix TexTransform;
+		DirectX::SimpleMath::Vector4 BaseColor;
+		DirectX::SimpleMath::Vector4 EmissiveColor;
+		DirectX::SimpleMath::Vector4 DissolveStartColor;
+		DirectX::SimpleMath::Vector4 DissolveEndColor;
 
 		float Metalness;
 		float Roughness;
@@ -173,6 +169,11 @@ namespace fq::graphics
 
 		float EmissiveIntensity;
 		int bUseMetalnessSmoothnessMap;
+		int bUseDissolve;
+		float OutlineThickness;
+
+		float DissolveCutoff;
+		int DissolveOperator;
 		float unused[2];
 	};
 
@@ -366,5 +367,8 @@ namespace fq::graphics
 		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
 			float* r, float* g, float* b, float intensity);
+		static void UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device,
+			const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB,
+			const MaterialInstanceInfo& materialInstanceInfo);
 	};
 }

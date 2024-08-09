@@ -234,10 +234,7 @@ namespace fq::graphics
 						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 					}
 
-					CBMaterialInstance materialInstance;
-					materialInstance.bUseAlphaConstant = job.StaticMeshObject->GetUseInstanceAlpha();
-					materialInstance.Alpha = job.StaticMeshObject->GetAlpha();
-					mMaterialInstanceCB->Update(mDevice, materialInstance);
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -279,10 +276,7 @@ namespace fq::graphics
 						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
 					}
 
-					CBMaterialInstance alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
-					mMaterialInstanceCB->Update(mDevice, alphaData);
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

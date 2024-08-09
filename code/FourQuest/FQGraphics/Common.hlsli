@@ -560,9 +560,11 @@ struct ParticleMaterial
 
 struct ModelMaterial
 {
+    float4x4 TexTransform;
     float4 BaseColor;
     float4 EmissiveColor;
-    float4x4 TexTransform;
+    float4 DissolveOutlineStartColor;
+    float4 DissolveOutlineEndColor;
     
     float Metalness;
     float Roughness;
@@ -576,7 +578,16 @@ struct ModelMaterial
     
     float EmissiveIntensity;
     bool UseMetalnessSmoothness;
+    bool UseDissolve;
+    float OutlineThickness;
+
+    float DissolveCutoff;
+    uint DissolveOperator;
 };
+
+#define DISSOLVE_ADDITIVE 0
+#define DISSOLVE_SUBTRACTIVE 1
+#define DISSOLVE_MODULATE 2
 
 #define LIGHT_MODE_REALTIME 0
 #define LIGHT_MODE_MIXED 1

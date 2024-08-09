@@ -299,10 +299,7 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 				}
 
-				CBMaterialInstance materialInstance;
-				materialInstance.bUseAlphaConstant = job.StaticMeshObject->GetUseInstanceAlpha();
-				materialInstance.Alpha = job.StaticMeshObject->GetAlpha();
-				mMaterialInstanceCB->Update(mDevice, materialInstance);
+				ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
@@ -344,6 +341,8 @@ namespace fq::graphics
 				{
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
 				}
+
+				ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 			}

@@ -11,9 +11,10 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Terrain.h"
 #include "../FQGameModule/UVAnimator.h"
-#include "../FQGameModule/AlphaAnimator.h"
+#include "../FQGameModule/MaterialAnimator.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/PostProcessing.h"
+#include "../FQCommon/FQCommonGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "GameProcess.h"
 #include "AnimationSystem.h"
@@ -106,21 +107,26 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					{
 						meshObject->SetTransform(mesh.GetPrevApplyTransform() * nodeHierarchyInstanceOrNull->GetTransform());
 					}
-				}
 
-				// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함
-				auto* alphaAnimator = object.GetComponent<AlphaAnimator>();
+					// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함
+					auto* materialAnimator = object.GetComponent<MaterialAnimator>();
+					fq::graphics::MaterialInstanceInfo materialInstanceInfo{};
 
-				if (alphaAnimator != nullptr)
-				{
-					const auto& info = alphaAnimator->GetAlphaAnimatorInfo();
+					if (materialAnimator != nullptr)
+					{
+						{
+							const auto& info = materialAnimator->GetAlphaAnimatorInfo();
+							materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;
+							materialInstanceInfo.Alpha = info.Alpha;
+						}
+						{
+							const auto& info = materialAnimator->GetDissolveAnimatorInfo();
+							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
+							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
+						}
+					}
 
-					meshObject->SetUseInstanceAlpha(true);
-					meshObject->SetAlpha(info.Alpha);
-				}
-				else
-				{
-					meshObject->SetUseInstanceAlpha(false);
+					meshObject->SetMaterialInstanceInfo(materialInstanceInfo);
 				}
 			});
 
@@ -128,6 +134,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 		([](GameObject& object, Transform& transform, SkinnedMeshRenderer& mesh)
 			{
 				auto meshObject = mesh.GetSkinnedMeshObject();
+			
 				if (meshObject)
 				{
 					GameObject* parentObject = object.GetParent();
@@ -140,6 +147,25 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					{
 						meshObject->SetTransform(DirectX::SimpleMath::Matrix::Identity);
 					}
+
+					auto* materialAnimator = object.GetComponent<MaterialAnimator>();
+					fq::graphics::MaterialInstanceInfo materialInstanceInfo{};
+
+					if (materialAnimator != nullptr)
+					{
+						{
+							const auto& info = materialAnimator->GetAlphaAnimatorInfo();
+							materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;
+							materialInstanceInfo.Alpha = info.Alpha;
+						}
+						{
+							const auto& info = materialAnimator->GetDissolveAnimatorInfo();
+							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
+							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
+						}
+					}
+
+					meshObject->SetMaterialInstanceInfo(materialInstanceInfo);
 				}
 			});
 
@@ -275,21 +301,33 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 		for (const auto& materialPath : materialPaths)
 		{
+			std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = nullptr;
+
 			if (!std::filesystem::exists(materialPath))
 			{
-				spdlog::warn("{} materialPath is invalid", object->GetName());
-				continue;
+				spdlog::warn("{} material path is invalid", object->GetName());
+
+				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
+				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);
+
+				if (materialInterfaceOrNull == nullptr)
+				{
+					const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(DEFAULT_MATERIAL);
+					materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+				}
 			}
-
-			std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
-
-			if (materialInterfaceOrNull == nullptr)
+			else
 			{
-				const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(materialPath);
-				materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
-			}
-			assert(materialInterfaceOrNull != nullptr);
+				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
 
+				if (materialInterfaceOrNull == nullptr)
+				{
+					const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(materialPath);
+					materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+				}
+			}
+
+			assert(materialInterfaceOrNull != nullptr);
 			materialInterfaces.push_back(materialInterfaceOrNull);
 		}
 	}
@@ -412,6 +450,12 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 
 				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
 				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);
+
+				if (materialInterfaceOrNull == nullptr)
+				{
+					const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(DEFAULT_MATERIAL);
+					materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+				}
 			}
 			else
 			{
@@ -422,9 +466,9 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 					const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(materialPath);
 					materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
 				}
-				assert(materialInterfaceOrNull != nullptr);
 			}
-
+			
+			assert(materialInterfaceOrNull != nullptr);
 			materialInterfaces.push_back(materialInterfaceOrNull);
 		}
 	}
