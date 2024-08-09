@@ -119,6 +119,7 @@ namespace fq::graphics
 
 		std::unique_ptr<class ShaderProgram> mFullScreenProgram;
 		std::unique_ptr<class ShaderProgram> mPostProcessingProgram;
+		std::unique_ptr<class ShaderProgram> mSSRProgram;
 		PostProcessingInfo mPostProcessingInfo;
 		std::shared_ptr<D3D11ConstantBuffer<PostProcessingBuffer>> mPostProcessingCB;
 		std::shared_ptr<D3D11ConstantBuffer<Fog>> mFogCB;

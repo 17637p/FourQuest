@@ -730,7 +730,19 @@ fxc.exe %(FullPath) /Zi /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledSh
   <ItemGroup>
     <CustomBuild Include="SSRCS.hlsl">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /Od /T cs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="TestSSRPS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /Od /T ps_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="TestSSRVS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">fxc.exe %(FullPath) /Zi /Od /T vs_5_0 /E main  /Fc %(FileName).asm /Fo ../CompiledShader/Debug/%(FileName).cso</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../CompiledShader/Debug/%(FileName).cso</Outputs>
     </CustomBuild>
   </ItemGroup>
