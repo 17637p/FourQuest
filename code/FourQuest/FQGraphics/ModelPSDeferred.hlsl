@@ -94,7 +94,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
         clip(noise.x - dissolveCutoff);
 
-        float outlineWeight = saturate(noise.r - dissolveCutoff * gModelMaterial.OutlineThickness);
+        float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
         float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
         
         if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
