@@ -60,6 +60,11 @@ namespace fq::game_module
 		bool bIsRecursive; // 자식 계층 전달 여부
 	};
 
+	// 자식 계층 이어서 처리
+	// two side로 전환하게끔 만들어줘야 할듯
+	// 안쪽과 바깥쪽 색상?
+	// 타들어가는 부분 이미시브 넣어주면 이쁠듯
+
 	class MaterialAnimator : public Component
 	{
 		using ControllerPath = std::string;
