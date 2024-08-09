@@ -8,6 +8,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <atomic>
 #include <vector>
 
 namespace fq::game_module
@@ -22,17 +23,20 @@ namespace fq::game_module
 		template <class F, class... Args>
 		std::future<std::invoke_result_t<F, Args...>> EnqueueJob(F&& f, Args&&... args);
 
+		void Wait();
+
 	private:
 		ThreadPool(size_t numThreads);
 		~ThreadPool();
 
-		void workerThread();
+		void workerThread(size_t index);
 
 	private:
 		inline static ThreadPool* mInstance = nullptr;
 
 		size_t mNumThreads;
 		std::vector<std::thread> mWorkerThreads;
+		std::vector<std::atomic<bool>> mIsWaitThreads;
 		std::queue<std::function<void()>> mJobs;
 		std::condition_variable mJobCV;
 		std::mutex mJobMutex;

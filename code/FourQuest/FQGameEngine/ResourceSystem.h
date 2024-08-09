@@ -33,7 +33,13 @@ namespace fq::game_engine
 
 		void LoadSceneResource(fq::event::PreOnLoadScene event);
 		
-		void LoadAnimator(fq::game_module::Animator* animator);
+		std::shared_ptr<graphics::IStaticMesh> GetStaticMesh(const Path& modelPath, std::string meshName)const;
+		std::shared_ptr<graphics::IMaterial> GetMaterial(const Path& path)const;
+		std::shared_ptr<graphics::IAnimation> GetAnimation(const Path& path)const;
+
+		bool HasModel(const Path& path)const;
+		bool HasAnimation(const Path& path)const;
+
 		void LoadModelResource(const Path& path);
 		void LoadAnimation(const Path& path);
 		void LoadMaterial(const Path& path);
@@ -46,9 +52,10 @@ namespace fq::game_engine
 		mutable Mutex mModelMutex;
 		mutable	Mutex mStaticMeshMutex;
 		mutable Mutex mSkinnedMeshMutex;
+		mutable Mutex mMaterialMutex;
 		mutable Mutex mNodeHierarchyMutex;
 		mutable Mutex mAnimationMutex;
-		 
+
 		std::map<Path, fq::common::Model> mModels;
 		std::map<Path, std::shared_ptr<graphics::IStaticMesh>> mStaticMeshes;
 		std::map<Path, std::shared_ptr<graphics::ISkinnedMesh>> mSkinnedMeshes;

@@ -14,6 +14,7 @@ namespace fq::game_engine
 		std::set<Path> materialPaths;
 		std::set<Path> animatorControllerPaths;
 		std::set<Path> animationPaths;
+		std::set<Path> nodeHierachyPaths;
 
 		void Load(const Path& path);
 		void Save(const Path& path);

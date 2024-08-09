@@ -14,6 +14,7 @@ namespace fq::game_module
 namespace fq::game_engine
 {
 	class GameProcess;
+	class ResourceSystem;
 
 	/// <summary>
 	/// 랜더링관련 바인딩 처리를 담당합니다
@@ -102,6 +103,7 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
+		ResourceSystem* mResourceSystem;
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;

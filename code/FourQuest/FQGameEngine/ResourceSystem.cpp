@@ -1,6 +1,7 @@
 #include "ResourceSystem.h"
 
 #include "spdlog/spdlog.h"
+#include "spdlog/stopwatch.h"
 
 #include "../FQReflect/FQReflect.h"
 #include "../FQGameModule/GameModule.h"
@@ -28,6 +29,8 @@ void fq::game_engine::ResourceSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScene event)
 {
+	spdlog::stopwatch sw;
+
 	auto listPath = fq::path::GetScenePath() / event.sceneName / "resource_list.txt";
 
 	SceneResourceList list;
@@ -54,15 +57,16 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 			});
 	}
 
-	// Material 로드
+	//// Material 로드
 	for (const auto& materialPath : list.materialPaths)
 	{
-		pool->EnqueueJob([this, materialPath]()
-			{
-				LoadMaterial(materialPath);
-			});
+		LoadMaterial(materialPath);
 	}
 
+
+	pool->Wait();
+
+	spdlog::trace("load {}", sw);
 }
 
 void fq::game_engine::ResourceSystem::Finalize()
@@ -72,15 +76,6 @@ void fq::game_engine::ResourceSystem::Finalize()
 
 void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
 {
-	{
-		std::shared_lock<Mutex> lock(mModelMutex);
-
-		if (mModels.find(modelPath) != mModels.end())
-		{
-			return;
-		}
-	}
-
 	auto model = mGameProcess->mGraphics->ReadModel(modelPath);
 
 	for (const auto& [node, mesh] : model.Meshes)
@@ -117,15 +112,6 @@ const fq::common::Model& fq::game_engine::ResourceSystem::GetModel(const Path& p
 
 void fq::game_engine::ResourceSystem::LoadAnimation(const Path& path)
 {
-	{
-		std::shared_lock<Mutex> lock(mAnimationMutex);
-
-		if (mAnimations.find(path) != mAnimations.end())
-		{
-			return;
-		}
-	}
-
 	auto animationClip = mGameProcess->mGraphics->ReadAnimation(path);
 	auto animation = mGameProcess->mGraphics->CreateAnimation(animationClip);
 
@@ -135,37 +121,10 @@ void fq::game_engine::ResourceSystem::LoadAnimation(const Path& path)
 
 void fq::game_engine::ResourceSystem::LoadMaterial(const Path& path)
 {
-	std::unique_lock<Mutex> lock(mAnimationMutex);
-
-	if (mAnimations.find(path) != mAnimations.end())
-	{
-		return;
-	}
-
+	std::unique_lock<Mutex> lock(mMaterialMutex);
 	auto materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(path);
 	auto material = mGameProcess->mGraphics->CreateMaterial(materialInfo);
 	mMaterials.insert({ path, material });
-}
-
-void fq::game_engine::ResourceSystem::LoadAnimator(fq::game_module::Animator* animator)
-{
-	auto controllerPath = animator->GetControllerPath();
-	auto nodeHierarchyPath = animator->GetNodeHierarchyPath();
-
-	if (!std::filesystem::exists(controllerPath))
-	{
-		spdlog::warn("{} animation controller load fail", controllerPath);
-		return;
-	}
-	if (!std::filesystem::exists(nodeHierarchyPath))
-	{
-		spdlog::warn("{} animation controller load fail", controllerPath);
-		return;
-	}
-
-	// 컨트롤러 로드 
-	auto controller = mLoader.Load(controllerPath);
-
 }
 
 void fq::game_engine::ResourceSystem::SaveSceneResourceList(const std::filesystem::path& path)
@@ -281,5 +240,36 @@ void fq::game_engine::ResourceSystem::SaveAnimationResource(SceneResourceList& l
 			}
 		}
 	}
+}
+
+bool fq::game_engine::ResourceSystem::HasModel(const Path& path) const
+{
+	std::shared_lock<Mutex> lock(mModelMutex);
+	return mModels.find(path) != mModels.end();
+}
+
+bool fq::game_engine::ResourceSystem::HasAnimation(const Path& path) const
+{
+	std::shared_lock<Mutex> lock(mAnimationMutex);
+	return mAnimations.find(path) != mAnimations.end();
+}
+
+std::shared_ptr<fq::graphics::IMaterial> fq::game_engine::ResourceSystem::GetMaterial(const Path& path) const
+{
+	auto iter = mMaterials.find(path);
+	return iter == mMaterials.end() ? nullptr : iter->second;
+}
+
+
+std::shared_ptr<fq::graphics::IStaticMesh> fq::game_engine::ResourceSystem::GetStaticMesh(const Path& modelPath, std::string meshName) const
+{
+	auto iter = mStaticMeshes.find(modelPath + meshName);
+	return iter == mStaticMeshes.end() ? nullptr : iter->second;
+}
+
+std::shared_ptr<fq::graphics::IAnimation> fq::game_engine::ResourceSystem::GetAnimation(const Path& path) const
+{
+	auto iter = mAnimations.find(path);
+	return iter == mAnimations.end() ? nullptr : iter->second;
 }
 

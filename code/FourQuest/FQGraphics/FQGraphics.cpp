@@ -459,6 +459,7 @@ void fq::graphics::FQGraphics::WriteAnimation(const std::string& path, const fq:
 {
 	return fq::loader::AnimationLoader::Write(animationClip, path);
 }
+
 fq::common::AnimationClip fq::graphics::FQGraphics::ReadAnimation(const std::string& path)
 {
 	return fq::loader::AnimationLoader::Read(path);

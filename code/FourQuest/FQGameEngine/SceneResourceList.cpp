@@ -24,7 +24,8 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 	{
 		for (const auto& path : json.value())
 		{
-			modelPaths.insert(path);
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			modelPaths.insert(absolutePath.string());
 		}
 	}
 
@@ -32,7 +33,8 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 	{
 		for (const auto& path : json.value())
 		{
-			materialPaths.insert(path);
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			materialPaths.insert(absolutePath.string());
 		}
 	}
 
@@ -40,7 +42,8 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 	{
 		for (const auto& path : json.value())
 		{
-			animatorControllerPaths.insert(path);
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			animatorControllerPaths.insert(absolutePath.string());
 		}
 	}
 
@@ -48,7 +51,17 @@ void fq::game_engine::SceneResourceList::Load(const Path& path)
 	{
 		for (const auto& path : json.value())
 		{
-			animationPaths.insert(path);
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			animationPaths.insert(absolutePath.string());
+		}
+	}
+
+	if (auto json = readJson.find("NodeHierachy"); json != readJson.end())
+	{
+		for (const auto& path : json.value())
+		{
+			auto absolutePath = fq::path::GetAbsolutePath(path);
+			nodeHierachyPaths.insert(absolutePath.string());
 		}
 	}
 }
@@ -82,6 +95,14 @@ void fq::game_engine::SceneResourceList::Save(const Path& path)
 	saveJson["AnimatorController"] = animatorController;
 
 	json animation;
+	for (const auto& path : animationPaths)
+	{
+		auto relative = fq::path::GetRelativePath(path);
+		animation.push_back(relative);
+	}
+	saveJson["Animation"] = animation;
+
+	json nodeHiera;
 	for (const auto& path : animationPaths)
 	{
 		auto relative = fq::path::GetRelativePath(path);

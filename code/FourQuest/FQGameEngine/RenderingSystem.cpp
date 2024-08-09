@@ -28,6 +28,7 @@ fq::game_engine::RenderingSystem::RenderingSystem()
 	, mRemoveComponentHandler{}
 	, mAddComponentHandler{}
 	, mbIsGameLoaded(false)
+	, mResourceSystem(nullptr)
 {}
 
 fq::game_engine::RenderingSystem::~RenderingSystem()
@@ -36,6 +37,7 @@ fq::game_engine::RenderingSystem::~RenderingSystem()
 void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 {
 	mGameProcess = gameProcess;
+	mResourceSystem = gameProcess->mResourceSystem.get();
 
 	// EventHandle 등록
 	auto& eventMgr = mGameProcess->mEventManager;
@@ -278,7 +280,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 			materialInterfaces.push_back(materialInterfaceOrNull);
 		}
 	}
-	else
+	/*else
 	{
 		size_t i = 0;
 
@@ -300,7 +302,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 			++i;
 		}
-	}
+	}*/
 
 	auto meshInterface = mGameProcess->mGraphics->GetSkinnedMeshByModelPathOrNull(key, meshName);
 
@@ -368,18 +370,17 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 		return;
 	}
 
-	LoadModel(modelPath, texturePath);
+	if (!mResourceSystem->HasModel(modelPath))
+	{
+		mGameProcess->mResourceSystem->LoadModelResource(modelPath);
+	}
 
-	auto key = GetModelKey(modelPath, texturePath);
+	//auto key = GetModelKey(modelPath, texturePath);
 	auto meshName = staticMeshRenderer->GetMeshName();
 	auto materialPaths = staticMeshRenderer->GetMaterialPaths();
 	auto meshInfo = staticMeshRenderer->GetMeshObjectInfomation();
 	auto transform = object->GetComponent<fq::game_module::Transform>();
-
-	// 지울 예정
-	auto materialInfos = staticMeshRenderer->GetMaterialInfos();
-	auto materialNames = staticMeshRenderer->GetMaterials();
-
+	
 	using namespace fq::graphics;
 	std::vector<std::shared_ptr<IMaterial>> materialInterfaces;
 
@@ -394,18 +395,17 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 			if (!std::filesystem::exists(materialPath))
 			{
 				spdlog::warn("{} materialPath is invalid", object->GetName());
-
 				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
 				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);
 			}
 			else
 			{
-				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
+				materialInterfaceOrNull = mResourceSystem->GetMaterial(materialPath);
 
 				if (materialInterfaceOrNull == nullptr)
 				{
-					const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(materialPath);
-					materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+					mResourceSystem->LoadMaterial(materialPath);
+					materialInterfaceOrNull = mResourceSystem->GetMaterial(materialPath);
 				}
 				assert(materialInterfaceOrNull != nullptr);
 			}
@@ -413,38 +413,15 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 			materialInterfaces.push_back(materialInterfaceOrNull);
 		}
 	}
-	else
-	{
-		size_t i = 0;
 
-		for (const auto& materialName : materialNames)
-		{
-			auto materialInterface = mGameProcess->mGraphics->GetMaterialByModelPathOrNull(key, materialName);
-
-			if (materialInterface != nullptr)
-			{
-				const auto& materialInfos = staticMeshRenderer->GetMaterialInfos();
-
-				if (materialInfos.size() > i)
-				{
-					materialInterface->SetInfo(materialInfos[i]);
-				}
-
-				materialInterfaces.push_back(materialInterface);
-			}
-
-			++i;
-		}
-	}
-
-	auto meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, meshName);
+	auto meshInterface = mResourceSystem->GetStaticMesh( modelPath , meshName);
 
 	if (meshInterface != nullptr)
 	{
 		IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, staticMeshRenderer->GetMeshObjectInfomation(), transform->GetLocalMatrix());
 		staticMeshRenderer->SetStaticMeshObject(iStaticMeshObject);
 		staticMeshRenderer->SetMaterialInterfaces(materialInterfaces);
-		staticMeshRenderer->SetMaterialInfos(materialInfos);
+		//staticMeshRenderer->SetMaterialInfos(materialInfos);
 		staticMeshRenderer->SetLightmapUVScaleOffset(staticMeshRenderer->GetLightmapUVScaleOffset());
 		staticMeshRenderer->SetLightmapIndex(staticMeshRenderer->GetLightmapIndex());
 		staticMeshRenderer->SetIsStatic(staticMeshRenderer->GetIsStatic());
