@@ -7,7 +7,9 @@ Texture2D tex_scene_color : register(t2);
 SamplerState pointSampler : register(s0);
 
 #define MAX_ITERATION 200
-#define MAX_THICKNESS 0.000025
+#define MAX_THICKNESS 0.000025 
+// 크면 정밀하지 않지만 가까이 갔을 때 갈라지는 현상이 없음 
+// 작으면 정밀하고 예쁘게 나오지만 성능이 떨어지고 가까이 갔을 때 갈라지는 현상이 있음
 
 struct VertexOut
 {
