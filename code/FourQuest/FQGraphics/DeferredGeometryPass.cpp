@@ -151,6 +151,7 @@ namespace fq::graphics
 			mPreCalculatedLightRTV->Clear(mDevice, { 0, 0,0, -1000 });
 		}
 
+		bool bUseLightmap = false;
 		// Bind
 		{
 			std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
@@ -194,6 +195,8 @@ namespace fq::graphics
 			{
 				lightmapDirectionTexture->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
 			}
+
+			bUseLightmap = lightMapTexture != nullptr && lightmapDirectionTexture != nullptr;
 		}
 
 		auto bindingState = [this](const MaterialInfo& materialInfo)
@@ -245,8 +248,10 @@ namespace fq::graphics
 					LightMapInfomation lightmapInfo;
 					lightmapInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
 					lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
+					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
 					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
+
 					break;
 				}
 				case MeshObjectInfo::EObjectType::Dynamic:
@@ -256,6 +261,10 @@ namespace fq::graphics
 						mVertexColorStaticMeshShaderProgram->Bind(mDevice);
 					}
 					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Static)
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}

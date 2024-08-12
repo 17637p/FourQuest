@@ -15,7 +15,7 @@ namespace fq::game_module
 		/// 생성자
 		/// </summary>
 		StaticMeshRenderer();
-		~StaticMeshRenderer();
+		~StaticMeshRenderer() = default;
 
 		/// <summary>
 		/// 복사본을 반환합니다 
@@ -46,16 +46,6 @@ namespace fq::game_module
 		void SetModelPath(std::string path) { mModelPath = path; }
 
 		/// <summary>
-		/// 텍스처 폴더 경로를 설정합니다 
-		/// </summary>
-		std::string GetTexturePath() const { return mTexturePath; }
-
-		/// <summary>
-		/// 텍스터 폴더 경로를 반환합니다
-		/// </summary>
-		void SetTexturePath(std::string path) { mTexturePath = path; }
-
-		/// <summary>
 		/// 메쉬 이름을 반환합니다
 		/// </summary>
 		/// <returns></returns>
@@ -67,24 +57,8 @@ namespace fq::game_module
 		/// <param name="name"></param>
 		void SetMeshName(std::string name) { mMeshName = name; }
 
-		/// <summary>
-		/// 소유하고있는 메테리얼 이름들을 반환합니다
-		/// </summary>
-		/// <returns></returns>
-		const std::vector<std::string>& GetMaterials()const { return mMaterialNames; }
-
-		/// <summary>
-		/// 메테리얼을 설정합니다
-		/// </summary>
-		/// <param name="materials"></param>
-		void SetMaterials(std::vector<std::string> materials) { mMaterialNames = std::move(materials); }
-
-		void UpdateMaterialInfoByMaterialInterface();
-		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos() const;
-		void SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos);
-
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }
-		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces);
+		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces) { mMaterialInterfaces = materialInterfaces; }
 
 		/// <summary>
 		/// 메쉬정보를 설정합니다

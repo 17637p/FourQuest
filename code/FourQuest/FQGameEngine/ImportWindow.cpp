@@ -62,8 +62,8 @@ void fq::game_engine::ImportWindow::Render()
 			}
 		}
 
-		std::string fbxDirectory = mFBXDirectory.string();
-		ImGui::InputText("FBXDirectoryPath", &fbxDirectory);
+		std::string basePathString = mBasePath.string();
+		ImGui::InputText("BasePath", &basePathString);
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -76,45 +76,7 @@ void fq::game_engine::ImportWindow::Render()
 
 				if (std::filesystem::exists(*path) && std::filesystem::is_directory(*path))
 				{
-					mFBXDirectory = *path;
-				}
-			}
-		}
-
-		std::string textureDirectory = mTextureDirectory.string();
-		ImGui::InputText("TextureDirectoryPath", &textureDirectory);
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path
-					= static_cast<std::filesystem::path*>(pathPayLoad->Data);
-
-				if (std::filesystem::exists(*path) && std::filesystem::is_directory(*path))
-				{
-					mTextureDirectory = *path;
-				}
-			}
-		}
-
-		std::string materialDirectory = mMaterialDirectory.string();
-		ImGui::InputText("MaterialDirectoryPath", &materialDirectory);
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path
-					= static_cast<std::filesystem::path*>(pathPayLoad->Data);
-
-				if (std::filesystem::exists(*path) && std::filesystem::is_directory(*path))
-				{
-					mMaterialDirectory = *path;
+					mBasePath = *path;
 				}
 			}
 		}
@@ -131,18 +93,6 @@ void fq::game_engine::ImportWindow::Render()
 void fq::game_engine::ImportWindow::createGameObject()
 {
 	if (!std::filesystem::exists(mImportFileName) || mImportFileName.extension() != ".json")
-	{
-		return;
-	}
-	if (!std::filesystem::exists(mFBXDirectory) && !std::filesystem::is_directory(mFBXDirectory))
-	{
-		return;
-	}
-	if (!std::filesystem::exists(mTextureDirectory) && !std::filesystem::is_directory(mTextureDirectory))
-	{
-		return;
-	}
-	if (!std::filesystem::exists(mMaterialDirectory) && !std::filesystem::is_directory(mMaterialDirectory))
 	{
 		return;
 	}
@@ -202,11 +152,11 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 				if (!material.AlbedoMap.empty())
 				{
-					materialInfo.BaseColorFileName = mTextureDirectory / fq::common::StringUtil::ToWide(material.AlbedoMap);
+					materialInfo.BaseColorFileName = mBasePath / fq::common::StringUtil::ToWide(material.AlbedoMap);
 				}
 				if (!material.MetallicAndSmoothnessMap.empty())
 				{
-					materialInfo.MetalnessSmoothnessFileName = mTextureDirectory / fq::common::StringUtil::ToWide(material.MetallicAndSmoothnessMap);
+					materialInfo.MetalnessSmoothnessFileName = mBasePath / fq::common::StringUtil::ToWide(material.MetallicAndSmoothnessMap);
 				}
 				else
 				{
@@ -214,24 +164,23 @@ void fq::game_engine::ImportWindow::createGameObject()
 				}
 				if (!material.NormalMap.empty())
 				{
-					materialInfo.NormalFileName = mTextureDirectory / fq::common::StringUtil::ToWide(material.NormalMap);
+					materialInfo.NormalFileName = mBasePath / fq::common::StringUtil::ToWide(material.NormalMap);
 				}
 				if (!material.EmissionMap.empty())
 				{
-					materialInfo.EmissiveFileName = mTextureDirectory / fq::common::StringUtil::ToWide(material.EmissionMap);
+					materialInfo.EmissiveFileName = mBasePath / fq::common::StringUtil::ToWide(material.EmissionMap);
 				}
 
-				std::string materialPath = (mMaterialDirectory / material.Name).string() + ".material";
+				std::string materialPath = (mBasePath / material.Path).replace_extension(".material").string();
 				mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
 				materialPaths.push_back(materialPath);
 			}
 
-			const auto& modelName = gameObjectInfo.MeshData.ModelPath;
 			const auto& meshName = gameObjectInfo.MeshData.Name;
 
-			if (!modelName.empty() && !meshName.empty())
+			if (!gameObjectInfo.MeshData.ModelPath.empty() && !meshName.empty())
 			{
-				std::filesystem::path modelPath = (mFBXDirectory / modelName);
+				std::filesystem::path modelPath = mBasePath / std::filesystem::path(gameObjectInfo.MeshData.ModelPath);
 
 				if (modelPath.extension() == ".fbx")
 				{
@@ -240,14 +189,13 @@ void fq::game_engine::ImportWindow::createGameObject()
 					mGameProcess->mGraphics->WriteModel(modelPath.string(), modelData);
 				}
 
-				auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath.string(), mTextureDirectory.string());
-				mGameProcess->mGraphics->CreateModelResource(key, modelPath.string(), mTextureDirectory.string());
+				auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath.string(), "");
+				mGameProcess->mGraphics->CreateModelResource(key, modelPath.string());
 
 				auto& staticMeshRenderer = gameObject->AddComponent<fq::game_module::StaticMeshRenderer>();
 				staticMeshRenderer.SetModelPath(modelPath.string());
 				staticMeshRenderer.SetMaterialPaths(materialPaths);
 				staticMeshRenderer.SetMeshName(meshName);
-				staticMeshRenderer.SetTexturePath(mTextureDirectory.string());
 				staticMeshRenderer.SetIsStatic(gameObjectInfo.isStatic);
 				staticMeshRenderer.SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
 				staticMeshRenderer.SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
@@ -279,15 +227,15 @@ void fq::game_engine::ImportWindow::createGameObject()
 				light.SetLightColor(gameObjectInfo.LightData.Color);
 				light.SetSpot(gameObjectInfo.LightData.SpotAngle); // ¸ÂÃç¼­ Ã³¸®
 
-				if (lightType == "Realtime")
+				if (gameObjectInfo.LightData.Mode == "Realtime")
 				{
 					light.SetLightMode(fq::graphics::ELightMode::Realtime);
 				}
-				else if (lightType == "Mixed")
+				else if (gameObjectInfo.LightData.Mode == "Mixed")
 				{
 					light.SetLightMode(fq::graphics::ELightMode::Mixed);
 				}
-				else if (lightType == "Baked")
+				else if (gameObjectInfo.LightData.Mode == "Baked")
 				{
 					light.SetLightMode(fq::graphics::ELightMode::Baked);
 				}
@@ -372,16 +320,16 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 
 	using namespace importData;
 
-	auto getFileName = [](const std::string filePath) -> std::string
+
+	auto createPath = [](std::string& string)
 		{
-			if (filePath.empty())
+			for (auto& ch : string)
 			{
-				return "";
+				if (ch == '/')
+				{
+					ch = '\\';
+				}
 			}
-
-			std::filesystem::path path{ filePath };
-
-			return path.filename().string();
 		};
 
 	std::vector<GameObjectLoadInfo> objectInfos;
@@ -414,7 +362,9 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 		};
 
 		// Mesh ÆÄ½Ì
-		info.MeshData.ModelPath = getFileName(gameObjectJson["Mesh"]["ModelPath"].get<std::string>());
+		info.MeshData.ModelPath = gameObjectJson["Mesh"]["ModelPath"].get<std::string>();
+		createPath(info.MeshData.ModelPath);
+
 		info.MeshData.Name = gameObjectJson["Mesh"]["Name"].get<std::string>();
 		info.MeshData.LightmapScaleOffset = {
 				gameObjectJson["Mesh"]["LightmapScaleOffset"]["x"].get<float>(),
@@ -427,6 +377,9 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 		for (const auto& materialJson : gameObjectJson["Mesh"]["Materials"]) {
 			Material material;
 			material.Name = materialJson["Name"].get<std::string>();
+			material.Path = materialJson["Path"].get<std::string>();
+			createPath(material.Path);
+
 			material.renderMode = materialJson["renderMode"].get<std::string>();
 			material.Albedo = {
 				materialJson["Albedo"]["x"].get<float>(),
@@ -442,10 +395,18 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 				materialJson["Emission"]["z"].get<float>(),
 				materialJson["Emission"]["w"].get<float>()
 			};
-			material.AlbedoMap = getFileName(materialJson["AlbedoMap"].get<std::string>());
-			material.MetallicAndSmoothnessMap = getFileName(materialJson["MetallicAndSmoothnessMap"].get<std::string>());
-			material.NormalMap = getFileName(materialJson["NormalMap"].get<std::string>());
-			material.EmissionMap = getFileName(materialJson["EmissionMap"].get<std::string>());
+			material.AlbedoMap = (materialJson["AlbedoMap"].get<std::string>());
+			createPath(material.AlbedoMap);
+
+			material.MetallicAndSmoothnessMap = (materialJson["MetallicAndSmoothnessMap"].get<std::string>());
+			createPath(material.MetallicAndSmoothnessMap);
+
+			material.NormalMap = (materialJson["NormalMap"].get<std::string>());
+			createPath(material.NormalMap);
+
+			material.EmissionMap = (materialJson["EmissionMap"].get<std::string>());
+			createPath(material.EmissionMap);
+
 			material.Tiling = {
 				materialJson["Tiling"]["x"].get<float>(),
 				materialJson["Tiling"]["y"].get<float>()
@@ -485,7 +446,11 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 
 				importData::TerrainLayer terrainLayer;
 				terrainLayer.BaseColor = layerJson["BaseColor"].get<std::string>();
+				createPath(terrainLayer.BaseColor);
+
 				terrainLayer.NormalMap = layerJson["NormalMap"].get<std::string>();
+				createPath(terrainLayer.NormalMap);
+
 				terrainLayer.Metalic = layerJson["Metalic"].get<float>();
 				terrainLayer.Roughness = layerJson["Roughness"].get<float>();
 				terrainLayer.TileSizeX = layerJson["TileSizeX"].get<float>();
@@ -497,7 +462,11 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 			}
 
 			info.TerrainData.AlphaFileName = gameObjectJson["Terrain"]["AlphaFileName"].get<std::string>();
+			createPath(info.TerrainData.AlphaFileName);
+
 			info.TerrainData.HeightFileName = gameObjectJson["Terrain"]["HeightFileName"].get<std::string>();
+			createPath(info.TerrainData.HeightFileName);
+
 			info.TerrainData.TextureWidth = gameObjectJson["Terrain"]["TextureWidth"].get<float>();
 			info.TerrainData.TextureHeight = gameObjectJson["Terrain"]["TextureHeight"].get<float>();
 			info.TerrainData.HeightScale = gameObjectJson["Terrain"]["HeightScale"].get<float>();

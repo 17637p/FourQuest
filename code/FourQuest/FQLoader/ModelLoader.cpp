@@ -856,9 +856,10 @@ namespace fq::loader
 			}
 		}
 
-		if (!std::filesystem::exists(filePath.parent_path()))
+		const std::filesystem::path parentPath = filePath.parent_path();
+		if (!std::filesystem::exists(parentPath))
 		{
-			std::filesystem::create_directory(filePath.parent_path());
+			std::filesystem::create_directories(parentPath);
 		}
 
 		// JSON 파일로 쓰기

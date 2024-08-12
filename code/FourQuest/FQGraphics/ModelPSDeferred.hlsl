@@ -43,7 +43,8 @@ cbuffer cbLightmapInformation : register(b1)
 {
     float4 cUVOffsetScale;
     uint cUVIndex;
-    bool bUseDirectMap;
+    bool bUseLightMap;
+    bool bUseDirectionMap;
 };
 #endif
 
@@ -171,17 +172,21 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #ifdef STATIC
     // 여기서 UV 값만 저장해두는 식으로 하고 Shading에서 연산하게 수정하는 게 더 저렴할듯
     // 현재 레거시로 라이트맵 적용, 추후에 PBR 방식으로 GI 연산 수정 예정
-    pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, cUVIndex));
 
-   if (bUseDirectMap)
-   {
-       float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, cUVIndex));
-       direction.xyz = direction.xyz * 2 - 1;
-       direction.x = -direction.x;
-       direction.z = -direction.z;
-       float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
-       pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
-   }
+    if (bUseLightMap)
+    {
+        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, cUVIndex));
+
+        if (bUseDirectionMap)
+        {
+            float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, cUVIndex));
+            direction.xyz = direction.xyz * 2 - 1;
+            direction.x = -direction.x;
+            direction.z = -direction.z;
+            float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
+            pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
+        }
+    }
 #else
     pout.Light = float4(0, 0, 0, -1000);
 #endif 

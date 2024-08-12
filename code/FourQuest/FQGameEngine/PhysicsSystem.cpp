@@ -383,8 +383,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
 			auto meshName = staticMeshRenderer->GetMeshName();
 			auto modelPath = staticMeshRenderer->GetModelPath();
-			auto texturePath = staticMeshRenderer->GetTexturePath();
-			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, texturePath);
+			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath);
 
 			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(key);
 			assert(check);
@@ -403,8 +402,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			auto skinnedMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
 			auto modelPath = skinnedMeshRenderer->GetModelPath();
-			auto texturePath = skinnedMeshRenderer->GetTexturePath();
-			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath, texturePath);
+			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath);
 			auto meshName = skinnedMeshRenderer->GetMeshName();
 
 			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(key);

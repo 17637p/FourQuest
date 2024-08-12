@@ -531,12 +531,22 @@ std::vector<DirectX::SimpleMath::Matrix> fq::graphics::D3D11LightManager::calcul
 
 void fq::graphics::D3D11LightManager::CreateLightMapTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths)
 {
-	assert(!paths.empty());
+	if (paths.empty())
+	{
+		mLightMapTextureArray = nullptr;
+		return;
+	}
+
 	mLightMapTextureArray = std::make_shared<D3D11TextureArray>(d3d11Device, paths);
 }
 
 void fq::graphics::D3D11LightManager::CreateLightMapDirectionTextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& paths)
 {
-	assert(!paths.empty());
+	if (paths.empty())
+	{
+		mLightMapDirectionTextureArray = nullptr;
+		return;
+	}
+
 	mLightMapDirectionTextureArray = std::make_shared<D3D11TextureArray>(d3d11Device, paths);
 }

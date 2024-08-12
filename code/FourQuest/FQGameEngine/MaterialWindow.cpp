@@ -59,7 +59,34 @@ void fq::game_engine::MaterialWindow::Render()
 		// 텍스처 패스
 		static char materialPath[256];
 		strcpy(materialPath, mSelectMaterialPaths.string().c_str());
-		ImGui::InputText("Material Path", materialPath, 256);
+
+		if (ImGui::InputText("Material Path", materialPath, 256))
+		{
+			std::filesystem::path path = std::filesystem::path(materialPath);
+
+			if (path.extension() == ".material")
+			{
+				if (!std::filesystem::exists(path))
+				{
+					spdlog::warn("{} material path is invalid", mSelectMaterialPaths.string());
+				}
+				else
+				{
+					mSelectMaterialPaths = path;
+
+					std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(mSelectMaterialPaths.string());
+
+					if (materialInterfaceOrNull == nullptr)
+					{
+						const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(mSelectMaterialPaths.string());
+						materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(mSelectMaterialPaths.string(), materialInfo);
+					}
+					assert(materialInterfaceOrNull != nullptr);
+
+					mMaterialInterface = materialInterfaceOrNull;
+				}
+			}
+		}
 
 		if (ImGui::BeginDragDropTarget())
 		{

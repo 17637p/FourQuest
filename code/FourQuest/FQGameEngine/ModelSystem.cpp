@@ -108,7 +108,6 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			staticMeshRenderer.SetModelPath(modelPath.string());
 			staticMeshRenderer.SetMaterialPaths(materialPaths);
 			staticMeshRenderer.SetMeshName(mesh.Name);
-			staticMeshRenderer.SetTexturePath(texturePath.string());
 		}
 		else // SkinnedMeshObject »ý¼º
 		{
@@ -120,7 +119,6 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			skinnedMeshRenderer.SetModelPath(modelPath.string());
 			skinnedMeshRenderer.SetMaterialPaths(materialPaths);
 			skinnedMeshRenderer.SetMeshName(mesh.Name);
-			skinnedMeshRenderer.SetTexturePath(texturePath.string());
 		}
 	}
 

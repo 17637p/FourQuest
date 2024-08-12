@@ -8,53 +8,8 @@ fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	:mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
 	, mIsNavigationMeshUsed(false)
-	, mTexturePath{}
 	, mPrevApplyTransform{}
 {
-}
-
-fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
-{
-}
-
-void fq::game_module::StaticMeshRenderer::UpdateMaterialInfoByMaterialInterface()
-{
-	mMaterialInfos.clear();
-
-	for (std::shared_ptr<fq::graphics::IMaterial>& materialInterface : mMaterialInterfaces)
-	{
-		mMaterialInfos.push_back(materialInterface->GetInfo());
-	}
-}
-
-const std::vector<fq::graphics::MaterialInfo>& fq::game_module::StaticMeshRenderer::GetMaterialInfos() const
-{
-	return mMaterialInfos;
-}
-
-void fq::game_module::StaticMeshRenderer::SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos)
-{
-	mMaterialInfos = std::move(materialInfos);
-
-	size_t MAX_COUNT = std::min<size_t>(mMaterialInfos.size(), mMaterialInterfaces.size());
-
-	for (size_t i = 0; i < MAX_COUNT; ++i)
-	{
-		mMaterialInterfaces[i]->SetInfo(mMaterialInfos[i]);
-	}
-
-	fq::game_module::Scene* scene = GetScene();
-
-	if (scene != nullptr)
-	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::UpdateMaterialInfo>({});
-	}
-}
-
-void fq::game_module::StaticMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces)
-{
-	mMaterialInterfaces = materialInterfaces;
-	UpdateMaterialInfoByMaterialInterface();
 }
 
 entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()
