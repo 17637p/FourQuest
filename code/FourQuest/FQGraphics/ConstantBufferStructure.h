@@ -156,6 +156,8 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 EmissiveColor;
 		DirectX::SimpleMath::Vector4 DissolveStartColor;
 		DirectX::SimpleMath::Vector4 DissolveEndColor;
+		DirectX::SimpleMath::Vector4 DissolveStartEmissive;
+		DirectX::SimpleMath::Vector4 DissolveEndEmissive;
 
 		float Metalness;
 		float Roughness;
@@ -173,8 +175,7 @@ namespace fq::graphics
 		float OutlineThickness;
 
 		float DissolveCutoff;
-		int DissolveOperator;
-		float unused[2];
+		float unused[3];
 	};
 
 	struct CBDecalObject

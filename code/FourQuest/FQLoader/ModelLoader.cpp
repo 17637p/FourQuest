@@ -790,14 +790,6 @@ namespace fq::loader
 			materialInfoJson.at("DissolveCutoff").get_to(materialInfo.DissolveCutoff);
 		}
 
-		find = materialInfoJson.find("DissolveOperator");
-		if (find != materialInfoJson.end())
-		{
-			int dissolveOP;
-			materialInfoJson.at("DissolveOperator").get_to(dissolveOP);
-			materialInfo.DissolveOperator = (EDissolveOperator)dissolveOP;
-		}
-
 		find = materialInfoJson.find("DissolveStartColor");
 		if (find != materialInfoJson.end())
 		{
@@ -850,7 +842,6 @@ namespace fq::loader
 			{"NoiseFileName", std::string(material.NoiseFileName.begin(),material.NoiseFileName.end()) },
 			{"OutlineThickness", material.OutlineThickness },
 			{"DissolveCutoff", material.DissolveCutoff },
-			{"DissolveOperator", (int)material.DissolveOperator },
 			{"DissolveStartColor", {material.DissolveStartColor.x, material.DissolveStartColor.y, material.DissolveStartColor.z, material.DissolveStartColor.w}},
 			{"DissolveEndColor", {material.DissolveEndColor.x, material.DissolveEndColor.y, material.DissolveEndColor.z, material.DissolveEndColor.w}},
 		};

@@ -30,6 +30,8 @@ namespace fq::graphics
 		CBMaterialData.EmissiveColor = info.EmissiveColor;
 		CBMaterialData.DissolveStartColor = info.DissolveStartColor;
 		CBMaterialData.DissolveEndColor = info.DissolveEndColor;
+		CBMaterialData.DissolveStartColor = info.DissolveStartEmissive;
+		CBMaterialData.DissolveEndColor = info.DissolveEndEmissive;
 		CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0) * texTransform).Transpose();
 
 		CBMaterialData.Metalness = info.Metalness;
@@ -48,7 +50,6 @@ namespace fq::graphics
 		CBMaterialData.OutlineThickness = info.OutlineThickness;
 
 		CBMaterialData.DissolveCutoff = info.DissolveCutoff;
-		CBMaterialData.DissolveOperator = static_cast<int>(info.DissolveOperator);
 
 		cbuffer->Update(device, CBMaterialData);
 	}

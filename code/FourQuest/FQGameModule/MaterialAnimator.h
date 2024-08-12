@@ -33,9 +33,6 @@ namespace fq::game_module
 		float MaxAlpha = 1.f;
 		float MinAlpha = 0.f;
 		EAnimationMode  AnimationMode = EAnimationMode::Decrease;
-
-		bool bIsRecursive; // 자식 계층 전달 여부
-		// mode { constant, mul sourc alpha }
 	};
 
 	struct DissolveAnimatorInfo
@@ -56,14 +53,9 @@ namespace fq::game_module
 		float MaxDissolveCutoff = 1.1f;
 		float MinDissolveCutoff = 0.f;
 		EAnimationMode AnimationMode = EAnimationMode::Increase;
-
-		bool bIsRecursive; // 자식 계층 전달 여부
 	};
 
 	// 자식 계층 이어서 처리
-	// two side로 전환하게끔 만들어줘야 할듯
-	// 안쪽과 바깥쪽 색상?
-	// 타들어가는 부분 이미시브 넣어주면 이쁠듯
 
 	class MaterialAnimator : public Component
 	{

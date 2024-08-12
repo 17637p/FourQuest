@@ -163,6 +163,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
 							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
 						}
+
 					}
 
 					meshObject->SetMaterialInstanceInfo(materialInstanceInfo);

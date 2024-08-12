@@ -47,6 +47,7 @@ void fq::game_engine::LightmapWindow::Render()
 		return;
 	}
 
+	// 第俊辑何磐 贸府秦林扁
 	if (ImGui::Begin("Lightmap", &mbIsOpen))
 	{
 		unsigned int index = 0;

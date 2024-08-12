@@ -81,6 +81,14 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #else
     pout.Albedo = gModelMaterial.BaseColor;
 #endif
+
+    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
+    pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
+
+    if (gModelMaterial.UseEmissiveMap)
+    {
+        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+    }
     
     if (gModelMaterial.UseDissolve)
     {
@@ -96,13 +104,15 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
         float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
         float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
-        
+        float3 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive.rgb, gModelMaterial.DissolveOutlineEndEmissive.rgb ,outlineWeight);        
+
         if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
             outlineColor *= 0;
         else
             outlineColor *= 1;
 
         pout.Albedo.rgb += outlineColor;
+        pout.Emissive.rgb += outlineEmissive;
     }
 
     if (cUseAlpha)
@@ -157,14 +167,6 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;
-
-    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
-    pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
-
-    if (gModelMaterial.UseEmissiveMap)
-    {
-        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
-    }
 
 #ifdef STATIC
     // 여기서 UV 값만 저장해두는 식으로 하고 Shading에서 연산하게 수정하는 게 더 저렴할듯

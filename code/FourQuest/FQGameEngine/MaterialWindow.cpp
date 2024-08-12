@@ -166,14 +166,10 @@ void fq::game_engine::MaterialWindow::Render()
 		getFilePath(materialInfo.NoiseFileName, "Noise File");
 		ImGui::InputFloat("OutlineThickness", reinterpret_cast<float*>(&materialInfo.OutlineThickness));
 		ImGui::InputFloat("DissolveCutoff", reinterpret_cast<float*>(&materialInfo.DissolveCutoff));
-		const char* dissolveOpeartor[] = { "Additive", "Subtractive", "Modulate"};
-		int dissolveOperatorMode = static_cast<int>(materialInfo.DissolveOperator);
-		if (ImGui::Combo("Dissolve Operator", &dissolveOperatorMode, dissolveOpeartor, IM_ARRAYSIZE(dissolveOpeartor)))
-		{
-			materialInfo.DissolveOperator = static_cast<EDissolveOperator>(dissolveOperatorMode);
-		}
 		ImGui::ColorEdit4("Dissolve StartColor", reinterpret_cast<float*>(&materialInfo.DissolveStartColor));
 		ImGui::ColorEdit4("Dissolve EndColor", reinterpret_cast<float*>(&materialInfo.DissolveEndColor));
+		ImGui::ColorEdit4("Dissolve StartEmissive", reinterpret_cast<float*>(&materialInfo.DissolveStartEmissive));
+		ImGui::ColorEdit4("Dissolve EndEmissive", reinterpret_cast<float*>(&materialInfo.DissolveEndEmissive));
 	}
 
 	if (mMaterialInterface != nullptr)

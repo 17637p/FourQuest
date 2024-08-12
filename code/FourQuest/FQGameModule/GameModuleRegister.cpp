@@ -869,10 +869,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&AlphaAnimatorInfo::MinAlpha>("MinAlpha"_hs)
 		.prop(fq::reflect::prop::Name, "MinAlpha")
 		.data<&AlphaAnimatorInfo::AnimationMode>("AlphaAnimationMode"_hs)
-		.prop(fq::reflect::prop::Name, "AlphaAnimationMode")
-		.data<&AlphaAnimatorInfo::bIsRecursive>("bIsRecursive"_hs)
-		.prop(fq::reflect::prop::Name, "bIsRecursive")
-		.prop(fq::reflect::prop::Comment, u8"자식 오브젝트 전달 여부");
+		.prop(fq::reflect::prop::Name, "AlphaAnimationMode");
 
 	entt::meta<DissolveAnimatorInfo>()
 		.type("DissolveAnimatorInfo"_hs)
@@ -901,10 +898,7 @@ void fq::game_module::RegisterMetaData()
 		.data<&DissolveAnimatorInfo::MinDissolveCutoff>("MinDissolveCutoff"_hs)
 		.prop(fq::reflect::prop::Name, "MinDissolveCutoff")
 		.data<&DissolveAnimatorInfo::AnimationMode>("AlphaAnimationMode"_hs)
-		.prop(fq::reflect::prop::Name, "AlphaAnimationMode")
-		.data<&DissolveAnimatorInfo::bIsRecursive>("bIsRecursive"_hs)
-		.prop(fq::reflect::prop::Name, "bIsRecursive")
-		.prop(fq::reflect::prop::Comment, u8"자식 오브젝트 전달 여부");
+		.prop(fq::reflect::prop::Name, "AlphaAnimationMode");
 
 	entt::meta<MaterialAnimator>()
 		.type("MaterialAnimator"_hs)

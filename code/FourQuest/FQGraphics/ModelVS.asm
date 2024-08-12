@@ -31,22 +31,23 @@
 //       float4 EmissiveColor;          // Offset:   80
 //       float4 DissolveOutlineStartColor;// Offset:   96
 //       float4 DissolveOutlineEndColor;// Offset:  112
-//       float Metalness;               // Offset:  128
-//       float Roughness;               // Offset:  132
-//       bool UseAlbedoMap;             // Offset:  136
-//       bool UseMetalnessMap;          // Offset:  140
-//       bool UseRoughnessMap;          // Offset:  144
-//       bool UseNormalMap;             // Offset:  148
-//       bool UseEmissiveMap;           // Offset:  152
-//       float AlphaCutoff;             // Offset:  156
-//       float EmissiveIntensity;       // Offset:  160
-//       bool UseMetalnessSmoothness;   // Offset:  164
-//       bool UseDissolve;              // Offset:  168
-//       float OutlineThickness;        // Offset:  172
-//       float DissolveCutoff;          // Offset:  176
-//       uint DissolveOperator;         // Offset:  180
+//       float4 DissolveOutlineStartEmissive;// Offset:  128
+//       float4 DissolveOutlineEndEmissive;// Offset:  144
+//       float Metalness;               // Offset:  160
+//       float Roughness;               // Offset:  164
+//       bool UseAlbedoMap;             // Offset:  168
+//       bool UseMetalnessMap;          // Offset:  172
+//       bool UseRoughnessMap;          // Offset:  176
+//       bool UseNormalMap;             // Offset:  180
+//       bool UseEmissiveMap;           // Offset:  184
+//       float AlphaCutoff;             // Offset:  188
+//       float EmissiveIntensity;       // Offset:  192
+//       bool UseMetalnessSmoothness;   // Offset:  196
+//       bool UseDissolve;              // Offset:  200
+//       float OutlineThickness;        // Offset:  204
+//       float DissolveCutoff;          // Offset:  208
 //
-//   } gModelMaterial;                  // Offset:    0 Size:   184
+//   } gModelMaterial;                  // Offset:    0 Size:   212
 //
 // }
 //

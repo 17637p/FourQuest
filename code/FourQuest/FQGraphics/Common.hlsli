@@ -565,6 +565,8 @@ struct ModelMaterial
     float4 EmissiveColor;
     float4 DissolveOutlineStartColor;
     float4 DissolveOutlineEndColor;
+    float4 DissolveOutlineStartEmissive;
+    float4 DissolveOutlineEndEmissive;
     
     float Metalness;
     float Roughness;
@@ -582,7 +584,6 @@ struct ModelMaterial
     float OutlineThickness;
 
     float DissolveCutoff;
-    uint DissolveOperator;
 };
 
 #define DISSOLVE_ADDITIVE 0
