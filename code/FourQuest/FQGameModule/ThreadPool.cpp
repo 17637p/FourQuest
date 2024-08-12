@@ -1,5 +1,5 @@
 #include "ThreadPool.h"
-
+#include <windows.h>
 #include <cassert>
 
 fq::game_module::ThreadPool* fq::game_module::ThreadPool::GetInstance()
@@ -12,7 +12,8 @@ fq::game_module::ThreadPool* fq::game_module::ThreadPool::GetInstance()
 void fq::game_module::ThreadPool::Initialize()
 {
 	assert(mInstance == nullptr);
-	mInstance = new ThreadPool(std::thread::hardware_concurrency());
+	//mInstance = new ThreadPool(std::thread::hardware_concurrency());
+	mInstance = new ThreadPool(4);
 }
 
 void fq::game_module::ThreadPool::Finalize()
@@ -23,14 +24,14 @@ void fq::game_module::ThreadPool::Finalize()
 }
 
 fq::game_module::ThreadPool::ThreadPool(size_t numThreads)
-	:mNumThreads(numThreads)
-	,mbIsStopAll(false)
+	: mNumThreads(numThreads)
+	, mbIsStopAll(false)
 {
 	mWorkerThreads.reserve(mNumThreads);
 
 	for (size_t i = 0; i < numThreads; ++i)
 	{
-		mWorkerThreads.emplace_back([this]() {this->workerThread(); });
+		mWorkerThreads.emplace_back([this, i]() {this->workerThread(i); });
 	}
 }
 
@@ -46,12 +47,15 @@ fq::game_module::ThreadPool::~ThreadPool()
 	}
 }
 
-void fq::game_module::ThreadPool::workerThread()
+void fq::game_module::ThreadPool::workerThread(size_t index)
 {
 	while (true)
 	{
 		std::unique_lock<std::mutex> lock(mJobMutex);
-		mJobCV.wait(lock, [this]() {return !this->mJobs.empty() || mbIsStopAll; });
+		mJobCV.wait(lock, [this, index]()
+			{
+				return !this->mJobs.empty() || mbIsStopAll;
+			});
 
 		if (mbIsStopAll && this->mJobs.empty())
 		{
@@ -65,3 +69,4 @@ void fq::game_module::ThreadPool::workerThread()
 		job();
 	}
 }
+

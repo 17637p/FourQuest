@@ -183,7 +183,7 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 	{
 		// 현재 씬을 저장합니다 
 		mEditorProcess->mMainMenuBar->SaveScene();
-
+			
 		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, true });

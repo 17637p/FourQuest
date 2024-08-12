@@ -41,7 +41,7 @@ namespace fq::loader
 	void FileUtil::Write(const T& data)
 	{
 		assert(mFstream.is_open());
-		mFstream.write((char*)&data, sizeof(data));
+		mFstream.write	((char*)&data, sizeof(data));
 	}
 
 	template <>

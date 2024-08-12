@@ -35,7 +35,8 @@ namespace fq::game_module
 			, InputManager* inputMgr
 			, PrefabManager* prefabMgr
 			, ScreenManager* screenMgr
-			, TimeManager* timeMgr);
+			, TimeManager* timeMgr
+			, bool isInvokeStartScene = false);
 
 		/// <summary>
 		/// 씬 매니져를 종료합니다
@@ -102,18 +103,18 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="event">요청에 필요한 정보</param>
 		void RequestChangeScene(fq::event::RequestChangeScene event);
-		
+
 		/// <summary>
 		/// 게임 종료 요청을 보냅니다
 		/// </summary>
 		/// <param name="event">요청에 필요한 정보</param>
 		void RequestExitGame(fq::event::RequestExitGame event);
-		
+
 		bool IsChangeScene()const;
 
 	private:
 		std::unique_ptr<Scene> mCurrentScene;
-		
+
 		EventManager* mEventManager;
 		PrefabManager* mPrefabManager;
 		TimeManager* mTimeManager;

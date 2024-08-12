@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include <DirectXCollision.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/stopwatch.h>
 
 #include "ModelLoader.h"
 #include "FileUtil.h"
@@ -372,7 +374,6 @@ namespace fq::loader
 		else
 			assert(!"파일 열기 실패");
 
-
 		fq::common::UVAnimationClip result;
 
 		result.FrameCount = controllerJson.at("FrameCount").get<int>();
@@ -462,16 +463,18 @@ namespace fq::loader
 	fq::common::AnimationClip AnimationLoader::Read(const std::filesystem::path& filePath)
 	{
 		std::ifstream readData(filePath);
-		nlohmann::ordered_json controllerJson;
+		nlohmann::json controllerJson;
 
 		if (readData.is_open())
 		{
-			readData >> controllerJson;
+			std::stringstream buffer;
+			buffer << readData.rdbuf();
 			readData.close();
+			std::string data = buffer.str();
+			controllerJson = nlohmann::json::parse(data);
 		}
 		else
 			assert(!"파일 열기 실패");
-
 
 		fq::common::AnimationClip result;
 

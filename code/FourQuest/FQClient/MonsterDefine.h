@@ -24,5 +24,6 @@ namespace fq::client
 		SmashDown,
 		Combo,
 		Grawl,
+		ContContinuousAttack,
 	};
 }

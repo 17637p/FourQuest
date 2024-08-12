@@ -5,7 +5,7 @@
 
 fq::game_module::Animator::Animator()
 	:mDefaultPlaySpeed(1.f)
-	,mbIsStopAnimation(false)
+	, mbIsStopAnimation(false)
 {
 
 }
@@ -28,6 +28,9 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Animator::Clone(std
 		// 기본 대입 연산자 호출한다.
 		*cloneAnimator = *this;
 	}
+
+	cloneAnimator->mController = nullptr;
+	cloneAnimator->mNodeHierarchyInstance = nullptr;
 
 	return cloneAnimator;
 }
@@ -68,7 +71,7 @@ void fq::game_module::Animator::SetParameterOffTrigger(const std::string& id)
 }
 
 void fq::game_module::Animator::UpdateState(float dt)
-{ 
+{
 	if (mController)
 		mController->UpdateState(dt);
 }
