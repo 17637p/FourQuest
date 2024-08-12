@@ -42,6 +42,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mViewportSize{ 1.f,1.f }
 	, mViewPortOffset{ 0.f,0.f }
 	, mbAlreadyDrawGizumo(false)
+	, mbIsFocused(false)
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -51,6 +52,8 @@ void fq::game_engine::GamePlayWindow::Render()
 {
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		if (mWindowSize.x != ImGui::GetWindowSize().x
 			|| mWindowSize.y != ImGui::GetWindowSize().y)
 		{
@@ -183,7 +186,7 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 	{
 		// 현재 씬을 저장합니다 
 		mEditorProcess->mMainMenuBar->SaveScene();
-			
+
 		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, true });
@@ -380,7 +383,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto width = ImGui::GetWindowSize().x;
 	auto height = ImGui::GetWindowSize().y;
 	ImGuizmo::SetRect(x, y, width, height);
-	
+
 	// 이미 다른곳에서 기즈모 그린경우 그리지 않습니다.
 	if (mbAlreadyDrawGizumo)
 	{
@@ -740,7 +743,7 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 			if (particleObject)
 			{
 				auto worldM = tmp->GetComponent<game_module::Transform>()->GetWorldMatrix();
-				 
+
 				particleObject->SetTransform(worldM);
 				particleObject->SetFrameTime(dt);
 			}

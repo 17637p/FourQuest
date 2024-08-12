@@ -113,8 +113,8 @@ void fq::client::RegisterMetaData()
 		.conv<std::underlying_type_t<ESoulType>>()
 		.data<ESoulType::Sword>("Sword"_hs) // 0
 		.prop(fq::reflect::prop::Name, "Sword")
-		.data<ESoulType::Shield>("Shield"_hs) // 1
-		.prop(fq::reflect::prop::Name, "Shield")
+		.data<ESoulType::Axe>("Axe"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Axe")
 		.data<ESoulType::Bow>("Bow"_hs) // 2
 		.prop(fq::reflect::prop::Name, "Bow")
 		.data<ESoulType::Staff>("Staff"_hs) // 3
