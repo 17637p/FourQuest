@@ -9,8 +9,9 @@ namespace fq::game_module
 	ObjectAnimationTrack::ObjectAnimationTrack()
 		: Track(ETrackType::ANIMAITON)
 		, mTargetObjectName{}
-		, mControllerPath{}
 		, mAnimationTrackKeys{}
+		, mAnimationContainer{}
+		, mTargetObject()
 	{
 	}
 	ObjectAnimationTrack::~ObjectAnimationTrack()
@@ -24,7 +25,6 @@ namespace fq::game_module
 		mStartTime = info.startTime;
 
 		mTargetObjectName = info.targetObjectName;
-		mControllerPath = info.controllerPath;
 		mAnimationTrackKeys = info.animationTrackKeys;
 
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
@@ -72,9 +72,27 @@ namespace fq::game_module
 
 	void ObjectAnimationTrack::PlayExit()
 	{
+		if (!mTargetObject.expired())
+		{
+			auto animator = mTargetObject.lock()->GetComponent<Animator>();
+
+			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
+
+			nodeHierarchyInstance.SetBindPose();
+			nodeHierarchyInstance.UpdateByLocalTransform();
+		}
 	}
 
 	void ObjectAnimationTrack::End()
 	{
+		if (!mTargetObject.expired())
+		{
+			auto animator = mTargetObject.lock()->GetComponent<Animator>();
+
+			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
+
+			nodeHierarchyInstance.SetBindPose();
+			nodeHierarchyInstance.UpdateByLocalTransform();
+		}
 	}
 }

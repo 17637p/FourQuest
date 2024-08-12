@@ -45,9 +45,25 @@ namespace fq::game_module
 	
 	void SoundTrack::PlayExit()
 	{
+		auto object = mScene->GetObjectByName(mSoundObjectName);
+
+		if (object != nullptr)
+		{
+			auto soundClip = object->GetComponent<SoundClip>();
+			soundClip->StopChannel(3);
+			soundClip->OnDestroy();
+		}
 	}
 
 	void SoundTrack::End()
 	{
+		auto object = mScene->GetObjectByName(mSoundObjectName);
+
+		if (object != nullptr)
+		{
+			auto soundClip = object->GetComponent<SoundClip>();
+			soundClip->StopChannel(3);
+			soundClip->OnDestroy();
+		}
 	}
 }

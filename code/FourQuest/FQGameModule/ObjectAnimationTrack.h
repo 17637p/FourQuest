@@ -15,8 +15,6 @@ namespace fq::game_module
 
 		const std::string& GetTargetObjectName() { return mTargetObjectName; }
 		void SetTargetObjectName(const std::string& objectName) { mTargetObjectName = objectName; }
-		const std::string& GetControllerPath() { return mControllerPath; }
-		void SetControllerPath(const std::string& controllerPath) { mControllerPath = controllerPath; }
 		const std::string& GetPrevAnimationPath() { return mPrevAnimationPath; }
 		void SetPrevAnimationPath(const std::string& animationPath) { mPrevAnimationPath = animationPath; }
 		const std::vector<AnimationTrackKey> GetAnimationTrackKey() { return mAnimationTrackKeys; }
@@ -30,7 +28,6 @@ namespace fq::game_module
 
 	private:
 		std::string mTargetObjectName;
-		std::string mControllerPath;
 		std::vector<AnimationTrackKey> mAnimationTrackKeys;
 		std::string mPrevAnimationPath;
 
@@ -38,5 +35,3 @@ namespace fq::game_module
 		std::vector<std::shared_ptr<fq::graphics::IAnimation>> mAnimationContainer;
 	};
 }
-
-

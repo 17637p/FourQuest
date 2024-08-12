@@ -814,9 +814,6 @@ void fq::game_module::RegisterMetaData()
 		.data<&fq::game_module::ObjectAnimationInfo::targetObjectName>("TargetObjectName"_hs)
 		.prop(fq::reflect::prop::Name, "TargetObjectName")
 		.prop(fq::reflect::prop::Comment, u8"움직일 오브젝트 이름")
-		.data<&fq::game_module::ObjectAnimationInfo::controllerPath>("ControllerPath"_hs)
-		.prop(fq::reflect::prop::Name, "ControllerPath")
-		.prop(fq::reflect::prop::Comment, u8"컨트롤러 파일의 경로")
 		.data<&fq::game_module::ObjectAnimationInfo::animationTrackKeys>("AnimationTrackKeys"_hs)
 		.prop(fq::reflect::prop::Name, "AnimationTrackKeys");
 

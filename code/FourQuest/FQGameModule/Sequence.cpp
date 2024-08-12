@@ -19,6 +19,14 @@ namespace fq::game_module
 		, mbIsLoop(false)
 		, mTotalPlayTime(0.f)
 		, mDurationTime(0.f)
+		, mAnimationContainer{}
+		, mCameraChangeTrackInfo{}
+		, mObjectMoveTrackInfo{}
+		, mObjectTeleportTrackInfo{}
+		, mObjectAnimationInfo{}
+		, mEffectTrackInfo{}
+		, mSoundTrackInfo{}
+		, mTextPrintTrackInfo{}
 	{
 	}
 

@@ -59,7 +59,6 @@ namespace fq::game_module
 		float totalPlayTime = 1.f;
 
 		std::string targetObjectName = {};
-		std::string controllerPath = {};
 		std::vector<AnimationTrackKey> animationTrackKeys = {};
 	};
 
@@ -145,13 +144,13 @@ namespace fq::game_module
 		float mTotalPlayTime;
 		float mDurationTime;
 
-		std::vector<CameraChangeTrackInfo> mCameraChangeTrackInfo;
-		std::vector<ObjectMoveTrackInfo> mObjectMoveTrackInfo;
-		std::vector<ObjectTeleportTrackInfo> mObjectTeleportTrackInfo;
-		std::vector<ObjectAnimationInfo> mObjectAnimationInfo;
-		std::vector<EffectTrackInfo> mEffectTrackInfo;
-		std::vector<SoundTrackInfo> mSoundTrackInfo;
-		std::vector<TextPrintTrackInfo> mTextPrintTrackInfo;
+		std::vector<CameraChangeTrackInfo>		mCameraChangeTrackInfo;
+		std::vector<ObjectMoveTrackInfo>		mObjectMoveTrackInfo;
+		std::vector<ObjectTeleportTrackInfo>	mObjectTeleportTrackInfo;
+		std::vector<ObjectAnimationInfo>		mObjectAnimationInfo;
+		std::vector<EffectTrackInfo>			mEffectTrackInfo;
+		std::vector<SoundTrackInfo>				mSoundTrackInfo;
+		std::vector<TextPrintTrackInfo>			mTextPrintTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 	};
