@@ -50,13 +50,6 @@ namespace fq::game_engine
 		EventHandler mPreOnLoadSceneHandler;
 		fq::game_module::AnimatorControllerLoader mLoader;
 
-		mutable Mutex mModelMutex;
-		mutable	Mutex mStaticMeshMutex;
-		mutable Mutex mSkinnedMeshMutex;
-		mutable Mutex mMaterialMutex;
-		mutable Mutex mNodeHierarchyMutex;
-		mutable Mutex mAnimationMutex;
-
 		std::map<Path, fq::common::Model> mModels;
 		std::map<Path, std::shared_ptr<graphics::IStaticMesh>> mStaticMeshes;
 		std::map<Path, std::shared_ptr<graphics::ISkinnedMesh>> mSkinnedMeshes;

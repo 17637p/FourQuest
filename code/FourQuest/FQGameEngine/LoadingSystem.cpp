@@ -30,8 +30,8 @@ void fq::game_engine::LoadingSystem::Finalize()
 void fq::game_engine::LoadingSystem::loadUI()
 {
 	fq::graphics::UIInfo info;
-	info.Height = 1080;
-	info.Width = 1920;
+	info.Height = 1200;
+	info.Width = 2000;
 	info.ImagePath = (fq::path::GetInternalPath() / "loading" / "Loading.png").string();
 	mLoadImage = mGameProcess->mGraphics->CreateImageObject(info);
 }

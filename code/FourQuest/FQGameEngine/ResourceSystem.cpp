@@ -63,6 +63,11 @@ void fq::game_engine::ResourceSystem::Finalize()
 
 void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
 {
+	if (mModels.find(modelPath) != mModels.end())
+	{
+		return;
+	}
+
 	auto model = mGameProcess->mGraphics->ReadModel(modelPath);
 
 	for (const auto& [node, mesh] : model.Meshes)
@@ -75,39 +80,43 @@ void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
 		if (mesh.BoneVertices.empty())
 		{
 			auto staticMesh = mGameProcess->mGraphics->CreateStaticMesh(mesh);
-			std::unique_lock<Mutex> lock(mStaticMeshMutex);
 			mStaticMeshes.insert({ modelPath + mesh.Name, staticMesh });
 		}
 		else
 		{
 			auto skinnedMesh = mGameProcess->mGraphics->CreateSkinnedMesh(mesh);
-			std::unique_lock<Mutex> lock(mSkinnedMeshMutex);
 			mSkinnedMeshes.insert({ modelPath + mesh.Name, skinnedMesh });
 		}
 	}
 
-	std::unique_lock<Mutex> lock(mModelMutex);
 	mModels.insert({ modelPath, std::move(model) });
 }
 
 const fq::common::Model& fq::game_engine::ResourceSystem::GetModel(const Path& path)const
 {
-	std::shared_lock<Mutex> lock(mModelMutex);
 	return mModels.find(path)->second;
 }
 
 void fq::game_engine::ResourceSystem::LoadAnimation(const Path& path)
 {
+	if (mAnimations.find(path) != mAnimations.end())
+	{
+		return;
+	}
+
 	auto animationClip = mGameProcess->mGraphics->ReadAnimation(path);
 	auto animation = mGameProcess->mGraphics->CreateAnimation(animationClip);
 
-	std::unique_lock<Mutex> lock(mAnimationMutex);
 	mAnimations.insert({ path, animation });
 }
 
 void fq::game_engine::ResourceSystem::LoadMaterial(const Path& path)
 {
-	std::unique_lock<Mutex> lock(mMaterialMutex);
+	if (mMaterials.find(path) != mMaterials.end())
+	{
+		return;
+	}
+
 	auto materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(path);
 	auto material = mGameProcess->mGraphics->CreateMaterial(materialInfo);
 	mMaterials.insert({ path, material });
@@ -230,13 +239,11 @@ void fq::game_engine::ResourceSystem::SaveAnimationResource(SceneResourceList& l
 
 bool fq::game_engine::ResourceSystem::HasModel(const Path& path) const
 {
-	std::shared_lock<Mutex> lock(mModelMutex);
 	return mModels.find(path) != mModels.end();
 }
 
 bool fq::game_engine::ResourceSystem::HasAnimation(const Path& path) const
 {
-	std::shared_lock<Mutex> lock(mAnimationMutex);
 	return mAnimations.find(path) != mAnimations.end();
 }
 
