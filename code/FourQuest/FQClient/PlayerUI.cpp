@@ -157,11 +157,10 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 				default:
 					break;
 			}
-
 			SetWeaponAndSkillIcons(armourTypeIndex, true);
 
 			// Soul Gauge 조정
-			float soulGauge = mPlayer->GetHPRatio(); // Test 용으로 일단 HP
+			float soulGauge = mPlayer->GetSoultStackRation(); 
 			float soulDegree = mSoulGaugeDegree * soulGauge + 25;
 			mSoulGauge->SetFillDegree(0, soulDegree);
 

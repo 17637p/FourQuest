@@ -332,6 +332,15 @@
     <ClInclude Include="QuestColliderTriggerChecker.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
+    <ClInclude Include="StaffSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="StaffSoulAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="SwordSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -546,6 +555,15 @@
     </ClCompile>
     <ClCompile Include="QuestColliderTriggerChecker.cpp">
       <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="StaffSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="StaffSoulAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="SwordSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
