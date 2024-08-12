@@ -24,6 +24,7 @@ namespace fq::game_module
 		std::future<std::invoke_result_t<F, Args...>> EnqueueJob(F&& f, Args&&... args);
 
 		void Wait();
+		bool IsAllWaitState();
 
 	private:
 		ThreadPool(size_t numThreads);

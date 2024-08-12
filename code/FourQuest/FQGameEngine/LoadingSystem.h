@@ -20,7 +20,6 @@ namespace fq::game_engine
 		void ProcessLoading();
 	private:
 		void loadUI();
-		void load();
 
 	private:
 		GameProcess* mGameProcess;

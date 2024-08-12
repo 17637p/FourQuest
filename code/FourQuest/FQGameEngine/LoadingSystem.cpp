@@ -4,6 +4,7 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::LoadingSystem::LoadingSystem()
 	:mGameProcess(nullptr)
@@ -37,15 +38,18 @@ void fq::game_engine::LoadingSystem::loadUI()
 
 void fq::game_engine::LoadingSystem::ProcessLoading()
 {
-	mbIsDone = false;
+	mGameProcess->mSceneManager->LoadScene();
+	mGameProcess->mGraphics->SetIsRenderObjects(false);
 
-	fq::game_module::ThreadPool::GetInstance()->EnqueueJob([this]() 
+	auto pool = fq::game_module::ThreadPool::GetInstance();
+
+	pool->EnqueueJob([this]()
 		{
-			mbIsDone = true;
+			mGameProcess->mResourceSystem->LoadSceneResource({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
 		});
 
 	// 랜더링 
-	while (!mbIsDone)
+	while (!pool->IsAllWaitState())
 	{
 		mGameProcess->mGraphics->BeginRender();
 		mGameProcess->mGraphics->Render();
@@ -53,14 +57,8 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 	}
 
 	mLoadImage->SetIsRender(false);
+	mGameProcess->mGraphics->SetIsRenderObjects(true);
 
-	mGameProcess->mSceneManager->LoadScene();
-}
-
-void fq::game_engine::LoadingSystem::load()
-{
-	// 로딩 쓰레드 
-	mGameProcess->mSceneManager->LoadScene();
-
+	mGameProcess->mEventManager->FireEvent<fq::event::OnLoadScene>({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
 }
 

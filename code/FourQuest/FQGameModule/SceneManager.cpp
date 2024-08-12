@@ -110,8 +110,6 @@ void fq::game_module::SceneManager::PostUpdate()
 
 void fq::game_module::SceneManager::LoadScene()
 {
-	spdlog::stopwatch sw;
-
 	auto scenePath = fq::path::GetScenePath();
 
 	scenePath /= mCurrentScene->GetSceneName();
@@ -135,11 +133,8 @@ void fq::game_module::SceneManager::LoadScene()
 	mPrefabManager->LoadPrefabResource(mCurrentScene.get());
 
 	// Event CallBack
-	mEventManager->FireEvent<fq::event::PreOnLoadScene>({ mCurrentScene->GetSceneName() });
-	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
-
-
-	spdlog::trace("[SceneManager] Load \"{}\" Scene [{}s]", mCurrentScene->GetSceneName(), sw);
+//	mEventManager->FireEvent<fq::event::PreOnLoadScene>({ mCurrentScene->GetSceneName() });
+//	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
 }
 
 void fq::game_module::SceneManager::UnloadScene()

@@ -29,8 +29,6 @@ void fq::game_engine::ResourceSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScene event)
 {
-	spdlog::stopwatch sw;
-
 	auto listPath = fq::path::GetScenePath() / event.sceneName / "resource_list.txt";
 
 	SceneResourceList list;
@@ -42,31 +40,20 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	// Model 로드
 	for (const auto& modelPath : list.modelPaths)
 	{
-		pool->EnqueueJob([this, modelPath]()
-			{
-				LoadModelResource(modelPath);
-			});
+		LoadModelResource(modelPath);
 	}
 
 	// Animation 로드
 	for (const auto& animationPath : list.animationPaths)
 	{
-		pool->EnqueueJob([this, animationPath]()
-			{
-				LoadAnimation(animationPath);
-			});
+		LoadAnimation(animationPath);
 	}
 
 	//// Material 로드
-	for (const auto& materialPath : list.materialPaths)
-	{
-		LoadMaterial(materialPath);
-	}
-
-
-	pool->Wait();
-
-	spdlog::trace("load {}", sw);
+	//for (const auto& materialPath : list.materialPaths)
+	//{
+	//	LoadMaterial(materialPath);
+	//}
 }
 
 void fq::game_engine::ResourceSystem::Finalize()
@@ -108,7 +95,6 @@ const fq::common::Model& fq::game_engine::ResourceSystem::GetModel(const Path& p
 	std::shared_lock<Mutex> lock(mModelMutex);
 	return mModels.find(path)->second;
 }
-
 
 void fq::game_engine::ResourceSystem::LoadAnimation(const Path& path)
 {

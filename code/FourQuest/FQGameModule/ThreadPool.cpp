@@ -25,12 +25,12 @@ void fq::game_module::ThreadPool::Finalize()
 
 fq::game_module::ThreadPool::ThreadPool(size_t numThreads)
 	:mNumThreads(numThreads)
-	,mIsWaitThreads(numThreads)
-	,mbIsStopAll(false)
+	, mIsWaitThreads(numThreads)
+	, mbIsStopAll(false)
 {
 	mWorkerThreads.reserve(mNumThreads);
 
-	for (size_t i = 0; i < numThreads; ++i)	
+	for (size_t i = 0; i < numThreads; ++i)
 	{
 		mIsWaitThreads[i] = false;
 		mWorkerThreads.emplace_back([this, i]() {this->workerThread(i); });
@@ -54,10 +54,10 @@ void fq::game_module::ThreadPool::workerThread(size_t index)
 	while (true)
 	{
 		std::unique_lock<std::mutex> lock(mJobMutex);
-		mJobCV.wait(lock, [this, index]() 
+		mJobCV.wait(lock, [this, index]()
 			{
 				mIsWaitThreads[index] = true;
-				return !this->mJobs.empty() || mbIsStopAll; 
+				return !this->mJobs.empty() || mbIsStopAll;
 			});
 
 		mIsWaitThreads[index] = false;
@@ -75,22 +75,15 @@ void fq::game_module::ThreadPool::workerThread(size_t index)
 	}
 }
 
-void fq::game_module::ThreadPool::Wait()
+bool fq::game_module::ThreadPool::IsAllWaitState()
 {
-	bool allWait = false;
-	
-	while (!allWait)
+	for (int i = 0; i < mIsWaitThreads.size(); ++i)
 	{
-		allWait = true;
-
-		for (int i = 0; i < mIsWaitThreads.size(); ++i)
+		if (!mIsWaitThreads[i])
 		{
-			if (!mIsWaitThreads[i])
-			{
-				allWait = false;
-			}
+			return false;
 		}
 	}
 
-	return;
+	return true;
 }
