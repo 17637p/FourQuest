@@ -16,9 +16,9 @@ fq::client::MonsterGroup* fq::client::MonsterGroup::GetMonsterGroup(fq::game_mod
 }
 
 fq::client::MonsterGroup::MonsterGroup()
-{
-
-}
+	:mMonsters{}
+	,mGroupIndex(0)
+{}
 
 fq::client::MonsterGroup::~MonsterGroup()
 {
@@ -80,5 +80,10 @@ void fq::client::MonsterGroup::AnnounceFindedTarget(fq::game_module::GameObject*
 fq::game_module::GameObject* fq::client::MonsterGroup::GetTarget() const
 {
 	return mTarget.get();
+}
+
+size_t fq::client::MonsterGroup::GetMonsterSize() const
+{
+	return mMonsters.size();
 }
 

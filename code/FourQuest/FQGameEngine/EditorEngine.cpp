@@ -166,7 +166,6 @@ void fq::game_engine::EditorEngine::Process()
 				{
 					accmulator -= fixedDeltaTime;
 					onFixedUpdtae = true;
-					// PathFindingSystem Update
 					mGameProcess->mPathFindgingSystem->Update(fixedDeltaTime);
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
@@ -212,7 +211,6 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			// UI 트랜스폼 위치 설정 
 			mGameProcess->mUISystem->Update();
 
 			//////////////////////////////////////////////////////////////////////////
@@ -261,6 +259,8 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	fq::game_module::ThreadPool::Finalize();
+
 	EditorHelper::SetStartSceneName(mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName());
 	EditorHelper::SaveEditorSetting(mEditor.get());
 
@@ -287,7 +287,6 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mEventManager->RemoveAllHandles();
 
 	fq::game_module::ObjectPool::Finalize();
-	fq::game_module::ThreadPool::Finalize();
 
 	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();

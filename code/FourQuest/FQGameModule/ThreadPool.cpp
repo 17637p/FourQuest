@@ -24,15 +24,13 @@ void fq::game_module::ThreadPool::Finalize()
 }
 
 fq::game_module::ThreadPool::ThreadPool(size_t numThreads)
-	:mNumThreads(numThreads)
-	, mIsWaitThreads(numThreads)
+	: mNumThreads(numThreads)
 	, mbIsStopAll(false)
 {
 	mWorkerThreads.reserve(mNumThreads);
 
 	for (size_t i = 0; i < numThreads; ++i)
 	{
-		mIsWaitThreads[i] = false;
 		mWorkerThreads.emplace_back([this, i]() {this->workerThread(i); });
 	}
 }
@@ -56,11 +54,8 @@ void fq::game_module::ThreadPool::workerThread(size_t index)
 		std::unique_lock<std::mutex> lock(mJobMutex);
 		mJobCV.wait(lock, [this, index]()
 			{
-				mIsWaitThreads[index] = true;
 				return !this->mJobs.empty() || mbIsStopAll;
 			});
-
-		mIsWaitThreads[index] = false;
 
 		if (mbIsStopAll && this->mJobs.empty())
 		{
@@ -75,15 +70,3 @@ void fq::game_module::ThreadPool::workerThread(size_t index)
 	}
 }
 
-bool fq::game_module::ThreadPool::IsAllWaitState()
-{
-	for (int i = 0; i < mIsWaitThreads.size(); ++i)
-	{
-		if (!mIsWaitThreads[i])
-		{
-			return false;
-		}
-	}
-
-	return true;
-}

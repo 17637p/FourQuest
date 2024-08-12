@@ -40,16 +40,17 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 {
 	mGameProcess->mSceneManager->LoadScene();
 	mGameProcess->mGraphics->SetIsRenderObjects(false);
+	mLoadImage->SetIsRender(true);
 
 	auto pool = fq::game_module::ThreadPool::GetInstance();
 
-	pool->EnqueueJob([this]()
+	auto check = pool->EnqueueJob([this]()
 		{
 			mGameProcess->mResourceSystem->LoadSceneResource({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
 		});
 
 	// ·£´õ¸µ 
-	while (!pool->IsAllWaitState())
+	while (check.wait_for(std::chrono::milliseconds(100)) == std::future_status::timeout)
 	{
 		mGameProcess->mGraphics->BeginRender();
 		mGameProcess->mGraphics->Render();

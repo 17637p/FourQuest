@@ -34,6 +34,7 @@ namespace fq::game_engine
 		void LoadSceneResource(fq::event::PreOnLoadScene event);
 		
 		std::shared_ptr<graphics::IStaticMesh> GetStaticMesh(const Path& modelPath, std::string meshName)const;
+		std::shared_ptr<graphics::ISkinnedMesh> GetSkinnedMesh(const Path& modelPath, std::string meshName)const;
 		std::shared_ptr<graphics::IMaterial> GetMaterial(const Path& path)const;
 		std::shared_ptr<graphics::IAnimation> GetAnimation(const Path& path)const;
 

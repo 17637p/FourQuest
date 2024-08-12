@@ -259,3 +259,9 @@ std::shared_ptr<fq::graphics::IAnimation> fq::game_engine::ResourceSystem::GetAn
 	return iter == mAnimations.end() ? nullptr : iter->second;
 }
 
+std::shared_ptr<fq::graphics::ISkinnedMesh> fq::game_engine::ResourceSystem::GetSkinnedMesh(const Path& modelPath, std::string meshName) const
+{
+	auto iter = mSkinnedMeshes.find(modelPath + meshName);
+	return iter == mSkinnedMeshes.end() ? nullptr : iter->second;
+}
+

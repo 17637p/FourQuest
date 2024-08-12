@@ -24,8 +24,5 @@ namespace fq::game_engine
 	private:
 		GameProcess* mGameProcess;
 		fq::graphics::IImageObject* mLoadImage;
-
-
-		bool mbIsDone;
 	};
 }

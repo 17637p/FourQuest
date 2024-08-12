@@ -34,7 +34,8 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	, InputManager* inputMgr
 	, PrefabManager* prefabMgr
 	, ScreenManager* screenMgr
-	, TimeManager* timeMgr)
+	, TimeManager* timeMgr
+	, bool isInvokeStartScene)
 {
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
@@ -48,6 +49,8 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 
 	mRequestChangeSceneHandler =
 		mEventManager->RegisterHandle<fq::event::RequestChangeScene>(this, &SceneManager::RequestChangeScene);
+
+	mbIsInvokeStartScene = isInvokeStartScene;
 }
 
 void fq::game_module::SceneManager::Finalize()
@@ -131,10 +134,6 @@ void fq::game_module::SceneManager::LoadScene()
 
 	// PrefabResource Load
 	mPrefabManager->LoadPrefabResource(mCurrentScene.get());
-
-	// Event CallBack
-//	mEventManager->FireEvent<fq::event::PreOnLoadScene>({ mCurrentScene->GetSceneName() });
-//	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
 }
 
 void fq::game_module::SceneManager::UnloadScene()

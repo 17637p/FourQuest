@@ -190,8 +190,6 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 void fq::game_engine::RenderingSystem::OnUnLoadScene()
 {
 	// 1. Model Unload
-	unloadAllModel();
-
 	mbIsGameLoaded = false;
 }
 
@@ -240,15 +238,16 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 	// 지울 예정
 	auto materialNames = skinnedMeshRenderer->GetMaterials();
-	auto materialInfos = skinnedMeshRenderer->GetMaterialInfos();
 
 	if (!std::filesystem::exists(modelPath))
 	{
-		SPDLOG_WARN("\"{}\" does not exist", modelPath);
+		SPDLOG_WARN("[RenderingSystem] Model Path \"{}\" does not exist", modelPath);
+		return;
 	}
-	else
+
+	if (!mResourceSystem->HasModel(modelPath))
 	{
-		LoadModel(modelPath, texturePath);
+		mGameProcess->mResourceSystem->LoadModelResource(modelPath);
 	}
 
 	using namespace fq::graphics;
@@ -268,12 +267,12 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 				continue;
 			}
 
-			std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
+			std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(materialPath);
 
 			if (materialInterfaceOrNull == nullptr)
 			{
-				const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(materialPath);
-				materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+				mResourceSystem->LoadMaterial(materialPath);
+				materialInterfaceOrNull = mResourceSystem->GetMaterial(materialPath);
 			}
 			assert(materialInterfaceOrNull != nullptr);
 
@@ -304,14 +303,13 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 		}
 	}*/
 
-	auto meshInterface = mGameProcess->mGraphics->GetSkinnedMeshByModelPathOrNull(key, meshName);
+	auto meshInterface = mGameProcess->mResourceSystem->GetSkinnedMesh(modelPath, meshName);
 
 	if (meshInterface != nullptr)
 	{
 		ISkinnedMeshObject* iSkinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, skinnedMeshRenderer->GetMeshObjectInfomation(), transform->GetLocalMatrix());
 		skinnedMeshRenderer->SetSkinnedMeshObject(iSkinnedMeshObject);
 		skinnedMeshRenderer->SetMaterialInterfaces(materialInterfaces);
-		skinnedMeshRenderer->SetMaterialInfos(materialInfos);
 	}
 }
 
@@ -375,7 +373,6 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 		mGameProcess->mResourceSystem->LoadModelResource(modelPath);
 	}
 
-	//auto key = GetModelKey(modelPath, texturePath);
 	auto meshName = staticMeshRenderer->GetMeshName();
 	auto materialPaths = staticMeshRenderer->GetMaterialPaths();
 	auto meshInfo = staticMeshRenderer->GetMeshObjectInfomation();
@@ -539,37 +536,6 @@ void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObje
 	}
 }
 
-void fq::game_engine::RenderingSystem::LoadModel(const Path& path, const std::string& texturePath /*= {}*/)
-{
-	if (!std::filesystem::exists(path))
-	{
-		spdlog::warn("[RenderingSystem] Load Model Failed \"{}\" ", path);
-		return;
-	}
-
-	auto key = GetModelKey(path, texturePath);
-	auto iter = mLoadModels.find(key);
-
-	if (iter == mLoadModels.end())
-	{
-		std::filesystem::path texture = texturePath.empty() ?
-			std::filesystem::path(path).remove_filename() : texturePath;
-
-		auto key = GetModelKey(path, texturePath);
-		mGameProcess->mGraphics->CreateModelResource(key, path, texture);
-		mLoadModels.insert(key);
-	}
-}
-
-void fq::game_engine::RenderingSystem::unloadAllModel()
-{
-	for (auto& modelKey : mLoadModels)
-	{
-		mGameProcess->mGraphics->DeleteModelResource(modelKey);
-	}
-
-	mLoadModels.clear();
-}
 
 void fq::game_engine::RenderingSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
@@ -641,11 +607,6 @@ void fq::game_engine::RenderingSystem::RemoveComponent(const fq::event::RemoveCo
 	}
 }
 
-bool fq::game_engine::RenderingSystem::IsLoadedModel(unsigned int key)
-{
-	return mLoadModels.find(key) != mLoadModels.end();
-}
-
 void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::Terrain>())
@@ -659,14 +620,18 @@ void fq::game_engine::RenderingSystem::loadTerrain(fq::game_module::GameObject* 
 	std::string terrainPath = "./resource/internal/terrain/Plane.model";
 
 	// Model 생성
-	LoadModel(terrainPath);
-	auto key = GetModelKey(terrainPath, {});
-	const fq::common::Model& modelData = mGameProcess->mGraphics->GetModel(key);
+
+	if (!mResourceSystem->HasModel(terrainPath))
+	{
+		mGameProcess->mResourceSystem->LoadModelResource(terrainPath);
+	}
+
+	const fq::common::Model& modelData = mGameProcess->mResourceSystem->GetModel(terrainPath);
 	auto mesh = modelData.Meshes[1];
 
 	mPlaneMatrix = mesh.first.ToParentMatrix;
 
-	auto staticMeshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(key, mesh.second.Name); ;
+	auto staticMeshInterface = mGameProcess->mResourceSystem->GetStaticMesh(terrainPath, mesh.second.Name);
 
 	fq::graphics::ITerrainMeshObject* iTerrainMeshObject = mGameProcess->mGraphics->CreateTerrainMeshObject(staticMeshInterface, mesh.first.ToParentMatrix * transform->GetWorldMatrix());
 	terrain->SetTerrainMeshObject(iTerrainMeshObject);
