@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Component.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::game_module
 {
@@ -16,6 +17,12 @@ namespace fq::game_module
 		DirectX::SimpleMath::Vector3 position = { 0.f, 0.f, 0.f };
 		DirectX::SimpleMath::Vector3 rotation = { 0.f, 0.f, 0.f };
 		DirectX::SimpleMath::Vector3 scale = { 1.f, 1.f, 1.f };
+	};
+
+	struct AnimationTrackKey
+	{
+		float time = 0.f;
+		std::string animationPath = {};
 	};
 
 	struct CameraChangeTrackInfo
@@ -52,6 +59,8 @@ namespace fq::game_module
 		float totalPlayTime = 1.f;
 
 		std::string targetObjectName = {};
+		std::string controllerPath = {};
+		std::vector<AnimationTrackKey> animationTrackKeys = {};
 	};
 
 	struct EffectTrackInfo
@@ -69,7 +78,7 @@ namespace fq::game_module
 		float totalPlayTime = 1.f;
 
 		std::string keyName = {};
-		std::string soundPath = {};
+		std::string soundObjectName = {};
 		bool bIsLoop = false;
 	};
 	
@@ -120,6 +129,9 @@ namespace fq::game_module
 		void SetSoundTrackInfo(const std::vector<SoundTrackInfo>& info) { mSoundTrackInfo = info; }
 		const std::vector<ObjectAnimationInfo>& GetObjectAnimationInfo() const { return mObjectAnimationInfo; }
 		void SetObjectAnimationInfo(const std::vector<ObjectAnimationInfo>& info) { mObjectAnimationInfo = info; }
+
+		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
+		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
 		  
 	private:
 		virtual entt::meta_handle GetHandle() override;
@@ -140,5 +152,7 @@ namespace fq::game_module
 		std::vector<EffectTrackInfo> mEffectTrackInfo;
 		std::vector<SoundTrackInfo> mSoundTrackInfo;
 		std::vector<TextPrintTrackInfo> mTextPrintTrackInfo;
+
+		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 	};
 }

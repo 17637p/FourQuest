@@ -3,6 +3,8 @@
 #include "Track.h"
 #include "Sequence.h"
 
+#include "SoundClip.h"
+
 namespace fq::game_module
 {
 	class SoundTrack : public Track
@@ -11,7 +13,7 @@ namespace fq::game_module
 		SoundTrack();
 		~SoundTrack();
 
-		void Initialize(const SoundTrackInfo& info, Scene* scene);
+		bool Initialize(const SoundTrackInfo& info, Scene* scene);
 
 	private:
 		virtual void PlayEnter() override;
@@ -20,9 +22,12 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
+		Scene* mScene;
+
 		std::string mKeyName;
-		std::string mSoundPath;
-		bool mbIsLoop = false;
+		std::string mSoundObjectName;
+		bool mbIsLoop;
+		bool mOnce;
 	};
 }
 

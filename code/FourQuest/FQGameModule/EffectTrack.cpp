@@ -89,19 +89,18 @@ namespace fq::game_module
 
 	void EffectTrack::PlayExit()
 	{
-		for (auto& object : mObjects)
-			mScene->DestroyGameObject(object.get());
-
-		mObjects.clear();
+		if (!mEffectObject.expired())
+		{
+			mScene->DestroyGameObject(mEffectObject.lock().get());
+			mObjects.clear();
+		}
 	}
 
 	void EffectTrack::End()
 	{
 		if (!mEffectObject.expired())
 		{
-			for (auto& object : mObjects)
-				mScene->DestroyGameObject(object.get());
-
+			mScene->DestroyGameObject(mEffectObject.lock().get());
 			mObjects.clear();
 		}
 	}

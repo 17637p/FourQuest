@@ -9,6 +9,7 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Sequence.h"
 #include "../FQGameModule/Terrain.h"
 #include "../FQGameModule/UVAnimator.h"
 #include "../FQGameModule/Decal.h"
@@ -162,6 +163,7 @@ void fq::game_engine::RenderingSystem::OnLoadScene()
 	{
 		loadAnimation(&object);
 		loadUVAnimation(&object);
+		loadSequenceAnimation(&object);
 	}
 
 	// 2. PrefabInstance¸¦ ·Îµå
@@ -217,6 +219,9 @@ void fq::game_engine::RenderingSystem::OnAddGameObject(const fq::event::AddGameO
 
 	// 5. UVAnimation
 	loadUVAnimation(gameObject);
+
+	// 6. SequenceAnimation
+	loadSequenceAnimation(gameObject);
 }
 
 void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::GameObject* object)
@@ -478,6 +483,40 @@ void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObje
 			auto decal = child->GetComponent<fq::game_module::Decal>();
 			decal->GetDecalObjectInterface()->SetUVAnimationInstance(uvAnimationInstanceInterface);
 		}
+	}
+}
+
+void fq::game_engine::RenderingSystem::loadSequenceAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::Sequence>())
+	{
+		return;
+	}
+
+	auto sequence = object->GetComponent<fq::game_module::Sequence>();
+	auto& animationContainerMap = sequence->GetAnimationContainer();
+
+	auto& animationInfo = sequence->GetObjectAnimationInfo();
+
+	std::vector<std::shared_ptr<fq::graphics::IAnimation>> animationContainer;
+
+	for (auto& info : animationInfo)
+	{
+		for (auto& trackKey : info.animationTrackKeys)
+		{
+			auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(trackKey.animationPath);
+
+			if (animationInterfaceOrNull == nullptr)
+			{
+				const auto animationData = mGameProcess->mGraphics->ReadAnimation(trackKey.animationPath);
+				animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(trackKey.animationPath, animationData);
+			}
+			assert(animationInterfaceOrNull != nullptr);
+
+			animationContainer.push_back(animationInterfaceOrNull);
+		}
+
+		animationContainerMap.insert(std::make_pair(info.targetObjectName, animationContainer));
 	}
 }
 

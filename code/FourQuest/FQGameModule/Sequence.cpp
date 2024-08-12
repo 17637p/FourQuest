@@ -8,6 +8,7 @@
 #include "ObjectTeleportTrack.h"
 #include "TextPrintTrack.h"
 #include "EffectTrack.h"
+#include "SoundTrack.h"
 #include "ObjectAnimationTrack.h"
 
 namespace fq::game_module
@@ -63,6 +64,36 @@ namespace fq::game_module
 		for (const auto& trackInfo : mObjectTeleportTrackInfo)
 		{
 			std::shared_ptr<ObjectTeleportTrack> track = std::make_shared<ObjectTeleportTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
+		for (const auto& trackInfo : mObjectAnimationInfo)
+		{
+			std::shared_ptr<ObjectAnimationTrack> track = std::make_shared<ObjectAnimationTrack>();
+			check = track->Initialize(trackInfo, scene, mAnimationContainer.find(trackInfo.targetObjectName)->second);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
+		for (const auto& trackInfo : mSoundTrackInfo)
+		{
+			std::shared_ptr<SoundTrack> track = std::make_shared<SoundTrack>();
 			check = track->Initialize(trackInfo, scene);
 
 			if (check)
