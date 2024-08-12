@@ -23,7 +23,7 @@ struct ComputePosAndReflectionOutput
 {
     float3 outSamplePosInTS; // 텍스트 공간에서 샘플링하는 위치
     float3 outReflDirInTS; // 텍스트 공간에서 ReflectionVector 방향
-    float outMaxDistance; // 최대 이동 거리 (화면 밖으로 벗어나지 않는? Todo: 더 공부하기)
+    float outMaxDistance; // 최대 이동 거리 (가시 영역 내에서 레이 트레이싱을 제한하기 위해)
 };
 
 struct Inter
@@ -114,6 +114,7 @@ Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
         depth0 = tex_depth.SampleLevel(pointSampler, rayPosInTS0.xy, 0).x;
         
         {
+            // MAX_THICKNESS 보다 크다는 것은 교차가 아닌 물체 뒤로 지나가는 것이라고 가정
             float thickness = rayPosInTS3.z - depth3;
             hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+3) : hitIndex;
         }
