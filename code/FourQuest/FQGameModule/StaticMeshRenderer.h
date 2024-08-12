@@ -93,6 +93,10 @@ namespace fq::game_module
 		const DirectX::SimpleMath::Matrix& GetPrevApplyTransform() const { return mPrevApplyTransform; }
 		void SetPrevApplyTransform(const DirectX::SimpleMath::Matrix& transform) { mPrevApplyTransform = transform; }
 
+		// 그리기 여부 설정
+		bool GetIsRender() const { return mbIsRender; }
+		void SetIsRender(bool bIsRender);
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -117,6 +121,9 @@ namespace fq::game_module
 		int mLightmapIndex;
 		bool mbIsStatic;
 		DirectX::SimpleMath::Matrix mPrevApplyTransform; // 추후 모델 자체에서 처리할 예정
+
+		// 그리기 여부
+		bool mbIsRender;
 	};
 
 }

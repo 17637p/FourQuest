@@ -62,6 +62,10 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) abstract;
 			virtual FQ_GRAPHICS const MaterialInstanceInfo& GetMaterialInstanceInfo() const abstract;
 
+			// Render
+			virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) abstract;
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};
@@ -92,6 +96,10 @@ extern "C" {
 			// MaterialInstanceInfo
 			virtual FQ_GRAPHICS void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) abstract;
 			virtual FQ_GRAPHICS const MaterialInstanceInfo& GetMaterialInstanceInfo() const abstract;
+
+			// Render
+			virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) abstract;
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;

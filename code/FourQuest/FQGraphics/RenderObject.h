@@ -72,6 +72,10 @@ namespace fq::graphics
 		virtual void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) override { mMaterialInstanceInfo = materialInstanceInfo; }
 		virtual const MaterialInstanceInfo& GetMaterialInstanceInfo() const override { return mMaterialInstanceInfo; }
 
+		// Render
+		virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
+		virtual FQ_GRAPHICS bool GetIsRender() const override { return mbIsRender; }
+
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		size_t mIndex;
@@ -86,6 +90,9 @@ namespace fq::graphics
 		unsigned int mLightmapIndex;
 
 		MaterialInstanceInfo mMaterialInstanceInfo;
+
+		// render
+		bool mbIsRender;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject
@@ -120,6 +127,10 @@ namespace fq::graphics
 		virtual void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) override { mMaterialInstanceInfo = materialInstanceInfo; }
 		virtual const MaterialInstanceInfo& GetMaterialInstanceInfo() const override { return mMaterialInstanceInfo; }
 
+		// Render
+		virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
+		virtual FQ_GRAPHICS bool GetIsRender() const override { return mbIsRender; }
+
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		std::shared_ptr<ISkinnedMesh> mSkinnedMesh;
@@ -127,6 +138,9 @@ namespace fq::graphics
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		MaterialInstanceInfo mMaterialInstanceInfo;
+
+		// render
+		bool mbIsRender;
 	};
 
 	class TerrainMeshObject : public ITerrainMeshObject

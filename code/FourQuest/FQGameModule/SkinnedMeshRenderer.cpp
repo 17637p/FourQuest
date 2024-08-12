@@ -8,12 +8,23 @@ fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
 	:mMeshInfomation{}
 	, mSkinnedMeshObject(nullptr)
 	, mModelPath{}
+	, mbIsRender{ true }
 {
 }
 
 fq::game_module::SkinnedMeshRenderer::~SkinnedMeshRenderer()
 {
 
+}
+
+void fq::game_module::SkinnedMeshRenderer::SetIsRender(bool bIsRender)
+{
+	mbIsRender = bIsRender;
+
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetIsRender(mbIsRender);
+	}
 }
 
 entt::meta_handle fq::game_module::SkinnedMeshRenderer::GetHandle()

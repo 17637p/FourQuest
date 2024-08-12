@@ -68,6 +68,10 @@ namespace fq::game_module
 		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
 		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
 
+		// 그리기 여부 설정
+		bool GetIsRender() const { return mbIsRender; }
+		void SetIsRender(bool bIsRender);
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -83,7 +87,7 @@ namespace fq::game_module
 		std::vector<std::shared_ptr<fq::graphics::IMaterial>> mMaterialInterfaces;
 
 		std::vector<std::string> mMaterialPaths; // 별도로 직렬화된 데이터로 인터페이스 가져올 예정
+
+		bool mbIsRender;
 	};
-
-
 }

@@ -9,7 +9,18 @@ fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
 	, mMeshInfomation{}
 	, mIsNavigationMeshUsed(false)
 	, mPrevApplyTransform{}
+	, mbIsRender{ true }
 {
+}
+
+void fq::game_module::StaticMeshRenderer::SetIsRender(bool bIsRender)
+{
+	mbIsRender = bIsRender;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetIsRender(mbIsRender);
+	}
 }
 
 entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()

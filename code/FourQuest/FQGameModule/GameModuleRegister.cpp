@@ -189,6 +189,10 @@ void fq::game_module::RegisterMetaData()
 		.data<&StaticMeshRenderer::SetPrevApplyTransform, &StaticMeshRenderer::GetPrevApplyTransform>("PrevApplyTransform"_hs)
 		.prop(fq::reflect::prop::Name, "PrevApplyTransform")
 		.prop(fq::reflect::prop::ReadOnly)
+		.data<&StaticMeshRenderer::SetIsStatic, &StaticMeshRenderer::GetIsStatic>("IsStatic"_hs)
+		.prop(fq::reflect::prop::Name, "IsStatic")
+		.data<&StaticMeshRenderer::SetIsRender, &StaticMeshRenderer::GetIsRender>("IsRender"_hs)
+		.prop(fq::reflect::prop::Name, "IsRender")
 		.base<Component>();
 
 	// SkinnedMeshRenderer
@@ -208,6 +212,8 @@ void fq::game_module::RegisterMetaData()
 		.data<&SkinnedMeshRenderer::SetMaterialPaths, &SkinnedMeshRenderer::GetMaterialPaths>("MaterialPaths"_hs)
 		.prop(fq::reflect::prop::Name, "MaterialPaths")
 		.prop(fq::reflect::prop::DragDrop, ".material")
+		.data<&SkinnedMeshRenderer::SetIsRender, &SkinnedMeshRenderer::GetIsRender>("IsRender"_hs)
+		.prop(fq::reflect::prop::Name, "IsRender")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////

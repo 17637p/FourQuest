@@ -501,7 +501,17 @@ void fq::graphics::FQGraphics::WriteMaterialInfo(const std::string& path, const 
 }
 MaterialInfo fq::graphics::FQGraphics::ReadMaterialInfo(const std::string& path)
 {
-	return fq::loader::MaterialLoader::Read(path);
+	std::string tempPath = path;
+
+	for (auto& ch : tempPath)
+	{
+		if (ch == '|')
+		{
+			ch = 'a';
+		}
+	}
+
+	return fq::loader::MaterialLoader::Read(tempPath);
 }
 
 fq::common::Model fq::graphics::FQGraphics::ConvertModel(const std::string& fbxFile)
