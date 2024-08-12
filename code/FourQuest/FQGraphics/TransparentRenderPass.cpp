@@ -50,6 +50,7 @@ namespace fq::graphics
 		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mDefualtSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
+		mLinearWrap = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mDefaultRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
 		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
 
@@ -87,6 +88,7 @@ namespace fq::graphics
 		mAnisotropicClampSamplerState = nullptr;
 		mShadowSampler = nullptr;
 		mDefualtSampler = nullptr;
+		mLinearWrap = nullptr;
 		mCullOffRasterizer = nullptr;
 
 		mModelTransformCB = nullptr;
@@ -147,6 +149,7 @@ namespace fq::graphics
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mLinearWrap->Bind(mDevice,3, ED3D11ShaderType::PixelShader);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);

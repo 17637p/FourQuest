@@ -50,23 +50,23 @@ namespace fq::game_module
 		/// <param name="name"></param>
 		void SetMeshName(std::string name) { mMeshName = name; }
 
-		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }
-		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces) { mMaterialInterfaces = materialInterfaces; }
-
-		/// <summary>
-		/// 메쉬정보를 설정합니다
-		/// </summary>
-		/// <param name="info">메쉬 정보</param>
-		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info) { mMeshInfomation = std::move(info); if (mSkinnedMeshObject != nullptr) { mSkinnedMeshObject->SetMeshObjectInfo(mMeshInfomation); } }
-
 		/// <summary>
 		/// 메쉬정보를 반환합니다
 		/// </summary>
 		/// <returns>메쉬 정보</returns>
 		fq::graphics::MeshObjectInfo GetMeshObjectInfomation() const { return mMeshInfomation; }
 
-		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
+		/// <summary>
+		/// 메쉬정보를 설정합니다
+		/// </summary>
+		/// <param name="info">메쉬 정보</param>
+		void SetMeshObjectInfomation(const fq::graphics::MeshObjectInfo& info);
+
+		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }
+		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces);
+		
 		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
+		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
 
 	private:
 		entt::meta_handle GetHandle() override;

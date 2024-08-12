@@ -39,3 +39,23 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SkinnedMeshRenderer
 
 	return cloneMesh;
 }
+
+void fq::game_module::SkinnedMeshRenderer::SetMeshObjectInfomation(const fq::graphics::MeshObjectInfo& info)
+{
+	mMeshInfomation = info;
+
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetMeshObjectInfo(mMeshInfomation);
+	}
+}
+
+
+void fq::game_module::SkinnedMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces) {
+	mMaterialInterfaces = materialInterfaces;
+
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetMaterials(mMaterialInterfaces);
+	}
+}

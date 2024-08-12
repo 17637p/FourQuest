@@ -53,7 +53,7 @@ namespace fq::graphics
 		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
 		if (GetHasMetalnessSmoothness()) mMetalnessSmoothness->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
-		if (GetHasNoise()) mNoise->Bind(d3d11Device, 8, ED3D11ShaderType::PixelShader);
+		if (GetHasNoise()) mNoise->Bind(d3d11Device, 10, ED3D11ShaderType::PixelShader);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,

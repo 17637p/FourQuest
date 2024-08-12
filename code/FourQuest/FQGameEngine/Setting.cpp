@@ -255,7 +255,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						std::filesystem::path modelPath = std::filesystem::path(renderer.GetModelPath());
 						std::filesystem::path modelDirectory = modelPath;
 						modelDirectory.replace_extension("");
-						modelDirectory /= modelDirectory.filename();
+						//modelDirectory /= modelDirectory.filename();
 
 						const auto& modelData = graphics->CreateModelResource(renderingSystem->GetModelKey(modelPath.string()), modelPath.string());
 						createMaterial(modelDirectory, modelData);
@@ -275,7 +275,8 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 									if (materialInterface == nullptr)
 									{
-										//default material
+										const graphics::MaterialInfo& materialInfo = graphics->ReadMaterialInfo(materialPath);
+										materialInterface = graphics->CreateMaterial(materialPath, materialInfo);
 									}
 
 									materialPaths.push_back(materialPath);
@@ -300,7 +301,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						std::filesystem::path modelPath = std::filesystem::path(renderer.GetModelPath());
 						std::filesystem::path modelDirectory = modelPath;
 						modelDirectory.replace_extension("");
-						modelDirectory /= modelDirectory.filename();
+						// modelDirectory /= modelDirectory.filename();
 
 						const auto& modelData = graphics->CreateModelResource(renderingSystem->GetModelKey(modelPath.string()), modelPath.string());
 						createMaterial(modelDirectory, modelData);
@@ -320,7 +321,8 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 									if (materialInterface == nullptr)
 									{
-										//default material
+										const graphics::MaterialInfo& materialInfo = graphics->ReadMaterialInfo(materialPath);
+										materialInterface = graphics->CreateMaterial(materialPath, materialInfo);
 									}
 
 									materialPaths.push_back(materialPath);

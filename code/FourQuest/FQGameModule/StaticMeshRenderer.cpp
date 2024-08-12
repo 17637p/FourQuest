@@ -36,6 +36,27 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::StaticMeshRenderer:
 	return cloneMesh;
 }
 
+void fq::game_module::StaticMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces)
+{
+	mMaterialInterfaces = materialInterfaces;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMaterials(mMaterialInterfaces);
+	}
+}
+
+void fq::game_module::StaticMeshRenderer::SetMeshObjectInfomation(const fq::graphics::MeshObjectInfo& info)
+{
+	mMeshInfomation = info;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMeshObjectInfo(mMeshInfomation);
+	}
+}
+
+
 void fq::game_module::StaticMeshRenderer::SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset)
 {
 	mLightmapScaleOffset = scaleOffset;

@@ -545,7 +545,7 @@ namespace fq::graphics
 		bool bUseDissolve = false;
 		std::wstring NoiseFileName;
 		float OutlineThickness = 1.15;
-		float DissolveCutoff = 0;
+		float DissolveCutoff = -1;
 		DirectX::SimpleMath::Color DissolveStartColor = { 1, 1, 1, 1 };
 		DirectX::SimpleMath::Color DissolveEndColor = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveStartEmissive = { 0, 0, 0, 0 };

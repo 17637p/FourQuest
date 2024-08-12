@@ -47,8 +47,9 @@ cbuffer cbMaterialInstance : register(b2)
 {
     bool cUseAlpha;
     float cAlpha;
+    bool cUseDissolveCutoff;
+    float cDissolveCutoff;
 };
-
 cbuffer cbDirectionalShadow : register(b3)
 {
     matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
@@ -61,15 +62,19 @@ Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
+Texture2D gMetalnessSmoothness : register(t5);
 
 TextureCube gDiffuseCubMap : register(t6);
 TextureCube gSpecularCubeMap : register(t7);
 Texture2D gSpecularBRDF_LUT : register(t8);
 Texture2DArray gDirectionalShadowMap : register(t9);
 
+Texture2D gNoiseMap : register(t10);
+
 SamplerState gSamplerAnisotropic : register(s0); 
 SamplerComparisonState gShadowSampler : register(s1);
 SamplerState gLinearClamp : register(s2); 
+SamplerState gLinearWrap : register(s3); 
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
@@ -131,6 +136,37 @@ PixelOut main(VertexOut pin) : SV_TARGET
     if (gModelMaterial.UseEmissiveMap)
     {
         emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+    }
+    
+    if (gModelMaterial.UseDissolve)
+    {
+        float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
+        float dissolveCutoff = gModelMaterial.DissolveCutoff;
+
+        if (cUseDissolveCutoff)
+        {
+            dissolveCutoff = cDissolveCutoff;
+        }
+
+        clip(noise.x - dissolveCutoff);
+
+        float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
+        float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
+        float4 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive, gModelMaterial.DissolveOutlineEndEmissive ,outlineWeight);        
+
+        if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
+        {
+            outlineColor *= 0;
+            outlineEmissive *= 0;
+        }        
+        else
+        {
+            outlineColor *= 1;
+            outlineEmissive *= 1;
+        }
+
+        albedo += outlineColor;
+        emissive += outlineEmissive.rgb;
     }
 
     float3 directLighting = 0.0;

@@ -66,7 +66,7 @@ Texture2D gMetalnessSmoothness : register(t5);
 Texture2DArray gLightMapArray : register(t6);
 Texture2DArray gDirectionArray : register(t7);
 
-Texture2D gNoiseMap : register(t8);
+Texture2D gNoiseMap : register(t10);
 
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gPointWrap : register(s1); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
@@ -82,6 +82,18 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #else
     pout.Albedo = gModelMaterial.BaseColor;
 #endif
+
+    if (cUseAlpha)
+    {
+        pout.Albedo.a *= cAlpha;
+    }
+
+    if (gModelMaterial.UseAlbedoMap)
+    {
+        pout.Albedo *= pow(gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV), 2.2f);
+    }
+
+    clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
 
     pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
     pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
@@ -105,28 +117,22 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
         float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
         float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
-        float3 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive.rgb, gModelMaterial.DissolveOutlineEndEmissive.rgb ,outlineWeight);        
+        float4 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive, gModelMaterial.DissolveOutlineEndEmissive ,outlineWeight);        
 
         if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
+        {
             outlineColor *= 0;
+            outlineEmissive *= 0;
+        }        
         else
+        {
             outlineColor *= 1;
+            outlineEmissive *= 1;
+        }
 
         pout.Albedo.rgb += outlineColor;
-        pout.Emissive.rgb += outlineEmissive;
+        pout.Emissive.rgb += outlineEmissive.rgb;
     }
-
-    if (cUseAlpha)
-    {
-        pout.Albedo.a *= cAlpha;
-    }
-
-    if (gModelMaterial.UseAlbedoMap)
-    {
-        pout.Albedo *= pow(gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV), 2.2f);
-    }
-
-    clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
 
     if (gModelMaterial.UseMetalnessMap)
     {
