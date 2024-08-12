@@ -33,28 +33,21 @@
 //   struct ModelMaterial
 //   {
 //       
-//       float4x4 TexTransform;         // Offset:    0
-//       float4 BaseColor;              // Offset:   64
-//       float4 EmissiveColor;          // Offset:   80
-//       float4 DissolveOutlineStartColor;// Offset:   96
-//       float4 DissolveOutlineEndColor;// Offset:  112
-//       float4 DissolveOutlineStartEmissive;// Offset:  128
-//       float4 DissolveOutlineEndEmissive;// Offset:  144
-//       float Metalness;               // Offset:  160
-//       float Roughness;               // Offset:  164
-//       bool UseAlbedoMap;             // Offset:  168
-//       bool UseMetalnessMap;          // Offset:  172
-//       bool UseRoughnessMap;          // Offset:  176
-//       bool UseNormalMap;             // Offset:  180
-//       bool UseEmissiveMap;           // Offset:  184
-//       float AlphaCutoff;             // Offset:  188
-//       float EmissiveIntensity;       // Offset:  192
-//       bool UseMetalnessSmoothness;   // Offset:  196
-//       bool UseDissolve;              // Offset:  200
-//       float OutlineThickness;        // Offset:  204
-//       float DissolveCutoff;          // Offset:  208
+//       float4 BaseColor;              // Offset:    0
+//       float4 EmissiveColor;          // Offset:   16
+//       float4x4 TexTransform;         // Offset:   32
+//       float Metalness;               // Offset:   96
+//       float Roughness;               // Offset:  100
+//       bool UseAlbedoMap;             // Offset:  104
+//       bool UseMetalnessMap;          // Offset:  108
+//       bool UseRoughnessMap;          // Offset:  112
+//       bool UseNormalMap;             // Offset:  116
+//       bool UseEmissiveMap;           // Offset:  120
+//       float AlphaCutoff;             // Offset:  124
+//       float EmissiveIntensity;       // Offset:  128
+//       bool UseMetalnessSmoothness;   // Offset:  132
 //
-//   } gModelMaterial;                  // Offset:    0 Size:   212
+//   } gModelMaterial;                  // Offset:    0 Size:   136
 //
 // }
 //
@@ -101,7 +94,7 @@ dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[4], immediateIndexed
 dcl_constantbuffer CB1[8], immediateIndexed
 dcl_constantbuffer CB2[512], dynamicIndexed
-dcl_constantbuffer CB3[2], immediateIndexed
+dcl_constantbuffer CB3[4], immediateIndexed
 dcl_input v0.xyz
 dcl_input v1.xyz
 dcl_input v2.xyz
@@ -250,8 +243,8 @@ mul r1.xyz, r0.wwww, r2.xyzx
 mov o3.xyz, r1.xyzx
 mov r2.xy, v3.xyxx
 mov r2.z, l(1.000000)
-dp3 o4.x, r2.xyzx, cb3[0].xywx
-dp3 o4.y, r2.xyzx, cb3[1].xywx
+dp3 o4.x, r2.xyzx, cb3[2].xywx
+dp3 o4.y, r2.xyzx, cb3[3].xywx
 dp3 r2.x, r0.xyzx, cb1[0].xyzx
 dp3 r2.y, r0.xyzx, cb1[1].xyzx
 dp3 r2.z, r0.xyzx, cb1[2].xyzx

@@ -31,7 +31,8 @@ fq::graphics::UIManager::UIManager()
 	mDefaultFontSize{ 50 },
 	mDefaultFontColor{ 0, 1, 1, 1 },
 	mTexts{},
-	mResourceManager(nullptr)
+	mResourceManager(nullptr),
+	mIsRenderObjects(true)
 {
 
 }
@@ -121,6 +122,11 @@ HRESULT fq::graphics::UIManager::createRenderTarget(std::shared_ptr<D3D11Device>
 void fq::graphics::UIManager::Render()
 {
 	mRenderTarget->BeginDraw();
+
+	if (!mIsRenderObjects)
+	{
+		mRenderTarget->Clear(D2D1_COLOR_F{ 0, 0, 0, 1 });
+	}
 
 	drawAllText();
 	drawAllImage();

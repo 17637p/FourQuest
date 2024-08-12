@@ -165,6 +165,7 @@ namespace fq::graphics
 			mHeightMapData[i] = (in[i] / 255.0f) * mHeightscale;
 		}
 
+		// 유니티에서 읽어온 하이트맵 텍스처의 y축이 대칭된 모습을 보여서 임시로 수정_홍지환
 		// flip y
 		for (UINT i = 0; i < mHeight / 2; ++i)
 		{

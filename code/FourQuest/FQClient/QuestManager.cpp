@@ -3,6 +3,7 @@
 
 #include "DefenceCounter.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/Transform.h"
 
 #include <spdlog/spdlog.h>
 
@@ -74,14 +75,16 @@ void fq::client::QuestManager::OnStart()
 
 	// 
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren();
-	mMainQuestText = children[1]->GetComponent<game_module::TextUI>();
+	mMainQuestText = children[1]->GetChildren()[0]->GetComponent<game_module::TextUI>();
 	for (int i = 0; i < 3; i++)
 	{
-		mSubQuestTexts.push_back(children[3]->GetChildren()[i]->GetComponent<game_module::TextUI>());
+		mSubQuestTexts.push_back(children[3]->GetChildren()[i]->GetChildren()[0]->GetComponent<game_module::TextUI>());
 	}
 
 	// GaugeMaxWidth 설정
-	mGaugeMaxWidth = mMainQuestText->GetGameObject()->GetChildren()[2]->GetComponent<game_module::ImageUI>()->GetUIInfomation(0).Width;
+	mGaugeMaxWidth = mMainQuestText->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>()->GetUIInfomation(0).Width;
+	// 기본 FontSize 설정
+	mFontSize = mMainQuestText->GetTextInfo().FontSize;
 
 	// 이벤트 핸들러 등록
 	EventProcessKillMonster();
@@ -90,6 +93,8 @@ void fq::client::QuestManager::OnStart()
 	EventProcessClearQuest();
 	EventProcessAllColliderTrigger();
 	EventProcessObjectInteraction();
+
+	mScreenManager = GetScene()->GetScreenManager();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -108,6 +113,37 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		textInfo.Text = mCurSubQuest[i].mName;
 		mSubQuestTexts[i]->SetTextInfo(textInfo);
 		ViewQuestInformation(mCurSubQuest[i], mSubQuestTexts[i]);
+	}
+
+	// Scale 자동 조정 
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	UINT screenWidth = mScreenManager->GetScreenWidth();
+	UINT screenHeight = mScreenManager->GetScreenHeight();
+	float scaleX = screenWidth / (float)1920;
+	float scaleY = screenHeight / (float)1080;
+	{
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+	}
+
+	textInfo = mMainQuestText->GetTextInfo();
+	textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
+	mMainQuestText->SetTextInfo(textInfo);
+	int deltaFontSize = textInfo.FontSize - mFontSize;
+	mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * -6, (float)deltaFontSize * -1.6f, 0});
+
+	for (int i = 0; i < mSubQuestTexts.size(); i++)
+	{
+		textInfo = mSubQuestTexts[i]->GetTextInfo();
+		textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
+		mSubQuestTexts[i]->SetTextInfo(textInfo);
+		mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * -6, (float)deltaFontSize * -1.6f, 0 });
+	}
+
+	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
+	// Position 자동 조정
+	{
+		myTransform->SetLocalPosition({ 0.85f * screenWidth, 0.45f * screenHeight, 1 });
 	}
 }
 
@@ -454,13 +490,13 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 {
 	// textUI children 0 - QuestBox, 1 - monsterKillText, 2 - GaugeBar
 	game_module::TextUI* monsterKillText =
-		textUI->GetGameObject()->GetChildren()[1]->GetComponent<game_module::TextUI>();
+		textUI->GetGameObject()->GetParent()->GetChildren()[2]->GetComponent<game_module::TextUI>();
 	
 	auto text = monsterKillText->GetTextInfo();
 	text.IsRender = false;
 	monsterKillText->SetTextInfo(text);
 
-	game_module::ImageUI* gaugeBar = textUI->GetGameObject()->GetChildren()[2]->GetComponent<game_module::ImageUI>();
+	game_module::ImageUI* gaugeBar = textUI->GetGameObject()->GetParent()->GetChildren()[3]->GetComponent<game_module::ImageUI>();
 	gaugeBar->SetIsRender(0, false);
 
 	// Monster Kill Setting
