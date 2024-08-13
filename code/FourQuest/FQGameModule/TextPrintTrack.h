@@ -20,15 +20,15 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
-		float mNameFontCenterY = 500.f;
-		float mNameFontSize = 12.f;
-		DirectX::SimpleMath::Color mNameFontColor = { 0.f, 0.f, 1.f, 1.f };
-		std::string mName = {};
+		float mNameFontCenterY;
+		float mNameFontSize;
+		DirectX::SimpleMath::Color mNameFontColor;
+		std::string mName;
 
-		float mTextFontCenterY = 550.f;
-		float mTextFontSize = 10.f;
-		DirectX::SimpleMath::Color mTextFontColor = { 1.f, 1.f, 1.f, 1.f };
-		std::string mText = {};
+		float mTextFontCenterY;
+		float mTextFontSize;
+		DirectX::SimpleMath::Color mTextFontColor;
+		std::string mText;
 
 		Scene* mScene;
 		std::shared_ptr<GameObject> mNameObject;
