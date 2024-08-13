@@ -141,6 +141,11 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 			for (const auto& material : gameObjectInfo.MeshData.Materials)
 			{
+				if (gameObjectInfo.MeshData.ModelPath.empty())
+				{
+					continue;
+				}
+
 				fq::graphics::MaterialInfo materialInfo;
 
 				materialInfo.BaseColor = material.Albedo;
@@ -171,9 +176,17 @@ void fq::game_engine::ImportWindow::createGameObject()
 					materialInfo.EmissiveFileName = mBasePath / fq::common::StringUtil::ToWide(material.EmissionMap);
 				}
 
-				std::string materialPath = (mBasePath / material.Path).replace_extension(".material").string();
-				mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
-				materialPaths.push_back(materialPath);
+				std::filesystem::path materialPath = mBasePath / std::filesystem::path(gameObjectInfo.MeshData.ModelPath);
+				materialPath.replace_filename("Material\\" + material.Name);
+				materialPath.replace_extension(".material");
+
+				if (!std::filesystem::exists(materialPath.parent_path()))
+				{
+					std::filesystem::create_directories(materialPath.parent_path());
+				}
+
+				mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), materialInfo);
+				materialPaths.push_back(materialPath.string());
 			}
 
 			const auto& meshName = gameObjectInfo.MeshData.Name;
@@ -250,8 +263,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				for (const auto& importLayerInfo : gameObjectInfo.TerrainData.Layers)
 				{
 					fq::graphics::TerrainLayer terrainLayer;
-					terrainLayer.BaseColor = importLayerInfo.BaseColor;
-					terrainLayer.NormalMap = importLayerInfo.NormalMap;
+					terrainLayer.BaseColor = (mBasePath / importLayerInfo.BaseColor).string();
+					terrainLayer.NormalMap = (mBasePath / importLayerInfo.NormalMap).string();
 					terrainLayer.Metalic = importLayerInfo.Metalic;
 					terrainLayer.Roughness = importLayerInfo.Roughness;
 					terrainLayer.TileSizeX = importLayerInfo.TileSizeX;
@@ -262,7 +275,10 @@ void fq::game_engine::ImportWindow::createGameObject()
 					terrainLayers.push_back(terrainLayer);
 				}
 
-				terrain.SetAlphaMap(gameObjectInfo.TerrainData.AlphaFileName);
+				if (!gameObjectInfo.TerrainData.AlphaFileName.empty())
+				{
+					terrain.SetAlphaMap((mBasePath / gameObjectInfo.TerrainData.AlphaFileName).string());
+				}
 				terrain.SetTerrainLayers(terrainLayers);
 				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth);
 				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight);
@@ -271,7 +287,11 @@ void fq::game_engine::ImportWindow::createGameObject()
 				// 이 데이터 현재 못 읽어옴
 				terrain.SetTextureWidth(512);
 				terrain.SetTextureHeight(512);
-				terrain.SetHeightMap(gameObjectInfo.TerrainData.HeightFileName);
+
+				if (!gameObjectInfo.TerrainData.HeightFileName.empty())
+				{
+					terrain.SetHeightMap((mBasePath / gameObjectInfo.TerrainData.HeightFileName).string());
+				}
 
 				terrain.SetLightmapUVScaleOffset(gameObjectInfo.TerrainData.LightmapScaleOffset);
 				terrain.SetLightmapIndex(gameObjectInfo.TerrainData.LightmapIndex);
