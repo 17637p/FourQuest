@@ -5,6 +5,8 @@
 #include "ModelLoader.h"
 #include "FileUtil.h"
 
+#include "../FQCommon/FQPath.h"
+
 namespace fq::loader
 {
 	fq::common::Model ModelLoader::Read(const std::string& fileName)
@@ -744,18 +746,23 @@ namespace fq::loader
 		std::string temp;
 		materialInfoJson.at("BaseColorFileName").get_to(temp);
 		materialInfo.BaseColorFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.BaseColorFileName = fq::path::GetAbsolutePath(materialInfo.BaseColorFileName);
 
 		materialInfoJson.at("MetalnessFileName").get_to(temp);
 		materialInfo.MetalnessFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.MetalnessFileName = fq::path::GetAbsolutePath(materialInfo.MetalnessFileName);
 
 		materialInfoJson.at("RoughnessFileName").get_to(temp);
 		materialInfo.RoughnessFileName = std::wstring(temp.begin(), temp.end());
-
-		materialInfoJson.at("NormalFileName").get_to(temp);
-		materialInfo.NormalFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.RoughnessFileName = fq::path::GetAbsolutePath(materialInfo.RoughnessFileName);
 
 		materialInfoJson.at("EmissiveFileName").get_to(temp);
 		materialInfo.EmissiveFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.EmissiveFileName = fq::path::GetAbsolutePath(materialInfo.EmissiveFileName);
+
+		materialInfoJson.at("NormalFileName").get_to(temp);
+		materialInfo.NormalFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.NormalFileName = fq::path::GetAbsolutePath(materialInfo.NormalFileName);
 
 		materialInfoJson.at("bUseBaseColor").get_to(materialInfo.bUseBaseColor);
 		materialInfoJson.at("bUseMetalness").get_to(materialInfo.bUseMetalness);
@@ -819,11 +826,24 @@ namespace fq::loader
 			materialInfo.DissolveEndColor.w = materialInfoJson.at("DissolveEndColor")[3].get<float>();
 		}
 
+		find = materialInfoJson.find("bIsUsedMetalnessSmoothness");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bIsUsedMetalnessSmoothness").get_to(materialInfo.bIsUsedMetalnessSmoothness);
+		}
+
+		find = materialInfoJson.find("MetalnessSmoothnessFileName");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("MetalnessSmoothnessFileName").get_to(temp);
+			materialInfo.MetalnessSmoothnessFileName = std::wstring(temp.begin(), temp.end());
+			materialInfo.MetalnessSmoothnessFileName = fq::path::GetAbsolutePath(materialInfo.MetalnessSmoothnessFileName);
+		}
+
 		return materialInfo;
 	}
 	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
 	{
-
 		using namespace fq::graphics;
 
 		nlohmann::ordered_json materialInfoJson;
@@ -835,16 +855,18 @@ namespace fq::loader
 			{"Metalness", material.Metalness},
 			{"Roughness", material.Roughness},
 			{"EmissiveColor", {material.EmissiveColor.x, material.EmissiveColor.y, material.EmissiveColor.z, material.EmissiveColor.w}},
-			{"BaseColorFileName", std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())},
-			{"MetalnessFileName", std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())},
-			{"RoughnessFileName", std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())},
-			{"NormalFileName", std::string(material.NormalFileName.begin(), material.NormalFileName.end())},
-			{"EmissiveFileName", std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())},
+			{"BaseColorFileName", fq::path::GetRelativePath(std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())).string() },
+			{"MetalnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())).string() },
+			{"RoughnessFileName", fq::path::GetRelativePath(std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())).string() },
+			{"NormalFileName", fq::path::GetRelativePath(std::string(material.NormalFileName.begin(), material.NormalFileName.end())).string() },
+			{"EmissiveFileName", fq::path::GetRelativePath(std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())).string() },
+			{"MetalnessSmoothnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessSmoothnessFileName.begin(), material.MetalnessSmoothnessFileName.end())).string() },
 			{"bUseBaseColor", material.bUseBaseColor},
 			{"bUseMetalness", material.bUseMetalness},
 			{"bUseRoughness", material.bUseRoughness},
 			{"bUseNormalness", material.bUseNormalness},
 			{"bIsUsedEmissive", material.bIsUsedEmissive},
+			{"bIsUsedMetalnessSmoothness", material.bIsUsedMetalnessSmoothness},
 			{"Tiling", {material.Tiling.x, material.Tiling.y}},
 			{"Offset", {material.Offset.x, material.Offset.y}},
 			{"AlphaCutoff", material.AlphaCutoff},

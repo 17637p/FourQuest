@@ -50,6 +50,7 @@ namespace fq::game_engine
 
 		// 머터리얼 저장 경로
 		std::filesystem::path mExtractedPrefabPath;
+		std::filesystem::path mRewriteMaterialDir;
 
 		// 인스펙터
 		bool mbCanEditPath;// 드래그 드랍이 아닌 입력을 받을 수 있음
