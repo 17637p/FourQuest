@@ -88,7 +88,7 @@ fq::game_module::GameObject* fq::client::MonsterGroup::GetTarget() const
 	return mTarget.get();
 }
 
-int fq::client::MonsterGroup::GetRemianMonsterSize() const
+int fq::client::MonsterGroup::GetRemainMonsterSize() const
 {
 	return static_cast<int>(mMonsters.size());
 }

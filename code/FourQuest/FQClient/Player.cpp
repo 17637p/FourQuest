@@ -93,9 +93,6 @@ void fq::client::Player::OnStart()
 	EquipArmourWeapone();
 
 	// TODO : °©¿Ê ¹öÇÁ Àû¿ë
-
-	// Player HUD µî·Ï
-	GetScene()->GetObjectByName("PlayerUIManager")->GetComponent<PlayerUIManager>()->AddPlayer(GetPlayerID());
 }
 
 void fq::client::Player::processInput()
