@@ -13,6 +13,7 @@ namespace fq::graphics
 	class D3D11ParticleManager;
 	class D3D11ObjectManager;
 	class D3D11ObjectManager;
+	class FullScreenPass;
 
 	class RenderPipeline
 	{
@@ -25,7 +26,7 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		virtual	void Finalize();
-		virtual void OnResize(unsigned short width, unsigned short height);
+		virtual void OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight);
 
 		virtual void BeginRender();
 		virtual void Render();
@@ -37,7 +38,7 @@ namespace fq::graphics
 	protected:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-		std::shared_ptr<Pass> mFullScreenLastPass;
+		std::shared_ptr<FullScreenPass> mFullScreenLastPass;
 		std::vector<std::shared_ptr<Pass>> mPasses;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;

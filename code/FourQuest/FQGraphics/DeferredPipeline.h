@@ -36,7 +36,7 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		void Finalize() override;
-		virtual void OnResize(unsigned short width, unsigned short height);
+		virtual void OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight);
 
 	private:
 		std::shared_ptr<class ShadowPass> mShadowPass;

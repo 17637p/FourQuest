@@ -116,46 +116,48 @@ void fq::client::PlayerUIManager::DeletePlayer(int playerID)
 void fq::client::PlayerUIManager::SetPlayerUIPosition()
 {
 	int playerSize = mPlayerUIs.size();
+	int screenWidth = mScreenManager->GetFixScreenWidth();
+	int screenHeight = mScreenManager->GetFixScreenHeight();
 	if (playerSize == 1)
 	{
 		mPlayerUIs[0]->GetComponent<game_module::Transform>()->SetLocalPosition({ 
-			mScreenManager->GetScreenWidth() / (float)2, 
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)2,
+			screenHeight* mHeightRatio, 0 });
 	}
 	else if (playerSize == 2)
 	{
 		mPlayerUIs[0]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)3,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)3,
+			screenHeight* mHeightRatio, 0 });
 		mPlayerUIs[1]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)3 * 2,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)3 * 2,
+			screenHeight * mHeightRatio, 0 });
 	}
 	else if (playerSize == 3)
 	{
 		mPlayerUIs[0]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)4,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)4,
+			screenHeight* mHeightRatio, 0 });
 		mPlayerUIs[1]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)4 * 2,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)4 * 2,
+			screenHeight* mHeightRatio, 0 });
 		mPlayerUIs[2]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)4 * 3,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)4 * 3,
+			screenHeight* mHeightRatio, 0 });
 	}
 	else if (playerSize == 4)
 	{
 		mPlayerUIs[0]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)5,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)5,
+			screenHeight* mHeightRatio, 0 });
 		mPlayerUIs[1]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)5 * 2,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)5 * 2,
+			screenHeight* mHeightRatio, 0 });
 		mPlayerUIs[2]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)5 * 3,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)5 * 3,
+			screenHeight * mHeightRatio, 0 });
 		mPlayerUIs[3]->GetComponent<game_module::Transform>()->SetLocalPosition({
-			mScreenManager->GetScreenWidth() / (float)5 * 4,
-			mScreenManager->GetScreenHeight() * mHeightRatio, 0 });
+			screenWidth / (float)5 * 4,
+			screenHeight* mHeightRatio, 0 });
 	}
 }

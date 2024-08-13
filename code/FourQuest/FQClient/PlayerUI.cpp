@@ -104,8 +104,8 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 	}
 
 	// Scale 자동 조정 
-	UINT screenWidth = mScreenManager->GetScreenWidth();
-	UINT screenHeight = mScreenManager->GetScreenHeight();
+	UINT screenWidth = mScreenManager->GetFixScreenWidth();
+	UINT screenHeight = mScreenManager->GetFixScreenHeight();
 	{
 		myTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
 	}

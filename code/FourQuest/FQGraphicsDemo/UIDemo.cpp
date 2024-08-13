@@ -86,10 +86,10 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	///////////////////////////////////////////////////////////////
 
 	fq::graphics::TextInfo textInfo{};
-	textInfo.CenterX = 960;
-	textInfo.CenterY = 540;
-	textInfo.Width = 1920;
-	textInfo.Height = 1000;
+	textInfo.CenterX = 150;
+	textInfo.CenterY = 150;
+	textInfo.Width = 300;
+	textInfo.Height = 300;
 	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
 	textInfo.FontColor = { 0.1,0.8,0.4,1 };
 	textInfo.FontSize = 32;
