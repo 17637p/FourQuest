@@ -399,8 +399,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	{
 		mGameProcess->mResourceSystem->LoadModelResource(modelPath);
 	}
-
-
+	
 	auto meshName = staticMeshRenderer->GetMeshName();
 	auto materialPaths = staticMeshRenderer->GetMaterialPaths();
 	auto meshInfo = staticMeshRenderer->GetMeshObjectInfomation();

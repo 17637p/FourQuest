@@ -191,13 +191,13 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 							materialInfo.Offset.y = materialInfoJson.at("Offset").at("y").get<float>();
 
 							materialInfo.RasterizeType = static_cast<ERasterizeMode>(materialInfoJson.at("RasterizeType").get<int>());
-							
+
 							materialInfo.RenderModeType = static_cast<MaterialInfo::ERenderMode>(materialInfoJson.at("RenderModeType").get<int>());
 
 							materialInfoJson.at("Roughness").get_to(materialInfo.Roughness);
 
 							materialInfo.RoughnessFileName = generateWString(materialInfoJson.at("RoughnessFileName"));
-							
+
 							materialInfo.SampleType = static_cast<ESampleMode>(materialInfoJson.at("SampleType").get<int>());
 
 							materialInfo.Tiling.x = materialInfoJson.at("Tiling").at("x").get<float>();
@@ -392,14 +392,70 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				);
 			}
 
-			if (ImGui::Button("reload Material File"))
+			std::string basePathString = mRewriteMaterialDir.string();
+			ImGui::InputText("rewrite material Directory", &basePathString);
+
+			if (ImGui::BeginDragDropTarget())
 			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* path
+						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+					if (std::filesystem::exists(*path) && std::filesystem::is_directory(*path))
+					{
+						mRewriteMaterialDir = *path;
+					}
+				}
+			}
+
+			if (ImGui::Button("rewrite material texture path"))
+			{
+				auto makeRelativePath = [](std::wstring& filename)
+					{
+						if (filename.empty())
+						{
+							return;
+						}
+
+						size_t index = filename.find(L"resource");
+
+						if (index == std::wstring::npos) {
+							index = 0;
+						}
+
+						filename = filename.substr(index, filename.size());
+					};
+
+				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
+				{
+					for (auto path : std::filesystem::recursive_directory_iterator(mRewriteMaterialDir))
+					{
+						if (path.path().extension() == ".material")
+						{
+							auto data = mGameProcess->mGraphics->ReadMaterialInfo(path.path().string());
+
+							makeRelativePath(data.BaseColorFileName);
+							makeRelativePath(data.MetalnessFileName);
+							makeRelativePath(data.RoughnessFileName);
+							makeRelativePath(data.EmissiveFileName);
+							makeRelativePath(data.NormalFileName);
+							makeRelativePath(data.MetalnessSmoothnessFileName);
+
+							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
+						}
+					}
+				}
+
+
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
 				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
 					[](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
 					{
-						if (!renderer.GetMaterialPaths().empty())
+						if (renderer.GetMaterialPaths().empty())
 						{
 							return;
 						}
@@ -411,13 +467,15 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 							size_t index = materialPath.find("resource");
 							materialPath = materialPath.substr(index, materialPath.size());
 						}
+
+						renderer.SetMaterialPaths(materialPaths);
 					}
 				);
 
 				scene->ViewComponents<game_module::StaticMeshRenderer>(
 					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
 					{
-						if (!renderer.GetMaterialPaths().empty())
+						if (renderer.GetMaterialPaths().empty())
 						{
 							return;
 						}
@@ -427,8 +485,10 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						for (auto& materialPath : materialPaths)
 						{
 							size_t index = materialPath.find("resource");
-							materialPath = materialPath.substr(index, materialPath.size());
+							materialPath = fq::path::GetAbsolutePath(materialPath.substr(index, materialPath.size())).string();
 						}
+
+						renderer.SetMaterialPaths(materialPaths);
 					}
 				);
 			}

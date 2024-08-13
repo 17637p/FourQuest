@@ -81,11 +81,13 @@ void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
 		{
 			auto staticMesh = mGameProcess->mGraphics->CreateStaticMesh(mesh);
 			mStaticMeshes.insert({ modelPath + mesh.Name, staticMesh });
+			mStaticMeshes.insert({ modelPath + node.Name, staticMesh }); // 유니티에서 메쉬이름이 노드이름으로 변환되어 해당 로직 추가합니다_홍지환
 		}
 		else
 		{
 			auto skinnedMesh = mGameProcess->mGraphics->CreateSkinnedMesh(mesh);
 			mSkinnedMeshes.insert({ modelPath + mesh.Name, skinnedMesh });
+			mSkinnedMeshes.insert({ modelPath + node.Name, skinnedMesh }); // 유니티에서 메쉬이름이 노드이름으로 변환되어 해당 로직 추가합니다_홍지환
 		}
 	}
 
