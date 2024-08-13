@@ -4,6 +4,9 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/GameModule.h"
 
+#include "GameManager.h"
+#include "Player.h"
+
 std::shared_ptr<fq::game_module::Component> fq::client::PlayerUIManager::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
 	auto clonePlayerUIManager = std::dynamic_pointer_cast<PlayerUIManager>(clone);
@@ -36,23 +39,57 @@ fq::client::PlayerUIManager::~PlayerUIManager()
 void fq::client::PlayerUIManager::OnStart()
 {
 	mScreenManager = GetScene()->GetScreenManager();
+	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
 }
 
 void fq::client::PlayerUIManager::OnUpdate(float dt)
 {
 	SetPlayerUIPosition();
+
+	int playerSize = mPlayerUIs.size();
+	if (mGameManager != nullptr)
+	{
+		auto players = mGameManager->GetPlayers();
+		if (players.size() > playerSize)
+		{
+			for (int i = 0; i < players.size() - playerSize; i++)
+			{
+				Player* player = players[i]->GetComponent<Player>();
+				AddPlayer(player->GetPlayerID());
+			}
+		}
+	}
+
+	for (int i = 0; i < mPlayerUIs.size(); i++)
+	{
+		mPlayerUIs[i]->GetComponent<PlayerUI>()->SetPlayer();
+	}
 }
 
 void fq::client::PlayerUIManager::AddPlayer(int playerID)
 {
-	// 뭔가 굉장히 지저분하다 오토도 그렇고...
+	std::shared_ptr<game_module::GameObject> playerUIObject;
+	bool isExist = false;
+	for (int i = 0; i < mPlayerUIs.size(); i++)
+	{
+		if (mPlayerUIs[i]->GetComponent<PlayerUI>()->GetPlayerID() == playerID)
+		{
+			playerUIObject = mPlayerUIs[i];
+			isExist = true;
+		}
+	}
 	// PlayerHUD 생성
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPlayerUIPrefab);
-	auto playerUIObject = *(instance.begin());
-	playerUIObject->GetComponent<PlayerUI>()->SetPlayerID(playerID);
+	if (!isExist)
+	{
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPlayerUIPrefab);
+		playerUIObject = *(instance.begin());
 
-	mPlayerUIs.push_back(playerUIObject);
-	GetScene()->AddGameObject(playerUIObject);
+		mPlayerUIs.push_back(playerUIObject);
+		GetScene()->AddGameObject(playerUIObject);
+	}
+
+	playerUIObject->GetComponent<PlayerUI>()->SetPlayerID(playerID);
+	playerUIObject->GetComponent<PlayerUI>()->SetPlayer();
 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
 	playerUIObject->GetComponent<game_module::Transform>()->SetParent(myTransform);

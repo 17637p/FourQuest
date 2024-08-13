@@ -33,6 +33,16 @@ namespace fq::client
 		const std::vector<std::shared_ptr<game_module::GameObject>>& GetMonsters()const { return mMonsters; }
 
 		/// <summary>
+		/// 몬스터그룹의 남은 몬스터의 갯수를 반환합니다 
+		/// </summary>
+		int GetRemainMonsterSize()const;
+
+		/// <summary>
+		/// 몬스터 그룹에 등록된 모든 몬스터의 갯수를 반환합니다
+		/// </summary>
+		int GetAllMonsterSize()const;
+
+		/// <summary>
 		/// 타겟을 반환합니다
 		/// </summary>
 		fq::game_module::GameObject* GetTarget()const;
@@ -46,5 +56,10 @@ namespace fq::client
 	private:
 		std::vector<std::shared_ptr<game_module::GameObject>> mMonsters;
 		std::shared_ptr<fq::game_module::GameObject> mTarget;
+
+		int mGroupIndex;
+		int mMonsterCount;
+
+		friend void RegisterMetaData();
 	};
 }

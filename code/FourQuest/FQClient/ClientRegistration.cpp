@@ -20,6 +20,8 @@
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
 #include "ShieldAttackState.h"
+#include "StaffSoulAttackState.h"
+#include "SwordSoulAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -72,6 +74,7 @@
 #include "SpawnerOpenState.h"
 
 #include "Attack.h"
+#include "StaffSoulAttack.h"
 #include "KnockBack.h"
 
 // UI
@@ -113,8 +116,8 @@ void fq::client::RegisterMetaData()
 		.conv<std::underlying_type_t<ESoulType>>()
 		.data<ESoulType::Sword>("Sword"_hs) // 0
 		.prop(fq::reflect::prop::Name, "Sword")
-		.data<ESoulType::Shield>("Shield"_hs) // 1
-		.prop(fq::reflect::prop::Name, "Shield")
+		.data<ESoulType::Axe>("Axe"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Axe")
 		.data<ESoulType::Bow>("Bow"_hs) // 2
 		.prop(fq::reflect::prop::Name, "Bow")
 		.data<ESoulType::Staff>("Staff"_hs) // 3
@@ -150,8 +153,10 @@ void fq::client::RegisterMetaData()
 		.data<&Player::mAttackPositionOffset>("FeverTime"_hs)
 		.prop(reflect::prop::Name, "FeverTime")
 		.prop(reflect::prop::Comment, u8"갑옷 버프 시간")
-		.data<&Player::mAttackPrafab>("AttakPrefab"_hs)
-		.prop(reflect::prop::Name, "AttakPrefab")
+		.data<&Player::mStaffSoulAttack>("StaffSoulAttack"_hs)
+		.prop(reflect::prop::Name, "StaffSoulAttack")
+		.data<&Player::mSwordSoulAttack>("SwordSoulAttack"_hs)
+		.prop(reflect::prop::Name, "SwordSoulAttack")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
 		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
@@ -295,6 +300,17 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AttackTiming")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<StaffSoulAttackState>()
+		.type("StaffSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "StaffSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<SwordSoulAttackState>()
+		.type("SwordSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "SwordSoulAttackState")
+		.data<&SwordSoulAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             몬스터									//
@@ -634,6 +650,10 @@ void fq::client::RegisterMetaData()
 		.type("MonsterGroup"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterGroup")
 		.prop(reflect::prop::Label, "Monster")
+		.data<&MonsterGroup::mMonsterCount>("MonsterCount"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterCount")
+		.data<&MonsterGroup::mGroupIndex>("GroupIndex"_hs)
+		.prop(fq::reflect::prop::Name, "GroupIndex")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -673,20 +693,28 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "CameraMoving")
 		.data<&CameraMoving::SetMoveSpeed, &CameraMoving::GetMoveSpeed>("MoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "MoveSpeed")
+		.prop(fq::reflect::prop::Comment, u8"카메라 움직이는 속도")
 		.data<&CameraMoving::SetZoomSpeed, &CameraMoving::GetZoomSpeed>("ZoomSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomSpeed")
+		.prop(fq::reflect::prop::Comment, u8"카메라 ZoomInOut 속도")
 		.data<&CameraMoving::SetZoomMin, &CameraMoving::GetZoomMin>("ZoomMin"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomMin")
+		.prop(fq::reflect::prop::Comment, u8"카메라 최대 ZoomIn 정도")
 		.data<&CameraMoving::SetZoomMax, &CameraMoving::GetZoomMax>("ZoomMax"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomMax")
+		.prop(fq::reflect::prop::Comment, u8"카메라 최대 ZoomOut 정도")
 		.data<&CameraMoving::SetZoomOutPadX, &CameraMoving::GetZoomOutPadX>("ZoomOutPadX"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomOutPadX")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomOut x축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomOut 시작. 화면 왼쪽 끝 -1, 오른쪽 끝 1")
 		.data<&CameraMoving::SetZoomOutPadY, &CameraMoving::GetZoomOutPadY>("ZoomOutPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomOutPadY")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomOut y축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomOut 시작. 화면 위쪽 끝 1, 아래쪽 끝 -1. 위쪽은 좀 더 여유롭게 값을 잡아야함")
 		.data<&CameraMoving::SetZoomInPadX, &CameraMoving::GetZoomInPadX>("ZoomInPadX"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadX")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomIn x축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomIn 시작. 화면 왼쪽 끝 -1, 오른쪽 끝 1")
 		.data<&CameraMoving::SetZoomInPadY, &CameraMoving::GetZoomInPadY>("ZoomInPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadY")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomIn y축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomIn 시작. 화면 위쪽 끝 1, 아래쪽 끝 -1. 위쪽은 좀 더 여유롭게 값을 잡아야함")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -713,6 +741,18 @@ void fq::client::RegisterMetaData()
 		.data<&KnockBack::mFriction>("Friction"_hs)
 		.prop(fq::reflect::prop::Name, "Friction")
 		.base<fq::game_module::Component>();
+
+	entt::meta<StaffSoulAttack>()
+		.type("StaffSoulAttack"_hs)
+		.prop(fq::reflect::prop::Name, "StaffSoulAttack")
+		.data<&StaffSoulAttack::mAttackEmitTick>("AttackEmitTick"_hs)
+		.prop(fq::reflect::prop::Name, "AttackEmitTick")
+		.data<&StaffSoulAttack::mAttackDuration>("AttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "AttackDuration")
+		.data<&StaffSoulAttack::mAttack>("Attack"_hs)
+		.prop(fq::reflect::prop::Name, "Attack")
+		.base<fq::game_module::Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//
@@ -826,8 +866,8 @@ void fq::client::RegisterMetaData()
 		.type("MonsterGroupKill"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterGroupKill")
 		.prop(fq::reflect::prop::POD)
-		.data<&MonsterGroupKill::groupIndex>("GroupIndex"_hs)
-		.prop(fq::reflect::prop::Name, "GroupIndex");
+		.data<&MonsterGroupKill::monsterGroupName>("MonsterGroupName"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupName");
 
 	entt::meta<Defence>()
 		.type("Defence"_hs)

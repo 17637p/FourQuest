@@ -360,6 +360,66 @@ void fq::graphics::UIManager::drawAllText()
 			std::wstring text = stringToWstring(drawTextInformation.Text);
 			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
 
+			switch (textObject->GetTextInformation().Align)
+			{
+				case ETextAlign::LeftTop:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				}
+				case ETextAlign::LeftCenter:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				}
+				case ETextAlign::LeftBottom:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				case ETextAlign::CenterTop:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				}
+				case ETextAlign::CenterCenter:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				}
+				case ETextAlign::CenterBottom:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				case ETextAlign::RightTop:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				}
+				case ETextAlign::RightCenter:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				}
+				case ETextAlign::RightBottom:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				default:
+					break;
+			}
+
 			mRenderTarget->DrawText(
 				text.c_str(),
 				text.length(),
@@ -401,7 +461,7 @@ void fq::graphics::UIManager::drawAllImage()
 		std::wstring imagePath = stringToWstringPath.wstring();
 
 		D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
-		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
+ 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 		D2D1_RECT_F screenRect{};
 		if (image->GetRenderMode()) // true가 isCenter
 		{

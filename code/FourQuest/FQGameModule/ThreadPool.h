@@ -8,6 +8,7 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <atomic>
 #include <vector>
 
 namespace fq::game_module
@@ -26,7 +27,7 @@ namespace fq::game_module
 		ThreadPool(size_t numThreads);
 		~ThreadPool();
 
-		void workerThread();
+		void workerThread(size_t index);
 
 	private:
 		inline static ThreadPool* mInstance = nullptr;

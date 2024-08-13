@@ -86,19 +86,20 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	///////////////////////////////////////////////////////////////
 
 	fq::graphics::TextInfo textInfo{};
-	textInfo.CenterX = 500;
-	textInfo.CenterY = 500;
-	textInfo.Width = 1000;
+	textInfo.CenterX = 960;
+	textInfo.CenterY = 540;
+	textInfo.Width = 1920;
 	textInfo.Height = 1000;
 	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
 	textInfo.FontColor = { 0.1,0.8,0.4,1 };
 	textInfo.FontSize = 32;
 	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
+	textInfo.Align = fq::graphics::ETextAlign::RightTop;
 	mTextObject1 = mTestGraphics->CreateText(textInfo);
 	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
 
-	textInfo.CenterX = 600;
-	textInfo.CenterY = 700;
+	//textInfo.CenterX = 600;
+	//textInfo.CenterY = 700;
 	textInfo.FontSize = 50;
 	textInfo.FontColor = { 0.8,0.8,0.4,1 };
 	mTextObject2 = mTestGraphics->CreateText(textInfo);
@@ -155,6 +156,10 @@ LRESULT UIDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		mScreenWidth = max(200, mScreenWidth);
 		mScreenHeight = max(200, mScreenHeight);
 
+		if (mTestGraphics != nullptr)
+		{
+			mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
+		}
 		break;
 	}
 	case WM_PAINT:

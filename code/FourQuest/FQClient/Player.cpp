@@ -10,17 +10,19 @@
 #include "Soul.h"
 #include "ClientEvent.h"
 #include "PlayerUIManager.h"
+#include "DamageCalculation.h"
+#include "StaffSoulAttack.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
-	, mAttackPrafab{}
 	, mController(nullptr)
 	, mHp(0.f)
 	, mMaxHp(0.f)
+	, mMaxSoulStack(0.f)
+	, mSoulStack(0.f)
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(0.f)
 	, mAnimator(nullptr)
-	, mSoulStack(0.f)
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
 	, mArmourType(EArmourType::Knight)
@@ -28,6 +30,7 @@ fq::client::Player::Player()
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
 	, mAttackSpeed(1.f)
+	, mEquipWeapone(ESoulType::Sword)
 {}
 
 fq::client::Player::~Player()
@@ -64,6 +67,7 @@ void fq::client::Player::OnUpdate(float dt)
 void fq::client::Player::OnStart()
 {
 	mMaxHp = mHp;
+	mMaxSoulStack = mSoulStack;
 
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	mController = GetComponent<fq::game_module::CharacterController>();
@@ -85,16 +89,15 @@ void fq::client::Player::OnStart()
 	// ¿µÈ¥ Å¸ÀÔ Àû¿ë
 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
-	// TODO : °©¿Ê ¹öÇÁ Àû¿ë
+	// ¹«±â Âø¿ë
+	EquipArmourWeapone();
 
-	// Player HUD µî·Ï
-	GetScene()->GetObjectByName("PlayerUIManager")->GetComponent<PlayerUIManager>()->AddPlayer(GetPlayerID());
+	// TODO : °©¿Ê ¹öÇÁ Àû¿ë
 }
 
 void fq::client::Player::processInput()
 {
 	auto input = GetScene()->GetInputManager();
-
 
 	if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::B, EKeyState::Tap))
 	{
@@ -209,5 +212,88 @@ void fq::client::Player::processFeverTime(float dt)
 float fq::client::Player::GetPlayerID() const
 {
 	return mController->GetControllerID();
+}
+
+void fq::client::Player::EmitStaffSoulAttack()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStaffSoulAttack);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	auto attackComponent = attackObj->GetComponent<StaffSoulAttack>();
+	attackT->SetParent(mTransform);
+	attackComponent->SetPlayer(this);
+
+	GetScene()->AddGameObject(attackObj);
+}
+
+void fq::client::Player::EmitSwordSoulAttack()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSwordSoulAttack);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	auto attackComponent = attackObj->GetComponent<Attack>();
+	auto foward = mTransform->GetLookAtVector();
+
+	// °ø°Ý Æ®·£½ºÆû ¼³Á¤
+	DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
+	DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
+	pos.y += 1.f;
+	constexpr float AttackOffset = 1.5f;
+	pos += foward * AttackOffset;
+	attackT->GenerateWorld(pos, rotation, attackT->GetWorldScale());
+
+	// °ø°Ý¼³Á¤
+	AttackInfo attackInfo{};
+	attackInfo.damage = dc::GetSwordSoulDamage(mAttackPower);
+	attackInfo.attacker = GetGameObject();
+	attackInfo.type = EKnockBackType::TargetPosition;
+	attackInfo.attackDirection = foward;
+	attackInfo.knocBackPower = 20.f;
+	attackInfo.attackPosition = mTransform->GetWorldPosition();
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(attackObj);
+}
+
+void fq::client::Player::EquipSoulWeapone()
+{
+	equipWeapone(mEquipWeapone, false);
+	mEquipWeapone = mSoulType;
+	equipWeapone(mEquipWeapone, true);
+}
+
+void fq::client::Player::EquipArmourWeapone()
+{
+	equipWeapone(mEquipWeapone, false);
+	mEquipWeapone = static_cast<ESoulType>(mArmourType);
+	equipWeapone(mEquipWeapone, true);
+}
+
+void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
+{
+	switch (equipType)
+	{
+		case fq::client::ESoulType::Sword:
+		{
+		}
+		break;
+		case fq::client::ESoulType::Staff:
+		{
+
+		}
+		break;
+		case fq::client::ESoulType::Axe:
+		{
+
+		}
+		break;
+		case fq::client::ESoulType::Bow:
+		{
+
+		}
+		break;
+	}
 }
 

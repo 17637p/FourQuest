@@ -25,6 +25,10 @@ namespace fq::client
 		int GetPlayerID() const { return mPlayerID; }
 		void SetPlayerID(int val) { mPlayerID = val; }
 
+		void SetPlayer();
+		void SetSoulGauge(float ratio);
+		void SetHPBar(float ratio);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

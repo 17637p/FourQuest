@@ -34,7 +34,8 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 	, InputManager* inputMgr
 	, PrefabManager* prefabMgr
 	, ScreenManager* screenMgr
-	, TimeManager* timeMgr)
+	, TimeManager* timeMgr
+	, bool isInvokeStartScene)
 {
 	mCurrentScene = std::make_unique<Scene>();
 	mEventManager = eventMgr;
@@ -48,6 +49,8 @@ void fq::game_module::SceneManager::Initialize(const std::string& startSceneName
 
 	mRequestChangeSceneHandler =
 		mEventManager->RegisterHandle<fq::event::RequestChangeScene>(this, &SceneManager::RequestChangeScene);
+
+	mbIsInvokeStartScene = isInvokeStartScene;
 }
 
 void fq::game_module::SceneManager::Finalize()
@@ -60,11 +63,7 @@ void fq::game_module::SceneManager::ChangeScene()
 {
 	UnloadScene();
 	LoadScene();
-
-	if (mbIsInvokeStartScene)
-	{
-		StartScene();
-	}
+	StartScene();
 }
 
 void fq::game_module::SceneManager::Update(float dt)
@@ -93,6 +92,8 @@ void fq::game_module::SceneManager::FixedUpdate(float dt)
 
 void fq::game_module::SceneManager::StartScene()
 {
+	if (!mbIsInvokeStartScene) return;
+
 	mCurrentScene->mIsStartScene = true;
 
 	for (auto& object : mCurrentScene->GetObjectView())
@@ -112,8 +113,6 @@ void fq::game_module::SceneManager::PostUpdate()
 
 void fq::game_module::SceneManager::LoadScene()
 {
-	spdlog::stopwatch sw;
-
 	auto scenePath = fq::path::GetScenePath();
 
 	scenePath /= mCurrentScene->GetSceneName();
@@ -135,12 +134,6 @@ void fq::game_module::SceneManager::LoadScene()
 
 	// PrefabResource Load
 	mPrefabManager->LoadPrefabResource(mCurrentScene.get());
-
-	// Event CallBack
-	mEventManager->FireEvent<fq::event::OnLoadScene>({ mCurrentScene->GetSceneName() });
-
-
-	spdlog::trace("[SceneManager] Load \"{}\" Scene [{}s]", mCurrentScene->GetSceneName(), sw);
 }
 
 void fq::game_module::SceneManager::UnloadScene()

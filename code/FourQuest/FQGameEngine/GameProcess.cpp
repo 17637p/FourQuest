@@ -17,6 +17,8 @@
 #include "PathFindingSystem.h"
 #include "LightProbeSystem.h"
 #include "LoadingSystem.h"
+#include "ResourceSystem.h"
+
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -40,6 +42,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mPathFindgingSystem(std::make_unique<PathFindingSystem>(this))
 	, mLightProbeSystem(std::make_unique<LightProbeSystem>(this))
 	, mLoadingSystem(std::make_unique<LoadingSystem>())
+	, mResourceSystem(std::make_unique<ResourceSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}
