@@ -131,7 +131,7 @@ namespace fq::loader
 			}
 
 			unsigned int dynamicDataCount = 0;
-			fileUtil.Read<unsigned int>(&tex1Count);
+			fileUtil.Read<unsigned int>(&dynamicDataCount);
 
 			for (unsigned int j = 0; j < dynamicDataCount; ++j)
 			{
@@ -140,7 +140,8 @@ namespace fq::loader
 				fileUtil.Read<string>(&dynamicData.Name);
 				fileUtil.Read<unsigned int>(&dynamicData.Size);
 				fileUtil.Read<unsigned int>(&dynamicData.Count);
-				fileUtil.Read(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+				dynamicData.Data.resize(dynamicData.Size * dynamicData.Count);
+				fileUtil.Read(dynamicData.Data.data(), dynamicData.Size * dynamicData.Count);
 
 				mesh.DynamicInfos.insert({ dynamicData.Name, dynamicData });
 			}
@@ -299,7 +300,7 @@ namespace fq::loader
 				fileUtil.Write<string>(dynamicData.Name);
 				fileUtil.Write<unsigned int>(dynamicData.Size);
 				fileUtil.Write<unsigned int>(dynamicData.Count);
-				fileUtil.Write(dynamicData.DataPtr, dynamicData.Size * dynamicData.Count);
+				fileUtil.Write(dynamicData.Data.data(), dynamicData.Size * dynamicData.Count);
 			}
 		}
 	}
@@ -764,6 +765,49 @@ namespace fq::loader
 		materialInfoJson.at("RasterizeType").get_to(rasterizeTypeStr);
 		materialInfo.RasterizeType = (rasterizeTypeStr == "BackFaceClip") ? ERasterizeMode::BackFaceClip : ERasterizeMode::TwoSide;
 
+		auto find = materialInfoJson.find("bUseDissolve");
+		if (find != materialInfoJson.end())
+		{
+			find->get_to(materialInfo.bUseDissolve);
+		}
+
+		find = materialInfoJson.find("NoiseFileName");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("NoiseFileName").get_to(temp);
+			materialInfo.NoiseFileName = std::wstring(temp.begin(), temp.end());
+		}
+
+		find = materialInfoJson.find("OutlineThickness");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("OutlineThickness").get_to(materialInfo.OutlineThickness);
+		}
+
+		find = materialInfoJson.find("DissolveCutoff");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("DissolveCutoff").get_to(materialInfo.DissolveCutoff);
+		}
+
+		find = materialInfoJson.find("DissolveStartColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.DissolveStartColor.x = materialInfoJson.at("DissolveStartColor")[0].get<float>();
+			materialInfo.DissolveStartColor.y = materialInfoJson.at("DissolveStartColor")[1].get<float>();
+			materialInfo.DissolveStartColor.z = materialInfoJson.at("DissolveStartColor")[2].get<float>();
+			materialInfo.DissolveStartColor.w = materialInfoJson.at("DissolveStartColor")[3].get<float>();
+		}
+
+		find = materialInfoJson.find("DissolveEndColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.DissolveEndColor.x = materialInfoJson.at("DissolveEndColor")[0].get<float>();
+			materialInfo.DissolveEndColor.y = materialInfoJson.at("DissolveEndColor")[1].get<float>();
+			materialInfo.DissolveEndColor.z = materialInfoJson.at("DissolveEndColor")[2].get<float>();
+			materialInfo.DissolveEndColor.w = materialInfoJson.at("DissolveEndColor")[3].get<float>();
+		}
+
 		return materialInfo;
 	}
 	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
@@ -793,11 +837,34 @@ namespace fq::loader
 			{"Offset", {material.Offset.x, material.Offset.y}},
 			{"AlphaCutoff", material.AlphaCutoff},
 			{"SampleType", material.SampleType == ESampleMode::Clamp ? "Clamp" : "Wrap"},
-			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"}
+			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"},
+			{"bUseDissolve", material.bUseDissolve },
+			{"NoiseFileName", std::string(material.NoiseFileName.begin(),material.NoiseFileName.end()) },
+			{"OutlineThickness", material.OutlineThickness },
+			{"DissolveCutoff", material.DissolveCutoff },
+			{"DissolveStartColor", {material.DissolveStartColor.x, material.DissolveStartColor.y, material.DissolveStartColor.z, material.DissolveStartColor.w}},
+			{"DissolveEndColor", {material.DissolveEndColor.x, material.DissolveEndColor.y, material.DissolveEndColor.z, material.DissolveEndColor.w}},
 		};
 
+		std::string tempPath = filePath.string();
+
+		for (auto& ch : tempPath)
+		{
+			if (ch == '|')
+			{
+				ch = 'a';
+			}
+		}
+
+		const std::filesystem::path parentPath = filePath.parent_path();
+		if (!std::filesystem::exists(parentPath))
+		{
+			std::filesystem::create_directories(parentPath);
+		}
+
 		// JSON 파일로 쓰기
-		std::ofstream writeData(filePath);
+		std::ofstream writeData(tempPath);
+
 		if (writeData.is_open())
 		{
 			writeData << materialInfoJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.

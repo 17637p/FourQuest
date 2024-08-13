@@ -47,6 +47,7 @@ void fq::game_engine::LightmapWindow::Render()
 		return;
 	}
 
+	// 第俊辑何磐 贸府秦林扁
 	if (ImGui::Begin("Lightmap", &mbIsOpen))
 	{
 		unsigned int index = 0;
@@ -92,7 +93,7 @@ void fq::game_engine::LightmapWindow::Render()
 			if (!mLightmapArrayPath.empty())
 			{
 				std::string basePath = mLightmapArrayPath[0].string();
-				size_t numberIndex = basePath.find('0');
+				size_t numberIndex = basePath.find_last_of('0');
 
 				std::string lhsPath = basePath.substr(0, numberIndex);
 				std::string rhsPath = basePath.substr(numberIndex + 1, basePath.size() - numberIndex);
@@ -154,7 +155,7 @@ void fq::game_engine::LightmapWindow::Render()
 			if (!mDirectionArrayPath.empty())
 			{
 				std::string basePath = mDirectionArrayPath[0].string();
-				size_t numberIndex = basePath.find('0');
+				size_t numberIndex = basePath.find_last_of('0');
 
 				std::string lhsPath = basePath.substr(0, numberIndex);
 				std::string rhsPath = basePath.substr(numberIndex + 1, basePath.size() - numberIndex);
@@ -241,15 +242,6 @@ void fq::game_engine::LightmapWindow::LoadLightmap(std::filesystem::path path)
 
 void fq::game_engine::LightmapWindow::ApplyLightmap()
 {
-	if (mLightmapArrayPath.empty())
-	{
-		return;
-	}
-	if (mDirectionArrayPath.empty())
-	{
-		return;
-	}
-
 	for (const auto& lightmap : mLightmapArrayPath)
 	{
 		if (!std::filesystem::exists(lightmap))

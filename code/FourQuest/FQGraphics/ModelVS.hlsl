@@ -15,6 +15,9 @@ struct VertexIn
 #ifdef STATIC
     float2 UV1 : UV1;
 #endif
+#ifdef VERTEX_COLOR
+    float4 Color : COLOR;
+#endif
 };
 
 struct VertexOut
@@ -28,8 +31,12 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
+    
 #ifdef STATIC
     float2 UV1 : TEXCOORD6;
+#endif
+#ifdef VERTEX_COLOR
+    float4 Color : COLOR0;
 #endif
 };
 
@@ -104,6 +111,9 @@ VertexOut main(VertexIn vin)
     vin.UV1.y = 1 - vin.UV1.y; 
     vout.UV1 = vin.UV1 * cUVOffsetScale.xy + cUVOffsetScale.zw;
     vout.UV1.y = 1 - vout.UV1.y; 
+#endif
+#ifdef VERTEX_COLOR
+    vout.Color = vin.Color;
 #endif
     
     return vout;

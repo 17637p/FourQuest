@@ -30,6 +30,7 @@ namespace fq::game_engine
 		struct Material
 		{
 			std::string Name;
+			std::string Path;
 			std::string renderMode;
 			DirectX::SimpleMath::Vector4 Albedo;
 			float Metallic;
@@ -61,7 +62,7 @@ namespace fq::game_engine
 			float SpotAngle;
 			std::string Mode;
 		};
-		
+
 		struct TerrainLayer
 		{
 			std::string BaseColor;
@@ -127,9 +128,7 @@ namespace fq::game_engine
 		fq::game_module::Scene* mScene;
 
 		std::filesystem::path mImportFileName;
-		std::filesystem::path mFBXDirectory;
-		std::filesystem::path mTextureDirectory;
-		std::filesystem::path mMaterialDirectory;
+		std::filesystem::path mBasePath;
 
 		bool mbIsOpen;
 	};

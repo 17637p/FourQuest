@@ -17,6 +17,7 @@ namespace fq::graphics
 		, mMaterials(materials)
 		, mInfo(info)
 		, mTransform(transform)
+		, mbIsRender(true)
 	{
 	}
 
@@ -29,6 +30,7 @@ namespace fq::graphics
 		, mMaterials(materials)
 		, mInfo(info)
 		, mTransform(transform)
+		, mbIsRender(true)
 	{
 	}
 

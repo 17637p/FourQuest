@@ -206,9 +206,6 @@
     <ClInclude Include="EditorHelper.h">
       <Filter>include\10.Editor</Filter>
     </ClInclude>
-    <ClInclude Include="TrailSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="ArticulationHierarchy.h">
       <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
@@ -232,6 +229,18 @@
     </ClInclude>
     <ClInclude Include="LoadingSystem.h">
       <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LightmapWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include\11.EditorWindow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -367,9 +376,6 @@
     <ClCompile Include="EditorHelper.cpp">
       <Filter>src\10.Editor</Filter>
     </ClCompile>
-    <ClCompile Include="TrailSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ArticulationHierarchy.cpp">
       <Filter>src\11.Window</Filter>
     </ClCompile>
@@ -390,6 +396,18 @@
     </ClCompile>
     <ClCompile Include="LoadingSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LightmapWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src\11.Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

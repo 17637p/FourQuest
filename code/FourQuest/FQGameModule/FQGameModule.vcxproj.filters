@@ -111,6 +111,18 @@
     <Filter Include="src\12.ThreadPool">
       <UniqueIdentifier>{63171bad-388a-4f42-909a-b06f1937084b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.EntityComponent\Sequence">
+      <UniqueIdentifier>{c10f0b85-5e41-43d2-91b0-831785dc9d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Sequence">
+      <UniqueIdentifier>{fa14a593-0391-4a8f-a807-9da6f310fb1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Sequence\Track">
+      <UniqueIdentifier>{19f925ee-80e4-4d76-a39b-a00620b83a60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Sequence\Track">
+      <UniqueIdentifier>{7eaee9aa-5888-47c0-abe7-b7aa461e1cc1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -320,6 +332,36 @@
     <ClInclude Include="TextUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialAnimator.h">
+      <Filter>include\09.Animation</Filter>
+	</ClInclude>
+    <ClInclude Include="Track.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="Sequence.h">
+      <Filter>include\01.EntityComponent\Sequence</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTeleportTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectMoveTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraChangeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="TextPrintTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectAnimationTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -510,6 +552,36 @@
     </ClCompile>
     <ClCompile Include="TextUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialAnimator.cpp">
+      <Filter>src\09.Animation</Filter>
+	</ClCompile>
+    <ClCompile Include="Track.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="Sequence.cpp">
+      <Filter>src\01.EntityComponent\Sequence</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectTeleportTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectMoveTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraChangeTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="TextPrintTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectAnimationTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

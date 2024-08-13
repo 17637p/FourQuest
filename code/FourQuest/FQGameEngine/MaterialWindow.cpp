@@ -32,6 +32,24 @@ void fq::game_engine::MaterialWindow::Render()
 {
 	using namespace fq::graphics;
 
+	auto getFilePath = [](std::wstring& wfilename, const std::string& imguiLabel)
+		{
+			char filename[256];
+			wcstombs(filename, wfilename.c_str(), 256);
+
+			ImGui::InputText(imguiLabel.c_str(), filename, 256);
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
+					wfilename = path->c_str();
+				}
+			}
+		};
+
 	if (!mbIsOpen) return;
 
 	graphics::MaterialInfo materialInfo;
@@ -41,7 +59,34 @@ void fq::game_engine::MaterialWindow::Render()
 		// 텍스처 패스
 		static char materialPath[256];
 		strcpy(materialPath, mSelectMaterialPaths.string().c_str());
-		ImGui::InputText("Material Path", materialPath, 256);
+
+		if (ImGui::InputText("Material Path", materialPath, 256))
+		{
+			std::filesystem::path path = std::filesystem::path(materialPath);
+
+			if (path.extension() == ".material")
+			{
+				if (!std::filesystem::exists(path))
+				{
+					spdlog::warn("{} material path is invalid", mSelectMaterialPaths.string());
+				}
+				else
+				{
+					mSelectMaterialPaths = path;
+
+					std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(mSelectMaterialPaths.string());
+
+					if (materialInterfaceOrNull == nullptr)
+					{
+						const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(mSelectMaterialPaths.string());
+						materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(mSelectMaterialPaths.string(), materialInfo);
+					}
+					assert(materialInterfaceOrNull != nullptr);
+
+					mMaterialInterface = materialInterfaceOrNull;
+				}
+			}
+		}
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -103,89 +148,12 @@ void fq::game_engine::MaterialWindow::Render()
 		ImGui::ColorEdit4("Emissive Color", reinterpret_cast<float*>(&materialInfo.EmissiveColor));
 
 		//// Texture file names
-		char baseColorFileName[256];
-		wcstombs(baseColorFileName, materialInfo.BaseColorFileName.c_str(), 256);
-		ImGui::InputText("Base Color File", baseColorFileName, 256);
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
-				materialInfo.BaseColorFileName = path->c_str();
-			}
-		}
-
-		char metalnessFileName[256];
-		wcstombs(metalnessFileName, materialInfo.MetalnessFileName.c_str(), 256);
-		ImGui::InputText("Metalness File", metalnessFileName, 256);
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
-				materialInfo.MetalnessFileName = path->c_str();
-			}
-		}
-
-		char roughnessFileName[256];
-		wcstombs(roughnessFileName, materialInfo.RoughnessFileName.c_str(), 256);
-		ImGui::InputText("Roughness File", roughnessFileName, 256);
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
-				materialInfo.RoughnessFileName = path->c_str();
-			}
-		}
-
-		char normalFileName[256];
-		wcstombs(normalFileName, materialInfo.NormalFileName.c_str(), 256);
-		ImGui::InputText("Normal File", normalFileName, 256);
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
-				materialInfo.NormalFileName = path->c_str();
-			}
-		}
-
-		char emissiveFileName[256];
-		wcstombs(emissiveFileName, materialInfo.EmissiveFileName.c_str(), 256);
-		ImGui::InputText("Emissive File", emissiveFileName, 256);
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
-				materialInfo.EmissiveFileName = path->c_str();
-			}
-		}
-
-		char metalnessSmoothnessFileName[256];
-		wcstombs(metalnessSmoothnessFileName, materialInfo.MetalnessSmoothnessFileName.c_str(), 256);
-		ImGui::InputText("MetalnessSmoothness File", emissiveFileName, 256);
-		if (ImGui::BeginDragDropTarget())
-		{
-			const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
-
-			if (pathPayLoad)
-			{
-				std::filesystem::path* path = static_cast<std::filesystem::path*>(pathPayLoad->Data);
-				materialInfo.MetalnessSmoothnessFileName = path->c_str();
-			}
-		}
+		getFilePath(materialInfo.BaseColorFileName, "Base Color File");
+		getFilePath(materialInfo.MetalnessFileName, "Metalness File");
+		getFilePath(materialInfo.RoughnessFileName, "Roughness File");
+		getFilePath(materialInfo.NormalFileName, "Normal File");
+		getFilePath(materialInfo.EmissiveFileName, "Emissive File");
+		getFilePath(materialInfo.MetalnessSmoothnessFileName, "MetalnessSmoothness File");
 
 		// Usage booleans
 		ImGui::Checkbox("Use Base Color", &materialInfo.bUseBaseColor);
@@ -219,6 +187,16 @@ void fq::game_engine::MaterialWindow::Render()
 		}
 
 		ImGui::InputFloat("EmissiveIntensity", reinterpret_cast<float*>(&materialInfo.EmissiveIntensity));
+
+		// dissolve
+		ImGui::Checkbox("Use Dissolve", &materialInfo.bUseDissolve);
+		getFilePath(materialInfo.NoiseFileName, "Noise File");
+		ImGui::InputFloat("OutlineThickness", reinterpret_cast<float*>(&materialInfo.OutlineThickness));
+		ImGui::InputFloat("DissolveCutoff", reinterpret_cast<float*>(&materialInfo.DissolveCutoff));
+		ImGui::ColorEdit4("Dissolve StartColor", reinterpret_cast<float*>(&materialInfo.DissolveStartColor));
+		ImGui::ColorEdit4("Dissolve EndColor", reinterpret_cast<float*>(&materialInfo.DissolveEndColor));
+		ImGui::ColorEdit4("Dissolve StartEmissive", reinterpret_cast<float*>(&materialInfo.DissolveStartEmissive));
+		ImGui::ColorEdit4("Dissolve EndEmissive", reinterpret_cast<float*>(&materialInfo.DissolveEndEmissive));
 	}
 
 	if (mMaterialInterface != nullptr)

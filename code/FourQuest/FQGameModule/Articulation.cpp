@@ -12,6 +12,9 @@ namespace fq::game_module
 		, mArticulationData()
 		, mArticulationPath()
 		, mOffset{}
+		, rotationOffset{}
+		, mCompleteTime(1.f)
+		, mBlendTime(0.f)
 	{
 	}
 

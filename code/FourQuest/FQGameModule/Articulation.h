@@ -89,6 +89,31 @@ namespace fq::game_module
 		/// </summary>
 		void SetRotationOffset(const DirectX::SimpleMath::Vector3& offset) { rotationOffset = offset; }
 
+		/// <summary>
+		/// 총 보간 시간을 반환합니다.
+		/// </summary>
+		const float& GetCompleteTime() const { return mCompleteTime; }
+		
+		/// <summary>
+		/// 총 보간 시간을 설정합니다.
+		/// </summary>
+		void SetCompleteTime(const float& completeTime) { mCompleteTime = completeTime; }
+
+		/// <summary>
+		/// 현재 보간 시간을 반환합니다.
+		/// </summary>
+		float GetBlendTime() const { return mBlendTime; }
+
+		/// <summary>
+		/// 보간 시간을 더합니다.
+		/// </summary>
+		void AddBlendTime(const float& time) { mBlendTime += time / mCompleteTime; }
+		
+		/// <summary>
+		/// 현재 보간 시간을 설정합니다.
+		/// </summary>
+		void SetBlendTime(const float& time) { mBlendTime = time; }
+
 	private:
 		inline void OnCollisionEnter(const Collision& collision) override;
 		inline void OnCollisionExit(const Collision& collision) override;
@@ -100,9 +125,12 @@ namespace fq::game_module
 	private:
 		unsigned int mID;
 		unsigned int mCollisionCount;
+
 		DirectX::SimpleMath::Vector3 mOffset;
 		DirectX::SimpleMath::Vector3 rotationOffset;
 		bool mbIsRagdoll;
+		float mBlendTime;
+		float mCompleteTime;
 
 		ArticulationPath mArticulationPath;
 		std::shared_ptr<ArticulationData> mArticulationData;
