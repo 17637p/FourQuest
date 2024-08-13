@@ -141,6 +141,11 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 			for (const auto& material : gameObjectInfo.MeshData.Materials)
 			{
+				if (gameObjectInfo.MeshData.ModelPath.empty())
+				{
+					continue;
+				}
+
 				fq::graphics::MaterialInfo materialInfo;
 
 				materialInfo.BaseColor = material.Albedo;
@@ -171,9 +176,17 @@ void fq::game_engine::ImportWindow::createGameObject()
 					materialInfo.EmissiveFileName = mBasePath / fq::common::StringUtil::ToWide(material.EmissionMap);
 				}
 
-				std::string materialPath = (mBasePath / material.Path).replace_extension(".material").string();
-				mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
-				materialPaths.push_back(materialPath);
+				std::filesystem::path materialPath = mBasePath / std::filesystem::path(gameObjectInfo.MeshData.ModelPath);
+				materialPath.replace_filename("Material\\" + material.Name);
+				materialPath.replace_extension(".material");
+
+				if (!std::filesystem::exists(materialPath.parent_path()))
+				{
+					std::filesystem::create_directories(materialPath.parent_path());
+				}
+
+				mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), materialInfo);
+				materialPaths.push_back(materialPath.string());
 			}
 
 			const auto& meshName = gameObjectInfo.MeshData.Name;
