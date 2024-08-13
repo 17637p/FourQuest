@@ -317,6 +317,47 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					}
 				);
 			}
+
+			if (ImGui::Button("reload Material File"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+					[](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					{
+						if (!renderer.GetMaterialPaths().empty())
+						{
+							return;
+						}
+
+						std::vector<std::string> materialPaths = renderer.GetMaterialPaths();
+
+						for (auto& materialPath : materialPaths)
+						{
+							size_t index = materialPath.find("resource");
+							materialPath = materialPath.substr(index, materialPath.size());
+						}
+					}
+				);
+
+				scene->ViewComponents<game_module::StaticMeshRenderer>(
+					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					{
+						if (!renderer.GetMaterialPaths().empty())
+						{
+							return;
+						}
+
+						std::vector<std::string> materialPaths = renderer.GetMaterialPaths();
+
+						for (auto& materialPath : materialPaths)
+						{
+							size_t index = materialPath.find("resource");
+							materialPath = materialPath.substr(index, materialPath.size());
+						}
+					}
+				);
+			}
 		}
 
 		ImGui::EndChild();

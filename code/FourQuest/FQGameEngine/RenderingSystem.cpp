@@ -424,8 +424,8 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 
 			if (materialInterfaceOrNull == nullptr)
 			{
-				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
-				materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);
+				const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(DEFAULT_MATERIAL);
+				materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
 			}
 		}
 		else
