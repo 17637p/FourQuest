@@ -93,7 +93,7 @@ void fq::game_engine::LightmapWindow::Render()
 			if (!mLightmapArrayPath.empty())
 			{
 				std::string basePath = mLightmapArrayPath[0].string();
-				size_t numberIndex = basePath.find('0');
+				size_t numberIndex = basePath.find_last_of('0');
 
 				std::string lhsPath = basePath.substr(0, numberIndex);
 				std::string rhsPath = basePath.substr(numberIndex + 1, basePath.size() - numberIndex);
@@ -155,7 +155,7 @@ void fq::game_engine::LightmapWindow::Render()
 			if (!mDirectionArrayPath.empty())
 			{
 				std::string basePath = mDirectionArrayPath[0].string();
-				size_t numberIndex = basePath.find('0');
+				size_t numberIndex = basePath.find_last_of('0');
 
 				std::string lhsPath = basePath.substr(0, numberIndex);
 				std::string rhsPath = basePath.substr(numberIndex + 1, basePath.size() - numberIndex);
