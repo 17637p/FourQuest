@@ -401,7 +401,7 @@ void fq::graphics::UIManager::drawAllImage()
 		std::wstring imagePath = stringToWstringPath.wstring();
 
 		D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
-		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
+ 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
 		D2D1_RECT_F screenRect{};
 		if (image->GetRenderMode()) // true가 isCenter
 		{

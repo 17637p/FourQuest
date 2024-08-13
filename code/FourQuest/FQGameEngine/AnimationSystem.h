@@ -30,7 +30,6 @@ namespace fq::game_engine
 		/// <summary>
 		/// 애니메이터 컨트롤러 로드
 		/// </summary>
-		/// <param name="object"></param>
 		bool LoadAnimatorController(fq::game_module::GameObject* object);
 
 	private:

@@ -42,6 +42,7 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mViewportSize{ 1.f,1.f }
 	, mViewPortOffset{ 0.f,0.f }
 	, mbAlreadyDrawGizumo(false)
+	, mbIsFocused(false)
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -51,6 +52,8 @@ void fq::game_engine::GamePlayWindow::Render()
 {
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		if (mWindowSize.x != ImGui::GetWindowSize().x
 			|| mWindowSize.y != ImGui::GetWindowSize().y)
 		{
@@ -380,7 +383,7 @@ void fq::game_engine::GamePlayWindow::beginGizumo()
 	auto width = ImGui::GetWindowSize().x;
 	auto height = ImGui::GetWindowSize().y;
 	ImGuizmo::SetRect(x, y, width, height);
-	
+
 	// 이미 다른곳에서 기즈모 그린경우 그리지 않습니다.
 	if (mbAlreadyDrawGizumo)
 	{
@@ -492,6 +495,8 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 					, static_cast<unsigned short>(mViewportSize.y - mViewportSize.y) });
 		}
 	}
+
+
 }
 
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
@@ -500,7 +505,13 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 
 	constexpr float offsetY = 70.f;
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	float cameraAspectRatio = camera->GetAspectRatio();
+
+	constexpr float FixedAspectRatio = 16.f / 9.f;
+
+	// 16 : 9 화면 비율 고정 
+	float cameraAspectRatio = FixedAspectRatio;
+	// Window 사이즈 비율 
+	// float cameraAspectRatio = camera->GetAspectRatio();
 
 	mViewportSize.x = size.x;
 	mViewportSize.y = size.y - offsetY;
@@ -740,7 +751,7 @@ void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
 			if (particleObject)
 			{
 				auto worldM = tmp->GetComponent<game_module::Transform>()->GetWorldMatrix();
-				 
+
 				particleObject->SetTransform(worldM);
 				particleObject->SetFrameTime(dt);
 			}

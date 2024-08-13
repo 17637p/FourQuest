@@ -25,6 +25,7 @@ fq::game_engine::Hierarchy::Hierarchy()
 	, mCopyObject(nullptr)
 	, mSelectObjectHandle{}
 	, mbIsOpen(true)
+	, mbIsFocused(false)
 {}
 
 fq::game_engine::Hierarchy::~Hierarchy()
@@ -61,6 +62,8 @@ void fq::game_engine::Hierarchy::Render()
 
 	if (ImGui::Begin("Hierarchy", &mbIsOpen))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		beginSearchBar();
 
 		if (ImGui::BeginChild("HierarchyChild"))
@@ -409,7 +412,9 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
+	bool isFoused = mbIsFocused || mEditorProcess->mGamePlayWindow->IsFocusedWindow();
+
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold) && isFoused)
 	{
 		// Ctrl + C (บนป็)
 		if (input->IsKeyState(EKey::C, EKeyState::Tap) && mSelectObject)
@@ -457,7 +462,8 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene, root);
 		}
 	}
-	else if (mSelectObject && input->IsKeyState(EKey::Del, EKeyState::Tap))
+	else if (mSelectObject && input->IsKeyState(EKey::Del, EKeyState::Tap) 
+		&& isFoused)
 	{
 		// Delete
 		mEditorProcess->mCommandSystem->Push<DestroyObjectCommand>(mScene

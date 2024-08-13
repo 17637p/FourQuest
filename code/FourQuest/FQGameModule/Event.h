@@ -32,11 +32,16 @@ namespace fq::event
 		fq::game_module::GameObject* object;
 	};
 
-	/// <summary>
 	struct OnLoadScene
 	{
 		std::string sceneName;
 	};
+
+	struct PreOnLoadScene
+	{
+		std::string sceneName;
+	};
+
 
 	/// <summary>
 	/// Scene Start 할때 호출

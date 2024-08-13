@@ -56,6 +56,8 @@ namespace fq::game_module
 		/// <param name="resource">로드할 프리팹 리소스</param>
 		/// <returns>프리팹 계층구조를 담은 인스턴스를 반환합니다</returns>
 		PrefabInstance InstantiatePrefabResoure(const PrefabResource& resource)const;
+		
+		const PrefabContainer& GetPrefabContainer()const { return mPrefabInstances; }
 
 	private:
 		nlohmann::json saveGameObject(GameObject* object);

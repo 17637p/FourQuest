@@ -11,6 +11,7 @@
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "PhysicsSystem.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
@@ -243,6 +244,9 @@ void fq::game_engine::MainMenuBar::SaveScene()
 
 	// 라이트맵 저장
 	mEditorProcess->mLightmapWindow->SaveLightmap(scenePath);
+
+	// 리소스 리스트 저장 
+	mGameProcess->mResourceSystem->SaveSceneResourceList(scenePath);
 
 	//  ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);

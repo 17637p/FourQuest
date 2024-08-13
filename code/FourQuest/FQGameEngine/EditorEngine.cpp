@@ -26,6 +26,7 @@
 #include "UISystem.h"
 #include "PathFindingSystem.h"
 #include "LoadingSystem.h"
+#include "ResourceSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -93,12 +94,13 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
+	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
 
 	// Editor 초기화
 	InitializeEditor();
 
 	// 모델 데이터 수정이 생긴경우
-	mEditor->mModelSystem->ConvertAllModel();
+	//mEditor->mModelSystem->ConvertAllModel();
 	
 	// Scene 로드 
 	mGameProcess->mLoadingSystem->ProcessLoading();
@@ -164,7 +166,6 @@ void fq::game_engine::EditorEngine::Process()
 				{
 					accmulator -= fixedDeltaTime;
 					onFixedUpdtae = true;
-					// PathFindingSystem Update
 					mGameProcess->mPathFindgingSystem->Update(fixedDeltaTime);
 					mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 					mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
@@ -210,13 +211,11 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
+			mGameProcess->mUISystem->Update();
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
 			//////////////////////////////////////////////////////////////////////////
-
-			// UI 트랜스폼 위치 설정 
-			mGameProcess->mUISystem->Update();
 
 			// 랜더링 
 			mGameProcess->mGraphics->BeginRender();
@@ -242,7 +241,9 @@ void fq::game_engine::EditorEngine::Process()
 			//////////////////////////////////////////////////////////////////////////
 			if (mGameProcess->mSceneManager->IsChangeScene())
 			{
-				mGameProcess->mSceneManager->ChangeScene();
+				mGameProcess->mSceneManager->UnloadScene();
+				mGameProcess->mLoadingSystem->ProcessLoading();
+				mGameProcess->mSceneManager->StartScene();
 			}
 
 			//////////////////////////////////////////////////////////////////////////
@@ -258,6 +259,8 @@ void fq::game_engine::EditorEngine::Process()
 
 void fq::game_engine::EditorEngine::Finalize()
 {
+	fq::game_module::ThreadPool::Finalize();
+
 	EditorHelper::SetStartSceneName(mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName());
 	EditorHelper::SaveEditorSetting(mEditor.get());
 
@@ -284,7 +287,6 @@ void fq::game_engine::EditorEngine::Finalize()
 	mGameProcess->mEventManager->RemoveAllHandles();
 
 	fq::game_module::ObjectPool::Finalize();
-	fq::game_module::ThreadPool::Finalize();
 
 	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();

@@ -4,6 +4,7 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::LoadingSystem::LoadingSystem()
 	:mGameProcess(nullptr)
@@ -29,23 +30,27 @@ void fq::game_engine::LoadingSystem::Finalize()
 void fq::game_engine::LoadingSystem::loadUI()
 {
 	fq::graphics::UIInfo info;
-	info.Height = 1080;
-	info.Width = 1920;
+	info.Height = 1200;
+	info.Width = 2000;
 	info.ImagePath = (fq::path::GetInternalPath() / "loading" / "Loading.png").string();
 	mLoadImage = mGameProcess->mGraphics->CreateImageObject(info);
 }
 
 void fq::game_engine::LoadingSystem::ProcessLoading()
 {
-	mbIsDone = false;
+	mGameProcess->mSceneManager->LoadScene();
+	mGameProcess->mGraphics->SetIsRenderObjects(false);
+	mLoadImage->SetIsRender(true);
 
-	fq::game_module::ThreadPool::GetInstance()->EnqueueJob([this]() 
+	auto pool = fq::game_module::ThreadPool::GetInstance();
+
+	auto check = pool->EnqueueJob([this]()
 		{
-			mbIsDone = true;
+			mGameProcess->mResourceSystem->LoadSceneResource({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
 		});
 
 	// 랜더링 
-	while (!mbIsDone)
+	while (check.wait_for(std::chrono::milliseconds(100)) == std::future_status::timeout)
 	{
 		mGameProcess->mGraphics->BeginRender();
 		mGameProcess->mGraphics->Render();
@@ -53,14 +58,8 @@ void fq::game_engine::LoadingSystem::ProcessLoading()
 	}
 
 	mLoadImage->SetIsRender(false);
+	mGameProcess->mGraphics->SetIsRenderObjects(true);
 
-	mGameProcess->mSceneManager->LoadScene();
-}
-
-void fq::game_engine::LoadingSystem::load()
-{
-	// 로딩 쓰레드 
-	mGameProcess->mSceneManager->LoadScene();
-
+	mGameProcess->mEventManager->FireEvent<fq::event::OnLoadScene>({ mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName() });
 }
 
