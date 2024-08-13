@@ -73,8 +73,8 @@ namespace fq::graphics
 		virtual const MaterialInstanceInfo& GetMaterialInstanceInfo() const override { return mMaterialInstanceInfo; }
 
 		// Render
-		virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
-		virtual FQ_GRAPHICS bool GetIsRender() const override { return mbIsRender; }
+		virtual void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
+		virtual bool GetIsRender() const override { return mbIsRender; }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
@@ -128,8 +128,8 @@ namespace fq::graphics
 		virtual const MaterialInstanceInfo& GetMaterialInstanceInfo() const override { return mMaterialInstanceInfo; }
 
 		// Render
-		virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
-		virtual FQ_GRAPHICS bool GetIsRender() const override { return mbIsRender; }
+		virtual void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
+		virtual bool GetIsRender() const override { return mbIsRender; }
 
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;

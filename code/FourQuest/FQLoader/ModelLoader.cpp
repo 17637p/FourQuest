@@ -14,8 +14,10 @@ namespace fq::loader
 
 		Model model;
 
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(std::filesystem::path{ fileName });
+
 		FileUtil fileUtil;
-		fileUtil.Open(fileName, EFileMode::Read);
+		fileUtil.Open(correctedPath.string(), EFileMode::Read);
 
 		model.Meshes = ReadMesh(fileUtil);
 		model.Materials = ReadMaterial(fileUtil);
@@ -360,9 +362,9 @@ namespace fq::loader
 	}
 	fq::common::UVAnimationClip UVAnimationLoader::Read(const std::filesystem::path& filePath)
 	{
-		assert(std::filesystem::exists(filePath));
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
 
-		std::ifstream readData(filePath);
 		nlohmann::ordered_json controllerJson;
 
 		if (readData.is_open())
@@ -448,7 +450,8 @@ namespace fq::loader
 		controllerJson["objects"] = objectsJson;
 
 		// JSON 파일로 쓰기
-		std::ofstream writeData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
 		if (writeData.is_open())
 		{
 			writeData << controllerJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
@@ -462,7 +465,8 @@ namespace fq::loader
 
 	fq::common::AnimationClip AnimationLoader::Read(const std::filesystem::path& filePath)
 	{
-		std::ifstream readData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
 		nlohmann::ordered_json controllerJson;
 
 		if (readData.is_open())
@@ -554,7 +558,8 @@ namespace fq::loader
 		controllerJson["objects"] = objectsJson;
 
 		// JSON 파일로 쓰기
-		std::ofstream writeData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
 		if (writeData.is_open())
 		{
 			writeData << controllerJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
@@ -568,7 +573,8 @@ namespace fq::loader
 
 	std::vector<fq::common::Node> NodeHierarchyLoader::Read(const std::filesystem::path& filePath)
 	{
-		std::ifstream readData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
 		nlohmann::ordered_json nodeHierarchyJson;
 
 		if (readData.is_open())
@@ -640,7 +646,9 @@ namespace fq::loader
 		}
 
 		// JSON 파일로 쓰기
-		std::ofstream writeData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
+
 		if (writeData.is_open())
 		{
 			writeData << nodeHierarchyJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
@@ -686,7 +694,8 @@ namespace fq::loader
 		}
 
 		// JSON 파일로 쓰기
-		std::ofstream writeData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
 		if (writeData.is_open())
 		{
 			writeData << nodeHierarchyJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
@@ -700,7 +709,9 @@ namespace fq::loader
 
 	fq::graphics::MaterialInfo MaterialLoader::Read(const std::filesystem::path& filePath)
 	{
-		std::ifstream readData(filePath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
+
 		nlohmann::ordered_json materialInfoJson;
 
 		if (readData.is_open())
@@ -812,6 +823,7 @@ namespace fq::loader
 	}
 	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
 	{
+
 		using namespace fq::graphics;
 
 		nlohmann::ordered_json materialInfoJson;
@@ -846,16 +858,6 @@ namespace fq::loader
 			{"DissolveEndColor", {material.DissolveEndColor.x, material.DissolveEndColor.y, material.DissolveEndColor.z, material.DissolveEndColor.w}},
 		};
 
-		std::string tempPath = filePath.string();
-
-		for (auto& ch : tempPath)
-		{
-			if (ch == '|')
-			{
-				ch = 'a';
-			}
-		}
-
 		const std::filesystem::path parentPath = filePath.parent_path();
 		if (!std::filesystem::exists(parentPath))
 		{
@@ -863,7 +865,8 @@ namespace fq::loader
 		}
 
 		// JSON 파일로 쓰기
-		std::ofstream writeData(tempPath);
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
 
 		if (writeData.is_open())
 		{
@@ -874,5 +877,30 @@ namespace fq::loader
 		{
 			assert(!"파일 쓰기 실패");
 		}
+	}
+
+	std::filesystem::path LoaderHelpaer::CorrectPathCharacters(const std::filesystem::path& path)
+	{
+		std::string stringPath = path.string();
+
+		std::vector<char> checkedCharacters =
+		{
+			'|',
+		};
+
+		bool bIsBreak = false;
+		for (char& ch : stringPath)
+		{
+			for (const char& checkedCh : checkedCharacters)
+			{
+				if (ch == checkedCh)
+				{
+					ch = ' ';
+					break;
+				}
+			}
+		}
+
+		return stringPath;
 	}
 }
