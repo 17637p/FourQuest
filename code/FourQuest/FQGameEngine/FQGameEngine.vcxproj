@@ -204,7 +204,6 @@
     <ClInclude Include="SkyBoxWindow.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="SoundSystem.h" />
-    <ClInclude Include="SysquenceSystem.h" />
     <ClInclude Include="TrailSystem.h" />
     <ClInclude Include="UISystem.h" />
     <ClInclude Include="WindowSystem.h" />
@@ -261,7 +260,6 @@
     <ClCompile Include="SkyBoxWindow.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="SoundSystem.cpp" />
-    <ClCompile Include="SysquenceSystem.cpp" />
     <ClCompile Include="TrailSystem.cpp" />
     <ClCompile Include="UISystem.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
