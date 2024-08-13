@@ -866,8 +866,8 @@ void fq::client::RegisterMetaData()
 		.type("MonsterGroupKill"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterGroupKill")
 		.prop(fq::reflect::prop::POD)
-		.data<&MonsterGroupKill::groupIndex>("GroupIndex"_hs)
-		.prop(fq::reflect::prop::Name, "GroupIndex");
+		.data<&MonsterGroupKill::monsterGroupName>("MonsterGroupName"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterGroupName");
 
 	entt::meta<Defence>()
 		.type("Defence"_hs)

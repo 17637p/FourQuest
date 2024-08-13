@@ -101,6 +101,19 @@ namespace fq::graphics
 		bool isCenter = false;
 	};
 
+	enum class ETextAlign
+	{
+		LeftTop,
+		LeftCenter,
+		LeftBottom,
+		CenterTop,
+		CenterCenter,
+		CenterBottom,
+		RightTop,
+		RightCenter,
+		RightBottom
+	};
+
 	struct TextInfo
 	{
 		std::string Text = ""; // 실제 띄울 내용
@@ -113,6 +126,8 @@ namespace fq::graphics
 		std::string FontPath = "Verdana";
 		int FontSize = 10;
 		DirectX::SimpleMath::Color FontColor = { 0, 0, 0, 1 };
+
+		ETextAlign Align = ETextAlign::LeftTop;
 
 		bool IsRender = true;
 	};

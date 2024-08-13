@@ -30,7 +30,7 @@ namespace fq::client
 
 	struct MonsterGroupKill
 	{
-		int groupIndex;
+		std::string monsterGroupName;
 
 		int curNumber = 0;
 		int groupMonsterNumber = 0;

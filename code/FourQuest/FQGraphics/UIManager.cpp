@@ -360,6 +360,66 @@ void fq::graphics::UIManager::drawAllText()
 			std::wstring text = stringToWstring(drawTextInformation.Text);
 			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
 
+			switch (textObject->GetTextInformation().Align)
+			{
+				case ETextAlign::LeftTop:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				}
+				case ETextAlign::LeftCenter:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				}
+				case ETextAlign::LeftBottom:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				case ETextAlign::CenterTop:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				}
+				case ETextAlign::CenterCenter:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				}
+				case ETextAlign::CenterBottom:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				case ETextAlign::RightTop:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				}
+				case ETextAlign::RightCenter:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				}
+				case ETextAlign::RightBottom:
+				{
+					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				default:
+					break;
+			}
+
 			mRenderTarget->DrawText(
 				text.c_str(),
 				text.length(),

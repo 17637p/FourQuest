@@ -162,6 +162,7 @@ void fq::client::QuestManager::EventProcessKillMonster()
 	mKillMonsterHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::KillMonster>(
 		[this](const client::event::KillMonster& event)
 		{
+			// KillMonster 贸府 
 			// Main
 			std::vector<MonsterKill>& monsterKillList = mCurMainQuest.mclearConditionList.monsterKillList;
 			int monsterKillListSize = monsterKillList.size();
@@ -230,15 +231,18 @@ void fq::client::QuestManager::EventProcessKillMonster()
 					}
 				}
 			}
+
+			// Group Monster Kill 贸府
+
 		});
 }
 
 void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 {
-	// Defence 贸府
 	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
 		[this](const client::event::PlayerCollideTrigger& event)
 		{
+			// Defence 贸府
 			std::vector<Defence>& defenceList = mCurMainQuest.mclearConditionList.defenceList;
 			if (defenceList.size() > 0)
 			{
@@ -261,16 +265,12 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 					}
 				}
 			}
-		});
 
-	// Join - Collider Trigger 贸府
-	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
-		[this](const client::event::PlayerCollideTrigger& event)
-		{
-			std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurMainQuest.mJoinConditionList.colliderTriggerList;
-			if (questColliderTriggerList.size() > 0)
+			// Join - Collider Trigger 贸府
+			std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mCurMainQuest.mJoinConditionList.colliderTriggerList;
+			if (joinQuestColliderTriggerList.size() > 0)
 			{
-				if (questColliderTriggerList[0].colliderName == event.colliderName)
+				if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
 				{
 					GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 						{ mCurMainQuest, 0 });
@@ -280,10 +280,10 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurSubQuest[i].mJoinConditionList.colliderTriggerList;
-				if (questColliderTriggerList.size() > 0)
+				std::vector<QuestColliderTrigger>& joinQuestColliderTriggerList = mCurSubQuest[i].mJoinConditionList.colliderTriggerList;
+				if (joinQuestColliderTriggerList.size() > 0)
 				{
-					if (questColliderTriggerList[0].colliderName == event.colliderName)
+					if (joinQuestColliderTriggerList[0].colliderName == event.colliderName)
 					{
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 							{ mCurSubQuest[i], i });
@@ -291,18 +291,14 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 					}
 				}
 			}
-		});
 
-	// Clear - Collider Trigger 贸府
-	mPlayerCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
-		[this](const client::event::PlayerCollideTrigger& event)
-		{
-			std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurMainQuest.mclearConditionList.colliderTriggerList;
-			if (questColliderTriggerList.size() > 0)
+			// Clear - Collider Trigger 贸府
+			std::vector<QuestColliderTrigger>& clearQuestColliderTriggerList = mCurMainQuest.mclearConditionList.colliderTriggerList;
+			if (clearQuestColliderTriggerList.size() > 0)
 			{
-				if (questColliderTriggerList[0].colliderName == event.colliderName)
+				if (clearQuestColliderTriggerList[0].colliderName == event.colliderName)
 				{
-					if (!questColliderTriggerList[0].isAll)
+					if (!clearQuestColliderTriggerList[0].isAll)
 					{
 						GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 							{ mCurMainQuest, 0 });
@@ -313,12 +309,12 @@ void fq::client::QuestManager::EventProcessPlayerCollideTrigger()
 
 			for (int i = 0; i < mCurSubQuest.size(); i++)
 			{
-				std::vector<QuestColliderTrigger>& questColliderTriggerList = mCurSubQuest[i].mclearConditionList.colliderTriggerList;
-				if (questColliderTriggerList.size() > 0)
+				std::vector<QuestColliderTrigger>& clearQuestColliderTriggerList = mCurSubQuest[i].mclearConditionList.colliderTriggerList;
+				if (clearQuestColliderTriggerList.size() > 0)
 				{
-					if (questColliderTriggerList[0].colliderName == event.colliderName)
+					if (clearQuestColliderTriggerList[0].colliderName == event.colliderName)
 					{
-						if (!questColliderTriggerList[0].isAll)
+						if (!clearQuestColliderTriggerList[0].isAll)
 						{
 							GetScene()->GetEventManager()->FireEvent<client::event::ClearQuestEvent>(
 								{ mCurSubQuest[i], i });
