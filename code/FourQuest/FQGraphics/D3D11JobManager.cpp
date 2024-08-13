@@ -15,6 +15,11 @@ namespace fq::graphics
 
 	void D3D11JobManager::CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject)
 	{
+		if (!iStaticMeshObject->GetIsRender())
+		{
+			return;
+		}
+
 		const auto& material = iStaticMeshObject->GetMaterials();
 		const size_t JOB_COUNT = std::min<size_t>(material.size(), iStaticMeshObject->GetStaticMesh()->GetMeshData().Subsets.size());
 
@@ -32,6 +37,11 @@ namespace fq::graphics
 	}
 	void D3D11JobManager::CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject)
 	{
+		if (!iSkinnedMeshObject->GetIsRender())
+		{
+			return;
+		}
+
 		const auto& material = iSkinnedMeshObject->GetMaterials();
 		const size_t JOB_COUNT = std::min<size_t>(material.size(), iSkinnedMeshObject->GetSkinnedMesh()->GetMeshData().Subsets.size());
 

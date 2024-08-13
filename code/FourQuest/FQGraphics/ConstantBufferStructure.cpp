@@ -28,6 +28,10 @@ namespace fq::graphics
 		CBMaterial CBMaterialData;
 		CBMaterialData.BaseColor = info.BaseColor;
 		CBMaterialData.EmissiveColor = info.EmissiveColor;
+		CBMaterialData.DissolveStartColor = info.DissolveStartColor;
+		CBMaterialData.DissolveEndColor = info.DissolveEndColor;
+		CBMaterialData.DissolveStartEmissive = info.DissolveStartEmissive;
+		CBMaterialData.DissolveEndEmissive = info.DissolveEndEmissive;
 		CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0) * texTransform).Transpose();
 
 		CBMaterialData.Metalness = info.Metalness;
@@ -42,6 +46,10 @@ namespace fq::graphics
 
 		CBMaterialData.EmissiveIntensity = info.EmissiveIntensity;
 		CBMaterialData.bUseMetalnessSmoothnessMap = info.bIsUsedMetalnessSmoothness;
+		CBMaterialData.bUseDissolve = info.bUseDissolve;
+		CBMaterialData.OutlineThickness = info.OutlineThickness;
+
+		CBMaterialData.DissolveCutoff = info.DissolveCutoff;
 
 		cbuffer->Update(device, CBMaterialData);
 	}
@@ -133,4 +141,14 @@ namespace fq::graphics
 		cbuffer->Update(device, probe);
 	}
 
+	void ConstantBufferHelper::UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB, const MaterialInstanceInfo& materialInstanceInfo)
+	{
+		CBMaterialInstance materialInstance;
+		materialInstance.bUseInstanceAlpha = materialInstanceInfo.bUseInstanceAlpha;
+		materialInstance.Alpha = materialInstanceInfo.Alpha;
+		materialInstance.bUseDissolveCutoff = materialInstanceInfo.bUseDissolveCutoff;
+		materialInstance.DissolveCutoff = materialInstanceInfo.DissolveCutoff;
+
+		materialInstanceCB->Update(device, materialInstance);
+	}
 }

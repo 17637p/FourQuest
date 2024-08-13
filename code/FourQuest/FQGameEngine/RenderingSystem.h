@@ -69,12 +69,7 @@ namespace fq::game_engine
 		/// </summary>
 		void WriteAnimation(const fq::event::WriteAnimation& event);
 
-		/// <summary>
-		/// 모든 렌더링 컴포넌트의 머터리얼 정보를 갱신합니다.
-		/// </summary>
-		void OnUpdateMaterialInfos(const fq::event::UpdateMaterialInfo& event);
-
-		unsigned int GetModelKey(const Path& modelPath, const Path& texturePath)const;
+		unsigned int GetModelKey(const Path& modelPath, const Path& texturePath = "")const;
 
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);

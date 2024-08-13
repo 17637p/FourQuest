@@ -49,10 +49,43 @@ namespace fq::graphics
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
 		: MeshBase(device, meshData)
 		, mDevice(device)
+		, mStaticMeshType(EStaticMeshType::Default)
 	{
 		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(device, meshData.Indices);
 
-		if (meshData.Tex1.empty())
+		auto find = meshData.DynamicInfos.find("Color0");
+		if (find != meshData.DynamicInfos.end())
+		{
+			struct Vertex
+			{
+				DirectX::SimpleMath::Vector3 Pos;
+				DirectX::SimpleMath::Vector3 Normal;
+				DirectX::SimpleMath::Vector3 Tangent;
+				DirectX::SimpleMath::Vector2 Tex;
+				DirectX::SimpleMath::Vector4 Color;
+			};
+
+			std::vector<Vertex> vertices(meshData.Vertices.size());
+
+			const DirectX::SimpleMath::Vector4* colorPtr = reinterpret_cast<const DirectX::SimpleMath::Vector4*>(find->second.Data.data());
+
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				vertices[i].Pos = meshData.Vertices[i].Pos;
+				vertices[i].Normal = meshData.Vertices[i].Normal;
+				vertices[i].Tangent = meshData.Vertices[i].Tangent;
+				vertices[i].Tex = meshData.Vertices[i].Tex;
+
+				if (find->second.Count > i)
+				{
+					vertices[i].Color = colorPtr[i];
+				}
+			}
+			
+			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
+			mStaticMeshType = EStaticMeshType::VertexColor;
+		}
+		else if (meshData.Tex1.empty())
 		{
 			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
 		}
@@ -67,7 +100,7 @@ namespace fq::graphics
 				DirectX::SimpleMath::Vector2 Tex1;
 			};
 
-  			std::vector<Vertex> vertices(meshData.Vertices.size());
+			std::vector<Vertex> vertices(meshData.Vertices.size());
 
 			for (size_t i = 0; i < vertices.size(); ++i)
 			{
@@ -79,6 +112,7 @@ namespace fq::graphics
 			}
 
 			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
+			mStaticMeshType = EStaticMeshType::Static;
 		}
 	}
 	void* StaticMesh::GetVertexBuffer()
@@ -141,7 +175,7 @@ namespace fq::graphics
 
 		mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
 	}
-	
+
 	void* SkinnedMesh::GetVertexBuffer()
 	{
 		auto vertexBuffer = mVertexBuffer->GetVertexBuffer();

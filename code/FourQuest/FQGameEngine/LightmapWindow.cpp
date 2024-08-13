@@ -47,6 +47,7 @@ void fq::game_engine::LightmapWindow::Render()
 		return;
 	}
 
+	// 第俊辑何磐 贸府秦林扁
 	if (ImGui::Begin("Lightmap", &mbIsOpen))
 	{
 		unsigned int index = 0;
@@ -241,15 +242,6 @@ void fq::game_engine::LightmapWindow::LoadLightmap(std::filesystem::path path)
 
 void fq::game_engine::LightmapWindow::ApplyLightmap()
 {
-	if (mLightmapArrayPath.empty())
-	{
-		return;
-	}
-	if (mDirectionArrayPath.empty())
-	{
-		return;
-	}
-
 	for (const auto& lightmap : mLightmapArrayPath)
 	{
 		if (!std::filesystem::exists(lightmap))

@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/MaterialAnimator.h"
 
 #include "GameProcess.h"
 #include "RenderingSystem.h"
@@ -91,6 +92,12 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		[dt](GameObject& object, UVAnimator& animator)
 		{
 			animator.UpdateTimePos(dt * animator.GetPlaySpeed());
+		});
+
+	mScene->ViewComponents<MaterialAnimator>(
+		[dt](GameObject& object,MaterialAnimator& animator)
+		{
+			animator.UpdateTimePos(dt);
 		});
 }
 

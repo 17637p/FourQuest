@@ -9,6 +9,12 @@ struct VertexOut
     float3 TangentW : TEXCOORD0;
     float2 UV : TEXCOORD1;
     float ClipSpacePosZ : TEXCOORD2;
+    float DepthView : TEXCOORD3;
+    float3 NormalV : TEXCOORD4;
+    float3 TangentV : TEXCOORD5;
+#ifdef VERTEX_COLOR
+    float4 Color : COLOR0;
+#endif
 };
 
 struct PixelOut
@@ -37,12 +43,13 @@ cbuffer cbLight : register(b1)
     float pad2;
 };
 
-cbuffer cbAlpha : register(b2)
+cbuffer cbMaterialInstance : register(b2)
 {
     bool cUseAlpha;
     float cAlpha;
+    bool cUseDissolveCutoff;
+    float cDissolveCutoff;
 };
-
 cbuffer cbDirectionalShadow : register(b3)
 {
     matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
@@ -55,22 +62,36 @@ Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
+Texture2D gMetalnessSmoothness : register(t5);
 
 TextureCube gDiffuseCubMap : register(t6);
 TextureCube gSpecularCubeMap : register(t7);
 Texture2D gSpecularBRDF_LUT : register(t8);
 Texture2DArray gDirectionalShadowMap : register(t9);
 
+Texture2D gNoiseMap : register(t10);
+
 SamplerState gSamplerAnisotropic : register(s0); 
 SamplerComparisonState gShadowSampler : register(s1);
 SamplerState gLinearClamp : register(s2); 
+SamplerState gLinearWrap : register(s3); 
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
+#ifdef VERTEX_COLOR
     float4 baseColor = gModelMaterial.BaseColor;
+    baseColor.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용
+#else
+    float4 baseColor = gModelMaterial.BaseColor;
+#endif
     
+    if (cUseAlpha)
+    {
+        baseColor.a *= cAlpha;
+    }
+
     if (gModelMaterial.UseAlbedoMap)
     {
         baseColor *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
@@ -110,11 +131,42 @@ PixelOut main(VertexOut pin) : SV_TARGET
         normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
-    float3 emissive = gModelMaterial.EmissiveColor.rgb;
+    float3 emissive = gModelMaterial.EmissiveColor.rgb * gModelMaterial.EmissiveIntensity;
     
     if (gModelMaterial.UseEmissiveMap)
     {
-        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb * gModelMaterial.EmissiveIntensity;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+    }
+    
+    if (gModelMaterial.UseDissolve)
+    {
+        float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
+        float dissolveCutoff = gModelMaterial.DissolveCutoff;
+
+        if (cUseDissolveCutoff)
+        {
+            dissolveCutoff = cDissolveCutoff;
+        }
+
+        clip(noise.x - dissolveCutoff);
+
+        float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
+        float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
+        float4 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive, gModelMaterial.DissolveOutlineEndEmissive ,outlineWeight);        
+
+        if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
+        {
+            outlineColor *= 0;
+            outlineEmissive *= 0;
+        }        
+        else
+        {
+            outlineColor *= 1;
+            outlineEmissive *= 1;
+        }
+
+        albedo += outlineColor;
+        emissive += outlineEmissive.rgb;
     }
 
     float3 directLighting = 0.0;

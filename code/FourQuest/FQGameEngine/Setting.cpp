@@ -108,90 +108,90 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
-			// 임시적용
-			if (ImGui::Button("Change TexturePath"))
-			{
-				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+			// // 임시적용
+			// if (ImGui::Button("Change TexturePath"))
+			// {
+			// 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+			// 
+			// 	auto texturePath = fq::path::GetResourcePath() / "Texture";
+			// 
+			// 	scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+			// 		[texturePath](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+			// 		{
+			// 			if (renderer.GetTexturePath().empty())
+			// 			{
+			// 				//renderer.SetTexturePath(texturePath.string());
+			// 			}
+			// 		}
+			// 	);
+			// 
+			// 	scene->ViewComponents<game_module::StaticMeshRenderer>(
+			// 		[texturePath](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+			// 		{
+			// 			if (renderer.GetTexturePath().empty())
+			// 			{
+			// 				renderer.SetTexturePath(texturePath.string());
+			// 			}
+			// 		}
+			// 	);
+			// }
 
-				auto texturePath = fq::path::GetResourcePath() / "Texture";
-
-				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
-					[texturePath](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
-					{
-						if (renderer.GetTexturePath().empty())
-						{
-							renderer.SetTexturePath(texturePath.string());
-						}
-					}
-				);
-
-				scene->ViewComponents<game_module::StaticMeshRenderer>(
-					[texturePath](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
-					{
-						if (renderer.GetTexturePath().empty())
-						{
-							renderer.SetTexturePath(texturePath.string());
-						}
-					}
-				);
-			}
-
-			if (ImGui::Button("Reload Texture(TexturePath + TextureName)"))
-			{
-				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-
-				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
-					[](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
-					{
-						const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
-						auto materialInfos = renderer.GetMaterialInfos();
-
-						for (auto& materialInfo : materialInfos)
-						{
-							if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
-						}
-
-						renderer.SetMaterialInfos(materialInfos);
-					}
-				);
-
-				scene->ViewComponents<game_module::StaticMeshRenderer>(
-					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
-					{
-						const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
-						auto materialInfos = renderer.GetMaterialInfos();
-
-						for (auto& materialInfo : materialInfos)
-						{
-							if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
-							if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
-						}
-
-						renderer.SetMaterialInfos(materialInfos);
-					}
-				);
-
-				scene->ViewComponents<game_module::Decal>(
-					[](game_module::GameObject& object, game_module::Decal& decal)
-					{
-						const auto& texturePath = fq::path::GetResourcePath() / "Texture";
-						auto materialInfo = decal.GetDecalMaterialInfo();
-
-						if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
-						if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
-						if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
-
-						decal.SetDecalMaterialInfo(materialInfo);
-					}
-				);
-			}
+			// if (ImGui::Button("Reload Texture(TexturePath + TextureName)"))
+			// {
+			// 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+			// 
+			// 	scene->ViewComponents<game_module::SkinnedMeshRenderer>(
+			// 		[](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+			// 		{
+			// 			const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
+			// 			auto materialInfos = renderer.GetMaterialInfos();
+			// 
+			// 			for (auto& materialInfo : materialInfos)
+			// 			{
+			// 				if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+			// 			}
+			// 
+			// 			renderer.SetMaterialInfos(materialInfos);
+			// 		}
+			// 	);
+			// 
+			// 	scene->ViewComponents<game_module::StaticMeshRenderer>(
+			// 		[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+			// 		{
+			// 			const auto& texturePath = std::filesystem::path(renderer.GetTexturePath());
+			// 			auto materialInfos = renderer.GetMaterialInfos();
+			// 
+			// 			for (auto& materialInfo : materialInfos)
+			// 			{
+			// 				if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.MetalnessFileName).filename().empty())materialInfo.MetalnessFileName = (texturePath / std::filesystem::path(materialInfo.MetalnessFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.RoughnessFileName).filename().empty())materialInfo.RoughnessFileName = (texturePath / std::filesystem::path(materialInfo.RoughnessFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+			// 				if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+			// 			}
+			// 
+			// 			renderer.SetMaterialInfos(materialInfos);
+			// 		}
+			// 	);
+			// 
+			// 	scene->ViewComponents<game_module::Decal>(
+			// 		[](game_module::GameObject& object, game_module::Decal& decal)
+			// 		{
+			// 			const auto& texturePath = fq::path::GetResourcePath() / "Texture";
+			// 			auto materialInfo = decal.GetDecalMaterialInfo();
+			// 
+			// 			if (!std::filesystem::path(materialInfo.BaseColorFileName).filename().empty())materialInfo.BaseColorFileName = (texturePath / std::filesystem::path(materialInfo.BaseColorFileName).filename()).wstring();
+			// 			if (!std::filesystem::path(materialInfo.NormalFileName).filename().empty())materialInfo.NormalFileName = (texturePath / std::filesystem::path(materialInfo.NormalFileName).filename()).wstring();
+			// 			if (!std::filesystem::path(materialInfo.EmissiveFileName).filename().empty())materialInfo.EmissiveFileName = (texturePath / std::filesystem::path(materialInfo.EmissiveFileName).filename()).wstring();
+			// 
+			// 			decal.SetDecalMaterialInfo(materialInfo);
+			// 		}
+			// 	);
+			// }
 
 			std::string materialDirectory = mMaterialDirectory.string();
 			ImGui::InputText("MaterialDirectoryPath", &materialDirectory);
@@ -216,59 +216,123 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 				auto graphics = mGameProcess->mGraphics;
+				const auto& renderingSystem = mGameProcess->mRenderingSystem;
+
+				auto createMaterial = [&graphics](auto directory, const auto& modelData)
+					{
+						// material 생성
+						for (const auto& material : modelData.Materials)
+						{
+							using namespace fq::graphics;
+
+							MaterialInfo materialInfo;
+
+							materialInfo.BaseColor = material.BaseColor;
+							materialInfo.Metalness = material.Metalness;
+							materialInfo.Roughness = material.Roughness;
+
+							std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
+
+							if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = texturePath / material.BaseColorFileName;
+							if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = texturePath / material.MetalnessFileName;
+							if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = texturePath / material.RoughnessFileName;
+							if (material.NormalFileName != L"") materialInfo.NormalFileName = texturePath / material.NormalFileName;
+							if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = texturePath / material.EmissiveFileName;
+
+							auto materialPath = (directory / material.Name).string() + ".material";
+							graphics->WriteMaterialInfo(materialPath, materialInfo);
+						}
+					};
+
 				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
-					[&graphics](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					[&graphics, &renderingSystem, createMaterial](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
 					{
 						if (!renderer.GetMaterialPaths().empty())
 						{
 							return;
 						}
 
-						const auto& materialDirectory = fq::path::GetResourcePath() / "Material";
+						std::filesystem::path modelPath = std::filesystem::path(renderer.GetModelPath());
+						std::filesystem::path modelDirectory = modelPath;
+						modelDirectory.replace_extension("");
+						//modelDirectory /= modelDirectory.filename();
+
+						const auto& modelData = graphics->CreateModelResource(renderingSystem->GetModelKey(modelPath.string()), modelPath.string());
+						createMaterial(modelDirectory, modelData);
+
 						std::vector<std::string> materialPaths;
-						materialPaths.reserve(renderer.GetMaterialInfos().size());
-						const auto& materialInfos = renderer.GetMaterialInfos();
-						const auto& materialNames = renderer.GetMaterials();
+						std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces;
 
-						const size_t COUNT = std::min<size_t>(materialInfos.size(), materialNames.size());
-
-						for (size_t i = 0; i < COUNT; ++i)
+						for (const auto& [node, mesh] : modelData.Meshes)
 						{
-							std::string materialPath = (materialDirectory / materialNames[i]).string() + ".material";
-							materialPaths.push_back(materialPath);
+							if (mesh.Name == renderer.GetMeshName())
+							{
+								for (const auto& subset : mesh.Subsets)
+								{
+									auto materialPath = (modelDirectory / subset.MaterialName).string() + ".material";
 
-							graphics->WriteMaterialInfo(materialPath, materialInfos[i]);
+									auto materialInterface = graphics->GetMaterialOrNull(materialPath);
+
+									if (materialInterface == nullptr)
+									{
+										const graphics::MaterialInfo& materialInfo = graphics->ReadMaterialInfo(materialPath);
+										materialInterface = graphics->CreateMaterial(materialPath, materialInfo);
+									}
+
+									materialPaths.push_back(materialPath);
+									materialInterfaces.push_back(materialInterface);
+								}
+							}
 						}
 
 						renderer.SetMaterialPaths(materialPaths);
+						renderer.SetMaterialInterfaces(materialInterfaces);
 					}
 				);
 
 				scene->ViewComponents<game_module::StaticMeshRenderer>(
-					[&graphics](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					[&graphics, &renderingSystem, createMaterial](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
 					{
 						if (!renderer.GetMaterialPaths().empty())
 						{
 							return;
 						}
 
-						const auto& materialDirectory = fq::path::GetResourcePath() / "Material";
+						std::filesystem::path modelPath = std::filesystem::path(renderer.GetModelPath());
+						std::filesystem::path modelDirectory = modelPath;
+						modelDirectory.replace_extension("");
+						// modelDirectory /= modelDirectory.filename();
+
+						const auto& modelData = graphics->CreateModelResource(renderingSystem->GetModelKey(modelPath.string()), modelPath.string());
+						createMaterial(modelDirectory, modelData);
+
 						std::vector<std::string> materialPaths;
-						materialPaths.reserve(renderer.GetMaterialInfos().size());
-						const auto& materialInfos = renderer.GetMaterialInfos();
-						const auto& materialNames = renderer.GetMaterials();
+						std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces;
 
-						const size_t COUNT = std::min<size_t>(materialInfos.size(), materialNames.size());
-
-						for (size_t i = 0; i < COUNT; ++i)
+						for (const auto& [node, mesh] : modelData.Meshes)
 						{
-							std::string materialPath = (materialDirectory / materialNames[i]).string() + ".material";
-							materialPaths.push_back(materialPath);
+							if (mesh.Name == renderer.GetMeshName())
+							{
+								for (const auto& subset : mesh.Subsets)
+								{
+									auto materialPath = (modelDirectory / subset.MaterialName).string() + ".material";
 
-							graphics->WriteMaterialInfo(materialPath, materialInfos[i]);
+									auto materialInterface = graphics->GetMaterialOrNull(materialPath);
+
+									if (materialInterface == nullptr)
+									{
+										const graphics::MaterialInfo& materialInfo = graphics->ReadMaterialInfo(materialPath);
+										materialInterface = graphics->CreateMaterial(materialPath, materialInfo);
+									}
+
+									materialPaths.push_back(materialPath);
+									materialInterfaces.push_back(materialInterface);
+								}
+							}
 						}
 
 						renderer.SetMaterialPaths(materialPaths);
+						renderer.SetMaterialInterfaces(materialInterfaces);
 					}
 				);
 			}

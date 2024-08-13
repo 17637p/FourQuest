@@ -45,8 +45,11 @@ namespace fq::graphics
 
 		virtual const fq::common::Mesh& GetMeshData() const override { return mMeshData; }
 
+		virtual EStaticMeshType GetStaticMeshType() const override { return mStaticMeshType; }
+
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
+		EStaticMeshType mStaticMeshType;
 	};
 
 	class SkinnedMesh : public ISkinnedMesh, public MeshBase

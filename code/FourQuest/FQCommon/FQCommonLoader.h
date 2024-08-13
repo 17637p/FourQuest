@@ -101,10 +101,9 @@ namespace fq::common
 			std::string Name;
 			unsigned int Size;
 			unsigned int Count;
-			void* DataPtr;
+			std::vector<char> Data;
 		};
 		std::map<std::string, DynamicData> DynamicInfos;
-
 	};
 
 	struct Material

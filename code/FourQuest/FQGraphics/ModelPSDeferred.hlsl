@@ -16,6 +16,9 @@ struct VertexOut
 #ifdef STATIC
     float2 UV1 : TEXCOORD6;
 #endif
+#ifdef VERTEX_COLOR
+    float4 Color : COLOR0;
+#endif
 };
 
 struct PixelOut
@@ -40,9 +43,18 @@ cbuffer cbLightmapInformation : register(b1)
 {
     float4 cUVOffsetScale;
     uint cUVIndex;
-    bool bUseDirectMap;
+    bool bUseLightMap;
+    bool bUseDirectionMap;
 };
 #endif
+
+cbuffer cbMaterialInstance : register(b2)
+{
+    bool cUseAlpha;
+    float cAlpha;
+    bool cUseDissolveCutoff;
+    float cDissolveCutoff;
+};
 
 Texture2D gAlbedoMap : register(t0);
 Texture2D gMetalnessMap : register(t1);
@@ -54,22 +66,73 @@ Texture2D gMetalnessSmoothness : register(t5);
 Texture2DArray gLightMapArray : register(t6);
 Texture2DArray gDirectionArray : register(t7);
 
+Texture2D gNoiseMap : register(t10);
+
 SamplerState gSamplerAnisotropic : register(s0); //	D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gPointWrap : register(s1); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
 SamplerState gLinearWrap : register(s2); //	D3D11_FILTER_Linear, D3D11_TEXTURE_ADDRESS_WRAP
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
-    PixelOut pout;
+    PixelOut pout = (PixelOut)0;
 
+#ifdef VERTEX_COLOR
     pout.Albedo = gModelMaterial.BaseColor;
+    pout.Albedo.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용
+#else
+    pout.Albedo = gModelMaterial.BaseColor;
+#endif
+
+    if (cUseAlpha)
+    {
+        pout.Albedo.a *= cAlpha;
+    }
 
     if (gModelMaterial.UseAlbedoMap)
     {
         pout.Albedo *= pow(gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV), 2.2f);
     }
-    
+
     clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
+
+    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
+    pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
+
+    if (gModelMaterial.UseEmissiveMap)
+    {
+        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+    }
+    
+    if (gModelMaterial.UseDissolve)
+    {
+        float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
+        float dissolveCutoff = gModelMaterial.DissolveCutoff;
+
+        if (cUseDissolveCutoff)
+        {
+            dissolveCutoff = cDissolveCutoff;
+        }
+
+        clip(noise.x - dissolveCutoff);
+
+        float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
+        float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
+        float4 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive, gModelMaterial.DissolveOutlineEndEmissive ,outlineWeight);        
+
+        if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
+        {
+            outlineColor *= 0;
+            outlineEmissive *= 0;
+        }        
+        else
+        {
+            outlineColor *= 1;
+            outlineEmissive *= 1;
+        }
+
+        pout.Albedo.rgb += outlineColor;
+        pout.Emissive.rgb += outlineEmissive.rgb;
+    }
 
     if (gModelMaterial.UseMetalnessMap)
     {
@@ -112,28 +175,24 @@ PixelOut main(VertexOut pin) : SV_TARGET
     pout.PositionW.xyz = pin.PositionW;
     pout.PositionW.w = pin.ClipSpacePosZ;
 
-    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
-    pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
-
-    if (gModelMaterial.UseEmissiveMap)
-    {
-        pout.Emissive.rgb *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
-    }
-
 #ifdef STATIC
     // 여기서 UV 값만 저장해두는 식으로 하고 Shading에서 연산하게 수정하는 게 더 저렴할듯
     // 현재 레거시로 라이트맵 적용, 추후에 PBR 방식으로 GI 연산 수정 예정
-    pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, cUVIndex));
 
-   if (bUseDirectMap)
-   {
-       float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, cUVIndex));
-       direction.xyz = direction.xyz * 2 - 1;
-       direction.x = -direction.x;
-       direction.z = -direction.z;
-       float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
-       pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
-   }
+    if (bUseLightMap)
+    {
+        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, cUVIndex));
+
+        if (bUseDirectionMap)
+        {
+            float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, cUVIndex));
+            direction.xyz = direction.xyz * 2 - 1;
+            direction.x = -direction.x;
+            direction.z = -direction.z;
+            float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
+            pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
+        }
+    }
 #else
     pout.Light = float4(0, 0, 0, -1000);
 #endif 

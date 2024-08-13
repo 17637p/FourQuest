@@ -33,12 +33,16 @@ namespace fq::graphics
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto staticMeshVertexColorVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_VERTEX_COLOR.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
+
 		auto transparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER.cso");
+		auto transparentRenderVertexColorPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER_VERTEX_COLOR.cso");
 		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, disableDepthWriteState, OITRenderState);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, transparentRenderPS, pipelieState);
+		mStaticMeshVertexColorShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVertexColorVS, nullptr, transparentRenderVertexColorPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, transparentRenderPS, pipelieState);
 
 		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
@@ -46,6 +50,7 @@ namespace fq::graphics
 		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mDefualtSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
+		mLinearWrap = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mDefaultRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
 		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
 
@@ -53,7 +58,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mAlphaDataCB = std::make_shared<D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialInstanceCB = std::make_shared<D3D11ConstantBuffer<CBMaterialInstance>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -83,13 +88,14 @@ namespace fq::graphics
 		mAnisotropicClampSamplerState = nullptr;
 		mShadowSampler = nullptr;
 		mDefualtSampler = nullptr;
+		mLinearWrap = nullptr;
 		mCullOffRasterizer = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
-		mAlphaDataCB = nullptr;
+		mMaterialInstanceCB = nullptr;
 	}
 	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -143,10 +149,11 @@ namespace fq::graphics
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mLinearWrap->Bind(mDevice,3, ED3D11ShaderType::PixelShader);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
-			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mMaterialInstanceCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
 			mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 		}
 
@@ -179,8 +186,6 @@ namespace fq::graphics
 
 		// Draw
 		{
-			mStaticMeshShaderProgram->Bind(mDevice);
-
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
@@ -191,6 +196,15 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					bindingState(materialInfo);
+
+					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+					{
+						mStaticMeshVertexColorShaderProgram->Bind(mDevice);
+					}
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
 
 					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
 					{
@@ -223,10 +237,7 @@ namespace fq::graphics
 						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 					}
 
-					AlphaData alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
-					mAlphaDataCB->Update(mDevice, alphaData);
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -268,10 +279,7 @@ namespace fq::graphics
 						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
 					}
 
-					AlphaData alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = materialInfo.BaseColor.A();
-					mAlphaDataCB->Update(mDevice, alphaData);
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

@@ -69,6 +69,13 @@ namespace fq::graphics
 		virtual void SetLightmapIndex(unsigned int lightmapIndex) override { mLightmapIndex = lightmapIndex; }
 		virtual unsigned int GetLightmapIndex() const override { return mLightmapIndex; }
 
+		virtual void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) override { mMaterialInstanceInfo = materialInstanceInfo; }
+		virtual const MaterialInstanceInfo& GetMaterialInstanceInfo() const override { return mMaterialInstanceInfo; }
+
+		// Render
+		virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
+		virtual FQ_GRAPHICS bool GetIsRender() const override { return mbIsRender; }
+
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		size_t mIndex;
@@ -81,6 +88,11 @@ namespace fq::graphics
 		// lightMap
 		DirectX::SimpleMath::Vector4 mScaleOffset;
 		unsigned int mLightmapIndex;
+
+		MaterialInstanceInfo mMaterialInstanceInfo;
+
+		// render
+		bool mbIsRender;
 	};
 
 	class SkinnedMeshObject : public ISkinnedMeshObject
@@ -112,12 +124,23 @@ namespace fq::graphics
 		virtual void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) override { mNodeHierarchyInstance = nodeHierarchyInstance; }
 		virtual std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const override { return mNodeHierarchyInstance; }
 
+		virtual void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) override { mMaterialInstanceInfo = materialInstanceInfo; }
+		virtual const MaterialInstanceInfo& GetMaterialInstanceInfo() const override { return mMaterialInstanceInfo; }
+
+		// Render
+		virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) override { mbIsRender = bIsRender; }
+		virtual FQ_GRAPHICS bool GetIsRender() const override { return mbIsRender; }
+
 	private:
 		std::shared_ptr<INodeHierarchyInstance> mNodeHierarchyInstance;
 		std::shared_ptr<ISkinnedMesh> mSkinnedMesh;
 		std::vector<std::shared_ptr<IMaterial>> mMaterials;
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
+		MaterialInstanceInfo mMaterialInstanceInfo;
+
+		// render
+		bool mbIsRender;
 	};
 
 	class TerrainMeshObject : public ITerrainMeshObject

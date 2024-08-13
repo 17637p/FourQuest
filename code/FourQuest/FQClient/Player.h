@@ -66,6 +66,7 @@ namespace fq::client
 		void processInput();
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
+		void equipWeapone(ESoulType equipType, bool isEquip);
 
 		void OnStart() override;
 		void OnDestroy() override;

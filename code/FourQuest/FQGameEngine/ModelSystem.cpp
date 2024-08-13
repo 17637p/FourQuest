@@ -85,7 +85,17 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 
 		for (const auto& subset : mesh.Subsets)
 		{
-			materialPaths.push_back((directory / subset.MaterialName).string() + ".material");
+			const std::filesystem::path materialPath  = (directory / subset.MaterialName).string() + ".material";
+			
+			if (!std::filesystem::exists(materialPath))
+			{
+				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
+				materialPaths.push_back(DEFAULT_MATERIAL);
+			}
+			else
+			{
+				materialPaths.push_back(materialPath.string());
+			}
 		}
 
 		// StaticMeshObject 持失
@@ -98,7 +108,6 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			staticMeshRenderer.SetModelPath(modelPath.string());
 			staticMeshRenderer.SetMaterialPaths(materialPaths);
 			staticMeshRenderer.SetMeshName(mesh.Name);
-			staticMeshRenderer.SetTexturePath(texturePath.string());
 		}
 		else // SkinnedMeshObject 持失
 		{
@@ -110,7 +119,6 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 			skinnedMeshRenderer.SetModelPath(modelPath.string());
 			skinnedMeshRenderer.SetMaterialPaths(materialPaths);
 			skinnedMeshRenderer.SetMeshName(mesh.Name);
-			skinnedMeshRenderer.SetTexturePath(texturePath.string());
 		}
 	}
 

@@ -15,7 +15,7 @@ namespace fq::game_module
 		/// 생성자
 		/// </summary>
 		StaticMeshRenderer();
-		~StaticMeshRenderer();
+		~StaticMeshRenderer() = default;
 
 		/// <summary>
 		/// 복사본을 반환합니다 
@@ -46,16 +46,6 @@ namespace fq::game_module
 		void SetModelPath(std::string path) { mModelPath = path; }
 
 		/// <summary>
-		/// 텍스처 폴더 경로를 설정합니다 
-		/// </summary>
-		std::string GetTexturePath() const { return mTexturePath; }
-
-		/// <summary>
-		/// 텍스터 폴더 경로를 반환합니다
-		/// </summary>
-		void SetTexturePath(std::string path) { mTexturePath = path; }
-
-		/// <summary>
 		/// 메쉬 이름을 반환합니다
 		/// </summary>
 		/// <returns></returns>
@@ -68,55 +58,44 @@ namespace fq::game_module
 		void SetMeshName(std::string name) { mMeshName = name; }
 
 		/// <summary>
-		/// 소유하고있는 메테리얼 이름들을 반환합니다
-		/// </summary>
-		/// <returns></returns>
-		const std::vector<std::string>& GetMaterials()const { return mMaterialNames; }
-
-		/// <summary>
-		/// 메테리얼을 설정합니다
-		/// </summary>
-		/// <param name="materials"></param>
-		void SetMaterials(std::vector<std::string> materials) { mMaterialNames = std::move(materials); }
-
-		void UpdateMaterialInfoByMaterialInterface();
-		const std::vector<fq::graphics::MaterialInfo>& GetMaterialInfos() const;
-		void SetMaterialInfos(std::vector<fq::graphics::MaterialInfo> materialInfos);
-
-		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }
-		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces);
-
-		/// <summary>
-		/// 메쉬정보를 설정합니다
-		/// </summary>
-		/// <param name="info">메쉬 정보</param>
-		void SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info) { mMeshInfomation = std::move(info); if (mStaticMeshObject != nullptr) { mStaticMeshObject->SetMeshObjectInfo(mMeshInfomation); } }
-
-		/// <summary>
 		/// 메쉬정보를 반환합니다
 		/// </summary>
 		/// <returns>메쉬 정보</returns>
 		fq::graphics::MeshObjectInfo GetMeshObjectInfomation()const { return mMeshInfomation; }
 
+		/// <summary>
+		/// 메쉬정보를 설정합니다
+		/// </summary>
+		/// <param name="info">메쉬 정보</param>
+		void SetMeshObjectInfomation(const fq::graphics::MeshObjectInfo& info);
+
+		// 머터리얼 인터페이스 Getter/Setter
+		std::vector<std::shared_ptr<fq::graphics::IMaterial>> GetMaterialInterfaces() const { return mMaterialInterfaces; }
+		void SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces);
+
 		// Navigation 사용 여부
 		bool GetIsNavigationMeshUsed() const { return mIsNavigationMeshUsed; }
 		void SetIsNavigationMeshUsed(bool val) { mIsNavigationMeshUsed = val; }
 
-		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
 		const std::vector<std::string>& GetMaterialPaths() const { return mMaterialPaths; }
+		void SetMaterialPaths(const std::vector<std::string>& materialPaths) { mMaterialPaths = materialPaths; }
 
-		// 라이트맵 관련
-		void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset);
+		// 라이트맵 관련 Getter/Setter
 		const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const;
+		void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset);
 
-		void SetLightmapIndex(unsigned int lightmapIndex);
 		int GetLightmapIndex() const;
+		void SetLightmapIndex(unsigned int lightmapIndex);
 
-		void SetIsStatic(bool bIsStatic);
 		bool GetIsStatic() const;
+		void SetIsStatic(bool bIsStatic);
 
-		void SetPrevApplyTransform(const DirectX::SimpleMath::Matrix& transform) { mPrevApplyTransform = transform; }
 		const DirectX::SimpleMath::Matrix& GetPrevApplyTransform() const { return mPrevApplyTransform; }
+		void SetPrevApplyTransform(const DirectX::SimpleMath::Matrix& transform) { mPrevApplyTransform = transform; }
+
+		// 그리기 여부 설정
+		bool GetIsRender() const { return mbIsRender; }
+		void SetIsRender(bool bIsRender);
 
 	private:
 		entt::meta_handle GetHandle() override;
@@ -142,6 +121,9 @@ namespace fq::game_module
 		int mLightmapIndex;
 		bool mbIsStatic;
 		DirectX::SimpleMath::Matrix mPrevApplyTransform; // 추후 모델 자체에서 처리할 예정
+
+		// 그리기 여부
+		bool mbIsRender;
 	};
 
 }

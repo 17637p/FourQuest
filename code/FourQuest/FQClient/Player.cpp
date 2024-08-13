@@ -18,7 +18,7 @@ fq::client::Player::Player()
 	, mController(nullptr)
 	, mHp(0.f)
 	, mMaxHp(0.f)
-	, mMaxSoulStack (0.f)
+	, mMaxSoulStack(0.f)
 	, mSoulStack(0.f)
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(0.f)
@@ -263,46 +263,41 @@ void fq::client::Player::EmitSwordSoulAttack()
 
 void fq::client::Player::EquipSoulWeapone()
 {
-	switch (mSoulType)
-	{
-		case fq::client::ESoulType::Sword:
-			break;
-		case fq::client::ESoulType::Axe:
-			break;
-		case fq::client::ESoulType::Bow:
-			break;
-		case fq::client::ESoulType::Staff:
-			break;
-	}
-
+	equipWeapone(mEquipWeapone, false);
 	mEquipWeapone = mSoulType;
+	equipWeapone(mEquipWeapone, true);
 }
 
 void fq::client::Player::EquipArmourWeapone()
 {
-	switch (mArmourType)
-	{
-		case fq::client::EArmourType::Knight:
-		{
-			mEquipWeapone = ESoulType::Sword;
-		}
-			break;
-		case fq::client::EArmourType::Magic:
-		{
-			mEquipWeapone = ESoulType::Staff;
-		}
-			break;
-		case fq::client::EArmourType::Warrior:
-		{
-			mEquipWeapone = ESoulType::Axe;
-		}
-			break;
-		case fq::client::EArmourType::Archer:
-		{
-			mEquipWeapone = ESoulType::Bow;
-		}
-			break;
-	}
+	equipWeapone(mEquipWeapone, false);
+	mEquipWeapone = static_cast<ESoulType>(mArmourType);
+	equipWeapone(mEquipWeapone, true);
+}
 
+void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
+{
+	switch (equipType)
+	{
+		case fq::client::ESoulType::Sword:
+		{
+		}
+		break;
+		case fq::client::ESoulType::Staff:
+		{
+
+		}
+		break;
+		case fq::client::ESoulType::Axe:
+		{
+
+		}
+		break;
+		case fq::client::ESoulType::Bow:
+		{
+
+		}
+		break;
+	}
 }
 

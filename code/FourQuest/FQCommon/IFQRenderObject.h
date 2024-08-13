@@ -58,6 +58,14 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetLightmapIndex(unsigned int lightmapIndex) abstract;
 			virtual FQ_GRAPHICS unsigned int GetLightmapIndex() const abstract;
 
+			// MaterialInstanceInfo
+			virtual FQ_GRAPHICS void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) abstract;
+			virtual FQ_GRAPHICS const MaterialInstanceInfo& GetMaterialInstanceInfo() const abstract;
+
+			// Render
+			virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) abstract;
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
+
 		protected:
 			virtual ~IStaticMeshObject() = default;
 		};
@@ -84,6 +92,14 @@ extern "C" {
 			// NodeHierarchy
 			virtual FQ_GRAPHICS void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const abstract;
+
+			// MaterialInstanceInfo
+			virtual FQ_GRAPHICS void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) abstract;
+			virtual FQ_GRAPHICS const MaterialInstanceInfo& GetMaterialInstanceInfo() const abstract;
+
+			// Render
+			virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) abstract;
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;

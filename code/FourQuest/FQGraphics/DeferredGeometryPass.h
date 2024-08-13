@@ -47,6 +47,7 @@ namespace fq::graphics
 
 		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
+		std::unique_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
 		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
@@ -61,5 +62,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>> mMaterialInstanceCB;
 	};
 }

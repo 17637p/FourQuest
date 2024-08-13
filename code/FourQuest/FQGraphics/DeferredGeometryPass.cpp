@@ -51,13 +51,19 @@ namespace fq::graphics
 		// shader
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
 		auto staticMeshStaticVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_STATIC.cso");
+		auto staticMeshVertexColorVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_VERTEX_COLOR.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
+
 		auto geometryPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY.cso");
 		auto geometryStaticPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY_STATIC.cso");
+		auto geometryVertexColorPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelPSDeferred_GEOMETRY_VERTEX_COLOR.cso");
+
 		auto skinningPipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, nullptr, nullptr);
+
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, geometryPS, pipelieState);
 		mLightmapStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshStaticVS, nullptr, geometryStaticPS, pipelieState);
+		mVertexColorStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVertexColorVS, nullptr, geometryVertexColorPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, geometryPS, pipelieState);
 
 		// constant buffer
@@ -66,6 +72,7 @@ namespace fq::graphics
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialInstanceCB = std::make_shared<D3D11ConstantBuffer<CBMaterialInstance>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 
 	void DeferredGeometryPass::Finalize()
@@ -96,6 +103,7 @@ namespace fq::graphics
 
 		mStaticMeshShaderProgram = nullptr;
 		mLightmapStaticMeshShaderProgram = nullptr;
+		mVertexColorStaticMeshShaderProgram = nullptr;
 		mSkinnedMeshShaderProgram = nullptr;
 
 		mModelTransformCB = nullptr;
@@ -103,7 +111,7 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
-
+		mMaterialInstanceCB = nullptr;
 	}
 	void DeferredGeometryPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -143,6 +151,7 @@ namespace fq::graphics
 			mPreCalculatedLightRTV->Clear(mDevice, { 0, 0,0, -1000 });
 		}
 
+		bool bUseLightmap = false;
 		// Bind
 		{
 			std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
@@ -169,6 +178,8 @@ namespace fq::graphics
 
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightMapInformationCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
+			mMaterialInstanceCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mPointWrapSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mLinearWrapSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
@@ -184,6 +195,8 @@ namespace fq::graphics
 			{
 				lightmapDirectionTexture->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
 			}
+
+			bUseLightmap = lightMapTexture != nullptr && lightmapDirectionTexture != nullptr;
 		}
 
 		auto bindingState = [this](const MaterialInfo& materialInfo)
@@ -235,13 +248,27 @@ namespace fq::graphics
 					LightMapInfomation lightmapInfo;
 					lightmapInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
 					lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
+					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
 					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
+
 					break;
 				}
 				case MeshObjectInfo::EObjectType::Dynamic:
 				{
-					mStaticMeshShaderProgram->Bind(mDevice);
+					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+					{
+						mVertexColorStaticMeshShaderProgram->Bind(mDevice);
+					}
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Static)
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
+
 					break;
 				}
 				default:
@@ -280,6 +307,8 @@ namespace fq::graphics
 				{
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 				}
+
+				ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
@@ -321,6 +350,8 @@ namespace fq::graphics
 				{
 					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
 				}
+
+				ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 				job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 			}
