@@ -263,8 +263,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				for (const auto& importLayerInfo : gameObjectInfo.TerrainData.Layers)
 				{
 					fq::graphics::TerrainLayer terrainLayer;
-					terrainLayer.BaseColor = importLayerInfo.BaseColor;
-					terrainLayer.NormalMap = importLayerInfo.NormalMap;
+					terrainLayer.BaseColor = (mBasePath / importLayerInfo.BaseColor).string();
+					terrainLayer.NormalMap = (mBasePath / importLayerInfo.NormalMap).string();
 					terrainLayer.Metalic = importLayerInfo.Metalic;
 					terrainLayer.Roughness = importLayerInfo.Roughness;
 					terrainLayer.TileSizeX = importLayerInfo.TileSizeX;
@@ -275,7 +275,10 @@ void fq::game_engine::ImportWindow::createGameObject()
 					terrainLayers.push_back(terrainLayer);
 				}
 
-				terrain.SetAlphaMap(gameObjectInfo.TerrainData.AlphaFileName);
+				if (!gameObjectInfo.TerrainData.AlphaFileName.empty())
+				{
+					terrain.SetAlphaMap((mBasePath / gameObjectInfo.TerrainData.AlphaFileName).string());
+				}
 				terrain.SetTerrainLayers(terrainLayers);
 				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth);
 				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight);
@@ -284,7 +287,11 @@ void fq::game_engine::ImportWindow::createGameObject()
 				// 이 데이터 현재 못 읽어옴
 				terrain.SetTextureWidth(512);
 				terrain.SetTextureHeight(512);
-				terrain.SetHeightMap(gameObjectInfo.TerrainData.HeightFileName);
+
+				if (!gameObjectInfo.TerrainData.HeightFileName.empty())
+				{
+					terrain.SetHeightMap((mBasePath / gameObjectInfo.TerrainData.HeightFileName).string());
+				}
 
 				terrain.SetLightmapUVScaleOffset(gameObjectInfo.TerrainData.LightmapScaleOffset);
 				terrain.SetLightmapIndex(gameObjectInfo.TerrainData.LightmapIndex);
