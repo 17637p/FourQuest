@@ -84,15 +84,7 @@ void fq::client::PlayerUI::OnStart()
 	mSkillIconRs.push_back(skillRs[3]->GetComponent<fq::game_module::ImageUI>());
 
 	fq::game_module::Scene* scene = GetScene();
-	for (auto& object : scene->GetComponentView<fq::client::Player>())
-	{
-		auto player = object.GetComponent<fq::client::Player>();
-
-		if (GetPlayerID() == player->GetPlayerID())
-		{
-			mPlayer = player;
-		}
-	}
+	SetPlayer();
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -129,12 +121,8 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 		if (mPlayer != nullptr)
 		{
 			// HP 바 조정
-			float hpRatio = mPlayer->GetHPRatio();
-			std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
-			uiInfos[0].XRatio = hpRatio;
-			uiInfos[0].Width = mHPWidth * hpRatio;
-			mHPBarGauge->SetUIInfomations(uiInfos);
-
+			SetHPBar(mPlayer->GetHPRatio());
+			
 			// 갑옷 타입 받아오기 
 			// 무기 아이콘, 스킬 아이콘 변화
 			fq::client::EArmourType armourType = mPlayer->GetArmourType();
@@ -159,21 +147,13 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 			}
 
 			SetWeaponAndSkillIcons(armourTypeIndex, true);
-
-			// Soul Gauge 조정
-			float soulGauge = mPlayer->GetHPRatio(); // Test 용으로 일단 HP
-			float soulDegree = mSoulGaugeDegree * soulGauge + 25;
-			mSoulGauge->SetFillDegree(0, soulDegree);
-
-			// Soul Gauge 끝에 Icon 붙이기
-			float radian = DirectX::XMConvertToRadians(soulDegree + 90);
-			float radius = (mSoulGauge->GetUIInfomation(0).Width / 2) * myTransform->GetLocalScale().x;
-
-			float cos = std::cosf(radian) * radius;
-			float sin = std::sinf(radian) * radius;
-
-			mSoulIcon->GetComponent<game_module::Transform>()->SetLocalPosition({ cos, sin, 0 });
+			SetSoulGauge(mPlayer->GetHPRatio());
 		}
+	}
+	else
+	{
+		SetSoulGauge(0);
+		SetHPBar(0);
 	}
 }
 
@@ -183,6 +163,48 @@ void fq::client::PlayerUI::SetWeaponAndSkillIcons(int index, bool isRender)
 	mSkillIconXs[index]->SetIsRender(0, isRender);
 	mSkillIconAs[index]->SetIsRender(0, isRender);
 	mSkillIconRs[index]->SetIsRender(0, isRender);
+}
+
+void fq::client::PlayerUI::SetPlayer()
+{
+	fq::game_module::Scene* scene = GetScene();
+	for (auto& object : scene->GetComponentView<fq::client::Player>())
+	{
+		auto player = object.GetComponent<fq::client::Player>();
+
+		if (GetPlayerID() == player->GetPlayerID())
+		{
+			mPlayer = player;
+		}
+	}
+}
+
+void fq::client::PlayerUI::SetSoulGauge(float ratio)
+{
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	// Soul Gauge 조정
+	float soulGauge = ratio; // Test 용으로 일단 HP
+	float soulDegree = mSoulGaugeDegree * soulGauge + 25;
+	mSoulGauge->SetFillDegree(0, soulDegree);
+
+	// Soul Gauge 끝에 Icon 붙이기
+	float radian = DirectX::XMConvertToRadians(soulDegree + 90);
+	float radius = (mSoulGauge->GetUIInfomation(0).Width / 2) * myTransform->GetLocalScale().x;
+
+	float cos = std::cosf(radian) * radius;
+	float sin = std::sinf(radian) * radius;
+
+	mSoulIcon->GetComponent<game_module::Transform>()->SetLocalPosition({ cos, sin, 0 });
+}
+
+void fq::client::PlayerUI::SetHPBar(float ratio)
+{
+	float hpRatio = ratio;
+	std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
+	uiInfos[0].XRatio = hpRatio;
+	uiInfos[0].Width = mHPWidth * hpRatio;
+	mHPBarGauge->SetUIInfomations(uiInfos);
 }
 
 // HP 줄어들면 반응하기
