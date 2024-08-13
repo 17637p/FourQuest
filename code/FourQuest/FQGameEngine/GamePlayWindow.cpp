@@ -495,6 +495,8 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 					, static_cast<unsigned short>(mViewportSize.y - mViewportSize.y) });
 		}
 	}
+
+
 }
 
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
@@ -503,7 +505,13 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 
 	constexpr float offsetY = 70.f;
 	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	float cameraAspectRatio = camera->GetAspectRatio();
+
+	constexpr float FixedAspectRatio = 16.f / 9.f;
+
+	// 16 : 9 화면 비율 고정 
+	float cameraAspectRatio = FixedAspectRatio;
+	// Window 사이즈 비율 
+	// float cameraAspectRatio = camera->GetAspectRatio();
 
 	mViewportSize.x = size.x;
 	mViewportSize.y = size.y - offsetY;

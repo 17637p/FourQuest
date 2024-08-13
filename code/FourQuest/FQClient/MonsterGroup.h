@@ -33,9 +33,14 @@ namespace fq::client
 		const std::vector<std::shared_ptr<game_module::GameObject>>& GetMonsters()const { return mMonsters; }
 
 		/// <summary>
-		/// 몬스터그룹의 몬스터의 갯수를 반환합니다 
+		/// 몬스터그룹의 남은 몬스터의 갯수를 반환합니다 
 		/// </summary>
-		size_t GetMonsterSize()const;
+		int GetRemianMonsterSize()const;
+
+		/// <summary>
+		/// 몬스터 그룹에 등록된 모든 몬스터의 갯수를 반환합니다
+		/// </summary>
+		int GetAllMonsterSize()const;
 
 		/// <summary>
 		/// 타겟을 반환합니다
@@ -53,5 +58,8 @@ namespace fq::client
 		std::shared_ptr<fq::game_module::GameObject> mTarget;
 
 		int mGroupIndex;
+		int mMonsterCount;
+
+		friend void RegisterMetaData();
 	};
 }

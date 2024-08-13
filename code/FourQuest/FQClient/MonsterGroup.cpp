@@ -17,7 +17,8 @@ fq::client::MonsterGroup* fq::client::MonsterGroup::GetMonsterGroup(fq::game_mod
 
 fq::client::MonsterGroup::MonsterGroup()
 	:mMonsters{}
-	,mGroupIndex(0)
+	, mGroupIndex(0)
+	, mMonsterCount(0)
 {}
 
 fq::client::MonsterGroup::~MonsterGroup()
@@ -51,18 +52,23 @@ void fq::client::MonsterGroup::OnStart()
 			|| child->HasComponent<PlantMonster>())
 		{
 			mMonsters.push_back(child->shared_from_this());
+			++mMonsterCount;
 		}
 	}
 }
 
 void fq::client::MonsterGroup::OnUpdate(float dt)
 {
-
+	mMonsters.erase(std::remove_if(mMonsters.begin(), mMonsters.end(), [](const std::shared_ptr<game_module::GameObject>& monster)
+		{
+			return monster->IsDestroyed();
+		}), mMonsters.end());
 }
 
 void fq::client::MonsterGroup::Register(fq::game_module::GameObject* monster)
 {
 	mMonsters.push_back(monster->shared_from_this());
+	++mMonsterCount;
 }
 
 void fq::client::MonsterGroup::AnnounceFindedTarget(fq::game_module::GameObject* target)
@@ -82,8 +88,13 @@ fq::game_module::GameObject* fq::client::MonsterGroup::GetTarget() const
 	return mTarget.get();
 }
 
-size_t fq::client::MonsterGroup::GetMonsterSize() const
+int fq::client::MonsterGroup::GetRemianMonsterSize() const
 {
-	return mMonsters.size();
+	return static_cast<int>(mMonsters.size());
+}
+
+int fq::client::MonsterGroup::GetAllMonsterSize() const
+{
+	return mMonsterCount;
 }
 
