@@ -9,10 +9,10 @@ namespace fq::client
 	/// </summary>
 	enum class ESoulType
 	{
-		Sword, // 강공격에 내려찍기를 시전합니다.   
-		Shield, // 강력한 쉴드공격을 시전합니다
-		Bow,  // 강력한 활공격을 시전합니다
-		Staff // 강력한 마법공격을 시전합니다
+		Sword, // 검 영혼   
+		Staff, // 마법 영혼
+		Axe, // 도끼 영혼
+		Bow  // 활 영혼
 	};
 
 	/// <summary>

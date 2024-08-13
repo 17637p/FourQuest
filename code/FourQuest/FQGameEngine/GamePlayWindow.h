@@ -74,6 +74,8 @@ namespace fq::game_engine
 		/// </summary>
 		void DrawGizumo(DirectX::SimpleMath::Matrix& transform);
 
+		bool IsFocusedWindow()const { return mbIsFocused; }
+
 	private:
 		void resizeWindow(ImVec2 size);
 		void pickObject();
@@ -95,6 +97,7 @@ namespace fq::game_engine
 		bool mbIsOpen;
 		bool mbIsPauseGame;
 		bool mbIsMouseHoveredWindow;
+		bool mbIsFocused;
 
 		ImVec2 mWindowSize;
 		ImVec2 mViewportSize;

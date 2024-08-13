@@ -9,6 +9,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQphysics/IFQPhysics.h"
 #include "FQGameEngineRegister.h"
+#include "EditorHelper.h"
 
 #include "GameProcess.h"
 #include "WindowSystem.h"
@@ -25,6 +26,8 @@
 #include "PathFindingSystem.h"
 #include "UISystem.h"
 #include "LightProbeSystem.h"
+#include "ResourceSystem.h"
+#include "LoadingSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -53,14 +56,16 @@ void fq::game_engine::GameEngine::Initialize()
 	// GameProcess 초기화
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	constexpr const char* StartSceneName = "Scene4";
+	//constexpr const char* StartSceneName = "GitaeTest";
+	std::string startSceneName = EditorHelper::GetStartSceneName();
 
-	mGameProcess->mSceneManager->Initialize(StartSceneName
+	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get()
 		, mGameProcess->mScreenManager.get()
-		, mGameProcess->mTimeManager.get());
+		, mGameProcess->mTimeManager.get()
+		, true);
 
 	mGameProcess->mSoundManager->Initialize();
 	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
@@ -90,10 +95,11 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mTrailSystem->Initialize(mGameProcess.get());
 	mGameProcess->mUISystem->Initialize(mGameProcess.get());
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
+	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
+	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
-	mGameProcess->mSceneManager->LoadScene();
-
+	mGameProcess->mLoadingSystem->ProcessLoading();
 	mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 
 	// 게임을 시작하므로 StartScene 호출
@@ -158,6 +164,7 @@ void fq::game_engine::GameEngine::Process()
 			{
 				accmulator -= fixedDeltaTime;
 				onFixedUpdtae = true;
+				mGameProcess->mPathFindgingSystem->Update(fixedDeltaTime);
 				mGameProcess->mSceneManager->FixedUpdate(fixedDeltaTime);
 				mGameProcess->mPhysicsSystem->SinkToPhysicsScene();
 				mGameProcess->mPhysics->Update(fixedDeltaTime);
@@ -181,9 +188,6 @@ void fq::game_engine::GameEngine::Process()
 			// Animation Update
 			mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
 
-			// PathFindingSystem Update
-			mGameProcess->mPathFindgingSystem->Update(deltaTime);
-
 			// Scene Late Update
 			mGameProcess->mSceneManager->LateUpdate(deltaTime);
 
@@ -197,7 +201,7 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mPathFindgingSystem->Update(deltaTime);
+			mGameProcess->mUISystem->Update();
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
@@ -214,6 +218,16 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mPhysicsSystem->PostUpdate();
 			mGameProcess->mSceneManager->PostUpdate();
 
+			//////////////////////////////////////////////////////////////////////////
+			//							Scene 변경 처리								//
+			//////////////////////////////////////////////////////////////////////////
+			if (mGameProcess->mSceneManager->IsChangeScene())
+			{
+				mGameProcess->mSceneManager->UnloadScene();
+				mGameProcess->mLoadingSystem->ProcessLoading();
+				mGameProcess->mSceneManager->StartScene();
+			}
+
 			if (mGameProcess->mSceneManager->IsEnd())
 			{
 				bIsDone = true;
@@ -224,6 +238,8 @@ void fq::game_engine::GameEngine::Process()
 
 void fq::game_engine::GameEngine::Finalize()
 {
+	fq::game_module::ThreadPool::Finalize();
+
 	//System
 	mGameProcess->mLightProbeSystem->Finalize();
 
@@ -238,7 +254,6 @@ void fq::game_engine::GameEngine::Finalize()
 	mGameProcess->mEventManager->RemoveAllHandles();
 
 	fq::game_module::ObjectPool::Finalize();
-	fq::game_module::ThreadPool::Finalize();
 
 	// Window 종료
 	mGameProcess->mWindowSystem->Finalize();

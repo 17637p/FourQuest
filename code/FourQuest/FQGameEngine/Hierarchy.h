@@ -49,6 +49,8 @@ namespace fq::game_engine
 		void ExcuteShortcut();
 
 		bool& IsWindowOpen() { return mbIsOpen; }
+
+		bool IsWindowFocused()const { return mbIsFocused; }
 	private:
 		/// <summary>
 		/// 마우스 우클릭 창
@@ -109,6 +111,7 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 
 		bool mbIsOpen;
+		bool mbIsFocused;
 
 		fq::game_module::Scene* mScene;
 		fq::game_module::InputManager* mInputManager;

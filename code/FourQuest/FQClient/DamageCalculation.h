@@ -36,6 +36,31 @@ namespace fq::client::dc
 	}
 
 	//////////////////////////////////////////////////////////////////////////
+	//							영혼 공격									//
+	//////////////////////////////////////////////////////////////////////////
+
+	inline float GetStaffSoulDamage(float attackPower)
+	{
+		return attackPower / 4.f;
+	}
+
+	inline float GetSwordSoulDamage(float attackPower)
+	{
+		return attackPower / 4.f;
+	}
+
+	inline float GetAxeSoulDamage(float attackPower)
+	{
+		return attackPower / 4.f;
+	}
+
+	inline float GetBowSoulDamage(float attackPower)
+	{
+		return attackPower / 4.f;
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////
 	//							보스 몬스터									//
 	//////////////////////////////////////////////////////////////////////////
 

@@ -1,11 +1,12 @@
 #include "AnimationSystem.h"
 
-#include "GameProcess.h"
-#include "RenderingSystem.h"
-
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/UVAnimator.h"
 #include "../FQGameModule/MaterialAnimator.h"
+
+#include "GameProcess.h"
+#include "RenderingSystem.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::AnimationSystem::AnimationSystem()
 	:mGameProcess(nullptr)
@@ -145,12 +146,12 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 			continue;
 		}
 
-		auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
+		auto animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(animationPath);
 
 		if (animationInterfaceOrNull == nullptr)
 		{
-			const auto animationData = mGameProcess->mGraphics->ReadAnimation(animationPath);
-			animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(animationPath, animationData);
+			mGameProcess->mResourceSystem->LoadAnimation(animationPath);
+			animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(animationPath);
 		}
 		assert(animationInterfaceOrNull != nullptr);
 

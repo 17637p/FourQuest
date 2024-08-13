@@ -25,6 +25,7 @@ fq::game_engine::AnimatorWindow::AnimatorWindow()
 	, mStartSceneHandler{}
 	, mSelectObjectHandler{}
 	, mSelectNodeID(0)
+	, mbIsFocused(false)
 {}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
@@ -54,6 +55,8 @@ void fq::game_engine::AnimatorWindow::Render()
 
 	if (ImGui::Begin("Animator", &mbIsOpen))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		beginChild_ParameterWindow();
 		ImGui::SameLine();
 		beginChild_NodeEditor();
@@ -397,7 +400,7 @@ fq::game_engine::AnimatorWindow::PinID fq::game_engine::AnimatorWindow::getOutpu
 
 void fq::game_engine::AnimatorWindow::beginCreate()
 {
-	if (ed::BeginCreate())
+	if (ed::BeginCreate() && mbIsFocused)
 	{
 		ed::PinId inputID, outputID;
 		if (ed::QueryNewLink(&inputID, &outputID))
@@ -424,7 +427,7 @@ void fq::game_engine::AnimatorWindow::beginCreate()
 
 void fq::game_engine::AnimatorWindow::beginDelete()
 {
-	if (ed::BeginDelete())
+	if (ed::BeginDelete() && mbIsFocused)
 	{
 		ed::LinkId deleteLinkID;
 		while (ed::QueryDeletedLink(&deleteLinkID))

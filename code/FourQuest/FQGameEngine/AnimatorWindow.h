@@ -82,6 +82,7 @@ namespace fq::game_engine
 		entt::id_type mSelectNodeID;
 
 		bool mbIsOpen;
+		bool mbIsFocused;
 		std::unordered_map<NodeID, std::string> mMatchNodeID;
 		std::unordered_map<PinID, std::string> mMatchPinID;
 		std::unordered_map<LinkID, LinkPair> mMatchLinkID;

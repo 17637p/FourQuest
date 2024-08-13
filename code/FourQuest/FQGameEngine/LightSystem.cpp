@@ -137,7 +137,7 @@ void fq::game_engine::LightSystem::Update()
 	using namespace fq::game_module;
 
 	mScene->ViewComponents<Transform, Light>(
-		[this](GameObject& object, Transform transform, Light& light)
+		[this](GameObject& object, Transform& transform, Light& light)
 		{
 			updateLight(light, transform);
 			mGameProcess->mGraphics->UpdateLight(object.GetID(), light.GetLightInfomation());

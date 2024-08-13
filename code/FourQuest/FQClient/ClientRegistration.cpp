@@ -20,6 +20,8 @@
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
 #include "ShieldAttackState.h"
+#include "StaffSoulAttackState.h"
+#include "SwordSoulAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -72,6 +74,7 @@
 #include "SpawnerOpenState.h"
 
 #include "Attack.h"
+#include "StaffSoulAttack.h"
 #include "KnockBack.h"
 
 // UI
@@ -113,8 +116,8 @@ void fq::client::RegisterMetaData()
 		.conv<std::underlying_type_t<ESoulType>>()
 		.data<ESoulType::Sword>("Sword"_hs) // 0
 		.prop(fq::reflect::prop::Name, "Sword")
-		.data<ESoulType::Shield>("Shield"_hs) // 1
-		.prop(fq::reflect::prop::Name, "Shield")
+		.data<ESoulType::Axe>("Axe"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Axe")
 		.data<ESoulType::Bow>("Bow"_hs) // 2
 		.prop(fq::reflect::prop::Name, "Bow")
 		.data<ESoulType::Staff>("Staff"_hs) // 3
@@ -150,8 +153,10 @@ void fq::client::RegisterMetaData()
 		.data<&Player::mAttackPositionOffset>("FeverTime"_hs)
 		.prop(reflect::prop::Name, "FeverTime")
 		.prop(reflect::prop::Comment, u8"°©¿Ê ¹öÇÁ ½Ã°£")
-		.data<&Player::mAttackPrafab>("AttakPrefab"_hs)
-		.prop(reflect::prop::Name, "AttakPrefab")
+		.data<&Player::mStaffSoulAttack>("StaffSoulAttack"_hs)
+		.prop(reflect::prop::Name, "StaffSoulAttack")
+		.data<&Player::mSwordSoulAttack>("SwordSoulAttack"_hs)
+		.prop(reflect::prop::Name, "SwordSoulAttack")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
 		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
@@ -295,6 +300,17 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AttackTiming")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<StaffSoulAttackState>()
+		.type("StaffSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "StaffSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<SwordSoulAttackState>()
+		.type("SwordSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "SwordSoulAttackState")
+		.data<&SwordSoulAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             ¸ó½ºÅÍ									//
@@ -634,6 +650,10 @@ void fq::client::RegisterMetaData()
 		.type("MonsterGroup"_hs)
 		.prop(fq::reflect::prop::Name, "MonsterGroup")
 		.prop(reflect::prop::Label, "Monster")
+		.data<&MonsterGroup::mMonsterCount>("MonsterCount"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterCount")
+		.data<&MonsterGroup::mGroupIndex>("GroupIndex"_hs)
+		.prop(fq::reflect::prop::Name, "GroupIndex")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -713,6 +733,18 @@ void fq::client::RegisterMetaData()
 		.data<&KnockBack::mFriction>("Friction"_hs)
 		.prop(fq::reflect::prop::Name, "Friction")
 		.base<fq::game_module::Component>();
+
+	entt::meta<StaffSoulAttack>()
+		.type("StaffSoulAttack"_hs)
+		.prop(fq::reflect::prop::Name, "StaffSoulAttack")
+		.data<&StaffSoulAttack::mAttackEmitTick>("AttackEmitTick"_hs)
+		.prop(fq::reflect::prop::Name, "AttackEmitTick")
+		.data<&StaffSoulAttack::mAttackDuration>("AttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "AttackDuration")
+		.data<&StaffSoulAttack::mAttack>("Attack"_hs)
+		.prop(fq::reflect::prop::Name, "Attack")
+		.base<fq::game_module::Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             UI										//
