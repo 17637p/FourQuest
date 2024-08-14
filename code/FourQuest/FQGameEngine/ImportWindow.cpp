@@ -97,7 +97,49 @@ void fq::game_engine::ImportWindow::Render()
 
 void fq::game_engine::ImportWindow::changeData()
 {
+	if (!std::filesystem::exists(mImportFileName) || mImportFileName.extension() != ".json")
+	{
+		return;
+	}
 
+	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadData(mImportFileName);
+	std::map<std::string, size_t> nameInfoIndexMap;
+
+	for (size_t i = 0; i < gameObjectInfos.size(); ++i)
+	{
+		const auto& objectInfo = gameObjectInfos[i];
+		std::string objectName = createObjectName(objectInfo);
+
+		assert(nameInfoIndexMap.find(objectName) == nameInfoIndexMap.end());
+		nameInfoIndexMap.insert({ objectName, i });
+	}
+
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	scene->ViewComponents<game_module::StaticMeshRenderer>(
+		[&nameInfoIndexMap, &gameObjectInfos](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+		{
+			const auto& objectName = object.GetName();
+
+			auto find = nameInfoIndexMap.find(objectName);
+
+			if (find != nameInfoIndexMap.end())
+			{
+				size_t index = find->second;
+
+				if (index < gameObjectInfos.size())
+				{
+					const auto& objectInfo = gameObjectInfos[index];
+					renderer.SetLightmapIndex(objectInfo.MeshData.LightmapIndex);
+					renderer.SetLightmapUVScaleOffset(objectInfo.MeshData.LightmapScaleOffset);
+				}
+			}
+		});
+}
+
+std::string fq::game_engine::ImportWindow::createObjectName(const importData::GameObjectLoadInfo& info) const
+{
+	return info.Name + '_' + std::to_string(static_cast<unsigned int>(info.ID));
 }
 
 void fq::game_engine::ImportWindow::createGameObject()
@@ -122,21 +164,23 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 		// 오브젝트 생성
 		{
-			auto find = objectNames.find(gameObjectInfo.Name);
-			std::string newFileName = gameObjectInfo.Name;
+			// auto find = objectNames.find(gameObjectInfo.Name);
+			// std::string newFileName = gameObjectInfo.Name;
+			// 
+			// int index = 0;
+			// while (find != objectNames.end())
+			// {
+			// 	++index;
+			// 	newFileName = gameObjectInfo.Name;
+			// 	newFileName += std::to_string(index);
+			// 
+			// 	find = objectNames.find(newFileName);
+			// }
 
-			int index = 0;
-			while (find != objectNames.end())
-			{
-				++index;
-				newFileName = gameObjectInfo.Name;
-				newFileName += std::to_string(index);
+			// gameObject->SetName(newFileName); 
+			// objectNames.insert(newFileName);
 
-				find = objectNames.find(newFileName);
-			}
-
-			gameObject->SetName(newFileName);
-			objectNames.insert(newFileName);
+			gameObject->SetName(createObjectName(gameObjectInfo));
 
 			// 트랜스폼
 			auto transform = gameObject->GetComponent<game_module::Transform>();
@@ -290,8 +334,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 					terrain.SetAlphaMap((mBasePath / gameObjectInfo.TerrainData.AlphaFileName).string());
 				}
 				terrain.SetTerrainLayers(terrainLayers);
-				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth);
-				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight);
+				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth * 2.05);
+				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight * 2.05);
 				terrain.SetHeightScale(gameObjectInfo.TerrainData.HeightScale);
 
 				// 이 데이터 현재 못 읽어옴
@@ -306,6 +350,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				terrain.SetLightmapUVScaleOffset(gameObjectInfo.TerrainData.LightmapScaleOffset);
 				terrain.SetLightmapIndex(gameObjectInfo.TerrainData.LightmapIndex);
 				terrain.SetIsStatic(gameObjectInfo.isStatic);
+
+				transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateRotationY(3.14f) * transform->GetLocalMatrix() * DirectX::SimpleMath::Matrix::CreateTranslation(terrain.GetWidth() / 4, 0, terrain.GetHeight() / 4));
 			}
 
 			gameObjectsMap.insert({ gameObjectInfo.ID, gameObject });

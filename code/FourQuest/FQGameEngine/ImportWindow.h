@@ -123,6 +123,8 @@ namespace fq::game_engine
 		void changeData();
 		std::vector<importData::GameObjectLoadInfo> loadData(const std::filesystem::path& filePath);
 
+		std::string createObjectName(const importData::GameObjectLoadInfo& info) const;
+
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;
