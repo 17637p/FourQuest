@@ -4,18 +4,28 @@
 #include "..\FQGameModule\SkinnedMeshRenderer.h"
 #include "..\FQGameModule\TriangleCollider.h"
 #include "..\FQGameModule\Transform.h"
+#include "..\FQGameModule\Camera.h"
 #include "..\FQGraphics\IFQGraphics.h"
 #include "..\FQphysics\IFQPhysics.h"
+#include "..\FQGameModule\Scene.h"
 
 #include "ModelSystem.h"
 
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "RenderingSystem.h"
+#include "CameraSystem.h"
 
 namespace fq::game_engine
 {
 	ClothEditorWindow::ClothEditorWindow()
+		: mGameProcess()
+		, mEditorProcess()
+		, mEventManager()
+		, mScene()
+		, mGameObject()
+		, mbIsOpen(false)
+		, mBrushRadian(1.f)
 	{
 	}
 
@@ -27,6 +37,8 @@ namespace fq::game_engine
 	{
 		mGameProcess = game;
 		mEditorProcess = editor;
+
+		mScene = mGameProcess->mSceneManager->GetCurrentScene();
 	}
 
 	void ClothEditorWindow::Finalize()
@@ -39,8 +51,13 @@ namespace fq::game_engine
 
 		if (ImGui::Begin("Cloth Editor", &mbIsOpen))
 		{
-			ImGui::BeginChild("PhysicsAnimatorTool");
+			ImGui::BeginChild("Cloth Editor");
+
+
+
 			ImGui::EndChild();
+		
+			createBrush();
 			dragDropGameObject();
 			debugDrawTriangle();
 		}
@@ -123,18 +140,88 @@ namespace fq::game_engine
 			return;
 
 		auto verticesMap = mGameProcess->mPhysics->GetDebugTriangleVertices();
-		auto verticesContainer = verticesMap[mGameObject->GetID()];
+		mObjectModelVertices = verticesMap[mGameObject->GetID()];
 
 		fq::graphics::debug::SphereInfo info;
 
-		for (auto& vertex : verticesContainer)
+		for (int i = 0; i < mObjectModelVertices.size(); i++)
 		{
-			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(vertex, mGameObject->GetTransform()->GetWorldMatrix());
+			info.Sphere.Center = DirectX::SimpleMath::Vector3::Transform(mObjectModelVertices[i], mGameObject->GetTransform()->GetWorldMatrix());
 			info.Sphere.Radius = 0.01f;
 			info.bUseDepthTest = false;
-			info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+			
+			if (mObjectDisableIndiecs.find(i) != mObjectDisableIndiecs.end())
+			{
+				info.Color = DirectX::SimpleMath::Color(1.f, 0.f, 0.f, 1.f);
+			}
+			else
+			{
+				info.Color = DirectX::SimpleMath::Color(1.f, 1.f, 0.f, 1.f);
+			}
 
 			mGameProcess->mGraphics->DrawSphere(info);
+		}
+	}
+
+	void ClothEditorWindow::createBrush()
+	{
+		if (!(mGameProcess->mInputManager->GetKeyState(EKey::LMouse) == EKeyState::Hold)) return;
+
+		// 월드 상의 마우스 포인트 좌표를 구해서 레이(Ray) 구하기
+		fq::game_module::Camera* editorCamera = mGameProcess->mCameraSystem->GetEditorCamera();
+
+		editorCamera->GetViewProjection();
+
+		float mousePosX = mGameProcess->mInputManager->GetMousePosition().x;
+		float mousePosY = mGameProcess->mInputManager->GetMousePosition().y;
+
+		float mouseX = (2.f * mousePosX) / mGameProcess->mScreenManager->GetScreenWidth();
+		float mouseY = (2.f * mousePosY) / mGameProcess->mScreenManager->GetScreenHeight();
+		float mouseZ = 1.f; // For the far plane
+		DirectX::SimpleMath::Vector3 rayOrigin = DirectX::XMVectorSet(mouseX, mouseY, 0.f, 1.f);
+		DirectX::SimpleMath::Vector3 rayDirection = DirectX::XMVectorSet(mouseX, mouseY, mouseZ, 0.f);
+
+		DirectX::SimpleMath::Matrix viewProjection = editorCamera->GetViewProjection();
+
+		DirectX::SimpleMath::Vector3 rayOriginWS = DirectX::SimpleMath::Vector3::Transform(rayOrigin, viewProjection);
+		DirectX::SimpleMath::Vector3 rayDirectionWS = DirectX::SimpleMath::Vector3::Transform(rayDirection, viewProjection);
+		rayDirectionWS.Normalize();
+
+		// 물리 엔진에 RayCast 실행하기
+		fq::physics::RayCastInput info;
+		info.origin = rayOriginWS;
+		info.direction = rayDirectionWS;
+		info.distance = 100.f;
+		info.layerNumber = 0;
+
+		fq::physics::RayCastOutput raycastOutput = mGameProcess->mPhysics->RayCast(info);
+
+		DirectX::SimpleMath::Vector3 radiusPos = raycastOutput.blockPosition;
+
+		// RayCast에 부딪힌 지점에 원(Circle)을 생성하여 해당 원 안에 포함되는 vertex들 모두 찾아서 브러쉬 타입에 따라
+		// 비활성화 버텍스, 활성화 버텍스 지정하기
+		for (int i = 0; i < mObjectModelVertices.size(); i++)
+		{
+			float x = mObjectModelVertices[i].x - radiusPos.x;
+			float y = mObjectModelVertices[i].y - radiusPos.y;
+			float z = mObjectModelVertices[i].z - radiusPos.z;
+
+			float total = std::abs(x) + std::abs(y) + std::abs(z);
+
+			if (total <= mBrushRadian)
+			{
+				if (mbIsDeleteBrush)
+				{
+					if (mObjectDisableIndiecs.find(i) != mObjectDisableIndiecs.end())
+					{
+						mObjectDisableIndiecs.erase(mObjectDisableIndiecs.find(i));
+					}
+				}
+				else
+				{
+					mObjectDisableIndiecs.insert(i);
+				}
+			}
 		}
 	}
 }

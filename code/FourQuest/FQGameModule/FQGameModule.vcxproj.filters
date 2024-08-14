@@ -365,6 +365,9 @@
     <ClInclude Include="TriangleCollider.h">
       <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ClothDataLoader.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -588,6 +591,9 @@
     </ClCompile>
     <ClCompile Include="TriangleCollider.cpp">
       <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ClothDataLoader.cpp">
+      <Filter>src\07.Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

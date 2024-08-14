@@ -54,16 +54,25 @@ namespace fq::game_engine
 		/// </summary>
 		void debugDrawTriangle();
 
+		/// <summary>
+		/// 마우스 포인터에서 일직선으로 날아가는 브러쉬를 생성합니다.
+		/// </summary>
+		void createBrush();
+
 	private:
-		Scene* mScene;
-		GameProcess* mGameProcess;
-		EditorProcess* mEditorProcess;
+		GameProcess*	mGameProcess;
+		EditorProcess*	mEditorProcess;
+		fq::game_module::EventManager* mEventManager;
+		fq::game_module::Scene* mScene;
+		std::shared_ptr<fq::game_module::GameObject> mGameObject;
 
 		bool mbIsOpen;
+		bool mbIsDeleteBrush;
 
-		fq::game_module::EventManager* mEventManager;
+		std::vector<DirectX::SimpleMath::Vector3> mObjectModelVertices;
+		std::set<unsigned int> mObjectDisableIndiecs;
+		float mBrushRadian;
 
-		std::shared_ptr<fq::game_module::GameObject> mGameObject;
 	}; 
 
 }
