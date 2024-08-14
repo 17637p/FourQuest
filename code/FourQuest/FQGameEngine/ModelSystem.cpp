@@ -13,6 +13,7 @@
 #include "EditorProcess.h"
 #include "GameProcess.h"
 #include "RenderingSystem.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::ModelSystem::ModelSystem()
 	:mGameProcess(nullptr)
@@ -31,12 +32,18 @@ void fq::game_engine::ModelSystem::Initialize(GameProcess* game, EditorProcess* 
 
 void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 {
-	std::filesystem::path modelPath = path;
-	std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
-	auto key = mGameProcess->mRenderingSystem->GetModelKey(path.string(), texturePath.string());
+	if (!std::filesystem::exists(path))
+	{
+		//spdlog::warn("[RenderingSystem] Model Path \"{}\" does not exist", path);
+		return;
+	}
 
-	auto& graphics = mGameProcess->mGraphics;
-	const auto& model = graphics->CreateModelResource(key, modelPath.string(), texturePath);
+	if (!mGameProcess->mResourceSystem->HasModel(path.string()))
+	{
+		mGameProcess->mResourceSystem->LoadModelResource(path.string());
+	}
+
+	const fq::common::Model& model = mGameProcess->mResourceSystem->GetModel(path.string());
 
 	std::vector<std::shared_ptr<fq::game_module::GameObject>> modelObjects;
 
@@ -48,7 +55,7 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 
 		if (modelObjects.empty())
 		{
-			std::string modelName = modelPath.filename().string();
+			std::string modelName = path.filename().string();
 			modelName = modelName.substr(0, modelName.size() - 6);
 			nodeObject->SetName(modelName);
 		}
@@ -81,20 +88,28 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		std::vector<std::string> materialPaths;
 		materialPaths.reserve(mesh.Subsets.size());
 		fq::graphics::MeshObjectInfo meshObjectInfo;
-		std::filesystem::path directory = path.parent_path();
+		std::filesystem::path parentDirectory = path.parent_path();
+		std::filesystem::path directory = path;
+		directory.replace_extension("");
 
+		// 같은 디렉토리나 모델 이름으로 생성된 폴더가 있으면 확인 후 경로 지정
 		for (const auto& subset : mesh.Subsets)
 		{
-			const std::filesystem::path materialPath  = (directory / subset.MaterialName).string() + ".material";
-			
-			if (!std::filesystem::exists(materialPath))
+			const std::filesystem::path materialPath0 = (parentDirectory / subset.MaterialName).string() + ".material";
+			const std::filesystem::path materialPath1 = (directory / subset.MaterialName).string() + ".material";
+
+			if (std::filesystem::exists(materialPath0))
 			{
-				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
-				materialPaths.push_back(DEFAULT_MATERIAL);
+				materialPaths.push_back(materialPath0.string());
+			}
+			else if (std::filesystem::exists(materialPath1))
+			{
+				materialPaths.push_back(materialPath1.string());
 			}
 			else
 			{
-				materialPaths.push_back(materialPath.string());
+				const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
+				materialPaths.push_back(DEFAULT_MATERIAL);
 			}
 		}
 
@@ -102,21 +117,14 @@ void fq::game_engine::ModelSystem::BuildModel(const std::filesystem::path& path)
 		if (mesh.BoneVertices.empty())
 		{
 			auto& staticMeshRenderer = nodeObject->AddComponent<fq::game_module::StaticMeshRenderer>();
-			//std::shared_ptr < fq::graphics::IStaticMesh> meshInterface = mGameProcess->mGraphics->GetStaticMeshByModelPathOrNull(modelPath.string(), mesh.Name);
-			//fq::graphics::IStaticMeshObject* iStaticMeshObject = mGameProcess->mGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
-			//staticMeshRenderer.SetStaticMeshObject(iStaticMeshObject);
-			staticMeshRenderer.SetModelPath(modelPath.string());
+			staticMeshRenderer.SetModelPath(path.string());
 			staticMeshRenderer.SetMaterialPaths(materialPaths);
 			staticMeshRenderer.SetMeshName(mesh.Name);
 		}
 		else // SkinnedMeshObject 생성
 		{
 			auto& skinnedMeshRenderer = nodeObject->AddComponent<fq::game_module::SkinnedMeshRenderer>();
-			//std::shared_ptr<fq::graphics::ISkinnedMesh> meshInterface = mGameProcess->mGraphics->GetSkinnedMeshByModelPathOrNull(modelPath.string(), mesh.Name);
-			//fq::graphics::ISkinnedMeshObject* iSkinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, meshObjectInfo, DirectX::SimpleMath::Matrix::Identity);
-			//iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
-			//skinnedMeshRenderer.SetSkinnedMeshObject(iSkinnedMeshObject);
-			skinnedMeshRenderer.SetModelPath(modelPath.string());
+			skinnedMeshRenderer.SetModelPath(path.string());
 			skinnedMeshRenderer.SetMaterialPaths(materialPaths);
 			skinnedMeshRenderer.SetMeshName(mesh.Name);
 		}

@@ -202,9 +202,6 @@ void fq::game_engine::ImportWindow::createGameObject()
 					mGameProcess->mGraphics->WriteModel(modelPath.string(), modelData);
 				}
 
-				auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath.string(), "");
-				mGameProcess->mGraphics->CreateModelResource(key, modelPath.string());
-
 				auto& staticMeshRenderer = gameObject->AddComponent<fq::game_module::StaticMeshRenderer>();
 				staticMeshRenderer.SetModelPath(modelPath.string());
 				staticMeshRenderer.SetMaterialPaths(materialPaths);
