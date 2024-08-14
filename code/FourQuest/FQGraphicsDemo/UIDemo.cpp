@@ -278,8 +278,8 @@ void UIDemo::debugRender()
 void UIDemo::createImage()
 {
 	fq::graphics::UIInfo uiInfo;
-	uiInfo.StartX = 0;
-	uiInfo.StartY = 0;
+	uiInfo.StartX = 300;
+	uiInfo.StartY = 300;
 	uiInfo.Width = 100;
 	uiInfo.Height = 100;
 	uiInfo.XRatio = 1;
@@ -292,24 +292,25 @@ void UIDemo::createImage()
 	uiInfo.ScaleY = 1;
 	uiInfo.fillDegree = 180;
 	uiInfo.RotationAngle = 0;
+	uiInfo.isCenter = true;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 
-	uiInfo.StartX = 500;
-	uiInfo.StartY = 500;
-	uiInfo.Width = 100;
-	uiInfo.Height = 50;
-	uiInfo.XRatio = 1;
-	uiInfo.YRatio = 0.5;
-	uiInfo.Alpha = 1;
-	uiInfo.Layer = 0;
-	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
-	uiInfo.ScaleX = 1;
-	uiInfo.ScaleY = 1;
-	uiInfo.RotationAngle = 0;
-	uiInfo.fillDegree = 359;
-	
-	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
+	//uiInfo.StartX = 500;
+	//uiInfo.StartY = 500;
+	//uiInfo.Width = 100;
+	//uiInfo.Height = 50;
+	//uiInfo.XRatio = 1;
+	//uiInfo.YRatio = 0.5;
+	//uiInfo.Alpha = 1;
+	//uiInfo.Layer = 0;
+	//uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	//uiInfo.ScaleX = 1;
+	//uiInfo.ScaleY = 1;
+	//uiInfo.RotationAngle = 0;
+	//uiInfo.fillDegree = 359;
+	//
+	//tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	//mImageObjects.push_back(tempImageObject);
 }

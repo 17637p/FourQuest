@@ -532,14 +532,17 @@ void fq::graphics::UIManager::drawAllImage()
 			{
 				float radian = DirectX::XMConvertToRadians(degree - 270);
 
-				float radiusX = (image->GetWidth() / 2) * image->GetScaleX();
-				float radiusY = (image->GetHeight() / 2) * image->GetScaleY();
+				float radiusX = (image->GetWidth() / 2);
+				float radiusY = (image->GetHeight() / 2);
 
-				float startX = image->GetStartX();
-				float startY = image->GetStartY();
+				//float radiusX = (image->GetWidth() / 2);// *image->GetScaleX();
+				//float radiusY = (image->GetHeight() / 2);// *image->GetScaleY();
 
-				float maxLength = (radiusX > radiusY) ? radiusX : radiusY;
-				float halfDiagonal = (maxLength) * std::sqrt(2);
+				float startX = image->GetStartX() - radiusX;
+				float startY = image->GetStartY() - radiusY;
+
+				//float maxLength = (radiusX > radiusY) ? radiusX : radiusY;
+				//float halfDiagonal = (maxLength) * std::sqrt(2);
 
 				// 경로 기하학을 생성하여 반원 모양을 정의합니다.
 				ID2D1PathGeometry* pPathGeometry = nullptr;
@@ -548,11 +551,13 @@ void fq::graphics::UIManager::drawAllImage()
 				ID2D1GeometrySink* pSink = nullptr;
 				pPathGeometry->Open(&pSink);
 
-				startX = startX + radiusX - halfDiagonal;
-				startY = startY + radiusY - halfDiagonal;
-
-				radiusX = halfDiagonal;
-				radiusY = halfDiagonal;
+				//float halfDiagonal = radiusX;
+				//
+				//startX = startX + radiusX - halfDiagonal;
+				//startY = startY + radiusY - halfDiagonal;
+				//
+				//radiusX = halfDiagonal;
+				//radiusY = halfDiagonal;
 
 				float cos = std::cosf(radian) * radiusX;
 				float sin = std::sinf(radian) * radiusY;
@@ -580,6 +585,12 @@ void fq::graphics::UIManager::drawAllImage()
 				pSink->Close();
 				pSink->Release();
 
+				mRenderTarget->SetTransform
+				(
+					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
+				);
+
 				// 클리핑 영역을 설정합니다.
 				mRenderTarget->PushLayer(
 					D2D1::LayerParameters(
@@ -587,12 +598,6 @@ void fq::graphics::UIManager::drawAllImage()
 						pPathGeometry
 					),
 					nullptr
-				);
-
-				mRenderTarget->SetTransform
-				(
-					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
 				);
 
 				// 이미지를 그립니다.
