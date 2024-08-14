@@ -81,9 +81,6 @@
     <Filter Include="src\03.Attack">
       <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\07.Quest">
-      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\07.Quest">
       <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
     </Filter>
@@ -92,6 +89,15 @@
     </Filter>
     <Filter Include="src\02.Monster\Boss">
       <UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\07.Quest">
+      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\08.GameVariable">
+      <UniqueIdentifier>{9829b4ba-12d2-4d87-a7b0-bd011d69722e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\08.GameVariable">
+      <UniqueIdentifier>{3147849c-1693-431a-b546-ec48aa861240}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +347,24 @@
     <ClInclude Include="SwordSoulAttackState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="BowSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="AxeSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSoulVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="GameVaribleHelper.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -564,6 +588,15 @@
     </ClCompile>
     <ClCompile Include="SwordSoulAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="BowSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="AxeSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GameVaribleHelper.cpp">
+      <Filter>src\08.GameVariable</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

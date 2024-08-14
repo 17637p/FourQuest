@@ -104,13 +104,17 @@ namespace fq::game_module
 		~Sequence();
 
 		virtual void OnStart() override;
-		virtual void OnUpdate(float dt) override;
+		virtual void OnFixedUpdate(float dt) override;
 		virtual void OnTriggerEnter(const Collision& collision) override;
 
 		bool GetIsPlay() const { return mbIsPlay; }
 		void SetIsPlay(bool isPlay) { mbIsPlay = isPlay; }
 		bool GetIsLoop() const { return mbIsLoop; }
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
+
+		/// <summary>
+		/// 인스펙터 창에서 해당 시간에 정지되어 있는 화면을 확인할 수 있도록 만든 함수입니다.
+		/// </summary>
 		float GetDurationTime() const { return mDurationTime; }
 		void SetDurationTime(float durationTime);
 

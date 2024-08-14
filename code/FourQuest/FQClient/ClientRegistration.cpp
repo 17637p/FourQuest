@@ -22,6 +22,8 @@
 #include "ShieldAttackState.h"
 #include "StaffSoulAttackState.h"
 #include "SwordSoulAttackState.h"
+#include "BowSoulAttackState.h"
+#include "AxeSoulAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -92,6 +94,9 @@
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
 
+// GameVariable
+#include "PlayerSoulVariable.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -150,17 +155,30 @@ void fq::client::RegisterMetaData()
 		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
 		.prop(reflect::prop::Name, "InvincibleTime")
 		.prop(reflect::prop::Comment, u8"무적시간")
-		.data<&Player::mAttackPositionOffset>("FeverTime"_hs)
+		.data<&Player::mFeverTime>("FeverTime"_hs)
 		.prop(reflect::prop::Name, "FeverTime")
-		.prop(reflect::prop::Comment, u8"갑옷 버프 시간")
+		.prop(reflect::prop::Comment, u8"피버 타임")
+		.data<&Player::mBowAttackTick>("BowAttackTick"_hs)
+		.prop(reflect::prop::Name, "BowAttackTick")
+		.prop(reflect::prop::Comment, u8"영혼 활 공격 틱")
+		.data<&Player::mBowAttackSpeed>("BowAttackSpeed"_hs)
+		.prop(reflect::prop::Name, "BowAttackSpeed")
+		.prop(reflect::prop::Comment, u8"영혼 활 공격 속도")
+		.data<&Player::mBowAttackAngle>("BowAttackAngle"_hs)
+		.prop(reflect::prop::Name, "BowAttackAngle")
+		.prop(reflect::prop::Comment, u8"영혼 활 공격 각도")
+		.data<&Player::mBowAttackOffset>("BowAttackOffset"_hs)
+		.prop(reflect::prop::Name, "BowAttackOffset")
 		.data<&Player::mStaffSoulAttack>("StaffSoulAttack"_hs)
 		.prop(reflect::prop::Name, "StaffSoulAttack")
 		.data<&Player::mSwordSoulAttack>("SwordSoulAttack"_hs)
 		.prop(reflect::prop::Name, "SwordSoulAttack")
+		.data<&Player::mBowSoulAttack>("BowSoulAttack"_hs)
+		.prop(reflect::prop::Name, "BowSoulAttack")
+		.data<&Player::mAxeSoulAttack>("AxeSoulAttack"_hs)
+		.prop(reflect::prop::Name, "AxeSoulAttack")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
-		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
-		.prop(reflect::prop::Name, "AttackPositionOffset")
 		.base<game_module::Component>();
 
 	entt::meta<DeadArmour>()
@@ -310,6 +328,16 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "SwordSoulAttackState")
 		.data<&SwordSoulAttackState::mAttackTiming>("AttackTiming"_hs)
 		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowSoulAttackState>()
+		.type("BowSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "BowSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<AxeSoulAttackState>()
+		.type("AxeSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "AxeSoulAttackState")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -978,4 +1006,16 @@ void fq::client::RegisterMetaData()
 		.type("QuestColliderTriggerChecker"_hs)
 		.prop(fq::reflect::prop::Name, "QuestColliderTriggerChecker")
 		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Game Variable								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PlayerSoulVariable>()
+		.type("PlayerSoulVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerSoulVariable")
+		.data<&PlayerSoulVariable::SoulAxeAttackTick>("AxeAttackTick"_hs)
+		.prop(fq::reflect::prop::Name, "AxeAttackTick")
+		.base<IGameVariable>();
+
 }

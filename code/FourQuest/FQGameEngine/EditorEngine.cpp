@@ -7,6 +7,7 @@
 #include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQphysics/IFQPhysics.h"
+#include "../FQClient/GameVaribleHelper.h"
 
 #include "GameProcess.h"
 #include "EditorProcess.h"
@@ -45,6 +46,9 @@ void fq::game_engine::EditorEngine::Initialize()
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
+
+	// 게임 전역 변수 로드 
+	client::GameVaribleHelper::Load();
 
 	// 쓰레드 풀 생성
 	fq::game_module::ThreadPool::Initialize();
@@ -312,6 +316,7 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mImportWindow->Render(); 
 	mEditor->mMaterialWindow->Render();
 	mEditor->mLightmapWindow->Render();
+	mEditor->mGameVariableWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
@@ -350,6 +355,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mImportWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mMaterialWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLightmapWindow->Initialize(mGameProcess.get());
+	mEditor->mGameVariableWindow->Initialize();
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());

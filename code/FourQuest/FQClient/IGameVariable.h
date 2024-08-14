@@ -3,8 +3,10 @@
 namespace fq::client
 {
 	/// <summary>
-	/// 클래스 메타 데이터 정보를 등록합니다
+	/// 게임 변수 인터페이스 
 	/// </summary>
-	void RegisterMetaData();
-
+	class IGameVariable
+	{
+	public:
+	};
 }

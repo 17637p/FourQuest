@@ -33,6 +33,7 @@
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackDefine.h" />
+    <ClInclude Include="AxeSoulAttackState.h" />
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
     <ClInclude Include="BossMonsterWaitTargetState.h" />
+    <ClInclude Include="BowSoulAttackState.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -54,7 +56,9 @@
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameVaribleHelper.h" />
     <ClInclude Include="HpBar.h" />
+    <ClInclude Include="IGameVariable.h" />
     <ClInclude Include="KnightArmour.h" />
     <ClInclude Include="KnockBack.h" />
     <ClInclude Include="MagicArmour.h" />
@@ -83,6 +87,7 @@
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
+    <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
     <ClInclude Include="PlantMonsterAttckState.h" />
@@ -90,6 +95,7 @@
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerUIManager.h" />
+    <ClInclude Include="PlayerSoulVariable.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
@@ -116,6 +122,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="AxeSoulAttackState.cpp" />
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
@@ -129,12 +136,14 @@
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
     <ClCompile Include="BossMonsterWaitTargetState.cpp" />
+    <ClCompile Include="BowSoulAttackState.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameVaribleHelper.cpp" />
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="KnightArmour.cpp" />
     <ClCompile Include="KnockBack.cpp" />

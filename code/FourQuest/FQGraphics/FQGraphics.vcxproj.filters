@@ -701,6 +701,15 @@
     </CustomBuild>
     <CustomBuild Include="BlurHorzCS.hlsl">
       <Filter>Shader\CS</Filter>
+	</CustomBuild>
+    <CustomBuild Include="SSRCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TestSSRPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TestSSRVS.hlsl">
+      <Filter>Shader\VS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

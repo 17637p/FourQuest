@@ -189,7 +189,7 @@ void fq::client::PlayerUI::SetSoulGauge(float ratio)
 
 	// Soul Gauge 끝에 Icon 붙이기
 	float radian = DirectX::XMConvertToRadians(soulDegree + 90);
-	float radius = (mSoulGauge->GetUIInfomation(0).Width / 2) * myTransform->GetLocalScale().x;
+	float radius = mSoulGauge->GetUIInfomation(0).Width / 2;// *myTransform->GetLocalScale().x; // world나 local 이나 똑같은 값
 
 	float cos = std::cosf(radian) * radius;
 	float sin = std::sinf(radian) * radius;

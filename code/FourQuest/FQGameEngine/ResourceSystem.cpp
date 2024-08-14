@@ -50,10 +50,10 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	}
 
 	//// Material ·Îµå
-	//for (const auto& materialPath : list.materialPaths)
-	//{
-	//	LoadMaterial(materialPath);
-	//}
+	for (const auto& materialPath : list.materialPaths)
+	{
+//		LoadMaterial(materialPath);
+	}
 }
 
 void fq::game_engine::ResourceSystem::Finalize()
@@ -114,7 +114,7 @@ void fq::game_engine::ResourceSystem::LoadAnimation(const Path& path)
 
 void fq::game_engine::ResourceSystem::LoadMaterial(const Path& path)
 {
-	if (mMaterials.find(path) != mMaterials.end())
+ 	if (mMaterials.find(path) != mMaterials.end())
 	{
 		return;
 	}

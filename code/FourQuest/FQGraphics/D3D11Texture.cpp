@@ -48,7 +48,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
-		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
+    		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
 			d3d11Device->GetDeviceContext().Get(),
 			texturePath.c_str(),
 			nullptr, mSRV.GetAddressOf()));

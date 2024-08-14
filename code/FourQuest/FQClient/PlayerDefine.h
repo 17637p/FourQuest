@@ -12,7 +12,8 @@ namespace fq::client
 		Sword, // °Ë ¿µÈ¥   
 		Staff, // ¸¶¹ý ¿µÈ¥
 		Axe, // µµ³¢ ¿µÈ¥
-		Bow  // È° ¿µÈ¥
+		Bow,  // È° ¿µÈ¥
+		End
 	};
 
 	/// <summary>
@@ -38,7 +39,18 @@ namespace fq::client
 		Knight, // °Ë ¹æÆÐ
 		Magic, // ¸¶¹ý 
 		Warrior, // µµ³¢ ?
-		Archer // ±Ã¼ö 
+		Archer, // ±Ã¼ö 
+		End
+	};
+
+	enum class EWeaponeMesh
+	{
+		Sword, // °Ë   
+		Staff, // ¸¶¹ý 
+		Axe,   // µµ³¢ 
+		Bow,   // È° 
+		Shield, // ºùÆÐ
+		End
 	};
 
 }
