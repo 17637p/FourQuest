@@ -173,9 +173,6 @@
     <ClInclude Include="SoundSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsAnimatorWindow.h">
-      <Filter>include\05.EditorWindow</Filter>
-    </ClInclude>
     <ClInclude Include="AnimatorWindow.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
@@ -218,9 +215,6 @@
     <ClInclude Include="ArticulationInspector.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
-    <ClInclude Include="TrailSystem.h">
-      <Filter>include\03.GameSystem</Filter>
-    </ClInclude>
     <ClInclude Include="LightProbeSystem.h">
       <Filter>include\03.GameSystem</Filter>
     </ClInclude>
@@ -231,15 +225,6 @@
       <Filter>include\03.GameSystem\PathFindingSystem</Filter>
     </ClInclude>
     <ClInclude Include="ExportWindow.h">
-      <Filter>include\05.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="ImportWindow.h">
-      <Filter>include\05.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="LightmapWindow.h">
-      <Filter>include\05.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialWindow.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="LoadingSystem.h">
@@ -265,6 +250,21 @@
     </ClInclude>
     <ClInclude Include="GameVariableWindow.h">
       <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="LightmapWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include\03.GameSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -406,9 +406,6 @@
     <ClCompile Include="ArticulationInspector.cpp">
       <Filter>src\05.Window</Filter>
     </ClCompile>
-    <ClCompile Include="TrailSystem.cpp">
-      <Filter>src\03.GameSystem</Filter>
-    </ClCompile>
     <ClCompile Include="LightProbeSystem.cpp">
       <Filter>src\03.GameSystem</Filter>
     </ClCompile>
@@ -416,15 +413,6 @@
       <Filter>src\05.Window</Filter>
     </ClCompile>
     <ClCompile Include="ExportWindow.cpp">
-      <Filter>src\05.Window</Filter>
-    </ClCompile>
-    <ClCompile Include="ImportWindow.cpp">
-      <Filter>src\05.Window</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialWindow.cpp">
-      <Filter>src\05.Window</Filter>
-    </ClCompile>
-    <ClCompile Include="LightmapWindow.cpp">
       <Filter>src\05.Window</Filter>
     </ClCompile>
     <ClCompile Include="LoadingSystem.cpp">
@@ -450,6 +438,18 @@
     </ClCompile>
     <ClCompile Include="GameVariableWindow.cpp">
       <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LightmapWindow.cpp">
+      <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportWindow.cpp">
+      <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialWindow.cpp">
+      <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
