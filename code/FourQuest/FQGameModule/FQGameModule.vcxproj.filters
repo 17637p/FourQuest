@@ -334,7 +334,7 @@
     </ClInclude>
     <ClInclude Include="MaterialAnimator.h">
       <Filter>include\09.Animation</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Track.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
@@ -361,6 +361,9 @@
     </ClInclude>
     <ClInclude Include="SoundTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangleCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -555,7 +558,7 @@
     </ClCompile>
     <ClCompile Include="MaterialAnimator.cpp">
       <Filter>src\09.Animation</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Track.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
@@ -582,6 +585,9 @@
     </ClCompile>
     <ClCompile Include="SoundTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangleCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
