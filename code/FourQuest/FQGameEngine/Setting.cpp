@@ -83,7 +83,6 @@ void fq::game_engine::Setting::beginChild_GizumoSetting()
 	}
 }
 
-
 void fq::game_engine::Setting::beginChild_GraphicsSetting()
 {
 	if (ImGui::CollapsingHeader("Graphics"))
@@ -267,7 +266,8 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
-			if (ImGui::Button("Generate Material File"))
+			// 빈 머터리얼 경로를 가진 오브젝트를 참조한 모델데이터에 의해 재연결 해줍니다.
+			if (ImGui::Button("Generate Material File(empty path object target, by model data)"))
 			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 				auto graphics = mGameProcess->mGraphics;
@@ -411,7 +411,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
-			if (ImGui::Button("rewrite material texture path"))
+			if (ImGui::Button("rewrite material texture path(change relative path)"))
 			{
 				auto makeRelativePath = [](std::wstring& filename)
 					{
@@ -448,8 +448,10 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						}
 					}
 				}
+			}
 
-
+			if (ImGui::Button("reload material path(change relative path)"))
+			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
 				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
