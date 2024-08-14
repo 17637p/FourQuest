@@ -468,14 +468,28 @@ bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short 
 		fixed16_9Height = width / renderAspect;
 	}
 
-	mUIManager->ReleaseRenderTarget();
-	mRenderManager->OnResize(fixed16_9Width, fixed16_9Height, width, height);
-	mCameraManager->OnResize(fixed16_9Width, fixed16_9Height);
-	mPickingManager->OnResize(fixed16_9Width, fixed16_9Height, mDevice);
-	mUIManager->OnResize(mDevice, fixed16_9Width, fixed16_9Height);
-	mPostProcessingManager->OnResize(mDevice, mResourceManager, fixed16_9Width, fixed16_9Height);
+	if (width < 10 || height < 10)
+	{
+		mUIManager->ReleaseRenderTarget();
+		mRenderManager->OnResize(width, height, width, height);
+		mCameraManager->OnResize(width, height);
+		mPickingManager->OnResize(width, height, mDevice);
+		mUIManager->OnResize(mDevice, width, height);
+		mPostProcessingManager->OnResize(mDevice, mResourceManager, width, height);
 
-	return true;
+		return true;
+	}
+	else
+	{
+		mUIManager->ReleaseRenderTarget();
+		mRenderManager->OnResize(fixed16_9Width, fixed16_9Height, width, height);
+		mCameraManager->OnResize(fixed16_9Width, fixed16_9Height);
+		mPickingManager->OnResize(fixed16_9Width, fixed16_9Height, mDevice);
+		mUIManager->OnResize(mDevice, fixed16_9Width, fixed16_9Height);
+		mPostProcessingManager->OnResize(mDevice, mResourceManager, fixed16_9Width, fixed16_9Height);
+
+		return true;
+	}
 }
 
 void FQGraphics::WriteModel(const std::string& path, const fq::common::Model& modelData)

@@ -127,18 +127,21 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
 
+	float xOffset = -6.f;
+	float yOffset = -2.6f;
+
 	textInfo = mMainQuestText->GetTextInfo();
 	textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-	mMainQuestText->SetTextInfo(textInfo);
+	//mMainQuestText->SetTextInfo(textInfo);
 	int deltaFontSize = textInfo.FontSize - mFontSize;
-	mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * -6, (float)deltaFontSize * -1.6f, 0});
+	//mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0});
 
 	for (int i = 0; i < mSubQuestTexts.size(); i++)
 	{
 		textInfo = mSubQuestTexts[i]->GetTextInfo();
 		textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-		mSubQuestTexts[i]->SetTextInfo(textInfo);
-		mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * -6, (float)deltaFontSize * -1.6f, 0 });
+		//mSubQuestTexts[i]->SetTextInfo(textInfo);
+		//mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0 });
 	}
 
 	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
