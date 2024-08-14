@@ -162,6 +162,9 @@ PixelOut main(VertexOut pin) : SV_TARGET
         pout.Normal.xyz = normalize(pin.NormalW);
     }
 
+    // SSR Temp ReflectionMask
+    pout.Normal.w = pout.MetalnessRoughness.x * (1 - pout.MetalnessRoughness.y);
+
     if (gModelMaterial.UseMetalnessSmoothness)
     {
         float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xy;
