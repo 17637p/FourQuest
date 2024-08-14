@@ -4,6 +4,7 @@
 #include "DefenceCounter.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/Transform.h"
+#include "MonsterGroup.h"
 
 #include <spdlog/spdlog.h>
 
@@ -118,8 +119,8 @@ void fq::client::QuestManager::OnUpdate(float dt)
 	// Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
 
-	UINT screenWidth = mScreenManager->GetScreenWidth();
-	UINT screenHeight = mScreenManager->GetScreenHeight();
+	UINT screenWidth = mScreenManager->GetFixScreenWidth();
+	UINT screenHeight = mScreenManager->GetFixScreenHeight();
 	float scaleX = screenWidth / (float)1920;
 	float scaleY = screenHeight / (float)1080;
 	{
@@ -233,7 +234,26 @@ void fq::client::QuestManager::EventProcessKillMonster()
 			}
 
 			// Group Monster Kill 처리
+			// Main
+			std::vector<MonsterGroupKill>& monsterGroupKillList = mCurMainQuest.mclearConditionList.monsterGroupKillList;
+			if (monsterGroupKillList.size() > 0)
+			{
+				MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+				monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
+				monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
+			}
 
+			// Sub
+			for (int i = 0; i < mCurSubQuest.size(); i++)
+			{
+				std::vector<MonsterGroupKill>& monsterGroupKillList = mCurSubQuest[i].mclearConditionList.monsterGroupKillList;
+				if (monsterGroupKillList.size() > 0)
+				{
+					MonsterGroup* monsterGroup = GetScene()->GetObjectByName(monsterGroupKillList[0].monsterGroupName)->GetComponent<MonsterGroup>();
+					monsterGroupKillList[0].groupMonsterNumber = monsterGroup->GetAllMonsterSize();
+					monsterGroupKillList[0].curNumber = monsterGroup->GetRemainMonsterSize();
+				}
+			}
 		});
 }
 
@@ -500,6 +520,15 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 	if (monsterKillList.size() > 0)
 	{
 		text.Text = std::to_string(monsterKillList[0].curNumber) + " / " + std::to_string(monsterKillList[0].requestsNumber);
+		text.IsRender = true;
+		monsterKillText->SetTextInfo(text);
+	}
+
+	// Monster Group Kill Setting
+	std::vector<MonsterGroupKill>& monsterGroupKillList = quest.mclearConditionList.monsterGroupKillList;
+	if (monsterGroupKillList.size() > 0)
+	{
+		text.Text = std::to_string(monsterGroupKillList[0].curNumber) + " / " + std::to_string(monsterGroupKillList[0].groupMonsterNumber);
 		text.IsRender = true;
 		monsterKillText->SetTextInfo(text);
 	}

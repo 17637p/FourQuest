@@ -8,6 +8,13 @@ namespace fq::loader
 {
 	class FileUtil;
 
+
+	class LoaderHelpaer
+	{
+	public:
+		static std::filesystem::path CorrectPathCharacters(const std::filesystem::path& path);
+	};
+
 	class ModelLoader
 	{
 	public:

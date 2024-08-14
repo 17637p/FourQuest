@@ -61,6 +61,35 @@ namespace fq::graphics
 
 		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
 	}
+
+	void FullScreenPass::OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight)
+	{
+		// 16:9 비율 유지하기 위한 스케일링 계산
+		float renderAspect = 16.0f / 9.0f;
+		float windowAspect = (float)oriWidth / oriHeight;
+
+		D3D11_VIEWPORT viewport = {};
+		if (windowAspect > renderAspect)
+		{
+			// 창이 더 넓은 경우
+			viewport.Width = oriHeight * renderAspect;
+			viewport.Height = oriHeight;
+			viewport.TopLeftX = (oriWidth - viewport.Width) / 2.0f;
+			viewport.TopLeftY = 0.0f;
+		}
+		else
+		{
+			// 창이 더 높은 경우
+			viewport.Width = oriWidth;
+			viewport.Height = oriWidth / renderAspect;
+			viewport.TopLeftX = 0.0f;
+			viewport.TopLeftY = (oriHeight - viewport.Height) / 2.0f;
+		}
+		mViewport = viewport;
+
+		mBackBufferSRV->Init(mDevice, mBackBufferRTV);
+	}
+
 	void FullScreenPass::Render()
 	{
 		ID3D11ShaderResourceView* SRVs[10] = { NULL };
@@ -78,6 +107,6 @@ namespace fq::graphics
 		mPointClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 
 		mDevice->GetDeviceContext()->DrawIndexed(6, 0, 0);
-		mSwapChainRTV->Bind(mDevice, mDSV);
+		//mSwapChainRTV->Bind(mDevice, mDSV);
 	}
 }

@@ -174,6 +174,11 @@ LRESULT TerrainDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		mScreenWidth = max(200, mScreenWidth);
 		mScreenHeight = max(200, mScreenHeight);
 
+		if (mTestGraphics != nullptr)
+		{
+			mTestGraphics->SetWindowSize(mScreenWidth, mScreenHeight);
+		}
+
 		break;
 	}
 	case WM_PAINT:

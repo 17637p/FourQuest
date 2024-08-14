@@ -449,12 +449,31 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
+	// 16:9 비율 유지하기 위한 스케일링 계산
+	float renderAspect = 16.0f / 9.0f;
+	float windowAspect = (float)width / height;
+
+	int fixed16_9Width = 0;
+	int fixed16_9Height = 0;
+	if (windowAspect > renderAspect)
+	{
+		// 창이 더 넓은 경우
+		fixed16_9Width = height * renderAspect;
+		fixed16_9Height = height;
+	}
+	else
+	{
+		// 창이 더 높은 경우
+		fixed16_9Width = width;
+		fixed16_9Height = width / renderAspect;
+	}
+
 	mUIManager->ReleaseRenderTarget();
-	mRenderManager->OnResize(width, height);
-	mCameraManager->OnResize(width, height);
-	mPickingManager->OnResize(width, height, mDevice);
-	mUIManager->OnResize(mDevice, width, height);
-	mPostProcessingManager->OnResize(mDevice, mResourceManager, width, height);
+	mRenderManager->OnResize(fixed16_9Width, fixed16_9Height, width, height);
+	mCameraManager->OnResize(fixed16_9Width, fixed16_9Height);
+	mPickingManager->OnResize(fixed16_9Width, fixed16_9Height, mDevice);
+	mUIManager->OnResize(mDevice, fixed16_9Width, fixed16_9Height);
+	mPostProcessingManager->OnResize(mDevice, mResourceManager, fixed16_9Width, fixed16_9Height);
 
 	return true;
 }

@@ -112,7 +112,7 @@ namespace fq::graphics
 		mPreCalculatedLightRTV = nullptr;
 	}
 
-	void DeferredPipeline::OnResize(unsigned short width, unsigned short height)
+	void DeferredPipeline::OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight)
 	{
 		mAlbedoRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Albedo, width, height);
 		mMetalnessRoughnessRTV->OnResize(mDevice, ED3D11RenderTargetViewType::MetalnessRoughness, width, height);
@@ -123,6 +123,6 @@ namespace fq::graphics
 		mSourceTangentRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
 		mPreCalculatedLightRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PreCalculatedLight, width, height);
 
-		RenderPipeline::OnResize(width, height);
+		RenderPipeline::OnResize(width, height, oriWidth, oriHeight);
 	}
 }

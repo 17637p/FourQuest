@@ -86,13 +86,13 @@ namespace fq::game_module
 		float startTime = 0.f;
 		float totalPlayTime = 1.f;
 
-		float nameFontCenterY = 100.f;
-		float nameFontSize = 12.f;
+		float nameFontCenterY = 200.f;
+		float nameFontSize = 30.f;
 		DirectX::SimpleMath::Color nameFontColor = { 0.f, 0.f, 1.f, 1.f };
 		std::string name = {};
 
 		float textFontCenterY = 150.f;
-		float textFontSize = 10.f;
+		float textFontSize = 20.f;
 		DirectX::SimpleMath::Color textFontColor = { 1.f, 1.f, 1.f, 1.f };
 		std::string text = {};
 	};

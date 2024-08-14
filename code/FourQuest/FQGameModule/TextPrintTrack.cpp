@@ -4,6 +4,8 @@
 #include "TextUI.h"
 #include "Transform.h"
 
+#include "ScreenManager.h"
+
 namespace fq::game_module
 {
 	TextPrintTrack::TextPrintTrack()
@@ -56,8 +58,8 @@ namespace fq::game_module
 		mScene->AddGameObject(mNameObject);
 		mScene->AddGameObject(mTextObject);
 
-		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, mNameFontCenterY, 0.f));
-		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, mTextFontCenterY, 0.f));
+		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetScreenWidth() / 2.f, mScene->GetScreenManager()->GetScreenHeight() - mNameFontCenterY, 0.f));
+		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetScreenWidth() / 2.f, mScene->GetScreenManager()->GetScreenHeight() - mTextFontCenterY, 0.f));
 	}
 
 	void TextPrintTrack::PlayOn()
@@ -66,20 +68,21 @@ namespace fq::game_module
 		auto text = mTextObject->GetComponent<TextUI>();
 
 		fq::graphics::TextInfo textInfo;
+		textInfo.Align = fq::graphics::ETextAlign::CenterTop;
 		textInfo.Text = mName;
 		textInfo.FontSize = mNameFontSize;
 		textInfo.FontColor = mNameFontColor;
-		textInfo.CenterX = 960.f;
-		textInfo.CenterY = mNameFontCenterY;
-		textInfo.Width = 300.f;
+		textInfo.CenterX = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
+		textInfo.CenterY = mScene->GetScreenManager()->GetScreenHeight() - mNameFontCenterY;
+		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth() / 4.f;
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;
 		textInfo.FontSize = mTextFontSize;
 		textInfo.FontColor = mTextFontColor;
-		textInfo.CenterX = 960.f;
-		textInfo.CenterY = mTextFontCenterY;
-		textInfo.Width = 1500.f;
+		textInfo.CenterX = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
+		textInfo.CenterY = mScene->GetScreenManager()->GetScreenHeight() - mTextFontCenterY;
+		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
 		text->SetTextInfo(textInfo);
 	}
 

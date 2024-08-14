@@ -35,7 +35,7 @@ namespace fq::client
 		/// <summary>
 		/// 몬스터그룹의 남은 몬스터의 갯수를 반환합니다 
 		/// </summary>
-		int GetRemianMonsterSize()const;
+		int GetRemainMonsterSize()const;
 
 		/// <summary>
 		/// 몬스터 그룹에 등록된 모든 몬스터의 갯수를 반환합니다

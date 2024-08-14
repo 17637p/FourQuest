@@ -41,8 +41,8 @@ void fq::client::PauseUI::OnUpdate(float dt)
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
 
 	// Scale 자동 조정 
-	UINT screenWidth = mScreenManager->GetScreenWidth();
-	UINT screenHeight = mScreenManager->GetScreenHeight();
+	UINT screenWidth = mScreenManager->GetFixScreenWidth();
+	UINT screenHeight = mScreenManager->GetFixScreenHeight();
 	float scaleX = screenWidth / (float)1920;
 	float scaleY = screenHeight / (float)1080;
 	{

@@ -15,6 +15,7 @@ namespace fq::graphics
 			unsigned short height);
 		void Finalize() override;
 		void OnResize(unsigned short width, unsigned short height) override;
+		void OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight);
 		void Render() override;
 
 	private:
