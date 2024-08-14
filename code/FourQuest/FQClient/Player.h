@@ -72,9 +72,6 @@ namespace fq::client
 		/// </summary>
 		void EquipArmourWeapone();
 
-		float GetBowAttackTick() const { return mBowAttackTick; }
-		float GetAxeAttackTick() const { return mAxeAttackTick; }
-
 	private:
 		void processInput();
 		void processCoolTime(float dt);
@@ -115,12 +112,6 @@ namespace fq::client
 		game_module::PrefabResource mAxeSoulAttack; // µµ³¢ ¿µÈ¥ °ø°Ý 
 		game_module::PrefabResource mBowSoulAttack; // È° ¿µÈ¥ °ø°Ý 	
 		game_module::PrefabResource mStaffSoulAttack; // ¸¶¹ý ¿µÈ¥ °ø°Ý
-
-		// È° ¿µÈ¥ °ø°Ý °ü·Ã
-		float mBowAttackTick;
-		float mBowAttackSpeed;
-		float mBowAttackAngle;
-		float mBowAttackOffset;
 
 		// µµ³¢ ¿µÈ¥ °ø°Ý °ü·Ã
 		float mAxeAttackTick;

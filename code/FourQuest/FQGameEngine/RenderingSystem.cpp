@@ -318,7 +318,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 		}
 		else
 		{
-			materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
+			materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(materialPath);
 
 			if (materialInterfaceOrNull == nullptr)
 			{

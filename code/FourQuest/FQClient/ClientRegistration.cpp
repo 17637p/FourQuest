@@ -96,6 +96,7 @@
 
 // GameVariable
 #include "PlayerSoulVariable.h"
+#include "DamageVariable.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -158,17 +159,6 @@ void fq::client::RegisterMetaData()
 		.data<&Player::mFeverTime>("FeverTime"_hs)
 		.prop(reflect::prop::Name, "FeverTime")
 		.prop(reflect::prop::Comment, u8"피버 타임")
-		.data<&Player::mBowAttackTick>("BowAttackTick"_hs)
-		.prop(reflect::prop::Name, "BowAttackTick")
-		.prop(reflect::prop::Comment, u8"영혼 활 공격 틱")
-		.data<&Player::mBowAttackSpeed>("BowAttackSpeed"_hs)
-		.prop(reflect::prop::Name, "BowAttackSpeed")
-		.prop(reflect::prop::Comment, u8"영혼 활 공격 속도")
-		.data<&Player::mBowAttackAngle>("BowAttackAngle"_hs)
-		.prop(reflect::prop::Name, "BowAttackAngle")
-		.prop(reflect::prop::Comment, u8"영혼 활 공격 각도")
-		.data<&Player::mBowAttackOffset>("BowAttackOffset"_hs)
-		.prop(reflect::prop::Name, "BowAttackOffset")
 		.data<&Player::mStaffSoulAttack>("StaffSoulAttack"_hs)
 		.prop(reflect::prop::Name, "StaffSoulAttack")
 		.data<&Player::mSwordSoulAttack>("SwordSoulAttack"_hs)
@@ -1014,8 +1004,52 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlayerSoulVariable>()
 		.type("PlayerSoulVariable"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerSoulVariable")
-		.data<&PlayerSoulVariable::SoulAxeAttackTick>("AxeAttackTick"_hs)
-		.prop(fq::reflect::prop::Name, "AxeAttackTick")
+		.data<&PlayerSoulVariable::SoulBowAttackTick>("SoulBowAttackTick"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackTick")
+		.data<&PlayerSoulVariable::SoulBowAttackSpeed>("SoulBowAttackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackSpeed")
+		.data<&PlayerSoulVariable::SoulBowAttackAngle>("SoulBowAttackAngle"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackAngle")
+		.data<&PlayerSoulVariable::SoulBowAttackOffset>("SoulBowAttackOffset"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackOffset")
+
+		.data<&PlayerSoulVariable::SoulAxeAttackTick>("SoulAxeAttackTick"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
+		.base<IGameVariable>();
+
+	entt::meta<DamageVariable>()
+		.type("DamageVariable"_hs)
+		.prop(fq::reflect::prop::Name, "DamageVariable")
+		.data<&DamageVariable::SwordAttackCoefficient>("SwordAttackCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "SwordAttackCoefficient")
+		.data<&DamageVariable::ShieldAttackCoefficient>("ShieldAttackCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "ShieldAttackCoefficient")
+		.data<&DamageVariable::ShieldDashCoefficient>("ShieldDashCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "ShieldDashCoefficient")
+
+		.data<&DamageVariable::MagicBallCoefficient>("MagicBallCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "MagicBallCoefficient")
+		.data<&DamageVariable::MagicAOECoefficient>("MagicAOECoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "MagicAOECoefficient")
+		.data<&DamageVariable::MagicLaserCoefficient>("MagicLaserCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "MagicLaserCoefficient")
+
+		.data<&DamageVariable::SwordSoulCoefficient>("SwordSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "SwordSoulCoefficient")
+		.data<&DamageVariable::StaffSoulCoefficient>("StaffSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "StaffSoulCoefficient")
+		.data<&DamageVariable::AxeSoulCoefficient>("AxeSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "AxeSoulCoefficient")
+		.data<&DamageVariable::BowSoulCoefficient>("BowSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BowSoulCoefficient")
+
+		.data<&DamageVariable::BossSmashDownCoefficient>("BossSmashDownCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BossSmashDownCoefficient")
+		.data<&DamageVariable::BossComboAttackCoefficient>("BossComboAttackCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BossComboAttackCoefficient")
+		.data<&DamageVariable::BossRushCoefficient>("BossRushCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BossRushCoefficient")
+
 		.base<IGameVariable>();
 
 }

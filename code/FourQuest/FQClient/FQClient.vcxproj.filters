@@ -365,6 +365,9 @@
     <ClInclude Include="IGameVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
+    <ClInclude Include="DamageVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">

@@ -2,10 +2,10 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "Player.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::BowSoulAttackState::BowSoulAttackState()
-	:mAttackTick(0.1f)
-	, mAttackElapsedTime(0.f)
+	: mAttackElapsedTime(0.f)
 {
 
 }
@@ -24,7 +24,6 @@ void fq::client::BowSoulAttackState::OnStateEnter(game_module::Animator& animato
 
 	auto player = animator.GetComponent<Player>();
 	player->EquipSoulWeapone();
-	mAttackTick = player->GetBowAttackTick();
 }
 
 void fq::client::BowSoulAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -35,11 +34,13 @@ void fq::client::BowSoulAttackState::OnStateExit(game_module::Animator& animator
 
 void fq::client::BowSoulAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
+	assert(PlayerSoulVariable::SoulBowAttackTick > 0.f);
+
 	mAttackElapsedTime += dt;
 
-	while (mAttackElapsedTime >= mAttackTick)
+	while (mAttackElapsedTime >= PlayerSoulVariable::SoulBowAttackTick)
 	{
-		mAttackElapsedTime -= mAttackTick;
+		mAttackElapsedTime -= PlayerSoulVariable::SoulBowAttackTick;
 		auto player = animator.GetComponent<Player>();
 		player->EmitBowSoulAttack();
 	}
