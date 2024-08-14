@@ -292,6 +292,13 @@ void fq::game_module::RegisterMetaData()
 		.data<fq::graphics::ETextAlign::RightBottom>("RightBottom"_hs)
 		.prop(fq::reflect::prop::Name, "RightBottom");
 
+	entt::meta<fq::graphics::ETextBoxAlign>()
+		.prop(fq::reflect::prop::Name, "TextAlign")
+		.data<fq::graphics::ETextBoxAlign::LeftTop>("LeftTop"_hs)
+		.prop(fq::reflect::prop::Name, "LeftTop")
+		.data<fq::graphics::ETextBoxAlign::CenterCenter>("CenterCenter"_hs)
+		.prop(fq::reflect::prop::Name, "CenterCenter");
+
 	entt::meta<graphics::TextInfo>()
 		.type("TextInformation"_hs)
 		.prop(fq::reflect::prop::Name, "TextInformation")
@@ -310,6 +317,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "FontColor")
 		.data<&graphics::TextInfo::Align>("Align"_hs)
 		.prop(fq::reflect::prop::Name, "Align")
+		.data<&graphics::TextInfo::BoxAlign>("BoxAlign"_hs)
+		.prop(fq::reflect::prop::Name, "BoxAlign")
 		.data<&graphics::TextInfo::IsRender>("IsRender"_hs)
 		.prop(fq::reflect::prop::Name, "IsRender");
 

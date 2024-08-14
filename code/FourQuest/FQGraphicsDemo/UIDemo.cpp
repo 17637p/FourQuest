@@ -86,15 +86,16 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	///////////////////////////////////////////////////////////////
 
 	fq::graphics::TextInfo textInfo{};
-	textInfo.CenterX = 150;
-	textInfo.CenterY = 150;
-	textInfo.Width = 300;
-	textInfo.Height = 300;
+	textInfo.CenterX = 0;
+	textInfo.CenterY = 0;
+	textInfo.Width = 1920;
+	textInfo.Height = 1080;
 	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
 	textInfo.FontColor = { 0.1,0.8,0.4,1 };
 	textInfo.FontSize = 32;
 	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
 	textInfo.Align = fq::graphics::ETextAlign::RightTop;
+	textInfo.BoxAlign = fq::graphics::ETextBoxAlign::LeftTop;
 	mTextObject1 = mTestGraphics->CreateText(textInfo);
 	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
 
@@ -278,8 +279,8 @@ void UIDemo::debugRender()
 void UIDemo::createImage()
 {
 	fq::graphics::UIInfo uiInfo;
-	uiInfo.StartX = 0;
-	uiInfo.StartY = 0;
+	uiInfo.StartX = 300;
+	uiInfo.StartY = 300;
 	uiInfo.Width = 100;
 	uiInfo.Height = 100;
 	uiInfo.XRatio = 1;
@@ -292,24 +293,25 @@ void UIDemo::createImage()
 	uiInfo.ScaleY = 1;
 	uiInfo.fillDegree = 180;
 	uiInfo.RotationAngle = 0;
+	uiInfo.isCenter = true;
 
 	auto tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
 	mImageObjects.push_back(tempImageObject);
 
-	uiInfo.StartX = 500;
-	uiInfo.StartY = 500;
-	uiInfo.Width = 100;
-	uiInfo.Height = 50;
-	uiInfo.XRatio = 1;
-	uiInfo.YRatio = 0.5;
-	uiInfo.Alpha = 1;
-	uiInfo.Layer = 0;
-	uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
-	uiInfo.ScaleX = 1;
-	uiInfo.ScaleY = 1;
-	uiInfo.RotationAngle = 0;
-	uiInfo.fillDegree = 359;
-	
-	tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
-	mImageObjects.push_back(tempImageObject);
+	//uiInfo.StartX = 500;
+	//uiInfo.StartY = 500;
+	//uiInfo.Width = 100;
+	//uiInfo.Height = 50;
+	//uiInfo.XRatio = 1;
+	//uiInfo.YRatio = 0.5;
+	//uiInfo.Alpha = 1;
+	//uiInfo.Layer = 0;
+	//uiInfo.ImagePath = "./resource/Graphics/UIDemo/1_Base_color.png";
+	//uiInfo.ScaleX = 1;
+	//uiInfo.ScaleY = 1;
+	//uiInfo.RotationAngle = 0;
+	//uiInfo.fillDegree = 359;
+	//
+	//tempImageObject = mTestGraphics->CreateImageObject(uiInfo);
+	//mImageObjects.push_back(tempImageObject);
 }

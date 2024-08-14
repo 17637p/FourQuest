@@ -35,8 +35,13 @@ namespace fq::game_module
 	{
 		auto object = mScene->GetObjectByName(mSoundObjectName);
 
-		auto soundClip = object->GetComponent<SoundClip>();
-		soundClip->Play(mKeyName, mbIsLoop, 3);
+		if (object != nullptr)
+		{
+			if (!object->HasComponent<SoundClip>()) return;
+
+			auto soundClip = object->GetComponent<SoundClip>();
+			soundClip->Play(mKeyName, mbIsLoop, 3);
+		}
 	}
 	
 	void SoundTrack::PlayOn()
@@ -49,6 +54,8 @@ namespace fq::game_module
 
 		if (object != nullptr)
 		{
+			if (!object->HasComponent<SoundClip>()) return;
+
 			auto soundClip = object->GetComponent<SoundClip>();
 			soundClip->StopChannel(3);
 			soundClip->OnDestroy();
@@ -61,6 +68,8 @@ namespace fq::game_module
 
 		if (object != nullptr)
 		{
+			if (!object->HasComponent<SoundClip>()) return;
+
 			auto soundClip = object->GetComponent<SoundClip>();
 			soundClip->StopChannel(3);
 			soundClip->OnDestroy();
