@@ -34,8 +34,13 @@ namespace fq::game_module
 
 	void CameraChangeTrack::PlayEnter()
 	{
-		auto camera = mTargetCameraObject.lock()->GetComponent<Camera>();
-		camera->SetMainCamera(true);
+		if (!mTargetCameraObject.expired())
+		{
+			if (!mTargetCameraObject.lock()->HasComponent<Camera>()) return;
+
+			auto camera = mTargetCameraObject.lock()->GetComponent<Camera>();
+			camera->SetMainCamera(true);
+		}
 	}
 
 	void CameraChangeTrack::PlayOn()
@@ -96,7 +101,12 @@ namespace fq::game_module
 
 	void CameraChangeTrack::End()
 	{
-		auto camera = mCurrentCameraObject.lock()->GetComponent<Camera>();
-		camera->SetMainCamera(true);
+		if (!mCurrentCameraObject.expired())
+		{
+			if (!mCurrentCameraObject.lock()->HasComponent<Camera>()) return;
+
+			auto camera = mCurrentCameraObject.lock()->GetComponent<Camera>();
+			camera->SetMainCamera(true);
+		}
 	}
 }
