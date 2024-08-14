@@ -150,7 +150,7 @@ void fq::client::MagicArmour::EmitLaser()
 			auto attackT = attackObj->GetComponent<game_module::Transform>();
 			
 			float attackPower = mPlayer->GetAttackPower();
-			attackInfo.damage = dc::GetRazerDamage(attackPower);
+			attackInfo.damage = dc::GetLaserDamage(attackPower);
 			attackInfo.attacker = GetGameObject();
 			attackInfo.remainingAttackCount = 1;
 			attackInfo.bIsInfinite = false;

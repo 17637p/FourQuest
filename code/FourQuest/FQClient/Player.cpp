@@ -14,6 +14,7 @@
 #include "StaffSoulAttack.h"
 #include "LinearAttack.h"
 #include "ClientHelper.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -31,10 +32,6 @@ fq::client::Player::Player()
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
 	, mAttackSpeed(1.f)
-	, mBowAttackOffset(1.f)
-	, mBowAttackAngle(10.f)
-	, mBowAttackSpeed(4.f)
-	, mBowAttackTick(0.1f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mAxeAttackTick(0.5f)
@@ -245,21 +242,20 @@ void fq::client::Player::EmitBowSoulAttack()
 
 	// 화살 방향 설정
 	auto rotation = mTransform->GetWorldRotation();
-	float halfRadian = DirectX::XMConvertToRadians(mBowAttackAngle) * 0.5f;
+	float halfRadian = DirectX::XMConvertToRadians(PlayerSoulVariable::SoulBowAttackAngle) * 0.5f;
 	float angle = helper::RandomGenerator::GetInstance().GetRandomNumber(-halfRadian, +halfRadian);
 	auto angleOffset = rotation * DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0.f,1.f,0.f }, angle);
 	auto fowardDirection = DirectX::SimpleMath::Matrix::CreateFromQuaternion(angleOffset).Forward();
 
-
 	// 화살 시작 위치
 	auto position = mTransform->GetWorldPosition();
 	position.y += 1.f;
-	position += fowardDirection * mBowAttackOffset;
+	position += fowardDirection * PlayerSoulVariable::SoulBowAttackOffset;
 
 	attackT->GenerateWorld(position, angleOffset, attackT->GetWorldScale());
 
 	linearAttack->SetMoveDirection(fowardDirection);
-	linearAttack->SetMoveSpeed(mBowAttackSpeed);
+	linearAttack->SetMoveSpeed(PlayerSoulVariable::SoulBowAttackSpeed);
 
 	// 공격 설정 
 	AttackInfo attackInfo{};

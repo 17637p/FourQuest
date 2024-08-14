@@ -51,6 +51,7 @@
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
+    <ClInclude Include="DamageVariable.h" />
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />

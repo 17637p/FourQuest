@@ -385,7 +385,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			auto meshName = staticMeshRenderer->GetMeshName();
 			auto modelPath = staticMeshRenderer->GetModelPath();
 
-
 			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
 			assert(check);
 
