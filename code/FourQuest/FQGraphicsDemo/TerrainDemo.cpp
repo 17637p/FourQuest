@@ -492,6 +492,8 @@ void TerrainDemo::createModel(std::string modelPath, std::filesystem::path textu
 				{
 
 				}
+				matData.Metalness = 0.5f;
+				matData.Roughness = 0.2f;
 
 				mat[i]->SetInfo(matData);
 			}
@@ -530,18 +532,20 @@ void TerrainDemo::createProbeObject(std::string modelPath, std::filesystem::path
 
 void TerrainDemo::renderObjectInit()
 {
-	// convertFBXModelAll("./resource/example/fbx/", "./resource/example/model/");
+	convertFBXModelAll("./resource/Graphics/TerrainDemo/", "./resource/Graphics/TerrainDemo/");
 	// convertFBXModelAll("C:/Git/FourQuest/code/FourQuest/FQGameEngineDemo/resource");
 
 	//Light Probe Test
-	const std::string cubeYModel = "./resource/Graphics/TerrainDemo/testCubeY.model";
-	const std::string cubeYModel1 = "./resource/Graphics/TerrainDemo/testCubeY1.model";
-	const std::string cubeYModel2 = "./resource/Graphics/TerrainDemo/testCubeY2.model";
-	const std::string cubeYModel3 = "./resource/Graphics/TerrainDemo/testCubeY3.model";
+	 const std::string cubeYModel = "./resource/Graphics/TerrainDemo/testCubeY.model";
+	 const std::string cubeYModel1 = "./resource/Graphics/TerrainDemo/testCubeY1.model";
+	 const std::string cubeYModel2 = "./resource/Graphics/TerrainDemo/testCubeY2.model";
+	 const std::string cubeYModel3 = "./resource/Graphics/TerrainDemo/testCubeY3.model";
+	 const std::string cubeYModel4 = "./resource/Graphics/TerrainDemo/testCubeY4.model";
+	 const std::string sphereModel = "./resource/Graphics/TerrainDemo/testSphere.model";
 
-	const std::string sphereModel = "./resource/Graphics/TerrainDemo/testSphere.model";
-
-	const std::string textureBase3Path = "./resource/example/texture";
+	 const std::string textureBase3Path = "./resource/example/texture";
+	 
+	createModel(cubeYModel4, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.1f, 0.01f, 0.1f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, -4, 0 }), false);
 
 	createModel(cubeYModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 2.5, 0, 0 }), false);
 	createModel(cubeYModel1, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -2.5, 0, 0 }), false);
@@ -553,10 +557,10 @@ void TerrainDemo::renderObjectInit()
 	//createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.7, 1.7, -0.7 }), true);
 	//createModel(sphereModel, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.7, 1.9, 0.7 }), true);
 
-	createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -0.95, 1.2, 0 }), true);
-	createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.95, 1.4, 0 }), true);
-	createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.95 }), true);
-	createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.95 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.01f, 0.01f, 0.01f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ -5.95, 1.2, 2 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0.95, 1.4, 0 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.7, -0.95 }), true);
+	 createModel(sphereModel, textureBase3Path, DirectX::SimpleMath::Matrix::CreateScale({ 0.002f, 0.002f, 0.002f }) * DirectX::SimpleMath::Matrix::CreateTranslation({ 0, 1.9, 0.95 }), true);
 }
 
 void TerrainDemo::renderObjectUpdate()
