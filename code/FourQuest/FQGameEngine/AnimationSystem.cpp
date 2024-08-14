@@ -95,7 +95,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 		});
 
 	mScene->ViewComponents<MaterialAnimator>(
-		[dt](GameObject& object,MaterialAnimator& animator)
+		[dt](GameObject& object, MaterialAnimator& animator)
 		{
 			animator.UpdateTimePos(dt);
 		});
@@ -122,12 +122,12 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 	auto controller = mLoader.Load(controllerPath);
 
 	// 계층 구조 로드
-	auto nodeHierarchyOrNull = mGameProcess->mGraphics->GetNodeHierarchyOrNull(nodeHierarchyPath);
+	auto nodeHierarchyOrNull = mGameProcess->mResourceSystem->GetNodeHierarchy(nodeHierarchyPath);
 
 	if (nodeHierarchyOrNull == nullptr)
 	{
-		const auto& nodeHierarchyData = mGameProcess->mGraphics->ReadNodeHierarchy(nodeHierarchyPath);
-		nodeHierarchyOrNull = mGameProcess->mGraphics->CreateNodeHierarchy(nodeHierarchyPath, nodeHierarchyData);
+		mGameProcess->mResourceSystem->LoadNodeHierarchy(nodeHierarchyPath);
+		nodeHierarchyOrNull = mGameProcess->mResourceSystem->GetNodeHierarchy(nodeHierarchyPath);
 	}
 	assert(nodeHierarchyOrNull != nullptr);
 

@@ -1,16 +1,19 @@
 #include "Setting.h"
 
 #include <imgui.h>
+#include <spdlog/spdlog.h>
 #include "imgui_stdlib.h"
 
-#include "GameProcess.h"
-#include "RenderingSystem.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
+
+#include "GameProcess.h"
+#include "RenderingSystem.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::Setting::Setting()
 	:mbUseSnap(false)
@@ -91,9 +94,9 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 		{
 			if (ImGui::Checkbox("UseGrayScale", &mbUseGrayScale))
 			{
-				auto materials = mGameProcess->mGraphics->GetMaterials();
+				auto materials = mGameProcess->mResourceSystem->GetMaterials();
 
-				for (auto& material : materials)
+				for (auto& [key, material] : materials)
 				{
 					auto materialInfo = material->GetInfo();
 
@@ -272,6 +275,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 				auto graphics = mGameProcess->mGraphics;
 				const auto& renderingSystem = mGameProcess->mRenderingSystem;
+				const auto& resourceSystem = mGameProcess->mResourceSystem;
 
 				auto createMaterial = [&graphics](auto directory, const auto& modelData)
 					{
@@ -300,7 +304,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					};
 
 				scene->ViewComponents<game_module::SkinnedMeshRenderer>(
-					[&graphics, &renderingSystem, createMaterial](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
+					[&graphics, &renderingSystem, &resourceSystem, createMaterial](game_module::GameObject& object, game_module::SkinnedMeshRenderer& renderer)
 					{
 						if (!renderer.GetMaterialPaths().empty())
 						{
@@ -312,7 +316,18 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						modelDirectory.replace_extension("");
 						//modelDirectory /= modelDirectory.filename();
 
-						const auto& modelData = graphics->CreateModelResource(renderingSystem->GetModelKey(modelPath.string()), modelPath.string());
+						if (std::filesystem::exists(modelPath))
+						{
+							return;
+						}
+
+						if (!resourceSystem->HasModel(modelPath.string()))
+						{
+							resourceSystem->LoadModelResource(modelPath.string());
+						}
+
+						const fq::common::Model& modelData = resourceSystem->GetModel(modelPath.string());
+
 						createMaterial(modelDirectory, modelData);
 
 						std::vector<std::string> materialPaths;
@@ -325,13 +340,13 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 								for (const auto& subset : mesh.Subsets)
 								{
 									auto materialPath = (modelDirectory / subset.MaterialName).string() + ".material";
-
-									auto materialInterface = graphics->GetMaterialOrNull(materialPath);
+									assert(std::filesystem::exists(materialPath));
+									auto materialInterface = resourceSystem->GetMaterial(materialPath);
 
 									if (materialInterface == nullptr)
 									{
-										const graphics::MaterialInfo& materialInfo = graphics->ReadMaterialInfo(materialPath);
-										materialInterface = graphics->CreateMaterial(materialPath, materialInfo);
+										resourceSystem->LoadMaterial(materialPath);
+										materialInterface = resourceSystem->GetMaterial(materialPath);
 									}
 
 									materialPaths.push_back(materialPath);
@@ -346,7 +361,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				);
 
 				scene->ViewComponents<game_module::StaticMeshRenderer>(
-					[&graphics, &renderingSystem, createMaterial](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+					[&graphics, &renderingSystem, &resourceSystem, createMaterial](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
 					{
 						if (!renderer.GetMaterialPaths().empty())
 						{
@@ -358,7 +373,18 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						modelDirectory.replace_extension("");
 						// modelDirectory /= modelDirectory.filename();
 
-						const auto& modelData = graphics->CreateModelResource(renderingSystem->GetModelKey(modelPath.string()), modelPath.string());
+						if (std::filesystem::exists(modelPath))
+						{
+							return;
+						}
+
+						if (!resourceSystem->HasModel(modelPath.string()))
+						{
+							resourceSystem->LoadModelResource(modelPath.string());
+						}
+
+						const fq::common::Model& modelData = resourceSystem->GetModel(modelPath.string());
+
 						createMaterial(modelDirectory, modelData);
 
 						std::vector<std::string> materialPaths;
@@ -371,13 +397,13 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 								for (const auto& subset : mesh.Subsets)
 								{
 									auto materialPath = (modelDirectory / subset.MaterialName).string() + ".material";
-
-									auto materialInterface = graphics->GetMaterialOrNull(materialPath);
+									assert(std::filesystem::exists(materialPath));
+									auto materialInterface = resourceSystem->GetMaterial(materialPath);
 
 									if (materialInterface == nullptr)
 									{
-										const graphics::MaterialInfo& materialInfo = graphics->ReadMaterialInfo(materialPath);
-										materialInterface = graphics->CreateMaterial(materialPath, materialInfo);
+										resourceSystem->LoadMaterial(materialPath);
+										materialInterface = resourceSystem->GetMaterial(materialPath);
 									}
 
 									materialPaths.push_back(materialPath);

@@ -282,7 +282,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 	if (!std::filesystem::exists(modelPath))
 	{
-		SPDLOG_WARN("[RenderingSystem] Model Path \"{}\" does not exist", modelPath);
+		//spdlog::warn("[RenderingSystem] Model Path \"{}\" does not exist", modelPath);
 		return;
 	}
 
@@ -306,19 +306,18 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 		{
 			spdlog::warn("{} material path is invalid", object->GetName());
 
-			std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(materialPath);
 			const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
-			materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);
+			materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(DEFAULT_MATERIAL);
 
 			if (materialInterfaceOrNull == nullptr)
 			{
-				const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(DEFAULT_MATERIAL);
-				materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+				mGameProcess->mResourceSystem->LoadMaterial(DEFAULT_MATERIAL);
+				materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(DEFAULT_MATERIAL);
 			}
 		}
 		else
 		{
-			materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(materialPath);
+			materialInterfaceOrNull = mResourceSystem->GetMaterial(materialPath);
 
 			if (materialInterfaceOrNull == nullptr)
 			{
@@ -391,7 +390,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	// Model »ý¼º
 	if (!std::filesystem::exists(modelPath))
 	{
-		SPDLOG_WARN("[RenderingSystem] Model Path \"{}\" does not exist", modelPath);
+		//spdlog::warn("[RenderingSystem] Model Path \"{}\" does not exist", modelPath);
 		return;
 	}
 
@@ -399,7 +398,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	{
 		mGameProcess->mResourceSystem->LoadModelResource(modelPath);
 	}
-	
+
 	auto meshName = staticMeshRenderer->GetMeshName();
 	auto materialPaths = staticMeshRenderer->GetMaterialPaths();
 	auto meshInfo = staticMeshRenderer->GetMeshObjectInfomation();
@@ -419,12 +418,12 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 			spdlog::warn("{} material path is invalid", object->GetName());
 
 			const std::string DEFAULT_MATERIAL = "./resource/Material/Default.material";
-			materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(DEFAULT_MATERIAL);
+			materialInterfaceOrNull = mResourceSystem->GetMaterial(DEFAULT_MATERIAL);
 
 			if (materialInterfaceOrNull == nullptr)
 			{
-				const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(DEFAULT_MATERIAL);
-				materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(materialPath, materialInfo);
+				mResourceSystem->LoadMaterial(DEFAULT_MATERIAL);
+				materialInterfaceOrNull = mResourceSystem->GetMaterial(DEFAULT_MATERIAL);
 			}
 		}
 		else
@@ -527,12 +526,12 @@ void fq::game_engine::RenderingSystem::loadUVAnimation(fq::game_module::GameObje
 		return;
 	}
 
-	auto uvAnimationInterfaceOrNull = mGameProcess->mGraphics->GetUVAnimationOrNull(uvAnimationPath);
+	auto uvAnimationInterfaceOrNull = mResourceSystem->GetUVAnimation(uvAnimationPath);
 
 	if (uvAnimationInterfaceOrNull == nullptr)
 	{
-		const auto& uvAnimationData = mGameProcess->mGraphics->ReadUVAnimation(uvAnimationPath);
-		uvAnimationInterfaceOrNull = mGameProcess->mGraphics->CreateUVAnimation(uvAnimationPath, uvAnimationData);
+		mResourceSystem->LoadUVAnimation(uvAnimationPath);
+		uvAnimationInterfaceOrNull = mResourceSystem->GetUVAnimation(uvAnimationPath);
 	}
 	assert(uvAnimationInterfaceOrNull != nullptr);
 
@@ -584,12 +583,12 @@ void fq::game_engine::RenderingSystem::loadSequenceAnimation(fq::game_module::Ga
 	{
 		for (auto& trackKey : info.animationTrackKeys)
 		{
-			auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(trackKey.animationPath);
+			auto animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(trackKey.animationPath);
 
 			if (animationInterfaceOrNull == nullptr)
 			{
-				const auto animationData = mGameProcess->mGraphics->ReadAnimation(trackKey.animationPath);
-				animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(trackKey.animationPath, animationData);
+				mGameProcess->mResourceSystem->LoadAnimation(trackKey.animationPath);
+				animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(trackKey.animationPath);
 			}
 			assert(animationInterfaceOrNull != nullptr);
 
