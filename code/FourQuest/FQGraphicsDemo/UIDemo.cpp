@@ -86,15 +86,16 @@ bool UIDemo::Init(HINSTANCE hInstance)
 	///////////////////////////////////////////////////////////////
 
 	fq::graphics::TextInfo textInfo{};
-	textInfo.CenterX = 150;
-	textInfo.CenterY = 150;
-	textInfo.Width = 300;
-	textInfo.Height = 300;
+	textInfo.CenterX = 0;
+	textInfo.CenterY = 0;
+	textInfo.Width = 1920;
+	textInfo.Height = 1080;
 	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
 	textInfo.FontColor = { 0.1,0.8,0.4,1 };
 	textInfo.FontSize = 32;
 	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
 	textInfo.Align = fq::graphics::ETextAlign::RightTop;
+	textInfo.BoxAlign = fq::graphics::ETextBoxAlign::LeftTop;
 	mTextObject1 = mTestGraphics->CreateText(textInfo);
 	//mTestGraphics->DrawText(L"집가고싶당", drawRect, 32, L"DungGeunMo", { 0.1,0.8,0.4,1 });
 

@@ -114,6 +114,12 @@ namespace fq::graphics
 		RightBottom
 	};
 
+	enum class ETextBoxAlign
+	{
+		LeftTop,
+		CenterCenter,
+	};
+
 	struct TextInfo
 	{
 		std::string Text = ""; // 실제 띄울 내용
@@ -128,6 +134,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color FontColor = { 0, 0, 0, 1 };
 
 		ETextAlign Align = ETextAlign::LeftTop;
+		ETextBoxAlign BoxAlign = ETextBoxAlign::CenterCenter;
 
 		bool IsRender = true;
 	};

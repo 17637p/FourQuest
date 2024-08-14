@@ -420,16 +420,32 @@ void fq::graphics::UIManager::drawAllText()
 					break;
 			}
 
-			mRenderTarget->DrawText(
-				text.c_str(),
-				text.length(),
-				mFonts[fontPath],
-				D2D1::RectF(
-					drawTextInformation.CenterX - drawTextInformation.Width / 2,
-					drawTextInformation.CenterY - drawTextInformation.Height / 2,
-					drawTextInformation.CenterX + drawTextInformation.Width / 2,
-					drawTextInformation.CenterY + drawTextInformation.Height / 2),
-				mBrushes[drawTextInformation.FontColor]);
+			if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
+			{
+				mRenderTarget->DrawText(
+					text.c_str(),
+					text.length(),
+					mFonts[fontPath],
+					D2D1::RectF(
+						drawTextInformation.CenterX - drawTextInformation.Width / 2,
+						drawTextInformation.CenterY - drawTextInformation.Height / 2,
+						drawTextInformation.CenterX + drawTextInformation.Width / 2,
+						drawTextInformation.CenterY + drawTextInformation.Height / 2),
+					mBrushes[drawTextInformation.FontColor]);
+			}
+			else
+			{
+				mRenderTarget->DrawText(
+					text.c_str(),
+					text.length(),
+					mFonts[fontPath],
+					D2D1::RectF(
+						drawTextInformation.CenterX,
+						drawTextInformation.CenterY,
+						drawTextInformation.CenterX + drawTextInformation.Width,
+						drawTextInformation.CenterY + drawTextInformation.Height),
+					mBrushes[drawTextInformation.FontColor]);
+			}
 		}
 	}
 }
