@@ -204,7 +204,6 @@ void fq::game_engine::MaterialWindow::Render()
 		mMaterialInterface->SetInfo(materialInfo);
 	}
 
-
 	ImGui::End();
 }
 
