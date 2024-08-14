@@ -85,9 +85,19 @@ void fq::game_engine::ImportWindow::Render()
 		{
 			createGameObject();
 		}
+
+		if (ImGui::Button("Change data by scene json(lightmap scaleoffset)", ImVec2{ 133,25 }))
+		{
+			changeData();
+		}
 	}
 
 	ImGui::End();
+}
+
+void fq::game_engine::ImportWindow::changeData()
+{
+
 }
 
 void fq::game_engine::ImportWindow::createGameObject()
@@ -162,6 +172,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 				if (!material.MetallicAndSmoothnessMap.empty())
 				{
 					materialInfo.MetalnessSmoothnessFileName = mBasePath / fq::common::StringUtil::ToWide(material.MetallicAndSmoothnessMap);
+					materialInfo.bIsUsedMetalnessSmoothness = true;
 				}
 				else
 				{
@@ -249,6 +260,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				{
 					light.SetLightMode(fq::graphics::ELightMode::Baked);
 				}
+
+				transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateRotationY(3.14f) * transform->GetLocalMatrix());
 			}
 
 			// 터레인
@@ -279,7 +292,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 				terrain.SetTerrainLayers(terrainLayers);
 				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth);
 				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight);
-				terrain.SetHeightScale(gameObjectInfo.TerrainData.HeightScale * 0.5);
+				terrain.SetHeightScale(gameObjectInfo.TerrainData.HeightScale);
 
 				// 이 데이터 현재 못 읽어옴
 				terrain.SetTextureWidth(512);

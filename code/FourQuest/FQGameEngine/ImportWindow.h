@@ -120,6 +120,7 @@ namespace fq::game_engine
 
 	private:
 		void createGameObject();
+		void changeData();
 		std::vector<importData::GameObjectLoadInfo> loadData(const std::filesystem::path& filePath);
 
 	private:
