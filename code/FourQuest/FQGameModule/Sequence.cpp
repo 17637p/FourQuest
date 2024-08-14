@@ -146,7 +146,7 @@ namespace fq::game_module
 		}
 	}
 
-	void Sequence::OnUpdate(float dt)
+	void Sequence::OnFixedUpdate(float dt)
 	{
 		if (mbIsPlay)
 		{
@@ -221,8 +221,8 @@ namespace fq::game_module
 			track->End();
 
 			mbIsPlay = true;
-			OnUpdate(0.0f);
-			OnUpdate(0.0f);
+			OnFixedUpdate(0.0f);
+			OnFixedUpdate(0.0f);
 			mbIsPlay = false;
 		}
 	}
