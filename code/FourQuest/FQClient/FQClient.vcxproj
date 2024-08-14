@@ -33,6 +33,7 @@
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackDefine.h" />
+    <ClInclude Include="AxeSoulAttackState.h" />
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
     <ClInclude Include="BossMonsterWaitTargetState.h" />
+    <ClInclude Include="BowSoulAttackState.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
@@ -116,6 +118,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="AxeSoulAttackState.cpp" />
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
@@ -129,6 +132,7 @@
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
     <ClCompile Include="BossMonsterWaitTargetState.cpp" />
+    <ClCompile Include="BowSoulAttackState.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />

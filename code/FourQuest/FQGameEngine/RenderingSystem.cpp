@@ -453,6 +453,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 		staticMeshRenderer->SetLightmapUVScaleOffset(staticMeshRenderer->GetLightmapUVScaleOffset());
 		staticMeshRenderer->SetLightmapIndex(staticMeshRenderer->GetLightmapIndex());
 		staticMeshRenderer->SetIsStatic(staticMeshRenderer->GetIsStatic());
+		staticMeshRenderer->SetIsRender(staticMeshRenderer->GetIsRender());
 	}
 }
 
