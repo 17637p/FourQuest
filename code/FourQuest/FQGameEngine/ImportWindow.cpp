@@ -231,16 +231,18 @@ void fq::game_engine::ImportWindow::createGameObject()
 					materialInfo.EmissiveFileName = mBasePath / fq::common::StringUtil::ToWide(material.EmissionMap);
 				}
 
-				std::filesystem::path materialPath = mBasePath / std::filesystem::path(gameObjectInfo.MeshData.ModelPath);
-				materialPath.replace_filename("Material\\" + material.Name);
-				materialPath.replace_extension(".material");
+				std::filesystem::path materialPath = mBasePath / std::filesystem::path(gameObjectInfo.MeshData.ModelPath).parent_path().parent_path() / ("Material\\" + material.Name + ".material");
 
 				if (!std::filesystem::exists(materialPath.parent_path()))
 				{
 					std::filesystem::create_directories(materialPath.parent_path());
 				}
 
-				mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), materialInfo);
+				if (!std::filesystem::exists(materialPath))
+				{
+					mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), materialInfo);
+				}
+
 				materialPaths.push_back(materialPath.string());
 			}
 
