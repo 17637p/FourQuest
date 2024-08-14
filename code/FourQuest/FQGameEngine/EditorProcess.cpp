@@ -27,6 +27,7 @@ fq::game_engine::EditorProcess::EditorProcess()
 	, mImportWindow(std::make_unique<ImportWindow>())
 	, mMaterialWindow(std::make_unique<MaterialWindow>())
 	, mLightmapWindow(std::make_unique<LightmapWindow>())
+	, mGameVariableWindow(std::make_unique<GameVariableWindow>())
 {}
 
 fq::game_engine::EditorProcess::~EditorProcess()

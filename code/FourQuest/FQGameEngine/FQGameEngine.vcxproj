@@ -168,6 +168,7 @@
     <ClInclude Include="ExportWindow.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
+    <ClInclude Include="GameVariableWindow.h" />
     <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
     <ClInclude Include="ImportWindow.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="EditorHelper.cpp" />
     <ClCompile Include="ExportWindow.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
+    <ClCompile Include="GameVariableWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
     <ClCompile Include="ImportWindow.cpp" />
     <ClCompile Include="LightmapWindow.cpp" />

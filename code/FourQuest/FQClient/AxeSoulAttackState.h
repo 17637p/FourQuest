@@ -18,7 +18,6 @@ namespace fq::client
 
 	private:
 		float mAttackElapsedTime;
-		float mAttackTick;
 	};
 
 }

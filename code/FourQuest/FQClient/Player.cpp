@@ -37,6 +37,7 @@ fq::client::Player::Player()
 	, mBowAttackTick(0.1f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
+	, mAxeAttackTick(0.5f)
 {}
 
 fq::client::Player::~Player()
@@ -394,4 +395,26 @@ void fq::client::Player::linkWeaponeMeshes()
 			}
 		}
 	}
+}
+
+void fq::client::Player::EmitAxeSoulAttack()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAxeSoulAttack);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	auto attackComponent = attackObj->GetComponent<Attack>();
+	auto foward = mTransform->GetLookAtVector();
+
+	// 공격 트랜스폼 설정
+	DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
+	attackT->SetWorldPosition(pos);
+
+	// 공격설정
+	AttackInfo attackInfo{};
+	attackInfo.damage = dc::GetAxeSoulDamage(mAttackPower);
+	attackInfo.attacker = GetGameObject();
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(attackObj);
 }

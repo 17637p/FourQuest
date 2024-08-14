@@ -1,0 +1,16 @@
+#pragma once
+
+#include "IGameVariable.h"
+
+namespace fq::client
+{
+	class PlayerSoulVariable : public IGameVariable
+	{
+	public:
+		//////////////////////////////////////////////////////////////////////////
+		//							영혼 공격 관련 								// 
+		//////////////////////////////////////////////////////////////////////////
+		static inline float SoulAxeAttackTick = 1.f;
+	};
+
+}

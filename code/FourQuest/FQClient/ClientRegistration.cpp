@@ -94,6 +94,9 @@
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
 
+// GameVariable
+#include "PlayerSoulVariable.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -172,6 +175,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "SwordSoulAttack")
 		.data<&Player::mBowSoulAttack>("BowSoulAttack"_hs)
 		.prop(reflect::prop::Name, "BowSoulAttack")
+		.data<&Player::mAxeSoulAttack>("AxeSoulAttack"_hs)
+		.prop(reflect::prop::Name, "AxeSoulAttack")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
 		.base<game_module::Component>();
@@ -1001,4 +1006,16 @@ void fq::client::RegisterMetaData()
 		.type("QuestColliderTriggerChecker"_hs)
 		.prop(fq::reflect::prop::Name, "QuestColliderTriggerChecker")
 		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Game Variable								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PlayerSoulVariable>()
+		.type("PlayerSoulVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerSoulVariable")
+		.data<&PlayerSoulVariable::SoulAxeAttackTick>("AxeAttackTick"_hs)
+		.prop(fq::reflect::prop::Name, "AxeAttackTick")
+		.base<IGameVariable>();
+
 }

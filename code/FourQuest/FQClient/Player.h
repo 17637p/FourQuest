@@ -58,6 +58,11 @@ namespace fq::client
 		void EmitBowSoulAttack();
 
 		/// <summary>
+		/// 도끼 영혼 공격을 방출합니다
+		/// </summary>
+		void EmitAxeSoulAttack();
+
+		/// <summary>
 		/// 소울타입에 해당하는 무기를 장착합니다
 		/// </summary>
 		void EquipSoulWeapone();
@@ -68,6 +73,7 @@ namespace fq::client
 		void EquipArmourWeapone();
 
 		float GetBowAttackTick() const { return mBowAttackTick; }
+		float GetAxeAttackTick() const { return mAxeAttackTick; }
 
 	private:
 		void processInput();
@@ -106,7 +112,7 @@ namespace fq::client
 
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 		game_module::PrefabResource mSwordSoulAttack;
-		game_module::PrefabResource mAxeSoulAttack;
+		game_module::PrefabResource mAxeSoulAttack; // 도끼 영혼 공격 
 		game_module::PrefabResource mBowSoulAttack; // 활 영혼 공격 	
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
 
@@ -115,6 +121,9 @@ namespace fq::client
 		float mBowAttackSpeed;
 		float mBowAttackAngle;
 		float mBowAttackOffset;
+
+		// 도끼 영혼 공격 관련
+		float mAxeAttackTick;
 
 		bool mbOnShieldBlock;
 

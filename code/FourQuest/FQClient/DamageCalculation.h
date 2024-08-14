@@ -1,5 +1,8 @@
 #pragma once
 
+#include "PlayerSoulVariable.h"
+#include "DamageVariable.h"
+
 /// <summary>
 /// 대미지 산정 방식 정의 
 /// </summary>
@@ -41,7 +44,7 @@ namespace fq::client::dc
 
 	inline float GetStaffSoulDamage(float attackPower)
 	{
-		return attackPower / 4.f;
+		return attackPower * fq::client::DamageVariable::StaffSoulCoefficient;
 	}
 
 	inline float GetSwordSoulDamage(float attackPower)

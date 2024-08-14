@@ -56,7 +56,9 @@
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameVaribleHelper.h" />
     <ClInclude Include="HpBar.h" />
+    <ClInclude Include="IGameVariable.h" />
     <ClInclude Include="KnightArmour.h" />
     <ClInclude Include="KnockBack.h" />
     <ClInclude Include="MagicArmour.h" />
@@ -85,6 +87,7 @@
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
+    <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
     <ClInclude Include="PlantMonsterAttckState.h" />
@@ -92,6 +95,7 @@
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerUIManager.h" />
+    <ClInclude Include="PlayerSoulVariable.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
@@ -139,6 +143,7 @@
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameVaribleHelper.cpp" />
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="KnightArmour.cpp" />
     <ClCompile Include="KnockBack.cpp" />
