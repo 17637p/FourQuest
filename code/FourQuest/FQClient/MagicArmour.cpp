@@ -17,7 +17,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mController(nullptr)
 	, mMagicBall{}
 	, mAOE{}
-	, mLaserHeadEffect{}
+	, mLaserHeadEffectPrefab{}
 	, mAttackWarningUI{}
 	, mMagicBallSpeed(10.f)
 	, mAOEMoveRange(10.f)
@@ -125,8 +125,7 @@ void fq::client::MagicArmour::EmitLaser()
 	fq::event::RayCast::ResultData data;
 
 	auto tf = GetComponent<game_module::Transform>();
-	auto origin = tf->GetWorldPosition();
-	origin.y += 1.f;
+	auto origin = mLaserHeadEffect->GetTransform()->GetWorldPosition();
 	auto direction = tf->GetLookAtVector();
 	auto distance = mRazerDistance;
 	bool bUseDebugDraw = true;
@@ -148,7 +147,7 @@ void fq::client::MagicArmour::EmitLaser()
 			AttackInfo attackInfo{};
 			auto attackComponent = attackObj->GetComponent<client::Attack>();
 			auto attackT = attackObj->GetComponent<game_module::Transform>();
-			
+
 			float attackPower = mPlayer->GetAttackPower();
 			attackInfo.damage = dc::GetLaserDamage(attackPower);
 			attackInfo.attacker = GetGameObject();
@@ -164,8 +163,27 @@ void fq::client::MagicArmour::EmitLaser()
 
 			mRazerHitElapsedTime = mRazerHiTick;
 		}
-
 	}
+
+	// 레이저 몸통 이펙트 설정
+	if (mLaserLineEffect)
+	{
+		auto laserT = mLaserLineEffect->GetTransform();
+		auto position = mLaserHeadEffect->GetTransform()->GetWorldPosition();
+		auto rotation = mTransform->GetWorldRotation();
+		auto scale = laserT->GetWorldScale();
+
+		// 레이저의 길이는 scale.z 로 설정합니다 
+		if (data.hasBlock)
+		{
+			scale.z = (position - data.blockPosition).Length();
+		}
+		else
+			scale.z = mRazerDistance;
+
+		laserT->GenerateWorld(position, rotation, scale);
+	}
+
 }
 
 void fq::client::MagicArmour::OnStart()
@@ -285,27 +303,36 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserG
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserHeadEffect()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserHeadEffect);
-	auto& attackObj = *(instance.begin());
-	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserHeadEffectPrefab);
+	auto& effectObj = *(instance.begin());
+	auto attackT = effectObj->GetComponent<game_module::Transform>();
 
 	// 스태프 트랜스폼 가져오기
 	attackT->SetParent(mTransform->GetChildren()[2]);
+	GetScene()->AddGameObject(effectObj);
 
-	GetScene()->AddGameObject(attackObj);
-
-	return attackObj;
+	mLaserHeadEffect = effectObj;
+	return effectObj;
 }
 
-std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserTailEffect()
+void fq::client::MagicArmour::DestroyLaserEffect()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserTailEffect);
-	auto& attackObj = *(instance.begin());
-	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	if (mLaserLineEffect)
+	{
+		GetScene()->DestroyGameObject(mLaserLineEffect.get());
+		mLaserLineEffect = nullptr;
+	}
+	if (mLaserHeadEffect)
+	{
+		GetScene()->DestroyGameObject(mLaserHeadEffect.get());
+		mLaserHeadEffect = nullptr;
+	}
+}
 
-	// 스태프 트랜스폼 가져오기
-	attackT->SetParent(mTransform->GetChildren()[2]);
-	GetScene()->AddGameObject(attackObj);
-
-	return attackObj;
+void fq::client::MagicArmour::EmitLaserLineEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserLineEffectPrefab);
+	auto& effect = *(instance.begin());
+	mLaserLineEffect = effect;
+	GetScene()->AddGameObject(effect);
 }

@@ -23,7 +23,6 @@ namespace fq::client
 
 		std::shared_ptr<game_module::GameObject> mGatherEffect;
 		std::shared_ptr<game_module::GameObject> mLaserHeadEffect;
-		std::shared_ptr<game_module::GameObject> mLaserTailEffect;
 
 		friend void RegisterMetaData();
 	};

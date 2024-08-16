@@ -38,16 +38,16 @@ void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator
 	// Laser น฿ป็ 
 	if (mElapsedTime >= mLaserEmitTime)
 	{
-		magic->EmitLaser();
-
+		// Laser Effect
 		if (mLaserHeadEffect == nullptr)
 		{
 			mLaserHeadEffect = magic->EmitLaserHeadEffect();
+			magic->EmitLaserLineEffect();
 		}
-		if (mLaserTailEffect == nullptr)
-		{
-			mLaserTailEffect = magic->EmitLaserTailEffect();
-		}
+
+		// Raycast 
+		magic->EmitLaser();
+
 		if (mGatherEffect != nullptr)
 		{
 			animator.GetScene()->DestroyGameObject(mGatherEffect.get());
@@ -64,17 +64,7 @@ void fq::client::LaserAttackState::OnStateExit(game_module::Animator& animator, 
 		mGatherEffect = nullptr;
 	}
 
-	if (mLaserHeadEffect != nullptr)
-	{
-		animator.GetScene()->DestroyGameObject(mLaserHeadEffect.get());
-		mLaserHeadEffect = nullptr;
-	}
-
-	if (mLaserTailEffect != nullptr)
-	{
-		animator.GetScene()->DestroyGameObject(mLaserTailEffect.get());
-		mLaserTailEffect = nullptr;
-	}
-
-
+	auto magic = animator.GetComponent<MagicArmour>();
+	magic->DestroyLaserEffect();
+	mLaserHeadEffect = nullptr;
 }
