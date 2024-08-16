@@ -96,6 +96,11 @@ PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
+    if (cUseScaleOffset)
+    {
+        pin.UV = pin.UV * cUVScale + cUVOffset;
+    }
+
 #ifdef VERTEX_COLOR
     float4 baseColor = gModelMaterial.BaseColor;
     baseColor.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용

@@ -712,9 +712,4 @@
       <Filter>Shader\VS</Filter>
     </CustomBuild>
   </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="CharacterPS.hlsl">
-      <Filter>Shader\PS</Filter>
-    </FxCompile>
-  </ItemGroup>
 </Project>

@@ -68,9 +68,9 @@ namespace fq::graphics
 	struct MaterialInstanceInfo
 	{
 		bool bUseInstanceAlpha = false;
-		float Alpha;
+		float Alpha = 1.f;
 		bool bUseDissolveCutoff = false;
-		float DissolveCutoff;
+		float DissolveCutoff = 0.f;
 
 		bool bUseRimLight = false;
 		DirectX::SimpleMath::Color RimLightColor;

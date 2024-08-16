@@ -84,14 +84,9 @@ namespace fq::graphics
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
-
-		// lightMap
 		DirectX::SimpleMath::Vector4 mScaleOffset;
 		unsigned int mLightmapIndex;
-
 		MaterialInstanceInfo mMaterialInstanceInfo;
-
-		// render
 		bool mbIsRender;
 	};
 
@@ -138,8 +133,6 @@ namespace fq::graphics
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		MaterialInstanceInfo mMaterialInstanceInfo;
-
-		// render
 		bool mbIsRender;
 	};
 
