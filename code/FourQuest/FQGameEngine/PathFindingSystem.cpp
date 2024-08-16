@@ -23,9 +23,9 @@ fq::game_engine::PathFindingSystem::~PathFindingSystem()
 	delete mBuilder;
 }
 
-void fq::game_engine::PathFindingSystem::BuildNavigationMesh(fq::game_module::Scene* scene)
+void fq::game_engine::PathFindingSystem::BuildNavigationMesh(fq::game_module::Scene* scene, bool isAll)
 {
-	mBuilder->BuildNavigationMesh(scene, *mBuildSettings);
+	mBuilder->BuildNavigationMesh(scene, *mBuildSettings, isAll);
 	mHasNavigationMesh = true;
 
 	for (const auto& agent : mAgents)

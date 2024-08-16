@@ -36,7 +36,12 @@ void fq::game_engine::NavigationMeshWindow::beginButtonBuild()
 	if (ImGui::Button("Build", ImVec2{ 133,25 }))
 	{
 		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
-		mPathFindingSystem->BuildNavigationMesh(scene);
+		mPathFindingSystem->BuildNavigationMesh(scene, false);
+	}
+	if (ImGui::Button("BuildAll", ImVec2{ 133,25 }))
+	{
+		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
+		mPathFindingSystem->BuildNavigationMesh(scene, true);
 	}
 
 	ImGui::InputText(".Nav", &mSaveFileName);
