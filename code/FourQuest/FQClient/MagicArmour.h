@@ -38,6 +38,11 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<fq::game_module::GameObject> EmitLaserGatherEffect();
 
+		std::shared_ptr<fq::game_module::GameObject> EmitLaserHeadEffect();
+
+		void EmitLaserLineEffect();
+		void DestroyLaserEffect();
+
 		/// <summary>
 		/// R ½ºÆ½À¸·Î Razer¸¦ ½õ´Ï´Ù
 		/// </summary>
@@ -78,10 +83,14 @@ namespace fq::client
 		float mRazerHiTick;
 		float mRazerHitElapsedTime;
 
+		std::shared_ptr<game_module::GameObject> mLaserLineEffect;
+		std::shared_ptr<game_module::GameObject> mLaserHeadEffect;
+
 		game_module::PrefabResource mMagicBall;
 		game_module::PrefabResource mAttackWarningUI;
 		game_module::PrefabResource mAOE;
-		game_module::PrefabResource mLaserEffect;
+		game_module::PrefabResource mLaserHeadEffectPrefab;
+		game_module::PrefabResource mLaserLineEffectPrefab;
 		game_module::PrefabResource mLaserGatherEffect;
 		game_module::PrefabResource mLaserAttackBox;
 

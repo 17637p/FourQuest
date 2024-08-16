@@ -231,6 +231,9 @@ namespace fq::physics
 
 		if (isAnyHit)
 		{
+			if (static_cast<CollisionData*>(hitBufferStruct.block.shape->userData) == nullptr)
+				return output;
+
 			// Block 정보 저장 
 			output.hasBlock = hitBufferStruct.hasBlock;
 			output.blockID = static_cast<CollisionData*>(hitBufferStruct.block.shape->userData)->myId;

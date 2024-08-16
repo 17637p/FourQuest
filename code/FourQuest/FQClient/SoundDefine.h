@@ -8,13 +8,8 @@ namespace fq::client
 		enum
 		{
 			BackGround,
-
 			Razer,
-			
-
-
 		};
-
 
 
 

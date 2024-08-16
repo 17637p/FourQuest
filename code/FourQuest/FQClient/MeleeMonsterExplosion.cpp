@@ -75,7 +75,7 @@ void fq::client::MeleeMonsterExplosion::Explode()
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MonsterExplosion", false , 0 });
 }
 
-std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonsterExplosion::EmitExplosionWaringUI()
+std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonsterExplosion::EmitExplosionEffect()
 {
 	// ³Ë¹é »èÁ¦
 	GetGameObject()->RemoveComponent<KnockBack>();
