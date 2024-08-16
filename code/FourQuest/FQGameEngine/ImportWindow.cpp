@@ -204,7 +204,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 			// 트랜스폼
 			auto transform = gameObject->GetComponent<game_module::Transform>();
-			transform->SetWorldPosition(gameObjectInfo.TransformData.Position);
+			transform->SetLocalPosition(gameObjectInfo.TransformData.Position);
 			transform->SetLocalRotation(gameObjectInfo.TransformData.Rotation);
 			transform->SetLocalScale(gameObjectInfo.TransformData.Scale);
 
@@ -286,7 +286,9 @@ void fq::game_engine::ImportWindow::createGameObject()
 				staticMeshRenderer.SetIsStatic(gameObjectInfo.isStatic);
 				staticMeshRenderer.SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
 				staticMeshRenderer.SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
-				staticMeshRenderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
+				// staticMeshRenderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
+
+				transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f) * transform->GetLocalMatrix());
 			}
 
 			// 라이트

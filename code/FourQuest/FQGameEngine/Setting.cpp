@@ -7,6 +7,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Decal.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
@@ -517,6 +518,27 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						}
 
 						renderer.SetMaterialPaths(materialPaths);
+					}
+				);
+			}
+
+			if (ImGui::Button("convert preApplied transform"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+				scene->ViewComponents<game_module::StaticMeshRenderer, game_module::Transform>(
+					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer, game_module::Transform& transform)
+					{
+						if (renderer.GetMaterialPaths().empty())
+						{
+							return;
+						}
+
+						DirectX::SimpleMath::Matrix preAppliedTransform = renderer.GetPrevApplyTransform();
+						renderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::Identity);
+
+						//transform.SetLocalMatrix(preAppliedTransform * transform.GetLocalMatrix());
+						transform.SetPreAppliedTransform(preAppliedTransform);
 					}
 				);
 			}

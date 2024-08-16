@@ -102,11 +102,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 					if (nodeHierarchyInstanceOrNull == nullptr)
 					{
-						meshObject->SetTransform(mesh.GetPrevApplyTransform() * transform.GetWorldMatrix());
+						meshObject->SetTransform(transform.GetWorldMatrix());
 					}
 					else
 					{
-						meshObject->SetTransform(mesh.GetPrevApplyTransform() * nodeHierarchyInstanceOrNull->GetTransform());
+						meshObject->SetTransform(nodeHierarchyInstanceOrNull->GetTransform());
 					}
 
 					// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함

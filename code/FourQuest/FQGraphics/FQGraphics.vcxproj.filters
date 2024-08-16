@@ -701,7 +701,7 @@
     </CustomBuild>
     <CustomBuild Include="BlurHorzCS.hlsl">
       <Filter>Shader\CS</Filter>
-	</CustomBuild>
+    </CustomBuild>
     <CustomBuild Include="SSRCS.hlsl">
       <Filter>Shader\CS</Filter>
     </CustomBuild>
@@ -711,5 +711,10 @@
     <CustomBuild Include="TestSSRVS.hlsl">
       <Filter>Shader\VS</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="CharacterPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

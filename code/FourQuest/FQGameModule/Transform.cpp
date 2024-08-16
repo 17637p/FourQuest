@@ -43,6 +43,22 @@ entt::meta_handle fq::game_module::Transform::GetHandle()
 	return *this;
 }
 
+void fq::game_module::Transform::updatePreAppliedTransformRecurvise(Matrix invMatrix)
+{
+	mFQTransform.localMatrix = invMatrix * mFQTransform.localMatrix;
+	decomposeLocalMatrix();
+	mFQTransform.worldMatrix = HasParent() ?
+		mFQTransform.localMatrix * mParent->mFQTransform.worldMatrix
+		: mFQTransform.localMatrix;
+	decomposeWorldMatrix();
+
+	// children
+	for (auto child : mChildren)
+	{
+		child->updatePreAppliedTransformRecurvise(invMatrix);
+	}
+}
+
 
 void fq::game_module::Transform::SetLocalPosition(DirectX::SimpleMath::Vector3 position)
 {
@@ -184,7 +200,7 @@ void fq::game_module::Transform::updateWorldMatrix()
 void fq::game_module::Transform::updateLocalMatrix()
 {
 	mFQTransform.localMatrix = HasParent() ?
-		 mFQTransform.worldMatrix * mParent->mFQTransform.worldMatrix.Invert() 
+		mFQTransform.worldMatrix * mParent->mFQTransform.worldMatrix.Invert()
 		: mFQTransform.worldMatrix;
 
 	decomposeLocalMatrix();
@@ -207,6 +223,21 @@ void fq::game_module::Transform::decomposeLocalMatrix()
 	mFQTransform.localMatrix.Decompose(mFQTransform.localScale
 		, mFQTransform.localRotation
 		, mFQTransform.localPosition);
+}
+
+void fq::game_module::Transform::SetPreAppliedTransform(Matrix matrix)
+{
+	mFQTransform.localMatrix = matrix * mFQTransform.localMatrix;
+	decomposeLocalMatrix();
+
+	const Matrix invMatrix = matrix.Invert();
+	for (auto child : mChildren)
+	{
+		child->mFQTransform.localMatrix = child->mFQTransform.localMatrix * invMatrix;
+		child->decomposeLocalMatrix();
+	}
+
+	updateWorldMatrix();
 }
 
 void fq::game_module::Transform::decomposeWorldMatrix()
