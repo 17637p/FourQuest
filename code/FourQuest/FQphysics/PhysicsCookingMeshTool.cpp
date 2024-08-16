@@ -17,12 +17,11 @@ namespace fq::physics
 		physx::PxCookingParams params(scale);
 		params.meshPreprocessParams |= physx::PxMeshPreprocessingFlag::eDISABLE_CLEAN_MESH;
 		params.meshPreprocessParams |= physx::PxMeshPreprocessingFlag::eDISABLE_ACTIVE_EDGES_PRECOMPUTE;
-		params.buildGPUData = true;
 
 		physx::PxDefaultMemoryOutputStream buf;
 		physx::PxConvexMeshCookingResult::Enum result;
 
-		assert(PxCookConvexMesh(params, convexdesc, buf, &result));
+		PxCookConvexMesh(params, convexdesc, buf, &result);
 
 		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 		physx::PxConvexMesh* convexMesh = physics->createConvexMesh(input);
