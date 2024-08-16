@@ -20,7 +20,7 @@ void fq::client::MeleeMonsterExplosionState::OnStateEnter(game_module::Animator&
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
 
-	mWarningUI = animator.GetComponent<MeleeMonsterExplosion>()->EmitExplosionWaringUI();
+	mWarningUI = animator.GetComponent<MeleeMonsterExplosion>()->EmitExplosionEffect();
 }
 
 void fq::client::MeleeMonsterExplosionState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

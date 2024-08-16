@@ -17,7 +17,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mController(nullptr)
 	, mMagicBall{}
 	, mAOE{}
-	, mLaserEffect{}
+	, mLaserHeadEffect{}
 	, mAttackWarningUI{}
 	, mMagicBallSpeed(10.f)
 	, mAOEMoveRange(10.f)
@@ -274,10 +274,37 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserG
 	auto& attackObj = *(instance.begin());
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
-	
-	// 스태프 트랜스폼 가져오기
-	attackT->SetParent(mTransform->GetChildren()[1]);
 
+	// 스태프 트랜스폼 가져오기
+	attackT->SetParent(mTransform->GetChildren()[2]);
+
+	GetScene()->AddGameObject(attackObj);
+
+	return attackObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserHeadEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserHeadEffect);
+	auto& attackObj = *(instance.begin());
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+
+	// 스태프 트랜스폼 가져오기
+	attackT->SetParent(mTransform->GetChildren()[2]);
+
+	GetScene()->AddGameObject(attackObj);
+
+	return attackObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserTailEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserTailEffect);
+	auto& attackObj = *(instance.begin());
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+
+	// 스태프 트랜스폼 가져오기
+	attackT->SetParent(mTransform->GetChildren()[2]);
 	GetScene()->AddGameObject(attackObj);
 
 	return attackObj;

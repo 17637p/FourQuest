@@ -25,6 +25,4 @@ namespace fq::client
 		float mElapsedTime;
 		float mChangeStateTime;
 	};
-
-
 }

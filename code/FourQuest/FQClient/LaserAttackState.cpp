@@ -40,6 +40,14 @@ void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator
 	{
 		magic->EmitLaser();
 
+		if (mLaserHeadEffect == nullptr)
+		{
+			mLaserHeadEffect = magic->EmitLaserHeadEffect();
+		}
+		if (mLaserTailEffect == nullptr)
+		{
+			mLaserTailEffect = magic->EmitLaserTailEffect();
+		}
 		if (mGatherEffect != nullptr)
 		{
 			animator.GetScene()->DestroyGameObject(mGatherEffect.get());
@@ -54,6 +62,18 @@ void fq::client::LaserAttackState::OnStateExit(game_module::Animator& animator, 
 	{
 		animator.GetScene()->DestroyGameObject(mGatherEffect.get());
 		mGatherEffect = nullptr;
+	}
+
+	if (mLaserHeadEffect != nullptr)
+	{
+		animator.GetScene()->DestroyGameObject(mLaserHeadEffect.get());
+		mLaserHeadEffect = nullptr;
+	}
+
+	if (mLaserTailEffect != nullptr)
+	{
+		animator.GetScene()->DestroyGameObject(mLaserTailEffect.get());
+		mLaserTailEffect = nullptr;
 	}
 
 
