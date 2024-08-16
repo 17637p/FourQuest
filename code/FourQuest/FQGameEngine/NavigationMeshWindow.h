@@ -26,6 +26,7 @@ namespace fq::game_engine
 	private:
 		bool mbIsOpen;
 		std::string mSaveFileName;
+		std::string mObjectName;
 
 		GameProcess* mGameProcess;
 		PathFindingSystem* mPathFindingSystem;
