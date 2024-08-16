@@ -183,6 +183,7 @@ namespace fq::graphics
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mPointWrapSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mLinearWrapSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 
 			const std::shared_ptr<D3D11TextureArray>& lightMapTexture = mLightManager->GetLightMapTextureArray();
 			const std::shared_ptr<D3D11TextureArray>& lightmapDirectionTexture = mLightManager->GetLightMapDirectionTextureArray();

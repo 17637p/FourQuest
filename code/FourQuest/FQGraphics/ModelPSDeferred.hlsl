@@ -54,6 +54,36 @@ cbuffer cbMaterialInstance : register(b2)
     float cAlpha;
     bool cUseDissolveCutoff;
     float cDissolveCutoff;
+
+    int cUseRimLight;
+    float cRimPow;
+    int cUseInvRimLight;
+    float cInvRimPow;
+
+    float4 cRimColor;
+    float4 cInvRimColor;
+
+    float2 cUVScale;
+    float2 cUVOffset;
+
+    int cUseScaleOffset;
+    float cRimIntensity;
+    float cInvRimIntensity;
+};
+
+cbuffer cbLight : register(b3)
+{
+    DirectionalLight directionalLights[3];
+    PointLight pointLights[10];
+    SpotLight spotLights[5];
+    
+    unsigned int numOfDirectionalLight;
+    unsigned int numOfPointLight;
+    unsigned int numOfSpotLight;
+    unsigned int isUseIBL;
+
+    float3 eyePosition;
+    float pad2;
 };
 
 Texture2D gAlbedoMap : register(t0);
@@ -74,6 +104,11 @@ SamplerState gLinearWrap : register(s2); //	D3D11_FILTER_Linear, D3D11_TEXTURE_A
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
+    if (cUseScaleOffset)
+    {
+        pin.UV = pin.UV * cUVScale + cUVOffset;
+    }
+
     PixelOut pout = (PixelOut)0;
 
 #ifdef VERTEX_COLOR
@@ -95,8 +130,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
     clip(pout.Albedo.a - gModelMaterial.AlphaCutoff);
 
-    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb;
-    pout.Emissive.a = gModelMaterial.EmissiveIntensity / 255;
+    pout.Emissive.rgb = gModelMaterial.EmissiveColor.rgb * gModelMaterial.EmissiveIntensity;
 
     if (gModelMaterial.UseEmissiveMap)
     {
@@ -199,6 +233,22 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #else
     pout.Light = float4(0, 0, 0, -1000);
 #endif 
+
+    if (cUseRimLight)
+    {
+        float3 toEye = normalize(eyePosition - pout.PositionW.xyz);
+        float rim = saturate(dot(pout.Normal, toEye));
+        rim = pow(1 - rim, cRimPow);
+        pout.Emissive.rgb += rim * cRimColor.rgb * cRimIntensity;
+    }
+    if (cUseInvRimLight)
+    {
+        float3 toEye = normalize(eyePosition - pout.PositionW.xyz);
+        float rim = saturate(dot(pout.Normal, toEye));
+        rim = pow(rim, cInvRimPow);
+        pout.Emissive.rgb += rim * cInvRimColor.rgb * cInvRimIntensity;
+    }
+
     return pout;
 }
 
@@ -251,8 +301,7 @@ SamplerComparisonState gShadowSampler : register(s3);
 float4 main(VertexOut pin) : SV_TARGET
 {
     float3 albedo = gAlbedoMap.Sample(gPointClampSampler, pin.uv).xyz;
-    float4 sampledEmissive = gEmissiveMap.Sample(gPointClampSampler, pin.uv);
-    float3 emissive = sampledEmissive.rgb * sampledEmissive.a * 255;
+    float3 emissive = gEmissiveMap.Sample(gPointClampSampler, pin.uv).rgb;
     float3 normal = gNormalMap.Sample(gPointClampSampler, pin.uv).xyz;
     float4 preCaculatedLightData = gPreCalculatedLightMap.Sample(gPointClampSampler, pin.uv);
     float3 preCaculatedLight = preCaculatedLightData.xyz;

@@ -23,6 +23,16 @@ void fq::game_module::StaticMeshRenderer::SetIsRender(bool bIsRender)
 	}
 }
 
+void fq::game_module::StaticMeshRenderer::SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info)
+{
+	mMaterialInstanceInfo = info;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMaterialInstanceInfo(mMaterialInstanceInfo);
+	}
+}
+
 entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()
 {
 	return *this;

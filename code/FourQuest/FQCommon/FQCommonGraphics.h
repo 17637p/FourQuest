@@ -67,10 +67,24 @@ namespace fq::graphics
 
 	struct MaterialInstanceInfo
 	{
-		bool bUseInstanceAlpha;
+		bool bUseInstanceAlpha = false;
 		float Alpha;
-		bool bUseDissolveCutoff;
+		bool bUseDissolveCutoff = false;
 		float DissolveCutoff;
+
+		bool bUseRimLight = false;
+		DirectX::SimpleMath::Color RimLightColor;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		bool bUseInvRimLight = false;
+		DirectX::SimpleMath::Color InvRimLightColor;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
+
+		bool bUseUVScaleOffset = false;
+		DirectX::SimpleMath::Vector2 UVScale = { 1, 1 };
+		DirectX::SimpleMath::Vector2 UVOffset = { 0, 0 };
 	};
 
 	struct UIInfo

@@ -536,8 +536,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 						DirectX::SimpleMath::Matrix preAppliedTransform = renderer.GetPrevApplyTransform();
 						renderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::Identity);
-
-						//transform.SetLocalMatrix(preAppliedTransform * transform.GetLocalMatrix());
 						transform.SetPreAppliedTransform(preAppliedTransform);
 					}
 				);

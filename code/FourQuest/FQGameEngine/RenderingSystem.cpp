@@ -111,10 +111,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 
 					// viewComponets가 모두 포함하는 오브젝트만 비용없이 가져온다면 해당 로직 수정해줘야 함
 					auto* materialAnimator = object.GetComponent<MaterialAnimator>();
-					fq::graphics::MaterialInstanceInfo materialInstanceInfo{};
 
 					if (materialAnimator != nullptr)
 					{
+						fq::graphics::MaterialInstanceInfo materialInstanceInfo = mesh.GetMaterialInstanceInfo();
+
 						{
 							const auto& info = materialAnimator->GetAlphaAnimatorInfo();
 							materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;
@@ -125,9 +126,9 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
 							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
 						}
-					}
 
-					meshObject->SetMaterialInstanceInfo(materialInstanceInfo);
+						mesh.SetMaterialInstanceInfo(materialInstanceInfo);
+					}
 				}
 			});
 
@@ -150,10 +151,11 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					}
 
 					auto* materialAnimator = object.GetComponent<MaterialAnimator>();
-					fq::graphics::MaterialInstanceInfo materialInstanceInfo{};
-
+					
 					if (materialAnimator != nullptr)
 					{
+						fq::graphics::MaterialInstanceInfo materialInstanceInfo = mesh.GetMaterialInstanceInfo();
+
 						{
 							const auto& info = materialAnimator->GetAlphaAnimatorInfo();
 							materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;
@@ -164,10 +166,9 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
 							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
 						}
-
+						
+						mesh.SetMaterialInstanceInfo(materialInstanceInfo);
 					}
-
-					meshObject->SetMaterialInstanceInfo(materialInstanceInfo);
 				}
 			});
 
@@ -337,6 +338,7 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 		ISkinnedMeshObject* iSkinnedMeshObject = mGameProcess->mGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, skinnedMeshRenderer->GetMeshObjectInfomation(), transform->GetLocalMatrix());
 		skinnedMeshRenderer->SetSkinnedMeshObject(iSkinnedMeshObject);
 		skinnedMeshRenderer->SetMaterialInterfaces(materialInterfaces);
+		skinnedMeshRenderer->SetMaterialInstanceInfo(skinnedMeshRenderer->GetMaterialInstanceInfo());
 	}
 }
 
@@ -452,6 +454,7 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 		staticMeshRenderer->SetLightmapIndex(staticMeshRenderer->GetLightmapIndex());
 		staticMeshRenderer->SetIsStatic(staticMeshRenderer->GetIsStatic());
 		staticMeshRenderer->SetIsRender(staticMeshRenderer->GetIsRender());
+		staticMeshRenderer->SetMaterialInstanceInfo(staticMeshRenderer->GetMaterialInstanceInfo());
 	}
 }
 

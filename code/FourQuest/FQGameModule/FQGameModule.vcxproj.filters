@@ -334,7 +334,7 @@
     </ClInclude>
     <ClInclude Include="MaterialAnimator.h">
       <Filter>include\09.Animation</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Track.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
@@ -555,7 +555,7 @@
     </ClCompile>
     <ClCompile Include="MaterialAnimator.cpp">
       <Filter>src\09.Animation</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Track.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>

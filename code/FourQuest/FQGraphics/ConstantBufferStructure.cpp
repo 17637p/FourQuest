@@ -148,6 +148,22 @@ namespace fq::graphics
 		materialInstance.Alpha = materialInstanceInfo.Alpha;
 		materialInstance.bUseDissolveCutoff = materialInstanceInfo.bUseDissolveCutoff;
 		materialInstance.DissolveCutoff = materialInstanceInfo.DissolveCutoff;
+		
+		materialInstance.bUseRimLight = materialInstanceInfo.bUseRimLight;
+		materialInstance.RimPow = materialInstanceInfo.RimPow;
+		materialInstance.bUseInvRimLight = materialInstanceInfo.bUseInvRimLight;
+		materialInstance.InvRimPow = materialInstanceInfo.InvRimPow;
+		
+		materialInstance.RimLightColor = materialInstanceInfo.RimLightColor;
+
+		materialInstance.InvRimLightColor = materialInstanceInfo.InvRimLightColor;
+		
+		materialInstance.UVScale = materialInstanceInfo.UVScale;
+		materialInstance.UVOffset = materialInstanceInfo.UVOffset;
+		
+		materialInstance.bUseUVScaleOffset = materialInstanceInfo.bUseUVScaleOffset;
+		materialInstance.RimIntensity = materialInstanceInfo.RimIntensity;
+		materialInstance.InvRimIntensity = materialInstanceInfo.InvRimIntensity;
 
 		materialInstanceCB->Update(device, materialInstance);
 	}

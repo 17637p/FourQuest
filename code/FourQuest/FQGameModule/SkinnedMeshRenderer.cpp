@@ -27,6 +27,16 @@ void fq::game_module::SkinnedMeshRenderer::SetIsRender(bool bIsRender)
 	}
 }
 
+void fq::game_module::SkinnedMeshRenderer::SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info)
+{
+	mMaterialInstanceInfo = info;
+
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetMaterialInstanceInfo(mMaterialInstanceInfo);
+	}
+}
+
 entt::meta_handle fq::game_module::SkinnedMeshRenderer::GetHandle()
 {
 	return *this;

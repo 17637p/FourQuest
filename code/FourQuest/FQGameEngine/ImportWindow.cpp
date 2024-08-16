@@ -286,9 +286,6 @@ void fq::game_engine::ImportWindow::createGameObject()
 				staticMeshRenderer.SetIsStatic(gameObjectInfo.isStatic);
 				staticMeshRenderer.SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
 				staticMeshRenderer.SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
-				// staticMeshRenderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
-
-				transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f) * transform->GetLocalMatrix());
 			}
 
 			// ¶óÀÌÆ®
@@ -336,7 +333,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 			if (!gameObjectInfo.TerrainData.Layers.empty())
 			{
 				auto& terrain = gameObject->AddComponent<fq::game_module::Terrain>();
-
+		
 				std::vector<fq::graphics::TerrainLayer> terrainLayers;
 				for (const auto& importLayerInfo : gameObjectInfo.TerrainData.Layers)
 				{
@@ -397,6 +394,17 @@ void fq::game_engine::ImportWindow::createGameObject()
 			auto sceneRootTransform = sceneRootObject->GetComponent<game_module::Transform>();
 			sceneRootTransform->AddChild(transform);
 			rootObjects.push_back(gameObject);
+		}
+	}
+
+	for (auto [id, gameObject] : gameObjectsMap)
+	{
+		auto staticMeshRenderer = gameObject->GetComponent< fq::game_module::StaticMeshRenderer>();
+
+		if (staticMeshRenderer != nullptr)
+		{
+			auto transform = gameObject->GetComponent<game_module::Transform>();
+			transform->SetPreAppliedTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f)* DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
 		}
 	}
 
