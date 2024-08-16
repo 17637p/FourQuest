@@ -37,7 +37,7 @@ namespace fq::game_engine
 		virtual ~NavigationMeshBuilder();
 
 		void Update(float dt);
-		void BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings);
+		void BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings, bool isAll);
 
 		// agent
 		dtNavMeshQuery* GetNavQuery() const;

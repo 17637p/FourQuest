@@ -4,6 +4,7 @@
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/NavigationMeshLoader.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
 
 #include "NavigationMesh.h"
 #include "GameProcess.h"
@@ -23,9 +24,9 @@ fq::game_engine::PathFindingSystem::~PathFindingSystem()
 	delete mBuilder;
 }
 
-void fq::game_engine::PathFindingSystem::BuildNavigationMesh(fq::game_module::Scene* scene)
+void fq::game_engine::PathFindingSystem::BuildNavigationMesh(fq::game_module::Scene* scene, bool isAll)
 {
-	mBuilder->BuildNavigationMesh(scene, *mBuildSettings);
+	mBuilder->BuildNavigationMesh(scene, *mBuildSettings, isAll);
 	mHasNavigationMesh = true;
 
 	for (const auto& agent : mAgents)
@@ -274,4 +275,28 @@ void fq::game_engine::PathFindingSystem::SaveNavMesh(std::string& fileName)
 void fq::game_engine::PathFindingSystem::LoadNavMesh(std::string& fileName)
 {
 	mBuilder->LoadNavMesh(fileName, *mBuildSettings);
+}
+
+void fq::game_engine::PathFindingSystem::IsOnAllMeshUsedNavMesh(fq::game_module::Scene* scene)
+{
+	auto staticMeshView = mScene->GetComponentView<fq::game_module::StaticMeshRenderer>();
+	for (auto& staticMesh : staticMeshView)
+	{
+		staticMesh.GetComponent<fq::game_module::StaticMeshRenderer>()->SetIsNavigationMeshUsed(true);
+	}
+}
+
+void fq::game_engine::PathFindingSystem::IsOffMeshToName(fq::game_module::Scene* scene, std::string objectName)
+{
+	for (auto& object : mScene->GetObjectView(false))
+	{
+		if (object.GetName().find(objectName) != std::string::npos)
+		{
+			game_module::StaticMeshRenderer* staticRenderer = object.GetComponent<fq::game_module::StaticMeshRenderer>();
+			if (staticRenderer != nullptr)
+			{
+				staticRenderer->SetIsNavigationMeshUsed(false);
+			}
+		}
+	}
 }

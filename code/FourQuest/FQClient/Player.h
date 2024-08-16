@@ -86,7 +86,6 @@ namespace fq::client
 
 		entt::meta_handle GetHandle() override { return *this; }
 
-
 	private:
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;

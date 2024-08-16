@@ -38,9 +38,7 @@ fq::client::Player::Player()
 {}
 
 fq::client::Player::~Player()
-{
-
-}
+{}
 
 std::shared_ptr<fq::game_module::Component> fq::client::Player::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {

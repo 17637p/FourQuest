@@ -26,7 +26,10 @@ namespace fq::game_engine
 		~PathFindingSystem();
 
 		BuildSettings* GetBuildingSettrings();
-		void BuildNavigationMesh(fq::game_module::Scene* scene);
+		void BuildNavigationMesh(fq::game_module::Scene* scene, bool isAll);
+
+		void IsOnAllMeshUsedNavMesh(fq::game_module::Scene* scene);
+		void IsOffMeshToName(fq::game_module::Scene* scene, std::string objectName);
 
 		void Initialize(GameProcess* game);
 		void Update(float dt);
