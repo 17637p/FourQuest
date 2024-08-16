@@ -40,6 +40,33 @@ namespace fq::loader
 		return mAiScene != nullptr;
 	}
 
+	aiMatrix4x4 ConvertSimpleMathMatrixToAiMatrix4x4(const DirectX::SimpleMath::Matrix& smMatrix) {
+		aiMatrix4x4 aiMat;
+
+		// DirectX SimpleMath의 row-major 행렬을 Assimp의 column-major 행렬로 변환
+		aiMat.a1 = smMatrix._11; // 1st row, 1st column
+		aiMat.a2 = smMatrix._12; // 1st row, 2nd column
+		aiMat.a3 = smMatrix._13; // 1st row, 3rd column
+		aiMat.a4 = smMatrix._14; // 1st row, 4th column
+
+		aiMat.b1 = smMatrix._21; // 2nd row, 1st column
+		aiMat.b2 = smMatrix._22; // 2nd row, 2nd column
+		aiMat.b3 = smMatrix._23; // 2nd row, 3rd column
+		aiMat.b4 = smMatrix._24; // 2nd row, 4th column
+
+		aiMat.c1 = smMatrix._31; // 3rd row, 1st column
+		aiMat.c2 = smMatrix._32; // 3rd row, 2nd column
+		aiMat.c3 = smMatrix._33; // 3rd row, 3rd column
+		aiMat.c4 = smMatrix._34; // 3rd row, 4th column
+
+		aiMat.d1 = smMatrix._41; // 4th row, 1st column
+		aiMat.d2 = smMatrix._42; // 4th row, 2nd column
+		aiMat.d3 = smMatrix._43; // 4th row, 3rd column
+		aiMat.d4 = smMatrix._44; // 4th row, 4th column
+
+		return aiMat;
+	}
+
 	fq::common::Model ModelConverter::Convert()
 	{
 		assert(mAiScene != nullptr);
@@ -47,6 +74,7 @@ namespace fq::loader
 		using namespace fq::common;
 
 		Model model;
+		
 		model.Meshes = convertModel();
 		model.Materials = convertMaterial();
 		model.Animations = convertAnimation();
@@ -346,14 +374,14 @@ namespace fq::loader
 			{
 				Mesh::DynamicData colorData;
 
- 				colorData.Name = "Color0";
+				colorData.Name = "Color0";
 				colorData.Size = sizeof(aiColor4D);
 				colorData.Count = aiMeshPtr->mNumVertices;
 
 				size_t bufferSize = colorData.Size * colorData.Count;
 				colorData.Data.resize(bufferSize);
 				memcpy(colorData.Data.data(), &aiMeshPtr->mColors[0][0], bufferSize);
-				
+
 				resultMesh.DynamicInfos.insert({ colorData.Name, colorData });
 			}
 
@@ -379,7 +407,7 @@ namespace fq::loader
 			resultMesh.Vertices.insert(resultMesh.Vertices.end(), vertices.begin(), vertices.end());
 			resultMesh.Indices.insert(resultMesh.Indices.end(), indices.begin(), indices.end());
 			resultMesh.Tex1.insert(resultMesh.Tex1.end(), uv1s.begin(), uv1s.end());
-			
+
 		}
 
 		DirectX::BoundingBox::CreateFromPoints(resultMesh.RenderBoundingBox, min, max);

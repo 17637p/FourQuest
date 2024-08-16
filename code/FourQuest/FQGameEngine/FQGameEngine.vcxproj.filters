@@ -185,9 +185,6 @@
     <ClInclude Include="SkyBoxWindow.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsAnimatorWindow.h">
-      <Filter>include\11.EditorWindow</Filter>
-    </ClInclude>
     <ClInclude Include="Setting.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
@@ -236,18 +233,6 @@
     <ClInclude Include="SceneResourceList.h">
       <Filter>include\03.GameSystem\Resouce</Filter>
     </ClInclude>
-    <ClInclude Include="LightmapWindow.h">
-      <Filter>include\11.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="ImportWindow.h">
-      <Filter>include\11.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialWindow.h">
-      <Filter>include\11.EditorWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="TrailSystem.h">
-      <Filter>include\11.EditorWindow</Filter>
-    </ClInclude>
     <ClInclude Include="GameVariableWindow.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
@@ -261,6 +246,21 @@
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="MaterialWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="LightmapWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
       <Filter>include\05.EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="TrailSystem.h">
@@ -424,18 +424,6 @@
     <ClCompile Include="SceneResourceList.cpp">
       <Filter>src\03.GameSystem\Resouce</Filter>
     </ClCompile>
-    <ClCompile Include="ImportWindow.cpp">
-      <Filter>src\11.Window</Filter>
-    </ClCompile>
-    <ClCompile Include="LightmapWindow.cpp">
-      <Filter>src\11.Window</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialWindow.cpp">
-      <Filter>src\11.Window</Filter>
-    </ClCompile>
-    <ClCompile Include="TrailSystem.cpp">
-      <Filter>src\11.Window</Filter>
-    </ClCompile>
     <ClCompile Include="GameVariableWindow.cpp">
       <Filter>src\05.Window</Filter>
     </ClCompile>
@@ -446,6 +434,18 @@
       <Filter>src\05.Window</Filter>
     </ClCompile>
     <ClCompile Include="MaterialWindow.cpp">
+      <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialWindow.cpp">
+      <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportWindow.cpp">
+      <Filter>src\05.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LightmapWindow.cpp">
       <Filter>src\05.Window</Filter>
     </ClCompile>
     <ClCompile Include="TrailSystem.cpp">
