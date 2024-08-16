@@ -135,6 +135,26 @@ void fq::game_engine::ImportWindow::changeData()
 				}
 			}
 		});
+
+	scene->ViewComponents<game_module::Terrain>(
+		[&nameInfoIndexMap, &gameObjectInfos](game_module::GameObject& object, game_module::Terrain& terrain)
+		{
+			const auto& objectName = object.GetName();
+
+			auto find = nameInfoIndexMap.find(objectName);
+
+			if (find != nameInfoIndexMap.end())
+			{
+				size_t index = find->second;
+
+				if (index < gameObjectInfos.size())
+				{
+					const auto& objectInfo = gameObjectInfos[index];
+					terrain.SetLightmapIndex(objectInfo.MeshData.LightmapIndex);
+					terrain.SetLightmapUVScaleOffset(objectInfo.MeshData.LightmapScaleOffset);
+				}
+			}
+		});
 }
 
 std::string fq::game_engine::ImportWindow::createObjectName(const importData::GameObjectLoadInfo& info) const
