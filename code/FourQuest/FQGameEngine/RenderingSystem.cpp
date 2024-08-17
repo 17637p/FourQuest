@@ -344,13 +344,11 @@ void fq::game_engine::RenderingSystem::loadSkinnedMeshRenderer(fq::game_module::
 
 void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnimation& event)
 {
-	static std::vector<fq::common::AnimationClip> mAnimationClips;
-
 	fq::common::AnimationClip animationClilp;
 	animationClilp.Name = event.animationName;
 	animationClilp.FrameCount = event.animationData.begin()->second.size();
 	animationClilp.FramePerSecond = (1.f / 30.f);
-	animationClilp.Duration = (1.f / 30.f);
+	animationClilp.Duration = animationClilp.FrameCount * animationClilp.FramePerSecond;
 
 	for (const auto& data : event.animationData)
 	{
@@ -368,15 +366,7 @@ void fq::game_engine::RenderingSystem::WriteAnimation(const fq::event::WriteAnim
 		animationClilp.NodeClips.push_back(nodeClip);
 	}
 
-	mAnimationClips.push_back(animationClilp);
-
-	if (mAnimationClips.size() >= event.animationSize)
-	{
-		fq::common::Model model;
-		model.Animations = mAnimationClips;
-		mGameProcess->mGraphics->WriteModel("./" + event.animationName + ".model", model);
-		mAnimationClips.clear();
-	}
+	mGameProcess->mGraphics->WriteAnimation("./" + event.animationName + ".animation", animationClilp);
 }
 
 void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::GameObject* object)
