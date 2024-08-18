@@ -98,6 +98,9 @@
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
 
+// Box
+#include "Box.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -1054,4 +1057,19 @@ void fq::client::RegisterMetaData()
 
 		.base<IGameVariable>();
 
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Game Variable								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Box>()
+		.type("Box"_hs)
+		.prop(reflect::prop::Name, "Box")
+		.prop(reflect::prop::Label, "Box")
+		.data<&Box::SetmBrokenBoxPrefebPath, &Box::GetBrokenBoxPrefebPath>("BrokenBoxPrefebPath"_hs)
+		.prop(reflect::prop::Name, "BrokenBoxPrefebPath")
+		.prop(fq::reflect::prop::DragDrop, ".prefab")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(reflect::prop::Comment, u8"부서진 박스 프리펫 경로를 지정해주세요.")
+		.base<game_module::Component>();
 }
