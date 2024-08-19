@@ -122,6 +122,8 @@ namespace fq::graphics
 		virtual void DeleteProbeObject(IProbeObject* probeObject) override;
 
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
+		
+		virtual std::set<IStaticMeshObject*> GetStaticMeshObjects() const override;
 
 		/// Primitive
 		// Debug Draw

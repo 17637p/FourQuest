@@ -54,14 +54,13 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 			fbxPaths.push_back(path + ".fbx");
 		};
 
-	////addPath("./resource/Graphics/RenderObjectDemo/gun");
-	//addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
-	//addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
-	//addPath("./resource/Graphics/RenderObjectDemo/player01");
-	//addPath("./resource/Graphics/RenderObjectDemo/playerani7");
-	//addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
-	//addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
-	//addPath("./resource/Graphics/RenderObjectDemo/Holland_Test");
+	addPath("./resource/Graphics/RenderObjectDemo/gun");
+	addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
+	addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
+	addPath("./resource/Graphics/RenderObjectDemo/player01");
+	addPath("./resource/Graphics/RenderObjectDemo/playerani7");
+	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
 
 	for (size_t i = 0; i < modelPaths.size(); ++i)
 	{
@@ -374,16 +373,14 @@ void RenderObjectDemo::createModel(std::string modelPath, std::filesystem::path 
 		{
 			auto meshInterface = mTestGraphics->GetStaticMeshByModelPathOrNull(key, mesh.Name);
 			IStaticMeshObject* iStaticMeshObject = mTestGraphics->CreateStaticMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
-			if (bIsCreateHierarchy)
-				iStaticMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
+			iStaticMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
 			mStaticMeshObjects.push_back(iStaticMeshObject);
 		}
 		else
 		{
 			auto meshInterface = mTestGraphics->GetSkinnedMeshByModelPathOrNull(key, mesh.Name);
 			ISkinnedMeshObject* iSkinnedMeshObject = mTestGraphics->CreateSkinnedMeshObject(meshInterface, materialInterfaces, meshObjectInfo, transform);
-			if (bIsCreateHierarchy)
-				iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
+			iSkinnedMeshObject->SetNodeHierarchyInstance(boneHierarchyCache);
 			mSkinnedMeshObjects.push_back(iSkinnedMeshObject);
 		}
 	}

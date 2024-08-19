@@ -835,6 +835,11 @@ void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObje
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
 }
 
+std::set<IStaticMeshObject*> fq::graphics::FQGraphics::GetStaticMeshObjects() const
+{
+	return mObjectManager->GetStaticMeshObjects();
+}
+
 void FQGraphics::DeleteProbeObject(IProbeObject* probeObject)
 {
 	mObjectManager->DeleteProbeObject(probeObject);

@@ -111,7 +111,6 @@ namespace fq::game_module
 		fq::graphics::MeshObjectInfo mMeshInfomation;
 
 		std::string mModelPath;
-		std::string mTexturePath;
 		std::string mMeshName;
 		std::vector<std::string> mMaterialNames; // 컨버트 완료 후 지울 예정
 		std::vector<fq::graphics::MaterialInfo> mMaterialInfos; // 컨버트 완료 후 지울 예정
