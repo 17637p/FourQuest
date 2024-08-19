@@ -228,9 +228,7 @@ PixelOut main(DomainOut pin)
         resultRoughness += layers[0].Roughness * alpha.r;
     }
 
-    resultAlbedo = pow(resultAlbedo, 1 / 2.2);
     resultNormal = normalize(resultNormal);
-     
     
 #ifdef DEFERRED
     pout.Normal.xyz = resultNormal;
@@ -267,6 +265,8 @@ PixelOut main(DomainOut pin)
     
     return pout;
 #else
+    
+    resultAlbedo = pow(resultAlbedo, 1 / 2.2);
     
     // ∂Û¿Ã∆√ 
     float3 directLighting = 0.0;

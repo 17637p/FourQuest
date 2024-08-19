@@ -5,16 +5,17 @@
 #include "Event.h"
 
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
-	:mMeshInfomation{}
-	, mSkinnedMeshObject(nullptr)
+	: mSkinnedMeshObject(nullptr)
+	, mMeshInfomation{}
 	, mModelPath{}
+	, mMeshName{}
+	, mMaterialNames{}
+	, mMaterialInfos{}
+	, mMaterialInterfaces{}
+	, mMaterialPaths{}
 	, mbIsRender{ true }
+	, mMaterialInstanceInfo{}
 {
-}
-
-fq::game_module::SkinnedMeshRenderer::~SkinnedMeshRenderer()
-{
-
 }
 
 void fq::game_module::SkinnedMeshRenderer::SetIsRender(bool bIsRender)
