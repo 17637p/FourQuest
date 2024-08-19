@@ -38,13 +38,18 @@ namespace fq::client
 			auto transform = GetComponent<fq::game_module::Transform>();
 			auto worldPosition = transform->GetWorldPosition();
 
-			for (const auto& object : GetGameObject()->GetChildren())
+			if (staticMesh != nullptr)
 			{
-				auto staticMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
+				staticMesh->SetIsRender(false);
+			}
 
-				if (staticMesh != nullptr)
+			for (const auto& object : collision.object->GetChildren())
+			{
+				auto childStaticMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
+
+				if (childStaticMesh != nullptr)
 				{
-					staticMesh->SetIsRender(false);
+					childStaticMesh->SetIsRender(false);
 				}
 			}
 
@@ -60,9 +65,15 @@ namespace fq::client
 					auto objectTransform = object->GetComponent<fq::game_module::Transform>();
 
 					objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
+					objectTransform->SetWorldScale(transform->GetWorldScale() * 100.f);
 
 					GetScene()->AddGameObject(object);
 				}
+
+				auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
+
+				if (prefabObjectMesh != nullptr)
+					prefabObjectMesh->SetIsStatic(false);
 			}
 		}
 	}
@@ -81,31 +92,33 @@ namespace fq::client
 				normalizedAngle += 360.0f;
 			}
 
-			// 각도 범위에 따라 8방향을 지정합니다.
-			if (normalizedAngle > 337.5f || normalizedAngle <= 22.5f) {
-				animator->SetParameterTrigger("Up");
-			}
-			else if (normalizedAngle > 22.5f && normalizedAngle <= 67.5f) {
-				animator->SetParameterTrigger("RightUp");
-			}
-			else if (normalizedAngle > 67.5f && normalizedAngle <= 112.5f) {
-				animator->SetParameterTrigger("Right");
-			}
-			else if (normalizedAngle > 112.5f && normalizedAngle <= 157.5f) {
-				animator->SetParameterTrigger("RightButtom");
-			}
-			else if (normalizedAngle > 157.5f && normalizedAngle <= 202.5f) {
-				animator->SetParameterTrigger("Buttom");
-			}
-			else if (normalizedAngle > 202.5f && normalizedAngle <= 247.5f) {
-				animator->SetParameterTrigger("LeftButtom");
-			}
-			else if (normalizedAngle > 247.5f && normalizedAngle <= 292.5f) {
-				animator->SetParameterTrigger("Left");
-			}
-			else if (normalizedAngle > 292.5f && normalizedAngle <= 337.5f) {
-				animator->SetParameterTrigger("LeftUp");
-			}
+			animator->SetParameterTrigger("Idle");
+
+			//// 각도 범위에 따라 8방향을 지정합니다.
+			//if (normalizedAngle > 337.5f || normalizedAngle <= 22.5f) {
+			//	animator->SetParameterTrigger("Up");
+			//}
+			//else if (normalizedAngle > 22.5f && normalizedAngle <= 67.5f) {
+			//	animator->SetParameterTrigger("RightUp");
+			//}
+			//else if (normalizedAngle > 67.5f && normalizedAngle <= 112.5f) {
+			//	animator->SetParameterTrigger("Right");
+			//}
+			//else if (normalizedAngle > 112.5f && normalizedAngle <= 157.5f) {
+			//	animator->SetParameterTrigger("RightButtom");
+			//}
+			//else if (normalizedAngle > 157.5f && normalizedAngle <= 202.5f) {
+			//	animator->SetParameterTrigger("Buttom");
+			//}
+			//else if (normalizedAngle > 202.5f && normalizedAngle <= 247.5f) {
+			//	animator->SetParameterTrigger("LeftButtom");
+			//}
+			//else if (normalizedAngle > 247.5f && normalizedAngle <= 292.5f) {
+			//	animator->SetParameterTrigger("Left");
+			//}
+			//else if (normalizedAngle > 292.5f && normalizedAngle <= 337.5f) {
+			//	animator->SetParameterTrigger("LeftUp");
+			//}
 		}
 	}
 

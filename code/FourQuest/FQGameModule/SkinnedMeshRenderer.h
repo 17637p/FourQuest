@@ -10,7 +10,7 @@ namespace fq::game_module
 		using SkinnedMeshObject = fq::graphics::ISkinnedMeshObject;
 	public:
 		SkinnedMeshRenderer();
-		~SkinnedMeshRenderer();
+		~SkinnedMeshRenderer() = default;
 
 		/// <summary>
 		/// 복사본을 반환합니다 
@@ -84,7 +84,6 @@ namespace fq::game_module
 		fq::graphics::MeshObjectInfo mMeshInfomation;
 
 		std::string mModelPath;
-		std::string mTexturePath;
 		std::string mMeshName;
 		std::vector<std::string> mMaterialNames;
 		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;

@@ -540,6 +540,21 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 					}
 				);
 			}
+
+
+			if (ImGui::Button("all staticMesh apply decal"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+				scene->ViewComponents<game_module::StaticMeshRenderer, game_module::Transform>(
+					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer, game_module::Transform& transform)
+					{
+						auto meshObjectInfo  = renderer.GetMeshObjectInfomation();
+						meshObjectInfo.bIsAppliedDecal = true;
+						renderer.SetMeshObjectInfomation(meshObjectInfo);
+					}
+				);
+			}
 		}
 
 		ImGui::EndChild();
