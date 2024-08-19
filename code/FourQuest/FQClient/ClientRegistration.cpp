@@ -1039,9 +1039,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulBowAttackAngle")
 		.data<&PlayerSoulVariable::SoulBowAttackOffset>("SoulBowAttackOffset"_hs)
 		.prop(fq::reflect::prop::Name, "SoulBowAttackOffset")
+		.data<&PlayerSoulVariable::SoulBowAttackDuration>("SoulBowAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackDuration")
 
 		.data<&PlayerSoulVariable::SoulAxeAttackTick>("SoulAxeAttackTick"_hs)
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
+		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()

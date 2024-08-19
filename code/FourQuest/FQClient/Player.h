@@ -111,10 +111,7 @@ namespace fq::client
 		game_module::PrefabResource mAxeSoulAttack; // µµ³¢ ¿µÈ¥ °ø°Ý 
 		game_module::PrefabResource mBowSoulAttack; // È° ¿µÈ¥ °ø°Ý 	
 		game_module::PrefabResource mStaffSoulAttack; // ¸¶¹ý ¿µÈ¥ °ø°Ý
-
-		// µµ³¢ ¿µÈ¥ °ø°Ý °ü·Ã
-		float mAxeAttackTick;
-
+		
 		bool mbOnShieldBlock;
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;

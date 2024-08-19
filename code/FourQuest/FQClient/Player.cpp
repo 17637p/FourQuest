@@ -34,7 +34,6 @@ fq::client::Player::Player()
 	, mAttackSpeed(1.f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
-	, mAxeAttackTick(0.5f)
 {}
 
 fq::client::Player::~Player()

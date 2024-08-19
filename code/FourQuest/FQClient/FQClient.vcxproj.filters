@@ -26,9 +26,6 @@
     <Filter Include="include\04.Camera">
       <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\06.GameManager">
-      <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.Monster\Melee">
       <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
     </Filter>
@@ -66,9 +63,6 @@
     <Filter Include="src\05.UI">
       <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\06.GameManager">
-      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\02.Monster\Spawner">
       <UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
     </Filter>
@@ -104,6 +98,12 @@
     </Filter>
     <Filter Include="src\09.Box">
       <UniqueIdentifier>{b04ae50d-ad2a-44e5-89c5-605299ea3043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\06.ETC">
+      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\06.ETC">
+      <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -153,7 +153,7 @@
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
-      <Filter>include\06.GameManager</Filter>
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
     <ClInclude Include="ClientEvent.h">
       <Filter>include\00.Define</Filter>
@@ -378,10 +378,10 @@
       <Filter>include\09.Box</Filter>
     </ClInclude>
     <ClInclude Include="Portal.h">
-      <Filter>include\06.GameManager</Filter>
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
     <ClInclude Include="BGM.h">
-      <Filter>include</Filter>
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -428,7 +428,7 @@
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>src\06.GameManager</Filter>
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="MonsterAttack.cpp">
       <Filter>src\02.Monster\Prototype</Filter>
@@ -620,10 +620,10 @@
       <Filter>src\09.Box</Filter>
     </ClCompile>
     <ClCompile Include="Portal.cpp">
-      <Filter>src</Filter>
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="BGM.cpp">
-      <Filter>src</Filter>
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
