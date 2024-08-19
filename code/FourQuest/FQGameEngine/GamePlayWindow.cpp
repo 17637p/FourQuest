@@ -605,7 +605,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 	cameraT->SetLocalPosition(cameraPosition);
 }
 
-
+#pragma optimize( "", off )
 void fq::game_engine::GamePlayWindow::pickObject()
 {
 	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
@@ -708,6 +708,7 @@ void fq::game_engine::GamePlayWindow::pickObject()
 		mEditorProcess->mLightProbeWindow->PickObject(meshPtr);
 	}
 }
+#pragma optimize("", on)
 
 void fq::game_engine::GamePlayWindow::checkMouse()
 {
