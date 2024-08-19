@@ -52,8 +52,10 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	auto gameObject = animator.GetGameObject();
 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MeleeMonsterDead", false , 0 });
 	gameObject->RemoveComponent<game_module::RigidBody>();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::NavigationAgent>();
+
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , 0 });
 }

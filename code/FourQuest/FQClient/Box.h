@@ -22,7 +22,6 @@ namespace fq::client
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		virtual void OnFixedUpdate(float dt) override;
 
-
 	private:
 		std::string mBrokenBoxPrefebPath;
 		std::shared_ptr<fq::game_module::GameObject> mObject;

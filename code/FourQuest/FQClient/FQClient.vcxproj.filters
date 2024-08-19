@@ -377,6 +377,12 @@
     <ClInclude Include="Box.h">
       <Filter>include\09.Box</Filter>
     </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>include\06.GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BGM.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -612,6 +618,12 @@
     </ClCompile>
     <ClCompile Include="Box.cpp">
       <Filter>src\09.Box</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="BGM.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

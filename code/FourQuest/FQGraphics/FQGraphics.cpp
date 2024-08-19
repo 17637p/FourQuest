@@ -283,7 +283,7 @@ void FQGraphics::SetDefaultFont(const std::wstring& path)
 void FQGraphics::AddFont(const std::wstring& path)
 {
 	mUIManager->AddFont(path);
-}
+  }
 
 void FQGraphics::DeleteFont(const std::wstring& path)
 {

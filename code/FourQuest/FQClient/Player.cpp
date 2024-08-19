@@ -141,9 +141,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 				if (radian >= DirectX::XM_PIDIV2)
 				{
-					// TODO :: Shield Block 소리 , 이펙트  추가
-					//mSoundClip->Play("ShieldBlock", false, 0);
-
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , 3 });
 					return;
 				}
 			}

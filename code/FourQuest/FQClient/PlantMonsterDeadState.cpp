@@ -32,4 +32,7 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 {
 	auto gameObject = animator.GetGameObject();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
+
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , 3 });
 }

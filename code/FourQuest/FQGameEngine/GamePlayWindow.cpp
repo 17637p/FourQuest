@@ -511,9 +511,9 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 	// 16 : 9 화면 비율 고정 
 	float cameraAspectRatio = FixedAspectRatio;
 	// Window 사이즈 비율 
-	// float cameraAspectRatio = camera->GetAspectRatio();
+	//float cameraAspectRatio = camera->GetAspectRatio();
 
-	mViewportSize.x = size.x;
+	mViewportSize.x = size.x; 
 	mViewportSize.y = size.y - offsetY;
 
 	// 게임 카메라 화면 비율 조절 
@@ -647,7 +647,6 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			}
 			return;
 		}
-
 
 		// 피킹한 오브젝트 탐색
 		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
