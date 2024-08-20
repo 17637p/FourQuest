@@ -1071,5 +1071,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::DragDrop, ".prefab")
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(reflect::prop::Comment, u8"부서진 박스 프리펫 경로를 지정해주세요.")
+		.data<&Box::SetDeadTime, &Box::GetDeadTime>("DeadTime"_hs)
+		.prop(reflect::prop::Name, "DeadTime")
+		.prop(reflect::prop::Comment, u8"깨지고 난 뒤 사라질 시간을 지정해주세요.")
 		.base<game_module::Component>();
 }

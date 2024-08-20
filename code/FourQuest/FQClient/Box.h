@@ -13,6 +13,8 @@ namespace fq::client
 
 		void SetmBrokenBoxPrefebPath(const std::string& path) { mBrokenBoxPrefebPath = path; }
 		std::string GetBrokenBoxPrefebPath() const { return mBrokenBoxPrefebPath; }
+		void SetDeadTime(const float& deadTime) { mDeadTime = deadTime; }
+		float GetDeadTime() const { return mDeadTime; }
 
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
@@ -29,6 +31,8 @@ namespace fq::client
 
 		DirectX::SimpleMath::Vector3 mRotation;
 		bool bIsBlock;
+		float mDeadTime;
+		float mDurationTime;
 	};
 }
 

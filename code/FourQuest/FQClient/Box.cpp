@@ -14,6 +14,8 @@ namespace fq::client
 		: mBrokenBoxPrefebPath()
 		, bIsBlock(false)
 		, mRotation()
+		, mDeadTime(1.f)
+		, mDurationTime(0.f)
 	{
 	}
 
@@ -23,7 +25,34 @@ namespace fq::client
 
 	void Box::OnStart()
 	{
+		auto transform = GetComponent<fq::game_module::Transform>();
 
+		// 부서지는 항아리 오브젝트를 생성하고 위치를 해당 위치로 세팅
+		auto objects = GetScene()->GetPrefabManager()->LoadPrefab(mBrokenBoxPrefebPath);
+		assert(!objects.empty());
+
+		for (const auto& object : objects)
+		{
+			if (object->GetParent() == nullptr)
+			{
+				mObject = object;
+
+				auto objectTransform = object->GetComponent<fq::game_module::Transform>();
+
+				objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
+				objectTransform->SetWorldScale(transform->GetWorldScale() * 100.f);
+
+				GetScene()->AddGameObject(object);
+			}
+
+			auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
+
+			if (prefabObjectMesh != nullptr)
+			{
+				prefabObjectMesh->SetIsRender(false);
+				prefabObjectMesh->SetIsStatic(false);
+			}
+		}
 	}
 
 	void Box::OnTriggerEnter(const fq::game_module::Collision& collision)
@@ -35,8 +64,6 @@ namespace fq::client
 
 			// 기존 오브젝트의 스태틱 메시는 그리지 않는다. 
 			auto staticMesh = GetComponent<fq::game_module::StaticMeshRenderer>();
-			auto transform = GetComponent<fq::game_module::Transform>();
-			auto worldPosition = transform->GetWorldPosition();
 
 			if (staticMesh != nullptr)
 			{
@@ -54,34 +81,22 @@ namespace fq::client
 			}
 
 			// 부서지는 항아리 오브젝트를 생성하고 위치를 해당 위치로 세팅
-			auto objects = GetScene()->GetPrefabManager()->LoadPrefab(mBrokenBoxPrefebPath);
-			assert(!objects.empty());
-
-			for (const auto& object : objects)
+			for (const auto& object : mObject->GetChildren())
 			{
-				if (object->GetParent() == nullptr)
-				{
-					mObject = object;
-					auto objectTransform = object->GetComponent<fq::game_module::Transform>();
-
-					objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
-					objectTransform->SetWorldScale(transform->GetWorldScale() * 100.f);
-
-					GetScene()->AddGameObject(object);
-				}
-
 				auto prefabObjectMesh = object->GetComponent<fq::game_module::StaticMeshRenderer>();
 
 				if (prefabObjectMesh != nullptr)
-					prefabObjectMesh->SetIsStatic(false);
+					prefabObjectMesh->SetIsRender(true);
 			}
 		}
 	}
 
 	void Box::OnFixedUpdate(float dt)
 	{
-		if (bIsBlock)
+		if (bIsBlock && mObject != nullptr)
 		{
+			mDurationTime += dt;
+
 			auto animator = mObject->GetComponent<fq::game_module::Animator>();
 
 			float radian = fmod(mRotation.y, 360.0f);;
@@ -119,6 +134,12 @@ namespace fq::client
 			//else if (normalizedAngle > 292.5f && normalizedAngle <= 337.5f) {
 			//	animator->SetParameterTrigger("LeftUp");
 			//}
+
+			if (mDurationTime >= mDeadTime)
+			{
+				GetScene()->DestroyGameObject(mObject.get());
+				mObject = nullptr;
+			}
 		}
 	}
 
