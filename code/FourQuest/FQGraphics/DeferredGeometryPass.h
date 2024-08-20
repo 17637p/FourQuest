@@ -45,10 +45,10 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 
-		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mStaticMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;

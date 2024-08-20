@@ -290,9 +290,6 @@
     <ClInclude Include="NavigationMeshLoader.h">
       <Filter>include\10.PathFinding</Filter>
     </ClInclude>
-    <ClInclude Include="Socket.h">
-      <Filter>include\01.EntityComponent\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Decal.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
@@ -361,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="SoundTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

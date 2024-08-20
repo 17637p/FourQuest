@@ -304,6 +304,16 @@ void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 		mObjectManager->GetProbeObjects());
 }
 
+bool fq::graphics::FQGraphics::GetIsUsePostProcessing() const
+{
+	return mIsOnPostProcessing;
+}
+
+void fq::graphics::FQGraphics::SetIsUsePostProcessing(bool bUsePostProcessing)
+{
+	mIsOnPostProcessing = bUsePostProcessing;
+}
+
 void fq::graphics::FQGraphics::SetPostProcessingInfo(const PostProcessingInfo& info)
 {
 	mPostProcessingManager->SetPostProcessingInfo(info);
@@ -395,21 +405,19 @@ bool FQGraphics::Render()
 		staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 		skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
 
-		for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
-		for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
+		for (auto element : staticMeshesToRender) { mJobManager->CreateStaticMeshJob(element); }
+		for (auto element : skinnedMeshesToRender) { mJobManager->CreateSkinnedMeshJob(element); }
 		for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
+
+		mJobManager->SortStaticMeshJob();
+		mJobManager->SortSkinnedMeshJob();
 
 		mRenderManager->Render();
 
 		if (mIsOnPostProcessing)
 		{
 			mPostProcessingManager->CopyOffscreenBuffer(mDevice);
-			{
-				mPostProcessingManager->Excute(mDevice);
-			}
-		}
-		if (mIsOnPostProcessing)
-		{
+			mPostProcessingManager->Excute(mDevice);
 			mPostProcessingManager->RenderFullScreen(mDevice);
 		}
 	}

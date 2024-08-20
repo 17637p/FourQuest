@@ -93,5 +93,15 @@ namespace fq::graphics
 	{
 		mTerrainMeshJobs.clear();
 	}
+
+	void D3D11JobManager::SortStaticMeshJob()
+	{
+		std::sort(mStaticMeshJobs.begin(), mStaticMeshJobs.end(), [](auto lhs, auto rhs) { return JobHelper::CompareStaticMeshJob(lhs, rhs); });
+	}
+
+	void D3D11JobManager::SortSkinnedMeshJob()
+	{
+		std::sort(mSkinnedMeshJobs.begin(), mSkinnedMeshJobs.end(), [](auto lhs, auto rhs) { return JobHelper::CompareSkinnedMeshJob(lhs, rhs); });
+	}
 }
 
