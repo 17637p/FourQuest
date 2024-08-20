@@ -276,6 +276,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Soul::mSwordColor>("SwordColor"_hs)
+		.prop(reflect::prop::Name, "SwordColor")
+		.data<&Soul::mStaffColor>("StaffColor"_hs)
+		.prop(reflect::prop::Name, "StaffColor")
+		.data<&Soul::mAxeColor>("AxeColor"_hs)
+		.prop(reflect::prop::Name, "AxeColor")
+		.data<&Soul::mBowColor>("BowColor"_hs)
+		.prop(reflect::prop::Name, "BowColor")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

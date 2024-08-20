@@ -80,7 +80,6 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 			auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
 			auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
 			info.OutlineColor = { 0.8f, 0.6f, 0.2f, 1.0f };
-
 			skinnedMeshRenderer->SetMeshObjectInfomation(info);
 		}
 

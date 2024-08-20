@@ -476,7 +476,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		auto animatorMesh = object->GetComponent<fq::game_module::Animator>();
 
-
 		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
 			return;
 

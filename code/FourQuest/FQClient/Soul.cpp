@@ -3,6 +3,7 @@
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Particle.h"
 #include "DeadArmour.h"
 #include "CameraMoving.h"
 
@@ -42,6 +43,9 @@ void fq::client::Soul::OnStart()
 		{
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
+
+	// 소울 색깔 지정 
+	SetSoulColor();
 }
 
 void fq::client::Soul::DestorySoul()
@@ -93,7 +97,7 @@ void fq::client::Soul::OnUpdate(float dt)
 
 		for (auto& armour : mSelectArmours)
 		{
-			if(armour->GetGameObject()->IsDestroyed())
+			if (armour->GetGameObject()->IsDestroyed())
 				continue;
 
 			auto pos = armour->GetComponent<game_module::Transform>()->GetWorldPosition();
@@ -115,5 +119,46 @@ void fq::client::Soul::OnUpdate(float dt)
 		DestorySoul();
 	}
 
+}
+
+void fq::client::Soul::SetSoulColor()
+{
+	if (GetGameObject() == nullptr)
+		return;
+
+	for (auto child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::Particle>())
+		{
+			auto particle = child->GetComponent<game_module::Particle>();
+			auto matInfo = particle->GetParticleMaterialInfo();
+
+			switch (mSoulType)
+			{
+				case fq::client::ESoulType::Sword:
+					matInfo.EmissiveColor = mSwordColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					matInfo.EmissiveColor = mStaffColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					matInfo.EmissiveColor = mAxeColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					matInfo.EmissiveColor = mBowColor;
+					break;
+			}
+
+			particle->SetParticleMaterialInfo(matInfo);
+		}
+	}
+
+}
+
+void fq::client::Soul::SetSoulType(fq::client::ESoulType type)
+{
+	mSoulType = type;
+
+	SetSoulColor();
 }
 

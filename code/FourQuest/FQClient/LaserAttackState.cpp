@@ -24,8 +24,6 @@ void fq::client::LaserAttackState::OnStateEnter(game_module::Animator& animator,
 	auto magic = animator.GetComponent<MagicArmour>();
 	mGatherEffect = magic->EmitLaserGatherEffect();
 
-	// Razer ¼Ò¸® 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "LaserAttack", false , 0 });
 }
 
 void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)

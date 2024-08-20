@@ -135,7 +135,6 @@ void fq::client::MagicArmour::EmitLaser()
 		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
 	);
 
-
 	if (data.hasBlock)
 	{
 		if (mRazerHitElapsedTime == 0.f)
