@@ -362,6 +362,9 @@
     <ClInclude Include="SoundTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
+    <ClInclude Include="CameraShakeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -581,6 +584,9 @@
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
     <ClCompile Include="SoundTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraShakeTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
