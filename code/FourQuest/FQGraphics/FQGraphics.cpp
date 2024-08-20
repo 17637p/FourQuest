@@ -283,7 +283,7 @@ void FQGraphics::SetDefaultFont(const std::wstring& path)
 void FQGraphics::AddFont(const std::wstring& path)
 {
 	mUIManager->AddFont(path);
-}
+  }
 
 void FQGraphics::DeleteFont(const std::wstring& path)
 {
@@ -780,7 +780,9 @@ void fq::graphics::FQGraphics::DeleteDecalMaterial(const std::string& key)
 IStaticMeshObject* fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	assert(staticMesh != nullptr);
-	return mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
+	auto staticMeshObject = mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
+	mCullingManager->CreateBoundingBoxOfStaticObject(staticMeshObject);
+	return staticMeshObject;
 }
 ISkinnedMeshObject* fq::graphics::FQGraphics::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
@@ -808,6 +810,7 @@ ITrailObject* fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParti
 void fq::graphics::FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
 {
 	mObjectManager->DeleteStaticMeshObject(staticMeshObject);
+	mCullingManager->DeleteBoundingBoxOfStaticObject(staticMeshObject);
 }
 void fq::graphics::FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject)
 {

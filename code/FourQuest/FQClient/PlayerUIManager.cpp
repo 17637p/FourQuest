@@ -32,9 +32,7 @@ fq::client::PlayerUIManager::PlayerUIManager()
 }
 
 fq::client::PlayerUIManager::~PlayerUIManager()
-{
-
-}
+{}
 
 void fq::client::PlayerUIManager::OnStart()
 {

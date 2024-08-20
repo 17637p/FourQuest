@@ -15,8 +15,10 @@ namespace fq::client
 		static inline float SoulBowAttackSpeed = 5.f;
 		static inline float SoulBowAttackAngle = 20.f;
 		static inline float SoulBowAttackOffset = 1.5f;
+		static inline float SoulBowAttackDuration = 2.f;
 
 		static inline float SoulAxeAttackTick = 1.f;
+		static inline float SoulAxeAttackDuration = 2.f;
 	};
 
 }

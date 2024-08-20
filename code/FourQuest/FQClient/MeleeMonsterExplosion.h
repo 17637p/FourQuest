@@ -27,7 +27,7 @@ namespace fq::client
 
 	private:
 		float mExplosionRadius;
-		float mExplosionDamage;
+		float mExplosionDamage;	
 		float mExplosionTime;
 
 		fq::game_module::PrefabResource mWarningUI;

@@ -101,6 +101,10 @@
 // Box
 #include "Box.h"
 
+// etc
+#include "BGM.h"
+#include "Portal.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -114,6 +118,24 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "GameManager")
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
+		.base<game_module::Component>();
+	
+	//////////////////////////////////////////////////////////////////////////
+	//                             ETC										//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Portal>()
+		.type("Portal"_hs)
+		.prop(reflect::prop::Name, "Portal")
+		.data<&Portal::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.base<game_module::Component>();
+		
+	entt::meta<BGM>()
+		.type("BGM"_hs)
+		.prop(reflect::prop::Name, "BGM")
+		.data<&BGM::mSoundKey>("SoundKey"_hs)
+		.prop(fq::reflect::prop::Name, "SoundKey")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1017,9 +1039,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulBowAttackAngle")
 		.data<&PlayerSoulVariable::SoulBowAttackOffset>("SoulBowAttackOffset"_hs)
 		.prop(fq::reflect::prop::Name, "SoulBowAttackOffset")
+		.data<&PlayerSoulVariable::SoulBowAttackDuration>("SoulBowAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackDuration")
 
 		.data<&PlayerSoulVariable::SoulAxeAttackTick>("SoulAxeAttackTick"_hs)
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
+		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()

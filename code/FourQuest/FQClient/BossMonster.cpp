@@ -74,7 +74,6 @@ void fq::client::BossMonster::OnStart()
 
 void fq::client::BossMonster::OnUpdate(float dt)
 {
-
 }
 
 void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& collision)
