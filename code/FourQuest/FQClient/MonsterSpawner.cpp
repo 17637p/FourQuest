@@ -118,6 +118,9 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 				mAnimator->SetParameterTrigger("OnHit");
 			}
 
+			// 피격 사운드 재생
+			playerAttack->PlayHitSound();
+
 			// 스포너 사망 처리 
 			if (mHp <= 0.f)
 			{
