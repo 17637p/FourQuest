@@ -28,6 +28,8 @@ namespace fq::client
 
 		EKnockBackType type = EKnockBackType::None;
 		float knocBackPower = 0.f;
+		
+		std::string hitSound; // 피격 소리 
 	};
 
 }

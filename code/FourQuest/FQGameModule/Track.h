@@ -15,6 +15,7 @@ namespace fq::game_module
 		ANIMAITON,			// 애니메이션
 		EFFECT,				// 이펙트
 		SOUND,				// 사운드
+		CAMERA_SHAKE,		// 카메라 진동
 
 		END
 	};

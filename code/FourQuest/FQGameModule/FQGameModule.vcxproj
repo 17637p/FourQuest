@@ -224,6 +224,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraShakeTrack.h" />
     <ClInclude Include="MaterialAnimator.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
     <ClInclude Include="AnimationStateNode.h" />
@@ -305,6 +306,7 @@
     <ClInclude Include="UVAnimator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraShakeTrack.cpp" />
     <ClCompile Include="MaterialAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
     <ClCompile Include="AnimationStateNode.cpp" />

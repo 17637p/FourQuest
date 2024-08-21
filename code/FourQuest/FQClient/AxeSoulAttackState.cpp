@@ -22,6 +22,7 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::AxeSoulAttackState
 void fq::client::AxeSoulAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
 	mAttackElapsedTime += dt;
+	mAttackDuration += dt;
 
 	while (mAttackElapsedTime >= PlayerSoulVariable::SoulAxeAttackTick)
 	{
@@ -29,6 +30,12 @@ void fq::client::AxeSoulAttackState::OnStateUpdate(game_module::Animator& animat
 		auto player = animator.GetComponent<Player>();
 		player->EmitAxeSoulAttack();
 	}
+
+	if (mAttackDuration >= PlayerSoulVariable::SoulAxeAttackDuration)
+	{
+		animator.SetParameterBoolean("EndSoulAttack", true);
+	}
+
 }
 
 void fq::client::AxeSoulAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -36,10 +43,12 @@ void fq::client::AxeSoulAttackState::OnStateEnter(game_module::Animator& animato
 	auto player = animator.GetComponent<Player>();
 	player->EquipSoulWeapone();
 	mAttackElapsedTime = 0.f;
+	mAttackDuration = 0.f;
 }
 
 void fq::client::AxeSoulAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
 	auto player = animator.GetComponent<Player>();
 	player->EquipArmourWeapone();
+	animator.SetParameterBoolean("EndSoulAttack", false);
 }

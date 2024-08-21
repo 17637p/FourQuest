@@ -74,7 +74,6 @@ void fq::client::BossMonster::OnStart()
 
 void fq::client::BossMonster::OnUpdate(float dt)
 {
-
 }
 
 void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& collision)
@@ -90,6 +89,9 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 
 			// HP 감소
 			mHp -= attackPower;
+
+			// 피격 사운드 재생
+			playerAttack->PlayHitSound();
 
 			// 사망처리
 			if (mHp <= 0.f)
@@ -214,7 +216,6 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
-
 	return attackObj;
 }
 

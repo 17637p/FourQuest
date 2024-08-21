@@ -97,6 +97,17 @@ namespace fq::game_module
 		std::string text = {};
 	};
 
+	struct CameraShakeTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		std::string cameraObjectName = {};
+		DirectX::SimpleMath::Vector3 magnitude = {};
+		int shakeCount = 100;
+		int originInitSpacing = 5;
+	};
+
 	class Sequence : public Component
 	{
 	public:
@@ -132,6 +143,8 @@ namespace fq::game_module
 		void SetSoundTrackInfo(const std::vector<SoundTrackInfo>& info) { mSoundTrackInfo = info; }
 		const std::vector<ObjectAnimationInfo>& GetObjectAnimationInfo() const { return mObjectAnimationInfo; }
 		void SetObjectAnimationInfo(const std::vector<ObjectAnimationInfo>& info) { mObjectAnimationInfo = info; }
+		const std::vector<CameraShakeTrackInfo>& GetCameraShakeTrackInfo() const { return mCameraShakeTrackInfo; }
+		void SetCameraShakeTrackInfo(const std::vector<CameraShakeTrackInfo>& info) { mCameraShakeTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
@@ -155,6 +168,7 @@ namespace fq::game_module
 		std::vector<EffectTrackInfo>			mEffectTrackInfo;
 		std::vector<SoundTrackInfo>				mSoundTrackInfo;
 		std::vector<TextPrintTrackInfo>			mTextPrintTrackInfo;
+		std::vector<CameraShakeTrackInfo>		mCameraShakeTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 	};

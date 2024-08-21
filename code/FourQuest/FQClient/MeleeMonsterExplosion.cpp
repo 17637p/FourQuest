@@ -72,12 +72,12 @@ void fq::client::MeleeMonsterExplosion::Explode()
 	GetScene()->DestroyGameObject(GetGameObject());
 
 	// 气惯 家府 
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MonsterExplosion", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Explode_Boom", false , 0 });
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonsterExplosion::EmitExplosionEffect()
 {
-	// 乘归 昏力
+	// 乘归 昏力	
 	GetGameObject()->RemoveComponent<KnockBack>();
 
 	using namespace game_module;

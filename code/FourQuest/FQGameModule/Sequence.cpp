@@ -4,6 +4,7 @@
 
 #include "Track.h"
 #include "CameraChangeTrack.h"
+#include "CameraShakeTrack.h"
 #include "ObjectMoveTrack.h"
 #include "ObjectTeleportTrack.h"
 #include "TextPrintTrack.h"
@@ -42,6 +43,21 @@ namespace fq::game_module
 		for (const auto& trackInfo : mCameraChangeTrackInfo)
 		{
 			std::shared_ptr<CameraChangeTrack> track = std::make_shared<CameraChangeTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
+		for (const auto& trackInfo : mCameraShakeTrackInfo)
+		{
+			std::shared_ptr<CameraShakeTrack> track = std::make_shared<CameraShakeTrack>();
 			check = track->Initialize(trackInfo, scene);
 
 			if (check)
