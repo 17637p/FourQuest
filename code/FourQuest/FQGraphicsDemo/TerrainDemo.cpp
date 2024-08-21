@@ -125,6 +125,22 @@ bool TerrainDemo::Init(HINSTANCE hInstance)
 			probeIndex);
 	}
 
+	/// Text
+	mTestGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+
+	fq::graphics::TextInfo textInfo{};
+	textInfo.CenterX = 0;
+	textInfo.CenterY = 0;
+	textInfo.Width = 1920;
+	textInfo.Height = 1080;
+	textInfo.Text = reinterpret_cast<const char*>(u8"집가고싶당");
+	textInfo.FontColor = { 0.1,0.8,0.4,1 };
+	textInfo.FontSize = 32;
+	textInfo.FontPath = reinterpret_cast <const char*>(u8"DungGeunMo");
+	textInfo.Align = fq::graphics::ETextAlign::RightTop;
+	textInfo.BoxAlign = fq::graphics::ETextBoxAlign::LeftTop;
+	mTextObject1 = mTestGraphics->CreateText(textInfo);
+
 	return true;
 }
 
@@ -309,6 +325,28 @@ void TerrainDemo::Update()
 			int a = 3;
 		}
 	}
+
+	if (InputManager::GetInstance().IsGetKeyDown('Z'))
+	{
+		thickness += 0.000001f;
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('X'))
+	{
+		thickness -= 0.000001f;
+	}
+	if (InputManager::GetInstance().IsGetKeyDown('C'))
+	{
+		isSSR = !isSSR;
+	}
+
+	auto info = mTextObject1->GetTextInformation();
+	info.Text = std::to_string(thickness);
+	mTextObject1->SetTextInformation(info);
+
+	auto postInfo = mTestGraphics->GetPostProcessingInfo();
+	postInfo.max_thickness = thickness;
+	postInfo.bUseSSR = isSSR;
+	mTestGraphics->SetPostProcessingInfo(postInfo);
 
 	mTestGraphics->UpdateCamera(mCameraTransform);
 }

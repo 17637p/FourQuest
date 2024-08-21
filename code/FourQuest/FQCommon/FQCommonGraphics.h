@@ -689,5 +689,10 @@ namespace fq::graphics
 		bool bUseFog = false;
 		DirectX::SimpleMath::Vector4 fogColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 안개 색상 
 		float fogVisibleArea = 200.0f; // 가시 영역 near ~ far 기준으로 값을 넣어야 함 near가 1 far가 100이면 20일때 20퍼 보인다는 뜻
+
+		// SSR
+		bool bUseSSR = false;
+		float max_iteration = 160;
+		float max_thickness = 0.00001;
 	};
 };
