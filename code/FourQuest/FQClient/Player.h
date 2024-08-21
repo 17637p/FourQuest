@@ -72,6 +72,12 @@ namespace fq::client
 		/// </summary>
 		void EquipArmourWeapone();
 
+		/// <summary>
+		/// 소울 스택을 더합니다 
+		/// </summary>
+		void AddSoulStack(float stack);
+
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);

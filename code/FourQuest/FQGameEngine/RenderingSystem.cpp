@@ -155,7 +155,6 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					if (materialAnimator != nullptr)
 					{
 						fq::graphics::MaterialInstanceInfo materialInstanceInfo = mesh.GetMaterialInstanceInfo();
-
 						{
 							const auto& info = materialAnimator->GetAlphaAnimatorInfo();
 							materialInstanceInfo.bUseInstanceAlpha = info.bIsUsed;

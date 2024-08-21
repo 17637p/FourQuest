@@ -902,6 +902,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 				data.transform._43 = pos.z + offset.z;
 			}
 
+			// Tag가 변경된 경우
+			auto capsuleInfo = capsule->GetCapsuleInfomation();
+			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				capsuleInfo.colliderInfo.layerNumber = currentLayer;
+				capsule->SetCapsuleInfomation(capsuleInfo);
+			}
+
 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)

@@ -409,3 +409,8 @@ void fq::client::Player::EmitAxeSoulAttack()
 
 	GetScene()->AddGameObject(attackObj);
 }
+
+void fq::client::Player::AddSoulStack(float stack)
+{
+	mSoulStack = std::min(mMaxSoulStack, mSoulStack + stack);
+}
