@@ -87,7 +87,7 @@ namespace fq::graphics
 		void initializeImage();
 
 		void drawAllText();
-		void drawAllImage();
+		void drawAllImage(bool isOnText);
 
 		void registerFont(const std::wstring& path);
 

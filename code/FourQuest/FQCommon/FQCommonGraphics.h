@@ -113,6 +113,7 @@ namespace fq::graphics
 		float ScaleY = 1.f;
 
 		bool isCenter = false;
+		bool isOnText = false;
 	};
 
 	enum class ETextAlign

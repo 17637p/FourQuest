@@ -128,8 +128,9 @@ void fq::graphics::UIManager::Render()
 		mRenderTarget->Clear(D2D1_COLOR_F{ 0, 0, 0, 1 });
 	}
 
+	drawAllImage(false);
 	drawAllText();
-	drawAllImage();
+	drawAllImage(true);
 
 	mRenderTarget->EndDraw();
 }
@@ -455,7 +456,7 @@ bool IImageObjectCmpLayer(fq::graphics::IImageObject* a, fq::graphics::IImageObj
 	return a->GetLayer() > b->GetLayer();
 }
 
-void fq::graphics::UIManager::drawAllImage()
+void fq::graphics::UIManager::drawAllImage(bool isOnText)
 {
 	if (!mIsSorted)
 	{
@@ -468,6 +469,11 @@ void fq::graphics::UIManager::drawAllImage()
 	for (const auto& image : mImages)
 	{
 		if (!image->GetIsRender())
+		{
+			continue;
+		}
+
+		if (image->GetIsOnText() != isOnText)
 		{
 			continue;
 		}
@@ -665,6 +671,8 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 
 	newImageObject->SetFillDegree(uiInfo.fillDegree);
 	newImageObject->SetRenderMode(uiInfo.isCenter);
+
+	newImageObject->SetIsOnText(uiInfo.isOnText);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;

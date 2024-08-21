@@ -72,6 +72,7 @@
     <ClInclude Include="IGameVariable.h" />
     <ClInclude Include="KnightArmour.h" />
     <ClInclude Include="KnockBack.h" />
+    <ClInclude Include="LoadingUI.h" />
     <ClInclude Include="MagicArmour.h" />
     <ClInclude Include="MagicBallAttackState.h" />
     <ClInclude Include="MeleeMonster.h" />
@@ -129,6 +130,7 @@
     <ClInclude Include="StaffSoulAttack.h" />
     <ClInclude Include="StaffSoulAttackState.h" />
     <ClInclude Include="SwordAttackState.h" />
+    <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +163,7 @@
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="KnightArmour.cpp" />
     <ClCompile Include="KnockBack.cpp" />
+    <ClCompile Include="LoadingUI.cpp" />
     <ClCompile Include="MagicArmour.cpp" />
     <ClCompile Include="MagicBallAttackState.cpp" />
     <ClCompile Include="MeleeMonster.cpp" />
@@ -212,6 +215,7 @@
     <ClCompile Include="StaffSoulAttack.cpp" />
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
+    <ClCompile Include="TitleUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
