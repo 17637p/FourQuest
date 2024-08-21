@@ -96,6 +96,8 @@ void fq::client::QuestManager::OnStart()
 	EventProcessObjectInteraction();
 
 	mScreenManager = GetScene()->GetScreenManager();
+
+	RenderOffQuest();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -547,6 +549,32 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		gaugeBar->SetUIInfomation(0, imageInfo);
 
 		gaugeBar->SetIsRender(0, true);
+	}
+}
+
+void fq::client::QuestManager::RenderOffQuest()
+{
+	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren()[3]->GetChildren();
+
+	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
+	{
+		auto subQuest = children[2 - i]->GetChildren();
+		
+		auto text1 = subQuest[0]->GetComponent<game_module::TextUI>();
+		auto image1 = subQuest[1]->GetComponent<game_module::ImageUI>();
+		auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
+		auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
+
+		auto textInfo = text1->GetTextInfo();
+		textInfo.IsRender = false;
+		text1->SetTextInfo(textInfo);
+
+		textInfo = text2->GetTextInfo();
+		textInfo.IsRender = false;
+		text2->SetTextInfo(textInfo);
+
+		image1->SetIsRender(0, false);
+		image2->SetIsRender(0, false);
 	}
 }
 
