@@ -58,7 +58,7 @@ namespace fq::physics
 		inline const DirectX::SimpleMath::Matrix& GetOffsetRotation();
 
 	protected:
-		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix);
+		void updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix, void* userData);
 
 	protected:
 		unsigned int mID;
