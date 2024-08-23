@@ -524,7 +524,6 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 				materialJson["Offset"]["y"].get<float>()
 			};
 			info.MeshData.Materials.push_back(material);
-
 		}
 
 		// Light ÆÄ½Ì

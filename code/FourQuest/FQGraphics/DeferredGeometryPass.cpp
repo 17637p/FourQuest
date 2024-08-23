@@ -99,7 +99,7 @@ namespace fq::graphics
 		));
 
 		// 인스턴싱용 버퍼
-		mInstancingVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, sizeof(InstancingInfo) * 1024, sizeof(InstancingInfo), 0);
+		mInstancingVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, sizeof(InstancingInfo) * INSTANCING_BUFFER_SIZE, sizeof(InstancingInfo), 0);
 	}
 
 	void DeferredGeometryPass::Finalize()
@@ -307,12 +307,11 @@ namespace fq::graphics
 					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
 					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
-					
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-					// 스태틱 메쉬라면? 같은 넘들을 순회해서 인스턴스 목록을 만들어줌
-					// 인스턴스 목록만큼 처리되게끔 해줌
 
-					// apply static mesh object info
+					// static 타입은 언제나 데칼 적용
+					mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					std::vector<InstancingInfo> infos;
 					infos.reserve(32);
@@ -327,6 +326,11 @@ namespace fq::graphics
 
 					for (size_t j = i + 1; j < staticMeshJobs.size(); ++j)
 					{
+						if (INSTANCING_BUFFER_SIZE <= count)
+						{
+							break;
+						}
+
 						const StaticMeshJob& nextJob = staticMeshJobs[j];
 
 						if (job.StaticMesh != nextJob.StaticMesh

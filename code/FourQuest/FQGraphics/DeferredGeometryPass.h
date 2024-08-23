@@ -24,6 +24,8 @@ namespace fq::graphics
 		void Render() override;
 
 	private:
+		enum { INSTANCING_BUFFER_SIZE = 1024 };
+
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;

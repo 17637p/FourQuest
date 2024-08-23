@@ -119,8 +119,8 @@ namespace fq::graphics
 		mNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Normal, width, height);
 		mEmissiveRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Emissive, width, height);
 		mPositionRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
-		mSourceNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
-		mSourceTangentRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PositionWClipZ, width, height);
+		mSourceNormalRTV->OnResize(mDevice, ED3D11RenderTargetViewType::SourceNormal, width, height);
+		mSourceTangentRTV->OnResize(mDevice, ED3D11RenderTargetViewType::SourceTangent, width, height);
 		mPreCalculatedLightRTV->OnResize(mDevice, ED3D11RenderTargetViewType::PreCalculatedLight, width, height);
 
 		RenderPipeline::OnResize(width, height, oriWidth, oriHeight);

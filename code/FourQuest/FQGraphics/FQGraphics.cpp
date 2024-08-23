@@ -402,9 +402,9 @@ bool FQGraphics::Render()
 		std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
 		std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
 
-		staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
-		skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
-
+		// staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
+		// skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
+		
 		for (auto element : staticMeshesToRender) { mJobManager->CreateStaticMeshJob(element); }
 		for (auto element : skinnedMeshesToRender) { mJobManager->CreateSkinnedMeshJob(element); }
 		for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }

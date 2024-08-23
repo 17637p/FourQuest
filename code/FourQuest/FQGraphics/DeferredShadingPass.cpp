@@ -98,7 +98,7 @@ namespace fq::graphics
 
 		// init
 		{
-			ID3D11ShaderResourceView* NullSRVs[10] = { NULL, };
+			ID3D11ShaderResourceView* NullSRVs[20] = { NULL, };
 			mDevice->GetDeviceContext()->PSSetShaderResources(0, ARRAYSIZE(NullSRVs), NullSRVs);
 		}
 
@@ -117,7 +117,6 @@ namespace fq::graphics
 			mNormalSRV->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
 			mEmissiveSRV->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
 			mPositionSRV->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
-			mPreCalculatedSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
 			
 			const auto& iblTexture = mLightManager->GetIBLTexture();
 			if (iblTexture.DiffuseIrradiance != nullptr)
@@ -142,6 +141,8 @@ namespace fq::graphics
 			mLinearClampSamplerState->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mPointClampSamplerState->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
 			mShadowSampler->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
+			
+			mPreCalculatedSRV->Bind(mDevice, 5, ED3D11ShaderType::PixelShader);
 		}
 
 		// draw

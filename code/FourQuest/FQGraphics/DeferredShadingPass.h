@@ -12,7 +12,7 @@ namespace fq::graphics
 	public:
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
-			std::shared_ptr< D3D11LightManager> lightManager,
+			std::shared_ptr<D3D11LightManager> lightManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
 			unsigned short width,
 			unsigned short height);
@@ -23,7 +23,7 @@ namespace fq::graphics
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-		std::shared_ptr< D3D11LightManager> mLightManager;
+		std::shared_ptr<D3D11LightManager> mLightManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 
 		D3D11_VIEWPORT mViewport;
