@@ -263,6 +263,7 @@
     <ClCompile Include="OutLinePass.cpp" />
     <ClCompile Include="ParticleObject.cpp" />
     <ClCompile Include="ParticlePass.cpp" />
+    <ClCompile Include="RenderJob.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="RenderPipeline.cpp" />
     <ClCompile Include="ResourceBase.cpp" />

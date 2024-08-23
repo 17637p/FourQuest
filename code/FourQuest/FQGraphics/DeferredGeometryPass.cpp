@@ -307,7 +307,8 @@ namespace fq::graphics
 					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
 					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
-
+					
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 					// 스태틱 메쉬라면? 같은 넘들을 순회해서 인스턴스 목록을 만들어줌
 					// 인스턴스 목록만큼 처리되게끔 해줌
 
