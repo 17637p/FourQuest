@@ -174,6 +174,7 @@
     <ClInclude Include="ObjectTeleportTrack.h" />
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SoundTrack.h" />
+    <ClInclude Include="StaticMeshInstancingRenderer.h" />
     <ClInclude Include="TextPrintTrack.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="IStateBehaviour.h" />
@@ -254,6 +255,7 @@
     <ClCompile Include="ObjectTeleportTrack.cpp" />
     <ClCompile Include="Sequence.cpp" />
     <ClCompile Include="SoundTrack.cpp" />
+    <ClCompile Include="StaticMeshInstancingRenderer.cpp" />
     <ClCompile Include="TextPrintTrack.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />

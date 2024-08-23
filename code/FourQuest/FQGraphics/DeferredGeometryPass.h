@@ -63,5 +63,15 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>> mMaterialInstanceCB;
+
+		struct InstancingInfo
+		{
+			DirectX::SimpleMath::Matrix Transform;
+			DirectX::SimpleMath::Vector4 UVScaleOffset;
+			unsigned int UVIndex;
+		};
+
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInstancedIL;
+		std::shared_ptr<D3D11VertexBuffer> mInstancingVertexBuffer;
 	};
 }

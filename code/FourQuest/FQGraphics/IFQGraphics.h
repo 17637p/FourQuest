@@ -155,6 +155,8 @@ extern "C" {
 
 			virtual FQ_GRAPHICS std::set<IStaticMeshObject*> GetStaticMeshObjects() const abstract;
 
+			// staticMeshObject getter/setter
+
 			/// Primitive
 			// Debug Draw
 			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;

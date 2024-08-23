@@ -38,6 +38,8 @@ namespace fq::graphics
 		void Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot = 0);
 		template <typename Vertex>
 		void Update(std::shared_ptr<D3D11Device> device, const std::deque<Vertex>& vertices);
+		template <typename Vertex>
+		void Update(std::shared_ptr<D3D11Device> device, const std::vector<Vertex>& vertices);
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
@@ -82,6 +84,21 @@ namespace fq::graphics
 		{
 			vertexPtr[i] = vertices[i];
 		}
+
+		device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
+	}
+
+	template<typename Vertex>
+	inline void D3D11VertexBuffer::Update(std::shared_ptr<D3D11Device> device, const std::vector<Vertex>& vertices)
+	{
+		assert(mbUseCPUWrite);
+
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		device->GetDeviceContext()->Map(mVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+		Vertex* vertexPtr = reinterpret_cast<Vertex*>(mappedData.pData);
+
+		memcpy(vertexPtr, vertices.data(), sizeof(Vertex) * vertices.size());
 
 		device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
 	}

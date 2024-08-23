@@ -46,6 +46,12 @@ namespace fq::graphics
 		d3d11Device->GetDeviceContext()->DrawIndexed(subset.IndexCount, subset.IndexStart, subset.VertexStart);
 	}
 
+	void MeshBase::DrawInstanced(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex, size_t instanceCount)
+	{
+		const fq::common::Mesh::Subset& subset = mMeshData.Subsets[subsetIndex];
+		d3d11Device->GetDeviceContext()->DrawIndexedInstanced(subset.IndexCount, instanceCount, subset.IndexStart, subset.VertexStart, 0);
+	}
+
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
 		: MeshBase(device, meshData)
 		, mDevice(device)
@@ -81,7 +87,7 @@ namespace fq::graphics
 					vertices[i].Color = colorPtr[i];
 				}
 			}
-			
+
 			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
 			mStaticMeshType = EStaticMeshType::VertexColor;
 		}

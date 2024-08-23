@@ -190,6 +190,13 @@ PixelOut main(VertexOut pin) : SV_TARGET
         emissive += outlineEmissive.rgb;
     }
 
+    if (gModelMaterial.UseMetalnessSmoothness)
+    {
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xw;
+        metalness = metalnessSmoothness.x;
+        roughness = 1 - metalnessSmoothness.y;
+    }
+
     float3 directLighting = 0.0;
 
     Material material;
