@@ -150,8 +150,8 @@ void fq::game_engine::ImportWindow::changeData()
 				if (index < gameObjectInfos.size())
 				{
 					const auto& objectInfo = gameObjectInfos[index];
-					terrain.SetLightmapIndex(objectInfo.MeshData.LightmapIndex);
-					terrain.SetLightmapUVScaleOffset(objectInfo.MeshData.LightmapScaleOffset);
+					terrain.SetLightmapIndex(objectInfo.TerrainData.LightmapIndex);
+					terrain.SetLightmapUVScaleOffset(objectInfo.TerrainData.LightmapScaleOffset);
 				}
 			}
 		});
