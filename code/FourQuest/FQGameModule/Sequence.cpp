@@ -55,21 +55,6 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
-		for (const auto& trackInfo : mCameraShakeTrackInfo)
-		{
-			std::shared_ptr<CameraShakeTrack> track = std::make_shared<CameraShakeTrack>();
-			check = track->Initialize(trackInfo, scene);
-
-			if (check)
-			{
-				mTracks.push_back(track);
-
-				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
-
-				if (mTotalPlayTime < trackTotalTime)
-					mTotalPlayTime = trackTotalTime;
-			}
-		}
 		for (const auto& trackInfo : mObjectMoveTrackInfo)
 		{
 			std::shared_ptr<ObjectMoveTrack> track = std::make_shared<ObjectMoveTrack>();
@@ -160,6 +145,21 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
+		for (const auto& trackInfo : mCameraShakeTrackInfo)
+		{
+			std::shared_ptr<CameraShakeTrack> track = std::make_shared<CameraShakeTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
 	}
 
 	void Sequence::OnFixedUpdate(float dt)
@@ -191,6 +191,10 @@ namespace fq::game_module
 					mbIsPlay = false;
 				}
 			}
+		}
+		else
+		{
+			mDurationTime = 0.f;
 		}
 	}
 

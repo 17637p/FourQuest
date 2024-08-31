@@ -65,6 +65,9 @@ namespace fq::game_module
 		ETrackType mType;
 		ETrackState mCurrentState;
 
+		DirectX::SimpleMath::Vector3 mCurPosition;
+		DirectX::SimpleMath::Vector3 mPrevPosition;
+
 		float mStartTime;
 		float mTotalPlayTime;
 		float mElapsedTime;
