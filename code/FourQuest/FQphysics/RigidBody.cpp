@@ -30,6 +30,8 @@ namespace fq::physics
 		newShape->setContactOffset(0.02f);
 		newShape->setRestOffset(0.01f);
 		newShape->userData = userData;
+		userData = nullptr;
+
 
 		if (mColliderType == EColliderType::COLLISION)
 		{
