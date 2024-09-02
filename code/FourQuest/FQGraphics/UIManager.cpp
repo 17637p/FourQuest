@@ -359,6 +359,18 @@ void fq::graphics::UIManager::drawAllText()
 			}
 
 			std::wstring text = stringToWstring(drawTextInformation.Text);
+
+			// \\n 찾아서 \n으로 바꾸기
+			std::wstring toReplace = L"\\n";
+			std::wstring replaceWith = L"\n";
+
+			size_t pos = text.find(toReplace);
+
+			while (pos != std::wstring::npos) {
+				text.replace(pos, toReplace.length(), replaceWith);
+				pos = text.find(toReplace, pos + replaceWith.length());
+			}
+
 			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
 
 			switch (textObject->GetTextInformation().Align)

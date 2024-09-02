@@ -64,8 +64,8 @@ void fq::client::PauseUI::OnStart()
 void fq::client::PauseUI::OnUpdate(float dt)
 {
 	SetScaleScreen();
-	SetSelectBoxPosition(dt);
-	
+	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
+
 	if (mIsActive)
 	{
 		// UI 조작 (계속하기, 선택 옮기기 등)
@@ -189,7 +189,6 @@ void fq::client::PauseUI::ClickButton()
 
 void fq::client::PauseUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 {
-	// RepauseUI 생성
 	std::shared_ptr<game_module::GameObject> newObject;
 
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(prefab);

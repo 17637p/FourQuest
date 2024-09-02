@@ -890,6 +890,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
 		.data<&TitleUI::mNextSceneName>("NextSceneName"_hs)
 		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.data<&TitleUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SoulSelectUI>()

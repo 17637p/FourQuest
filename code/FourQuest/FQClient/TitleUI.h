@@ -1,5 +1,7 @@
 #pragma once
 #include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
+#include "../FQGameModule/EventHandler.h"
 
 namespace fq::game_module
 {
@@ -14,6 +16,9 @@ namespace fq::client
 		TitleUI();
 		~TitleUI();
 
+		TitleUI(const TitleUI& other);
+		TitleUI& operator=(const TitleUI& other);
+
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
@@ -25,6 +30,10 @@ namespace fq::client
 		void SetSelectBoxPosition(float dt);
 		void ClickButton();
 
+		void SpawnUIObject(fq::game_module::PrefabResource prefab);
+
+		void EventProcessOffPopupSetting();
+
 	private:
 		game_module::ScreenManager* mScreenManager;
 		
@@ -34,6 +43,10 @@ namespace fq::client
 		std::vector<game_module::GameObject*> mButtons;
 
 		std::string mNextSceneName;
+
+		bool mIsActive;
+		fq::game_module::PrefabResource mSettingUIPrefab;
+		game_module::EventHandler mOffPopupSettingHandler;
 
 	private:
 		friend void RegisterMetaData();
