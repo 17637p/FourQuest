@@ -48,6 +48,11 @@ namespace fq::client
 		void Patrol();
 
 		void CheckAttackAble()const;
+
+		/// <summary>
+		/// 타겟을 응시합니다
+		/// </summary>
+		void LookAtTarget();
 	
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

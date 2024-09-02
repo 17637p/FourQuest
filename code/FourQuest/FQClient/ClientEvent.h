@@ -66,4 +66,25 @@ namespace fq::client::event
 	{
 		game_module::ETag tag;
 	};
+
+	/// <summary>
+	/// Repause 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupRepause
+	{
+	};
+
+	/// <summary>
+	/// Setting 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupSetting
+	{
+	};
+
+	/// <summary>
+	/// Pause 팝업 창 Off 이벤트
+	/// </summary>
+	struct OffPopupPause
+	{
+	};
 }

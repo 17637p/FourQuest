@@ -88,6 +88,8 @@
 #include "LoadingUI.h"
 #include "TitleUI.h"
 #include "SoulSelectUI.h"
+#include "SettingUI.h"
+#include "RepauseUI.h"
 
 #include "CameraMoving.h"
 
@@ -864,6 +866,13 @@ void fq::client::RegisterMetaData()
 		.type("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PauseUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&PauseUI::mRepauseUIPrefab>("ResourceUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResourceUIPrefab")
+		.data<&PauseUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<LoadingUI>()
@@ -876,11 +885,28 @@ void fq::client::RegisterMetaData()
 		.type("TitleUI"_hs)
 		.prop(fq::reflect::prop::Name, "TitleUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&TitleUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&TitleUI::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SoulSelectUI>()
 		.type("SoulSelectUI"_hs)
 		.prop(fq::reflect::prop::Name, "SoulSelectUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SettingUI>()
+		.type("SettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<RepauseUI>()
+		.type("RepauseUI"_hs)
+		.prop(fq::reflect::prop::Name, "RepauseUI")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 

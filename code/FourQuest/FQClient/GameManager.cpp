@@ -77,18 +77,6 @@ void fq::client::GameManager::OnUpdate(float dt)
 			mIsStop = true;
 		}
 	}
-	if (mIsStop)
-	{
-		if (input->IsPadKeyState(0, EPadKey::B, EKeyState::Tap)
-			|| input->IsPadKeyState(1, EPadKey::B, EKeyState::Tap)
-			|| input->IsPadKeyState(2, EPadKey::B, EKeyState::Tap)
-			|| input->IsPadKeyState(3, EPadKey::B, EKeyState::Tap)
-			|| input->IsKeyState(EKey::O, EKeyState::Tap))
-		{
-			GetScene()->GetTimeManager()->SetTimeScale(1);
-			mIsStop = false;
-		}
-	}
 
 	testKey();
 }
@@ -100,11 +88,36 @@ void fq::client::GameManager::OnStart()
 		{
 			mPlayers.push_back(event.player->shared_from_this());
 		});
+
+	EventProcessOffPopupPause();
+	EventProcessOffPopupSetting();
 }
 
 void fq::client::GameManager::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mRegisterPlayerHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupSettingHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupPauseHandler);
+}
+
+void fq::client::GameManager::EventProcessOffPopupPause()
+{
+	mOffPopupSettingHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupSetting>(
+		[this]()
+		{
+			mIsStop = false;
+			GetScene()->GetTimeManager()->SetTimeScale(1);
+		});
+}
+
+void fq::client::GameManager::EventProcessOffPopupSetting()
+{
+	mOffPopupPauseHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupPause>(
+		[this]()
+		{
+			mIsStop = false;
+			GetScene()->GetTimeManager()->SetTimeScale(1);
+		});
 }
 
 void fq::client::GameManager::testKey()

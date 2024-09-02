@@ -47,15 +47,6 @@ void fq::client::LoadingUI::OnUpdate(float dt)
 	{
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
-
-	if (GetAsyncKeyState('O') & 0x8000)
-	{
-		SetProgressBar(1.0f);
-	}
-	if (GetAsyncKeyState('P') & 0x8000)
-	{
-		SetProgressBar(0.5f);
-	}
 }
 
 fq::client::LoadingUI::LoadingUI()

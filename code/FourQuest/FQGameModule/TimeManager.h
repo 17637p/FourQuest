@@ -26,6 +26,11 @@ namespace fq::game_module
 		unsigned int GetFPS()const { return mFPS; }
 
 		/// <summary>
+		/// 시간 변화량을 반환합니다.
+		/// </summary>
+		float GetDeltaTime()const;
+
+		/// <summary>
 		/// 게임의 시간비율을 반환합니다
 		/// </summary>
 		/// <returns></returns>
