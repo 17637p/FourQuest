@@ -126,8 +126,8 @@ namespace fq::graphics
 
 		device->GetDeviceContext()->DrawIndexed(6, 0, 0);
 
-		//mOffscreenRTV->UnBind(device);
-		//mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::PixelShader);
+		mOffscreenRTV->UnBind(device);
+		mPostProcessingSRV[mSRVIndex]->UnBind(device, 0, ED3D11ShaderType::PixelShader);
 
 		mSwapChainRTV->Bind(device, mNoneDSV);
 	}
@@ -211,8 +211,6 @@ namespace fq::graphics
 		mFullScreenIB->Bind(device);
 		mPostProcessingCB->Update(device, postProcessingBuffer);
 		mPostProcessingCB->Bind(device, ED3D11ShaderType::PixelShader);
-
-		device->GetDeviceContext()->DrawIndexed(6, 0, 0);
 
 		/// SSR VS, PS
 		//mSSRProgram->Bind(device);
