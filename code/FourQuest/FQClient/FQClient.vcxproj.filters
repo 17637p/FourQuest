@@ -392,6 +392,9 @@
     <ClInclude Include="SoulSelectUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="ParabolaAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -642,6 +645,9 @@
     </ClCompile>
     <ClCompile Include="SoulSelectUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ParabolaAttack.cpp">
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

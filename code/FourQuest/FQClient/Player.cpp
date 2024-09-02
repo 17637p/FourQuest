@@ -246,7 +246,6 @@ void fq::client::Player::EmitBowSoulAttack()
 	position += fowardDirection * PlayerSoulVariable::SoulBowAttackOffset;
 
 	attackT->GenerateWorld(position, angleOffset, attackT->GetWorldScale());
-
 	linearAttack->SetMoveDirection(fowardDirection);
 	linearAttack->SetMoveSpeed(PlayerSoulVariable::SoulBowAttackSpeed);
 
