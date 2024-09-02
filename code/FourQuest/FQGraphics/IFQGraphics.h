@@ -155,6 +155,8 @@ extern "C" {
 
 			virtual FQ_GRAPHICS std::set<IStaticMeshObject*> GetStaticMeshObjects() const abstract;
 
+			// staticMeshObject getter/setter
+
 			/// Primitive
 			// Debug Draw
 			virtual FQ_GRAPHICS void DrawSphere(const debug::SphereInfo& sphereInfo) abstract;
@@ -224,6 +226,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void* GetPickingObject(const short mouseX, const short mouseY) abstract;
 
 			// PostProcessing
+			virtual FQ_GRAPHICS bool GetIsUsePostProcessing() const abstract;
+			virtual FQ_GRAPHICS void SetIsUsePostProcessing(bool bUsePostProcessing) abstract;
 			virtual FQ_GRAPHICS void  SetPostProcessingInfo(const PostProcessingInfo& info) abstract;
 			virtual FQ_GRAPHICS const PostProcessingInfo& GetPostProcessingInfo() const abstract;
 

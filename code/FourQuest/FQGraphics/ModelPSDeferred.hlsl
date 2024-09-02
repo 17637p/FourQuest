@@ -15,6 +15,7 @@ struct VertexOut
     float3 TangentV : TEXCOORD5;
 #ifdef STATIC
     float2 UV1 : TEXCOORD6;
+    uint LightmapIndex : TEXCOORD7;
 #endif
 #ifdef VERTEX_COLOR
     float4 Color : COLOR0;
@@ -201,7 +202,7 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
     if (gModelMaterial.UseMetalnessSmoothness)
     {
-        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xy;
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xw;
         pout.MetalnessRoughness.x = metalnessSmoothness.x;
         pout.MetalnessRoughness.y = 1 - metalnessSmoothness.y;
     }
@@ -218,14 +219,14 @@ PixelOut main(VertexOut pin) : SV_TARGET
 
     if (bUseLightMap)
     {
-        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, cUVIndex));
+        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(pin.UV1, pin.LightmapIndex));
 
         if (bUseDirectionMap)
         {
-            float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, cUVIndex));
+            float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, pin.LightmapIndex));
             direction.xyz = direction.xyz * 2 - 1;
-            direction.x = -direction.x;
-            direction.z = -direction.z;
+            // direction.x = -direction.x;
+            // direction.z = -direction.z;
             float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
             pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
         }

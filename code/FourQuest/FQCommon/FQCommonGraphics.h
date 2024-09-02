@@ -50,7 +50,6 @@ namespace fq::graphics
 		ELightMode mode = ELightMode::Realtime;
 	};
 
-
 	struct MeshObjectInfo
 	{
 		bool bUseShadow = true;

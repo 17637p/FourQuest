@@ -185,8 +185,16 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 		([this](GameObject& object, PostProcessing& postProcessing)
 			{
 				auto info = postProcessing.GetPostProcessingInfo();
+				mGameProcess->mGraphics->SetIsUsePostProcessing(true);
 				mGameProcess->mGraphics->SetPostProcessingInfo(info);
 			});
+
+	auto postProcessingView = scene->GetComponentView<game_module::PostProcessing>();
+
+	if (postProcessingView.begin() == postProcessingView.end())
+	{
+		mGameProcess->mGraphics->SetIsUsePostProcessing(false);
+	}
 }
 
 void fq::game_engine::RenderingSystem::OnLoadScene()

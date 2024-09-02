@@ -46,6 +46,12 @@ namespace fq::graphics
 		d3d11Device->GetDeviceContext()->DrawIndexed(subset.IndexCount, subset.IndexStart, subset.VertexStart);
 	}
 
+	void MeshBase::DrawInstanced(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex, size_t instanceCount)
+	{
+		const fq::common::Mesh::Subset& subset = mMeshData.Subsets[subsetIndex];
+		d3d11Device->GetDeviceContext()->DrawIndexedInstanced(subset.IndexCount, instanceCount, subset.IndexStart, subset.VertexStart, 0);
+	}
+
 	StaticMesh::StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData)
 		: MeshBase(device, meshData)
 		, mDevice(device)
@@ -54,7 +60,33 @@ namespace fq::graphics
 		mIndexBuffer = std::make_shared<D3D11IndexBuffer>(device, meshData.Indices);
 
 		auto find = meshData.DynamicInfos.find("Color0");
-		if (find != meshData.DynamicInfos.end())
+
+		if (!meshData.Tex1.empty())
+		{
+			struct Vertex
+			{
+				DirectX::SimpleMath::Vector3 Pos;
+				DirectX::SimpleMath::Vector3 Normal;
+				DirectX::SimpleMath::Vector3 Tangent;
+				DirectX::SimpleMath::Vector2 Tex;
+				DirectX::SimpleMath::Vector2 Tex1;
+			};
+
+			std::vector<Vertex> vertices(meshData.Vertices.size());
+
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				vertices[i].Pos = meshData.Vertices[i].Pos;
+				vertices[i].Normal = meshData.Vertices[i].Normal;
+				vertices[i].Tangent = meshData.Vertices[i].Tangent;
+				vertices[i].Tex = meshData.Vertices[i].Tex;
+				vertices[i].Tex1 = meshData.Tex1[i];
+			}
+
+			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
+			mStaticMeshType = EStaticMeshType::Static;
+		}
+		else if (find != meshData.DynamicInfos.end())
 		{
 			struct Vertex
 			{
@@ -81,38 +113,14 @@ namespace fq::graphics
 					vertices[i].Color = colorPtr[i];
 				}
 			}
-			
+
 			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
 			mStaticMeshType = EStaticMeshType::VertexColor;
 		}
-		else if (meshData.Tex1.empty())
-		{
-			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
-		}
 		else
 		{
-			struct Vertex
-			{
-				DirectX::SimpleMath::Vector3 Pos;
-				DirectX::SimpleMath::Vector3 Normal;
-				DirectX::SimpleMath::Vector3 Tangent;
-				DirectX::SimpleMath::Vector2 Tex;
-				DirectX::SimpleMath::Vector2 Tex1;
-			};
-
-			std::vector<Vertex> vertices(meshData.Vertices.size());
-
-			for (size_t i = 0; i < vertices.size(); ++i)
-			{
-				vertices[i].Pos = meshData.Vertices[i].Pos;
-				vertices[i].Normal = meshData.Vertices[i].Normal;
-				vertices[i].Tangent = meshData.Vertices[i].Tangent;
-				vertices[i].Tex = meshData.Vertices[i].Tex;
-				vertices[i].Tex1 = meshData.Tex1[i];
-			}
-
-			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, vertices);
-			mStaticMeshType = EStaticMeshType::Static;
+			
+			mVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, meshData.Vertices);
 		}
 	}
 	void* StaticMesh::GetVertexBuffer()

@@ -29,6 +29,9 @@ namespace fq::graphics
 		inline const std::vector<SkinnedMeshJob>& GetSkinnedMeshJobs() const;
 		inline const std::vector<TerrainMeshJob>& GetTerrainMeshJobs() const;
 
+		void SortStaticMeshJob();
+		void SortSkinnedMeshJob();
+
 	private:
 		enum { RESERVE_SIZE = 2048 };
 

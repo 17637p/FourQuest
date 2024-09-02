@@ -333,7 +333,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 			if (!gameObjectInfo.TerrainData.Layers.empty())
 			{
 				auto& terrain = gameObject->AddComponent<fq::game_module::Terrain>();
-		
+
 				std::vector<fq::graphics::TerrainLayer> terrainLayers;
 				for (const auto& importLayerInfo : gameObjectInfo.TerrainData.Layers)
 				{
@@ -404,7 +404,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 		if (staticMeshRenderer != nullptr)
 		{
 			auto transform = gameObject->GetComponent<game_module::Transform>();
-			transform->SetPreAppliedTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f)* DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
+			transform->SetPreAppliedTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
 		}
 	}
 
@@ -524,7 +524,6 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 				materialJson["Offset"]["y"].get<float>()
 			};
 			info.MeshData.Materials.push_back(material);
-
 		}
 
 		// Light ÆÄ½Ì

@@ -521,6 +521,9 @@
     <ClCompile Include="D3D11PostProcessingManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
+    <ClCompile Include="RenderJob.cpp">
+      <Filter>Object\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DecalCommon.hlsli">

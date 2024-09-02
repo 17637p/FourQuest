@@ -420,7 +420,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 			}
 
 			std::string basePathString = mRewriteMaterialDir.string();
-			ImGui::InputText("rewrite material Directory", &basePathString);
+			ImGui::InputText("Material Reference Directory", &basePathString);
 
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -477,7 +477,46 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
-			if (ImGui::Button("reload material path(change relative path)"))
+			if (ImGui::Button("rewrite material texture path(try change file format to dds)"))
+			{
+				auto tryChangeDDSFormat = [](std::wstring& filename)
+					{
+						if (filename.empty())
+						{
+							return;
+						}
+
+						std::filesystem::path ddsFilename = filename;
+						ddsFilename.replace_extension(".dds");
+
+						if (std::filesystem::exists(ddsFilename))
+						{
+							filename = ddsFilename;
+						}
+					};
+
+				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
+				{
+					for (auto path : std::filesystem::recursive_directory_iterator(mRewriteMaterialDir))
+					{
+						if (path.path().extension() == ".material")
+						{
+							auto data = mGameProcess->mGraphics->ReadMaterialInfo(path.path().string());
+
+							tryChangeDDSFormat(data.BaseColorFileName);
+							tryChangeDDSFormat(data.MetalnessFileName);
+							tryChangeDDSFormat(data.RoughnessFileName);
+							tryChangeDDSFormat(data.EmissiveFileName);
+							tryChangeDDSFormat(data.NormalFileName);
+							tryChangeDDSFormat(data.MetalnessSmoothnessFileName);
+
+							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
+						}
+					}
+				}
+			}
+
+			if (ImGui::Button("rewrite renderer material path(change relative path)"))
 			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
@@ -549,7 +588,7 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				scene->ViewComponents<game_module::StaticMeshRenderer, game_module::Transform>(
 					[](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer, game_module::Transform& transform)
 					{
-						auto meshObjectInfo  = renderer.GetMeshObjectInfomation();
+						auto meshObjectInfo = renderer.GetMeshObjectInfomation();
 						meshObjectInfo.bIsAppliedDecal = true;
 						renderer.SetMeshObjectInfomation(meshObjectInfo);
 					}

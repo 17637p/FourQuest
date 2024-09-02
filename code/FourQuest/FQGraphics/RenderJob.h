@@ -38,6 +38,13 @@ namespace fq::graphics
 		std::shared_ptr<NodeHierarchyInstance> NodeHierarchyInstnace;
 	};
 
+	class JobHelper
+	{
+	public:
+		static bool CompareStaticMeshJob(const StaticMeshJob& lhs, const StaticMeshJob& rhs);
+		static bool CompareSkinnedMeshJob(const SkinnedMeshJob& lhs, const SkinnedMeshJob& rhs);
+	};
+
 	struct TerrainMeshJob
 	{
 		size_t SubsetIndex;

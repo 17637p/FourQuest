@@ -73,6 +73,33 @@ namespace fq::graphics
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialInstanceCB = std::make_shared<D3D11ConstantBuffer<CBMaterialInstance>>(mDevice, ED3D11ConstantBuffer::Transform);
+
+		// 인스턴싱용 인풋레이아웃
+		const D3D11_INPUT_ELEMENT_DESC InstancingLayoutDesc[] =
+		{
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"TANGENT",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"UV", 1, DXGI_FORMAT_R32G32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+			{"TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"TEXCOORD", 1, DXGI_FORMAT_R32_UINT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+		};
+
+		HR(mDevice->GetDevice()->CreateInputLayout(
+			InstancingLayoutDesc,
+			ARRAYSIZE(InstancingLayoutDesc),
+			staticMeshStaticVS->GetBlob()->GetBufferPointer(),
+			staticMeshStaticVS->GetBlob()->GetBufferSize(),
+			mInstancedIL.GetAddressOf()
+		));
+
+		// 인스턴싱용 버퍼
+		mInstancingVertexBuffer = std::make_shared<D3D11VertexBuffer>(mDevice, sizeof(InstancingInfo) * INSTANCING_BUFFER_SIZE, sizeof(InstancingInfo), 0);
 	}
 
 	void DeferredGeometryPass::Finalize()
@@ -112,7 +139,11 @@ namespace fq::graphics
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
 		mMaterialInstanceCB = nullptr;
+
+		mInstancedIL = nullptr;
+		mInstancingVertexBuffer = nullptr;
 	}
+
 	void DeferredGeometryPass::OnResize(unsigned short width, unsigned short height)
 	{
 		mViewport.Width = (float)width;
@@ -228,8 +259,14 @@ namespace fq::graphics
 			};
 		// Draw
 		{
-			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
+			std::shared_ptr<StaticMesh> staticMeshCache = nullptr;
+			std::shared_ptr<Material> materialCache = nullptr;
+
+			const std::vector<StaticMeshJob> staticMeshJobs = mJobManager->GetStaticMeshJobs();
+
+			for (size_t i = 0; i < staticMeshJobs.size(); ++i)
 			{
+				const StaticMeshJob& job = staticMeshJobs[i];
 				const MaterialInfo& materialInfo = job.Material->GetInfo();
 				const MeshObjectInfo& meshObjectInfo = job.StaticMeshObject->GetMeshObjectInfo();
 
@@ -238,20 +275,83 @@ namespace fq::graphics
 					continue;
 				}
 
-				job.StaticMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
+				if (staticMeshCache != job.StaticMesh)
+				{
+					staticMeshCache = job.StaticMesh;
+					job.StaticMesh->Bind(mDevice);
+				}
+
+				if (materialCache != job.Material)
+				{
+					materialCache = job.Material;
+					job.Material->Bind(mDevice);
+					bindingState(materialInfo);
+				}
 
 				switch (meshObjectInfo.ObjectType)
 				{
 				case MeshObjectInfo::EObjectType::Static:
 				{
 					mLightmapStaticMeshShaderProgram->Bind(mDevice);
+					mDevice->GetDeviceContext()->IASetInputLayout(mInstancedIL.Get());
+
+					std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers;
+					buffers.push_back(job.StaticMesh->GetSharedVertexBuffer());
+					buffers.push_back(mInstancingVertexBuffer);
+					D3D11VertexBuffer::Bind(mDevice, buffers);
+					job.StaticMesh->GetSharedIndexBuffer()->Bind(mDevice);
+
 					LightMapInfomation lightmapInfo;
 					lightmapInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
 					lightmapInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
 					lightmapInfo.bUseLightmap = mLightManager->GetLightMapTextureArray() != nullptr;
 					lightmapInfo.bUseDirection = mLightManager->GetLightMapDirectionTextureArray() != nullptr;
 					mLightMapInformationCB->Update(mDevice, lightmapInfo);
+
+					// static 타입은 언제나 데칼 적용
+					mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
+
+					std::vector<InstancingInfo> infos;
+					infos.reserve(32);
+
+					InstancingInfo instancingInfo;
+					instancingInfo.Transform = job.StaticMeshObject->GetTransform().Transpose();
+					instancingInfo.UVScaleOffset = job.StaticMeshObject->GetLightmapUVScaleOffset();
+					instancingInfo.UVIndex = job.StaticMeshObject->GetLightmapIndex();
+					infos.push_back(instancingInfo);
+
+					size_t count = 1;
+
+					for (size_t j = i + 1; j < staticMeshJobs.size(); ++j)
+					{
+						if (INSTANCING_BUFFER_SIZE <= count)
+						{
+							break;
+						}
+
+						const StaticMeshJob& nextJob = staticMeshJobs[j];
+
+						if (job.StaticMesh != nextJob.StaticMesh
+							|| job.Material != nextJob.Material
+							|| job.SubsetIndex != nextJob.SubsetIndex)
+						{
+							break;
+						}
+
+						instancingInfo.Transform = nextJob.StaticMeshObject->GetTransform().Transpose();
+						instancingInfo.UVScaleOffset = nextJob.StaticMeshObject->GetLightmapUVScaleOffset();
+						instancingInfo.UVIndex = nextJob.StaticMeshObject->GetLightmapIndex();
+						infos.push_back(instancingInfo);
+
+						++count;
+					}
+
+					mInstancingVertexBuffer->Update(mDevice, infos);
+					job.StaticMesh->DrawInstanced(mDevice, job.SubsetIndex, count);
+
+					i += count - 1;
 
 					break;
 				}
@@ -261,14 +361,39 @@ namespace fq::graphics
 					{
 						mVertexColorStaticMeshShaderProgram->Bind(mDevice);
 					}
-					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default
+						|| job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Static)
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}
-					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Static)
+
+					mLessEqualStencilReplaceState->Bind(mDevice, job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal ? 0 : 1);
+
+					if (job.NodeHierarchyInstnace != nullptr)
 					{
-						mStaticMeshShaderProgram->Bind(mDevice);
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
 					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					}
+
+					const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
+
+					if (uvAnimInstnace != nullptr)
+					{
+						const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
+						const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					}
+
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
+
+					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 
 					break;
 				}
@@ -276,46 +401,15 @@ namespace fq::graphics
 					assert(false);
 				}
 
-				bindingState(materialInfo);
-
-				if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
-				{
-					mLessEqualStencilReplaceState->Bind(mDevice, 0);
-				}
-				else
-				{
-					mLessEqualStencilReplaceState->Bind(mDevice, 1);
-				}
-
-				if (job.NodeHierarchyInstnace != nullptr)
-				{
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
-				}
-				else
-				{
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-				}
-
-				const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
-
-				if (uvAnimInstnace != nullptr)
-				{
-					const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
-					const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
-				}
-				else
-				{
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-				}
-
-				ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
-
-				job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 			}
 
 			mSkinnedMeshShaderProgram->Bind(mDevice);
 			std::vector<DirectX::SimpleMath::Matrix> identityTransform(BoneTransform::MAX_BOND_COUNT);
+			ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
+
+			std::shared_ptr<NodeHierarchyInstance> nodeHierarchyInstanceCache = nullptr;
+			std::shared_ptr<SkinnedMesh> skinnedMeshCache = nullptr;
+			materialCache = nullptr;
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
@@ -326,8 +420,17 @@ namespace fq::graphics
 					continue;
 				}
 
-				job.SkinnedMesh->Bind(mDevice);
-				job.Material->Bind(mDevice);
+				if (skinnedMeshCache != job.SkinnedMesh)
+				{
+					skinnedMeshCache = job.SkinnedMesh;
+					job.SkinnedMesh->Bind(mDevice);
+				}
+
+				if (materialCache != job.Material)
+				{
+					materialCache = job.Material;
+					job.Material->Bind(mDevice);
+				}
 
 				bindingState(materialInfo);
 
@@ -343,13 +446,18 @@ namespace fq::graphics
 				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
 				ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
-				if (job.NodeHierarchyInstnace != nullptr)
+				if (nodeHierarchyInstanceCache != job.NodeHierarchyInstnace)
 				{
-					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
-				}
-				else
-				{
-					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
+					nodeHierarchyInstanceCache = job.NodeHierarchyInstnace;
+
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
+					}
 				}
 
 				ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
