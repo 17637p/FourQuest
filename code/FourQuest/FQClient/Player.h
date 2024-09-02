@@ -77,6 +77,7 @@ namespace fq::client
 		/// </summary>
 		void AddSoulStack(float stack);
 
+		void SetHp(float hp);
 
 	private:
 		void processInput();

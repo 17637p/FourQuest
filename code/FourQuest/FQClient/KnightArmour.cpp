@@ -219,7 +219,6 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
 	auto& effectObj = *(instance.begin());
 	auto effectT = effectObj->GetComponent<game_module::Transform>();
-
 	effectT->SetParent(mTransform);
 
 	GetScene()->AddGameObject(effectObj);

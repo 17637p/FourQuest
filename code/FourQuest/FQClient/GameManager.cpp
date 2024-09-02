@@ -2,6 +2,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "ClientEvent.h"
+#include "Player.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -15,7 +16,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::GameManager::Clone(std::
 	{
 		// 기본 대입 연산자 호출한다.
 		*cloneGameMgr = *this;
-	} 
+	}
 
 	return cloneGameMgr;
 }
@@ -27,14 +28,14 @@ fq::client::GameManager::~GameManager()
 
 fq::client::GameManager::GameManager()
 	:mIsStop(false)
-//	:mRegisterPlayerHandler{}
+	//	:mRegisterPlayerHandler{}
 {}
 
 fq::client::GameManager::GameManager(const GameManager& other)
 	:mRegisterPlayerHandler{}
-	,mPlayers(other.mPlayers)
-	,mPauseUI(other.mPauseUI)
-	,mIsStop(false)
+	, mPlayers(other.mPlayers)
+	, mPauseUI(other.mPauseUI)
+	, mIsStop(false)
 {
 }
 
@@ -50,7 +51,7 @@ fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& o
 void fq::client::GameManager::OnUpdate(float dt)
 {
 	mPlayers.erase(std::remove_if(mPlayers.begin(), mPlayers.end()
-		, [](const std::shared_ptr<game_module::GameObject> object) 
+		, [](const std::shared_ptr<game_module::GameObject> object)
 		{
 			return object->IsDestroyed();
 		}), mPlayers.end());
@@ -88,6 +89,8 @@ void fq::client::GameManager::OnUpdate(float dt)
 			mIsStop = false;
 		}
 	}
+
+	testKey();
 }
 
 void fq::client::GameManager::OnStart()
@@ -102,5 +105,32 @@ void fq::client::GameManager::OnStart()
 void fq::client::GameManager::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mRegisterPlayerHandler);
+}
+
+void fq::client::GameManager::testKey()
+{
+	auto input = GetScene()->GetInputManager();
+
+	if (input->IsKeyState(EKey::F1, EKeyState::Tap))
+	{
+		for (auto& player : mPlayers)
+		{
+			auto playerComponent = player->GetComponent<Player>();
+			playerComponent->SetHp(100000.f);
+		}
+	}
+
+	if (input->IsKeyState(EKey::F2, EKeyState::Tap))
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene2", true});
+	}
+	if (input->IsKeyState(EKey::F3, EKeyState::Tap))
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene3", true });
+	}
+	if (input->IsKeyState(EKey::F4, EKeyState::Tap))
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });	
+	}
 }
 

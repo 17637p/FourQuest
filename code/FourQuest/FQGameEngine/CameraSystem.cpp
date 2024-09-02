@@ -40,6 +40,7 @@ void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 		[this](fq::event::OnLoadScene event)
 		{
 			SetMainGameCamera(FindMainCamera());
+		
 			if (!mGameMainCamera) SPDLOG_WARN("Can't Find MainCamera");
 
 			auto view = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::Camera>();

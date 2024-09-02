@@ -1104,6 +1104,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 	rayCastInfo.origin = event.origin;
 
 	auto result = mPhysicsEngine->RayCast(rayCastInfo);
+	
 	// Block Á¤º¸
 	if (result.hasBlock)
 	{

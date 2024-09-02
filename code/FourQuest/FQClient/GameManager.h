@@ -29,6 +29,8 @@ namespace fq::client
 		void OnStart() override;
 		void OnDestroy() override;
 
+		void testKey();
+
 	private:
 		EventHandler mRegisterPlayerHandler;
 

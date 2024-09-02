@@ -28,7 +28,6 @@ void fq::client::BossMonsterComboAttackState::OnStateUpdate(game_module::Animato
 			mAttackElapsedTime = mEmitAttackTime;
 		}
 	}
-
 }
 
 void fq::client::BossMonsterComboAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
