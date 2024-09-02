@@ -287,9 +287,6 @@
     <ClInclude Include="QuestManager.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
-    <ClInclude Include="QuestUI.h">
-      <Filter>include\05.UI</Filter>
-    </ClInclude>
     <ClInclude Include="BossMonster.h">
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
@@ -390,6 +387,12 @@
       <Filter>include\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="SoulSelectUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="RepauseUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -556,9 +559,6 @@
     <ClCompile Include="Quest.cpp">
       <Filter>src\07.Quest</Filter>
     </ClCompile>
-    <ClCompile Include="QuestUI.cpp">
-      <Filter>src\05.UI</Filter>
-    </ClCompile>
     <ClCompile Include="BossHP.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
@@ -641,6 +641,12 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="SoulSelectUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="RepauseUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>

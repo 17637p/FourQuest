@@ -112,7 +112,8 @@
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
-    <ClInclude Include="QuestUI.h" />
+    <ClInclude Include="RepauseUI.h" />
+    <ClInclude Include="SettingUI.h" />
     <ClInclude Include="ShiedlDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
@@ -200,7 +201,8 @@
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />
     <ClCompile Include="QuestManager.cpp" />
-    <ClCompile Include="QuestUI.cpp" />
+    <ClCompile Include="RepauseUI.cpp" />
+    <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShiedlDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />

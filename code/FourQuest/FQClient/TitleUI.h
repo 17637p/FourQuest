@@ -21,13 +21,22 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-	private:
-		int mSelectButtonID; // 0: 계속하기, 1: 환경설정, 2: 미션중단, 3: 게임 종료
+		void SetScaleScreen();
+		void SetSelectBoxPosition(float dt);
+		void ClickButton();
 
+	private:
+		game_module::ScreenManager* mScreenManager;
+		
+		int mSelectButtonID; // 0: 게임 시작, 1: 설정, 2: 제작진, 3: 종료
+		float mUIAnimSpeed;
 		game_module::GameObject* mSelectBackground;
 		std::vector<game_module::GameObject*> mButtons;
 
-		game_module::ScreenManager* mScreenManager;
+		std::string mNextSceneName;
+
+	private:
+		friend void RegisterMetaData();
 	};
 }
 

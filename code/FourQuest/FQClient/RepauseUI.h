@@ -8,18 +8,17 @@ namespace fq::game_module
 
 namespace fq::client
 {
-	class SoulSelectUI : public game_module::Component
+	class RepauseUI : public game_module::Component
 	{
 	public:
-		SoulSelectUI();
-		~SoulSelectUI();
+		RepauseUI();
+		~RepauseUI();
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
 
 	private:
 		void SetScaleScreen();
-		void SetSpawnButton(int index, bool isSpawned);
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -28,4 +27,3 @@ namespace fq::client
 		game_module::ScreenManager* mScreenManager;
 	};
 }
-

@@ -30,8 +30,8 @@ void fq::client::SoulSelectUI::OnStart()
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
 
-	SetSpawnButton(0, true);
-	for (int i = 1; i < 4; i++)
+	// 전부 OFF
+	for (int i = 0; i < 4; i++)
 	{
 		SetSpawnButton(i, false);
 	}
@@ -39,15 +39,25 @@ void fq::client::SoulSelectUI::OnStart()
 
 void fq::client::SoulSelectUI::OnUpdate(float dt)
 {
-	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+	SetScaleScreen();
 
-	// Scale 자동 조정 
-	UINT screenWidth = mScreenManager->GetFixScreenWidth();
-	UINT screenHeight = mScreenManager->GetFixScreenHeight();
-	float scaleX = screenWidth / (float)1920;
-	float scaleY = screenHeight / (float)1080;
+	// Test 선택 버튼 이동
+	auto input = GetScene()->GetInputManager();
+	if (input->GetKeyState(EKey::Z) == EKeyState::Tap)
 	{
-		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+		SetSpawnButton(0, true);
+	}
+	if (input->GetKeyState(EKey::X) == EKeyState::Tap)
+	{
+		SetSpawnButton(1, true);
+	}
+	if (input->GetKeyState(EKey::C) == EKeyState::Tap)
+	{
+		SetSpawnButton(2, true);
+	}
+	if (input->GetKeyState(EKey::V) == EKeyState::Tap)
+	{
+		SetSpawnButton(3, true);
 	}
 }
 
@@ -66,36 +76,31 @@ void fq::client::SoulSelectUI::SetSpawnButton(int index, bool isSpawned)
 	auto soulBox = children[2];
 	auto spawnButton = children[3];
 
-	if (isSpawned)
-	{
-		spawnButton->GetComponent<game_module::ImageUI>()->SetIsRender(0, false);
+	spawnButton->GetComponent<game_module::ImageUI>()->SetIsRender(0, !isSpawned);
 
-		children[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
-		soulBox->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
-		auto soulBoxChildren = soulBox->GetChildren();
-		for (int i = 0; i < 4; i++)
-		{
-			auto textUI = soulBoxChildren[i]->GetComponent<game_module::TextUI>();
-			auto textInfo = textUI->GetTextInfo();
-			textInfo.IsRender = true;
-			textUI->SetTextInfo(textInfo);
-		}
-		soulBoxChildren[4]->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
+	children[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+	soulBox->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+	auto soulBoxChildren = soulBox->GetChildren();
+	for (int i = 0; i < 4; i++)
+	{
+		auto textUI = soulBoxChildren[i]->GetComponent<game_module::TextUI>();
+		auto textInfo = textUI->GetTextInfo();
+		textInfo.IsRender = isSpawned;
+		textUI->SetTextInfo(textInfo);
 	}
-	else
-	{
-		spawnButton->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
+	soulBoxChildren[4]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+}
 
-		children[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, false);
-		soulBox->GetComponent<game_module::ImageUI>()->SetIsRender(0, false);
-		auto soulBoxChildren = soulBox->GetChildren();
-		for (int i = 0; i < 4; i++)
-		{
-			auto textUI = soulBoxChildren[i]->GetComponent<game_module::TextUI>();
-			auto textInfo = textUI->GetTextInfo();
-			textInfo.IsRender = false;
-			textUI->SetTextInfo(textInfo);
-		}
-		soulBoxChildren[4]->GetComponent<game_module::ImageUI>()->SetIsRender(0, false);
+void fq::client::SoulSelectUI::SetScaleScreen()
+{
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	// Scale 자동 조정 
+	UINT screenWidth = mScreenManager->GetFixScreenWidth();
+	UINT screenHeight = mScreenManager->GetFixScreenHeight();
+	float scaleX = screenWidth / (float)1920;
+	float scaleY = screenHeight / (float)1080;
+	{
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
 }
