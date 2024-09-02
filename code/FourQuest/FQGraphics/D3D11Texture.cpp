@@ -39,19 +39,22 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 		spdlog::warn("[D3D11Texture] \"{}\" not exist", std::filesystem::path(texturePath).string());
 	}
 
+	using namespace DirectX;
+
+	TexMetadata md;
+	ScratchImage scratchImage;
+
 	if (fileExtension == L"dds")
 	{
-		HR(DirectX::CreateDDSTextureFromFile(d3d11Device->GetDevice().Get(),
-			d3d11Device->GetDeviceContext().Get(),
-			texturePath.c_str(),
-			nullptr, mSRV.GetAddressOf()));
+		HR(LoadFromDDSFile(texturePath.c_str(), DDS_FLAGS_NONE, &md, scratchImage));
+		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
-    		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
-			d3d11Device->GetDeviceContext().Get(),
-			texturePath.c_str(),
-			nullptr, mSRV.GetAddressOf()));
+		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
+		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else
 	{
@@ -315,25 +318,22 @@ fq::graphics::D3D11CubeTexture::D3D11CubeTexture(const std::shared_ptr<D3D11Devi
 		spdlog::warn("[D3D11Texture] \"{}\" not exist", std::filesystem::path(texturePath).string());
 	}
 
+	using namespace DirectX;
+
+	TexMetadata md;
+	ScratchImage scratchImage;
+
 	if (fileExtension == L"dds")
 	{
-		HR(DirectX::CreateDDSTextureFromFile(d3d11Device->GetDevice().Get(),
-			d3d11Device->GetDeviceContext().Get(),
-			texturePath.c_str(),
-			(ID3D11Resource**)mTexture.GetAddressOf(),
-			mSRV.GetAddressOf()));
+		HR(LoadFromDDSFile(texturePath.c_str(), DDS_FLAGS_NONE, &md, scratchImage));
+		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
-		HR(DirectX::CreateWICTextureFromFile(d3d11Device->GetDevice().Get(),
-			d3d11Device->GetDeviceContext().Get(),
-			texturePath.c_str(),
-			(ID3D11Resource**)mTexture.GetAddressOf(),
-			mSRV.GetAddressOf()));
-	}
-	else if (fileExtension == L"exr")
-	{
-
+		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
+		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else
 	{

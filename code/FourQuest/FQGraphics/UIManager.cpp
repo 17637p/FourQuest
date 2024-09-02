@@ -137,7 +137,6 @@ void fq::graphics::UIManager::Render()
 
 void fq::graphics::UIManager::Finalize()
 {
-
 }
 
 void fq::graphics::UIManager::AddFont(const std::wstring& path)
@@ -366,7 +365,8 @@ void fq::graphics::UIManager::drawAllText()
 
 			size_t pos = text.find(toReplace);
 
-			while (pos != std::wstring::npos) {
+			while (pos != std::wstring::npos) 
+			{
 				text.replace(pos, toReplace.length(), replaceWith);
 				pos = text.find(toReplace, pos + replaceWith.length());
 			}
