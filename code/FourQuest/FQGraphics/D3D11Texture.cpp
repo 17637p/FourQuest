@@ -52,7 +52,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
-		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
+ 		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
 		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
 		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}

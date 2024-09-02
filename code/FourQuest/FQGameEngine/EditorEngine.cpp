@@ -42,6 +42,9 @@ fq::game_engine::EditorEngine::~EditorEngine()
 
 void fq::game_engine::EditorEngine::Initialize()
 {
+	// COM
+	HRESULT hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();

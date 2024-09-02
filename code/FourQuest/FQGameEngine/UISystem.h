@@ -69,10 +69,8 @@ namespace fq::game_engine
 
 		void LoadImageUI(game_module::GameObject* object);
 		void UnloadImageUI(game_module::GameObject* object);
-	private:
-
-		void loadTextUI(game_module::GameObject* object);
-		void unloadTextUI(game_module::GameObject* object);
+		void LoadTextUI(game_module::GameObject* object);
+		void UnloadTextUI(game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;

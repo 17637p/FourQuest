@@ -3,6 +3,7 @@
 #include "../FQCommon/FQPath.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQClient/LoadingUI.h"
 #include "GameProcess.h"
@@ -44,6 +45,7 @@ void fq::game_engine::LoadingSystem::loadUI()
 	{
 		object->SetScene(scene);
 		mGameProcess->mUISystem->LoadImageUI(object.get());
+		mGameProcess->mUISystem->LoadTextUI(object.get());
 	}
 	mLoadingUIObject[0]->OnStart();
 
@@ -105,6 +107,11 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 			{
 				imageObject->SetIsRender(isRender);
 			}
+		}
+
+		if (object->HasComponent<game_module::TextUI>())
+		{
+			auto textUI = object->GetComponent<game_module::TextUI>();
 		}
 	}
 }

@@ -45,11 +45,14 @@ fq::game_engine::GameEngine::~GameEngine()
 
 void fq::game_engine::GameEngine::Initialize()
 {
+
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
 
+	// Com객체 초기화 
+	HRESULT hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	// 쓰레드 풀 생성
 	fq::game_module::ThreadPool::Initialize();
 
