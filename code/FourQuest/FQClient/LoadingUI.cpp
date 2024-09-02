@@ -3,6 +3,7 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
+#include "../FQGameModule/ImageUI.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::LoadingUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -25,6 +26,13 @@ void fq::client::LoadingUI::OnStart()
 {
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
+
+	// 초기값 세팅
+	auto Bars = GetGameObject()->GetChildren()[0]->GetChildren();
+	mProgressBar = Bars[0]->GetComponent<game_module::ImageUI>();
+	mProgressBarMaxWidth = mProgressBar->GetUIInfomation(0).Width;
+
+	mProgressSoul = Bars[1]->GetComponent<game_module::Transform>();
 }
 
 void fq::client::LoadingUI::OnUpdate(float dt)
@@ -39,10 +47,22 @@ void fq::client::LoadingUI::OnUpdate(float dt)
 	{
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
+
+	if (GetAsyncKeyState('O') & 0x8000)
+	{
+		SetProgressBar(1.0f);
+	}
+	if (GetAsyncKeyState('P') & 0x8000)
+	{
+		SetProgressBar(0.5f);
+	}
 }
 
 fq::client::LoadingUI::LoadingUI()
-	:mScreenManager(nullptr)
+	:mScreenManager(nullptr),
+	mProgressBar(nullptr),
+	mProgressSoul(nullptr),
+	mProgressBarMaxWidth(0)
 {
 
 }
@@ -50,4 +70,18 @@ fq::client::LoadingUI::LoadingUI()
 fq::client::LoadingUI::~LoadingUI()
 {
 
+}
+
+void fq::client::LoadingUI::SetProgressBar(float progress)
+{
+	// Bar Percent Setting
+	auto uiInfo = mProgressBar->GetUIInfomation(0);
+
+	uiInfo.Width = mProgressBarMaxWidth * progress;
+	uiInfo.XRatio = progress;
+
+	mProgressBar->SetUIInfomation(0, uiInfo);
+
+	// Soul Position Setting
+	mProgressSoul->SetLocalPosition({ uiInfo.Width - 50 , -90, 0});
 }
