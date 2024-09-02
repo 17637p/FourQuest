@@ -875,10 +875,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
 
+	entt::meta<LoadingText>()
+		.type("LoadingText"_hs)
+		.prop(fq::reflect::prop::POD)
+		.prop(fq::reflect::prop::Name, "LoadingText")
+		.data<&LoadingText::Text>("Text"_hs)
+		.prop(fq::reflect::prop::Name, "Text");
+
 	entt::meta<LoadingUI>()
 		.type("LoadingUI"_hs)
 		.prop(fq::reflect::prop::Name, "LoadingUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&LoadingUI::mTexts>("Texts"_hs)
+		.prop(fq::reflect::prop::Name, "Texts")
 		.base<fq::game_module::Component>();
 
 	entt::meta<TitleUI>()
@@ -890,6 +899,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
 		.data<&TitleUI::mNextSceneName>("NextSceneName"_hs)
 		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.data<&TitleUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SoulSelectUI>()

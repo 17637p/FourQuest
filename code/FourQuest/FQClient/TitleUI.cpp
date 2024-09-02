@@ -6,6 +6,10 @@
 #include "../FQGameModule/SceneManager.h"
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/TimeManager.h"
+#include "../FQGameModule/PrefabManager.h"
+
+#include "ClientEvent.h"
 
 std::shared_ptr<fq::game_module::Component> fq::client::TitleUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -29,7 +33,22 @@ fq::client::TitleUI::TitleUI()
 	mSelectBackground(nullptr),
 	mButtons(),
 	mScreenManager(nullptr),
-	mUIAnimSpeed(1000)
+	mUIAnimSpeed(1000),
+	mIsActive(true),
+	mNextSceneName(""),
+	mSettingUIPrefab()
+{
+}
+
+fq::client::TitleUI::TitleUI(const TitleUI& other)
+	:mSelectButtonID(other.mSelectButtonID),
+	mSelectBackground(other.mSelectBackground),
+	mButtons(other.mButtons),
+	mScreenManager(other.mScreenManager),
+	mUIAnimSpeed(other.mUIAnimSpeed),
+	mIsActive(other.mIsActive),
+	mNextSceneName(other.mNextSceneName),
+	mSettingUIPrefab(other.mSettingUIPrefab)
 {
 }
 
@@ -61,28 +80,31 @@ void fq::client::TitleUI::OnStart()
 void fq::client::TitleUI::OnUpdate(float dt)
 {
 	SetScaleScreen();
-	SetSelectBoxPosition(dt);
+	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
 
 	// Test 선택 버튼 이동
-	auto input = GetScene()->GetInputManager();
-	if (input->GetKeyState(EKey::S) == EKeyState::Tap)
+	if (mIsActive)
 	{
-		if (mSelectButtonID < 3)
+		auto input = GetScene()->GetInputManager();
+		if (input->GetKeyState(EKey::S) == EKeyState::Tap)
 		{
-			mSelectButtonID++;
+			if (mSelectButtonID < 3)
+			{
+				mSelectButtonID++;
+			}
 		}
-	}
-	if (input->GetKeyState(EKey::W) == EKeyState::Tap)
-	{
-		if (mSelectButtonID > 0)
+		if (input->GetKeyState(EKey::W) == EKeyState::Tap)
 		{
-			mSelectButtonID--;
+			if (mSelectButtonID > 0)
+			{
+				mSelectButtonID--;
+			}
 		}
-	}
 
-	if (input->GetKeyState(EKey::F) == EKeyState::Tap)
-	{
-		ClickButton();
+		if (input->GetKeyState(EKey::F) == EKeyState::Tap)
+		{
+			ClickButton();
+		}
 	}
 }
 
@@ -135,6 +157,8 @@ void fq::client::TitleUI::ClickButton()
 			break;
 		case 1:
 			// 설정
+			mIsActive = false;
+			SpawnUIObject(mSettingUIPrefab);
 			break;
 		case 2:
 			// 제작진
@@ -147,3 +171,39 @@ void fq::client::TitleUI::ClickButton()
 			break;
 	}
 }
+
+void fq::client::TitleUI::EventProcessOffPopupSetting()
+{
+	mOffPopupSettingHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupSetting>
+		(
+			[this]()
+			{
+				mIsActive = true;
+			}
+		);
+}
+
+fq::client::TitleUI& fq::client::TitleUI::operator=(const TitleUI& other)
+{
+	mSelectButtonID = other.mSelectButtonID;
+	mSelectBackground = other.mSelectBackground;
+	mButtons = other.mButtons;
+	mScreenManager = other.mScreenManager;
+	mUIAnimSpeed = other.mUIAnimSpeed;
+	mIsActive = other.mIsActive;
+	mNextSceneName = other.mNextSceneName;
+	mSettingUIPrefab = other.mSettingUIPrefab;
+
+	return *this;
+}
+
+void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
+{
+	std::shared_ptr<game_module::GameObject> newObject;
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(prefab);
+	newObject = *(instance.begin());
+
+	GetScene()->AddGameObject(newObject);
+}
+
