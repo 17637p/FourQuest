@@ -4,6 +4,7 @@
 #include "../FQGameModule/CapsuleCollider.h"
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/MaterialAnimator.h"
 
 #include "ClientEvent.h"
 #include "../FQGameModule/EventManager.h"
@@ -52,8 +53,24 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 
 	auto gameObject = animator.GetGameObject();
 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MeleeMonsterDead", false , 0 });
 	gameObject->RemoveComponent<game_module::RigidBody>();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::NavigationAgent>();
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , 0 });
+
+	// BurnEffect
+	for (auto child : gameObject->GetChildren())
+	{
+		if (child->HasComponent<game_module::MaterialAnimator>())
+		{
+			auto matAnimator = child->GetComponent<game_module::MaterialAnimator>();
+			auto info = matAnimator->GetDissolveAnimatorInfo();
+			info.bIsUpdate = true;
+			info.bIsUsed = true;
+			info.Duration = state.GetDuration();
+			matAnimator->SetDissolveAnimatorInfo(info);
+		}
+	}
 }
+

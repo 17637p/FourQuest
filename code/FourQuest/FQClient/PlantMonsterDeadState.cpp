@@ -2,6 +2,8 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/MaterialAnimator.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 
 #include "ClientEvent.h"
 #include "../FQGameModule/EventManager.h"
@@ -32,4 +34,27 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 {
 	auto gameObject = animator.GetGameObject();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
+
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , 3 });
+
+	// BurnEffect
+	for (auto child : gameObject->GetChildren())
+	{
+		if (child->HasComponent<game_module::MaterialAnimator>())
+		{
+			auto matAnimator = child->GetComponent<game_module::MaterialAnimator>();
+			auto info = matAnimator->GetDissolveAnimatorInfo();
+			info.bIsUpdate = true;
+			info.bIsUsed = true;
+			matAnimator->SetDissolveAnimatorInfo(info);
+		}
+
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		{
+			auto skinnedMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+			auto info = skinnedMesh->GetMeshObjectInfomation();
+			info.bUseShadow = false;
+			skinnedMesh->SetMeshObjectInfomation(info);
+		}
+	}
 }

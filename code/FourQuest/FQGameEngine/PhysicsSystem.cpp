@@ -476,7 +476,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		auto animatorMesh = object->GetComponent<fq::game_module::Animator>();
 
-
 		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
 			return;
 
@@ -903,6 +902,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 				data.transform._43 = pos.z + offset.z;
 			}
 
+			// Tag가 변경된 경우
+			auto capsuleInfo = capsule->GetCapsuleInfomation();
+			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				capsuleInfo.colliderInfo.layerNumber = currentLayer;
+				capsule->SetCapsuleInfomation(capsuleInfo);
+			}
+
 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
@@ -1094,6 +1104,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 	rayCastInfo.origin = event.origin;
 
 	auto result = mPhysicsEngine->RayCast(rayCastInfo);
+	
 	// Block 정보
 	if (result.hasBlock)
 	{

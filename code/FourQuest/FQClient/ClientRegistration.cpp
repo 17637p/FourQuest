@@ -85,6 +85,9 @@
 #include "PlayerUIManager.h"
 #include "BossHP.h"
 #include "PauseUI.h"
+#include "LoadingUI.h"
+#include "TitleUI.h"
+#include "SoulSelectUI.h"
 
 #include "CameraMoving.h"
 
@@ -101,6 +104,10 @@
 // Box
 #include "Box.h"
 
+// etc
+#include "BGM.h"
+#include "Portal.h"
+
 void fq::client::RegisterMetaData()
 {
 	using namespace entt::literals;
@@ -114,6 +121,24 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "GameManager")
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
+		.base<game_module::Component>();
+	
+	//////////////////////////////////////////////////////////////////////////
+	//                             ETC										//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Portal>()
+		.type("Portal"_hs)
+		.prop(reflect::prop::Name, "Portal")
+		.data<&Portal::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.base<game_module::Component>();
+		
+	entt::meta<BGM>()
+		.type("BGM"_hs)
+		.prop(reflect::prop::Name, "BGM")
+		.data<&BGM::mSoundKey>("SoundKey"_hs)
+		.prop(fq::reflect::prop::Name, "SoundKey")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -254,6 +279,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Soul::mSwordColor>("SwordColor"_hs)
+		.prop(reflect::prop::Name, "SwordColor")
+		.data<&Soul::mStaffColor>("StaffColor"_hs)
+		.prop(reflect::prop::Name, "StaffColor")
+		.data<&Soul::mAxeColor>("AxeColor"_hs)
+		.prop(reflect::prop::Name, "AxeColor")
+		.data<&Soul::mBowColor>("BowColor"_hs)
+		.prop(reflect::prop::Name, "BowColor")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -833,6 +866,24 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
+	entt::meta<LoadingUI>()
+		.type("LoadingUI"_hs)
+		.prop(fq::reflect::prop::Name, "LoadingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<TitleUI>()
+		.type("TitleUI"_hs)
+		.prop(fq::reflect::prop::Name, "TitleUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SoulSelectUI>()
+		.type("SoulSelectUI"_hs)
+		.prop(fq::reflect::prop::Name, "SoulSelectUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             Monster Type								//
 	//////////////////////////////////////////////////////////////////////////
@@ -1017,9 +1068,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulBowAttackAngle")
 		.data<&PlayerSoulVariable::SoulBowAttackOffset>("SoulBowAttackOffset"_hs)
 		.prop(fq::reflect::prop::Name, "SoulBowAttackOffset")
+		.data<&PlayerSoulVariable::SoulBowAttackDuration>("SoulBowAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackDuration")
 
 		.data<&PlayerSoulVariable::SoulAxeAttackTick>("SoulAxeAttackTick"_hs)
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
+		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()
@@ -1071,5 +1126,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::DragDrop, ".prefab")
 		.prop(fq::reflect::prop::RelativePath)
 		.prop(reflect::prop::Comment, u8"부서진 박스 프리펫 경로를 지정해주세요.")
+		.data<&Box::SetDeadTime, &Box::GetDeadTime>("DeadTime"_hs)
+		.prop(reflect::prop::Name, "DeadTime")
+		.prop(reflect::prop::Comment, u8"깨지고 난 뒤 사라질 시간을 지정해주세요.")
 		.base<game_module::Component>();
 }

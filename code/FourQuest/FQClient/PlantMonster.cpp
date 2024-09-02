@@ -89,9 +89,10 @@ void fq::client::PlantMonster::EmitAttack()
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
-	// TODO :  원거리 공격사운드 추가 
-
 	GetScene()->AddGameObject(attackObj);
+
+	// 원거리 공격사운드  
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , 3 });
 }
 
 void fq::client::PlantMonster::OnUpdate(float dt)
@@ -123,6 +124,9 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 
 			// 타겟을 자신을 때린 사람으로 바꿉니다 
 			SetTarget(playerAttack->GetAttacker());
+
+			// 피격 사운드 재생
+			playerAttack->PlayHitSound();
 
 			// PlantMonster 사망 처리 
 			if (mHp <= 0.f)

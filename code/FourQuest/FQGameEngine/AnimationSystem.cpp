@@ -54,7 +54,7 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 	mScene->ViewComponents<Animator>(
 		[dt](GameObject& object, Animator& animator)
 		{
-			if (animator.GetStopAnimation())
+			if (animator.IsStopAnimation())
 			{
 				return;
 			}

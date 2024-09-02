@@ -19,7 +19,7 @@ namespace fq::game_module
 		Dash = 11,
 		Spawner = 12,
 		Goddess = 13,
-		Tag14 = 14,
+		Box = 14,
 		Tag15 = 15,
 		End =16,
 	};

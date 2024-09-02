@@ -87,15 +87,15 @@ namespace fq::graphics
 			float unused[1]; // 아마도 함수 타입 들어갈듯 일단은 선형 함수!
 		};
 
-		struct SceneInfoInfo
+		struct SSRInfo
 		{
 			DirectX::SimpleMath::Matrix viewMat;
 			DirectX::SimpleMath::Matrix projMat;
 			DirectX::SimpleMath::Matrix invProjMat;
 			int viewSizeX;
 			int viewSizeY;
-			int t1;
-			int t2;
+			float maxIteration;
+			float maxThickness;
 		};
 
 	private:
@@ -141,9 +141,9 @@ namespace fq::graphics
 
 		// SSR
 		std::shared_ptr<class D3D11UnorderedAccessView> mSSRUAV;
-		std::shared_ptr<class D3D11ShaderResourceView> mColorSSRSRV;
+		std::shared_ptr<class D3D11ShaderResourceView> mSSRSRV;
 		std::shared_ptr<class D3D11ShaderResourceView> mNormalSSRSRV;
-		std::shared_ptr<D3D11ConstantBuffer<SceneInfoInfo>> mSSRCB;
+		std::shared_ptr<D3D11ConstantBuffer<SSRInfo>> mSSRCB;
 
 		unsigned int mDownScaleBufferDenominators[DOWN_SCALE_BUFFER_COUNT] = { 4, 8, 16, 32 };
 		unsigned int mDownScaleSRVIndex = 0;

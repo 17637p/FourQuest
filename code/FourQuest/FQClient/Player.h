@@ -72,6 +72,13 @@ namespace fq::client
 		/// </summary>
 		void EquipArmourWeapone();
 
+		/// <summary>
+		/// 소울 스택을 더합니다 
+		/// </summary>
+		void AddSoulStack(float stack);
+
+		void SetHp(float hp);
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);
@@ -111,10 +118,7 @@ namespace fq::client
 		game_module::PrefabResource mAxeSoulAttack; // 도끼 영혼 공격 
 		game_module::PrefabResource mBowSoulAttack; // 활 영혼 공격 	
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
-
-		// 도끼 영혼 공격 관련
-		float mAxeAttackTick;
-
+		
 		bool mbOnShieldBlock;
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;

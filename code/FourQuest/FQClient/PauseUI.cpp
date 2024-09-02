@@ -49,7 +49,7 @@ void fq::client::PauseUI::OnUpdate(float dt)
 		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
 	}
 
-	// 선택UI의 자식으로 영혼 넣고 위치 옮기기 
+	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
 	DirectX::SimpleMath::Vector3 selectPosition = selectTransform->GetLocalPosition();
 

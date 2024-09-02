@@ -6,18 +6,17 @@ RWTexture2D<float4> tex_output : register(u0);
 
 SamplerState pointSampler : register(s0);
 
-#define MAX_ITERATION 160
-#define MAX_THICKNESS 0.00001
+//#define MAX_ITERATION 160
+//#define MAX_THICKNESS 0.00001
 
 // Scene 정보들 
-struct SceneInfo
+struct SSRInfo
 {
     float4x4 ViewMat;
     float4x4 ProjMat;
     float4x4 InvProjMat;
     uint2 ViewSize; // 화면 해상도
 };
-
 
 struct ComputePosAndReflectionOutput
 {
@@ -34,22 +33,24 @@ struct Inter
 
 cbuffer cbSceneInfo
 {
-    SceneInfo sceneInfo;
+    SSRInfo ssrInfo;
+    float max_iteration; // 160
+    float max_thickness; // 0.00001
 };
 
 // Compute the position, the reflection direction, maxTraceDistance of the sample in texture space.
 // 반사 방향 계산, 위치 계산, 텍스트 공간에서 샘플의 최대추적거리 계산
 ComputePosAndReflectionOutput ComputePosAndReflection(
                                 uint2 tid,
-                                const SceneInfo sceneInfo,
+                                const SSRInfo ssrInfo,
                                 float3 vSampleNormalInVS,
                                 ComputePosAndReflectionOutput output)
 {
     float sampleDepth = tex_depth[tid].r;
-    float4 samplePosInCS =  float4(((float2(tid)+0.5)/sceneInfo.ViewSize)*2-1.0f, sampleDepth, 1);
+    float4 samplePosInCS =  float4(((float2(tid)+0.5)/ssrInfo.ViewSize)*2-1.0f, sampleDepth, 1);
     samplePosInCS.y *= -1;
 
-    float4 samplePosInVS = mul(samplePosInCS, sceneInfo.InvProjMat);
+    float4 samplePosInVS = mul(samplePosInCS, ssrInfo.InvProjMat);
     samplePosInVS /= samplePosInVS.w;
 
     float3 vCamToSampleInVS = normalize(samplePosInVS.xyz);
@@ -57,7 +58,7 @@ ComputePosAndReflectionOutput ComputePosAndReflection(
 
     float4 vReflectionEndPosInVS = samplePosInVS + vReflectionInVS;
     vReflectionEndPosInVS /= (vReflectionEndPosInVS.z < 0 ? vReflectionEndPosInVS.z : 1);
-    float4 vReflectionEndPosInCS = mul(float4(vReflectionEndPosInVS.xyz, 1), sceneInfo.ProjMat);
+    float4 vReflectionEndPosInCS = mul(float4(vReflectionEndPosInVS.xyz, 1), ssrInfo.ProjMat);
     vReflectionEndPosInCS /= vReflectionEndPosInCS.w;
     float3 vReflectionDir = normalize((vReflectionEndPosInCS - samplePosInCS).xyz);
 
@@ -85,8 +86,8 @@ Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
     float3 vReflectionEndPosInTS = posAndReflection.outSamplePosInTS + posAndReflection.outReflDirInTS * posAndReflection.outMaxDistance;
     
     float3 dp = vReflectionEndPosInTS.xyz - posAndReflection.outSamplePosInTS.xyz;
-    int2 sampleScreenPos = int2(posAndReflection.outSamplePosInTS.xy * sceneInfo.ViewSize.xy);
-    int2 endPosScreenPos = int2(vReflectionEndPosInTS.xy * sceneInfo.ViewSize.xy);
+    int2 sampleScreenPos = int2(posAndReflection.outSamplePosInTS.xy * ssrInfo.ViewSize.xy);
+    int2 endPosScreenPos = int2(vReflectionEndPosInTS.xy * ssrInfo.ViewSize.xy);
     int2 dp2 = endPosScreenPos - sampleScreenPos;
     const int max_dist = max(abs(dp2.x), abs(dp2.y));
     dp /= max_dist;
@@ -96,7 +97,7 @@ Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
 	float4 rayStartPos = rayPosInTS;
 
     int hitIndex = -1;
-    for(int i = 0;i<=max_dist && i<MAX_ITERATION;i += 4)
+    for(int i = 0;i<=max_dist && i<max_iteration;i += 4)
     {
         float depth0 = 0;
         float depth1 = 0;
@@ -116,19 +117,19 @@ Inter FindIntersection_Linear(ComputePosAndReflectionOutput posAndReflection)
         {
             // MAX_THICKNESS 보다 크다는 것은 교차가 아닌 물체 뒤로 지나가는 것이라고 가정
             float thickness = rayPosInTS3.z - depth3;
-            hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+3) : hitIndex;
+            hitIndex = (thickness>=0 && thickness < max_thickness) ? (i+3) : hitIndex;
         }
         {
             float thickness = rayPosInTS2.z - depth2;
-            hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+2) : hitIndex;
+            hitIndex = (thickness>=0 && thickness < max_thickness) ? (i+2) : hitIndex;
         }
         {
             float thickness = rayPosInTS1.z - depth1;
-            hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+1) : hitIndex;
+            hitIndex = (thickness>=0 && thickness < max_thickness) ? (i+1) : hitIndex;
         }
         {
             float thickness = rayPosInTS0.z - depth0;
-            hitIndex = (thickness>=0 && thickness < MAX_THICKNESS) ? (i+0) : hitIndex;
+            hitIndex = (thickness>=0 && thickness < max_thickness) ? (i+0) : hitIndex;
         }
         
         if(hitIndex != -1) break;
@@ -166,7 +167,7 @@ void main(int3 tid : SV_GroupThreadID
     float4 color = tex_scene_color[int2(x, y)];
     float4 normalInWS = float4(normalize(NormalAndReflectionMask.xyz), 0);
     
-    float3 normal = mul(normalInWS, sceneInfo.ViewMat).xyz;
+    float3 normal = mul(normalInWS, ssrInfo.ViewMat).xyz;
     float reflection_mask = NormalAndReflectionMask.w;
 
     float4 skyColor = float4(0,0,0,1);
@@ -182,7 +183,7 @@ void main(int3 tid : SV_GroupThreadID
         value.outMaxDistance = 0;
 
         // Compute the position, the reflection vector, maxTraceDistance of this sample in texture space.
-        value = ComputePosAndReflection(uint2(x, y), sceneInfo, normal, value);
+        value = ComputePosAndReflection(uint2(x, y), ssrInfo, normal, value);
 
         // Find intersection in texture space by tracing the reflection ray
         //float3 intersection = 0;

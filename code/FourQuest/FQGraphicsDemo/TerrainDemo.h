@@ -14,6 +14,7 @@ namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class ITerrainMeshObject; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class IProbeObject; }
+namespace fq::graphics { class ITextObject; }
 
 class TerrainDemo : public BaseWindow<TerrainDemo>
 {
@@ -72,5 +73,8 @@ private:
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::IProbeObject*> mProbeObjects;
 	std::vector<DirectX::SimpleMath::Vector3> lightProbePositions;
+	fq::graphics::ITextObject* mTextObject1;
+	float thickness = 0.000001f;
+	bool isSSR = true;
 };
 

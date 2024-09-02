@@ -141,9 +141,10 @@ void fq::game_engine::EditorEngine::Process()
 				mGameProcess->mWindowSystem->OnResize();
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
-				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
-				mGameProcess->mGraphics->SetWindowSize(width, hegiht);
-				mGameProcess->mEventManager->FireEvent<fq::event::SetScreenSize>({ width,hegiht });
+				unsigned short height = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
+				
+				mGameProcess->mGraphics->SetWindowSize(width, height);
+				mGameProcess->mEventManager->FireEvent<fq::event::SetScreenSize>({ width,height });
 			}
 			auto mode = mEditor->mGamePlayWindow->GetMode();
 

@@ -290,6 +290,9 @@
     <ClInclude Include="NavigationMeshLoader.h">
       <Filter>include\10.PathFinding</Filter>
     </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="Decal.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
@@ -359,11 +362,8 @@
     <ClInclude Include="SoundTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
-    <ClInclude Include="Socket.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticMeshInstancingRenderer.h">
-      <Filter>include</Filter>
+    <ClInclude Include="CameraShakeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -586,8 +586,8 @@
     <ClCompile Include="SoundTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
-    <ClCompile Include="StaticMeshInstancingRenderer.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="CameraShakeTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

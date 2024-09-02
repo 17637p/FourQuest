@@ -61,6 +61,12 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = mSwordKnockBackPower;
+
+	auto name = mAnimator->GetController().GetCurrentStateName();
+
+	bool isSwing1 = name == "Swing1";
+
+	attackInfo.hitSound = isSwing1 ? "K_Swing1_Hit" : "K_Swing2_Hit";
 	attackComponent->Set(attackInfo);
 
 	// 공격 트랜스폼 설정
@@ -71,7 +77,7 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	attackT->GenerateWorld(pos, rotation, attackT->GetWorldScale());
 
 	// Sword 소리
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "SwordAttack", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ isSwing1 ? "K_Swing1" : "K_Swing2", false , 3});
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -100,10 +106,11 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = mShieldKnockPower;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
+	attackInfo.hitSound = "K_Swing3_Hit";
 	attackComponent->Set(attackInfo);
 
 	// ShieldAttack 소리
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "ShieldAttack", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Swing3", false , 0 });
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -129,7 +136,8 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.knocBackPower = 20.f;
 	attackComponent->Set(attackInfo);
 
-	// TODO:: Dash 소리 추가
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , 0 });
+
 	GetScene()->AddGameObject(attackObj);
 }
 
@@ -211,7 +219,6 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::KnightArmour::EmitSword
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
 	auto& effectObj = *(instance.begin());
 	auto effectT = effectObj->GetComponent<game_module::Transform>();
-
 	effectT->SetParent(mTransform);
 
 	GetScene()->AddGameObject(effectObj);

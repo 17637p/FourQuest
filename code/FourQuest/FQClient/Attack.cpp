@@ -28,6 +28,7 @@ fq::client::Attack::Attack()
 	, mKnockBackType(EKnockBackType::None)
 	, mAttackPosition{}
 	, mAttacker(nullptr)
+	, mHitSound{}
 {}
 
 fq::client::Attack::~Attack()
@@ -46,7 +47,7 @@ void fq::client::Attack::OnUpdate(float dt)
 }
 
 
-bool fq::client::Attack::ProcessAttack() 
+bool fq::client::Attack::ProcessAttack()
 {
 	// 삭제된 공격은 처리하지 않습니다 
 	if (GetGameObject()->IsDestroyed())
@@ -77,9 +78,18 @@ void fq::client::Attack::Set(const AttackInfo& info)
 	mKnockBackPower = info.knocBackPower;
 	mAttackDirection = info.attackDirection;
 	mAttackPosition = info.attackPosition;
+	mHitSound = info.hitSound;
 }
 
 bool fq::client::Attack::HasKnockBack() const
 {
 	return mKnockBackType != EKnockBackType::None;
+}
+
+void fq::client::Attack::PlayHitSound()
+{
+	if (!mHitSound.empty())
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , 3 });
+	}
 }

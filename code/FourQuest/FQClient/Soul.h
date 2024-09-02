@@ -20,8 +20,10 @@ namespace fq::client
 		
 		void DestorySoul();
 		fq::client::ESoulType GetSoulType() const { return mSoulType; }
-		void SetSoulType(fq::client::ESoulType type) { mSoulType = type; }
+		void SetSoulType(fq::client::ESoulType type);
 	
+		void SetSoulColor();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -35,6 +37,13 @@ namespace fq::client
 		std::vector<DeadArmour*> mSelectArmours;
 
 		ESoulType mSoulType;
+
+		DirectX::SimpleMath::Color mSwordColor;
+		DirectX::SimpleMath::Color mStaffColor;
+		DirectX::SimpleMath::Color mAxeColor;
+		DirectX::SimpleMath::Color mBowColor;
+
+		friend void RegisterMetaData();
 	};
 
 }

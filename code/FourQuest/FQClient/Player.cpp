@@ -34,7 +34,6 @@ fq::client::Player::Player()
 	, mAttackSpeed(1.f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
-	, mAxeAttackTick(0.5f)
 {}
 
 fq::client::Player::~Player()
@@ -93,8 +92,6 @@ void fq::client::Player::OnStart()
 
 	// ¹«±â Âø¿ë
 	EquipArmourWeapone();
-
-	// TODO : °©¿Ê ¹öÇÁ Àû¿ë
 }
 
 void fq::client::Player::processInput()
@@ -141,9 +138,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 				if (radian >= DirectX::XM_PIDIV2)
 				{
-					// TODO :: Shield Block ¼Ò¸® , ÀÌÆåÆ®  Ãß°¡
-					//mSoundClip->Play("ShieldBlock", false, 0);
-
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , 3 });
 					return;
 				}
 			}
@@ -183,9 +178,9 @@ void fq::client::Player::SummonSoul()
 	soul->GetComponent<Soul>()->SetSoulType(mSoulType);
 
 	// À§Ä¡ ¼³Á¤
-	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
-	localMat._42 += 1.f;
-	soul->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
+	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
+	worldMat._42 += 1.f;
+	soul->GetComponent<game_module::Transform>()->SetWorldMatrix(worldMat);
 
 	GetScene()->AddGameObject(soul);
 	GetScene()->DestroyGameObject(GetGameObject());
@@ -411,4 +406,15 @@ void fq::client::Player::EmitAxeSoulAttack()
 	attackComponent->Set(attackInfo);
 
 	GetScene()->AddGameObject(attackObj);
+}
+
+void fq::client::Player::AddSoulStack(float stack)
+{
+	mSoulStack = std::min(mMaxSoulStack, mSoulStack + stack);
+}
+
+void fq::client::Player::SetHp(float hp)
+{
+	mHp = hp;
+	mMaxHp = hp;
 }
