@@ -87,6 +87,7 @@
 #include "PauseUI.h"
 #include "LoadingUI.h"
 #include "TitleUI.h"
+#include "SoulSelectUI.h"
 
 #include "CameraMoving.h"
 
@@ -874,6 +875,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<TitleUI>()
 		.type("TitleUI"_hs)
 		.prop(fq::reflect::prop::Name, "TitleUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SoulSelectUI>()
+		.type("SoulSelectUI"_hs)
+		.prop(fq::reflect::prop::Name, "SoulSelectUI")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 

@@ -123,6 +123,7 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SoulSelectUI.h" />
     <ClInclude Include="SwordSoulAttackState.h" />
     <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
+    <ClCompile Include="SoulSelectUI.cpp" />
     <ClCompile Include="SwordSoulAttackState.cpp" />
     <ClCompile Include="SpawnerDeadState.cpp" />
     <ClCompile Include="SpawnerOpenState.cpp" />

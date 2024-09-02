@@ -389,6 +389,9 @@
     <ClInclude Include="TitleUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="SoulSelectUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -635,6 +638,9 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="TitleUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulSelectUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
