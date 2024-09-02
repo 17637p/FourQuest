@@ -20,6 +20,9 @@ namespace fq::game_module
 		virtual void End() override;
 
 	private:
+		void GenerateNewShakeOffset();
+
+	private:
 		std::string mCameraObjectName;
 
 		float mPrevTime;
@@ -28,9 +31,10 @@ namespace fq::game_module
 		
 		DirectX::SimpleMath::Vector3 mMagnitude;
 		DirectX::SimpleMath::Vector3 mTargetPosition;
-		DirectX::SimpleMath::Vector3 mOrizinPosition;
-		DirectX::SimpleMath::Vector3 mCurrentPoisiton;
-		DirectX::SimpleMath::Vector3 mPrevPoisiton;
+		DirectX::SimpleMath::Vector3 mCameraOffsetPosition;
+		DirectX::SimpleMath::Vector3 mOffsetNextPosition;
+		DirectX::SimpleMath::Vector3 mOffsetPrevPosition;
+		DirectX::SimpleMath::Vector3 mPrevPosition;
 
 		int mOriginInitSpacing;
 		int mCurrentShakeCount;

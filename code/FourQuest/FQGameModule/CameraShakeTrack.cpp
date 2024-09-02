@@ -12,8 +12,9 @@ namespace fq::game_module
 		, mCameraObjectName{}
 		, mOriginInitSpacing()
 		, mTargetPosition{}
-		, mOrizinPosition{}
-		, mPrevPoisiton{}
+		, mPrevPosition{}
+		, mOffsetNextPosition{}
+		, mOffsetPrevPosition{}
 		, mCurrentTime()
 		, mPrevTime()
 		, mCurrentShakeCount()
@@ -44,17 +45,8 @@ namespace fq::game_module
 	{
 		mCameraObject = mScene->GetObjectByName(mCameraObjectName).get();
 
-		auto transform = mCameraObject->GetComponent<Transform>();
-
-		if (transform != nullptr)
-		{
-			mOrizinPosition = transform->GetLocalPosition();
-			mPrevPoisiton = transform->GetLocalPosition();
-		}
-
-		mTargetPosition.x = mOrizinPosition.x + ((rand() % 1000) / 1000.f - 0.5f) * 2 * mMagnitude.x;
-		mTargetPosition.y = mOrizinPosition.y + ((rand() % 1000) / 1000.f - 0.5f) * 2 * mMagnitude.y;
-		mTargetPosition.z = mOrizinPosition.z + ((rand() % 1000) / 1000.f - 0.5f) * 2 * mMagnitude.z;
+		GenerateNewShakeOffset();
+		mDurationTime = 0.f;
 	}
 
 	void CameraShakeTrack::PlayOn()
@@ -69,61 +61,78 @@ namespace fq::game_module
 		float oneShakeTime = mTotalPlayTime / mShakeCount;
 		float normalizedTime = std::fmod(mElapsedTime, oneShakeTime);
 
-		mDurationTime += deltaTime;
+		if (deltaTime >= 0.f)
+			mDurationTime += deltaTime;
 
-		// originspacing 변수와 현재 흔들린 횟수가 같으면 다시 원 위치로 되돌아간다. ( 카메라가 원 위치에서 너무 벗어나지 않기 위함. )
-		if (mDurationTime >= oneShakeTime && mCurrentShakeCount != mOriginInitSpacing)
+		if (mDurationTime >= oneShakeTime)
 		{
 			mCurrentShakeCount++;
 			mDurationTime -= oneShakeTime;
 
-			// 이전 위치를 기억한 이후 새로운 진동 오프셋 값을 찾아 이동
-			mPrevPoisiton = mTargetPosition;
-			mTargetPosition.x = mPrevPoisiton.x + ((rand() % 1000) / 1000.f - 0.5f) * 2 * mMagnitude.x;
-			mTargetPosition.y = mPrevPoisiton.y + ((rand() % 1000) / 1000.f - 0.5f) * 2 * mMagnitude.y;
-			mTargetPosition.z = mPrevPoisiton.z + ((rand() % 1000) / 1000.f - 0.5f) * 2 * mMagnitude.z;
-		}
-		else if (mDurationTime >= oneShakeTime && mCurrentShakeCount == mOriginInitSpacing)
-		{
-			mCurrentShakeCount++;
-			mDurationTime -= oneShakeTime;
+			mPrevPosition = mTargetPosition;
 
-			mPrevPoisiton = mTargetPosition;
-			mTargetPosition.x = mOrizinPosition.x;
-			mTargetPosition.y = mOrizinPosition.y;
-			mTargetPosition.z = mOrizinPosition.z;
+			if (mCurrentShakeCount > mShakeCount || mCurrentShakeCount == mOriginInitSpacing)
+			{
+				mTargetPosition = -mCameraOffsetPosition;
+				mCameraOffsetPosition = {};
+			}
+			else if (mCurrentShakeCount < mShakeCount)
+			{
+				GenerateNewShakeOffset();
+			}
 		}
 
 		// 보간 처리하여 카메라의 위치를 조정해준다.
-		mCurrentPoisiton.x = std::lerp(mPrevPoisiton.x, mTargetPosition.x, normalizedTime / oneShakeTime);
-		mCurrentPoisiton.y = std::lerp(mPrevPoisiton.y, mTargetPosition.y, normalizedTime / oneShakeTime);
-		mCurrentPoisiton.z = std::lerp(mPrevPoisiton.z, mTargetPosition.z, normalizedTime / oneShakeTime);
+		mOffsetNextPosition.x = std::lerp(mPrevPosition.x, mTargetPosition.x, normalizedTime / oneShakeTime);
+		mOffsetNextPosition.y = std::lerp(mPrevPosition.y, mTargetPosition.y, normalizedTime / oneShakeTime);
+		mOffsetNextPosition.z = std::lerp(mPrevPosition.z, mTargetPosition.z, normalizedTime / oneShakeTime);
+		DirectX::SimpleMath::Vector3 addPosition = mOffsetNextPosition - mOffsetPrevPosition;
+		mOffsetPrevPosition = mOffsetNextPosition;
+
+		mCameraOffsetPosition += addPosition;
 
 		auto transform = mCameraObject->GetComponent<Transform>();
 
 		if (transform != nullptr)
-			transform->SetLocalPosition(mCurrentPoisiton);
+			transform->AddLocalPosition(addPosition);
 	}
 
 	void CameraShakeTrack::PlayExit()
 	{
-		if (mCameraObject != nullptr)
-		{
-			auto transform = mCameraObject->GetComponent<Transform>();
-
-			if (transform != nullptr)
-			{
-				transform->SetLocalPosition(mCurrentPoisiton);
-			}
-		}
+		//if (mCameraObject != nullptr)
+		//{
+		//	auto transform = mCameraObject->GetComponent<Transform>();
+		//	if (transform != nullptr)
+		//	{
+		//		// 누적된 오프셋만큼 원래 위치로 복구
+		//		transform->AddLocalPosition(-mCameraOffsetPosition);
+		//	}
+		//}
 
 		mCurrentShakeCount = 0;
 		mDurationTime = 0.f;
 		mTargetPosition = {};
+		mPrevPosition = {};
+		mOffsetNextPosition = {};
+		mOffsetPrevPosition = {};
+		mCameraOffsetPosition = {}; // 초기화
 	}
 
 	void CameraShakeTrack::End()
 	{
 	}
 
+	void CameraShakeTrack::GenerateNewShakeOffset()
+	{
+		// 새로운 진동 오프셋 값 생성
+		mTargetPosition.x = ((rand() % 1000) / 1000.f - 0.5f) * 2;
+		mTargetPosition.y = ((rand() % 1000) / 1000.f - 0.5f) * 2;
+		mTargetPosition.z = ((rand() % 1000) / 1000.f - 0.5f) * 2;
+
+		mTargetPosition.Normalize();
+
+		mTargetPosition.x *= mMagnitude.x;
+		mTargetPosition.y *= mMagnitude.y;
+		mTargetPosition.z *= mMagnitude.z;
+	}
 }

@@ -41,6 +41,14 @@ namespace fq::game_module
 			auto camera = mTargetCameraObject.lock()->GetComponent<Camera>();
 			camera->SetMainCamera(true);
 		}
+
+		mPrevPosition = mKeys[0].position;
+
+		if (!mTargetCameraObject.lock()->HasComponent<Transform>()) return;
+
+		auto transform = mTargetCameraObject.lock()->GetComponent<Transform>();
+
+		mOriginTransform = transform->GetLocalMatrix();
 	}
 
 	void CameraChangeTrack::PlayOn()
@@ -70,16 +78,16 @@ namespace fq::game_module
 
 				DirectX::SimpleMath::Vector3 scale = LerpVector3(mKeys[keyNumber].scale, mKeys[keyNumber + 1].scale, lerpValue);
 				DirectX::SimpleMath::Vector3 rotation = LerpVector3(mKeys[keyNumber].rotation, mKeys[keyNumber + 1].rotation, lerpValue);
-				DirectX::SimpleMath::Vector3 position = LerpVector3(mKeys[keyNumber].position, mKeys[keyNumber + 1].position, lerpValue);
+				mCurPosition = LerpVector3(mKeys[keyNumber].position, mKeys[keyNumber + 1].position, lerpValue);
 
 				DirectX::SimpleMath::Quaternion quaternion = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rotation / 180.f * 3.14f);
 
-				DirectX::SimpleMath::Matrix newTransform =
-					DirectX::SimpleMath::Matrix::CreateScale(scale)
-					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(quaternion)
-					* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+				auto position = mCurPosition - mPrevPosition;
+				mPrevPosition = mCurPosition;
 
-				transform->SetWorldMatrix(newTransform);
+				transform->AddLocalPosition(position);
+				transform->SetLocalRotation(quaternion);
+				transform->SetLocalScale(scale);
 			}
 			else
 			{
@@ -90,7 +98,7 @@ namespace fq::game_module
 					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(quaternion)
 					* DirectX::SimpleMath::Matrix::CreateTranslation(mKeys[mKeys.size() - 1].position);
 
-				transform->SetWorldMatrix(newTransform);
+				transform->SetLocalMatrix(newTransform);
 			}
 		}
 	}
@@ -101,6 +109,15 @@ namespace fq::game_module
 
 	void CameraChangeTrack::End()
 	{
+		if (!mTargetCameraObject.expired())
+		{
+			if (!mTargetCameraObject.lock()->HasComponent<Transform>()) return;
+
+			auto transform = mTargetCameraObject.lock()->GetComponent<Transform>();
+
+			transform->SetLocalMatrix(mOriginTransform);
+		}
+
 		if (!mCurrentCameraObject.expired())
 		{
 			if (!mCurrentCameraObject.lock()->HasComponent<Camera>()) return;

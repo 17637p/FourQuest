@@ -19,7 +19,7 @@ namespace fq::physics
 	{
 	}
 
-	void RigidBody::updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix)
+	void RigidBody::updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix, void* userData)
 	{
 		// 货肺款 shape 积己
 		physx::PxShape* newShape = physics->createShape(newGeometry, *material);
@@ -29,6 +29,9 @@ namespace fq::physics
 		newShape->setSimulationFilterData(filterdata);
 		newShape->setContactOffset(0.02f);
 		newShape->setRestOffset(0.01f);
+		newShape->userData = userData;
+		userData = nullptr;
+
 
 		if (mColliderType == EColliderType::COLLISION)
 		{
