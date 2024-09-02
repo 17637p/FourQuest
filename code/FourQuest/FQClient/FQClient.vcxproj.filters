@@ -395,6 +395,9 @@
     <ClInclude Include="RepauseUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="ResultUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -647,6 +650,9 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="RepauseUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
