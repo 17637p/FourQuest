@@ -225,8 +225,8 @@ PixelOut main(VertexOut pin) : SV_TARGET
         {
             float4 direction = gDirectionArray.Sample(gPointWrap, float3(pin.UV1, pin.LightmapIndex));
             direction.xyz = direction.xyz * 2 - 1;
-            direction.x = -direction.x;
-            direction.z = -direction.z;
+            // direction.x = -direction.x;
+            // direction.z = -direction.z;
             float halfLambert = dot(pout.Normal.xyz, direction.xyz) * 0.5 + 0.5;
             pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
         }
