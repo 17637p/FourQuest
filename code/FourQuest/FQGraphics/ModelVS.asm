@@ -125,7 +125,7 @@ dcl_temps 3
 //   o1.x <- <main return value>.PositionW.x; o1.y <- <main return value>.PositionW.y; o1.z <- <main return value>.PositionW.z; o1.w <- <main return value>.DepthView; 
 //   o0.x <- <main return value>.PositionH.x; o0.y <- <main return value>.PositionH.y; o0.z <- <main return value>.PositionH.z; o0.w <- <main return value>.PositionH.w
 //
-#line 94 "C:\Git\FourQuest\code\FourQuest\FQGraphics\ModelVS.hlsl"
+#line 92 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\ModelVS.hlsl"
 mov r0.xyz, v0.xyzx
 mov r0.w, l(1.000000)
 dp4 r1.w, r0.xyzw, cb0[3].xyzw  // r1.w <- vout.PositionH.w
@@ -133,26 +133,26 @@ dp4 r1.x, r0.xyzw, cb0[0].xyzw  // r1.x <- vout.PositionH.x
 dp4 r1.y, r0.xyzw, cb0[1].xyzw  // r1.y <- vout.PositionH.y
 dp4 r1.z, r0.xyzw, cb0[2].xyzw  // r1.z <- vout.PositionH.z
 
-#line 95
+#line 93
 dp4 r0.x, r1.xyzw, cb1[6].xyzw  // r0.x <- vout.PositionH.z
 
-#line 119
+#line 112
 mov o0.z, r0.x
 mov o4.z, r0.x
 
-#line 95
+#line 93
 dp4 o0.x, r1.xyzw, cb1[4].xyzw
 dp4 o0.y, r1.xyzw, cb1[5].xyzw
 dp4 o0.w, r1.xyzw, cb1[7].xyzw
 
-#line 98
+#line 96
 mov r1.w, l(1.000000)
 dp4 o1.w, r1.xyzw, cb1[2].xyzw
 
-#line 119
+#line 112
 mov o1.xyz, r1.xyzx
 
-#line 100
+#line 98
 dp3 r0.x, v1.xyzx, cb0[0].xyzx
 dp3 r0.y, v1.xyzx, cb0[1].xyzx
 dp3 r0.z, v1.xyzx, cb0[2].xyzx
@@ -160,10 +160,10 @@ dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul r0.xyz, r0.wwww, r0.xyzx  // r0.x <- vout.NormalW.x; r0.y <- vout.NormalW.y; r0.z <- vout.NormalW.z
 
-#line 119
+#line 112
 mov o2.xyz, r0.xyzx
 
-#line 103
+#line 101
 dp3 r1.x, v2.xyzx, cb0[0].xyzx
 dp3 r1.y, v2.xyzx, cb0[1].xyzx
 dp3 r1.z, v2.xyzx, cb0[2].xyzx
@@ -171,16 +171,16 @@ dp3 r0.w, r1.xyzx, r1.xyzx
 rsq r0.w, r0.w
 mul r1.xyz, r0.wwww, r1.xyzx  // r1.x <- vout.TangentW.x; r1.y <- vout.TangentW.y; r1.z <- vout.TangentW.z
 
-#line 119
+#line 112
 mov o3.xyz, r1.xyzx
 
-#line 106
+#line 104
 mov r2.xy, v3.xyxx
 mov r2.z, l(1.000000)
 dp3 o4.x, r2.xyzx, cb3[0].xywx
 dp3 o4.y, r2.xyzx, cb3[1].xywx
 
-#line 101
+#line 99
 dp3 r2.x, r0.xyzx, cb1[0].xyzx
 dp3 r2.y, r0.xyzx, cb1[1].xyzx
 dp3 r2.z, r0.xyzx, cb1[2].xyzx
@@ -188,7 +188,7 @@ dp3 r0.x, r2.xyzx, r2.xyzx
 rsq r0.x, r0.x
 mul o5.xyz, r0.xxxx, r2.xyzx
 
-#line 104
+#line 102
 dp3 r0.x, r1.xyzx, cb1[0].xyzx
 dp3 r0.y, r1.xyzx, cb1[1].xyzx
 dp3 r0.z, r1.xyzx, cb1[2].xyzx
@@ -196,7 +196,7 @@ dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul o6.xyz, r0.wwww, r0.xyzx
 
-#line 119
+#line 112
 mov o7.xyzw, v4.xyzw
 ret 
 // Approximately 47 instruction slots used

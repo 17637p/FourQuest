@@ -70,7 +70,6 @@ void fq::game_engine::EditorEngine::Initialize()
 		, mGameProcess->mTimeManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
-	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
 
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
@@ -78,6 +77,8 @@ void fq::game_engine::EditorEngine::Initialize()
 	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
 	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width, height, fq::graphics::EPipelineType::Deferred);
+	
+	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get(), width, height);
 
 	// 물리 엔진 초기화
 	mGameProcess->mPhysics = fq::physics::EngineExporter().GetEngine();

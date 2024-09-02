@@ -75,7 +75,7 @@ void fq::game_engine::UISystem::OnLoadScene()
 
 	for (auto& object : scene->GetObjectView(true))
 	{
-		loadImageUI(&object);
+		LoadImageUI(&object);
 		loadTextUI(&object);
 	}
 
@@ -97,13 +97,13 @@ void fq::game_engine::UISystem::OnAddGameObject(const fq::event::AddGameObject& 
 {
 	if (!mbIsGameLoaded) return;
 
-	loadImageUI(event.object);
+	LoadImageUI(event.object);
 	loadTextUI(event.object);
 }
 
 void fq::game_engine::UISystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
-	unloadImageUI(event.object);
+	UnloadImageUI(event.object);
 	unloadTextUI(event.object);
 }
 
@@ -111,7 +111,7 @@ void fq::game_engine::UISystem::AddComponent(const fq::event::AddComponent& even
 {
 	if (event.id == entt::resolve<fq::game_module::ImageUI>().id())
 	{
-		loadImageUI(event.component->GetGameObject());
+		LoadImageUI(event.component->GetGameObject());
 	}
 	if (event.id == entt::resolve<fq::game_module::TextUI>().id())
 	{
@@ -123,7 +123,7 @@ void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent
 {
 	if (event.id == entt::resolve<fq::game_module::ImageUI>().id())
 	{
-		unloadImageUI(event.component->GetGameObject());
+		UnloadImageUI(event.component->GetGameObject());
 	}
 	if (event.id == entt::resolve<fq::game_module::TextUI>().id())
 	{
@@ -131,7 +131,7 @@ void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent
 	}
 }
 
-void fq::game_engine::UISystem::loadImageUI(game_module::GameObject* object)
+void fq::game_engine::UISystem::LoadImageUI(game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::ImageUI>())
 	{
@@ -157,7 +157,7 @@ void fq::game_engine::UISystem::loadImageUI(game_module::GameObject* object)
 	}
 }
 
-void fq::game_engine::UISystem::unloadImageUI(game_module::GameObject* object)
+void fq::game_engine::UISystem::UnloadImageUI(game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::ImageUI>())
 	{
@@ -178,8 +178,8 @@ void fq::game_engine::UISystem::unloadImageUI(game_module::GameObject* object)
 
 void fq::game_engine::UISystem::SetUIInfomations(const fq::event::SetUIInfomations& event)
 {
-	unloadImageUI(event.object);
-	loadImageUI(event.object);
+	UnloadImageUI(event.object);
+	LoadImageUI(event.object);
 }
 
 void fq::game_engine::UISystem::Update()
