@@ -1,4 +1,3 @@
-
 #define WIN32_LEAN_AND_MEAN       
 #include <windows.h>
 #include <crtdbg.h>
@@ -21,6 +20,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	app->Process();
 
 	app->Finalize();
+
 	delete app;
 
 	return 0;

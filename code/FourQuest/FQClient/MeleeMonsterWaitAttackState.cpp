@@ -20,6 +20,7 @@ void fq::client::MeleeMonsterWaitAttackState::OnStateUpdate(game_module::Animato
 
 	monster->CheckTargetInAttackRange();
 	monster->CheckAttackAble();
+	monster->LookAtTarget();
 }
 
 void fq::client::MeleeMonsterWaitAttackState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)

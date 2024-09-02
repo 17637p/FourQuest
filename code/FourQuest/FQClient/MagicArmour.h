@@ -62,6 +62,7 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;
 		void OnUpdate(float dt) override;
+		void OnDestroy() override;
 		void checkInput(float dt);
 		void checkCoolTime(float dt);
 

@@ -32,6 +32,7 @@ namespace fq::client
 
 		void EventProcessOffPopupPause();
 		void EventProcessOffPopupSetting();
+		void testKey();
 
 	private:
 		EventHandler mRegisterPlayerHandler;

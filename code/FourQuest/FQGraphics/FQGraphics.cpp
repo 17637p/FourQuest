@@ -37,6 +37,7 @@ FQGraphics::FQGraphics()
 	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
 	, mIsOnPostProcessing(true)
 	, mIsRenderObjects(true)
+
 {
 }
 

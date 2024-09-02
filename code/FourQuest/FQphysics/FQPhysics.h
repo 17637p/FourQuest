@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "IFQPhysics.h"
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
