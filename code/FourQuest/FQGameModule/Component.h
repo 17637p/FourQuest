@@ -34,6 +34,11 @@ namespace fq::game_module
 		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const abstract;
 
 		/// <summary>
+		/// Scene 시작시 OnStart 이전에 호출
+		/// </summary>
+		virtual void OnAwake() {}
+
+		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
 		virtual void OnStart() {}
