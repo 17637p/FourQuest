@@ -36,8 +36,7 @@ fq::client::GameManager::GameManager(const GameManager& other)
 	, mPlayers(other.mPlayers)
 	, mPauseUI(other.mPauseUI)
 	, mIsStop(false)
-{
-}
+{}
 
 fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& other)
 {

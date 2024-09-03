@@ -121,12 +121,12 @@ void fq::game_module::SceneManager::LoadScene()
 	auto scenePath = fq::path::GetScenePath();
 
 	scenePath /= mCurrentScene->GetSceneName();
-	assert(std::filesystem::exists(scenePath));
+		assert(std::filesystem::exists(scenePath));
 
 	// Prefab Load
 	auto prefabPath = scenePath / "prefab";
 	assert(std::filesystem::exists(prefabPath));
-
+ 
 	auto prefabList = fq::path::GetFileList(prefabPath);
 	for (const auto& prefabPath : prefabList)
 	{

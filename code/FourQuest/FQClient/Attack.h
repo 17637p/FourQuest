@@ -54,6 +54,8 @@ namespace fq::client
 		/// </summary>
 		void PlayHitSound();
 
+		void SetDestroyTime(float destroyTime);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnUpdate(float dt) override;
