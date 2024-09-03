@@ -12,7 +12,7 @@
 
 fq::game_engine::LoadingSystem::LoadingSystem()
 	:mGameProcess(nullptr)
-	, mLoadImage(nullptr)
+	,mLoadingUIObject{}
 {}
 
 fq::game_engine::LoadingSystem::~LoadingSystem()
@@ -28,8 +28,6 @@ void fq::game_engine::LoadingSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::LoadingSystem::Finalize()
 {
-	//	mGameProcess->mGraphics->DeleteImageObject(mLoadImage);
-
 	for (auto& object : mLoadingUIObject)
 	{
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
@@ -48,13 +46,6 @@ void fq::game_engine::LoadingSystem::loadUI()
 		mGameProcess->mUISystem->LoadTextUI(object.get());
 	}
 	mLoadingUIObject[0]->OnStart();
-
-	// Loading 배경화면 로딩
-	fq::graphics::UIInfo info;
-	info.Height = 1200;
-	info.Width = 2000;
-	info.ImagePath = (fq::path::GetInternalPath() / "loading" / "Loading.png").string();
-	//mLoadImage = mGameProcess->mGraphics->CreateImageObject(info);
 }
 
 void fq::game_engine::LoadingSystem::ProcessLoading()

@@ -27,7 +27,6 @@ namespace fq::game_engine
 
 	private:
 		GameProcess* mGameProcess;
-		fq::graphics::IImageObject* mLoadImage;
 		std::vector<std::shared_ptr<fq::game_module::GameObject>> mLoadingUIObject;
 	};
 }
