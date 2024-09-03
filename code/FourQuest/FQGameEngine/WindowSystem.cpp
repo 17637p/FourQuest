@@ -21,7 +21,6 @@ void fq::game_engine::WindowSystem::Initialize()
 	mHInstance = ::GetModuleHandle(NULL);
 
 	WNDCLASS wndClass{};
-
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.lpfnWndProc = WndProc::GameWndProc;
 	wndClass.cbClsExtra = 0;

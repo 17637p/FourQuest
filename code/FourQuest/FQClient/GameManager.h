@@ -28,6 +28,7 @@ namespace fq::client
 
 		void OnUpdate(float dt) override;
 		void OnStart() override;
+		void OnAwake() override;
 		void OnDestroy() override;
 
 		void EventProcessOffPopupPause();

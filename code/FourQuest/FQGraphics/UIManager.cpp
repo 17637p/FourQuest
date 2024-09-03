@@ -508,6 +508,21 @@ void fq::graphics::UIManager::drawAllImage(bool isOnText)
 			image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
 		}
 
+		if (image->GetColor() != DirectX::SimpleMath::Color(0, 0, 0, 1))
+		{
+			ID2D1SolidColorBrush* brush;
+			D2D1_COLOR_F d2dColor;
+			DirectX::SimpleMath::Color color = image->GetColor();
+			d2dColor.r = color.R();
+			d2dColor.g = color.G();
+			d2dColor.b = color.B();
+			d2dColor.a = color.A();
+			mRenderTarget->CreateSolidColorBrush(d2dColor, &brush);
+			mRenderTarget->FillRectangle(screenRect, brush);
+
+			continue;
+		}
+
 		//  마스크 있을 때
 		if (image->GetMaskPath() != "")
 		{
@@ -685,6 +700,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetRenderMode(uiInfo.isCenter);
 
 	newImageObject->SetIsOnText(uiInfo.isOnText);
+	newImageObject->SetColor(uiInfo.Color);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;

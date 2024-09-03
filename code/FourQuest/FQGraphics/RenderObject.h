@@ -333,6 +333,9 @@ namespace fq::graphics
 		virtual bool GetIsOnText() const override { return mIsOnText; };
 		virtual void SetIsOnText(bool isOnText) override { mIsOnText = isOnText; };
 
+		virtual DirectX::SimpleMath::Color GetColor() const override { return mColor; }
+		virtual void SetColor(DirectX::SimpleMath::Color val) override { mColor = val; }
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -358,6 +361,8 @@ namespace fq::graphics
 		bool mIsRender;
 		bool mIsCenter;
 		bool mIsOnText;
+
+		DirectX::SimpleMath::Color mColor;
 	};
 
 	class ProbeObject : public IProbeObject

@@ -25,7 +25,6 @@ std::shared_ptr<fq::game_module::Component> fq::client::LoadingUI::Clone(std::sh
 
 void fq::client::LoadingUI::OnStart()
 {
-	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
 
 	// 초기값 세팅
@@ -42,6 +41,8 @@ void fq::client::LoadingUI::OnStart()
 
 void fq::client::LoadingUI::OnUpdate(float dt)
 {
+	SetScaleScreen();
+
 	auto textInfo = mText->GetTextInfo();
 	textInfo.Text = mTexts[mCurGuideID].Text;
 	mText->SetTextInfo(textInfo);

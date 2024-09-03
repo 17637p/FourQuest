@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <directxtk/SimpleMath.h>
 
 #include "MonsterDefine.h"
 #include "../FQGameModule/GameModuleEnum.h"
@@ -72,22 +73,30 @@ namespace fq::client
 		std::vector<ObjectInteraction> objectInteration;
 	};
 
+	struct RewardPortal
+	{
+		DirectX::SimpleMath::Vector3 position;
+		std::string nextSceneName;
+	};
+
+	struct QuestReward
+	{
+		std::vector<RewardPortal> RewardPortalList;
+	};
+
 	class Quest
 	{
 	public:
 		Quest();
 		~Quest();
 
-	private:
 		int mIndex;
 		std::string mName;
 		bool mIsMain; // QuestType
 
 		QuestJoinCondition mJoinConditionList;
 		QuestClearCondition mclearConditionList;
-		
-		friend void RegisterMetaData();
-		friend class QuestManager;
+		QuestReward mRewardList;
 	};
 }
 

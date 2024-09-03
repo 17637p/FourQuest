@@ -98,6 +98,11 @@ void fq::game_module::SceneManager::StartScene()
 
 	for (auto& object : mCurrentScene->GetObjectView())
 	{
+		object.OnAwake();
+	}
+
+	for (auto& object : mCurrentScene->GetObjectView())
+	{
 		object.OnStart();
 	}
 

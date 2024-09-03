@@ -1,7 +1,6 @@
 #pragma once
 #include "../FQGameModule/IStateBehaviour.h"
 
-
 namespace fq::client
 {
 	/// <summary>

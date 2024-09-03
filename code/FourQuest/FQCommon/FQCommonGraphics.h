@@ -113,6 +113,8 @@ namespace fq::graphics
 
 		bool isCenter = false;
 		bool isOnText = false;
+
+		DirectX::SimpleMath::Color Color;
 	};
 
 	enum class ETextAlign

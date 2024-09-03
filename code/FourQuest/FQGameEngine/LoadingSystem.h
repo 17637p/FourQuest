@@ -1,6 +1,8 @@
 #pragma once
+#pragma once
 
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/GameModule.h"
 
 namespace fq::game_engine
 {
@@ -20,9 +22,11 @@ namespace fq::game_engine
 		void ProcessLoading();
 	private:
 		void loadUI();
+		void updateUI();
+		void setRenderUI(bool isRender);
 
 	private:
 		GameProcess* mGameProcess;
-		fq::graphics::IImageObject* mLoadImage;
+		std::vector<std::shared_ptr<fq::game_module::GameObject>> mLoadingUIObject;
 	};
 }

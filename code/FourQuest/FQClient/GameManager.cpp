@@ -83,15 +83,19 @@ void fq::client::GameManager::OnUpdate(float dt)
 
 void fq::client::GameManager::OnStart()
 {
+	EventProcessOffPopupPause();
+	EventProcessOffPopupSetting();
+}
+
+void fq::client::GameManager::OnAwake()
+{
 	mRegisterPlayerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::RegisterPlayer>(
 		[this](const client::event::RegisterPlayer& event)
 		{
 			mPlayers.push_back(event.player->shared_from_this());
 		});
-
-	EventProcessOffPopupPause();
-	EventProcessOffPopupSetting();
 }
+
 
 void fq::client::GameManager::OnDestroy()
 {

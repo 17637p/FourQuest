@@ -65,7 +65,6 @@ void fq::client::PlantMonster::EmitAttack()
 	auto attackT = attackObj->GetComponent<Transform>();
 	auto transform = GetComponent<Transform>();
 
-
 	DirectX::SimpleMath::Vector3 offset = { 0.f,1.f,0.f };
 	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
 
