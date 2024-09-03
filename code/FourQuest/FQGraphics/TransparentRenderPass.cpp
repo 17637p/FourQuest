@@ -201,7 +201,7 @@ namespace fq::graphics
 					{
 						mStaticMeshVertexColorShaderProgram->Bind(mDevice);
 					}
-					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					else
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}
