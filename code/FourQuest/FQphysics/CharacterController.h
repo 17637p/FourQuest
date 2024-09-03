@@ -93,7 +93,7 @@ namespace fq::physics
 	{
 		position.x = mPxController->getPosition().x;
 		position.y = mPxController->getPosition().y;
-		position.z = -mPxController->getPosition().z;
+		position.z = mPxController->getPosition().z;
 	}
 	void CharacterController::SetPosition(const DirectX::SimpleMath::Vector3& position)
 	{
@@ -101,7 +101,7 @@ namespace fq::physics
 
 		vector.x = position.x;
 		vector.y = position.y;
-		vector.z = -position.z;
+		vector.z = position.z;
 
 		mPxController->setPosition(vector);
 	}
