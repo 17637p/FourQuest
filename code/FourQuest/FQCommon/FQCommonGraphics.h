@@ -50,7 +50,6 @@ namespace fq::graphics
 		ELightMode mode = ELightMode::Realtime;
 	};
 
-
 	struct MeshObjectInfo
 	{
 		bool bUseShadow = true;
@@ -67,10 +66,24 @@ namespace fq::graphics
 
 	struct MaterialInstanceInfo
 	{
-		bool bUseInstanceAlpha;
-		float Alpha;
-		bool bUseDissolveCutoff;
-		float DissolveCutoff;
+		bool bUseInstanceAlpha = false;
+		float Alpha = 1.f;
+		bool bUseDissolveCutoff = false;
+		float DissolveCutoff = 0.f;
+
+		bool bUseRimLight = false;
+		DirectX::SimpleMath::Color RimLightColor;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		bool bUseInvRimLight = false;
+		DirectX::SimpleMath::Color InvRimLightColor;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
+
+		bool bUseUVScaleOffset = false;
+		DirectX::SimpleMath::Vector2 UVScale = { 1, 1 };
+		DirectX::SimpleMath::Vector2 UVOffset = { 0, 0 };
 	};
 
 	struct UIInfo
@@ -99,6 +112,7 @@ namespace fq::graphics
 		float ScaleY = 1.f;
 
 		bool isCenter = false;
+		bool isOnText = false;
 	};
 
 	enum class ETextAlign
@@ -112,6 +126,12 @@ namespace fq::graphics
 		RightTop,
 		RightCenter,
 		RightBottom
+	};
+
+	enum class ETextBoxAlign
+	{
+		LeftTop,
+		CenterCenter,
 	};
 
 	struct TextInfo
@@ -128,6 +148,7 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color FontColor = { 0, 0, 0, 1 };
 
 		ETextAlign Align = ETextAlign::LeftTop;
+		ETextBoxAlign BoxAlign = ETextBoxAlign::CenterCenter;
 
 		bool IsRender = true;
 	};
@@ -668,5 +689,10 @@ namespace fq::graphics
 		bool bUseFog = false;
 		DirectX::SimpleMath::Vector4 fogColor = { 0.5f, 0.5f, 0.5f, 1.0f }; // 안개 색상 
 		float fogVisibleArea = 200.0f; // 가시 영역 near ~ far 기준으로 값을 넣어야 함 near가 1 far가 100이면 20일때 20퍼 보인다는 뜻
+
+		// SSR
+		bool bUseSSR = false;
+		float max_iteration = 160;
+		float max_thickness = 0.00001;
 	};
 };

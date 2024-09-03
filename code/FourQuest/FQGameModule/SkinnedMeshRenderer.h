@@ -10,7 +10,7 @@ namespace fq::game_module
 		using SkinnedMeshObject = fq::graphics::ISkinnedMeshObject;
 	public:
 		SkinnedMeshRenderer();
-		~SkinnedMeshRenderer();
+		~SkinnedMeshRenderer() = default;
 
 		/// <summary>
 		/// 복사본을 반환합니다 
@@ -72,6 +72,10 @@ namespace fq::game_module
 		bool GetIsRender() const { return mbIsRender; }
 		void SetIsRender(bool bIsRender);
 
+		// 머터리얼 인스턴스 정보
+		const fq::graphics::MaterialInstanceInfo& GetMaterialInstanceInfo() const { return mMaterialInstanceInfo; }
+		void SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info);
+
 	private:
 		entt::meta_handle GetHandle() override;
 
@@ -80,7 +84,6 @@ namespace fq::game_module
 		fq::graphics::MeshObjectInfo mMeshInfomation;
 
 		std::string mModelPath;
-		std::string mTexturePath;
 		std::string mMeshName;
 		std::vector<std::string> mMaterialNames;
 		std::vector<fq::graphics::MaterialInfo> mMaterialInfos;
@@ -89,5 +92,7 @@ namespace fq::game_module
 		std::vector<std::string> mMaterialPaths; // 별도로 직렬화된 데이터로 인터페이스 가져올 예정
 
 		bool mbIsRender;
+
+		fq::graphics::MaterialInstanceInfo mMaterialInstanceInfo;
 	};
 }

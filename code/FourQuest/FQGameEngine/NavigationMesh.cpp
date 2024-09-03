@@ -22,7 +22,7 @@ fq::game_engine::NavigationMeshBuilder::~NavigationMeshBuilder()
 	delete mNavigationMeshData;
 }
 
-void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings)
+void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module::Scene* scene, BuildSettings buildSettrings, bool isAll)
 {
 	if (mNavigationMeshData != nullptr)
 	{
@@ -40,9 +40,12 @@ void fq::game_engine::NavigationMeshBuilder::BuildNavigationMesh(fq::game_module
 	{
 		// NavMesh 추가는 해뒀지만 디버그 등의 이유로 사용하지 않기로 했다면
 		bool isUsed = navObject.GetComponent<fq::game_module::StaticMeshRenderer>()->GetIsNavigationMeshUsed();
-		if (!isUsed)
+		if (!isAll)
 		{
-			continue;
+			if (!isUsed)
+			{
+				continue;
+			}
 		}
 
 		auto staticMesh = navObject.GetComponent<fq::game_module::StaticMeshRenderer>();

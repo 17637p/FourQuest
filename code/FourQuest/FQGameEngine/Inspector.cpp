@@ -13,6 +13,7 @@
 #include "CommandSystem.h"
 #include "Command.h"
 #include "RenderingSystem.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::Inspector::Inspector()
 	:mGameProcess(nullptr)
@@ -1131,12 +1132,12 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	}
 
 	animationPath = stateNode.GetAnimationPath();
-	auto animationInterfaceOrNull = mGameProcess->mGraphics->GetAnimationOrNull(animationPath);
+	auto animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(animationPath);
 
 	if (animationInterfaceOrNull == nullptr && std::filesystem::exists(animationPath))
 	{
-		const auto animationData = mGameProcess->mGraphics->ReadAnimation(animationPath);
-		animationInterfaceOrNull = mGameProcess->mGraphics->CreateAnimation(animationPath, animationData);
+		mGameProcess->mResourceSystem->LoadAnimation(animationPath);
+		animationInterfaceOrNull = mGameProcess->mResourceSystem->GetAnimation(animationPath);
 	}
 
 	if (animationPath.empty() || animationInterfaceOrNull == nullptr) return;

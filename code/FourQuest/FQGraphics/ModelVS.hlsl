@@ -9,11 +9,11 @@ struct VertexIn
 #ifdef SKINNING
     int4 Indices : INDICES;
     float4 Weights : WEIGHTS;
-#elif defined INSTANCING
-    float4x4 World : WORLD;
-#endif
-#ifdef STATIC
+#elif defined STATIC
     float2 UV1 : UV1;
+    float4x4 World : WORLD;
+    float4 UVScaleOffset : TEXCOORD0;
+    uint LightmapIndex : TEXCOORD1;
 #endif
 #ifdef VERTEX_COLOR
     float4 Color : COLOR;
@@ -31,9 +31,9 @@ struct VertexOut
     float DepthView : TEXCOORD3;
     float3 NormalV : TEXCOORD4;
     float3 TangentV : TEXCOORD5;
-    
 #ifdef STATIC
-    float2 UV1 : TEXCOORD6;
+    float2 UV1 : TEXCOORD6;    
+    uint LightmapIndex : TEXCOORD7;
 #endif
 #ifdef VERTEX_COLOR
     float4 Color : COLOR0;
@@ -65,14 +65,6 @@ cbuffer cbMaterial : register(b3)
     ModelMaterial gModelMaterial;
 };
 
-#ifdef STATIC
-cbuffer cbLightmapInformation : register(b4)
-{
-    float4 cUVOffsetScale;
-    uint cUVIndex;
-};
-#endif
-
 VertexOut main(VertexIn vin)
 {
     VertexOut vout;
@@ -85,8 +77,14 @@ VertexOut main(VertexIn vin)
     worldMat += mul(vin.Weights.z, cFinalTransforms[vin.Indices.z]);
     worldMat += mul(vin.Weights.w, cFinalTransforms[vin.Indices.w]);
     worldMat = mul(worldMat, cWorld);
-#elif defined INSTANCING
+#elif defined STATIC
     worldMat = vin.World;
+    
+    vin.UV1.y = 1 - vin.UV1.y; 
+    vout.UV1 = vin.UV1 * vin.UVScaleOffset.xy + vin.UVScaleOffset.zw;
+    vout.UV1.y = 1 - vout.UV1.y; 
+    
+    vout.LightmapIndex = vin.LightmapIndex;
 #else
     worldMat = cWorld;
 #endif 
@@ -107,11 +105,6 @@ VertexOut main(VertexIn vin)
     
     vout.ClipSpacePosZ = vout.PositionH.z;
     
-#ifdef STATIC
-    vin.UV1.y = 1 - vin.UV1.y; 
-    vout.UV1 = vin.UV1 * cUVOffsetScale.xy + cUVOffsetScale.zw;
-    vout.UV1.y = 1 - vout.UV1.y; 
-#endif
 #ifdef VERTEX_COLOR
     vout.Color = vin.Color;
 #endif

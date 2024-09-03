@@ -95,7 +95,7 @@ float4 main(VertexOut pin) : SV_TARGET
     
     if (gModelMaterial.UseMetalnessSmoothness)
     {
-        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xy;
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xw;
         metalness = metalnessSmoothness.x;
         roughness = 1 - metalnessSmoothness.y;
     }

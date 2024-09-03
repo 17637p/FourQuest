@@ -67,15 +67,15 @@ namespace fq::graphics
 		}
 	}
 
-	void D3D11RenderManager::OnResize(unsigned short width, unsigned short height)
+	void D3D11RenderManager::OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight)
 	{
 		switch (mPipelineType)
 		{
 		case fq::graphics::EPipelineType::Forward:
-			mForwardPipeline->OnResize(width, height);
+			mForwardPipeline->OnResize(width, height, oriWidth, oriHeight);
 			break;
 		case fq::graphics::EPipelineType::Deferred:
-			mDeferredPipeline->OnResize(width, height);
+			mDeferredPipeline->OnResize(width, height, oriWidth, oriHeight);
 			break;
 		default:
 			assert(false);

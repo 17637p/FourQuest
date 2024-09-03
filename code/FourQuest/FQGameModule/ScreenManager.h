@@ -14,14 +14,19 @@ namespace fq::game_module
 		ScreenManager();
 		~ScreenManager();
 
-		void Initialize(EventManager* eventMgr);
+		void Initialize(EventManager* eventMgr, UINT screenWidth, UINT screenHeight);
 
 		UINT GetScreenWidth() const { return mScreenWidth; }
 		UINT GetScreenHeight() const { return mScreenHeight; }
 
+		UINT GetFixScreenWidth() const { return mFixScreenWidth; }
+		UINT GetFixScreenHeight() const { return mFixScreenHeight; }
 	private:
 		UINT mScreenWidth;
 		UINT mScreenHeight;
+
+		UINT mFixScreenWidth;
+		UINT mFixScreenHeight;
 
 		game_module::EventHandler mSetScreenSizeHanlder;
 	};

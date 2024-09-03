@@ -218,10 +218,10 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 
 					if (!std::filesystem::exists(prefabPath))
 					{
-						spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
+					/*	spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
 							, fq::reflect::GetName(entt::resolve(componentID))
 							, fq::reflect::GetName(metaData));
-						continue;
+					*/	continue;
 					}
 
 					auto instance = LoadPrefab(prefabPath);

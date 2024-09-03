@@ -316,7 +316,4 @@ namespace fq::game_module
 		T* component = static_cast<T*>(iter->second.get());
 		return component;
 	}
-
 }
-
-

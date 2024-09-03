@@ -5,11 +5,21 @@
 #include "Event.h"
 
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
-	:mStaticMeshObject(nullptr)
+	: mIsNavigationMeshUsed(false)
+	, mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
-	, mIsNavigationMeshUsed(false)
+	, mModelPath{}
+	, mMeshName{}
+	, mMaterialNames{}
+	, mMaterialInfos{}
+	, mMaterialInterfaces{}
+	, mMaterialPaths{}
+	, mLightmapScaleOffset{}
+	, mLightmapIndex(-1)
+	, mbIsStatic{ false }
 	, mPrevApplyTransform{}
 	, mbIsRender{ true }
+	, mMaterialInstanceInfo{}
 {
 }
 
@@ -20,6 +30,16 @@ void fq::game_module::StaticMeshRenderer::SetIsRender(bool bIsRender)
 	if (mStaticMeshObject != nullptr)
 	{
 		mStaticMeshObject->SetIsRender(mbIsRender);
+	}
+}
+
+void fq::game_module::StaticMeshRenderer::SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info)
+{
+	mMaterialInstanceInfo = info;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMaterialInstanceInfo(mMaterialInstanceInfo);
 	}
 }
 

@@ -40,3 +40,8 @@ float fq::game_module::TimeManager::Update()
 
 	return static_cast<float>(mDeltaTime * mTimeScale);
 }
+
+float fq::game_module::TimeManager::GetDeltaTime() const
+{
+	return mDeltaTime;
+}

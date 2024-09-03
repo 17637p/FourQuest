@@ -25,8 +25,9 @@ namespace fq::game_module
 
 		mTargetObject = scene->GetObjectByName(info.targetObjectName);
 
-		if (mTargetObject.expired())
-			return false;
+		if (mTargetObject.expired()) return false;
+
+		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
 
 		mKeys = info.keys;
 
@@ -50,6 +51,8 @@ namespace fq::game_module
 
 		if (!mTargetObject.expired())
 		{
+			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
+
 			auto transform = mTargetObject.lock()->GetComponent<Transform>();
 
 			for (int i = 0; i < mKeys.size(); i++)
@@ -77,6 +80,8 @@ namespace fq::game_module
 	{
 		if (!mTargetObject.expired())
 		{
+			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
+
 			auto transform = mTargetObject.lock()->GetComponent<Transform>();
 
 			DirectX::SimpleMath::Matrix prevTransform =

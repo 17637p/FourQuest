@@ -32,8 +32,11 @@
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
 
+#include "LightmapWindow.h"
+
 fq::game_engine::GameEngine::GameEngine()
 	:mGameProcess(std::make_unique<GameProcess>())
+	,mLightMap(std::make_unique<LightmapWindow>())
 {
 }
 
@@ -42,11 +45,14 @@ fq::game_engine::GameEngine::~GameEngine()
 
 void fq::game_engine::GameEngine::Initialize()
 {
+
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
 
+	// Com객체 초기화 
+	HRESULT hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	// 쓰레드 풀 생성
 	fq::game_module::ThreadPool::Initialize();
 
@@ -68,7 +74,6 @@ void fq::game_engine::GameEngine::Initialize()
 		, true);
 
 	mGameProcess->mSoundManager->Initialize();
-	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get());
 
 	// 그래픽스 엔진 초기화
 	mGameProcess->mGraphics = fq::graphics::EngineExporter().GetEngine();
@@ -76,6 +81,8 @@ void fq::game_engine::GameEngine::Initialize()
 	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
 	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width, height);
+
+	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get(), width, height);
 
 	// 물리 엔진 초기화
 	mGameProcess->mPhysics = fq::physics::EngineExporter().GetEngine();
@@ -97,6 +104,8 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
+
+	mLightMap->Initialize(mGameProcess.get());
 
 	// 씬을 로드합니다 
 	mGameProcess->mLoadingSystem->ProcessLoading();

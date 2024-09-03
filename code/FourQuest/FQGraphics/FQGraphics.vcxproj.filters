@@ -521,6 +521,9 @@
     <ClCompile Include="D3D11PostProcessingManager.cpp">
       <Filter>Management\Source</Filter>
     </ClCompile>
+    <ClCompile Include="RenderJob.cpp">
+      <Filter>Object\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DecalCommon.hlsli">
@@ -701,6 +704,15 @@
     </CustomBuild>
     <CustomBuild Include="BlurHorzCS.hlsl">
       <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SSRCS.hlsl">
+      <Filter>Shader\CS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TestSSRPS.hlsl">
+      <Filter>Shader\PS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TestSSRVS.hlsl">
+      <Filter>Shader\VS</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -24,6 +24,8 @@ namespace fq::graphics
 		void Render() override;
 
 	private:
+		enum { INSTANCING_BUFFER_SIZE = 1024 };
+
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11JobManager> mJobManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
@@ -45,10 +47,10 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 
-		std::unique_ptr<ShaderProgram> mStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
-		std::unique_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mStaticMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mLightmapStaticMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mVertexColorStaticMeshShaderProgram;
+		std::shared_ptr<ShaderProgram> mSkinnedMeshShaderProgram;
 
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
@@ -63,5 +65,15 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>> mMaterialInstanceCB;
+
+		struct InstancingInfo
+		{
+			DirectX::SimpleMath::Matrix Transform;
+			DirectX::SimpleMath::Vector4 UVScaleOffset;
+			unsigned int UVIndex;
+		};
+
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> mInstancedIL;
+		std::shared_ptr<D3D11VertexBuffer> mInstancingVertexBuffer;
 	};
 }

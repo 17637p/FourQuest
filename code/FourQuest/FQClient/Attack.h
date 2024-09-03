@@ -48,7 +48,12 @@ namespace fq::client
 		/// 공격카운트를 계산하고 공격이 활성화되어있는지 확인합니다
 		/// </summary>
 		bool ProcessAttack();
-	
+
+		/// <summary>
+		/// 피격 사운드를 재생합니다 
+		/// </summary>
+		void PlayHitSound();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnUpdate(float dt) override;
@@ -71,6 +76,7 @@ namespace fq::client
 	
 		// 공격을 하는 객체 
 		fq::game_module::GameObject* mAttacker;
+		std::string mHitSound;
 
 		friend void RegisterMetaData();
 	};

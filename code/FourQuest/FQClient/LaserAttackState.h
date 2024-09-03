@@ -21,6 +21,7 @@ namespace fq::client
 		float mElapsedTime;
 
 		std::shared_ptr<game_module::GameObject> mGatherEffect;
+		std::shared_ptr<game_module::GameObject> mLaserHeadEffect;
 
 		friend void RegisterMetaData();
 	};

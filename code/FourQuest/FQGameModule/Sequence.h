@@ -97,6 +97,17 @@ namespace fq::game_module
 		std::string text = {};
 	};
 
+	struct CameraShakeTrackInfo
+	{
+		float startTime = 0.f;
+		float totalPlayTime = 1.f;
+
+		std::string cameraObjectName = {};
+		DirectX::SimpleMath::Vector3 magnitude = {};
+		int shakeCount = 100;
+		int originInitSpacing = 5;
+	};
+
 	class Sequence : public Component
 	{
 	public:
@@ -104,13 +115,17 @@ namespace fq::game_module
 		~Sequence();
 
 		virtual void OnStart() override;
-		virtual void OnUpdate(float dt) override;
+		virtual void OnFixedUpdate(float dt) override;
 		virtual void OnTriggerEnter(const Collision& collision) override;
 
 		bool GetIsPlay() const { return mbIsPlay; }
 		void SetIsPlay(bool isPlay) { mbIsPlay = isPlay; }
 		bool GetIsLoop() const { return mbIsLoop; }
 		void SetIsLoop(bool isLoop) { mbIsLoop = isLoop; }
+
+		/// <summary>
+		/// 인스펙터 창에서 해당 시간에 정지되어 있는 화면을 확인할 수 있도록 만든 함수입니다.
+		/// </summary>
 		float GetDurationTime() const { return mDurationTime; }
 		void SetDurationTime(float durationTime);
 
@@ -128,6 +143,8 @@ namespace fq::game_module
 		void SetSoundTrackInfo(const std::vector<SoundTrackInfo>& info) { mSoundTrackInfo = info; }
 		const std::vector<ObjectAnimationInfo>& GetObjectAnimationInfo() const { return mObjectAnimationInfo; }
 		void SetObjectAnimationInfo(const std::vector<ObjectAnimationInfo>& info) { mObjectAnimationInfo = info; }
+		const std::vector<CameraShakeTrackInfo>& GetCameraShakeTrackInfo() const { return mCameraShakeTrackInfo; }
+		void SetCameraShakeTrackInfo(const std::vector<CameraShakeTrackInfo>& info) { mCameraShakeTrackInfo = info; }
 
 		std::vector<std::shared_ptr<Track>>& GetTrackContainer() { return mTracks; }
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>>& GetAnimationContainer() { return mAnimationContainer; }
@@ -151,6 +168,7 @@ namespace fq::game_module
 		std::vector<EffectTrackInfo>			mEffectTrackInfo;
 		std::vector<SoundTrackInfo>				mSoundTrackInfo;
 		std::vector<TextPrintTrackInfo>			mTextPrintTrackInfo;
+		std::vector<CameraShakeTrackInfo>		mCameraShakeTrackInfo;
 
 		std::unordered_map<std::string, std::vector<std::shared_ptr<fq::graphics::IAnimation>>> mAnimationContainer;
 	};

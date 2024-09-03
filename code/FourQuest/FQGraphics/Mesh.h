@@ -20,8 +20,12 @@ namespace fq::graphics
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11VertexBuffer> uvBuffer);
 		void Draw(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex);
+		void DrawInstanced(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex, size_t instanceCount);
 
 		inline const fq::common::Mesh& GetMeshData() const;
+
+		std::shared_ptr<D3D11VertexBuffer> GetSharedVertexBuffer() const { return mVertexBuffer; }
+		std::shared_ptr<D3D11IndexBuffer> GetSharedIndexBuffer() const { return mIndexBuffer; }
 
 	protected:
 		fq::common::Mesh mMeshData;

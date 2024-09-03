@@ -33,10 +33,30 @@ void fq::game_engine::NavigationMeshWindow::Render()
 
 void fq::game_engine::NavigationMeshWindow::beginButtonBuild()
 {
+	// IS TRUE 인 STATIC MESH OBJECT만 굽기
 	if (ImGui::Button("Build", ImVec2{ 133,25 }))
 	{
 		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
-		mPathFindingSystem->BuildNavigationMesh(scene);
+		mPathFindingSystem->BuildNavigationMesh(scene, false);
+	}
+	// IS 여부에 상관없이 다 굽기
+	if (ImGui::Button("BuildAll", ImVec2{ 133,25 }))
+	{
+		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
+		mPathFindingSystem->BuildNavigationMesh(scene, true);
+	}
+	// 모두 다 IS ON 하기
+	if (ImGui::Button("AllIsOnUsedNavMesh", ImVec2{ 133,25 }))
+	{
+		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
+		mPathFindingSystem->IsOnAllMeshUsedNavMesh(scene);
+	}
+	ImGui::InputText("Object Name", &mObjectName);
+	// 특정 이름을 가진 오브젝트 IS OFF 하기 
+	if (ImGui::Button("IsOffToName", ImVec2{ 133,25 }))
+	{
+		fq::game_module::Scene* scene = mGameProcess->mSceneManager->GetCurrentScene();
+		mPathFindingSystem->IsOffMeshToName(scene, mObjectName);
 	}
 
 	ImGui::InputText(".Nav", &mSaveFileName);

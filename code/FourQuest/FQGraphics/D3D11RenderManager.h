@@ -51,7 +51,7 @@ namespace fq::graphics
 			EPipelineType pipelineType);
 		void Finalize();
 
-		void OnResize(unsigned short width, unsigned short height);
+		void OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight);
 
 		void BeginRender();
 		void Render();

@@ -18,7 +18,7 @@ namespace fq::client
 		/// </summary>
 		void Explode();
 
-		std::shared_ptr<fq::game_module::GameObject> EmitExplosionWaringUI();
+		std::shared_ptr<fq::game_module::GameObject> EmitExplosionEffect();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -27,7 +27,7 @@ namespace fq::client
 
 	private:
 		float mExplosionRadius;
-		float mExplosionDamage;
+		float mExplosionDamage;	
 		float mExplosionTime;
 
 		fq::game_module::PrefabResource mWarningUI;

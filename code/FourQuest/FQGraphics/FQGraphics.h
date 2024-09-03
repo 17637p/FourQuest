@@ -123,6 +123,8 @@ namespace fq::graphics
 
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
+		virtual std::set<IStaticMeshObject*> GetStaticMeshObjects() const override;
+
 		/// Primitive
 		// Debug Draw
 		virtual void DrawSphere(const debug::SphereInfo& sphereInfo) override;
@@ -192,6 +194,8 @@ namespace fq::graphics
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
 
 		// PostProcessing
+		virtual bool GetIsUsePostProcessing() const override;
+		virtual void SetIsUsePostProcessing(bool bUsePostProcessing) override;
 		virtual void  SetPostProcessingInfo(const PostProcessingInfo& info) override;
 		virtual const PostProcessingInfo& GetPostProcessingInfo() const override;
 

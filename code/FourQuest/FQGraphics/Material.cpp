@@ -135,7 +135,10 @@ namespace fq::graphics
 			mMetalics.push_back(materialData.Layers[i].Metalic);
 			mRoughnesses.push_back(materialData.Layers[i].Roughness);
 
-			mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);
+			if (!materialData.AlPhaFileName.empty())
+			{
+				mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);
+			}
 			// ¿œ¥‹ BaseColor ∏∏
 			//if (!materialData.MetalnessFileNames[i].empty()) mMetalness = std::make_shared<D3D11Texture>(device, basePath / materialData.MetalnessFileName);
 			//if (!materialData.RoughnessFileNames[i].empty()) mRoughness = std::make_shared<D3D11Texture>(device, basePath / materialData.RoughnessFileName);

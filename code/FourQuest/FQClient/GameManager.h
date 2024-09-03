@@ -25,12 +25,21 @@ namespace fq::client
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
+
 		void OnUpdate(float dt) override;
 		void OnStart() override;
 		void OnDestroy() override;
 
+		void EventProcessOffPopupPause();
+		void EventProcessOffPopupSetting();
+		void testKey();
+
 	private:
 		EventHandler mRegisterPlayerHandler;
+
+		// Pause UI Off Ã³¸®
+		EventHandler mOffPopupSettingHandler;
+		EventHandler mOffPopupPauseHandler;
 
 		std::vector<std::shared_ptr<game_module::GameObject>> mPlayers;
 

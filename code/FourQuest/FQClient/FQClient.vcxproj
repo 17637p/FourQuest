@@ -17,6 +17,14 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Test|Win32">
+      <Configuration>Test</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Test|x64">
+      <Configuration>Test</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQCommon\FQCommon.vcxproj">
@@ -33,6 +41,8 @@
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="AttackDefine.h" />
+    <ClInclude Include="AxeSoulAttackState.h" />
+    <ClInclude Include="BGM.h" />
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
@@ -46,17 +56,23 @@
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
     <ClInclude Include="BossMonsterWaitTargetState.h" />
+    <ClInclude Include="BowSoulAttackState.h" />
+    <ClInclude Include="Box.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
     <ClInclude Include="DamageCalculation.h" />
+    <ClInclude Include="DamageVariable.h" />
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameVaribleHelper.h" />
     <ClInclude Include="HpBar.h" />
+    <ClInclude Include="IGameVariable.h" />
     <ClInclude Include="KnightArmour.h" />
     <ClInclude Include="KnockBack.h" />
+    <ClInclude Include="LoadingUI.h" />
     <ClInclude Include="MagicArmour.h" />
     <ClInclude Include="MagicBallAttackState.h" />
     <ClInclude Include="MeleeMonster.h" />
@@ -83,6 +99,7 @@
     <ClInclude Include="MonsterIdle.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
+    <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
     <ClInclude Include="PlantMonsterAttckState.h" />
@@ -90,10 +107,14 @@
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerUIManager.h" />
+    <ClInclude Include="PlayerSoulVariable.h" />
+    <ClInclude Include="Portal.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
     <ClInclude Include="QuestManager.h" />
-    <ClInclude Include="QuestUI.h" />
+    <ClInclude Include="RepauseUI.h" />
+    <ClInclude Include="ResultUI.h" />
+    <ClInclude Include="SettingUI.h" />
     <ClInclude Include="ShiedlDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
@@ -104,6 +125,7 @@
     <ClInclude Include="ShieldAttackState.h" />
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
+    <ClInclude Include="SoulSelectUI.h" />
     <ClInclude Include="SwordSoulAttackState.h" />
     <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
@@ -111,11 +133,14 @@
     <ClInclude Include="StaffSoulAttack.h" />
     <ClInclude Include="StaffSoulAttackState.h" />
     <ClInclude Include="SwordAttackState.h" />
+    <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="AxeSoulAttackState.cpp" />
+    <ClCompile Include="BGM.cpp" />
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
@@ -129,15 +154,19 @@
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
     <ClCompile Include="BossMonsterWaitTargetState.cpp" />
+    <ClCompile Include="BowSoulAttackState.cpp" />
+    <ClCompile Include="Box.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
     <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameVaribleHelper.cpp" />
     <ClCompile Include="HpBar.cpp" />
     <ClCompile Include="KnightArmour.cpp" />
     <ClCompile Include="KnockBack.cpp" />
+    <ClCompile Include="LoadingUI.cpp" />
     <ClCompile Include="MagicArmour.cpp" />
     <ClCompile Include="MagicBallAttackState.cpp" />
     <ClCompile Include="MeleeMonster.cpp" />
@@ -169,10 +198,13 @@
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
+    <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />
     <ClCompile Include="QuestManager.cpp" />
-    <ClCompile Include="QuestUI.cpp" />
+    <ClCompile Include="RepauseUI.cpp" />
+    <ClCompile Include="ResultUI.cpp" />
+    <ClCompile Include="SettingUI.cpp" />
     <ClCompile Include="ShiedlDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -182,12 +214,14 @@
     <ClCompile Include="ShieldAttackState.cpp" />
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
+    <ClCompile Include="SoulSelectUI.cpp" />
     <ClCompile Include="SwordSoulAttackState.cpp" />
     <ClCompile Include="SpawnerDeadState.cpp" />
     <ClCompile Include="SpawnerOpenState.cpp" />
     <ClCompile Include="StaffSoulAttack.cpp" />
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
+    <ClCompile Include="TitleUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -203,6 +237,12 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -211,6 +251,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
@@ -231,10 +277,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -242,6 +294,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -290,6 +357,29 @@
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL 0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

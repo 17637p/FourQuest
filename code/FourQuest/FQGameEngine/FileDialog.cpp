@@ -562,7 +562,6 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 
 			auto createNodeHierarchy = [&gameProcess, &path, this](auto directory, auto fileName, const auto& modelData)
 				{
-					for (const auto& animation : modelData.Animations)
 					{
 						auto path = directory / fileName;
 						path += ".nodeHierachy";

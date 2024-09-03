@@ -24,8 +24,6 @@ void fq::client::LaserAttackState::OnStateEnter(game_module::Animator& animator,
 	auto magic = animator.GetComponent<MagicArmour>();
 	mGatherEffect = magic->EmitLaserGatherEffect();
 
-	// Razer 소리 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "LaserAttack", false , 0 });
 }
 
 void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -38,6 +36,14 @@ void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator
 	// Laser 발사 
 	if (mElapsedTime >= mLaserEmitTime)
 	{
+		// Laser Effect
+		if (mLaserHeadEffect == nullptr)
+		{
+			mLaserHeadEffect = magic->EmitLaserHeadEffect();
+			magic->EmitLaserLineEffect();
+		}
+
+		// Raycast 
 		magic->EmitLaser();
 
 		if (mGatherEffect != nullptr)
@@ -56,5 +62,7 @@ void fq::client::LaserAttackState::OnStateExit(game_module::Animator& animator, 
 		mGatherEffect = nullptr;
 	}
 
-
+	auto magic = animator.GetComponent<MagicArmour>();
+	magic->DestroyLaserEffect();
+	mLaserHeadEffect = nullptr;
 }

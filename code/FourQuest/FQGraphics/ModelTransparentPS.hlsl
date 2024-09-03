@@ -49,7 +49,23 @@ cbuffer cbMaterialInstance : register(b2)
     float cAlpha;
     bool cUseDissolveCutoff;
     float cDissolveCutoff;
+
+    int cUseRimLight;
+    float cRimPow;
+    int cUseInvRimLight;
+    float cInvRimPow;
+
+    float4 cRimColor;
+    float4 cInvRimColor;
+
+    float2 cUVScale;
+    float2 cUVOffset;
+
+    int cUseScaleOffset;
+    float cRimIntensity;
+    float cInvRimIntensity;
 };
+
 cbuffer cbDirectionalShadow : register(b3)
 {
     matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
@@ -79,6 +95,11 @@ SamplerState gLinearWrap : register(s3);
 PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
+
+    if (cUseScaleOffset)
+    {
+        pin.UV = pin.UV * cUVScale + cUVOffset;
+    }
 
 #ifdef VERTEX_COLOR
     float4 baseColor = gModelMaterial.BaseColor;
@@ -169,6 +190,13 @@ PixelOut main(VertexOut pin) : SV_TARGET
         emissive += outlineEmissive.rgb;
     }
 
+    if (gModelMaterial.UseMetalnessSmoothness)
+    {
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xw;
+        metalness = metalnessSmoothness.x;
+        roughness = 1 - metalnessSmoothness.y;
+    }
+
     float3 directLighting = 0.0;
 
     Material material;
@@ -244,6 +272,21 @@ PixelOut main(VertexOut pin) : SV_TARGET
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
         ambientLighting = diffuseIBL + specularIBL;
+    }
+
+    if (cUseRimLight)
+    {
+        float3 toEye = normalize(eyePosition - pin.PositionW.xyz);
+        float rim = saturate(dot(normal, toEye));
+        rim = pow(1 - rim, cRimPow);
+        emissive.rgb += rim * cRimColor.rgb * cRimIntensity;
+    }
+    if (cUseInvRimLight)
+    {
+        float3 toEye = normalize(eyePosition - pin.PositionW.xyz);
+        float rim = saturate(dot(normal, toEye));
+        rim = pow(rim, cInvRimPow);
+        emissive.rgb += rim * cInvRimColor.rgb * cInvRimIntensity;
     }
 
     float4 color = float4(directLighting + ambientLighting + emissive, opacity);

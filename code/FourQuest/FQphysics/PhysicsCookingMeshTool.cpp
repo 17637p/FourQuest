@@ -21,7 +21,7 @@ namespace fq::physics
 		physx::PxDefaultMemoryOutputStream buf;
 		physx::PxConvexMeshCookingResult::Enum result;
 
-		assert(PxCookConvexMesh(params, convexdesc, buf, &result));
+		PxCookConvexMesh(params, convexdesc, buf, &result);
 
 		physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 		physx::PxConvexMesh* convexMesh = physics->createConvexMesh(input);

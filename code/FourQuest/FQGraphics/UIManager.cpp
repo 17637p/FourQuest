@@ -128,15 +128,15 @@ void fq::graphics::UIManager::Render()
 		mRenderTarget->Clear(D2D1_COLOR_F{ 0, 0, 0, 1 });
 	}
 
+	drawAllImage(false);
 	drawAllText();
-	drawAllImage();
+	drawAllImage(true);
 
 	mRenderTarget->EndDraw();
 }
 
 void fq::graphics::UIManager::Finalize()
 {
-
 }
 
 void fq::graphics::UIManager::AddFont(const std::wstring& path)
@@ -358,6 +358,19 @@ void fq::graphics::UIManager::drawAllText()
 			}
 
 			std::wstring text = stringToWstring(drawTextInformation.Text);
+
+			// \\n 찾아서 \n으로 바꾸기
+			std::wstring toReplace = L"\\n";
+			std::wstring replaceWith = L"\n";
+
+			size_t pos = text.find(toReplace);
+
+			while (pos != std::wstring::npos) 
+			{
+				text.replace(pos, toReplace.length(), replaceWith);
+				pos = text.find(toReplace, pos + replaceWith.length());
+			}
+
 			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
 
 			switch (textObject->GetTextInformation().Align)
@@ -420,16 +433,32 @@ void fq::graphics::UIManager::drawAllText()
 					break;
 			}
 
-			mRenderTarget->DrawText(
-				text.c_str(),
-				text.length(),
-				mFonts[fontPath],
-				D2D1::RectF(
-					drawTextInformation.CenterX - drawTextInformation.Width / 2,
-					drawTextInformation.CenterY - drawTextInformation.Height / 2,
-					drawTextInformation.CenterX + drawTextInformation.Width / 2,
-					drawTextInformation.CenterY + drawTextInformation.Height / 2),
-				mBrushes[drawTextInformation.FontColor]);
+			if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
+			{
+				mRenderTarget->DrawText(
+					text.c_str(),
+					text.length(),
+					mFonts[fontPath],
+					D2D1::RectF(
+						drawTextInformation.CenterX - drawTextInformation.Width / 2,
+						drawTextInformation.CenterY - drawTextInformation.Height / 2,
+						drawTextInformation.CenterX + drawTextInformation.Width / 2,
+						drawTextInformation.CenterY + drawTextInformation.Height / 2),
+					mBrushes[drawTextInformation.FontColor]);
+			}
+			else
+			{
+				mRenderTarget->DrawText(
+					text.c_str(),
+					text.length(),
+					mFonts[fontPath],
+					D2D1::RectF(
+						drawTextInformation.CenterX,
+						drawTextInformation.CenterY,
+						drawTextInformation.CenterX + drawTextInformation.Width,
+						drawTextInformation.CenterY + drawTextInformation.Height),
+					mBrushes[drawTextInformation.FontColor]);
+			}
 		}
 	}
 }
@@ -439,7 +468,7 @@ bool IImageObjectCmpLayer(fq::graphics::IImageObject* a, fq::graphics::IImageObj
 	return a->GetLayer() > b->GetLayer();
 }
 
-void fq::graphics::UIManager::drawAllImage()
+void fq::graphics::UIManager::drawAllImage(bool isOnText)
 {
 	if (!mIsSorted)
 	{
@@ -452,6 +481,11 @@ void fq::graphics::UIManager::drawAllImage()
 	for (const auto& image : mImages)
 	{
 		if (!image->GetIsRender())
+		{
+			continue;
+		}
+
+		if (image->GetIsOnText() != isOnText)
 		{
 			continue;
 		}
@@ -532,14 +566,17 @@ void fq::graphics::UIManager::drawAllImage()
 			{
 				float radian = DirectX::XMConvertToRadians(degree - 270);
 
-				float radiusX = (image->GetWidth() / 2) * image->GetScaleX();
-				float radiusY = (image->GetHeight() / 2) * image->GetScaleY();
+				float radiusX = (image->GetWidth() / 2);
+				float radiusY = (image->GetHeight() / 2);
 
-				float startX = image->GetStartX();
-				float startY = image->GetStartY();
+				//float radiusX = (image->GetWidth() / 2);// *image->GetScaleX();
+				//float radiusY = (image->GetHeight() / 2);// *image->GetScaleY();
 
-				float maxLength = (radiusX > radiusY) ? radiusX : radiusY;
-				float halfDiagonal = (maxLength) * std::sqrt(2);
+				float startX = image->GetStartX() - radiusX;
+				float startY = image->GetStartY() - radiusY;
+
+				//float maxLength = (radiusX > radiusY) ? radiusX : radiusY;
+				//float halfDiagonal = (maxLength) * std::sqrt(2);
 
 				// 경로 기하학을 생성하여 반원 모양을 정의합니다.
 				ID2D1PathGeometry* pPathGeometry = nullptr;
@@ -548,11 +585,13 @@ void fq::graphics::UIManager::drawAllImage()
 				ID2D1GeometrySink* pSink = nullptr;
 				pPathGeometry->Open(&pSink);
 
-				startX = startX + radiusX - halfDiagonal;
-				startY = startY + radiusY - halfDiagonal;
-
-				radiusX = halfDiagonal;
-				radiusY = halfDiagonal;
+				//float halfDiagonal = radiusX;
+				//
+				//startX = startX + radiusX - halfDiagonal;
+				//startY = startY + radiusY - halfDiagonal;
+				//
+				//radiusX = halfDiagonal;
+				//radiusY = halfDiagonal;
 
 				float cos = std::cosf(radian) * radiusX;
 				float sin = std::sinf(radian) * radiusY;
@@ -580,6 +619,12 @@ void fq::graphics::UIManager::drawAllImage()
 				pSink->Close();
 				pSink->Release();
 
+				mRenderTarget->SetTransform
+				(
+					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
+				);
+
 				// 클리핑 영역을 설정합니다.
 				mRenderTarget->PushLayer(
 					D2D1::LayerParameters(
@@ -587,12 +632,6 @@ void fq::graphics::UIManager::drawAllImage()
 						pPathGeometry
 					),
 					nullptr
-				);
-
-				mRenderTarget->SetTransform
-				(
-					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
 				);
 
 				// 이미지를 그립니다.
@@ -644,6 +683,8 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 
 	newImageObject->SetFillDegree(uiInfo.fillDegree);
 	newImageObject->SetRenderMode(uiInfo.isCenter);
+
+	newImageObject->SetIsOnText(uiInfo.isOnText);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;

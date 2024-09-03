@@ -9,7 +9,7 @@ namespace fq::game_module
 	class Animator;
 	class CharacterController;
 	class Transform;
-	class SoundClip;
+	class StaticMeshRenderer;
 }
 
 namespace fq::client
@@ -34,7 +34,7 @@ namespace fq::client
 		float GetHPRatio() const { return mHp / mMaxHp; }
 		float GetSoultStackRatio() const { return mSoulStack / mMaxSoulStack; }
 		float GetPlayerID() const;
-		
+
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 
 		/// <summary>
@@ -53,6 +53,16 @@ namespace fq::client
 		void EmitSwordSoulAttack();
 
 		/// <summary>
+		/// 활 영혼 공격을 방출합니다
+		/// </summary>
+		void EmitBowSoulAttack();
+
+		/// <summary>
+		/// 도끼 영혼 공격을 방출합니다
+		/// </summary>
+		void EmitAxeSoulAttack();
+
+		/// <summary>
 		/// 소울타입에 해당하는 무기를 장착합니다
 		/// </summary>
 		void EquipSoulWeapone();
@@ -62,11 +72,19 @@ namespace fq::client
 		/// </summary>
 		void EquipArmourWeapone();
 
+		/// <summary>
+		/// 소울 스택을 더합니다 
+		/// </summary>
+		void AddSoulStack(float stack);
+
+		void SetHp(float hp);
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
 		void equipWeapone(ESoulType equipType, bool isEquip);
+		void linkWeaponeMeshes();
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -79,7 +97,6 @@ namespace fq::client
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
 		game_module::Transform* mTransform;
-		game_module::SoundClip* mSoundClip;
 
 		ESoulType mSoulType; // 영혼 타입
 		ESoulType mEquipWeapone;
@@ -94,19 +111,17 @@ namespace fq::client
 
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 
-
 		float mFeverTime; // 갑옷 버프 시간
 
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 		game_module::PrefabResource mSwordSoulAttack;
-		game_module::PrefabResource mAxeSoulAttack;
-		game_module::PrefabResource mBowSoulAttack;
+		game_module::PrefabResource mAxeSoulAttack; // 도끼 영혼 공격 
+		game_module::PrefabResource mBowSoulAttack; // 활 영혼 공격 	
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
-
-		float mAttackPositionOffset;
-
+		
 		bool mbOnShieldBlock;
 
+		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();
 	};
 }

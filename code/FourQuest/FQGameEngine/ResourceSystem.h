@@ -18,6 +18,7 @@ namespace fq::game_engine
 		using Path = std::string;
 		using Mutex = std::shared_mutex;
 		using EventHandler = fq::game_module::EventHandler;
+
 	public:
 		ResourceSystem();
 		~ResourceSystem();
@@ -29,21 +30,32 @@ namespace fq::game_engine
 		void SaveObjectResource(SceneResourceList& list, game_module::GameObject* object);
 		void SaveAnimationResource(SceneResourceList& list);
 
-		const fq::common::Model& GetModel(const Path& path)const ;
+		const fq::common::Model& GetModel(const Path& path)const;
 
 		void LoadSceneResource(fq::event::PreOnLoadScene event);
-		
-		std::shared_ptr<graphics::IStaticMesh> GetStaticMesh(const Path& modelPath, std::string meshName)const;
-		std::shared_ptr<graphics::ISkinnedMesh> GetSkinnedMesh(const Path& modelPath, std::string meshName)const;
-		std::shared_ptr<graphics::IMaterial> GetMaterial(const Path& path)const;
-		std::shared_ptr<graphics::IAnimation> GetAnimation(const Path& path)const;
 
-		bool HasModel(const Path& path)const;
-		bool HasAnimation(const Path& path)const;
+		std::shared_ptr<graphics::IStaticMesh> GetStaticMesh(const Path& modelPath, std::string meshName) const;
+		std::shared_ptr<graphics::ISkinnedMesh> GetSkinnedMesh(const Path& modelPath, std::string meshName) const;
+		std::shared_ptr<graphics::IMaterial> GetMaterial(const Path& path) const;
+		std::shared_ptr<graphics::IAnimation> GetAnimation(const Path& path) const;
+		std::shared_ptr<graphics::IUVAnimation> GetUVAnimation(const Path& path) const;
+		std::shared_ptr<graphics::INodeHierarchy> GetNodeHierarchy(const Path& path) const;
+
+		bool HasModel(const Path& path) const;
+		bool HasAnimation(const Path& path) const;
 
 		void LoadModelResource(const Path& path);
 		void LoadAnimation(const Path& path);
 		void LoadMaterial(const Path& path);
+		void LoadUVAnimation(const Path& path);
+		void LoadNodeHierarchy(const Path& path);
+
+		inline std::map<Path, std::shared_ptr<graphics::IMaterial>> GetMaterials() const; // 그레이 스케일로 인해 추가
+
+		/// <summary>
+		/// 현재 로드된 리소스 비율을 반환합니다.
+		/// </summary>
+		float GetLoadingRatio()const;
 
 	private:
 		GameProcess* mGameProcess;
@@ -57,7 +69,13 @@ namespace fq::game_engine
 		std::map<Path, std::shared_ptr<graphics::IAnimation>> mAnimations;
 		std::map<Path, std::shared_ptr<graphics::IUVAnimation>> mUVAnimations;
 		std::map<Path, std::shared_ptr<graphics::IMaterial>> mMaterials;
-		std::map<Path, std::shared_ptr<graphics::IParticleMaterial>> mParticleMaterials;
-		std::map<Path, std::shared_ptr<graphics::IDecalMaterial>> mDecalMaterials;
+
+		std::atomic<size_t> mResourceCount;
+		std::atomic<size_t> mLoadedResourceCount;
 	};
+
+	inline std::map<std::string, std::shared_ptr<graphics::IMaterial>> ResourceSystem::GetMaterials() const
+	{
+		return mMaterials;
+	}
 }

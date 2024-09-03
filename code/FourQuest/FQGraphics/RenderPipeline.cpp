@@ -4,6 +4,7 @@
 #include "D3D11Common.h"
 #include "Pass.h"
 #include "Define.h"
+#include "FullScreenPass.h"
 
 namespace fq::graphics
 {
@@ -45,16 +46,16 @@ namespace fq::graphics
 		mNoneDSV = nullptr;
 	}
 
-	void RenderPipeline::OnResize(unsigned short width, unsigned short height)
+	void RenderPipeline::OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight)
 	{
 		mSwapChainRTV->Release();
 		mBackBufferRTV->Release();
 		mDSV->Release();
 		mNoneDSV->Release();
 
-		mDevice->OnResize(width, height);
+		mDevice->OnResize(oriWidth, oriHeight);
 
-		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, width, height);
+		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, oriWidth, oriHeight);
 		mBackBufferRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mDSV->OnResize(mDevice, ED3D11DepthStencilViewType::Default, width, height);
 		mNoneDSV->OnResize(mDevice, ED3D11DepthStencilViewType::None, width, height);
@@ -65,7 +66,7 @@ namespace fq::graphics
 		{
 			pass->OnResize(width, height);
 		}
-		mFullScreenLastPass->OnResize(width, height);
+		mFullScreenLastPass->OnResize(width, height, oriWidth, oriHeight);
 	}
 
 	void RenderPipeline::BeginRender()

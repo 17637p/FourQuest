@@ -13,6 +13,8 @@
 
 fq::game_engine::ResourceSystem::ResourceSystem()
 	:mGameProcess(nullptr)
+	, mLoadedResourceCount(0)
+	, mResourceCount(0)
 {}
 
 fq::game_engine::ResourceSystem::~ResourceSystem()
@@ -34,26 +36,29 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	SceneResourceList list;
 	list.Load(listPath.string());
 
-	// 리소스 로드 
-	auto pool = game_module::ThreadPool::GetInstance();
+	mLoadedResourceCount = 0;
+	mResourceCount = list.modelPaths.size() + list.animationPaths.size() +list.materialPaths.size();
 
 	// Model 로드
 	for (const auto& modelPath : list.modelPaths)
 	{
 		LoadModelResource(modelPath);
+		++mLoadedResourceCount;
 	}
 
 	// Animation 로드
 	for (const auto& animationPath : list.animationPaths)
 	{
 		LoadAnimation(animationPath);
+		++mLoadedResourceCount;
 	}
 
 	//// Material 로드
-	//for (const auto& materialPath : list.materialPaths)
-	//{
-	//	LoadMaterial(materialPath);
-	//}
+	for (const auto& materialPath : list.materialPaths)
+	{
+		LoadMaterial(materialPath);
+		++mLoadedResourceCount;
+	}
 }
 
 void fq::game_engine::ResourceSystem::Finalize()
@@ -81,11 +86,13 @@ void fq::game_engine::ResourceSystem::LoadModelResource(const Path& modelPath)
 		{
 			auto staticMesh = mGameProcess->mGraphics->CreateStaticMesh(mesh);
 			mStaticMeshes.insert({ modelPath + mesh.Name, staticMesh });
+			mStaticMeshes.insert({ modelPath + node.Name, staticMesh }); // 유니티에서 메쉬 이름이 노드 이름으로 변환되어 해당 로직 추가합니다_홍지환
 		}
 		else
 		{
 			auto skinnedMesh = mGameProcess->mGraphics->CreateSkinnedMesh(mesh);
 			mSkinnedMeshes.insert({ modelPath + mesh.Name, skinnedMesh });
+			mSkinnedMeshes.insert({ modelPath + node.Name, skinnedMesh }); // 유니티에서 메쉬 이름이 노드 이름으로 변환되어 해당 로직 추가합니다_홍지환
 		}
 	}
 
@@ -120,6 +127,30 @@ void fq::game_engine::ResourceSystem::LoadMaterial(const Path& path)
 	auto materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(path);
 	auto material = mGameProcess->mGraphics->CreateMaterial(materialInfo);
 	mMaterials.insert({ path, material });
+}
+
+void fq::game_engine::ResourceSystem::LoadUVAnimation(const Path& path)
+{
+	if (mUVAnimations.find(path) != mUVAnimations.end())
+	{
+		return;
+	}
+
+	auto uvAnimationInfo = mGameProcess->mGraphics->ReadUVAnimation(path);
+	auto uvAnimation = mGameProcess->mGraphics->CreateUVAnimation(uvAnimationInfo);
+	mUVAnimations.insert({ path, uvAnimation });
+}
+
+void fq::game_engine::ResourceSystem::LoadNodeHierarchy(const Path& path)
+{
+	if (mNodeHierarchies.find(path) != mNodeHierarchies.end())
+	{
+		return;
+	}
+
+	auto nodeHierarchyInfo = mGameProcess->mGraphics->ReadNodeHierarchy(path);
+	auto nodeHierarchy = mGameProcess->mGraphics->CreateNodeHierarchy(nodeHierarchyInfo);
+	mNodeHierarchies.insert({ path, nodeHierarchy });
 }
 
 void fq::game_engine::ResourceSystem::SaveSceneResourceList(const std::filesystem::path& path)
@@ -266,9 +297,26 @@ std::shared_ptr<fq::graphics::IAnimation> fq::game_engine::ResourceSystem::GetAn
 	return iter == mAnimations.end() ? nullptr : iter->second;
 }
 
+std::shared_ptr<fq::graphics::IUVAnimation> fq::game_engine::ResourceSystem::GetUVAnimation(const Path& path) const
+{
+	auto iter = mUVAnimations.find(path);
+	return iter == mUVAnimations.end() ? nullptr : iter->second;
+}
+
+std::shared_ptr<fq::graphics::INodeHierarchy> fq::game_engine::ResourceSystem::GetNodeHierarchy(const Path& path) const
+{
+	auto iter = mNodeHierarchies.find(path);
+	return iter == mNodeHierarchies.end() ? nullptr : iter->second;
+}
+
 std::shared_ptr<fq::graphics::ISkinnedMesh> fq::game_engine::ResourceSystem::GetSkinnedMesh(const Path& modelPath, std::string meshName) const
 {
 	auto iter = mSkinnedMeshes.find(modelPath + meshName);
 	return iter == mSkinnedMeshes.end() ? nullptr : iter->second;
+}
+
+float fq::game_engine::ResourceSystem::GetLoadingRatio() const
+{
+	return static_cast<float>(mLoadedResourceCount) / mResourceCount;
 }
 

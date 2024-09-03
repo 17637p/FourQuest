@@ -20,6 +20,7 @@
 #include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 
+#include "ResourceSystem.h"
 #include "GameProcess.h"
 #include "ModelSystem.h"
 #include "RenderingSystem.h"
@@ -383,15 +384,15 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
 			auto meshName = staticMeshRenderer->GetMeshName();
 			auto modelPath = staticMeshRenderer->GetModelPath();
-			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath);
 
-			//bool check = mGameProcess->mRenderingSystem->IsLoadedModel(key);
-			//assert(check);
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+			assert(check);
 
-			const auto& model = mGameProcess->mGraphics->GetModel(key);
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
 			const auto& mesh = ModelSystem::GetMesh(model, meshName);
 			convexMeshInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
 			convexMeshInfo.vertexSize = mesh.Vertices.size();
+			convexMeshInfo.convexMeshHash = entt::hashed_string(modelPath.c_str()).value();
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{
@@ -402,14 +403,21 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		{
 			auto skinnedMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
 			auto modelPath = skinnedMeshRenderer->GetModelPath();
-			auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath);
 			auto meshName = skinnedMeshRenderer->GetMeshName();
 
-			//bool check = mGameProcess->mRenderingSystem->IsLoadedModel(key);
-			//assert(check);
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
+			assert(check);
 
-			const auto& model = mGameProcess->mGraphics->GetModel(key);
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+			const auto& mesh = ModelSystem::GetMesh(model, meshName);
+			convexMeshInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
+			convexMeshInfo.vertexSize = mesh.Vertices.size();
+			convexMeshInfo.convexMeshHash = entt::hashed_string(modelPath.c_str()).value();
 
+			for (int i = 0; i < mesh.Vertices.size(); ++i)
+			{	
+				convexMeshInfo.vertices[i] = -mesh.Vertices[i].Pos;
+			}
 		}
 		meshCollider->SetConvexMeshInfomation(convexMeshInfo);
 
@@ -418,7 +426,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			bool check = mPhysicsEngine->CreateStaticBody(convexMeshInfo, type);
 			assert(check);
 			mColliderContainer.insert({ id,
-				{mCapsuleTypeID
+				{mMeshTypeID
 				, meshCollider->shared_from_this()
 				,object->shared_from_this()
 				,meshCollider,false} });
@@ -430,7 +438,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type, isKinematic);
 			assert(check);
 			mColliderContainer.insert({ id,
-				{mCapsuleTypeID
+				{mMeshTypeID
 				, meshCollider->shared_from_this()
 				,object->shared_from_this()
 				,meshCollider,false} });
@@ -467,7 +475,6 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 			return;
 
 		auto animatorMesh = object->GetComponent<fq::game_module::Animator>();
-
 
 		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
 			return;
@@ -515,26 +522,26 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 				switch (linkData->GetShapeType())
 				{
-				case EShapeType::BOX:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
-				}
-				break;
-				case EShapeType::SPHERE:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
-				}
-				break;
-				case EShapeType::CAPSULE:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
-				}
-				break;
-				case EShapeType::END:
-				{
-					mPhysicsEngine->AddArticulationLink(id, linkInfo);
-				}
-				break;
+					case EShapeType::BOX:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
+					}
+					break;
+					case EShapeType::SPHERE:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
+					}
+					break;
+					case EShapeType::CAPSULE:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
+					}
+					break;
+					case EShapeType::END:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo);
+					}
+					break;
 				}
 
 				for (auto& [name, childLinkData] : linkData->GetChildrenLinkData())
@@ -895,6 +902,17 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 				data.transform._43 = pos.z + offset.z;
 			}
 
+			// Tag가 변경된 경우
+			auto capsuleInfo = capsule->GetCapsuleInfomation();
+			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				capsuleInfo.colliderInfo.layerNumber = currentLayer;
+				capsule->SetCapsuleInfomation(capsuleInfo);
+			}
+
 			mPhysicsEngine->SetRigidBodyData(id, data);
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
@@ -1052,24 +1070,24 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 
 		switch (type)
 		{
-		case fq::physics::ECollisionEventType::ENTER_OVERLAP:
-			lhsObject->OnTriggerEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_OVERLAP:
-			lhsObject->OnTriggerStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_OVERLAP:
-			lhsObject->OnTriggerExit(collision);
-			break;
-		case fq::physics::ECollisionEventType::ENTER_COLLISION:
-			lhsObject->OnCollisionEnter(collision);
-			break;
-		case fq::physics::ECollisionEventType::ON_COLLISION:
-			lhsObject->OnCollisionStay(collision);
-			break;
-		case fq::physics::ECollisionEventType::END_COLLISION:
-			lhsObject->OnCollisionExit(collision);
-			break;
+			case fq::physics::ECollisionEventType::ENTER_OVERLAP:
+				lhsObject->OnTriggerEnter(collision);
+				break;
+			case fq::physics::ECollisionEventType::ON_OVERLAP:
+				lhsObject->OnTriggerStay(collision);
+				break;
+			case fq::physics::ECollisionEventType::END_OVERLAP:
+				lhsObject->OnTriggerExit(collision);
+				break;
+			case fq::physics::ECollisionEventType::ENTER_COLLISION:
+				lhsObject->OnCollisionEnter(collision);
+				break;
+			case fq::physics::ECollisionEventType::ON_COLLISION:
+				lhsObject->OnCollisionStay(collision);
+				break;
+			case fq::physics::ECollisionEventType::END_COLLISION:
+				lhsObject->OnCollisionExit(collision);
+				break;
 		}
 	}
 
@@ -1086,6 +1104,7 @@ void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
 	rayCastInfo.origin = event.origin;
 
 	auto result = mPhysicsEngine->RayCast(rayCastInfo);
+	
 	// Block 정보
 	if (result.hasBlock)
 	{

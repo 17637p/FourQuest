@@ -104,7 +104,7 @@ namespace fq::game_module
 		//////////////////////////////////////////////////////////////////////////
 		//								World									//
 		//////////////////////////////////////////////////////////////////////////
-		
+
 		/// <summary>
 		/// 월드 공간 기준으로 Transform을 구성합니다 
 		/// </summary>
@@ -147,7 +147,7 @@ namespace fq::game_module
 		/// 월드행렬을 설정합니다
 		/// </summary>
 		void SetWorldMatrix(Matrix matrix);
-		
+
 		/// <summary>
 		/// 월드 행렬을 반환합니다
 		/// </summary>
@@ -212,6 +212,11 @@ namespace fq::game_module
 		/// </summary>
 		DirectX::SimpleMath::Vector3 GetLookAtVector()const;
 
+		/// <summary>
+		/// 계층 구조 갱신 없이 로컬 트랜스폼에 행렬에 추가적인 행렬 연산을 가합니다.
+		/// </summary>
+		void SetPreAppliedTransform(Matrix matrix);
+
 	private:
 		void decomposeWorldMatrix();
 		void decomposeLocalMatrix();
@@ -219,6 +224,8 @@ namespace fq::game_module
 		void updateLocalMatrix();
 
 		entt::meta_handle GetHandle() override;
+
+		void updatePreAppliedTransformRecurvise(Matrix invMatrix);
 
 	private:
 		FQTransform mFQTransform;

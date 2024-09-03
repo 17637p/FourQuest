@@ -3,7 +3,7 @@
 
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
-#include "../FQGameModule/SoundClip.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -12,6 +12,9 @@
 #include "PlayerUIManager.h"
 #include "DamageCalculation.h"
 #include "StaffSoulAttack.h"
+#include "LinearAttack.h"
+#include "ClientHelper.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -26,17 +29,15 @@ fq::client::Player::Player()
 	, mFeverTime(0.f)
 	, mSoulType(ESoulType::Sword)
 	, mArmourType(EArmourType::Knight)
-	, mAttackPositionOffset{}
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
 	, mAttackSpeed(1.f)
 	, mEquipWeapone(ESoulType::Sword)
+	, mWeaponeMeshes{ nullptr }
 {}
 
 fq::client::Player::~Player()
-{
-
-}
+{}
 
 std::shared_ptr<fq::game_module::Component> fq::client::Player::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -73,9 +74,6 @@ void fq::client::Player::OnStart()
 	mController = GetComponent<fq::game_module::CharacterController>();
 	mTransform = GetComponent<fq::game_module::Transform>();
 
-	// 사운드 가져오기  
-	mSoundClip = GetScene()->GetObjectByName("SoundManager")->GetComponent<game_module::SoundClip>();
-
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
 		{ GetGameObject(), EPlayerType::LivingArmour });
@@ -89,10 +87,11 @@ void fq::client::Player::OnStart()
 	// 영혼 타입 적용
 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
+	// 무기 연결
+	linkWeaponeMeshes();
+
 	// 무기 착용
 	EquipArmourWeapone();
-
-	// TODO : 갑옷 버프 적용
 }
 
 void fq::client::Player::processInput()
@@ -139,9 +138,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 				if (radian >= DirectX::XM_PIDIV2)
 				{
-					// TODO :: Shield Block 소리 , 이펙트  추가
-					mSoundClip->Play("ShieldBlock", false, 0);
-
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , 3 });
 					return;
 				}
 			}
@@ -181,9 +178,9 @@ void fq::client::Player::SummonSoul()
 	soul->GetComponent<Soul>()->SetSoulType(mSoulType);
 
 	// 위치 설정
-	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
-	localMat._42 += 1.f;
-	soul->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
+	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
+	worldMat._42 += 1.f;
+	soul->GetComponent<game_module::Transform>()->SetWorldMatrix(worldMat);
 
 	GetScene()->AddGameObject(soul);
 	GetScene()->DestroyGameObject(GetGameObject());
@@ -226,6 +223,44 @@ void fq::client::Player::EmitStaffSoulAttack()
 
 	GetScene()->AddGameObject(attackObj);
 }
+
+void fq::client::Player::EmitBowSoulAttack()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mBowSoulAttack);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	auto attackComponent = attackObj->GetComponent<Attack>();
+	auto linearAttack = attackObj->GetComponent<LinearAttack>();
+
+	// 화살 방향 설정
+	auto rotation = mTransform->GetWorldRotation();
+	float halfRadian = DirectX::XMConvertToRadians(PlayerSoulVariable::SoulBowAttackAngle) * 0.5f;
+	float angle = helper::RandomGenerator::GetInstance().GetRandomNumber(-halfRadian, +halfRadian);
+	auto angleOffset = rotation * DirectX::SimpleMath::Quaternion::CreateFromAxisAngle({ 0.f,1.f,0.f }, angle);
+	auto fowardDirection = DirectX::SimpleMath::Matrix::CreateFromQuaternion(angleOffset).Forward();
+
+	// 화살 시작 위치
+	auto position = mTransform->GetWorldPosition();
+	position.y += 1.f;
+	position += fowardDirection * PlayerSoulVariable::SoulBowAttackOffset;
+
+	attackT->GenerateWorld(position, angleOffset, attackT->GetWorldScale());
+	linearAttack->SetMoveDirection(fowardDirection);
+	linearAttack->SetMoveSpeed(PlayerSoulVariable::SoulBowAttackSpeed);
+
+	// 공격 설정 
+	AttackInfo attackInfo{};
+	attackInfo.damage = dc::GetBowSoulDamage(mAttackPower);
+	attackInfo.attackDirection = fowardDirection;
+	attackInfo.attacker = GetGameObject();
+	attackInfo.bIsInfinite = false;
+	attackInfo.remainingAttackCount = 1;
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(attackObj);
+}
+
 
 void fq::client::Player::EmitSwordSoulAttack()
 {
@@ -277,23 +312,108 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 	{
 		case fq::client::ESoulType::Sword:
 		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
 		}
 		break;
 		case fq::client::ESoulType::Staff:
 		{
-
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
 		}
 		break;
 		case fq::client::ESoulType::Axe:
 		{
-
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
 		}
 		break;
 		case fq::client::ESoulType::Bow:
 		{
-
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
 		}
 		break;
 	}
 }
 
+void fq::client::Player::linkWeaponeMeshes()
+{
+	for (const auto& child : mTransform->GetChildren())
+	{
+		auto name = child->GetGameObject()->GetName();
+
+		if (name.find("ShieldSocket") != std::string::npos)
+		{
+			for (const auto& weapone : child->GetChildren())
+			{
+				auto name = weapone->GetGameObject()->GetName();
+				auto mesh = weapone->GetComponent<game_module::StaticMeshRenderer>();
+
+				if (name.find("Shield") != std::string::npos)
+				{
+					mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)] = mesh;
+				}
+				else if (name.find("Bow") != std::string::npos)
+				{
+					mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)] = mesh;
+				}
+			}
+		}
+		else if (name.find("WeaponeSocket") != std::string::npos)
+		{
+			for (const auto& weapone : child->GetChildren())
+			{
+				auto name = weapone->GetGameObject()->GetName();
+				auto mesh = weapone->GetComponent<game_module::StaticMeshRenderer>();
+
+				if (name.find("Sword") != std::string::npos)
+				{
+					mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)] = mesh;
+				}
+				else if (name.find("Staff") != std::string::npos)
+				{
+					mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)] = mesh;
+				}
+				else if (name.find("Axe") != std::string::npos)
+				{
+					mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)] = mesh;
+				}
+				else if (name.find("Bow") != std::string::npos)
+				{
+					mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)] = mesh;
+				}
+			}
+		}
+	}
+}
+
+void fq::client::Player::EmitAxeSoulAttack()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAxeSoulAttack);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<game_module::Transform>();
+	auto attackComponent = attackObj->GetComponent<Attack>();
+	auto foward = mTransform->GetLookAtVector();
+
+	// 공격 트랜스폼 설정
+	DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
+	attackT->SetWorldPosition(pos);
+
+	// 공격설정
+	AttackInfo attackInfo{};
+	attackInfo.damage = dc::GetAxeSoulDamage(mAttackPower);
+	attackInfo.attacker = GetGameObject();
+	attackComponent->Set(attackInfo);
+
+	GetScene()->AddGameObject(attackObj);
+}
+
+void fq::client::Player::AddSoulStack(float stack)
+{
+	mSoulStack = std::min(mMaxSoulStack, mSoulStack + stack);
+}
+
+void fq::client::Player::SetHp(float hp)
+{
+	mHp = hp;
+	mMaxHp = hp;
+}

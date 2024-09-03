@@ -67,7 +67,7 @@ namespace fq::graphics
 			const DirectX::SimpleMath::Color& color);
 
 	private:
-		bool mbIsRenderDebug = true;
+		bool mbIsRenderDebug = false;
 
 		std::unique_ptr<DirectX::DX11::CommonStates> mStates;
 		std::unique_ptr<DirectX::DX11::BasicEffect> mBatchEffect;

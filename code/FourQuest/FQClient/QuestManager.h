@@ -36,10 +36,13 @@ namespace fq::client
 		std::vector<Quest> GetSubQuests() const { return mSubQuests; }
 
 		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
+		void RenderOffQuest();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+
+		void SetScaleAndPositionScreen();
 
 		void EventProcessKillMonster();
 		void EventProcessPlayerCollideTrigger();

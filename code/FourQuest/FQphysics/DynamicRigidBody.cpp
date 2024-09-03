@@ -93,6 +93,7 @@ namespace fq::physics
 		physx::PxMaterial* material;
 		mRigidDynamic->getShapes(&shape, 1);
 		shape->getMaterials(&material, 1);
+		void* userData = shape->userData;
 
 		if (shape->getGeometry().getType() == physx::PxGeometryType::eBOX)
 		{
@@ -102,7 +103,7 @@ namespace fq::physics
 			boxGeometry.halfExtents.z = mExtent.z * scale.z;
 			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, boxGeometry, physics, material, collisionMatrix);
+			updateShapeGeometry(mRigidDynamic, boxGeometry, physics, material, collisionMatrix, userData);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eSPHERE)
 		{
@@ -112,7 +113,7 @@ namespace fq::physics
 			sphereGeometry.radius = mRadius * maxValue;
 			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, sphereGeometry, physics, material, collisionMatrix);
+			updateShapeGeometry(mRigidDynamic, sphereGeometry, physics, material, collisionMatrix, userData);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCAPSULE)
 		{
@@ -124,7 +125,7 @@ namespace fq::physics
 			capsuleGeometry.halfHeight = mHalfHeight * scale.x;
 			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, capsuleGeometry, physics, material, collisionMatrix);
+			updateShapeGeometry(mRigidDynamic, capsuleGeometry, physics, material, collisionMatrix, userData);
 		}
 		else if (shape->getGeometry().getType() == physx::PxGeometryType::eCONVEXMESH)
 		{
@@ -134,7 +135,7 @@ namespace fq::physics
 			convexmeshGeometry.scale.scale.z = scale.z;
 			assert(shape->getReferenceCount() == 1);
 			mRigidDynamic->detachShape(*shape);
-			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix);
+			updateShapeGeometry(mRigidDynamic, convexmeshGeometry, physics, material, collisionMatrix, userData);
 		}
 	}
 
@@ -154,15 +155,6 @@ namespace fq::physics
 		newFilterData.word0 = newLayerNumber;
 		newFilterData.word1 = collisionMatrix[newLayerNumber];
 		shape->setSimulationFilterData(newFilterData);
-
-		//CollisionData* data = (CollisionData*)mRigidDynamic->userData;
-		//data->isDead = true;
-
-		//std::shared_ptr<CollisionData> newData = std::make_shared<CollisionData>();
-		//newData->myId = mID;
-		//newData->myLayerNumber = mLayerNumber;
-		//collisionDataManager.lock()->Create(mID, newData);
-		//shape->userData = newData.get();
 
 		return true;
 	}

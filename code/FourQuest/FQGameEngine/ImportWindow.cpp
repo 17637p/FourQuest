@@ -85,9 +85,81 @@ void fq::game_engine::ImportWindow::Render()
 		{
 			createGameObject();
 		}
+
+		if (ImGui::Button("Change data by scene json(lightmap scaleoffset)", ImVec2{ 133,25 }))
+		{
+			changeData();
+		}
 	}
 
 	ImGui::End();
+}
+
+void fq::game_engine::ImportWindow::changeData()
+{
+	if (!std::filesystem::exists(mImportFileName) || mImportFileName.extension() != ".json")
+	{
+		return;
+	}
+
+	std::vector<importData::GameObjectLoadInfo> gameObjectInfos = loadData(mImportFileName);
+	std::map<std::string, size_t> nameInfoIndexMap;
+
+	for (size_t i = 0; i < gameObjectInfos.size(); ++i)
+	{
+		const auto& objectInfo = gameObjectInfos[i];
+		std::string objectName = createObjectName(objectInfo);
+
+		assert(nameInfoIndexMap.find(objectName) == nameInfoIndexMap.end());
+		nameInfoIndexMap.insert({ objectName, i });
+	}
+
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	scene->ViewComponents<game_module::StaticMeshRenderer>(
+		[&nameInfoIndexMap, &gameObjectInfos](game_module::GameObject& object, game_module::StaticMeshRenderer& renderer)
+		{
+			const auto& objectName = object.GetName();
+
+			auto find = nameInfoIndexMap.find(objectName);
+
+			if (find != nameInfoIndexMap.end())
+			{
+				size_t index = find->second;
+
+				if (index < gameObjectInfos.size())
+				{
+					const auto& objectInfo = gameObjectInfos[index];
+					renderer.SetLightmapIndex(objectInfo.MeshData.LightmapIndex);
+					renderer.SetLightmapUVScaleOffset(objectInfo.MeshData.LightmapScaleOffset);
+				}
+			}
+		});
+
+	scene->ViewComponents<game_module::Terrain>(
+		[&nameInfoIndexMap, &gameObjectInfos](game_module::GameObject& object, game_module::Terrain& terrain)
+		{
+			const auto& objectName = object.GetName();
+
+			auto find = nameInfoIndexMap.find(objectName);
+
+			if (find != nameInfoIndexMap.end())
+			{
+				size_t index = find->second;
+
+				if (index < gameObjectInfos.size())
+				{
+					const auto& objectInfo = gameObjectInfos[index];
+					terrain.SetLightmapIndex(objectInfo.TerrainData.LightmapIndex);
+					terrain.SetLightmapUVScaleOffset(objectInfo.TerrainData.LightmapScaleOffset);
+				}
+			}
+		});
+}
+
+std::string fq::game_engine::ImportWindow::createObjectName(const importData::GameObjectLoadInfo& info) const
+{
+	return info.Name + '_' + std::to_string(static_cast<unsigned int>(info.ID));
 }
 
 void fq::game_engine::ImportWindow::createGameObject()
@@ -112,25 +184,27 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 		// 오브젝트 생성
 		{
-			auto find = objectNames.find(gameObjectInfo.Name);
-			std::string newFileName = gameObjectInfo.Name;
+			// auto find = objectNames.find(gameObjectInfo.Name);
+			// std::string newFileName = gameObjectInfo.Name;
+			// 
+			// int index = 0;
+			// while (find != objectNames.end())
+			// {
+			// 	++index;
+			// 	newFileName = gameObjectInfo.Name;
+			// 	newFileName += std::to_string(index);
+			// 
+			// 	find = objectNames.find(newFileName);
+			// }
 
-			int index = 0;
-			while (find != objectNames.end())
-			{
-				++index;
-				newFileName = gameObjectInfo.Name;
-				newFileName += std::to_string(index);
+			// gameObject->SetName(newFileName); 
+			// objectNames.insert(newFileName);
 
-				find = objectNames.find(newFileName);
-			}
-
-			gameObject->SetName(newFileName);
-			objectNames.insert(newFileName);
+			gameObject->SetName(createObjectName(gameObjectInfo));
 
 			// 트랜스폼
 			auto transform = gameObject->GetComponent<game_module::Transform>();
-			transform->SetWorldPosition(gameObjectInfo.TransformData.Position);
+			transform->SetLocalPosition(gameObjectInfo.TransformData.Position);
 			transform->SetLocalRotation(gameObjectInfo.TransformData.Rotation);
 			transform->SetLocalScale(gameObjectInfo.TransformData.Scale);
 
@@ -141,6 +215,11 @@ void fq::game_engine::ImportWindow::createGameObject()
 
 			for (const auto& material : gameObjectInfo.MeshData.Materials)
 			{
+				if (gameObjectInfo.MeshData.ModelPath.empty())
+				{
+					continue;
+				}
+
 				fq::graphics::MaterialInfo materialInfo;
 
 				materialInfo.BaseColor = material.Albedo;
@@ -157,6 +236,7 @@ void fq::game_engine::ImportWindow::createGameObject()
 				if (!material.MetallicAndSmoothnessMap.empty())
 				{
 					materialInfo.MetalnessSmoothnessFileName = mBasePath / fq::common::StringUtil::ToWide(material.MetallicAndSmoothnessMap);
+					materialInfo.bIsUsedMetalnessSmoothness = true;
 				}
 				else
 				{
@@ -171,9 +251,19 @@ void fq::game_engine::ImportWindow::createGameObject()
 					materialInfo.EmissiveFileName = mBasePath / fq::common::StringUtil::ToWide(material.EmissionMap);
 				}
 
-				std::string materialPath = (mBasePath / material.Path).replace_extension(".material").string();
-				mGameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
-				materialPaths.push_back(materialPath);
+				std::filesystem::path materialPath = mBasePath / std::filesystem::path(gameObjectInfo.MeshData.ModelPath).parent_path().parent_path() / ("Material\\" + material.Name + ".material");
+
+				if (!std::filesystem::exists(materialPath.parent_path()))
+				{
+					std::filesystem::create_directories(materialPath.parent_path());
+				}
+
+				if (!std::filesystem::exists(materialPath))
+				{
+					mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), materialInfo);
+				}
+
+				materialPaths.push_back(materialPath.string());
 			}
 
 			const auto& meshName = gameObjectInfo.MeshData.Name;
@@ -189,9 +279,6 @@ void fq::game_engine::ImportWindow::createGameObject()
 					mGameProcess->mGraphics->WriteModel(modelPath.string(), modelData);
 				}
 
-				auto key = mGameProcess->mRenderingSystem->GetModelKey(modelPath.string(), "");
-				mGameProcess->mGraphics->CreateModelResource(key, modelPath.string());
-
 				auto& staticMeshRenderer = gameObject->AddComponent<fq::game_module::StaticMeshRenderer>();
 				staticMeshRenderer.SetModelPath(modelPath.string());
 				staticMeshRenderer.SetMaterialPaths(materialPaths);
@@ -199,7 +286,6 @@ void fq::game_engine::ImportWindow::createGameObject()
 				staticMeshRenderer.SetIsStatic(gameObjectInfo.isStatic);
 				staticMeshRenderer.SetLightmapIndex(gameObjectInfo.MeshData.LightmapIndex);
 				staticMeshRenderer.SetLightmapUVScaleOffset(gameObjectInfo.MeshData.LightmapScaleOffset);
-				staticMeshRenderer.SetPrevApplyTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
 			}
 
 			// 라이트
@@ -239,6 +325,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				{
 					light.SetLightMode(fq::graphics::ELightMode::Baked);
 				}
+
+				transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateRotationY(3.14f) * transform->GetLocalMatrix());
 			}
 
 			// 터레인
@@ -250,8 +338,8 @@ void fq::game_engine::ImportWindow::createGameObject()
 				for (const auto& importLayerInfo : gameObjectInfo.TerrainData.Layers)
 				{
 					fq::graphics::TerrainLayer terrainLayer;
-					terrainLayer.BaseColor = importLayerInfo.BaseColor;
-					terrainLayer.NormalMap = importLayerInfo.NormalMap;
+					terrainLayer.BaseColor = (mBasePath / importLayerInfo.BaseColor).string();
+					terrainLayer.NormalMap = (mBasePath / importLayerInfo.NormalMap).string();
 					terrainLayer.Metalic = importLayerInfo.Metalic;
 					terrainLayer.Roughness = importLayerInfo.Roughness;
 					terrainLayer.TileSizeX = importLayerInfo.TileSizeX;
@@ -262,20 +350,29 @@ void fq::game_engine::ImportWindow::createGameObject()
 					terrainLayers.push_back(terrainLayer);
 				}
 
-				terrain.SetAlphaMap(gameObjectInfo.TerrainData.AlphaFileName);
+				if (!gameObjectInfo.TerrainData.AlphaFileName.empty())
+				{
+					terrain.SetAlphaMap((mBasePath / gameObjectInfo.TerrainData.AlphaFileName).string());
+				}
 				terrain.SetTerrainLayers(terrainLayers);
-				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth);
-				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight);
-				terrain.SetHeightScale(gameObjectInfo.TerrainData.HeightScale * 0.5);
+				terrain.SetWidth(gameObjectInfo.TerrainData.TerrainWidth * 2.05);
+				terrain.SetHeight(gameObjectInfo.TerrainData.TerrainHeight * 2.05);
+				terrain.SetHeightScale(gameObjectInfo.TerrainData.HeightScale);
 
 				// 이 데이터 현재 못 읽어옴
 				terrain.SetTextureWidth(512);
 				terrain.SetTextureHeight(512);
-				terrain.SetHeightMap(gameObjectInfo.TerrainData.HeightFileName);
+
+				if (!gameObjectInfo.TerrainData.HeightFileName.empty())
+				{
+					terrain.SetHeightMap((mBasePath / gameObjectInfo.TerrainData.HeightFileName).string());
+				}
 
 				terrain.SetLightmapUVScaleOffset(gameObjectInfo.TerrainData.LightmapScaleOffset);
 				terrain.SetLightmapIndex(gameObjectInfo.TerrainData.LightmapIndex);
 				terrain.SetIsStatic(gameObjectInfo.isStatic);
+
+				transform->SetLocalMatrix(DirectX::SimpleMath::Matrix::CreateRotationY(3.14f) * transform->GetLocalMatrix() * DirectX::SimpleMath::Matrix::CreateTranslation(terrain.GetWidth() / 4, 0, terrain.GetHeight() / 4));
 			}
 
 			gameObjectsMap.insert({ gameObjectInfo.ID, gameObject });
@@ -297,6 +394,17 @@ void fq::game_engine::ImportWindow::createGameObject()
 			auto sceneRootTransform = sceneRootObject->GetComponent<game_module::Transform>();
 			sceneRootTransform->AddChild(transform);
 			rootObjects.push_back(gameObject);
+		}
+	}
+
+	for (auto [id, gameObject] : gameObjectsMap)
+	{
+		auto staticMeshRenderer = gameObject->GetComponent< fq::game_module::StaticMeshRenderer>();
+
+		if (staticMeshRenderer != nullptr)
+		{
+			auto transform = gameObject->GetComponent<game_module::Transform>();
+			transform->SetPreAppliedTransform(DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateRotationY(3.14f));
 		}
 	}
 
@@ -416,7 +524,6 @@ std::vector<fq::game_engine::importData::GameObjectLoadInfo> fq::game_engine::Im
 				materialJson["Offset"]["y"].get<float>()
 			};
 			info.MeshData.Materials.push_back(material);
-
 		}
 
 		// Light 파싱

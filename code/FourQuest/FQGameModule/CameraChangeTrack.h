@@ -30,6 +30,8 @@ namespace fq::game_module
 		std::weak_ptr<GameObject> mCurrentCameraObject;
 		std::weak_ptr<GameObject> mTargetCameraObject;
 
+		DirectX::SimpleMath::Matrix mOriginTransform;
+
 		std::vector<TrackKey> mKeys;
 	};
 }

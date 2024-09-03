@@ -29,6 +29,8 @@ namespace fq::game_module
 		if (mTargetObject.expired())
 			return false;
 
+		if (!mTargetObject.lock()->HasComponent<Transform>()) return false;
+
 		mKeys = info.keys;
 
 		auto transform = mTargetObject.lock()->GetComponent<Transform>();
@@ -107,6 +109,8 @@ namespace fq::game_module
 	{
 		if (!mTargetObject.expired())
 		{
+			if (!mTargetObject.lock()->HasComponent<Transform>()) return;
+
 			auto transform = mTargetObject.lock()->GetComponent<Transform>();
 
 			DirectX::SimpleMath::Matrix prevTransform =

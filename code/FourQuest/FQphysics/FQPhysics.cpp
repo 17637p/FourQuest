@@ -212,9 +212,9 @@ namespace fq::physics
 		physx::PxQueryFilterData qfd;
 		qfd.data.word0 = info.layerNumber;
 		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
-		qfd.flags = physx::PxQueryFlag::eDYNAMIC | physx::PxQueryFlag::eSTATIC
+		qfd.flags = physx::PxQueryFlag::eDYNAMIC //| physx::PxQueryFlag::eSTATIC
 			| physx::PxQueryFlag::ePREFILTER
-			| physx::PxQueryFlag::eANY_HIT
+			| physx::PxQueryFlag::eNO_BLOCK
 			| physx::PxQueryFlag::eDISABLE_HARDCODED_FILTER; // Physx 핕터형식 적용 X
 
 		RaycastQueryFileter queryfilter;
@@ -233,9 +233,12 @@ namespace fq::physics
 		{
 			// Block 정보 저장 
 			output.hasBlock = hitBufferStruct.hasBlock;
-			output.blockID = static_cast<CollisionData*>(hitBufferStruct.block.shape->userData)->myId;
-			hitBufferStruct.block.position;
-			CopyPxVec3ToDxVec3(hitBufferStruct.block.position ,output.blockPosition);
+			if (output.hasBlock)
+			{
+				output.blockID = static_cast<CollisionData*>(hitBufferStruct.block.shape->userData)->myId;
+				hitBufferStruct.block.position;
+				CopyPxVec3ToDxVec3(hitBufferStruct.block.position, output.blockPosition);
+			}
 
 			// Hit정보 저장
 			unsigned int hitSize = hitBufferStruct.nbTouches;

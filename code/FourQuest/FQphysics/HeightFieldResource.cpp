@@ -12,5 +12,6 @@ namespace fq::physics
 
 	HeightFieldResource::~HeightFieldResource()
 	{
+		PX_RELEASE(mHeightField);
 	}
 }

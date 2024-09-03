@@ -84,14 +84,9 @@ namespace fq::graphics
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		std::shared_ptr<IUVAnimationInstance> mIUVAnimationInstance;
-
-		// lightMap
 		DirectX::SimpleMath::Vector4 mScaleOffset;
 		unsigned int mLightmapIndex;
-
 		MaterialInstanceInfo mMaterialInstanceInfo;
-
-		// render
 		bool mbIsRender;
 	};
 
@@ -138,8 +133,6 @@ namespace fq::graphics
 		MeshObjectInfo mInfo;
 		DirectX::SimpleMath::Matrix mTransform;
 		MaterialInstanceInfo mMaterialInstanceInfo;
-
-		// render
 		bool mbIsRender;
 	};
 
@@ -337,6 +330,9 @@ namespace fq::graphics
 		virtual bool GetRenderMode() const override { return mIsCenter; };
 		virtual void SetRenderMode(bool isCenter) override { mIsCenter = isCenter; }; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
 
+		virtual bool GetIsOnText() const override { return mIsOnText; };
+		virtual void SetIsOnText(bool isOnText) override { mIsOnText = isOnText; };
+
 	protected:
 		float mStartX;
 		float mStartY;
@@ -361,6 +357,7 @@ namespace fq::graphics
 
 		bool mIsRender;
 		bool mIsCenter;
+		bool mIsOnText;
 	};
 
 	class ProbeObject : public IProbeObject

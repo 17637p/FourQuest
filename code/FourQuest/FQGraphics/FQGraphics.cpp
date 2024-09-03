@@ -37,6 +37,7 @@ FQGraphics::FQGraphics()
 	, mPostProcessingManager(std::make_shared<D3D11PostProcessingManager>())
 	, mIsOnPostProcessing(true)
 	, mIsRenderObjects(true)
+
 {
 }
 
@@ -283,7 +284,7 @@ void FQGraphics::SetDefaultFont(const std::wstring& path)
 void FQGraphics::AddFont(const std::wstring& path)
 {
 	mUIManager->AddFont(path);
-}
+  }
 
 void FQGraphics::DeleteFont(const std::wstring& path)
 {
@@ -302,6 +303,16 @@ void* FQGraphics::GetPickingObject(const short mouseX, const short mouseY)
 		mObjectManager->GetSkinnedMeshObjects(),
 		mObjectManager->GetTerrainMeshObjects(),
 		mObjectManager->GetProbeObjects());
+}
+
+bool fq::graphics::FQGraphics::GetIsUsePostProcessing() const
+{
+	return mIsOnPostProcessing;
+}
+
+void fq::graphics::FQGraphics::SetIsUsePostProcessing(bool bUsePostProcessing)
+{
+	mIsOnPostProcessing = bUsePostProcessing;
 }
 
 void fq::graphics::FQGraphics::SetPostProcessingInfo(const PostProcessingInfo& info)
@@ -392,24 +403,22 @@ bool FQGraphics::Render()
 		std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
 		std::set<ITerrainMeshObject*> terrainMeshesToRender = mObjectManager->GetTerrainMeshObjects();
 
-		staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
-		skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
-
-		for (auto element : mObjectManager->GetStaticMeshObjects()) { mJobManager->CreateStaticMeshJob(element); }
-		for (auto element : mObjectManager->GetSkinnedMeshObjects()) { mJobManager->CreateSkinnedMeshJob(element); }
+		// staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
+		// skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
+		
+		for (auto element : staticMeshesToRender) { mJobManager->CreateStaticMeshJob(element); }
+		for (auto element : skinnedMeshesToRender) { mJobManager->CreateSkinnedMeshJob(element); }
 		for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
+
+		mJobManager->SortStaticMeshJob();
+		mJobManager->SortSkinnedMeshJob();
 
 		mRenderManager->Render();
 
 		if (mIsOnPostProcessing)
 		{
 			mPostProcessingManager->CopyOffscreenBuffer(mDevice);
-			{
-				mPostProcessingManager->Excute(mDevice);
-			}
-		}
-		if (mIsOnPostProcessing)
-		{
+			mPostProcessingManager->Excute(mDevice);
 			mPostProcessingManager->RenderFullScreen(mDevice);
 		}
 	}
@@ -449,14 +458,47 @@ bool FQGraphics::SetViewportSize(const unsigned short width, const unsigned shor
 
 bool FQGraphics::SetWindowSize(const unsigned short width, const unsigned short height)
 {
-	mUIManager->ReleaseRenderTarget();
-	mRenderManager->OnResize(width, height);
-	mCameraManager->OnResize(width, height);
-	mPickingManager->OnResize(width, height, mDevice);
-	mUIManager->OnResize(mDevice, width, height);
-	mPostProcessingManager->OnResize(mDevice, mResourceManager, width, height);
+	// 16:9 비율 유지하기 위한 스케일링 계산
+	float renderAspect = 16.0f / 9.0f;
+	float windowAspect = (float)width / height;
 
-	return true;
+	int fixed16_9Width = 0;
+	int fixed16_9Height = 0;
+	if (windowAspect > renderAspect)
+	{
+		// 창이 더 넓은 경우
+		fixed16_9Width = height * renderAspect;
+		fixed16_9Height = height;
+	}
+	else
+	{
+		// 창이 더 높은 경우
+		fixed16_9Width = width;
+		fixed16_9Height = width / renderAspect;
+	}
+
+	if (width < 10 || height < 10)
+	{
+		mUIManager->ReleaseRenderTarget();
+		mRenderManager->OnResize(width, height, width, height);
+		mCameraManager->OnResize(width, height);
+		mPickingManager->OnResize(width, height, mDevice);
+		mUIManager->OnResize(mDevice, width, height);
+		mPostProcessingManager->OnResize(mDevice, mResourceManager, width, height);
+
+		return true;
+	}
+	else
+	{
+		mUIManager->ReleaseRenderTarget();
+		mRenderManager->OnResize(fixed16_9Width, fixed16_9Height, width, height);
+		mCameraManager->OnResize(fixed16_9Width, fixed16_9Height);
+		mPickingManager->OnResize(fixed16_9Width, fixed16_9Height, mDevice);
+		mUIManager->OnResize(mDevice, fixed16_9Width, fixed16_9Height);
+		mPostProcessingManager->OnResize(mDevice, mResourceManager, fixed16_9Width, fixed16_9Height);
+
+		return true;
+	}
 }
 
 void FQGraphics::WriteModel(const std::string& path, const fq::common::Model& modelData)
@@ -747,7 +789,9 @@ void fq::graphics::FQGraphics::DeleteDecalMaterial(const std::string& key)
 IStaticMeshObject* fq::graphics::FQGraphics::CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
 	assert(staticMesh != nullptr);
-	return mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
+	auto staticMeshObject = mObjectManager->CreateStaticMeshObject(staticMesh, materials, meshObjectInfo, transform);
+	mCullingManager->CreateBoundingBoxOfStaticObject(staticMeshObject);
+	return staticMeshObject;
 }
 ISkinnedMeshObject* fq::graphics::FQGraphics::CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform)
 {
@@ -775,6 +819,7 @@ ITrailObject* fq::graphics::FQGraphics::CreateTrailObject(std::shared_ptr<IParti
 void fq::graphics::FQGraphics::DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject)
 {
 	mObjectManager->DeleteStaticMeshObject(staticMeshObject);
+	mCullingManager->DeleteBoundingBoxOfStaticObject(staticMeshObject);
 }
 void fq::graphics::FQGraphics::DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject)
 {
@@ -800,6 +845,11 @@ void fq::graphics::FQGraphics::DeleteTrailObject(ITrailObject* trailObject)
 void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material)
 {
 	mObjectManager->SetTerrainMeshObject(mDevice, meshObject, material);
+}
+
+std::set<IStaticMeshObject*> fq::graphics::FQGraphics::GetStaticMeshObjects() const
+{
+	return mObjectManager->GetStaticMeshObjects();
 }
 
 void FQGraphics::DeleteProbeObject(IProbeObject* probeObject)

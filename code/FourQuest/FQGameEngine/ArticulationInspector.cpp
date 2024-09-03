@@ -287,15 +287,6 @@ namespace fq::game_engine
 						}
 					}
 				}
-				//else
-				//{
-				//	euler.x = DirectX::XMConvertToRadians(f[0]);
-				//	euler.y = DirectX::XMConvertToRadians(f[1]);
-				//	euler.z = DirectX::XMConvertToRadians(f[2]);
-				//	jointRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(euler);
-
-				//	mSelectLink->SetJointLocalTransform(jointPosition, jointRotation);
-				//}
 
 				ImGui::InputFloat("JointDamping", &jointDamping);
 				ImGui::InputFloat("JointMaxForce", &jointMaxForce);

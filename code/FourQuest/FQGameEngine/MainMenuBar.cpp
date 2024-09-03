@@ -8,6 +8,7 @@
 
 #include "../FQCommon/FQPath.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQClient/GameVaribleHelper.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "PhysicsSystem.h"
@@ -248,6 +249,9 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 리소스 리스트 저장 
 	mGameProcess->mResourceSystem->SaveSceneResourceList(scenePath);
 
+	// 게임 변수 저장
+	client::GameVaribleHelper::Save();
+
 	//  ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);
 }
@@ -324,6 +328,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		bool& onLightmapWindow = mEditorProcess->mLightmapWindow->IsWindowOpen();
 		ImGui::Checkbox("LightmapWindow", &onLightmapWindow);
+
+		bool& onGameVairableWindow = mEditorProcess->mGameVariableWindow->IsWindowOpen();
+		ImGui::Checkbox("GameVairable", &onGameVairableWindow);
 
 		ImGui::EndMenu();
 	}

@@ -17,7 +17,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mController(nullptr)
 	, mMagicBall{}
 	, mAOE{}
-	, mLaserEffect{}
+	, mLaserHeadEffectPrefab{}
 	, mAttackWarningUI{}
 	, mMagicBallSpeed(10.f)
 	, mAOEMoveRange(10.f)
@@ -71,6 +71,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	attackInfo.damage = dc::GetMagicBallDamage(attackPower);
 	attackInfo.bIsInfinite = false;
 	attackInfo.remainingAttackCount = mMagicBallPenetrationCount;
+	attackInfo.hitSound = "M_MagicBoll_Attack";
 	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
@@ -87,7 +88,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	linearAttack->SetMoveDirection(direction);
 
 	// MagicBall Attack 사운드  
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "EnergyBallAttack", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_MagicBoll_Start", false , 0 });
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -111,8 +112,7 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	attackT->SetWorldPosition(attackPoint);
 
 	// AOE Sound
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "AOEAttack", false , 0 });
-
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Attack", false , 0 });
 	GetScene()->AddGameObject(attackObj);
 
 	// CoolTime
@@ -124,48 +124,83 @@ void fq::client::MagicArmour::EmitLaser()
 	// RayCastTest
 	fq::event::RayCast::ResultData data;
 
-	auto tf = GetComponent<game_module::Transform>();
-	auto origin = tf->GetWorldPosition();
+	auto origin = mTransform->GetWorldPosition();
 	origin.y += 1.f;
-	auto direction = tf->GetLookAtVector();
+	auto direction =mTransform->GetLookAtVector();
 	auto distance = mRazerDistance;
-	bool bUseDebugDraw = true;
+	bool bUseDebugDraw = false;
 	auto tag = GetGameObject()->GetTag();
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::RayCast>(
 		fq::event::RayCast {origin, direction, distance, tag, & data, bUseDebugDraw}
 	);
 
-	if (data.hasBlock)
+	// 레이에서 가장 가까운 오브젝트 위치 찾기
+	DirectX::SimpleMath::Vector3 closestPoint{};
+	float minDistance = distance;
+
+	if (data.hitCount > 0)
 	{
-		if (mRazerHitElapsedTime == 0.f)
+		for (int i = 0; i < data.hitCount; ++i)
 		{
-			// RazerAttckBox 소환
-			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserAttackBox);
-			auto& attackObj = *(instance.begin());
+			float hitDistance =  (origin - data.hitContactPoints[i]).Length();
 
-			// 공격 설정
-			AttackInfo attackInfo{};
-			auto attackComponent = attackObj->GetComponent<client::Attack>();
-			auto attackT = attackObj->GetComponent<game_module::Transform>();
-			
-			float attackPower = mPlayer->GetAttackPower();
-			attackInfo.damage = dc::GetRazerDamage(attackPower);
-			attackInfo.attacker = GetGameObject();
-			attackInfo.remainingAttackCount = 1;
-			attackInfo.bIsInfinite = false;
-			attackComponent->Set(attackInfo);
-
-			// 공격 위치 설정
-			attackT->SetWorldPosition(data.blockPosition);
-
-			// TODO :: Razer HitSound 추가
-			GetScene()->AddGameObject(attackObj);
-
-			mRazerHitElapsedTime = mRazerHiTick;
+			if (minDistance >= hitDistance)
+			{
+				minDistance = hitDistance;
+				closestPoint = data.hitContactPoints[i];
+			}
 		}
-
 	}
+
+	if (data.hitCount > 0 && mRazerHitElapsedTime == 0.f)
+	{
+		// RazerAttckBox 소환
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserAttackBox);
+		auto& attackObj = *(instance.begin());
+
+		// 공격 설정
+		AttackInfo attackInfo{};
+		auto attackComponent = attackObj->GetComponent<client::Attack>();
+		auto attackT = attackObj->GetComponent<game_module::Transform>();
+
+		float attackPower = mPlayer->GetAttackPower();
+		attackInfo.damage = dc::GetLaserDamage(attackPower);
+		attackInfo.attacker = GetGameObject();
+		attackInfo.remainingAttackCount = 1;
+		attackInfo.bIsInfinite = false;
+		attackComponent->Set(attackInfo);
+
+		// 공격 위치 설정
+		attackT->SetWorldPosition(closestPoint);
+
+		GetScene()->AddGameObject(attackObj);
+
+		// Razer HitSound 
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Attack", false , 0 });
+
+		mRazerHitElapsedTime = mRazerHiTick;
+	}
+
+	// 레이저 몸통 이펙트 설정
+	if (mLaserLineEffect)
+	{
+		auto laserT = mLaserLineEffect->GetTransform();
+		auto position = mLaserHeadEffect->GetTransform()->GetWorldPosition();
+		auto rotation = mTransform->GetWorldRotation();
+		auto scale = laserT->GetWorldScale();
+
+		// 레이저의 길이는 scale.z 로 설정합니다 
+		if (data.hitCount > 0)
+		{
+			scale.z = (position - closestPoint).Length();
+		}
+		else
+			scale.z = mRazerDistance;
+
+		laserT->GenerateWorld(position, rotation, scale);
+	}
+
 }
 
 void fq::client::MagicArmour::OnStart()
@@ -274,11 +309,55 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserG
 	auto& attackObj = *(instance.begin());
 
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
-	
+
 	// 스태프 트랜스폼 가져오기
-	attackT->SetParent(mTransform->GetChildren()[1]);
+	attackT->SetParent(mTransform->GetChildren()[2]);
 
 	GetScene()->AddGameObject(attackObj);
 
+	// 레이저 시작 사운드 재생
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Start", false , 0 });
+
 	return attackObj;
+}
+
+std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserHeadEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserHeadEffectPrefab);
+	auto& effectObj = *(instance.begin());
+	auto attackT = effectObj->GetComponent<game_module::Transform>();
+
+	// 스태프 트랜스폼 가져오기
+	attackT->SetParent(mTransform->GetChildren()[2]);
+	GetScene()->AddGameObject(effectObj);
+
+	mLaserHeadEffect = effectObj;
+	return effectObj;
+}
+
+void fq::client::MagicArmour::DestroyLaserEffect()
+{
+	if (mLaserLineEffect)
+	{
+		GetScene()->DestroyGameObject(mLaserLineEffect.get());
+		mLaserLineEffect = nullptr;
+	}
+	if (mLaserHeadEffect)
+	{
+		GetScene()->DestroyGameObject(mLaserHeadEffect.get());
+		mLaserHeadEffect = nullptr;
+	}
+}
+
+void fq::client::MagicArmour::EmitLaserLineEffect()
+{
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLaserLineEffectPrefab);
+	auto& effect = *(instance.begin());
+	mLaserLineEffect = effect;
+	GetScene()->AddGameObject(effect);
+}
+
+void fq::client::MagicArmour::OnDestroy()
+{
+	DestroyLaserEffect();
 }

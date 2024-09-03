@@ -96,6 +96,8 @@ void fq::client::QuestManager::OnStart()
 	EventProcessObjectInteraction();
 
 	mScreenManager = GetScene()->GetScreenManager();
+
+	RenderOffQuest();
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -114,37 +116,6 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		textInfo.Text = mCurSubQuest[i].mName;
 		mSubQuestTexts[i]->SetTextInfo(textInfo);
 		ViewQuestInformation(mCurSubQuest[i], mSubQuestTexts[i]);
-	}
-
-	// Scale 자동 조정 
-	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
-
-	UINT screenWidth = mScreenManager->GetScreenWidth();
-	UINT screenHeight = mScreenManager->GetScreenHeight();
-	float scaleX = screenWidth / (float)1920;
-	float scaleY = screenHeight / (float)1080;
-	{
-		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
-	}
-
-	textInfo = mMainQuestText->GetTextInfo();
-	textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-	mMainQuestText->SetTextInfo(textInfo);
-	int deltaFontSize = textInfo.FontSize - mFontSize;
-	mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * -6, (float)deltaFontSize * -1.6f, 0});
-
-	for (int i = 0; i < mSubQuestTexts.size(); i++)
-	{
-		textInfo = mSubQuestTexts[i]->GetTextInfo();
-		textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
-		mSubQuestTexts[i]->SetTextInfo(textInfo);
-		mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * -6, (float)deltaFontSize * -1.6f, 0 });
-	}
-
-	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
-	// Position 자동 조정
-	{
-		myTransform->SetLocalPosition({ 0.85f * screenWidth, 0.45f * screenHeight, 1 });
 	}
 }
 
@@ -544,6 +515,70 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 		gaugeBar->SetUIInfomation(0, imageInfo);
 
 		gaugeBar->SetIsRender(0, true);
+	}
+}
+
+void fq::client::QuestManager::RenderOffQuest()
+{
+	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren()[3]->GetChildren();
+
+	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
+	{
+		auto subQuest = children[2 - i]->GetChildren();
+		
+		auto text1 = subQuest[0]->GetComponent<game_module::TextUI>();
+		auto image1 = subQuest[1]->GetComponent<game_module::ImageUI>();
+		auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
+		auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
+
+		auto textInfo = text1->GetTextInfo();
+		textInfo.IsRender = false;
+		text1->SetTextInfo(textInfo);
+
+		textInfo = text2->GetTextInfo();
+		textInfo.IsRender = false;
+		text2->SetTextInfo(textInfo);
+
+		image1->SetIsRender(0, false);
+		image2->SetIsRender(0, false);
+	}
+}
+
+void fq::client::QuestManager::SetScaleAndPositionScreen()
+{
+	// Scale 자동 조정 
+	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
+
+	UINT screenWidth = mScreenManager->GetFixScreenWidth();
+	UINT screenHeight = mScreenManager->GetFixScreenHeight();
+	float scaleX = screenWidth / (float)1920;
+	float scaleY = screenHeight / (float)1080;
+	{
+		myTransform->SetLocalScale({ scaleX, scaleY , 1 });
+	}
+
+	// Text 크기 및 위치 변경 (미적용 중)
+	float xOffset = -6.f;
+	float yOffset = -2.6f;
+
+	auto textInfo = mMainQuestText->GetTextInfo();
+	textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
+	//mMainQuestText->SetTextInfo(textInfo);
+	int deltaFontSize = textInfo.FontSize - mFontSize;
+	//mMainQuestText->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0});
+
+	for (int i = 0; i < mSubQuestTexts.size(); i++)
+	{
+		textInfo = mSubQuestTexts[i]->GetTextInfo();
+		textInfo.FontSize = mFontSize * myTransform->GetWorldScale().x;
+		//mSubQuestTexts[i]->SetTextInfo(textInfo);
+		//mSubQuestTexts[i]->GetTransform()->SetLocalPosition({ (float)deltaFontSize * xOffset, (float)deltaFontSize * -yOffset, 0 });
+	}
+
+	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
+	// Position 자동 조정
+	{
+		myTransform->SetLocalPosition({ 0.85f * screenWidth, 0.45f * screenHeight, 1 });
 	}
 }
 

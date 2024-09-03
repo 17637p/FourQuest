@@ -119,6 +119,8 @@ void fq::client::MeleeMonster::EmitAttack()
 	// 공격 쿨타임 관련처리
 	mAttackElapsedTime = mAttackCoolTime;
 
+	// 공격 사운드
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , 3});
 }
 
 
@@ -210,6 +212,9 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 			mHp -= attackPower;
 			GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
 
+			// 피격 사운드 재생
+			playerAttack->PlayHitSound();
+
 			// 사망처리 
 			if (mHp <= 0.f)
 			{
@@ -293,5 +298,38 @@ void fq::client::MeleeMonster::AnnounceFindedTarget()
 	{
 		group->AnnounceFindedTarget(mTarget.get());
 	}
+}
+
+void fq::client::MeleeMonster::LookAtTarget()
+{
+	if (mTarget == nullptr || mTarget->IsDestroyed())
+		return;
+
+	auto transform = GetComponent<game_module::Transform>();
+	auto targetT = mTarget->GetComponent<game_module::Transform>();
+
+	auto targetPos = targetT->GetWorldPosition();
+	auto myPos = transform->GetWorldPosition();
+
+	auto directV = targetPos - myPos;
+	directV.y = 0.f;
+	directV.Normalize();
+
+	constexpr float RotationSpeed = 0.1f;
+
+	auto currentRotation = transform->GetWorldRotation();
+	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	directionQuaternion.Normalize();
+	DirectX::SimpleMath::Quaternion result =
+		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
+
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
+
+	// UpVector가 뒤집힌 경우
+	if (rotationMatrix._22 <= -0.9f)
+	{
+		rotationMatrix._22 = 1.f;
+	}
+	transform->SetLocalRotationToMatrix(rotationMatrix);
 }
 

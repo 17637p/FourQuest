@@ -1,0 +1,17 @@
+#pragma once
+
+#include "IGameVariable.h"
+
+namespace fq::client
+{
+	class MonsterVariable : public IGameVariable
+	{
+	public:
+		//////////////////////////////////////////////////////////////////////////
+		//							영혼 스택 관련 								// 
+		//////////////////////////////////////////////////////////////////////////
+		static inline float MeleeSoul = 1.f;
+
+	};
+
+}

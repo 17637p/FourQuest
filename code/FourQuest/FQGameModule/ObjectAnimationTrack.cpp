@@ -52,6 +52,7 @@ namespace fq::game_module
 			if (!mTargetObject.lock()->HasComponent<Animator>()) return;
 
 			auto animator = mTargetObject.lock()->GetComponent<Animator>();
+			animator->SetStopAnimation(true);
 
 			for (int i = 0; i < mAnimationTrackKeys.size(); i++)
 			{
@@ -74,6 +75,8 @@ namespace fq::game_module
 	{
 		if (!mTargetObject.expired())
 		{
+			if (!mTargetObject.lock()->HasComponent<Animator>()) return;
+
 			auto animator = mTargetObject.lock()->GetComponent<Animator>();
 
 			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();
@@ -87,6 +90,8 @@ namespace fq::game_module
 	{
 		if (!mTargetObject.expired())
 		{
+			if (!mTargetObject.lock()->HasComponent<Animator>()) return;
+
 			auto animator = mTargetObject.lock()->GetComponent<Animator>();
 
 			auto& nodeHierarchyInstance = animator->GetNodeHierarchyInstance();

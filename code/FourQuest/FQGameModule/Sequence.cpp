@@ -4,6 +4,7 @@
 
 #include "Track.h"
 #include "CameraChangeTrack.h"
+#include "CameraShakeTrack.h"
 #include "ObjectMoveTrack.h"
 #include "ObjectTeleportTrack.h"
 #include "TextPrintTrack.h"
@@ -144,9 +145,24 @@ namespace fq::game_module
 					mTotalPlayTime = trackTotalTime;
 			}
 		}
+		for (const auto& trackInfo : mCameraShakeTrackInfo)
+		{
+			std::shared_ptr<CameraShakeTrack> track = std::make_shared<CameraShakeTrack>();
+			check = track->Initialize(trackInfo, scene);
+
+			if (check)
+			{
+				mTracks.push_back(track);
+
+				float trackTotalTime = track->GetStartTime() + track->GetTotalPlayTime();
+
+				if (mTotalPlayTime < trackTotalTime)
+					mTotalPlayTime = trackTotalTime;
+			}
+		}
 	}
 
-	void Sequence::OnUpdate(float dt)
+	void Sequence::OnFixedUpdate(float dt)
 	{
 		if (mbIsPlay)
 		{
@@ -175,6 +191,10 @@ namespace fq::game_module
 					mbIsPlay = false;
 				}
 			}
+		}
+		else
+		{
+			mDurationTime = 0.f;
 		}
 	}
 
@@ -221,8 +241,8 @@ namespace fq::game_module
 			track->End();
 
 			mbIsPlay = true;
-			OnUpdate(0.0f);
-			OnUpdate(0.0f);
+			OnFixedUpdate(0.0f);
+			OnFixedUpdate(0.0f);
 			mbIsPlay = false;
 		}
 	}

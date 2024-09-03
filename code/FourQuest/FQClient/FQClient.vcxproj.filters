@@ -26,9 +26,6 @@
     <Filter Include="include\04.Camera">
       <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\06.GameManager">
-      <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\02.Monster\Melee">
       <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
     </Filter>
@@ -66,9 +63,6 @@
     <Filter Include="src\05.UI">
       <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\06.GameManager">
-      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\02.Monster\Spawner">
       <UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
     </Filter>
@@ -81,9 +75,6 @@
     <Filter Include="src\03.Attack">
       <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\07.Quest">
-      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\07.Quest">
       <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
     </Filter>
@@ -92,6 +83,27 @@
     </Filter>
     <Filter Include="src\02.Monster\Boss">
       <UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\07.Quest">
+      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\08.GameVariable">
+      <UniqueIdentifier>{9829b4ba-12d2-4d87-a7b0-bd011d69722e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\08.GameVariable">
+      <UniqueIdentifier>{3147849c-1693-431a-b546-ec48aa861240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\09.Box">
+      <UniqueIdentifier>{575d109a-df30-4144-b864-65d16eb63d6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\09.Box">
+      <UniqueIdentifier>{b04ae50d-ad2a-44e5-89c5-605299ea3043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\06.ETC">
+      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\06.ETC">
+      <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,7 +153,7 @@
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
     <ClInclude Include="GameManager.h">
-      <Filter>include\06.GameManager</Filter>
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
     <ClInclude Include="ClientEvent.h">
       <Filter>include\00.Define</Filter>
@@ -275,9 +287,6 @@
     <ClInclude Include="QuestManager.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
-    <ClInclude Include="QuestUI.h">
-      <Filter>include\05.UI</Filter>
-    </ClInclude>
     <ClInclude Include="BossMonster.h">
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
@@ -341,6 +350,54 @@
     <ClInclude Include="SwordSoulAttackState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="BowSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="AxeSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSoulVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="GameVaribleHelper.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>include\09.Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="BGM.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulSelectUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="RepauseUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -386,7 +443,7 @@
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
     <ClCompile Include="GameManager.cpp">
-      <Filter>src\06.GameManager</Filter>
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="MonsterAttack.cpp">
       <Filter>src\02.Monster\Prototype</Filter>
@@ -505,9 +562,6 @@
     <ClCompile Include="Quest.cpp">
       <Filter>src\07.Quest</Filter>
     </ClCompile>
-    <ClCompile Include="QuestUI.cpp">
-      <Filter>src\05.UI</Filter>
-    </ClCompile>
     <ClCompile Include="BossHP.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
@@ -564,6 +618,42 @@
     </ClCompile>
     <ClCompile Include="SwordSoulAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="BowSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="AxeSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GameVaribleHelper.cpp">
+      <Filter>src\08.GameVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>src\09.Box</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="BGM.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulSelectUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="RepauseUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultUI.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

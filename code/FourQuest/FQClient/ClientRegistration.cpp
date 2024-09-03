@@ -22,6 +22,8 @@
 #include "ShieldAttackState.h"
 #include "StaffSoulAttackState.h"
 #include "SwordSoulAttackState.h"
+#include "BowSoulAttackState.h"
+#include "AxeSoulAttackState.h"
 
 // Monster
 #include "Monster.h"
@@ -83,6 +85,11 @@
 #include "PlayerUIManager.h"
 #include "BossHP.h"
 #include "PauseUI.h"
+#include "LoadingUI.h"
+#include "TitleUI.h"
+#include "SoulSelectUI.h"
+#include "SettingUI.h"
+#include "RepauseUI.h"
 
 #include "CameraMoving.h"
 
@@ -91,6 +98,17 @@
 #include "QuestManager.h"
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
+
+// GameVariable
+#include "PlayerSoulVariable.h"
+#include "DamageVariable.h"
+
+// Box
+#include "Box.h"
+
+// etc
+#include "BGM.h"
+#include "Portal.h"
 
 void fq::client::RegisterMetaData()
 {
@@ -105,6 +123,24 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "GameManager")
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
+		.base<game_module::Component>();
+	
+	//////////////////////////////////////////////////////////////////////////
+	//                             ETC										//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Portal>()
+		.type("Portal"_hs)
+		.prop(reflect::prop::Name, "Portal")
+		.data<&Portal::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.base<game_module::Component>();
+		
+	entt::meta<BGM>()
+		.type("BGM"_hs)
+		.prop(reflect::prop::Name, "BGM")
+		.data<&BGM::mSoundKey>("SoundKey"_hs)
+		.prop(fq::reflect::prop::Name, "SoundKey")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -150,17 +186,19 @@ void fq::client::RegisterMetaData()
 		.data<&Player::mInvincibleTime>("InvincibleTime"_hs)
 		.prop(reflect::prop::Name, "InvincibleTime")
 		.prop(reflect::prop::Comment, u8"무적시간")
-		.data<&Player::mAttackPositionOffset>("FeverTime"_hs)
+		.data<&Player::mFeverTime>("FeverTime"_hs)
 		.prop(reflect::prop::Name, "FeverTime")
-		.prop(reflect::prop::Comment, u8"갑옷 버프 시간")
+		.prop(reflect::prop::Comment, u8"피버 타임")
 		.data<&Player::mStaffSoulAttack>("StaffSoulAttack"_hs)
 		.prop(reflect::prop::Name, "StaffSoulAttack")
 		.data<&Player::mSwordSoulAttack>("SwordSoulAttack"_hs)
 		.prop(reflect::prop::Name, "SwordSoulAttack")
+		.data<&Player::mBowSoulAttack>("BowSoulAttack"_hs)
+		.prop(reflect::prop::Name, "BowSoulAttack")
+		.data<&Player::mAxeSoulAttack>("AxeSoulAttack"_hs)
+		.prop(reflect::prop::Name, "AxeSoulAttack")
 		.data<&Player::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(reflect::prop::Name, "SoulPrefab")
-		.data<&Player::mAttackPositionOffset>("AttackPositionOffset"_hs)
-		.prop(reflect::prop::Name, "AttackPositionOffset")
 		.base<game_module::Component>();
 
 	entt::meta<DeadArmour>()
@@ -192,8 +230,10 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "AOE")
 		.data<&MagicArmour::mAttackWarningUI>("AttackWarningUI"_hs)
 		.prop(reflect::prop::Name, "AttackWarningUI")
-		.data<&MagicArmour::mLaserEffect>("LaserEffect"_hs)
-		.prop(reflect::prop::Name, "LaserEffect")
+		.data<&MagicArmour::mLaserHeadEffectPrefab>("LaserHeadEffect"_hs)
+		.prop(reflect::prop::Name, "LaserHeadEffect")
+		.data<&MagicArmour::mLaserLineEffectPrefab>("LaserTailEffect"_hs)
+		.prop(reflect::prop::Name, "LaserTailEffect")
 		.data<&MagicArmour::mLaserGatherEffect>("LaserGatherEffect"_hs)
 		.prop(reflect::prop::Name, "LaserGatherEffect")
 		.data<&MagicArmour::mLaserAttackBox>("LaserAttackBox"_hs)
@@ -241,6 +281,14 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.data<&Soul::mSwordColor>("SwordColor"_hs)
+		.prop(reflect::prop::Name, "SwordColor")
+		.data<&Soul::mStaffColor>("StaffColor"_hs)
+		.prop(reflect::prop::Name, "StaffColor")
+		.data<&Soul::mAxeColor>("AxeColor"_hs)
+		.prop(reflect::prop::Name, "AxeColor")
+		.data<&Soul::mBowColor>("BowColor"_hs)
+		.prop(reflect::prop::Name, "BowColor")
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -310,6 +358,16 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "SwordSoulAttackState")
 		.data<&SwordSoulAttackState::mAttackTiming>("AttackTiming"_hs)
 		.prop(reflect::prop::Name, "AttackTiming")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowSoulAttackState>()
+		.type("BowSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "BowSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<AxeSoulAttackState>()
+		.type("AxeSoulAttackState"_hs)
+		.prop(reflect::prop::Name, "AxeSoulAttackState")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -808,6 +866,59 @@ void fq::client::RegisterMetaData()
 		.type("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&PauseUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&PauseUI::mRepauseUIPrefab>("ResourceUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResourceUIPrefab")
+		.data<&PauseUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<LoadingText>()
+		.type("LoadingText"_hs)
+		.prop(fq::reflect::prop::POD)
+		.prop(fq::reflect::prop::Name, "LoadingText")
+		.data<&LoadingText::Text>("Text"_hs)
+		.prop(fq::reflect::prop::Name, "Text");
+
+	entt::meta<LoadingUI>()
+		.type("LoadingUI"_hs)
+		.prop(fq::reflect::prop::Name, "LoadingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&LoadingUI::mTexts>("Texts"_hs)
+		.prop(fq::reflect::prop::Name, "Texts")
+		.base<fq::game_module::Component>();
+
+	entt::meta<TitleUI>()
+		.type("TitleUI"_hs)
+		.prop(fq::reflect::prop::Name, "TitleUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&TitleUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&TitleUI::mNextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.data<&TitleUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SoulSelectUI>()
+		.type("SoulSelectUI"_hs)
+		.prop(fq::reflect::prop::Name, "SoulSelectUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SettingUI>()
+		.type("SettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<RepauseUI>()
+		.type("RepauseUI"_hs)
+		.prop(fq::reflect::prop::Name, "RepauseUI")
+		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -978,4 +1089,82 @@ void fq::client::RegisterMetaData()
 		.type("QuestColliderTriggerChecker"_hs)
 		.prop(fq::reflect::prop::Name, "QuestColliderTriggerChecker")
 		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Game Variable								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<PlayerSoulVariable>()
+		.type("PlayerSoulVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerSoulVariable")
+		.data<&PlayerSoulVariable::SoulBowAttackTick>("SoulBowAttackTick"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackTick")
+		.data<&PlayerSoulVariable::SoulBowAttackSpeed>("SoulBowAttackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackSpeed")
+		.data<&PlayerSoulVariable::SoulBowAttackAngle>("SoulBowAttackAngle"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackAngle")
+		.data<&PlayerSoulVariable::SoulBowAttackOffset>("SoulBowAttackOffset"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackOffset")
+		.data<&PlayerSoulVariable::SoulBowAttackDuration>("SoulBowAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackDuration")
+
+		.data<&PlayerSoulVariable::SoulAxeAttackTick>("SoulAxeAttackTick"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
+		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
+		.base<IGameVariable>();
+
+	entt::meta<DamageVariable>()
+		.type("DamageVariable"_hs)
+		.prop(fq::reflect::prop::Name, "DamageVariable")
+		.data<&DamageVariable::SwordAttackCoefficient>("SwordAttackCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "SwordAttackCoefficient")
+		.data<&DamageVariable::ShieldAttackCoefficient>("ShieldAttackCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "ShieldAttackCoefficient")
+		.data<&DamageVariable::ShieldDashCoefficient>("ShieldDashCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "ShieldDashCoefficient")
+
+		.data<&DamageVariable::MagicBallCoefficient>("MagicBallCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "MagicBallCoefficient")
+		.data<&DamageVariable::MagicAOECoefficient>("MagicAOECoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "MagicAOECoefficient")
+		.data<&DamageVariable::MagicLaserCoefficient>("MagicLaserCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "MagicLaserCoefficient")
+
+		.data<&DamageVariable::SwordSoulCoefficient>("SwordSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "SwordSoulCoefficient")
+		.data<&DamageVariable::StaffSoulCoefficient>("StaffSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "StaffSoulCoefficient")
+		.data<&DamageVariable::AxeSoulCoefficient>("AxeSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "AxeSoulCoefficient")
+		.data<&DamageVariable::BowSoulCoefficient>("BowSoulCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BowSoulCoefficient")
+
+		.data<&DamageVariable::BossSmashDownCoefficient>("BossSmashDownCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BossSmashDownCoefficient")
+		.data<&DamageVariable::BossComboAttackCoefficient>("BossComboAttackCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BossComboAttackCoefficient")
+		.data<&DamageVariable::BossRushCoefficient>("BossRushCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BossRushCoefficient")
+
+		.base<IGameVariable>();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Game Variable								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<Box>()
+		.type("Box"_hs)
+		.prop(reflect::prop::Name, "Box")
+		.prop(reflect::prop::Label, "Box")
+		.data<&Box::SetmBrokenBoxPrefebPath, &Box::GetBrokenBoxPrefebPath>("BrokenBoxPrefebPath"_hs)
+		.prop(reflect::prop::Name, "BrokenBoxPrefebPath")
+		.prop(fq::reflect::prop::DragDrop, ".prefab")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(reflect::prop::Comment, u8"부서진 박스 프리펫 경로를 지정해주세요.")
+		.data<&Box::SetDeadTime, &Box::GetDeadTime>("DeadTime"_hs)
+		.prop(reflect::prop::Name, "DeadTime")
+		.prop(reflect::prop::Comment, u8"깨지고 난 뒤 사라질 시간을 지정해주세요.")
+		.base<game_module::Component>();
 }

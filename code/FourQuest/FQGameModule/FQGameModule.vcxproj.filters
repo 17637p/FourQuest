@@ -368,6 +368,9 @@
     <ClInclude Include="ClothDataLoader.h">
       <Filter>include\07.Physics</Filter>
     </ClInclude>
+    <ClInclude Include="CameraShakeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp">
@@ -594,6 +597,9 @@
     </ClCompile>
     <ClCompile Include="ClothDataLoader.cpp">
       <Filter>src\07.Physics</Filter>
+	</ClCompile>
+    <ClCompile Include="CameraShakeTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

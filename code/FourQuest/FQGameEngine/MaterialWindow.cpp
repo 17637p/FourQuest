@@ -7,7 +7,9 @@
 
 #include "../FQCommon/FQPath.h"
 #include "../FQGraphics/IFQGraphics.h"
+
 #include "GameProcess.h"
+#include "ResourceSystem.h"
 
 fq::game_engine::MaterialWindow::MaterialWindow()
 	: mbIsOpen(false)
@@ -74,12 +76,13 @@ void fq::game_engine::MaterialWindow::Render()
 				{
 					mSelectMaterialPaths = path;
 
-					std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(mSelectMaterialPaths.string());
+					std::string stringPath = mSelectMaterialPaths.string();
+					std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(stringPath);
 
 					if (materialInterfaceOrNull == nullptr)
 					{
-						const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(mSelectMaterialPaths.string());
-						materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(mSelectMaterialPaths.string(), materialInfo);
+						mGameProcess->mResourceSystem->LoadMaterial(stringPath);
+						materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(stringPath);
 					}
 					assert(materialInterfaceOrNull != nullptr);
 
@@ -107,12 +110,13 @@ void fq::game_engine::MaterialWindow::Render()
 					{
 						mSelectMaterialPaths = *path;
 
-						std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mGraphics->GetMaterialOrNull(mSelectMaterialPaths.string());
+						std::string stringPath = mSelectMaterialPaths.string();
+						std::shared_ptr<fq::graphics::IMaterial> materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(stringPath);
 
 						if (materialInterfaceOrNull == nullptr)
 						{
-							const graphics::MaterialInfo& materialInfo = mGameProcess->mGraphics->ReadMaterialInfo(mSelectMaterialPaths.string());
-							materialInterfaceOrNull = mGameProcess->mGraphics->CreateMaterial(mSelectMaterialPaths.string(), materialInfo);
+							mGameProcess->mResourceSystem->LoadMaterial(stringPath);
+							materialInterfaceOrNull = mGameProcess->mResourceSystem->GetMaterial(stringPath);
 						}
 						assert(materialInterfaceOrNull != nullptr);
 
@@ -203,7 +207,6 @@ void fq::game_engine::MaterialWindow::Render()
 	{
 		mMaterialInterface->SetInfo(materialInfo);
 	}
-
 
 	ImGui::End();
 }

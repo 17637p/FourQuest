@@ -61,6 +61,23 @@ namespace fq::graphics
 		float Alpha;
 		int bUseDissolveCutoff;
 		float DissolveCutoff;
+
+		int bUseRimLight;
+		float RimPow;
+		int bUseInvRimLight;
+		float InvRimPow;
+
+		DirectX::SimpleMath::Vector4 RimLightColor;
+
+		DirectX::SimpleMath::Vector4 InvRimLightColor;
+
+		DirectX::SimpleMath::Vector2 UVScale;
+		DirectX::SimpleMath::Vector2 UVOffset;
+
+		int bUseUVScaleOffset;
+		float RimIntensity;
+		float InvRimIntensity;
+		float unused[1];
 	};
 
 	struct ViewRotationProjectionMatrix
