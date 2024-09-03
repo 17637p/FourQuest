@@ -39,8 +39,6 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnStart() override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
-
-
 	private:
 		fq::game_module::Animator* mAnimator;
 		fq::game_module::Transform* mTransform;

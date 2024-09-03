@@ -52,6 +52,11 @@ namespace fq::game_engine
 
 		inline std::map<Path, std::shared_ptr<graphics::IMaterial>> GetMaterials() const; // 그레이 스케일로 인해 추가
 
+		/// <summary>
+		/// 현재 로드된 리소스 비율을 반환합니다.
+		/// </summary>
+		float GetLoadingRatio()const;
+
 	private:
 		GameProcess* mGameProcess;
 		EventHandler mPreOnLoadSceneHandler;
@@ -64,8 +69,9 @@ namespace fq::game_engine
 		std::map<Path, std::shared_ptr<graphics::IAnimation>> mAnimations;
 		std::map<Path, std::shared_ptr<graphics::IUVAnimation>> mUVAnimations;
 		std::map<Path, std::shared_ptr<graphics::IMaterial>> mMaterials;
-		// std::map<Path, std::shared_ptr<graphics::IParticleMaterial>> mParticleMaterials; 해당 리소스는 직렬화되는 데이터가 아니라 주석처리합니다_홍지환
-		// std::map<Path, std::shared_ptr<graphics::IDecalMaterial>> mDecalMaterials; 해당 리소스는 직렬화되는 데이터가 아니라 주석처리합니다_홍지환
+
+		std::atomic<size_t> mResourceCount;
+		std::atomic<size_t> mLoadedResourceCount;
 	};
 
 	inline std::map<std::string, std::shared_ptr<graphics::IMaterial>> ResourceSystem::GetMaterials() const

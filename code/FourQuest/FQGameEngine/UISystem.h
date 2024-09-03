@@ -67,12 +67,10 @@ namespace fq::game_engine
 		/// </summary>
 		void SetTextInformation(const fq::event::SetTextInformation& event);
 
-	private:
-		void loadImageUI(game_module::GameObject* object);
-		void unloadImageUI(game_module::GameObject* object);
-
-		void loadTextUI(game_module::GameObject* object);
-		void unloadTextUI(game_module::GameObject* object);
+		void LoadImageUI(game_module::GameObject* object);
+		void UnloadImageUI(game_module::GameObject* object);
+		void LoadTextUI(game_module::GameObject* object);
+		void UnloadTextUI(game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;

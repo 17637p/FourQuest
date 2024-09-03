@@ -13,6 +13,8 @@
 
 fq::game_engine::ResourceSystem::ResourceSystem()
 	:mGameProcess(nullptr)
+	, mLoadedResourceCount(0)
+	, mResourceCount(0)
 {}
 
 fq::game_engine::ResourceSystem::~ResourceSystem()
@@ -34,25 +36,28 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	SceneResourceList list;
 	list.Load(listPath.string());
 
-	// 리소스 로드 
-	auto pool = game_module::ThreadPool::GetInstance();
+	mLoadedResourceCount = 0;
+	mResourceCount = list.modelPaths.size() + list.animationPaths.size() +list.materialPaths.size();
 
 	// Model 로드
 	for (const auto& modelPath : list.modelPaths)
 	{
 		LoadModelResource(modelPath);
+		++mLoadedResourceCount;
 	}
 
 	// Animation 로드
 	for (const auto& animationPath : list.animationPaths)
 	{
 		LoadAnimation(animationPath);
+		++mLoadedResourceCount;
 	}
 
 	//// Material 로드
 	for (const auto& materialPath : list.materialPaths)
 	{
-//		LoadMaterial(materialPath);
+		LoadMaterial(materialPath);
+		++mLoadedResourceCount;
 	}
 }
 
@@ -114,7 +119,7 @@ void fq::game_engine::ResourceSystem::LoadAnimation(const Path& path)
 
 void fq::game_engine::ResourceSystem::LoadMaterial(const Path& path)
 {
- 	if (mMaterials.find(path) != mMaterials.end())
+	if (mMaterials.find(path) != mMaterials.end())
 	{
 		return;
 	}
@@ -308,5 +313,10 @@ std::shared_ptr<fq::graphics::ISkinnedMesh> fq::game_engine::ResourceSystem::Get
 {
 	auto iter = mSkinnedMeshes.find(modelPath + meshName);
 	return iter == mSkinnedMeshes.end() ? nullptr : iter->second;
+}
+
+float fq::game_engine::ResourceSystem::GetLoadingRatio() const
+{
+	return static_cast<float>(mLoadedResourceCount) / mResourceCount;
 }
 
