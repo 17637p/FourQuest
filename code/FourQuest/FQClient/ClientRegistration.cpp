@@ -1032,6 +1032,24 @@ void fq::client::RegisterMetaData()
 		.data<&QuestClearCondition::objectInteration>("ObjectInteration"_hs)
 		.prop(fq::reflect::prop::Name, "ObjectInteration");
 
+	entt::meta<RewardPortal>()
+		.type("RewardPortal"_hs)
+		.prop(fq::reflect::prop::Name, "RewardPortal")
+		.prop(fq::reflect::prop::POD)
+		.data<&RewardPortal::position>("Position"_hs)
+		.prop(fq::reflect::prop::Name, "Position")
+		.prop(reflect::prop::Comment, u8"포탈이 소환될 위치")
+		.data<&RewardPortal::nextSceneName>("NextSceneName"_hs)
+		.prop(fq::reflect::prop::Name, "NextSceneName")
+		.prop(reflect::prop::Comment, u8"포탈타면 이동할 씬 이름");
+
+	entt::meta<QuestReward>()
+		.type("QuestReward"_hs)
+		.prop(fq::reflect::prop::Name, "QuestReward")
+		.prop(fq::reflect::prop::POD)
+		.data<&QuestReward::RewardPortalList>("RewardPortalList"_hs)
+		.prop(fq::reflect::prop::Name, "RewardPortalList");
+
 	entt::meta<Quest>()
 		.type("Quest"_hs)
 		.prop(fq::reflect::prop::Name, "Quest")
@@ -1045,7 +1063,9 @@ void fq::client::RegisterMetaData()
 		.data<&Quest::mJoinConditionList>("JoinConditionList"_hs)
 		.prop(fq::reflect::prop::Name, "JoinConditionList")
 		.data<&Quest::mclearConditionList>("ClearConditionList"_hs)
-		.prop(fq::reflect::prop::Name, "ClearConditionList");
+		.prop(fq::reflect::prop::Name, "ClearConditionList")
+		.data<&Quest::mRewardList>("RewardList"_hs)
+		.prop(fq::reflect::prop::Name, "RewardList");
 
 	entt::meta<StartSubQuestIndex>()
 		.type("StartSubQuestIndex"_hs)
@@ -1072,6 +1092,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "MainQuest")
 		.data<&QuestManager::mSubQuests>("SubQuest"_hs)
 		.prop(fq::reflect::prop::Name, "SubQuest")
+		.data<&QuestManager::mPortalPrefab>("PortalPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "PortalPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<DefenceCounter>()

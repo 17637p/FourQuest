@@ -3,8 +3,11 @@
 
 #include "DefenceCounter.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/Transform.h"
+
 #include "MonsterGroup.h"
+#include "Portal.h"
 
 #include <spdlog/spdlog.h>
 
@@ -14,7 +17,8 @@ fq::client::QuestManager::QuestManager()
 	mSubQuests(),
 	mCurMainQuest(),
 	mCurSubQuest(),
-	mGaugeMaxWidth(0)
+	mGaugeMaxWidth(0),
+	mPortalPrefab()
 {
 }
 
@@ -23,7 +27,8 @@ fq::client::QuestManager::QuestManager(const QuestManager& other)
 	mMainQuests(other.mMainQuests),
 	mSubQuests(other.mSubQuests),
 	mCurMainQuest(other.mCurMainQuest),
-	mCurSubQuest(other.mCurSubQuest)
+	mCurSubQuest(other.mCurSubQuest),
+	mPortalPrefab(other.mPortalPrefab)
 {
 }
 
@@ -34,6 +39,7 @@ fq::client::QuestManager& fq::client::QuestManager::operator=(const QuestManager
 	mSubQuests = other.mSubQuests;
 	mCurMainQuest = other.mCurMainQuest;
 	mCurSubQuest = other.mCurSubQuest;
+	mPortalPrefab = other.mPortalPrefab;
 
 	return *this;
 }
@@ -403,6 +409,28 @@ void fq::client::QuestManager::EventProcessClearQuest()
 					{
 						spdlog::trace("Clear Quest Condition True!");
 					}
+				}
+			}
+
+			// 방금 깬 퀘스트에 보상이 있다면 보상 받기
+			std::vector<RewardPortal> rewardPortalList = event.clearQuest.mRewardList.RewardPortalList;
+			int rewardPortalListSize = rewardPortalList.size();
+			if (rewardPortalListSize > 0)
+			{
+				for (int i = 0; i < rewardPortalListSize; i++)
+				{
+					// prefab으로 포탈 소환
+					std::shared_ptr<game_module::GameObject> portal;
+
+					auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPortalPrefab);
+					portal = *(instance.begin());
+
+					// 트랜스폼 위치 바꾸기
+					portal->GetComponent<game_module::Transform>()->SetLocalPosition(rewardPortalList[i].position);
+					// Portal 컴포넌트에 접근해서 씬이름 바꾸기
+					portal->GetComponent<Portal>()->SetNextSceneName(rewardPortalList[i].nextSceneName);
+
+					GetScene()->AddGameObject(portal);
 				}
 			}
 		});

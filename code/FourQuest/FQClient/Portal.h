@@ -15,6 +15,8 @@ namespace fq::client
 
 		void ChangeScene();
 
+		void SetNextSceneName(std::string nextSceneName) { mNextSceneName = nextSceneName; }
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const override;
 		virtual void OnTriggerEnter(const fq::game_module::Collision& collision) override;

@@ -301,7 +301,9 @@ void fq::game_module::RegisterMetaData()
 		.data<&graphics::UIInfo::isOnText>("IsOnText"_hs)
 		.prop(fq::reflect::prop::Name, "IsOnText")
 		.data<&graphics::UIInfo::fillDegree>("FillDegree"_hs)
-		.prop(fq::reflect::prop::Name, "FillDegree");
+		.prop(fq::reflect::prop::Name, "FillDegree")
+		.data<&graphics::UIInfo::Color>("Color"_hs)
+		.prop(fq::reflect::prop::Name, "Color");
 
 	entt::meta<ImageUI>()
 		.type("ImageUI"_hs)
