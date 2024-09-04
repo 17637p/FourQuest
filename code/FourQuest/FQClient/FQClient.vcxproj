@@ -75,6 +75,7 @@
     <ClInclude Include="LoadingUI.h" />
     <ClInclude Include="MagicArmour.h" />
     <ClInclude Include="MagicBallAttackState.h" />
+    <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="MeleeMonster.h" />
     <ClInclude Include="MeleeMonsterAttackState.h" />
     <ClInclude Include="MeleeMonsterChaseState.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="LoadingUI.cpp" />
     <ClCompile Include="MagicArmour.cpp" />
     <ClCompile Include="MagicBallAttackState.cpp" />
+    <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="MeleeMonster.cpp" />
     <ClCompile Include="MeleeMonsterAttackState.cpp" />
     <ClCompile Include="MeleeMonsterChaseState.cpp" />

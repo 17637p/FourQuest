@@ -71,6 +71,12 @@ void fq::game_engine::RenderingSystem::Initialize(GameProcess* gameProcess)
 			{
 				mGameProcess->mGraphics->SetViewportSize(event.width, event.height);
 			});
+
+	mDebugDrawLayHanlder = eventMgr->
+		RegisterHandle<fq::event::DrawDebugLay>([this](fq::event::DrawDebugLay event)
+			{
+				mGameProcess->mGraphics->DrawRay(event.rayInfo);
+			});
 }
 
 void fq::game_engine::RenderingSystem::Update(float dt)

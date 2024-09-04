@@ -266,11 +266,21 @@ namespace fq::event
 	//////////////////////////////////////////////////////////////////////////
 
 	/// <summary>
-	/// 모든 랜더러의 머터리얼 정보를 갱신합니다.
+	/// 리소스 매니저에 머터리얼 생성을 요청합니다.
 	/// </summary>
-	struct UpdateMaterialInfo
+	struct LoadMaterial
 	{
+		std::string materialPath;
+		std::shared_ptr<fq::graphics::IMaterial>* materialPtr;
 	};
 
+	//////////////////////////////////////////////////////////////////////////
+	//							Debug Draw Event							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct DrawDebugLay
+	{
+		fq::graphics::debug::RayInfo rayInfo;
+	};
 }
 

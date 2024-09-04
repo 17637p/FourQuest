@@ -4,6 +4,7 @@
 #include "../FQReflect/FQReflect.h"
 
 #include "GameManager.h"
+#include "MaterialManager.h"
 
 // Player 
 #include "PlayerDefine.h"
@@ -124,7 +125,7 @@ void fq::client::RegisterMetaData()
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//
 	//////////////////////////////////////////////////////////////////////////
@@ -135,13 +136,32 @@ void fq::client::RegisterMetaData()
 		.data<&Portal::mNextSceneName>("NextSceneName"_hs)
 		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.base<game_module::Component>();
-		
+
 	entt::meta<BGM>()
 		.type("BGM"_hs)
 		.prop(reflect::prop::Name, "BGM")
 		.data<&BGM::mSoundKey>("SoundKey"_hs)
 		.prop(fq::reflect::prop::Name, "SoundKey")
 		.base<game_module::Component>();
+
+	entt::meta<MaterialManager>()
+		.type("MaterialManager"_hs)
+		.prop(reflect::prop::Name, "MaterialManager")
+		.data<&MaterialManager::mManagerMaterialPath>("MaterialPath"_hs)
+		.prop(fq::reflect::prop::Name, "MaterialPath")
+		.prop(reflect::prop::Comment, u8"플레이어와 카메라 사이에 가려질 시 사용할 머터리얼")
+		.prop(fq::reflect::prop::DragDrop, ".material")
+		.data<&MaterialManager::mLocalPointOffset>("LocalPointOffset"_hs)
+		.prop(fq::reflect::prop::Name, "LocalPointOffset")
+		.prop(reflect::prop::Comment, u8"플레이어 반직선 로컬 오프셋")
+		.data<&MaterialManager::mWorldPointOffset>("WorldPointOffset"_hs)
+		.prop(fq::reflect::prop::Name, "WorldPointOffset")
+		.prop(reflect::prop::Comment, u8"플레이어 반직선 월드 오프셋")
+		.data<&MaterialManager::mbUseDebugDraw>("UseDebugDraw"_hs)
+		.prop(fq::reflect::prop::Name, "UseDebugDraw")
+		.prop(reflect::prop::Comment, u8"디버깅 정보 사용 여부")
+		.base<game_module::Component>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             플레이어 관련								//

@@ -97,6 +97,7 @@ namespace fq::game_engine
 		EventHandler mWriteAnimationHandler;
 		EventHandler mSetViewportSizeHandler;
 		EventHandler mUpdateMaterialInfosHandler;
+		EventHandler mDebugDrawLayHanlder;
 
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;
