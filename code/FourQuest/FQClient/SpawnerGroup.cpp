@@ -203,6 +203,12 @@ void fq::client::SpawnerGroup::CheckTimer(int size, float dt)
 	for (int i = 0; i < size; i++)
 	{
 		auto& timerList = mSpawnConditions.TimerList[i];
+
+		if (timerList.isClear)
+		{
+			continue;
+		}
+
 		timerList.curSecond += dt;
 		if (timerList.curSecond > timerList.Second)
 		{
@@ -216,6 +222,11 @@ void fq::client::SpawnerGroup::CheckMaxEnemy(int size)
 	for (int i = 0; i < size; i++)
 	{
 		auto& maxEnemyList = mSpawnConditions.MaxEnemyList[i];
+
+		if (maxEnemyList.isClear)
+		{
+			continue;
+		}
 
 		// 여기랑 밑에 채워놓고 timer, collider 테스트 하기 
 		std::vector<std::shared_ptr<game_module::GameObject>> targetOnObject{}; // 타겟이 null이 아니고 isdestroy가 아닌 것들
@@ -260,6 +271,11 @@ void fq::client::SpawnerGroup::CheckObjectLive(int size)
 	for (int i = 0; i < size; i++)
 	{
 		auto& objectLiveList = mSpawnConditions.ObjectLiveList[i];
+
+		if (objectLiveList.isClear)
+		{
+			continue;
+		}
 
 		std::vector<std::shared_ptr<game_module::GameObject>> sameNameMonster{}; // 조건에 맞는 몬스터
 		std::copy_if(mMonsters.begin(), mMonsters.end(), std::back_inserter(sameNameMonster),

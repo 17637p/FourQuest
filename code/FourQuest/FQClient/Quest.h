@@ -79,6 +79,11 @@ namespace fq::client
 		std::string nextSceneName;
 	};
 
+	struct ArmourSpawn
+	{
+
+	};
+
 	struct QuestReward
 	{
 		std::vector<RewardPortal> RewardPortalList;
