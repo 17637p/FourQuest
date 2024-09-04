@@ -330,16 +330,21 @@ void fq::client::SpawnerGroup::CheckObjectLive(int size)
 		// 죽었는지 확인
 		else
 		{
+			bool isDie = true;
 			// 이름 일치하는 오브젝트 순회
 			for (int i = 0; i < sameNameMonster.size(); i++)
 			{
 				if (!sameNameMonster[i]->IsDestroyed())
 				{
-					continue;
+					isDie = false;
+					break;
 				}
 			}
 
-			objectLiveList.isClear = true;
+			if (isDie)
+			{
+				objectLiveList.isClear = true;
+			}
 		}
 	}
 }
