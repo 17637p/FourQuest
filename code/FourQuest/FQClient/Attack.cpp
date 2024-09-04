@@ -93,3 +93,8 @@ void fq::client::Attack::PlayHitSound()
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , 3 });
 	}
 }
+
+void fq::client::Attack::SetDestroyTime(float destroyTime)
+{
+	mDestroyTime = destroyTime;
+}

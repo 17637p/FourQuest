@@ -30,7 +30,6 @@ void fq::client::ShiedlDashState::OnStateEnter(fq::game_module::Animator& animat
 
 	auto transform = animator.GetComponent<game_module::Transform>();
 	auto rigid = animator.GetComponent<game_module::RigidBody>();
-
 	auto foward = transform->GetWorldMatrix().Forward();
 
 	foward.Normalize();

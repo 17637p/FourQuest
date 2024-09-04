@@ -135,9 +135,9 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = 20.f;
 	attackComponent->Set(attackInfo);
+	//attackComponent->SetDestroyTime(0.425f);
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , 0 });
-
 	GetScene()->AddGameObject(attackObj);
 }
 
