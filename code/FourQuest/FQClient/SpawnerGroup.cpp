@@ -7,7 +7,11 @@
 
 #include "Spawner.h"
 #include "ClientEvent.h"
-#include "Monster.h"
+#include "MonsterManager.h"
+
+#include "MeleeMonster.h"
+#include "BossMonster.h"
+#include "PlantMonster.h"
 
 fq::client::SpawnerGroup::SpawnerGroup()
 	:mID(0),
@@ -21,7 +25,7 @@ fq::client::SpawnerGroup::SpawnerGroup()
 	mSpawnerMonsterPrefab(),
 	mCurRuleNum(0),
 	mCurSpawnMonsterNum(0),
-	mMonsters()
+	mMonsterManager(nullptr)
 {
 }
 
@@ -31,14 +35,14 @@ fq::client::SpawnerGroup::SpawnerGroup(const SpawnerGroup& other)
 	mStartNum = other.mStartNum;
 	mSpawnConditions = other.mSpawnConditions;
 	mSpawnRules = other.mSpawnRules;
-	mMeleeMonsterPrefab = mMeleeMonsterPrefab;
+	mMeleeMonsterPrefab = other.mMeleeMonsterPrefab;
 	mExplosionMonsterPrefab = other.mExplosionMonsterPrefab;
 	mBossMonsterPrefab = other.mBossMonsterPrefab;
 	mPlantMonsterPrefab = other.mPlantMonsterPrefab;
 	mSpawnerMonsterPrefab = other.mSpawnerMonsterPrefab;
 	mCurRuleNum = other.mCurRuleNum;
 	mCurSpawnMonsterNum = other.mCurSpawnMonsterNum;
-	mMonsters = other.mMonsters;
+	mMonsterManager = other.mMonsterManager;
 }
 
 fq::client::SpawnerGroup::~SpawnerGroup()
@@ -47,7 +51,7 @@ fq::client::SpawnerGroup::~SpawnerGroup()
 
 void fq::client::SpawnerGroup::OnStart()
 {
-	mMonsters.clear();
+	mMonsterManager = GetScene()->GetObjectByName("MonsterManager")->GetComponent<MonsterManager>();
 	EventProcessPlayerSpawnCollideTrigger();
 }
 
@@ -161,21 +165,21 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 
 			// Prefab으로 소환
 			std::shared_ptr<game_module::GameObject> monster;
-
-			for (int i = 0; i < rule.SpawnMonsterNum; i++)
+			for (int j = 0; j < rule.SpawnMonsterNum; j++)
 			{
 				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSelectPrefab);
 				monster = *(instance.begin());
-
+				
 				// monster 이름 변경
 				monster->SetName(rule.Name + std::to_string(mCurSpawnMonsterNum));
 				// Monster Spawner 위치로 이동
 				monster->GetTransform()->SetLocalPosition(children[i]->GetTransform()->GetLocalPosition());
-
+				
 				GetScene()->AddGameObject(monster);
-				mMonsters.emplace_back(monster);
 				mCurSpawnMonsterNum++;
 			}
+
+			break;
 		}
 	}
 
@@ -230,11 +234,35 @@ void fq::client::SpawnerGroup::CheckMaxEnemy(int size)
 
 		// 여기랑 밑에 채워놓고 timer, collider 테스트 하기 
 		std::vector<std::shared_ptr<game_module::GameObject>> targetOnObject{}; // 타겟이 null이 아니고 isdestroy가 아닌 것들
-		std::copy_if(mMonsters.begin(), mMonsters.end(), std::back_inserter(targetOnObject),
+		auto monsters = mMonsterManager->GetMonsters();
+		std::copy_if(monsters.begin(), monsters.end(), std::back_inserter(targetOnObject),
 			[this](std::shared_ptr<game_module::GameObject> monster)
 			{
-				auto target = monster->GetComponent<Monster>()->GetTarget();
-				return !target->IsDestroyed();
+				auto isMelee = monster->GetComponent<MeleeMonster>();
+				std::shared_ptr<game_module::GameObject> target;
+				if (isMelee)
+				{
+					target = isMelee->GetTarget();
+				}
+				auto isBoss = monster->GetComponent<BossMonster>();
+				if (isBoss)
+				{
+					target = isBoss->GetTarget();
+				}
+				auto isPlant = monster->GetComponent<PlantMonster>();
+				if (isPlant)
+				{
+					target = isPlant->GetTarget();
+				}
+
+				if (target)
+				{
+					return !target->IsDestroyed();
+				}
+				else
+				{
+					return false;
+				}
 			}
 		);
 
@@ -278,7 +306,8 @@ void fq::client::SpawnerGroup::CheckObjectLive(int size)
 		}
 
 		std::vector<std::shared_ptr<game_module::GameObject>> sameNameMonster{}; // 조건에 맞는 몬스터
-		std::copy_if(mMonsters.begin(), mMonsters.end(), std::back_inserter(sameNameMonster),
+		auto monsters = mMonsterManager->GetMonsters();
+		std::copy_if(monsters.begin(), monsters.end(), std::back_inserter(sameNameMonster),
 			[this, objectLiveList](std::shared_ptr<game_module::GameObject> monster)
 			{
 				return monster->GetName().find(objectLiveList.ObjectOrPrefabName) != std::string::npos;
@@ -367,14 +396,14 @@ fq::client::SpawnerGroup& fq::client::SpawnerGroup::operator=(const SpawnerGroup
 	mStartNum = other.mStartNum;
 	mSpawnConditions = other.mSpawnConditions;
 	mSpawnRules = other.mSpawnRules;
-	mMeleeMonsterPrefab = mMeleeMonsterPrefab;
+	mMeleeMonsterPrefab = other.mMeleeMonsterPrefab;
 	mExplosionMonsterPrefab = other.mExplosionMonsterPrefab;
 	mBossMonsterPrefab = other.mBossMonsterPrefab;
 	mPlantMonsterPrefab = other.mPlantMonsterPrefab;
 	mSpawnerMonsterPrefab = other.mSpawnerMonsterPrefab;
 	mCurRuleNum = other.mCurRuleNum;
 	mCurSpawnMonsterNum = other.mCurSpawnMonsterNum;
-	mMonsters = other.mMonsters;
+	mMonsterManager = other.mMonsterManager;
 
 	return *this;
 }

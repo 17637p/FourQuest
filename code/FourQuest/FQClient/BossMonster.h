@@ -3,6 +3,8 @@
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
 
+#include "IMonster.h"
+
 namespace fq::game_module
 {
 	class Transform;
@@ -18,7 +20,7 @@ namespace fq::client
 	/// 웅장한 근접 보스몬스터 클래스
 	/// 
 	/// </summary>
-	class BossMonster : public game_module::Component
+	class BossMonster : public game_module::Component, public IMonster
 	{
 	public:
 		BossMonster();
@@ -42,7 +44,8 @@ namespace fq::client
 		/// <summary>
 		/// 타겟을 설정합니다 
 		/// </summary>
-		void SetTarget(game_module::GameObject* target);
+		void SetTarget(game_module::GameObject* target) override;
+		std::shared_ptr<game_module::GameObject> GetTarget() override { return mTarget; };
 
 		/// <summary>
 		/// 타겟을 추적합니다 
