@@ -1,14 +1,16 @@
 #pragma once
-
 #include "../FQGameModule/IStateBehaviour.h"
 
 namespace fq::client
 {
-	class MeleeMonsterDeadState :public fq::game_module::IStateBehaviour
+	/// <summary>
+	/// 원거리 몬스터 맞음 상태  처리
+	/// </summary>
+	class PlantMonsterHitState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		MeleeMonsterDeadState();
-		~MeleeMonsterDeadState();
+		PlantMonsterHitState();
+		~PlantMonsterHitState();
 
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
@@ -20,7 +22,6 @@ namespace fq::client
 
 	private:
 		float mDurationTime;
-		float mEraseTime;
+		float mRimTotalTime;
 	};
 }
-

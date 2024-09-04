@@ -66,6 +66,7 @@
 #include "LinearAttack.h"
 #include "PlantMonsterAttckState.h"
 #include "PlantMonsterDeadState.h"
+#include "PlantMonsterHitState.h"
 #include "PlantMonsterIdleState.h"
 #include "PlantMonsterStareState.h"
 
@@ -688,6 +689,11 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterStareState>()
 		.type("PlantMonsterStareState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterStareState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<PlantMonsterHitState>()
+		.type("PlantMonsterHitState"_hs)
+		.prop(fq::reflect::prop::Name, "PlantMonsterHitState")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterDeadState>()

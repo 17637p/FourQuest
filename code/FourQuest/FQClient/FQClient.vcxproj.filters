@@ -398,6 +398,9 @@
     <ClInclude Include="ResultUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="PlantMonsterHitState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -654,6 +657,9 @@
     </ClCompile>
     <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterHitState.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

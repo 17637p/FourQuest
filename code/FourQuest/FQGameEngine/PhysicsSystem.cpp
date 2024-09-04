@@ -780,8 +780,8 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				DirectX::SimpleMath::Vector3 position;
 				dxTransform.Decompose(scale, rotation, position);
 
-				transform->SetLocalPosition(position);
-				transform->SetLocalRotation(rotation);
+				transform->SetWorldPosition(position);
+				transform->SetWorldRotation(rotation);
 
 				//nodeHierarchy.UpdateByLocalTransform();
 				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
