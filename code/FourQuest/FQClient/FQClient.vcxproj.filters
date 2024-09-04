@@ -398,6 +398,12 @@
     <ClInclude Include="ResultUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterManager.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonster.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -654,6 +660,9 @@
     </ClCompile>
     <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterManager.cpp">
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

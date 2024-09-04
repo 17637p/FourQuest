@@ -70,6 +70,7 @@
     <ClInclude Include="GameVaribleHelper.h" />
     <ClInclude Include="HpBar.h" />
     <ClInclude Include="IGameVariable.h" />
+    <ClInclude Include="IMonster.h" />
     <ClInclude Include="KnightArmour.h" />
     <ClInclude Include="KnockBack.h" />
     <ClInclude Include="LoadingUI.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterGroup.h" />
     <ClInclude Include="MonsterIdle.h" />
+    <ClInclude Include="MonsterManager.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
     <ClInclude Include="MonsterVariable.h" />
@@ -189,6 +191,7 @@
     <ClCompile Include="MonsterFind.cpp" />
     <ClCompile Include="MonsterGroup.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
+    <ClCompile Include="MonsterManager.cpp" />
     <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="LinearAttack.cpp" />
     <ClCompile Include="PauseUI.cpp" />
