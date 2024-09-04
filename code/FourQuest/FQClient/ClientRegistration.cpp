@@ -4,6 +4,7 @@
 #include "../FQReflect/FQReflect.h"
 
 #include "GameManager.h"
+#include "MonsterManager.h"
 
 // Player 
 #include "PlayerDefine.h"
@@ -129,6 +130,14 @@ void fq::client::RegisterMetaData()
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
+
+	entt::meta<MonsterManager>()
+		.type("MonsterManager"_hs)
+		.prop(reflect::prop::Name, "MonsterManager")
+		.data<&MonsterManager::SetMonsterSize, &MonsterManager::GetMonsterSize>("Size"_hs)
+		.prop(fq::reflect::prop::Name, "Size")
+		.base<game_module::Component>();
+
 	
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//

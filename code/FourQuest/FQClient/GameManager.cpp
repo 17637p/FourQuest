@@ -56,7 +56,7 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}), mPlayers.end());
 
 	// Pause 처리
-	// P, O 는 임시
+	// P, O 는 임시 b 
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{
