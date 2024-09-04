@@ -100,19 +100,11 @@ void fq::game_engine::WindowSystem::InitializeEditorType(UINT screenWidth, UINT 
 	rect.top = mMonitorHeight / 2 - screenHeight / 2;
 	rect.bottom = mMonitorHeight / 2 + screenHeight / 2;
 
-	::AdjustWindowRect(&rect, WS_OVERLAPPED |
-		WS_CAPTION |
-		WS_SYSMENU |
-		WS_MINIMIZEBOX |
-		WS_MAXIMIZEBOX, false);
+	::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 
 	mHWND = CreateWindow(L"4Quset"
 		, L"4Quest"
-		, WS_OVERLAPPED |
-		WS_CAPTION |
-		WS_SYSMENU |
-		WS_MINIMIZEBOX |
-		WS_MAXIMIZEBOX
+		, WS_OVERLAPPEDWINDOW
 		, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top
 		, NULL, NULL, mHInstance, NULL);
 

@@ -139,7 +139,6 @@ namespace fq::event
 	{
 		unsigned short width;
 		unsigned short height;
-
 	};
 
 	struct SetViewportSize

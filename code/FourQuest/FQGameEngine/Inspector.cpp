@@ -653,10 +653,10 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
 		if (ImGui::Button(deleteText.c_str()))
 		{
-			auto last = view.end();
-
-			if (last != view.end())
+			if (view.size() != 0)
 			{
+				auto last = view.end();
+				last--;
 				view.erase(last);
 				mEditorProcess->mCommandSystem->Push<SetMetaData>(
 					data, mSelectObject, handle, any);
