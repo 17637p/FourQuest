@@ -112,7 +112,8 @@ namespace fq::game_engine
 
 		bool mbIsOpen;
 		bool mbIsFocused;
-
+		bool mbFlipHierachy;
+		
 		fq::game_module::Scene* mScene;
 		fq::game_module::InputManager* mInputManager;
 		fq::game_module::EventManager* mEventManager;
@@ -124,6 +125,7 @@ namespace fq::game_engine
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectObjectHandle;
 		fq::game_module::EventHandler mSelectAnimationState;
+		fq::game_module::EventHandler mFlipHierachy;
 	};
 
 
