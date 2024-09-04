@@ -10,28 +10,28 @@ namespace fq::client
 {
 	struct PreQuest
 	{
-		int preIndex;
+		int preIndex = 0;
 		bool preIsMain = true; // QuestType
 	};
 
 	struct QuestColliderTrigger
 	{
-		std::string colliderName;
+		std::string colliderName = "";
 		bool isAll;
 	};
 
 	struct MonsterKill
 	{
 		EMonsterType monsterType;
-		int requestsNumber;
+		int requestsNumber = 0;
 
 		int curNumber = 0;
-		bool isClear = false;
+		bool isClear;
 	};
 
 	struct MonsterGroupKill
 	{
-		std::string monsterGroupName;
+		std::string monsterGroupName = "";
 
 		int curNumber = 0;
 		int groupMonsterNumber = 0;
@@ -39,8 +39,8 @@ namespace fq::client
 
 	struct Defence
 	{
-		std::string colliderName;
-		float count;
+		std::string colliderName = "";
+		float count = 0;
 
 		float curCount = 0;
 	};
@@ -48,7 +48,7 @@ namespace fq::client
 	// UI ¾øÀ½ 
 	struct ClearQuest
 	{
-		int clearIndex;
+		int clearIndex = 0;
 		bool clearIsMain = true; // QuestType
 	};
 	
@@ -60,7 +60,7 @@ namespace fq::client
 
 	struct ObjectInteraction
 	{
-		game_module::ETag tag;
+		game_module::ETag tag = game_module::ETag::Armour;
 	};
 	
 	struct QuestClearCondition

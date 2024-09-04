@@ -398,6 +398,15 @@
     <ClInclude Include="ResultUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="SpawnerGroup.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnStruct.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawner.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -654,6 +663,15 @@
     </ClCompile>
     <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerGroup.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnStruct.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>src\07.Quest</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
