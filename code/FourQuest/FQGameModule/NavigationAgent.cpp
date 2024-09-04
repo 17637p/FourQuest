@@ -37,14 +37,20 @@ void fq::game_module::NavigationAgent::RegisterNavigationField(fq::game_engine::
 	mImpl->crowd = mPathFindingSystem->GetCrowd();
 }
 
-float fq::game_module::NavigationAgent::GetSpeed()
+float fq::game_module::NavigationAgent::GetSpeed()const
 {
+	if (mImpl->crowd == nullptr)
+	{
+		return 0.f;
+	}
+
 	return mImpl->agentParams.maxSpeed;
 }
 
 void fq::game_module::NavigationAgent::SetSpeed(float speed)
 {
 	mImpl->agentParams.maxSpeed = speed;
+
 	if (mImpl->crowd != nullptr)
 		mImpl->crowd->updateAgentParameters(mImpl->agentIdx, &mImpl->agentParams);
 }
@@ -63,8 +69,26 @@ void fq::game_module::NavigationAgent::SetAcceleration(float accel)
 
 float fq::game_module::NavigationAgent::GetRadius()
 {
+	if (mImpl->crowd == nullptr)
+	{
+		return 0.f;
+	}
+
 	return mImpl->agentParams.radius;
 }
+
+void fq::game_module::NavigationAgent::SetAgentState()
+{
+	if (mImpl->crowd != nullptr)
+	{
+		dtCrowdAgent* agent = mImpl->crowd->getEditableAgent(mImpl->agentIdx);
+		//agent->state = DT_CROWDAGENT_STATE_INVALID;
+		agent->state = DT_CROWDAGENT_STATE_OFFMESH;
+
+	}
+
+}
+
 
 void fq::game_module::NavigationAgent::SetRadius(float radius)
 {
@@ -92,6 +116,7 @@ void fq::game_module::NavigationAgent::MoveTo(DirectX::SimpleMath::Vector3 desti
 
 	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
 	const dtCrowdAgent* agent = mImpl->crowd->getAgent(mImpl->agentIdx);
+	
 	const float* halfExtents = mImpl->crowd->getQueryExtents();
 
 	mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&destination), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
@@ -171,3 +196,4 @@ bool fq::game_module::NavigationAgent::HasReachedDestination() const
 
 	return distance < tolerance;
 }
+

@@ -19,7 +19,7 @@ namespace fq::game_module
 		void DeleteAgentData();
 		void RegisterNavigationField(fq::game_engine::PathFindingSystem* pathFindingSystem);
 		
-		float GetSpeed();
+		float GetSpeed()const;
 		void SetSpeed(float speed);
 
 		float GetAcceleration();
@@ -27,6 +27,8 @@ namespace fq::game_module
 
 		float GetRadius();
 		void SetRadius(float radius);
+
+		void SetAgentState();
 
 		int GetAgentIndex();
 
@@ -48,7 +50,7 @@ namespace fq::game_module
 		
 		/// <summary>
 		/// 움직이는 방향에 따라서 회전 방향의 동기화 여부를 설정합니다
-		/// </summary>
+		/// </summary>	
 		void SetSyncRotationWithMovementDirection(bool val) { mbSyncRotationWithMovementDirection = val; }
 		
 		/// <summary>

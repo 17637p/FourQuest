@@ -16,7 +16,7 @@ fq::game_engine::CameraSystem::CameraSystem()
 	, mGameMainCamera(nullptr)
 	, mEditorCamera(nullptr)
 	, mCameraType(CameraType::None)
-	, mAspectRatio(1.f)
+	, mAspectRatio(16.f/9.f)
 	, mGetMainCameraHandler{}
 {}
 

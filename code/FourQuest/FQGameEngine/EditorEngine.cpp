@@ -57,7 +57,9 @@ void fq::game_engine::EditorEngine::Initialize()
 	fq::game_module::ThreadPool::Initialize();
 
 	// 윈도우 창 초기화 
-	mGameProcess->mWindowSystem->InitializeEditorType();
+	UINT ScreenWidth = 1920;
+	UINT ScreenHeight = 1080;
+	mGameProcess->mWindowSystem->InitializeEditorType(ScreenWidth,ScreenHeight);
 
 	// GameProcess 초기화
 	mGameProcess->mInputManager->

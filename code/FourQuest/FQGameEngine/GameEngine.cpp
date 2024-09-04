@@ -45,7 +45,6 @@ fq::game_engine::GameEngine::~GameEngine()
 
 void fq::game_engine::GameEngine::Initialize()
 {
-
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
@@ -57,7 +56,9 @@ void fq::game_engine::GameEngine::Initialize()
 	fq::game_module::ThreadPool::Initialize();
 
 	// 윈도우 창을 초기화
-	mGameProcess->mWindowSystem->Initialize();
+	UINT ScreenWidth = 1920;
+	UINT ScreenHeight = 1080;
+	mGameProcess->mWindowSystem->Initialize(ScreenWidth, ScreenHeight);
 
 	// GameProcess 초기화
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
@@ -144,7 +145,7 @@ void fq::game_engine::GameEngine::Process()
 
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
-				mGameProcess->mWindowSystem->OnResize();
+					mGameProcess->mWindowSystem->OnResize();
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
 				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);

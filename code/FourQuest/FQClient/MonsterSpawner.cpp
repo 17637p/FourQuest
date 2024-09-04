@@ -3,6 +3,7 @@
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/NavigationAgent.h"
 #include "Attack.h"
 #include "MonsterGroup.h"
 #include "MeleeMonster.h"
@@ -53,6 +54,9 @@ void fq::client::MonsterSpawner::OnUpdate(float dt)
 		mbIsSpawnState = true;
 		mAnimator->SetParameterTrigger("Spawn");
 	}
+
+	auto agent = GetComponent<game_module::NavigationAgent>();
+	agent->SetAgentState();
 }
 
 void fq::client::MonsterSpawner::OnStart()
@@ -63,6 +67,17 @@ void fq::client::MonsterSpawner::OnStart()
 
 	mMaxHp = mHp;
 	mSpawnElapsedTime = mSpawnCoolTime;
+
+	auto agent = GetComponent<game_module::NavigationAgent>();
+	if (agent)
+	{
+		agent->SetSpeed(0.f);
+		agent->SetAcceleration(0.f);
+		agent->SetRadius(3.f);
+		agent->SetSyncRotationWithMovementDirection(false);
+		//agent->SetAgentState();
+	}
+
 }
 
 void fq::client::MonsterSpawner::Spawn()
