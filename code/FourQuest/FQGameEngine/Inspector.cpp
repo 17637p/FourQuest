@@ -653,7 +653,7 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
 		if (ImGui::Button(deleteText.c_str()))
 		{
-			auto last = view.begin();
+			auto last = view.end();
 
 			if (last != view.end())
 			{
@@ -735,6 +735,43 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 			++index;
 		}
 	}
+	else if (valueType == entt::resolve<fq::game_module::PrefabResource>())
+	{
+		size_t index = 0;
+		for (auto element : view)
+		{
+			game_module::PrefabResource val = element.cast<fq::game_module::PrefabResource>();
+			std::string path = val.GetPrefabPath();
+
+			std::string sIndex = "  [" + std::to_string(index) + "]";
+
+			ImGui::Text(sIndex.c_str());
+			ImGui::SameLine();
+
+			std::string textName = "##" + sIndex + path;
+			ImGui::InputText(textName.c_str(), &path);
+
+			// DragDrop ¹Þ±â
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* dropPath
+						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+					if (dropPath->extension() == L".prefab")
+					{
+						view[index].cast<game_module::PrefabResource&>().SetPrefabPath(dropPath->string());
+						mEditorProcess->mCommandSystem->Push<SetMetaData>(
+							data, mSelectObject, handle, any);
+					}
+				}
+			}
+			++index;
+		}
+	}
 }
 
 void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IHandle* handle)
@@ -751,7 +788,6 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 			assert(mSelectObject->GetComponent(id));
 
 			auto component = mSelectObject->GetComponent(id)->shared_from_this();
-
 
 			auto remove = [selectObject = mSelectObject, id]()
 				{

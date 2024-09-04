@@ -218,10 +218,10 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 
 					if (!std::filesystem::exists(prefabPath))
 					{
-					/*	spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
-							, fq::reflect::GetName(entt::resolve(componentID))
-							, fq::reflect::GetName(metaData));
-					*/	continue;
+						/*	spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
+								, fq::reflect::GetName(entt::resolve(componentID))
+								, fq::reflect::GetName(metaData));
+						*/	continue;
 					}
 
 					auto instance = LoadPrefab(prefabPath);
@@ -233,6 +233,27 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 					}
 
 					mPrefabInstances.insert({ prefabPath, std::move(instance) });
+				}
+				else if (metaData.type() == entt::resolve<std::vector<PrefabResource>>()) // vector PrefabInstance도 탐색
+				{
+					auto prefabresourceVector = metaData.get(component->GetHandle()).cast<std::vector<PrefabResource>>();
+
+					for (auto& resource : prefabresourceVector)
+					{
+						auto prefabPath = resource.GetPrefabPath();
+
+						if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()) continue;
+
+						auto instance = LoadPrefab(prefabPath);
+
+						// 프리팹 리소스내부에 존재하는 프리팹 리소도 같이로드
+						for (auto& object : instance)
+						{
+							q.push(object.get());
+						}
+
+						mPrefabInstances.insert({ prefabPath, std::move(instance) });
+					}
 				}
 			}
 		}

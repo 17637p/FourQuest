@@ -1,4 +1,3 @@
-
 #include "ClientRegistration.h"
 
 #include "../FQReflect/FQReflect.h"
@@ -136,6 +135,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "MonsterManager")
 		.data<&MonsterManager::SetMonsterSize, &MonsterManager::GetMonsterSize>("Size"_hs)
 		.prop(fq::reflect::prop::Name, "Size")
+		.data<&MonsterManager::mRes>("mRes"_hs)
+		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
 
 	
@@ -1205,6 +1206,7 @@ void fq::client::RegisterMetaData()
 	//////////////////////////////////////////////////////////////////////////
 	//                            Game Variable								//
 	//////////////////////////////////////////////////////////////////////////
+
 	entt::meta<SpawnColliderTrigger>()
 		.type("SpawnColliderTrigger"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnColliderTrigger")
