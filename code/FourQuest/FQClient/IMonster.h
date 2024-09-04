@@ -18,5 +18,6 @@ namespace fq::client
 		virtual ~IMonster(){}
 
 		virtual void SetTarget(game_module::GameObject* target) abstract;
+		virtual std::shared_ptr<game_module::GameObject> GetTarget() abstract;
 	};
 }

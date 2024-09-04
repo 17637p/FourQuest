@@ -10,6 +10,8 @@
 
 namespace fq::client
 {
+	class MonsterManager;
+
 	class SpawnerGroup : public game_module::Component
 	{
 	public:
@@ -58,8 +60,7 @@ namespace fq::client
 
 		game_module::EventHandler mPlayerSpawnCollideTriggerHandler;
 
-		// 소환한 모든 몬스터를 들고 있다가 isDestroyed 삭제됐는지 확인
-		std::vector<std::shared_ptr<game_module::GameObject>> mMonsters; // 소환한 몬스터 저장
+		MonsterManager* mMonsterManager;
 
 	private:
 		friend void RegisterMetaData();

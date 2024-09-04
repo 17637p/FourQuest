@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/EventManager.h"
 
@@ -21,7 +20,6 @@ namespace fq::client
 		/// 현재 총 몬스터 숫자를 반환합니다.
 		/// </summary>
 		int GetMonsterSize()const { return static_cast<int>(mMonsters.size()); }
-
 
 		/// <summary>
 		/// 몬스터를 담은 컨테이너를 반환합니다.
