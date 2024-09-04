@@ -33,7 +33,7 @@ namespace fq::physics
 		if (data.word0 > 32)
 			return PxQueryHitType::eNONE;
 
-		if ((((1 << mFilterData->word0) & data.word1) > 0) && (((1 << data.word0) & mFilterData->word1) > 0))
+		if ((((1 << mFilterData->word0) & data.word1) > 0) && (((1 << data.word0) & mFilterData->word1) > 0) && data.word2 == 0)
 		{
 			return PxQueryHitType::eBLOCK;
 		}

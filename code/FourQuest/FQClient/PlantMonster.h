@@ -28,6 +28,7 @@ namespace fq::client
 		void EmitAttack();
 
 		void SetTarget(fq::game_module::GameObject* target) override;
+		std::shared_ptr<game_module::GameObject> GetTarget() override { return mTarget; };
 
 		/// <summary>
 		/// 타겟을 응시합니다 

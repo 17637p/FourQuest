@@ -2,6 +2,7 @@
 
 #include "CharacterLink.h"
 #include "EngineDataConverter.h"
+#include "../FQGameModule/GameModule.h"
 
 #include "PhysicsCollisionDataManager.h"
 
@@ -74,6 +75,7 @@ namespace fq::physics
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
 		filterdata.word1 = collisionMatrix[mLayerNumber];
+		filterdata.word2 = 1;
 		shape->setSimulationFilterData(filterdata);
 
 		mLinkContainer.insert(std::make_pair(info.boneName, link));
@@ -101,6 +103,7 @@ namespace fq::physics
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
 		filterdata.word1 = collisionMatrix[mLayerNumber];
+		filterdata.word2 = 1;
 		shape->setSimulationFilterData(filterdata);
 
 		return true;
@@ -126,6 +129,7 @@ namespace fq::physics
 		physx::PxFilterData filterdata;
 		filterdata.word0 = mLayerNumber;
 		filterdata.word1 = collisionMatrix[mLayerNumber];
+		filterdata.word2 = 1;
 		shape->setSimulationFilterData(filterdata);
 
 		return true;
@@ -150,6 +154,7 @@ namespace fq::physics
 		physx::PxFilterData newFilterData;
 		newFilterData.word0 = newLayerNumber;
 		newFilterData.word1 = collisionMatrix[newLayerNumber];
+		newFilterData.word2 = 1;
 
 		std::shared_ptr<CollisionData> collisionData = std::make_shared<CollisionData>();
 		collisionData->myId = mID;

@@ -36,8 +36,7 @@ fq::client::GameManager::GameManager(const GameManager& other)
 	, mPlayers(other.mPlayers)
 	, mPauseUI(other.mPauseUI)
 	, mIsStop(false)
-{
-}
+{}
 
 fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& other)
 {
@@ -57,7 +56,7 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}), mPlayers.end());
 
 	// Pause 처리
-	// P, O 는 임시
+	// P, O 는 임시 b 
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{

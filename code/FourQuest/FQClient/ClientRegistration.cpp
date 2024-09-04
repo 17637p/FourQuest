@@ -1,10 +1,10 @@
-
 #include "ClientRegistration.h"
 
 #include "../FQReflect/FQReflect.h"
 
 #include "GameManager.h"
 #include "MaterialManager.h"
+#include "MonsterManager.h"
 
 // Player 
 #include "PlayerDefine.h"
@@ -67,6 +67,7 @@
 #include "LinearAttack.h"
 #include "PlantMonsterAttckState.h"
 #include "PlantMonsterDeadState.h"
+#include "PlantMonsterHitState.h"
 #include "PlantMonsterIdleState.h"
 #include "PlantMonsterStareState.h"
 
@@ -100,6 +101,11 @@
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
 
+// MonsterSpawner
+#include "SpawnerGroup.h"
+#include "SpawnStruct.h"
+#include "Spawner.h"
+
 // GameVariable
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
@@ -126,6 +132,16 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
 
+	entt::meta<MonsterManager>()
+		.type("MonsterManager"_hs)
+		.prop(reflect::prop::Name, "MonsterManager")
+		.data<&MonsterManager::SetMonsterSize, &MonsterManager::GetMonsterSize>("Size"_hs)
+		.prop(fq::reflect::prop::Name, "Size")
+		.data<&MonsterManager::mRes>("mRes"_hs)
+		.prop(fq::reflect::prop::Name, "mRes")
+		.base<game_module::Component>();
+
+	
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//
 	//////////////////////////////////////////////////////////////////////////
@@ -710,6 +726,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PlantMonsterStareState")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<PlantMonsterHitState>()
+		.type("PlantMonsterHitState"_hs)
+		.prop(fq::reflect::prop::Name, "PlantMonsterHitState")
+		.base<fq::game_module::IStateBehaviour>();
+
 	entt::meta<PlantMonsterDeadState>()
 		.type("PlantMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterDeadState")
@@ -1188,9 +1209,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossComboAttackCoefficient")
 		.data<&DamageVariable::BossRushCoefficient>("BossRushCoefficient"_hs)
 		.prop(fq::reflect::prop::Name, "BossRushCoefficient")
-
 		.base<IGameVariable>();
-
 
 	//////////////////////////////////////////////////////////////////////////
 	//                            Game Variable								//
@@ -1209,4 +1228,115 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DeadTime")
 		.prop(reflect::prop::Comment, u8"깨지고 난 뒤 사라질 시간을 지정해주세요.")
 		.base<game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            Game Variable								//
+	//////////////////////////////////////////////////////////////////////////
+
+	entt::meta<SpawnColliderTrigger>()
+		.type("SpawnColliderTrigger"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnColliderTrigger")
+		.prop(fq::reflect::prop::POD)
+		.data<&SpawnColliderTrigger::ColliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName");
+
+	entt::meta<EComparisonOperators>()
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.conv<std::underlying_type_t<EComparisonOperators>>()
+		.data<EComparisonOperators::Equals>("Equals"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Equals")
+		.data<EComparisonOperators::Greater>("Greater"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Greater")
+		.data<EComparisonOperators::Less>("Less"_hs) // 2
+		.prop(fq::reflect::prop::Name, "Less");
+
+	entt::meta<MaxEnemy>()
+		.type("MaxEnemy"_hs)
+		.prop(fq::reflect::prop::Name, "MaxEnemy")
+		.prop(fq::reflect::prop::POD)
+		.data<&MaxEnemy::ComparisonOperator>("ComparisonOperator"_hs)
+		.prop(fq::reflect::prop::Name, "ComparisonOperator")
+		.data<&MaxEnemy::MonsterNum>("MonsterNum"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterNum");
+
+	entt::meta<Timer>()
+		.type("Timer"_hs)
+		.prop(fq::reflect::prop::Name, "Timer")
+		.prop(fq::reflect::prop::POD)
+		.data<&Timer::Second>("Second"_hs)
+		.prop(fq::reflect::prop::Name, "Second");
+
+	entt::meta<ObjectLive>()
+		.type("ObjectLive"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectLive")
+		.prop(fq::reflect::prop::POD)
+		.data<&ObjectLive::isLive>("isLive"_hs)
+		.prop(fq::reflect::prop::Name, "isLive")
+		.data<&ObjectLive::ObjectOrPrefabName>("ObjectOrPrefabName"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectOrPrefabName");
+
+	entt::meta<SpawnCondition>()
+		.type("SpawnCondition"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnCondition")
+		.prop(fq::reflect::prop::POD)
+		.data<&SpawnCondition::SpawnColliderTriggerList>("SpawnColliderTriggerList"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnColliderTriggerList")
+		.data<&SpawnCondition::MaxEnemyList>("MaxEnemyList"_hs)
+		.prop(fq::reflect::prop::Name, "MaxEnemyList")
+		.data<&SpawnCondition::TimerList>("TimerList"_hs)
+		.prop(fq::reflect::prop::Name, "TimerList")
+		.data<&SpawnCondition::ObjectLiveList>("ObjectLiveList"_hs)
+		.prop(fq::reflect::prop::Name, "ObjectLiveList");
+
+	entt::meta<SpawnRule>()
+		.type("SpawnRule"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnRule")
+		.prop(fq::reflect::prop::POD)
+		.data<&SpawnRule::MonsterType>("MonsterType"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.data<&SpawnRule::Name>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
+		.data<&SpawnRule::SpawnerNum>("SpawnerNum"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerNum")
+		.data<&SpawnRule::SpawnMonsterNum>("SpawnMonsterNum"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnMonsterNum");
+
+	entt::meta<SpawnRules>()
+		.type("SpawnRules"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnRules")
+		.prop(fq::reflect::prop::POD)
+		.data<&SpawnRules::isLoof>("isLoof"_hs)
+		.prop(fq::reflect::prop::Name, "isLoof")
+		.data<&SpawnRules::SpawnRuleList>("SpawnRuleList"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnRuleList");
+
+	entt::meta<Spawner>()
+		.type("Spawner"_hs)
+		.prop(fq::reflect::prop::Name, "Spawner")
+		.data<&Spawner::mID>("ID"_hs)
+		.prop(fq::reflect::prop::Name, "ID")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SpawnerGroup>()
+		.type("SpawnerGroup"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerGroup")
+		.data<&SpawnerGroup::mID>("ID"_hs)
+		.prop(fq::reflect::prop::Name, "ID")
+		.data<&SpawnerGroup::mStartNum>("StartNum"_hs)
+		.prop(fq::reflect::prop::Name, "StartNum")
+		.data<&SpawnerGroup::mSpawnConditions>("SpawnConditions"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnConditions")
+		.data<&SpawnerGroup::mSpawnRules>("SpawnRules"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnRules")
+		.data<&SpawnerGroup::mMeleeMonsterPrefab>("MeleeMonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "MeleeMonsterPrefab")
+		.data<&SpawnerGroup::mExplosionMonsterPrefab>("ExplosionMonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ExplosionMonsterPrefab")
+		.data<&SpawnerGroup::mBossMonsterPrefab>("BossMonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterPrefab")
+		.data<&SpawnerGroup::mPlantMonsterPrefab>("PlantMonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "PlantMonsterPrefab")
+		.data<&SpawnerGroup::mSpawnerMonsterPrefab>("SpawnerMonsterPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerMonsterPrefab")
+		.base<fq::game_module::Component>();
 }

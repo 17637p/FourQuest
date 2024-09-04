@@ -56,6 +56,26 @@ void fq::game_engine::GameVariableWindow::beginVariable(entt::meta_type type)
 						metaData.set(variable, val);
 					}
 				}
+				else if (memberType == entt::resolve<int>())
+				{
+					int val = metaData.get(variable).cast<int>();
+					std::string memberName = fq::reflect::GetName(metaData);
+
+					if (ImGui::InputInt(memberName.c_str(), &val))
+					{
+						metaData.set(variable, val);
+					}
+				}
+				else if (memberType == entt::resolve<bool>())
+				{
+					bool val = metaData.get(variable).cast<bool>();
+					std::string memberName = fq::reflect::GetName(metaData);
+
+					if (ImGui::Checkbox(memberName.c_str(), &val))
+					{
+						metaData.set(variable, val);
+					}
+				}
 			}
 		}
 		ImGui::EndChild();

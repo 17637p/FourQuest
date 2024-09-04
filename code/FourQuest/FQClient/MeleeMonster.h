@@ -18,13 +18,15 @@ namespace fq::client
 	/// <summary>
 	/// 근접몬스터
 	/// </summary>
-	class MeleeMonster : public game_module::Component , public IMonster
+	class MeleeMonster : public game_module::Component, public IMonster
 	{
 	public:
 		MeleeMonster();
 		~MeleeMonster();
 
 		void SetTarget(game_module::GameObject* target) override;
+		std::shared_ptr<game_module::GameObject> GetTarget() override { return mTarget; };
+
 		void EmitAttack();
 		std::shared_ptr<game_module::GameObject> EmitAttackEffect();
 		void ChaseTarget();

@@ -32,6 +32,11 @@ void fq::game_engine::LoadingSystem::Finalize()
 	{
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
 	}
+
+	for (auto& object : mLoadingUIObject)
+	{
+		mGameProcess->mUISystem->UnloadTextUI(object.get());
+	}
 }
 
 void fq::game_engine::LoadingSystem::loadUI()

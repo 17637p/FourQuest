@@ -36,6 +36,10 @@ void fq::client::MeleeMonsterHitState::OnStateEnter(game_module::Animator& anima
 			info.RimLightColor = DirectX::SimpleMath::Color{ 1.f, 0.f, 0.f, 1.f };
 			info.RimPow = 0.f;
 			info.RimIntensity = 1.f;
+			info.bUseInvRimLight = true;
+			info.InvRimLightColor = DirectX::SimpleMath::Color{ 1.f, 0.f, 0.f, 1.f };
+			info.InvRimPow = 0.f;
+			info.InvRimIntensity = 1.f;
 
 			skeletalMesh->SetMaterialInstanceInfo(info);
 		}
