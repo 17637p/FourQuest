@@ -81,12 +81,19 @@ namespace fq::client
 
 	struct ArmourSpawn
 	{
+		std::string armourSetName;
+	};
 
+	struct SequenceStart
+	{
+		std::string name;
 	};
 
 	struct QuestReward
 	{
 		std::vector<RewardPortal> RewardPortalList;
+		std::vector<ArmourSpawn> ArmourList;
+		std::vector<SequenceStart> SequenceStartList;
 	};
 
 	class Quest

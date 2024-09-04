@@ -5,9 +5,13 @@
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Sequence.h"
+#include "../FQGameModule/PrefabResource.h"
+#include "../FQGameModule/NavigationAgent.h"
 
 #include "MonsterGroup.h"
 #include "Portal.h"
+#include "ArmourSet.h"
 
 #include <spdlog/spdlog.h>
 
@@ -412,7 +416,8 @@ void fq::client::QuestManager::EventProcessClearQuest()
 				}
 			}
 
-			// 방금 깬 퀘스트에 보상이 있다면 보상 받기
+			/// Quest Reward
+			// 방금 깬 퀘스트에 포탈 보상이 있다면 보상 받기
 			std::vector<RewardPortal> rewardPortalList = event.clearQuest.mRewardList.RewardPortalList;
 			int rewardPortalListSize = rewardPortalList.size();
 			if (rewardPortalListSize > 0)
@@ -431,6 +436,33 @@ void fq::client::QuestManager::EventProcessClearQuest()
 					portal->GetComponent<Portal>()->SetNextSceneName(rewardPortalList[i].nextSceneName);
 
 					GetScene()->AddGameObject(portal);
+				}
+			}
+
+			// 방금 깬 퀘스트에 갑옷 보상이 있다면 보상 받기
+			std::vector<ArmourSpawn> armourSpawnList = event.clearQuest.mRewardList.ArmourList;
+			int armourSpawnListSize = armourSpawnList.size();
+			if (armourSpawnListSize > 0)
+			{
+				for (int i = 0; i < armourSpawnListSize; i++)
+				{
+					std::vector<game_module::PrefabResource> armourPrefabList = 
+						GetScene()->GetObjectByName(armourSpawnList[i].armourSetName)->GetComponent<ArmourSet>()->GetArmourPrefabList();
+					for (int j = 0; j < armourPrefabList.size(); j++)
+					{
+						SpawnArmour(armourPrefabList[j]);
+					}
+				}
+			}
+
+			// 방금 깬 퀘스트에 시퀀스 시작이 있다면 시작
+			std::vector<SequenceStart> sequenceStartList = event.clearQuest.mRewardList.SequenceStartList;
+			int sequenceStartListSize = sequenceStartList.size();
+			if (sequenceStartListSize > 0)
+			{
+				for (int i = 0; i < sequenceStartListSize; i++)
+				{
+					GetScene()->GetObjectByName(sequenceStartList[i].name)->GetComponent<game_module::Sequence>()->SetIsPlay(true);
 				}
 			}
 		});
@@ -608,5 +640,24 @@ void fq::client::QuestManager::SetScaleAndPositionScreen()
 	{
 		myTransform->SetLocalPosition({ 0.85f * screenWidth, 0.45f * screenHeight, 1 });
 	}
+}
+
+void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armour)
+{
+	// 갑옷 소환
+	std::shared_ptr<game_module::GameObject> armourObject;
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(armour);
+	armourObject = *(instance.begin());
+
+	// 트랜스폼 위치 바꾸기
+	//armour->GetComponent<game_module::Transform>()->SetLocalPosition(rewardPortalList[i].position);
+	// Portal 컴포넌트에 접근해서 씬이름 바꾸기
+	//armour->GetComponent<Portal>()->SetNextSceneName(rewardPortalList[i].nextSceneName);
+	bool isis = armourObject->GetComponent<game_module::NavigationAgent>()->IsValid({ 0, 0, 0 });
+
+	int a = 3;
+
+	GetScene()->AddGameObject(armourObject);
 }
 
