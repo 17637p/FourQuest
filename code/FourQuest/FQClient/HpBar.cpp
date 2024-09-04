@@ -159,8 +159,8 @@ void fq::client::HpBar::setUIInfo()
 	Vector3 pos = mTransform->GetWorldPosition();
 	pos.y += mWorldOffset;
 
-	float height = GetScene()->GetScreenManager()->GetScreenHeight();
-	float width = GetScene()->GetScreenManager()->GetScreenWidth();
+	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 
 	auto viewProj = mMainCamera->GetViewProjection();
 	Vector3 screenPos = Vector3::Transform(pos, viewProj);

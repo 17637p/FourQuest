@@ -36,8 +36,7 @@ fq::client::GameManager::GameManager(const GameManager& other)
 	, mPlayers(other.mPlayers)
 	, mPauseUI(other.mPauseUI)
 	, mIsStop(false)
-{
-}
+{}
 
 fq::client::GameManager& fq::client::GameManager::operator=(const GameManager& other)
 {
@@ -57,7 +56,7 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}), mPlayers.end());
 
 	// Pause 처리
-	// P, O 는 임시
+	// P, O 는 임시 b 
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{
@@ -83,15 +82,19 @@ void fq::client::GameManager::OnUpdate(float dt)
 
 void fq::client::GameManager::OnStart()
 {
+	EventProcessOffPopupPause();
+	EventProcessOffPopupSetting();
+}
+
+void fq::client::GameManager::OnAwake()
+{
 	mRegisterPlayerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::RegisterPlayer>(
 		[this](const client::event::RegisterPlayer& event)
 		{
 			mPlayers.push_back(event.player->shared_from_this());
 		});
-
-	EventProcessOffPopupPause();
-	EventProcessOffPopupSetting();
 }
+
 
 void fq::client::GameManager::OnDestroy()
 {

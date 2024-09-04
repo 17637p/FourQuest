@@ -38,7 +38,6 @@ namespace fq::client
 		static inline float BossRushCoefficient = 1.f;
 
 
-
 	};
 
 

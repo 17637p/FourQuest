@@ -88,6 +88,14 @@ void fq::game_module::GameObject::OnStart()
 	}
 }
 
+void fq::game_module::GameObject::OnAwake()
+{
+	for (const auto& [key, component] : mComponents)
+	{
+		component->OnAwake();
+	}
+}
+
 void fq::game_module::GameObject::OnUpdate(float dt)
 {
 	for (const auto& [key, component] : mComponents)

@@ -18,5 +18,8 @@ namespace fq::editor_event
 		std::string stateName;
 	};
 
+	struct FlipHierachy
+	{
+	};
 
 }

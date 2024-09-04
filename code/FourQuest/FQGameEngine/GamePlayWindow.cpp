@@ -648,6 +648,9 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			return;
 		}
 
+		// 하이어라키 펼치기 전달
+		mGameProcess->mEventManager->FireEvent<fq::editor_event::FlipHierachy>({});
+
 		// 피킹한 오브젝트 탐색
 		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 		scene->ViewComponents<fq::game_module::StaticMeshRenderer>(

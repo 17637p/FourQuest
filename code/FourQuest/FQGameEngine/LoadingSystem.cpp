@@ -12,7 +12,7 @@
 
 fq::game_engine::LoadingSystem::LoadingSystem()
 	:mGameProcess(nullptr)
-	,mLoadingUIObject{}
+	, mLoadingUIObject{}
 {}
 
 fq::game_engine::LoadingSystem::~LoadingSystem()
@@ -31,6 +31,11 @@ void fq::game_engine::LoadingSystem::Finalize()
 	for (auto& object : mLoadingUIObject)
 	{
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
+	}
+
+	for (auto& object : mLoadingUIObject)
+	{
+		mGameProcess->mUISystem->UnloadTextUI(object.get());
 	}
 }
 
@@ -93,7 +98,7 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 		if (object->HasComponent<game_module::ImageUI>())
 		{
 			auto imageUI = object->GetComponent<game_module::ImageUI>();
-			
+
 			for (auto imageObject : imageUI->GetImageObjects())
 			{
 				imageObject->SetIsRender(isRender);
@@ -103,6 +108,10 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 		if (object->HasComponent<game_module::TextUI>())
 		{
 			auto textUI = object->GetComponent<game_module::TextUI>();
+
+			auto info = textUI->GetTextInfo();
+			info.IsRender = isRender;
+			textUI->SetTextInfo(info);
 		}
 	}
 }

@@ -70,6 +70,7 @@
     <ClInclude Include="GameVaribleHelper.h" />
     <ClInclude Include="HpBar.h" />
     <ClInclude Include="IGameVariable.h" />
+    <ClInclude Include="IMonster.h" />
     <ClInclude Include="KnightArmour.h" />
     <ClInclude Include="KnockBack.h" />
     <ClInclude Include="LoadingUI.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="MonsterFind.h" />
     <ClInclude Include="MonsterGroup.h" />
     <ClInclude Include="MonsterIdle.h" />
+    <ClInclude Include="MonsterManager.h" />
     <ClInclude Include="MonsterSpawner.h" />
     <ClInclude Include="LinearAttack.h" />
     <ClInclude Include="MonsterVariable.h" />
@@ -127,6 +129,9 @@
     <ClInclude Include="ShieldBlockState.h" />
     <ClInclude Include="Soul.h" />
     <ClInclude Include="SoulSelectUI.h" />
+    <ClInclude Include="Spawner.h" />
+    <ClInclude Include="SpawnerGroup.h" />
+    <ClInclude Include="SpawnStruct.h" />
     <ClInclude Include="SwordSoulAttackState.h" />
     <ClInclude Include="SoundDefine.h" />
     <ClInclude Include="SpawnerDeadState.h" />
@@ -190,6 +195,7 @@
     <ClCompile Include="MonsterFind.cpp" />
     <ClCompile Include="MonsterGroup.cpp" />
     <ClCompile Include="MonsterIdle.cpp" />
+    <ClCompile Include="MonsterManager.cpp" />
     <ClCompile Include="MonsterSpawner.cpp" />
     <ClCompile Include="LinearAttack.cpp" />
     <ClCompile Include="PauseUI.cpp" />
@@ -217,6 +223,9 @@
     <ClCompile Include="ShieldBlockState.cpp" />
     <ClCompile Include="Soul.cpp" />
     <ClCompile Include="SoulSelectUI.cpp" />
+    <ClCompile Include="Spawner.cpp" />
+    <ClCompile Include="SpawnerGroup.cpp" />
+    <ClCompile Include="SpawnStruct.cpp" />
     <ClCompile Include="SwordSoulAttackState.cpp" />
     <ClCompile Include="SpawnerDeadState.cpp" />
     <ClCompile Include="SpawnerOpenState.cpp" />
@@ -353,6 +362,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -373,6 +383,7 @@
       <Optimization>MaxSpeed</Optimization>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -394,6 +405,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
