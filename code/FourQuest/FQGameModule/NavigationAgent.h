@@ -55,6 +55,8 @@ namespace fq::game_module
 		/// 현재 Agent가 정지상태인지 반환합니다.
 		/// </summary>
 		bool IsStopAgent() const { return mbIsStop; }
+
+		bool IsValid(DirectX::SimpleMath::Vector3 position);
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

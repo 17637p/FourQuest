@@ -171,3 +171,20 @@ bool fq::game_module::NavigationAgent::HasReachedDestination() const
 
 	return distance < tolerance;
 }
+
+bool fq::game_module::NavigationAgent::IsValid(DirectX::SimpleMath::Vector3 position)
+{
+	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
+	const float* halfExtents = mImpl->crowd->getQueryExtents();
+
+	dtStatus status = mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&position), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
+	dtPolyRef nearestPolyRef = 0;
+	if (dtStatusSucceed(status) && nearestPolyRef != 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

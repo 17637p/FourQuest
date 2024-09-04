@@ -40,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="AxeSoulAttackState.h" />
     <ClInclude Include="BGM.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="PlantMonsterDeadState.h" />
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
+    <ClInclude Include="PlayerInfoVariable.h" />
     <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="PlayerSoulVariable.h" />
     <ClInclude Include="Portal.h" />
@@ -117,6 +119,7 @@
     <ClInclude Include="RepauseUI.h" />
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SettingUI.h" />
+    <ClInclude Include="SettingVariable.h" />
     <ClInclude Include="ShiedlDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
@@ -144,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="AxeSoulAttackState.cpp" />
     <ClCompile Include="BGM.cpp" />
     <ClCompile Include="BossHP.cpp" />

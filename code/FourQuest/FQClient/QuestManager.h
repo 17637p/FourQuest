@@ -42,6 +42,7 @@ namespace fq::client
 
 		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
 		void RenderOffQuest();
+		void SpawnArmour(fq::game_module::PrefabResource armour);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
