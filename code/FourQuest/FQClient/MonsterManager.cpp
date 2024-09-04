@@ -11,11 +11,11 @@ fq::client::MonsterManager::MonsterManager()
 fq::client::MonsterManager::MonsterManager(const MonsterManager& other)
 	:mOnDestroyHandler{}
 	,mAddGameObjectHandler{}
+	,mRes{}
 {}
 
 fq::client::MonsterManager& fq::client::MonsterManager::operator=(const MonsterManager& other)
 {
-	
 	return *this;
 }
 
@@ -35,6 +35,8 @@ std::shared_ptr<fq::game_module::Component> fq::client::MonsterManager::Clone(st
 		// 기본 대입 연산자 호출한다.
 		*cloneMgr = *this;
 	}
+
+	cloneMgr->mMonsters.clear();
 
 	return cloneMgr;
 }
@@ -83,4 +85,5 @@ void fq::client::MonsterManager::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mOnDestroyHandler);
 	GetScene()->GetEventManager()->RemoveHandle(mAddGameObjectHandler);
+	mMonsters.clear();
 }

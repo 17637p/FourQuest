@@ -1,8 +1,9 @@
-#pragma once
+ #pragma once
 
 
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/PrefabResource.h"
 
 namespace fq::client
 {
@@ -19,9 +20,8 @@ namespace fq::client
 
 		/// <summary>
 		/// 현재 총 몬스터 숫자를 반환합니다.
-		/// </summary>
+		/// </summary>  
 		int GetMonsterSize()const { return static_cast<int>(mMonsters.size()); }
-
 
 		/// <summary>
 		/// 몬스터를 담은 컨테이너를 반환합니다.
@@ -30,7 +30,7 @@ namespace fq::client
 
 		/// <summary>
 		/// 에디터 디버깅용도의 함수입니다. 사용X
-		/// </summary>
+		/// </summary>1
 		void SetMonsterSize(int size) {};
 
 	private:
@@ -45,5 +45,9 @@ namespace fq::client
 
 		EventHandler mOnDestroyHandler;
 		EventHandler mAddGameObjectHandler;
+
+		std::vector<fq::game_module::PrefabResource> mRes;
+
+		friend void RegisterMetaData();
 	};
 }
