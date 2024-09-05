@@ -75,6 +75,7 @@ fq::game_module::InputManager::InputManager()
 	, mPrevMousePosition{}
 	, mPadStickInfomations{}
 	, mPadVibrationInfomations{}
+	, mbUseVibration(true)
 {}
 
 fq::game_module::InputManager::~InputManager()
@@ -363,6 +364,9 @@ bool fq::game_module::InputManager::IsPadKeyState(PadID id, EPadKey key, EKeySta
 
 void fq::game_module::InputManager::SetVibration(PadID id, EVibrationMode mode, unsigned short intensity, float duration)
 {
+	if (!mbUseVibration)
+		return;
+
 	assert(id <= 3);
 
 	if (mode == EVibrationMode::Left)
@@ -508,4 +512,9 @@ void fq::game_module::InputManager::updateKeyGamePad()
 		mPadKeyInfomations[1][static_cast<size_t>(EPadKey::B)].state = GetKeyState(EKey::PgDn);
 	}
 
+}
+
+void fq::game_module::InputManager::SetUseVibration(bool useVibration)
+{
+	mbUseVibration = useVibration;
 }

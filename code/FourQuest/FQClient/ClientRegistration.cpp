@@ -17,7 +17,7 @@
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
 #include "LaserAttackState.h"
-#include "ShiedlDashState.h"
+#include "ShieldDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
 #include "ShieldAttackState.h"
@@ -368,7 +368,7 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "LaserEmitTime")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<ShiedlDashState>()
+	entt::meta<ShieldDashState>()
 		.type("ShiedlDashState"_hs)
 		.prop(reflect::prop::Name, "ShiedlDashState")
 		.base<game_module::IStateBehaviour>();
