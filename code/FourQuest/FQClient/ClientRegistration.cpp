@@ -101,6 +101,7 @@
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
 #include "ArmourSet.h"
+#include "ArmourSpawner.h"
 
 // MonsterSpawner
 #include "SpawnerGroup.h"
@@ -1156,6 +1157,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SubQuest")
 		.data<&QuestManager::mPortalPrefab>("PortalPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PortalPrefab")
+		.data<&QuestManager::mDistance>("Distance"_hs)
+		.prop(fq::reflect::prop::Name, "Distance")
 		.base<fq::game_module::Component>();
 
 	entt::meta<DefenceCounter>()
@@ -1178,6 +1181,13 @@ void fq::client::RegisterMetaData()
 		.type("ArmourSet"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSet")
 		.data<&ArmourSet::mArmourList>("ArmourList"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourList")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ArmourSpawner>()
+		.type("ArmourSpawner"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawner")
+		.data<&ArmourSpawner::mArmourList>("ArmourList"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourList")
 		.base<fq::game_module::Component>();
 
@@ -1253,6 +1263,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsVibe")
 		.data<&SettingVariable::IsUsedAimAssist>("IsUsedAimAssist"_hs)
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
+		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()

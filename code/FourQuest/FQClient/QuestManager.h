@@ -64,6 +64,8 @@ namespace fq::client
 		std::vector<Quest> mMainQuests;
 		std::vector<Quest> mSubQuests;
 
+		float mDistance;
+
 		// 스크립트 용
 		Quest mCurMainQuest;
 		std::vector<Quest> mCurSubQuest;
@@ -87,6 +89,8 @@ namespace fq::client
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
+
+		std::vector<std::shared_ptr<game_module::GameObject>> mAddedArmourObjects;
 
 		friend void RegisterMetaData();
 	};

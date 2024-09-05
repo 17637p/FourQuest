@@ -24,6 +24,8 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		DirectX::SimpleMath::Vector3 GetCenterCameraInWorld();
+
 		float GetMoveSpeed() const { return mMoveSpeed; }
 		void SetMoveSpeed(float val) { mMoveSpeed = val; }
 
@@ -62,6 +64,8 @@ namespace fq::client
 		fq::game_module::Camera* mMainCamera;
 
 		std::vector<fq::game_module::Transform*> mPlayerTransforms;
+
+		DirectX::SimpleMath::Vector3 mPlayersCenterPoint;
 
 		bool mIsFixed;
 		//

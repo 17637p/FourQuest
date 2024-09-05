@@ -86,7 +86,6 @@ void fq::game_module::NavigationAgent::SetAgentState()
 		agent->state = DT_CROWDAGENT_STATE_OFFMESH;
 
 	}
-
 }
 
 
@@ -197,15 +196,18 @@ bool fq::game_module::NavigationAgent::HasReachedDestination() const
 	return distance < tolerance;
 }
 
-bool fq::game_module::NavigationAgent::IsValid(DirectX::SimpleMath::Vector3 position)
+bool fq::game_module::NavigationAgent::IsValid(DirectX::SimpleMath::Vector3 position, DirectX::SimpleMath::Vector3& nearestPos)
 {
 	const dtQueryFilter* filter{ mImpl->crowd->getFilter(0) };
 	const float* halfExtents = mImpl->crowd->getQueryExtents();
 
-	dtStatus status = mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&position), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
-	dtPolyRef nearestPolyRef = 0;
-	if (dtStatusSucceed(status) && nearestPolyRef != 0)
+	dtStatus status = 
+		mPathFindingSystem->GetNavQuery()->findNearestPoly(reinterpret_cast<float*>(&position), halfExtents, filter, &mImpl->targetRef, mImpl->targetPos);
+	if (dtStatusSucceed(status) && mImpl->targetRef != 0)
 	{
+		nearestPos.x = mImpl->targetPos[0];
+		nearestPos.y = mImpl->targetPos[1];
+		nearestPos.z = mImpl->targetPos[2];
 		return true;
 	}
 	else
