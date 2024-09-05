@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Attack.h"
 #include "DamageCalculation.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::KnightArmour::KnightArmour()
 	:mDashCoolTime(1.f)
@@ -61,6 +62,14 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = mSwordKnockBackPower;
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
 
 	auto name = mAnimator->GetController().GetCurrentStateName();
 
@@ -107,6 +116,14 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackInfo.knocBackPower = mShieldKnockPower;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackInfo.hitSound = "K_Swing3_Hit";
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
 	attackComponent->Set(attackInfo);
 
 	// ShieldAttack ¼Ò¸®
@@ -134,8 +151,15 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackInfo.type = EKnockBackType::Fixed;
 	attackInfo.attackDirection = foward;
 	attackInfo.knocBackPower = 20.f;
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
 	attackComponent->Set(attackInfo);
-	//attackComponent->SetDestroyTime(0.425f);
 
 	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , 0 });
 	GetScene()->AddGameObject(attackObj);

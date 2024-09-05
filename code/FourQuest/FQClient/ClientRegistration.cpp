@@ -1203,6 +1203,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
 		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
+
+		.data<&PlayerSoulVariable::SoulSwordAttackCost>("SoulSwordAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulSwordAttackCost")
+		.data<&PlayerSoulVariable::SoulBowAttackCost>("SoulBowAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackCost")
+		.data<&PlayerSoulVariable::SoulAxeAttackCost>("SoulAxeAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackCost")
+		.data<&PlayerSoulVariable::SoulStaffAttackCost>("SoulStaffAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulStaffAttackCost")
+
+		.data<&PlayerSoulVariable::SoulGaugeCharging>("SoulGaugeCharging"_hs)
+		.prop(fq::reflect::prop::Name, "SoulGaugeCharging")
+
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()

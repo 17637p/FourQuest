@@ -29,6 +29,7 @@ fq::client::Attack::Attack()
 	, mAttackPosition{}
 	, mAttacker(nullptr)
 	, mHitSound{}
+	, mHitCallback{}
 {}
 
 fq::client::Attack::~Attack()
@@ -65,6 +66,11 @@ bool fq::client::Attack::ProcessAttack()
 		}
 	}
 
+	if (mHitCallback)
+	{
+		mHitCallback();
+	}
+
 	return true;
 }
 
@@ -79,6 +85,7 @@ void fq::client::Attack::Set(const AttackInfo& info)
 	mAttackDirection = info.attackDirection;
 	mAttackPosition = info.attackPosition;
 	mHitSound = info.hitSound;
+	mHitCallback = info.mHitCallback;
 }
 
 bool fq::client::Attack::HasKnockBack() const

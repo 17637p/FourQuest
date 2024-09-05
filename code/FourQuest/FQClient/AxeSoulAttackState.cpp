@@ -42,6 +42,8 @@ void fq::client::AxeSoulAttackState::OnStateEnter(game_module::Animator& animato
 {
 	auto player = animator.GetComponent<Player>();
 	player->EquipSoulWeapone();
+	player->AddSoulGauge(-PlayerSoulVariable::SoulAxeAttackCost);
+
 	mAttackElapsedTime = 0.f;
 	mAttackDuration = 0.f;
 }

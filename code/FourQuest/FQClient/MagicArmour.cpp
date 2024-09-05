@@ -72,6 +72,14 @@ void fq::client::MagicArmour::EmitMagicBall()
 	attackInfo.bIsInfinite = false;
 	attackInfo.remainingAttackCount = mMagicBallPenetrationCount;
 	attackInfo.hitSound = "M_MagicBoll_Attack";
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
 	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
@@ -106,6 +114,14 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	auto attackT = attackObj->GetComponent<game_module::Transform>();
 	float attackPower = mPlayer->GetAttackPower();
 	attackInfo.damage = dc::GetAOEDamage(attackPower);
+	attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+		{
+			if (!isIncrease)
+			{
+				this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+				isIncrease = true;
+			}
+		};
 	attackComponent->Set(attackInfo);
 
 	// 공격 위치 설정
@@ -169,6 +185,14 @@ void fq::client::MagicArmour::EmitLaser()
 		attackInfo.attacker = GetGameObject();
 		attackInfo.remainingAttackCount = 1;
 		attackInfo.bIsInfinite = false;
+		attackInfo.mHitCallback = [this, isIncrease = false]() mutable
+			{
+				if (!isIncrease)
+				{
+					this->mPlayer->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+					isIncrease = true;
+				}
+			};
 		attackComponent->Set(attackInfo);
 
 		// 공격 위치 설정

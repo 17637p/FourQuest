@@ -7,6 +7,7 @@
 #include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/Transform.h"
 #include "Player.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::SwordSoulAttackState::SwordSoulAttackState()
 	:mAttackTiming(1.f)
@@ -29,6 +30,7 @@ void fq::client::SwordSoulAttackState::OnStateEnter(game_module::Animator& anima
 	// 검을 장착합니다
 	auto player = animator.GetComponent<Player>();
 	player->EquipSoulWeapone();
+	player->AddSoulGauge(-PlayerSoulVariable::SoulSwordAttackCost);
 }
 
 void fq::client::SwordSoulAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
