@@ -83,7 +83,9 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 			info.bIsUpdate = true;
 			info.bIsUsed = true;
 			info.Duration = mEraseTime;
-			info.DelayTime = mEraseTime - 1.f;
+			info.DelayTime = mEraseTime - 2.f;
+			info.MinDissolveCutoff = -1.f;
+			info.InitDissolveCutoff = -1.f;
 			matAnimator->SetDissolveAnimatorInfo(info);
 		}
 	}
