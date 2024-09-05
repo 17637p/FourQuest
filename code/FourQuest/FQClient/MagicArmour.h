@@ -53,9 +53,11 @@ namespace fq::client
 		float GetAOEMoveRange() const { return mAOEMoveRange; }
 
 		/// <summary>
-		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
+		/// R 스틱의 입력방향으로 바라보는 방0향을 설정합니다
 		/// </summary>
 		void SetLookAtRStickInput();
+
+		void CountLaserCoolTime();
 
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -77,12 +79,12 @@ namespace fq::client
 		float mAOEMoveRange;
 		float mAOECoolTime;
 		float mAOEElapsedTime;
-		float mRazerCoolTime;
-		float mRazerElapsedTime;
+		float mLaserCoolTime;
+		float mLaserElapsedTime;
 		float mRStickNoInputTime;
-		float mRazerDistance;
-		float mRazerHiTick;
-		float mRazerHitElapsedTime;
+		float mLaserDistance;
+		float mLaserHiTick;
+		float mLaserHitElapsedTime;
 
 		std::shared_ptr<game_module::GameObject> mLaserLineEffect;
 		std::shared_ptr<game_module::GameObject> mLaserHeadEffect;
