@@ -58,7 +58,7 @@ namespace fq::game_module
 		/// </summary>
 		bool IsStopAgent() const { return mbIsStop; }
 
-		bool IsValid(DirectX::SimpleMath::Vector3 position);
+		bool IsValid(DirectX::SimpleMath::Vector3 position, DirectX::SimpleMath::Vector3& nearestPos);
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 

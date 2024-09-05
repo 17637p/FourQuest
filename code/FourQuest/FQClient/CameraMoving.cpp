@@ -66,7 +66,7 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();
 
 	// 플레이어 트랜스폼 돌면서 센터 점 계산 
-	DirectX::SimpleMath::Vector3 playersCenterPoint = { 0, 0, 0 };
+	mPlayersCenterPoint = { 0, 0, 0 };
 	mIsZoomIn = true;
 	mIsZoomOut = false;
 
@@ -74,7 +74,7 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 	{
 		DirectX::SimpleMath::Vector3 playerWorldPosition = playerTransform->GetWorldPosition();
 		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, viewMatrix);
-		playersCenterPoint += playerWorldPosition;
+		mPlayersCenterPoint += playerWorldPosition;
 
 		//playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
 		float aspectRatio = mMainCamera->GetAspectRatio();
@@ -109,10 +109,10 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 		zoomOut(dt);
 	}
 
-	playersCenterPoint /= mPlayerTransforms.size();
+	mPlayersCenterPoint /= mPlayerTransforms.size();
 	//spdlog::trace("{}, {}, {}", playersCenterPoint.x, playersCenterPoint.y, playersCenterPoint.z);
 
-	return playersCenterPoint;
+	return mPlayersCenterPoint;
 }
 
 void fq::client::CameraMoving::OnStart()
@@ -210,4 +210,10 @@ void fq::client::CameraMoving::AddPlayerTransform(fq::game_module::Transform* pl
 void fq::client::CameraMoving::DeletePlayerTransform(fq::game_module::Transform* player)
 {
 	mPlayerTransforms.erase(std::remove(mPlayerTransforms.begin(), mPlayerTransforms.end(), player), mPlayerTransforms.end());
+}
+
+DirectX::SimpleMath::Vector3 fq::client::CameraMoving::GetCenterCameraInWorld()
+{
+	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();
+	return DirectX::SimpleMath::Vector3::Transform(mPlayersCenterPoint, viewMatrix.Invert());
 }

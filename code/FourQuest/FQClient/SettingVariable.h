@@ -16,6 +16,11 @@ namespace fq::client
 
 		static inline bool IsVibe = true;
 		static inline bool IsUsedAimAssist = true;
+
+		//////////////////////////////////////////////////////////////////////////
+		//							°©¿Ê ½ºÆù ¹Ý°æ								//
+		//////////////////////////////////////////////////////////////////////////
+		static inline float ArmourSpawnDistance = 2.5f;
 	};
 }
 

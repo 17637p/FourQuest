@@ -8,6 +8,8 @@
 #include "../FQGameModule/AnimatorController.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 
+#include "ArmourSpawner.h"
+
 namespace fq::client
 {
 	Box::Box()
@@ -139,6 +141,13 @@ namespace fq::client
 			{
 				GetScene()->DestroyGameObject(mObject.get());
 				mObject = nullptr;
+
+				// ±úÁö°í °©¿Ê ½ºÆ÷³Ê ÄÄÆ÷³ÍÆ®°¡ ÀÖ´Ù¸é °©¿Ê ½ºÆù
+				auto armourSpawner = GetComponent<ArmourSpawner>();
+				if (armourSpawner)
+				{
+					armourSpawner->SpawnArmour();
+				}
 			}
 		}
 	}
