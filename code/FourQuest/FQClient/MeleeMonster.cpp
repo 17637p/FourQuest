@@ -120,7 +120,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	mAttackElapsedTime = mAttackCoolTime;
 
 	// 공격 사운드
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , 3});
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , fq::sound::EChannel::SE });
 }
 
 

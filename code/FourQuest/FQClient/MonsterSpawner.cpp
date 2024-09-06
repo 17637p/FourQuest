@@ -112,7 +112,7 @@ void fq::client::MonsterSpawner::Spawn()
 	GetScene()->AddGameObject(monster);
 	mbIsSpawnState = false;
 
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Spon", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Spon", false ,  fq::sound::EChannel::SE });
 }
 
 void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& collision)
@@ -140,7 +140,7 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 			if (mHp <= 0.f)
 			{
 				mAnimator->SetParameterBoolean("IsDead", true);
-				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Death", false , 0 });
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Death", false , fq::sound::EChannel::SE });
 			}
 		}
 	}

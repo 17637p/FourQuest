@@ -137,7 +137,7 @@ void fq::client::RegisterMetaData()
 		.base<game_module::Component>();
 
 	entt::meta<TestPOD>()
-		.type("TestPOD"_hs)
+		.type("TestPOD"_hs)	
 		.prop(reflect::prop::Name, "TestPOD")
 		.prop(reflect::prop::POD)
 		.data<&TestPOD::res>("res"_hs)

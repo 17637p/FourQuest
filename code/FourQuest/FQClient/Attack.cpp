@@ -90,7 +90,7 @@ void fq::client::Attack::PlayHitSound()
 {
 	if (!mHitSound.empty())
 	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , 3 });
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , fq::sound::EChannel::SE });
 	}
 }
 

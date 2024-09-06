@@ -91,7 +91,7 @@ void fq::client::PlantMonster::EmitAttack()
 	GetScene()->AddGameObject(attackObj);
 
 	// 원거리 공격사운드  
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , 3 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , fq::sound::EChannel::SE });
 }
 
 void fq::client::PlantMonster::OnUpdate(float dt)

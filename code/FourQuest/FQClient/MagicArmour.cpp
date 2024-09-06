@@ -88,7 +88,7 @@ void fq::client::MagicArmour::EmitMagicBall()
 	linearAttack->SetMoveDirection(direction);
 
 	// MagicBall Attack 사운드  
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_MagicBoll_Start", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_MagicBoll_Start", false , fq::sound::EChannel::SE });
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -112,7 +112,7 @@ void fq::client::MagicArmour::EmitAOE(DirectX::SimpleMath::Vector3 attackPoint)
 	attackT->SetWorldPosition(attackPoint);
 
 	// AOE Sound
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Attack", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Attack", false , fq::sound::EChannel::SE });
 	GetScene()->AddGameObject(attackObj);
 
 	// CoolTime
@@ -177,7 +177,7 @@ void fq::client::MagicArmour::EmitLaser()
 		GetScene()->AddGameObject(attackObj);
 
 		// Razer HitSound 
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Attack", false , 0 });
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Attack", false , fq::sound::EChannel::SE });
 
 		mRazerHitElapsedTime = mRazerHiTick;
 	}
@@ -316,7 +316,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::MagicArmour::EmitLaserG
 	GetScene()->AddGameObject(attackObj);
 
 	// 레이저 시작 사운드 재생
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Start", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Lazer_Start", false , fq::sound::EChannel::SE });
 
 	return attackObj;
 }

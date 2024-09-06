@@ -72,7 +72,7 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	gameObject->RemoveComponent<game_module::NavigationAgent>();
 	gameObject->RemoveComponent<game_module::ImageUI>();
 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , 0 });
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , fq::sound::EChannel::SE });
 
 	// Ragdoll
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())

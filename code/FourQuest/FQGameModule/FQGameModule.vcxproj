@@ -246,6 +246,7 @@
     <ClInclude Include="ObjectMoveTrack.h" />
     <ClInclude Include="ObjectTeleportTrack.h" />
     <ClInclude Include="Sequence.h" />
+    <ClInclude Include="SoundEnum.h" />
     <ClInclude Include="SoundTrack.h" />
     <ClInclude Include="StaticMeshInstancingRenderer.h" />
     <ClInclude Include="TextPrintTrack.h" />

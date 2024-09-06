@@ -9,7 +9,12 @@ fq::game_module::SoundManager::SoundManager()
 	, mChannel{}
 	, mVersion{}
 	, mSoundList{}
-{}
+{
+	for (auto& voulme : mChannelVolume)
+	{
+		voulme = 1.f;
+	}
+}
 
 fq::game_module::SoundManager::~SoundManager()
 {}
@@ -71,21 +76,22 @@ void fq::game_module::SoundManager::UnloadAllSound()
 	}
 
 	mSoundList.clear();
+
 }
 
 
 void fq::game_module::SoundManager::UnloadSound(const SoundKey& key)
 {
-		auto iter = mSoundList.find(key);
+	auto iter = mSoundList.find(key);
 
-		if (iter == mSoundList.end())
-		{
-			return;
-		}
+	if (iter == mSoundList.end())
+	{
+		return;
+	}
 
-		auto sound = iter->second;
-		sound->release();
-		mSoundList.erase(iter);
+	auto sound = iter->second;
+	sound->release();
+	mSoundList.erase(iter);
 }
 
 void fq::game_module::SoundManager::StopChannel(ChannelIndex index)
@@ -109,6 +115,7 @@ void fq::game_module::SoundManager::Play(const SoundKey& key, bool bIsLoop, Chan
 	}
 
 	mFmodResult = mSoundSystem->playSound(iter->second, nullptr, false, &mChannel[index]);
+	mChannel[index]->setVolume(mChannelVolume[index]);
 
 	if (mFmodResult == FMOD_OK)
 	{
@@ -118,5 +125,20 @@ void fq::game_module::SoundManager::Play(const SoundKey& key, bool bIsLoop, Chan
 	{
 		SPDLOG_WARN(" play sound failed", key);
 	}
+}
+
+void fq::game_module::SoundManager::SetChannelVoulme(fq::sound::EChannel channel, float voulme)
+{
+	mChannelVolume[channel] = voulme;
+
+	if (mChannel[channel])
+	{
+		mChannel[channel]->setVolume(voulme);
+	}
+}
+
+float fq::game_module::SoundManager::GetChannelVoulme(fq::sound::EChannel channel) const
+{
+	return mChannelVolume[channel];
 }
 

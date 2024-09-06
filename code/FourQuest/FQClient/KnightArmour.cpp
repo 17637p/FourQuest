@@ -77,7 +77,7 @@ void fq::client::KnightArmour::EmitSwordAttack()
 	attackT->GenerateWorld(pos, rotation, attackT->GetWorldScale());
 
 	// Sword 家府
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ isSwing1 ? "K_Swing1" : "K_Swing2", false , 3});
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ isSwing1 ? "K_Swing1" : "K_Swing2", false , fq::sound::EChannel::SE });
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -110,7 +110,7 @@ void fq::client::KnightArmour::EmitShieldAttack()
 	attackComponent->Set(attackInfo);
 
 	// ShieldAttack 家府
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Swing3", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Swing3", false , fq::sound::EChannel::SE });
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -137,7 +137,7 @@ void fq::client::KnightArmour::EmitShieldDashAttack()
 	attackComponent->Set(attackInfo);
 	//attackComponent->SetDestroyTime(0.425f);
 
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Bash", false , fq::sound::EChannel::SE });
 	GetScene()->AddGameObject(attackObj);
 }
 
