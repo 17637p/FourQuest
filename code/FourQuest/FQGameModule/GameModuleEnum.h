@@ -20,7 +20,7 @@ namespace fq::game_module
 		Spawner = 12,
 		Goddess = 13,
 		Box = 14,
-		Tag15 = 15,
+		CameraWall = 15,
 		End =16,
 	};
 }

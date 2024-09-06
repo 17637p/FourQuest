@@ -152,7 +152,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
 
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//
 	//////////////////////////////////////////////////////////////////////////
@@ -801,30 +801,36 @@ void fq::client::RegisterMetaData()
 	entt::meta<CameraMoving>()
 		.type("CameraMoving"_hs)
 		.prop(fq::reflect::prop::Name, "CameraMoving")
-		.data<&CameraMoving::SetMoveSpeed, &CameraMoving::GetMoveSpeed>("MoveSpeed"_hs)
+		.data<&CameraMoving::mMoveSpeed>("MoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "MoveSpeed")
 		.prop(fq::reflect::prop::Comment, u8"카메라 움직이는 속도")
-		.data<&CameraMoving::SetZoomSpeed, &CameraMoving::GetZoomSpeed>("ZoomSpeed"_hs)
+		.data<&CameraMoving::mZoomSpeed>("ZoomSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomSpeed")
 		.prop(fq::reflect::prop::Comment, u8"카메라 ZoomInOut 속도")
-		.data<&CameraMoving::SetZoomMin, &CameraMoving::GetZoomMin>("ZoomMin"_hs)
+		.data<&CameraMoving::mZoomMin>("ZoomMin"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomMin")
 		.prop(fq::reflect::prop::Comment, u8"카메라 최대 ZoomIn 정도")
-		.data<&CameraMoving::SetZoomMax, &CameraMoving::GetZoomMax>("ZoomMax"_hs)
+		.data<&CameraMoving::mZoomMax>("ZoomMax"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomMax")
 		.prop(fq::reflect::prop::Comment, u8"카메라 최대 ZoomOut 정도")
-		.data<&CameraMoving::SetZoomOutPadX, &CameraMoving::GetZoomOutPadX>("ZoomOutPadX"_hs)
+		.data<&CameraMoving::mZoomOutPadX>("ZoomOutPadX"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomOutPadX")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomOut x축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomOut 시작. 화면 왼쪽 끝 -1, 오른쪽 끝 1")
-		.data<&CameraMoving::SetZoomOutPadY, &CameraMoving::GetZoomOutPadY>("ZoomOutPadY"_hs)
+		.data<&CameraMoving::mZoomOutPadY>("ZoomOutPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomOutPadY")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomOut y축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomOut 시작. 화면 위쪽 끝 1, 아래쪽 끝 -1. 위쪽은 좀 더 여유롭게 값을 잡아야함")
-		.data<&CameraMoving::SetZoomInPadX, &CameraMoving::GetZoomInPadX>("ZoomInPadX"_hs)
+		.data<&CameraMoving::mZoomInPadX>("ZoomInPadX"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadX")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomIn x축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomIn 시작. 화면 왼쪽 끝 -1, 오른쪽 끝 1")
-		.data<&CameraMoving::SetZoomInPadY, &CameraMoving::GetZoomInPadY>("ZoomInPadY"_hs)
+		.data<&CameraMoving::mZoomInPadY>("ZoomInPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadY")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomIn y축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomIn 시작. 화면 위쪽 끝 1, 아래쪽 끝 -1. 위쪽은 좀 더 여유롭게 값을 잡아야함")
+		.data<&CameraMoving::mForbiddenAreaPaddingX>("ForbiddenAreaPaddingX"_hs)
+		.prop(fq::reflect::prop::Name, "ForbiddenAreaPaddingX")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) 금지영역패딩 x축 시작 위치 - ZoomOutPadX는 이 영역보다 작아야 함")
+		.data<&CameraMoving::mForbiddenAreaPaddingY>("ForbiddenAreaPaddingY"_hs)
+		.prop(fq::reflect::prop::Name, "ForbiddenAreaPaddingY")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) 금지영역패딩 y축 시작 위치 - ZoomOutPadY는 이 영역보다 작아야 함")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
