@@ -53,6 +53,7 @@ namespace fq::client
 		void Zoom(float dt);
 		void zoomIn(float dt);
 		void zoomOut(float dt);
+		void restrcitPlayerMove();
 
 	private:
 		fq::game_module::Camera* mMainCamera;

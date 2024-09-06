@@ -6,6 +6,7 @@
 // Test
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/Scene.h"
+#include "../FQGameModule/CharacterController.h"
 
 #include "Player.h"
 
@@ -59,6 +60,8 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 	{
 		//mIsFixed = !mIsFixed;
 	}
+
+	restrcitPlayerMove();
 
 	auto input = GetScene()->GetInputManager();
 	if (input->GetKeyState(EKey::A) == EKeyState::Tap)
@@ -381,6 +384,57 @@ void fq::client::CameraMoving::SetColliderRotation()
 	{
 		spdlog::error({ "Please Change Camera Prefab" });
 	}
+}
+
+void fq::client::CameraMoving::restrcitPlayerMove()
+{
+	for (int i = 0; i < mPlayerTransforms.size(); i++)
+	{
+		auto controller = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>();
+		DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[i]->GetWorldPosition();
+		DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
+
+		std::array<bool, 4> moveRestriction{};
+
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusX)] = projPos.x >= mForbiddenAreaPaddingX.y;
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusZ)] = projPos.y >= mForbiddenAreaPaddingY.y;
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusX)] = projPos.x <= mForbiddenAreaPaddingX.x;
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusZ)] = projPos.y <= mForbiddenAreaPaddingY.x;
+
+		controller->SetMoveRestriction(moveRestriction);
+	}
+
+	//switch (eDirection)
+	//{
+	//	case fq::client::EDirection::Top:
+	//		if (projPos.y >= mForbiddenAreaPaddingY.y)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	case fq::client::EDirection::Left:
+	//		if (projPos.x <= mForbiddenAreaPaddingX.x)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	case fq::client::EDirection::Bottom:
+	//		if (projPos.y <= mForbiddenAreaPaddingY.x)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	case fq::client::EDirection::Right:
+	//		if (projPos.x >= mForbiddenAreaPaddingX.y)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	default:
+	//		break;
+	//}
+
+	//return true;
 }
 
 // 콜라이더 추가하기

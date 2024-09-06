@@ -205,7 +205,7 @@ void fq::client::Player::processFeverTime(float dt)
 	}
 }
 
-float fq::client::Player::GetPlayerID() const
+int fq::client::Player::GetPlayerID() const
 {
 	return mController->GetControllerID();
 }

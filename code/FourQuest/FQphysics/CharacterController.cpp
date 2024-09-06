@@ -17,6 +17,7 @@ namespace fq::physics
 		, mFilterData(nullptr)
 		, mCharacterQueryFilterCallback(nullptr)
 		, mbIsDynamic(false)
+		, mbMoveRestriction{}
 	{
 	}
 
@@ -63,8 +64,28 @@ namespace fq::physics
 		mCharacterMovement->Update(deltaTime, mInputMove, mbIsDynamic);
 		mCharacterMovement->CopyDirectionToPxVec3(dispVector);
 
+		// 이동 제한
+		if (dispVector.x < 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::MinusX)])
+		{
+			dispVector.x = 0.f;
+		}
+		else if (dispVector.x > 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::PlusX)])
+		{
+			dispVector.x = 0.f;
+		}
+
+		if (dispVector.z < 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::MinusZ)])
+		{
+			dispVector.z = 0.f;
+		}
+		else if (dispVector.z > 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::PlusZ)])
+		{
+			dispVector.z = 0.f;
+		}
+
+
 		// physx CCT 이동
-  		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, *mFilters.get());
+		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, *mFilters.get());
 
 		// 바닥과 충돌을 안한다면 떨어짐 상태로 체크
 		if (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
@@ -125,4 +146,10 @@ namespace fq::physics
 
 		return true;
 	}
+
+	void CharacterController::SetMoveRestriction(std::array<bool, 4> moveRestriction)
+	{
+		mbMoveRestriction = moveRestriction;
+	}
+
 }

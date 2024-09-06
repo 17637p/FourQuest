@@ -33,7 +33,7 @@ namespace fq::client
 		float GetAttackPower() const { return mAttackPower; }
 		float GetHPRatio() const { return mHp / mMaxHp; }
 		float GetSoultGaugeRatio() const { return mSoulGauge / mMaxSoulGauge; }
-		float GetPlayerID() const;
+		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 
