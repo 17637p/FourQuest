@@ -79,6 +79,15 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 
 void fq::client::QuestManager::OnStart()
 {
+	for (int i = 0; i < mMainQuests.size(); i++)
+	{
+		mMainQuests[i].mIsMain = true;
+	}
+	for (int i = 0; i < mSubQuests.size(); i++)
+	{
+		mSubQuests[i].mIsMain = false;
+	}
+
 	// 시작 퀘스트 등록
 	mCurSubQuest.clear();
 
