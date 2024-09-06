@@ -330,7 +330,6 @@
     <ClCompile Include="ObjectTeleportTrack.cpp" />
     <ClCompile Include="Sequence.cpp" />
     <ClCompile Include="SoundTrack.cpp" />
-    <ClCompile Include="StaticMeshInstancingRenderer.cpp" />
     <ClCompile Include="TextPrintTrack.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />

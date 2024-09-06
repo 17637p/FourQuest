@@ -595,8 +595,5 @@
     <ClCompile Include="CameraShakeTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
     </ClCompile>
-    <ClCompile Include="StaticMeshInstancingRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
