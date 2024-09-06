@@ -419,6 +419,18 @@
     <ClInclude Include="MaterialManager.h">
       <Filter>include\06.ETC</Filter>
     </ClInclude>
+    <ClInclude Include="SettingVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfoVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSet.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSpawner.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -692,6 +704,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="MaterialManager.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSet.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSpawner.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>

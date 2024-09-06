@@ -100,6 +100,8 @@
 #include "QuestManager.h"
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
+#include "ArmourSet.h"
+#include "ArmourSpawner.h"
 
 // MonsterSpawner
 #include "SpawnerGroup.h"
@@ -109,6 +111,8 @@
 // GameVariable
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
+#include "SettingVariable.h"
+#include "PlayerInfoVariable.h"
 
 // Box
 #include "Box.h"
@@ -131,6 +135,13 @@ void fq::client::RegisterMetaData()
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
+
+	entt::meta<TestPOD>()
+		.type("TestPOD"_hs)
+		.prop(reflect::prop::Name, "TestPOD")
+		.prop(reflect::prop::POD)
+		.data<&TestPOD::res>("res"_hs)
+		.prop(fq::reflect::prop::Name, "res");
 
 	entt::meta<MonsterManager>()
 		.type("MonsterManager"_hs)
@@ -1084,12 +1095,30 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "NextSceneName")
 		.prop(reflect::prop::Comment, u8"Æ÷Å»Å¸¸é ÀÌµ¿ÇÒ ¾À ÀÌ¸§");
 
+	entt::meta<ArmourSpawn>()
+		.type("ArmourSpawn"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawn")
+		.prop(fq::reflect::prop::POD)
+		.data<&ArmourSpawn::armourSetName>("ArmourSetName"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSetName");
+
+	entt::meta<SequenceStart>()
+		.type("SequenceStart"_hs)
+		.prop(fq::reflect::prop::Name, "SequenceStart")
+		.prop(fq::reflect::prop::POD)
+		.data<&SequenceStart::name>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name");
+
 	entt::meta<QuestReward>()
 		.type("QuestReward"_hs)
 		.prop(fq::reflect::prop::Name, "QuestReward")
 		.prop(fq::reflect::prop::POD)
 		.data<&QuestReward::RewardPortalList>("RewardPortalList"_hs)
-		.prop(fq::reflect::prop::Name, "RewardPortalList");
+		.prop(fq::reflect::prop::Name, "RewardPortalList")
+		.data<&QuestReward::ArmourList>("ArmourList"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourList")
+		.data<&QuestReward::SequenceStartList>("SequenceStartList"_hs)
+		.prop(fq::reflect::prop::Name, "SequenceStartList");
 
 	entt::meta<Quest>()
 		.type("Quest"_hs)
@@ -1135,6 +1164,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SubQuest")
 		.data<&QuestManager::mPortalPrefab>("PortalPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PortalPrefab")
+		.data<&QuestManager::mDistance>("Distance"_hs)
+		.prop(fq::reflect::prop::Name, "Distance")
 		.base<fq::game_module::Component>();
 
 	entt::meta<DefenceCounter>()
@@ -1151,6 +1182,20 @@ void fq::client::RegisterMetaData()
 	entt::meta<QuestColliderTriggerChecker>()
 		.type("QuestColliderTriggerChecker"_hs)
 		.prop(fq::reflect::prop::Name, "QuestColliderTriggerChecker")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ArmourSet>()
+		.type("ArmourSet"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSet")
+		.data<&ArmourSet::mArmourList>("ArmourList"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourList")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ArmourSpawner>()
+		.type("ArmourSpawner"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawner")
+		.data<&ArmourSpawner::mArmourList>("ArmourList"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourList")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1211,8 +1256,101 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossRushCoefficient")
 		.base<IGameVariable>();
 
+	entt::meta<SettingVariable>()
+		.type("SettingVariable"_hs)
+		.prop(fq::reflect::prop::Name, "SettingVariable")
+		.data<&SettingVariable::MasterVolume>("MasterVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MasterVolume")
+		.data<&SettingVariable::BGMVolume>("BGMVolume"_hs)
+		.prop(fq::reflect::prop::Name, "BGMVolume")
+		.data<&SettingVariable::SFXVolume>("SFXVolume"_hs)
+		.prop(fq::reflect::prop::Name, "SFXVolume")
+
+		.data<&SettingVariable::IsVibe>("IsVibe"_hs)
+		.prop(fq::reflect::prop::Name, "IsVibe")
+		.data<&SettingVariable::IsUsedAimAssist>("IsUsedAimAssist"_hs)
+		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
+		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
+		.base<IGameVariable>();
+
+	entt::meta<PlayerInfoVariable>()
+		.type("PlayerInfoVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerInfoVariable")
+		.data<&PlayerInfoVariable::Player1SoulType>("Player1SoulType"_hs)
+		.prop(fq::reflect::prop::Name, "Player1SoulType")
+		.data<&PlayerInfoVariable::Player2SoulType>("Player2SoulType"_hs)
+		.prop(fq::reflect::prop::Name, "Player2SoulType")
+		.data<&PlayerInfoVariable::Player3SoulType>("Player3SoulType"_hs)
+		.prop(fq::reflect::prop::Name, "Player3SoulType")
+		.data<&PlayerInfoVariable::Player4SoulType>("Player4SoulType"_hs)
+		.prop(fq::reflect::prop::Name, "Player4SoulType")
+
+		.data<&PlayerInfoVariable::Player1HP>("Player1HP"_hs)
+		.prop(fq::reflect::prop::Name, "Player1HP")
+		.data<&PlayerInfoVariable::Player2HP>("Player2HP"_hs)
+		.prop(fq::reflect::prop::Name, "Player2HP")
+		.data<&PlayerInfoVariable::Player3HP>("Player3HP"_hs)
+		.prop(fq::reflect::prop::Name, "Player3HP")
+		.data<&PlayerInfoVariable::Player4HP>("Player4HP"_hs)
+		.prop(fq::reflect::prop::Name, "Player4HP")
+
+		.data<&PlayerInfoVariable::Player1SoulGauge>("Player1SoulGauge"_hs)
+		.prop(fq::reflect::prop::Name, "Player1SoulGauge")
+		.data<&PlayerInfoVariable::Player2SoulGauge>("Player2SoulGauge"_hs)
+		.prop(fq::reflect::prop::Name, "Player2SoulGauge")
+		.data<&PlayerInfoVariable::Player3SoulGauge>("Player3SoulGauge"_hs)
+		.prop(fq::reflect::prop::Name, "Player3SoulGauge")
+		.data<&PlayerInfoVariable::Player4SoulGauge>("Player4SoulGauge"_hs)
+		.prop(fq::reflect::prop::Name, "Player4SoulGauge")
+
+		.data<&PlayerInfoVariable::Player1Knight>("Player1Knight"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Knight")
+		.data<&PlayerInfoVariable::Player2Knight>("Player2Knight"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Knight")
+		.data<&PlayerInfoVariable::Player3Knight>("Player3Knight"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Knight")
+		.data<&PlayerInfoVariable::Player4Knight>("Player4Knight"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Knight")
+
+		.data<&PlayerInfoVariable::Player1Magic>("Player1Magic"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Magic")
+		.data<&PlayerInfoVariable::Player2Magic>("Player2Magic"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Magic")
+		.data<&PlayerInfoVariable::Player3Magic>("Player3Magic"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Magic")
+		.data<&PlayerInfoVariable::Player4Magic>("Player4Magic"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Magic")
+
+		.data<&PlayerInfoVariable::Player1Warrior>("Player1Warrior"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Warrior")
+		.data<&PlayerInfoVariable::Player2Warrior>("Player2Warrior"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Warrior")
+		.data<&PlayerInfoVariable::Player3Warrior>("Player3Warrior"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Warrior")
+		.data<&PlayerInfoVariable::Player4Warrior>("Player4Warrior"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Warrior")
+
+		.data<&PlayerInfoVariable::Player1Archer>("Player1Archer"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Archer")
+		.data<&PlayerInfoVariable::Player2Archer>("Player2Archer"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Archer")
+		.data<&PlayerInfoVariable::Player3Archer>("Player3Archer"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Archer")
+		.data<&PlayerInfoVariable::Player4Archer>("Player4Archer"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Archer")
+
+		.data<&PlayerInfoVariable::Player1Monster>("Player1Monster"_hs)
+		.prop(fq::reflect::prop::Name, "Player1Monster")
+		.data<&PlayerInfoVariable::Player2Monster>("Player2Monster"_hs)
+		.prop(fq::reflect::prop::Name, "Player2Monster")
+		.data<&PlayerInfoVariable::Player3Monster>("Player3Monster"_hs)
+		.prop(fq::reflect::prop::Name, "Player3Monster")
+		.data<&PlayerInfoVariable::Player4Monster>("Player4Monster"_hs)
+		.prop(fq::reflect::prop::Name, "Player4Monster")
+		.base<IGameVariable>();
 	//////////////////////////////////////////////////////////////////////////
-	//                            Game Variable								//
+	//								  Box									//
 	//////////////////////////////////////////////////////////////////////////
 
 	entt::meta<Box>()
@@ -1230,7 +1368,7 @@ void fq::client::RegisterMetaData()
 		.base<game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
-	//                            Game Variable								//
+	//                            Spawn Group								//
 	//////////////////////////////////////////////////////////////////////////
 
 	entt::meta<SpawnColliderTrigger>()

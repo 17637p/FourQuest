@@ -1,15 +1,23 @@
 #include "QuestManager.h"
 #include "ClientEvent.h"
 
-#include "DefenceCounter.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Sequence.h"
+#include "../FQGameModule/PrefabResource.h"
+#include "../FQGameModule/NavigationAgent.h"
 
+#include "DefenceCounter.h"
 #include "MonsterGroup.h"
 #include "Portal.h"
+#include "ArmourSet.h"
+#include "CameraMoving.h"
 
 #include <spdlog/spdlog.h>
+
+#include <random>
+#include <chrono>
 
 fq::client::QuestManager::QuestManager()
 	:mStartQuests(),
@@ -18,7 +26,9 @@ fq::client::QuestManager::QuestManager()
 	mCurMainQuest(),
 	mCurSubQuest(),
 	mGaugeMaxWidth(0),
-	mPortalPrefab()
+	mPortalPrefab(),
+	mAddedArmourObjects(),
+	mDistance(5)
 {
 }
 
@@ -28,7 +38,8 @@ fq::client::QuestManager::QuestManager(const QuestManager& other)
 	mSubQuests(other.mSubQuests),
 	mCurMainQuest(other.mCurMainQuest),
 	mCurSubQuest(other.mCurSubQuest),
-	mPortalPrefab(other.mPortalPrefab)
+	mPortalPrefab(other.mPortalPrefab),
+	mDistance(other.mDistance)
 {
 }
 
@@ -40,6 +51,7 @@ fq::client::QuestManager& fq::client::QuestManager::operator=(const QuestManager
 	mCurMainQuest = other.mCurMainQuest;
 	mCurSubQuest = other.mCurSubQuest;
 	mPortalPrefab = other.mPortalPrefab;
+	mDistance = other.mDistance;
 
 	return *this;
 }
@@ -412,7 +424,8 @@ void fq::client::QuestManager::EventProcessClearQuest()
 				}
 			}
 
-			// 방금 깬 퀘스트에 보상이 있다면 보상 받기
+			/// Quest Reward
+			// 방금 깬 퀘스트에 포탈 보상이 있다면 보상 받기
 			std::vector<RewardPortal> rewardPortalList = event.clearQuest.mRewardList.RewardPortalList;
 			int rewardPortalListSize = rewardPortalList.size();
 			if (rewardPortalListSize > 0)
@@ -431,6 +444,39 @@ void fq::client::QuestManager::EventProcessClearQuest()
 					portal->GetComponent<Portal>()->SetNextSceneName(rewardPortalList[i].nextSceneName);
 
 					GetScene()->AddGameObject(portal);
+				}
+			}
+
+			// 방금 깬 퀘스트에 갑옷 보상이 있다면 보상 받기
+			std::vector<ArmourSpawn> armourSpawnList = event.clearQuest.mRewardList.ArmourList;
+			int armourSpawnListSize = armourSpawnList.size();
+			if (armourSpawnListSize > 0)
+			{
+				for (int i = 0; i < armourSpawnListSize; i++)
+				{
+					std::vector<game_module::PrefabResource> armourPrefabList = 
+						GetScene()->GetObjectByName(armourSpawnList[i].armourSetName)->GetComponent<ArmourSet>()->GetArmourPrefabList();
+
+					unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+					std::mt19937 generator(seed);
+					std::uniform_int_distribution<int> randomArmourDistribution(0, armourPrefabList.size() - 1);
+					int randomArmour = randomArmourDistribution(generator);
+
+					//for (int j = 0; j < armourPrefabList.size(); j++)
+					{
+						SpawnArmour(armourPrefabList[randomArmour]);
+					}
+				}
+			}
+
+			// 방금 깬 퀘스트에 시퀀스 시작이 있다면 시작
+			std::vector<SequenceStart> sequenceStartList = event.clearQuest.mRewardList.SequenceStartList;
+			int sequenceStartListSize = sequenceStartList.size();
+			if (sequenceStartListSize > 0)
+			{
+				for (int i = 0; i < sequenceStartListSize; i++)
+				{
+					GetScene()->GetObjectByName(sequenceStartList[i].name)->GetComponent<game_module::Sequence>()->SetIsPlay(true);
 				}
 			}
 		});
@@ -607,6 +653,50 @@ void fq::client::QuestManager::SetScaleAndPositionScreen()
 	// Position 자동 조정
 	{
 		myTransform->SetLocalPosition({ 0.85f * screenWidth, 0.45f * screenHeight, 1 });
+	}
+}
+
+void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armour)
+{
+	// 갑옷 소환
+	std::shared_ptr<game_module::GameObject> armourObject;
+
+	//for (int aaa = 0; aaa < 1000; aaa++) 디버깅용
+	{
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(armour);
+		armourObject = *(instance.begin());
+
+		GetScene()->AddGameObject(armourObject);
+
+		/// 갑옷 위치 설정
+		// 카메라 중심 가져오기
+		DirectX::SimpleMath::Vector3 center = GetScene()->GetObjectByName("MainCamera")->GetComponent<CameraMoving>()->GetCenterCameraInWorld();
+		DirectX::SimpleMath::Vector3 nearPos = { 0, 0, 0 };
+
+		// 랜덤 위치 설정
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		std::mt19937 generator(seed);
+		std::uniform_real_distribution<float> distanceDistribution(0, mDistance);
+		std::uniform_real_distribution<float> degreeDistribution(0, 360);
+
+		float randomDistance = distanceDistribution(generator);
+		float randomDegree = degreeDistribution(generator);
+
+		float radian = randomDegree * 3.1415926535f / 180.0f;
+
+		center.x += std::cosf(radian) * randomDistance;
+		center.z += std::sinf(radian) * randomDistance;
+
+		// 유효한 위치인지 확인
+		int count = 0;
+		bool isValid = false;
+		while (!isValid && count < 100)
+		{
+			isValid = GetGameObject()->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
+			count++;
+		}
+		nearPos.y += 1.0f;
+		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
 	}
 }
 

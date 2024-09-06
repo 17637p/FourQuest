@@ -42,6 +42,7 @@ namespace fq::client
 
 		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
 		void RenderOffQuest();
+		void SpawnArmour(fq::game_module::PrefabResource armour);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -62,6 +63,8 @@ namespace fq::client
 
 		std::vector<Quest> mMainQuests;
 		std::vector<Quest> mSubQuests;
+
+		float mDistance;
 
 		// 스크립트 용
 		Quest mCurMainQuest;
@@ -86,6 +89,8 @@ namespace fq::client
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
+
+		std::vector<std::shared_ptr<game_module::GameObject>> mAddedArmourObjects;
 
 		friend void RegisterMetaData();
 	};
