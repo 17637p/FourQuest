@@ -248,7 +248,6 @@
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SoundEnum.h" />
     <ClInclude Include="SoundTrack.h" />
-    <ClInclude Include="StaticMeshInstancingRenderer.h" />
     <ClInclude Include="TextPrintTrack.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="IStateBehaviour.h" />
