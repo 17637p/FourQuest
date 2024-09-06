@@ -41,6 +41,7 @@
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="ArmourSet.h" />
+    <ClInclude Include="ArmourSpawner.h" />
     <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="AxeSoulAttackState.h" />
     <ClInclude Include="BGM.h" />
@@ -122,7 +123,7 @@
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
-    <ClInclude Include="ShiedlDashState.h" />
+    <ClInclude Include="ShieldDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
+    <ClCompile Include="ArmourSpawner.cpp" />
     <ClCompile Include="AxeSoulAttackState.cpp" />
     <ClCompile Include="BGM.cpp" />
     <ClCompile Include="BossHP.cpp" />
@@ -219,7 +221,7 @@
     <ClCompile Include="RepauseUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
     <ClCompile Include="SettingUI.cpp" />
-    <ClCompile Include="ShiedlDashState.cpp" />
+    <ClCompile Include="ShieldDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />

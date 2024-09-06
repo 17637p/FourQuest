@@ -46,7 +46,7 @@ void fq::client::AOEAttackState::OnStateEnter(game_module::Animator& animator, g
 	mMoveRange = magicArmour->GetAOEMoveRange();
 
 	// 시작 사운드 재생
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Start", false , 0 });
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "M_Explosion_Start", false , fq::sound::EChannel::SE});
 }
 
 void fq::client::AOEAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

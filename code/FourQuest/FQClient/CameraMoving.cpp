@@ -2,12 +2,18 @@
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Camera.h"
+
+// Test
+#include "../FQGameModule/InputManager.h"
+#include "../FQGameModule/Scene.h"
+#include "../FQGameModule/CharacterController.h"
+
 #include "Player.h"
 
 fq::client::CameraMoving::CameraMoving()
 	:mMainCamera(nullptr),
 	mPlayerTransforms{},
-	mIsFixed{false},
+	mIsFixed{ false },
 	mCurZoom(10),
 	mIsZoomIn(false),
 	mIsZoomOut(false),
@@ -15,10 +21,12 @@ fq::client::CameraMoving::CameraMoving()
 	mZoomSpeed(3.f),
 	mZoomMin(5),
 	mZoomMax(30),
-	mZoomOutPadX{-0.8f, 0.8f},
-	mZoomOutPadY{-0.7f, 1.0f},
+	mZoomOutPadX{ -0.7f, 0.7f },
+	mZoomOutPadY{ -0.5f, 0.9f },
 	mZoomInPadX{ -0.4f, 0.4f },
-	mZoomInPadY{ -0.3f, 0.6f }
+	mZoomInPadY{ -0.3f, 0.6f },
+	mForbiddenAreaPaddingX{ -0.85f, 0.85f },
+	mForbiddenAreaPaddingY{ -0.7f, 1.0f }
 {
 }
 
@@ -52,9 +60,61 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 	{
 		//mIsFixed = !mIsFixed;
 	}
+
+	restrcitPlayerMove();
+
+	auto input = GetScene()->GetInputManager();
+	if (input->GetKeyState(EKey::A) == EKeyState::Tap)
+	{
+		bool isis = IsValid(0, EDirection::Left);
+		if (isis)
+		{
+			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+		}
+		else
+		{
+			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		}
+	}
+	if (input->GetKeyState(EKey::W) == EKeyState::Tap)
+	{
+		bool isis = IsValid(0, EDirection::Top);
+		if (isis)
+		{
+			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+		}
+		else
+		{
+			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		}
+	}
+	if (input->GetKeyState(EKey::S) == EKeyState::Tap)
+	{
+		bool isis = IsValid(0, EDirection::Bottom);
+		if (isis)
+		{
+			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+		}
+		else
+		{
+			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		}
+	}
+	if (input->GetKeyState(EKey::D) == EKeyState::Tap)
+	{
+		bool isis = IsValid(0, EDirection::Right);
+		if (isis)
+		{
+			spdlog::trace("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+		}
+		else
+		{
+			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		}
+	}
 }
 
-DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(float dt)
+DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float dt)
 {
 	// 등록된 플레이어가 없으면 
 	if (mPlayerTransforms.size() == 0 || mIsFixed)
@@ -63,68 +123,34 @@ DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPointInView(floa
 		return { 0, 0, mCurZoom };
 	}
 
-	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();
-
 	// 플레이어 트랜스폼 돌면서 센터 점 계산 
-	DirectX::SimpleMath::Vector3 playersCenterPoint = { 0, 0, 0 };
-	mIsZoomIn = true;
-	mIsZoomOut = false;
+	mPlayersCenterPoint = { 0, 0, 0 };
 
 	for (const auto& playerTransform : mPlayerTransforms)
 	{
 		DirectX::SimpleMath::Vector3 playerWorldPosition = playerTransform->GetWorldPosition();
-		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, viewMatrix);
-		playersCenterPoint += playerWorldPosition;
-
-		//playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(2068.f / 898.f));
-		float aspectRatio = mMainCamera->GetAspectRatio();
-		playerWorldPosition = DirectX::SimpleMath::Vector3::Transform(playerWorldPosition, mMainCamera->GetProjection(aspectRatio));
-		//spdlog::trace("{}, {}, {}", playerWorldPosition.x, playerWorldPosition.y, playerWorldPosition.z);
-
-		if (playerWorldPosition.x > mZoomOutPadX.y || playerWorldPosition.x < mZoomOutPadX.x)
-		{
-			mIsZoomOut = true;
-		}
-		if (playerWorldPosition.y > mZoomOutPadX.y || playerWorldPosition.y < mZoomOutPadX.x)
-		{
-			mIsZoomOut = true;
-		}
-		if (playerWorldPosition.x > mZoomInPadX.y || playerWorldPosition.x < mZoomInPadX.x)
-		{
-			mIsZoomIn = false;
-		}
-		if (playerWorldPosition.y > mZoomInPadY.y || playerWorldPosition.y < mZoomInPadY.x)
-		{
-			mIsZoomIn = false;
-		}
+		mPlayersCenterPoint += getViewPos(playerWorldPosition);
 	}
 
-	// 플레이어 위치 반영해서 Zoom 처리
-	if (mIsZoomIn)
-	{
-		zoomIn(dt);
-	}
-	if (mIsZoomOut)
-	{
-		zoomOut(dt);
-	}
-
-	playersCenterPoint /= mPlayerTransforms.size();
+	mPlayersCenterPoint /= mPlayerTransforms.size();
 	//spdlog::trace("{}, {}, {}", playersCenterPoint.x, playersCenterPoint.y, playersCenterPoint.z);
 
-	return playersCenterPoint;
+	return mPlayersCenterPoint;
 }
 
 void fq::client::CameraMoving::OnStart()
 {
 	mMainCamera = GetComponent<fq::game_module::Camera>();
+
+	SetColliderRotation();
 }
 
 void fq::client::CameraMoving::chaseCenter(float dt)
 {
 	fq::game_module::Transform* myTransform = this->GetGameObject()->GetComponent<fq::game_module::Transform>();
 
-	DirectX::SimpleMath::Vector3 center = getCenterPointInView(dt); // 방향 벡터로 사용
+	Zoom(dt);
+	DirectX::SimpleMath::Vector3 center = getCenterPosInView(dt); // 방향 벡터로 사용
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
 	//spdlog::trace("{}, {}, {}", center.x, center.y, center.z);
@@ -211,3 +237,205 @@ void fq::client::CameraMoving::DeletePlayerTransform(fq::game_module::Transform*
 {
 	mPlayerTransforms.erase(std::remove(mPlayerTransforms.begin(), mPlayerTransforms.end(), player), mPlayerTransforms.end());
 }
+
+DirectX::SimpleMath::Vector3 fq::client::CameraMoving::GetCenterCameraInWorld()
+{
+	DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();
+	return DirectX::SimpleMath::Vector3::Transform(mPlayersCenterPoint, viewMatrix.Invert());
+}
+
+bool fq::client::CameraMoving::IsValid(int playerID, EDirection eDirection)
+{
+	int index = -1;
+	for (int i = 0; i < mPlayerTransforms.size(); i++)
+	{
+		int playerIDi = mPlayerTransforms[i]->GetComponent<Player>()->GetPlayerID();
+		if (playerIDi == playerID)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[index]->GetWorldPosition();
+	DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
+
+	switch (eDirection)
+	{
+		case fq::client::EDirection::Top:
+			if (projPos.y >= mForbiddenAreaPaddingY.y)
+			{
+				return false;
+			}
+			break;
+		case fq::client::EDirection::Left:
+			if (projPos.x <= mForbiddenAreaPaddingX.x)
+			{
+				return false;
+			}
+			break;
+		case fq::client::EDirection::Bottom:
+			if (projPos.y <= mForbiddenAreaPaddingY.x)
+			{
+				return false;
+			}
+			break;
+		case fq::client::EDirection::Right:
+			if (projPos.x >= mForbiddenAreaPaddingX.y)
+			{
+				return false;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return true;
+}
+
+DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getViewPos(DirectX::SimpleMath::Vector3 worldPos)
+{
+	DirectX::SimpleMath::Matrix viewMat = mMainCamera->GetView();
+
+	return DirectX::SimpleMath::Vector3::Transform(worldPos, viewMat);
+}
+
+DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getProjPos(DirectX::SimpleMath::Vector3 worldPos)
+{
+	DirectX::SimpleMath::Vector3 viewPos = getViewPos(worldPos);
+
+	float aspectRatio = mMainCamera->GetAspectRatio();
+	DirectX::SimpleMath::Matrix projMat = mMainCamera->GetProjection(aspectRatio);
+
+	return DirectX::SimpleMath::Vector3::Transform(viewPos, projMat);
+}
+
+void fq::client::CameraMoving::Zoom(float dt)
+{
+	mIsZoomIn = true;
+
+	for (const auto& playerTransform : mPlayerTransforms)
+	{
+		DirectX::SimpleMath::Vector3 playerWorldPos = playerTransform->GetWorldPosition();
+		DirectX::SimpleMath::Vector3 playerProjPos = getProjPos(playerWorldPos);
+
+		// 한 명이라도 zoomOut 영역 들어가면 zoomOut
+		if (playerProjPos.x > mZoomOutPadX.y || playerProjPos.x < mZoomOutPadX.x)
+		{
+			zoomOut(dt);
+		}
+		if (playerProjPos.y > mZoomOutPadX.y || playerProjPos.y < mZoomOutPadX.x)
+		{
+			zoomOut(dt);
+		}
+
+		// 모두 zoomIn 영역 안에 들어가면 zoomIn
+		if (playerProjPos.x > mZoomInPadX.y || playerProjPos.x < mZoomInPadX.x)
+		{
+			mIsZoomIn = false;
+		}
+		if (playerProjPos.y > mZoomInPadY.y || playerProjPos.y < mZoomInPadY.x)
+		{
+			mIsZoomIn = false;
+		}
+	}
+
+	// 플레이어 위치 반영해서 Zoom 처리
+	if (mIsZoomIn)
+	{
+		zoomIn(dt);
+	}
+}
+
+void fq::client::CameraMoving::SetColliderRotation()
+{
+	if (GetTransform()->GetChildren().size() > 0)
+	{
+		DirectX::BoundingFrustum frustum;
+		DirectX::BoundingFrustum::CreateFromMatrix(frustum, mMainCamera->GetProjection(mMainCamera->GetAspectRatio()));
+
+		DirectX::SimpleMath::Matrix viewMatrix = mMainCamera->GetView();
+
+		// 위아래
+		float yRadian = std::atanf(frustum.TopSlope);
+		DirectX::SimpleMath::Vector3 xAxis = { 1, 0, 0 };
+
+		DirectX::SimpleMath::Quaternion rotationTopQuaternion =
+			DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(xAxis, -yRadian);
+		DirectX::SimpleMath::Quaternion rotationBottomQuaternion =
+			DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(xAxis, yRadian);
+
+		GetTransform()->GetChildren()[0]->SetLocalRotation(rotationTopQuaternion);
+		GetTransform()->GetChildren()[1]->SetLocalRotation(rotationBottomQuaternion);
+
+		// 좌우
+		float xRadian = std::atanf(frustum.LeftSlope);
+		DirectX::SimpleMath::Vector3 yAxis = { 0, 1, 0 };
+
+		DirectX::SimpleMath::Quaternion rotationLeftQuaternion =
+			DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(yAxis, xRadian);
+		DirectX::SimpleMath::Quaternion rotationRightQuaternion =
+			DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(yAxis, -xRadian);
+
+		GetTransform()->GetChildren()[2]->SetLocalRotation(rotationLeftQuaternion);
+		GetTransform()->GetChildren()[3]->SetLocalRotation(rotationRightQuaternion);
+	}
+	else
+	{
+		spdlog::error({ "Please Change Camera Prefab" });
+	}
+}
+
+void fq::client::CameraMoving::restrcitPlayerMove()
+{
+	for (int i = 0; i < mPlayerTransforms.size(); i++)
+	{
+		auto controller = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>();
+		DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[i]->GetWorldPosition();
+		DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
+
+		std::array<bool, 4> moveRestriction{};
+
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusX)] = projPos.x >= mForbiddenAreaPaddingX.y;
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::PlusZ)] = projPos.y >= mForbiddenAreaPaddingY.y;
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusX)] = projPos.x <= mForbiddenAreaPaddingX.x;
+		moveRestriction[static_cast<int>(physics::ERestrictDirection::MinusZ)] = projPos.y <= mForbiddenAreaPaddingY.x;
+
+		controller->SetMoveRestriction(moveRestriction);
+	}
+
+	//switch (eDirection)
+	//{
+	//	case fq::client::EDirection::Top:
+	//		if (projPos.y >= mForbiddenAreaPaddingY.y)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	case fq::client::EDirection::Left:
+	//		if (projPos.x <= mForbiddenAreaPaddingX.x)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	case fq::client::EDirection::Bottom:
+	//		if (projPos.y <= mForbiddenAreaPaddingY.x)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	case fq::client::EDirection::Right:
+	//		if (projPos.x >= mForbiddenAreaPaddingX.y)
+	//		{
+	//			return false;
+	//		}
+	//		break;
+	//	default:
+	//		break;
+	//}
+
+	//return true;
+}
+
+// 콜라이더 추가하기
+// 콜라이더 넘어갈 때 어떻게 처리 ?

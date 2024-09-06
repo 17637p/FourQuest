@@ -79,6 +79,7 @@ namespace fq::client
 		// 공격을 하는 객체 
 		fq::game_module::GameObject* mAttacker;
 		std::string mHitSound;
+		std::function<void()> mHitCallback;
 
 		friend void RegisterMetaData();
 	};

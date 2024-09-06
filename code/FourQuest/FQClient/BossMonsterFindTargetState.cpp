@@ -18,7 +18,7 @@ fq::client::BossMonsterFindTargetState::~BossMonsterFindTargetState()
 
 void fq::client::BossMonsterFindTargetState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MeleeMonsterFind", false , 0 });
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MeleeMonsterFind", false , fq::sound::EChannel::SE });
 
 	animator.GetComponent<BossMonster>()->CreateHpBar();
 }

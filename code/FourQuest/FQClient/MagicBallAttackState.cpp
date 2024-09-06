@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/GameModule.h"
 #include "MagicArmour.h"
 
 fq::client::MagicBallAttackState::MagicBallAttackState()
@@ -44,6 +45,16 @@ void fq::client::MagicBallAttackState::OnStateUpdate(game_module::Animator& anim
 	{
 		auto magicArmour = animator.GetComponent<MagicArmour>();
 		magicArmour->EmitMagicBall();
+	}
+
+	// 마법 기본 공격 X키 홀드 로직 추가
+	auto input = animator.GetGameObject()->GetScene()->GetInputManager();
+	auto controller = animator.GetComponent<game_module::CharacterController>();
+	auto controllerID = controller->GetControllerID();
+
+	if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::Hold))
+	{
+		animator.SetParameterTrigger("PushX");
 	}
 }
 

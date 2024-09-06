@@ -14,6 +14,8 @@
 #include "../FQGameModule/Event.h"
 #include "MeleeMonsterExplosion.h"
 
+#include "ArmourSpawner.h"
+
 fq::client::MeleeMonsterDeadState::MeleeMonsterDeadState()
 	: mEraseTime()
 {
@@ -48,6 +50,13 @@ void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& anima
 		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 			{ EMonsterType::Melee });
 	}
+
+	// 죽었는데 ArmourSpawner 컴포넌트가 있을 경우 갑옷 소환
+	auto armourSpawner = animator.GetComponent<ArmourSpawner>();
+	if (armourSpawner)
+	{
+		armourSpawner->SpawnArmour();
+	}
 }
 
 void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
@@ -63,7 +72,7 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	gameObject->RemoveComponent<game_module::NavigationAgent>();
 	gameObject->RemoveComponent<game_module::ImageUI>();
 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , 0 });
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , fq::sound::EChannel::SE });
 
 	// Ragdoll
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())
@@ -83,7 +92,9 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 			info.bIsUpdate = true;
 			info.bIsUsed = true;
 			info.Duration = mEraseTime;
-			info.DelayTime = mEraseTime - 1.f;
+			info.DelayTime = mEraseTime - 2.f;
+			info.MinDissolveCutoff = -1.f;
+			info.InitDissolveCutoff = -1.f;
 			matAnimator->SetDissolveAnimatorInfo(info);
 		}
 	}

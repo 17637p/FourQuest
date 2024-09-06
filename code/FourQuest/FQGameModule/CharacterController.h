@@ -111,8 +111,12 @@ namespace fq::game_module
 		/// </summary>
 		void SetPadInputRotation();
 
-
 		void SetDashInput(bool val) { mbHasDashInput = val; }
+
+		std::array<bool, 4> GetMoveRestrction()const { return mbMoveRestriction; }
+
+		void SetMoveRestriction(std::array<bool, 4> restriction);
+
 	private:
 		void OnStart() override;
 		void OnFixedUpdate(float dt) override;
@@ -138,6 +142,7 @@ namespace fq::game_module
 		bool mbOnRotation;
 		bool mbHasInput;
 		bool mbHasDashInput;
+		std::array<bool, 4> mbMoveRestriction; // 캐릭터 이동방향 제한 
 	};
 
 }

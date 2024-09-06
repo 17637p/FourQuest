@@ -17,7 +17,7 @@
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
 #include "LaserAttackState.h"
-#include "ShiedlDashState.h"
+#include "ShieldDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
 #include "ShieldAttackState.h"
@@ -101,6 +101,7 @@
 #include "DefenceCounter.h"
 #include "QuestColliderTriggerChecker.h"
 #include "ArmourSet.h"
+#include "ArmourSpawner.h"
 
 // MonsterSpawner
 #include "SpawnerGroup.h"
@@ -135,6 +136,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "PauseUI")
 		.base<game_module::Component>();
 
+	entt::meta<TestPOD>()
+		.type("TestPOD"_hs)	
+		.prop(reflect::prop::Name, "TestPOD")
+		.prop(reflect::prop::POD)
+		.data<&TestPOD::res>("res"_hs)
+		.prop(fq::reflect::prop::Name, "res");
+
 	entt::meta<MonsterManager>()
 		.type("MonsterManager"_hs)
 		.prop(reflect::prop::Name, "MonsterManager")
@@ -144,7 +152,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "mRes")
 		.base<game_module::Component>();
 
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             ETC										//
 	//////////////////////////////////////////////////////////////////////////
@@ -259,9 +267,9 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Comment, u8"매직볼트 관통횟수")
 		.data<&MagicArmour::mAOEMoveRange>("AOEMoveRange"_hs)
 		.prop(reflect::prop::Name, "AOEMoveRange")
-		.data<&MagicArmour::mRazerDistance>("RazerDistance"_hs)
+		.data<&MagicArmour::mLaserDistance>("RazerDistance"_hs)
 		.prop(reflect::prop::Name, "RazerDistance")
-		.data<&MagicArmour::mRazerHiTick>("RazerHiTick"_hs)
+		.data<&MagicArmour::mLaserHiTick>("RazerHiTick"_hs)
 		.prop(reflect::prop::Name, "RazerHiTick")
 		.data<&MagicArmour::mMagicBall>("MagicBall"_hs)
 		.prop(reflect::prop::Name, "MagicBall")
@@ -368,7 +376,7 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "LaserEmitTime")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<ShiedlDashState>()
+	entt::meta<ShieldDashState>()
 		.type("ShiedlDashState"_hs)
 		.prop(reflect::prop::Name, "ShiedlDashState")
 		.base<game_module::IStateBehaviour>();
@@ -793,30 +801,36 @@ void fq::client::RegisterMetaData()
 	entt::meta<CameraMoving>()
 		.type("CameraMoving"_hs)
 		.prop(fq::reflect::prop::Name, "CameraMoving")
-		.data<&CameraMoving::SetMoveSpeed, &CameraMoving::GetMoveSpeed>("MoveSpeed"_hs)
+		.data<&CameraMoving::mMoveSpeed>("MoveSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "MoveSpeed")
 		.prop(fq::reflect::prop::Comment, u8"카메라 움직이는 속도")
-		.data<&CameraMoving::SetZoomSpeed, &CameraMoving::GetZoomSpeed>("ZoomSpeed"_hs)
+		.data<&CameraMoving::mZoomSpeed>("ZoomSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomSpeed")
 		.prop(fq::reflect::prop::Comment, u8"카메라 ZoomInOut 속도")
-		.data<&CameraMoving::SetZoomMin, &CameraMoving::GetZoomMin>("ZoomMin"_hs)
+		.data<&CameraMoving::mZoomMin>("ZoomMin"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomMin")
 		.prop(fq::reflect::prop::Comment, u8"카메라 최대 ZoomIn 정도")
-		.data<&CameraMoving::SetZoomMax, &CameraMoving::GetZoomMax>("ZoomMax"_hs)
+		.data<&CameraMoving::mZoomMax>("ZoomMax"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomMax")
 		.prop(fq::reflect::prop::Comment, u8"카메라 최대 ZoomOut 정도")
-		.data<&CameraMoving::SetZoomOutPadX, &CameraMoving::GetZoomOutPadX>("ZoomOutPadX"_hs)
+		.data<&CameraMoving::mZoomOutPadX>("ZoomOutPadX"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomOutPadX")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomOut x축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomOut 시작. 화면 왼쪽 끝 -1, 오른쪽 끝 1")
-		.data<&CameraMoving::SetZoomOutPadY, &CameraMoving::GetZoomOutPadY>("ZoomOutPadY"_hs)
+		.data<&CameraMoving::mZoomOutPadY>("ZoomOutPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomOutPadY")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomOut y축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomOut 시작. 화면 위쪽 끝 1, 아래쪽 끝 -1. 위쪽은 좀 더 여유롭게 값을 잡아야함")
-		.data<&CameraMoving::SetZoomInPadX, &CameraMoving::GetZoomInPadX>("ZoomInPadX"_hs)
+		.data<&CameraMoving::mZoomInPadX>("ZoomInPadX"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadX")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomIn x축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomIn 시작. 화면 왼쪽 끝 -1, 오른쪽 끝 1")
-		.data<&CameraMoving::SetZoomInPadY, &CameraMoving::GetZoomInPadY>("ZoomInPadY"_hs)
+		.data<&CameraMoving::mZoomInPadY>("ZoomInPadY"_hs)
 		.prop(fq::reflect::prop::Name, "ZoomInPadY")
 		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) ZoomIn y축 시작 위치 - 한 플레이어라도 이 위치에 있다면 ZoomIn 시작. 화면 위쪽 끝 1, 아래쪽 끝 -1. 위쪽은 좀 더 여유롭게 값을 잡아야함")
+		.data<&CameraMoving::mForbiddenAreaPaddingX>("ForbiddenAreaPaddingX"_hs)
+		.prop(fq::reflect::prop::Name, "ForbiddenAreaPaddingX")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) 금지영역패딩 x축 시작 위치 - ZoomOutPadX는 이 영역보다 작아야 함")
+		.data<&CameraMoving::mForbiddenAreaPaddingY>("ForbiddenAreaPaddingY"_hs)
+		.prop(fq::reflect::prop::Name, "ForbiddenAreaPaddingY")
+		.prop(fq::reflect::prop::Comment, u8"(-1 ~ 1) 금지영역패딩 y축 시작 위치 - ZoomOutPadY는 이 영역보다 작아야 함")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1154,6 +1168,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SubQuest")
 		.data<&QuestManager::mPortalPrefab>("PortalPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "PortalPrefab")
+		.data<&QuestManager::mDistance>("Distance"_hs)
+		.prop(fq::reflect::prop::Name, "Distance")
 		.base<fq::game_module::Component>();
 
 	entt::meta<DefenceCounter>()
@@ -1179,6 +1195,13 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ArmourList")
 		.base<fq::game_module::Component>();
 
+	entt::meta<ArmourSpawner>()
+		.type("ArmourSpawner"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawner")
+		.data<&ArmourSpawner::mArmourList>("ArmourList"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourList")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                            Game Variable								//
 	//////////////////////////////////////////////////////////////////////////
@@ -1201,6 +1224,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
 		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
+
+		.data<&PlayerSoulVariable::SoulSwordAttackCost>("SoulSwordAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulSwordAttackCost")
+		.data<&PlayerSoulVariable::SoulBowAttackCost>("SoulBowAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackCost")
+		.data<&PlayerSoulVariable::SoulAxeAttackCost>("SoulAxeAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackCost")
+		.data<&PlayerSoulVariable::SoulStaffAttackCost>("SoulStaffAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulStaffAttackCost")
+
+		.data<&PlayerSoulVariable::SoulGaugeCharging>("SoulGaugeCharging"_hs)
+		.prop(fq::reflect::prop::Name, "SoulGaugeCharging")
+
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()
@@ -1251,6 +1287,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsVibe")
 		.data<&SettingVariable::IsUsedAimAssist>("IsUsedAimAssist"_hs)
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
+		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
+		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()

@@ -26,13 +26,13 @@ namespace fq::physics
 		/// <param name="material"> PxController를 생성하기 위한 material </param>
 		/// <param name="collisionMatrix"> 충돌 매트릭스 </param>
 		/// <returns></returns>
-		virtual bool Initialize( const CharacterControllerInfo& info
+		virtual bool Initialize(const CharacterControllerInfo& info
 			, const CharacterMovementInfo& movementInfo
 			, physx::PxControllerManager* CCTManager
 			, physx::PxMaterial* material
 			, std::shared_ptr<CollisionData> collisionData
 			, int* collisionMatrix);
-		
+
 		/// <summary>
 		/// 입력 받은 입력 값을 가지고 이동하거나 점프하는 함수
 		/// </summary>
@@ -48,13 +48,13 @@ namespace fq::physics
 
 		bool ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
-
 		inline physx::PxController* GetPxController();
 		inline const unsigned int& GetID();
 		inline const unsigned int& GetLayerNumber();
 		inline const std::shared_ptr<CharacterMovement> GetCharacterMovement();
 		inline void GetPosition(DirectX::SimpleMath::Vector3& position);
 		inline void SetPosition(const DirectX::SimpleMath::Vector3& position);
+		void SetMoveRestriction(std::array<bool,4> moveRestriction);
 
 	protected:
 		unsigned int mID;
@@ -62,6 +62,7 @@ namespace fq::physics
 
 		DirectX::SimpleMath::Vector3 mInputMove;
 		bool mbIsDynamic;
+		std::array<bool,4> mbMoveRestriction;
 
 		std::shared_ptr<CharacterMovement> mCharacterMovement;
 

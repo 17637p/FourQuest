@@ -1,7 +1,6 @@
 #include "QuestManager.h"
 #include "ClientEvent.h"
 
-#include "DefenceCounter.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/Transform.h"
@@ -9,11 +8,16 @@
 #include "../FQGameModule/PrefabResource.h"
 #include "../FQGameModule/NavigationAgent.h"
 
+#include "DefenceCounter.h"
 #include "MonsterGroup.h"
 #include "Portal.h"
 #include "ArmourSet.h"
+#include "CameraMoving.h"
 
 #include <spdlog/spdlog.h>
+
+#include <random>
+#include <chrono>
 
 fq::client::QuestManager::QuestManager()
 	:mStartQuests(),
@@ -22,7 +26,9 @@ fq::client::QuestManager::QuestManager()
 	mCurMainQuest(),
 	mCurSubQuest(),
 	mGaugeMaxWidth(0),
-	mPortalPrefab()
+	mPortalPrefab(),
+	mAddedArmourObjects(),
+	mDistance(5)
 {
 }
 
@@ -32,7 +38,8 @@ fq::client::QuestManager::QuestManager(const QuestManager& other)
 	mSubQuests(other.mSubQuests),
 	mCurMainQuest(other.mCurMainQuest),
 	mCurSubQuest(other.mCurSubQuest),
-	mPortalPrefab(other.mPortalPrefab)
+	mPortalPrefab(other.mPortalPrefab),
+	mDistance(other.mDistance)
 {
 }
 
@@ -44,6 +51,7 @@ fq::client::QuestManager& fq::client::QuestManager::operator=(const QuestManager
 	mCurMainQuest = other.mCurMainQuest;
 	mCurSubQuest = other.mCurSubQuest;
 	mPortalPrefab = other.mPortalPrefab;
+	mDistance = other.mDistance;
 
 	return *this;
 }
@@ -432,9 +440,15 @@ void fq::client::QuestManager::EventProcessClearQuest()
 				{
 					std::vector<game_module::PrefabResource> armourPrefabList = 
 						GetScene()->GetObjectByName(armourSpawnList[i].armourSetName)->GetComponent<ArmourSet>()->GetArmourPrefabList();
-					for (int j = 0; j < armourPrefabList.size(); j++)
+
+					unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+					std::mt19937 generator(seed);
+					std::uniform_int_distribution<int> randomArmourDistribution(0, armourPrefabList.size() - 1);
+					int randomArmour = randomArmourDistribution(generator);
+
+					//for (int j = 0; j < armourPrefabList.size(); j++)
 					{
-						SpawnArmour(armourPrefabList[j]);
+						SpawnArmour(armourPrefabList[randomArmour]);
 					}
 				}
 			}
@@ -666,17 +680,42 @@ void fq::client::QuestManager::SpawnArmour(fq::game_module::PrefabResource armou
 	// 갑옷 소환
 	std::shared_ptr<game_module::GameObject> armourObject;
 
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(armour);
-	armourObject = *(instance.begin());
+	//for (int aaa = 0; aaa < 1000; aaa++) 디버깅용
+	{
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(armour);
+		armourObject = *(instance.begin());
 
-	// 트랜스폼 위치 바꾸기
-	//armour->GetComponent<game_module::Transform>()->SetLocalPosition(rewardPortalList[i].position);
-	// Portal 컴포넌트에 접근해서 씬이름 바꾸기
-	//armour->GetComponent<Portal>()->SetNextSceneName(rewardPortalList[i].nextSceneName);
-	bool isis = armourObject->GetComponent<game_module::NavigationAgent>()->IsValid({ 0, 0, 0 });
+		GetScene()->AddGameObject(armourObject);
 
-	int a = 3;
+		/// 갑옷 위치 설정
+		// 카메라 중심 가져오기
+		DirectX::SimpleMath::Vector3 center = GetScene()->GetObjectByName("MainCamera")->GetComponent<CameraMoving>()->GetCenterCameraInWorld();
+		DirectX::SimpleMath::Vector3 nearPos = { 0, 0, 0 };
 
-	GetScene()->AddGameObject(armourObject);
+		// 랜덤 위치 설정
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		std::mt19937 generator(seed);
+		std::uniform_real_distribution<float> distanceDistribution(0, mDistance);
+		std::uniform_real_distribution<float> degreeDistribution(0, 360);
+
+		float randomDistance = distanceDistribution(generator);
+		float randomDegree = degreeDistribution(generator);
+
+		float radian = randomDegree * 3.1415926535f / 180.0f;
+
+		center.x += std::cosf(radian) * randomDistance;
+		center.z += std::sinf(radian) * randomDistance;
+
+		// 유효한 위치인지 확인
+		int count = 0;
+		bool isValid = false;
+		while (!isValid && count < 100)
+		{
+			isValid = GetGameObject()->GetComponent<game_module::NavigationAgent>()->IsValid(center, nearPos);
+			count++;
+		}
+		nearPos.y += 1.0f;
+		armourObject->GetComponent<game_module::Transform>()->SetLocalPosition(nearPos);
+	}
 }
 

@@ -239,7 +239,7 @@
     <ClInclude Include="KnightArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="ShiedlDashState.h">
+    <ClInclude Include="ShieldDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="KnockBack.h">
@@ -418,7 +418,7 @@
     </ClInclude>
     <ClInclude Include="MaterialManager.h">
       <Filter>include\06.ETC</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="SettingVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
@@ -426,6 +426,9 @@
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
     <ClInclude Include="ArmourSet.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSpawner.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
   </ItemGroup>
@@ -547,7 +550,7 @@
     <ClCompile Include="KnightArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="ShiedlDashState.cpp">
+    <ClCompile Include="ShieldDashState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="LinearAttack.cpp">
@@ -705,6 +708,9 @@
     </ClCompile>
     <ClCompile Include="ArmourSet.cpp">
       <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSpawner.cpp">
+      <Filter>src\06.ETC</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

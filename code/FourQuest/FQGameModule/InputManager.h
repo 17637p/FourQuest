@@ -119,9 +119,14 @@ namespace fq::game_module
 		bool IsPadKeyState(PadID id, EPadKey key, EKeyState keyState) const;
 		
 		/// <summary>
-		/// 스틱의 진동상태를 설정합니다.
+		/// 게임패드의 진동상태를 설정합니다.
 		/// </summary>
 		void SetVibration(PadID id, EVibrationMode mode, unsigned short intensity, float duration);
+
+		/// <summary>
+		/// 패드의 진동 사용 여부를 설정합니다. 
+		/// </summary>
+		void SetUseVibration(bool useVibration);
 
 		/// <summary>
 		///  -1.f ~ 1.f 사이의 스틱의 방향정보를 반환합니다.
@@ -157,6 +162,6 @@ namespace fq::game_module
 		KeyInfo mPadKeyInfomations[XUSER_MAX_COUNT][static_cast<size_t>(EPadKey::Last)];
 		PadStickInfo mPadStickInfomations[XUSER_MAX_COUNT];
 		VibrationInfo mPadVibrationInfomations[XUSER_MAX_COUNT];
-
+		bool mbUseVibration; // 진동 사용여부
 	};
 }

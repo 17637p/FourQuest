@@ -86,8 +86,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Goddess")
 		.data<ETag::Box>("Box"_hs) // 14
 		.prop(fq::reflect::prop::Name, "Box")
-		.data<ETag::Dash>("Tag15"_hs) // 15
-		.prop(fq::reflect::prop::Name, "Tag15");
+		.data<ETag::CameraWall>("CameraWall"_hs) // 15
+		.prop(fq::reflect::prop::Name, "CameraWall");
 
 
 	// GameObject
