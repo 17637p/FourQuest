@@ -292,5 +292,10 @@ namespace fq::event
 		std::string RegisterKeyName;
 		fq::game_module::GameObject* gameObject;
 	};
+
+	struct AnimationStateExitEvent
+	{
+		fq::game_module::GameObject* gameObject;
+	};
 }
 

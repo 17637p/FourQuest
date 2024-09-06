@@ -5,6 +5,7 @@
 #include "EventManager.h"
 #include "Event.h"
 #include "GameObject.h"
+#include "Scene.h"
 
 fq::game_module::AnimationStateNode::AnimationStateNode(AnimatorController* controller)
 	:mController(controller)
@@ -63,6 +64,11 @@ void fq::game_module::AnimationStateNode::OnStateExit()
 	{
 		behaviour->OnStateExit(*mController->GetAnimator(), *this);
 	}
+
+	auto eventManager = mController->GetAnimator()->GetScene()->GetEventManager();
+	auto gameObject = mController->GetAnimator()->GetGameObject();
+
+	eventManager->FireEvent<fq::event::AnimationStateExitEvent>({ gameObject });
 }
 
 void fq::game_module::AnimationStateNode::OnStateEnter()

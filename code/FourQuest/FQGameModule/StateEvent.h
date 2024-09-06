@@ -16,7 +16,19 @@ namespace fq::game_module
 		{
 			std::string FunctionName;
 			PrefabResource PrefabResourceData;
-			float DeleteTime = 2.f;
+
+			// 생성한 부모를 따라갈지 여부
+			bool bIsFollowingParentPosition = true;
+
+			// 삭제여부
+			bool bUseAutoDelete = true; 
+			bool bUseDeleteByStateEnd = false;
+			float DeleteTime = 1.f;
+
+			// 오프셋
+			DirectX::SimpleMath::Vector3 Scale = { 1, 1, 1 };
+			DirectX::SimpleMath::Vector3 Translate;
+			DirectX::SimpleMath::Vector3 RandomRange;
 		};
 
 		struct PlaySoundInfo
