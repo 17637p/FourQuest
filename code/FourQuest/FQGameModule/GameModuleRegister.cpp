@@ -17,6 +17,7 @@
 #include "Socket.h"
 #include "PostProcessing.h"
 #include "Sequence.h"
+#include "StateEvent.h"
 
 // Physics
 #include "Terrain.h"
@@ -1088,6 +1089,14 @@ void fq::game_module::RegisterMetaData()
 		.data<AnimationStateNode::Type::State>("State"_hs)
 		.prop(fq::reflect::prop::Name, "State");
 
+	entt::meta<AnimationStateNode::Event>()
+		.type("AnimationStateEffectEvent"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationStateEffectEvent")
+		.data<&AnimationStateNode::Event::FunctionName>("FunctionName"_hs)
+		.prop(fq::reflect::prop::Name, "FunctionName")
+		.data<&AnimationStateNode::Event::Time>("Time"_hs)
+		.prop(fq::reflect::prop::Name, "Time");
+
 	entt::meta<AnimationStateNode>()
 		.type("AnimationStateNode"_hs)
 		.prop(fq::reflect::prop::Name, "AnimationStateNode")
@@ -1099,7 +1108,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&AnimationStateNode::SetAnimationKey, &AnimationStateNode::GetAnimationKey>("AnimationKey"_hs)
 		.prop(fq::reflect::prop::Name, "AnimationKey")
 		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
-		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed")
+		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed")
+		.data<&AnimationStateNode::mEvents>("EffectInfos"_hs)
+		.prop(fq::reflect::prop::Name, "EffectInfos");
 
 	entt::meta<Animator>()
 		.type("Animator"_hs)
@@ -1958,5 +1971,28 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Miscellaneous")
 		.data<&PostProcessing::SetPostProcessingInfo, &PostProcessing::GetPostProcessingInfo>("PostProcessingInfo"_hs)
 		.prop(fq::reflect::prop::Name, "PostProcessingInfo")
+		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            StateEvent                                //
+	//////////////////////////////////////////////////////////////////////////
+	entt::meta<StateEvent::InstantiatePrefab>()
+		.type("InstantiatePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "InstantiatePrefab")
+		.prop(fq::reflect::prop::POD)
+		.data<&StateEvent::InstantiatePrefab::FunctionName>("FunctionName"_hs)
+		.prop(fq::reflect::prop::Name, "FunctionName")
+		.data<&StateEvent::InstantiatePrefab::PrefabResource>("PrefabResource"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabResource")
+		.prop(fq::reflect::prop::DragDrop, ".prefab")
+		.prop(fq::reflect::prop::RelativePath);
+
+
+	entt::meta<StateEvent>()
+		.type("StateEvent"_hs)
+		.prop(fq::reflect::prop::Name, "StateEvent")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&StateEvent::mInstantiatePrefabs>("InstantiatePrefabInfos"_hs)
+		.prop(fq::reflect::prop::Name, "InstantiatePrefabInfos")
 		.base<fq::game_module::Component>();
 }

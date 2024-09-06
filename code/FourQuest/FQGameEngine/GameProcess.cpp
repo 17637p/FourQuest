@@ -18,7 +18,7 @@
 #include "LightProbeSystem.h"
 #include "LoadingSystem.h"
 #include "ResourceSystem.h"
-
+#include "StateEventSystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -43,6 +43,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mLightProbeSystem(std::make_unique<LightProbeSystem>(this))
 	, mLoadingSystem(std::make_unique<LoadingSystem>())
 	, mResourceSystem(std::make_unique<ResourceSystem>())
+	, mStateEventSystem(std::make_unique<StateEventSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

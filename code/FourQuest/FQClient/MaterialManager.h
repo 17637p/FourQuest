@@ -5,7 +5,6 @@
 
 namespace fq::client
 {
-
 	/*
 	현재는 메쉬의 바운딩 볼륨과 플레이어의 반직선으로 처리중
 	추가적으로 TransparentMaterialGroup 컴포넌트 하나 만들어서 처리 받을 오브젝트 조절하는 것도 좋을듯
