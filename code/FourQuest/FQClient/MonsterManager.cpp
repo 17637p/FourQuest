@@ -4,18 +4,21 @@
 
 fq::client::MonsterManager::MonsterManager()
 	:mOnDestroyHandler{}
-	,mAddGameObjectHandler{}
+	, mAddGameObjectHandler{}
 {}
 
 
 fq::client::MonsterManager::MonsterManager(const MonsterManager& other)
 	:mOnDestroyHandler{}
-	,mAddGameObjectHandler{}
-	,mRes{}
-{}
+	, mAddGameObjectHandler{}
+{
+	mRes = other.mRes;
+}
 
 fq::client::MonsterManager& fq::client::MonsterManager::operator=(const MonsterManager& other)
 {
+	mRes = other.mRes;
+
 	return *this;
 }
 
