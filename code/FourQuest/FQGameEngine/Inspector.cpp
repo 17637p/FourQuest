@@ -1224,12 +1224,14 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	for (size_t i = 0; i < events.size(); ++i)
 	{
 		auto& event = events[i];
-		std::string label = "FuntionName" + i;
 		std::string functionName = event.FunctionName;
 		float time = event.Time;
-
+		
+		std::string label = "FuntionName" + std::to_string(i);
 		ImGui::InputText(label.c_str(), &functionName);
-		ImGui::InputFloat("PlayBackSpeed", &time);
+
+		label = "EmitTime" + std::to_string(i);
+		ImGui::InputFloat(label.c_str(), &time);
 
 		event.FunctionName = functionName;
 		event.Time = time;

@@ -15,7 +15,7 @@ namespace fq::game_module
 		struct InstantiatePrefab // 현재 위치에서 프리팹을 생성해주는 이벤트를 던짐
 		{
 			std::string FunctionName;
-			std::string PrefabResource;
+			PrefabResource PrefabResourceData;
 			float DeleteTime = 2.f;
 		};
 

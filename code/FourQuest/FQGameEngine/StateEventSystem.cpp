@@ -18,20 +18,6 @@ fq::game_engine::StateEventSystem::~StateEventSystem()
 
 void fq::game_engine::StateEventSystem::OnLoadScene()
 {
-	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-
-	scene->ViewComponents<fq::game_module::StateEvent>(
-		[this](fq::game_module::GameObject& object, fq::game_module::StateEvent& stateEvent)
-		{
-			const auto& instantiatePrefabs = stateEvent.GetInstantiatePrefabs();
-
-			for (const auto& instantiatePrefab : instantiatePrefabs)
-			{
-				auto instance = mGameProcess->mPrefabManager->LoadPrefab(instantiatePrefab.PrefabResource);
-			}
-		}
-	);
-
 	// 게임오브젝트에 종속적인 이펙트를 저장해두고, 상태 변화가 감지되면 제거하도록 하면 어떨까
 	// 상태변화 이벤트는
 }
@@ -72,7 +58,7 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 				{
 					if (instantiatePrefab.FunctionName == event.RegisterKeyName)
 					{
-						auto instance = mGameProcess->mPrefabManager->InstantiatePrefabResoure({ PrefabResource{instantiatePrefab.PrefabResource} });
+						auto instance = mGameProcess->mPrefabManager->InstantiatePrefabResoure({ instantiatePrefab.PrefabResourceData });
 						auto& effectObject = *(instance.begin());
 						auto effectObjectTransform = effectObject->GetTransform();
 
@@ -99,7 +85,7 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 
 		if (gameObjectLifeTime.LifeTime < 0)
 		{
-			gameObjectLifeTime.gameObject->OnDestroy();
+			scene->DestroyGameObject(gameObjectLifeTime.gameObject.get());
 			iter = mGameObjectLifeTimes.erase(iter);
 		}
 		else

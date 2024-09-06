@@ -1982,11 +1982,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::POD)
 		.data<&StateEvent::InstantiatePrefab::FunctionName>("FunctionName"_hs)
 		.prop(fq::reflect::prop::Name, "FunctionName")
-		.data<&StateEvent::InstantiatePrefab::PrefabResource>("PrefabResource"_hs)
+		.data<&StateEvent::InstantiatePrefab::PrefabResourceData>("PrefabResource"_hs)
 		.prop(fq::reflect::prop::Name, "PrefabResource")
 		.prop(fq::reflect::prop::DragDrop, ".prefab")
-		.prop(fq::reflect::prop::RelativePath);
-
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&StateEvent::InstantiatePrefab::DeleteTime>("DeleteTime"_hs)
+		.prop(fq::reflect::prop::Name, "DeleteTime");
 
 	entt::meta<StateEvent>()
 		.type("StateEvent"_hs)
