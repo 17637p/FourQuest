@@ -38,6 +38,16 @@ namespace fq::client::dc
 		return attackPower * DamageVariable::MagicLaserCoefficient;
 	}
 
+	inline float GetArcherWADamage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherWACoefficient;
+	}
+
+	inline float GetArcherSADamage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherSACoefficient;
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	//							¿µÈ¥ °ø°Ý									//
 	//////////////////////////////////////////////////////////////////////////

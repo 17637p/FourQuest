@@ -434,6 +434,9 @@
     <ClInclude Include="ArrowAttack.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="ArcherArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -717,6 +720,9 @@
     </ClCompile>
     <ClCompile Include="ArrowAttack.cpp">
       <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ArcherArmour.cpp">
+      <Filter>src\01.Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -21,6 +21,12 @@ namespace fq::client
 		static inline float MagicBallCoefficient = 1.f;
 		static inline float MagicAOECoefficient = 1.f;
 		static inline float MagicLaserCoefficient = 1.f;
+		
+		//////////////////////////////////////////////////////////////////////////
+		//						±Ã¼ö °©¿Ê °ø°Ý ¹èÀ²								//
+		//////////////////////////////////////////////////////////////////////////
+		static inline float ArcherWACoefficient = 1.f;
+		static inline float ArcherSACoefficient = 1.f;
 
 		//////////////////////////////////////////////////////////////////////////
 		//							¿µÈ¥ °ø°Ý ¹èÀ²								//
