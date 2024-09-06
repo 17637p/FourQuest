@@ -71,6 +71,15 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 
 void fq::client::QuestManager::OnStart()
 {
+	for (int i = 0; i < mMainQuests.size(); i++)
+	{
+		mMainQuests[i].mIsMain = true;
+	}
+	for (int i = 0; i < mSubQuests.size(); i++)
+	{
+		mSubQuests[i].mIsMain = false;
+	}
+
 	// 시작 퀘스트 등록
 	mCurSubQuest.clear();
 
@@ -107,7 +116,10 @@ void fq::client::QuestManager::OnStart()
 
 	mScreenManager = GetScene()->GetScreenManager();
 
-	RenderOffQuest();
+	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
+	{
+		RenderOnSubQuest(i, false);
+	}
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
@@ -364,34 +376,6 @@ void fq::client::QuestManager::EventProcessClearQuest()
 	mClearQuestHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::ClearQuestEvent>(
 		[this](const client::event::ClearQuestEvent& event)
 		{
-			// 방금 깬 퀘스트가 선행퀘스트라면 다음 퀘스트 추가하기
-			for (int i = 0; i < mMainQuests.size(); i++)
-			{
-				std::vector<PreQuest>& preQuestList = mMainQuests[i].mJoinConditionList.preQuestList;
-				if (preQuestList.size() > 0)
-				{
-					if (preQuestList[0].preIndex == event.clearQuest.mIndex &&
-						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
-					{
-						mCurMainQuest = mMainQuests[i];
-						spdlog::trace("Complete PreQuest!");
-					}
-				}
-			}
-			for (int i = 0; i < mSubQuests.size(); i++)
-			{
-				std::vector<PreQuest>& preQuestList = mSubQuests[i].mJoinConditionList.preQuestList;
-				if (preQuestList.size() > 0)
-				{
-					if (preQuestList[0].preIndex == event.clearQuest.mIndex &&
-						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
-					{
-						mCurSubQuest[event.index] = mSubQuests[i];
-						spdlog::trace("Complete PreQuest!");
-					}
-				}
-			}
-
 			// 방금 깬 퀘스트가 클리어 조건으로 있는 퀘스트가 있다면 클리어 하기 
 			std::vector<ClearQuest>& clearQuestList = mCurMainQuest.mclearConditionList.clearQuestList;
 			if (clearQuestList.size() > 0)
@@ -463,6 +447,44 @@ void fq::client::QuestManager::EventProcessClearQuest()
 				for (int i = 0; i < sequenceStartListSize; i++)
 				{
 					GetScene()->GetObjectByName(sequenceStartList[i].name)->GetComponent<game_module::Sequence>()->SetIsPlay(true);
+				}
+			}
+
+			// 방금 깬 퀘스트가 선행퀘스트라면 다음 퀘스트 추가하기
+			for (int i = 0; i < mMainQuests.size(); i++)
+			{
+				std::vector<PreQuest>& preQuestList = mMainQuests[i].mJoinConditionList.preQuestList;
+				if (preQuestList.size() > 0)
+				{
+					if (preQuestList[0].preIndex == event.clearQuest.mIndex &&
+						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
+					{
+						mCurMainQuest = mMainQuests[i];
+						spdlog::trace("Complete PreQuest!");
+					}
+				}
+			}
+
+			// 서브 퀘스트면 목록에서 삭제 
+			if (!event.clearQuest.mIsMain)
+			{
+				mCurSubQuest.erase(mCurSubQuest.begin() + event.index);
+
+				RenderOnSubQuest(mCurSubQuest.size(), false);
+			}
+
+			for (int i = 0; i < mSubQuests.size(); i++)
+			{
+				std::vector<PreQuest>& preQuestList = mSubQuests[i].mJoinConditionList.preQuestList;
+				if (preQuestList.size() > 0)
+				{
+					if (preQuestList[0].preIndex == event.clearQuest.mIndex &&
+						preQuestList[0].preIsMain == event.clearQuest.mIsMain)
+					{
+						mCurSubQuest.push_back(mSubQuests[i]);
+						RenderOnSubQuest(i, true);
+						spdlog::trace("Complete PreQuest!");
+					}
 				}
 			}
 		});
@@ -578,30 +600,27 @@ void fq::client::QuestManager::ViewQuestInformation(Quest quest, game_module::Te
 	}
 }
 
-void fq::client::QuestManager::RenderOffQuest()
+void fq::client::QuestManager::RenderOnSubQuest(int i, bool isOn)
 {
 	std::vector<fq::game_module::GameObject*> children = GetGameObject()->GetChildren()[3]->GetChildren();
 
-	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
-	{
-		auto subQuest = children[2 - i]->GetChildren();
-		
-		auto text1 = subQuest[0]->GetComponent<game_module::TextUI>();
-		auto image1 = subQuest[1]->GetComponent<game_module::ImageUI>();
-		auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
-		auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
+	auto subQuest = children[i]->GetChildren();
 
-		auto textInfo = text1->GetTextInfo();
-		textInfo.IsRender = false;
-		text1->SetTextInfo(textInfo);
+	auto text1 = subQuest[0]->GetComponent<game_module::TextUI>();
+	auto image1 = subQuest[1]->GetComponent<game_module::ImageUI>();
+	auto text2 = subQuest[2]->GetComponent<game_module::TextUI>();
+	auto image2 = subQuest[3]->GetComponent<game_module::ImageUI>();
 
-		textInfo = text2->GetTextInfo();
-		textInfo.IsRender = false;
-		text2->SetTextInfo(textInfo);
+	auto textInfo = text1->GetTextInfo();
+	textInfo.IsRender = isOn;
+	text1->SetTextInfo(textInfo);
 
-		image1->SetIsRender(0, false);
-		image2->SetIsRender(0, false);
-	}
+	textInfo = text2->GetTextInfo();
+	textInfo.IsRender = isOn;
+	text2->SetTextInfo(textInfo);
+
+	image1->SetIsRender(0, isOn);
+	image2->SetIsRender(0, isOn);
 }
 
 void fq::client::QuestManager::SetScaleAndPositionScreen()

@@ -41,7 +41,7 @@ namespace fq::client
 		std::vector<Quest> GetSubQuests() const { return mSubQuests; }
 
 		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
-		void RenderOffQuest();
+		void RenderOnSubQuest(int i, bool isOn);
 		void SpawnArmour(fq::game_module::PrefabResource armour);
 
 	private:
