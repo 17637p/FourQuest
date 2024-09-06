@@ -30,6 +30,7 @@ namespace fq::client
 		float knocBackPower = 0.f;
 		
 		std::string hitSound; // 피격 소리 
+		std::function<void()> mHitCallback; // 공격성공 콜백함수
 	};
 
 }

@@ -2,6 +2,7 @@
 
 #include "Player.h"
 #include "../FQGameModule/GameModule.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::StaffSoulAttackState::StaffSoulAttackState()
 {
@@ -29,4 +30,5 @@ void fq::client::StaffSoulAttackState::OnStateEnter(game_module::Animator& anima
 {
 	auto player = animator.GetComponent<Player>();
 	player->EquipSoulWeapone();
+	player->AddSoulGauge(-PlayerSoulVariable::SoulSwordAttackCost);
 }

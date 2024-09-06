@@ -146,7 +146,7 @@ void fq::client::PlayerUI::OnUpdate(float dt)
 					break;
 			}
 			SetWeaponAndSkillIcons(armourTypeIndex, true);
-			SetSoulGauge(mPlayer->GetSoultStackRatio());
+			SetSoulGauge(mPlayer->GetSoultGaugeRatio());
 	}
 	}
 	else

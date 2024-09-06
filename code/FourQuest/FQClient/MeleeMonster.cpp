@@ -73,7 +73,6 @@ void fq::client::MeleeMonster::OnStart()
 	mStartPosition = mTransform->GetWorldPosition();
 	mAnimator = GetComponent<game_module::Animator>();
 	mKnockBack = GetComponent<KnockBack>();
-
 	mMaxHp = mHp;
 
 	// Agent ¼³Á¤

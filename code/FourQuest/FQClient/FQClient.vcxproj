@@ -123,7 +123,7 @@
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
-    <ClInclude Include="ShiedlDashState.h" />
+    <ClInclude Include="ShieldDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
@@ -221,7 +221,7 @@
     <ClCompile Include="RepauseUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
     <ClCompile Include="SettingUI.cpp" />
-    <ClCompile Include="ShiedlDashState.cpp" />
+    <ClCompile Include="ShieldDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />

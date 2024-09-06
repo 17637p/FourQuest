@@ -17,7 +17,7 @@
 #include "MagicBallAttackState.h"
 #include "AOEAttackState.h"
 #include "LaserAttackState.h"
-#include "ShiedlDashState.h"
+#include "ShieldDashState.h"
 #include "KnightArmour.h"
 #include "SwordAttackState.h"
 #include "ShieldAttackState.h"
@@ -267,9 +267,9 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Comment, u8"매직볼트 관통횟수")
 		.data<&MagicArmour::mAOEMoveRange>("AOEMoveRange"_hs)
 		.prop(reflect::prop::Name, "AOEMoveRange")
-		.data<&MagicArmour::mRazerDistance>("RazerDistance"_hs)
+		.data<&MagicArmour::mLaserDistance>("RazerDistance"_hs)
 		.prop(reflect::prop::Name, "RazerDistance")
-		.data<&MagicArmour::mRazerHiTick>("RazerHiTick"_hs)
+		.data<&MagicArmour::mLaserHiTick>("RazerHiTick"_hs)
 		.prop(reflect::prop::Name, "RazerHiTick")
 		.data<&MagicArmour::mMagicBall>("MagicBall"_hs)
 		.prop(reflect::prop::Name, "MagicBall")
@@ -376,7 +376,7 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "LaserEmitTime")
 		.base<game_module::IStateBehaviour>();
 
-	entt::meta<ShiedlDashState>()
+	entt::meta<ShieldDashState>()
 		.type("ShiedlDashState"_hs)
 		.prop(reflect::prop::Name, "ShiedlDashState")
 		.base<game_module::IStateBehaviour>();
@@ -1226,6 +1226,19 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackTick")
 		.data<&PlayerSoulVariable::SoulAxeAttackDuration>("SoulAxeAttackDuration"_hs)
 		.prop(fq::reflect::prop::Name, "SoulAxeAttackDuration")
+
+		.data<&PlayerSoulVariable::SoulSwordAttackCost>("SoulSwordAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulSwordAttackCost")
+		.data<&PlayerSoulVariable::SoulBowAttackCost>("SoulBowAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulBowAttackCost")
+		.data<&PlayerSoulVariable::SoulAxeAttackCost>("SoulAxeAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulAxeAttackCost")
+		.data<&PlayerSoulVariable::SoulStaffAttackCost>("SoulStaffAttackCost"_hs)
+		.prop(fq::reflect::prop::Name, "SoulStaffAttackCost")
+
+		.data<&PlayerSoulVariable::SoulGaugeCharging>("SoulGaugeCharging"_hs)
+		.prop(fq::reflect::prop::Name, "SoulGaugeCharging")
+
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()

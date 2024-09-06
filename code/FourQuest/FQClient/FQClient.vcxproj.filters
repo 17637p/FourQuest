@@ -239,7 +239,7 @@
     <ClInclude Include="KnightArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="ShiedlDashState.h">
+    <ClInclude Include="ShieldDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="KnockBack.h">
@@ -550,7 +550,7 @@
     <ClCompile Include="KnightArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="ShiedlDashState.cpp">
+    <ClCompile Include="ShieldDashState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="LinearAttack.cpp">
