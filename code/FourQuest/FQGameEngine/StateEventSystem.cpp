@@ -6,6 +6,7 @@
 #include "../FQGameModule/Decal.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/GameObject.h"
+#include "../FQGameModule/SoundManager.h"
 
 fq::game_engine::StateEventSystem::StateEventSystem()
 	: mGameProcess(nullptr)
@@ -21,8 +22,7 @@ fq::game_engine::StateEventSystem::~StateEventSystem()
 void fq::game_engine::StateEventSystem::OnLoadScene()
 {
 	mInstantiatePrefabMap.clear();
-	// 게임오브젝트에 종속적인 이펙트를 저장해두고, 상태 변화가 감지되면 제거하도록 하면 어떨까
-	// 상태변화 이벤트는
+
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
 	auto stateEventGameObject = scene->GetObjectByName("StateEvent");
@@ -55,38 +55,58 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 		RegisterHandle<fq::event::AnimationStateEvent>(
 			[this](const fq::event::AnimationStateEvent& data)
 			{
-				auto find = mInstantiatePrefabMap.find(data.RegisterKeyName);
-
-				if (find != mInstantiatePrefabMap.end())
+				if (mStateEvent == nullptr)
 				{
-					const auto& instantiatePrefab = find->second;
-
-					auto instance = mGameProcess->mPrefabManager->InstantiatePrefabResoure({ instantiatePrefab.PrefabResourceData });
-					auto effectObject = *(instance.begin());
-					auto effectObjectTransform = effectObject->GetTransform();
-
-					auto firedEventObjectTransform = data.gameObject->GetTransform();
-
-					const auto addtiveTransform = DirectX::SimpleMath::Matrix::CreateScale(instantiatePrefab.Scale) * DirectX::SimpleMath::Matrix::CreateTranslation(instantiatePrefab.Translate + genarateRenderVector(instantiatePrefab.RandomRange));
-
-					if (instantiatePrefab.bIsFollowingParentPosition)
-					{
-						effectObjectTransform->SetParent(firedEventObjectTransform);
-						effectObjectTransform->SetLocalMatrix(addtiveTransform);
-					}
-					else
-					{
-						effectObjectTransform->SetWorldMatrix(addtiveTransform * firedEventObjectTransform->GetWorldMatrix());
-					}
-					
-
-					auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-					scene->AddGameObject(effectObject);
-
-					mGameObjectLifeTimes.push_back({ data.gameObject, effectObject, instantiatePrefab.DeleteTime, instantiatePrefab.bUseDeleteByStateEnd });
+					return;
 				}
 
-				mAnimationStateEvents.push_back(data);
+				{
+					auto find = mInstantiatePrefabMap.find(data.RegisterKeyName);
+
+					if (find != mInstantiatePrefabMap.end())
+					{
+						const auto& instantiatePrefab = find->second;
+
+						auto instance = mGameProcess->mPrefabManager->InstantiatePrefabResoure({ instantiatePrefab.PrefabResourceData });
+						auto effectObject = *(instance.begin());
+						auto effectObjectTransform = effectObject->GetTransform();
+
+						auto firedEventObjectTransform = data.gameObject->GetTransform();
+
+						const auto addtiveTransform = DirectX::SimpleMath::Matrix::CreateScale(instantiatePrefab.Scale) * DirectX::SimpleMath::Matrix::CreateTranslation(instantiatePrefab.Translate + genarateRenderVector(instantiatePrefab.RandomRange));
+
+						if (instantiatePrefab.bIsFollowingParentPosition)
+						{
+							effectObjectTransform->SetParent(firedEventObjectTransform);
+							effectObjectTransform->SetLocalMatrix(addtiveTransform);
+						}
+						else
+						{
+							effectObjectTransform->SetWorldMatrix(addtiveTransform * firedEventObjectTransform->GetWorldMatrix());
+						}
+
+						auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+						scene->AddGameObject(effectObject);
+
+						mGameObjectLifeTimes.push_back({ data.gameObject, effectObject, instantiatePrefab.DeleteTime, instantiatePrefab.bUseDeleteByStateEnd });
+					}
+				}
+
+				{
+					auto find = mPlaySoundInfoMap.find(data.RegisterKeyName);
+
+					if (find != mPlaySoundInfoMap.end())
+					{
+						const auto& playerSoundInfo = find->second;
+
+						if (playerSoundInfo.bUseAutoDelete)
+						{
+							// 자료구조에 저장
+						}
+
+						mGameProcess->mSoundManager->Play(playerSoundInfo.FunctionName, playerSoundInfo.bIsLoop, playerSoundInfo.Channel);
+					}
+				}
 			});
 
 	mOnProcessStateExitEvent = eventMgr->
@@ -116,21 +136,16 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 
 void fq::game_engine::StateEventSystem::Update(float dt)
 {
-	if (mStateEvent == nullptr)
-	{
-		return;
-	}
-
 	using namespace fq::game_module;
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
-	for (auto iter = mGameObjectLifeTimes.begin(); iter != mGameObjectLifeTimes.end(); )
+	for (auto iter = mGameObjectLifeTimes.begin(); iter != mGameObjectLifeTimes.end();)
 	{
 		GameObjectLifeTime& gameObjectLifeTime = *iter;
 
 		gameObjectLifeTime.LifeTime -= dt;
 
-		if (gameObjectLifeTime.LifeTime < 0)
+		if (gameObjectLifeTime.LifeTime < 0 || gameObjectLifeTime.gameObject->IsDestroyed())
 		{
 			scene->DestroyGameObject(gameObjectLifeTime.gameObject.get());
 			iter = mGameObjectLifeTimes.erase(iter);
@@ -140,6 +155,24 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 			++iter;
 		}
 	}
+
+	for (auto iter = mPlaySoundLifeTimes.begin(); iter != mPlaySoundLifeTimes.end();)
+	{
+		PlaySoundLifeTime& playSoundLifeTime = *iter;
+
+		playSoundLifeTime.LifeTime -= dt;
+
+		if (playSoundLifeTime.LifeTime < 0)
+		{
+			mGameProcess->mSoundManager->StopChannel(playSoundLifeTime.Channel);
+			iter = mPlaySoundLifeTimes.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
 }
 
 DirectX::SimpleMath::Vector3 fq::game_engine::StateEventSystem::genarateRenderVector(const DirectX::SimpleMath::Vector3& random)
@@ -153,6 +186,6 @@ DirectX::SimpleMath::Vector3 fq::game_engine::StateEventSystem::genarateRenderVe
 	float x = randoemFloat(-random.x, random.x);
 	float y = randoemFloat(-random.y, random.y);
 	float z = randoemFloat(-random.z, random.z);
-	
+
 	return DirectX::SimpleMath::Vector3(x, y, z);
 }

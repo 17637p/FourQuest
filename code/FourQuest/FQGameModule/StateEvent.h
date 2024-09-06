@@ -21,7 +21,7 @@ namespace fq::game_module
 			bool bIsFollowingParentPosition = true;
 
 			// 삭제여부
-			bool bUseAutoDelete = true; 
+			bool bUseAutoDelete = true;
 			bool bUseDeleteByStateEnd = false;
 			float DeleteTime = 1.f;
 
@@ -35,6 +35,16 @@ namespace fq::game_module
 		{
 			std::string FunctionName;
 			std::string SoundPath;
+
+			// 삭제여부
+			bool bUseAutoDelete = true;
+			bool bUseDeleteByStateEnd = false;
+			float DeleteTime = 1.f;
+
+			// 반복여부
+			bool bIsLoop;
+
+			int Channel; // 0 ~ 31 
 		};
 
 	public:
@@ -50,7 +60,7 @@ namespace fq::game_module
 
 	private:
 		std::vector<InstantiatePrefab> mInstantiatePrefabs;
-
+		std::vector<PlaySoundInfo> mPlayerSoundInfos;
 
 		friend void RegisterMetaData();
 	};

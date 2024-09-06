@@ -35,9 +35,8 @@ namespace fq::game_engine
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnProcessStateEvent;
 		EventHandler mOnProcessStateExitEvent;
-		// 이벤트 저장
 
-		std::vector<fq::event::AnimationStateEvent> mAnimationStateEvents;
+		fq::game_module::StateEvent* mStateEvent;
 
 		struct GameObjectLifeTime
 		{
@@ -47,11 +46,18 @@ namespace fq::game_engine
 			bool bUseDeleteStateEnd;
 		};
 
+		struct PlaySoundLifeTime
+		{
+			fq::game_module::GameObject* OnwerGameObject;
+			int Channel;
+			float LifeTime;
+			bool bUseDeleteStateEnd;
+		};
+
 		std::vector<GameObjectLifeTime> mGameObjectLifeTimes;
-
-		fq::game_module::StateEvent* mStateEvent;
-
+		std::vector<PlaySoundLifeTime> mPlaySoundLifeTimes;
 		std::map<std::string, fq::game_module::StateEvent::InstantiatePrefab> mInstantiatePrefabMap;
+		std::map<std::string, fq::game_module::StateEvent::PlaySoundInfo> mPlaySoundInfoMap;
 
 		std::random_device mRandomDevice;  // 랜덤 장치
 		std::mt19937 mGenerarator;
