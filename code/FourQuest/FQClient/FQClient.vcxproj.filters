@@ -431,6 +431,9 @@
     <ClInclude Include="ArmourSpawner.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
+    <ClInclude Include="ArrowAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -711,6 +714,9 @@
     </ClCompile>
     <ClCompile Include="ArmourSpawner.cpp">
       <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrowAttack.cpp">
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

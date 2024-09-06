@@ -42,6 +42,7 @@
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
+    <ClInclude Include="ArrowAttack.h" />
     <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="AxeSoulAttackState.h" />
     <ClInclude Include="BGM.h" />
@@ -152,6 +153,7 @@
     <ClCompile Include="AOEAttackState.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
+    <ClCompile Include="ArrowAttack.cpp" />
     <ClCompile Include="AxeSoulAttackState.cpp" />
     <ClCompile Include="BGM.cpp" />
     <ClCompile Include="BossHP.cpp" />
