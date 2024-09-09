@@ -80,7 +80,7 @@ namespace fq::client
 		GetScene()->AddGameObject(attackObj);
 	}
 
-	void ArcherArmour::EmitStrongAttack(float chargingTime)
+	void ArcherArmour::EmitStrongAttack(bool bIscharging)
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttack);
 		auto& attackObj = *(instance.begin());
@@ -123,7 +123,7 @@ namespace fq::client
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.lifeTime = 3.f;
 
-		if (mChangeChargingTime <= chargingTime)
+		if (bIscharging)
 		{
 			attackInfo.bIsStrongAttack = true;
 			attackInfo.remainingAttackCount = 0b11111111;
@@ -142,6 +142,29 @@ namespace fq::client
 		// MagicBall Attack 사운드  
 
 		GetScene()->AddGameObject(attackObj);
+	}
+
+	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitChargingEffect()
+	{
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttackChargingEffect);
+		auto& chargingObj = *(instance.begin());
+
+		auto attackT = chargingObj->GetComponent<game_module::Transform>();
+
+		// 스태프 트랜스폼 가져오기
+		attackT->SetParent(mTransform->GetChildren()[3]);
+
+		GetScene()->AddGameObject(chargingObj);
+
+		// 레이저 시작 사운드 재생
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Charging", true , 0 });
+
+		return chargingObj;
+	}
+
+	void ArcherArmour::EmitStrongAttackEffect()
+	{
+
 	}
 
 	void ArcherArmour::EmitDash()
@@ -182,6 +205,7 @@ namespace fq::client
 			mDashElapsedTime = mDashCoolTime;
 		}
 
+
 		// Shield 
 		DirectX::SimpleMath::Vector3 rightInput{};
 		rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
@@ -201,6 +225,72 @@ namespace fq::client
 			else
 			{
 				mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,1.f,0.f }));
+			}
+		}
+	}
+
+	void ArcherArmour::SetLookAtRStickInput()
+	{
+		using namespace DirectX::SimpleMath;
+
+		auto inputMgr = GetScene()->GetInputManager();
+		Vector3 input = Vector3::Zero;
+
+		// 컨트롤러 입력
+		input.x = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
+		input.z = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
+
+		float lengthSq = input.LengthSquared();
+
+		// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
+		constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+		// 캐릭터 컨트롤러 회전 처리
+		if (lengthSq >= rotationOffsetSq)
+		{
+			// 바라보는 방향 설정 
+			input.Normalize();
+
+			if (input == Vector3::Backward)
+			{
+				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+			}
+			else if (input != Vector3::Zero)
+			{
+				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
+			}
+		}
+	} 
+
+	void ArcherArmour::SetLookAtLStickInput()
+	{
+		using namespace DirectX::SimpleMath;
+
+		auto inputMgr = GetScene()->GetInputManager();
+		Vector3 input = Vector3::Zero;
+
+		// 컨트롤러 입력
+		input.x = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::leftX);
+		input.z = inputMgr->GetStickInfomation(mController->GetControllerID(), EPadStick::leftY);
+
+		float lengthSq = input.LengthSquared();
+
+		// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
+		constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+		// 캐릭터 컨트롤러 회전 처리
+		if (lengthSq >= rotationOffsetSq)
+		{
+			// 바라보는 방향 설정 
+			input.Normalize();
+
+			if (input == Vector3::Backward)
+			{
+				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
+			}
+			else if (input != Vector3::Zero)
+			{
+				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
 			}
 		}
 	}

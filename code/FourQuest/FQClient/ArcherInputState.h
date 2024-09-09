@@ -3,14 +3,13 @@
 
 namespace fq::client
 {
-	class BowDashState : public fq::game_module::IStateBehaviour
+	class ArcherInputState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		BowDashState();
-		~BowDashState();
+		ArcherInputState();
+		~ArcherInputState();
 
 	private:
-
 		virtual void OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
 		virtual void OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt) override;
 		virtual void OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
@@ -19,7 +18,7 @@ namespace fq::client
 		virtual entt::meta_handle GetHandle() override;
 
 	private:
-
+		float mChangeChargingTime;
 	};
 
 }

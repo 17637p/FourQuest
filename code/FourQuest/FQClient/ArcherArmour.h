@@ -21,8 +21,18 @@ namespace fq::client
 		~ArcherArmour();
 
 		void EmitmMultiShotAttack();
-		void EmitStrongAttack(float chargingTime);
+		void EmitStrongAttack(bool bIscharging);
+		std::shared_ptr<game_module::GameObject> EmitChargingEffect();
+		void EmitStrongAttackEffect();
 		void EmitDash();
+
+		/// <summary>
+		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
+		/// </summary>
+		void SetLookAtRStickInput();
+		void SetLookAtLStickInput();
+
+		float GetChangeChargingTime() { return mChangeChargingTime; }
 
 	private:
 		void OnStart() override;

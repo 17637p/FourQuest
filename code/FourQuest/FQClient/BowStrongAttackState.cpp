@@ -8,10 +8,6 @@ namespace fq::client
 	BowStrongAttackState::~BowStrongAttackState()
 	{
 	}
-	std::shared_ptr<fq::game_module::IStateBehaviour> BowStrongAttackState::Clone()
-	{
-		return fq::game_module::ObjectPool::GetInstance()->Assign<BowStrongAttackState>(*this);
-	}
 	void BowStrongAttackState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
 	}
@@ -20,5 +16,16 @@ namespace fq::client
 	}
 	void BowStrongAttackState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
+	}
+
+
+
+	std::shared_ptr<fq::game_module::IStateBehaviour> BowStrongAttackState::Clone()
+	{
+		return fq::game_module::ObjectPool::GetInstance()->Assign<BowStrongAttackState>(*this);
+	}
+	entt::meta_handle BowStrongAttackState::GetHandle()
+	{
+		return *this;
 	}
 }

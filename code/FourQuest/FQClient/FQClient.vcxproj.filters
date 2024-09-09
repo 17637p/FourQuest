@@ -105,6 +105,12 @@
     <Filter Include="include\06.ETC">
       <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.Player\State\BowState">
+      <UniqueIdentifier>{66b11bb0-e02d-4c9c-9ceb-c651b9e7dc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Bow">
+      <UniqueIdentifier>{49914565-c983-4fe8-92a4-f6316be2c96e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -437,6 +443,15 @@
     <ClInclude Include="ArcherArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
+    <ClInclude Include="BowStrongAttackState.h">
+      <Filter>include\01.Player\State\BowState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowDashState.h">
+      <Filter>include\01.Player\State\BowState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowMultiShotAttackState.h">
+      <Filter>include\01.Player\State\BowState</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -723,6 +738,15 @@
     </ClCompile>
     <ClCompile Include="ArcherArmour.cpp">
       <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BowStrongAttackState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowDashState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowMultiShotAttackState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

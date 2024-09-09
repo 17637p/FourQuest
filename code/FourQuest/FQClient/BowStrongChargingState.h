@@ -3,14 +3,13 @@
 
 namespace fq::client
 {
-	class BowDashState : public fq::game_module::IStateBehaviour
+	class BowStrongChargingState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		BowDashState();
-		~BowDashState();
+		BowStrongChargingState();
+		~BowStrongChargingState();
 
 	private:
-
 		virtual void OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
 		virtual void OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt) override;
 		virtual void OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
@@ -19,7 +18,8 @@ namespace fq::client
 		virtual entt::meta_handle GetHandle() override;
 
 	private:
+		float mChargingElapsedTime;
 
+		std::shared_ptr<game_module::GameObject> mChargingEffect;
 	};
-
 }

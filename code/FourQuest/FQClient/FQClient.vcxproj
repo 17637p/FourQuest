@@ -60,7 +60,10 @@
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
     <ClInclude Include="BossMonsterWaitTargetState.h" />
+    <ClInclude Include="BowDashState.h" />
+    <ClInclude Include="BowMultiShotAttackState.h" />
     <ClInclude Include="BowSoulAttackState.h" />
+    <ClInclude Include="BowStrongAttackState.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
@@ -171,7 +174,10 @@
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
     <ClCompile Include="BossMonsterWaitTargetState.cpp" />
+    <ClCompile Include="BowDashState.cpp" />
+    <ClCompile Include="BowMultiShotAttackState.cpp" />
     <ClCompile Include="BowSoulAttackState.cpp" />
+    <ClCompile Include="BowStrongAttackState.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />

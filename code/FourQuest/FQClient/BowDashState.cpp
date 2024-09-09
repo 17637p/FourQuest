@@ -9,10 +9,6 @@ namespace fq::client
 	{
 	}
 
-	std::shared_ptr<fq::game_module::IStateBehaviour> BowDashState::Clone()
-	{
-		return fq::game_module::ObjectPool::GetInstance()->Assign<BowDashState>(*this);
-	}
 	void BowDashState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
 	}
@@ -21,5 +17,15 @@ namespace fq::client
 	}
 	void BowDashState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 	{
+	}
+
+
+	std::shared_ptr<fq::game_module::IStateBehaviour> BowDashState::Clone()
+	{
+		return fq::game_module::ObjectPool::GetInstance()->Assign<BowDashState>(*this);
+	}
+	entt::meta_handle BowDashState::GetHandle()
+	{
+		return *this;
 	}
 }
