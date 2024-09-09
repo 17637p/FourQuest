@@ -451,6 +451,7 @@ void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
 		else if (isPlant)
 		{
 			isPlant->SetTarget(nearestPlayer);
+			isPlant->CheckTargetInAttackRange();
 		}
 	}
 

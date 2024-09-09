@@ -13,6 +13,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class Player;
+	class AimAssist;
 
 	/// <summary>
 	/// 마법 갑옷 
@@ -59,6 +60,11 @@ namespace fq::client
 
 		void CountLaserCoolTime();
 
+		/// <summary>
+		/// 가까운 몬스터에게 에임을 보정합니다.
+		/// </summary>
+		void AimToNearMonster();
+
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -72,6 +78,7 @@ namespace fq::client
 		game_module::Transform* mTransform;
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
+		AimAssist* mAimAisst;
 		Player* mPlayer;
 
 		unsigned int mMagicBallPenetrationCount;

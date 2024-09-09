@@ -431,6 +431,9 @@
     <ClInclude Include="ArmourSpawner.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
+    <ClInclude Include="BossMonsterGroggyState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -711,6 +714,9 @@
     </ClCompile>
     <ClCompile Include="ArmourSpawner.cpp">
       <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterGroggyState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

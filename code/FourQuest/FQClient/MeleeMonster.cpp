@@ -89,6 +89,11 @@ void fq::client::MeleeMonster::OnStart()
 
 	// GameManager ¿¬°á
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
+
+	if (mTarget)
+	{
+		SetTarget(mTarget.get());
+	}
 }
 
 void fq::client::MeleeMonster::EmitAttack()
