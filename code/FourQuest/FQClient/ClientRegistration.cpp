@@ -25,6 +25,7 @@
 #include "SwordSoulAttackState.h"
 #include "BowSoulAttackState.h"
 #include "AxeSoulAttackState.h"
+#include "AimAssist.h"
 
 // Monster
 #include "Monster.h"
@@ -61,6 +62,7 @@
 #include "BossMonsterHomingRushState.h"
 #include "BossMonsterComboAttackState.h"
 #include "BossMonsterPrepareAttackState.h"
+#include "BossMonsterGroggyState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -338,6 +340,15 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "BowColor")
 		.base<game_module::Component>();
 
+	entt::meta<AimAssist>()
+		.type("AimAssist"_hs)
+		.prop(reflect::prop::Name, "AimAssist")
+		.prop(reflect::prop::Label, "Player")
+		.data<&AimAssist::mTheta>("Theta"_hs)
+		.prop(reflect::prop::Name, "Theta")
+		.prop(reflect::prop::Comment, u8"보정할 각도, 기본 180도")
+		.base<game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                         플레이어 상태 관련								//
 	//////////////////////////////////////////////////////////////////////////
@@ -613,6 +624,12 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
+		.data<&BossMonster::mGroggyIncreaseRatio>("GroggyIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyIncreaseRatio")
+		.prop(fq::reflect::prop::Comment, u8"피격시 대미지 비례 그로기 게이지 증가량")
+		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
+		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
 		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownAttack")
 		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
@@ -693,6 +710,14 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonsterPrepareAttackState::mHomingTime>("HomingTime"_hs)
 		.prop(fq::reflect::prop::Name, "HomingTime")
 		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterGroggyState>()
+		.type("BossMonsterGroggyState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterGroggyState")
+		.data<&BossMonsterGroggyState::mGroggyTime>("GroggyTime"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyTime")
+		.base<fq::game_module::IStateBehaviour>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//

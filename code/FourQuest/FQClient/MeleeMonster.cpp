@@ -56,6 +56,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 
 void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	if (target == nullptr)
 	{
 		mTarget = nullptr;
@@ -83,6 +89,11 @@ void fq::client::MeleeMonster::OnStart()
 
 	// GameManager ¿¬°á
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
+
+	if (mTarget)
+	{
+		SetTarget(mTarget.get());
+	}
 }
 
 void fq::client::MeleeMonster::EmitAttack()

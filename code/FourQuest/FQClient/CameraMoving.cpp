@@ -63,7 +63,7 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 
 	restrcitPlayerMove();
 
-	auto input = GetScene()->GetInputManager();
+	/*auto input = GetScene()->GetInputManager();
 	if (input->GetKeyState(EKey::A) == EKeyState::Tap)
 	{
 		bool isis = IsValid(0, EDirection::Left);
@@ -111,7 +111,7 @@ void fq::client::CameraMoving::OnUpdate(float dt)
 		{
 			spdlog::trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 		}
-	}
+	}*/
 }
 
 DirectX::SimpleMath::Vector3 fq::client::CameraMoving::getCenterPosInView(float dt)
@@ -249,7 +249,7 @@ bool fq::client::CameraMoving::IsValid(int playerID, EDirection eDirection)
 	int index = -1;
 	for (int i = 0; i < mPlayerTransforms.size(); i++)
 	{
-		int playerIDi = mPlayerTransforms[i]->GetComponent<Player>()->GetPlayerID();
+		int playerIDi = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>()->GetControllerID();
 		if (playerIDi == playerID)
 		{
 			index = i;
@@ -403,38 +403,6 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 
 		controller->SetMoveRestriction(moveRestriction);
 	}
-
-	//switch (eDirection)
-	//{
-	//	case fq::client::EDirection::Top:
-	//		if (projPos.y >= mForbiddenAreaPaddingY.y)
-	//		{
-	//			return false;
-	//		}
-	//		break;
-	//	case fq::client::EDirection::Left:
-	//		if (projPos.x <= mForbiddenAreaPaddingX.x)
-	//		{
-	//			return false;
-	//		}
-	//		break;
-	//	case fq::client::EDirection::Bottom:
-	//		if (projPos.y <= mForbiddenAreaPaddingY.x)
-	//		{
-	//			return false;
-	//		}
-	//		break;
-	//	case fq::client::EDirection::Right:
-	//		if (projPos.x >= mForbiddenAreaPaddingX.y)
-	//		{
-	//			return false;
-	//		}
-	//		break;
-	//	default:
-	//		break;
-	//}
-
-	//return true;
 }
 
 // 콜라이더 추가하기

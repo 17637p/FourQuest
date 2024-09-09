@@ -1206,6 +1206,36 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	{
 		stateNode.SetLoof(IsLoof);
 	}
+
+	auto& events = stateNode.GetEvents();
+
+	if (ImGui::Button("AddEvent", { 100, 30 }))
+	{
+		events.push_back({});
+	}
+	if (ImGui::Button("DeleteEvent", { 100, 30 }))
+	{
+		if (!events.empty())
+		{
+			events.pop_back();
+		}
+	}
+
+	for (size_t i = 0; i < events.size(); ++i)
+	{
+		auto& event = events[i];
+		std::string functionName = event.FunctionName;
+		float time = event.Time;
+		
+		std::string label = "FuntionName" + std::to_string(i);
+		ImGui::InputText(label.c_str(), &functionName);
+
+		label = "EmitTime" + std::to_string(i);
+		ImGui::InputFloat(label.c_str(), &time);
+
+		event.FunctionName = functionName;
+		event.Time = time;
+	}
 }
 
 bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int index)

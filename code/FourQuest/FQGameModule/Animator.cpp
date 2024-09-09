@@ -99,3 +99,11 @@ void fq::game_module::Animator::SetNodeHierarchyPath(const std::string& path)
 		mNodeHierarchyPath = path;
 }
 
+void fq::game_module::Animator::ProcessAnimationEvent(class GameObject* gameObject, fq::game_module::EventManager* eventManager)
+{
+	if (mController != nullptr)
+	{
+		mController->ProcessAnimationEvent(gameObject, eventManager);
+	}
+}
+

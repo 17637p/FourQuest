@@ -51,7 +51,8 @@ void fq::client::LoadingUI::OnUpdate(float dt)
 	{
 		mImages[i]->GetComponent<game_module::ImageUI>()->SetIsRender(0, false);
 	}
-	mImages[mCurGuideID]->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
+
+//	mImages[mCurGuideID]->GetComponent<game_module::ImageUI>()->SetIsRender(0, true);
 }
 
 fq::client::LoadingUI::LoadingUI()

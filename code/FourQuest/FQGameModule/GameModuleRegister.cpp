@@ -17,6 +17,7 @@
 #include "Socket.h"
 #include "PostProcessing.h"
 #include "Sequence.h"
+#include "StateEvent.h"
 
 // Physics
 #include "Terrain.h"
@@ -86,8 +87,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Goddess")
 		.data<ETag::Box>("Box"_hs) // 14
 		.prop(fq::reflect::prop::Name, "Box")
-		.data<ETag::CameraWall>("CameraWall"_hs) // 15
-		.prop(fq::reflect::prop::Name, "CameraWall");
+		.data<ETag::AimAssist>("AimAssist"_hs) // 15
+		.prop(fq::reflect::prop::Name, "AimAssist");
 
 
 	// GameObject
@@ -298,8 +299,6 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "ScaleY")
 		.data<&graphics::UIInfo::isCenter>("IsCenter"_hs)
 		.prop(fq::reflect::prop::Name, "IsCenter")
-		.data<&graphics::UIInfo::isOnText>("IsOnText"_hs)
-		.prop(fq::reflect::prop::Name, "IsOnText")
 		.data<&graphics::UIInfo::fillDegree>("FillDegree"_hs)
 		.prop(fq::reflect::prop::Name, "FillDegree")
 		.data<&graphics::UIInfo::Color>("Color"_hs)
@@ -353,6 +352,8 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "Width")
 		.data<&graphics::TextInfo::Height>("Height"_hs)
 		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::TextInfo::Layer>("Layer"_hs)
+		.prop(fq::reflect::prop::Name, "Layer")
 		.data<&graphics::TextInfo::FontPath>("FontPath"_hs)
 		.prop(fq::reflect::prop::Name, "FontPath")
 		.data<&graphics::TextInfo::FontSize>("FontSize"_hs)
@@ -1088,6 +1089,14 @@ void fq::game_module::RegisterMetaData()
 		.data<AnimationStateNode::Type::State>("State"_hs)
 		.prop(fq::reflect::prop::Name, "State");
 
+	entt::meta<AnimationStateNode::Event>()
+		.type("AnimationStateEffectEvent"_hs)
+		.prop(fq::reflect::prop::Name, "AnimationStateEffectEvent")
+		.data<&AnimationStateNode::Event::FunctionName>("FunctionName"_hs)
+		.prop(fq::reflect::prop::Name, "FunctionName")
+		.data<&AnimationStateNode::Event::Time>("Time"_hs)
+		.prop(fq::reflect::prop::Name, "Time");
+
 	entt::meta<AnimationStateNode>()
 		.type("AnimationStateNode"_hs)
 		.prop(fq::reflect::prop::Name, "AnimationStateNode")
@@ -1099,7 +1108,11 @@ void fq::game_module::RegisterMetaData()
 		.data<&AnimationStateNode::SetAnimationKey, &AnimationStateNode::GetAnimationKey>("AnimationKey"_hs)
 		.prop(fq::reflect::prop::Name, "AnimationKey")
 		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
-		.prop(fq::reflect::prop::Name, "PlayBackSpeed");
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed")
+		.data<&AnimationStateNode::SetPlayBackSpeed, &AnimationStateNode::GetPlayBackSpeed>("PlayBackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed")
+		.data<&AnimationStateNode::mEvents>("EffectInfos"_hs)
+		.prop(fq::reflect::prop::Name, "EffectInfos");
 
 	entt::meta<Animator>()
 		.type("Animator"_hs)
@@ -1958,5 +1971,76 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Miscellaneous")
 		.data<&PostProcessing::SetPostProcessingInfo, &PostProcessing::GetPostProcessingInfo>("PostProcessingInfo"_hs)
 		.prop(fq::reflect::prop::Name, "PostProcessingInfo")
+		.base<fq::game_module::Component>();
+
+	//////////////////////////////////////////////////////////////////////////
+	//                            StateEvent                                //
+	//////////////////////////////////////////////////////////////////////////
+	entt::meta<StateEvent::InstantiatePrefab>()
+		.type("InstantiatePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "InstantiatePrefab")
+		.prop(fq::reflect::prop::POD)
+		.data<&StateEvent::InstantiatePrefab::FunctionName>("FunctionName"_hs)
+		.prop(fq::reflect::prop::Name, "FunctionName")
+		.data<&StateEvent::InstantiatePrefab::PrefabResourceData>("PrefabResource"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabResource")
+		.prop(fq::reflect::prop::DragDrop, ".prefab")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&StateEvent::InstantiatePrefab::bIsFollowingParentPosition>("IsFollowingParentPosition"_hs)
+		.prop(fq::reflect::prop::Name, "IsFollowingParentPosition")
+		.prop(fq::reflect::prop::Comment, u8"부모 위치를 따라갈지 여부")
+		.data<&StateEvent::InstantiatePrefab::bUseAutoDelete>("UseAutoDelete"_hs)
+		.prop(fq::reflect::prop::Name, "UseAutoDelete")
+		.prop(fq::reflect::prop::Comment, u8"자동 삭제 여부")
+		.data<&StateEvent::InstantiatePrefab::bUseDeleteByStateEnd>("UseDeleteByStateEnd"_hs)
+		.prop(fq::reflect::prop::Name, "UseDeleteByStateEnd")
+		.prop(fq::reflect::prop::Comment, u8"상태 종료 시 삭제 여부")
+		.data<&StateEvent::InstantiatePrefab::DeleteTime>("DeleteTime"_hs)
+		.prop(fq::reflect::prop::Name, "DeleteTime")
+		.prop(fq::reflect::prop::Comment, u8"자동 삭제 수명 시간")
+		.data<&StateEvent::InstantiatePrefab::Scale>("Scale"_hs)
+		.prop(fq::reflect::prop::Name, "Scale")
+		.prop(fq::reflect::prop::Comment, u8"생성 로컬 스케일")
+		.data<&StateEvent::InstantiatePrefab::Translate>("Translate"_hs)
+		.prop(fq::reflect::prop::Name, "Translate")
+		.prop(fq::reflect::prop::Comment, u8"생성 로컬 오프셋")
+		.data<&StateEvent::InstantiatePrefab::RandomRange>("RandomRange"_hs)
+		.prop(fq::reflect::prop::Name, "RandomRange")
+		.prop(fq::reflect::prop::Comment, u8"생성 랜덤 범위");
+
+	entt::meta<StateEvent::PlaySoundInfo>()
+		.type("PlaySoundInfo"_hs)
+		.prop(fq::reflect::prop::Name, "PlaySoundInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&StateEvent::PlaySoundInfo::FunctionName>("FunctionName"_hs)
+		.prop(fq::reflect::prop::Name, "FunctionName")
+		.data<&StateEvent::PlaySoundInfo::SoundPath>("PrefabResource"_hs)
+		.prop(fq::reflect::prop::Name, "PrefabResource")
+		.prop(fq::reflect::prop::DragDrop, ".mp3/.wav")
+		.prop(fq::reflect::prop::RelativePath)
+		.data<&StateEvent::PlaySoundInfo::bUseAutoDelete>("UseAutoDelete"_hs)
+		.prop(fq::reflect::prop::Name, "UseAutoDelete")
+		.prop(fq::reflect::prop::Comment, u8"자동 삭제 여부")
+		.data<&StateEvent::PlaySoundInfo::bUseDeleteByStateEnd>("UseDeleteByStateEnd"_hs)
+		.prop(fq::reflect::prop::Name, "UseDeleteByStateEnd")
+		.prop(fq::reflect::prop::Comment, u8"상태 종료 시 삭제 여부")
+		.data<&StateEvent::PlaySoundInfo::DeleteTime>("DeleteTime"_hs)
+		.prop(fq::reflect::prop::Name, "DeleteTime")
+		.prop(fq::reflect::prop::Comment, u8"자동 삭제 수명 시간")
+		.data<&StateEvent::PlaySoundInfo::bIsLoop>("bIsLoop"_hs)
+		.prop(fq::reflect::prop::Name, "bIsLoop")
+		.prop(fq::reflect::prop::Comment, u8"반복 여부")
+		.data<&StateEvent::PlaySoundInfo::Channel>("Channel"_hs)
+		.prop(fq::reflect::prop::Name, "Channel")
+		.prop(fq::reflect::prop::Comment, u8"사운드 채널 (0 ~ 31)");
+
+	entt::meta<StateEvent>()
+		.type("StateEvent"_hs)
+		.prop(fq::reflect::prop::Name, "StateEvent")
+		.prop(fq::reflect::prop::Label, "Miscellaneous")
+		.data<&StateEvent::mInstantiatePrefabs>("InstantiatePrefabInfos"_hs)
+		.prop(fq::reflect::prop::Name, "InstantiatePrefabInfos")
+		.data<&StateEvent::mPlayerSoundInfos>("PlayerSoundInfos"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerSoundInfos")
 		.base<fq::game_module::Component>();
 }

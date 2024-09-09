@@ -30,6 +30,7 @@ void fq::client::LaserAttackState::OnStateUpdate(game_module::Animator& animator
 {
 	auto magic = animator.GetComponent<MagicArmour>();
 	magic->SetLookAtRStickInput();
+	magic->AimToNearMonster();
 
 	mElapsedTime += dt;
 

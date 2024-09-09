@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <list>
 
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
@@ -23,6 +24,7 @@ namespace fq::client
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
+		virtual void OnFixedUpdate(float dt) override;
 		virtual void OnDestroy() override;
 
 	private:
@@ -61,6 +63,8 @@ namespace fq::client
 		game_module::EventHandler mPlayerSpawnCollideTriggerHandler;
 
 		MonsterManager* mMonsterManager;
+
+		std::list<std::shared_ptr<game_module::GameObject>> mAddedMonsterList; // 추가되고 다음 틱에 타겟 설정하기 위해서 필요, 바로는 컨트롤러 설정이 안되어서 불가능 
 
 	private:
 		friend void RegisterMetaData();

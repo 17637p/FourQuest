@@ -63,6 +63,11 @@ void fq::client::MonsterGroup::OnUpdate(float dt)
 		{
 			return monster->IsDestroyed();
 		}), mMonsters.end());
+
+	if (mTarget && mTarget->IsDestroyed())
+	{
+		mTarget = nullptr;
+	}
 }
 
 void fq::client::MonsterGroup::Register(fq::game_module::GameObject* monster)
@@ -96,5 +101,17 @@ int fq::client::MonsterGroup::GetRemainMonsterSize() const
 int fq::client::MonsterGroup::GetAllMonsterSize() const
 {
 	return mMonsterCount;
+}
+
+void fq::client::MonsterGroup::SetTarget(fq::game_module::GameObject* target)
+{
+	if (target == nullptr)
+	{
+		mTarget = nullptr;
+		return;
+	}
+
+	mTarget = target->shared_from_this();
+	AnnounceFindedTarget(target);
 }
 

@@ -47,6 +47,11 @@ namespace fq::client
 		/// </summary>
 		fq::game_module::GameObject* GetTarget()const;
 
+		/// <summary>
+		/// 타겟을 설정합니다
+		/// </summary>
+		void SetTarget(fq::game_module::GameObject* target);
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

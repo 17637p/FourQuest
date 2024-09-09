@@ -119,6 +119,7 @@ namespace fq::game_module
 		/// </summary>
 		void SetStopAnimation(bool isStop) { mbIsStopAnimation = isStop; }
 
+		void ProcessAnimationEvent(class GameObject* gameObject, class EventManager* eventManager);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }

@@ -365,7 +365,10 @@
     <ClInclude Include="CameraShakeTrack.h">
       <Filter>include\01.EntityComponent\Sequence\Track</Filter>
     </ClInclude>
-    <ClInclude Include="SoundEnum.h">
+    <ClInclude Include="StateEvent.h">
+      <Filter>include\04.Event</Filter>
+	</ClInclude>
+	<ClInclude Include="SoundEnum.h">
       <Filter>include\05.Input</Filter>
     </ClInclude>
   </ItemGroup>
@@ -591,6 +594,9 @@
     </ClCompile>
     <ClCompile Include="CameraShakeTrack.cpp">
       <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="StateEvent.cpp">
+      <Filter>src\04.Event</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

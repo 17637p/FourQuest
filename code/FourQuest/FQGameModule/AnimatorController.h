@@ -171,6 +171,8 @@ namespace fq::game_module
 
 		TransitionIterator GetCurrentTransition();
 
+		void ProcessAnimationEvent(class GameObject* gameObject,class EventManager* eventManager);
+
 	private:
 		bool checkNextStateTransition();
 		bool checkCurrentStateTransition();
