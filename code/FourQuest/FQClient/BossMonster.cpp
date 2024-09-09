@@ -31,10 +31,9 @@ fq::client::BossMonster::BossMonster()
 	, mTransform(nullptr)
 	, mGroggyGauge(0.f)
 	, mStartGroggyGauge(100.f)
-	, mGroggyIncrease(1.f)
+	, mGroggyIncreaseRatio(0.1f)
 	, mGroggyDecreasePerSecond(1.f)
 	, mGroggyDecreaseElapsedTime(0.f)
-	
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -107,7 +106,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			playerAttack->PlayHitSound();
 
 			// ±×·Î±â 
-			mGroggyGauge += mGroggyIncrease;
+			mGroggyGauge += mGroggyIncreaseRatio * attackPower;
 
 			if (mGroggyGauge >= mStartGroggyGauge)
 			{

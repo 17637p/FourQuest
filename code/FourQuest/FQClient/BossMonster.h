@@ -133,7 +133,7 @@ namespace fq::client
 		// 그로기 관련 
 		float mStartGroggyGauge;
 		float mGroggyGauge;
-		float mGroggyIncrease;
+		float mGroggyIncreaseRatio;
 		float mGroggyDecreasePerSecond;
 		float mGroggyDecreaseElapsedTime;
 

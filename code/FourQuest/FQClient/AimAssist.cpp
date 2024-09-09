@@ -51,6 +51,7 @@ void fq::client::AimAssist::SetNearMonsterDirection()
 	DirectX::SimpleMath::Vector3 forwardVec = playerTransform->GetLookAtVector();
 	float minDistance = FLT_MAX;
 	game_module::GameObject* minDistanceMonster = nullptr;
+
 	// 충돌한 몬스터 중에서 범위 각 안에 있고 가장 가까운 몬스터 찾기 
 	for (auto monster : mInRangeMonsters)
 	{
