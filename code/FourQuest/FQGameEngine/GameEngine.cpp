@@ -257,6 +257,7 @@ void fq::game_engine::GameEngine::Finalize()
 	mGameProcess->mLightProbeSystem->Finalize();
 
 	mGameProcess->mSceneManager->UnloadScene();
+	mGameProcess->mUISystem->Finalize();
 
 	mGameProcess->mGraphics->Finalize();
 	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);
