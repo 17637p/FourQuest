@@ -61,6 +61,7 @@
 #include "BossMonsterHomingRushState.h"
 #include "BossMonsterComboAttackState.h"
 #include "BossMonsterPrepareAttackState.h"
+#include "BossMonsterGroggyState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -613,6 +614,12 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
+		.data<&BossMonster::mGroggyIncrease>("GroggyIncrease"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyIncrease")
+		.prop(fq::reflect::prop::Comment, u8"피격시 그로기 게이지 증가량")
+		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
+		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
 		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownAttack")
 		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
@@ -693,6 +700,14 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonsterPrepareAttackState::mHomingTime>("HomingTime"_hs)
 		.prop(fq::reflect::prop::Name, "HomingTime")
 		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterGroggyState>()
+		.type("BossMonsterGroggyState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterGroggyState")
+		.data<&BossMonsterGroggyState::mGroggyTime>("GroggyTime"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyTime")
+		.base<fq::game_module::IStateBehaviour>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//

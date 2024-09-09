@@ -29,9 +29,13 @@ fq::client::BossMonster::BossMonster()
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mTransform(nullptr)
-{
-
-}
+	, mGroggyGauge(0.f)
+	, mStartGroggyGauge(100.f)
+	, mGroggyIncrease(1.f)
+	, mGroggyDecreasePerSecond(1.f)
+	, mGroggyDecreaseElapsedTime(0.f)
+	
+{}
 
 fq::client::BossMonster::~BossMonster()
 {
@@ -74,6 +78,15 @@ void fq::client::BossMonster::OnStart()
 
 void fq::client::BossMonster::OnUpdate(float dt)
 {
+	// 그로기 게이지 
+	mGroggyDecreaseElapsedTime += dt;
+
+	while (mGroggyDecreaseElapsedTime >= 1.f)
+	{
+		mGroggyDecreaseElapsedTime -= 1.f;
+		mGroggyGauge -= mGroggyDecreasePerSecond;
+	}
+
 }
 
 void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& collision)
@@ -92,6 +105,15 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
+
+			// 그로기 
+			mGroggyGauge += mGroggyIncrease;
+
+			if (mGroggyGauge >= mStartGroggyGauge)
+			{
+				mGroggyGauge = 0.f;
+				mAnimator->SetParameterBoolean("OnGroggy", true);
+			}
 
 			// 사망처리
 			if (mHp <= 0.f)

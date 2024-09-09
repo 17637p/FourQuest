@@ -129,6 +129,13 @@ namespace fq::client
 		float mComboAttackReboundPower;
 		float mDetectRange;
 		float mRotationSpeed;
+		
+		// 그로기 관련 
+		float mStartGroggyGauge;
+		float mGroggyGauge;
+		float mGroggyIncrease;
+		float mGroggyDecreasePerSecond;
+		float mGroggyDecreaseElapsedTime;
 
 		fq::game_module::PrefabResource mSmashDownAttack;
 		fq::game_module::PrefabResource mSmashDownEffect;
