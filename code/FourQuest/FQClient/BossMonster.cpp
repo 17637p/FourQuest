@@ -98,7 +98,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 		if (playerAttack->ProcessAttack())
 		{
 			float attackPower = playerAttack->GetAttackPower();
-
+			
 			// HP °¨¼Ò
 			mHp -= attackPower;
 

@@ -5,7 +5,7 @@
 // Test
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/InputManager.h"
-
+#include "SettingVariable.h"
 
 void fq::client::AimAssist::OnTriggerEnter(const game_module::Collision& collision)
 {
@@ -46,6 +46,11 @@ std::shared_ptr<fq::game_module::Component> fq::client::AimAssist::Clone(std::sh
 
 void fq::client::AimAssist::SetNearMonsterDirection()
 {
+	if (!SettingVariable::IsUsedAimAssist)
+	{
+		return;
+	}
+
 	auto playerTransform = GetTransform()->GetParentTransform();
 
 	DirectX::SimpleMath::Vector3 forwardVec = playerTransform->GetLookAtVector();

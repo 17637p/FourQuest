@@ -26,7 +26,7 @@ fq::client::Player::Player()
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(0.f)
 	, mAnimator(nullptr)
-	, mFeverTime(0.f)
+	, mFeverTime(10.f)
 	, mSoulType(ESoulType::Sword)
 	, mArmourType(EArmourType::Knight)
 	, mbOnShieldBlock(false)
@@ -34,6 +34,7 @@ fq::client::Player::Player()
 	, mAttackSpeed(1.f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
+	, mFeverElapsedTime(0.f)
 {}
 
 fq::client::Player::~Player()
@@ -91,6 +92,9 @@ void fq::client::Player::OnStart()
 
 	// 무기 착용
 	EquipArmourWeapone();
+
+	// 피버 버프 적용
+	setFeverBuff(true);
 }
 
 void fq::client::Player::processInput()
@@ -440,4 +444,16 @@ bool fq::client::Player::CanUseSoulAttack() const
 	}
 
 	return mSoulGauge >= cost;
+}
+
+void fq::client::Player::setFeverBuff(bool isFever)
+{
+	if (isFever)
+	{
+	}
+	else
+	{
+
+	}
+
 }
