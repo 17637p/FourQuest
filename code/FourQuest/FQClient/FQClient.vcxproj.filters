@@ -434,6 +434,9 @@
     <ClInclude Include="BossMonsterGroggyState.h">
       <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -717,6 +720,9 @@
     </ClCompile>
     <ClCompile Include="BossMonsterGroggyState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerVariable.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

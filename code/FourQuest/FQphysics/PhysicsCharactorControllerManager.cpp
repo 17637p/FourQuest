@@ -138,6 +138,8 @@ namespace fq::physics
 		controller->SetMoveRestriction(movementData.restriction);
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
+		movement->SetMaxSpeed(movementData.maxSpeed);
+		movement->SetAcceleration(movementData.acceleration);
 	}
 #pragma endregion
 }

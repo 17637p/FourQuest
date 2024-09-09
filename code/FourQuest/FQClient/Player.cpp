@@ -15,6 +15,7 @@
 #include "LinearAttack.h"
 #include "ClientHelper.h"
 #include "PlayerSoulVariable.h"
+#include "PlayerVariable.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -31,10 +32,10 @@ fq::client::Player::Player()
 	, mArmourType(EArmourType::Knight)
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
-	, mAttackSpeed(1.f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mFeverElapsedTime(0.f)
+	, mbIsFeverTime(false)
 {}
 
 fq::client::Player::~Player()
@@ -196,16 +197,15 @@ void fq::client::Player::processCoolTime(float dt)
 
 void fq::client::Player::processFeverTime(float dt)
 {
-	if (mFeverTime == 0.f)
+	if (!mbIsFeverTime)
 		return;
 
-	mFeverTime = std::max(mFeverTime - dt, 0.f);
+	mFeverElapsedTime += dt;
 
 	// °©¿Ê ¹öÇÁ Á¾·á
-	if (mFeverTime == 0.f)
+	if (mFeverElapsedTime >= mFeverTime)
 	{
-		// TODO : °©¿Ê ÇØÁ¦¿¡ ´ëÇÑ ¹öÇÁ¸¦ ÁøÇà
-		mAttackPower = mAttackPower * 0.5f;
+		setFeverBuff(false);
 	}
 }
 
@@ -414,7 +414,7 @@ void fq::client::Player::EmitAxeSoulAttack()
 
 void fq::client::Player::AddSoulGauge(float soul)
 {
-	mSoulGauge = std::clamp( mSoulGauge + soul, 0.f, mMaxSoulGauge);
+	mSoulGauge = std::clamp(mSoulGauge + soul, 0.f, mMaxSoulGauge);
 }
 
 void fq::client::Player::SetHp(float hp)
@@ -448,12 +448,27 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 void fq::client::Player::setFeverBuff(bool isFever)
 {
+	assert(isFever != mbIsFeverTime);
+
+	mFeverElapsedTime = 0.f;
+
+	mbIsFeverTime = isFever;
+
 	if (isFever)
 	{
+		mAttackPower *= PlayerVariable::FeverAttackIncreaseRatio;
+		auto movementInfo = mController->GetMovementInfo();
+		movementInfo.maxSpeed *= PlayerVariable::FeverSpeedIncreaseRatio;
+		movementInfo.acceleration *= PlayerVariable::FeverSpeedIncreaseRatio;
+		mController->SetMovementInfo(movementInfo);
 	}
 	else
 	{
-
+		mAttackPower /= PlayerVariable::FeverAttackIncreaseRatio;
+		auto movementInfo = mController->GetMovementInfo();
+		movementInfo.maxSpeed /= PlayerVariable::FeverSpeedIncreaseRatio;
+		movementInfo.acceleration /= PlayerVariable::FeverSpeedIncreaseRatio;
+		mController->SetMovementInfo(movementInfo);
 	}
 
 }
