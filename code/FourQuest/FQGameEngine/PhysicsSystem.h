@@ -123,6 +123,7 @@ namespace fq::game_engine
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
+		void removeArticulation(fq::game_module::GameObject* object);
 		void setPhysicsEngineinfo();
 		void calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset);
 		void callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type);

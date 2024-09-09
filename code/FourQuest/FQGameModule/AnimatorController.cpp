@@ -354,6 +354,14 @@ float fq::game_module::AnimatorController::GetBlendWeight() const
 	return mBlendWeight;
 }
 
+void fq::game_module::AnimatorController::ProcessAnimationEvent(class GameObject* gameObject, EventManager* eventManager)
+{
+	if (mNextState != mStates.end())
+		mNextState->second.ProcessAnimationEvent(gameObject, eventManager);
+	else
+		mCurrentState->second.ProcessAnimationEvent(gameObject, eventManager);
+}
+
 fq::game_module::AnimatorController::TransitionIterator fq::game_module::AnimatorController::GetCurrentTransition()
 {
 	return IsInTransition() ? mCurrentTransition : mTransitions.end();

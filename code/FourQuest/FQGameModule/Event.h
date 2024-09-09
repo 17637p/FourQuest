@@ -282,5 +282,20 @@ namespace fq::event
 	{
 		fq::graphics::debug::RayInfo rayInfo;
 	};
+
+	//////////////////////////////////////////////////////////////////////////
+	//							AnimationStateEvent							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct AnimationStateEvent
+	{
+		std::string RegisterKeyName;
+		fq::game_module::GameObject* gameObject;
+	};
+
+	struct AnimationStateExitEvent
+	{
+		fq::game_module::GameObject* gameObject;
+	};
 }
 
