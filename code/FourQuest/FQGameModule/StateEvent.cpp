@@ -2,13 +2,6 @@
 
 namespace fq::game_module
 {
-	StateEvent::StateEvent()
-	{
-	}
-	StateEvent::~StateEvent()
-	{
-	}
-
 	std::shared_ptr<Component> StateEvent::Clone(std::shared_ptr<Component> clone) const
 	{
 		auto cloneAnimator = std::dynamic_pointer_cast<StateEvent>(clone);

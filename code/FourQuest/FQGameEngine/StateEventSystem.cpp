@@ -10,9 +10,16 @@
 
 fq::game_engine::StateEventSystem::StateEventSystem()
 	: mGameProcess(nullptr)
+	, mStateEvent(nullptr)
+	, mInstantiatePrefabLifeTimeInfos{}
+	, mPlaySoundLifeTimeInfos{}
+	, mInstantiatePrefabMap{}
+	, mPlaySoundInfoMap{}
 	, mRandomDevice()
 	, mGenerarator(mRandomDevice())
 {
+	mInstantiatePrefabLifeTimeInfos.reserve(RESERVE_SIZE);
+	mPlaySoundLifeTimeInfos.reserve(RESERVE_SIZE);
 }
 
 fq::game_engine::StateEventSystem::~StateEventSystem()
@@ -22,6 +29,7 @@ fq::game_engine::StateEventSystem::~StateEventSystem()
 void fq::game_engine::StateEventSystem::OnLoadScene()
 {
 	mInstantiatePrefabMap.clear();
+	mPlaySoundInfoMap.clear();
 
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
@@ -37,6 +45,12 @@ void fq::game_engine::StateEventSystem::OnLoadScene()
 		for (const auto& instantiatePrefab : mStateEvent->GetInstantiatePrefabs())
 		{
 			mInstantiatePrefabMap.insert({ instantiatePrefab.FunctionName, instantiatePrefab });
+		}
+
+		for (const auto& playSoundInfo : mStateEvent->GetPlaySoundInfos())
+		{
+			mPlaySoundInfoMap.insert({ playSoundInfo.FunctionName, playSoundInfo });
+			mGameProcess->mSoundManager->LoadSound(playSoundInfo.FunctionName, playSoundInfo.SoundPath);
 		}
 	}
 }
@@ -60,6 +74,7 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 					return;
 				}
 
+				// 인스턴스 프리팹 처리
 				{
 					auto find = mInstantiatePrefabMap.find(data.RegisterKeyName);
 
@@ -88,10 +103,17 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 						auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 						scene->AddGameObject(effectObject);
 
-						mGameObjectLifeTimes.push_back({ data.gameObject, effectObject, instantiatePrefab.DeleteTime, instantiatePrefab.bUseDeleteByStateEnd });
+						InstantiatePrefabLifeTimeInfo InstantiatePrefabLifeTimeInfo;
+						InstantiatePrefabLifeTimeInfo.OnwerGameObject = data.gameObject;
+						InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject = effectObject;
+						InstantiatePrefabLifeTimeInfo.LifeTime = instantiatePrefab.DeleteTime;
+						InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd = instantiatePrefab.bUseDeleteByStateEnd;
+
+						mInstantiatePrefabLifeTimeInfos.push_back(InstantiatePrefabLifeTimeInfo);
 					}
 				}
 
+				// 사운드 이벤트 처리
 				{
 					auto find = mPlaySoundInfoMap.find(data.RegisterKeyName);
 
@@ -101,7 +123,13 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 
 						if (playerSoundInfo.bUseAutoDelete)
 						{
-							// 자료구조에 저장
+							PlaySoundLifeTimeInfo playSoundLifeTimeInfo;
+							playSoundLifeTimeInfo.OnwerGameObject = data.gameObject;
+							playSoundLifeTimeInfo.Channel = playerSoundInfo.Channel;
+							playSoundLifeTimeInfo.LifeTime = playerSoundInfo.DeleteTime;
+							playSoundLifeTimeInfo.bUseDeleteStateEnd = playerSoundInfo.bUseDeleteByStateEnd;
+
+							mPlaySoundLifeTimeInfos.push_back(playSoundLifeTimeInfo);
 						}
 
 						mGameProcess->mSoundManager->Play(playerSoundInfo.FunctionName, playerSoundInfo.bIsLoop, playerSoundInfo.Channel);
@@ -115,16 +143,32 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 			{
 				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
-				for (auto iter = mGameObjectLifeTimes.begin(); iter != mGameObjectLifeTimes.end();)
+				for (auto iter = mInstantiatePrefabLifeTimeInfos.begin(); iter != mInstantiatePrefabLifeTimeInfos.end();)
 				{
-					GameObjectLifeTime& gameObjectLifeTime = *iter;
+					const InstantiatePrefabLifeTimeInfo& InstantiatePrefabLifeTimeInfo = *iter;
 
-					if (gameObjectLifeTime.bUseDeleteStateEnd && data.gameObject == gameObjectLifeTime.OnwerGameObject)
+					if (InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd
+						&& data.gameObject == InstantiatePrefabLifeTimeInfo.OnwerGameObject)
 					{
-						scene->DestroyGameObject(gameObjectLifeTime.gameObject.get());
-						iter = mGameObjectLifeTimes.erase(iter);
+						scene->DestroyGameObject(InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject.get());
+						iter = mInstantiatePrefabLifeTimeInfos.erase(iter);
 
 						break;
+					}
+					else
+					{
+						++iter;
+					}
+				}
+
+				for (auto iter = mPlaySoundLifeTimeInfos.begin(); iter != mPlaySoundLifeTimeInfos.end();)
+				{
+					const PlaySoundLifeTimeInfo& playSoundLifeTimeInfo = *iter;
+
+					if (playSoundLifeTimeInfo.bUseDeleteStateEnd)
+					{
+						mGameProcess->mSoundManager->StopChannel(playSoundLifeTimeInfo.Channel);
+						iter = mPlaySoundLifeTimeInfos.erase(iter);
 					}
 					else
 					{
@@ -139,16 +183,17 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 	using namespace fq::game_module;
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
-	for (auto iter = mGameObjectLifeTimes.begin(); iter != mGameObjectLifeTimes.end();)
+	for (auto iter = mInstantiatePrefabLifeTimeInfos.begin(); iter != mInstantiatePrefabLifeTimeInfos.end();)
 	{
-		GameObjectLifeTime& gameObjectLifeTime = *iter;
+		InstantiatePrefabLifeTimeInfo& InstantiatePrefabLifeTimeInfo = *iter;
 
-		gameObjectLifeTime.LifeTime -= dt;
+		InstantiatePrefabLifeTimeInfo.LifeTime -= dt;
 
-		if (gameObjectLifeTime.LifeTime < 0 || gameObjectLifeTime.gameObject->IsDestroyed())
+		if (InstantiatePrefabLifeTimeInfo.LifeTime < 0
+			|| InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject->IsDestroyed())
 		{
-			scene->DestroyGameObject(gameObjectLifeTime.gameObject.get());
-			iter = mGameObjectLifeTimes.erase(iter);
+			scene->DestroyGameObject(InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject.get());
+			iter = mInstantiatePrefabLifeTimeInfos.erase(iter);
 		}
 		else
 		{
@@ -156,16 +201,16 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 		}
 	}
 
-	for (auto iter = mPlaySoundLifeTimes.begin(); iter != mPlaySoundLifeTimes.end();)
+	for (auto iter = mPlaySoundLifeTimeInfos.begin(); iter != mPlaySoundLifeTimeInfos.end();)
 	{
-		PlaySoundLifeTime& playSoundLifeTime = *iter;
+		PlaySoundLifeTimeInfo& playSoundLifeTimeInfo = *iter;
 
-		playSoundLifeTime.LifeTime -= dt;
+		playSoundLifeTimeInfo.LifeTime -= dt;
 
-		if (playSoundLifeTime.LifeTime < 0)
+		if (playSoundLifeTimeInfo.LifeTime < 0)
 		{
-			mGameProcess->mSoundManager->StopChannel(playSoundLifeTime.Channel);
-			iter = mPlaySoundLifeTimes.erase(iter);
+			mGameProcess->mSoundManager->StopChannel(playSoundLifeTimeInfo.Channel);
+			iter = mPlaySoundLifeTimeInfos.erase(iter);
 		}
 		else
 		{

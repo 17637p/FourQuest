@@ -30,23 +30,17 @@ namespace fq::game_engine
 	private:
 		DirectX::SimpleMath::Vector3 genarateRenderVector(const DirectX::SimpleMath::Vector3& random);
 
+
 	private:
-		GameProcess* mGameProcess;
-		EventHandler mOnLoadSceneHandler;
-		EventHandler mOnProcessStateEvent;
-		EventHandler mOnProcessStateExitEvent;
-
-		fq::game_module::StateEvent* mStateEvent;
-
-		struct GameObjectLifeTime
+		struct InstantiatePrefabLifeTimeInfo
 		{
 			fq::game_module::GameObject* OnwerGameObject;
-			std::shared_ptr<fq::game_module::GameObject> gameObject;
+			std::shared_ptr<fq::game_module::GameObject> InstantiatePrefabObject;
 			float LifeTime;
 			bool bUseDeleteStateEnd;
 		};
 
-		struct PlaySoundLifeTime
+		struct PlaySoundLifeTimeInfo
 		{
 			fq::game_module::GameObject* OnwerGameObject;
 			int Channel;
@@ -54,8 +48,18 @@ namespace fq::game_engine
 			bool bUseDeleteStateEnd;
 		};
 
-		std::vector<GameObjectLifeTime> mGameObjectLifeTimes;
-		std::vector<PlaySoundLifeTime> mPlaySoundLifeTimes;
+	private:
+		enum { RESERVE_SIZE = 512 };
+
+		GameProcess* mGameProcess;
+		EventHandler mOnLoadSceneHandler;
+		EventHandler mOnProcessStateEvent;
+		EventHandler mOnProcessStateExitEvent;
+
+		fq::game_module::StateEvent* mStateEvent;
+
+		std::vector<InstantiatePrefabLifeTimeInfo> mInstantiatePrefabLifeTimeInfos;
+		std::vector<PlaySoundLifeTimeInfo> mPlaySoundLifeTimeInfos;
 		std::map<std::string, fq::game_module::StateEvent::InstantiatePrefab> mInstantiatePrefabMap;
 		std::map<std::string, fq::game_module::StateEvent::PlaySoundInfo> mPlaySoundInfoMap;
 

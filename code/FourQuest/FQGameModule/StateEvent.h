@@ -12,7 +12,7 @@ namespace fq::game_module
 	class StateEvent : public Component
 	{
 	public:
-		struct InstantiatePrefab // 현재 위치에서 프리팹을 생성해주는 이벤트를 던짐
+		struct InstantiatePrefab
 		{
 			std::string FunctionName;
 			PrefabResource PrefabResourceData;
@@ -21,9 +21,9 @@ namespace fq::game_module
 			bool bIsFollowingParentPosition = true;
 
 			// 삭제여부
-			bool bUseAutoDelete = true;
-			bool bUseDeleteByStateEnd = false;
-			float DeleteTime = 1.f;
+			bool bUseAutoDelete = true; // 상태변화나 시간에 따른 변화에 삭제될지 여부
+			bool bUseDeleteByStateEnd = false;  // 상태변화에 따라 삭제될지 여부
+			float DeleteTime = 1.f;  // 삭제될 시간
 
 			// 오프셋
 			DirectX::SimpleMath::Vector3 Scale = { 1, 1, 1 };
@@ -37,23 +37,24 @@ namespace fq::game_module
 			std::string SoundPath;
 
 			// 삭제여부
-			bool bUseAutoDelete = true;
-			bool bUseDeleteByStateEnd = false;
-			float DeleteTime = 1.f;
+			bool bUseAutoDelete = false; // 상태변화나 시간에 따른 변화에 삭제될지 여부
+			bool bUseDeleteByStateEnd = false; // 상태변화에 따라 삭제될지 여부
+			float DeleteTime = 1.f; // 삭제될 시간
 
 			// 반복여부
-			bool bIsLoop;
+			bool bIsLoop = false;
 
-			int Channel; // 0 ~ 31 
+			unsigned int Channel = 0; // 0 ~ 31 
 		};
 
 	public:
-		StateEvent();
-		~StateEvent();
+		StateEvent() = default;
+		~StateEvent() = default;
 
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		const std::vector<InstantiatePrefab>& GetInstantiatePrefabs() const { return mInstantiatePrefabs; }
+		const std::vector<PlaySoundInfo>& GetPlaySoundInfos() const { return mPlayerSoundInfos; }
 
 	private:
 		entt::meta_handle GetHandle() override;
