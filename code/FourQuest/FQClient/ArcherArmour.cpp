@@ -6,7 +6,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
 #include "Player.h"
-#include "Attack.h"
+#include "ArrowAttack.h"
 #include "DamageCalculation.h"
 #include "LinearAttack.h"
 
@@ -29,34 +29,50 @@ namespace fq::client
 	{
 	}
 
-	void ArcherArmour::EmitWeakAttack()
+	void ArcherArmour::EmitmMultiShotAttack()
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mWeakAttack);
 		auto& attackObj = *(instance.begin());
 
-		auto attackComponent = attackObj->GetComponent<client::Attack>();
+		auto attackComponent = attackObj->GetComponent<client::ArrowAttack>();
 		auto rigidBodyComponent = attackObj->GetComponent<fq::game_module::RigidBody>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
 		auto foward = mTransform->GetLookAtVector();
+		DirectX::SimpleMath::Vector3 position{};
+
+		for (const auto& child : mTransform->GetChildren())
+		{
+			auto name = child->GetGameObject()->GetName();
+
+			if (name.find("WeaponeSocket") != std::string::npos)
+			{
+				auto name = child->GetGameObject()->GetName();
+				auto transform = child->GetComponent<game_module::Transform>();
+
+				if (name.find("Bow") != std::string::npos)
+				{
+					position = transform->GetWorldPosition();
+					break;
+				}
+			}
+		}
 
 		// 공격 트랜스폼 설정
-		DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
 		DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
-		pos.y += 1.f;
-		attackT->GenerateWorld(pos, rotation, attackT->GetWorldScale());
+		attackT->GenerateWorld(position, rotation, attackT->GetWorldScale());
 
 		// 공격 설정
-		AttackInfo attackInfo{};
-		attackInfo.damage = dc::GetShieldDamage(mPlayer->GetAttackPower());
+		ArrowAttackInfo attackInfo{};
+		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
+		attackInfo.weakProjectileVelocity = 1.f;
 		attackInfo.attacker = GetGameObject();
 		attackInfo.remainingAttackCount = 1;
-		attackInfo.type = EKnockBackType::None;
 		attackInfo.attackDirection = foward;
-		attackInfo.attackPosition = mTransform->GetWorldPosition();
+		attackInfo.attackTransform = attackT->GetWorldMatrix();
+		attackInfo.bIsStrongAttack = false;
+		attackInfo.lifeTime = 3.f;
 		attackInfo.hitSound = "A_WeakAttack_Hit";
 		attackComponent->Set(attackInfo);
-
-		rigidBodyComponent->SetLinearVelocity(foward * mArrowPower);
 
 		// ShieldAttack 소리
 		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
@@ -64,39 +80,66 @@ namespace fq::client
 		GetScene()->AddGameObject(attackObj);
 	}
 
-	void ArcherArmour::EmitStrongAttack()
+	void ArcherArmour::EmitStrongAttack(float chargingTime)
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttack);
 		auto& attackObj = *(instance.begin());
 
-		// 공격 설정
-		AttackInfo attackInfo;
-		auto attackComponent = attackObj->GetComponent<client::Attack>();
+		auto attackComponent = attackObj->GetComponent<client::ArrowAttack>();
+		auto rigidBodyComponent = attackObj->GetComponent<fq::game_module::RigidBody>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
+		auto foward = mTransform->GetLookAtVector();
+		DirectX::SimpleMath::Vector3 position{};
 
+		for (const auto& child : mTransform->GetChildren())
+		{
+			auto name = child->GetGameObject()->GetName();
+
+			if (name.find("WeaponeSocket") != std::string::npos)
+			{
+				auto name = child->GetGameObject()->GetName();
+				auto transform = child->GetComponent<game_module::Transform>();
+
+				if (name.find("Bow") != std::string::npos)
+				{
+					position = transform->GetWorldPosition();
+					break;
+				}
+			}
+		}
+
+		// 공격 트랜스폼 설정
+		DirectX::SimpleMath::Quaternion rotation = mTransform->GetWorldRotation();
+		attackT->GenerateWorld(position, rotation, attackT->GetWorldScale());
+
+		// 공격 설정
+		ArrowAttackInfo attackInfo{};
+		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
+		attackInfo.weakProjectileVelocity = 1.f;
+		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
+		attackInfo.strongProjectileVelocity = 1.5f;
 		attackInfo.attacker = GetGameObject();
-		float attackPower = mPlayer->GetAttackPower();
-		attackInfo.damage = dc::GetMagicBallDamage(attackPower);
-		attackInfo.bIsInfinite = false;
-		attackInfo.remainingAttackCount = 1;
-		attackInfo.hitSound = "A_StrongAttack_Hit";
+		attackInfo.attackDirection = foward;
+		attackInfo.attackTransform = attackT->GetWorldMatrix();
+		attackInfo.lifeTime = 3.f;
+
+		if (mChangeChargingTime <= chargingTime)
+		{
+			attackInfo.bIsStrongAttack = true;
+			attackInfo.remainingAttackCount = 0b11111111;
+			attackInfo.hitSound = "A_StrongAttack_Hit";
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
+		}
+		else
+		{
+			attackInfo.bIsStrongAttack = false;
+			attackInfo.remainingAttackCount = 1;
+			attackInfo.hitSound = "A_WeakAttack_Hit";
+			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
+		}
 		attackComponent->Set(attackInfo);
 
-		// 공격 위치 설정
-		DirectX::SimpleMath::Vector3 pos = mTransform->GetWorldPosition();
-		pos.y += 1.f;
-		attackT->SetLocalPosition(pos);
-
-		// 공격 방향 설정
-		auto linearAttack = attackObj->GetComponent<LinearAttack>();
-
-		auto direction = DirectX::SimpleMath::Matrix::CreateFromQuaternion(mTransform->GetWorldRotation()).Forward();
-		direction.Normalize();
-		linearAttack->SetMoveSpeed(mArrowPower);
-		linearAttack->SetMoveDirection(direction);
-
 		// MagicBall Attack 사운드  
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
 
 		GetScene()->AddGameObject(attackObj);
 	}

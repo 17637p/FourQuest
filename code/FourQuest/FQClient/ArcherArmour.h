@@ -20,8 +20,8 @@ namespace fq::client
 		ArcherArmour();
 		~ArcherArmour();
 
-		void EmitWeakAttack();
-		void EmitStrongAttack();
+		void EmitmMultiShotAttack();
+		void EmitStrongAttack(float chargingTime);
 		void EmitDash();
 
 	private:
@@ -43,8 +43,12 @@ namespace fq::client
 		float mDashCoolTime;
 		float mDashElapsedTime;
 		float mArrowPower;
+		float mChangeChargingTime;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;
+		game_module::PrefabResource mStrongAttackChargingEffect;
+		game_module::PrefabResource mStrongAttackLaunchEffect;
+		game_module::PrefabResource mDashEffect;
 	};
 }

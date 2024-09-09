@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../FQGameModule/Component.h"
+#include "../FQGameModule/GameModuleEnum.h"
+#include "../FQGameModule/GameModule.h"
+
+#include "AttackDefine.h"
 
 namespace fq::client
 {
@@ -10,29 +13,51 @@ namespace fq::client
 		ArrowAttack();
 		~ArrowAttack();
 
-		virtual void OnFixedUpdate(float dt) override;
-
+		/// <summary>
+		/// 화살 오브젝트가 상대 오브젝트에 박히는 함수
+		/// </summary>
 		virtual void OnTriggerEnter(const game_module::Collision& collision) override;
-		virtual void OnTriggerStay(const game_module::Collision& collision) override;
-		virtual void OnTriggerExit(const game_module::Collision& collision) override;
 
-		unsigned int GetIsBlock() const { return mMaxBlockCount; }
-		void SetIsBlock(unsigned int maxBlockCount) { mMaxBlockCount = maxBlockCount; }
+		/// <summary>
+		/// 화살 공격 세팅
+		/// </summary>
+		void Set(const ArrowAttackInfo& info);
+
+		/// <summary>
+		/// 화살 피격 사운드 재생
+		/// </summary>
+		void PlayHitSound();
+
 		bool GetIsStrongAttack() const { return mbIsStrongAttack; }
 		void SetIsStrongAttack(bool isStrongAttack) { mbIsStrongAttack = isStrongAttack; }
+		float GetWeakAttackPower() const { return mWeakAttackPower; }
+		void SetWeakAttackPower(float attackPower) { mWeakAttackPower = attackPower; }
+		float GetStrongAttackPower() const { return mStrongAttackPower; }
+		void SetStrongAttackPower(float attackPower) { mStrongAttackPower = attackPower; }
+		int GetIsBlock() const { return mMaxBlockCount; }
+		void SetIsBlock(int maxBlockCount) { mMaxBlockCount = maxBlockCount; }
 		float GetLifeTime() const { return mLifeTime; }
 		void SetLifeTime(float time) { mLifeTime = time; }
 
 	private:
+		/// <summary>
+		/// 화살의 라이프 타임을 계산하고 시간이 지나면 화살 오브젝트 삭제
+		/// </summary>
+		void OnUpdate(float dt) override;
+
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 	private:
 		// 강공격, 약공격 공격력 및 최대 관통 갯수
-		bool mbIsStrongAttack;
+		bool  mbIsStrongAttack;
 		float mWeakAttackPower;
 		float mStrongAttackPower;
-		unsigned int mMaxBlockCount;
+		float mWeakProjectileVelocity;
+		float mStrongProjectileVelocity;
+		DirectX::SimpleMath::Vector3 mAttackDirection;
+		DirectX::SimpleMath::Matrix  mAttackTransform;
+		int mMaxBlockCount;
 
 		// 생존 시간
 		float mLifeElapsedTime;
@@ -42,5 +67,4 @@ namespace fq::client
 		fq::game_module::GameObject* mAttacker;
 		std::string mHitSound;
 	};
-
 }
