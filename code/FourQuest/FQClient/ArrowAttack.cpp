@@ -9,9 +9,7 @@
 namespace fq::client
 {
 	ArrowAttack::ArrowAttack()
-		: mbIsBlock(false)
-		, mbIsStrongAttack(false)
-		, mDurationTime()
+		: mbIsStrongAttack(false)
 		, mLifeTime(1.f)
 	{
 	}
@@ -22,15 +20,15 @@ namespace fq::client
 
 	void ArrowAttack::OnFixedUpdate(float dt)
 	{
-		if (mbIsBlock == true)
-		{
-			mDurationTime += dt;
+		//if (mbIsBlock == true)
+		//{
+		//	mDurationTime += dt;
 
-			if (mDurationTime >= mLifeTime)
-			{
-				GetScene()->DestroyGameObject(GetGameObject());
-			}
-		}
+		//	if (mDurationTime >= mLifeTime)
+		//	{
+		//		GetScene()->DestroyGameObject(GetGameObject());
+		//	}
+		//}
 	}
 
 	void ArrowAttack::OnTriggerEnter(const game_module::Collision& collision)
@@ -44,7 +42,6 @@ namespace fq::client
 		GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
 		GetGameObject()->RemoveComponent<fq::game_module::CapsuleCollider>();
 
-		mbIsBlock = true;
 	}
 
 	void ArrowAttack::OnTriggerStay(const game_module::Collision& collision)

@@ -16,8 +16,8 @@ namespace fq::client
 		virtual void OnTriggerStay(const game_module::Collision& collision) override;
 		virtual void OnTriggerExit(const game_module::Collision& collision) override;
 
-		bool GetIsBlock() const { return mbIsBlock; }
-		void SetIsBlock(bool isBlock) { mbIsBlock = isBlock; }
+		unsigned int GetIsBlock() const { return mMaxBlockCount; }
+		void SetIsBlock(unsigned int maxBlockCount) { mMaxBlockCount = maxBlockCount; }
 		bool GetIsStrongAttack() const { return mbIsStrongAttack; }
 		void SetIsStrongAttack(bool isStrongAttack) { mbIsStrongAttack = isStrongAttack; }
 		float GetLifeTime() const { return mLifeTime; }
@@ -28,11 +28,19 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 	private:
-		bool mbIsBlock;
+		// 강공격, 약공격 공격력 및 최대 관통 갯수
 		bool mbIsStrongAttack;
+		float mWeakAttackPower;
+		float mStrongAttackPower;
+		unsigned int mMaxBlockCount;
 
-		float mDurationTime;
+		// 생존 시간
+		float mLifeElapsedTime;
 		float mLifeTime;
+
+		// 공격을 하는 객체 
+		fq::game_module::GameObject* mAttacker;
+		std::string mHitSound;
 	};
 
 }
