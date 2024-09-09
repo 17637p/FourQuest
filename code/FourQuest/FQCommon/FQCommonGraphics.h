@@ -112,7 +112,6 @@ namespace fq::graphics
 		float ScaleY = 1.f;
 
 		bool isCenter = false;
-		bool isOnText = false;
 
 		DirectX::SimpleMath::Color Color;
 	};

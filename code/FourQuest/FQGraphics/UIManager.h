@@ -87,8 +87,8 @@ namespace fq::graphics
 		void initializeImage();
 
 		void draw();
-		void drawText(const fq::graphics::ITextObject* textObject);
-		void drawImage(const IImageObject* imageObject);
+		void drawText(fq::graphics::ITextObject* textObject);
+		void drawImage(IImageObject* imageObject);
 
 		void drawAllText();
 		void drawAllImage(bool isOnText);
@@ -127,7 +127,9 @@ namespace fq::graphics
 
 		std::vector<IImageObject*> mImages;
 		std::vector<ITextObject*> mTexts;
-		bool mIsSorted;
+		bool mIsSortedImage;
+		bool mIsSortedText;
+		bool mIsSortedAll;
 	};
 }
 
