@@ -28,6 +28,7 @@
 #include "PathFindingSystem.h"
 #include "LoadingSystem.h"
 #include "ResourceSystem.h"
+#include "StateEventSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -105,6 +106,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
+	mGameProcess->mStateEventSystem->Initialize(mGameProcess.get());
 
 	// Editor ÃÊ±âÈ­
 	InitializeEditor();
@@ -223,6 +225,7 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 			mGameProcess->mUISystem->Update();
+			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//

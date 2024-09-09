@@ -88,6 +88,17 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		}
 		bool isLoof = value.at("isLoof").get<bool>();
 
+		std::vector<AnimationStateNode::Event> events;
+
+		for (const auto& eventJson : value["Events"])
+		{
+			AnimationStateNode::Event eventInfo;
+			eventInfo.FunctionName = eventJson["FunctionName"];
+			eventInfo.Time = eventJson["Time"].get<float>();
+
+			events.push_back(eventInfo);
+		}
+
 		stateNode.SetType(AnimationStateNode::Type::State);
 		stateNode.SetAnimationKey(stateName);
 		stateNode.SetPlayBackSpeed(playbackSpeed);
@@ -95,6 +106,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		stateNode.SetStartTimePos(startTimepos);
 		stateNode.SetDuration(duration);
 		stateNode.SetLoof(isLoof);
+		stateNode.SetEvents(events);
 
 		// StateBehaviours
 		auto& stateMap = stateNode.GetStateBehaviourMap();
@@ -229,6 +241,13 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		stateJson["startTimePos"] = stateNode.GetStartTimePos();
 		stateJson["duration"] = stateNode.GetDuration();
 		stateJson["isLoof"] = stateNode.IsLoof();
+
+		const auto events = stateNode.GetEvents();
+		for (size_t i = 0; i < events.size(); ++i)
+		{
+			stateJson["Events"][i]["FunctionName"] = events[i].FunctionName;
+			stateJson["Events"][i]["Time"] = events[i].Time;
+		}
 
 		// StateBehaviour
 		stateJson["stateBehaviours"] = serializeStateBehaviours(stateNode);

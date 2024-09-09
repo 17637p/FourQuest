@@ -12,6 +12,7 @@
 #include "MeleeMonster.h"
 #include "BossMonster.h"
 #include "PlantMonster.h"
+#include "Player.h"
 
 fq::client::SpawnerGroup::SpawnerGroup()
 	:mID(0),
@@ -173,8 +174,10 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 				// monster 이름 변경
 				monster->SetName(rule.Name + std::to_string(mCurSpawnMonsterNum));
 				// Monster Spawner 위치로 이동
-				monster->GetTransform()->SetLocalPosition(children[i]->GetTransform()->GetLocalPosition());
-				
+				DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetLocalPosition();
+				monster->GetTransform()->SetLocalPosition(spawnPos);
+				mAddedMonsterList.push_back(monster);
+
 				GetScene()->AddGameObject(monster);
 				mCurSpawnMonsterNum++;
 			}
@@ -411,4 +414,45 @@ fq::client::SpawnerGroup& fq::client::SpawnerGroup::operator=(const SpawnerGroup
 	mMonsterManager = other.mMonsterManager;
 
 	return *this;
+}
+
+void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
+{
+	for (auto& monster : mAddedMonsterList)
+	{
+		// Target 설정 위해
+		game_module::GameObject* nearestPlayer = nullptr;
+		float minDistance = FLT_MAX;
+
+		for (auto& player : GetScene()->GetComponentView<Player>())
+		{
+			DirectX::SimpleMath::Vector3 playerPos = player.GetTransform()->GetWorldPosition();
+			DirectX::SimpleMath::Vector3 monsterPos = player.GetTransform()->GetWorldPosition();
+			float distance = DirectX::SimpleMath::Vector3::Distance(playerPos, monsterPos);
+			if (distance < minDistance)
+			{
+				minDistance = distance;
+				nearestPlayer = &player;
+			}
+		}
+
+		auto isMelee = monster->GetComponent<MeleeMonster>();
+		auto isBoss = monster->GetComponent<BossMonster>();
+		auto isPlant = monster->GetComponent<PlantMonster>();
+		std::shared_ptr<game_module::GameObject> target;
+		if (isMelee)
+		{
+			isMelee->SetTarget(nearestPlayer);
+		}
+		else if (isBoss)
+		{
+			isBoss->SetTarget(nearestPlayer);
+		}
+		else if (isPlant)
+		{
+			isPlant->SetTarget(nearestPlayer);
+		}
+	}
+
+	mAddedMonsterList.clear();
 }

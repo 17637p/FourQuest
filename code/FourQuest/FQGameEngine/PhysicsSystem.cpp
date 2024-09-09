@@ -129,6 +129,7 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
 	removeCollider(event.object);
+	removeArticulation(event.object);
 }
 
 void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObject& event)
@@ -452,6 +453,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		auto articulation = object->GetComponent<Articulation>();
 		articulation->Load();
+		articulation->SetArticulationID(id);
 		auto articulationData = articulation->GetArticulationData();
 
 		ArticulationInfo articulationInfo;
@@ -621,7 +623,24 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
+}
 
+void fq::game_engine::PhysicsSystem::removeArticulation(fq::game_module::GameObject* object)
+{
+	using namespace fq::game_module;
+	if (!object->HasComponent<RigidBody>())
+	{
+		return;
+	}
+
+	if (object->HasComponent<Articulation>())
+	{
+		auto articulation = object->GetComponent<Articulation>();
+		auto id = articulation->GetID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)

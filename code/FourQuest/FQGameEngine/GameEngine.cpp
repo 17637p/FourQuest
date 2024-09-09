@@ -28,6 +28,7 @@
 #include "LightProbeSystem.h"
 #include "ResourceSystem.h"
 #include "LoadingSystem.h"
+#include "StateEventSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -105,6 +106,7 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
+	mGameProcess->mStateEventSystem->Initialize(mGameProcess.get());
 
 	mLightMap->Initialize(mGameProcess.get());
 
@@ -212,6 +214,7 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 			mGameProcess->mUISystem->Update();
+			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//

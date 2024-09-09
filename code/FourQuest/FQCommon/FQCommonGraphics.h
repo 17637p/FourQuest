@@ -152,6 +152,8 @@ namespace fq::graphics
 		ETextAlign Align = ETextAlign::LeftTop;
 		ETextBoxAlign BoxAlign = ETextBoxAlign::CenterCenter;
 
+		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
+
 		bool IsRender = true;
 	};
 
