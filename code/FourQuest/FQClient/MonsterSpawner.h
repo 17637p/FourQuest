@@ -53,7 +53,7 @@ namespace fq::client
 		float mMaxHp;
 
 		fq::game_module::PrefabResource mMonster;
-		
+
 		friend void RegisterMetaData();
 	};
 }

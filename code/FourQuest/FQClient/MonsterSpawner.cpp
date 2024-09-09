@@ -46,7 +46,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::MonsterSpawner::Clone(st
 void fq::client::MonsterSpawner::OnUpdate(float dt)
 {
 	mSpawnElapsedTime = std::max(mSpawnElapsedTime - dt, 0.f);
-
+	 
 	// 몬스터 생성
 	if (mSpawnElapsedTime == 0.f)
 	{
@@ -54,7 +54,6 @@ void fq::client::MonsterSpawner::OnUpdate(float dt)
 		mbIsSpawnState = true;
 		mAnimator->SetParameterTrigger("Spawn");
 	}
-
 
 	auto agent = GetComponent<game_module::NavigationAgent>();
 	if (agent)
@@ -137,6 +136,9 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 				mAnimator->SetParameterTrigger("OnHit");
 			}
 
+			// 몬스터 스포너의 타겟 설정
+			mMonsterGroup->SetTarget(playerAttack->GetAttacker());
+
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
@@ -163,3 +165,4 @@ void fq::client::MonsterSpawner::Destroy()
 
 	GetScene()->DestroyGameObject(GetGameObject());
 }
+
