@@ -86,6 +86,10 @@ namespace fq::graphics
 		void initializeText();
 		void initializeImage();
 
+		void draw();
+		void drawText(const fq::graphics::ITextObject* textObject);
+		void drawImage(const IImageObject* imageObject);
+
 		void drawAllText();
 		void drawAllImage(bool isOnText);
 

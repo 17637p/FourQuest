@@ -141,6 +141,12 @@ void fq::client::BossMonster::SetRandomTarget()
 
 void fq::client::BossMonster::SetTarget(game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	if (target == nullptr)
 	{
 		mTarget = nullptr;

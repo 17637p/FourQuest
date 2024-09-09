@@ -56,7 +56,10 @@ void fq::client::MonsterSpawner::OnUpdate(float dt)
 	}
 
 	auto agent = GetComponent<game_module::NavigationAgent>();
-	agent->SetAgentState();
+	if (agent)
+	{
+		agent->SetAgentState();
+	}
 }
 
 void fq::client::MonsterSpawner::OnStart()
