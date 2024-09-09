@@ -160,7 +160,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 		hr = mDWriteFactory->CreateTextFormat(
 			path.c_str(),
 			NULL,
-			DWRITE_FONT_WEIGHT_NORMAL,
+			DWRITE_FONT_WEIGHT_BOLD,
 			DWRITE_FONT_STYLE_NORMAL,
 			DWRITE_FONT_STRETCH_NORMAL,
 			fontSize,
@@ -708,6 +708,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 	newImageObject->SetRenderMode(uiInfo.isCenter);
 
 	newImageObject->SetColor(uiInfo.Color);
+	newImageObject->SetIsRender(uiInfo.isRender);
 
 	// bitmap에서 찾은 다음에 없으면 만들 것
 	std::filesystem::path stringToWstringPath = uiInfo.ImagePath;
