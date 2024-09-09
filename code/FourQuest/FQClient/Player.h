@@ -32,8 +32,8 @@ namespace fq::client
 
 		float GetAttackPower() const { return mAttackPower; }
 		float GetHPRatio() const { return mHp / mMaxHp; }
-		float GetSoultStackRatio() const { return mSoulStack / mMaxSoulStack; }
-		float GetPlayerID() const;
+		float GetSoultGaugeRatio() const { return mSoulGauge / mMaxSoulGauge; }
+		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 
@@ -75,9 +75,14 @@ namespace fq::client
 		/// <summary>
 		/// 소울 스택을 더합니다 
 		/// </summary>
-		void AddSoulStack(float stack);
+		void AddSoulGauge(float soul);
 
 		void SetHp(float hp);
+
+		/// <summary>
+		/// 소울 공격이 가능한 상태인지 확인합니다.
+		/// </summary>
+		bool CanUseSoulAttack()const;
 
 	private:
 		void processInput();
@@ -104,8 +109,8 @@ namespace fq::client
 
 		float mMaxHp; // 최대 체력
 		float mHp; // 현재 체력
-		float mMaxSoulStack; // 최대 소울 게이지
-		float mSoulStack; // 소울 게이지
+		float mMaxSoulGauge; // 최대 소울 게이지
+		float mSoulGauge; // 소울 게이지
 		float mAttackPower; // 공격력
 		float mAttackSpeed; // 공격속도
 

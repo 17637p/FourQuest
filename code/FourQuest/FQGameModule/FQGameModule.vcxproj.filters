@@ -99,9 +99,6 @@
     <Filter Include="include\11.SkyBox">
       <UniqueIdentifier>{9c08872f-78ae-4e48-9037-60c014459e3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\11.SkyBox">
-      <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\08.Prefab">
       <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
     </Filter>
@@ -122,6 +119,9 @@
     </Filter>
     <Filter Include="src\01.EntityComponent\Sequence\Track">
       <UniqueIdentifier>{7eaee9aa-5888-47c0-abe7-b7aa461e1cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.SkyBox">
+      <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="StateEvent.h">
       <Filter>include\04.Event</Filter>
+	</ClInclude>
+	<ClInclude Include="SoundEnum.h">
+      <Filter>include\05.Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

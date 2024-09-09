@@ -135,6 +135,7 @@ namespace fq::physics
 		auto& controller = mCCTmap.find(id)->second;
 		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
 
+		controller->SetMoveRestriction(movementData.restriction);
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
 	}

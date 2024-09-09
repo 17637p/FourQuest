@@ -6,6 +6,7 @@
 
 fq::client::BowSoulAttackState::BowSoulAttackState()
 	: mAttackElapsedTime(0.f)
+	, mAttackDuration(0.f)
 {
 
 }
@@ -25,6 +26,7 @@ void fq::client::BowSoulAttackState::OnStateEnter(game_module::Animator& animato
 
 	auto player = animator.GetComponent<Player>();
 	player->EquipSoulWeapone();
+	player->AddSoulGauge(-PlayerSoulVariable::SoulBowAttackCost);
 }
 
 void fq::client::BowSoulAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)

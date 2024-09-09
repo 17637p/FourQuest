@@ -861,7 +861,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
+			moveData.restriction = controller->GetMoveRestrction();
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
+
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{

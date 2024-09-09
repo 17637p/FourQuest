@@ -21,8 +21,8 @@ fq::client::Player::Player()
 	, mController(nullptr)
 	, mHp(0.f)
 	, mMaxHp(0.f)
-	, mMaxSoulStack(0.f)
-	, mSoulStack(0.f)
+	, mMaxSoulGauge(100.f)
+	, mSoulGauge(0.f)
 	, mInvincibleTime(1.f)
 	, mInvincibleElapsedTime(0.f)
 	, mAnimator(nullptr)
@@ -68,7 +68,6 @@ void fq::client::Player::OnUpdate(float dt)
 void fq::client::Player::OnStart()
 {
 	mMaxHp = mHp;
-	mMaxSoulStack = mSoulStack;
 
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	mController = GetComponent<fq::game_module::CharacterController>();
@@ -138,7 +137,7 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 				if (radian >= DirectX::XM_PIDIV2)
 				{
-					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , 3 });
+					GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "K_Shield_Block", false , fq::sound::EChannel::SE });
 					return;
 				}
 			}
@@ -206,7 +205,7 @@ void fq::client::Player::processFeverTime(float dt)
 	}
 }
 
-float fq::client::Player::GetPlayerID() const
+int fq::client::Player::GetPlayerID() const
 {
 	return mController->GetControllerID();
 }
@@ -226,6 +225,7 @@ void fq::client::Player::EmitStaffSoulAttack()
 
 void fq::client::Player::EmitBowSoulAttack()
 {
+
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mBowSoulAttack);
 	auto& attackObj = *(instance.begin());
 
@@ -288,6 +288,7 @@ void fq::client::Player::EmitSwordSoulAttack()
 	attackInfo.knocBackPower = 20.f;
 	attackInfo.attackPosition = mTransform->GetWorldPosition();
 	attackComponent->Set(attackInfo);
+
 
 	GetScene()->AddGameObject(attackObj);
 }
@@ -407,13 +408,36 @@ void fq::client::Player::EmitAxeSoulAttack()
 	GetScene()->AddGameObject(attackObj);
 }
 
-void fq::client::Player::AddSoulStack(float stack)
+void fq::client::Player::AddSoulGauge(float soul)
 {
-	mSoulStack = std::min(mMaxSoulStack, mSoulStack + stack);
+	mSoulGauge = std::clamp( mSoulGauge + soul, 0.f, mMaxSoulGauge);
 }
 
 void fq::client::Player::SetHp(float hp)
 {
 	mHp = hp;
 	mMaxHp = hp;
+}
+
+bool fq::client::Player::CanUseSoulAttack() const
+{
+	float cost = 0.f;
+
+	switch (mSoulType)
+	{
+		case fq::client::ESoulType::Sword:
+			cost = PlayerSoulVariable::SoulSwordAttackCost;
+			break;
+		case fq::client::ESoulType::Staff:
+			cost = PlayerSoulVariable::SoulStaffAttackCost;
+			break;
+		case fq::client::ESoulType::Axe:
+			cost = PlayerSoulVariable::SoulAxeAttackCost;
+			break;
+		case fq::client::ESoulType::Bow:
+			cost = PlayerSoulVariable::SoulBowAttackCost;
+			break;
+	}
+
+	return mSoulGauge >= cost;
 }

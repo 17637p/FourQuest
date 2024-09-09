@@ -3,11 +3,11 @@
 
 namespace fq::client
 {
-	class ShiedlDashState :	public game_module::IStateBehaviour
+	class ShieldDashState :	public game_module::IStateBehaviour
 	{
 	public:
-		ShiedlDashState();
-		~ShiedlDashState();
+		ShieldDashState();
+		~ShieldDashState();
 		std::shared_ptr<IStateBehaviour> Clone() override;
 
 		void OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state) override;
