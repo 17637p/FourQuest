@@ -26,6 +26,10 @@
 #include "BowSoulAttackState.h"
 #include "AxeSoulAttackState.h"
 #include "AimAssist.h"
+#include "EBerserkerAttackType.h"
+#include "BerserkerArmour.h"
+#include "BerserkerAttackState.h"
+#include "BerserkerRushChargingState.h"
 
 // Monster
 #include "Monster.h"
@@ -323,6 +327,36 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DashAttack")
 		.base<game_module::Component>();
 
+	entt::meta<BerserkerArmour>()
+		.type("BerserkerArmour"_hs)
+		.prop(reflect::prop::Name, "BerserkerArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&BerserkerArmour::mAttackPrefab>("mAttackPrefab"_hs)
+		.prop(reflect::prop::Name, "mAttackPrefab")
+		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더")
+		.data<&BerserkerArmour::mLeftAttackHitSound>("LeftAttackHitSound"_hs)
+		.prop(reflect::prop::Name, "LeftAttackHitSound")
+		.prop(reflect::prop::Comment, u8"기본공격(1타)로 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mRightAttackHitSound>("RightAttackHitSound"_hs)
+		.prop(reflect::prop::Name, "RightAttackHitSound")
+		.prop(reflect::prop::Comment, u8"기본공격(2타)로 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mStrikeDownAttackHitSound>("StrikeDownAttackHitSound"_hs)
+		.prop(reflect::prop::Name, "StrikeDownAttackHitSound")
+		.prop(reflect::prop::Comment, u8"기본공격(3타)로 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundHitSound>("SwingAroundHitSound"_hs)
+		.prop(reflect::prop::Name, "SwingAroundHitSound")
+		.prop(reflect::prop::Comment, u8"휩쓸기로 인해 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushHitSound>("RushHitSound"_hs)
+		.prop(reflect::prop::Name, "RushHitSound")
+		.prop(reflect::prop::Comment, u8"돌진으로 인해 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundCoolTime>("mSwingAroundCoolTime"_hs)
+		.prop(reflect::prop::Name, "mSwingAroundCoolTime")
+		.prop(reflect::prop::Comment, u8"휩쓸기(A 버튼) 쿨타임")
+		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
+		.prop(reflect::prop::Name, "RushCoolTime")
+		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.base<game_module::Component>();
+
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
@@ -425,6 +459,59 @@ void fq::client::RegisterMetaData()
 	entt::meta<AxeSoulAttackState>()
 		.type("AxeSoulAttackState"_hs)
 		.prop(reflect::prop::Name, "AxeSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<EBerserkerAttackType>()
+		.prop(fq::reflect::prop::Name, "ArmourType")
+		.conv<std::underlying_type_t<EBerserkerAttackType>>()
+		.data<EBerserkerAttackType::Left>("Left"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Left")
+		.data<EBerserkerAttackType::Right>("Right"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Right")
+		.data<EBerserkerAttackType::StrikeDown>("StrikeDown"_hs) // 2
+		.prop(fq::reflect::prop::Name, "StrikeDown")
+		.data<EBerserkerAttackType::SwingAround>("SwingAround"_hs) // 3
+		.prop(fq::reflect::prop::Name, "SwingAround")
+		.data<EBerserkerAttackType::Rush>("Rush"_hs) // 4
+		.prop(fq::reflect::prop::Name, "Rush")
+		.data<EBerserkerAttackType::None>("None"_hs) // 5
+		.prop(fq::reflect::prop::Name, "None");
+
+	entt::meta<BerserkerAttackState>()
+		.type("BerserkerAttackState"_hs)
+		.prop(reflect::prop::Name, "BerserkerAttackState")
+		.data<&BerserkerAttackState::mAttackType>("AttackType"_hs)
+		.prop(reflect::prop::Name, "AttackType")
+		.prop(fq::reflect::prop::Comment, u8"공격 종류")
+		.data<&BerserkerAttackState::mAttackMovement>("AttackMovement"_hs)
+		.prop(reflect::prop::Name, "AttackMovement")
+		.prop(fq::reflect::prop::Comment, u8"공격 시 이동될 움직임")
+		.data<&BerserkerAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 생성 시기")
+		.data<&BerserkerAttackState::mColliderOffset>("ColliderOffset"_hs)
+		.prop(reflect::prop::Name, "ColliderOffset")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 오프셋")
+		.data<&BerserkerAttackState::mColliderScale>("ColliderScale"_hs)
+		.prop(reflect::prop::Name, "ColliderScale")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 스케일")
+		.data<&BerserkerAttackState::mKnocBackPower>("KnocBackPower"_hs)
+		.prop(reflect::prop::Name, "KnocBackPower")
+		.prop(fq::reflect::prop::Comment, u8"피격된 물체가 밀리는 정도")
+		.data<&BerserkerAttackState::mDestroyTime>("DestroyTime"_hs)
+		.prop(reflect::prop::Name, "DestroyTime")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 지속 시간")
+		.base<game_module::IStateBehaviour>();
+	
+	entt::meta<BerserkerRushChargingState>()
+		.type("BerserkerRushChargingState"_hs)
+		.prop(reflect::prop::Name, "BerserkerRushChargingState")
+		.data<&BerserkerRushChargingState::mChargingTime>("ChargingTime"_hs)
+		.prop(reflect::prop::Name, "ChargingTime")
+		.prop(fq::reflect::prop::Comment, u8"차징 대기 시간")
+		.data<&BerserkerRushChargingState::mChargingMinimumTime>("ChargingMinimumTime"_hs)
+		.prop(reflect::prop::Name, "ChargingMinimumTime")
+		.prop(fq::reflect::prop::Comment, u8"Rush 상태 진입을 위한 최소 차징 시간")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////

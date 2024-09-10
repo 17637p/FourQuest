@@ -81,7 +81,7 @@ void fq::game_module::CharacterController::OnFixedUpdate(float dt)
 	{
 		mbOnMove = input != Vector3::Zero;
 		GetScene()->GetEventManager()
-			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input , true});
+			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input , true });
 	}
 
 	float lengthSq = input.LengthSquared();
@@ -142,7 +142,7 @@ void fq::game_module::CharacterController::OnTriggerExit(const Collision& collis
 	--mCollisionCount;
 }
 
-void fq::game_module::CharacterController::SetPadInputRotation()
+void fq::game_module::CharacterController::SetPadInputRotation(EPadStickType padStickType/* = EPadStickType::Left */)
 {
 	using namespace DirectX::SimpleMath;
 
@@ -150,9 +150,20 @@ void fq::game_module::CharacterController::SetPadInputRotation()
 	Vector3 input = Vector3::Zero;
 
 	// 컨트롤러
-	input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
-	input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
-
+	switch (padStickType)
+	{
+	case fq::game_module::EPadStickType::Left:
+		input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftX);
+		input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::leftY);
+		break;
+	case fq::game_module::EPadStickType::Right: // 우측 방향키로 회전 값을 가지는 경우가 생겨 해당 부분 수정
+		input.x = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightX);
+		input.z = inputMgr->GetStickInfomation(mControllerID, EPadStick::rightY);
+		break;
+	default:
+		assert(false);
+		break;
+	}
 	input.Normalize();
 
 	if (input == Vector3::Backward)

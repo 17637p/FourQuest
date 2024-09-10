@@ -25,7 +25,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
-	, mAnimator(nullptr)	
+	, mAnimator(nullptr)
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mStartPosition{}
@@ -204,6 +204,41 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					knockBackDir.Normalize();
 
 					mKnockBack->Set(power, knockBackDir);
+				}
+				else if (type == EKnockBackType::TargetPositionAndDirectionByAngle)
+				{
+					// 현재는 콜라이더가 항상 플레이어 앞쪽에 위치함을 가정함
+					auto monsterPos = mTransform->GetWorldPosition();
+					monsterPos.y = 0.f;
+					auto attackPos = playerAttack->GetAttackPosition();
+					attackPos.y = 0.f;
+
+					auto pushedDir = monsterPos - attackPos;
+					pushedDir.Normalize();
+
+					// 플레이어를 원점으로 몬스터와 이루는 각도가 작을수록 방향의 영향을 많이 받음
+					const auto& invDirection = -playerAttack->GetAttackDirection();
+					float directionRatio = invDirection.Dot(pushedDir);
+
+					auto knockBackDir = pushedDir + playerAttack->GetAttackDirection() * directionRatio;
+					knockBackDir.Normalize();
+
+					mKnockBack->Set(power, knockBackDir);
+				}
+				else if (type == EKnockBackType::TargetPositionAndKnockDown)
+				{
+					auto monsterPos = mTransform->GetWorldPosition();
+					monsterPos.y = 0.f;
+					auto attackPos = playerAttack->GetAttackPosition();
+					attackPos.y = 0.f;
+
+					auto knockBackDir = monsterPos - attackPos;
+					knockBackDir.Normalize();
+
+					mKnockBack->Set(power, knockBackDir);
+
+					// 몬스터를 넘어트리는 상태 변화 호출
+					// mAnimator->SetParameterBoolean("IsKockDown", true);
 				}
 			}
 

@@ -105,6 +105,12 @@
     <Filter Include="include\06.ETC">
       <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\01.Player\State\Berserker">
+      <UniqueIdentifier>{868f5cc0-acaf-4ce3-92a4-c37e7109a4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Berserker">
+      <UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -431,6 +437,18 @@
     <ClInclude Include="ArmourSpawner.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
+    <ClInclude Include="BerserkerArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerAttackState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushChargingState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="EBerserkerAttackType.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -711,6 +729,15 @@
     </ClCompile>
     <ClCompile Include="ArmourSpawner.cpp">
       <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerAttackState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushChargingState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

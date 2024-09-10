@@ -47,6 +47,14 @@ namespace fq::game_module
 			unsigned int Channel = 0; // 0 ~ 31 
 		};
 
+		struct AttackIntendInfo
+		{
+			std::string FunctionName;
+			PrefabResource PrefabResourceData;
+
+
+		};
+
 	public:
 		StateEvent() = default;
 		~StateEvent() = default;
