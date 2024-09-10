@@ -32,6 +32,7 @@ namespace fq::game_engine
 		/// </summary>
 		bool LoadAnimatorController(fq::game_module::GameObject* object);
 
+
 	private:
 		void updateAnimtorState(float dt);
 		void processAnimation(float dt);
