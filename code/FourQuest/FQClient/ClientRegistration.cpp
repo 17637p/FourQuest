@@ -94,6 +94,7 @@
 #include "SoulSelectUI.h"
 #include "SettingUI.h"
 #include "RepauseUI.h"
+#include "ResultUI.h"
 
 #include "CameraMoving.h"
 
@@ -1003,6 +1004,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<RepauseUI>()
 		.type("RepauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "RepauseUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ResultUI>()
+		.type("ResultUI"_hs)
+		.prop(fq::reflect::prop::Name, "ResultUI")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
