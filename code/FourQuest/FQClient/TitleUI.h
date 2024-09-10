@@ -26,13 +26,21 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		// 스크린 비율 맞춰서 Scale Set
 		void SetScaleScreen();
+		// 선택한 버튼에 따라 Select Box Pos Set
 		void SetSelectBoxPosition(float dt);
+		// 버튼 선택 시 로직
 		void ClickButton();
 
+		// Prefab 소환
 		void SpawnUIObject(fq::game_module::PrefabResource prefab);
 
+		// Setting Popup Off 시 처리할 것
 		void EventProcessOffPopupSetting();
+
+		// 입력 처리 
+		void ProcessInput();
 
 	private:
 		game_module::ScreenManager* mScreenManager;
@@ -47,6 +55,9 @@ namespace fq::client
 		bool mIsActive;
 		fq::game_module::PrefabResource mSettingUIPrefab;
 		game_module::EventHandler mOffPopupSettingHandler;
+
+		float mStickDelay;
+		float mCurStickDelay;
 
 	private:
 		friend void RegisterMetaData();
