@@ -9,6 +9,7 @@
 #include "GameProcess.h"
 #include "ResourceSystem.h"
 #include "UISystem.h"
+#include "../FQClient/ClientHelper.h"
 
 fq::game_engine::LoadingSystem::LoadingSystem()
 	:mGameProcess(nullptr)
@@ -44,13 +45,13 @@ void fq::game_engine::LoadingSystem::loadUI()
 	// Loading Progress Bar ·Îµù 
 	mLoadingUIObject = mGameProcess->mPrefabManager->LoadPrefab(fq::path::GetResourcePath() / "UI" / "Loading" / "LoadingUI.prefab");
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
 	for (auto& object : mLoadingUIObject)
 	{
 		object->SetScene(scene);
 		mGameProcess->mUISystem->LoadImageUI(object.get());
 		mGameProcess->mUISystem->LoadTextUI(object.get());
 	}
-	mLoadingUIObject[0]->OnStart();
 }
 
 void fq::game_engine::LoadingSystem::ProcessLoading()
@@ -81,7 +82,8 @@ void fq::game_engine::LoadingSystem::updateUI()
 {
 	float ratio = mGameProcess->mResourceSystem->GetLoadingRatio();
 	//spdlog::debug("loading ratio {}", ratio);
-	mLoadingUIObject[0]->GetComponent<client::LoadingUI>()->SetProgressBar(ratio);
+	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
+	loadingUI->SetProgressBar(ratio);
 
 	for (auto& object : mLoadingUIObject)
 	{
@@ -99,9 +101,19 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 		{
 			auto imageUI = object->GetComponent<game_module::ImageUI>();
 
-			for (auto imageObject : imageUI->GetImageObjects())
+			auto& imageObjects = imageUI->GetImageObjects();
+			auto uiInfomations = imageUI->GetUIInfomations();
+
+			for (int i = 0; i < imageObjects.size(); ++i)
 			{
-				imageObject->SetIsRender(isRender);
+				if (uiInfomations[i].isRender && isRender)
+				{
+					imageObjects[i]->SetIsRender(isRender);
+				}
+				else
+				{
+					imageObjects[i]->SetIsRender(false);
+				}
 			}
 		}
 
@@ -114,5 +126,17 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 			textUI->SetTextInfo(info);
 		}
 	}
+
+	if (isRender)
+	{
+		for (auto& object : mLoadingUIObject)
+		{
+			object->OnStart();
+		}
+	}
+
+	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
+	auto id = client::helper::RandomGenerator::GetInstance().GetRandomNumber(0, loadingUI->GetGuideSize()-1);
+	loadingUI->SetGuideID(id);
 }
 
