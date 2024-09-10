@@ -10,7 +10,7 @@ namespace fq::client
 		//////////////////////////////////////////////////////////////////////////
 		//							영혼 공격 관련 								// 
 		//////////////////////////////////////////////////////////////////////////
-		
+
 		static inline float SoulBowAttackTick = 0.1f;
 		static inline float SoulBowAttackSpeed = 5.f;
 		static inline float SoulBowAttackAngle = 20.f;
@@ -19,6 +19,12 @@ namespace fq::client
 
 		static inline float SoulAxeAttackTick = 1.f;
 		static inline float SoulAxeAttackDuration = 2.f;
+
+		static inline float SoulSwordAttackCost = 50.f; 
+		static inline float SoulBowAttackCost = 50.f;
+		static inline float SoulAxeAttackCost = 50.f;
+		static inline float SoulStaffAttackCost = 50.f;
+		static inline float SoulGaugeCharging = 10.f; // 소울게이지 차징량 
 	};
 
 }

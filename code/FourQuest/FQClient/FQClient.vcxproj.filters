@@ -245,7 +245,7 @@
     <ClInclude Include="KnightArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="ShiedlDashState.h">
+    <ClInclude Include="ShieldDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="KnockBack.h">
@@ -451,6 +451,9 @@
     </ClInclude>
     <ClInclude Include="BowStrongChargingState.h">
       <Filter>include\01.Player\State\ArcherState</Filter>
+	</ClInclude>
+    <ClInclude Include="BossMonsterGroggyState.h">
+      <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -571,7 +574,7 @@
     <ClCompile Include="KnightArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="ShiedlDashState.cpp">
+    <ClCompile Include="ShieldDashState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="LinearAttack.cpp">
@@ -747,6 +750,9 @@
     </ClCompile>
     <ClCompile Include="BowStrongChargingState.cpp">
       <Filter>src\01.Player\State\Bow</Filter>
+	</ClCompile>
+    <ClCompile Include="BossMonsterGroggyState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

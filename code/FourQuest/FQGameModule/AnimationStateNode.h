@@ -28,6 +28,15 @@ namespace fq::game_module
 			AnyState,
 		};
 
+		struct Event
+		{
+			std::string FunctionName;
+			float Time; // 해당시간이 넘은 경우 이펙트 이벤트를 발생시킴
+			bool bIsProcessed; // 이펙트 이벤트 발생 여부
+			bool bIsFired; // 이펙트 이벤트 발생 여부
+		};
+
+	public:
 		AnimationStateNode(AnimatorController* controller);
 		~AnimationStateNode();
 
@@ -49,6 +58,11 @@ namespace fq::game_module
 		void SetLoof(bool val) { mbIsLoof = val; }
 		float GetStartTimePos() const { return mStartTimePos; }
 		void SetStartTimePos(float val) { mStartTimePos = val; }
+		std::vector<Event>& GetEvents() { return mEvents; }
+		const std::vector<Event>& GetEvents() const { return mEvents; }
+		void SetEvents(const std::vector<Event>& events) { mEvents = events; }
+
+		void ProcessAnimationEvent(class GameObject* gameObject, class EventManager* eventManager);
 
 	public:
 		// 애니메이션 리소스 관련
@@ -76,6 +90,12 @@ namespace fq::game_module
 
 		StateBehaviourMap mBehaviours;
 		std::shared_ptr<fq::graphics::IAnimation> mAnimation;
+
+		// 이쪽에 처리할 이벤트 목록 추가
+		std::vector<Event> mEvents;
+		float mAccumulationTime;
+
+		friend void RegisterMetaData();
 	};
 
 }

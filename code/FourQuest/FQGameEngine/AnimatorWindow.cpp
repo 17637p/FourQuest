@@ -159,6 +159,33 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 					mSelectController->SetParameter(id, static_cast<char>(val));
 				}
 			}
+			else if (parameter.type() == entt::resolve<std::string>())
+			{
+				std::string param = mSelectController->GetParameter(id).cast<std::string>();
+				ImGui::InputText(parameterSetLabel.c_str(), &param);
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* prefabPath = ImGui::AcceptDragDropPayload("Path");
+
+					if (prefabPath)
+					{
+						std::filesystem::path* path
+							= static_cast<std::filesystem::path*>(prefabPath->Data);
+
+						if (path->extension() == ".prefab")
+						{
+							std::string str = static_cast<std::string>(path->string());
+							mSelectController->SetParameter(id, str);
+						}
+					}
+				}
+				else
+				{
+					std::string str = static_cast<std::string>(parameter.cast<std::string>());
+					mSelectController->SetParameter(id, str);
+				}
+			}
 			else assert(nullptr);
 
 		}
@@ -256,6 +283,11 @@ void fq::game_engine::AnimatorWindow::beginCombo_AddParameter()
 		{
 			mSelectController->AddParameter("new_trigger"
 				, fq::game_module::AnimatorController::OffTrigger);
+		}
+		if (ImGui::Selectable("string##button"))
+		{
+			mSelectController->AddParameter("new_string"
+				, std::string());
 		}
 		ImGui::EndCombo();
 	}
@@ -588,7 +620,7 @@ void fq::game_engine::AnimatorWindow::SelectObject(fq::editor_event::SelectObjec
 	if (event.object->HasComponent<game_module::Animator>())
 	{
 		auto animator = event.object->GetComponent<game_module::Animator>();
-		mSelectObjectName = event.object->GetName(); 
+		mSelectObjectName = event.object->GetName();
 		mSelectController = animator->GetSharedController();
 		mSelectControllerPath = animator->GetControllerPath();
 		createContext();

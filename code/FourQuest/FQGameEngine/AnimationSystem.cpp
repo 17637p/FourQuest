@@ -39,10 +39,13 @@ void fq::game_engine::AnimationSystem::updateAnimtorState(float dt)
 {
 	using namespace fq::game_module;
 
+	fq::game_module::EventManager* eventManagerPtr = mGameProcess->mEventManager.get();
+
 	mScene->ViewComponents<Animator>(
-		[dt](GameObject& object, Animator& animator)
+		[dt, eventManagerPtr](GameObject& object, Animator& animator)
 		{
 			animator.UpdateState(dt);
+			animator.ProcessAnimationEvent(&object, eventManagerPtr);
 		}
 	);
 }

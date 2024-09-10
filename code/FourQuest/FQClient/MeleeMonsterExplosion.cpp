@@ -72,7 +72,7 @@ void fq::client::MeleeMonsterExplosion::Explode()
 	GetScene()->DestroyGameObject(GetGameObject());
 
 	// Æø¹ß ¼Ò¸® 
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Explode_Boom", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Explode_Boom", false ,  fq::sound::EChannel::SE });
 }
 
 std::shared_ptr<fq::game_module::GameObject> fq::client::MeleeMonsterExplosion::EmitExplosionEffect()

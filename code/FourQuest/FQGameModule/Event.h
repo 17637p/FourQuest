@@ -164,7 +164,7 @@ namespace fq::event
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	//							UI Event									// 
+	//								UI Event									// 
 	//////////////////////////////////////////////////////////////////////////
 
 	struct SetUIInfomations
@@ -281,6 +281,21 @@ namespace fq::event
 	struct DrawDebugLay
 	{
 		fq::graphics::debug::RayInfo rayInfo;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
+	//							AnimationStateEvent							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct AnimationStateEvent
+	{
+		std::string RegisterKeyName;
+		fq::game_module::GameObject* gameObject;
+	};
+
+	struct AnimationStateExitEvent
+	{
+		fq::game_module::GameObject* gameObject;
 	};
 }
 

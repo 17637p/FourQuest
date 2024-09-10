@@ -91,7 +91,7 @@ void fq::client::PlantMonster::EmitAttack()
 	GetScene()->AddGameObject(attackObj);
 
 	// 원거리 공격사운드  
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , 3 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , fq::sound::EChannel::SE });
 }
 
 void fq::client::PlantMonster::OnUpdate(float dt)
@@ -138,6 +138,12 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 
 void fq::client::PlantMonster::SetTarget(fq::game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	// Target이 사라진 경우
 	if (target == nullptr)
 	{

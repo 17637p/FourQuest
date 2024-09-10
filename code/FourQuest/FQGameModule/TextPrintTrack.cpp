@@ -58,31 +58,32 @@ namespace fq::game_module
 		mScene->AddGameObject(mNameObject);
 		mScene->AddGameObject(mTextObject);
 
-		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetScreenWidth() / 2.f, mScene->GetScreenManager()->GetScreenHeight() - mNameFontCenterY, 0.f));
-		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetScreenWidth() / 2.f, mScene->GetScreenManager()->GetScreenHeight() - mTextFontCenterY, 0.f));
+		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, 1080.f - mNameFontCenterY, 0.f));
+		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, 1080.f - mTextFontCenterY, 0.f));
 	}
 
 	void TextPrintTrack::PlayOn()
 	{
 		auto name = mNameObject->GetComponent<TextUI>();
 		auto text = mTextObject->GetComponent<TextUI>();
+		auto nameTransform = mNameObject->GetComponent<Transform>();
+		auto textTransform = mTextObject->GetComponent<Transform>();
+		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, 1080.f - mNameFontCenterY, 0.f));
+		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(960.f, 1080.f - mTextFontCenterY, 0.f));
 
 		fq::graphics::TextInfo textInfo;
 		textInfo.Align = fq::graphics::ETextAlign::CenterTop;
+		textInfo.BoxAlign = fq::graphics::ETextBoxAlign::CenterCenter;
 		textInfo.Text = mName;
 		textInfo.FontSize = mNameFontSize;
 		textInfo.FontColor = mNameFontColor;
-		textInfo.CenterX = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
-		textInfo.CenterY = mScene->GetScreenManager()->GetScreenHeight() - mNameFontCenterY;
-		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth() / 4.f;
+		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;
 		textInfo.FontSize = mTextFontSize;
 		textInfo.FontColor = mTextFontColor;
-		textInfo.CenterX = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
-		textInfo.CenterY = mScene->GetScreenManager()->GetScreenHeight() - mTextFontCenterY;
-		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
+		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		text->SetTextInfo(textInfo);
 	}
 

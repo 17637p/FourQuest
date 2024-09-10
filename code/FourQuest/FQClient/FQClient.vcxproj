@@ -50,6 +50,7 @@
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterGroggyState.h" />
     <ClInclude Include="BossMonsterHomingRushState.h" />
     <ClInclude Include="BossMonsterPrepareAttackState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
@@ -128,7 +129,7 @@
     <ClInclude Include="ResultUI.h" />
     <ClInclude Include="SettingUI.h" />
     <ClInclude Include="SettingVariable.h" />
-    <ClInclude Include="ShiedlDashState.h" />
+    <ClInclude Include="ShieldDashState.h" />
     <ClInclude Include="PlayerDefine.h" />
     <ClInclude Include="PlayerInputState.h" />
     <ClInclude Include="Player.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterGroggyState.cpp" />
     <ClCompile Include="BossMonsterHomingRushState.cpp" />
     <ClCompile Include="BossMonsterPrepareAttackState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />
@@ -231,7 +233,7 @@
     <ClCompile Include="RepauseUI.cpp" />
     <ClCompile Include="ResultUI.cpp" />
     <ClCompile Include="SettingUI.cpp" />
-    <ClCompile Include="ShiedlDashState.cpp" />
+    <ClCompile Include="ShieldDashState.cpp" />
     <ClCompile Include="PlayerInputState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMovementState.cpp" />

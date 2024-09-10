@@ -46,7 +46,6 @@ namespace fq::physics
 		/// </summary>
 		void LimitVelocity();
 
-
 		inline const DirectX::SimpleMath::Vector3& GetVelocity();
 		inline const DirectX::SimpleMath::Vector3& GetDisplacementVector();
 		inline const bool& GetIsFall();
@@ -70,7 +69,6 @@ namespace fq::physics
 		inline void SetJumpXZDeceleration(const float& jumpXZDeceleration);
 		inline void SetGravityWeight(const float& gravityWeight);
 
-
 	private:
 		bool mIsFall;
 
@@ -87,6 +85,7 @@ namespace fq::physics
 		float mJumpXZDeceleration;
 		float mGravityWeight;
 		float mMinDistance;
+	
 	};
 
 

@@ -6,6 +6,11 @@
 
 namespace fq::client
 {
+	struct TestPOD
+	{
+		fq::game_module::PrefabResource res;
+	};
+
 	class MonsterManager : public fq::game_module::Component
 	{
 		using EventHandler = game_module::EventHandler;
@@ -29,7 +34,7 @@ namespace fq::client
 
 		/// <summary>
 		/// 에디터 디버깅용도의 함수입니다. 사용X
-		/// </summary>1
+		/// </summary>
 		void SetMonsterSize(int size) {};
 
 	private:
@@ -45,7 +50,7 @@ namespace fq::client
 		EventHandler mOnDestroyHandler;
 		EventHandler mAddGameObjectHandler;
 
-		std::vector<fq::game_module::PrefabResource> mRes;
+		std::vector<TestPOD> mRes;
 
 		friend void RegisterMetaData();
 	};

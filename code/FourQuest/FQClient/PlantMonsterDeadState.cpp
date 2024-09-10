@@ -48,7 +48,7 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::ImageUI>();
 
-	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , 3 });
+	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Death", false , fq::sound::EChannel::SE });
 
 	// Ragdoll
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())
@@ -72,6 +72,20 @@ void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& anim
 			info.MinDissolveCutoff = -1.f;
 			info.InitDissolveCutoff = -1.f;
 			matAnimator->SetDissolveAnimatorInfo(info);
+		}
+	}
+
+	// RimLight ²ô±â
+	for (auto child : animator.GetGameObject()->GetChildren())
+	{
+		auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+
+		if (skeletalMesh != nullptr)
+		{
+			fq::graphics::MaterialInstanceInfo info;
+			info.bUseRimLight = false;
+
+			skeletalMesh->SetMaterialInstanceInfo(info);
 		}
 	}
 }

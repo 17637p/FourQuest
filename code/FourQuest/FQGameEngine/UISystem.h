@@ -24,6 +24,7 @@ namespace fq::game_engine
 		~UISystem();
 
 		void Initialize(GameProcess* gameProcess);
+		void Finalize();
 
 		void Update();
 

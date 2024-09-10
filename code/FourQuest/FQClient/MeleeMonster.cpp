@@ -57,6 +57,12 @@ std::shared_ptr<fq::game_module::Component> fq::client::MeleeMonster::Clone(std:
 
 void fq::client::MeleeMonster::SetTarget(game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	if (target == nullptr)
 	{
 		mTarget = nullptr;
@@ -74,7 +80,6 @@ void fq::client::MeleeMonster::OnStart()
 	mStartPosition = mTransform->GetWorldPosition();
 	mAnimator = GetComponent<game_module::Animator>();
 	mKnockBack = GetComponent<KnockBack>();
-
 	mMaxHp = mHp;
 
 	// Agent 설정
@@ -85,6 +90,11 @@ void fq::client::MeleeMonster::OnStart()
 
 	// GameManager 연결
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
+
+	if (mTarget)
+	{
+		SetTarget(mTarget.get());
+	}
 }
 
 void fq::client::MeleeMonster::EmitAttack()
@@ -121,7 +131,7 @@ void fq::client::MeleeMonster::EmitAttack()
 	mAttackElapsedTime = mAttackCoolTime;
 
 	// 공격 사운드
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , 3});
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Attack", false , fq::sound::EChannel::SE });
 }
 
 

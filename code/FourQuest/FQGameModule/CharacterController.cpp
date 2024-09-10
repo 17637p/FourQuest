@@ -41,6 +41,8 @@ fq::game_module::CharacterController::CharacterController()
 	, mbOnRotation(true)
 	, mbCanMoveCharater(true)
 	, mCollisionCount(0)
+	, mbMoveRestriction{}
+
 {}
 
 fq::game_module::CharacterController::~CharacterController()
@@ -161,5 +163,10 @@ void fq::game_module::CharacterController::SetPadInputRotation()
 	{
 		mTransform->SetLocalRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
 	}
+}
+
+void fq::game_module::CharacterController::SetMoveRestriction(std::array<bool, 4> restriction)
+{
+	mbMoveRestriction = restriction;
 }
 
