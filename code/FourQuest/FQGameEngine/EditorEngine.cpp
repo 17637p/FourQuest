@@ -280,6 +280,7 @@ void fq::game_engine::EditorEngine::Finalize()
 
 	mGameProcess->mSceneManager->UnloadScene();
 	mGameProcess->mLoadingSystem->Finalize();
+	mGameProcess->mUISystem->Finalize();
 
 	// Editor Process
 	mEditor->mImageSystem->Finalize();

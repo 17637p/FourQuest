@@ -20,7 +20,6 @@ fq::game_engine::UISystem::UISystem()
 
 fq::game_engine::UISystem::~UISystem()
 {
-
 }
 
 void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
@@ -67,6 +66,15 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 				mViewporWidth = event.width;
 				mViewportHeight = event.height;
 			});
+
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+}
+
+void fq::game_engine::UISystem::Finalize()
+{
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnLoadScene()
@@ -80,17 +88,11 @@ void fq::game_engine::UISystem::OnLoadScene()
 	}
 
 	mbIsGameLoaded = true;
-
-	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
-	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
-
-	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
-	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnAddGameObject(const fq::event::AddGameObject& event)
@@ -232,3 +234,4 @@ void fq::game_engine::UISystem::SetTextInformation(const fq::event::SetTextInfor
 	UnloadTextUI(event.object);
 	LoadTextUI(event.object);
 }
+

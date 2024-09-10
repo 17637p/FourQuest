@@ -962,8 +962,10 @@ void fq::client::RegisterMetaData()
 		.type("LoadingText"_hs)
 		.prop(fq::reflect::prop::POD)
 		.prop(fq::reflect::prop::Name, "LoadingText")
-		.data<&LoadingText::Text>("Text"_hs)
-		.prop(fq::reflect::prop::Name, "Text");
+		.data<&LoadingText::Title>("Title"_hs)
+		.prop(fq::reflect::prop::Name, "Title")
+		.data<&LoadingText::Content>("Content"_hs)
+		.prop(fq::reflect::prop::Name, "Content");
 
 	entt::meta<LoadingUI>()
 		.type("LoadingUI"_hs)
