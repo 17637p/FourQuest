@@ -55,6 +55,8 @@ namespace fq::client
 		float mArrowPower;
 		float mChangeChargingTime;
 		float mRStickNoInputTime;
+		float mWeakProjectileVelocity;
+		float mStrongProjectileVelocity;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;

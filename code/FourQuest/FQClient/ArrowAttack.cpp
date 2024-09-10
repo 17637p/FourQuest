@@ -8,6 +8,8 @@
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
 
+#include "Attack.h"
+
 namespace fq::client
 {
 	ArrowAttack::ArrowAttack()
@@ -16,8 +18,6 @@ namespace fq::client
 		, mLifeElapsedTime()
 		, mWeakAttackPower()
 		, mStrongAttackPower()
-		, mWeakProjectileVelocity()
-		, mStrongProjectileVelocity()
 		, mMaxBlockCount()
 		, mAttacker(nullptr)
 		, mHitSound{}
@@ -58,16 +58,11 @@ namespace fq::client
 			return;
 		}
 
-		if (collision.other->GetTag() == fq::game_module::ETag::Monster
-			|| collision.other->GetTag() == fq::game_module::ETag::Floor
-			|| collision.other->GetTag() == fq::game_module::ETag::Wall)
-		{
-			mMaxBlockCount--;
+		mMaxBlockCount--;
 
-			if (mMaxBlockCount > 0)
-			{
-				return;
-			}
+		if (mMaxBlockCount > 0)
+		{
+			return;
 		}
 
 		auto transform = GetComponent<fq::game_module::Transform>();
@@ -100,7 +95,30 @@ namespace fq::client
 			auto rigidBody = GetComponent<fq::game_module::RigidBody>();
 
 			transform->SetLocalMatrix(mAttackTransform);
-			rigidBody->SetLinearVelocity(mAttackDirection * mWeakProjectileVelocity);
+			rigidBody->SetLinearVelocity(mAttackDirection * info.weakProjectileVelocity);
+		}
+
+		if (GetGameObject()->HasComponent<Attack>())
+		{
+			auto attack = GetComponent<Attack>();
+			AttackInfo info;
+			info.attacker = mAttacker;
+			info.hitSound = mHitSound;
+			info.attackDirection = mAttackDirection;
+			info.attackPosition = mAttackTransform.Translation();
+
+			if (mbIsStrongAttack)
+			{
+				info.remainingAttackCount = 1000;
+				info.damage = mStrongAttackPower;
+			}
+			else
+			{
+				info.remainingAttackCount = 1;
+				info.damage = mWeakAttackPower;
+			}
+
+			attack->Set(info);
 		}
 	}
 

@@ -80,6 +80,7 @@ namespace fq::client
 		auto& attackObj = *(instance.begin());
 
 		auto attackComponent = attackObj->GetComponent<client::ArrowAttack>();
+		auto linearComponent = attackObj->GetComponent<LinearAttack>();
 		auto rigidBodyComponent = attackObj->GetComponent<fq::game_module::RigidBody>();
 		auto attackT = attackObj->GetComponent<game_module::Transform>();
 		auto foward = mTransform->GetLookAtVector();
@@ -117,6 +118,9 @@ namespace fq::client
 		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.hitSound = "A_StrongAttack_Hit";
 		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
+
+		linearComponent->SetMoveDirection(foward);
+		linearComponent->SetMoveSpeed(mStrongProjectileVelocity);
 
 		attackComponent->Set(attackInfo);
 

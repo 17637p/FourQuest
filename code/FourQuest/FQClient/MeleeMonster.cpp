@@ -184,71 +184,39 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 	// 플레이어 공격 피격 처리
 	if (collision.other->GetTag() == game_module::ETag::PlayerAttack)
 	{
-		if (collision.other->HasComponent<Attack>())
+		auto playerAttack = collision.other->GetComponent<Attack>();
+
+		if (playerAttack->ProcessAttack())
 		{
-			auto playerAttack = collision.other->GetComponent<Attack>();
-
-			if (playerAttack->ProcessAttack())
-			{
-				mAnimator->SetParameterTrigger("OnHit");
-				float attackPower = playerAttack->GetAttackPower();
-
-				// 타겟은 자신을 때린 사람으로 바꿉니다 
-				SetTarget(playerAttack->GetAttacker());
-
-				// 넉백처리 
-				if (playerAttack->HasKnockBack())
-				{
-					auto type = playerAttack->GetKnockBackType();
-					float power = playerAttack->GetKnockBackPower();
-
-					if (type == EKnockBackType::Fixed)
-					{
-						DirectX::SimpleMath::Vector3 direction = playerAttack->GetAttackDirection();
-						mKnockBack->Set(power, direction);
-					}
-					else if (type == EKnockBackType::TargetPosition)
-					{
-						auto monsterPos = mTransform->GetWorldPosition();
-						monsterPos.y = 0.f;
-						auto attackPos = playerAttack->GetAttackPosition();
-						attackPos.y = 0.f;
-
-						auto knockBackDir = monsterPos - attackPos;
-						knockBackDir.Normalize();
-
-						mKnockBack->Set(power, knockBackDir);
-					}
-				}
-
-				// HP 설정
-				mHp -= attackPower;
-				GetComponent<HpBar>()->DecreaseHp(attackPower / mMaxHp);
-
-				// 피격 사운드 재생
-				playerAttack->PlayHitSound();
-
-				// 사망처리 
-				if (mHp <= 0.f)
-				{
-					mAnimator->SetParameterBoolean("IsDead", true);
-				}
-			}
-		}
-		else if (collision.other->HasComponent<ArrowAttack>())
-		{
-			auto playerAttack = collision.other->GetComponent<ArrowAttack>();
-			float attackPower;
-
 			mAnimator->SetParameterTrigger("OnHit");
+			float attackPower = playerAttack->GetAttackPower();
 
-			if (playerAttack->GetIsStrongAttack())
+			// 타겟은 자신을 때린 사람으로 바꿉니다 
+			SetTarget(playerAttack->GetAttacker());
+
+			// 넉백처리 
+			if (playerAttack->HasKnockBack())
 			{
-				attackPower = playerAttack->GetStrongAttackPower();
-			}
-			else
-			{
-				attackPower = playerAttack->GetWeakAttackPower();
+				auto type = playerAttack->GetKnockBackType();
+				float power = playerAttack->GetKnockBackPower();
+
+				if (type == EKnockBackType::Fixed)
+				{
+					DirectX::SimpleMath::Vector3 direction = playerAttack->GetAttackDirection();
+					mKnockBack->Set(power, direction);
+				}
+				else if (type == EKnockBackType::TargetPosition)
+				{
+					auto monsterPos = mTransform->GetWorldPosition();
+					monsterPos.y = 0.f;
+					auto attackPos = playerAttack->GetAttackPosition();
+					attackPos.y = 0.f;
+
+					auto knockBackDir = monsterPos - attackPos;
+					knockBackDir.Normalize();
+
+					mKnockBack->Set(power, knockBackDir);
+				}
 			}
 
 			// HP 설정
