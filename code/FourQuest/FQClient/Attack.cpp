@@ -30,6 +30,8 @@ fq::client::Attack::Attack()
 	, mAttacker(nullptr)
 	, mHitSound{}
 	, mHitCallback{}
+	, mTargetPosRatio{}
+	, mDirectionRatio{}
 {}
 
 fq::client::Attack::~Attack()
@@ -86,6 +88,8 @@ void fq::client::Attack::Set(const AttackInfo& info)
 	mAttackPosition = info.attackPosition;
 	mHitSound = info.hitSound;
 	mHitCallback = info.mHitCallback;
+	mTargetPosRatio = info.targetPosRatio;
+	mDirectionRatio = info.directionRatio;
 }
 
 bool fq::client::Attack::HasKnockBack() const

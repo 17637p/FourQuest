@@ -8,7 +8,7 @@
 
 namespace fq::client
 {
-	void BerserkerArmour::EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime)
+	std::shared_ptr<fq::game_module::GameObject> BerserkerArmour::EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime)
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackPrefab);
 		auto& attackObj = *(instance.begin());
@@ -52,7 +52,7 @@ namespace fq::client
 			break;
 		case EBerserkerAttackType::Rush:
 			hitSoundName = mAttackRushHitSound;
-			knockBackType = EKnockBackType::Fixed;
+			knockBackType = EKnockBackType::TargetPosition;
 			direction = foward;
 			break;
 		default:
@@ -65,6 +65,7 @@ namespace fq::client
 		attackInfo.damage = dc::GetSwordDamage(mPlayer->GetAttackPower());
 		attackInfo.type = knockBackType;
 		attackInfo.attackDirection = direction;
+		attackInfo.attackPosition = mTransform->GetWorldPosition();
 		attackInfo.knocBackPower = knocBackPower;
 		attackInfo.mHitCallback = [this, isIncrease = false]() mutable
 			{
@@ -75,10 +76,14 @@ namespace fq::client
 				}
 			};
 		attackInfo.hitSound = hitSoundName;
+		attackInfo.targetPosRatio = mTargetPosRatio;
+		attackInfo.directionRatio = mDirectionRatio;
 
 		attackComponent->Set(attackInfo);
 
 		GetScene()->AddGameObject(attackObj);
+
+		return attackObj;
 	}
 
 	std::shared_ptr<fq::game_module::Component> BerserkerArmour::Clone(std::shared_ptr<Component> clone) const

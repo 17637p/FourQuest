@@ -3,6 +3,7 @@
 #include "EBerserkerAttackType.h"
 #include "../FQGameModule/IStateBehaviour.h"
 #include "../FQGameModule/PrefabResource.h"
+#include "BerserkerAttackState.h"
 
 namespace fq::game_module
 {
@@ -11,30 +12,26 @@ namespace fq::game_module
 
 namespace fq::client
 {
-	class BerserkerAttackState : public game_module::IStateBehaviour
+	class BerserkerRushState : public BerserkerAttackState
 	{
 	public:
-		BerserkerAttackState();
-		~BerserkerAttackState() = default;
+		BerserkerRushState() = default;
+		~BerserkerRushState() = default;
 
-	protected:
+	private:
 		std::shared_ptr<IStateBehaviour> Clone() override;
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
 		void OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 		entt::meta_handle GetHandle() override { return *this; }
 
-	protected:
-		EBerserkerAttackType mAttackType;
-		float mAttackMovement;
-		float mElapsedTime;
-		float mAttackTiming;
-		DirectX::SimpleMath::Vector3 mColliderOffset;
-		DirectX::SimpleMath::Vector3 mColliderScale;
-		float mKnocBackPower;
-		float mDestroyTime;
+	private:
+		float mVelocity;
+		float mAcceleration;
+		float mAccumulatedTime;
+		float mMaxVelocity;
+		std::shared_ptr<fq::game_module::GameObject> mAttackObjectOrNull;
 
 		friend void RegisterMetaData();
 	};
-
 }

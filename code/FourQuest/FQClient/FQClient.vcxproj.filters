@@ -437,7 +437,6 @@
     <ClInclude Include="ArmourSpawner.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="BerserkerArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
@@ -449,10 +448,12 @@
     </ClInclude>
     <ClInclude Include="EBerserkerAttackType.h">
       <Filter>include</Filter>
-=======
+    </ClInclude>
     <ClInclude Include="BossMonsterGroggyState.h">
       <Filter>include\02.Monster\Boss</Filter>
->>>>>>> main
+    </ClInclude>
+    <ClInclude Include="BerserkerRushState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -735,7 +736,6 @@
     <ClCompile Include="ArmourSpawner.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="BerserkerArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
@@ -744,10 +744,12 @@
     </ClCompile>
     <ClCompile Include="BerserkerRushChargingState.cpp">
       <Filter>src\01.Player\State\Berserker</Filter>
-=======
+    </ClCompile>
     <ClCompile Include="BossMonsterGroggyState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
->>>>>>> main
+    </ClCompile>
+    <ClCompile Include="BerserkerRushState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

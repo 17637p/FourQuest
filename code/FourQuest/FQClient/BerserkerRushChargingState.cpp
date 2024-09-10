@@ -40,28 +40,21 @@ namespace fq::client
 
 	void BerserkerRushChargingState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 	{
-		if (mChargingElapsedTime == mChargingTime)
-		{
-			return;
-		}
-
 		auto input = animator.GetScene()->GetInputManager();
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		mChargingElapsedTime = std::min<float>(mChargingElapsedTime + dt * state.GetPlayBackSpeed(), mChargingTime);
 		controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
 
-		if (input->IsPadKeyState(controller->GetControllerID(), EPadKey::RightThumb, EKeyState::Away))
+		if (!input->IsPadKeyState(controller->GetControllerID(), EPadKey::RightThumb, EKeyState::Hold))
 		{
 			if (mChargingElapsedTime < mChargingMinimumTime)
 			{
 				animator.SetParameterTrigger("OnIdle");
-				return;
 			}
-		}
-
-		if (mChargingElapsedTime == mChargingTime)
-		{
-			animator.SetParameterTrigger("OnRush");
+			else if (mChargingElapsedTime == mChargingTime)
+			{
+				animator.SetParameterTrigger("OnRush");
+			}
 		}
 	}
 

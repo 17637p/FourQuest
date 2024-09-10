@@ -47,6 +47,7 @@
     <ClInclude Include="BerserkerArmour.h" />
     <ClInclude Include="BerserkerAttackState.h" />
     <ClInclude Include="BerserkerRushChargingState.h" />
+    <ClInclude Include="BerserkerRushState.h" />
     <ClInclude Include="BGM.h" />
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="BerserkerArmour.cpp" />
     <ClCompile Include="BerserkerAttackState.cpp" />
     <ClCompile Include="BerserkerRushChargingState.cpp" />
+    <ClCompile Include="BerserkerRushState.cpp" />
     <ClCompile Include="BGM.cpp" />
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />

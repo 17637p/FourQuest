@@ -29,6 +29,7 @@
 #include "EBerserkerAttackType.h"
 #include "BerserkerArmour.h"
 #include "BerserkerAttackState.h"
+#include "BerserkerRushState.h"
 #include "BerserkerRushChargingState.h"
 
 // Monster
@@ -144,7 +145,7 @@ void fq::client::RegisterMetaData()
 		.base<game_module::Component>();
 
 	entt::meta<TestPOD>()
-		.type("TestPOD"_hs)	
+		.type("TestPOD"_hs)
 		.prop(reflect::prop::Name, "TestPOD")
 		.prop(reflect::prop::POD)
 		.data<&TestPOD::res>("res"_hs)
@@ -357,6 +358,15 @@ void fq::client::RegisterMetaData()
 		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
 		.prop(reflect::prop::Name, "RushCoolTime")
 		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
+		.prop(reflect::prop::Name, "RushCoolTime")
+		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.data<&BerserkerArmour::mTargetPosRatio>("Pushed Back Ratio"_hs)
+		.prop(reflect::prop::Name, "Pushed Back Ratio")
+		.prop(reflect::prop::Comment, u8"기본 공격 시 뒤로 밀리는 비율")
+		.data<&BerserkerArmour::mDirectionRatio>("Pushed Attack Direction Ratio"_hs)
+		.prop(reflect::prop::Name, "Pushed Attack Direction Ratio")
+		.prop(reflect::prop::Comment, u8"기본 공격 시 공격 방향으로 밀리는 비율")
 		.base<game_module::Component>();
 
 	entt::meta<Soul>()
@@ -504,7 +514,42 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DestroyTime")
 		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 지속 시간")
 		.base<game_module::IStateBehaviour>();
-	
+
+	entt::meta<BerserkerRushState>()
+		.type("BerserkerRushState"_hs)
+		.prop(reflect::prop::Name, "BerserkerRushState")
+		.data<&BerserkerRushState::mAttackType>("AttackType"_hs)
+		.prop(reflect::prop::Name, "AttackType")
+		.prop(fq::reflect::prop::Comment, u8"공격 종류")
+		.data<&BerserkerRushState::mAttackMovement>("AttackMovement"_hs)
+		.prop(reflect::prop::Name, "AttackMovement")
+		.prop(fq::reflect::prop::Comment, u8"공격 시 이동될 움직임")
+		.data<&BerserkerRushState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 생성 시기")
+		.data<&BerserkerRushState::mColliderOffset>("ColliderOffset"_hs)
+		.prop(reflect::prop::Name, "ColliderOffset")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 오프셋")
+		.data<&BerserkerRushState::mColliderScale>("ColliderScale"_hs)
+		.prop(reflect::prop::Name, "ColliderScale")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 스케일")
+		.data<&BerserkerRushState::mKnocBackPower>("KnocBackPower"_hs)
+		.prop(reflect::prop::Name, "KnocBackPower")
+		.prop(fq::reflect::prop::Comment, u8"피격된 물체가 밀리는 정도")
+		.data<&BerserkerRushState::mDestroyTime>("DestroyTime"_hs)
+		.prop(reflect::prop::Name, "DestroyTime")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 지속 시간")
+		.data<&BerserkerRushState::mVelocity>("Velocity"_hs)
+		.prop(reflect::prop::Name, "Velocity")
+		.prop(fq::reflect::prop::Comment, u8"돌진 속도")
+		.data<&BerserkerRushState::mAcceleration>("Acceleration"_hs)
+		.prop(reflect::prop::Name, "Acceleration")
+		.prop(fq::reflect::prop::Comment, u8"돌진 가속도")
+		.data<&BerserkerRushState::mMaxVelocity>("MaxVelocity"_hs)
+		.prop(reflect::prop::Name, "MaxVelocity")
+		.prop(fq::reflect::prop::Comment, u8"돌진 최대 속도 max(속 + 가속 * 시간, MaxVelocity)")
+		.base<game_module::IStateBehaviour>();
+
 	entt::meta<BerserkerRushChargingState>()
 		.type("BerserkerRushChargingState"_hs)
 		.prop(reflect::prop::Name, "BerserkerRushChargingState")

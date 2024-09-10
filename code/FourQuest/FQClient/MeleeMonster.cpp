@@ -229,10 +229,11 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 
 					// 플레이어를 원점으로 몬스터와 이루는 각도가 작을수록 방향의 영향을 많이 받음
 					const auto& invDirection = -playerAttack->GetAttackDirection();
-					float directionRatio = invDirection.Dot(pushedDir);
+					float directionRatio = invDirection.Dot(pushedDir) * 0.5 + 0.5;
+					directionRatio = std::clamp<float>(directionRatio, 0.f, 1.f);
 
-					auto knockBackDir = pushedDir + playerAttack->GetAttackDirection() * directionRatio;
-					knockBackDir.Normalize();
+					auto knockBackDir = pushedDir * (1 - directionRatio) * playerAttack->GetTargetPosRatio() + playerAttack->GetAttackDirection() * directionRatio * playerAttack->GetDirectionRatio();
+					//knockBackDir.Normalize();
 
 					mKnockBack->Set(power, knockBackDir);
 				}

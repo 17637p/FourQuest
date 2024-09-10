@@ -9,6 +9,7 @@ namespace fq::game_module
 	class Animator;
 	class Transform;
 	class CharacterController;
+	class GameObject;
 }
 
 namespace fq::client
@@ -20,7 +21,7 @@ namespace fq::client
 		using Vector3 = DirectX::SimpleMath::Vector3;
 
 	public:
-		void EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime);
+		std::shared_ptr<fq::game_module::GameObject> EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -49,6 +50,9 @@ namespace fq::client
 		float mSwingAroundCoolTime;
 		float mRushCoolTime;
 
+		float mTargetPosRatio = 1.f;
+		float mDirectionRatio = 1.f;
+		
 		// 로직 변수
 		float mSwingAroundElapsedTime;
 		float mRushElapsedTime;

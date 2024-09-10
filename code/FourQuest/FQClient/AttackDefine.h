@@ -33,6 +33,9 @@ namespace fq::client
 
 		std::string hitSound; // 피격 소리 
 		std::function<void()> mHitCallback; // 공격성공 콜백함수
+
+		float targetPosRatio = 1.f; // TargetPositionAndDirectionByAngle용 변수
+		float directionRatio = 1.f; // TargetPositionAndDirectionByAngle용 변수
 	};
 
 }
