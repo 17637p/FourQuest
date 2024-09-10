@@ -20,6 +20,8 @@ namespace fq::client
 		AimAssist();
 		~AimAssist();
 
+		void SetNearMonsterDirection();
+
 	private:
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 		void OnTriggerExit(const game_module::Collision& collision) override;
@@ -29,7 +31,6 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		void SetNearMonsterDirection();
 	private:
 		//std::unordered_map<unsigned int, std::shared_ptr<game_module::GameObject>> mQueryObject;
 		float mTheta;

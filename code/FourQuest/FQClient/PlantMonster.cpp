@@ -138,6 +138,12 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 
 void fq::client::PlantMonster::SetTarget(fq::game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	// Target이 사라진 경우
 	if (target == nullptr)
 	{

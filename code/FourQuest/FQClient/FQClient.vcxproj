@@ -51,6 +51,7 @@
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterGroggyState.h" />
     <ClInclude Include="BossMonsterHomingRushState.h" />
     <ClInclude Include="BossMonsterPrepareAttackState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterGroggyState.cpp" />
     <ClCompile Include="BossMonsterHomingRushState.cpp" />
     <ClCompile Include="BossMonsterPrepareAttackState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />

@@ -28,6 +28,8 @@ void fq::client::MagicBallAttackState::OnStateEnter(game_module::Animator& anima
 {
 	// 컨트롤러 입력방향을 바라봅니다
 	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
+	
+	animator.GetComponent<MagicArmour>()->AimToNearMonster();
 
 	mElapsedTime = 0.f;
 }

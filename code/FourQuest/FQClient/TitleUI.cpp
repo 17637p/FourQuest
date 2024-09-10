@@ -36,7 +36,9 @@ fq::client::TitleUI::TitleUI()
 	mUIAnimSpeed(1000),
 	mIsActive(true),
 	mNextSceneName(""),
-	mSettingUIPrefab()
+	mSettingUIPrefab(),
+	mStickDelay(0.2f),
+	mCurStickDelay(0)
 {
 }
 
@@ -48,8 +50,26 @@ fq::client::TitleUI::TitleUI(const TitleUI& other)
 	mUIAnimSpeed(other.mUIAnimSpeed),
 	mIsActive(other.mIsActive),
 	mNextSceneName(other.mNextSceneName),
-	mSettingUIPrefab(other.mSettingUIPrefab)
+	mSettingUIPrefab(other.mSettingUIPrefab),
+	mStickDelay(other.mStickDelay),
+	mCurStickDelay(other.mCurStickDelay)
 {
+}
+
+fq::client::TitleUI& fq::client::TitleUI::operator=(const TitleUI& other)
+{
+	mSelectButtonID = other.mSelectButtonID;
+	mSelectBackground = other.mSelectBackground;
+	mButtons = other.mButtons;
+	mScreenManager = other.mScreenManager;
+	mUIAnimSpeed = other.mUIAnimSpeed;
+	mIsActive = other.mIsActive;
+	mNextSceneName = other.mNextSceneName;
+	mSettingUIPrefab = other.mSettingUIPrefab;
+	mStickDelay = other.mStickDelay;
+	mCurStickDelay = other.mCurStickDelay;
+
+	return *this;
 }
 
 fq::client::TitleUI::~TitleUI()
@@ -82,30 +102,8 @@ void fq::client::TitleUI::OnUpdate(float dt)
 	SetScaleScreen();
 	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
 
-	// Test 선택 버튼 이동
-	if (mIsActive)
-	{
-		auto input = GetScene()->GetInputManager();
-		if (input->GetKeyState(EKey::S) == EKeyState::Tap)
-		{
-			if (mSelectButtonID < 3)
-			{
-				mSelectButtonID++;
-			}
-		}
-		if (input->GetKeyState(EKey::W) == EKeyState::Tap)
-		{
-			if (mSelectButtonID > 0)
-			{
-				mSelectButtonID--;
-			}
-		}
-
-		if (input->GetKeyState(EKey::F) == EKeyState::Tap)
-		{
-			ClickButton();
-		}
-	}
+	ProcessInput();
+	mCurStickDelay += dt;
 }
 
 void fq::client::TitleUI::SetSelectBoxPosition(float dt)
@@ -183,20 +181,6 @@ void fq::client::TitleUI::EventProcessOffPopupSetting()
 		);
 }
 
-fq::client::TitleUI& fq::client::TitleUI::operator=(const TitleUI& other)
-{
-	mSelectButtonID = other.mSelectButtonID;
-	mSelectBackground = other.mSelectBackground;
-	mButtons = other.mButtons;
-	mScreenManager = other.mScreenManager;
-	mUIAnimSpeed = other.mUIAnimSpeed;
-	mIsActive = other.mIsActive;
-	mNextSceneName = other.mNextSceneName;
-	mSettingUIPrefab = other.mSettingUIPrefab;
-
-	return *this;
-}
-
 void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 {
 	std::shared_ptr<game_module::GameObject> newObject;
@@ -205,5 +189,69 @@ void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 	newObject = *(instance.begin());
 
 	GetScene()->AddGameObject(newObject);
+}
+
+void fq::client::TitleUI::ProcessInput()
+{
+	// Setting Popup이 위에 없을 경우
+	if (mIsActive)
+	{
+		auto input = GetScene()->GetInputManager();
+		for (int i = 0; i < 4; i++)
+		{
+			// Stick Y 값
+			float isLeftStickY = input->GetStickInfomation(i, EPadStick::leftY);
+
+			// 아래로
+			bool isDpadDownTap = input->GetPadKeyState(i, EPadKey::DpadDown) == EKeyState::Tap;
+			// Stick 처리
+			bool isLeftStickDownTap = false;
+			if (isLeftStickY < -0.9f)
+			{
+				if (mCurStickDelay > mStickDelay)
+				{
+					mCurStickDelay = 0;
+					isLeftStickDownTap = true;
+				}
+			}
+
+			if (isDpadDownTap || isLeftStickDownTap)
+			{
+				if (mSelectButtonID < 3)
+				{
+					mSelectButtonID++;
+				}
+			}
+
+			// 위로
+			bool isDpadUpTap = input->GetPadKeyState(i, EPadKey::DpadUp) == EKeyState::Tap;
+			// Stick 처리
+			bool isLeftStickUpTap = false;
+			if (isLeftStickY > 0.9f)
+			{
+				if (mCurStickDelay > mStickDelay)
+				{
+					mCurStickDelay = 0;
+					isLeftStickUpTap = true;
+				}
+			}
+
+			if (isDpadUpTap || isLeftStickUpTap)
+			{
+				if (mSelectButtonID > 0)
+				{
+					mSelectButtonID--;
+				}
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
+			{
+				ClickButton();
+			}
+		}
+	}
 }
 

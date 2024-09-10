@@ -9,6 +9,7 @@
 #include "Attack.h"
 #include "Player.h"
 #include "DamageCalculation.h"
+#include "AimAssist.h"
 
 fq::client::MagicArmour::MagicArmour()
 	:mPlayer(nullptr)
@@ -30,6 +31,7 @@ fq::client::MagicArmour::MagicArmour()
 	, mLaserHiTick(0.25f)
 	, mLaserHitElapsedTime(0.f)
 	, mMagicBallPenetrationCount(1)
+	, mAimAisst(nullptr)
 {}
 
 fq::client::MagicArmour::~MagicArmour()
@@ -233,6 +235,15 @@ void fq::client::MagicArmour::OnStart()
 	mAnimator = GetComponent<game_module::Animator>();
 	mTransform = GetComponent<game_module::Transform>();
 	mPlayer = GetComponent<Player>();
+
+	//
+	for (auto child : GetGameObject()->GetChildren())
+	{
+		if (child->GetName().find("AimAssist") != std::string::npos)
+		{
+			mAimAisst = child->GetComponent<AimAssist>();
+		}
+	}
 }
 
 void fq::client::MagicArmour::OnUpdate(float dt)
@@ -392,4 +403,9 @@ void fq::client::MagicArmour::OnDestroy()
 	DestroyLaserEffect();
 }
 
+void fq::client::MagicArmour::AimToNearMonster()
+{
+	if (mAimAisst)
+		mAimAisst->SetNearMonsterDirection();
+}
 

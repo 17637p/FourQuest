@@ -21,7 +21,6 @@ namespace fq::game_module
 		using SoundChannel = FMOD::Channel;
 		using ChannelIndex = unsigned int;
 
-
 	public:
 		SoundManager();
 		~SoundManager();

@@ -90,6 +90,7 @@ namespace fq::client
 		void processFeverTime(float dt);
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
+		void setFeverBuff(bool isFever);
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -117,6 +118,7 @@ namespace fq::client
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 
 		float mFeverTime; // 갑옷 버프 시간
+		float mFeverElapsedTime; // 피버타임 경과 시간
 
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 		game_module::PrefabResource mSwordSoulAttack;

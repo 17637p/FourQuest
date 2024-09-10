@@ -66,6 +66,7 @@
 #include "BossMonsterHomingRushState.h"
 #include "BossMonsterComboAttackState.h"
 #include "BossMonsterPrepareAttackState.h"
+#include "BossMonsterGroggyState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -97,6 +98,7 @@
 #include "SoulSelectUI.h"
 #include "SettingUI.h"
 #include "RepauseUI.h"
+#include "ResultUI.h"
 
 #include "CameraMoving.h"
 
@@ -710,6 +712,12 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
+		.data<&BossMonster::mGroggyIncreaseRatio>("GroggyIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyIncreaseRatio")
+		.prop(fq::reflect::prop::Comment, u8"피격시 대미지 비례 그로기 게이지 증가량")
+		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
+		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
 		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownAttack")
 		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
@@ -790,6 +798,14 @@ void fq::client::RegisterMetaData()
 		.data<&BossMonsterPrepareAttackState::mHomingTime>("HomingTime"_hs)
 		.prop(fq::reflect::prop::Name, "HomingTime")
 		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterGroggyState>()
+		.type("BossMonsterGroggyState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterGroggyState")
+		.data<&BossMonsterGroggyState::mGroggyTime>("GroggyTime"_hs)
+		.prop(fq::reflect::prop::Name, "GroggyTime")
+		.base<fq::game_module::IStateBehaviour>();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
@@ -1034,8 +1050,10 @@ void fq::client::RegisterMetaData()
 		.type("LoadingText"_hs)
 		.prop(fq::reflect::prop::POD)
 		.prop(fq::reflect::prop::Name, "LoadingText")
-		.data<&LoadingText::Text>("Text"_hs)
-		.prop(fq::reflect::prop::Name, "Text");
+		.data<&LoadingText::Title>("Title"_hs)
+		.prop(fq::reflect::prop::Name, "Title")
+		.data<&LoadingText::Content>("Content"_hs)
+		.prop(fq::reflect::prop::Name, "Content");
 
 	entt::meta<LoadingUI>()
 		.type("LoadingUI"_hs)
@@ -1073,6 +1091,12 @@ void fq::client::RegisterMetaData()
 	entt::meta<RepauseUI>()
 		.type("RepauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "RepauseUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ResultUI>()
+		.type("ResultUI"_hs)
+		.prop(fq::reflect::prop::Name, "ResultUI")
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
