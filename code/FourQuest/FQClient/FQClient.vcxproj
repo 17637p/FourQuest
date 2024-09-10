@@ -63,7 +63,7 @@
     <ClInclude Include="BowDashState.h" />
     <ClInclude Include="BowMultiShotAttackState.h" />
     <ClInclude Include="BowSoulAttackState.h" />
-    <ClInclude Include="BowStrongAttackState.h" />
+    <ClInclude Include="BowStrongChargingState.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
@@ -177,7 +177,7 @@
     <ClCompile Include="BowDashState.cpp" />
     <ClCompile Include="BowMultiShotAttackState.cpp" />
     <ClCompile Include="BowSoulAttackState.cpp" />
-    <ClCompile Include="BowStrongAttackState.cpp" />
+    <ClCompile Include="BowStrongChargingState.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />

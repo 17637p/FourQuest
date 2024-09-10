@@ -85,7 +85,7 @@ void fq::client::Player::OnStart()
 		});
 
 	// 영혼 타입 적용
-	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
+ 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// 무기 연결
 	linkWeaponeMeshes();

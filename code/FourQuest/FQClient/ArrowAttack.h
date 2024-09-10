@@ -29,15 +29,11 @@ namespace fq::client
 		void PlayHitSound();
 
 		bool GetIsStrongAttack() const { return mbIsStrongAttack; }
-		void SetIsStrongAttack(bool isStrongAttack) { mbIsStrongAttack = isStrongAttack; }
 		float GetWeakAttackPower() const { return mWeakAttackPower; }
-		void SetWeakAttackPower(float attackPower) { mWeakAttackPower = attackPower; }
 		float GetStrongAttackPower() const { return mStrongAttackPower; }
-		void SetStrongAttackPower(float attackPower) { mStrongAttackPower = attackPower; }
-		int GetIsBlock() const { return mMaxBlockCount; }
-		void SetIsBlock(int maxBlockCount) { mMaxBlockCount = maxBlockCount; }
-		float GetLifeTime() const { return mLifeTime; }
-		void SetLifeTime(float time) { mLifeTime = time; }
+		fq::game_module::GameObject* GetAttacker() const { return mAttacker; }
+		DirectX::SimpleMath::Vector3 GetAttackDirection() const { return mAttackDirection; }
+		DirectX::SimpleMath::Matrix GetAttackPosition() const { return mAttackTransform; }
 
 	private:
 		/// <summary>
@@ -66,5 +62,7 @@ namespace fq::client
 		// 공격을 하는 객체 
 		fq::game_module::GameObject* mAttacker;
 		std::string mHitSound;
+
+		friend void RegisterMetaData();
 	};
 }

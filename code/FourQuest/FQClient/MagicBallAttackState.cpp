@@ -28,7 +28,7 @@ void fq::client::MagicBallAttackState::OnStateEnter(game_module::Animator& anima
 	// 컨트롤러 입력방향을 바라봅니다
 	animator.GetComponent<game_module::CharacterController>()->SetPadInputRotation();
 
-	mElapsedTime = 0.f;
+	mElapsedTime = 0.f; 
 }
 
 void fq::client::MagicBallAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)

@@ -29,7 +29,7 @@ namespace fq::client
 	{
 	}
 
-	void ArcherArmour::EmitmMultiShotAttack()
+	void ArcherArmour::EmitmWeakAttack()
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mWeakAttack);
 		auto& attackObj = *(instance.begin());
@@ -46,14 +46,9 @@ namespace fq::client
 
 			if (name.find("WeaponeSocket") != std::string::npos)
 			{
-				auto name = child->GetGameObject()->GetName();
 				auto transform = child->GetComponent<game_module::Transform>();
-
-				if (name.find("Bow") != std::string::npos)
-				{
-					position = transform->GetWorldPosition();
-					break;
-				}
+				position = transform->GetWorldPosition();
+				break;
 			}
 		}
 
@@ -64,23 +59,22 @@ namespace fq::client
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.weakProjectileVelocity = 1.f;
+		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
 		attackInfo.attacker = GetGameObject();
 		attackInfo.remainingAttackCount = 1;
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = false;
-		attackInfo.lifeTime = 3.f;
 		attackInfo.hitSound = "A_WeakAttack_Hit";
 		attackComponent->Set(attackInfo);
 
-		// ShieldAttack 소리
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
+		// 약공격 소리
+		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
 
 		GetScene()->AddGameObject(attackObj);
 	}
 
-	void ArcherArmour::EmitStrongAttack(bool bIscharging)
+	void ArcherArmour::EmitStrongAttack()
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttack);
 		auto& attackObj = *(instance.begin());
@@ -115,28 +109,15 @@ namespace fq::client
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.weakProjectileVelocity = 1.f;
 		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
-		attackInfo.strongProjectileVelocity = 1.5f;
 		attackInfo.attacker = GetGameObject();
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
-		attackInfo.lifeTime = 3.f;
+		attackInfo.bIsStrongAttack = true;
+		attackInfo.remainingAttackCount = 0b11111111;
+		attackInfo.hitSound = "A_StrongAttack_Hit";
+		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
 
-		if (bIscharging)
-		{
-			attackInfo.bIsStrongAttack = true;
-			attackInfo.remainingAttackCount = 0b11111111;
-			attackInfo.hitSound = "A_StrongAttack_Hit";
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
-		}
-		else
-		{
-			attackInfo.bIsStrongAttack = false;
-			attackInfo.remainingAttackCount = 1;
-			attackInfo.hitSound = "A_WeakAttack_Hit";
-			GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_WeakAttack", false , 0 });
-		}
 		attackComponent->Set(attackInfo);
 
 		// MagicBall Attack 사운드  
@@ -151,13 +132,13 @@ namespace fq::client
 
 		auto attackT = chargingObj->GetComponent<game_module::Transform>();
 
-		// 스태프 트랜스폼 가져오기
+		// 활 트랜스폼 가져오기
 		attackT->SetParent(mTransform->GetChildren()[3]);
 
 		GetScene()->AddGameObject(chargingObj);
 
-		// 레이저 시작 사운드 재생
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Charging", true , 0 });
+		// 차징 사운드 재생
+		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Charging", true , 0 });
 
 		return chargingObj;
 	}
@@ -183,7 +164,7 @@ namespace fq::client
 	void ArcherArmour::OnUpdate(float dt)
 	{
 		checkSkillCoolTime(dt);
-		checkInput();
+		checkInput(dt);
 	}
 
 	void ArcherArmour::checkSkillCoolTime(float dt)
@@ -191,11 +172,12 @@ namespace fq::client
 		mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
 	}
 
-	void ArcherArmour::checkInput()
+	void ArcherArmour::checkInput(float dt)
 	{
 		using namespace DirectX::SimpleMath;
 
 		auto input = GetScene()->GetInputManager();
+		auto padID = mController->GetControllerID();
 
 		// Dash
 		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::A, EKeyState::Tap)
@@ -205,27 +187,26 @@ namespace fq::client
 			mDashElapsedTime = mDashCoolTime;
 		}
 
+		// MultiShot R Stick 조작
+		DirectX::SimpleMath::Vector2 r;
+		r.x = input->GetStickInfomation(padID, EPadStick::rightX);
+		r.y = input->GetStickInfomation(padID, EPadStick::rightY);
 
-		// Shield 
-		DirectX::SimpleMath::Vector3 rightInput{};
-		rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
-		rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
-
-		// 컨트롤러 스틱을 조작하 땔때 반동으로 생기는 미세한 방향설정을 무시하는 값
-		constexpr float rotationOffsetSq = 0.5f * 0.5f;
-
-		if (rightInput.LengthSquared() >= rotationOffsetSq)
+		if (r.Length() > 0.f)
 		{
-			rightInput.Normalize();
+			mAnimator->SetParameterBoolean("OnFastShot", true);
 
-			if (rightInput == Vector3::Backward)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,-1.f,0.f }));
-			}
-			else
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(rightInput, { 0.f,1.f,0.f }));
-			}
+			// R Stick의 갑작스러운 방향전환으로 입력이 0이 되는
+			// 순간에 스킬이 캔슬되는 것을 방지하는 값입니다
+			constexpr float RStickInputCorrectTime = 0.1f;
+			mRStickNoInputTime = RStickInputCorrectTime;
+		}
+		else
+		{
+			mRStickNoInputTime = std::max(0.f, mRStickNoInputTime - dt);
+
+			if (mRStickNoInputTime == 0.f)
+				mAnimator->SetParameterBoolean("OnFastShot", false);
 		}
 	}
 

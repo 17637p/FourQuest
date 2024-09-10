@@ -1,6 +1,9 @@
 #include "BowStrongChargingState.h"
 
 #include "../FQGameModule/Scene.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/InputManager.h"
+
 #include "ArcherArmour.h"
 
 namespace fq::client
@@ -19,7 +22,7 @@ namespace fq::client
 		mChargingElapsedTime = 0.f;
 		auto archer = animator.GetComponent<ArcherArmour>();
 
-		mChargingEffect = archer->EmitChargingEffect();
+		//mChargingEffect = archer->EmitChargingEffect();
 	}
 
 	void BowStrongChargingState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
@@ -29,8 +32,19 @@ namespace fq::client
 		auto archer = animator.GetComponent<ArcherArmour>();
 		archer->SetLookAtLStickInput();
 
+		auto controller = animator.GetComponent<game_module::CharacterController>();
+		auto controllerID = controller->GetControllerID();
+		auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 
-
+		if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::None) && mChargingElapsedTime >= 0.5f)
+		{
+			animator.SetParameterBoolean("OnCharging", false);
+			animator.SetParameterFloat("ChargingTime", mChargingElapsedTime);
+		}
+		else
+		{
+			animator.SetParameterBoolean("OnCharging", true);
+		}
 	}
 
 	void BowStrongChargingState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
@@ -46,11 +60,12 @@ namespace fq::client
 
 		if (changeChargingTime <= mChargingElapsedTime)
 		{
-			archer->EmitStrongAttack(true);
+			//archer->EmitStrongAttack();
+			//archer->EmitStrongAttackEffect();
 		}
 		else
 		{
-			archer->EmitStrongAttack(false);
+			archer->EmitmWeakAttack();
 		}
 	}
 

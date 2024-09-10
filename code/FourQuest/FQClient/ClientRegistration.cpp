@@ -25,6 +25,10 @@
 #include "SwordSoulAttackState.h"
 #include "BowSoulAttackState.h"
 #include "AxeSoulAttackState.h"
+#include "ArcherArmour.h"
+#include "BowDashState.h"
+#include "BowMultiShotAttackState.h"
+#include "BowStrongChargingState.h"
 
 // Monster
 #include "Monster.h"
@@ -79,6 +83,7 @@
 
 #include "Attack.h"
 #include "StaffSoulAttack.h"
+#include "ArrowAttack.h"
 #include "KnockBack.h"
 
 // UI
@@ -315,6 +320,36 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DashAttack")
 		.base<game_module::Component>();
 
+	entt::meta<ArcherArmour>()
+		.type("ArcherArmour"_hs)
+		.prop(reflect::prop::Name, "ArcherArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&ArcherArmour::mDashCoolTime>("DashCoolTime"_hs)
+		.prop(reflect::prop::Name, "DashCoolTime")
+		.prop(reflect::prop::Comment, u8"구르기 쿨타임")
+		.data<&ArcherArmour::mArrowPower>("mArrowPower"_hs)
+		.prop(reflect::prop::Name, "mArrowPower")
+		.prop(reflect::prop::Comment, u8"공격력")
+		.data<&ArcherArmour::mChangeChargingTime>("mChangeChargingTime"_hs)
+		.prop(reflect::prop::Name, "mChangeChargingTime")
+		.prop(reflect::prop::Comment, u8"X공격 차징 시간")
+		.data<&ArcherArmour::mWeakAttack>("mWeakAttack"_hs)
+		.prop(reflect::prop::Name, "mWeakAttack")
+		.prop(reflect::prop::Comment, u8"약공격 프리펩")
+		.data<&ArcherArmour::mStrongAttack>("mStrongAttack"_hs)
+		.prop(reflect::prop::Name, "mStrongAttack")
+		.prop(reflect::prop::Comment, u8"강공격 프리펩")
+		.data<&ArcherArmour::mStrongAttackChargingEffect>("mStrongAttackChargingEffect"_hs)
+		.prop(reflect::prop::Name, "mStrongAttackChargingEffect")
+		.prop(reflect::prop::Comment, u8"차징 이펙트")
+		.data<&ArcherArmour::mStrongAttackLaunchEffect>("mStrongAttackLaunchEffect"_hs)
+		.prop(reflect::prop::Name, "mStrongAttackLaunchEffect")
+		.prop(reflect::prop::Comment, u8"강공격 이펙트 프리펩")
+		.data<&ArcherArmour::mDashEffect>("mDashEffect"_hs)
+		.prop(reflect::prop::Name, "mDashEffect")
+		.prop(reflect::prop::Comment, u8"구르기 이펙트")
+		.base<game_module::Component>();
+
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
@@ -408,6 +443,23 @@ void fq::client::RegisterMetaData()
 	entt::meta<AxeSoulAttackState>()
 		.type("AxeSoulAttackState"_hs)
 		.prop(reflect::prop::Name, "AxeSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowDashState>()
+		.type("BowDashState"_hs)
+		.prop(reflect::prop::Name, "BowDashState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowMultiShotAttackState>()
+		.type("BowMultiShotAttackState"_hs)
+		.prop(reflect::prop::Name, "BowMultiShotAttackState")
+		.data<&BowMultiShotAttackState::mShotDelay>("ShotDelay"_hs)
+		.prop(reflect::prop::Name, "ShotDelay")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowStrongChargingState>()
+		.type("BowStrongChargingState"_hs)
+		.prop(reflect::prop::Name, "BowStrongChargingState")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -834,6 +886,20 @@ void fq::client::RegisterMetaData()
 	entt::meta<LinearAttack>()
 		.type("LinearAttack"_hs)
 		.prop(fq::reflect::prop::Name, "LinearAttack")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ArrowAttack>()
+		.type("ArrowAttack"_hs)
+		.prop(fq::reflect::prop::Name, "ArrowAttack")
+		.data<&ArrowAttack::mWeakProjectileVelocity>("WeakProjectileVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "WeakProjectileVelocity")
+		.prop(fq::reflect::prop::Comment, u8"약공격 속도")
+		.data<&ArrowAttack::mStrongProjectileVelocity>("StrongProjectileVelocity"_hs)
+		.prop(fq::reflect::prop::Name, "StrongProjectileVelocity")
+		.prop(fq::reflect::prop::Comment, u8"강공격 속도")
+		.data<&ArrowAttack::mLifeTime>("LifeTime"_hs)
+		.prop(fq::reflect::prop::Comment, u8"생존 시간")
+		.prop(fq::reflect::prop::Name, "LifeTime")
 		.base<fq::game_module::Component>();
 
 	entt::meta<KnockBack>()

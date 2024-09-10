@@ -19,7 +19,10 @@ namespace fq::client
 		virtual entt::meta_handle GetHandle() override;
 
 	private:
+		float mShotDelay;
+		float mShotElapsedTime;
 
+		friend void RegisterMetaData();
 	};
 
 }

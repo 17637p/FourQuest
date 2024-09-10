@@ -58,7 +58,9 @@ namespace fq::client
 			return;
 		}
 
-		if (collision.other->GetTag() == fq::game_module::ETag::Monster)
+		if (collision.other->GetTag() == fq::game_module::ETag::Monster
+			|| collision.other->GetTag() == fq::game_module::ETag::Floor
+			|| collision.other->GetTag() == fq::game_module::ETag::Wall)
 		{
 			mMaxBlockCount--;
 
@@ -87,10 +89,7 @@ namespace fq::client
 		mbIsStrongAttack = info.bIsStrongAttack;
 		mWeakAttackPower = info.weakDamage;
 		mStrongAttackPower = info.strongDamage;
-		mWeakProjectileVelocity = info.weakProjectileVelocity;
-		mStrongProjectileVelocity = info.strongProjectileVelocity;
 		mMaxBlockCount = info.remainingAttackCount;
-		mLifeTime = info.lifeTime;
 		mHitSound = info.hitSound;
 		mAttackDirection = info.attackDirection;
 		mAttackTransform = info.attackTransform;

@@ -20,8 +20,8 @@ namespace fq::client
 		ArcherArmour();
 		~ArcherArmour();
 
-		void EmitmMultiShotAttack();
-		void EmitStrongAttack(bool bIscharging);
+		void EmitmWeakAttack();
+		void EmitStrongAttack();
 		std::shared_ptr<game_module::GameObject> EmitChargingEffect();
 		void EmitStrongAttackEffect();
 		void EmitDash();
@@ -39,7 +39,7 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 
 		void checkSkillCoolTime(float dt);
-		void checkInput();
+		void checkInput(float dt);
 
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -54,11 +54,14 @@ namespace fq::client
 		float mDashElapsedTime;
 		float mArrowPower;
 		float mChangeChargingTime;
+		float mRStickNoInputTime;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;
 		game_module::PrefabResource mStrongAttackChargingEffect;
 		game_module::PrefabResource mStrongAttackLaunchEffect;
 		game_module::PrefabResource mDashEffect;
+
+		friend void RegisterMetaData();
 	};
 }
