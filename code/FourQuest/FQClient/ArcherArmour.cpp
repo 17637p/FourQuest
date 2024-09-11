@@ -288,14 +288,11 @@ namespace fq::client
 			// 바라보는 방향 설정 
 			input.Normalize();
 
-			if (input == Vector3::Backward)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
-			}
-			else if (input != Vector3::Zero)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
-			}
+			Quaternion targetRotation = Quaternion::LookRotation(input, { 0.f,-1.f,0.f });
+			Quaternion prevRotation = mTransform->GetWorldRotation();
+
+			Quaternion currentRotation;
+
 		}
 	}
 
