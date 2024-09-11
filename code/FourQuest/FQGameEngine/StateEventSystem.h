@@ -38,6 +38,7 @@ namespace fq::game_engine
 			std::shared_ptr<fq::game_module::GameObject> InstantiatePrefabObject;
 			float LifeTime;
 			bool bUseDeleteStateEnd;
+			float PlaybackSpeed;
 		};
 
 		struct PlaySoundLifeTimeInfo
