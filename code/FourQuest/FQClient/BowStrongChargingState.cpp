@@ -30,7 +30,7 @@ namespace fq::client
 		mChargingElapsedTime += dt;
 
 		auto archer = animator.GetComponent<ArcherArmour>();
-		archer->SetLookAtLStickInput();
+		archer->SetLookAtLStickInput(dt);
 
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		auto controllerID = controller->GetControllerID();
