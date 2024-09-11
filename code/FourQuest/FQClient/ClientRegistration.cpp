@@ -117,6 +117,7 @@
 #include "Spawner.h"
 
 // GameVariable
+
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
 #include "SettingVariable.h"
@@ -334,9 +335,12 @@ void fq::client::RegisterMetaData()
 		.type("BerserkerArmour"_hs)
 		.prop(reflect::prop::Name, "BerserkerArmour")
 		.prop(reflect::prop::Label, "Player")
-		.data<&BerserkerArmour::mAttackPrefab>("mAttackPrefab"_hs)
-		.prop(reflect::prop::Name, "mAttackPrefab")
-		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더")
+		.data<&BerserkerArmour::mBoxAttackPrefab>("BoxAttackPrefab"_hs)
+		.prop(reflect::prop::Name, "BoxAttackPrefab")
+		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(박스형)")
+		.data<&BerserkerArmour::mCircleAttackPrefab>("CircleAttackPrefab"_hs)
+		.prop(reflect::prop::Name, "CircleAttackPrefab")
+		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(원형)")
 		.data<&BerserkerArmour::mLeftAttackHitSound>("LeftAttackHitSound"_hs)
 		.prop(reflect::prop::Name, "LeftAttackHitSound")
 		.prop(reflect::prop::Comment, u8"기본공격(1타)로 피해 입을 시 사운드(사운드 클립키)")
@@ -1437,6 +1441,22 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossComboAttackCoefficient")
 		.data<&DamageVariable::BossRushCoefficient>("BossRushCoefficient"_hs)
 		.prop(fq::reflect::prop::Name, "BossRushCoefficient")
+
+		.data<&DamageVariable::BluntFirstConsecutiveAttack>("BluntFirstConsecutiveAttack"_hs)
+		.prop(fq::reflect::prop::Name, "BluntFirstConsecutiveAttack")
+		.prop(reflect::prop::Comment, u8"워리어 연속공격(1타) 배율")
+		.data<&DamageVariable::BluntSecondConsecutiveAttack>("BluntSecondConsecutiveAttack"_hs)
+		.prop(fq::reflect::prop::Name, "BluntSecondConsecutiveAttack")
+		.prop(reflect::prop::Comment, u8"워리어 연속공격(2타) 배율")
+		.data<&DamageVariable::BluntThirdConsecutiveAttack>("BluntThirdConsecutiveAttack"_hs)
+		.prop(fq::reflect::prop::Name, "BluntThirdConsecutiveAttack")
+		.prop(reflect::prop::Comment, u8"워리어 연속공격(3타) 배율")
+		.data<&DamageVariable::BluntSwingAroundCoefficient>("BluntSwingAroundCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BluntSwingAroundCoefficient")
+		.prop(reflect::prop::Comment, u8"워리어 휩쓸기 공격 배율")
+		.data<&DamageVariable::BluntRushCoefficient>("BluntRushCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BluntRushCoefficient")
+		.prop(reflect::prop::Comment, u8"워리어 돌진 공격 배율")
 		.base<IGameVariable>();
 
 	entt::meta<SettingVariable>()

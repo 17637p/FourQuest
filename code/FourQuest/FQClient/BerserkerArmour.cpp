@@ -10,20 +10,13 @@ namespace fq::client
 {
 	std::shared_ptr<fq::game_module::GameObject> BerserkerArmour::EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime)
 	{
-		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAttackPrefab);
-		auto& attackObj = *(instance.begin());
 
-		auto attackComponent = attackObj->GetComponent<client::Attack>();
-		auto attackTransform = attackObj->GetComponent<game_module::Transform>();
-		attackComponent->SetDestroyTime(destroyTime);
-
-		const auto addtiveTransform = DirectX::SimpleMath::Matrix::CreateScale(scale) * DirectX::SimpleMath::Matrix::CreateTranslation(offset);
-		attackTransform->SetLocalMatrix(attackTransform->GetLocalMatrix() * addtiveTransform);
-		mTransform->AddChild(attackTransform);
 
 		DirectX::SimpleMath::Vector3 direction;
 		EKnockBackType knockBackType;
 		std::string hitSoundName;
+		float damage;
+		fq::game_module::PrefabResource attackPrefabResource;
 
 		auto foward = mTransform->GetLookAtVector();
 		auto right = DirectX::SimpleMath::Matrix::CreateFromQuaternion(mTransform->GetWorldRotation()).Right();
@@ -34,35 +27,56 @@ namespace fq::client
 			hitSoundName = mLeftAttackHitSound;
 			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
 			direction = -right;
+			damage = dc::GetBluntFirstConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
 			break;
 		case EBerserkerAttackType::Right:
 			hitSoundName = mRightAttackHitSound;
 			knockBackType = EKnockBackType::TargetPositionAndDirectionByAngle;
 			direction = right;
+			damage = dc::GetBluntSecondConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
 			break;
 		case EBerserkerAttackType::StrikeDown:
 			hitSoundName = mStrikeDownAttackHitSound;
 			knockBackType = EKnockBackType::TargetPosition;
 			direction = foward;
+			damage = dc::GetBluntThirdConsecutiveAttackDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mBoxAttackPrefab;
 			break;
 		case EBerserkerAttackType::SwingAround:
 			hitSoundName = mSwingAroundHitSound;
 			knockBackType = EKnockBackType::TargetPositionAndKnockDown;
 			direction = foward;
+			damage = dc::GetBluntSwingAroundDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mCircleAttackPrefab;
 			break;
 		case EBerserkerAttackType::Rush:
 			hitSoundName = mAttackRushHitSound;
 			knockBackType = EKnockBackType::TargetPosition;
 			direction = foward;
+			damage = dc::GetBluntRsuhDamage(mPlayer->GetAttackPower());
+			attackPrefabResource = mCircleAttackPrefab;
 			break;
 		default:
 			assert(false);
 			break;
 		}
 
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(attackPrefabResource);
+		auto& attackObj = *(instance.begin());
+
+		auto attackComponent = attackObj->GetComponent<client::Attack>();
+		auto attackTransform = attackObj->GetComponent<game_module::Transform>();
+		attackComponent->SetDestroyTime(destroyTime);
+
+		const auto addtiveTransform = DirectX::SimpleMath::Matrix::CreateScale(scale) * DirectX::SimpleMath::Matrix::CreateTranslation(offset);
+		attackTransform->SetLocalMatrix(attackTransform->GetLocalMatrix() * addtiveTransform);
+		mTransform->AddChild(attackTransform);
+
 		AttackInfo attackInfo{};
 		attackInfo.attacker = GetGameObject();
-		attackInfo.damage = dc::GetSwordDamage(mPlayer->GetAttackPower());
+		attackInfo.damage = damage;
 		attackInfo.type = knockBackType;
 		attackInfo.attackDirection = direction;
 		attackInfo.attackPosition = mTransform->GetWorldPosition();

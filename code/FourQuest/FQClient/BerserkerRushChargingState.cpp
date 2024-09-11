@@ -1,5 +1,6 @@
 #include "BerserkerRushChargingState.h"
 #include "BerserkerArmour.h"
+#include "Player.h"
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
@@ -36,6 +37,12 @@ namespace fq::client
 
 		mChargingElapsedTime = 0.f;
 		mbPassedPoint = false;
+
+		auto playerOrNull = animator.GetComponent<Player>();
+		if (playerOrNull != nullptr)
+		{
+			playerOrNull->SetIsActiveOnHit(false);
+		}
 	}
 
 	void BerserkerRushChargingState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -62,5 +69,11 @@ namespace fq::client
 	{
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		controller->SetDashInput(false);
+
+		auto playerOrNull = animator.GetComponent<Player>();
+		if (playerOrNull != nullptr)
+		{
+			playerOrNull->SetIsActiveOnHit(true);
+		}
 	}
 }

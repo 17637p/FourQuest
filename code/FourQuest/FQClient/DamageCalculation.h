@@ -38,6 +38,30 @@ namespace fq::client::dc
 		return attackPower * DamageVariable::MagicLaserCoefficient;
 	}
 
+	inline float GetBluntFirstConsecutiveAttackDamage(float attackPower)
+	{
+		return attackPower * DamageVariable::BluntFirstConsecutiveAttack;
+	}
+
+	inline float GetBluntSecondConsecutiveAttackDamage(float attackPower)
+	{
+		return attackPower * DamageVariable::BluntSecondConsecutiveAttack;
+	}
+
+	inline float GetBluntThirdConsecutiveAttackDamage(float attackPower)
+	{
+		return attackPower * DamageVariable::BluntThirdConsecutiveAttack;
+	}
+
+	inline float GetBluntSwingAroundDamage(float attackPower)
+	{
+		return attackPower * DamageVariable::BluntSwingAroundCoefficient;
+	}
+
+	inline float GetBluntRsuhDamage(float attackPower)
+	{
+		return attackPower * DamageVariable::BluntRushCoefficient;
+	}
 	//////////////////////////////////////////////////////////////////////////
 	//							¿µÈ¥ °ø°Ý									//
 	//////////////////////////////////////////////////////////////////////////
@@ -80,5 +104,4 @@ namespace fq::client::dc
 	{
 		return attackPower * DamageVariable::BossRushCoefficient;
 	}
-
 }

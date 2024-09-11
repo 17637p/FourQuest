@@ -39,7 +39,8 @@ namespace fq::client
 		client::Player* mPlayer;
 
 		// 인스펙터 변수
-		game_module::PrefabResource mAttackPrefab;
+		game_module::PrefabResource mBoxAttackPrefab;
+		game_module::PrefabResource mCircleAttackPrefab;
 
 		std::string mLeftAttackHitSound;
 		std::string mRightAttackHitSound;
@@ -52,7 +53,7 @@ namespace fq::client
 
 		float mTargetPosRatio = 1.f;
 		float mDirectionRatio = 1.f;
-		
+
 		// 로직 변수
 		float mSwingAroundElapsedTime;
 		float mRushElapsedTime;

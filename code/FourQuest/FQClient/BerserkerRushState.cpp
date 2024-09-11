@@ -1,6 +1,7 @@
 #include "BerserkerRushState.h"
 #include "BerserkerArmour.h"
 #include "Attack.h"
+#include "Player.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/Transform.h"
@@ -19,6 +20,12 @@ void fq::client::BerserkerRushState::OnStateEnter(game_module::Animator& animato
 	mElapsedTime = 0.f;
 	mAccumulatedTime = 0.f;
 	mAttackObjectOrNull = nullptr;
+
+	auto playerOrNull = animator.GetComponent<Player>();
+	if (playerOrNull != nullptr)
+	{
+		playerOrNull->SetIsActiveOnHit(false);
+	}
 }
 
 void fq::client::BerserkerRushState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
@@ -63,5 +70,11 @@ void fq::client::BerserkerRushState::OnStateExit(game_module::Animator& animator
 	if (mAttackObjectOrNull != nullptr)
 	{
 		mAttackObjectOrNull->OnDestroy();
+	}
+
+	auto playerOrNull = animator.GetComponent<Player>();
+	if (playerOrNull != nullptr)
+	{
+		playerOrNull->SetIsActiveOnHit(true);
 	}
 }
