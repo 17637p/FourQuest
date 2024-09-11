@@ -6,6 +6,12 @@
 
 namespace fq::game_module
 {
+	enum class EPadStickType
+	{
+		Left,
+		Right,
+	};
+
 	class Transform;
 	
 	class CharacterController :	public Component, public ICollider
@@ -109,7 +115,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 컨트롤러 입력방향을 바라봅니다
 		/// </summary>
-		void SetPadInputRotation();
+		void SetPadInputRotation(EPadStickType padStickType = EPadStickType::Left);
 
 		void SetDashInput(bool val) { mbHasDashInput = val; }
 

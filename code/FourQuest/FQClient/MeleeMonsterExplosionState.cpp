@@ -25,8 +25,11 @@ void fq::client::MeleeMonsterExplosionState::OnStateEnter(game_module::Animator&
 
 void fq::client::MeleeMonsterExplosionState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	animator.GetScene()->DestroyGameObject(mWarningUI.get());
-	mWarningUI = nullptr;
+	if (mWarningUI)
+	{
+		animator.GetScene()->DestroyGameObject(mWarningUI.get());
+		mWarningUI = nullptr;
+	}
 
 	animator.GetComponent<MeleeMonsterExplosion>()->Explode();
 }

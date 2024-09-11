@@ -110,6 +110,12 @@
     </Filter>
     <Filter Include="include\01.Player\State\ArcherState">
       <UniqueIdentifier>{66b11bb0-e02d-4c9c-9ceb-c651b9e7dc9f}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="include\01.Player\State\Berserker">
+      <UniqueIdentifier>{868f5cc0-acaf-4ce3-92a4-c37e7109a4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Berserker">
+      <UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -452,8 +458,23 @@
     <ClInclude Include="BowStrongChargingState.h">
       <Filter>include\01.Player\State\ArcherState</Filter>
 	</ClInclude>
+    <ClInclude Include="BerserkerArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerAttackState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushChargingState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="EBerserkerAttackType.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="BossMonsterGroggyState.h">
       <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -751,8 +772,20 @@
     <ClCompile Include="BowStrongChargingState.cpp">
       <Filter>src\01.Player\State\Bow</Filter>
 	</ClCompile>
+    <ClCompile Include="BerserkerArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerAttackState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushChargingState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
     <ClCompile Include="BossMonsterGroggyState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

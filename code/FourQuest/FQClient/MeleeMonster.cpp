@@ -26,7 +26,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
-	, mAnimator(nullptr)	
+	, mAnimator(nullptr)
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mStartPosition{}
@@ -217,6 +217,42 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 
 					mKnockBack->Set(power, knockBackDir);
 				}
+				else if (type == EKnockBackType::TargetPositionAndDirectionByAngle)
+				{
+					// 현재는 콜라이더가 항상 플레이어 앞쪽에 위치함을 가정함
+					auto monsterPos = mTransform->GetWorldPosition();
+					monsterPos.y = 0.f;
+					auto attackPos = playerAttack->GetAttackPosition();
+					attackPos.y = 0.f;
+
+					auto pushedDir = monsterPos - attackPos;
+					pushedDir.Normalize();
+
+					// 플레이어를 원점으로 몬스터와 이루는 각도가 작을수록 방향의 영향을 많이 받음
+					const auto& invDirection = -playerAttack->GetAttackDirection();
+					float directionRatio = invDirection.Dot(pushedDir) * 0.5 + 0.5;
+					directionRatio = std::clamp<float>(directionRatio, 0.f, 1.f);
+
+					auto knockBackDir = pushedDir * (1 - directionRatio) * playerAttack->GetTargetPosRatio() + playerAttack->GetAttackDirection() * directionRatio * playerAttack->GetDirectionRatio();
+					//knockBackDir.Normalize();
+
+					mKnockBack->Set(power, knockBackDir);
+				}
+				else if (type == EKnockBackType::TargetPositionAndKnockDown)
+				{
+					auto monsterPos = mTransform->GetWorldPosition();
+					monsterPos.y = 0.f;
+					auto attackPos = playerAttack->GetAttackPosition();
+					attackPos.y = 0.f;
+
+					auto knockBackDir = monsterPos - attackPos;
+					knockBackDir.Normalize();
+
+					mKnockBack->Set(power, knockBackDir);
+
+					// 몬스터를 넘어트리는 상태 변화 호출
+					// mAnimator->SetParameterBoolean("IsKockDown", true);
+				}
 			}
 
 			// HP 설정
@@ -316,31 +352,31 @@ void fq::client::MeleeMonster::LookAtTarget()
 	if (mTarget == nullptr || mTarget->IsDestroyed())
 		return;
 
+	constexpr float RotationSpeed = 0.1f;
+
 	auto transform = GetComponent<game_module::Transform>();
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
-
 	auto targetPos = targetT->GetWorldPosition();
 	auto myPos = transform->GetWorldPosition();
-
+	auto currentRotation = transform->GetWorldRotation();
 	auto directV = targetPos - myPos;
 	directV.y = 0.f;
 	directV.Normalize();
 
-	constexpr float RotationSpeed = 0.1f;
+	DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
 
-	auto currentRotation = transform->GetWorldRotation();
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	// UpVector가 뒤집히는 경우에 대한 예외 처리 
+	if (directV.z >= 1.f)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f, -1.f, 0.f });
+	else if (directV != DirectX::SimpleMath::Vector3::Zero)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
+
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
+
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
 
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
-
-	// UpVector가 뒤집힌 경우
-	if (rotationMatrix._22 <= -0.9f)
-	{
-		rotationMatrix._22 = 1.f;
-	}
-	transform->SetLocalRotationToMatrix(rotationMatrix);
+	mTransform->SetWorldRotation(result);
 }
 

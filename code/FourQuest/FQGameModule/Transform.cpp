@@ -176,6 +176,16 @@ void fq::game_module::Transform::SetLocalRotationToMatrix(Matrix rotation)
 	updateWorldMatrix();
 }
 
+void fq::game_module::Transform::SetWorldRotationToMatrix(Matrix rotation)
+{
+	mFQTransform.worldMatrix = Matrix::CreateScale(mFQTransform.worldScale)
+		* rotation
+		* Matrix::CreateTranslation(mFQTransform.worldPosition);
+
+	mFQTransform.worldRotation = Quaternion::CreateFromRotationMatrix(rotation);
+
+	updateLocalMatrix();
+}
 
 void fq::game_module::Transform::SetLocalScale(Vector3 scale)
 {

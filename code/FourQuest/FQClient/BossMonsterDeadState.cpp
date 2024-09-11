@@ -36,7 +36,6 @@ void fq::client::BossMonsterDeadState::OnStateExit(game_module::Animator& animat
 	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 		{ EMonsterType::Boss });
 
-
 	// 죽었는데 ArmourSpawner 컴포넌트가 있을 경우 갑옷 소환
 	auto armourSpawner = animator.GetComponent<ArmourSpawner>();
 	if (armourSpawner)

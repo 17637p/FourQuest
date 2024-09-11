@@ -30,6 +30,11 @@
 #include "BowMultiShotAttackState.h"
 #include "BowStrongChargingState.h"
 #include "AimAssist.h"
+#include "EBerserkerAttackType.h"
+#include "BerserkerArmour.h"
+#include "BerserkerAttackState.h"
+#include "BerserkerRushState.h"
+#include "BerserkerRushChargingState.h"
 
 // Monster
 #include "Monster.h"
@@ -117,6 +122,7 @@
 #include "Spawner.h"
 
 // GameVariable
+
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
 #include "SettingVariable.h"
@@ -145,7 +151,7 @@ void fq::client::RegisterMetaData()
 		.base<game_module::Component>();
 
 	entt::meta<TestPOD>()
-		.type("TestPOD"_hs)	
+		.type("TestPOD"_hs)
 		.prop(reflect::prop::Name, "TestPOD")
 		.prop(reflect::prop::POD)
 		.data<&TestPOD::res>("res"_hs)
@@ -369,6 +375,48 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Comment, u8"구르기 이펙트")
 		.base<game_module::Component>();
 
+	entt::meta<BerserkerArmour>()
+		.type("BerserkerArmour"_hs)
+		.prop(reflect::prop::Name, "BerserkerArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&BerserkerArmour::mBoxAttackPrefab>("BoxAttackPrefab"_hs)
+		.prop(reflect::prop::Name, "BoxAttackPrefab")
+		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(박스형)")
+		.data<&BerserkerArmour::mCircleAttackPrefab>("CircleAttackPrefab"_hs)
+		.prop(reflect::prop::Name, "CircleAttackPrefab")
+		.prop(reflect::prop::Comment, u8"공격 시 생성되는 기본 콜라이더(원형)")
+		.data<&BerserkerArmour::mLeftAttackHitSound>("LeftAttackHitSound"_hs)
+		.prop(reflect::prop::Name, "LeftAttackHitSound")
+		.prop(reflect::prop::Comment, u8"기본공격(1타)로 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mRightAttackHitSound>("RightAttackHitSound"_hs)
+		.prop(reflect::prop::Name, "RightAttackHitSound")
+		.prop(reflect::prop::Comment, u8"기본공격(2타)로 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mStrikeDownAttackHitSound>("StrikeDownAttackHitSound"_hs)
+		.prop(reflect::prop::Name, "StrikeDownAttackHitSound")
+		.prop(reflect::prop::Comment, u8"기본공격(3타)로 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundHitSound>("SwingAroundHitSound"_hs)
+		.prop(reflect::prop::Name, "SwingAroundHitSound")
+		.prop(reflect::prop::Comment, u8"휩쓸기로 인해 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mAttackRushHitSound>("RushHitSound"_hs)
+		.prop(reflect::prop::Name, "RushHitSound")
+		.prop(reflect::prop::Comment, u8"돌진으로 인해 피해 입을 시 사운드(사운드 클립키)")
+		.data<&BerserkerArmour::mSwingAroundCoolTime>("mSwingAroundCoolTime"_hs)
+		.prop(reflect::prop::Name, "mSwingAroundCoolTime")
+		.prop(reflect::prop::Comment, u8"휩쓸기(A 버튼) 쿨타임")
+		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
+		.prop(reflect::prop::Name, "RushCoolTime")
+		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.data<&BerserkerArmour::mRushCoolTime>("RushCoolTime"_hs)
+		.prop(reflect::prop::Name, "RushCoolTime")
+		.prop(reflect::prop::Comment, u8"돌진(R 스틱) 쿨타임")
+		.data<&BerserkerArmour::mTargetPosRatio>("Pushed Back Ratio"_hs)
+		.prop(reflect::prop::Name, "Pushed Back Ratio")
+		.prop(reflect::prop::Comment, u8"기본 공격 시 뒤로 밀리는 비율")
+		.data<&BerserkerArmour::mDirectionRatio>("Pushed Attack Direction Ratio"_hs)
+		.prop(reflect::prop::Name, "Pushed Attack Direction Ratio")
+		.prop(reflect::prop::Comment, u8"기본 공격 시 공격 방향으로 밀리는 비율")
+		.base<game_module::Component>();
+
 	entt::meta<Soul>()
 		.type("Soul"_hs)
 		.prop(reflect::prop::Name, "Soul")
@@ -494,12 +542,101 @@ void fq::client::RegisterMetaData()
 		.type("BowMultiShotAttackState"_hs)
 		.prop(reflect::prop::Name, "BowMultiShotAttackState")
 		.data<&BowMultiShotAttackState::mShotDelay>("ShotDelay"_hs)
+		.prop(fq::reflect::prop::Comment, u8"화살 연사 속도")
 		.prop(reflect::prop::Name, "ShotDelay")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<BowStrongChargingState>()
 		.type("BowStrongChargingState"_hs)
 		.prop(reflect::prop::Name, "BowStrongChargingState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<EBerserkerAttackType>()
+		.prop(fq::reflect::prop::Name, "ArmourType")
+		.conv<std::underlying_type_t<EBerserkerAttackType>>()
+		.data<EBerserkerAttackType::Left>("Left"_hs) // 0
+		.prop(fq::reflect::prop::Name, "Left")
+		.data<EBerserkerAttackType::Right>("Right"_hs) // 1
+		.prop(fq::reflect::prop::Name, "Right")
+		.data<EBerserkerAttackType::StrikeDown>("StrikeDown"_hs) // 2
+		.prop(fq::reflect::prop::Name, "StrikeDown")
+		.data<EBerserkerAttackType::SwingAround>("SwingAround"_hs) // 3
+		.prop(fq::reflect::prop::Name, "SwingAround")
+		.data<EBerserkerAttackType::Rush>("Rush"_hs) // 4
+		.prop(fq::reflect::prop::Name, "Rush")
+		.data<EBerserkerAttackType::None>("None"_hs) // 5
+		.prop(fq::reflect::prop::Name, "None");
+
+	entt::meta<BerserkerAttackState>()
+		.type("BerserkerAttackState"_hs)
+		.prop(reflect::prop::Name, "BerserkerAttackState")
+		.data<&BerserkerAttackState::mAttackType>("AttackType"_hs)
+		.prop(reflect::prop::Name, "AttackType")
+		.prop(fq::reflect::prop::Comment, u8"공격 종류")
+		.data<&BerserkerAttackState::mAttackMovement>("AttackMovement"_hs)
+		.prop(reflect::prop::Name, "AttackMovement")
+		.prop(fq::reflect::prop::Comment, u8"공격 시 이동될 움직임")
+		.data<&BerserkerAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 생성 시기")
+		.data<&BerserkerAttackState::mColliderOffset>("ColliderOffset"_hs)
+		.prop(reflect::prop::Name, "ColliderOffset")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 오프셋")
+		.data<&BerserkerAttackState::mColliderScale>("ColliderScale"_hs)
+		.prop(reflect::prop::Name, "ColliderScale")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 스케일")
+		.data<&BerserkerAttackState::mKnocBackPower>("KnocBackPower"_hs)
+		.prop(reflect::prop::Name, "KnocBackPower")
+		.prop(fq::reflect::prop::Comment, u8"피격된 물체가 밀리는 정도")
+		.data<&BerserkerAttackState::mDestroyTime>("DestroyTime"_hs)
+		.prop(reflect::prop::Name, "DestroyTime")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 지속 시간")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BerserkerRushState>()
+		.type("BerserkerRushState"_hs)
+		.prop(reflect::prop::Name, "BerserkerRushState")
+		.data<&BerserkerRushState::mAttackType>("AttackType"_hs)
+		.prop(reflect::prop::Name, "AttackType")
+		.prop(fq::reflect::prop::Comment, u8"공격 종류")
+		.data<&BerserkerRushState::mAttackMovement>("AttackMovement"_hs)
+		.prop(reflect::prop::Name, "AttackMovement")
+		.prop(fq::reflect::prop::Comment, u8"공격 시 이동될 움직임")
+		.data<&BerserkerRushState::mAttackTiming>("AttackTiming"_hs)
+		.prop(reflect::prop::Name, "AttackTiming")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 생성 시기")
+		.data<&BerserkerRushState::mColliderOffset>("ColliderOffset"_hs)
+		.prop(reflect::prop::Name, "ColliderOffset")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 오프셋")
+		.data<&BerserkerRushState::mColliderScale>("ColliderScale"_hs)
+		.prop(reflect::prop::Name, "ColliderScale")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 스케일")
+		.data<&BerserkerRushState::mKnocBackPower>("KnocBackPower"_hs)
+		.prop(reflect::prop::Name, "KnocBackPower")
+		.prop(fq::reflect::prop::Comment, u8"피격된 물체가 밀리는 정도")
+		.data<&BerserkerRushState::mDestroyTime>("DestroyTime"_hs)
+		.prop(reflect::prop::Name, "DestroyTime")
+		.prop(fq::reflect::prop::Comment, u8"공격 콜라이더 지속 시간")
+		.data<&BerserkerRushState::mVelocity>("Velocity"_hs)
+		.prop(reflect::prop::Name, "Velocity")
+		.prop(fq::reflect::prop::Comment, u8"돌진 속도")
+		.data<&BerserkerRushState::mAcceleration>("Acceleration"_hs)
+		.prop(reflect::prop::Name, "Acceleration")
+		.prop(fq::reflect::prop::Comment, u8"돌진 가속도")
+		.data<&BerserkerRushState::mMaxVelocity>("MaxVelocity"_hs)
+		.prop(reflect::prop::Name, "MaxVelocity")
+		.prop(fq::reflect::prop::Comment, u8"돌진 최대 속도 max(속 + 가속 * 시간, MaxVelocity)")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BerserkerRushChargingState>()
+		.type("BerserkerRushChargingState"_hs)
+		.prop(reflect::prop::Name, "BerserkerRushChargingState")
+		.data<&BerserkerRushChargingState::mChargingTime>("ChargingTime"_hs)
+		.prop(reflect::prop::Name, "ChargingTime")
+		.prop(fq::reflect::prop::Comment, u8"차징 대기 시간")
+		.data<&BerserkerRushChargingState::mChargingMinimumTime>("ChargingMinimumTime"_hs)
+		.prop(reflect::prop::Name, "ChargingMinimumTime")
+		.prop(fq::reflect::prop::Comment, u8"Rush 상태 진입을 위한 최소 차징 시간")
 		.base<game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -695,9 +832,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackRange")
 		.data<&BossMonster::mDetectRange>("DetectRange"_hs)
 		.prop(fq::reflect::prop::Name, "DetectRange")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
-		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mGroggyIncreaseRatio>("GroggyIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyIncreaseRatio")
 		.prop(fq::reflect::prop::Comment, u8"피격시 대미지 비례 그로기 게이지 증가량")
@@ -1386,6 +1523,22 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossComboAttackCoefficient")
 		.data<&DamageVariable::BossRushCoefficient>("BossRushCoefficient"_hs)
 		.prop(fq::reflect::prop::Name, "BossRushCoefficient")
+
+		.data<&DamageVariable::BluntFirstConsecutiveAttack>("BluntFirstConsecutiveAttack"_hs)
+		.prop(fq::reflect::prop::Name, "BluntFirstConsecutiveAttack")
+		.prop(reflect::prop::Comment, u8"워리어 연속공격(1타) 배율")
+		.data<&DamageVariable::BluntSecondConsecutiveAttack>("BluntSecondConsecutiveAttack"_hs)
+		.prop(fq::reflect::prop::Name, "BluntSecondConsecutiveAttack")
+		.prop(reflect::prop::Comment, u8"워리어 연속공격(2타) 배율")
+		.data<&DamageVariable::BluntThirdConsecutiveAttack>("BluntThirdConsecutiveAttack"_hs)
+		.prop(fq::reflect::prop::Name, "BluntThirdConsecutiveAttack")
+		.prop(reflect::prop::Comment, u8"워리어 연속공격(3타) 배율")
+		.data<&DamageVariable::BluntSwingAroundCoefficient>("BluntSwingAroundCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BluntSwingAroundCoefficient")
+		.prop(reflect::prop::Comment, u8"워리어 휩쓸기 공격 배율")
+		.data<&DamageVariable::BluntRushCoefficient>("BluntRushCoefficient"_hs)
+		.prop(fq::reflect::prop::Name, "BluntRushCoefficient")
+		.prop(reflect::prop::Comment, u8"워리어 돌진 공격 배율")
 		.base<IGameVariable>();
 
 	entt::meta<SettingVariable>()

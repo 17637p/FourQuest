@@ -157,7 +157,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 					}
 
 					auto* materialAnimator = object.GetComponent<MaterialAnimator>();
-					
+
 					if (materialAnimator != nullptr)
 					{
 						fq::graphics::MaterialInstanceInfo materialInstanceInfo = mesh.GetMaterialInstanceInfo();
@@ -171,7 +171,7 @@ void fq::game_engine::RenderingSystem::Update(float dt)
 							materialInstanceInfo.bUseDissolveCutoff = info.bIsUsed;
 							materialInstanceInfo.DissolveCutoff = info.DissolveCutoff;
 						}
-						
+
 						mesh.SetMaterialInstanceInfo(materialInstanceInfo);
 					}
 				}
@@ -461,6 +461,21 @@ void fq::game_engine::RenderingSystem::loadStaticMeshRenderer(fq::game_module::G
 	}
 }
 
+void fq::game_engine::RenderingSystem::unloadAnimation(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::Animator>())
+	{
+		return;
+	}
+
+	auto animator = object->GetComponent<game_module::Animator>();
+
+//	animator->SetController(nullptr);
+//	animator->SetNodeHierarchyInstance(nullptr);
+//	animator->SetNodeHierarchy(nullptr);
+}
+
+
 void fq::game_engine::RenderingSystem::loadAnimation(fq::game_module::GameObject* object)
 {
 	if (!object->HasComponent<game_module::Animator>())
@@ -612,6 +627,7 @@ void fq::game_engine::RenderingSystem::OnDestroyedGameObject(const fq::event::On
 	unloadStaticMeshRenderer(event.object);
 	unloadSkinnedMeshRenderer(event.object);
 	unloadTerrain(event.object);
+	unloadAnimation(event.object);
 }
 
 void fq::game_engine::RenderingSystem::unloadStaticMeshRenderer(fq::game_module::GameObject* object)
@@ -745,3 +761,4 @@ unsigned int fq::game_engine::RenderingSystem::GetModelKey(const Path& modelPath
 {
 	return entt::hashed_string((modelPath + texturePath).c_str()).value();
 }
+

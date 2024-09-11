@@ -76,6 +76,8 @@ namespace fq::game_module
 		/// </summary>
 		void SetLocalRotationToMatrix(Matrix rotation);
 
+		void SetWorldRotationToMatrix(Matrix rotation);
+
 		/// <summary>
 		/// 로컬 공간의 스케일 값을 반환합니다
 		/// </summary>
