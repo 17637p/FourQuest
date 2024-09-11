@@ -36,6 +36,7 @@ fq::client::Player::Player()
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mFeverElapsedTime(0.f)
+	, mbIsActiveOnHit(true)
 {}
 
 fq::client::Player::~Player()
@@ -86,7 +87,7 @@ void fq::client::Player::OnStart()
 		});
 
 	// 영혼 타입 적용
-	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
+ 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// 무기 연결
 	linkWeaponeMeshes();
@@ -150,7 +151,11 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				}
 			}
 
-			mAnimator->SetParameterTrigger("OnHit");
+			if (mbIsActiveOnHit)
+			{
+				mAnimator->SetParameterTrigger("OnHit");
+			}
+
 			float attackPower = monsterAtk->GetAttackPower();
 			mHp -= attackPower;
 
@@ -319,27 +324,27 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 {
 	switch (equipType)
 	{
-		case fq::client::ESoulType::Sword:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Staff:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Axe:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Bow:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
-		}
-		break;
+	case fq::client::ESoulType::Sword:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Staff:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Axe:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Bow:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
+	}
+	break;
 	}
 }
 
@@ -433,18 +438,18 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 	switch (mSoulType)
 	{
-		case fq::client::ESoulType::Sword:
-			cost = PlayerSoulVariable::SoulSwordAttackCost;
-			break;
-		case fq::client::ESoulType::Staff:
-			cost = PlayerSoulVariable::SoulStaffAttackCost;
-			break;
-		case fq::client::ESoulType::Axe:
-			cost = PlayerSoulVariable::SoulAxeAttackCost;
-			break;
-		case fq::client::ESoulType::Bow:
-			cost = PlayerSoulVariable::SoulBowAttackCost;
-			break;
+	case fq::client::ESoulType::Sword:
+		cost = PlayerSoulVariable::SoulSwordAttackCost;
+		break;
+	case fq::client::ESoulType::Staff:
+		cost = PlayerSoulVariable::SoulStaffAttackCost;
+		break;
+	case fq::client::ESoulType::Axe:
+		cost = PlayerSoulVariable::SoulAxeAttackCost;
+		break;
+	case fq::client::ESoulType::Bow:
+		cost = PlayerSoulVariable::SoulBowAttackCost;
+		break;
 	}
 
 	return mSoulGauge >= cost;

@@ -36,7 +36,7 @@ namespace fq::client
 		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
-
+		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;   }
 		/// <summary>
 		/// 갑옷타입을 반환합니다
 		/// </summary>
@@ -128,6 +128,7 @@ namespace fq::client
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
 		
 		bool mbOnShieldBlock;
+		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();

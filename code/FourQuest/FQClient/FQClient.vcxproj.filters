@@ -105,6 +105,18 @@
     <Filter Include="include\06.ETC">
       <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\01.Player\State\Bow">
+      <UniqueIdentifier>{49914565-c983-4fe8-92a4-f6316be2c96e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player\State\ArcherState">
+      <UniqueIdentifier>{66b11bb0-e02d-4c9c-9ceb-c651b9e7dc9f}</UniqueIdentifier>
+	</Filter>
+    <Filter Include="include\01.Player\State\Berserker">
+      <UniqueIdentifier>{868f5cc0-acaf-4ce3-92a4-c37e7109a4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Berserker">
+      <UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientRegistration.h">
@@ -431,8 +443,38 @@
     <ClInclude Include="ArmourSpawner.h">
       <Filter>include\07.Quest</Filter>
     </ClInclude>
+    <ClInclude Include="ArrowAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ArcherArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BowDashState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowMultiShotAttackState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowStrongChargingState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+	</ClInclude>
+    <ClInclude Include="BerserkerArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerAttackState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushChargingState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="EBerserkerAttackType.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="BossMonsterGroggyState.h">
       <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -715,8 +757,35 @@
     <ClCompile Include="ArmourSpawner.cpp">
       <Filter>src\06.ETC</Filter>
     </ClCompile>
+    <ClCompile Include="ArrowAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ArcherArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BowDashState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowMultiShotAttackState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowStrongChargingState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+	</ClCompile>
+    <ClCompile Include="BerserkerArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerAttackState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushChargingState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
     <ClCompile Include="BossMonsterGroggyState.cpp">
       <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

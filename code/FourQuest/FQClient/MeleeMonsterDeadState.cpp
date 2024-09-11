@@ -98,6 +98,20 @@ void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& anim
 			matAnimator->SetDissolveAnimatorInfo(info);
 		}
 	}
+
+	// RimLight ²ô±â
+	for (auto child : animator.GetGameObject()->GetChildren())
+	{
+		auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();
+
+		if (skeletalMesh != nullptr)
+		{
+			fq::graphics::MaterialInstanceInfo info;
+			info.bUseRimLight = false;
+
+			skeletalMesh->SetMaterialInstanceInfo(info);
+		}
+	}
 }
 
 void fq::client::MeleeMonsterDeadState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
