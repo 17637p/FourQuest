@@ -110,8 +110,10 @@ void fq::client::Soul::OnUpdate(float dt)
 			}
 		}
 
-		// °¡Àå °¡±î¿î °©¿ÊÀ¸·Î ¿µÈ¥È­
-		assert(closestArmour);
+		if (closestArmour == nullptr)
+		{
+			return;
+		}
 
 		PlayerInfo info{ mController->GetControllerID(), mSoulType };
 

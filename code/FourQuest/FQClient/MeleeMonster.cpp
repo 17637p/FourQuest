@@ -25,7 +25,7 @@ fq::client::MeleeMonster::MeleeMonster()
 	, mAttackCoolTime(3.f)
 	, mAttackElapsedTime(0.f)
 	, mGameManager(nullptr)
-	, mAnimator(nullptr)	
+	, mAnimator(nullptr)
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mStartPosition{}
@@ -315,31 +315,31 @@ void fq::client::MeleeMonster::LookAtTarget()
 	if (mTarget == nullptr || mTarget->IsDestroyed())
 		return;
 
+	constexpr float RotationSpeed = 0.1f;
+
 	auto transform = GetComponent<game_module::Transform>();
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
-
 	auto targetPos = targetT->GetWorldPosition();
 	auto myPos = transform->GetWorldPosition();
-
+	auto currentRotation = transform->GetWorldRotation();
 	auto directV = targetPos - myPos;
 	directV.y = 0.f;
 	directV.Normalize();
 
-	constexpr float RotationSpeed = 0.1f;
+	DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
 
-	auto currentRotation = transform->GetWorldRotation();
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	// UpVector가 뒤집히는 경우에 대한 예외 처리 
+	if (directV.z >= 1.f)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f, -1.f, 0.f });
+	else if (directV != DirectX::SimpleMath::Vector3::Zero)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
+
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
+
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
 
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
-
-	// UpVector가 뒤집힌 경우
-	if (rotationMatrix._22 <= -0.9f)
-	{
-		rotationMatrix._22 = 1.f;
-	}
-	transform->SetLocalRotationToMatrix(rotationMatrix);
+	mTransform->SetWorldRotation(result);
 }
 

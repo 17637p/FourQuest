@@ -106,11 +106,12 @@ void fq::game_engine::PathFindingSystem::Update(float dt)
 				moveDir.y = 0.f;
 				moveDir.Normalize();
 
-				if (moveDir == DirectX::SimpleMath::Vector3::Backward)
-					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, -1, 0 });
+				if (moveDir.z >= 1.f)
+				{
+					rotation = DirectX::SimpleMath::Quaternion::LookRotation({0.f,0.f,1.f}, { 0, -1, 0 });
+				}
 				else if (moveDir != DirectX::SimpleMath::Vector3::Zero)
 					rotation = DirectX::SimpleMath::Quaternion::LookRotation(moveDir, { 0, 1, 0 });
-
 				rotation.Normalize();
 			}
 

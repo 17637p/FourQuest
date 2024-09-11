@@ -28,5 +28,4 @@ namespace fq::client::helper
 
 	};
 
-
 }

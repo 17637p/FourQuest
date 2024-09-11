@@ -98,7 +98,7 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 		if (playerAttack->ProcessAttack())
 		{
 			float attackPower = playerAttack->GetAttackPower();
-			
+
 			// HP 감소
 			mHp -= attackPower;
 
@@ -300,25 +300,27 @@ void fq::client::BossMonster::HomingTarget()
 
 	auto targetPos = targetT->GetWorldPosition();
 	auto myPos = mTransform->GetWorldPosition();
+	auto currentRotation = mTransform->GetWorldRotation();
 
 	auto directV = targetPos - myPos;
 	directV.y = 0.f;
 	directV.Normalize();
 
-	auto currentRotation = mTransform->GetWorldRotation();
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
+
+	// UpVector가 뒤집히는 경우에 대한 예외 처리 
+	if (directV.z >= 1.f)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({0.f,0.f,1.f}, {0.f, -1.f, 0.f});
+	else if (directV != DirectX::SimpleMath::Vector3::Zero)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
+
+	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
+
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
 
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
-
-	// UpVector가 뒤집힌 경우
-	if (rotationMatrix._22 <= -0.9f)
-	{
-		rotationMatrix._22 = 1.f;
-	}
-	mTransform->SetLocalRotationToMatrix(rotationMatrix);
+	mTransform->SetWorldRotation(result);
 }
 
 float fq::client::BossMonster::GetHPRatio() const

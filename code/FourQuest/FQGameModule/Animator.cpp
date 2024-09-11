@@ -6,9 +6,9 @@
 fq::game_module::Animator::Animator()
 	:mDefaultPlaySpeed(1.f)
 	, mbIsStopAnimation(false)
-	,mNodeHierarchyInstance{nullptr}
-	,mController{nullptr}
-	,mNodeHierarchy{nullptr}
+	, mNodeHierarchyInstance{ nullptr }
+	, mController{ nullptr }
+	, mNodeHierarchy{ nullptr }
 {
 
 }
@@ -79,10 +79,6 @@ void fq::game_module::Animator::UpdateState(float dt)
 	{
 		mController->UpdateState(dt);
 	}
-	else
-	{
-		int a = 3;
-	}
 }
 
 void fq::game_module::Animator::UpdateAnimation(float dt)
@@ -113,6 +109,20 @@ void fq::game_module::Animator::ProcessAnimationEvent(class GameObject* gameObje
 	if (mController != nullptr)
 	{
 		mController->ProcessAnimationEvent(gameObject, eventManager);
+	}
+}
+
+void fq::game_module::Animator::OnDestroy()
+{
+	if (mController)
+	{
+		auto& stateMap = mController->GetStateMap();
+		auto name = mController->GetCurrentStateName();
+
+		if (auto iter =  stateMap.find(name); iter != stateMap.end())
+		{
+			iter->second.OnStateExit();
+		}
 	}
 }
 
