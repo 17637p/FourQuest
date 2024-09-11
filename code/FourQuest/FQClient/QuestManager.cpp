@@ -74,6 +74,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::QuestManager::Clone(std:
 		*cloneQuestManager = *this;
 	}
 
+	cloneQuestManager->mSubQuestTexts.clear();
 	return cloneQuestManager;
 }
 
@@ -126,12 +127,14 @@ void fq::client::QuestManager::OnStart()
 
 	for (int i = 0; i < 3 - mCurSubQuest.size(); i++)
 	{
-		RenderOnSubQuest(i, false);
+		RenderOnSubQuest(2 - i, false);
 	}
 }
 
 void fq::client::QuestManager::OnUpdate(float dt)
 {
+	SetScaleAndPositionScreen();
+
 	// Main Quest Text Setting
 	auto textInfo = mMainQuestText->GetTextInfo();
 	textInfo.Text = mCurMainQuest.mName;
