@@ -25,6 +25,11 @@ namespace fq::game_module
 		void OnUpdate(float dt) override;
 
 		/// <summary>
+		/// 파괴되는 경우 ExitState 함수를 호출합니다.
+		/// </summary>
+		void OnDestroy() override;
+
+		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -123,6 +128,7 @@ namespace fq::game_module
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
+		
 
 	private:
 		ControllerPath mControllerPath;

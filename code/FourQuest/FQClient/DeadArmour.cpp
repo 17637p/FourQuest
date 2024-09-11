@@ -126,21 +126,12 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 
 	mbIsVisible = isVisible;
 	auto imageUI = GetComponent<game_module::ImageUI>();
+	auto& uiObject = imageUI->GetImageObjects();
 
-	auto uiInfo = imageUI->GetUIInfomations();
-	if (isVisible)
+	for (auto& ui : uiObject)
 	{
-		// UI 보이게 설정 
-		uiInfo[0].ScaleX = 1.f;
-		uiInfo[0].ScaleY = 1.f;
+		ui->SetIsRender(isVisible);
 	}
-	else
-	{
-		uiInfo[0].ScaleX = 0.f;
-		uiInfo[0].ScaleY = 0.f;
-	}
-
-	imageUI->SetUIInfomations(uiInfo);
 }
 
 void fq::client::DeadArmour::OnUpdate(float dt)
@@ -158,8 +149,8 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 			});
 		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
 
-		float height = static_cast<float>(GetScene()->GetScreenManager()->GetScreenHeight());
-		float width = static_cast<float>(GetScene()->GetScreenManager()->GetScreenWidth());
+		float height = static_cast<float>(GetScene()->GetScreenManager()->GetFixScreenHeight());
+		float width = static_cast<float>(GetScene()->GetScreenManager()->GetFixScreenWidth());
 
 		auto viewProj = mainCamera->GetViewProjection();
 		Vector3 screenPos = Vector3::Transform(pos, viewProj);
