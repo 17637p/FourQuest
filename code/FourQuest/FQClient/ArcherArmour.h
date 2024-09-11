@@ -23,8 +23,8 @@ namespace fq::client
 		void EmitmWeakAttack();
 		void EmitStrongAttack();
 		std::shared_ptr<game_module::GameObject> EmitChargingEffect();
-		void EmitStrongAttackEffect();
-		void EmitDash();
+		std::shared_ptr<game_module::GameObject> EmitStrongAttackEffect();
+		std::shared_ptr<game_module::GameObject> EmitDash();
 
 		/// <summary>
 		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
@@ -33,6 +33,7 @@ namespace fq::client
 		void SetLookAtLStickInput();
 
 		float GetChangeChargingTime() { return mChangeChargingTime; }
+		float GetOriginCharacterMaxSpeed() { return mOriginCharacterMaxSpeed; }
 
 	private:
 		void OnStart() override;
@@ -52,11 +53,14 @@ namespace fq::client
 
 		float mDashCoolTime;
 		float mDashElapsedTime;
+		float mStrongAttackCoolTime;
+		float mStrongAttackElapsedTime;
 		float mArrowPower;
 		float mChangeChargingTime;
 		float mRStickNoInputTime;
 		float mWeakProjectileVelocity;
 		float mStrongProjectileVelocity;
+		float mOriginCharacterMaxSpeed;
 
 		game_module::PrefabResource mWeakAttack;
 		game_module::PrefabResource mStrongAttack;

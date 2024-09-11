@@ -19,7 +19,17 @@ namespace fq::client
 		virtual entt::meta_handle GetHandle() override;
 
 	private:
+		std::shared_ptr<fq::game_module::GameObject> mDashEffect;
 
+		float mOriginSpeed;
+		float mMaxSpeed;
+		float mMinSpeed;
+		float mCurrentSpeed;
+		float mPeakSpeedTime;
+		float mDurationTime;
+		float mSpeedDecayRate;
+
+		friend void RegisterMetaData();
 	};
 
 }

@@ -22,7 +22,7 @@ namespace fq::client
 		mChargingElapsedTime = 0.f;
 		auto archer = animator.GetComponent<ArcherArmour>();
 
-		//mChargingEffect = archer->EmitChargingEffect();
+		mChargingEffect = archer->EmitChargingEffect();
 	}
 
 	void BowStrongChargingState::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
@@ -60,8 +60,8 @@ namespace fq::client
 
 		if (changeChargingTime <= mChargingElapsedTime)
 		{
-			//archer->EmitStrongAttack();
-			//archer->EmitStrongAttackEffect();
+			archer->EmitStrongAttack();
+			archer->EmitStrongAttackEffect();
 		}
 		else
 		{

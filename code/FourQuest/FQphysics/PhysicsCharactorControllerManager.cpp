@@ -121,6 +121,7 @@ namespace fq::physics
 
 		data.velocity = movement->GetDisplacementVector();
 		data.isFall = movement->GetIsFall();
+		data.maxSpeed = movement->GetMaxSpeed();
 	}
 	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData, int* collisionMatrix)
 	{
@@ -138,6 +139,7 @@ namespace fq::physics
 		controller->SetMoveRestriction(movementData.restriction);
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
+		movement->SetMaxSpeed(movementData.maxSpeed);
 	}
 #pragma endregion
 }

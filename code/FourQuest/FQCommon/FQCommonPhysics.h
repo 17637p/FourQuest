@@ -134,6 +134,7 @@ namespace fq::physics
 	{
 		DirectX::SimpleMath::Vector3 velocity = {};				// 캐릭터 컨트롤러의 x,y,z축 속도
 		bool isFall = false;									// 캐릭터가 떨어지고 있는지 체크 변수
+		float maxSpeed = 0.1f;									// 캐릭터 최대 속도
 		std::array<bool,4> restriction;							// 캐릭터 이동제한 설정
 	};
 

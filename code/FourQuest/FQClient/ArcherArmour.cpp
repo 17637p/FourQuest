@@ -22,6 +22,7 @@ namespace fq::client
 		, mDashCoolTime()
 		, mDashElapsedTime()
 		, mArrowPower()
+		, mOriginCharacterMaxSpeed()
 	{
 	}
 
@@ -60,6 +61,8 @@ namespace fq::client
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
 		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
+		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
+		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
 		attackInfo.remainingAttackCount = 1;
 		attackInfo.attackDirection = foward;
@@ -92,14 +95,9 @@ namespace fq::client
 
 			if (name.find("WeaponeSocket") != std::string::npos)
 			{
-				auto name = child->GetGameObject()->GetName();
 				auto transform = child->GetComponent<game_module::Transform>();
-
-				if (name.find("Bow") != std::string::npos)
-				{
-					position = transform->GetWorldPosition();
-					break;
-				}
+				position = transform->GetWorldPosition();
+				break;
 			}
 		}
 
@@ -111,6 +109,8 @@ namespace fq::client
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
 		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
+		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
+		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
@@ -118,9 +118,6 @@ namespace fq::client
 		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.hitSound = "A_StrongAttack_Hit";
 		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
-
-		linearComponent->SetMoveDirection(foward);
-		linearComponent->SetMoveSpeed(mStrongProjectileVelocity);
 
 		attackComponent->Set(attackInfo);
 
@@ -131,30 +128,42 @@ namespace fq::client
 
 	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitChargingEffect()
 	{
-		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttackChargingEffect);
-		auto& chargingObj = *(instance.begin());
+		//auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttackChargingEffect);
+		//auto& chargingObj = *(instance.begin());
 
-		auto attackT = chargingObj->GetComponent<game_module::Transform>();
+		//auto attackT = chargingObj->GetComponent<game_module::Transform>();
 
-		// 활 트랜스폼 가져오기
-		attackT->SetParent(mTransform->GetChildren()[3]);
+		//// 활 트랜스폼 가져오기
+		//attackT->SetParent(mTransform->GetChildren()[3]);
 
-		GetScene()->AddGameObject(chargingObj);
+		//GetScene()->AddGameObject(chargingObj);
 
 		// 차징 사운드 재생
 		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_Charging", true , 0 });
 
-		return chargingObj;
+		//return chargingObj;
+
+		return nullptr;
 	}
 
-	void ArcherArmour::EmitStrongAttackEffect()
+	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitStrongAttackEffect()
 	{
-
+		return nullptr;
 	}
 
-	void ArcherArmour::EmitDash()
+	std::shared_ptr<game_module::GameObject> ArcherArmour::EmitDash()
 	{
+		// 대쉬 이펙트 생성
+		auto name = mAnimator->GetController().GetCurrentStateName();
 
+		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mDashEffect);
+		auto& effectObj = *(instance.begin());
+		auto effectT = effectObj->GetComponent<game_module::Transform>();
+		effectT->SetParent(mTransform);
+
+		GetScene()->AddGameObject(effectObj);
+
+		return effectObj;
 	}
 
 	void ArcherArmour::OnStart()
@@ -163,6 +172,8 @@ namespace fq::client
 		mAnimator = GetComponent<game_module::Animator>();
 		mTransform = GetComponent<game_module::Transform>();
 		mPlayer = GetComponent<Player>();
+
+		mOriginCharacterMaxSpeed = mController->GetMovementInfo().maxSpeed;
 	}
 
 	void ArcherArmour::OnUpdate(float dt)
@@ -174,6 +185,7 @@ namespace fq::client
 	void ArcherArmour::checkSkillCoolTime(float dt)
 	{
 		mDashElapsedTime = std::max(0.f, mDashElapsedTime - dt);
+		mStrongAttackElapsedTime = std::max(0.f, mStrongAttackElapsedTime - dt);
 	}
 
 	void ArcherArmour::checkInput(float dt)
@@ -189,6 +201,13 @@ namespace fq::client
 		{
 			mAnimator->SetParameterTrigger("OnDash");
 			mDashElapsedTime = mDashCoolTime;
+		}
+		// StrongAttack
+		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::X, EKeyState::Tap)
+			&& mStrongAttackElapsedTime == 0.f)
+		{
+			mStrongAttackElapsedTime = mStrongAttackCoolTime;
+			mAnimator->SetParameterTrigger("OnStrongAttack");
 		}
 
 		// MultiShot R Stick 조작

@@ -39,8 +39,9 @@ namespace fq::client
 
 		bool bIsStrongAttack = false;
 		float weakDamage = -1.f;
-		float WeakProjectileVelocity = 10.f;
+		float weakProjectileVelocity = 10.f;
 		float strongDamage = -1.f;
+		float strongProjectileVelocity = 20.f;
 		int remainingAttackCount = -1;
 		DirectX::SimpleMath::Vector3 attackDirection{};
 		DirectX::SimpleMath::Matrix attackTransform{};

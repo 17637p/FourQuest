@@ -58,7 +58,15 @@ namespace fq::client
 			return;
 		}
 
-		mMaxBlockCount--;
+		if (collision.other->GetTag() == fq::game_module::ETag::Monster
+			|| collision.other->GetTag() == fq::game_module::ETag::Floor
+			|| collision.other->GetTag() == fq::game_module::ETag::Wall
+			|| collision.other->GetTag() == fq::game_module::ETag::Spawner
+			|| collision.other->GetTag() == fq::game_module::ETag::Box)
+		{
+			mMaxBlockCount--;
+
+		}
 
 		if (mMaxBlockCount > 0)
 		{
@@ -84,10 +92,14 @@ namespace fq::client
 		mbIsStrongAttack = info.bIsStrongAttack;
 		mWeakAttackPower = info.weakDamage;
 		mStrongAttackPower = info.strongDamage;
+		mWeakAttackPower = info.weakDamage;
+		mStrongAttackPower = info.strongDamage;
 		mMaxBlockCount = info.remainingAttackCount;
 		mHitSound = info.hitSound;
-		mAttackDirection = info.attackDirection;
 		mAttackTransform = info.attackTransform;
+		mWeakProjectileVelocity = info.weakProjectileVelocity;
+		mStrongProjectileVelocity = info.strongProjectileVelocity;
+		mAttackDirection = info.attackDirection;
 
 		if (GetGameObject()->HasComponent<fq::game_module::RigidBody>())
 		{
