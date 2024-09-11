@@ -6,6 +6,8 @@
 #include "../FQGameModule/Particle.h"
 #include "DeadArmour.h"
 #include "CameraMoving.h"
+#include "ClientEvent.h"
+
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
@@ -37,6 +39,10 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 void fq::client::Soul::OnStart()
 {
 	mController = GetComponent<game_module::CharacterController>();
+
+	// Player등록
+	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
+		{ GetGameObject(), EPlayerType::Soul });
 
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
