@@ -49,7 +49,9 @@ void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 			}
 		});
 
-	mSetViewportSizeHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::SetScreenSize>(
+	/// ½ºÅ©¸° 
+
+	/*mSetViewportSizeHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::SetScreenSize>(
 		[this](fq::event::SetScreenSize event)
 		{
 			float aspectRatio = static_cast<float>( event.width) / event.height;
@@ -60,7 +62,7 @@ void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 			{
 				object.GetComponent<game_module::Camera>()->SetAspectRatio(aspectRatio);
 			}
-		});
+		});*/
 
 	mGetMainCameraHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::GetMainCamera>(
 		[this](fq::event::GetMainCamera event)
