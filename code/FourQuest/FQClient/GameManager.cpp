@@ -5,6 +5,7 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
 
 // temp
 #include "PlayerInfoVariable.h"
@@ -384,5 +385,25 @@ void fq::client::GameManager::SpawnPlayer(fq::game_module::PrefabResource prefab
 
 	GetScene()->AddGameObject(newObject);
 	newObject->GetComponent<game_module::CharacterController>()->SetControllerID(index);
+
+	DirectX::SimpleMath::Vector3 spawnPos;
+	switch (index)
+	{
+		case 0:
+			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player1SpawnPosObject)->GetTransform()->GetLocalPosition();
+			break;
+		case 1:
+			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player2SpawnPosObject)->GetTransform()->GetLocalPosition();
+			break;
+		case 2:
+			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player3SpawnPosObject)->GetTransform()->GetLocalPosition();
+			break;
+		case 3:
+			spawnPos = GetScene()->GetObjectByName(PlayerInfoVariable::Player4SpawnPosObject)->GetTransform()->GetLocalPosition();
+			break;
+		default:
+			break;
+	}
+	newObject->GetTransform()->SetLocalPosition(spawnPos);
 }
 

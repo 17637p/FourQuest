@@ -22,6 +22,12 @@ namespace fq::client
 		static inline int Player3State = -1; 
 		static inline int Player4State = -1; 
 
+		// 플레이어 스폰 위치
+		static inline std::string Player1SpawnPosObject = "PlayerSpawner1";
+		static inline std::string Player2SpawnPosObject = "PlayerSpawner2";
+		static inline std::string Player3SpawnPosObject = "PlayerSpawner3";
+		static inline std::string Player4SpawnPosObject = "PlayerSpawner4";
+
 		// 플레이어 남은 HP
 		static inline float Player1HP = 100.f;
 		static inline float Player2HP = 100.f;
