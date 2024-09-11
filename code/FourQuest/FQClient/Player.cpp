@@ -4,6 +4,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Decal.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -95,6 +96,9 @@ void fq::client::Player::OnStart()
 
 	// 피버 버프 적용
 	setFeverBuff(true);
+
+	// Decal 색상 적용
+	setDecalColor();
 }
 
 void fq::client::Player::processInput()
@@ -414,7 +418,7 @@ void fq::client::Player::EmitAxeSoulAttack()
 
 void fq::client::Player::AddSoulGauge(float soul)
 {
-	mSoulGauge = std::clamp( mSoulGauge + soul, 0.f, mMaxSoulGauge);
+	mSoulGauge = std::clamp(mSoulGauge + soul, 0.f, mMaxSoulGauge);
 }
 
 void fq::client::Player::SetHp(float hp)
@@ -454,6 +458,39 @@ void fq::client::Player::setFeverBuff(bool isFever)
 	else
 	{
 
+	}
+
+}
+
+void fq::client::Player::setDecalColor()
+{
+	auto gameObject = GetGameObject();
+
+	for (auto child : gameObject->GetChildren())
+	{
+		auto decal = child->GetComponent<game_module::Decal>();
+		if (decal)
+		{
+			auto info = decal->GetDecalMaterialInfo();
+
+			switch (mSoulType)
+			{
+				case fq::client::ESoulType::Sword:
+					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					info.BaseColor = PlayerSoulVariable::BowSoulColor;
+					break;
+			}
+
+			decal->SetDecalMaterialInfo(info);
+		}
 	}
 
 }

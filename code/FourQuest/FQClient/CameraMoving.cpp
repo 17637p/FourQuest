@@ -170,7 +170,6 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
 	// zoom 20 기준으로 100;
-	spdlog::trace("{}, {}", xViewport, yViewport);
 	//spdlog::trace("{}, {}, {}", xViewport, yViewport, center.z);
 
 	// 0,0 밖에 있따면 움직이기 

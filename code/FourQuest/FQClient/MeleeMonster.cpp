@@ -12,6 +12,7 @@
 #include "HpBar.h"
 #include "MonsterGroup.h"
 #include "KnockBack.h"
+#include "Player.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -253,9 +254,11 @@ void fq::client::MeleeMonster::DetectTarget()
 
 	for (const auto& player : mGameManager->GetPlayers())
 	{
+		if (!player->HasComponent<Player>())
+			continue;
+
 		auto playerT = player->GetComponent<game_module::Transform>();
 		auto playerPos = playerT->GetWorldPosition();
-
 		float distance = (monsterPos - playerPos).Length();
 
 		if (distance <= mDetectRange)

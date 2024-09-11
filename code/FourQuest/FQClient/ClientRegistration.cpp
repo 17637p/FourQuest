@@ -342,14 +342,6 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
-		.data<&Soul::mSwordColor>("SwordColor"_hs)
-		.prop(reflect::prop::Name, "SwordColor")
-		.data<&Soul::mStaffColor>("StaffColor"_hs)
-		.prop(reflect::prop::Name, "StaffColor")
-		.data<&Soul::mAxeColor>("AxeColor"_hs)
-		.prop(reflect::prop::Name, "AxeColor")
-		.data<&Soul::mBowColor>("BowColor"_hs)
-		.prop(reflect::prop::Name, "BowColor")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()
@@ -385,6 +377,9 @@ void fq::client::RegisterMetaData()
 		.data<&MagicBallAttackState::mAttackTiming>("AttackTiming"_hs)
 		.prop(reflect::prop::Name, "AttackTiming")
 		.prop(reflect::prop::Comment, u8"공격 시간")
+		.data<&MagicBallAttackState::mCheckInputTime>("CheckInputTime"_hs)
+		.prop(reflect::prop::Name, "CheckInputTime")
+		.prop(reflect::prop::Comment, u8"Hold 입력을 받는 시간")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<AOEAttackState>()
@@ -1275,6 +1270,15 @@ void fq::client::RegisterMetaData()
 
 		.data<&PlayerSoulVariable::SoulGaugeCharging>("SoulGaugeCharging"_hs)
 		.prop(fq::reflect::prop::Name, "SoulGaugeCharging")
+
+		.data<&PlayerSoulVariable::SwordSoulColor>("SwordSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "SwordSoulColor")
+		.data<&PlayerSoulVariable::StaffSoulColor>("StaffSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "StaffSoulColor")
+		.data<&PlayerSoulVariable::AxeSoulColor>("AxeSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "AxeSoulColor")
+		.data<&PlayerSoulVariable::BowSoulColor>("BowSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "BowSoulColor")
 
 		.base<IGameVariable>();
 

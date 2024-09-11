@@ -7,7 +7,7 @@
 #include "DeadArmour.h"
 #include "CameraMoving.h"
 #include "ClientEvent.h"
-
+#include "PlayerSoulVariable.h"
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
@@ -144,16 +144,16 @@ void fq::client::Soul::SetSoulColor()
 			switch (mSoulType)
 			{
 				case fq::client::ESoulType::Sword:
-					matInfo.EmissiveColor = mSwordColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
 					break;
 				case fq::client::ESoulType::Staff:
-					matInfo.EmissiveColor = mStaffColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
 					break;
 				case fq::client::ESoulType::Axe:
-					matInfo.EmissiveColor = mAxeColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
 					break;
 				case fq::client::ESoulType::Bow:
-					matInfo.EmissiveColor = mBowColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
 					break;
 			}
 

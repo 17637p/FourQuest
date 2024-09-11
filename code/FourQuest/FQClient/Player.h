@@ -91,6 +91,7 @@ namespace fq::client
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);
+		void setDecalColor();
 
 		void OnStart() override;
 		void OnDestroy() override;
