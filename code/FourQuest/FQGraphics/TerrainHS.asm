@@ -86,21 +86,84 @@ dcl_output_siv o2.x, finalQuadUeq1EdgeTessFactor
 dcl_output_siv o3.x, finalQuadVeq1EdgeTessFactor
 dcl_temps 1
 dcl_indexrange o0.x 4
+//
+// Initial variable locations:
+//   vPrim.x <- patchID; 
+//   vpc0.x <- <ConstantHS return value>.EdgeTess[0]; 
+//   vpc1.x <- <ConstantHS return value>.EdgeTess[1]; 
+//   vpc2.x <- <ConstantHS return value>.EdgeTess[2]; 
+//   vpc3.x <- <ConstantHS return value>.EdgeTess[3]; 
+//   vpc4.x <- <ConstantHS return value>.InsideTess[0]; 
+//   vpc5.x <- <ConstantHS return value>.InsideTess[1]; 
+//   vicp[0][0].x <- patch[0].PositionW.x; vicp[0][0].y <- patch[0].PositionW.y; vicp[0][0].z <- patch[0].PositionW.z; 
+//   vicp[0][1].x <- patch[0].NormalW.x; vicp[0][1].y <- patch[0].NormalW.y; vicp[0][1].z <- patch[0].NormalW.z; 
+//   vicp[0][2].x <- patch[0].TangentW.x; vicp[0][2].y <- patch[0].TangentW.y; vicp[0][2].z <- patch[0].TangentW.z; 
+//   vicp[0][3].x <- patch[0].UV.x; vicp[0][3].y <- patch[0].UV.y; vicp[0][3].z <- patch[0].BoundsY.x; vicp[0][3].w <- patch[0].BoundsY.y; 
+//   vicp[1][0].x <- patch[1].PositionW.x; vicp[1][0].y <- patch[1].PositionW.y; vicp[1][0].z <- patch[1].PositionW.z; 
+//   vicp[1][1].x <- patch[1].NormalW.x; vicp[1][1].y <- patch[1].NormalW.y; vicp[1][1].z <- patch[1].NormalW.z; 
+//   vicp[1][2].x <- patch[1].TangentW.x; vicp[1][2].y <- patch[1].TangentW.y; vicp[1][2].z <- patch[1].TangentW.z; 
+//   vicp[1][3].x <- patch[1].UV.x; vicp[1][3].y <- patch[1].UV.y; vicp[1][3].z <- patch[1].BoundsY.x; vicp[1][3].w <- patch[1].BoundsY.y; 
+//   vicp[2][0].x <- patch[2].PositionW.x; vicp[2][0].y <- patch[2].PositionW.y; vicp[2][0].z <- patch[2].PositionW.z; 
+//   vicp[2][1].x <- patch[2].NormalW.x; vicp[2][1].y <- patch[2].NormalW.y; vicp[2][1].z <- patch[2].NormalW.z; 
+//   vicp[2][2].x <- patch[2].TangentW.x; vicp[2][2].y <- patch[2].TangentW.y; vicp[2][2].z <- patch[2].TangentW.z; 
+//   vicp[2][3].x <- patch[2].UV.x; vicp[2][3].y <- patch[2].UV.y; vicp[2][3].z <- patch[2].BoundsY.x; vicp[2][3].w <- patch[2].BoundsY.y; 
+//   vicp[3][0].x <- patch[3].PositionW.x; vicp[3][0].y <- patch[3].PositionW.y; vicp[3][0].z <- patch[3].PositionW.z; 
+//   vicp[3][1].x <- patch[3].NormalW.x; vicp[3][1].y <- patch[3].NormalW.y; vicp[3][1].z <- patch[3].NormalW.z; 
+//   vicp[3][2].x <- patch[3].TangentW.x; vicp[3][2].y <- patch[3].TangentW.y; vicp[3][2].z <- patch[3].TangentW.z; 
+//   vicp[3][3].x <- patch[3].UV.x; vicp[3][3].y <- patch[3].UV.y; vicp[3][3].z <- patch[3].BoundsY.x; vicp[3][3].w <- patch[3].BoundsY.y; 
+//   vOutputControlPointID.x <- i; 
+//   vPrim.x <- patchID; 
+//   o0.x <- <main return value>.PositionW.x; o0.y <- <main return value>.PositionW.y; o0.z <- <main return value>.PositionW.z; 
+//   o1.x <- <main return value>.NormalW.x; o1.y <- <main return value>.NormalW.y; o1.z <- <main return value>.NormalW.z; 
+//   o2.x <- <main return value>.TangentW.x; o2.y <- <main return value>.TangentW.y; o2.z <- <main return value>.TangentW.z; 
+//   o3.x <- <main return value>.UV.x; o3.y <- <main return value>.UV.y; o3.z <- <main return value>.BoundsY.x; o3.w <- <main return value>.BoundsY.y; 
+//   v[0][0].x <- patch[0].PositionW.x; v[0][0].y <- patch[0].PositionW.y; v[0][0].z <- patch[0].PositionW.z; 
+//   v[0][1].x <- patch[0].NormalW.x; v[0][1].y <- patch[0].NormalW.y; v[0][1].z <- patch[0].NormalW.z; 
+//   v[0][2].x <- patch[0].TangentW.x; v[0][2].y <- patch[0].TangentW.y; v[0][2].z <- patch[0].TangentW.z; 
+//   v[0][3].x <- patch[0].UV.x; v[0][3].y <- patch[0].UV.y; v[0][3].z <- patch[0].BoundsY.x; v[0][3].w <- patch[0].BoundsY.y; 
+//   v[1][0].x <- patch[1].PositionW.x; v[1][0].y <- patch[1].PositionW.y; v[1][0].z <- patch[1].PositionW.z; 
+//   v[1][1].x <- patch[1].NormalW.x; v[1][1].y <- patch[1].NormalW.y; v[1][1].z <- patch[1].NormalW.z; 
+//   v[1][2].x <- patch[1].TangentW.x; v[1][2].y <- patch[1].TangentW.y; v[1][2].z <- patch[1].TangentW.z; 
+//   v[1][3].x <- patch[1].UV.x; v[1][3].y <- patch[1].UV.y; v[1][3].z <- patch[1].BoundsY.x; v[1][3].w <- patch[1].BoundsY.y; 
+//   v[2][0].x <- patch[2].PositionW.x; v[2][0].y <- patch[2].PositionW.y; v[2][0].z <- patch[2].PositionW.z; 
+//   v[2][1].x <- patch[2].NormalW.x; v[2][1].y <- patch[2].NormalW.y; v[2][1].z <- patch[2].NormalW.z; 
+//   v[2][2].x <- patch[2].TangentW.x; v[2][2].y <- patch[2].TangentW.y; v[2][2].z <- patch[2].TangentW.z; 
+//   v[2][3].x <- patch[2].UV.x; v[2][3].y <- patch[2].UV.y; v[2][3].z <- patch[2].BoundsY.x; v[2][3].w <- patch[2].BoundsY.y; 
+//   v[3][0].x <- patch[3].PositionW.x; v[3][0].y <- patch[3].PositionW.y; v[3][0].z <- patch[3].PositionW.z; 
+//   v[3][1].x <- patch[3].NormalW.x; v[3][1].y <- patch[3].NormalW.y; v[3][1].z <- patch[3].NormalW.z; 
+//   v[3][2].x <- patch[3].TangentW.x; v[3][2].y <- patch[3].TangentW.y; v[3][2].z <- patch[3].TangentW.z; 
+//   v[3][3].x <- patch[3].UV.x; v[3][3].y <- patch[3].UV.y; v[3][3].z <- patch[3].BoundsY.x; v[3][3].w <- patch[3].BoundsY.y
+//
+#line 114 "C:\Users\user\Desktop\Build_Project\code\FourQuest\FQGraphics\TerrainHS.hlsl"
 iadd r0.x, vForkInstanceID.x, l(-1)
 ult r0.yz, vForkInstanceID.xxxx, l(0, 1, 2, 0)
 movc r0.x, r0.y, l(0), r0.x
 iadd r0.y, -vForkInstanceID.x, l(1)
 movc r0.y, r0.z, r0.y, l(2)
 add r0.x, vicp[r0.y + 1][0].x, vicp[r0.x + 0][0].x
+
+#line 74
 mad r0.xyz, r0.xxxx, l(0.500000, 0.500000, 0.500000, 0.000000), -cb0[1].xyzx
 dp3 r0.x, r0.xyzx, r0.xyzx
-sqrt r0.x, r0.x
+sqrt r0.x, r0.x  // r0.x <- d
+
+#line 76
 add r0.x, r0.x, -cb0[0].x
+
+#line 79
 add r0.yz, -cb0[0].xxwx, cb0[0].yyzy
-div_sat r0.x, r0.x, r0.y
+
+#line 76
+div_sat r0.x, r0.x, r0.y  // r0.x <- s
+
+#line 79
 mad r0.x, r0.x, r0.z, cb0[0].w
-exp r0.x, r0.x
-add r0.x, r0.x, l(1.000000)
+exp r0.x, r0.x  // r0.x <- t
+
+#line 83
+add r0.x, r0.x, l(1.000000)  // r0.x <- <CalcTessFactor return value>
+
+#line 135
 mov r0.y, vForkInstanceID.x
 mov o[r0.y + 0].x, r0.x
 ret 
@@ -112,18 +175,34 @@ dcl_output_siv o4.x, finalQuadUInsideTessFactor
 dcl_output_siv o5.x, finalQuadVInsideTessFactor
 dcl_temps 1
 dcl_indexrange o4.x 2
+
+#line 118
 add r0.x, vicp[1][0].x, vicp[0][0].x
 add r0.x, r0.x, vicp[2][0].x
 add r0.x, r0.x, vicp[3][0].x
+
+#line 74
 mad r0.xyz, r0.xxxx, l(0.250000, 0.250000, 0.250000, 0.000000), -cb0[1].xyzx
 dp3 r0.x, r0.xyzx, r0.xyzx
-sqrt r0.x, r0.x
+sqrt r0.x, r0.x  // r0.x <- d
+
+#line 76
 add r0.x, r0.x, -cb0[0].x
+
+#line 79
 add r0.yz, -cb0[0].xxwx, cb0[0].yyzy
-div_sat r0.x, r0.x, r0.y
+
+#line 76
+div_sat r0.x, r0.x, r0.y  // r0.x <- s
+
+#line 79
 mad r0.x, r0.x, r0.z, cb0[0].w
-exp r0.x, r0.x
-add r0.x, r0.x, l(1.000000)
+exp r0.x, r0.x  // r0.x <- t
+
+#line 83
+add r0.x, r0.x, l(1.000000)  // r0.x <- <CalcTessFactor return value>
+
+#line 135
 mov r0.y, vForkInstanceID.x
 mov o[r0.y + 4].x, r0.x
 ret 

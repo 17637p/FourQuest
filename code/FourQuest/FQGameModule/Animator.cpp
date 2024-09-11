@@ -6,6 +6,9 @@
 fq::game_module::Animator::Animator()
 	:mDefaultPlaySpeed(1.f)
 	, mbIsStopAnimation(false)
+	, mNodeHierarchyInstance{ nullptr }
+	, mController{ nullptr }
+	, mNodeHierarchy{ nullptr }
 {
 
 }
@@ -37,7 +40,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Animator::Clone(std
 
 void fq::game_module::Animator::SetController(std::shared_ptr<AnimatorController> controller)
 {
-	mController = std::move(controller);
+	mController = controller;
 }
 
 void fq::game_module::Animator::SetParameterInt(const std::string& id, int val)
@@ -66,19 +69,21 @@ void fq::game_module::Animator::SetParameterTrigger(const std::string& id)
 
 void fq::game_module::Animator::SetParameterOffTrigger(const std::string& id)
 {
-	if (mController)
+	if (mController != nullptr)
 		mController->SetParameter(id, AnimatorController::OffTrigger);
 }
 
 void fq::game_module::Animator::UpdateState(float dt)
 {
-	if (mController)
+	if (mController != nullptr)
+	{
 		mController->UpdateState(dt);
+	}
 }
 
 void fq::game_module::Animator::UpdateAnimation(float dt)
 {
-	if (mController)
+	if (mController != nullptr)
 		mController->UpdateAnimation(dt, mDefaultPlaySpeed);
 }
 
@@ -89,7 +94,7 @@ bool fq::game_module::Animator::IsInTransition() const
 
 void fq::game_module::Animator::OnUpdate(float dt)
 {
-	if (mController)
+	if (mController != nullptr)
 		mController->Update(dt);
 }
 
@@ -104,6 +109,20 @@ void fq::game_module::Animator::ProcessAnimationEvent(class GameObject* gameObje
 	if (mController != nullptr)
 	{
 		mController->ProcessAnimationEvent(gameObject, eventManager);
+	}
+}
+
+void fq::game_module::Animator::OnDestroy()
+{
+	if (mController)
+	{
+		auto& stateMap = mController->GetStateMap();
+		auto name = mController->GetCurrentStateName();
+
+		if (auto iter =  stateMap.find(name); iter != stateMap.end())
+		{
+			iter->second.OnStateExit();
+		}
 	}
 }
 

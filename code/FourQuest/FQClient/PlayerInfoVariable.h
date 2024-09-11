@@ -16,6 +16,12 @@ namespace fq::client
 		static inline int Player3SoulType = -1;
 		static inline int Player4SoulType = -1;
 
+		// 플레이어 현재 상태 
+		static inline int Player1State = 0; // 0 영혼, 1 검방, 2 마법, 3 궁수, 4 광전사
+		static inline int Player2State = 0; 
+		static inline int Player3State = 0; 
+		static inline int Player4State = 0; 
+
 		// 플레이어 남은 HP
 		static inline float Player1HP = 100.f;
 		static inline float Player2HP = 100.f;

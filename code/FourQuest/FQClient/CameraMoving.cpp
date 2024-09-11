@@ -7,6 +7,7 @@
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/ScreenManager.h"
 
 #include "Player.h"
 
@@ -151,9 +152,27 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 
 	Zoom(dt);
 	DirectX::SimpleMath::Vector3 center = getCenterPosInView(dt); // 방향 벡터로 사용
+
+	/// 테스트 중 
+	float aspectRatio = mMainCamera->GetAspectRatio();
+	DirectX::SimpleMath::Matrix projMat = mMainCamera->GetProjection(aspectRatio);
+
+	DirectX::SimpleMath::Vector3 projCenter = DirectX::SimpleMath::Vector3::Transform(center, projMat);
+
+	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
+	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+	float xViewport = ((projCenter.x + 1) / 2) * width;
+	float yViewport = ((1 - projCenter.y) / 2) * height;
+	yViewport += 100;
+	center.x = 2 * (xViewport / width) - 1;
+	center.y = 1 - 2 * (yViewport / height);
+
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
-	//spdlog::trace("{}, {}, {}", center.x, center.y, center.z);
+	// zoom 20 기준으로 100;
+	spdlog::trace("{}, {}", xViewport, yViewport);
+	//spdlog::trace("{}, {}, {}", xViewport, yViewport, center.z);
+
 	// 0,0 밖에 있따면 움직이기 
 	float epsilon = 0.001f;
 	if (abs(center.x) > epsilon || abs(center.y) > epsilon)
@@ -167,6 +186,8 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	// 왜 둘이 반대지?
 	DirectX::SimpleMath::Vector3 cameraUp = { viewMatrix._31, viewMatrix._32, viewMatrix._33 };
 	DirectX::SimpleMath::Vector3 cameraForward = { viewMatrix._21, viewMatrix._22, viewMatrix._23 };
+
+	//centerCopy -= cameraUp * 3 * mCurZoom;
 
 	// X 방향 이동 값
 	DirectX::SimpleMath::Vector3 rightMove{};
@@ -388,11 +409,39 @@ void fq::client::CameraMoving::SetColliderRotation()
 
 void fq::client::CameraMoving::restrcitPlayerMove()
 {
+	float minY = FLT_MAX;
+	float maxY = FLT_MIN;
+	int minIndex = -1;
+	int maxIndex = -1;
+	for (int i = 0; i < mPlayerTransforms.size(); i++)
+	{
+		DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[i]->GetWorldPosition();
+		DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
+
+		if (projPos.y > maxY)
+		{
+			maxY = projPos.y;
+			maxIndex = i;
+		}
+		if (projPos.y < minY)
+		{
+			minY = projPos.y;
+			minIndex = i;
+		}
+	}
+
 	for (int i = 0; i < mPlayerTransforms.size(); i++)
 	{
 		auto controller = mPlayerTransforms[i]->GetComponent<game_module::CharacterController>();
 		DirectX::SimpleMath::Vector3 playerWorldPos = mPlayerTransforms[i]->GetWorldPosition();
 		DirectX::SimpleMath::Vector3 projPos = getProjPos(playerWorldPos);
+
+		float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
+		float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
+		float xViewport = ((projPos.x + 1) / 2) * width;
+		float yViewport = ((1 - projPos.y) / 2) * height;
+
+		//spdlog::trace("{}, {}", xViewport, yViewport);
 
 		std::array<bool, 4> moveRestriction{};
 

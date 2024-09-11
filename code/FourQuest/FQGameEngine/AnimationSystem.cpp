@@ -44,9 +44,15 @@ void fq::game_engine::AnimationSystem::updateAnimtorState(float dt)
 	mScene->ViewComponents<Animator>(
 		[dt, eventManagerPtr](GameObject& object, Animator& animator)
 		{
-			animator.UpdateState(dt);
-			animator.ProcessAnimationEvent(&object, eventManagerPtr);
+			if (!object.IsDestroyed())
+			{
+				assert(!object.IsDestroyed());
+				animator.UpdateState(dt);
+				animator.ProcessAnimationEvent(&object, eventManagerPtr);
+			}
+
 		}
+
 	);
 }
 

@@ -748,7 +748,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 
 void fq::graphics::UIManager::DeleteText(fq::graphics::ITextObject* textObject)
 {
-	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject));
+	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject),mTexts.end());
 	delete textObject;
 }
 
