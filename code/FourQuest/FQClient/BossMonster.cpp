@@ -32,7 +32,7 @@ fq::client::BossMonster::BossMonster()
 	, mGroggyGauge(0.f)
 	, mStartGroggyGauge(100.f)
 	, mGroggyIncreaseRatio(0.1f)
-	, mGroggyDecreasePerSecond(1.f)
+	, mGroggyDecreasePerSecond(1.f)	
 	, mGroggyDecreaseElapsedTime(0.f)
 {}
 
@@ -227,7 +227,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 	auto look = mTransform->GetLookAtVector();
 	mKnockBack->Set(mRushPower, look);
 
-	// 러쉬 히트 박스 생성
+	// 러쉬 히트 박스 생성	
 	using namespace game_module;
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRushAttack);
 	auto& attackObj = *(instance.begin());

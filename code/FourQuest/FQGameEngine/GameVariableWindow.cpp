@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <ImGuizmo.h>
+#include "imgui_stdlib.h"
 
 #include "../FQClient/PlayerSoulVariable.h"
 #include "../FQClient/MonsterVariable.h"
@@ -72,6 +73,16 @@ void fq::game_engine::GameVariableWindow::beginVariable(entt::meta_type type)
 					std::string memberName = fq::reflect::GetName(metaData);
 
 					if (ImGui::Checkbox(memberName.c_str(), &val))
+					{
+						metaData.set(variable, val);
+					}
+				}
+				else if (memberType == entt::resolve<std::string>())
+				{
+					std::string val = metaData.get(variable).cast<std::string>();
+					std::string memberName = fq::reflect::GetName(metaData);
+
+					if (ImGui::InputText(memberName.c_str(), &val))
 					{
 						metaData.set(variable, val);
 					}
