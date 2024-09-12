@@ -514,3 +514,8 @@ void fq::client::Player::setDecalColor()
 	}
 
 }
+
+bool fq::client::Player::IsFeverTime() const
+{
+	return mbIsFeverTime;
+}

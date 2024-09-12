@@ -36,7 +36,8 @@ namespace fq::client
 		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
-		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;   }
+		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
+
 		/// <summary>
 		/// 갑옷타입을 반환합니다
 		/// </summary>
@@ -83,6 +84,11 @@ namespace fq::client
 		/// 소울 공격이 가능한 상태인지 확인합니다.
 		/// </summary>
 		bool CanUseSoulAttack()const;
+
+		/// <summary>
+		/// 현재 피버타임인지 반환합니다
+		/// </summary>
+		bool IsFeverTime()const;
 
 	private:
 		void processInput();
