@@ -23,6 +23,8 @@ namespace fq::client
 	private:
 		float mDurationTime;
 		float mEraseTime;
+
+		friend void RegisterMetaData();
 	};
 
 

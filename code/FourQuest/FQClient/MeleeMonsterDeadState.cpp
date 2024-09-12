@@ -61,8 +61,6 @@ void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& anima
 
 void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	mEraseTime = 10.f;
-
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
 
