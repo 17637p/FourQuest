@@ -17,6 +17,7 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 		void OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt) override;
+		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
 	};
 }
 

@@ -465,6 +465,8 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 
 void fq::client::CameraMoving::InitCameraPos()
 {
+	return;
+
 	// 플레이어 트랜스폼 돌면서 센터 점 계산 
 	std::vector<DirectX::SimpleMath::Vector3> playerSpawnPosList;
 	playerSpawnPosList.push_back(GetScene()->GetObjectByName("PlayerSpawner1")->GetTransform()->GetWorldPosition());
