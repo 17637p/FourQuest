@@ -12,6 +12,7 @@
 #include "Soul.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
+#include "PlayerMovementSoundState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
@@ -463,7 +464,12 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "CanMovePlayer")
 		.data<&PlayerMovementState::mbOnRotation>("OnRotation"_hs)
 		.prop(reflect::prop::Name, "OnRotation")
-		.data<&PlayerMovementState::mWalkSoundTurm>("WalkSoundTurm"_hs)
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<PlayerMovementSoundState>()
+		.type("PlayerMovementSoundState"_hs)
+		.prop(reflect::prop::Name, "PlayerMovementSoundState")
+		.data<&PlayerMovementSoundState::mWalkSoundTurm>("WalkSoundTurm"_hs)
 		.prop(reflect::prop::Name, "WalkSoundTurm")
 		.base<game_module::IStateBehaviour>();
 

@@ -479,6 +479,9 @@
     <ClInclude Include="PlayerVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerMovementSoundState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -791,6 +794,9 @@
       <Filter>src\01.Player\State\Berserker</Filter>
     </ClCompile>
     <ClCompile Include="PlayerVariable.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementSoundState.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
