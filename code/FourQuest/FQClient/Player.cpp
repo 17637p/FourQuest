@@ -163,9 +163,12 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 		}
 	}
 
-	// Quest Event Ã³¸®
-	GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideTrigger>(
-		{ (int)GetPlayerID(), collision.other->GetName() });
+	// Quest Event 
+	if (mController != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideTrigger>(
+			{ (int)GetPlayerID(), collision.other->GetName() });
+	}
 }
 
 void fq::client::Player::SummonSoul()
