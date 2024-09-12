@@ -12,6 +12,7 @@
 #include "Soul.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
+#include "PlayerMovementSoundState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
@@ -127,6 +128,7 @@
 #include "DamageVariable.h"
 #include "SettingVariable.h"
 #include "PlayerInfoVariable.h"
+#include "PlayerVariable.h"
 
 // Box
 #include "Box.h"
@@ -464,6 +466,13 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<PlayerMovementSoundState>()
+		.type("PlayerMovementSoundState"_hs)
+		.prop(reflect::prop::Name, "PlayerMovementSoundState")
+		.data<&PlayerMovementSoundState::mWalkSoundTurm>("WalkSoundTurm"_hs)
+		.prop(reflect::prop::Name, "WalkSoundTurm")
+		.base<game_module::IStateBehaviour>();
+
 	entt::meta<MagicBallAttackState>()
 		.type("MagicAttackState"_hs)
 		.prop(reflect::prop::Name, "MagicAttackState")
@@ -537,6 +546,9 @@ void fq::client::RegisterMetaData()
 		.data<&BowDashState::mMinSpeed>("MinSpeed"_hs)
 		.prop(reflect::prop::Name, "MinSpeed")
 		.prop(fq::reflect::prop::Comment, u8"최소 스피드")
+		.data<&BowDashState::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회전 스피드")
 		.data<&BowDashState::mPeakSpeedTime>("PeakSpeedTime"_hs)
 		.prop(reflect::prop::Name, "PeakSpeedTime")
 		.prop(fq::reflect::prop::Comment, u8"최고 스피드가 도달하는 시간")
@@ -549,13 +561,16 @@ void fq::client::RegisterMetaData()
 		.type("BowMultiShotAttackState"_hs)
 		.prop(reflect::prop::Name, "BowMultiShotAttackState")
 		.data<&BowMultiShotAttackState::mShotDelay>("ShotDelay"_hs)
-		.prop(fq::reflect::prop::Comment, u8"화살 연사 속도")
 		.prop(reflect::prop::Name, "ShotDelay")
+		.prop(fq::reflect::prop::Comment, u8"화살 연사 속도")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<BowStrongChargingState>()
 		.type("BowStrongChargingState"_hs)
 		.prop(reflect::prop::Name, "BowStrongChargingState")
+		.data<&BowStrongChargingState::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회전 속도")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<EBerserkerAttackType>()
@@ -787,6 +802,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterDeadState>()
 		.type("MeleeMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterDeadState")
+		.data<&MeleeMonsterDeadState::mEraseTime>("EraseTime"_hs)
+		.prop(fq::reflect::prop::Name, "EraseTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterWaitAttackState>()
@@ -988,6 +1005,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterDeadState>()
 		.type("PlantMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterDeadState")
+		.data<&PlantMonsterDeadState::mEraseTime>("EraseTime"_hs)
+		.prop(fq::reflect::prop::Name, "EraseTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterIdleState>()
@@ -1573,6 +1592,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
+		.base<IGameVariable>();
+
+	entt::meta<PlayerVariable>()
+		.type("PlayerVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerVariable")
+		.data<&PlayerVariable::FeverAttackIncreaseRatio>("FeverAttackIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "FeverAttackIncreaseRatio")
+		.data<&PlayerVariable::FeverSpeedIncreaseRatio>("FeverSpeedIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "FeverSpeedIncreaseRatio")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()

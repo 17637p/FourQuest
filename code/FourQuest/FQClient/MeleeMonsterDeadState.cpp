@@ -38,19 +38,6 @@ void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& anima
 	auto scene = animator.GetScene();
 	scene->DestroyGameObject(animator.GetGameObject());
 
-	// 몬스터 죽음 이벤트 발생
-	auto explosion = animator.GetComponent<MeleeMonsterExplosion>();
-	if (explosion)
-	{
-		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-			{ EMonsterType::Explosion });
-	}
-	else
-	{
-		scene->GetEventManager()->FireEvent<client::event::KillMonster>(
-			{ EMonsterType::Melee });
-	}
-
 	// 죽었는데 ArmourSpawner 컴포넌트가 있을 경우 갑옷 소환
 	auto armourSpawner = animator.GetComponent<ArmourSpawner>();
 	if (armourSpawner)
@@ -61,18 +48,22 @@ void fq::client::MeleeMonsterDeadState::OnStateExit(game_module::Animator& anima
 
 void fq::client::MeleeMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	mEraseTime = 10.f;
-
 	auto agent = animator.GetComponent<game_module::NavigationAgent>();
 	agent->Stop();
 
 	auto gameObject = animator.GetGameObject();
 
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
-	gameObject->RemoveComponent<game_module::NavigationAgent>();
+	//gameObject->RemoveComponent<game_module::NavigationAgent>();
 	gameObject->RemoveComponent<game_module::ImageUI>();
 
+	// 사운드 재생
 	animator.GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MM_Death", false , fq::sound::EChannel::SE });
+
+	// 몬스터 죽음 이벤트 발생
+	auto scene = animator.GetScene();
+	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+		{ EMonsterType::Melee });
 
 	// Ragdoll
 	if (animator.GetGameObject()->HasComponent<game_module::Articulation>())

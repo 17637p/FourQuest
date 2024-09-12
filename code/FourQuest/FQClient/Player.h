@@ -36,7 +36,8 @@ namespace fq::client
 		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
-		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;   }
+		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
+
 		/// <summary>
 		/// 갑옷타입을 반환합니다
 		/// </summary>
@@ -84,6 +85,11 @@ namespace fq::client
 		/// </summary>
 		bool CanUseSoulAttack()const;
 
+		/// <summary>
+		/// 현재 피버타임인지 반환합니다
+		/// </summary>
+		bool IsFeverTime()const;
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);
@@ -114,12 +120,12 @@ namespace fq::client
 		float mMaxSoulGauge; // 최대 소울 게이지
 		float mSoulGauge; // 소울 게이지
 		float mAttackPower; // 공격력
-		float mAttackSpeed; // 공격속도
 
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 
 		float mFeverTime; // 갑옷 버프 시간
 		float mFeverElapsedTime; // 피버타임 경과 시간
+		bool mbIsFeverTime; // 현재 피버 타임인지 
 
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 		game_module::PrefabResource mSwordSoulAttack;

@@ -5,7 +5,9 @@
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
+
 #include "Player.h"
+#include "AimAssist.h"
 #include "ArrowAttack.h"
 #include "DamageCalculation.h"
 #include "LinearAttack.h"
@@ -13,10 +15,11 @@
 namespace fq::client
 {
 	ArcherArmour::ArcherArmour()
-		: mAnimator()
-		, mController()
+		: mAnimator(nullptr)
+		, mController(nullptr)
 		, mTransform()
-		, mPlayer()
+		, mPlayer(nullptr)
+		, mAimAssist(nullptr)
 		, mWeakAttack()
 		, mStrongAttack()
 		, mDashCoolTime()
@@ -172,6 +175,14 @@ namespace fq::client
 		mAnimator = GetComponent<game_module::Animator>();
 		mTransform = GetComponent<game_module::Transform>();
 		mPlayer = GetComponent<Player>();
+		for (auto child : GetGameObject()->GetChildren())
+		{
+			if (child->HasComponent<AimAssist>())
+			{
+				mAimAssist = child->GetComponent<AimAssist>();
+				break;
+			}
+		}
 
 		mOriginCharacterMaxSpeed = mController->GetMovementInfo().maxSpeed;
 	}
@@ -266,7 +277,7 @@ namespace fq::client
 		}
 	} 
 
-	void ArcherArmour::SetLookAtLStickInput()
+	void ArcherArmour::SetLookAtLStickInput(float dt, float rotationSpeed)
 	{
 		using namespace DirectX::SimpleMath;
 
@@ -288,15 +299,29 @@ namespace fq::client
 			// 바라보는 방향 설정 
 			input.Normalize();
 
-			if (input == Vector3::Backward)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
-			}
-			else if (input != Vector3::Zero)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
-			}
+			// 입력 값으로부터 Y축 회전 각도를 계산
+			float targetYaw = atan2f(-input.x, -input.z); // atan2 사용으로 XZ 평면 기준 각도 계산
+
+			// 현재 회전 값을 가져와 Y축 회전만 남긴다
+			Quaternion startRotation = mTransform->GetWorldRotation();
+			Vector3 eulerStartRotation = startRotation.ToEuler();
+			eulerStartRotation.x = eulerStartRotation.z = 0.0f; // Y축 회전만 남기고 다른 축은 0으로 설정
+
+			// 목표 회전 값 (Y축 회전만 적용)
+			Quaternion targetRotation = Quaternion::CreateFromYawPitchRoll(targetYaw, 0.0f, 0.0f);
+
+			// 회전 방향을 결정
+			Quaternion newRotation = Quaternion::Slerp(startRotation, targetRotation, rotationSpeed * dt);
+
+			// 새 회전 값 설정
+			mTransform->SetWorldRotation(newRotation);
 		}
+	}
+
+	void ArcherArmour::AimToNearMonster()
+	{
+		if (mAimAssist)
+			mAimAssist->SetNearMonsterDirection();
 	}
 
 	std::shared_ptr<fq::game_module::Component> ArcherArmour::Clone(std::shared_ptr<Component> clone) const

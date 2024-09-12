@@ -13,6 +13,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class Player;
+	class AimAssist;
 
 	class ArcherArmour : public game_module::Component
 	{
@@ -30,7 +31,12 @@ namespace fq::client
 		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
 		/// </summary>
 		void SetLookAtRStickInput();
-		void SetLookAtLStickInput();
+		void SetLookAtLStickInput(float dt, float rotationSpeed);
+
+		/// <summary>
+		/// 가까운 몬스터에게 에임을 보정합니다.
+		/// </summary>
+		void AimToNearMonster();
 
 		float GetChangeChargingTime() { return mChangeChargingTime; }
 		float GetOriginCharacterMaxSpeed() { return mOriginCharacterMaxSpeed; }
@@ -50,6 +56,7 @@ namespace fq::client
 		game_module::CharacterController*	mController;
 		game_module::Transform*				mTransform;
 		client::Player*						mPlayer;
+		AimAssist*							mAimAssist;
 
 		float mDashCoolTime;
 		float mDashElapsedTime;

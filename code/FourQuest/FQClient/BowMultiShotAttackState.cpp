@@ -29,6 +29,7 @@ namespace fq::client
 	{
 		auto archer = animator.GetComponent<ArcherArmour>();
 		archer->SetLookAtRStickInput();
+		archer->AimToNearMonster();
 
 		mShotElapsedTime += dt;
 
