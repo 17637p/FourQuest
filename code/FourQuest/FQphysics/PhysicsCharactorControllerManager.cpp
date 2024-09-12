@@ -140,6 +140,7 @@ namespace fq::physics
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
 		movement->SetMaxSpeed(movementData.maxSpeed);
+		movement->SetAcceleration(movementData.acceleration);
 	}
 #pragma endregion
 }
