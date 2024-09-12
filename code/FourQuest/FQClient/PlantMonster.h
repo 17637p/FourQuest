@@ -27,6 +27,11 @@ namespace fq::client
 		/// </summary>
 		void EmitAttack();
 
+		/// <summary>
+		/// 원거리 범위 공격 발사체 생성
+		/// </summary>
+		void EmitAOEAttack();
+
 		void SetTarget(fq::game_module::GameObject* target) override;
 		std::shared_ptr<game_module::GameObject> GetTarget() override { return mTarget; };
 

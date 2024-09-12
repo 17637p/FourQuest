@@ -136,6 +136,11 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 	}
 }
 
+void fq::client::PlantMonster::EmitAOEAttack()
+{
+
+}
+
 void fq::client::PlantMonster::SetTarget(fq::game_module::GameObject* target)
 {
 	if (mAnimator == nullptr)

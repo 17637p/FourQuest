@@ -114,7 +114,7 @@
     <Filter Include="src\01.Player\State\Berserker">
       <UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\04.Camera\03.Attack">
+    <Filter Include="src\03.Attack">
       <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -482,13 +482,19 @@
     <ClInclude Include="PlayerMovementSoundState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
+    <ClInclude Include="PlantMonsterAOEAttackState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="ArcAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
       <Filter>src\00.Define</Filter>
     </ClCompile>
     <ClCompile Include="Attack.cpp">
-      <Filter>src\04.Camera\03.Attack</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="PlayerInputState.cpp">
       <Filter>src\01.Player\State</Filter>
@@ -605,10 +611,10 @@
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="LinearAttack.cpp">
-      <Filter>src\04.Camera\03.Attack</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="KnockBack.cpp">
-      <Filter>src\04.Camera\03.Attack</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="ShieldAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
@@ -698,7 +704,7 @@
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="StaffSoulAttack.cpp">
-      <Filter>src\04.Camera\03.Attack</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="SwordSoulAttackState.cpp">
       <Filter>src\01.Player\State</Filter>
@@ -739,13 +745,7 @@
     <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="PlantMonsterHitState.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="MonsterManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Spawner.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="SpawnerGroup.cpp">
@@ -764,7 +764,7 @@
       <Filter>src\06.ETC</Filter>
     </ClCompile>
     <ClCompile Include="ArrowAttack.cpp">
-      <Filter>src\04.Camera\03.Attack</Filter>
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="ArcherArmour.cpp">
       <Filter>src\01.Player</Filter>
@@ -797,6 +797,18 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="PlayerMovementSoundState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterAOEAttackState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="ArcAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterHitState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
