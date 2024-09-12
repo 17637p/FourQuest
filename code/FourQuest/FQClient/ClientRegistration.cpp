@@ -463,6 +463,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "CanMovePlayer")
 		.data<&PlayerMovementState::mbOnRotation>("OnRotation"_hs)
 		.prop(reflect::prop::Name, "OnRotation")
+		.data<&PlayerMovementState::mWalkSoundTurm>("WalkSoundTurm"_hs)
+		.prop(reflect::prop::Name, "WalkSoundTurm")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<MagicBallAttackState>()
@@ -794,6 +796,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterDeadState>()
 		.type("MeleeMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterDeadState")
+		.data<&MeleeMonsterDeadState::mEraseTime>("EraseTime"_hs)
+		.prop(fq::reflect::prop::Name, "EraseTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterWaitAttackState>()
@@ -995,6 +999,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterDeadState>()
 		.type("PlantMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterDeadState")
+		.data<&PlantMonsterDeadState::mEraseTime>("EraseTime"_hs)
+		.prop(fq::reflect::prop::Name, "EraseTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterIdleState>()

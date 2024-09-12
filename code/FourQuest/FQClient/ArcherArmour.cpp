@@ -5,7 +5,9 @@
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/RigidBody.h"
+
 #include "Player.h"
+#include "AimAssist.h"
 #include "ArrowAttack.h"
 #include "DamageCalculation.h"
 #include "LinearAttack.h"
@@ -13,10 +15,11 @@
 namespace fq::client
 {
 	ArcherArmour::ArcherArmour()
-		: mAnimator()
-		, mController()
+		: mAnimator(nullptr)
+		, mController(nullptr)
 		, mTransform()
-		, mPlayer()
+		, mPlayer(nullptr)
+		, mAimAssist(nullptr)
 		, mWeakAttack()
 		, mStrongAttack()
 		, mDashCoolTime()
@@ -172,6 +175,14 @@ namespace fq::client
 		mAnimator = GetComponent<game_module::Animator>();
 		mTransform = GetComponent<game_module::Transform>();
 		mPlayer = GetComponent<Player>();
+		for (auto child : GetGameObject()->GetChildren())
+		{
+			if (child->HasComponent<AimAssist>())
+			{
+				mAimAssist = child->GetComponent<AimAssist>();
+				break;
+			}
+		}
 
 		mOriginCharacterMaxSpeed = mController->GetMovementInfo().maxSpeed;
 	}
@@ -305,6 +316,12 @@ namespace fq::client
 			// 새 회전 값 설정
 			mTransform->SetWorldRotation(newRotation);
 		}
+	}
+
+	void ArcherArmour::AimToNearMonster()
+	{
+		if (mAimAssist)
+			mAimAssist->SetNearMonsterDirection();
 	}
 
 	std::shared_ptr<fq::game_module::Component> ArcherArmour::Clone(std::shared_ptr<Component> clone) const
