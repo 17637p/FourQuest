@@ -75,7 +75,7 @@ void fq::game_engine::CameraSystem::SetMainGameCamera(fq::game_module::Camera* c
 {
 	mGameMainCamera = camera;
 }
-
+	
 void fq::game_engine::CameraSystem::SetEditorCamera(fq::game_module::Camera* camera)
 {
 	mEditorCamera = camera;
