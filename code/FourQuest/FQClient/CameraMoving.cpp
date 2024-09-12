@@ -144,7 +144,7 @@ void fq::client::CameraMoving::OnStart()
 	mMainCamera = GetComponent<fq::game_module::Camera>();
 
 	InitCameraPos();
-	SetColliderRotation();
+	//SetColliderRotation();
 }
 
 void fq::client::CameraMoving::chaseCenter(float dt)

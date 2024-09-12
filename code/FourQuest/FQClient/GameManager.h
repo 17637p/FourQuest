@@ -37,7 +37,7 @@ namespace fq::client
 
 		// temp alpha
 		void SavePlayerState();
-		void SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
+		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
 
 	private:
 		EventHandler mRegisterPlayerHandler;

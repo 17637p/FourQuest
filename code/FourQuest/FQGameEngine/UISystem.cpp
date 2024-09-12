@@ -69,12 +69,14 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 
 	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
 	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/´øÆÄ ¿¬´ÜµÈ Ä®³¯.ttf");
 }
 
 void fq::game_engine::UISystem::Finalize()
 {
 	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
 	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/´øÆÄ ¿¬´ÜµÈ Ä®³¯.ttf");
 }
 
 void fq::game_engine::UISystem::OnLoadScene()
