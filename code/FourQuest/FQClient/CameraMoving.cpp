@@ -55,13 +55,13 @@ std::shared_ptr<fq::game_module::Component> fq::client::CameraMoving::Clone(std:
 
 void fq::client::CameraMoving::OnUpdate(float dt)
 {
-	// 플레이어 중앙 추적
-	chaseCenter(dt);
-	if (GetAsyncKeyState('O') & 0x8000)
+	if (mPlayerTransforms.size() <= 0)
 	{
-		//mIsFixed = !mIsFixed;
+		return;
 	}
 
+	// 플레이어 중앙 추적
+	chaseCenter(dt);
 	restrcitPlayerMove();
 
 	/*auto input = GetScene()->GetInputManager();
@@ -143,11 +143,18 @@ void fq::client::CameraMoving::OnStart()
 {
 	mMainCamera = GetComponent<fq::game_module::Camera>();
 
+	InitCameraPos();
 	SetColliderRotation();
 }
 
 void fq::client::CameraMoving::chaseCenter(float dt)
 {
+	float maxDT = 1 / (float)60;
+	if (dt > maxDT)
+	{
+		dt = maxDT;
+	}
+
 	fq::game_module::Transform* myTransform = this->GetGameObject()->GetComponent<fq::game_module::Transform>();
 
 	Zoom(dt);
@@ -159,13 +166,14 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 
 	DirectX::SimpleMath::Vector3 projCenter = DirectX::SimpleMath::Vector3::Transform(center, projMat);
 
+	// 위 아래 보정 (각도 때문)
 	float width = GetScene()->GetScreenManager()->GetFixScreenWidth();
 	float height = GetScene()->GetScreenManager()->GetFixScreenHeight();
 	float xViewport = ((projCenter.x + 1) / 2) * width;
 	float yViewport = ((1 - projCenter.y) / 2) * height;
 	yViewport += 100;
-	center.x = 2 * (xViewport / width) - 1;
-	center.y = 1 - 2 * (yViewport / height);
+	//center.x = 2 * (xViewport / width) - 1;
+	//center.y = 1 - 2 * (yViewport / height);
 
 	DirectX::SimpleMath::Vector3 centerCopy = center; // 거리 재는 용
 
@@ -230,6 +238,8 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	// 카메라 트랜스폼에 적용
 	auto cameraTransform = mMainCamera->GetGameObject()->GetComponent<fq::game_module::Transform>();
 	cameraTransform->SetLocalPosition(cameraTransform->GetLocalPosition() + rightMove + upMove + forwardMove);
+	auto d = cameraTransform->GetLocalPosition() + rightMove + upMove + forwardMove;
+	spdlog::trace("{} {} {}", d.x, d.y, d.z);
 }
 
 void fq::client::CameraMoving::zoomIn(float dt)
@@ -451,6 +461,30 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 
 		controller->SetMoveRestriction(moveRestriction);
 	}
+}
+
+void fq::client::CameraMoving::InitCameraPos()
+{
+	// 플레이어 트랜스폼 돌면서 센터 점 계산 
+	std::vector<DirectX::SimpleMath::Vector3> playerSpawnPosList;
+	playerSpawnPosList.push_back(GetScene()->GetObjectByName("PlayerSpawner1")->GetTransform()->GetWorldPosition());
+	playerSpawnPosList.push_back(GetScene()->GetObjectByName("PlayerSpawner2")->GetTransform()->GetWorldPosition());
+	playerSpawnPosList.push_back(GetScene()->GetObjectByName("PlayerSpawner3")->GetTransform()->GetWorldPosition());
+	playerSpawnPosList.push_back(GetScene()->GetObjectByName("PlayerSpawner4")->GetTransform()->GetWorldPosition());
+
+	DirectX::SimpleMath::Vector3 center = { 0, 0, 0 };
+
+	for (const auto& spawnWorldPos : playerSpawnPosList)
+	{
+		center += spawnWorldPos;
+	}
+
+	center /= playerSpawnPosList.size();
+
+	auto cameraTransform = GetTransform()->GetComponent<fq::game_module::Transform>();
+	cameraTransform->SetLocalPosition(center);
+
+	return;
 }
 
 // 콜라이더 추가하기
