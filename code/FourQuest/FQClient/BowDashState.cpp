@@ -4,6 +4,7 @@
 #include "../FQGameModule/RigidBody.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
 
 namespace fq::client
 {
@@ -12,6 +13,7 @@ namespace fq::client
 		, mMaxSpeed()
 		, mMinSpeed()
 		, mCurrentSpeed()
+		, mRotationSpeed()
 		, mPeakSpeedTime()
 		, mDurationTime()
 		, mSpeedDecayRate()
@@ -40,10 +42,14 @@ namespace fq::client
 	{
 		mDurationTime += dt;
 
+		auto controller = animator.GetComponent<game_module::CharacterController>();
+		auto transform = animator.GetComponent<game_module::Transform>();
+		auto rigidBody = animator.GetComponent<game_module::RigidBody>();
+		auto archer = animator.GetComponent<ArcherArmour>();
+		archer->SetLookAtLStickInput(dt, mRotationSpeed);
+
 		if (mDurationTime <= mPeakSpeedTime)
 		{
-			auto controller = animator.GetComponent<game_module::CharacterController>();
-
 			mCurrentSpeed = std::lerp(mOriginSpeed, mMaxSpeed, mDurationTime / mPeakSpeedTime);
 			
 			auto movementInfo = controller->GetMovementInfo();
@@ -52,14 +58,15 @@ namespace fq::client
 		}
 		else
 		{
-			auto controller = animator.GetComponent<game_module::CharacterController>();
-
 			mCurrentSpeed = std::fmax(mMinSpeed, mCurrentSpeed - mSpeedDecayRate * dt);
 
 			auto movementInfo = controller->GetMovementInfo();
 			movementInfo.maxSpeed = mCurrentSpeed;
 			controller->SetMovementInfo(movementInfo);
 		}
+
+		DirectX::SimpleMath::Vector3 direction = transform->GetWorldMatrix().Forward();
+		rigidBody->SetLinearVelocity(direction * mCurrentSpeed);
 	}
 
 	void BowDashState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)

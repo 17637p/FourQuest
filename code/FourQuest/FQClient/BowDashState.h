@@ -25,6 +25,7 @@ namespace fq::client
 		float mMaxSpeed;
 		float mMinSpeed;
 		float mCurrentSpeed;
+		float mRotationSpeed;
 		float mPeakSpeedTime;
 		float mDurationTime;
 		float mSpeedDecayRate;

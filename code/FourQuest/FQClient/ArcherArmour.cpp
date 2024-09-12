@@ -266,7 +266,7 @@ namespace fq::client
 		}
 	} 
 
-	void ArcherArmour::SetLookAtLStickInput()
+	void ArcherArmour::SetLookAtLStickInput(float dt, float rotationSpeed)
 	{
 		using namespace DirectX::SimpleMath;
 
@@ -288,14 +288,22 @@ namespace fq::client
 			// 바라보는 방향 설정 
 			input.Normalize();
 
-			if (input == Vector3::Backward)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,-1.f,0.f }));
-			}
-			else if (input != Vector3::Zero)
-			{
-				mTransform->SetWorldRotation(Quaternion::LookRotation(input, { 0.f,1.f,0.f }));
-			}
+			// 입력 값으로부터 Y축 회전 각도를 계산
+			float targetYaw = atan2f(-input.x, -input.z); // atan2 사용으로 XZ 평면 기준 각도 계산
+
+			// 현재 회전 값을 가져와 Y축 회전만 남긴다
+			Quaternion startRotation = mTransform->GetWorldRotation();
+			Vector3 eulerStartRotation = startRotation.ToEuler();
+			eulerStartRotation.x = eulerStartRotation.z = 0.0f; // Y축 회전만 남기고 다른 축은 0으로 설정
+
+			// 목표 회전 값 (Y축 회전만 적용)
+			Quaternion targetRotation = Quaternion::CreateFromYawPitchRoll(targetYaw, 0.0f, 0.0f);
+
+			// 회전 방향을 결정
+			Quaternion newRotation = Quaternion::Slerp(startRotation, targetRotation, rotationSpeed * dt);
+
+			// 새 회전 값 설정
+			mTransform->SetWorldRotation(newRotation);
 		}
 	}
 
