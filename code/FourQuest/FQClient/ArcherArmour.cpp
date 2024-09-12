@@ -266,7 +266,7 @@ namespace fq::client
 		}
 	} 
 
-	void ArcherArmour::SetLookAtLStickInput(float dt)
+	void ArcherArmour::SetLookAtLStickInput(float dt, float rotationSpeed)
 	{
 		using namespace DirectX::SimpleMath;
 
@@ -298,9 +298,6 @@ namespace fq::client
 
 			// 목표 회전 값 (Y축 회전만 적용)
 			Quaternion targetRotation = Quaternion::CreateFromYawPitchRoll(targetYaw, 0.0f, 0.0f);
-
-			// 두 쿼터니언 사이의 각도가 짧은 방향으로 회전
-			float rotationSpeed = 2.f; // 초당 회전 속도
 
 			// 회전 방향을 결정
 			Quaternion newRotation = Quaternion::Slerp(startRotation, targetRotation, rotationSpeed * dt);

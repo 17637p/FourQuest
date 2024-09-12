@@ -19,7 +19,10 @@ namespace fq::client
 
 	private:
 		float mChargingElapsedTime;
+		float mRotationSpeed;
 
 		std::shared_ptr<game_module::GameObject> mChargingEffect;
+
+		friend void RegisterMetaData();
 	};
 }

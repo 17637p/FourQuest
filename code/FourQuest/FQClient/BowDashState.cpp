@@ -13,6 +13,7 @@ namespace fq::client
 		, mMaxSpeed()
 		, mMinSpeed()
 		, mCurrentSpeed()
+		, mRotationSpeed()
 		, mPeakSpeedTime()
 		, mDurationTime()
 		, mSpeedDecayRate()
@@ -45,7 +46,7 @@ namespace fq::client
 		auto transform = animator.GetComponent<game_module::Transform>();
 		auto rigidBody = animator.GetComponent<game_module::RigidBody>();
 		auto archer = animator.GetComponent<ArcherArmour>();
-		archer->SetLookAtLStickInput(dt);
+		archer->SetLookAtLStickInput(dt, mRotationSpeed);
 
 		if (mDurationTime <= mPeakSpeedTime)
 		{

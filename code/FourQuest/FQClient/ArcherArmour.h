@@ -30,7 +30,7 @@ namespace fq::client
 		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
 		/// </summary>
 		void SetLookAtRStickInput();
-		void SetLookAtLStickInput(float dt);
+		void SetLookAtLStickInput(float dt, float rotationSpeed);
 
 		float GetChangeChargingTime() { return mChangeChargingTime; }
 		float GetOriginCharacterMaxSpeed() { return mOriginCharacterMaxSpeed; }
