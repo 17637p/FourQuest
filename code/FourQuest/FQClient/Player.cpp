@@ -4,6 +4,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/Decal.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -35,6 +36,7 @@ fq::client::Player::Player()
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mFeverElapsedTime(0.f)
+	, mbIsActiveOnHit(true)
 {}
 
 fq::client::Player::~Player()
@@ -85,7 +87,7 @@ void fq::client::Player::OnStart()
 		});
 
 	// 영혼 타입 적용
-	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
+ 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// 무기 연결
 	linkWeaponeMeshes();
@@ -95,6 +97,9 @@ void fq::client::Player::OnStart()
 
 	// 피버 버프 적용
 	setFeverBuff(true);
+
+	// Decal 색상 적용
+	setDecalColor();
 }
 
 void fq::client::Player::processInput()
@@ -146,7 +151,11 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 				}
 			}
 
-			mAnimator->SetParameterTrigger("OnHit");
+			if (mbIsActiveOnHit)
+			{
+				mAnimator->SetParameterTrigger("OnHit");
+			}
+
 			float attackPower = monsterAtk->GetAttackPower();
 			mHp -= attackPower;
 
@@ -318,27 +327,27 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 {
 	switch (equipType)
 	{
-		case fq::client::ESoulType::Sword:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Staff:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Axe:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
-		}
-		break;
-		case fq::client::ESoulType::Bow:
-		{
-			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
-		}
-		break;
+	case fq::client::ESoulType::Sword:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Staff:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Axe:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
+	}
+	break;
+	case fq::client::ESoulType::Bow:
+	{
+		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
+	}
+	break;
 	}
 }
 
@@ -417,7 +426,7 @@ void fq::client::Player::EmitAxeSoulAttack()
 
 void fq::client::Player::AddSoulGauge(float soul)
 {
-	mSoulGauge = std::clamp( mSoulGauge + soul, 0.f, mMaxSoulGauge);
+	mSoulGauge = std::clamp(mSoulGauge + soul, 0.f, mMaxSoulGauge);
 }
 
 void fq::client::Player::SetHp(float hp)
@@ -432,18 +441,18 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 	switch (mSoulType)
 	{
-		case fq::client::ESoulType::Sword:
-			cost = PlayerSoulVariable::SoulSwordAttackCost;
-			break;
-		case fq::client::ESoulType::Staff:
-			cost = PlayerSoulVariable::SoulStaffAttackCost;
-			break;
-		case fq::client::ESoulType::Axe:
-			cost = PlayerSoulVariable::SoulAxeAttackCost;
-			break;
-		case fq::client::ESoulType::Bow:
-			cost = PlayerSoulVariable::SoulBowAttackCost;
-			break;
+	case fq::client::ESoulType::Sword:
+		cost = PlayerSoulVariable::SoulSwordAttackCost;
+		break;
+	case fq::client::ESoulType::Staff:
+		cost = PlayerSoulVariable::SoulStaffAttackCost;
+		break;
+	case fq::client::ESoulType::Axe:
+		cost = PlayerSoulVariable::SoulAxeAttackCost;
+		break;
+	case fq::client::ESoulType::Bow:
+		cost = PlayerSoulVariable::SoulBowAttackCost;
+		break;
 	}
 
 	return mSoulGauge >= cost;
@@ -457,6 +466,39 @@ void fq::client::Player::setFeverBuff(bool isFever)
 	else
 	{
 
+	}
+
+}
+
+void fq::client::Player::setDecalColor()
+{
+	auto gameObject = GetGameObject();
+
+	for (auto child : gameObject->GetChildren())
+	{
+		auto decal = child->GetComponent<game_module::Decal>();
+		if (decal)
+		{
+			auto info = decal->GetDecalMaterialInfo();
+
+			switch (mSoulType)
+			{
+				case fq::client::ESoulType::Sword:
+					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					info.BaseColor = PlayerSoulVariable::BowSoulColor;
+					break;
+			}
+
+			decal->SetDecalMaterialInfo(info);
+		}
 	}
 
 }

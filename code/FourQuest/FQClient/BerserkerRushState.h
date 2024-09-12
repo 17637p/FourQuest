@@ -1,15 +1,22 @@
 #pragma once
 
+#include "EBerserkerAttackType.h"
 #include "../FQGameModule/IStateBehaviour.h"
-#include "PlayerDefine.h"
+#include "../FQGameModule/PrefabResource.h"
+#include "BerserkerAttackState.h"
+
+namespace fq::game_module
+{
+	class GameObject;
+}
 
 namespace fq::client
 {
-	class MagicBallAttackState :public game_module::IStateBehaviour
+	class BerserkerRushState : public BerserkerAttackState
 	{
 	public:
-		MagicBallAttackState();
-		~MagicBallAttackState();
+		BerserkerRushState() = default;
+		~BerserkerRushState() = default;
 
 	private:
 		std::shared_ptr<IStateBehaviour> Clone() override;
@@ -19,13 +26,11 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		void checkAttackEmit(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt);
-
-	private:
-		float mAttackTiming; // 공격발동시간
-		float mAttackElapsedTime;
-		float mCheckInputElapsedTime;
-		float mCheckInputTime;
+		float mVelocity;
+		float mAcceleration;
+		float mAccumulatedTime;
+		float mMaxVelocity;
+		std::shared_ptr<fq::game_module::GameObject> mAttackObjectOrNull;
 
 		friend void RegisterMetaData();
 	};

@@ -387,6 +387,7 @@ void fq::client::GameManager::SpawnPlayer(fq::game_module::PrefabResource prefab
 	newObject->GetComponent<game_module::CharacterController>()->SetControllerID(index);
 
 	DirectX::SimpleMath::Vector3 spawnPos;
+	
 	switch (index)
 	{
 		case 0:
@@ -404,6 +405,7 @@ void fq::client::GameManager::SpawnPlayer(fq::game_module::PrefabResource prefab
 		default:
 			break;
 	}
+
 	newObject->GetTransform()->SetLocalPosition(spawnPos);
 }
 

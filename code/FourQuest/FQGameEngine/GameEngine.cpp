@@ -8,6 +8,7 @@
 #include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQphysics/IFQPhysics.h"
+#include "../FQClient/GameVaribleHelper.h"
 #include "FQGameEngineRegister.h"
 #include "EditorHelper.h"
 
@@ -51,8 +52,12 @@ void fq::game_engine::GameEngine::Initialize()
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
 
+	// 게임 전역 변수 로드 
+	client::GameVaribleHelper::Load();
+
 	// Com객체 초기화 
 	HRESULT hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+
 	// 쓰레드 풀 생성
 	fq::game_module::ThreadPool::Initialize();
 

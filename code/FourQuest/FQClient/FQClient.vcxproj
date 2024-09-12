@@ -40,10 +40,16 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
+    <ClInclude Include="ArrowAttack.h" />
     <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="AxeSoulAttackState.h" />
+    <ClInclude Include="BerserkerArmour.h" />
+    <ClInclude Include="BerserkerAttackState.h" />
+    <ClInclude Include="BerserkerRushChargingState.h" />
+    <ClInclude Include="BerserkerRushState.h" />
     <ClInclude Include="BGM.h" />
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
@@ -59,7 +65,10 @@
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
     <ClInclude Include="BossMonsterWaitTargetState.h" />
+    <ClInclude Include="BowDashState.h" />
+    <ClInclude Include="BowMultiShotAttackState.h" />
     <ClInclude Include="BowSoulAttackState.h" />
+    <ClInclude Include="BowStrongChargingState.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
@@ -69,6 +78,7 @@
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
     <ClInclude Include="DefenceCounter.h" />
+    <ClInclude Include="EBerserkerAttackType.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameVaribleHelper.h" />
     <ClInclude Include="HpBar.h" />
@@ -151,9 +161,15 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
+    <ClCompile Include="ArrowAttack.cpp" />
     <ClCompile Include="AxeSoulAttackState.cpp" />
+    <ClCompile Include="BerserkerArmour.cpp" />
+    <ClCompile Include="BerserkerAttackState.cpp" />
+    <ClCompile Include="BerserkerRushChargingState.cpp" />
+    <ClCompile Include="BerserkerRushState.cpp" />
     <ClCompile Include="BGM.cpp" />
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
@@ -169,7 +185,10 @@
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
     <ClCompile Include="BossMonsterWaitTargetState.cpp" />
+    <ClCompile Include="BowDashState.cpp" />
+    <ClCompile Include="BowMultiShotAttackState.cpp" />
     <ClCompile Include="BowSoulAttackState.cpp" />
+    <ClCompile Include="BowStrongChargingState.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />

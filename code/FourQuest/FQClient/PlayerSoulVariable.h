@@ -1,5 +1,6 @@
 #pragma once
 
+#include <directxtk/SimpleMath.h>
 #include "IGameVariable.h"
 
 namespace fq::client
@@ -25,6 +26,12 @@ namespace fq::client
 		static inline float SoulAxeAttackCost = 50.f;
 		static inline float SoulStaffAttackCost = 50.f;
 		static inline float SoulGaugeCharging = 10.f; // 소울게이지 차징량 
+
+
+		static inline DirectX::SimpleMath::Color SwordSoulColor;
+		static inline DirectX::SimpleMath::Color StaffSoulColor;
+		static inline DirectX::SimpleMath::Color AxeSoulColor;
+		static inline DirectX::SimpleMath::Color BowSoulColor;
 	};
 
 }

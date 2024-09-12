@@ -56,6 +56,12 @@ namespace fq::client
 
 		void SetDestroyTime(float destroyTime);
 
+		float GetTargetPosRatio() const { return mTargetPosRatio; }
+
+		float GetDirectionRatio() const { return mDirectionRatio; }
+
+		void SetAttackPosition(const DirectX::SimpleMath::Vector3& attackPosition) { mAttackPosition = attackPosition; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnUpdate(float dt) override;
@@ -74,12 +80,15 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mAttackDirection; // 공격 방향
 		DirectX::SimpleMath::Vector3 mAttackPosition;
 		// 공격방향으로 밀어내는 힘
-		float mKnockBackPower; 
-	
+		float mKnockBackPower;
+
 		// 공격을 하는 객체 
 		fq::game_module::GameObject* mAttacker;
 		std::string mHitSound;
 		std::function<void()> mHitCallback;
+
+		float mTargetPosRatio; // TargetPositionAndDirectionByAngle용 변수
+		float mDirectionRatio; // TargetPositionAndDirectionByAngle용 변수
 
 		friend void RegisterMetaData();
 	};
