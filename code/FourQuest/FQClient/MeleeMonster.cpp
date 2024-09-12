@@ -375,8 +375,6 @@ void fq::client::MeleeMonster::LookAtTarget()
 		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
 
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
-
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
 
