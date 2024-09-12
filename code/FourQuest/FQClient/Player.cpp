@@ -16,6 +16,7 @@
 #include "LinearAttack.h"
 #include "ClientHelper.h"
 #include "PlayerSoulVariable.h"
+#include "PlayerVariable.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -32,11 +33,11 @@ fq::client::Player::Player()
 	, mArmourType(EArmourType::Knight)
 	, mbOnShieldBlock(false)
 	, mTransform(nullptr)
-	, mAttackSpeed(1.f)
 	, mEquipWeapone(ESoulType::Sword)
 	, mWeaponeMeshes{ nullptr }
 	, mFeverElapsedTime(0.f)
 	, mbIsActiveOnHit(true)
+	, mbIsFeverTime(false)
 {}
 
 fq::client::Player::~Player()
@@ -205,16 +206,15 @@ void fq::client::Player::processCoolTime(float dt)
 
 void fq::client::Player::processFeverTime(float dt)
 {
-	if (mFeverTime == 0.f)
+	if (!mbIsFeverTime)
 		return;
 
-	mFeverTime = std::max(mFeverTime - dt, 0.f);
+	mFeverElapsedTime += dt;
 
 	// °©¿Ê ¹öÇÁ Á¾·á
-	if (mFeverTime == 0.f)
+	if (mFeverElapsedTime >= mFeverTime)
 	{
-		// TODO : °©¿Ê ÇØÁ¦¿¡ ´ëÇÑ ¹öÇÁ¸¦ ÁøÇà
-		mAttackPower = mAttackPower * 0.5f;
+		setFeverBuff(false);
 	}
 }
 
@@ -457,12 +457,27 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 void fq::client::Player::setFeverBuff(bool isFever)
 {
+	assert(isFever != mbIsFeverTime);
+
+	mFeverElapsedTime = 0.f;
+
+	mbIsFeverTime = isFever;
+
 	if (isFever)
 	{
+		mAttackPower *= PlayerVariable::FeverAttackIncreaseRatio;
+		auto movementInfo = mController->GetMovementInfo();
+		movementInfo.maxSpeed *= PlayerVariable::FeverSpeedIncreaseRatio;
+		movementInfo.acceleration *= PlayerVariable::FeverSpeedIncreaseRatio;
+		mController->SetMovementInfo(movementInfo);
 	}
 	else
 	{
-
+		mAttackPower /= PlayerVariable::FeverAttackIncreaseRatio;
+		auto movementInfo = mController->GetMovementInfo();
+		movementInfo.maxSpeed /= PlayerVariable::FeverSpeedIncreaseRatio;
+		movementInfo.acceleration /= PlayerVariable::FeverSpeedIncreaseRatio;
+		mController->SetMovementInfo(movementInfo);
 	}
 
 }
@@ -477,20 +492,20 @@ void fq::client::Player::setDecalColor()
 		if (decal)
 		{
 			auto info = decal->GetDecalMaterialInfo();
-
+			info.BaseColor = { 0.f,0.f,0.f,1.f };
 			switch (mSoulType)
 			{
 				case fq::client::ESoulType::Sword:
-					info.BaseColor = PlayerSoulVariable::SwordSoulColor;
+					info.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
 					break;
 				case fq::client::ESoulType::Staff:
-					info.BaseColor = PlayerSoulVariable::StaffSoulColor;
+					info.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
 					break;
 				case fq::client::ESoulType::Axe:
-					info.BaseColor = PlayerSoulVariable::AxeSoulColor;
+					info.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
 					break;
 				case fq::client::ESoulType::Bow:
-					info.BaseColor = PlayerSoulVariable::BowSoulColor;
+					info.EmissiveColor = PlayerSoulVariable::BowSoulColor;
 					break;
 			}
 
@@ -498,4 +513,9 @@ void fq::client::Player::setDecalColor()
 		}
 	}
 
+}
+
+bool fq::client::Player::IsFeverTime() const
+{
+	return mbIsFeverTime;
 }

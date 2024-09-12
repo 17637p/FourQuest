@@ -145,9 +145,9 @@ void fq::game_module::SceneManager::UnloadScene()
 {
 	mTimeManager->SetTimeScale(1);
 	mEventManager->FireEvent<fq::event::OnUnloadScene>({});
-	mPrefabManager->UnloadPrefabResource();
 	mCurrentScene->DestroyAll();
 	mCurrentScene->CleanUp();
+	mPrefabManager->UnloadPrefabResource();
 	mCurrentScene->mIsStartScene = false;
 	mCurrentScene->mSceneName = mNextSceneName;
 	mNextSceneName.clear();

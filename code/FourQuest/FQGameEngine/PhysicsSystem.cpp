@@ -878,6 +878,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			fq::physics::CharacterMovementGetSetData moveData;
 
+			auto movementInfo = controller->GetMovementInfo();
+			moveData.acceleration = movementInfo.acceleration;
+			moveData.maxSpeed = movementInfo.maxSpeed;
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
 			moveData.restriction = controller->GetMoveRestrction();

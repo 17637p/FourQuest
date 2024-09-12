@@ -127,6 +127,7 @@
 #include "DamageVariable.h"
 #include "SettingVariable.h"
 #include "PlayerInfoVariable.h"
+#include "PlayerVariable.h"
 
 // Box
 #include "Box.h"
@@ -1585,6 +1586,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
+		.base<IGameVariable>();
+
+	entt::meta<PlayerVariable>()
+		.type("PlayerVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerVariable")
+		.data<&PlayerVariable::FeverAttackIncreaseRatio>("FeverAttackIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "FeverAttackIncreaseRatio")
+		.data<&PlayerVariable::FeverSpeedIncreaseRatio>("FeverSpeedIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "FeverSpeedIncreaseRatio")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()
