@@ -115,7 +115,7 @@ namespace fq::game_module
 		~Sequence();
 
 		virtual void OnStart() override;
-		virtual void OnFixedUpdate(float dt) override;
+		virtual void OnUpdate(float dt) override;
 		virtual void OnTriggerEnter(const Collision& collision) override;
 
 		bool GetIsPlay() const { return mbIsPlay; }

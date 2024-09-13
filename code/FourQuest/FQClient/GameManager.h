@@ -22,6 +22,8 @@ namespace fq::client
 		/// </summary>
 		const std::vector<std::shared_ptr<game_module::GameObject>>& GetPlayers()const { return mPlayers; }
 
+		// temp alpha
+		void SavePlayerState();
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
@@ -36,7 +38,6 @@ namespace fq::client
 		void testKey();
 
 		// temp alpha
-		void SavePlayerState();
 		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
 
 	private:
