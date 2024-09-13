@@ -10,8 +10,6 @@ namespace fq::client
 {
 	std::shared_ptr<fq::game_module::GameObject> BerserkerArmour::EmitAttackIntend(EBerserkerAttackType attackType, const Vector3& offset, const Vector3& scale, float knocBackPower, float destroyTime)
 	{
-
-
 		DirectX::SimpleMath::Vector3 direction;
 		EKnockBackType knockBackType;
 		std::string hitSoundName;
@@ -151,12 +149,20 @@ namespace fq::client
 			mSwingAroundElapsedTime = mSwingAroundCoolTime;
 		}
 
+		DirectX::SimpleMath::Vector3 rightInput{};
+		rightInput.x = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightX);
+		rightInput.z = input->GetStickInfomation(mController->GetControllerID(), EPadStick::rightY);
+		constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
 		// RushCharging
-		if (input->IsPadKeyState(mController->GetControllerID(), EPadKey::RightThumb, EKeyState::Tap)
-			&& mRushElapsedTime == 0.f)
+		if (rightInput.LengthSquared() >= rotationOffsetSq)
 		{
 			mAnimator->SetParameterTrigger("OnRushCharging");
 			mRushElapsedTime = mRushCoolTime;
+		}
+		else
+		{
+			mAnimator->SetParameterOffTrigger("OnRushCharging");
 		}
 	}
 }

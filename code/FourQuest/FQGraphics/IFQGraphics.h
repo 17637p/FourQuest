@@ -154,7 +154,7 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) abstract;
 
 			virtual FQ_GRAPHICS std::set<IStaticMeshObject*> GetStaticMeshObjects() const abstract;
-
+			virtual FQ_GRAPHICS DebugInfo GetDebugInfo() const abstract;
 			// staticMeshObject getter/setter
 
 			/// Primitive

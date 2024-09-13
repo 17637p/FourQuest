@@ -124,6 +124,7 @@ namespace fq::graphics
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
 		virtual std::set<IStaticMeshObject*> GetStaticMeshObjects() const override;
+		virtual DebugInfo GetDebugInfo() const override;
 
 		/// Primitive
 		// Debug Draw
