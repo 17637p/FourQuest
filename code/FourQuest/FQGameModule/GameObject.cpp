@@ -310,7 +310,7 @@ void fq::game_module::GameObject::OnTriggerEnter(const Collision& collision)
 {
 	for (auto& [id, component] : mComponents)
 	{
-		component->OnTriggerEnter(collision);
+		component->OnTriggerEnter(collision);	
 	}
 }
 

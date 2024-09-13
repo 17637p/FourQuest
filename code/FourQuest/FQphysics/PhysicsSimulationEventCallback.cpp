@@ -86,7 +86,7 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::OnTrigger()
 	{
-		for (auto trigger : mTriggerContainer)
+		for (auto& trigger : mTriggerContainer)
 		{
 			std::shared_ptr<CollisionData> TriggerActorData = mCollisionDataManager->FindCollisionData(trigger.first);
 			if (TriggerActorData.get() == nullptr)
