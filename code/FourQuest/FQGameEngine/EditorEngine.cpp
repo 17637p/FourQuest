@@ -60,13 +60,13 @@ void fq::game_engine::EditorEngine::Initialize()
 	// 윈도우 창 초기화 
 	UINT ScreenWidth = 1920;
 	UINT ScreenHeight = 1080;
-	mGameProcess->mWindowSystem->InitializeEditorType(ScreenWidth,ScreenHeight);
+	mGameProcess->mWindowSystem->InitializeEditorType(ScreenWidth, ScreenHeight);
 
 	// GameProcess 초기화
 	mGameProcess->mInputManager->
 		Initialize(mGameProcess->mWindowSystem->GetHWND());
 
-	std::string startSceneName =  EditorHelper::GetStartSceneName();
+	std::string startSceneName = EditorHelper::GetStartSceneName();
 
 	mGameProcess->mSceneManager->Initialize(startSceneName
 		, mGameProcess->mEventManager.get()
@@ -83,7 +83,7 @@ void fq::game_engine::EditorEngine::Initialize()
 	UINT width = mGameProcess->mWindowSystem->GetScreenWidth();
 	UINT height = mGameProcess->mWindowSystem->GetScreenHeight();
 	mGameProcess->mGraphics->Initialize(hwnd, width, height, fq::graphics::EPipelineType::Deferred);
-	
+
 	mGameProcess->mScreenManager->Initialize(mGameProcess->mEventManager.get(), width, height);
 
 	// 물리 엔진 초기화
@@ -113,7 +113,7 @@ void fq::game_engine::EditorEngine::Initialize()
 
 	// 모델 데이터 수정이 생긴경우
 	// mEditor->mModelSystem->ConvertAllModel();
-	
+
 	// Scene 로드 
 	mGameProcess->mLoadingSystem->ProcessLoading();
 }
@@ -150,7 +150,7 @@ void fq::game_engine::EditorEngine::Process()
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
 				unsigned short height = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
-				
+
 				mGameProcess->mGraphics->SetWindowSize(width, height);
 				mGameProcess->mEventManager->FireEvent<fq::event::SetScreenSize>({ width,height });
 			}
@@ -202,7 +202,7 @@ void fq::game_engine::EditorEngine::Process()
 
 				// Animation Update
 				mGameProcess->mAnimationSystem->UpdateAnimation(deltaTime);
-				
+
 				// Scene Late Update
 				mGameProcess->mSceneManager->LateUpdate(deltaTime);
 			}
@@ -315,19 +315,20 @@ void fq::game_engine::EditorEngine::RenderEditorWinodw()
 	mEditor->mLogWindow->Render();
 	mEditor->mFileDialog->Render();
 	mEditor->mMainMenuBar->Render();
-	mEditor->mCollisionMatrixWindow->Render(); 
-	mEditor->mPhysicsAnimatorWindow->Render(); 
+	mEditor->mCollisionMatrixWindow->Render();
+	mEditor->mPhysicsAnimatorWindow->Render();
 	mEditor->mSkyBoxWindow->Render();
 	mEditor->mAnimatorWindow->Render();
 	mEditor->mSettingWindow->Render();
 	mEditor->mNavMeshWindow->Render();
-	mEditor->mArticulationHierarchy->Render(); 
-	mEditor->mArticulationInspector->Render(); 
-	mEditor->mExportWindow->Render(); 
-	mEditor->mImportWindow->Render(); 
+	mEditor->mArticulationHierarchy->Render();
+	mEditor->mArticulationInspector->Render();
+	mEditor->mExportWindow->Render();
+	mEditor->mImportWindow->Render();
 	mEditor->mMaterialWindow->Render();
 	mEditor->mLightmapWindow->Render();
 	mEditor->mGameVariableWindow->Render();
+	mEditor->mRenderingDebugWindow->Render();
 
 	// 기즈모 세팅 이유로 항상 마지막에 랜더링합니다  
 	mEditor->mGamePlayWindow->Render();
@@ -367,6 +368,7 @@ void fq::game_engine::EditorEngine::InitializeEditor()
 	mEditor->mMaterialWindow->Initialize(mGameProcess.get(), mEditor.get());
 	mEditor->mLightmapWindow->Initialize(mGameProcess.get());
 	mEditor->mGameVariableWindow->Initialize();
+	mEditor->mRenderingDebugWindow->Initialize(mGameProcess.get());
 
 	// Editor Setting
 	EditorHelper::LoadEditorSetting(mEditor.get());
