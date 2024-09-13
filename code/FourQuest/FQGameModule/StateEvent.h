@@ -29,6 +29,9 @@ namespace fq::game_module
 			DirectX::SimpleMath::Vector3 Scale = { 1, 1, 1 };
 			DirectX::SimpleMath::Vector3 Translate;
 			DirectX::SimpleMath::Vector3 RandomRange;
+
+			float PlayBackSpeed = 1.f;
+			bool bIsPlaybackSppedHandleChildHierarchy = false;
 		};
 
 		struct PlaySoundInfo
