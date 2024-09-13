@@ -2,6 +2,9 @@
 
 #include "../FQGameModule/GameModule.h"
 
+#include "GameManager.h"
+#include <spdlog/spdlog.h>
+
 std::shared_ptr<fq::game_module::Component> fq::client::Portal::Clone(std::shared_ptr<Component> clone /*= nullptr*/) const
 {
 	auto clonePortal = std::dynamic_pointer_cast<Portal>(clone);
@@ -36,15 +39,9 @@ void fq::client::Portal::ChangeScene()
 
 void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collision)
 {
-}
-
-void fq::client::Portal::OnTriggerStay(const fq::game_module::Collision& collision)
-{
-	if (collision.other->GetTag() == game_module::ETag::Player)
+	if (collision.other->GetTag() == game_module::ETag::Player || collision.other->GetTag() == game_module::ETag::Soul)
 	{
+		GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>()->SavePlayerState();
 		ChangeScene();
 	}
 }
-
-void fq::client::Portal::OnTriggerExit(const fq::game_module::Collision& collision)
-{}

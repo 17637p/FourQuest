@@ -10,6 +10,7 @@
 #include "../FQGameModule/ScreenManager.h"
 
 #include "Player.h"
+#include "SettingVariable.h"
 
 fq::client::CameraMoving::CameraMoving()
 	:mMainCamera(nullptr),
@@ -143,7 +144,10 @@ void fq::client::CameraMoving::OnStart()
 {
 	mMainCamera = GetComponent<fq::game_module::Camera>();
 
-	InitCameraPos();
+	if (SettingVariable::IsUseCameraInit)
+	{
+		InitCameraPos();
+	}
 	//SetColliderRotation();
 }
 
@@ -238,8 +242,6 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	// 카메라 트랜스폼에 적용
 	auto cameraTransform = mMainCamera->GetGameObject()->GetComponent<fq::game_module::Transform>();
 	cameraTransform->SetLocalPosition(cameraTransform->GetLocalPosition() + rightMove + upMove + forwardMove);
-	auto d = cameraTransform->GetLocalPosition() + rightMove + upMove + forwardMove;
-	//spdlog::trace("{} {} {}", d.x, d.y, d.z);
 }
 
 void fq::client::CameraMoving::zoomIn(float dt)
@@ -465,8 +467,6 @@ void fq::client::CameraMoving::restrcitPlayerMove()
 
 void fq::client::CameraMoving::InitCameraPos()
 {
-	return;
-
 	// 플레이어 트랜스폼 돌면서 센터 점 계산 
 	std::vector<DirectX::SimpleMath::Vector3> playerSpawnPosList;
 	playerSpawnPosList.push_back(GetScene()->GetObjectByName("PlayerSpawner1")->GetTransform()->GetWorldPosition());

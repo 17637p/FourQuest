@@ -146,7 +146,7 @@ void fq::client::GameManager::OnStart()
 		}
 		playerID = 1;
 		playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player2SoulType);
-		switch (PlayerInfoVariable::Player1State)
+		switch (PlayerInfoVariable::Player2State)
 		{
 			case 0:
 			{
@@ -183,7 +183,7 @@ void fq::client::GameManager::OnStart()
 		}
 		playerID = 2;
 		playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player3SoulType);
-		switch (PlayerInfoVariable::Player1State)
+		switch (PlayerInfoVariable::Player3State)
 		{
 			case 0:
 			{
@@ -220,7 +220,7 @@ void fq::client::GameManager::OnStart()
 		}
 		playerID = 3;
 		playerSoulType = static_cast<ESoulType>(PlayerInfoVariable::Player4SoulType);
-		switch (PlayerInfoVariable::Player1State)
+		switch (PlayerInfoVariable::Player4State)
 		{
 			case 0:
 			{

@@ -232,11 +232,16 @@ void fq::client::PlantMonster::FindTarget()
 	// 가장 가까운 플레이어를 쿼리
 	for (const auto& player : mGameManager->GetPlayers())
 	{
-		auto playerT = player->GetComponent<game_module::Transform>();
+		if (player->GetTag() == game_module::ETag::Soul)
+		{
+			continue;
+		}
 
+		auto playerT = player->GetComponent<game_module::Transform>();
 		auto playerPos = playerT->GetWorldPosition();
 
 		float distance = (playerPos - monsterPos).Length();
+
 
 		if (distance <= minDistance)
 		{

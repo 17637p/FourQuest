@@ -92,7 +92,7 @@ namespace fq::physics
 			if (TriggerActorData.get() == nullptr)
 			{
 				mTriggerContainer.erase(mTriggerContainer.find(trigger.first));
-				return;
+				continue;
 			}
 
 			for (auto other : trigger.second)
@@ -101,7 +101,7 @@ namespace fq::physics
 				if (OtherActordata.get() == nullptr)
 				{
 					trigger.second.erase(trigger.second.find(other));
-					return;
+					continue;
 				}
 
 				CollisionData Mydata;

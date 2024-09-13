@@ -1593,6 +1593,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
+		.data<&SettingVariable::IsUseCameraInit>("IsUseCameraInit"_hs)
+		.prop(fq::reflect::prop::Name, "IsUseCameraInit")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerVariable>()
