@@ -32,6 +32,7 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
+		void InitCameraPos();
 		DirectX::SimpleMath::Vector3 GetCenterCameraInWorld();
 
 		void AddPlayerTransform(fq::game_module::Transform* player);

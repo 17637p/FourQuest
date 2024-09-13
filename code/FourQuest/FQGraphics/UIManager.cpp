@@ -34,7 +34,6 @@ fq::graphics::UIManager::UIManager()
 	mResourceManager(nullptr),
 	mIsRenderObjects(true)
 {
-
 }
 
 fq::graphics::UIManager::~UIManager()
@@ -160,7 +159,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 		hr = mDWriteFactory->CreateTextFormat(
 			path.c_str(),
 			NULL,
-			DWRITE_FONT_WEIGHT_BOLD,
+			DWRITE_FONT_WEIGHT_NORMAL,
 			DWRITE_FONT_STYLE_NORMAL,
 			DWRITE_FONT_STRETCH_NORMAL,
 			fontSize,
@@ -214,6 +213,7 @@ void fq::graphics::UIManager::DeleteFont(const std::wstring& path)
 	{
 		mFonts.erase(path + std::to_wstring(fontSize));
 	}
+	RemoveFontResourceEx(path.c_str(), FR_NOT_ENUM, NULL);
 }
 
 fq::graphics::ITextObject* fq::graphics::UIManager::CreateText(TextInfo textInfo)
@@ -748,7 +748,7 @@ fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UII
 
 void fq::graphics::UIManager::DeleteText(fq::graphics::ITextObject* textObject)
 {
-	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject));
+	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), textObject),mTexts.end());
 	delete textObject;
 }
 
@@ -877,6 +877,11 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 		}
 
 		std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
+
+		if (mFonts.find(fontPath) == mFonts.end())
+		{
+			fontPath = L"Verdana" + std::to_wstring(drawTextInformation.FontSize);
+		}
 
 		switch (textObject->GetTextInformation().Align)
 		{

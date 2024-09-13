@@ -80,6 +80,7 @@ void fq::game_module::CharacterController::OnFixedUpdate(float dt)
 	else
 	{
 		mbOnMove = input != Vector3::Zero;
+		input.Normalize();
 		GetScene()->GetEventManager()
 			->FireEvent<fq::event::AddInputMove>({ mControllerInfo.id, input , true });
 	}

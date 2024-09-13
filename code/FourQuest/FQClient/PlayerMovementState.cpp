@@ -1,6 +1,7 @@
 #include "PlayerMovementState.h"
 
 #include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/GameModule.h"
 
 fq::client::PlayerMovementState::PlayerMovementState()
 	:mbCanMovePlayer(false)
@@ -22,4 +23,3 @@ void fq::client::PlayerMovementState::OnStateEnter(fq::game_module::Animator& an
 	controller->SetCanMoveCharater(mbCanMovePlayer);
 	controller->SetOnRotation(mbOnRotation);
 }
-

@@ -40,8 +40,10 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
+    <ClInclude Include="ArrowAttack.h" />
     <ClInclude Include="AttackDefine.h" />
     <ClInclude Include="AxeSoulAttackState.h" />
     <ClInclude Include="BerserkerArmour.h" />
@@ -63,7 +65,10 @@
     <ClInclude Include="BossMonsterFindTargetState.h" />
     <ClInclude Include="BossMonsterWaitAttackState.h" />
     <ClInclude Include="BossMonsterWaitTargetState.h" />
+    <ClInclude Include="BowDashState.h" />
+    <ClInclude Include="BowMultiShotAttackState.h" />
     <ClInclude Include="BowSoulAttackState.h" />
+    <ClInclude Include="BowStrongChargingState.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="ClientEvent.h" />
     <ClInclude Include="ClientHelper.h" />
@@ -119,8 +124,10 @@
     <ClInclude Include="PlantMonsterIdleState.h" />
     <ClInclude Include="PlantMonsterStareState.h" />
     <ClInclude Include="PlayerInfoVariable.h" />
+    <ClInclude Include="PlayerMovementSoundState.h" />
     <ClInclude Include="PlayerUIManager.h" />
     <ClInclude Include="PlayerSoulVariable.h" />
+    <ClInclude Include="PlayerVariable.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Quest.h" />
     <ClInclude Include="QuestColliderTriggerChecker.h" />
@@ -156,8 +163,10 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
+    <ClCompile Include="ArrowAttack.cpp" />
     <ClCompile Include="AxeSoulAttackState.cpp" />
     <ClCompile Include="BerserkerArmour.cpp" />
     <ClCompile Include="BerserkerAttackState.cpp" />
@@ -178,7 +187,10 @@
     <ClCompile Include="BossMonsterFindTargetState.cpp" />
     <ClCompile Include="BossMonsterWaitAttackState.cpp" />
     <ClCompile Include="BossMonsterWaitTargetState.cpp" />
+    <ClCompile Include="BowDashState.cpp" />
+    <ClCompile Include="BowMultiShotAttackState.cpp" />
     <ClCompile Include="BowSoulAttackState.cpp" />
+    <ClCompile Include="BowStrongChargingState.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="ClientHelper.cpp" />
     <ClCompile Include="DeadArmour.cpp" />
@@ -224,7 +236,9 @@
     <ClCompile Include="PlantMonsterHitState.cpp" />
     <ClCompile Include="PlantMonsterIdleState.cpp" />
     <ClCompile Include="PlantMonsterStareState.cpp" />
+    <ClCompile Include="PlayerMovementSoundState.cpp" />
     <ClCompile Include="PlayerUIManager.cpp" />
+    <ClCompile Include="PlayerVariable.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="QuestColliderTriggerChecker.cpp" />

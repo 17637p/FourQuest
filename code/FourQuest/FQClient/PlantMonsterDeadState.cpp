@@ -42,8 +42,6 @@ void fq::client::PlantMonsterDeadState::OnStateExit(game_module::Animator& anima
 
 void fq::client::PlantMonsterDeadState::OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	mEraseTime = 10.f;
-
 	auto gameObject = animator.GetGameObject();
 	gameObject->RemoveComponent<game_module::CapsuleCollider>();
 	gameObject->RemoveComponent<game_module::ImageUI>();

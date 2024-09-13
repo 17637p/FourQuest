@@ -52,6 +52,8 @@ void fq::client::MeleeMonsterHitState::OnStateUpdate(game_module::Animator& anim
 
 	if (mDurationTime >= 0.15f)
 	{
+		mDurationTime = 0.f;
+
 		for (auto child : animator.GetGameObject()->GetChildren())
 		{
 			auto skeletalMesh = child->GetComponent<game_module::SkinnedMeshRenderer>();

@@ -8,10 +8,12 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
 #include "Attack.h"
+#include "ArrowAttack.h"
 #include "GameManager.h"
 #include "HpBar.h"
 #include "MonsterGroup.h"
 #include "KnockBack.h"
+#include "Player.h"
 
 fq::client::MeleeMonster::MeleeMonster()
 	:mMaxHp(0.f)
@@ -289,9 +291,11 @@ void fq::client::MeleeMonster::DetectTarget()
 
 	for (const auto& player : mGameManager->GetPlayers())
 	{
+		if (!player->HasComponent<Player>())
+			continue;
+
 		auto playerT = player->GetComponent<game_module::Transform>();
 		auto playerPos = playerT->GetWorldPosition();
-
 		float distance = (monsterPos - playerPos).Length();
 
 		if (distance <= mDetectRange)
@@ -351,31 +355,29 @@ void fq::client::MeleeMonster::LookAtTarget()
 	if (mTarget == nullptr || mTarget->IsDestroyed())
 		return;
 
+	constexpr float RotationSpeed = 0.1f;
+
 	auto transform = GetComponent<game_module::Transform>();
 	auto targetT = mTarget->GetComponent<game_module::Transform>();
-
 	auto targetPos = targetT->GetWorldPosition();
 	auto myPos = transform->GetWorldPosition();
-
+	auto currentRotation = transform->GetWorldRotation();
 	auto directV = targetPos - myPos;
 	directV.y = 0.f;
 	directV.Normalize();
 
-	constexpr float RotationSpeed = 0.1f;
+	DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
 
-	auto currentRotation = transform->GetWorldRotation();
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	// UpVector가 뒤집히는 경우에 대한 예외 처리 
+	if (directV.z >= 1.f)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f, -1.f, 0.f });
+	else if (directV != DirectX::SimpleMath::Vector3::Zero)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
+
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
 
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
-
-	// UpVector가 뒤집힌 경우
-	if (rotationMatrix._22 <= -0.9f)
-	{
-		rotationMatrix._22 = 1.f;
-	}
-	transform->SetLocalRotationToMatrix(rotationMatrix);
+	mTransform->SetWorldRotation(result);
 }
 

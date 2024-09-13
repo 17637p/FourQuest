@@ -38,6 +38,16 @@ namespace fq::client::dc
 		return attackPower * DamageVariable::MagicLaserCoefficient;
 	}
 
+	inline float GetArcherWADamage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherWACoefficient;
+	}
+
+	inline float GetArcherSADamage(float attackPower)
+	{
+		return attackPower * DamageVariable::ArcherSACoefficient;
+	}
+
 	inline float GetBluntFirstConsecutiveAttackDamage(float attackPower)
 	{
 		return attackPower * DamageVariable::BluntFirstConsecutiveAttack;
@@ -62,6 +72,7 @@ namespace fq::client::dc
 	{
 		return attackPower * DamageVariable::BluntRushCoefficient;
 	}
+
 	//////////////////////////////////////////////////////////////////////////
 	//							¿µÈ¥ °ø°Ý									//
 	//////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@
 #include "../FQGameModule/NavigationAgent.h"
 #include "MeleeMonsterExplosion.h"
 #include "KnockBack.h"
+#include "ClientEvent.h"
 
 fq::client::MeleeMonsterExplosionState::MeleeMonsterExplosionState()
 {
@@ -25,10 +26,18 @@ void fq::client::MeleeMonsterExplosionState::OnStateEnter(game_module::Animator&
 
 void fq::client::MeleeMonsterExplosionState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	animator.GetScene()->DestroyGameObject(mWarningUI.get());
-	mWarningUI = nullptr;
+	if (mWarningUI)
+	{
+		animator.GetScene()->DestroyGameObject(mWarningUI.get());
+		mWarningUI = nullptr;
+	}
 
 	animator.GetComponent<MeleeMonsterExplosion>()->Explode();
+
+	// 몬스터 죽음 이벤트 발생
+	auto scene = animator.GetScene();
+	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
+		{ EMonsterType::Explosion });
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MeleeMonsterExplosionState::Clone()

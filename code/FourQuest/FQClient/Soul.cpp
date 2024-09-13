@@ -6,6 +6,8 @@
 #include "../FQGameModule/Particle.h"
 #include "DeadArmour.h"
 #include "CameraMoving.h"
+#include "ClientEvent.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
@@ -37,6 +39,10 @@ std::shared_ptr<fq::game_module::Component> fq::client::Soul::Clone(std::shared_
 void fq::client::Soul::OnStart()
 {
 	mController = GetComponent<game_module::CharacterController>();
+
+	// Player등록
+	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
+		{ GetGameObject(), EPlayerType::Soul });
 
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
@@ -110,8 +116,10 @@ void fq::client::Soul::OnUpdate(float dt)
 			}
 		}
 
-		// 가장 가까운 갑옷으로 영혼화
-		assert(closestArmour);
+		if (closestArmour == nullptr)
+		{
+			return;
+		}
 
 		PlayerInfo info{ mController->GetControllerID(), mSoulType };
 
@@ -136,16 +144,16 @@ void fq::client::Soul::SetSoulColor()
 			switch (mSoulType)
 			{
 				case fq::client::ESoulType::Sword:
-					matInfo.EmissiveColor = mSwordColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
 					break;
 				case fq::client::ESoulType::Staff:
-					matInfo.EmissiveColor = mStaffColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
 					break;
 				case fq::client::ESoulType::Axe:
-					matInfo.EmissiveColor = mAxeColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
 					break;
 				case fq::client::ESoulType::Bow:
-					matInfo.EmissiveColor = mBowColor;
+					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
 					break;
 			}
 

@@ -12,6 +12,7 @@
 #include "Soul.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
+#include "PlayerMovementSoundState.h"
 #include "DeadArmour.h"
 #include "MagicArmour.h"
 #include "MagicBallAttackState.h"
@@ -25,6 +26,10 @@
 #include "SwordSoulAttackState.h"
 #include "BowSoulAttackState.h"
 #include "AxeSoulAttackState.h"
+#include "ArcherArmour.h"
+#include "BowDashState.h"
+#include "BowMultiShotAttackState.h"
+#include "BowStrongChargingState.h"
 #include "AimAssist.h"
 #include "EBerserkerAttackType.h"
 #include "BerserkerArmour.h"
@@ -86,6 +91,7 @@
 
 #include "Attack.h"
 #include "StaffSoulAttack.h"
+#include "ArrowAttack.h"
 #include "KnockBack.h"
 
 // UI
@@ -122,6 +128,7 @@
 #include "DamageVariable.h"
 #include "SettingVariable.h"
 #include "PlayerInfoVariable.h"
+#include "PlayerVariable.h"
 
 // Box
 #include "Box.h"
@@ -141,8 +148,20 @@ void fq::client::RegisterMetaData()
 	entt::meta<GameManager>()
 		.type("GameManager"_hs)
 		.prop(reflect::prop::Name, "GameManager")
+		.data<&GameManager::mIsAutoSpawn>("UseAutoSpawn"_hs)
+		.prop(fq::reflect::prop::Name, "UseAutoSpawn")
 		.data<&GameManager::mPauseUI>("PauseUI"_hs)
 		.prop(fq::reflect::prop::Name, "PauseUI")
+		.data<&GameManager::mSoul>("Soul"_hs)
+		.prop(fq::reflect::prop::Name, "Soul")
+		.data<&GameManager::mKnight>("Knight"_hs)
+		.prop(fq::reflect::prop::Name, "Knight")
+		.data<&GameManager::mMagic>("Magic"_hs)
+		.prop(fq::reflect::prop::Name, "Magic")
+		.data<&GameManager::mArcher>("Archer"_hs)
+		.prop(fq::reflect::prop::Name, "Archer")
+		.data<&GameManager::mWarrior>("Warrior"_hs)
+		.prop(fq::reflect::prop::Name, "Warrior")
 		.base<game_module::Component>();
 
 	entt::meta<TestPOD>()
@@ -332,6 +351,45 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "DashAttack")
 		.base<game_module::Component>();
 
+	entt::meta<ArcherArmour>()
+		.type("ArcherArmour"_hs)
+		.prop(reflect::prop::Name, "ArcherArmour")
+		.prop(reflect::prop::Label, "Player")
+		.data<&ArcherArmour::mDashCoolTime>("DashCoolTime"_hs)
+		.prop(reflect::prop::Name, "DashCoolTime")
+		.prop(reflect::prop::Comment, u8"구르기 쿨타임")
+		.data<&ArcherArmour::mStrongAttackCoolTime>("StrongAttackCoolTime"_hs)
+		.prop(reflect::prop::Name, "StrongAttackCoolTime")
+		.prop(reflect::prop::Comment, u8"X공격(강공격) 쿨타임")
+		.data<&ArcherArmour::mArrowPower>("ArrowPower"_hs)
+		.prop(reflect::prop::Name, "ArrowPower")
+		.prop(reflect::prop::Comment, u8"공격력")
+		.data<&ArcherArmour::mChangeChargingTime>("ChangeChargingTime"_hs)
+		.prop(reflect::prop::Name, "ChangeChargingTime")
+		.prop(reflect::prop::Comment, u8"X공격 차징 시간")
+		.data<&ArcherArmour::mWeakProjectileVelocity>("WeakProjectileVelocity"_hs)
+		.prop(reflect::prop::Name, "WeakProjectileVelocity")
+		.prop(reflect::prop::Comment, u8"약공격 속도")
+		.data<&ArcherArmour::mStrongProjectileVelocity>("StrongProjectileVelocity"_hs)
+		.prop(reflect::prop::Name, "StrongProjectileVelocity")
+		.prop(reflect::prop::Comment, u8"강공격 속도")
+		.data<&ArcherArmour::mWeakAttack>("mWeakAttack"_hs)
+		.prop(reflect::prop::Name, "mWeakAttack")
+		.prop(reflect::prop::Comment, u8"약공격 프리펩")
+		.data<&ArcherArmour::mStrongAttack>("mStrongAttack"_hs)
+		.prop(reflect::prop::Name, "mStrongAttack")
+		.prop(reflect::prop::Comment, u8"강공격 프리펩")
+		.data<&ArcherArmour::mStrongAttackChargingEffect>("mStrongAttackChargingEffect"_hs)
+		.prop(reflect::prop::Name, "mStrongAttackChargingEffect")
+		.prop(reflect::prop::Comment, u8"차징 이펙트")
+		.data<&ArcherArmour::mStrongAttackLaunchEffect>("mStrongAttackLaunchEffect"_hs)
+		.prop(reflect::prop::Name, "mStrongAttackLaunchEffect")
+		.prop(reflect::prop::Comment, u8"강공격 이펙트 프리펩")
+		.data<&ArcherArmour::mDashEffect>("mDashEffect"_hs)
+		.prop(reflect::prop::Name, "mDashEffect")
+		.prop(reflect::prop::Comment, u8"구르기 이펙트")
+		.base<game_module::Component>();
+
 	entt::meta<BerserkerArmour>()
 		.type("BerserkerArmour"_hs)
 		.prop(reflect::prop::Name, "BerserkerArmour")
@@ -380,14 +438,6 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
-		.data<&Soul::mSwordColor>("SwordColor"_hs)
-		.prop(reflect::prop::Name, "SwordColor")
-		.data<&Soul::mStaffColor>("StaffColor"_hs)
-		.prop(reflect::prop::Name, "StaffColor")
-		.data<&Soul::mAxeColor>("AxeColor"_hs)
-		.prop(reflect::prop::Name, "AxeColor")
-		.data<&Soul::mBowColor>("BowColor"_hs)
-		.prop(reflect::prop::Name, "BowColor")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()
@@ -417,12 +467,22 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "OnRotation")
 		.base<game_module::IStateBehaviour>();
 
+	entt::meta<PlayerMovementSoundState>()
+		.type("PlayerMovementSoundState"_hs)
+		.prop(reflect::prop::Name, "PlayerMovementSoundState")
+		.data<&PlayerMovementSoundState::mWalkSoundTurm>("WalkSoundTurm"_hs)
+		.prop(reflect::prop::Name, "WalkSoundTurm")
+		.base<game_module::IStateBehaviour>();
+
 	entt::meta<MagicBallAttackState>()
 		.type("MagicAttackState"_hs)
 		.prop(reflect::prop::Name, "MagicAttackState")
 		.data<&MagicBallAttackState::mAttackTiming>("AttackTiming"_hs)
 		.prop(reflect::prop::Name, "AttackTiming")
 		.prop(reflect::prop::Comment, u8"공격 시간")
+		.data<&MagicBallAttackState::mCheckInputTime>("CheckInputTime"_hs)
+		.prop(reflect::prop::Name, "CheckInputTime")
+		.prop(reflect::prop::Comment, u8"Hold 입력을 받는 시간")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<AOEAttackState>()
@@ -476,6 +536,42 @@ void fq::client::RegisterMetaData()
 	entt::meta<AxeSoulAttackState>()
 		.type("AxeSoulAttackState"_hs)
 		.prop(reflect::prop::Name, "AxeSoulAttackState")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowDashState>()
+		.type("BowDashState"_hs)
+		.prop(reflect::prop::Name, "BowDashState")
+		.data<&BowDashState::mMaxSpeed>("MaxSpeed"_hs)
+		.prop(reflect::prop::Name, "MaxSpeed")
+		.prop(fq::reflect::prop::Comment, u8"최대로 늘어날 스피드")
+		.data<&BowDashState::mMinSpeed>("MinSpeed"_hs)
+		.prop(reflect::prop::Name, "MinSpeed")
+		.prop(fq::reflect::prop::Comment, u8"최소 스피드")
+		.data<&BowDashState::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회전 스피드")
+		.data<&BowDashState::mPeakSpeedTime>("PeakSpeedTime"_hs)
+		.prop(reflect::prop::Name, "PeakSpeedTime")
+		.prop(fq::reflect::prop::Comment, u8"최고 스피드가 도달하는 시간")
+		.data<&BowDashState::mSpeedDecayRate>("SpeedDecayRate"_hs)
+		.prop(reflect::prop::Name, "SpeedDecayRate")
+		.prop(fq::reflect::prop::Comment, u8"최고 스피드 이후로 초당 줄어드는 속도값")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowMultiShotAttackState>()
+		.type("BowMultiShotAttackState"_hs)
+		.prop(reflect::prop::Name, "BowMultiShotAttackState")
+		.data<&BowMultiShotAttackState::mShotDelay>("ShotDelay"_hs)
+		.prop(reflect::prop::Name, "ShotDelay")
+		.prop(fq::reflect::prop::Comment, u8"화살 연사 속도")
+		.base<game_module::IStateBehaviour>();
+
+	entt::meta<BowStrongChargingState>()
+		.type("BowStrongChargingState"_hs)
+		.prop(reflect::prop::Name, "BowStrongChargingState")
+		.data<&BowStrongChargingState::mRotationSpeed>("RotationSpeed"_hs)
+		.prop(reflect::prop::Name, "RotationSpeed")
+		.prop(fq::reflect::prop::Comment, u8"회전 속도")
 		.base<game_module::IStateBehaviour>();
 
 	entt::meta<EBerserkerAttackType>()
@@ -707,6 +803,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<MeleeMonsterDeadState>()
 		.type("MeleeMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "MeleeMonsterDeadState")
+		.data<&MeleeMonsterDeadState::mEraseTime>("EraseTime"_hs)
+		.prop(fq::reflect::prop::Name, "EraseTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<MeleeMonsterWaitAttackState>()
@@ -759,9 +857,9 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackRange")
 		.data<&BossMonster::mDetectRange>("DetectRange"_hs)
 		.prop(fq::reflect::prop::Name, "DetectRange")
+		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
-		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mGroggyIncreaseRatio>("GroggyIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyIncreaseRatio")
 		.prop(fq::reflect::prop::Comment, u8"피격시 대미지 비례 그로기 게이지 증가량")
@@ -908,6 +1006,8 @@ void fq::client::RegisterMetaData()
 	entt::meta<PlantMonsterDeadState>()
 		.type("PlantMonsterDeadState"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonsterDeadState")
+		.data<&PlantMonsterDeadState::mEraseTime>("EraseTime"_hs)
+		.prop(fq::reflect::prop::Name, "EraseTime")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<PlantMonsterIdleState>()
@@ -1010,6 +1110,14 @@ void fq::client::RegisterMetaData()
 	entt::meta<LinearAttack>()
 		.type("LinearAttack"_hs)
 		.prop(fq::reflect::prop::Name, "LinearAttack")
+		.base<fq::game_module::Component>();
+
+	entt::meta<ArrowAttack>()
+		.type("ArrowAttack"_hs)
+		.prop(fq::reflect::prop::Name, "ArrowAttack")
+		.data<&ArrowAttack::mLifeTime>("LifeTime"_hs)
+		.prop(fq::reflect::prop::Comment, u8"생존 시간")
+		.prop(fq::reflect::prop::Name, "LifeTime")
 		.base<fq::game_module::Component>();
 
 	entt::meta<KnockBack>()
@@ -1408,6 +1516,15 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerSoulVariable::SoulGaugeCharging>("SoulGaugeCharging"_hs)
 		.prop(fq::reflect::prop::Name, "SoulGaugeCharging")
 
+		.data<&PlayerSoulVariable::SwordSoulColor>("SwordSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "SwordSoulColor")
+		.data<&PlayerSoulVariable::StaffSoulColor>("StaffSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "StaffSoulColor")
+		.data<&PlayerSoulVariable::AxeSoulColor>("AxeSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "AxeSoulColor")
+		.data<&PlayerSoulVariable::BowSoulColor>("BowSoulColor"_hs)
+		.prop(fq::reflect::prop::Name, "BowSoulColor")
+
 		.base<IGameVariable>();
 
 	entt::meta<DamageVariable>()
@@ -1476,6 +1593,15 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
+		.base<IGameVariable>();
+
+	entt::meta<PlayerVariable>()
+		.type("PlayerVariable"_hs)
+		.prop(fq::reflect::prop::Name, "PlayerVariable")
+		.data<&PlayerVariable::FeverAttackIncreaseRatio>("FeverAttackIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "FeverAttackIncreaseRatio")
+		.data<&PlayerVariable::FeverSpeedIncreaseRatio>("FeverSpeedIncreaseRatio"_hs)
+		.prop(fq::reflect::prop::Name, "FeverSpeedIncreaseRatio")
 		.base<IGameVariable>();
 
 	entt::meta<PlayerInfoVariable>()

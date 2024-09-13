@@ -3,6 +3,7 @@
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
 
 #include "GameManager.h"
 #include "Player.h"
@@ -52,8 +53,8 @@ void fq::client::PlayerUIManager::OnUpdate(float dt)
 		{
 			for (int i = 0; i < players.size() - playerSize; i++)
 			{
-				Player* player = players[i]->GetComponent<Player>();
-				AddPlayer(player->GetPlayerID());
+				game_module::CharacterController* controller = players[i]->GetComponent<game_module::CharacterController>();
+				AddPlayer(controller->GetControllerID());
 			}
 		}
 	}

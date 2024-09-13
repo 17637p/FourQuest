@@ -427,7 +427,7 @@ void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
 		for (auto& player : GetScene()->GetComponentView<Player>())
 		{
 			DirectX::SimpleMath::Vector3 playerPos = player.GetTransform()->GetWorldPosition();
-			DirectX::SimpleMath::Vector3 monsterPos = player.GetTransform()->GetWorldPosition();
+			DirectX::SimpleMath::Vector3 monsterPos = monster->GetTransform()->GetWorldPosition();
 			float distance = DirectX::SimpleMath::Vector3::Distance(playerPos, monsterPos);
 			if (distance < minDistance)
 			{

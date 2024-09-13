@@ -38,4 +38,20 @@ namespace fq::client
 		float directionRatio = 1.f; // TargetPositionAndDirectionByAngle용 변수
 	};
 
+	struct ArrowAttackInfo
+	{
+		fq::game_module::GameObject* attacker = nullptr;
+
+		bool bIsStrongAttack = false;
+		float weakDamage = -1.f;
+		float weakProjectileVelocity = 10.f;
+		float strongDamage = -1.f;
+		float strongProjectileVelocity = 20.f;
+		int remainingAttackCount = -1;
+		DirectX::SimpleMath::Vector3 attackDirection{};
+		DirectX::SimpleMath::Matrix attackTransform{};
+
+		std::string hitSound; // 피격 소리
+	};
+
 }

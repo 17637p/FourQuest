@@ -93,27 +93,21 @@ void fq::client::AimAssist::SetNearMonsterDirection()
 
 		auto targetPos = targetTransform->GetWorldPosition();
 		auto myPos = playerTransform->GetWorldPosition();
+		auto currentRotation = playerTransform->GetWorldRotation();
 
 		auto directV = targetPos - myPos;
 		directV.y = 0.f;
 		directV.Normalize();
 
-		constexpr float RotationSpeed = 0.1f;
+		DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
 
-		auto currentRotation = playerTransform->GetWorldRotation();
-		DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+		if (directV.z >= 1.f)
+			directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f, -1.f, 0.f });
+		else if (directV != DirectX::SimpleMath::Vector3::Zero)
+			directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 		directionQuaternion.Normalize();
-		//DirectX::SimpleMath::Quaternion result =
-		//	DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, RotationSpeed);
 
-		DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(directionQuaternion);
-
-		// UpVector가 뒤집힌 경우
-		if (rotationMatrix._22 <= -0.9f)
-		{
-			rotationMatrix._22 = 1.f;
-		}
-		playerTransform->SetLocalRotationToMatrix(rotationMatrix);
+		playerTransform->SetWorldRotation(directionQuaternion);
 	}
 }
 

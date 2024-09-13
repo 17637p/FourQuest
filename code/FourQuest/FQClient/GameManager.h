@@ -35,6 +35,10 @@ namespace fq::client
 		void EventProcessOffPopupSetting();
 		void testKey();
 
+		// temp alpha
+		void SavePlayerState();
+		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
+
 	private:
 		EventHandler mRegisterPlayerHandler;
 
@@ -46,7 +50,14 @@ namespace fq::client
 
 		// pause Ã³¸®
 		bool mIsStop;
+		bool mIsAutoSpawn;
 		fq::game_module::PrefabResource mPauseUI;
+
+		game_module::PrefabResource mSoul;
+		game_module::PrefabResource mKnight;
+		game_module::PrefabResource mMagic;
+		game_module::PrefabResource mArcher;
+		game_module::PrefabResource mWarrior;
 
 		friend void RegisterMetaData();
 	};
