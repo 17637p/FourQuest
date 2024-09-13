@@ -144,7 +144,12 @@ void fq::client::BossMonster::DetectTarget()
 
 void fq::client::BossMonster::SetRandomTarget()
 {
-	const auto& players = mGameManager->GetPlayers();
+	auto players = mGameManager->GetPlayers();
+
+	players.erase(std::remove_if(players.begin(), players.end(), [](std::shared_ptr<game_module::GameObject>& player)
+		{
+			return player->GetTag() == game_module::ETag::Soul;
+		}), players.end());
 
 	if (!players.empty())
 	{

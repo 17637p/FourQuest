@@ -239,7 +239,7 @@ void fq::client::CameraMoving::chaseCenter(float dt)
 	auto cameraTransform = mMainCamera->GetGameObject()->GetComponent<fq::game_module::Transform>();
 	cameraTransform->SetLocalPosition(cameraTransform->GetLocalPosition() + rightMove + upMove + forwardMove);
 	auto d = cameraTransform->GetLocalPosition() + rightMove + upMove + forwardMove;
-	spdlog::trace("{} {} {}", d.x, d.y, d.z);
+	//spdlog::trace("{} {} {}", d.x, d.y, d.z);
 }
 
 void fq::client::CameraMoving::zoomIn(float dt)
