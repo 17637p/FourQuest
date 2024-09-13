@@ -2008,7 +2008,13 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"생성 로컬 오프셋")
 		.data<&StateEvent::InstantiatePrefab::RandomRange>("RandomRange"_hs)
 		.prop(fq::reflect::prop::Name, "RandomRange")
-		.prop(fq::reflect::prop::Comment, u8"생성 랜덤 범위");
+		.prop(fq::reflect::prop::Comment, u8"생성 랜덤 범위")
+		.data<&StateEvent::InstantiatePrefab::PlayBackSpeed>("PlayBackSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "PlayBackSpeed")
+		.prop(fq::reflect::prop::Comment, u8"재생 속도")
+		.data<&StateEvent::InstantiatePrefab::bIsPlaybackSppedHandleChildHierarchy>("IsPlaybackSppedHandleChildHierarchy"_hs)
+		.prop(fq::reflect::prop::Name, "IsPlaybackSppedHandleChildHierarchy")
+		.prop(fq::reflect::prop::Comment, u8"재생 속도 자식 계층 구조도 탐색할지 여부, 활성화 시 자식 탐색 시간이 소요됨");
 
 	entt::meta<StateEvent::PlaySoundInfo>()
 		.type("PlaySoundInfo"_hs)

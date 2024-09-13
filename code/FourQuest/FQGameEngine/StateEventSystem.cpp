@@ -7,6 +7,8 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/GameObject.h"
 #include "../FQGameModule/SoundManager.h"
+#include "../FQGameModule/UVAnimator.h"
+#include "../FQGameModule/Animator.h"
 
 fq::game_engine::StateEventSystem::StateEventSystem()
 	: mGameProcess(nullptr)
@@ -108,6 +110,47 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 						InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject = effectObject;
 						InstantiatePrefabLifeTimeInfo.LifeTime = instantiatePrefab.DeleteTime;
 						InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd = instantiatePrefab.bUseDeleteByStateEnd;
+						InstantiatePrefabLifeTimeInfo.PlaybackSpeed = instantiatePrefab.PlayBackSpeed;
+
+						// 아마 자식 계층까지 파고 들어가야 할거 같음
+						if (!instantiatePrefab.bIsPlaybackSppedHandleChildHierarchy)
+						{
+							auto uvAnimator = effectObject->GetComponent<fq::game_module::UVAnimator>();
+							if (uvAnimator != nullptr)
+							{
+								uvAnimator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
+							}
+
+							auto animator = effectObject->GetComponent<fq::game_module::Animator>();
+							if (animator != nullptr)
+							{
+								animator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
+							}
+						}
+						else
+						{
+							std::function<void(fq::game_module::GameObject*, float)> setPlayBackSpeedRecursive = [&setPlayBackSpeedRecursive](fq::game_module::GameObject* gameObject, float playBackSpeed)
+								{
+									auto uvAnimator = gameObject->GetComponent<fq::game_module::UVAnimator>();
+									if (uvAnimator != nullptr)
+									{
+										uvAnimator->SetPlaySpeed(playBackSpeed);
+									}
+
+									auto animator = gameObject->GetComponent<fq::game_module::Animator>();
+									if (animator != nullptr)
+									{
+										animator->SetPlaySpeed(playBackSpeed);
+									}
+
+									for (auto child : gameObject->GetChildren())
+									{
+										setPlayBackSpeedRecursive(child, playBackSpeed);
+									}
+								};
+
+							setPlayBackSpeedRecursive(effectObject.get(), instantiatePrefab.PlayBackSpeed);
+						}
 
 						mInstantiatePrefabLifeTimeInfos.push_back(InstantiatePrefabLifeTimeInfo);
 					}
@@ -187,7 +230,7 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 	{
 		InstantiatePrefabLifeTimeInfo& InstantiatePrefabLifeTimeInfo = *iter;
 
-		InstantiatePrefabLifeTimeInfo.LifeTime -= dt;
+		InstantiatePrefabLifeTimeInfo.LifeTime -= dt * InstantiatePrefabLifeTimeInfo.PlaybackSpeed;
 
 		if (InstantiatePrefabLifeTimeInfo.LifeTime < 0
 			|| InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject->IsDestroyed())
