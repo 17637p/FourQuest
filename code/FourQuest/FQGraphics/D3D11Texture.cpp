@@ -57,6 +57,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
+		// 멀티스레드 로딩으로 인해 DeviceContext는 사용하면 안되므로 Tex로 수정함
 		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
 		ScratchImage mipmapImage;
 		HR(GenerateMipMaps(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), TEX_FILTER_DEFAULT, 0, mipmapImage));
@@ -89,17 +90,15 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 		MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff, gif 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
 	}
 
-	// 생성된 텍스처에서 밉맵 정보 확인
-	if (mTexture != nullptr)
-	{
-
-		Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2D;
-		mTexture.As(&texture2D);
-		D3D11_TEXTURE2D_DESC desc;
-		texture2D->GetDesc(&desc);
-		// 밉맵 레벨 확인
-		std::wcout << L"Created texture has " << desc.MipLevels << L" mip levels." << std::endl;
-	}
+	// if (mTexture != nullptr)
+	// {
+	// 	Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2D;
+	// 	mTexture.As(&texture2D);
+	// 	D3D11_TEXTURE2D_DESC desc;
+	// 	texture2D->GetDesc(&desc);
+	// 	// 밉맵 레벨 확인
+	// 	std::wcout << L"Created texture has " << desc.MipLevels << L" mip levels." << std::endl;
+	// }
 
 	type = TextureType::Default;
 }

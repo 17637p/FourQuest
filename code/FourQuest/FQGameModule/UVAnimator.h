@@ -38,6 +38,10 @@ namespace fq::game_module
 
 		float GetPlaySpeed() const { return mPlaySpeed; }
 		void SetPlaySpeed(float val) { mPlaySpeed = val; }
+
+		bool GetInverseX() const { return mbInverseX; }
+		bool GetInverseY() const { return mbInverseY; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -49,6 +53,9 @@ namespace fq::game_module
 		bool mbIsRecursive; // 반복 재생 여부
 		bool mbIsUpdate; // 델타타임 누적 여부
 		float mPlaySpeed; // 재생속도
+
+		bool mbInverseX;
+		bool mbInverseY;
 	};
 }
 

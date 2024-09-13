@@ -28,6 +28,7 @@ namespace fq::graphics
 
 		virtual std::shared_ptr<IUVAnimationInstance> CreateUVAnimationInstance() override;
 		virtual const fq::common::UVAnimationClip& GetUVAnimationClip() const override { return mUVAnimationClip; }
+		virtual void SetUVAnimationClip(const fq::common::UVAnimationClip& clip) override { mUVAnimationClip = clip; }
 
 	private:
 		fq::common::UVAnimationClip mUVAnimationClip;

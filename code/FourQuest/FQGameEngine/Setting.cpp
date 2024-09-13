@@ -496,7 +496,6 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 
 			if (ImGui::Button("rewrite material texture path(try change file format to dds)"))
 			{
-
 				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
 				{
 					for (auto path : std::filesystem::recursive_directory_iterator(mRewriteMaterialDir))
@@ -632,6 +631,98 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				);
 			}
 
+			std::string rewriteBasePathString = mRewriteUVAnimatorPath.string();
+			ImGui::InputText("Rewrite UVAnimation Path", &rewriteBasePathString);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* path
+						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+					if (std::filesystem::exists(*path) && path->extension() == ".uvAnimation")
+					{
+						mRewriteUVAnimatorPath = *path;
+					}
+				}
+			}
+
+			if (ImGui::Button("Reverse X-axis of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.x *= -1;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
+			if (ImGui::Button("Change X-axis minus 1 of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.x = 1 - keyframe.Translation.x;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
+
+			if (ImGui::Button("Reverse Y-axis of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.y *= -1;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
+			if (ImGui::Button("Change Y-axis minus 1 of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.y = 1 - keyframe.Translation.y;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
 		}
 
 		ImGui::EndChild();

@@ -25,7 +25,7 @@ extern "C" {
 			Static,
 			VertexColor,
 		};
-		
+
 		class IStaticMesh
 		{
 		public:
@@ -81,6 +81,7 @@ extern "C" {
 		public:
 			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> CreateUVAnimationInstance() abstract;
 			virtual FQ_GRAPHICS const fq::common::UVAnimationClip& GetUVAnimationClip() const abstract;
+			virtual FQ_GRAPHICS void SetUVAnimationClip(const fq::common::UVAnimationClip& clip) abstract;
 
 		protected:
 			virtual ~IUVAnimation() = default;
