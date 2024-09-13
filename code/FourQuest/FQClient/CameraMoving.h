@@ -64,7 +64,6 @@ namespace fq::client
 		DirectX::SimpleMath::Vector3 mPlayersCenterPoint;
 
 		bool mIsFixed;
-		//
 
 		float mCurZoom;
 		bool mIsZoomIn;
