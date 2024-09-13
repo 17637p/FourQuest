@@ -45,3 +45,6 @@ void fq::client::Portal::OnTriggerStay(const fq::game_module::Collision& collisi
 		ChangeScene();
 	}
 }
+
+void fq::client::Portal::OnTriggerExit(const fq::game_module::Collision& collision)
+{}
