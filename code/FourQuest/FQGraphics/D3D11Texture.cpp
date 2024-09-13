@@ -3,6 +3,9 @@
 #include <directxtk/DDSTextureLoader.h>
 #include <directxtk/WiCTextureLoader.h>
 #include <filesystem>
+#include <string>
+#include <algorithm>
+#include <cwctype>
 #include <spdlog/spdlog.h>
 #include <DirectXPackedVector.h>
 
@@ -33,6 +36,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	, mUAV(nullptr)
 {
 	std::wstring fileExtension = texturePath.substr(texturePath.find_last_of(L".") + 1, texturePath.length() - texturePath.find_last_of(L".") + 1);
+	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), [](wchar_t c) { return std::towlower(c); });
 
 	if (!std::filesystem::exists(texturePath))
 	{
@@ -42,6 +46,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	using namespace DirectX;
 
 	TexMetadata md;
+	md.mipLevels = 0;
 	ScratchImage scratchImage;
 
 	if (fileExtension == L"dds")
@@ -52,8 +57,31 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
 	{
- 		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
-		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		HR(LoadFromWICFile(texturePath.c_str(), WIC_FLAGS_NONE, &md, scratchImage));
+		ScratchImage mipmapImage;
+		HR(GenerateMipMaps(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), TEX_FILTER_DEFAULT, 0, mipmapImage));
+
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = md.width;
+		textureDesc.Height = md.height;
+		textureDesc.MipLevels = static_cast<UINT>(mipmapImage.GetImageCount()); // 밉맵 레벨 수
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = md.format;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.MiscFlags = 0;
+
+		std::vector<D3D11_SUBRESOURCE_DATA> subresourceData(textureDesc.MipLevels);
+		for (UINT i = 0; i < textureDesc.MipLevels; ++i)
+		{
+			const Image* mipImage = mipmapImage.GetImage(i, 0, 0);
+			subresourceData[i].pSysMem = mipImage->pixels;
+			subresourceData[i].SysMemPitch = mipImage->rowPitch;
+			subresourceData[i].SysMemSlicePitch = mipImage->slicePitch;
+		}
+
+		d3d11Device->GetDevice()->CreateTexture2D(&textureDesc, subresourceData.data(), mTexture.GetAddressOf());
 		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else
@@ -61,7 +89,19 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 		MessageBox(NULL, L"텍스처를 생성할 수 없습니다. 텍스처의 파일 확장자가 dds, jpg, png, tiff, gif 외에 다른 파일입니다. 프로그래머한테 문의 주세요~", L"에러", MB_ICONERROR);
 	}
 
-  	type = TextureType::Default;
+	// 생성된 텍스처에서 밉맵 정보 확인
+	if (mTexture != nullptr)
+	{
+
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2D;
+		mTexture.As(&texture2D);
+		D3D11_TEXTURE2D_DESC desc;
+		texture2D->GetDesc(&desc);
+		// 밉맵 레벨 확인
+		std::wcout << L"Created texture has " << desc.MipLevels << L" mip levels." << std::endl;
+	}
+
+	type = TextureType::Default;
 }
 
 fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d11Device,
@@ -312,6 +352,7 @@ fq::graphics::D3D11CubeTexture::D3D11CubeTexture(const std::shared_ptr<D3D11Devi
 	:ResourceBase(ResourceType::Texture)
 {
 	std::wstring fileExtension = texturePath.substr(texturePath.find_last_of(L".") + 1, texturePath.length() - texturePath.find_last_of(L".") + 1);
+	std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), [](wchar_t c) { return std::towlower(c); });
 
 	if (!std::filesystem::exists(texturePath))
 	{
@@ -515,6 +556,7 @@ fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11De
 	for (UINT i = 0; i < texturePaths.size(); ++i) {
 		const std::wstring& texturePath = texturePaths[i];
 		std::wstring fileExtension = texturePath.substr(texturePath.find_last_of(L".") + 1, texturePath.length() - texturePath.find_last_of(L".") + 1);
+		std::transform(fileExtension.begin(), fileExtension.end(), fileExtension.begin(), [](wchar_t c) { return std::towlower(c); });
 
 		if (!std::filesystem::exists(texturePath))
 		{

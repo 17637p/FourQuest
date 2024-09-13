@@ -1084,10 +1084,14 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 		auto lfs = mColliderContainer.find(data.myId);
 		auto rhs = mColliderContainer.find(data.otherId);
 
-		assert(data.myId != data.otherId);
-		assert(lfs != mColliderContainer.end());
-		assert(rhs != mColliderContainer.end());
-
+		if (data.myId == data.otherId
+			|| lfs == mColliderContainer.end()
+			|| rhs == mColliderContainer.end())
+		{
+			spdlog::warn("ColliderContainer CallBack Error");
+			continue; 
+		}
+		
 		auto lhsObject = lfs->second.component->GetGameObject();
 		auto rhsObject = rhs->second.component->GetGameObject();
 

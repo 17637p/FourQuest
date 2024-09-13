@@ -338,6 +338,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onGameVairableWindow = mEditorProcess->mGameVariableWindow->IsWindowOpen();
 		ImGui::Checkbox("GameVairable", &onGameVairableWindow);
 
+		bool& onRenderingDebugWindow = mEditorProcess->mRenderingDebugWindow->IsWindowOpen();
+		ImGui::Checkbox("RenderingDeubgWindow", &onRenderingDebugWindow);
+
 		ImGui::EndMenu();
 	}
 }

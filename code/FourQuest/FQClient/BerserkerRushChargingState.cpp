@@ -50,9 +50,17 @@ namespace fq::client
 		auto input = animator.GetScene()->GetInputManager();
 		auto controller = animator.GetComponent<game_module::CharacterController>();
 		mChargingElapsedTime = std::min<float>(mChargingElapsedTime + dt * state.GetPlayBackSpeed(), mChargingTime);
-		controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
 
-		if (!input->IsPadKeyState(controller->GetControllerID(), EPadKey::RightThumb, EKeyState::Hold))
+		DirectX::SimpleMath::Vector3 rightInput{};
+		rightInput.x = input->GetStickInfomation(controller->GetControllerID(), EPadStick::rightX);
+		rightInput.z = input->GetStickInfomation(controller->GetControllerID(), EPadStick::rightY);
+		constexpr float rotationOffsetSq = 0.5f * 0.5f;
+
+		if (rightInput.LengthSquared() >= rotationOffsetSq)
+		{
+			controller->SetPadInputRotation(fq::game_module::EPadStickType::Right);
+		}
+		else
 		{
 			if (mChargingElapsedTime < mChargingMinimumTime)
 			{

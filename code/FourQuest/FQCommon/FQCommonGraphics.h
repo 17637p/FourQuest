@@ -699,4 +699,25 @@ namespace fq::graphics
 		float max_iteration = 160;
 		float max_thickness = 0.00001;
 	};
+
+	struct DebugInfo
+	{
+		size_t StaticMeshObjectCount;
+		size_t SkinnedMeshObjectCount;
+
+		size_t StaticMeshObjectVertexCount;
+		size_t SkinnedMeshObjectVertexCount;
+
+		size_t StaticMeshObjectPolygonCount;
+		size_t SkinnedMeshObjectPolygonCount;
+
+		size_t CullingStaticMeshObjectCount;
+		size_t CullingSkinnedMeshObjectCount;
+
+		size_t CullingStaticMeshObjectVertexCount;
+		size_t CullingSkinnedMeshObjectVertexCount;
+
+		size_t CullingStaticMeshObjectPolygonCount;
+		size_t CullingSkinnedMeshObjectPolygonCount;
+	};
 };

@@ -45,4 +45,3 @@ void fq::client::Portal::OnTriggerEnter(const fq::game_module::Collision& collis
 		ChangeScene();
 	}
 }
-

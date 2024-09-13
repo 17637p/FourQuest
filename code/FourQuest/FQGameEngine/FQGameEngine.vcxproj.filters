@@ -269,6 +269,9 @@
     <ClInclude Include="StateEventSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="RenderingDebugWindow.h">
+      <Filter>include\05.EditorWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameEngine.cpp">
@@ -456,6 +459,9 @@
     </ClCompile>
     <ClCompile Include="StateEventSystem.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingDebugWindow.cpp">
+      <Filter>src\05.Window</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

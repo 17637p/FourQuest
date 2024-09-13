@@ -284,7 +284,7 @@ void FQGraphics::SetDefaultFont(const std::wstring& path)
 void FQGraphics::AddFont(const std::wstring& path)
 {
 	mUIManager->AddFont(path);
-  }
+}
 
 void FQGraphics::DeleteFont(const std::wstring& path)
 {
@@ -405,7 +405,7 @@ bool FQGraphics::Render()
 
 		// staticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
 		// skinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
-		
+
 		for (auto element : staticMeshesToRender) { mJobManager->CreateStaticMeshJob(element); }
 		for (auto element : skinnedMeshesToRender) { mJobManager->CreateSkinnedMeshJob(element); }
 		for (auto element : terrainMeshesToRender) { mJobManager->CreateTerrainMeshJob(element); }
@@ -850,6 +850,49 @@ void fq::graphics::FQGraphics::SetTerrainMeshObject(ITerrainMeshObject* meshObje
 std::set<IStaticMeshObject*> fq::graphics::FQGraphics::GetStaticMeshObjects() const
 {
 	return mObjectManager->GetStaticMeshObjects();
+}
+
+DebugInfo fq::graphics::FQGraphics::GetDebugInfo() const
+{
+	DebugInfo debugInfo{ 0, };
+
+	std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();
+	std::set<ISkinnedMeshObject*> skinnedMeshesToRender = mObjectManager->GetSkinnedMeshObjects();
+
+	std::set<IStaticMeshObject*>  cullingStaticMeshesToRender = mCullingManager->GetInFrustumStaticObjects(staticMeshesToRender);
+	std::set<ISkinnedMeshObject*> cullingSkinnedMeshesToRender = mCullingManager->GetInFrustumSkinnedObjects(skinnedMeshesToRender);
+
+	debugInfo.StaticMeshObjectCount = staticMeshesToRender.size();
+	debugInfo.SkinnedMeshObjectCount = skinnedMeshesToRender.size();
+	for (const auto& object : staticMeshesToRender)
+	{
+		const auto& meshData = object->GetStaticMesh()->GetMeshData();
+		debugInfo.StaticMeshObjectVertexCount += meshData.Vertices.size();
+		debugInfo.StaticMeshObjectPolygonCount += meshData.Indices.size() / 3;
+	}
+	for (const auto& object : skinnedMeshesToRender)
+	{
+		const auto& meshData = object->GetSkinnedMesh()->GetMeshData();
+		debugInfo.SkinnedMeshObjectVertexCount += meshData.Vertices.size();
+		debugInfo.SkinnedMeshObjectPolygonCount += meshData.Indices.size() / 3;
+	}
+
+	debugInfo.CullingStaticMeshObjectCount = cullingStaticMeshesToRender.size();
+	debugInfo.CullingSkinnedMeshObjectCount = cullingSkinnedMeshesToRender.size();
+	for (const auto& object : cullingStaticMeshesToRender)
+	{
+		const auto& meshData = object->GetStaticMesh()->GetMeshData();
+		debugInfo.CullingStaticMeshObjectVertexCount += meshData.Vertices.size();
+		debugInfo.CullingStaticMeshObjectPolygonCount += meshData.Indices.size() / 3;
+	}
+	for (const auto& object : cullingSkinnedMeshesToRender)
+	{
+		const auto& meshData = object->GetSkinnedMesh()->GetMeshData();
+		debugInfo.CullingSkinnedMeshObjectVertexCount += meshData.Vertices.size();
+		debugInfo.CullingSkinnedMeshObjectPolygonCount += meshData.Indices.size() / 3;
+	}
+
+	return debugInfo;
 }
 
 void FQGraphics::DeleteProbeObject(IProbeObject* probeObject)
