@@ -2,11 +2,16 @@
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/Transform.h"
+#include "../FQGameModule/GameObject.h"
+#include "../FQGameModule/SphereCollider.h"
+
+#include "Attack.h"
 
 namespace fq::client
 {
 	ArcAttack::ArcAttack()
-		: mAOEAttackPrefeb()
+		: mAOEAttackPoolEffectPrefeb()
+		, mAOEAttackSplashEffectPrefeb()
 		, mStartPosition{}
 		, mTargetPosition{}
 		, mMaxRange()
@@ -16,6 +21,9 @@ namespace fq::client
 		, mInitialYVelocity()
 		, mYVelocity()
 		, mDurationTime()
+		, mbIsCreateEffect(false)
+		, mDestroyTime()
+		, mDestroyDurationTime()
 	{
 	}
 
@@ -25,8 +33,14 @@ namespace fq::client
 
 	void ArcAttack::DetermineArrivalTime()
 	{
+		GetGameObject()->SetTag(fq::game_module::ETag::Untagged);
+
 		// 거리 값 계산해서 도착 시간 계산
-		float targetLength = mTargetPosition.Length() - mStartPosition.Length();
+		mYPosition = mStartPosition.y;
+		mTargetPosition.y = 0.f;
+		mStartPosition.y = 0.f;
+		DirectX::SimpleMath::Vector3 Vector = mTargetPosition - mStartPosition;
+		float targetLength = Vector.Length();
 		targetLength = targetLength / mMaxRange;
 
 		mArrivalTime = std::lerp(mMinArrivalTime, mMaxArrivalTime, targetLength);
@@ -37,7 +51,7 @@ namespace fq::client
 	void ArcAttack::determineYVelocity()
 	{
 		// 초기 Y속도 계산
-		mInitialYVelocity = 0.5f * 9.81f * mArrivalTime;
+		mInitialYVelocity = (mTargetPosition.y - mStartPosition.y + 0.5f * 9.81f * mArrivalTime * mArrivalTime) / mArrivalTime;
 		mYVelocity = mInitialYVelocity;
 	}
 
@@ -54,29 +68,49 @@ namespace fq::client
 			DirectX::SimpleMath::Vector3 XZPosition = DirectX::SimpleMath::Vector3::Lerp(mStartPosition, mTargetPosition, lerpDuration);
 
 			// y속도와 위치 계산
-			float yPosition = transform->GetWorldPosition().y;
 			mYVelocity = mYVelocity + -9.81 * dt;
-			yPosition = yPosition + mYVelocity * dt;
+			mYPosition = mYPosition + mYVelocity * dt;
 
 			// 최종 위치 결정
-			transform->SetWorldPosition(DirectX::SimpleMath::Vector3(XZPosition.x, yPosition, XZPosition.z));
+			transform->SetWorldPosition(DirectX::SimpleMath::Vector3(XZPosition.x, mYPosition, XZPosition.z));
 		}
-		else
+		else if (!mbIsCreateEffect)
 		{
+			mbIsCreateEffect = true;
+
 			auto transform = GetComponent<fq::game_module::Transform>();
 
 			transform->SetWorldPosition(mTargetPosition);
 
-			// 폭발하는 공격 오브젝트 생성
+			// 폭발하는 공격 이펙트 오브젝트 생성
+			auto poolInstance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAOEAttackPoolEffectPrefeb);
+			auto splashInstance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAOEAttackSplashEffectPrefeb);
+			auto& poolAttackObj = *(poolInstance.begin());
+			auto& splashAttackObj = *(splashInstance.begin());
 
+			auto poolTransform = poolAttackObj->GetComponent<fq::game_module::Transform>();
+			poolTransform->SetParent(transform);
+			auto splashTransform = splashAttackObj->GetComponent<fq::game_module::Transform>();
+			splashTransform->SetParent(transform);
 
-			GetScene()->DestroyGameObject(GetGameObject());
+			GetScene()->AddGameObject(poolAttackObj);
+			GetScene()->AddGameObject(splashAttackObj);
+
+			GetComponent<fq::game_module::SphereCollider>()->SetOffset(DirectX::SimpleMath::Vector3());
+
+			// 오브젝트 태그 변경
+			GetGameObject()->SetTag(fq::game_module::ETag::MonsterAttack);
+		}
+		else
+		{
+			mDestroyDurationTime += dt;
+
+			if (mDestroyDurationTime >= mDestroyTime)
+			{
+				GetScene()->DestroyGameObject(GetGameObject());
+			}
 		}
 	}
-
-
-
-
 
 	std::shared_ptr<fq::game_module::Component> fq::client::ArcAttack::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 	{

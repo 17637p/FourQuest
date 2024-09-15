@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../FQGameModule/Component.h"
+#include "../FQGameModule/PrefabResource.h"
+
 #include "AttackDefine.h"
 
 namespace fq::client
@@ -44,19 +46,27 @@ namespace fq::client
 
 
 	private:
-		game_module::PrefabResource mAOEAttackPrefeb;
+		game_module::PrefabResource mAOEAttackPoolEffectPrefeb;
+		game_module::PrefabResource mAOEAttackSplashEffectPrefeb;
 
 		DirectX::SimpleMath::Vector3 mStartPosition;
 		DirectX::SimpleMath::Vector3 mTargetPosition;
+		float mYPosition;
 		float mMaxRange;
 		float mMinArrivalTime;
 		float mMaxArrivalTime;
+		float mDestroyTime;
 
 		float mArrivalTime;
 		float mInitialYVelocity;
 		float mYVelocity;
 
 		float mDurationTime;
+		float mDestroyDurationTime;
+
+		bool mbIsCreateEffect;
+
+		friend void RegisterMetaData();
 	};
 
 }

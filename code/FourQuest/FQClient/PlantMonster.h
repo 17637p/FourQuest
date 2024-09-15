@@ -77,7 +77,9 @@ namespace fq::client
 		float mAttackRange;
 		float mAttackCoolTime;
 		float mRotationSpeed; 
+		bool mbIsAOEAttacker;
 		fq::game_module::PrefabResource mAttackPrefab;
+		fq::game_module::PrefabResource mAOEAttackPrefab;
 
 		friend void RegisterMetaData();
 	};
