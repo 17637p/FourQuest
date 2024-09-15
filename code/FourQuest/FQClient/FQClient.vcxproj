@@ -40,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="ArcAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
@@ -118,6 +119,7 @@
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
+    <ClInclude Include="PlantMonsterAOEAttackState.h" />
     <ClInclude Include="PlantMonsterAttckState.h" />
     <ClInclude Include="PlantMonsterDeadState.h" />
     <ClInclude Include="PlantMonsterHitState.h" />
@@ -163,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="ArcAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
@@ -231,6 +234,7 @@
     <ClCompile Include="LinearAttack.cpp" />
     <ClCompile Include="PauseUI.cpp" />
     <ClCompile Include="PlantMonster.cpp" />
+    <ClCompile Include="PlantMonsterAOEAttackState.cpp" />
     <ClCompile Include="PlantMonsterAttckState.cpp" />
     <ClCompile Include="PlantMonsterDeadState.cpp" />
     <ClCompile Include="PlantMonsterHitState.cpp" />
