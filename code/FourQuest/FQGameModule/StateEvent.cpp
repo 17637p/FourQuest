@@ -23,4 +23,20 @@ namespace fq::game_module
 	{
 		return *this;
 	}
+
+	void StateEvent::UpdateMapData()
+	{
+		mInstantiatePrefabMap.clear();
+		mPlaySoundInfoMap.clear();
+
+		for (const auto& instantiatePrefab : mInstantiatePrefabs)
+		{
+			mInstantiatePrefabMap.insert({ instantiatePrefab.FunctionName, instantiatePrefab });
+		}
+
+		for (const auto& playSoundInfo : mPlaySoundInfos)
+		{
+			mPlaySoundInfoMap.insert({ playSoundInfo.FunctionName, playSoundInfo });
+		}
+	}
 }
