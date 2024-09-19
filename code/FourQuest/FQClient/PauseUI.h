@@ -6,6 +6,7 @@
 namespace fq::game_module
 {
 	class ScreenManager;
+	class TextUI;
 }
 
 namespace fq::client
@@ -31,6 +32,9 @@ namespace fq::client
 
 		void EventProcessOffPopupRepause();
 
+		// 입력 처리 
+		void ProcessInput();
+
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
@@ -48,6 +52,14 @@ namespace fq::client
 		fq::game_module::PrefabResource mSettingUIPrefab;
 
 		game_module::ScreenManager* mScreenManager;
+
+		// 설명 Text
+		std::vector<std::string> mExplanationTexts;
+		game_module::TextUI* mExplanationTextUI;
+
+		// Button Animation
+		float mStickDelay;
+		float mCurStickDelay;
 
 	private:
 		friend void RegisterMetaData();

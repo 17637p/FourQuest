@@ -56,6 +56,7 @@ namespace fq::client
 		fq::game_module::PrefabResource mSettingUIPrefab;
 		game_module::EventHandler mOffPopupSettingHandler;
 
+		// Button Animation
 		float mStickDelay;
 		float mCurStickDelay;
 

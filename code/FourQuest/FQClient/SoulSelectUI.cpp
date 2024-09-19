@@ -31,7 +31,8 @@ void fq::client::SoulSelectUI::OnStart()
 	mScreenManager = GetScene()->GetScreenManager();
 
 	// ÀüºÎ OFF
-	for (int i = 0; i < 4; i++)
+	SetSpawnButton(0, true);
+	for (int i = 1; i < 4; i++)
 	{
 		SetSpawnButton(i, false);
 	}

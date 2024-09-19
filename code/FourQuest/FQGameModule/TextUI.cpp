@@ -59,3 +59,8 @@ void fq::game_module::TextUI::OnUpdate(float dt)
 
 	SetTextPosition(myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
 }
+
+void fq::game_module::TextUI::SetText(std::string text)
+{
+	mTextInfo.Text = text;
+}
