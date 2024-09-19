@@ -41,7 +41,8 @@ namespace fq::client
 				GetScene()->DestroyGameObject(GetGameObject());
 			}
 		}
-
+		
+		// 강공격 일 경우 일직선으로 날아가도록
 		if (mbIsStrongAttack)
 		{
 			auto transform = GetComponent<game_module::Transform>();
