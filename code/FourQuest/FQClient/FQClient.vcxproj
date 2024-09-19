@@ -40,7 +40,7 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
-    <ClInclude Include="ArcAttack.h" />
+    <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
@@ -78,6 +78,7 @@
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
+    <ClInclude Include="DebuffPoisonZone.h" />
     <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="EBerserkerAttackType.h" />
     <ClInclude Include="GameManager.h" />
@@ -165,7 +166,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
-    <ClCompile Include="ArcAttack.cpp" />
+    <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
@@ -199,6 +200,7 @@
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
+    <ClCompile Include="DebuffPoisonZone.cpp" />
     <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameVaribleHelper.cpp" />

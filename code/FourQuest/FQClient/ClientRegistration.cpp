@@ -77,7 +77,8 @@
 // PlantMoster
 #include "PlantMonster.h"
 #include "LinearAttack.h"
-#include "ArcAttack.h"
+#include "PlantAOEAttack.h"
+#include "DebuffPoisonZone.h"
 #include "PlantMonsterAttckState.h"
 #include "PlantMonsterAOEAttackState.h"
 #include "PlantMonsterDeadState.h"
@@ -1127,24 +1128,35 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "LinearAttack")
 		.base<fq::game_module::Component>();
 
-	entt::meta<ArcAttack>()
-		.type("ArcAttack"_hs)
-		.prop(fq::reflect::prop::Name, "ArcAttack")
-		.data<&ArcAttack::mDestroyTime>("DestroyTime"_hs)
+	entt::meta<PlantAOEAttack>()
+		.type("PlantAOEAttack"_hs)
+		.prop(fq::reflect::prop::Name, "PlantAOEAttack")
+		.data<&PlantAOEAttack::mDestroyTime>("DestroyTime"_hs)
 		.prop(fq::reflect::prop::Name, "DestroyTime")
 		.prop(fq::reflect::prop::Comment, u8"범위 공격이 없어지는 시간")
-		.data<&ArcAttack::mMinArrivalTime>("MinArrivalTime"_hs)
+		.data<&PlantAOEAttack::mMinArrivalTime>("MinArrivalTime"_hs)
 		.prop(fq::reflect::prop::Name, "MinArrivalTime")
 		.prop(fq::reflect::prop::Comment, u8"최소 도착 시간")
-		.data<&ArcAttack::mMaxArrivalTime>("MaxArrivalTime"_hs)
+		.data<&PlantAOEAttack::mMaxArrivalTime>("MaxArrivalTime"_hs)
 		.prop(fq::reflect::prop::Name, "MaxArrivalTime")
 		.prop(fq::reflect::prop::Comment, u8"최대 도착 시간")
-		.data<&ArcAttack::mAOEAttackSplashEffectPrefeb>("AOEAttackSplashEffectPrefeb"_hs)
+		.data<&PlantAOEAttack::mPoisonDamage>("PoisonDamage"_hs)
+		.prop(fq::reflect::prop::Name, "PoisonDamage")
+		.prop(fq::reflect::prop::Comment, u8"독 데미지")
+		.data<&PlantAOEAttack::mPoisonTurm>("PoisonTurm"_hs)
+		.prop(fq::reflect::prop::Name, "PoisonTurm")
+		.prop(fq::reflect::prop::Comment, u8"독 데미지 받는 시간 딜레이")
+		.data<&PlantAOEAttack::mAOEAttackSplashEffectPrefeb>("AOEAttackSplashEffectPrefeb"_hs)
 		.prop(fq::reflect::prop::Name, "AOEAttackSplashEffectPrefeb")
 		.prop(fq::reflect::prop::Comment, u8"스플래쉬 이펙트 프리펩 경로")
-		.data<&ArcAttack::mAOEAttackPoolEffectPrefeb>("mAOEAttackPoolEffectPrefeb"_hs)
+		.data<&PlantAOEAttack::mAOEAttackPoolEffectPrefeb>("mAOEAttackPoolEffectPrefeb"_hs)
 		.prop(fq::reflect::prop::Name, "mAOEAttackPoolEffectPrefeb")
 		.prop(fq::reflect::prop::Comment, u8"풀 이펙트 프리펩 경로")
+		.base<fq::game_module::Component>();
+
+	entt::meta<DebuffPoisonZone>()
+		.type("DebuffPoisonZone"_hs)
+		.prop(fq::reflect::prop::Name, "DebuffPoisonZone")
 		.base<fq::game_module::Component>();
 
 	entt::meta<ArrowAttack>()

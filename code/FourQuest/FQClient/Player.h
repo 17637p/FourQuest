@@ -94,6 +94,7 @@ namespace fq::client
 		void processInput();
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
+		void processDebuff(float dt);
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);

@@ -485,7 +485,10 @@
     <ClInclude Include="PlantMonsterAOEAttackState.h">
       <Filter>include\02.Monster\Plant</Filter>
     </ClInclude>
-    <ClInclude Include="ArcAttack.h">
+    <ClInclude Include="PlantAOEAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="DebuffPoisonZone.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
   </ItemGroup>
@@ -802,7 +805,7 @@
     <ClCompile Include="PlantMonsterAOEAttackState.cpp">
       <Filter>src\02.Monster\Plant</Filter>
     </ClCompile>
-    <ClCompile Include="ArcAttack.cpp">
+    <ClCompile Include="PlantAOEAttack.cpp">
       <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="PlantMonsterHitState.cpp">
@@ -810,6 +813,9 @@
     </ClCompile>
     <ClCompile Include="Spawner.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DebuffPoisonZone.cpp">
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

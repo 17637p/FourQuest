@@ -5,7 +5,7 @@
 #include "../FQGameModule/Animator.h"
 #include "GameManager.h"
 #include "LinearAttack.h"
-#include "ArcAttack.h"
+#include "PlantAOEAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
 
@@ -110,7 +110,7 @@ void fq::client::PlantMonster::EmitAOEAttack()
 	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
 
 	// 포물선 공격 설정
-	auto arcAttack = attackObj->GetComponent<ArcAttack>();
+	auto arcAttack = attackObj->GetComponent<PlantAOEAttack>();
 	arcAttack->SetmaxRange(mAttackRange);
 	arcAttack->SetStartPosition(transform->GetWorldPosition() + offset);
 	arcAttack->SetTargetPosition(mTarget->GetComponent<fq::game_module::Transform>()->GetWorldPosition());
