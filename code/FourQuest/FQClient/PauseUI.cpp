@@ -3,6 +3,7 @@
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/PrefabManager.h"
+#include "../FQGameModule/TimeManager.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/TextUI.h"
@@ -62,11 +63,6 @@ fq::client::PauseUI::~PauseUI()
 {
 }
 
-std::string wstringToString(const std::wstring& wStr)
-{
-	return boost::locale::conv::from_utf(wStr, "UTF-8");
-}
-
 void fq::client::PauseUI::OnStart()
 {
 	// 자식 버튼 가져오기
@@ -83,9 +79,9 @@ void fq::client::PauseUI::OnStart()
 	mSelectButtonID = 0;
 	mSelectBackground = children[4]->GetGameObject();
 
-	// screenManager 등록
-	fq::game_module::Scene* scene = GetScene();
+	// Manager 등록
 	mScreenManager = GetScene()->GetScreenManager();
+	mTimeManager = GetScene()->GetTimeManager();
 
 	// EventHandler 등록
 	EventProcessOffPopupRepause();
@@ -106,7 +102,7 @@ void fq::client::PauseUI::OnUpdate(float dt)
 	if (mIsActive)
 	{
 		ProcessInput();
-		mCurStickDelay += dt;
+		mCurStickDelay += mTimeManager->GetDeltaTime();
 	}
 }
 
@@ -291,4 +287,9 @@ void fq::client::PauseUI::ProcessInput()
 			ClickButton();
 		}
 	}
+}
+
+std::string fq::client::PauseUI::wstringToString(std::wstring wStr)
+{
+	return boost::locale::conv::from_utf(wStr, "UTF-8");
 }

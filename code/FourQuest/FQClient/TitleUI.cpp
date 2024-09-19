@@ -99,17 +99,17 @@ void fq::client::TitleUI::OnStart()
 
 void fq::client::TitleUI::OnUpdate(float dt)
 {
-	SetScaleScreen();
-	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
+	setScaleScreen();
+	setSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
 
 	if (mIsActive)
 	{
-		ProcessInput();
+		processInput();
 		mCurStickDelay += dt;
 	}
 }
 
-void fq::client::TitleUI::SetSelectBoxPosition(float dt)
+void fq::client::TitleUI::setSelectBoxPosition(float dt)
 {
 	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
@@ -134,7 +134,7 @@ void fq::client::TitleUI::SetSelectBoxPosition(float dt)
 	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
 
-void fq::client::TitleUI::SetScaleScreen()
+void fq::client::TitleUI::setScaleScreen()
 {
 	// 화면 크기에 따른 Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
@@ -148,7 +148,7 @@ void fq::client::TitleUI::SetScaleScreen()
 	}
 }
 
-void fq::client::TitleUI::ClickButton()
+void fq::client::TitleUI::clickButton()
 {
 	switch (mSelectButtonID)
 	{
@@ -159,7 +159,7 @@ void fq::client::TitleUI::ClickButton()
 		case 1:
 			// 설정
 			mIsActive = false;
-			SpawnUIObject(mSettingUIPrefab);
+			spawnUIObject(mSettingUIPrefab);
 			break;
 		case 2:
 			// 제작진
@@ -173,7 +173,7 @@ void fq::client::TitleUI::ClickButton()
 	}
 }
 
-void fq::client::TitleUI::EventProcessOffPopupSetting()
+void fq::client::TitleUI::eventProcessOffPopupSetting()
 {
 	mOffPopupSettingHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupSetting>
 		(
@@ -184,7 +184,7 @@ void fq::client::TitleUI::EventProcessOffPopupSetting()
 		);
 }
 
-void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
+void fq::client::TitleUI::spawnUIObject(fq::game_module::PrefabResource prefab)
 {
 	std::shared_ptr<game_module::GameObject> newObject;
 
@@ -194,7 +194,7 @@ void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 	GetScene()->AddGameObject(newObject);
 }
 
-void fq::client::TitleUI::ProcessInput()
+void fq::client::TitleUI::processInput()
 {
 	// Setting Popup이 위에 없을 경우
 	auto input = GetScene()->GetInputManager();
@@ -250,7 +250,7 @@ void fq::client::TitleUI::ProcessInput()
 	{
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
-			ClickButton();
+			clickButton();
 		}
 	}
 }

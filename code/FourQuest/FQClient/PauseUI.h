@@ -6,6 +6,7 @@
 namespace fq::game_module
 {
 	class ScreenManager;
+	class TimeManager;
 	class TextUI;
 }
 
@@ -32,6 +33,8 @@ namespace fq::client
 
 		void EventProcessOffPopupRepause();
 
+		std::string wstringToString(std::wstring wStr);
+
 		// 입력 처리 
 		void ProcessInput();
 
@@ -52,6 +55,7 @@ namespace fq::client
 		fq::game_module::PrefabResource mSettingUIPrefab;
 
 		game_module::ScreenManager* mScreenManager;
+		game_module::TimeManager* mTimeManager;
 
 		// 설명 Text
 		std::vector<std::string> mExplanationTexts;

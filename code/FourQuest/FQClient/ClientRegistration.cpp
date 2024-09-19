@@ -1238,6 +1238,8 @@ void fq::client::RegisterMetaData()
 		.type("SoulSelectUI"_hs)
 		.prop(fq::reflect::prop::Name, "SoulSelectUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SoulSelectUI::mSoulPrefab>("SoulPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SoulPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()

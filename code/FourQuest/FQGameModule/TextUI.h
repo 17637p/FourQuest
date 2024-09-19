@@ -24,6 +24,7 @@ namespace fq::game_module
 		void SetText(std::string text);
 
 		void SetTextPosition(float startX, float startY);
+		void SetTextScale(float scaleX, float scaleY);
 
 		fq::graphics::ITextObject* GetTextObject() const { return mTextObject; }
 		void SetTextObject(fq::graphics::ITextObject* val) { mTextObject = val; }
