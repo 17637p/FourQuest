@@ -43,6 +43,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mRaycastHandler{}
 	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
+	, mMaxRagdollNumber(15)
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -738,7 +739,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID )
 		{
-			if (mGameProcess->mTimeManager->GetFPS() <= 60)
+			if (mGameProcess->mTimeManager->GetFPS() <= 60 && mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
 				continue;
 
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
@@ -990,6 +991,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			//{
 			//	linkDataUpdate(link);
 			//}
+
+			if (mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
+				continue;
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}
