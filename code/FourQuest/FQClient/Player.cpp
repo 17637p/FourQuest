@@ -17,6 +17,7 @@
 #include "ClientHelper.h"
 #include "PlayerSoulVariable.h"
 #include "PlayerVariable.h"
+#include "DebuffPoisonZone.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -67,6 +68,7 @@ void fq::client::Player::OnUpdate(float dt)
 	processInput();
 	processFeverTime(dt);
 	processCoolTime(dt);
+	processDebuff(dt);
 }
 
 void fq::client::Player::OnStart()
@@ -219,6 +221,40 @@ void fq::client::Player::processFeverTime(float dt)
 	{
 		setFeverBuff(false);
 	}
+}
+
+void fq::client::Player::processDebuff(float dt)
+{
+	auto poisonZone = GetComponent<DebuffPoisonZone>();
+
+	// 포이즌 존에 밟았을 경우에 생긴 포이즌 존 컴포넌트에 의해 HP 깎이는 코드
+	if (poisonZone != nullptr)
+	{
+		float durationTime = poisonZone->GetDurationTime();
+		float poisonTurm = poisonZone->GetPoisonTurm();
+		float poisonDamage = poisonZone->GetPosionDamage();
+
+		durationTime += dt;
+
+		if (durationTime >= poisonTurm)
+		{
+			durationTime -= poisonTurm;
+
+			mHp -= poisonDamage;
+
+			// UI 설정
+			GetComponent<HpBar>()->DecreaseHp(poisonDamage / mMaxHp);
+
+			// 플레이어 사망처리 
+			if (mHp <= 0.f)
+			{
+				SummonSoul();
+			}
+		}
+
+		poisonZone->SetDurationTime(durationTime);
+	}
+
 }
 
 int fq::client::Player::GetPlayerID() const

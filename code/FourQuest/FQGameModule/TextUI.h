@@ -17,13 +17,18 @@ namespace fq::game_module
 
 		virtual void OnUpdate(float dt) override;
 		
+		// Text Option ¹Ù²Ù±â
 		fq::graphics::TextInfo GetTextInfo() const { return mTextInfo; }
 		void SetTextInfo(fq::graphics::TextInfo val);
 
+		void SetText(std::string text);
+
 		void SetTextPosition(float startX, float startY);
+		void SetTextScale(float scaleX, float scaleY);
 
 		fq::graphics::ITextObject* GetTextObject() const { return mTextObject; }
 		void SetTextObject(fq::graphics::ITextObject* val) { mTextObject = val; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;

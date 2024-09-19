@@ -102,6 +102,8 @@ namespace fq::game_engine
 		
 		fq::physics::CollisionMatrix GetCollisionMatrix() const { return mCollisionMatrix; }
 		void SetCollisionMatrix(fq::physics::CollisionMatrix matrix);
+		int GetMaxRagdollNumber() const { return mMaxRagdollNumber; }
+		void SetMaxRagdollNumber(int maxRagdollNumber);
 
 		/// <summary>
 		/// 콜라이더를 반환합니다 
@@ -136,6 +138,7 @@ namespace fq::game_engine
 		DirectX::SimpleMath::Vector3 mGravity;
 		fq::physics::CollisionMatrix mCollisionMatrix;
 		fq::physics::PhysicsEngineInfo mPhysicsEngineInfomation;
+		int mMaxRagdollNumber;
 
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;

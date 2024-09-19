@@ -943,6 +943,13 @@ void fq::graphics::UIManager::drawText(fq::graphics::ITextObject* textObject)
 				break;
 		}
 
+		float scaleX = drawTextInformation.ScaleX;
+		float scaleY = drawTextInformation.ScaleY;
+		mRenderTarget->SetTransform
+		(
+			D2D1::Matrix3x2F::Scale(scaleX, scaleY, D2D1::Point2F(drawTextInformation.CenterX, drawTextInformation.CenterY))
+		);
+
 		if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
 		{
 			mRenderTarget->DrawText(
@@ -1007,8 +1014,16 @@ void fq::graphics::UIManager::drawImage(IImageObject* image)
 		d2dColor.g = color.G();
 		d2dColor.b = color.B();
 		d2dColor.a = color.A();
+
+		mRenderTarget->SetTransform
+		(
+			D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
+			* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
+		);
+
 		mRenderTarget->CreateSolidColorBrush(d2dColor, &brush);
 		mRenderTarget->FillRectangle(screenRect, brush);
+		brush->Release();
 
 		return;
 	}

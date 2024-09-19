@@ -169,6 +169,11 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 	setPhysicsEngineinfo();
 }
 
+void fq::game_engine::PhysicsSystem::SetMaxRagdollNumber(int maxRagdollNumber)
+{
+	mMaxRagdollNumber = maxRagdollNumber;
+}
+
 void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObject* object)
 {
 	if (!object->HasComponent<game_module::TerrainCollider>())
@@ -731,8 +736,11 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			}
 			transform->SetWorldMatrix(matrix);
 		}
-		else if (colliderInfo.enttID == mArticulationTypeID)
+		else if (colliderInfo.enttID == mArticulationTypeID )
 		{
+			if (mGameProcess->mTimeManager->GetFPS() <= 60)
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
@@ -942,6 +950,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
+			if (mGameProcess->mTimeManager->GetFPS() <= 60)
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 
 			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)

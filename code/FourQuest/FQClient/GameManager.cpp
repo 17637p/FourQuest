@@ -76,24 +76,23 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}), mPlayers.end());
 
 	// Pause 贸府
-	// P, O 绰 烙矫 b 
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{
-		if (input->IsPadKeyState(0, EPadKey::Start, EKeyState::Tap)
-			|| input->IsPadKeyState(1, EPadKey::Start, EKeyState::Tap)
-			|| input->IsPadKeyState(2, EPadKey::Start, EKeyState::Tap)
-			|| input->IsPadKeyState(3, EPadKey::Start, EKeyState::Tap)
-			|| input->IsKeyState(EKey::P, EKeyState::Tap))
+		for (int i = 0; i < 4; i++)
 		{
-			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
-			auto pauseUIObject = *(instance.begin());
+			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap) || 
+				input->IsKeyState(EKey::ESC, EKeyState::Tap))
+			{
+				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
+				auto pauseUIObject = *(instance.begin());
 
-			GetScene()->AddGameObject(pauseUIObject);
+				GetScene()->AddGameObject(pauseUIObject);
 
-			// 肛勉 贸府
-			GetScene()->GetTimeManager()->SetTimeScale(0);
-			mIsStop = true;
+				// 肛勉 贸府
+				GetScene()->GetTimeManager()->SetTimeScale(0);
+				mIsStop = true;
+			}
 		}
 	}
 

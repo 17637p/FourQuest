@@ -77,7 +77,10 @@
 // PlantMoster
 #include "PlantMonster.h"
 #include "LinearAttack.h"
+#include "PlantAOEAttack.h"
+#include "DebuffPoisonZone.h"
 #include "PlantMonsterAttckState.h"
+#include "PlantMonsterAOEAttackState.h"
 #include "PlantMonsterDeadState.h"
 #include "PlantMonsterHitState.h"
 #include "PlantMonsterIdleState.h"
@@ -963,6 +966,9 @@ void fq::client::RegisterMetaData()
 		.type("PlantMonster"_hs)
 		.prop(fq::reflect::prop::Name, "PlantMonster")
 		.prop(reflect::prop::Label, "Monster")
+		.data<&PlantMonster::mbIsAOEAttacker>("IsAOEAttacker"_hs)
+		.prop(fq::reflect::prop::Name, "IsAOEAttacker")
+		.prop(fq::reflect::prop::Comment, u8"범위 공격 하는 원거리 몬스터인가?")
 		.data<&PlantMonster::mHp>("Hp"_hs)
 		.prop(fq::reflect::prop::Name, "Hp")
 		.data<&PlantMonster::mAttackPower>("AttackPower"_hs)
@@ -973,6 +979,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackRange")
 		.data<&PlantMonster::mAttackPrefab>("AttackPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "AttackPrefab")
+		.data<&PlantMonster::mAOEAttackPrefab>("AOEAttackPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "AOEAttackPrefab")
 		.data<&PlantMonster::mAttackCoolTime>("AttackCoolTime"_hs)
 		.prop(fq::reflect::prop::Name, "AttackCoolTime")
 		.data<&PlantMonster::mRotationSpeed>("RotationSpeed"_hs)
@@ -990,6 +998,15 @@ void fq::client::RegisterMetaData()
 		.data<&PlantMonsterAttckState::mAttackTiming>("AttackTiming"_hs)
 		.prop(fq::reflect::prop::Name, "AttackTiming")
 		.data<&PlantMonsterAttckState::mLookAtTime>("LookAtTime"_hs)
+		.prop(fq::reflect::prop::Name, "LookAtTime")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<PlantMonsterAOEAttackState>()
+		.type("PlantMonsterAOEAttackState"_hs)
+		.prop(fq::reflect::prop::Name, "PlantMonsterAOEAttackState")
+		.data<&PlantMonsterAOEAttackState::mAttackTiming>("AttackTiming"_hs)
+		.prop(fq::reflect::prop::Name, "AttackTiming")
+		.data<&PlantMonsterAOEAttackState::mLookAtTime>("LookAtTime"_hs)
 		.prop(fq::reflect::prop::Name, "LookAtTime")
 		.base<fq::game_module::IStateBehaviour>();
 
@@ -1112,6 +1129,37 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "LinearAttack")
 		.base<fq::game_module::Component>();
 
+	entt::meta<PlantAOEAttack>()
+		.type("PlantAOEAttack"_hs)
+		.prop(fq::reflect::prop::Name, "PlantAOEAttack")
+		.data<&PlantAOEAttack::mDestroyTime>("DestroyTime"_hs)
+		.prop(fq::reflect::prop::Name, "DestroyTime")
+		.prop(fq::reflect::prop::Comment, u8"범위 공격이 없어지는 시간")
+		.data<&PlantAOEAttack::mMinArrivalTime>("MinArrivalTime"_hs)
+		.prop(fq::reflect::prop::Name, "MinArrivalTime")
+		.prop(fq::reflect::prop::Comment, u8"최소 도착 시간")
+		.data<&PlantAOEAttack::mMaxArrivalTime>("MaxArrivalTime"_hs)
+		.prop(fq::reflect::prop::Name, "MaxArrivalTime")
+		.prop(fq::reflect::prop::Comment, u8"최대 도착 시간")
+		.data<&PlantAOEAttack::mPoisonDamage>("PoisonDamage"_hs)
+		.prop(fq::reflect::prop::Name, "PoisonDamage")
+		.prop(fq::reflect::prop::Comment, u8"독 데미지")
+		.data<&PlantAOEAttack::mPoisonTurm>("PoisonTurm"_hs)
+		.prop(fq::reflect::prop::Name, "PoisonTurm")
+		.prop(fq::reflect::prop::Comment, u8"독 데미지 받는 시간 딜레이")
+		.data<&PlantAOEAttack::mAOEAttackSplashEffectPrefeb>("AOEAttackSplashEffectPrefeb"_hs)
+		.prop(fq::reflect::prop::Name, "AOEAttackSplashEffectPrefeb")
+		.prop(fq::reflect::prop::Comment, u8"스플래쉬 이펙트 프리펩 경로")
+		.data<&PlantAOEAttack::mAOEAttackPoolEffectPrefeb>("mAOEAttackPoolEffectPrefeb"_hs)
+		.prop(fq::reflect::prop::Name, "mAOEAttackPoolEffectPrefeb")
+		.prop(fq::reflect::prop::Comment, u8"풀 이펙트 프리펩 경로")
+		.base<fq::game_module::Component>();
+
+	entt::meta<DebuffPoisonZone>()
+		.type("DebuffPoisonZone"_hs)
+		.prop(fq::reflect::prop::Name, "DebuffPoisonZone")
+		.base<fq::game_module::Component>();
+
 	entt::meta<ArrowAttack>()
 		.type("ArrowAttack"_hs)
 		.prop(fq::reflect::prop::Name, "ArrowAttack")
@@ -1198,8 +1246,8 @@ void fq::client::RegisterMetaData()
 		.data<&PauseUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
 		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
-		.data<&PauseUI::mRepauseUIPrefab>("ResourceUIPrefab"_hs)
-		.prop(fq::reflect::prop::Name, "ResourceUIPrefab")
+		.data<&PauseUI::mRepauseUIPrefab>("RepauseUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "RepauseUIPrefab")
 		.data<&PauseUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
@@ -1238,6 +1286,8 @@ void fq::client::RegisterMetaData()
 		.type("SoulSelectUI"_hs)
 		.prop(fq::reflect::prop::Name, "SoulSelectUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SoulSelectUI::mSoulPrefab>("SoulPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SoulPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()

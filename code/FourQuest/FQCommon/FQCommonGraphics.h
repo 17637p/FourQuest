@@ -145,6 +145,9 @@ namespace fq::graphics
 		int Width = 100;
 		int Height = 100;
 
+		float ScaleX = 1;
+		float ScaleY = 1;
+
 		std::string FontPath = "Verdana";
 		int FontSize = 10;
 		DirectX::SimpleMath::Color FontColor = { 0, 0, 0, 1 };
