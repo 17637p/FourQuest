@@ -2048,7 +2048,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "Miscellaneous")
 		.data<&StateEvent::mInstantiatePrefabs>("InstantiatePrefabInfos"_hs)
 		.prop(fq::reflect::prop::Name, "InstantiatePrefabInfos")
-		.data<&StateEvent::mPlayerSoundInfos>("PlayerSoundInfos"_hs)
+		.data<&StateEvent::mPlaySoundInfos>("PlaySoundInfos"_hs)
 		.prop(fq::reflect::prop::Name, "PlayerSoundInfos")
 		.base<fq::game_module::Component>();
 }
