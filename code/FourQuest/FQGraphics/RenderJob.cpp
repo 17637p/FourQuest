@@ -38,13 +38,17 @@ namespace fq::graphics
 		if (lhs.Material < rhs.Material) return true;
 		if (rhs.Material < lhs.Material) return false;
 
+		// NodeHierarchyInstance 비교 (shared_ptr이므로 내부 값 비교)
+		if (lhs.NodeHierarchy < rhs.NodeHierarchy) return true;
+		if (rhs.NodeHierarchy < lhs.NodeHierarchy) return false;
+
 		// StaticMeshObject 비교 (포인터 비교)
-		if (lhs.SkinnedMeshObject < rhs.SkinnedMeshObject) return true;
-		if (rhs.SkinnedMeshObject < lhs.SkinnedMeshObject) return false;
+		if (lhs.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing < rhs.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing) return true;
+		if (rhs.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing < lhs.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing) return false;
 
 		// NodeHierarchyInstance 비교 (shared_ptr이므로 내부 값 비교)
-		if (lhs.NodeHierarchyInstnace < rhs.NodeHierarchyInstnace) return true;
-		if (rhs.NodeHierarchyInstnace < lhs.NodeHierarchyInstnace) return false;
+		if (lhs.NodeHierarchyInstnace->GetUseInsatncing() < rhs.NodeHierarchyInstnace->GetUseInsatncing()) return true;
+		if (rhs.NodeHierarchyInstnace->GetUseInsatncing() < lhs.NodeHierarchyInstnace->GetUseInsatncing()) return false;
 
 		// SubsetIndex 비교
 		if (lhs.SubsetIndex < rhs.SubsetIndex) return true;

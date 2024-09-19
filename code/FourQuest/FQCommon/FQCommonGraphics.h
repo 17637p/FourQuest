@@ -66,6 +66,8 @@ namespace fq::graphics
 
 	struct MaterialInstanceInfo
 	{
+		bool bUseInstanceing = false;
+
 		bool bUseInstanceAlpha = false;
 		float Alpha = 1.f;
 		bool bUseDissolveCutoff = false;

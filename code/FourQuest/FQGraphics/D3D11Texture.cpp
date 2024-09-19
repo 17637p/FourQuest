@@ -41,6 +41,8 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	if (!std::filesystem::exists(texturePath))
 	{
 		spdlog::warn("[D3D11Texture] \"{}\" not exist", std::filesystem::path(texturePath).string());
+		// assert(false);
+		return;
 	}
 
 	using namespace DirectX;
@@ -52,7 +54,34 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	if (fileExtension == L"dds")
 	{
 		HR(LoadFromDDSFile(texturePath.c_str(), DDS_FLAGS_NONE, &md, scratchImage));
-		HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		
+		if (md.width % 4 != 0 || md.height % 4 != 0)
+		{
+			DXGI_FORMAT format = md.format;
+
+			// 압축된 포맷이면 압축 해제
+			if (IsCompressed(format))
+			{
+				ScratchImage uncompressedImage;
+				HR(Decompress(scratchImage.GetImages(), scratchImage.GetImageCount(), md, DXGI_FORMAT_R8G8B8A8_UNORM, uncompressedImage));
+
+				md.format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 비압축 포맷으로 변경
+				scratchImage = std::move(uncompressedImage);
+			}
+
+			TexMetadata resizedMd = md;
+			resizedMd.width = (md.width + 3) / 4 * 4;    // 4의 배수로 맞춤
+			resizedMd.height = (md.height + 3) / 4 * 4;
+
+			ScratchImage resizedImage;
+			HR(Resize(scratchImage.GetImages(), scratchImage.GetImageCount(), md, resizedMd.width, resizedMd.height, TEX_FILTER_DEFAULT, resizedImage));
+			HR(CreateTexture(d3d11Device->GetDevice().Get(), resizedImage.GetImages(), resizedImage.GetImageCount(), resizedMd, (ID3D11Resource**)mTexture.GetAddressOf()));
+		}
+		else
+		{
+			HR(CreateTexture(d3d11Device->GetDevice().Get(), scratchImage.GetImages(), scratchImage.GetImageCount(), md, (ID3D11Resource**)mTexture.GetAddressOf()));
+		}
+
 		HR(d3d11Device->GetDevice()->CreateShaderResourceView(mTexture.Get(), nullptr, mSRV.GetAddressOf()));
 	}
 	else if (fileExtension == L"jpg" || fileExtension == L"png" || fileExtension == L"tiff" || fileExtension == L"gif")
@@ -356,6 +385,8 @@ fq::graphics::D3D11CubeTexture::D3D11CubeTexture(const std::shared_ptr<D3D11Devi
 	if (!std::filesystem::exists(texturePath))
 	{
 		spdlog::warn("[D3D11Texture] \"{}\" not exist", std::filesystem::path(texturePath).string());
+		assert(false);
+		return;
 	}
 
 	using namespace DirectX;
@@ -677,6 +708,73 @@ fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11De
 
 	for (UINT i = 0; i < TEXTURE_COUNT; ++i) {
 		srcTextures[i]->Release();
+	}
+}
+
+fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<AnimationKeyFrames>& animationKeyframes)
+	: mSRV(nullptr)
+{
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> texture = nullptr;
+	size_t animationCount = animationKeyframes.size();
+
+	// Creature Texture
+	{
+
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+		desc.Width = AnimationKeyFrames::MAX_MODEL_TRANSFORMS * 3;
+		desc.Height = AnimationKeyFrames::MAX_MODEL_KEYFRAMES;
+		desc.ArraySize = animationCount;
+		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; // 16바이트
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.MipLevels = 1;
+		desc.SampleDesc.Count = 1;
+
+		const size_t dataSize = AnimationKeyFrames::MAX_MODEL_TRANSFORMS * sizeof(AnimationKeyFrames::KeyFrame);
+		const size_t pageSize = dataSize * AnimationKeyFrames::MAX_MODEL_KEYFRAMES;
+		void* mallocPtr = ::malloc(pageSize * animationCount);
+
+		// 파편화된 데이터를 조립한다.
+		for (size_t c = 0; c < animationCount; c++)
+		{
+			size_t startOffset = c * pageSize;
+
+			BYTE* pageStartPtr = reinterpret_cast<BYTE*>(mallocPtr) + startOffset;
+
+			for (size_t f = 0; f < AnimationKeyFrames::MAX_MODEL_KEYFRAMES; f++)
+			{
+				void* ptr = pageStartPtr + dataSize * f;
+				::memcpy(ptr, animationKeyframes[c].KeyFrames[f].data(), dataSize);
+			}
+		}
+
+		// 리소스 만들기
+		std::vector<D3D11_SUBRESOURCE_DATA> subResources(animationCount);
+
+		for (size_t c = 0; c < animationCount; c++)
+		{
+			void* ptr = (BYTE*)mallocPtr + c * pageSize;
+			subResources[c].pSysMem = ptr;
+			subResources[c].SysMemPitch = dataSize;
+			subResources[c].SysMemSlicePitch = pageSize;
+		}
+
+		HR(d3d11Device->GetDevice()->CreateTexture2D(&desc, subResources.data(), texture.GetAddressOf()));
+
+		::free(mallocPtr);
+	}
+
+	// Create SRV
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+		desc.Texture2DArray.MipLevels = 1;
+		desc.Texture2DArray.ArraySize = animationCount;
+
+		HR(d3d11Device->GetDevice()->CreateShaderResourceView(texture.Get(), &desc, mSRV.GetAddressOf()));
 	}
 }
 

@@ -5,6 +5,36 @@
 
 namespace fq::graphics
 {
+	struct KeyframeDesc
+	{
+		int animIndex = 0;
+		unsigned int currFrame = 0;
+		unsigned int nextFrame = 0;
+		float ratio = 0.f;
+	};
+
+	struct TweenDesc
+	{
+		TweenDesc()
+		{
+			curr.animIndex = 0;
+			next.animIndex = -1;
+		}
+
+		void ClearNextAnim()
+		{
+			next.animIndex = -1;
+			next.currFrame = 0;
+			next.nextFrame = 0;
+			tweenRatio = 0;
+		}
+
+		KeyframeDesc curr;
+		KeyframeDesc next;
+		float tweenRatio = 0.f;
+		float unused[3]{};
+	};
+
 	struct ModelTransform
 	{
 		DirectX::SimpleMath::Matrix WorldMat;
@@ -18,6 +48,11 @@ namespace fq::graphics
 		int bUseLightmap;
 		int bUseDirection;
 		float unused[1];
+	};
+
+	struct CBTweenBuffer
+	{
+		TweenDesc TweenFrames[500];
 	};
 
 	struct ViewProjectionMatrix

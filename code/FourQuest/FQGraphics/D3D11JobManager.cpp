@@ -53,6 +53,7 @@ namespace fq::graphics
 			job.Material = std::static_pointer_cast<Material>(material[i]);
 			job.SkinnedMeshObject = static_cast<SkinnedMeshObject*>(iSkinnedMeshObject);
 			job.NodeHierarchyInstnace = std::static_pointer_cast<NodeHierarchyInstance>(iSkinnedMeshObject->GetNodeHierarchyInstance());
+			job.NodeHierarchy = std::static_pointer_cast<NodeHierarchy>(job.NodeHierarchyInstnace->GetNodeHierarchy());
 			mSkinnedMeshJobs.push_back(job);
 		}
 	}

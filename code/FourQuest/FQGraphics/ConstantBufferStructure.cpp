@@ -144,14 +144,14 @@ namespace fq::graphics
 	void ConstantBufferHelper::UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB, const MaterialInstanceInfo& materialInstanceInfo)
 	{
 		CBMaterialInstance materialInstance;
-		materialInstance.bUseInstanceAlpha = materialInstanceInfo.bUseInstanceAlpha;
+		materialInstance.bUseInstanceAlpha = materialInstanceInfo.bUseInstanceAlpha && materialInstanceInfo.bUseInstanceing;
 		materialInstance.Alpha = materialInstanceInfo.Alpha;
-		materialInstance.bUseDissolveCutoff = materialInstanceInfo.bUseDissolveCutoff;
+		materialInstance.bUseDissolveCutoff = materialInstanceInfo.bUseDissolveCutoff && materialInstanceInfo.bUseInstanceing;;
 		materialInstance.DissolveCutoff = materialInstanceInfo.DissolveCutoff;
 		
-		materialInstance.bUseRimLight = materialInstanceInfo.bUseRimLight;
+		materialInstance.bUseRimLight = materialInstanceInfo.bUseRimLight && materialInstanceInfo.bUseInstanceing;;
 		materialInstance.RimPow = materialInstanceInfo.RimPow;
-		materialInstance.bUseInvRimLight = materialInstanceInfo.bUseInvRimLight;
+		materialInstance.bUseInvRimLight = materialInstanceInfo.bUseInvRimLight && materialInstanceInfo.bUseInstanceing;;
 		materialInstance.InvRimPow = materialInstanceInfo.InvRimPow;
 		
 		materialInstance.RimLightColor = materialInstanceInfo.RimLightColor;
@@ -161,7 +161,7 @@ namespace fq::graphics
 		materialInstance.UVScale = materialInstanceInfo.UVScale;
 		materialInstance.UVOffset = materialInstanceInfo.UVOffset;
 		
-		materialInstance.bUseUVScaleOffset = materialInstanceInfo.bUseUVScaleOffset;
+		materialInstance.bUseUVScaleOffset = materialInstanceInfo.bUseUVScaleOffset && materialInstanceInfo.bUseInstanceing;;
 		materialInstance.RimIntensity = materialInstanceInfo.RimIntensity;
 		materialInstance.InvRimIntensity = materialInstanceInfo.InvRimIntensity;
 

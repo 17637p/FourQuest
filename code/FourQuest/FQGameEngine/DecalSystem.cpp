@@ -46,17 +46,15 @@ void fq::game_engine::DecalSystem::Update(float dt)
 {
 	using namespace fq::game_module;
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-	auto graphics = mGameProcess->mGraphics; // 이 문법 유효한지 기태님한테 체크
 
 	scene->ViewComponents<Transform, Decal>
-		([dt, graphics](GameObject& object, Transform& transform, Decal& decal)
+		([dt](GameObject& object, Transform& transform, Decal& decal)
 			{
 				graphics::IDecalObject* decalObjectInterface = decal.GetDecalObjectInterface();
-				std::shared_ptr<graphics::IMaterial> material = decal.GetIMaterial();
 
-				if (decalObjectInterface != nullptr && material != nullptr)
+				if (decalObjectInterface != nullptr)
 				{
-					graphics->DrawDecalObject(decalObjectInterface, material, transform.GetWorldMatrix());
+					decalObjectInterface->SetTransform(transform.GetWorldMatrix());
 				}
 			});
 }

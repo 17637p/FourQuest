@@ -140,6 +140,7 @@ namespace fq::game_module
 
 		float mDefaultPlaySpeed;
 		bool mbIsStopAnimation;
-	};
 
+		// 동적 인스턴싱 사용 유무 체크
+	};
 }

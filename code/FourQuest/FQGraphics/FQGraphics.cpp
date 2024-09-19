@@ -335,6 +335,16 @@ std::shared_ptr<spdlog::logger> FQGraphics::SetUpLogger(std::vector<spdlog::sink
 	return logger;
 }
 
+void fq::graphics::FQGraphics::CreateAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface)
+{
+	std::static_pointer_cast<NodeHierarchy>(nodeHierarchyInterface)->CreateAnimationTexture(mDevice);
+}
+
+void fq::graphics::FQGraphics::ReleaseAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface)
+{
+	std::static_pointer_cast<NodeHierarchy>(nodeHierarchyInterface)->ReleaseAnimationTexture();
+}
+
 
 void FQGraphics::UpdateLight(const unsigned int id, const LightInfo& lightInfo)
 {
