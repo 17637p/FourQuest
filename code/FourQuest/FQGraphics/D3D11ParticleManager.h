@@ -13,6 +13,7 @@ namespace fq::graphics
 	class IParticleObject;
 	template <typename T>
 	class D3D11ConstantBuffer;
+	class IParticleMaterial;
 
 	class D3D11ParticleManager
 	{
@@ -23,12 +24,9 @@ namespace fq::graphics
 		void Initialize(const std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, std::shared_ptr<D3D11CameraManager> cameraManager);
 		void OnResize(unsigned short width, unsigned short height);
 
-		void Excute();
-
-		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
-		void DeleteParticleObject(IParticleObject* particleObjectInterface);
-
-		const std::set<IParticleObject*>& GetParticleObjects() const { return mParticleObjects; }
+		void BeginRender();
+		void Render(IParticleObject* particleObject);
+		void EndRender();
 
 	private:
 		void updateParticleObjectCB(IParticleObject* particleObjectInterface);
@@ -44,8 +42,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 
-		std::set<IParticleObject*> mParticleObjects;
-
 		std::shared_ptr<D3D11ConstantBuffer<ParticleFrameData>> mParticleFrameCB;
 		std::shared_ptr<D3D11ConstantBuffer<ParticleObjectData>> mParticleObjectCB;
 
@@ -53,9 +49,13 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11DepthStencilView> mNoneDSV;
 		std::shared_ptr<class D3D11DepthStencilView> mDSV;
 
-		std::shared_ptr<class ShaderProgram> mAdditiveRenderProgram;
-		std::shared_ptr<class ShaderProgram> mSubtractiveRenderProgram;
-		std::shared_ptr<class ShaderProgram> mModulateRenderProgram;
+		std::shared_ptr<class D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<class D3D11RasterizerState> mCullOffRasterizer;
+		std::shared_ptr<class D3D11BlendState> mAdditiveState;
+		std::shared_ptr<class D3D11BlendState> mSubtractiveState;
+		std::shared_ptr<class D3D11BlendState> mModulateState;
+		std::shared_ptr<class D3D11BlendState> mAlphaBlendState;
+		std::shared_ptr<class ShaderProgram> mRenderProgram;
 
 		std::shared_ptr<class D3D11ComputeShader> mInitDeadListCS;
 		std::shared_ptr<class D3D11ComputeShader> mInitParticlesCS;

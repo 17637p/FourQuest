@@ -3,9 +3,12 @@
 
 #include <algorithm>
 
+#include "Transform.h"
+
 fq::game_module::Particle::Particle()
 	: mParticleInfo{}
 	, mParticleObject(nullptr)
+	, mParticleMaterial(nullptr)
 {}
 
 fq::game_module::Particle::~Particle()
@@ -44,7 +47,7 @@ void fq::game_module::Particle::SetMainParticleInfo(ParticleInfo::Main mainInfo)
 {
 	mParticleInfo.MainData = mainInfo;
 
-	mParticleInfo.MainData.MaxParticleCount = std::min(mainInfo.MaxParticleCount,  static_cast<size_t>(ParticleInfo::MAX_PARTICLE_COUNT));
+	mParticleInfo.MainData.MaxParticleCount = std::min(mainInfo.MaxParticleCount, static_cast<size_t>(ParticleInfo::MAX_PARTICLE_COUNT));
 
 	if (mParticleObject)
 		mParticleObject->SetInfo(mParticleInfo);
@@ -122,6 +125,14 @@ void fq::game_module::Particle::SetRenderData(ParticleInfo::Render data)
 		mParticleObject->SetInfo(mParticleInfo);
 }
 
+void fq::game_module::Particle::SetInstanceData(ParticleInfo::Instance data)
+{
+	mParticleInfo.InstanceData = data;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
+}
+
 void fq::game_module::Particle::SetEmissionBursts(std::vector<ParticleInfo::Emission::Burst> bursts)
 {
 	mParticleInfo.EmissionData.Bursts = bursts;
@@ -130,11 +141,33 @@ void fq::game_module::Particle::SetEmissionBursts(std::vector<ParticleInfo::Emis
 		mParticleObject->SetInfo(mParticleInfo);
 }
 
-
 void fq::game_module::Particle::SetParticlesPerSecond(float data)
 {
 	mParticleInfo.EmissionData.ParticlesPerSecond = data;
 
 	if (mParticleObject)
 		mParticleObject->SetInfo(mParticleInfo);
+}
+
+void fq::game_module::Particle::SetParticleMaterialInfo(graphics::ParticleMaterialInfo data)
+{
+	mParticleMaterialInfo = data;
+
+	if (mParticleMaterial != nullptr)
+	{
+		mParticleMaterial->SetInfo(mParticleMaterialInfo);
+	}
+}
+
+void fq::game_module::Particle::OnUpdate(float dt)
+{
+	if (mParticleObject)
+	{
+		mParticleObject->SetTransform(GetComponent<Transform>()->GetWorldMatrix());
+		mParticleObject->SetFrameTime(dt);
+	}
+}
+
+void fq::game_module::Particle::OnStart()
+{
 }

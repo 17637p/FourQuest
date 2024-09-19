@@ -21,6 +21,7 @@ namespace fq::graphics
 			fq::common::Keyframe* outRhs,
 			float* outWeight);
 		static DirectX::SimpleMath::Matrix CreateMatrix(const fq::common::Keyframe& keyframe);
+		static DirectX::SimpleMath::Matrix CreateMatrix(const fq::common::UVKeyframe& keyframe);
 		static fq::common::Keyframe Interpolate(const fq::common::Keyframe& lhs, const fq::common::Keyframe& rhs, float weight);
 	};
 }

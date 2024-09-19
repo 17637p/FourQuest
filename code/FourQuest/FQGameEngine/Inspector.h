@@ -15,8 +15,6 @@ namespace fq::game_engine
 
 	/// <summary>
 	/// 게임오브젝트에 대한 정보를 표시한다.
-	/// 
-	/// Unity에서는 리소스에 대한 정보도 같이 표시해준다 여기서도 기능을 넣을까?
 	/// </summary>
 	class Inspector : public IEditorWindow
 	{
@@ -60,6 +58,7 @@ namespace fq::game_engine
 		void beginInputFloat3_Quaternion(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginColorEdit4_Color(entt::meta_data data, fq::reflect::IHandle* handle);
 		void beginSequenceContainer(entt::meta_data data, fq::reflect::IHandle* handle);
+		bool beginSequenceContainerPOD(entt::meta_data data, entt::meta_any& pod);
 		void beginInputText_PrefabResource(entt::meta_data data, fq::reflect::IHandle* handle);
 
 		void beginPopupContextItem_Component(fq::reflect::IHandle* handle);
@@ -72,12 +71,15 @@ namespace fq::game_engine
 
 		ViewType mViewType;
 
+		UINT mImguiID;
+
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 		UINT mCurrentAddComponentIndex;
 		UINT mCurrentAddBehaviourIndex;
 		std::multimap< std::string, entt::meta_type> mComponentTypes;
 		std::vector<entt::meta_type> mStateBehaviourTypes;
 		DirectX::SimpleMath::Color mPrevColor;
+		DirectX::SimpleMath::Vector3 mPrevVector3;
 
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSelectAnimationStateName;

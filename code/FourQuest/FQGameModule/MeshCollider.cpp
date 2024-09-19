@@ -25,6 +25,7 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::MeshCollider::Clone
 	}
 
 	cloneCollider->mConvexMeshInfomation.colliderInfo.id = fq::physics::unregisterID;
+	cloneCollider->mCollisionCount = 0;
 
 	return cloneCollider;
 }

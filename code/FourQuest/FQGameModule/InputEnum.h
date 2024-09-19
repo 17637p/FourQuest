@@ -113,7 +113,7 @@ enum class EPadStick
 	leftX,
 	leftY,
 	rightX,
-	rightY
+	rightY,
 };
 
 enum class EVibrationMode

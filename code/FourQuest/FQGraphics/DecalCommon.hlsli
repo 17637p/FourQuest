@@ -9,7 +9,7 @@ struct VertexOut
     float3 Orientation : TEXCOORD1;
 };
 
-cbuffer perFrame : register(b0)
+cbuffer cbDecalObject : register(b0)
 {
     matrix gTexMatrix;
     matrix gWorldMatrix;
@@ -19,16 +19,19 @@ cbuffer perFrame : register(b0)
     
     float2 gDeproject;
     float gNormalThresholdInRadian;
-    float gAlphaClipThreshold;
+}
+
+cbuffer cbDecalMaterial : register(b1)
+{
+    float4 gBaseColor;
+    float4 gEmissiveColor;
     
-    bool gUseMultiplyAlpha;
-    bool gUseAlphaClip;
     bool gUseAlbedoMap;
-    bool gUseMetalnessMap;
-    
-    bool gUseRoughnessMap;
     bool gUseNormalMap;
     bool gUseEmissiveMap;
+    float gNormalBlend;
+    
+    float gAlphaCutoff;
 }
 
 #endif  /* DECALCOMMON_HLSLI */

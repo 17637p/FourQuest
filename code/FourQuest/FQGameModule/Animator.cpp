@@ -4,10 +4,14 @@
 #include "AnimatorController.h"
 
 fq::game_module::Animator::Animator()
+	:mDefaultPlaySpeed(1.f)
+	, mbIsStopAnimation(false)
+	, mNodeHierarchyInstance{ nullptr }
+	, mController{ nullptr }
+	, mNodeHierarchy{ nullptr }
 {
 
 }
-
 
 fq::game_module::Animator::~Animator()
 {
@@ -28,42 +32,59 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::Animator::Clone(std
 		*cloneAnimator = *this;
 	}
 
+	cloneAnimator->mController = nullptr;
+	cloneAnimator->mNodeHierarchyInstance = nullptr;
+
 	return cloneAnimator;
 }
 
 void fq::game_module::Animator::SetController(std::shared_ptr<AnimatorController> controller)
 {
-	mController = std::move(controller);
+	mController = controller;
 }
 
 void fq::game_module::Animator::SetParameterInt(const std::string& id, int val)
 {
-   mController->SetParameter(id, val);
+	if (mController != nullptr)
+		mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterFloat(const std::string& id, float val)
 {
-	mController->SetParameter(id, val);
+	if (mController != nullptr)
+		mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterBoolean(const std::string& id, bool val)
 {
-	mController->SetParameter(id, val);
+	if (mController != nullptr)
+		mController->SetParameter(id, val);
 }
 
 void fq::game_module::Animator::SetParameterTrigger(const std::string& id)
 {
-	mController->SetParameter(id, AnimatorController::OnTrigger);
+	if (mController != nullptr)
+		mController->SetParameter(id, AnimatorController::OnTrigger);
+}
+
+void fq::game_module::Animator::SetParameterOffTrigger(const std::string& id)
+{
+	if (mController != nullptr)
+		mController->SetParameter(id, AnimatorController::OffTrigger);
 }
 
 void fq::game_module::Animator::UpdateState(float dt)
 {
-	mController->UpdateState(dt);
+	if (mController != nullptr)
+	{
+		mController->UpdateState(dt);
+	}
 }
 
 void fq::game_module::Animator::UpdateAnimation(float dt)
 {
-	mController->UpdateAnimation(dt);
+	if (mController != nullptr)
+		mController->UpdateAnimation(dt, mDefaultPlaySpeed);
 }
 
 bool fq::game_module::Animator::IsInTransition() const
@@ -73,6 +94,35 @@ bool fq::game_module::Animator::IsInTransition() const
 
 void fq::game_module::Animator::OnUpdate(float dt)
 {
-	mController->Update(dt);
+	if (mController != nullptr)
+		mController->Update(dt);
+}
+
+void fq::game_module::Animator::SetNodeHierarchyPath(const std::string& path)
+{
+	if (std::filesystem::path(path).extension() == ".nodeHierachy")
+		mNodeHierarchyPath = path;
+}
+
+void fq::game_module::Animator::ProcessAnimationEvent(class GameObject* gameObject, fq::game_module::EventManager* eventManager)
+{
+	if (mController != nullptr)
+	{
+		mController->ProcessAnimationEvent(gameObject, eventManager);
+	}
+}
+
+void fq::game_module::Animator::OnDestroy()
+{
+	if (mController)
+	{
+		auto& stateMap = mController->GetStateMap();
+		auto name = mController->GetCurrentStateName();
+
+		if (auto iter =  stateMap.find(name); iter != stateMap.end())
+		{
+			iter->second.OnStateExit();
+		}
+	}
 }
 

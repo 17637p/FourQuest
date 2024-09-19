@@ -113,9 +113,17 @@ namespace fq::game_engine
 		/// </summary>
 		void AddInputMove(const fq::event::AddInputMove& event);
 
+		void AddTerrainCollider(fq::game_module::GameObject* object);
+
+		/// <summary>
+		/// Raycast 이벤트 처리
+		/// </summary>
+		void Raycast(const fq::event::RayCast& event);
+
 	private:
 		void addCollider(fq::game_module::GameObject* object);
 		void removeCollider(fq::game_module::GameObject* object);
+		void removeArticulation(fq::game_module::GameObject* object);
 		void setPhysicsEngineinfo();
 		void calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset);
 		void callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type);
@@ -137,12 +145,15 @@ namespace fq::game_engine
 		EventHandler mOnAddGameObjectHandler;
 		EventHandler mDestroyedGameObjectHandler;
 		EventHandler mAddInputMoveHandler;
+		EventHandler mRaycastHandler;
 
 		entt::id_type mBoxTypeID;
 		entt::id_type mSphereTypeID;
 		entt::id_type mCapsuleTypeID;
 		entt::id_type mMeshTypeID;
 		entt::id_type mCharactorControllerTypeID;
+		entt::id_type mTerrainTypeID;
+		entt::id_type mArticulationTypeID;
 		entt::id_type mRigidTypeID;
 
 		bool mbIsGameLoaded;
@@ -150,8 +161,7 @@ namespace fq::game_engine
 		ColliderID mLastColliderID;
 		CallbackContainer mCallbacks;
 
-		std::map<unsigned int, std::string> mDebug;
+		// Articulation
+		fq::game_module::ArticulationLoader mArticulationLoader;
 	};
-
-
 }

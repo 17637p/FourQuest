@@ -10,6 +10,9 @@ namespace fq
 	{
 		class GameProcess;
 
+		class SkyBoxWindow;
+		class LightmapWindow;
+
 		class GameEngine :public IEngine
 		{
 		public:
@@ -22,6 +25,7 @@ namespace fq
 
 		private:
 			std::unique_ptr<GameProcess> mGameProcess;
+			std::unique_ptr<LightmapWindow> mLightMap;
 		};
 	}
 }

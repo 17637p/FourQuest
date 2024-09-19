@@ -11,7 +11,9 @@ namespace fq::graphics
 	class D3D11DepthStencilView;
 	class Pass;
 	class D3D11ParticleManager;
-	class D3D11DecalManager;
+	class D3D11ObjectManager;
+	class D3D11ObjectManager;
+	class FullScreenPass;
 
 	class RenderPipeline
 	{
@@ -24,18 +26,19 @@ namespace fq::graphics
 			unsigned short width,
 			unsigned short height);
 		virtual	void Finalize();
-		virtual void OnResize(unsigned short width, unsigned short height);
+		virtual void OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight);
 
 		virtual void BeginRender();
 		virtual void Render();
+		virtual void RenderFullScreen();
 		virtual void EndRender();
 
 		inline std::shared_ptr<D3D11ShaderResourceView>& GetBackBufferSRV();
-		void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT);
 
 	protected:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		std::shared_ptr<FullScreenPass> mFullScreenLastPass;
 		std::vector<std::shared_ptr<Pass>> mPasses;
 
 		std::shared_ptr<D3D11RenderTargetView> mSwapChainRTV;
@@ -43,11 +46,6 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mBackBufferSRV;
 		std::shared_ptr<D3D11DepthStencilView> mDSV;
 		std::shared_ptr<D3D11DepthStencilView> mNoneDSV;
-
-		// IBL юс╫ц
-		std::shared_ptr<class D3D11Texture> mDiffuseCubeMap;
-		std::shared_ptr<class D3D11Texture> mSpecularCubeMap;
-		std::shared_ptr<class D3D11Texture> mBRDFLUT;
 	};
 
 	inline std::shared_ptr<D3D11ShaderResourceView>& RenderPipeline::GetBackBufferSRV()

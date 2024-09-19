@@ -1,9 +1,11 @@
 #include "PlayerMovementState.h"
 
+#include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/GameModule.h"
 
 fq::client::PlayerMovementState::PlayerMovementState()
 	:mbCanMovePlayer(false)
+	,mbOnRotation(true)
 {}
 
 fq::client::PlayerMovementState::~PlayerMovementState()
@@ -19,14 +21,5 @@ void fq::client::PlayerMovementState::OnStateEnter(fq::game_module::Animator& an
 	auto controller = animator.GetComponent<game_module::CharacterController>();
 
 	controller->SetCanMoveCharater(mbCanMovePlayer);
-}
-
-void fq::client::PlayerMovementState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
-{
-
-}
-
-void fq::client::PlayerMovementState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
-{
-
+	controller->SetOnRotation(mbOnRotation);
 }

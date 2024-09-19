@@ -5,7 +5,22 @@
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 #include "../FQphysics/IFQPhysics.h"
+#include "../FQReflect/entt.hpp"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/SphereCollider.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/TerrainCollider.h"
+#include "../FQGameModule/Terrain.h"
+#include "../FQGameModule/Articulation.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+
+#include "ResourceSystem.h"
 #include "GameProcess.h"
 #include "ModelSystem.h"
 #include "RenderingSystem.h"
@@ -23,7 +38,10 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mCapsuleTypeID(0)
 	, mMeshTypeID(0)
 	, mCharactorControllerTypeID(0)
+	, mTerrainTypeID(0)
 	, mRigidTypeID(0)
+	, mRaycastHandler{}
+	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
 {}
 
@@ -61,6 +79,8 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 		RegisterHandle<fq::event::AddInputMove>(this, &PhysicsSystem::AddInputMove);
 	mOnCleanUpSceneHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::OnCleanUp>(this, &PhysicsSystem::CleanUp);
+	mRaycastHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::RayCast>(this, &PhysicsSystem::Raycast);
 
 	mBoxTypeID = entt::resolve<fq::game_module::BoxCollider>().id();
 	mSphereTypeID = entt::resolve<fq::game_module::SphereCollider>().id();
@@ -68,6 +88,8 @@ void fq::game_engine::PhysicsSystem::Initialize(GameProcess* game)
 	mMeshTypeID = entt::resolve<fq::game_module::MeshCollider>().id();
 	mCharactorControllerTypeID = entt::resolve<fq::game_module::CharacterController>().id();
 	mRigidTypeID = entt::resolve<game_module::RigidBody>().id();
+	mTerrainTypeID = entt::resolve<game_module::TerrainCollider>().id();
+	mArticulationTypeID = entt::resolve<game_module::Articulation>().id();
 }
 
 
@@ -89,6 +111,8 @@ void fq::game_engine::PhysicsSystem::OnUnLoadScene()
 
 void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene event)
 {
+	CleanUp({});
+
 	auto scenePath = fq::path::GetScenePath() / event.sceneName / "collision_matrix.txt";
 	mCollisionMatrix.Load(scenePath);
 
@@ -99,13 +123,13 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 		addCollider(&object);
 	}
 
-
 	mbIsGameLoaded = true;
 }
 
 void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
 	removeCollider(event.object);
+	removeArticulation(event.object);
 }
 
 void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObject& event)
@@ -123,7 +147,7 @@ void fq::game_engine::PhysicsSystem::AddComponent(const fq::event::AddComponent&
 {
 	if (event.id == mBoxTypeID || event.id == mSphereTypeID
 		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
-		|| event.id == mRigidTypeID)
+		|| event.id == mRigidTypeID || event.id == mTerrainTypeID)
 	{
 		addCollider(event.component->GetGameObject());
 	}
@@ -133,7 +157,7 @@ void fq::game_engine::PhysicsSystem::RemoveComponent(const fq::event::RemoveComp
 {
 	if (event.id == mBoxTypeID || event.id == mSphereTypeID
 		|| event.id == mCapsuleTypeID || event.id == mMeshTypeID
-		|| event.id == mRigidTypeID)
+		|| event.id == mRigidTypeID || event.id == mTerrainTypeID)
 	{
 		removeCollider(event.component->GetGameObject());
 	}
@@ -143,6 +167,40 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 {
 	mCollisionMatrix = matrix;
 	setPhysicsEngineinfo();
+}
+
+void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObject* object)
+{
+	if (!object->HasComponent<game_module::TerrainCollider>())
+		return;
+
+	game_module::TerrainCollider* collider = object->GetComponent<game_module::TerrainCollider>();
+	game_module::Transform* transform = object->GetComponent<game_module::Transform>();
+	game_module::Terrain* terrain = object->GetComponent<game_module::Terrain>();
+
+	physics::HeightFieldColliderInfo info{};
+
+	ColliderID id = ++mLastColliderID;
+
+	collider->SetColliderID(id);
+	info.colliderInfo.id = id;
+	info.heightFieldMeshHash = entt::hashed_string(terrain->GetAlphaMap().c_str()).value();
+	info.colliderInfo.layerNumber = static_cast<int>(object->GetTag());
+	info.colliderInfo.collisionTransform = transform->GetTransform();
+	info.height = terrain->GetTerrainMeshObject()->GetHeightData();
+
+	info.heightScale = terrain->GetHeightScale() / 255.f;
+	info.numCols = terrain->GetWidth();
+	info.numRows = terrain->GetHeight();
+	info.rowScale = terrain->GetTextureWidth() / 300.f;
+	info.colScale = terrain->GetTextureHeight() / 300.f;
+
+	mPhysicsEngine->CreateStaticBody(info, physics::EColliderType::COLLISION);
+	mColliderContainer.insert({ id,
+		{mTerrainTypeID
+		, collider->shared_from_this()
+		,  collider->GetGameObject()->shared_from_this()
+		, collider,false} });
 }
 
 void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* object)
@@ -156,7 +214,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 	auto rigid = object->GetComponent<RigidBody>();
 	auto transform = object->GetComponent<Transform>();
-	bool isStatic = rigid->IsStatic();
+	auto bodyType = rigid->GetBodyType();
 
 	// 1. Box Colllider
 	if (object->HasComponent<BoxCollider>())
@@ -174,11 +232,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		boxCollider->SetBoxInfomation(boxInfo);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(boxInfo, type);
 			assert(check);
-			mColliderContainer.insert({ colliderID, 
+			mColliderContainer.insert({ colliderID,
 				{mBoxTypeID
 				, boxCollider->shared_from_this()
 				,  boxCollider->GetGameObject()->shared_from_this()
@@ -186,9 +244,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(boxInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ colliderID, 
+			mColliderContainer.insert({ colliderID,
 				{mBoxTypeID
 				, boxCollider->shared_from_this()
 				, boxCollider->GetGameObject()->shared_from_this()
@@ -212,7 +272,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		calculateOffset(sphereInfo.colliderInfo.collisionTransform, offset);
 		sphereCollider->SetSphereInfomation(sphereInfo);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(sphereInfo, type);
 			assert(check);
@@ -224,9 +284,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(sphereInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mSphereTypeID
 				, sphereCollider->shared_from_this()
 				, sphereCollider->GetGameObject()->shared_from_this()
@@ -250,11 +312,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		capsuleCollider->SetCapsuleInfomation(capsuleInfo);
 		calculateOffset(capsuleInfo.colliderInfo.collisionTransform, offset);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(capsuleInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mCapsuleTypeID
 				, capsuleCollider->shared_from_this()
 				, object->shared_from_this()
@@ -263,9 +325,11 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(capsuleInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ id, 
+			mColliderContainer.insert({ id,
 				{mCapsuleTypeID
 				, capsuleCollider->shared_from_this()
 				,object->shared_from_this()
@@ -273,7 +337,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		}
 	}
 
-	// 5.CharacterController
+	// 4.CharacterController
 	if (object->HasComponent<CharacterController>())
 	{
 		auto controller = object->GetComponent<CharacterController>();
@@ -290,7 +354,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		bool check = mPhysicsEngine->CreateCCT(controllerInfo, movementInfo);
 		assert(check);
 
-		mColliderContainer.insert({ id, 
+		mColliderContainer.insert({ id,
 			{mCharactorControllerTypeID
 			, controller->shared_from_this()
 			,object->shared_from_this()
@@ -319,58 +383,178 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 		if (hasStaticMesh)
 		{
 			auto staticMeshRenderer = object->GetComponent<StaticMeshRenderer>();
-			auto meshName = staticMeshRenderer->GetMeshObjectInfomation().MeshName;
-			auto modelPath = staticMeshRenderer->GetMeshObjectInfomation().ModelPath;
+			auto meshName = staticMeshRenderer->GetMeshName();
+			auto modelPath = staticMeshRenderer->GetModelPath();
 
-			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(modelPath);
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
 			assert(check);
 
-			mGameProcess->mGraphics->GetModel(modelPath);
-
-			const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
 			const auto& mesh = ModelSystem::GetMesh(model, meshName);
 			convexMeshInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
 			convexMeshInfo.vertexSize = mesh.Vertices.size();
+			convexMeshInfo.convexMeshHash = entt::hashed_string(modelPath.c_str()).value();
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{
-				convexMeshInfo.vertices[i] = -mesh.Vertices[i].Pos;
+				convexMeshInfo.vertices[i] = mesh.Vertices[i].Pos;
 			}
 		}
 		else // skinned mesh 
 		{
 			auto skinnedMeshRenderer = object->GetComponent<SkinnedMeshRenderer>();
-			auto modelPath = skinnedMeshRenderer->GetMeshObjectInfomation().ModelPath;
-			auto meshName = skinnedMeshRenderer->GetMeshObjectInfomation().MeshName;
+			auto modelPath = skinnedMeshRenderer->GetModelPath();
+			auto meshName = skinnedMeshRenderer->GetMeshName();
 
-			bool check = mGameProcess->mRenderingSystem->IsLoadedModel(modelPath);
+			bool check = mGameProcess->mResourceSystem->HasModel(modelPath);
 			assert(check);
 
-			const auto& model = mGameProcess->mGraphics->GetModel(modelPath);
+			const auto& model = mGameProcess->mResourceSystem->GetModel(modelPath);
+			const auto& mesh = ModelSystem::GetMesh(model, meshName);
+			convexMeshInfo.vertices = new DirectX::SimpleMath::Vector3[mesh.Vertices.size()];
+			convexMeshInfo.vertexSize = mesh.Vertices.size();
+			convexMeshInfo.convexMeshHash = entt::hashed_string(modelPath.c_str()).value();
 
+			for (int i = 0; i < mesh.Vertices.size(); ++i)
+			{	
+				convexMeshInfo.vertices[i] = mesh.Vertices[i].Pos;
+			}
 		}
 		meshCollider->SetConvexMeshInfomation(convexMeshInfo);
 
-		if (isStatic)
+		if (bodyType == RigidBody::EBodyType::Static)
 		{
 			bool check = mPhysicsEngine->CreateStaticBody(convexMeshInfo, type);
 			assert(check);
-			mColliderContainer.insert({ id, 
-				{mCapsuleTypeID
+			mColliderContainer.insert({ id,
+				{mMeshTypeID
 				, meshCollider->shared_from_this()
 				,object->shared_from_this()
 				,meshCollider,false} });
 		}
 		else
 		{
-			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type);
+			bool isKinematic = bodyType == RigidBody::EBodyType::Kinematic;
+
+			bool check = mPhysicsEngine->CreateDynamicBody(convexMeshInfo, type, isKinematic);
 			assert(check);
-			mColliderContainer.insert({ id, 
-				{mCapsuleTypeID
+			mColliderContainer.insert({ id,
+				{mMeshTypeID
 				, meshCollider->shared_from_this()
 				,object->shared_from_this()
 				,meshCollider,false} });
 		}
+	}
+
+	// 6. Articulation
+	if (object->HasComponent<Articulation>())
+	{
+		ColliderID id = ++mLastColliderID;
+
+		auto articulation = object->GetComponent<Articulation>();
+		articulation->Load();
+		articulation->SetArticulationID(id);
+		auto articulationData = articulation->GetArticulationData();
+
+		ArticulationInfo articulationInfo;
+		articulationInfo.id = id;
+		articulationInfo.layerNumber = static_cast<int>(object->GetTag());
+		articulationInfo.density = articulationData->GetDensity();
+		articulationInfo.dynamicFriction = articulationData->GetDynamicFriction();
+		articulationInfo.restitution = articulationData->GetRestitution();
+		articulationInfo.staticFriction = articulationData->GetStaticFriction();
+		articulationInfo.worldTransform = transform->GetWorldMatrix();
+
+		bool check = mPhysicsEngine->CreateCharacterphysics(articulationInfo);
+		assert(check);
+		mColliderContainer.insert({ id,
+			{mArticulationTypeID
+			, articulation->shared_from_this()
+			, object->shared_from_this()
+			, articulation, false} });
+
+		if (object->GetComponent<fq::game_module::Animator>() == nullptr)
+			return;
+
+		auto animatorMesh = object->GetComponent<fq::game_module::Animator>();
+
+		if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+			return;
+
+		auto objectTransform = object->GetComponent<fq::game_module::Transform>();
+		auto objectScale = objectTransform->GetWorldScale();
+
+		auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+		auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+		nodeHierarchy.SetBindPose();
+		nodeHierarchy.UpdateByLocalTransform();
+
+		std::function<void(std::shared_ptr<LinkData>, ColliderID)> loadFunction = [&](std::shared_ptr<LinkData> linkData, ColliderID id)
+			{
+				fq::physics::LinkInfo linkInfo;
+
+				linkInfo.boneName = linkData->GetBoneName();
+				linkInfo.parentBoneName = linkData->GetParentBoneName();
+				linkInfo.density = linkData->GetDensity();
+				linkInfo.localTransform = linkData->GetLocalTransform();
+				linkInfo.worldTransform = linkData->GetWorldTransform();
+
+				if (linkData->GetBoneName() != "root")
+				{
+					int boneIndex = boneHierarchy.GetBoneIndex(linkData->GetBoneName());
+					int parentBoneIndex = boneHierarchy.GetBones()[boneIndex].ParentIndex;
+					linkInfo.boneTransform = nodeHierarchy.GetRootTransform(boneIndex);
+					linkInfo.jointInfo.localTransform = linkData->GetJointLocalTransform();
+				}
+				linkInfo.rootTransform = transform->GetWorldMatrix();
+
+				linkInfo.jointInfo.damping = linkData->GetJointDamping();
+				linkInfo.jointInfo.maxForce = linkData->GetJointMaxForce();
+				linkInfo.jointInfo.stiffness = linkData->GetJointStiffness();
+				linkInfo.jointInfo.Swing1AxisInfo.motion = linkData->GetSwing1AxisMotion();
+				linkInfo.jointInfo.Swing1AxisInfo.limitsHigh = linkData->GetSwing1LimitHigh();
+				linkInfo.jointInfo.Swing1AxisInfo.limitsLow = linkData->GetSwing1LimitLow();
+				linkInfo.jointInfo.Swing2AxisInfo.motion = linkData->GetSwing2AxisMotion();
+				linkInfo.jointInfo.Swing2AxisInfo.limitsHigh = linkData->GetSwing2LimitHigh();
+				linkInfo.jointInfo.Swing2AxisInfo.limitsLow = linkData->GetSwing2LimitLow();
+				linkInfo.jointInfo.TwistAxisInfo.motion = linkData->GetTwistAxisMotion();
+				linkInfo.jointInfo.TwistAxisInfo.limitsHigh = linkData->GetTwistLimitHigh();
+				linkInfo.jointInfo.TwistAxisInfo.limitsLow = linkData->GetTwistLimitLow();
+
+				switch (linkData->GetShapeType())
+				{
+					case EShapeType::BOX:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetBoxExtent());
+					}
+					break;
+					case EShapeType::SPHERE:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetSphereRadius());
+					}
+					break;
+					case EShapeType::CAPSULE:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo, linkData->GetCapsuleHalfHeight(), linkData->GetCapsuleRadius());
+					}
+					break;
+					case EShapeType::END:
+					{
+						mPhysicsEngine->AddArticulationLink(id, linkInfo);
+					}
+					break;
+				}
+
+				for (auto& [name, childLinkData] : linkData->GetChildrenLinkData())
+				{
+					loadFunction(childLinkData, id);
+				}
+			};
+
+		auto rootLinkData = articulationData->GetRootLinkData().lock();
+
+		loadFunction(rootLinkData, id);
 	}
 }
 
@@ -429,6 +613,34 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
+
+	// 5. TerrainCollider 
+	if (object->HasComponent<TerrainCollider>())
+	{
+		auto terrainCollider = object->GetComponent<TerrainCollider>();
+		auto id = terrainCollider->GetColliderID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
+}
+
+void fq::game_engine::PhysicsSystem::removeArticulation(fq::game_module::GameObject* object)
+{
+	using namespace fq::game_module;
+	if (!object->HasComponent<RigidBody>())
+	{
+		return;
+	}
+
+	if (object->HasComponent<Articulation>())
+	{
+		auto articulation = object->GetComponent<Articulation>();
+		auto id = articulation->GetID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
@@ -459,20 +671,23 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 		if (colliderInfo.bIsDestroyed)
 			continue;
 
-		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto rigid = colliderInfo.component->GetComponent<fq::game_module::RigidBody>();
+		auto transform = colliderInfo.component->GetComponent<fq::game_module::Transform>();
 		auto offset = colliderInfo.collider->GetOffset();
+
+		if (rigid->GetBodyType() == game_module::RigidBody::EBodyType::Static)
+			continue;
 
 		if (colliderInfo.enttID == mCharactorControllerTypeID)
 		{
 			auto controller = colliderInfo.component->GetComponent<fq::game_module::CharacterController>();
 			auto controll = mPhysicsEngine->GetCharacterControllerData(id);
 			auto movement = mPhysicsEngine->GetCharacterMovementData(id);
-			auto localPos = controll.position - controller->GetOffset();
+			auto position = controll.position - controller->GetOffset();
 
 			controller->SetFalling(movement.isFall);
 			rigid->SetLinearVelocity(movement.velocity);
-			transform->SetLocalPosition(localPos);
+			transform->SetWorldPosition(position);
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{
@@ -481,7 +696,6 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			rigid->SetAngularVelocity(data.angularVelocity);
 
 			auto matrix = data.transform;
-
 			auto capsule = colliderInfo.component->GetComponent<fq::game_module::CapsuleCollider>();
 			auto direct = capsule->GetDirection();
 
@@ -492,6 +706,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				Quaternion rotation;
 				matrix.Decompose(scale, rotation, pos);
 				rotation = game_module::CapsuleCollider::YtoXRoation * rotation;
+				rotation.Normalize();
 
 				matrix = Matrix::CreateScale(scale)
 					* Matrix::CreateFromQuaternion(rotation)
@@ -502,6 +717,7 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			{
 				Vector3 pos, scale;
 				Quaternion rotation;
+
 				matrix.Decompose(scale, rotation, pos);
 				matrix._41 = 0.f;
 				matrix._42 = 0.f;
@@ -513,8 +729,87 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				matrix._42 = pos.y;
 				matrix._43 = pos.z;
 			}
-
 			transform->SetWorldMatrix(matrix);
+		}
+		else if (colliderInfo.enttID == mArticulationTypeID)
+		{
+			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
+			auto data = mPhysicsEngine->GetArticulationData(id);
+
+			bool bIsRagdoll = data.bIsRagdollSimulation;
+
+			articulation->SetIsRagdoll(bIsRagdoll);
+
+			// Animator의 본에 LocalTransform을 수정하기
+			if (bIsRagdoll)
+			{
+				articulation->AddBlendTime(1.f / 60.f);
+
+				if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
+					return;
+
+				auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
+
+				if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+					return;
+
+				auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+				auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+				auto currentAnimation = animatorMesh->GetController().GetSharedCurrentStateAnimation();
+				auto currentAnimationTime = animatorMesh->GetController().GetTimePos();
+
+				animatorMesh->SetStopAnimation(true);
+
+				nodeHierarchy.SetBindPose();
+
+				for (auto& linkData : data.linkData)
+				{
+					DirectX::SimpleMath::Matrix boneTransform = linkData.jointLocalTransform;
+					DirectX::SimpleMath::Vector3 position;
+					DirectX::SimpleMath::Quaternion rotation;
+					DirectX::SimpleMath::Vector3 scale;
+					boneTransform.Decompose(scale, rotation, position);
+
+					position.x = position.x / transform->GetLocalScale().x;
+					position.y = position.y / transform->GetLocalScale().y;
+					position.z = position.z / transform->GetLocalScale().z;
+					boneTransform =
+						DirectX::SimpleMath::Matrix::CreateScale(1.f)
+						* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+						* DirectX::SimpleMath::Matrix::CreateTranslation(position);
+
+					unsigned int boneIndex = boneHierarchy.GetBoneIndex(linkData.name);
+					nodeHierarchy.SetLocalTransform(boneIndex, boneTransform);
+				}
+
+				float blendTime = articulation->GetBlendTime();
+				float rotationOffsetX = articulation->GetRotationOffset().x / 180.f * 3.14f;
+				float rotationOffsetY = articulation->GetRotationOffset().y / 180.f * 3.14f;
+				float rotationOffsetZ = articulation->GetRotationOffset().z / 180.f * 3.14f;
+
+				DirectX::SimpleMath::Matrix dxTransform =
+					DirectX::SimpleMath::Matrix::CreateRotationX(std::lerp(0.f, rotationOffsetX, std::clamp(blendTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationY(std::lerp(0.f, rotationOffsetY, std::clamp(blendTime, 0.f, 1.f)))
+					* DirectX::SimpleMath::Matrix::CreateRotationZ(std::lerp(0.f, rotationOffsetZ, std::clamp(blendTime, 0.f, 1.f)))
+					* data.worldTransform;
+
+				DirectX::SimpleMath::Vector3 scale;
+				DirectX::SimpleMath::Quaternion rotation;
+				DirectX::SimpleMath::Vector3 position;
+				dxTransform.Decompose(scale, rotation, position);
+
+				transform->SetWorldPosition(position);
+				transform->SetWorldRotation(rotation);
+
+				//nodeHierarchy.UpdateByLocalTransform();
+				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
+				nodeHierarchy.UpdateByLocalTransform(currentAnimationTime + blendTime, currentAnimation, std::max<float>(1 - blendTime, 0));
+			}
+			else
+			{
+				articulation->SetBlendTime(0.f);
+			}
 		}
 		else
 		{
@@ -568,13 +863,30 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			data.rotation = transform->GetWorldRotation();
 			data.scale = transform->GetWorldScale();
 
+			// Tag가 변경된 경우
+			auto controllerInfo = controller->GetControllerInfo();
+			auto prevLayer = controllerInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				controllerInfo.layerNumber = currentLayer;
+				controller->SetControllerInfo(controllerInfo);
+			}
+
 			mPhysicsEngine->SetCharacterControllerData(id, data);
 
 			fq::physics::CharacterMovementGetSetData moveData;
 
+			auto movementInfo = controller->GetMovementInfo();
+			moveData.acceleration = movementInfo.acceleration;
+			moveData.maxSpeed = movementInfo.maxSpeed;
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
+			moveData.restriction = controller->GetMoveRestrction();
+			moveData.maxSpeed = controller->GetMovementInfo().maxSpeed;
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
+
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{
@@ -590,6 +902,8 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			{
 				Quaternion rotation = game_module::CapsuleCollider::XtoYRoation
 					* transform->GetWorldRotation();
+				rotation.Normalize();
+
 				Vector3 pos = transform->GetWorldPosition();
 				Vector3 scale = transform->GetWorldScale();
 
@@ -613,7 +927,60 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 				data.transform._43 = pos.z + offset.z;
 			}
 
+			// Tag가 변경된 경우
+			auto capsuleInfo = capsule->GetCapsuleInfomation();
+			auto prevLayer = capsuleInfo.colliderInfo.layerNumber;
+			auto currentLayer = static_cast<unsigned int>(colliderInfo.gameObject->GetTag());
+			if (prevLayer != currentLayer)
+			{
+				data.myLayerNumber = currentLayer;
+				capsuleInfo.colliderInfo.layerNumber = currentLayer;
+				capsule->SetCapsuleInfomation(capsuleInfo);
+			}
+
 			mPhysicsEngine->SetRigidBodyData(id, data);
+		}
+		else if (colliderInfo.enttID == mArticulationTypeID)
+		{
+			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
+
+			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
+				return;
+
+			auto animatorMesh = colliderInfo.component->GetComponent<fq::game_module::Animator>();
+
+			if (animatorMesh->GetHasNodeHierarchyInstance() == false)
+				return;
+
+			auto& nodeHierarchy = animatorMesh->GetNodeHierarchyInstance();
+			auto& boneHierarchy = animatorMesh->GetNodeHierarchy();
+
+			nodeHierarchy.SetBindPose();
+
+			fq::physics::ArticulationSetData data;
+			data.bIsRagdollSimulation = articulation->GetIsRagdoll();
+			data.worldTransform = transform->GetWorldMatrix();
+
+			//std::function<void(std::shared_ptr<fq::game_module::LinkData>)> linkDataUpdate = [&](std::shared_ptr<fq::game_module::LinkData> link)
+			//	{
+			//		fq::physics::ArticulationLinkSetData linkData;
+
+			//		linkData.name = link->GetBoneName();
+			//		linkData.boneWorldTransform = nodeHierarchy.GetRootTransform(boneHierarchy.GetBoneIndex(link->GetBoneName()));
+			//		data.linkData.push_back(linkData);
+
+			//		for (const auto& [name, childLink] : link->GetChildrenLinkData())
+			//		{
+			//			linkDataUpdate(childLink);
+			//		}
+			//	};
+
+			//for (auto& [name, link] : articulation->GetArticulationData()->GetRootLinkData().lock()->GetChildrenLinkData())
+			//{
+			//	linkDataUpdate(link);
+			//}
+
+			mPhysicsEngine->SetArticulationData(id, data);
 		}
 		else
 		{
@@ -650,7 +1017,12 @@ fq::game_module::Component* fq::game_engine::PhysicsSystem::GetCollider(Collider
 
 void fq::game_engine::PhysicsSystem::AddInputMove(const fq::event::AddInputMove& event)
 {
-	mPhysicsEngine->AddInputMove(event.colliderID, event.input);
+	physics::CharacterControllerInputInfo info;
+	info.id = event.colliderID;
+	info.input = event.input;
+	info.isDynamic = event.isDynamic;
+
+	mPhysicsEngine->AddInputMove(info);
 }
 
 void fq::game_engine::PhysicsSystem::calculateOffset(common::Transform& t, DirectX::SimpleMath::Vector3 offset)
@@ -680,7 +1052,6 @@ void fq::game_engine::PhysicsSystem::CleanUp(const fq::event::OnCleanUp& event)
 		if (iter->second.bIsDestroyed
 			&& iter->second.bIsRemoveBody)
 		{
-			mDebug.insert({ iter->first, iter->second.component->GetGameObject()->GetName() });
 			iter = mColliderContainer.erase(iter);
 		}
 		else
@@ -694,7 +1065,9 @@ void fq::game_engine::PhysicsSystem::PostUpdate()
 	{
 		if (info.bIsDestroyed)
 		{
-			if (info.enttID == mCharactorControllerTypeID)
+			if (info.enttID == mArticulationTypeID)
+				mPhysicsEngine->RemoveArticulation(colliderID);
+			else if (info.enttID == mCharactorControllerTypeID)
 				mPhysicsEngine->RemoveController(colliderID);
 			else
 				mPhysicsEngine->RemoveRigidBody(colliderID);
@@ -711,10 +1084,14 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 		auto lfs = mColliderContainer.find(data.myId);
 		auto rhs = mColliderContainer.find(data.otherId);
 
-		assert(data.myId != data.otherId);
-		assert(lfs != mColliderContainer.end());
-		assert(rhs != mColliderContainer.end());
-
+		if (data.myId == data.otherId
+			|| lfs == mColliderContainer.end()
+			|| rhs == mColliderContainer.end())
+		{
+			spdlog::warn("ColliderContainer CallBack Error");
+			continue; 
+		}
+		
 		auto lhsObject = lfs->second.component->GetGameObject();
 		auto rhsObject = rhs->second.component->GetGameObject();
 
@@ -746,3 +1123,46 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 	mCallbacks.clear();
 }
 
+void fq::game_engine::PhysicsSystem::Raycast(const fq::event::RayCast& event)
+{
+	physics::RayCastInput rayCastInfo;
+
+	rayCastInfo.direction = event.direction;
+	rayCastInfo.distance = event.distance;
+	rayCastInfo.layerNumber = static_cast<int>(event.tag);
+	rayCastInfo.origin = event.origin;
+
+	auto result = mPhysicsEngine->RayCast(rayCastInfo);
+	
+	// Block 정보
+	if (result.hasBlock)
+	{
+		event.result->hasBlock = result.hasBlock;
+		event.result->blockObject = mColliderContainer.find(result.blockID)->second.gameObject.get();
+		event.result->blockPosition = result.blockPosition;
+	}
+
+	// Hit 정보
+	event.result->hitCount = result.hitSize;
+	event.result->hitContactPoints.reserve(result.hitSize);
+	event.result->hitObjects.reserve(result.hitSize);
+	for (unsigned int i = 0; i < result.hitSize; ++i)
+	{
+		event.result->hitContactPoints.push_back(result.contectPoints[i]);
+		auto object = mColliderContainer.find(result.id[i])->second.gameObject.get();
+		event.result->hitObjects.push_back(object);
+	}
+
+	if (event.bUseDebugDraw)
+	{
+		auto renderer = mGameProcess->mGraphics;
+
+		fq::graphics::debug::RayInfo  ray;
+		ray.Color = (result.hasBlock == 0) ? DirectX::SimpleMath::Color{ 0.f,1.f,0.f,1.f } : DirectX::SimpleMath::Color{ 1.f,0.f,0.f,1.f };
+		ray.Direction = event.direction * event.distance;
+		ray.Origin = event.origin;
+		ray.Normalize = false;
+
+		renderer->DrawRay(ray);
+	}
+}

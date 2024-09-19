@@ -9,6 +9,8 @@
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
 
+#include "../FQCommon/FQCommonGraphics.h"
+
 struct ID2D1Factory;
 struct ID2D1HwndRenderTarget;
 struct IDWriteFactory;
@@ -30,10 +32,10 @@ struct ColorHash
 namespace fq::graphics
 {
 	class D3D11Device;
+	class D3D11ResourceManager;
 
 	class IImageObject;
-
-	struct UIInfo;
+	class ITextObject;
 	/// <summary>
 	/// 일단 3D스러운 UI가 필요 없어 보여서 Direct2D로 만든다. 
 	/// 다른 게 필요하다면 그 때 만들어야지
@@ -41,15 +43,6 @@ namespace fq::graphics
 	class UIManager
 	{
 	private:
-		struct DrawTextInformation
-		{
-			std::wstring text;
-			DirectX::SimpleMath::Rectangle drawRect;
-			short fontSize;
-			std::wstring fontPath;
-			DirectX::SimpleMath::Color color;
-		};
-
 		struct FQBitmap
 		{
 			unsigned short refCount;
@@ -60,7 +53,9 @@ namespace fq::graphics
 		UIManager();
 		~UIManager();
 
-		void Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device, const short width, const short height);
+		void Initialize(HWND hWnd, std::shared_ptr<D3D11Device> device,
+			std::shared_ptr<D3D11ResourceManager> resourceManager, 
+			const short width, const short height);
 		void Render();
 		void Finalize();
 
@@ -75,12 +70,15 @@ namespace fq::graphics
 		void SetDefaultFontColor(const DirectX::SimpleMath::Color& color);
 		void SetDefaultFontSize(const unsigned short fontSize);
 
-		void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize, const std::wstring& fontPath, const DirectX::SimpleMath::Color& color);
+		ITextObject* CreateText(TextInfo textInfo);
+		void DeleteText(fq::graphics::ITextObject* textObject);
 
 		// Image
 		IImageObject* CreateImageObject(const UIInfo& uiInfo);
 		void AddImage(IImageObject* imageObject);
 		void DeleteImage(IImageObject* imageObject);
+
+		void SetIsRenderObjects(bool isRenderObjects) { mIsRenderObjects = isRenderObjects; }
 
 	private:
 		void loadBitmap(const std::wstring& path);
@@ -88,16 +86,27 @@ namespace fq::graphics
 		void initializeText();
 		void initializeImage();
 
+		void draw();
+		void drawText(fq::graphics::ITextObject* textObject);
+		void drawImage(IImageObject* imageObject);
+
 		void drawAllText();
-		void drawAllImage();
+		void drawAllImage(bool isOnText);
 
 		void registerFont(const std::wstring& path);
+
+		std::wstring stringToWstring(std::string str);
 
 	private:
 		HWND mHWnd;
 
+		// RenderObject 여부 // false라면 UIManger에서 RenderTarget을 초기화해야함
+		bool mIsRenderObjects;
+
 		ID2D1Factory* mDirect2DFactory;
 		ID2D1RenderTarget* mRenderTarget;
+
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 
 		// 컬러를 키로 브러시를 밸류로 키 - 밸류 쌍으로 없으면 만들고 있으면 꺼내쓰는 방식으로 색을 입력할 수 있게 해둘 것
 		std::unordered_map<DirectX::SimpleMath::Color, ID2D1SolidColorBrush*, ColorHash> mBrushes;
@@ -111,15 +120,16 @@ namespace fq::graphics
 		unsigned short mDefaultFontSize;
 		DirectX::SimpleMath::Color mDefaultFontColor;
 
-		std::vector<DrawTextInformation> mDrawTextInformations;
-
 		// Image
 		// 레퍼런스 카운팅이 되게 해야함
 		std::unordered_map<std::wstring, FQBitmap*> mBitmaps;
 		IWICImagingFactory* mWICFactory;
 
 		std::vector<IImageObject*> mImages;
-		bool mIsSorted;
+		std::vector<ITextObject*> mTexts;
+		bool mIsSortedImage;
+		bool mIsSortedText;
+		bool mIsSortedAll;
 	};
 }
 

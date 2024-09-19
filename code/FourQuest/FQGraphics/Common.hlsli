@@ -46,7 +46,7 @@ struct DirectionalLight
     float3 color;
     float intensity;
     float3 direction;
-    float pad;
+    uint lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 };
 
 struct PointLight
@@ -56,7 +56,7 @@ struct PointLight
     float3 position;
     float range;
     float3 attenuation;
-    float pad;
+    uint lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 };
 
 struct SpotLight
@@ -68,7 +68,7 @@ struct SpotLight
     float3 direction;
     float spot;
     float3 attenuation;
-    float pad;
+    uint lightMode; // 조명 타입{ Mixed, RealTime }에 따른 분기를 위해 추가_홍지환
 };
 
 struct Material
@@ -77,6 +77,51 @@ struct Material
     float roughness;
     float metallic;
 };
+
+// unity attenuation func
+float DistanceAttenuation(float distanceSqr, float2 distanceAttenuation)
+{
+    // Calculate the basic distance attenuation
+    float lightAtten = 1.0 / distanceSqr; // Using reciprocal function to avoid division
+
+    // Extract the attenuation parameters from the float2 vector
+    float distanceAttenuationX = distanceAttenuation.x;
+    float distanceAttenuationY = distanceAttenuation.y;
+
+    // Compute the factor and smoothFactor for distance attenuation
+    float factor = distanceSqr * distanceAttenuationX;
+    float smoothFactor = saturate(1.0 - factor * factor);
+    smoothFactor = smoothFactor * smoothFactor;
+
+    // Apply the smooth factor to the basic distance attenuation
+    return lightAtten * smoothFactor;
+}
+
+float AngleAttenuation(float3 spotDirection, float3 lightDirection, float2 spotAngles)
+{
+    // Calculate the dot product between the spotlight direction and light direction
+    float SdotL = dot(spotDirection, lightDirection);
+    
+    // Convert the spotAngles from degrees to radians
+    float innerAngleRad = spotAngles.x * 3.141592 / 180; //0.0174532925; // Degrees to radians (PI/180)
+    float outerAngleRad = spotAngles.y * 3.141592 / 180; //0.0174532925; // Degrees to radians (PI/180)
+
+    // Compute the cosines of the inner and outer angles
+    float cosInnerAngle = cos(innerAngleRad);
+    float cosOuterAngle = cos(outerAngleRad);
+
+    // Calculate the inverse angle range
+    float invAngleRange = 1.0 / (cosInnerAngle - cosOuterAngle);
+
+    // Calculate the attenuation based on the dot product and angle range
+    float attenuation = (SdotL - cosOuterAngle); // * invAngleRange;
+
+    // Clamp the attenuation between 0 and 1
+    float clampedAtten = saturate(attenuation);
+
+    // Square the clamped attenuation for smooth falloff
+    return clampedAtten * clampedAtten;
+}
 
 float3 ComputeDirectionLight(
     DirectionalLight directionLight,
@@ -112,7 +157,10 @@ float3 ComputeDirectionLight(
     float3 kd = lerp(float3(1, 1, 1) - F, float3(0, 0, 0), material.metallic);
     float3 diffuse = kd * material.albedo / PI;
         
-    return (diffuse + specular) * NdotL * directionLight.color * directionLight.intensity;
+    //Todo: 터레인 노말은 멀쩡한데 라이팅 연산을 하면 값이 inf가 나올 때가 있다 확인해봐야 하는 것
+    float3 result = (diffuse + specular) * NdotL * directionLight.color * directionLight.intensity;
+    result = clamp(result, 0.0, 1.0);
+    return result;
 }
 
 float3 ComputePointLight(
@@ -160,9 +208,11 @@ float3 ComputePointLight(
     // PointLight attenuation
     float3 resultColor = (diffuse + specular) * NdotL * pointLight.color * pointLight.intensity;
 
+    // float att = DistanceAttenuation(d * d, float2(pointLight.attenuation.yz));
     float att = 1.0f / dot(pointLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
+    resultColor = clamp(resultColor, 0.0, 1.0);
     return resultColor;
 }
 
@@ -186,6 +236,7 @@ float3 ComputeSpotLight(
     }
     
     lightVector = normalize(lightVector);
+    spotLight.direction = normalize(spotLight.direction);
 
     // Half vector
     const float3 halfVector = normalize(lightVector + toEye);
@@ -211,10 +262,17 @@ float3 ComputeSpotLight(
     // SpotLight attenuation
     float3 resultColor = (diffuse + specular) * NdotL * spotLight.color * spotLight.intensity;
 
+    // 이전 방식
     float spot = pow(max(dot(-lightVector, spotLight.direction), 0.0f), spotLight.spot);
     float att = spot / dot(spotLight.attenuation, float3(1.0f, d, d * d));
+    
+    // 유니티 방식
+    //float angleAttenuation = AngleAttenuation(spotLight.direction, -lightVector, float2(spotLight.spot, spotLight.spot + 1));
+    //float distanceAttenuation = DistanceAttenuation(d * d, spotLight.attenuation.yz); // 함수 형태 이상해서 일단 보류
+    //float att = angleAttenuation * 1 / dot(spotLight.attenuation, float3(1.0f, d, d * d));
     resultColor *= att;
     
+    resultColor = clamp(resultColor, 0.0, 1.0);
     return resultColor;
 }
 
@@ -375,14 +433,12 @@ float2 calcEllipsoidRadius(float radius, float2 viewSpaceVelocity)
     return float2(radius, minRadius);
 }
 
-
 // this creates the standard Hessian-normal-form plane equation from three points, 
 // except it is simplified for the case where the first point is the origin
 float3 CreatePlaneEquation(float3 b, float3 c)
 {
     return normalize(cross(b, c));
 }
-
 
 // point-plane distance, simplified for the case where 
 // the plane passes through the origin
@@ -393,3 +449,147 @@ float GetSignedDistanceFromPlane(float3 p, float3 eqn)
     return dot(eqn, p);
 }
 
+float3 RGBtoHSV(float3 rgb)
+{
+    float cmax = max(rgb.r, max(rgb.g, rgb.b));
+    float cmin = min(rgb.r, min(rgb.g, rgb.b));
+    float delta = cmax - cmin;
+
+    float3 hsv;
+    hsv.z = cmax; // value
+    if (cmax != 0)
+        hsv.y = delta / cmax; // saturation
+    else
+    {
+        hsv.y = 0;
+        hsv.x = -1;
+        return hsv;
+    }
+
+    if (rgb.r == cmax)
+        hsv.x = (rgb.g - rgb.b) / delta; // between yellow & magenta
+    else if (rgb.g == cmax)
+        hsv.x = 2 + (rgb.b - rgb.r) / delta; // between cyan & yellow
+    else
+        hsv.x = 4 + (rgb.r - rgb.g) / delta; // between magenta & cyan
+
+    hsv.x /= 6;
+    if (hsv.x < 0)
+        hsv.x += 1;
+    return hsv;
+}
+
+float3 HSVtoRGB(float3 hsv)
+{
+    float h = hsv.x * 6;
+    float s = hsv.y;
+    float v = hsv.z;
+
+    int i = floor(h);
+    float f = h - i;
+    float p = v * (1 - s);
+    float q = v * (1 - f * s);
+    float t = v * (1 - (1 - f) * s);
+
+    float3 rgb;
+    if (i == 0)
+        rgb = float3(v, t, p);
+    else if (i == 1)
+        rgb = float3(q, v, p);
+    else if (i == 2)
+        rgb = float3(p, v, t);
+    else if (i == 3)
+        rgb = float3(p, q, v);
+    else if (i == 4)
+        rgb = float3(t, p, v);
+    else
+        rgb = float3(v, p, q);
+
+    return rgb;
+}
+
+float GetBrightness(float3 color)
+{
+    return dot(color.rgb, float3(0.299, 0.587, 0.114));
+}
+
+float4 OverlayMode(float4 src, float4 dst)
+{
+    float4 result;
+    result.r = (dst.r < 0.5) ? (2.0 * src.r * dst.r) : (1.0 - 2.0 * (1.0 - src.r) * (1.0 - dst.r));
+    result.g = (dst.g < 0.5) ? (2.0 * src.g * dst.g) : (1.0 - 2.0 * (1.0 - src.g) * (1.0 - dst.g));
+    result.b = (dst.b < 0.5) ? (2.0 * src.b * dst.b) : (1.0 - 2.0 * (1.0 - src.b) * (1.0 - dst.b));
+    result.a = src.a * dst.a; // Assuming alpha is multiplied
+    return result;
+}
+
+float4 ColorMode(float4 src, float4 dst)
+{
+    float3 srcHsv = RGBtoHSV(src.rgb);
+    float3 dstHsv = RGBtoHSV(dst.rgb);
+    float3 resultRgb = HSVtoRGB(float3(srcHsv.r, srcHsv.g, dstHsv.b));
+    return float4(resultRgb, src.a);
+}
+
+#define RENDER_MODE_ADDITIVE 0
+#define RENDER_MODE_SUBTRACTIVE 1
+#define RENDER_MODE_MODULATE 2
+#define RENDER_MODE_ALPHA_BLEND 3
+
+#define COLOR_MODE_MULTIPLY 0
+#define COLOR_MODE_ADDITIVE 1
+#define COLOR_MODE_SUBTRACT 2
+#define COLOR_MODE_OVERLAY 3
+#define COLOR_MODE_COLOR 4
+#define COLOR_MODE_DIFFERENCE 5
+
+struct ParticleMaterial
+{
+    float4 BaseColor;
+    float4 EmssiveColor;
+    float4x4 TexTransform;
+    
+    int RenderMode;
+    int ColorMode;
+    int bUseAlbedo;
+    int bUseEmissive;
+    
+    int bUseMultiplyAlpha;
+    float AlphaCutoff;
+};
+
+struct ModelMaterial
+{
+    float4x4 TexTransform;
+    float4 BaseColor;
+    float4 EmissiveColor;
+    float4 DissolveOutlineStartColor;
+    float4 DissolveOutlineEndColor;
+    float4 DissolveOutlineStartEmissive;
+    float4 DissolveOutlineEndEmissive;
+    
+    float Metalness;
+    float Roughness;
+    bool UseAlbedoMap;
+    bool UseMetalnessMap;
+  
+    bool UseRoughnessMap;
+    bool UseNormalMap;
+    bool UseEmissiveMap;
+    float AlphaCutoff;
+    
+    float EmissiveIntensity;
+    bool UseMetalnessSmoothness;
+    bool UseDissolve;
+    float OutlineThickness;
+
+    float DissolveCutoff;
+};
+
+#define DISSOLVE_ADDITIVE 0
+#define DISSOLVE_SUBTRACTIVE 1
+#define DISSOLVE_MODULATE 2
+
+#define LIGHT_MODE_REALTIME 0
+#define LIGHT_MODE_MIXED 1
+#define LIGHT_MODE_BAKED 2

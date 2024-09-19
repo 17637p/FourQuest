@@ -28,20 +28,14 @@ namespace fq::game_engine
 		void UpdateAnimation(float dt);
 
 		/// <summary>
-		/// 애니메이션의 상태를 변경합니다 
-		/// </summary>
-		void ChangeAnimationState(const fq::event::ChangeAnimationState& event);
-
-		/// <summary>
 		/// 애니메이터 컨트롤러 로드
 		/// </summary>
-		/// <param name="object"></param>
 		bool LoadAnimatorController(fq::game_module::GameObject* object);
+
 
 	private:
 		void updateAnimtorState(float dt);
 		void processAnimation(float dt);
-		void processCallBack();
 
 	public:
 		GameProcess* mGameProcess;
@@ -52,6 +46,4 @@ namespace fq::game_engine
 
 		EventHandler mChangeAnimationStateHandler;
 	};
-
-
 }

@@ -5,20 +5,31 @@
 
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Light.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SphereCollider.h"
+#include "../FQGameModule/BoxCollider.h"
+#include "../FQGameModule/MeshCollider.h"
+#include "../FQGameModule/CapsuleCollider.h"
+#include "../FQGameModule/CharacterController.h"
 #include "GameProcess.h"
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
+#include "PathFindingSystem.h"
 
 fq::game_engine::DebugSystem::DebugSystem()
 	:mGameProcess(nullptr)
 	, mbOnGrid(true)
 	, mbOnLight(true)
 	, mScene(nullptr)
-	, mbOnBoxCollider(true)
-	, mbOnCapsuleCollider(true)
-	, mbOnSphereCollider(true)
-	, mbOnConvexMeshCollider(true)
-	, mbOnCharaterController(true)
+	, mbOnBoxCollider(false)
+	, mbOnCapsuleCollider(false)
+	, mbOnSphereCollider(false)
+	, mbOnConvexMeshCollider(false)
+	, mbOnCharaterController(false)
+	, mbOnNavigationMesh(false)
+	, mbOnTerrainCollider(false)
+	, mbUseRenderDebug(true)
 {}
 
 fq::game_engine::DebugSystem::~DebugSystem()
@@ -45,12 +56,15 @@ void fq::game_engine::DebugSystem::Initialize(GameProcess* game)
 
 void fq::game_engine::DebugSystem::Render()
 {
+	mGameProcess->mGraphics->SetIsRenderDebug(mbUseRenderDebug);
+
 	renderGrid();
 	renderBoxCollider();
 	renderSphereCollider();
 	renderCapsuleCollider();
 	renderConvexMeshCollider();
 	renderCharaterController();
+	renderNavigationMesh();
 }
 
 void fq::game_engine::DebugSystem::renderGrid()
@@ -189,7 +203,6 @@ void fq::game_engine::DebugSystem::RenderCapsuleCollier(fq::game_module::Transfo
 	using  namespace DirectX::SimpleMath;
 
 	Color color = (collider.GetCollisionCount() == 0) ? Color{ 0.f,1.f,0.f } : Color{ 1.f,0.f,0.f };
-
 
 	auto calpsuleInfo = collider.GetCapsuleInfomation();
 	auto offset = collider.GetOffset();
@@ -344,7 +357,6 @@ void fq::game_engine::DebugSystem::RenderCharaterController(fq::game_module::Tra
 	mGameProcess->mGraphics->DrawRay(ray);
 }
 
-
 void fq::game_engine::DebugSystem::renderCapsuleCollider()
 {
 	if (!GetOnCapsuleCollider()) return;
@@ -379,7 +391,13 @@ void fq::game_engine::DebugSystem::renderConvexMeshCollider()
 			mGameProcess->mGraphics->DrawPolygon(info);
 		}
 	}
+}
 
+void fq::game_engine::DebugSystem::renderTerrainCollider()
+{
+	if (!GetOnTerrainCollider()) return;
+
+	using namespace fq::game_module;
 }
 
 void fq::game_engine::DebugSystem::renderCharaterController()
@@ -394,4 +412,48 @@ void fq::game_engine::DebugSystem::renderCharaterController()
 				RenderCharaterController(transform, cotroller);
 			});
 }
+
+
+void fq::game_engine::DebugSystem::renderNavigationMesh()
+{
+	if (!mbOnNavigationMesh)
+	{
+		return;
+	}
+
+	std::vector<DirectX::SimpleMath::Vector3> navMeshVertices = 
+		mGameProcess->mPathFindgingSystem->GetNavMeshVertices();
+
+	if (navMeshVertices.size() == 0)
+	{
+		spdlog::error("Can't Draw NavMesh, No NavgationMesh was created");
+		return;
+	}
+
+	for (UINT i = 0; i < navMeshVertices.size(); i++)
+	{
+		if (i % 3 == 0)
+		{
+			fq::graphics::debug::PolygonInfo info;
+
+			info.Points.push_back(navMeshVertices[i + 0]);
+			info.Points.push_back(navMeshVertices[i + 1]);
+			info.Points.push_back(navMeshVertices[i + 2]);
+
+			info.Color = { 1, 1, 0, 1 };
+
+			mGameProcess->mGraphics->DrawPolygon(info);
+		}
+
+		fq::graphics::debug::SphereInfo info;
+
+		info.Sphere.Center = navMeshVertices[i];
+		info.Sphere.Radius = 0.05f;
+
+		info.Color = { 0, 1, 1, 1 };
+
+		mGameProcess->mGraphics->DrawSphere(info);
+	}
+}
+
 

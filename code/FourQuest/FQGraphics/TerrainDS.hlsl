@@ -22,7 +22,7 @@ float2 gTexScale = 50.0f;
 
 struct PatchTess
 {
-    float EdgeTess[4]   : SV_TessFactor;
+    float EdgeTess[4] : SV_TessFactor;
     float InsideTess[2] : SV_InsideTessFactor;
 };
 
@@ -34,11 +34,12 @@ cbuffer cbModelTransform : register(b0)
 
 cbuffer cbSceneTransform : register(b1)
 {
+    float4x4 cView;
     float4x4 cViewProj;
 };
 
 Texture2D gHeightMap : register(t0);
-SamplerState samHeightmap : register(s0); 
+SamplerState samHeightmap : register(s0);
 
 [domain("quad")]
 DomainOut main(PatchTess patchTess, float2 uv : SV_DomainLocation, const OutputPatch<HullOut, 4> quad)

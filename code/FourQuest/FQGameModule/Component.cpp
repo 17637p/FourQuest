@@ -1,6 +1,7 @@
 #include "Component.h"
 #include "Scene.h"
 
+#include "Transform.h"
 
 FQ_REGISTRATION
 {
@@ -22,6 +23,24 @@ fq::game_module::Scene* fq::game_module::Component::GetScene() const
 
 fq::game_module::Component::Component()
 	:mGameObject(nullptr)
-	,mbIsToBeRemoved(false)
+	, mbIsToBeRemoved(false)
 {}
+
+fq::game_module::Component::Component(const Component& other)
+	:mbIsToBeRemoved(other.mbIsToBeRemoved)
+	, mGameObject(nullptr)
+{}
+
+fq::game_module::Component& fq::game_module::Component::operator=(const Component& other)
+{
+	mbIsToBeRemoved = other.mbIsToBeRemoved;
+	mGameObject = nullptr;
+
+	return *this;
+}
+
+fq::game_module::Transform* fq::game_module::Component::GetTransform()
+{
+	return GetComponent<fq::game_module::Transform>();
+}
 

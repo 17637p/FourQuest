@@ -11,6 +11,15 @@ namespace fq::graphics
 		DirectX::SimpleMath::Matrix WorldInvTransposeMat;
 	};
 
+	struct LightMapInfomation
+	{
+		DirectX::SimpleMath::Vector4 UVScaleOffset;
+		unsigned int UVIndex;
+		int bUseLightmap;
+		int bUseDirection;
+		float unused[1];
+	};
+
 	struct ViewProjectionMatrix
 	{
 		DirectX::SimpleMath::Matrix ViewMatrix;
@@ -32,52 +41,48 @@ namespace fq::graphics
 	struct BoneTransform
 	{
 		enum { MAX_BOND_COUNT = 128 };
-		DirectX::SimpleMath::Matrix FinalTransforms[128];
+		DirectX::SimpleMath::Matrix FinalTransforms[MAX_BOND_COUNT];
 	};
 
-	struct DirectionalShadowTransform
+	struct DirectionalShadowInfo
 	{
 		enum { CASCADE_COUNT = 3 };
 		enum { MAX_SHADOW_COUNT = 3 };
 
 		DirectX::SimpleMath::Matrix ShadowViewProj[CASCADE_COUNT * MAX_SHADOW_COUNT];
+		DirectX::SimpleMath::Vector4 CascadeEnds[MAX_SHADOW_COUNT];
 		int ShadowCount;
-		int unused[3];
+		int LightModes[3];
 	};
 
-	struct DirectionalShadowInfo
+	struct CBMaterialInstance
 	{
-		DirectX::SimpleMath::Matrix ShadowViewProj[DirectionalShadowTransform::CASCADE_COUNT * DirectionalShadowTransform::MAX_SHADOW_COUNT];
-		DirectX::SimpleMath::Vector4 CascadeEnds[DirectionalShadowTransform::MAX_SHADOW_COUNT];
-		int ShadowCount;
-		float unused[3];
-	};
-
-	struct AlphaData
-	{
-		int bUseAlphaConstant;
+		int bUseInstanceAlpha;
 		float Alpha;
-		float unused[2];
+		int bUseDissolveCutoff;
+		float DissolveCutoff;
+
+		int bUseRimLight;
+		float RimPow;
+		int bUseInvRimLight;
+		float InvRimPow;
+
+		DirectX::SimpleMath::Vector4 RimLightColor;
+
+		DirectX::SimpleMath::Vector4 InvRimLightColor;
+
+		DirectX::SimpleMath::Vector2 UVScale;
+		DirectX::SimpleMath::Vector2 UVOffset;
+
+		int bUseUVScaleOffset;
+		float RimIntensity;
+		float InvRimIntensity;
+		float unused[1];
 	};
 
 	struct ViewRotationProjectionMatrix
 	{
 		DirectX::SimpleMath::Matrix ViewProjMat;
-	};
-
-	struct CBMaterial
-	{
-		DirectX::SimpleMath::Color BaseColor = { 1.f, 1.f, 1.f, 1.f };
-		
-		float Metalness = 0.f;
-		float Roughness = 0.f;
-		int bUseAlbedoMap;
-		int bUseMetalnessMap;
-		
-		int bUseRoughnessMap;
-		int bUseNormalMap;
-		int bUseEmissiveMap;
-		int bUseOpacityMap;
 	};
 
 	struct Layer
@@ -115,10 +120,106 @@ namespace fq::graphics
 		unsigned int numOfDirectionalLight;
 		unsigned int numOfPointLight;
 		unsigned int numOfSpotLight;
+
 		unsigned int isUseIBL;
 
 		DirectX::SimpleMath::Vector3 eyePosition;
 		float pad2;
+	};
+
+	struct OutLineColor
+	{
+		DirectX::SimpleMath::Color color;
+	};
+
+	struct ScreenSize
+	{
+		unsigned int width;
+		unsigned int height;
+		float pad[2];
+	};
+
+	struct TerrainHull
+	{
+		float MinDist;
+		float MaxDist;
+		float MinTess;
+		float MaxTess;
+		DirectX::XMFLOAT3 gEyePosW;
+		float pad;
+		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
+	};
+
+	struct CBParticleMaterial
+	{
+		DirectX::SimpleMath::Vector4 BaseColor;
+		DirectX::SimpleMath::Vector4 EmissiveColor;
+		DirectX::SimpleMath::Matrix TexTransform;
+
+		int RenderMode;
+		int ColorMode;
+		int bUseAlbedoMap;
+		int bUseEmissiveMap;
+
+		int bUseMultiplyAlpha;
+		float AlphaCutoff;
+		float unused[2];
+	};
+
+	struct CBMaterial
+	{
+		DirectX::SimpleMath::Matrix TexTransform;
+		DirectX::SimpleMath::Vector4 BaseColor;
+		DirectX::SimpleMath::Vector4 EmissiveColor;
+		DirectX::SimpleMath::Vector4 DissolveStartColor;
+		DirectX::SimpleMath::Vector4 DissolveEndColor;
+		DirectX::SimpleMath::Vector4 DissolveStartEmissive;
+		DirectX::SimpleMath::Vector4 DissolveEndEmissive;
+
+		float Metalness;
+		float Roughness;
+		int bUseAlbedoMap;
+		int bUseMetalnessMap;
+
+		int bUseRoughnessMap;
+		int bUseNormalMap;
+		int bUseEmissiveMap;
+		float AlphaCutoff;
+
+		float EmissiveIntensity;
+		int bUseMetalnessSmoothnessMap;
+		int bUseDissolve;
+		float OutlineThickness;
+
+		float DissolveCutoff;
+		float unused[3];
+	};
+
+	struct CBDecalObject
+	{
+		DirectX::SimpleMath::Matrix TexTransform;
+		DirectX::SimpleMath::Matrix World;
+		DirectX::SimpleMath::Matrix View;
+		DirectX::SimpleMath::Matrix Proj;
+		DirectX::SimpleMath::Matrix InvWV;
+
+		DirectX::SimpleMath::Vector2 Deproject;
+		float NormalThresholdInRadian;
+		float unused[1];
+	};
+
+	struct CBDecalMaterial
+	{
+		DirectX::SimpleMath::Color BaseColor;
+		DirectX::SimpleMath::Color EmissiveColor;
+
+		int bUseBaseColor;
+		int bUseNormalness;
+		int bIsUsedEmissive;
+		float NormalBlend;
+
+		float AlphaCutoff;
+		float unused[3];
 	};
 
 	struct ParticleFrameData
@@ -234,36 +335,27 @@ namespace fq::graphics
 			float unused[2];
 		} RotationOverLifetimeData;
 
-		struct Render
-		{
-			int bHasTexture;
-			int bUseMultiplyAlpha;
-			int bUseAlphaClip;
-			float AlphaClipThreshold;
-		} RenderData;
+		CBParticleMaterial ParticleMaterialData;
 	};
 
-	struct OutLineColor
+	struct LightProbeCB
 	{
-		DirectX::SimpleMath::Color color;
+		DirectX::XMFLOAT4 Ar;
+		DirectX::XMFLOAT4 Ag;
+		DirectX::XMFLOAT4 Ab;
+		DirectX::XMFLOAT4 Br;
+		DirectX::XMFLOAT4 Bg;
+		DirectX::XMFLOAT4 Bb;
+		DirectX::XMFLOAT4 C;
+		float Intensity;
+		DirectX::XMFLOAT3 pad;
 	};
 
-	struct ScreenSize
+	struct SpecularMapFilterSettingsCB
 	{
-		unsigned int width;
-		unsigned int height;
-		float pad[2];
-	};
-
-	struct TerrainHull
-	{
-		float MinDist;
-		float MaxDist;
-		float MinTess;
-		float MaxTess;
-		DirectX::XMFLOAT3 gEyePosW;
-		float pad;
-		DirectX::XMFLOAT4 WorldFrustumPlanes[6];
+		float roughness;
+		float EnvScale;
+		float padding[2];
 	};
 
 	template <typename T>
@@ -281,7 +373,8 @@ namespace fq::graphics
 			const DirectX::SimpleMath::Matrix& transform);
 		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
-			const std::shared_ptr<Material>& material);
+			const std::shared_ptr<Material>& material,
+			const DirectX::SimpleMath::Matrix& texTransform = DirectX::SimpleMath::Matrix::Identity);
 		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
 			const std::shared_ptr<TerrainMaterial>& material,
@@ -289,5 +382,11 @@ namespace fq::graphics
 		static void UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
 			const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms);
+		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
+			float* r, float* g, float* b, float intensity);
+		static void UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device,
+			const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB,
+			const MaterialInstanceInfo& materialInstanceInfo);
 	};
 }

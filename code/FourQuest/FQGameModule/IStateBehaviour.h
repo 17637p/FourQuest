@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../FQReflect/FQReflect.h"
+#include "../FQGameModule/Animator.h"
+#include "AnimationStateNode.h"
 
 namespace fq::game_module
 {

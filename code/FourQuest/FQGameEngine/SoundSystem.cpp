@@ -1,6 +1,7 @@
 #include "SoundSystem.h"
 
 #include "GameProcess.h"
+#include "../FQGameModule/SoundClip.h"
 
 void fq::game_engine::SoundSystem::Initialize(fq::game_engine::GameProcess* game)
 {
@@ -29,7 +30,7 @@ void fq::game_engine::SoundSystem::OnLoadScene(const fq::event::OnLoadScene even
 			auto sounds = clip.GetSounds();
 			for (auto& sound : sounds)
 			{
-				mSoundManager->LoadSound(sound);
+				mSoundManager->LoadSound(sound.key, sound.path);
 			}
 		}
 	);
@@ -46,7 +47,7 @@ void fq::game_engine::SoundSystem::OnUnLoadScene()
 
 void fq::game_engine::SoundSystem::OnPlaySound(fq::event::OnPlaySound event)
 {
-	mSoundManager->Play(event.path, event.bIsLoop, event.channelIndex);
+	mSoundManager->Play(event.key, event.bIsLoop, event.channelIndex);
 }
 
 void fq::game_engine::SoundSystem::OnStopChannel(fq::event::OnStopChannel event)

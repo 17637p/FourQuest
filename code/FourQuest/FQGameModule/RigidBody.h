@@ -24,20 +24,15 @@ namespace fq::game_module
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		/// <summary>
-		/// true면 static body, false 는 dynamic body 입니다
-		/// </summary>
-		bool IsStatic() const { return mbIsStatic; }
-
-		/// <summary>
-		/// true면 static body, false 는 dynamic body 입니다
-		/// </summary>
-		void SetStatic(bool isStatic) { mbIsStatic = isStatic; }
-
-		/// <summary>
 		/// 선속도를 반환합니다 
 		/// </summary>
 		fq::game_module::RigidBody::Vector3 GetLinearVelocity() const { return mLinearVelocity; }
-		
+
+		/// <summary>
+		/// 선속도를 더합니다.
+		/// </summary>
+		void AddLinearVelocity(Vector3 velocity);
+
 		/// <summary>
 		/// 선속도를 설정합니다 
 		/// </summary>
@@ -53,11 +48,21 @@ namespace fq::game_module
 		/// </summary>
 		void SetAngularVelocity(fq::game_module::RigidBody::Vector3 val) { mAngularVelocity = val; }
 
+		/// <summary>
+		/// 리지드 바디 타입을 반환합니다
+		/// </summary>
+		fq::game_module::RigidBody::EBodyType GetBodyType() const { return mBodyType; }
+		
+		/// <summary>
+		/// 리지드 바디 타입을 설정합니다
+		/// </summary>
+		void SetBodyType(fq::game_module::RigidBody::EBodyType val) { mBodyType = val; }
+
 	private:
 		entt::meta_handle GetHandle() override;
 
 	private:
-		bool mbIsStatic;
+		EBodyType mBodyType;
 		Vector3 mLinearVelocity;
 		Vector3 mAngularVelocity;
 	};

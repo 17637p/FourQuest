@@ -10,6 +10,7 @@ namespace fq::game_module
 	class TimeManager;
 	class PrefabManager;
 	class SoundManager; 
+	class ScreenManager;
 }
 
 namespace fq::graphics
@@ -34,6 +35,12 @@ namespace fq::game_engine
 	class ParticleSystem;
 	class DecalSystem;
 	class UISystem;
+	class PathFindingSystem;
+	class TrailSystem;
+	class LightProbeSystem;
+	class LoadingSystem;
+	class ResourceSystem;
+	class StateEventSystem;
 }
 
 namespace fq::game_engine
@@ -54,6 +61,7 @@ namespace fq::game_engine
 		std::unique_ptr<fq::game_module::EventManager> mEventManager;
 		std::unique_ptr<fq::game_module::PrefabManager> mPrefabManager;
 		std::unique_ptr<fq::game_module::SoundManager> mSoundManager;
+		std::unique_ptr<fq::game_module::ScreenManager> mScreenManager;
 
 		// Graphics
 		fq::graphics::IFQGraphics* mGraphics;
@@ -71,6 +79,12 @@ namespace fq::game_engine
 		std::unique_ptr<AnimationSystem> mAnimationSystem;
 		std::unique_ptr<ParticleSystem> mParticleSystem;
 		std::unique_ptr<DecalSystem> mDecalSystem;
+		std::unique_ptr<TrailSystem> mTrailSystem;
 		std::unique_ptr<UISystem> mUISystem;
+		std::unique_ptr<PathFindingSystem> mPathFindgingSystem;
+		std::unique_ptr<LightProbeSystem> mLightProbeSystem;
+		std::unique_ptr<LoadingSystem> mLoadingSystem;
+		std::unique_ptr<ResourceSystem> mResourceSystem;
+		std::unique_ptr<StateEventSystem> mStateEventSystem;
 	};
 }

@@ -8,6 +8,7 @@ namespace fq::graphics
 {
 	void DebugRenderPass::Initialize(std::shared_ptr<D3D11Device> device,
 		std::shared_ptr<D3D11JobManager> jobManager,
+		std::shared_ptr<D3D11ObjectManager> objectManager,
 		std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 		std::shared_ptr<D3D11CameraManager> cameraManager,
 		std::shared_ptr<D3D11ResourceManager> resourceManager,
@@ -19,6 +20,7 @@ namespace fq::graphics
 
 		mDevice = device;
 		mJobManager = jobManager;
+		mObjectManager = objectManager;
 		mDebugDrawManager = debugDrawManager;
 		mCameraManager = cameraManager;
 		mResourceManager = resourceManager;
@@ -34,6 +36,7 @@ namespace fq::graphics
 	{
 		mDevice = nullptr;
 		mJobManager = nullptr;
+		mObjectManager = nullptr;
 		mDebugDrawManager = nullptr;
 		mCameraManager = nullptr;
 		mResourceManager = nullptr;
@@ -59,105 +62,107 @@ namespace fq::graphics
 
 		mBackBufferRTV->Bind(mDevice, mDefaultDSV);
 
-		for (IParticleObject* particleObjectInterface : mParticleManager->GetParticleObjects())
-		{
-			ParticleObject* particleObject = (ParticleObject*)particleObjectInterface;
 
-			if (!particleObject->GetIsRenderDebug())
+		for (IParticleObject* particleObjectInterface : mObjectManager->GetParticleObjects())
+		{
+			ParticleObject* particleObject = static_cast<ParticleObject*>(particleObjectInterface);
+			const auto& info = particleObject->GetInfo();
+
+			if (!info.InstanceData.bIsRenderDebug)
 			{
 				continue;
 			}
 
-			const ParticleInfo::Shape& shapeData = particleObject->GetInfo().ShapeData;
+			const ParticleInfo::Shape& shapeData = info.ShapeData;
 			DirectX::SimpleMath::Matrix shapeTransform = Matrix::CreateScale(shapeData.Scale) * Matrix::CreateFromYawPitchRoll(shapeData.Rotation) * Matrix::CreateTranslation(shapeData.Position);
 			DirectX::SimpleMath::Matrix finalTransform = shapeTransform * particleObject->GetTransform();
 
 			switch (shapeData.ShapeType)
 			{
-				case ParticleInfo::Shape::EShape::Sphere:
-				{
-					debug::SphereInfoEx sphereInfo;
-					sphereInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
-					sphereInfo.XAxis = Vector3::TransformNormal(sphereInfo.XAxis * shapeData.Radius, finalTransform);
-					sphereInfo.YAxis = Vector3::TransformNormal(sphereInfo.YAxis * shapeData.Radius, finalTransform);
-					sphereInfo.ZAxis = Vector3::TransformNormal(sphereInfo.ZAxis * shapeData.Radius, finalTransform);
-					sphereInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-					sphereInfo.Color = particleObject->GetDebugRenderColor();
-					mDebugDrawManager->Submit(sphereInfo);
-					break;
-				}
-				case ParticleInfo::Shape::EShape::Hemisphere:
-				{
-					debug::HemisphereInfo hemisphereInfo;
-					hemisphereInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
-					hemisphereInfo.XAxis = Vector3::TransformNormal(hemisphereInfo.XAxis * shapeData.Radius, finalTransform);
-					hemisphereInfo.YAxis = Vector3::TransformNormal(hemisphereInfo.YAxis * shapeData.Radius, finalTransform);
-					hemisphereInfo.ZAxis = Vector3::TransformNormal(hemisphereInfo.ZAxis * shapeData.Radius, finalTransform);
-					hemisphereInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-					hemisphereInfo.Color = particleObject->GetDebugRenderColor();
+			case ParticleInfo::Shape::EShape::Sphere:
+			{
+				debug::SphereInfoEx sphereInfo;
+				sphereInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
+				sphereInfo.XAxis = Vector3::TransformNormal(sphereInfo.XAxis * shapeData.Radius, finalTransform);
+				sphereInfo.YAxis = Vector3::TransformNormal(sphereInfo.YAxis * shapeData.Radius, finalTransform);
+				sphereInfo.ZAxis = Vector3::TransformNormal(sphereInfo.ZAxis * shapeData.Radius, finalTransform);
+				sphereInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
+				sphereInfo.Color = info.InstanceData.DebugRenderColor;
+				mDebugDrawManager->Submit(sphereInfo);
+				break;
+			}
+			case ParticleInfo::Shape::EShape::Hemisphere:
+			{
+				debug::HemisphereInfo hemisphereInfo;
+				hemisphereInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
+				hemisphereInfo.XAxis = Vector3::TransformNormal(hemisphereInfo.XAxis * shapeData.Radius, finalTransform);
+				hemisphereInfo.YAxis = Vector3::TransformNormal(hemisphereInfo.YAxis * shapeData.Radius, finalTransform);
+				hemisphereInfo.ZAxis = Vector3::TransformNormal(hemisphereInfo.ZAxis * shapeData.Radius, finalTransform);
+				hemisphereInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
+				hemisphereInfo.Color = info.InstanceData.DebugRenderColor;
 
-					mDebugDrawManager->Submit(hemisphereInfo);
-					break;
-				}
-				case ParticleInfo::Shape::EShape::Cone:
-				{
-					debug::ConeInfo coneInfo;
-					coneInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
-					coneInfo.XAxis = Vector3::TransformNormal(coneInfo.XAxis * shapeData.Radius, finalTransform);
-					coneInfo.YAxis = Vector3::TransformNormal(coneInfo.YAxis * shapeData.Radius, finalTransform);
-					coneInfo.ZAxis = Vector3::TransformNormal(coneInfo.ZAxis * shapeData.Radius, finalTransform);
-					coneInfo.AngleInRadian = shapeData.AngleInDegree * 3.141592f / 180.f;
-					coneInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-					coneInfo.Height = particleObject->GetInfo().MainData.StartSpeed.x;
-					coneInfo.Color = particleObject->GetDebugRenderColor();
+				mDebugDrawManager->Submit(hemisphereInfo);
+				break;
+			}
+			case ParticleInfo::Shape::EShape::Cone:
+			{
+				debug::ConeInfo coneInfo;
+				coneInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
+				coneInfo.XAxis = Vector3::TransformNormal(coneInfo.XAxis * shapeData.Radius, finalTransform);
+				coneInfo.YAxis = Vector3::TransformNormal(coneInfo.YAxis * shapeData.Radius, finalTransform);
+				coneInfo.ZAxis = Vector3::TransformNormal(coneInfo.ZAxis * shapeData.Radius, finalTransform);
+				coneInfo.AngleInRadian = shapeData.AngleInDegree * 3.141592f / 180.f;
+				coneInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
+				coneInfo.Height = particleObject->GetInfo().MainData.StartSpeed.x;
+				coneInfo.Color = info.InstanceData.DebugRenderColor;
 
-					mDebugDrawManager->Submit(coneInfo);
-					break;
-				}
-				case ParticleInfo::Shape::EShape::Donut:
-				{
-					debug::DountInfo dountInfo;
-					dountInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
-					dountInfo.XAxis = Vector3::TransformNormal(dountInfo.XAxis * shapeData.Radius, finalTransform);
-					dountInfo.YAxis = Vector3::TransformNormal(dountInfo.YAxis * shapeData.Radius, finalTransform);
-					dountInfo.ZAxis = Vector3::TransformNormal(dountInfo.ZAxis * shapeData.Radius, finalTransform);
-					dountInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
-					dountInfo.DountRadius = shapeData.DountRadius;
-					dountInfo.Color = particleObject->GetDebugRenderColor();
+				mDebugDrawManager->Submit(coneInfo);
+				break;
+			}
+			case ParticleInfo::Shape::EShape::Donut:
+			{
+				debug::DountInfo dountInfo;
+				dountInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
+				dountInfo.XAxis = Vector3::TransformNormal(dountInfo.XAxis * shapeData.Radius, finalTransform);
+				dountInfo.YAxis = Vector3::TransformNormal(dountInfo.YAxis * shapeData.Radius, finalTransform);
+				dountInfo.ZAxis = Vector3::TransformNormal(dountInfo.ZAxis * shapeData.Radius, finalTransform);
+				dountInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592f / 180.f;
+				dountInfo.DountRadius = shapeData.DountRadius;
+				dountInfo.Color = info.InstanceData.DebugRenderColor;
 
-					mDebugDrawManager->Submit(dountInfo);
-					break;
-				}
-				case ParticleInfo::Shape::EShape::Box:
-				{
-					debug::OBBInfo obbInfo;
-					obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
-					obbInfo.Color = particleObject->GetDebugRenderColor();
+				mDebugDrawManager->Submit(dountInfo);
+				break;
+			}
+			case ParticleInfo::Shape::EShape::Box:
+			{
+				debug::OBBInfo obbInfo;
+				obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
+				obbInfo.Color = info.InstanceData.DebugRenderColor;
 
-					mDebugDrawManager->Submit(obbInfo);
-					break;
-				}
-				case ParticleInfo::Shape::EShape::Circle:
-				{
-					debug::RingInfoEx ringInfo;
-					ringInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
-					ringInfo.MajorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX * shapeData.Radius, finalTransform);
-					ringInfo.MinorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ * shapeData.Radius, finalTransform);
-					ringInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592 / 180.f;
-					ringInfo.Color = particleObject->GetDebugRenderColor();
+				mDebugDrawManager->Submit(obbInfo);
+				break;
+			}
+			case ParticleInfo::Shape::EShape::Circle:
+			{
+				debug::RingInfoEx ringInfo;
+				ringInfo.Origin = Vector3{ finalTransform._41, finalTransform._42, finalTransform._43 };
+				ringInfo.MajorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitX * shapeData.Radius, finalTransform);
+				ringInfo.MinorAxis = Vector3::TransformNormal(DirectX::SimpleMath::Vector3::UnitZ * shapeData.Radius, finalTransform);
+				ringInfo.ArcInRadian = shapeData.ArcInDegree * 3.141592 / 180.f;
+				ringInfo.Color = info.InstanceData.DebugRenderColor;
 
-					mDebugDrawManager->Submit(ringInfo);
-					break;
-				}
-				case ParticleInfo::Shape::EShape::Rectangle:
-				{
-					debug::OBBInfo obbInfo;
-					obbInfo.OBB.Extents = { 1, 0, 1 };
-					obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
-					obbInfo.Color = particleObject->GetDebugRenderColor();
-					mDebugDrawManager->Submit(obbInfo);
-					break;
-				}
+				mDebugDrawManager->Submit(ringInfo);
+				break;
+			}
+			case ParticleInfo::Shape::EShape::Rectangle:
+			{
+				debug::OBBInfo obbInfo;
+				obbInfo.OBB.Extents = { 1, 0, 1 };
+				obbInfo.OBB.Transform(obbInfo.OBB, shapeTransform * particleObject->GetTransform());
+				obbInfo.Color = info.InstanceData.DebugRenderColor;
+				mDebugDrawManager->Submit(obbInfo);
+				break;
+			}
 			}
 
 		}

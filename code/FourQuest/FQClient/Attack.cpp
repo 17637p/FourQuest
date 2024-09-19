@@ -19,11 +19,20 @@ std::shared_ptr<fq::game_module::Component> fq::client::Attack::Clone(std::share
 
 fq::client::Attack::Attack()
 	:mAttackPower(-1)
-	,mElapsedTime(0.f)
-	,mAttackTime(0.1f)
-{
-
-}
+	, mDestroyElapsedTime(0.f)
+	, mDestroyTime(0.1f)
+	, mAttackDirection()
+	, mRemainingAttackCount(1)
+	, mbIsInfinite(true)
+	, mKnockBackPower(0.f)
+	, mKnockBackType(EKnockBackType::None)
+	, mAttackPosition{}
+	, mAttacker(nullptr)
+	, mHitSound{}
+	, mHitCallback{}
+	, mTargetPosRatio{}
+	, mDirectionRatio{}
+{}
 
 fq::client::Attack::~Attack()
 {
@@ -32,10 +41,71 @@ fq::client::Attack::~Attack()
 
 void fq::client::Attack::OnUpdate(float dt)
 {
-	mElapsedTime += dt;
+	mDestroyElapsedTime += dt;
 
-	if (mElapsedTime >= mAttackTime)
+	if (mDestroyElapsedTime >= mDestroyTime)
 	{
 		GetScene()->DestroyGameObject(GetGameObject());
 	}
+}
+
+
+bool fq::client::Attack::ProcessAttack()
+{
+	// 삭제된 공격은 처리하지 않습니다 
+	if (GetGameObject()->IsDestroyed())
+	{
+		return false;
+	}
+
+	if (!mbIsInfinite)
+	{
+		mRemainingAttackCount--;
+
+		if (mRemainingAttackCount == 0)
+		{
+			GetScene()->DestroyGameObject(GetGameObject());
+		}
+	}
+
+	if (mHitCallback)
+	{
+		mHitCallback();
+	}
+
+	return true;
+}
+
+void fq::client::Attack::Set(const AttackInfo& info)
+{
+	mAttacker = info.attacker;
+	mAttackPower = info.damage;
+	mbIsInfinite = info.bIsInfinite;
+	mRemainingAttackCount = info.remainingAttackCount;
+	mKnockBackType = info.type;
+	mKnockBackPower = info.knocBackPower;
+	mAttackDirection = info.attackDirection;
+	mAttackPosition = info.attackPosition;
+	mHitSound = info.hitSound;
+	mHitCallback = info.mHitCallback;
+	mTargetPosRatio = info.targetPosRatio;
+	mDirectionRatio = info.directionRatio;
+}
+
+bool fq::client::Attack::HasKnockBack() const
+{
+	return mKnockBackType != EKnockBackType::None;
+}
+
+void fq::client::Attack::PlayHitSound()
+{
+	if (!mHitSound.empty())
+	{
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , fq::sound::EChannel::SE });
+	}
+}
+
+void fq::client::Attack::SetDestroyTime(float destroyTime)
+{
+	mDestroyTime = destroyTime;
 }

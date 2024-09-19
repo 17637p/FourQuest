@@ -36,19 +36,24 @@ namespace fq::graphics
 		std::shared_ptr<D3D11ShaderResourceView> mShadowSRV;
 
 		std::unique_ptr<class ShaderProgram> mStaticMeshShaderProgram;
+		std::unique_ptr<class ShaderProgram> mStaticMeshVertexColorShaderProgram;
 		std::unique_ptr<class ShaderProgram> mSkinnedMeshShaderProgram;
 
+		std::shared_ptr<D3D11DepthStencilState> mLessEqualStencilReplaceState;
 		std::shared_ptr<D3D11SamplerState> mAnisotropicWrapSamplerState;
+		std::shared_ptr<D3D11SamplerState> mAnisotropicClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mShadowSampler;
 		std::shared_ptr<D3D11SamplerState> mDefualtSampler;
+		std::shared_ptr<D3D11SamplerState> mLinearWrap;
+		std::shared_ptr<D3D11RasterizerState> mDefaultRasterizer;
+		std::shared_ptr<D3D11RasterizerState> mCullOffRasterizer;
 
 		// to do : 상수 버퍼 더 효율적으로 관리하는 기법이 필요함
 		std::shared_ptr<D3D11ConstantBuffer<ModelTransform>> mModelTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<SceneTrnasform>> mSceneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>> mBoneTransformCB;
 		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>> mMaterialCB;
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
-		std::shared_ptr<D3D11ConstantBuffer<AlphaData>> mAlphaDataCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>> mMaterialInstanceCB;
 	};
 
 }

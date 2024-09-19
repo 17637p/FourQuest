@@ -1,91 +1,37 @@
-#include "RenderObject.h"
-#include "BoneHierarchy.h"
-
-#include "Material.h"
-
 #include <d3d11.h>
-
 #include <algorithm>
+#include "RenderObject.h"
+#include "NodeHierarchy.h"
+#include "Material.h"
+#include "D3D11JobManager.h"
 
 namespace fq::graphics
 {
-	StaticMeshObject::StaticMeshObject(std::shared_ptr<StaticMesh> staticMesh,
+	StaticMeshObject::StaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
-		DirectX::SimpleMath::Matrix transform)
-		: mStaticMesh(staticMesh)
+		const MeshObjectInfo& info,
+		const DirectX::SimpleMath::Matrix& transform)
+		: mNodeHierarchyInstance(nullptr)
+		, mIndex((size_t)-1)
+		, mStaticMesh(staticMesh)
 		, mMaterials(materials)
+		, mInfo(info)
 		, mTransform(transform)
-		, mObjectRenderType(EObjectRenderType::Opaque)
-		, mAlpha(1.f)
-		, mbUseShadow(true)
-		, mOutLineColor{ -1, -1, -1 }
-		, mbIsAppliedDecal(true)
+		, mbIsRender(true)
 	{
 	}
 
-	void StaticMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
-	{
-		mOutLineColor = color;
-	}
-
-	DirectX::SimpleMath::Color StaticMeshObject::GetOutlineColor() const
-	{
-		return mOutLineColor;
-	}
-
-	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<SkinnedMesh> skinnedMesh,
+	SkinnedMeshObject::SkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh,
 		std::vector<std::shared_ptr<IMaterial>> materials,
-		DirectX::SimpleMath::Matrix transform,
-		BoneHierarchyCache boneHierarchyCache)
-		: mSkinnedMesh(skinnedMesh)
+		const MeshObjectInfo& info,
+		const DirectX::SimpleMath::Matrix& transform)
+		: mNodeHierarchyInstance(nullptr)
+		, mSkinnedMesh(skinnedMesh)
 		, mMaterials(materials)
+		, mInfo(info)
 		, mTransform(transform)
-		, mBoneHierarchyCache(boneHierarchyCache)
-		, mObjectRenderType(EObjectRenderType::Opaque)
-		, mAlpha(1.f)
-		, mbUseShadow(true)
-		, mOutLineColor{ -1, -1, -1 }
-		, mbIsAppliedDecal(false)
+		, mbIsRender(true)
 	{
-	}
-
-	void SkinnedMeshObject::SetOutlineColor(const DirectX::SimpleMath::Color& color)
-	{
-		mOutLineColor = color;
-	}
-
-	DirectX::SimpleMath::Color SkinnedMeshObject::GetOutlineColor() const
-	{
-		return mOutLineColor;
-	}
-
-	const std::vector<fq::common::Bone>& SkinnedMeshObject::GetBones() const
-	{
-		return mBoneHierarchyCache.GetBoneHierarchy()->GetBones();
-	}
-	unsigned int SkinnedMeshObject::GetBoneIndex(const std::string& boneName) const
-	{
-		return mBoneHierarchyCache.GetBoneHierarchy()->GetBoneIndex(boneName);
-	}
-	bool SkinnedMeshObject::TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex)
-	{
-		return mBoneHierarchyCache.GetBoneHierarchy()->TryGetBoneIndex(boneName, outBoneIndex);
-	}
-	const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetRootTransform(const std::string& boneName) const
-	{
-		return mBoneHierarchyCache.GetRootTransform(boneName);
-	}
-	bool SkinnedMeshObject::TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform)
-	{
-		return mBoneHierarchyCache.TryGetRootTransform(boneName, outRootTransform);
-	}
-	const DirectX::SimpleMath::Matrix& SkinnedMeshObject::GetRootTransform(size_t index) const
-	{
-		return mBoneHierarchyCache.GetRootTransform(index);
-	}
-	const std::vector<DirectX::SimpleMath::Matrix>& SkinnedMeshObject::GetRootTransforms() const
-	{
-		return mBoneHierarchyCache.GetRootTransforms();
 	}
 
 	TerrainMeshObject::TerrainMeshObject(
@@ -99,22 +45,31 @@ namespace fq::graphics
 		mNumIndices(0),
 		mWidth(0),
 		mHeight(0),
+		mTextureWidth(0),
+		mTextureHeight(0),
 		mNumPatchVertRows(0),
 		mNumPatchVertCols(0),
 		mNumPatchVertices(0),
 		mNumPatchQuadFaces(0),
-		mCellsPerPatch(64)
+		mIsBakeMesh(false),
+		mCellsPerPatch(64),
+		mLightmapUVScaleOffset{},
+		mLightmapIndex{ -1 },
+		mbIsStatic{ false }
 	{
 	}
 
 	void TerrainMeshObject::SetTerrainMaterial(const std::shared_ptr<D3D11Device>& device, const TerrainMaterialInfo& terrainMaterial)
 	{
-		mWidth = terrainMaterial.Width;
-		mHeight = terrainMaterial.Height;
+		mWidth = terrainMaterial.TerrainWidth;
+		mHeight = terrainMaterial.TerrainHeight;
 
-		mCellsPerPatch = (mWidth + mHeight) / 16;
+		mTextureWidth = terrainMaterial.TextureWidth;
+		mTextureHeight = terrainMaterial.TextureHeight;
 
-		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial);
+		mCellsPerPatch = (mTextureWidth + mTextureHeight) / 4;
+
+		mMaterial = make_shared<TerrainMaterial>(device, terrainMaterial, mTextureWidth, mTextureHeight);
 		BuildTerrainMesh(device, mTempStaticMesh);
 	}
 
@@ -212,12 +167,14 @@ namespace fq::graphics
 		mesh.Subsets[0].IndexCount = mNumIndices;
 
 		mTerrainMesh = std::make_shared<TerrainMesh>(device, mesh);
+
+		BuildStaticMesh(device, mesh);
 	}
 
 	void TerrainMeshObject::CalcAllPatchBoundsY(std::vector<DirectX::SimpleMath::Vector2>& patchBoundsY)
 	{
-		mNumPatchVertRows = ((mHeight - 1) / mCellsPerPatch) + 1;
-		mNumPatchVertCols = ((mWidth - 1) / mCellsPerPatch) + 1;
+		mNumPatchVertRows = ((mTextureHeight - 1) / mCellsPerPatch) + 1;
+		mNumPatchVertCols = ((mTextureWidth - 1) / mCellsPerPatch) + 1;
 
 		mNumPatchVertices = mNumPatchVertRows * mNumPatchVertCols;
 		mNumPatchQuadFaces = (mNumPatchVertRows - 1) * (mNumPatchVertCols - 1);
@@ -249,7 +206,7 @@ namespace fq::graphics
 		{
 			for (UINT x = x0; x <= x1; ++x)
 			{
-				UINT k = y * mWidth + x;
+				UINT k = y * mTextureWidth + x;
 				minY = min(minY, heightMap[k]);
 				maxY = max(maxY, heightMap[k]);
 			}
@@ -264,7 +221,6 @@ namespace fq::graphics
 		// https://copynull.tistory.com/324
 		// https://github.com/jjuiddong/Introduction-to-3D-Game-Programming-With-DirectX11
 		// https://ddidding.tistory.com/95
-		// 새벽이라 계산하기 싫다! 지금은 오전 4시
 		for (UINT i = 0; i < mesh.Indices.size() / 4; i++)
 		{
 			// Normal 계산 
@@ -338,6 +294,45 @@ namespace fq::graphics
 		}
 	}
 
+	void TerrainMeshObject::BuildStaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& terrainMesh)
+	{
+		fq::common::Mesh newStaticMesh = terrainMesh;
+
+		for (UINT i = 0; i < terrainMesh.Vertices.size(); i++)
+		{
+			newStaticMesh.Vertices[i].Pos.y = newStaticMesh.BoundsYVertices[i].BoundsY.y;
+		}
+
+		std::vector<unsigned int> terrainTriIndexBuffer;
+
+		for (UINT i = 0; i < terrainMesh.Indices.size(); i += 4)
+		{
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 0]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 3]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 2]);
+
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 0]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 1]);
+			terrainTriIndexBuffer.push_back(terrainMesh.Indices[i + 3]);
+		}
+
+		newStaticMesh.Indices = terrainTriIndexBuffer;
+		//newStaticMesh.Vertices;
+		//newStaticMesh.Indices;
+
+		mTempStaticMesh = std::make_shared<StaticMesh>(device, newStaticMesh);
+	}
+
+	const fq::common::Mesh& TerrainMeshObject::GetMeshData() const
+	{
+		return mTempStaticMesh->GetMeshData();
+	}
+
+	int* TerrainMeshObject::GetHeightData() const
+	{
+		return mMaterial->GetHeightMapRawData();
+	}
+
 	ImageObject::ImageObject()
 		:mStartX(0),
 		mStartY(0),
@@ -349,14 +344,14 @@ namespace fq::graphics
 		mImagePath(""),
 		mRotationAngle(0),
 		mScaleX(1),
-		mScaleY(1)
-	{
-	}
+		mScaleY(1),
+		mAlpha(1.f),
+		mIsRender(true),
+		mIsCenter(false)
+	{}
 
 	ImageObject::~ImageObject()
-	{
-
-	}
+	{}
 
 	void ImageObject::SetStartX(float startX)
 	{
@@ -476,6 +471,47 @@ namespace fq::graphics
 	float ImageObject::GetRotation() const
 	{
 		return mRotationAngle;
+	}
+
+	ProbeObject::ProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index)
+		: mIndex(index)
+		, mStaticMesh(staticMesh)
+		, mTransform(transform)
+	{
+	}
+
+	ProbeObject::~ProbeObject()
+	{
+	}
+
+	void ProbeObject::SetTransform(const DirectX::SimpleMath::Matrix& transform)
+	{
+		mTransform = transform;
+	}
+
+	const DirectX::SimpleMath::Matrix& ProbeObject::GetTransform() const
+	{
+		return mTransform;
+	}
+
+	void ProbeObject::SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh)
+	{
+		mStaticMesh = staticMesh;
+	}
+
+	std::shared_ptr<graphics::IStaticMesh> ProbeObject::GetStaticMesh() const
+	{
+		return mStaticMesh;
+	}
+
+	void ProbeObject::SetIndex(int index)
+	{
+		mIndex = index;
+	}
+
+	int ProbeObject::GetIndex()
+	{
+		return mIndex;
 	}
 
 }

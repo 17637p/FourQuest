@@ -101,6 +101,16 @@ namespace fq::game_module
 		/// </summary>
 		void SetShadow(bool bOnShadow);
 
+		/// <summary>
+		/// 라이트 모드을 변경합니다 
+		/// </summary>
+		void SetLightMode(fq::graphics::ELightMode mode);
+
+		/// <summary>
+		/// 라이트 모드을 변경합니다 
+		/// </summary>
+		fq::graphics::ELightMode GetLightMode() const;
+
 	private:
 		void fireSetLightType();
 		entt::meta_handle GetHandle() override;

@@ -66,9 +66,6 @@
     <Filter Include="include\01.EntityComponent\Graphics">
       <UniqueIdentifier>{03c7b1cc-2fb8-435a-a4d9-ca9f80bc4d16}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\08.Prefab">
-      <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\08.Prefab">
       <UniqueIdentifier>{d8a213a9-9766-44a7-8f3a-0bbf7584100e}</UniqueIdentifier>
     </Filter>
@@ -92,6 +89,39 @@
     </Filter>
     <Filter Include="src\01.EntityComponent\UI">
       <UniqueIdentifier>{e2c736a9-6d4d-475a-9f0b-35788b19c52f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\10.PathFinding">
+      <UniqueIdentifier>{91bec4ff-da06-4cb9-b146-4d193dbcb34e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\10.PathFinding">
+      <UniqueIdentifier>{1bcfb876-d582-4468-97e0-906710d30f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.SkyBox">
+      <UniqueIdentifier>{9c08872f-78ae-4e48-9037-60c014459e3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\08.Prefab">
+      <UniqueIdentifier>{034f801b-ca6f-4ad0-af77-528edd2f6d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\12.ThreadPool">
+      <UniqueIdentifier>{67188304-3881-48e3-92da-a080319dd720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.ThreadPool">
+      <UniqueIdentifier>{63171bad-388a-4f42-909a-b06f1937084b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Sequence">
+      <UniqueIdentifier>{c10f0b85-5e41-43d2-91b0-831785dc9d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Sequence">
+      <UniqueIdentifier>{fa14a593-0391-4a8f-a807-9da6f310fb1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.EntityComponent\Sequence\Track">
+      <UniqueIdentifier>{19f925ee-80e4-4d76-a39b-a00620b83a60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.EntityComponent\Sequence\Track">
+      <UniqueIdentifier>{7eaee9aa-5888-47c0-abe7-b7aa461e1cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.SkyBox">
+      <UniqueIdentifier>{947423a8-15e7-4f92-bc5f-0b2b56a9f551}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -245,11 +275,101 @@
     <ClInclude Include="Particle.h">
       <Filter>include\01.EntityComponent\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Decal.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="ImageUI.h">
       <Filter>include\01.EntityComponent\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationAgent.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationAgentImpl.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenManager.h">
+      <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMeshLoader.h">
+      <Filter>include\10.PathFinding</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Decal.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>include\11.SkyBox</Filter>
+    </ClInclude>
+    <ClInclude Include="Trail.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainCollider.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Articulation.h">
+      <Filter>include\01.EntityComponent\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkData.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationData.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>include\12.ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessing.h">
+      <Filter>include\01.EntityComponent\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationLoader.h">
+      <Filter>include\07.Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="UVAnimator.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="GameModuleManagerh.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialAnimator.h">
+      <Filter>include\09.Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Track.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="Sequence.h">
+      <Filter>include\01.EntityComponent\Sequence</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTeleportTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectMoveTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraChangeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="TextPrintTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectAnimationTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraShakeTrack.h">
+      <Filter>include\01.EntityComponent\Sequence\Track</Filter>
+    </ClInclude>
+    <ClInclude Include="StateEvent.h">
+      <Filter>include\04.Event</Filter>
+	</ClInclude>
+	<ClInclude Include="SoundEnum.h">
+      <Filter>include\05.Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -388,11 +508,95 @@
     <ClCompile Include="Particle.cpp">
       <Filter>src\01.EntityComponent\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Decal.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ImageUI.cpp">
       <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationAgent.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationAgentImpl.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenManager.cpp">
+      <Filter>src\05.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMeshLoader.cpp">
+      <Filter>src\10.PathFinding</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>src\11.SkyBox</Filter>
+    </ClCompile>
+    <ClCompile Include="Decal.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Trail.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainCollider.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Articulation.cpp">
+      <Filter>src\01.EntityComponent\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkData.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationData.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>src\12.ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessing.cpp">
+      <Filter>src\01.EntityComponent\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationLoader.cpp">
+      <Filter>src\07.Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="UVAnimator.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="TextUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialAnimator.cpp">
+      <Filter>src\09.Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Track.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="Sequence.cpp">
+      <Filter>src\01.EntityComponent\Sequence</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectTeleportTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectMoveTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraChangeTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="TextPrintTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectAnimationTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraShakeTrack.cpp">
+      <Filter>src\01.EntityComponent\Sequence\Track</Filter>
+    </ClCompile>
+    <ClCompile Include="StateEvent.cpp">
+      <Filter>src\04.Event</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -45,24 +45,25 @@ namespace fq::graphics
 		};
 
 	public:
-		ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
+		ParticleObject(std::shared_ptr<D3D11Device> device, std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform);
 		virtual ~ParticleObject() = default;
 
-		void SetInfo(const ParticleInfo& info);
-		void SetIsReset(bool bIsReset) { mbIsReset = bIsReset; }
-		void SetFrameTime(float frameTime) { mFrameTime = frameTime; }
-		void SetTransform(const DirectX::SimpleMath::Matrix& transform) { mTransform = transform; }
-		void SetIsEmit(bool bIsEmit) { mbIsEmit = bIsEmit; }
-		void SetIsRenderDebug(bool bIsRenderDebug) { mbIsRenderDebug = bIsRenderDebug; }
-		void SetDebugRenderColor(const DirectX::SimpleMath::Color& debugRenderColor) { mDebugRenderColor = debugRenderColor; }
+		// Transform
+		virtual void SetTransform(const DirectX::SimpleMath::Matrix& transform) override { mTransform = transform; }
+		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
-		const ParticleInfo& GetInfo() const { return mParticleInfo; }
-		bool GetIsReset() const { return mbIsReset; }
-		float GetFrameTIme() const { return mFrameTime; }
-		DirectX::SimpleMath::Matrix GetTransform() const { return mTransform; }
-		bool GetIsEmit() const { return mbIsEmit; }
-		bool GetIsRenderDebug() const { return mbIsRenderDebug; }
-		const DirectX::SimpleMath::Color& GetDebugRenderColor() const { return mDebugRenderColor; }
+		// Info
+		void SetInfo(const ParticleInfo& info) override { mParticleInfo = info; }
+		const ParticleInfo& GetInfo() const override { return mParticleInfo; }
+		ParticleInfo& GetInfo() override { return mParticleInfo; }
+
+		// Material
+		virtual void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) override { mIParticleMaterial = iParticleMaterial; }
+		virtual std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const override { return mIParticleMaterial; }
+
+		// FrameTime
+		void SetFrameTime(float frameTime) override { mFrameTime = frameTime; }
+		float GetFrameTIme() const override { return mFrameTime; }
 
 		DebugInfo& GetDebugInfo() { return mDebugInfo; }
 
@@ -71,8 +72,6 @@ namespace fq::graphics
 		void caculateNumToEmit();
 
 	private:
-		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mParticleBuffer;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mParticleBufferSRV;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mParticleBufferUAV;
@@ -84,25 +83,19 @@ namespace fq::graphics
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mAliveIndexBufferSRV;
 		Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> mAliveIndexBufferUAV;
 
-		std::shared_ptr<D3D11Texture> mTexture;
-		DirectX::SimpleMath::Matrix mTransform;
+		std::shared_ptr<IParticleMaterial> mIParticleMaterial;
 		ParticleInfo mParticleInfo;
-		bool mbIsReset;
+		DirectX::SimpleMath::Matrix mTransform;
 
 		float mTimePos;
 		float mFrameTime;
 		float mAccumlation = 0.f;
 		int	mNumToEmit;
-		DebugInfo mDebugInfo;
-		bool mbIsEmit;
-
 		bool mbIsRunDuationCycle;
 		float mStartTimePos;
 		size_t mCycleCount;
-
 		float mRandomSeed;
-		bool mbIsRenderDebug;
-		DirectX::SimpleMath::Color mDebugRenderColor = { 1, 0, 0, 1 };
+		DebugInfo mDebugInfo;
 	};
 }
 

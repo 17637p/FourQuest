@@ -2,18 +2,24 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/TextUI.h"
+#include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
+
+//#include "../FQGameModule/Transform.h"
 
 fq::game_engine::UISystem::UISystem()
 	:mGameProcess(nullptr)
 	, mbIsGameLoaded(false)
-{
-
-}
+	, mViewporWidth(0)
+	, mViewportHeight(0)
+	, mScreenHeight(0)
+	, mScreenWidth(0)
+{}
 
 fq::game_engine::UISystem::~UISystem()
 {
-
 }
 
 void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
@@ -43,6 +49,34 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 
 	mSetUIInfomationsHandler = eventMgr->
 		RegisterHandle<fq::event::SetUIInfomations>(this, &UISystem::SetUIInfomations);
+
+	mSetTextInformationHandler = eventMgr->
+		RegisterHandle<fq::event::SetTextInformation>(this, &UISystem::SetTextInformation);
+
+	mSetScreenSizeHandler = eventMgr->
+		RegisterHandle<fq::event::SetScreenSize>([this](fq::event::SetScreenSize event)
+			{
+				mScreenWidth = event.width;
+				mScreenHeight = event.height;
+			});
+
+	mSetScreenSizeHandler = eventMgr->
+		RegisterHandle<fq::event::SetViewportSize>([this](fq::event::SetViewportSize event)
+			{
+				mViewporWidth = event.width;
+				mViewportHeight = event.height;
+			});
+
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/´øÆÄ ¿¬´ÜµÈ Ä®³¯.ttf");
+}
+
+void fq::game_engine::UISystem::Finalize()
+{
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/´øÆÄ ¿¬´ÜµÈ Ä®³¯.ttf");
 }
 
 void fq::game_engine::UISystem::OnLoadScene()
@@ -51,7 +85,8 @@ void fq::game_engine::UISystem::OnLoadScene()
 
 	for (auto& object : scene->GetObjectView(true))
 	{
-		loadImageUI(&object);
+		LoadImageUI(&object);
+		LoadTextUI(&object);
 	}
 
 	mbIsGameLoaded = true;
@@ -66,19 +101,25 @@ void fq::game_engine::UISystem::OnAddGameObject(const fq::event::AddGameObject& 
 {
 	if (!mbIsGameLoaded) return;
 
-	loadImageUI(event.object);
+	LoadImageUI(event.object);
+	LoadTextUI(event.object);
 }
 
 void fq::game_engine::UISystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
-	unloadImageUI(event.object);
+	UnloadImageUI(event.object);
+	UnloadTextUI(event.object);
 }
 
 void fq::game_engine::UISystem::AddComponent(const fq::event::AddComponent& event)
 {
 	if (event.id == entt::resolve<fq::game_module::ImageUI>().id())
 	{
-		loadImageUI(event.component->GetGameObject());
+		LoadImageUI(event.component->GetGameObject());
+	}
+	if (event.id == entt::resolve<fq::game_module::TextUI>().id())
+	{
+		LoadTextUI(event.component->GetGameObject());
 	}
 }
 
@@ -86,11 +127,15 @@ void fq::game_engine::UISystem::RemoveComponent(const fq::event::RemoveComponent
 {
 	if (event.id == entt::resolve<fq::game_module::ImageUI>().id())
 	{
-		unloadImageUI(event.component->GetGameObject());
+		UnloadImageUI(event.component->GetGameObject());
+	}
+	if (event.id == entt::resolve<fq::game_module::TextUI>().id())
+	{
+		UnloadTextUI(event.component->GetGameObject());
 	}
 }
 
-void fq::game_engine::UISystem::loadImageUI(game_module::GameObject* object)
+void fq::game_engine::UISystem::LoadImageUI(game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::ImageUI>())
 	{
@@ -105,6 +150,7 @@ void fq::game_engine::UISystem::loadImageUI(game_module::GameObject* object)
 	{
 		if (!std::filesystem::exists(imageInfomation.ImagePath))
 		{
+			spdlog::warn("[UISystem] {} Load failed", imageInfomation.ImagePath);
 			imageObjects.push_back(nullptr);
 		}
 		else
@@ -115,7 +161,7 @@ void fq::game_engine::UISystem::loadImageUI(game_module::GameObject* object)
 	}
 }
 
-void fq::game_engine::UISystem::unloadImageUI(game_module::GameObject* object)
+void fq::game_engine::UISystem::UnloadImageUI(game_module::GameObject* object)
 {
 	if (!object->HasComponent<fq::game_module::ImageUI>())
 	{
@@ -136,6 +182,63 @@ void fq::game_engine::UISystem::unloadImageUI(game_module::GameObject* object)
 
 void fq::game_engine::UISystem::SetUIInfomations(const fq::event::SetUIInfomations& event)
 {
-	unloadImageUI(event.object);
-	loadImageUI(event.object);
+	UnloadImageUI(event.object);
+	LoadImageUI(event.object);
 }
+
+void fq::game_engine::UISystem::Update()
+{
+	auto componentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::ImageUI>();
+
+	for (auto& imageUI : componentView)
+	{
+		imageUI.GetComponent<game_module::ImageUI>()->OnUpdate(0);
+	}
+
+	auto textComponentView = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::TextUI>();
+
+	for (auto& textUI : textComponentView)
+	{
+		game_module::Transform* transform = textUI.GetComponent<game_module::Transform>();
+		textUI.GetComponent<game_module::TextUI>()->OnUpdate(0);
+	}
+}
+
+void fq::game_engine::UISystem::LoadTextUI(game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::TextUI>())
+	{
+		return;
+	}
+
+	game_module::TextUI* textUI = object->GetComponent<game_module::TextUI>();
+	graphics::TextInfo textInfo = textUI->GetTextInfo();
+
+	graphics::ITextObject* textObject = mGameProcess->mGraphics->CreateText(textInfo);
+	textUI->SetTextObject(textObject);
+}
+
+void fq::game_engine::UISystem::UnloadTextUI(game_module::GameObject* object)
+{
+	if (!object->HasComponent<fq::game_module::TextUI>())	
+	{
+		return;
+	}
+
+	game_module::TextUI* textUI = object->GetComponent<game_module::TextUI>();
+
+	graphics::ITextObject* textObject = textUI->GetTextObject();
+
+	if (textObject)
+	{
+		mGameProcess->mGraphics->DeleteText(textObject);
+		textUI->SetTextObject(nullptr);
+	}
+}
+
+void fq::game_engine::UISystem::SetTextInformation(const fq::event::SetTextInformation& event)
+{
+	UnloadTextUI(event.object);
+	LoadTextUI(event.object);
+}
+

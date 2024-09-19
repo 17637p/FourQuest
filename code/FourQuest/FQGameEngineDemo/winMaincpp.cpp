@@ -1,4 +1,3 @@
-
 #define WIN32_LEAN_AND_MEAN       
 #include <windows.h>
 #include <crtdbg.h>
@@ -11,8 +10,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int nCmdShow)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	
 	// 메모리 누수검사하기
-	//_CrtSetBreakAlloc(4598);
+	//_CrtSetBreakAlloc(16483);
 
 	Application* app = new Application();
 
@@ -21,7 +21,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	app->Process();
 
 	app->Finalize();
-	delete app;
 
+	delete app;
+	 
 	return 0;
 }

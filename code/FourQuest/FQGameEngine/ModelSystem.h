@@ -30,6 +30,11 @@ namespace fq::game_engine
 		/// </summary>
 		static const fq::common::Mesh& GetMesh(const fq::common::Model& model,const std::string& meshName);
 
+		/// <summary>
+		/// 리소스 경로 내부의 모든 fbx를 model로 컨버트합니다
+		/// </summary>
+		void ConvertAllModel();
+		
 	private:
 		GameProcess* mGameProcess;
 		EditorProcess* mEditorProcess;

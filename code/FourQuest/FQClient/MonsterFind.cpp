@@ -1,6 +1,9 @@
 #include "MonsterFind.h"
+
+#include "../FQGameModule/GameModule.h"
 #include "Monster.h"
 #include "Player.h"
+
 
 fq::client::MonsterFind::MonsterFind()
 {
@@ -27,9 +30,9 @@ void fq::client::MonsterFind::OnStateEnter(fq::game_module::Animator& animator, 
 
 	for (auto& player : componentView)
 	{
-		float dist = monster->CalculateDistance(player);
+		float dist = monster->CalculateDistanceTarget(&player);
 
-		if (distMin > dist)
+		if (distMin > dist && !player.IsDestroyed())
 		{
 			distMin = dist;
 			monster->SetTarget(&player);

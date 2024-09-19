@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "BaseWindow.h"
 #include "TimeManager.h"
@@ -15,24 +14,16 @@
 
 #include "../FQLoader/ModelLoader.h"
 #include "../FQCommon/FQCommonGraphics.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::graphics { class Renderer; }
 namespace fq::graphics { class IFQGraphics; }
 namespace fq::graphics { class EngineExporter; }
 namespace fq::graphics { class IStaticMeshObject; }
 namespace fq::graphics { class ISkinnedMeshObject; }
-namespace fq::graphics { class ITerrainMeshObject; }
-namespace fq::graphics { class IImageObject; }
 namespace fq::graphics { class IParticleObject; }
 namespace fq::graphics { class IDecalObject; }
-namespace fq::graphics { class IMaterial; }
-
-struct DecalObject
-{
-	fq::graphics::IDecalObject* DecalObject;
-	std::shared_ptr<fq::graphics::IMaterial> Material;
-	DirectX::SimpleMath::Matrix Transform;
-};
+namespace fq::graphics { class ITrailObject; }
 
 class Process : public BaseWindow<Process>
 {
@@ -52,31 +43,30 @@ private:
 	void debugRender();
 	void shadowTest();
 
-	void strafe(fq::common::Transform& cameraTransform, float distance);
-	void walk(fq::common::Transform& cameraTransform, float distance);
-	void worldUpdown(fq::common::Transform& cameraTransform, float distance);
-
-	void yaw(fq::common::Transform& cameraTransform, float angle);
-	void pitch(fq::common::Transform& cameraTransform, float angle);
-
-	void createModel(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createModel(std::string modelPath, std::vector<fq::graphics::AnimationInfo> animInfos, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createTerrain(std::string modelPath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
-	void createImage();
+	void createModel(std::string modelPath, std::filesystem::path textureBasePath, DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::Identity);
 
 	void calculateFrameStats();
 
 	void convertFBXModelAll(std::filesystem::path readFolderPath, std::filesystem::path outFolderPath);
+	void convertFBXModelAll(std::filesystem::path folderPath);
 
-	void particleInit();
-	void particleUpdate();
+	void renderObjectInit();
+	void renderObjectUpdate();
 
+	void animationUpdate();
 	void materialUpdate();
-
 	void socketUpdate();
 
+	void VFXInit();
+	void VFXUpdate();
+
+	void particleInit();
 	void decalInit();
+	void trailInit();
+
+	void particleUpdate();
 	void decalUpdate();
+	void trailUpdate();
 
 private:
 	/// ---------- 처음 실행할 때 필요한 상수 값 ----------
@@ -92,18 +82,15 @@ private:
 
 	bool mResizing;
 
-	fq::graphics::TerrainMaterialInfo terrainMaterial;
-
 	// Graphics
 	fq::graphics::IFQGraphics* mTestGraphics;
 	std::shared_ptr<fq::graphics::EngineExporter> mEngineExporter;
 
 	std::vector<fq::graphics::IStaticMeshObject*> mStaticMeshObjects;
 	std::vector<fq::graphics::ISkinnedMeshObject*> mSkinnedMeshObjects;
-	std::vector<fq::graphics::ITerrainMeshObject*> mTerrainMeshObjects;
-	std::vector<fq::graphics::IImageObject*> mImageObjects;
 	std::vector<fq::graphics::IParticleObject*> mParticleObjects;
-	std::vector<DecalObject> mDecalObjects;
+	std::vector<fq::graphics::IDecalObject*> mDecalObjects;
+	std::vector<fq::graphics::ITrailObject*> mTrailObjects;
 
 	fq::graphics::IStaticMeshObject* mSocketStaticMeshObject;
 	fq::graphics::ISkinnedMeshObject* mSoketSkinnedMeshObject;

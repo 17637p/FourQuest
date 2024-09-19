@@ -27,6 +27,37 @@
 //
 // }
 //
+// cbuffer cbMaterial
+// {
+//
+//   struct ModelMaterial
+//   {
+//       
+//       float4x4 TexTransform;         // Offset:    0
+//       float4 BaseColor;              // Offset:   64
+//       float4 EmissiveColor;          // Offset:   80
+//       float4 DissolveOutlineStartColor;// Offset:   96
+//       float4 DissolveOutlineEndColor;// Offset:  112
+//       float4 DissolveOutlineStartEmissive;// Offset:  128
+//       float4 DissolveOutlineEndEmissive;// Offset:  144
+//       float Metalness;               // Offset:  160
+//       float Roughness;               // Offset:  164
+//       bool UseAlbedoMap;             // Offset:  168
+//       bool UseMetalnessMap;          // Offset:  172
+//       bool UseRoughnessMap;          // Offset:  176
+//       bool UseNormalMap;             // Offset:  180
+//       bool UseEmissiveMap;           // Offset:  184
+//       float AlphaCutoff;             // Offset:  188
+//       float EmissiveIntensity;       // Offset:  192
+//       bool UseMetalnessSmoothness;   // Offset:  196
+//       bool UseDissolve;              // Offset:  200
+//       float OutlineThickness;        // Offset:  204
+//       float DissolveCutoff;          // Offset:  208
+//
+//   } gModelMaterial;                  // Offset:    0 Size:   212
+//
+// }
+//
 //
 // Resource Bindings:
 //
@@ -35,6 +66,7 @@
 // cbModelTransform                  cbuffer      NA          NA            cb0      1 
 // cbSceneTransform                  cbuffer      NA          NA            cb1      1 
 // cbBoneTransform                   cbuffer      NA          NA            cb2      1 
+// cbMaterial                        cbuffer      NA          NA            cb3      1 
 //
 //
 //
@@ -69,6 +101,7 @@ dcl_globalFlags refactoringAllowed
 dcl_constantbuffer CB0[4], immediateIndexed
 dcl_constantbuffer CB1[8], immediateIndexed
 dcl_constantbuffer CB2[512], dynamicIndexed
+dcl_constantbuffer CB3[2], immediateIndexed
 dcl_input v0.xyz
 dcl_input v1.xyz
 dcl_input v2.xyz
@@ -215,7 +248,10 @@ dp3 r0.w, r2.xyzx, r2.xyzx
 rsq r0.w, r0.w
 mul r1.xyz, r0.wwww, r2.xyzx
 mov o3.xyz, r1.xyzx
-mov o4.xy, v3.xyxx
+mov r2.xy, v3.xyxx
+mov r2.z, l(1.000000)
+dp3 o4.x, r2.xyzx, cb3[0].xywx
+dp3 o4.y, r2.xyzx, cb3[1].xywx
 dp3 r2.x, r0.xyzx, cb1[0].xyzx
 dp3 r2.y, r0.xyzx, cb1[1].xyzx
 dp3 r2.z, r0.xyzx, cb1[2].xyzx
@@ -229,4 +265,4 @@ dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul o6.xyz, r0.wwww, r0.xyzx
 ret 
-// Approximately 144 instruction slots used
+// Approximately 147 instruction slots used

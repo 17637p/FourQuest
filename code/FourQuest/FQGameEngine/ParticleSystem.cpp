@@ -4,10 +4,12 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Particle.h"
 
 fq::game_engine::ParticleSystem::ParticleSystem()
 	:mGameProcess(nullptr)
-	,mbIsGameLoaded(false)
+	, mbIsGameLoaded(false)
 {}
 
 fq::game_engine::ParticleSystem::~ParticleSystem()
@@ -41,22 +43,6 @@ void fq::game_engine::ParticleSystem::Initialize(GameProcess* gameProcess)
 		RegisterHandle<fq::event::RemoveComponent>(this, &ParticleSystem::RemoveComponent);
 }
 
-void fq::game_engine::ParticleSystem::Update(float dt)
-{
-	using namespace fq::game_module;
-	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-
-	scene->ViewComponents<Transform, Particle>
-		([dt](GameObject& object, Transform& transform, Particle& particle)
-			{
-				auto particleObject = particle.GetParticleObject();
-				if (particleObject)
-				{
-					particleObject->SetTransform(transform.GetWorldMatrix());
-					particleObject->SetFrameTime(dt);
-				}
-			});
-}
 
 void fq::game_engine::ParticleSystem::OnUnLoadScene()
 {
@@ -112,12 +98,11 @@ void fq::game_engine::ParticleSystem::loadParticle(fq::game_module::GameObject* 
 
 	auto particle = object->GetComponent<fq::game_module::Particle>();
 	auto particleInfo = particle->GetParticleInfomation();
-
-	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleInfo);
+	fq::graphics::ParticleMaterialInfo materialInfo = particle->GetParticleMaterialInfo();
+	auto particleMaterial = mGameProcess->mGraphics->CreateParticleMaterial(materialInfo);
+	auto particleObject = mGameProcess->mGraphics->CreateParticleObject(particleMaterial, particleInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	particle->SetParticleObject(particleObject);
-
-	particleObject->SetIsRenderDebug(true);
-	particleObject->SetIsEmit(true);
+	particle->SetParticleMaterial(particleMaterial);
 }
 
 void fq::game_engine::ParticleSystem::unloadParticle(fq::game_module::GameObject* object)
@@ -131,6 +116,10 @@ void fq::game_engine::ParticleSystem::unloadParticle(fq::game_module::GameObject
 	auto particleObject = particle->GetParticleObject();
 
 	if (particleObject != nullptr)
+	{
 		mGameProcess->mGraphics->DeleteParticleObject(particleObject);
-}
 
+		auto material = particle->GetParticleMaterial();
+		particle->SetParticleObject(nullptr);
+	}
+}

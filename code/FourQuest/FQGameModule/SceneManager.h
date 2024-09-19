@@ -13,6 +13,8 @@ namespace fq::game_module
 	class PrefabManager;
 	class InputManager;
 	class EventManager;
+	class ScreenManager;
+	class TimeManager;
 
 	/// <summary>
 	/// 씬을 관리하는 클래스 
@@ -31,7 +33,10 @@ namespace fq::game_module
 		void Initialize(const std::string& startSceneName
 			, EventManager* eventMgr
 			, InputManager* inputMgr
-			, PrefabManager* prefabMgr);
+			, PrefabManager* prefabMgr
+			, ScreenManager* screenMgr
+			, TimeManager* timeMgr
+			, bool isInvokeStartScene = false);
 
 		/// <summary>
 		/// 씬 매니져를 종료합니다
@@ -74,8 +79,7 @@ namespace fq::game_module
 		/// <summary>
 		/// 씬을 변경합니다.
 		/// </summary>
-		/// <param name="sceneName">다음 씬의 이름</param>
-		void ChangeScene(const std::string& nextSceneName);
+		void ChangeScene();
 
 		/// <summary>
 		/// 후처리 이벤트를 처리합니다
@@ -99,18 +103,21 @@ namespace fq::game_module
 		/// </summary>
 		/// <param name="event">요청에 필요한 정보</param>
 		void RequestChangeScene(fq::event::RequestChangeScene event);
-		
+
 		/// <summary>
 		/// 게임 종료 요청을 보냅니다
 		/// </summary>
 		/// <param name="event">요청에 필요한 정보</param>
 		void RequestExitGame(fq::event::RequestExitGame event);
-		
+
+		bool IsChangeScene()const;
+
 	private:
 		std::unique_ptr<Scene> mCurrentScene;
-		
+
 		EventManager* mEventManager;
 		PrefabManager* mPrefabManager;
+		TimeManager* mTimeManager;
 
 		EventHandler mRequestChangeSceneHandler;
 		EventHandler mRequestExitGameHadler;

@@ -4,7 +4,8 @@
 #include "ShadowPass.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "BoneHierarchy.h"
+#include "NodeHierarchy.h"
+#include "RenderObject.h"
 
 namespace fq::graphics
 {
@@ -32,23 +33,32 @@ namespace fq::graphics
 		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
 
 		auto staticMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS.cso");
+		auto staticMeshVertexColorVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_VERTEX_COLOR.cso");
 		auto skinnedMeshVS = std::make_shared<D3D11VertexShader>(mDevice, L"ModelVS_SKINNING.cso");
+
 		auto transparentRenderPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER.cso");
+		auto transparentRenderVertexColorPS = std::make_shared<D3D11PixelShader>(mDevice, L"ModelTransparentPS_RENDER_VERTEX_COLOR.cso");
 		auto disableDepthWriteState = resourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::DisableDepthWirte);
 		auto OITRenderState = resourceManager->Create<D3D11BlendState>(ED3D11BlendState::OITRender);
 		auto pipelieState = std::make_shared<PipelineState>(nullptr, disableDepthWriteState, OITRenderState);
 		mStaticMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVS, nullptr, transparentRenderPS, pipelieState);
+		mStaticMeshVertexColorShaderProgram = std::make_unique<ShaderProgram>(mDevice, staticMeshVertexColorVS, nullptr, transparentRenderVertexColorPS, pipelieState);
 		mSkinnedMeshShaderProgram = std::make_unique<ShaderProgram>(mDevice, skinnedMeshVS, nullptr, transparentRenderPS, pipelieState);
 
+		mLessEqualStencilReplaceState = mResourceManager->Create<D3D11DepthStencilState>(ED3D11DepthStencilState::LessEqualStencilWriteReplace);
 		mAnisotropicWrapSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicWrap);
+		mAnisotropicClampSamplerState = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::AnisotropicClamp);
 		mShadowSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mDefualtSampler = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::Default);
+		mLinearWrap = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
+		mDefaultRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::Default);
+		mCullOffRasterizer = resourceManager->Create<D3D11RasterizerState>(ED3D11RasterizerState::CullOff);
+
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mBoneTransformCB = std::make_shared<D3D11ConstantBuffer<BoneTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mMaterialCB = std::make_shared< D3D11ConstantBuffer<CBMaterial>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mDirectioanlShadowInfoCB = std::make_shared< D3D11ConstantBuffer<DirectionalShadowInfo>>(mDevice, ED3D11ConstantBuffer::Transform);
-		mAlphaDataCB = std::make_shared<D3D11ConstantBuffer<AlphaData>>(mDevice, ED3D11ConstantBuffer::Transform);
+		mMaterialInstanceCB = std::make_shared<D3D11ConstantBuffer<CBMaterialInstance>>(mDevice, ED3D11ConstantBuffer::Transform);
 
 		mViewport.Width = (float)width;
 		mViewport.Height = (float)height;
@@ -73,16 +83,19 @@ namespace fq::graphics
 		mStaticMeshShaderProgram = nullptr;
 		mSkinnedMeshShaderProgram = nullptr;
 
+		mLessEqualStencilReplaceState = nullptr;
 		mAnisotropicWrapSamplerState = nullptr;
+		mAnisotropicClampSamplerState = nullptr;
 		mShadowSampler = nullptr;
 		mDefualtSampler = nullptr;
+		mLinearWrap = nullptr;
+		mCullOffRasterizer = nullptr;
 
 		mModelTransformCB = nullptr;
 		mSceneTransformCB = nullptr;
 		mBoneTransformCB = nullptr;
 		mMaterialCB = nullptr;
-		mDirectioanlShadowInfoCB = nullptr;
-		mAlphaDataCB = nullptr;
+		mMaterialInstanceCB = nullptr;
 	}
 	void TransparentRenderPass::OnResize(unsigned short width, unsigned short height)
 	{
@@ -103,56 +116,10 @@ namespace fq::graphics
 		// Particle
 		// update
 		{
-			size_t currentDirectionaShadowCount = mLightManager->GetDirectionalShadows().size();
-			DirectionalShadowInfo directionalShadowData;
-			directionalShadowData.ShadowCount = currentDirectionaShadowCount;
-
-			if (currentDirectionaShadowCount > 0)
-			{
-				const std::vector<std::shared_ptr<Light<DirectionalLight>>>& directioanlShadows = mLightManager->GetDirectionalShadows();
-				DirectionalShadowTransform directionalShadowTransformData;
-				directionalShadowTransformData.ShadowCount = currentDirectionaShadowCount;
-
-
-				for (size_t i = 0; i < currentDirectionaShadowCount; ++i)
-				{
-					std::vector<float> cascadeEnds = ShadowPass::CalculateCascadeEnds({ 0.33, 0.66 },
-						mCameraManager->GetNearPlane(ECameraType::Player),
-						mCameraManager->GetFarPlane(ECameraType::Player));
-
-					std::vector<DirectX::SimpleMath::Matrix> shadowTransforms = ShadowPass::CalculateCascadeShadowTransform(cascadeEnds,
-						mCameraManager->GetViewMatrix(ECameraType::Player),
-						mCameraManager->GetProjectionMatrix(ECameraType::Player),
-						directioanlShadows[i]->GetData().direction);
-					assert(shadowTransforms.size() == 3);
-
-					DirectX::SimpleMath::Matrix texTransform =
-					{
-						 0.5f, 0.0f, 0.0f, 0.0f,
-						 0.0f, -0.5f, 0.0f, 0.0f,
-						 0.0f, 0.0f, 1.0f, 0.0f,
-						 0.5f, 0.5f, 0.0f, 1.0f
-					};
-					auto cameraProj = mCameraManager->GetProjectionMatrix(ECameraType::Player);
-					size_t shaodwIndex = i * DirectionalShadowTransform::MAX_SHADOW_COUNT;
-
-					directionalShadowTransformData.ShadowViewProj[shaodwIndex] = (shadowTransforms[0] * texTransform).Transpose();
-					directionalShadowData.CascadeEnds[i].x = Vector4::Transform({ 0, 0, cascadeEnds[1], 1.f }, cameraProj).z;
-					directionalShadowTransformData.ShadowViewProj[shaodwIndex + 1] = (shadowTransforms[1] * texTransform).Transpose();
-					directionalShadowData.CascadeEnds[i].y = Vector4::Transform({ 0, 0, cascadeEnds[2], 1.f }, cameraProj).z;
-					directionalShadowTransformData.ShadowViewProj[shaodwIndex + 2] = (shadowTransforms[2] * texTransform).Transpose();
-					directionalShadowData.CascadeEnds[i].z = Vector4::Transform({ 0, 0, cascadeEnds[3], 1.f }, cameraProj).z;
-				}
-			}
-
-			mDirectioanlShadowInfoCB->Update(mDevice, directionalShadowData);
-
 			SceneTrnasform sceneTransform;
 			sceneTransform.ViewProjMat = mCameraManager->GetViewMatrix(ECameraType::Player) * mCameraManager->GetProjectionMatrix(ECameraType::Player);
 			sceneTransform.ViewProjMat = sceneTransform.ViewProjMat.Transpose();
 			mSceneTransformCB->Update(mDevice, sceneTransform);
-
-			mLightManager->UpdateConstantBuffer(mDevice, mCameraManager->GetPosition(ECameraType::Player), false);
 		}
 
 		// init
@@ -178,35 +145,100 @@ namespace fq::graphics
 
 			mModelTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader);
 			mSceneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 1);
+			mMaterialCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 3);
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
+			mLinearWrap->Bind(mDevice,3, ED3D11ShaderType::PixelShader);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
-			mAlphaDataCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
+			mMaterialInstanceCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 		}
+
+		auto bindingState = [this](const MaterialInfo& materialInfo)
+			{
+				switch (materialInfo.RasterizeType)
+				{
+				case ERasterizeMode::TwoSide:
+					mCullOffRasterizer->Bind(mDevice);
+					break;
+				case ERasterizeMode::BackFaceClip:
+					mDefaultRasterizer->Bind(mDevice);
+					break;
+				default:
+					assert(false);
+				}
+
+				switch (materialInfo.SampleType)
+				{
+				case ESampleMode::Clamp:
+					mAnisotropicClampSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				case ESampleMode::Wrap:
+					mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
+					break;
+				default:
+					assert(false);
+				}
+			};
 
 		// Draw
 		{
-			mStaticMeshShaderProgram->Bind(mDevice);
-
 			for (const StaticMeshJob& job : mJobManager->GetStaticMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Transparent)
+				const MaterialInfo& materialInfo = job.Material->GetInfo();
+
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
 				{
 					job.StaticMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					bindingState(materialInfo);
 
-					AlphaData alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = job.Alpha;
+					if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::VertexColor)
+					{
+						mStaticMeshVertexColorShaderProgram->Bind(mDevice);
+					}
+					else
+					{
+						mStaticMeshShaderProgram->Bind(mDevice);
+					}
 
-					mAlphaDataCB->Update(mDevice, alphaData);
+					// 반투명 오브젝트에 데칼 적용이 될 필요가 있나?
+					//if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					//}
+					//else
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					//}
+
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.NodeHierarchyInstnace->GetRootTransform(job.StaticMeshObject->GetReferenceBoneIndex()) * job.StaticMeshObject->GetTransform());
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
+					}
+
+					const auto& uvAnimInstnace = job.StaticMeshObject->GetUVAnimationInstanceOrNull();
+
+					if (uvAnimInstnace != nullptr)
+					{
+						const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
+						const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					}
+
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -214,23 +246,42 @@ namespace fq::graphics
 
 			mBoneTransformCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 2);
 			mSkinnedMeshShaderProgram->Bind(mDevice);
+			std::vector<DirectX::SimpleMath::Matrix> identityTransforms(BoneTransform::MAX_BOND_COUNT);
 
 			for (const SkinnedMeshJob& job : mJobManager->GetSkinnedMeshJobs())
 			{
-				if (job.ObjectRenderType == EObjectRenderType::Transparent)
+				const MaterialInfo& materialInfo = job.Material->GetInfo();
+
+				if (materialInfo.RenderModeType == MaterialInfo::ERenderMode::Transparent)
 				{
 					job.SkinnedMesh->Bind(mDevice);
 					job.Material->Bind(mDevice);
 
-					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, *job.TransformPtr);
+					bindingState(materialInfo);
+
+					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-					ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, *job.BoneMatricesPtr);
 
-					AlphaData alphaData;
-					alphaData.bUseAlphaConstant = true;
-					alphaData.Alpha = job.Alpha;
+					// 반투명 오브젝트에 데칼 적용이 필요한가?
+					//if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					//}
+					//else
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					//}
 
-					mAlphaDataCB->Update(mDevice, alphaData);
+					if (job.NodeHierarchyInstnace != nullptr)
+					{
+						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, job.NodeHierarchyInstnace->GetTransposedFinalTransforms());
+					}
+					else
+					{
+						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
+					}
+
+					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

@@ -21,22 +21,22 @@ namespace fq::game_module
 		void SetDecalInfo(const DecalInfo& decalInfo) { mDecalInfo = decalInfo; if (mDecalObjectInterface) { mDecalObjectInterface->SetDecalInfo(mDecalInfo); } }
 		const DecalInfo& GetDecalInfo() const { return mDecalInfo; }
 
-		void SetDecalMaterialInfo(const DecalMaterialInfo& decalMaterialInfo) { mDecalMaterialInfo = decalMaterialInfo; if (mMaterialInterface) { mMaterialInterface->SetDecalMaterialInfo(mDecalMaterialInfo); } }
-		const DecalMaterialInfo& GetDecalMaterialInfo() const { return mDecalMaterialInfo; }
-
 		void SetDecalObjectInterface(graphics::IDecalObject* decalObjectInterface) { mDecalObjectInterface = decalObjectInterface; }
 		graphics::IDecalObject* GetDecalObjectInterface() const { return mDecalObjectInterface; }
 
-		void SetIMaterial(std::shared_ptr<graphics::IMaterial> iMaterial) { mMaterialInterface = iMaterial; }
-		std::shared_ptr<graphics::IMaterial> GetIMaterial() { return mMaterialInterface; }
+		void SetDecalMaterialInfo(const DecalMaterialInfo& decalMaterialInfo) { mDacalMaterialInfo = decalMaterialInfo; if (mDecalMaterial != nullptr) { mDecalMaterial->SetInfo(mDacalMaterialInfo); } }
+		const DecalMaterialInfo& GetDecalMaterialInfo() const { return mDacalMaterialInfo; }
+
+		void SetDecalMaterial(std::shared_ptr<graphics::IDecalMaterial> decalMaterial) { mDecalMaterial = decalMaterial; }
+		std::shared_ptr<graphics::IDecalMaterial> GetDecalMaterial() const { return mDecalMaterial; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
 		graphics::IDecalObject* mDecalObjectInterface;
-		std::shared_ptr<graphics::IMaterial> mMaterialInterface;
+		std::shared_ptr<graphics::IDecalMaterial> mDecalMaterial;
 		DecalInfo mDecalInfo;
-		DecalMaterialInfo mDecalMaterialInfo;
+		DecalMaterialInfo mDacalMaterialInfo;
 	};
 }

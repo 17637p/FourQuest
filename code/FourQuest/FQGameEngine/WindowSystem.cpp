@@ -9,19 +9,18 @@ std::vector<std::wstring> fq::game_engine::WindowSystem::DropFiles{};
 
 fq::game_engine::WindowSystem::WindowSystem()
 	:mHWND{}
-	,mHInstance{}
-	,mScreenWidth{}
-	,mScreenHeight{}
-	,mScreenLeft{}
-	,mScreenTop{}
+	, mHInstance{}
+	, mScreenLeft{}
+	, mScreenTop{}
+	, mMonitorHeight{}
+	, mMonitorWidth{}
 {}
 
-void fq::game_engine::WindowSystem::Initialize()
+void fq::game_engine::WindowSystem::Initialize(UINT screenWidth, UINT screenHeight)
 {
 	mHInstance = ::GetModuleHandle(NULL);
 
 	WNDCLASS wndClass{};
-
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.lpfnWndProc = WndProc::GameWndProc;
 	wndClass.cbClsExtra = 0;
@@ -35,27 +34,44 @@ void fq::game_engine::WindowSystem::Initialize()
 
 	RegisterClass(&wndClass);
 
-	RECT rect = { 0,0, 1920, 1080 };
+	// 모니터 해상도 
+	mMonitorWidth = GetSystemMetrics(SM_CXSCREEN);
+	mMonitorHeight = GetSystemMetrics(SM_CYSCREEN);
+
+	RECT rect = {};
+	rect.left = mMonitorWidth / 2 - screenWidth / 2;
+	rect.right = mMonitorWidth / 2 + screenWidth / 2;
+	rect.top = mMonitorHeight / 2 - screenHeight / 2;
+	rect.bottom = mMonitorHeight / 2 + screenHeight / 2;
+
+	::AdjustWindowRect(&rect, WS_OVERLAPPED |
+		WS_CAPTION |
+		WS_SYSMENU |
+		WS_MINIMIZEBOX |
+		WS_MAXIMIZEBOX, false);
 
 	mHWND = CreateWindow(L"4Quset"
 		, L"4Quest"
-		, WS_OVERLAPPEDWINDOW
+		, WS_OVERLAPPED |
+		WS_CAPTION |
+		WS_SYSMENU |
+		WS_MINIMIZEBOX |
+		WS_MAXIMIZEBOX
 		, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top
 		, NULL, NULL, mHInstance, NULL);
 
-	::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
-
-	mScreenWidth = rect.right - rect.left;
-	mScreenHeight = rect.bottom - rect.top;
-	mScreenLeft = rect.left;
-	mScreenTop = rect.top;
+	// 화면 해상도
+	mScreenWidth = screenWidth;
+	mScreenHeight = screenHeight;
+	mScreenLeft = rect.left;//rect.left;
+	mScreenTop = rect.top;// rect.top;
 
 	::ShowWindow(mHWND, SW_SHOWNORMAL);
 	::UpdateWindow(mHWND);
 }
 
 
-void fq::game_engine::WindowSystem::InitializeEditorType()
+void fq::game_engine::WindowSystem::InitializeEditorType(UINT screenWidth, UINT screenHeight)
 {
 	mHInstance = ::GetModuleHandle(NULL);
 
@@ -74,7 +90,17 @@ void fq::game_engine::WindowSystem::InitializeEditorType()
 
 	RegisterClass(&wndClass);
 
-	RECT rect = { 0,0, 1920, 1080 };
+	// 모니터 해상도 
+	mMonitorWidth = GetSystemMetrics(SM_CXSCREEN);
+	mMonitorHeight = GetSystemMetrics(SM_CYSCREEN);
+
+	RECT rect = {};
+	rect.left = mMonitorWidth / 2 - screenWidth / 2;
+	rect.right = mMonitorWidth / 2 + screenWidth / 2;
+	rect.top = mMonitorHeight / 2 - screenHeight / 2;
+	rect.bottom = mMonitorHeight / 2 + screenHeight / 2;
+
+	::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 
 	mHWND = CreateWindow(L"4Quset"
 		, L"4Quest"
@@ -85,12 +111,11 @@ void fq::game_engine::WindowSystem::InitializeEditorType()
 	// DragDrop 이벤트를 활성화
 	DragAcceptFiles(mHWND, true);
 
-	::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
-
-	mScreenWidth = rect.right - rect.left;
-	mScreenHeight = rect.bottom - rect.top;
-	mScreenLeft = rect.left;
-	mScreenTop = rect.top;
+	// 화면 해상도
+	mScreenWidth = screenWidth;
+	mScreenHeight = screenHeight;
+	mScreenLeft = rect.left;//rect.left;
+	mScreenTop = rect.top;// rect.top;
 
 	::ShowWindow(mHWND, SW_SHOWNORMAL);
 	::UpdateWindow(mHWND);
@@ -109,9 +134,8 @@ void fq::game_engine::WindowSystem::Finalize()
 
 void fq::game_engine::WindowSystem::OnResize()
 {
-	mScreenWidth= WindowSystem::Width;
+	mScreenWidth = WindowSystem::Width;
 	mScreenHeight = WindowSystem::Height;
-
 }
 
 bool fq::game_engine::WindowSystem::IsResizedWindow()const

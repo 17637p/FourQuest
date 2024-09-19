@@ -17,11 +17,21 @@
 #include "SkyBoxWindow.h"
 #include "AnimatorWindow.h"
 #include "Setting.h"
+#include "NavigationMeshWindow.h"
+#include "ArticulationHierarchy.h"
+#include "ArticulationInspector.h"
+#include "LightProbeWindow.h"
+#include "ExportWindow.h"
+#include "ImportWindow.h"
+#include "MaterialWindow.h"
+#include "LightmapWindow.h"
+#include "GameVariableWindow.h"
+#include "RenderingDebugWindow.h"
 
 // system
 #include "ImGuiSystem.h"
 #include "CommandSystem.h"
-#include "PrefabSystem.h"
+#include "ImageSystem.h"
 #include "ModelSystem.h"
 #include "DebugSystem.h"
 
@@ -50,11 +60,21 @@ namespace fq::game_engine
 		std::unique_ptr<CollisionMatrixWindow> mCollisionMatrixWindow;
 		std::unique_ptr<SkyBoxWindow> mSkyBoxWindow;
 		std::unique_ptr<Setting> mSettingWindow;
+		std::unique_ptr<NavigationMeshWindow> mNavMeshWindow;
+		std::unique_ptr<ArticulationHierarchy> mArticulationHierarchy;
+		std::unique_ptr<ArticulationInspector> mArticulationInspector;
+		std::unique_ptr<LightProbeWindow> mLightProbeWindow;
+		std::unique_ptr<ExportWindow> mExportWindow;
+		std::unique_ptr<ImportWindow> mImportWindow;
+		std::unique_ptr<MaterialWindow> mMaterialWindow;
+		std::unique_ptr<LightmapWindow> mLightmapWindow;
+		std::unique_ptr<GameVariableWindow> mGameVariableWindow;
+		std::unique_ptr<RenderingDebugWindow> mRenderingDebugWindow;
 
 		// System
 		std::unique_ptr<ImGuiSystem> mImGuiSystem;
 		std::unique_ptr<CommandSystem> mCommandSystem;
-		std::unique_ptr<PrefabSystem> mPrefabSystem;
+		std::unique_ptr<ImageSystem> mImageSystem;
 		std::unique_ptr<ModelSystem> mModelSystem;
 		std::unique_ptr<DebugSystem> mDebugSystem;
 

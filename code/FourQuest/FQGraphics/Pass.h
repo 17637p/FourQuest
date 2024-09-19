@@ -16,6 +16,7 @@ namespace fq::graphics
 	class D3D11ResourceManager;
 	class D3D11CameraManager;
 	class D3D11LightManager;
+	class D3D11LightProbeManager;
 	class D3D11JobManager;
 	class D3D11ParticleManager;
 	class D3D11DebugDrawManager;
@@ -25,8 +26,10 @@ namespace fq::graphics
 	class D3D11DepthStencilState;
 	class D3D11SamplerState;
 	class D3D11Texture;
+	class D3D11CubeTexture;
 	class D3D11UnorderedAccessView;
 	class D3D11StructuredBuffer;
+	class D3D11ObjectManager;
 
 	class Pass
 	{

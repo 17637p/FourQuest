@@ -6,6 +6,7 @@
 #include "imgui_stdlib.h"
 
 #include "../FQGameModule/InputManager.h"
+#include "../FQGameModule/Transform.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "CommandSystem.h"
@@ -24,6 +25,8 @@ fq::game_engine::Hierarchy::Hierarchy()
 	, mCopyObject(nullptr)
 	, mSelectObjectHandle{}
 	, mbIsOpen(true)
+	, mbIsFocused(false)
+	, mbFlipHierachy(false)
 {}
 
 fq::game_engine::Hierarchy::~Hierarchy()
@@ -42,14 +45,22 @@ void fq::game_engine::Hierarchy::Initialize(GameProcess* game, EditorProcess* ed
 
 	// 이벤트 핸들 등록
 	mSelectObjectHandle = mEventManager->RegisterHandle<editor_event::SelectObject>
-		([this](editor_event::SelectObject event) {
-		mSelectObject = event.object;
+		([this](editor_event::SelectObject event)
+			{
+				mSelectObject = event.object;
 			});
 
 	mSelectAnimationState = mEventManager->RegisterHandle<editor_event::SelectAnimationState>
 		([this](editor_event::SelectAnimationState event)
 			{
 				mSelectObject = nullptr;
+			});
+
+
+	mFlipHierachy = mEventManager->RegisterHandle<editor_event::FlipHierachy>
+		([this](editor_event::FlipHierachy event)
+			{
+				mbFlipHierachy = true;
 			});
 }
 
@@ -59,6 +70,8 @@ void fq::game_engine::Hierarchy::Render()
 
 	if (ImGui::Begin("Hierarchy", &mbIsOpen))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		beginSearchBar();
 
 		if (ImGui::BeginChild("HierarchyChild"))
@@ -77,6 +90,8 @@ void fq::game_engine::Hierarchy::Render()
 		dragDropWindow();
 	}
 	ImGui::End();
+
+	mbFlipHierachy = false;
 }
 
 void fq::game_engine::Hierarchy::beginPopupContextWindow_HierarchyChild()
@@ -107,7 +122,7 @@ void fq::game_engine::Hierarchy::beginHierarchy()
 	for (auto& object : mScene->GetObjectView(true))
 	{
 		// Root들만 정보를 표시합니다
-		if (object.GetParent() != nullptr)
+		if (object.GetParent() != nullptr || object.IsDestroyed())
 		{
 			continue;
 		}
@@ -124,11 +139,13 @@ void fq::game_engine::Hierarchy::beginHierarchyOfSearch()
 	{
 		std::string objectName = object.GetName();
 
-		if (objectName.find(mSearchString) == std::string::npos)
+		if (objectName.find(mSearchString) == std::string::npos
+			|| object.IsDestroyed())
 		{
 			continue;
 		}
 
+		begineGameObectSelectButton(object);
 		beginGameObjectNameBar(object);
 	}
 }
@@ -197,7 +214,8 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 		std::string treeNodeName = "##Tree" + std::to_string(object.GetID());
 
 		// 선택한 오브젝트가 자식 계층인 경우에서 TreeNode를 펼칩니다
-		if (mSelectObject && objectT->IsDescendant(mSelectObject->GetComponent<fq::game_module::Transform>()))
+		if (mSelectObject && objectT->IsDescendant(mSelectObject->GetComponent<fq::game_module::Transform>())
+			&& mbFlipHierachy)
 		{
 			ImGui::SetNextItemOpen(true);
 		}
@@ -206,7 +224,8 @@ void fq::game_engine::Hierarchy::beginGameObjectBar(fq::game_module::GameObject&
 		{
 			for (auto& child : children)
 			{
-				beginGameObjectBar(*child);
+				if (!child->IsDestroyed())
+					beginGameObjectBar(*child);
 			}
 
 			ImGui::TreePop();
@@ -378,7 +397,7 @@ void fq::game_engine::Hierarchy::dragDropWindow()
 					{
 						childSP->GetComponent<fq::game_module::Transform>()->SetParent(nullptr);
 					};
-				auto undo = [childSP, parentSP]() 
+				auto undo = [childSP, parentSP]()
 					{
 						childSP->GetComponent<fq::game_module::Transform>()
 							->SetParent(parentSP->GetComponent<fq::game_module::Transform>());
@@ -404,7 +423,9 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 
 	const auto& input = mEditorProcess->mInputManager;
 
-	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold))
+	bool isFoused = mbIsFocused || mEditorProcess->mGamePlayWindow->IsFocusedWindow();
+
+	if (input->IsKeyState(EKey::Ctrl, EKeyState::Hold) && isFoused)
 	{
 		// Ctrl + C (복사)
 		if (input->IsKeyState(EKey::C, EKeyState::Tap) && mSelectObject)
@@ -452,7 +473,8 @@ void fq::game_engine::Hierarchy::ExcuteShortcut()
 			mEditorProcess->mCommandSystem->Push<AddObjectCommand>(mScene, root);
 		}
 	}
-	else if (mSelectObject && input->IsKeyState(EKey::Del, EKeyState::Tap))
+	else if (mSelectObject && input->IsKeyState(EKey::Del, EKeyState::Tap)
+		&& isFoused)
 	{
 		// Delete
 		mEditorProcess->mCommandSystem->Push<DestroyObjectCommand>(mScene

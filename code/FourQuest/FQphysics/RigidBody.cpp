@@ -10,6 +10,8 @@ namespace fq::physics
 		, mHalfHeight()
 		, mExtent()
 		, mScale(DirectX::SimpleMath::Vector3(1.f, 1.f, 1.f))
+		, mOffsetTranslation(DirectX::SimpleMath::Matrix::Identity)
+		, mOffsetRotation(DirectX::SimpleMath::Matrix::Identity)
 	{
 	}
 
@@ -17,7 +19,7 @@ namespace fq::physics
 	{
 	}
 
-	void RigidBody::updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix)
+	void RigidBody::updateShapeGeometry(physx::PxRigidActor* actor, const physx::PxGeometry& newGeometry, physx::PxPhysics* physics, physx::PxMaterial* material, int* collisionMatrix, void* userData)
 	{
 		// 货肺款 shape 积己
 		physx::PxShape* newShape = physics->createShape(newGeometry, *material);
@@ -27,6 +29,9 @@ namespace fq::physics
 		newShape->setSimulationFilterData(filterdata);
 		newShape->setContactOffset(0.02f);
 		newShape->setRestOffset(0.01f);
+		newShape->userData = userData;
+		userData = nullptr;
+
 
 		if (mColliderType == EColliderType::COLLISION)
 		{
@@ -39,7 +44,15 @@ namespace fq::physics
 		}
 
 		// 货肺款 shape甫 actor俊 眠啊
+		physx::PxShape* prevShape = nullptr;
+		actor->getShapes(&prevShape, 1);
+		if (prevShape != nullptr)
+		{
+			actor->detachShape(*prevShape);
+		}
+
 		actor->attachShape(*newShape);
+		assert(newShape->getReferenceCount() == 2);
 
 		// 货肺款 shape 秦力
 		newShape->release();

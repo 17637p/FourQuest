@@ -5,12 +5,14 @@
 #include "RenderJob.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "RenderObject.h"
 #include "Define.h"
 
 namespace fq::graphics
 {
-	TerrainPass::TerrainPass()
-		:mDevice(nullptr),
+	TerrainPass::TerrainPass(EPipelineType pipelineType)
+		: mPipelineType(pipelineType),
+		mDevice(nullptr),
 		mJobManager(nullptr),
 		mCameraManager(nullptr),
 		mResourceManager(nullptr),
@@ -44,28 +46,59 @@ namespace fq::graphics
 		mLightManager = lightManager;
 
 		mTerrainVS = std::make_shared<D3D11VertexShader>(mDevice, L"TerrainVS.cso");
-		mTerrainPS = std::make_shared<D3D11PixelShader>(mDevice, L"TerrainPS.cso");
 		mTerrainDS = std::make_shared<D3D11DomainShader>(mDevice, L"TerrainDS.cso");
 		mTerrainHS = std::make_shared<D3D11HullShader>(mDevice, L"TerrainHS.cso");
 		mTerrainLayout = std::make_shared<D3D11InputLayout>(mDevice, mTerrainVS->GetBlob().Get());
 
 		// 스카이 박스랑 동일하게 가져가면 될듯?
-		mDrawRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+		switch (mPipelineType)
+		{
+		case fq::graphics::EPipelineType::Forward:
+		{
+			mTerrainPS = std::make_shared<D3D11PixelShader>(mDevice, L"TerrainPS.cso");
+
+			mDrawRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Offscreen);
+			auto shadowDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3);
+			mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
+		}
+		break;
+		case fq::graphics::EPipelineType::Deferred:
+		{
+			mTerrainPS = std::make_shared<D3D11PixelShader>(mDevice, L"TerrainPS_DEFERRED.cso");
+
+			mAlbedoRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Albedo);
+			mMetalnessRoughnessRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::MetalnessRoughness);
+			mNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Normal);
+			mEmissiveRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::Emissive);
+			mPositionRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PositionWClipZ);
+			mSourceNormalRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceNormal);
+			mSourceTangentRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::SourceTangent);
+			mPreCalculatedLightRTV = mResourceManager->Get<D3D11RenderTargetView>(ED3D11RenderTargetViewType::PreCalculatedLight);
+		}
+		break;
+		case fq::graphics::EPipelineType::None:
+			assert(false);
+			break;
+		default:
+			assert(false);
+			break;
+		}
+
 		mDrawDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::Default);
-		auto shadowDSV = mResourceManager->Get<D3D11DepthStencilView>(ED3D11DepthStencilViewType::CascadeShadow3);
-		mShadowSRV = std::make_shared<D3D11ShaderResourceView>(mDevice, shadowDSV);
 
 		mDefaultRS = std::make_shared<D3D11RasterizerState>(mDevice, ED3D11RasterizerState::Default);
 		mAnisotropicWrapSS = std::make_shared<D3D11SamplerState>(mDevice, ED3D11SamplerState::AnisotropicWrap);
 		mShadowSS = resourceManager->Get<D3D11SamplerState>(ED3D11SamplerState::Shadow);
 		mPointClampSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointClamp);
+		mPointWrapSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::PointWrap);
+		mLinearWrapSS = resourceManager->Create<D3D11SamplerState>(ED3D11SamplerState::LinearWrap);
 		mDefaultDS = std::make_shared<D3D11DepthStencilState>(mDevice, ED3D11DepthStencilState::Default);
 
 		mModelTransformCB = std::make_shared<D3D11ConstantBuffer<ModelTransform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mSceneTransformCB = std::make_shared<D3D11ConstantBuffer<SceneTrnasform>>(mDevice, ED3D11ConstantBuffer::Transform);
 		mTerrainTextureCB = std::make_shared<D3D11ConstantBuffer<TerrainTexture>>(mDevice, ED3D11ConstantBuffer::TerrainTexture);
 		mTerrainHullCB = std::make_shared<D3D11ConstantBuffer<TerrainHull>>(mDevice, ED3D11ConstantBuffer::TerrainTexture);
-		mDirectioanlShadowInfoCB = resourceManager->Get<D3D11ConstantBuffer<DirectionalShadowInfo>>(ED3D11ConstantBuffer::DirectionalShadowInfo);
+		mLightMapInfomationCB = std::make_shared<D3D11ConstantBuffer<LightMapInfomation>>(mDevice, ED3D11ConstantBuffer::Transform);
 	}
 
 	void TerrainPass::Finalize()
@@ -89,6 +122,8 @@ namespace fq::graphics
 		mDefaultRS = nullptr;
 		mAnisotropicWrapSS = nullptr;
 		mPointClampSS = nullptr;
+		mPointWrapSS = nullptr;
+		mLinearWrapSS = nullptr;
 		mShadowSS = nullptr;
 		mDefaultDS = nullptr;
 
@@ -96,7 +131,16 @@ namespace fq::graphics
 		mSceneTransformCB = nullptr;
 		mTerrainHullCB = nullptr;
 		mTerrainTextureCB = nullptr;
-		mDirectioanlShadowInfoCB = nullptr;
+		mLightMapInfomationCB = nullptr;
+
+		mAlbedoRTV = nullptr;
+		mMetalnessRoughnessRTV = nullptr;
+		mNormalRTV = nullptr;
+		mEmissiveRTV = nullptr;
+		mPositionRTV = nullptr;
+		mSourceNormalRTV = nullptr;
+		mSourceTangentRTV = nullptr;
+		mPreCalculatedLightRTV = nullptr;
 	}
 
 	void TerrainPass::Render()
@@ -110,22 +154,63 @@ namespace fq::graphics
 		}
 
 		// Bind
-		{
-			mDrawRTV->Bind(mDevice, mDrawDSV);
+		const std::shared_ptr<D3D11TextureArray>& lightMapTexture = mLightManager->GetLightMapTextureArray();
+		const std::shared_ptr<D3D11TextureArray>& lightmapDirectionTexture = mLightManager->GetLightMapDirectionTextureArray();
 
+		{
 			mDevice->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
+
+			if (lightMapTexture != nullptr)
+			{
+				lightMapTexture->Bind(mDevice, 19, ED3D11ShaderType::PixelShader);
+			}
+			if (lightmapDirectionTexture != nullptr)
+			{
+				lightmapDirectionTexture->Bind(mDevice, 20, ED3D11ShaderType::PixelShader);
+			}
 
 			mDefaultRS->Bind(mDevice);
 			mAnisotropicWrapSS->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSS->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
+			mPointWrapSS->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
+			mLinearWrapSS->Bind(mDevice, 4, ED3D11ShaderType::PixelShader);
 			mPointClampSS->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
 			mPointClampSS->Bind(mDevice, 0, ED3D11ShaderType::DomainShader);
 			mDefaultDS->Bind(mDevice);
 
+			switch (mPipelineType)
+			{
+			case fq::graphics::EPipelineType::Forward:
+				mDrawRTV->Bind(mDevice, mDrawDSV);
+				mShadowSRV->Bind(mDevice, 18, ED3D11ShaderType::PixelShader);
+				break;
+			case fq::graphics::EPipelineType::Deferred:
+			{
+				std::vector<std::shared_ptr<D3D11RenderTargetView>> renderTargetViews;
+				renderTargetViews.reserve(8u);
+				renderTargetViews.push_back(mAlbedoRTV);
+				renderTargetViews.push_back(mMetalnessRoughnessRTV);
+				renderTargetViews.push_back(mNormalRTV);
+				renderTargetViews.push_back(mEmissiveRTV);
+				renderTargetViews.push_back(mPositionRTV);
+				renderTargetViews.push_back(mSourceNormalRTV);
+				renderTargetViews.push_back(mSourceTangentRTV);
+				renderTargetViews.push_back(mPreCalculatedLightRTV);
+				D3D11RenderTargetView::Bind(mDevice, renderTargetViews, mDrawDSV);
+			}
+			break;
+			case fq::graphics::EPipelineType::None:
+				assert(false);
+				break;
+			default:
+				assert(false);
+				break;
+			}
+
 			TerrainHull terrainHull;
 			terrainHull.MinDist = 200;
 			terrainHull.MaxDist = 5000;
-			terrainHull.MinTess = 0;
+			terrainHull.MinTess = 1;
 			terrainHull.MaxTess = 10;
 			terrainHull.gEyePosW = mCameraManager->GetPosition(ECameraType::Player);
 			// 절두체 면 계산 
@@ -177,8 +262,8 @@ namespace fq::graphics
 			mTerrainHullCB->Bind(mDevice, ED3D11ShaderType::HullShader, 0);
 			mTerrainTextureCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
-			mDirectioanlShadowInfoCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
-			mShadowSRV->Bind(mDevice, 18, ED3D11ShaderType::PixelShader);
+			mLightManager->GetShadowConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 2);
+			mLightMapInfomationCB->Bind(mDevice, ED3D11ShaderType::PixelShader, 3);
 
 			mTerrainVS->Bind(mDevice);
 			mTerrainPS->Bind(mDevice);
@@ -192,13 +277,20 @@ namespace fq::graphics
 			for (const TerrainMeshJob& job : mJobManager->GetTerrainMeshJobs())
 			{
 				job.TerrainMesh->Bind(mDevice);
-				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TransformPtr);
+				ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.TerrainMeshObject->GetTransform());
 
 				if (job.TerrainMaterial != nullptr)
 				{
 					job.TerrainMaterial->Bind(mDevice);
-					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.tempObject);
+					ConstantBufferHelper::UpdateTerrainTextureCB(mDevice, mTerrainTextureCB, job.TerrainMaterial, job.TerrainMeshObject);
 				}
+
+				LightMapInfomation lightmapInfo;
+				lightmapInfo.bUseLightmap = lightMapTexture != nullptr && job.TerrainMeshObject->GetIsStatic();
+				lightmapInfo.bUseDirection = lightmapDirectionTexture != nullptr;
+				lightmapInfo.UVIndex = job.TerrainMeshObject->GetLightmapIndex();
+				lightmapInfo.UVScaleOffset = job.TerrainMeshObject->GetLightmapUVScaleOffset();
+				mLightMapInfomationCB->Update(mDevice, lightmapInfo);
 
 				job.TerrainMesh->Draw(mDevice, job.SubsetIndex);
 			}

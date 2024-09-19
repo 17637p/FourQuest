@@ -5,6 +5,8 @@
 
 namespace fq::physics
 {
+	class PhysicsCollisionDataManager;
+
 	class DynamicRigidBody : public RigidBody
 	{
 	public:
@@ -30,6 +32,8 @@ namespace fq::physics
 		/// </summary>
 		inline physx::PxRigidDynamic* GetPxRigidDynamic();
 
+		bool ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager);
+
 		virtual void SetConvertScale(const DirectX::SimpleMath::Vector3& scale, physx::PxPhysics* physics, int* collisionMatrix) override;
 
 	private:
@@ -40,5 +44,4 @@ namespace fq::physics
 	{
 		return mRigidDynamic;
 	}
-
 }

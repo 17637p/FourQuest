@@ -10,9 +10,6 @@
     <Filter Include="Manager">
       <UniqueIdentifier>{2f5b572a-f716-4d41-bc93-347ba83f9d88}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineDataConverter">
-      <UniqueIdentifier>{752b9b18-cffd-4eb2-b3d8-9cbf956e680f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Tool">
       <UniqueIdentifier>{b44d4da7-2419-4b10-93d2-155e5d2d13d7}</UniqueIdentifier>
     </Filter>
@@ -22,115 +19,139 @@
     <Filter Include="Character\CharacterController">
       <UniqueIdentifier>{8b735414-48ea-4b82-9509-7398b9e8dd9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Character\CharacterController\PlayerController">
-      <UniqueIdentifier>{411263d7-70ef-4d83-9fa5-c7d7c49189e7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Character\CharacterPhysics">
       <UniqueIdentifier>{c17eaaae-1433-4f14-8b3c-8cf2bf1ae99c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Character\CharacterPhysics\Articulation">
-      <UniqueIdentifier>{a11ee2a5-114c-4e19-8459-e0495128c902}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{5b9aa5bd-8e15-4218-86dd-cda0e21c807b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource\ConvexMesh">
-      <UniqueIdentifier>{1a6f6cac-ce3e-418f-87aa-7d6034984655}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Character\CharacterController\CharacterControllerCallback">
-      <UniqueIdentifier>{b9f023b8-1c01-4bf5-8d6d-365c6c88543a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PhysicsActor">
       <UniqueIdentifier>{d564109f-2285-4bf2-ae69-71b3855290de}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PhysicsActor\SimulationEventCallback">
-      <UniqueIdentifier>{474f32ba-6aea-4687-96ba-12179b51a7f6}</UniqueIdentifier>
+    <Filter Include="PhysicsActor\Header">
+      <UniqueIdentifier>{37b9fb57-bd86-478c-8bf1-7f37d9a0cf8d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PhysicsActor\RigidBody">
-      <UniqueIdentifier>{4cb61038-71a3-4f8a-9f18-fb7e7c16062e}</UniqueIdentifier>
+    <Filter Include="Manager\Header">
+      <UniqueIdentifier>{f2137e3f-9175-4f40-8334-28b653dbc0cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PhysicsActor\Cloth">
-      <UniqueIdentifier>{e4ed119a-f108-4fa2-8f1f-bf2c5159bdde}</UniqueIdentifier>
+    <Filter Include="Resource\Header">
+      <UniqueIdentifier>{91398720-00b3-4e8a-869a-cb0c79d45d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface\Header">
+      <UniqueIdentifier>{2f5ee099-8f9d-4bc1-8444-8a9b82c3ada2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterController\Header">
+      <UniqueIdentifier>{387369ea-a17e-43cc-91c4-21e556233bf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\CharacterPhysics\Header">
+      <UniqueIdentifier>{f1e7ae0f-1f54-43bc-8f48-7ef64760b066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{752b9b18-cffd-4eb2-b3d8-9cbf956e680f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper\Header">
+      <UniqueIdentifier>{e1535b79-53fd-4591-9ccd-7be24301626e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tool\Header">
+      <UniqueIdentifier>{f1976975-5348-49c9-862d-fd5d9c8c4d5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Filter">
+      <UniqueIdentifier>{e26831ee-a1d6-4cee-8c33-9fa37a8e23d9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IFQPhysics.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="FQPhysics.h">
-      <Filter>Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsRigidBodyManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
     <ClInclude Include="Physics.h">
       <Filter>physx</Filter>
     </ClInclude>
+    <ClInclude Include="CudaPhysicsCloth.h">
+      <Filter>PhysicsActor\Header</Filter>
+    </ClInclude>
     <ClInclude Include="PhysicsSimulationEventCallback.h">
-      <Filter>PhysicsActor\SimulationEventCallback</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineDataConverter.h">
-      <Filter>EngineDataConverter</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsCookingMeshTool.h">
-      <Filter>Tool</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsCharactorControllerManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsCCTHitCallback.h">
-      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerCharacterController.h">
-      <Filter>Character\CharacterController\PlayerController</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsCharacterPhysicsManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterPhysics.h">
-      <Filter>Character\CharacterPhysics</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterJoint.h">
-      <Filter>Character\CharacterPhysics\Articulation</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterLink.h">
-      <Filter>Character\CharacterPhysics\Articulation</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsResourceManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceBase.h">
-      <Filter>Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="ConvexMeshResource.h">
-      <Filter>Resource\ConvexMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterQueryFilterCallback.h">
-      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
+      <Filter>PhysicsActor\Header</Filter>
     </ClInclude>
     <ClInclude Include="DynamicRigidBody.h">
-      <Filter>PhysicsActor\RigidBody</Filter>
+      <Filter>PhysicsActor\Header</Filter>
     </ClInclude>
     <ClInclude Include="RigidBody.h">
-      <Filter>PhysicsActor\RigidBody</Filter>
+      <Filter>PhysicsActor\Header</Filter>
     </ClInclude>
     <ClInclude Include="StaticRigidBody.h">
-      <Filter>PhysicsActor\RigidBody</Filter>
+      <Filter>PhysicsActor\Header</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsCloth.h">
-      <Filter>PhysicsActor\Cloth</Filter>
+    <ClInclude Include="PhysicsCharacterPhysicsManager.h">
+      <Filter>Manager\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCharactorControllerManager.h">
+      <Filter>Manager\Header</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsClothManager.h">
-      <Filter>Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterMovement.h">
-      <Filter>Character\CharacterController</Filter>
-    </ClInclude>
-    <ClInclude Include="CharacterController.h">
-      <Filter>Character\CharacterController</Filter>
+      <Filter>Manager\Header</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsCollisionDataManager.h">
-      <Filter>Manager</Filter>
+      <Filter>Manager\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsResourceManager.h">
+      <Filter>Manager\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsRigidBodyManager.h">
+      <Filter>Manager\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexMeshResource.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBase.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="FQPhysics.h">
+      <Filter>Interface\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="IFQPhysics.h">
+      <Filter>Interface\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterQueryFilterCallback.h">
+      <Filter>Character\CharacterController\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCCTHitCallback.h">
+      <Filter>Character\CharacterController\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCharacterController.h">
+      <Filter>Character\CharacterController\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>Character\CharacterController\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterMovement.h">
+      <Filter>Character\CharacterController\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterJoint.h">
+      <Filter>Character\CharacterPhysics\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterLink.h">
+      <Filter>Character\CharacterPhysics\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightFieldResource.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="TriangleMeshResource.h">
+      <Filter>Resource\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugData.h">
+      <Filter>Helper\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineDataConverter.h">
+      <Filter>Helper\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterPhysics.h">
+      <Filter>Character\CharacterPhysics\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaClothTool.h">
+      <Filter>Tool\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCookingMeshTool.h">
+      <Filter>Tool\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="RaycastQueryFileter.h">
+      <Filter>Filter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,11 +167,8 @@
     <ClCompile Include="Physics.cpp">
       <Filter>physx</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsSimulationEventCallback.cpp">
-      <Filter>PhysicsActor\SimulationEventCallback</Filter>
-    </ClCompile>
     <ClCompile Include="EngineDataConverter.cpp">
-      <Filter>EngineDataConverter</Filter>
+      <Filter>Helper</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsCookingMeshTool.cpp">
       <Filter>Tool</Filter>
@@ -158,47 +176,17 @@
     <ClCompile Include="PhysicsCharactorControllerManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsCCTHitCallback.cpp">
-      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerCharacterController.cpp">
-      <Filter>Character\CharacterController\PlayerController</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsCharacterPhysicsManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="CharacterPhysics.cpp">
       <Filter>Character\CharacterPhysics</Filter>
     </ClCompile>
-    <ClCompile Include="CharacterJoint.cpp">
-      <Filter>Character\CharacterPhysics\Articulation</Filter>
-    </ClCompile>
-    <ClCompile Include="CharacterLink.cpp">
-      <Filter>Character\CharacterPhysics\Articulation</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsResourceManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
     <ClCompile Include="ResourceBase.cpp">
       <Filter>Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="ConvexMeshResource.cpp">
-      <Filter>Resource\ConvexMesh</Filter>
-    </ClCompile>
-    <ClCompile Include="CharacterQueryFilterCallback.cpp">
-      <Filter>Character\CharacterController\CharacterControllerCallback</Filter>
-    </ClCompile>
-    <ClCompile Include="DynamicRigidBody.cpp">
-      <Filter>PhysicsActor\RigidBody</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>PhysicsActor\RigidBody</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticRigidBody.cpp">
-      <Filter>PhysicsActor\RigidBody</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsCloth.cpp">
-      <Filter>PhysicsActor\Cloth</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsClothManager.cpp">
       <Filter>Manager</Filter>
@@ -212,8 +200,58 @@
     <ClCompile Include="PhysicsCollisionDataManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="CudaPhysicsCloth.cpp">
+      <Filter>PhysicsActor</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSimulationEventCallback.cpp">
+      <Filter>PhysicsActor</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicRigidBody.cpp">
+      <Filter>PhysicsActor</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>PhysicsActor</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticRigidBody.cpp">
+      <Filter>PhysicsActor</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexMeshResource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCharacterController.cpp">
+      <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCCTHitCallback.cpp">
+      <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterQueryFilterCallback.cpp">
+      <Filter>Character\CharacterController</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterLink.cpp">
+      <Filter>Character\CharacterPhysics</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightFieldResource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangleMeshResource.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugData.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="RaycastQueryFileter.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterJoint.cpp">
+      <Filter>Character\CharacterPhysics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="CudaClothTool.cu">
+      <Filter>Tool</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

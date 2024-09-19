@@ -1,15 +1,41 @@
 #include "SkinnedMeshRenderer.h"
 
+#include "Scene.h"
+#include "EventManager.h"
+#include "Event.h"
+
 fq::game_module::SkinnedMeshRenderer::SkinnedMeshRenderer()
-	:mMeshInfomation{}
-	,mSkinnedMeshObject(nullptr)
-	,mOutlineColor{0.f,0.f,0.f,0.f}
+	: mSkinnedMeshObject(nullptr)
+	, mMeshInfomation{}
+	, mModelPath{}
+	, mMeshName{}
+	, mMaterialNames{}
+	, mMaterialInfos{}
+	, mMaterialInterfaces{}
+	, mMaterialPaths{}
+	, mbIsRender{ true }
+	, mMaterialInstanceInfo{}
 {
 }
 
-fq::game_module::SkinnedMeshRenderer::~SkinnedMeshRenderer()
+void fq::game_module::SkinnedMeshRenderer::SetIsRender(bool bIsRender)
 {
+	mbIsRender = bIsRender;
 
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetIsRender(mbIsRender);
+	}
+}
+
+void fq::game_module::SkinnedMeshRenderer::SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info)
+{
+	mMaterialInstanceInfo = info;
+
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetMaterialInstanceInfo(mMaterialInstanceInfo);
+	}
 }
 
 entt::meta_handle fq::game_module::SkinnedMeshRenderer::GetHandle()
@@ -36,32 +62,22 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::SkinnedMeshRenderer
 	return cloneMesh;
 }
 
-void fq::game_module::SkinnedMeshRenderer::SetMeshName(std::string name)
+void fq::game_module::SkinnedMeshRenderer::SetMeshObjectInfomation(const fq::graphics::MeshObjectInfo& info)
 {
-	mMeshInfomation.MeshName = name;
+	mMeshInfomation = info;
+
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetMeshObjectInfo(mMeshInfomation);
+	}
 }
 
-void fq::game_module::SkinnedMeshRenderer::SetMaterials(std::vector<std::string> materials)
-{
-	mMeshInfomation.MaterialNames = std::move(materials);
-}
 
+void fq::game_module::SkinnedMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces) {
+	mMaterialInterfaces = materialInterfaces;
 
-void fq::game_module::SkinnedMeshRenderer::SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info)
-{
-	mMeshInfomation = std::move(info);
-}
-
-void fq::game_module::SkinnedMeshRenderer::SetModelPath(std::string path)
-{
-	mMeshInfomation.ModelPath = path;
-
-}
-
-void fq::game_module::SkinnedMeshRenderer::SetOutlineColor(DirectX::SimpleMath::Color color)
-{
-	mOutlineColor = color;
-
-	if (mSkinnedMeshObject)
-		mSkinnedMeshObject->SetOutlineColor(mOutlineColor);
+	if (mSkinnedMeshObject != nullptr)
+	{
+		mSkinnedMeshObject->SetMaterials(mMaterialInterfaces);
+	}
 }

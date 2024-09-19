@@ -24,7 +24,7 @@ namespace fq::physics
 	{
 	}
 
-	bool CharacterJoint::Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const CharacterJointInfo& info)
+	bool CharacterJoint::Initialize(const std::shared_ptr<CharacterLink> parentLink, const std::shared_ptr<CharacterLink> ownerLink, const JointInfo& info)
 	{
 		mParentLink = parentLink;
 		mOwnerLink = ownerLink;
@@ -41,30 +41,39 @@ namespace fq::physics
 		mDrive.driveType = physx::PxArticulationDriveType::eFORCE;
 
 		mPxJoint = ownerLink->GetPxLink()->getInboundJoint();
+		mPxJoint->setMaxJointVelocity(5.f);
+		mPxJoint->setFrictionCoefficient(0.1f);
+
+		DirectX::SimpleMath::Vector3 scale;
+		DirectX::SimpleMath::Quaternion rotation;
+		DirectX::SimpleMath::Vector3 position;
+		mLocalTransform.Decompose(scale, rotation, position);
+		mLocalTransform =
+			DirectX::SimpleMath::Matrix::CreateScale(1.f)
+			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation) 
+			* DirectX::SimpleMath::Matrix::CreateTranslation(position);
 
 		physx::PxTransform pxlocalTransform;
-		DirectX::SimpleMath::Matrix parentLocalTransform = ownerLink->GetLocalTransform() * mLocalTransform;
+		DirectX::SimpleMath::Matrix parentLocalTransform = mLocalTransform * ownerLink->GetLocalTransform();
+
 		CopyDirectXMatrixToPxTransform(mLocalTransform, pxlocalTransform);
 		mPxJoint->setChildPose(pxlocalTransform);
+
 		CopyDirectXMatrixToPxTransform(parentLocalTransform, pxlocalTransform);
 		mPxJoint->setParentPose(pxlocalTransform);
 
-		ownerLink->GetLocalTransform();
+		if (info.Swing1AxisInfo.motion == EArticulationMotion::LOCKED && info.Swing2AxisInfo.motion == EArticulationMotion::LOCKED && info.TwistAxisInfo.motion == EArticulationMotion::LOCKED)
+			mPxJoint->setJointType(physx::PxArticulationJointType::eFIX);
+		else
+			mPxJoint->setJointType(physx::PxArticulationJointType::eSPHERICAL);
 
-		mPxJoint->setJointType(physx::PxArticulationJointType::eSPHERICAL);
 		mPxJoint->setMotion(physx::PxArticulationAxis::eSWING1, (physx::PxArticulationMotion::Enum)info.Swing1AxisInfo.motion);
 		mPxJoint->setMotion(physx::PxArticulationAxis::eSWING2, (physx::PxArticulationMotion::Enum)info.Swing2AxisInfo.motion);
 		mPxJoint->setMotion(physx::PxArticulationAxis::eTWIST, (physx::PxArticulationMotion::Enum)info.TwistAxisInfo.motion);
 
-		physx::PxArticulationLimit swing1Limit;
-		physx::PxArticulationLimit swing2Limit;
-		physx::PxArticulationLimit twistLimit;
-		swing1Limit.low = mSwing1Limit.low * CircularMeasure;
-		swing1Limit.high = mSwing1Limit.high * CircularMeasure;
-		swing2Limit.low = mSwing2Limit.low * CircularMeasure;
-		swing2Limit.high = mSwing2Limit.high * CircularMeasure;
-		twistLimit.low = mTwistLimit.low * CircularMeasure;
-		twistLimit.high = mTwistLimit.high * CircularMeasure;
+		physx::PxArticulationLimit swing1Limit(mSwing1Limit.low * CircularMeasure, mSwing1Limit.high * CircularMeasure);
+		physx::PxArticulationLimit swing2Limit(mSwing2Limit.low * CircularMeasure, mSwing2Limit.high * CircularMeasure);
+		physx::PxArticulationLimit twistLimit(mTwistLimit.low * CircularMeasure, mTwistLimit.high * CircularMeasure);
 
 		mPxJoint->setLimitParams(physx::PxArticulationAxis::eSWING1, swing1Limit);
 		mPxJoint->setLimitParams(physx::PxArticulationAxis::eSWING2, swing2Limit);
@@ -73,6 +82,52 @@ namespace fq::physics
 		mPxJoint->setDriveParams(physx::PxArticulationAxis::eSWING1, mDrive);
 		mPxJoint->setDriveParams(physx::PxArticulationAxis::eSWING2, mDrive);
 		mPxJoint->setDriveParams(physx::PxArticulationAxis::eTWIST, mDrive);
+
+		return true;
+	}
+
+	bool CharacterJoint::Update(const physx::PxArticulationLink* parentLink)
+	{
+		using namespace DirectX::SimpleMath;
+
+		if (!mPxJoint)
+			return true;
+
+		physx::PxArticulationLink& childLink = mPxJoint->getChildArticulationLink();
+
+		physx::PxTransform parentJointLocalPoseInChild;
+
+		// 부모 Actor의 Joint의 LocalPose를 가져옵니다.
+		if (parentLink->getInboundJoint())
+		{
+			parentJointLocalPoseInChild = parentLink->getInboundJoint()->getChildPose();
+		}
+		else
+		{
+			parentJointLocalPoseInChild = physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f));
+		}
+
+		// 부모와 자식 Actor의 GlobalPose를 가져옵니다.
+		physx::PxTransform parentGlobalPose = parentLink->getGlobalPose();
+		physx::PxTransform childGlobalPose = childLink.getGlobalPose();
+
+		// joint의 child에 대한 로컬 포즈를 가져옵니다.
+		physx::PxTransform jointLocalPoseInChild = mPxJoint->getChildPose();
+
+		// 자식의 LocalPose를 GlobalPose로 변환합니다.
+		physx::PxTransform parentJointGlobalPose = parentGlobalPose * parentJointLocalPoseInChild;
+		physx::PxTransform jointGlobalPose = childGlobalPose * jointLocalPoseInChild;
+
+		// 부모 joint와 자식 joint를 DxMatrix로 변환합니다.
+		Matrix dxParentJointGlobalTransform;
+		Matrix dxChildJointGlobalTransform;
+		CopyPxTransformToDirectXMatrix(parentJointGlobalPose, dxParentJointGlobalTransform);
+		CopyPxTransformToDirectXMatrix(jointGlobalPose, dxChildJointGlobalTransform);
+
+		// 부모 joint의 인버트 함수를 활용하여 자식 joint의 로컬 트랜스폼을 계산합니다.
+		mSimulationLocalTransform = dxChildJointGlobalTransform * dxParentJointGlobalTransform.Invert();
+
+		mSimulationLocalTransform = mSimulationLocalTransform;
 
 		return true;
 	}

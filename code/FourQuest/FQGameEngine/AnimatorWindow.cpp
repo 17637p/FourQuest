@@ -24,6 +24,8 @@ fq::game_engine::AnimatorWindow::AnimatorWindow()
 	, mOnLoadSceneHandler{}
 	, mStartSceneHandler{}
 	, mSelectObjectHandler{}
+	, mSelectNodeID(0)
+	, mbIsFocused(false)
 {}
 
 fq::game_engine::AnimatorWindow::~AnimatorWindow()
@@ -53,6 +55,8 @@ void fq::game_engine::AnimatorWindow::Render()
 
 	if (ImGui::Begin("Animator", &mbIsOpen))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		beginChild_ParameterWindow();
 		ImGui::SameLine();
 		beginChild_NodeEditor();
@@ -111,7 +115,7 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 			{
 				if (ImGui::MenuItem("Delete"))
 					eraseParameter = iter;
-			
+
 				ImGui::EndPopup();
 			}
 
@@ -153,6 +157,33 @@ void fq::game_engine::AnimatorWindow::beginChild_ParameterWindow()
 				{
 					val = !val;
 					mSelectController->SetParameter(id, static_cast<char>(val));
+				}
+			}
+			else if (parameter.type() == entt::resolve<std::string>())
+			{
+				std::string param = mSelectController->GetParameter(id).cast<std::string>();
+				ImGui::InputText(parameterSetLabel.c_str(), &param);
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* prefabPath = ImGui::AcceptDragDropPayload("Path");
+
+					if (prefabPath)
+					{
+						std::filesystem::path* path
+							= static_cast<std::filesystem::path*>(prefabPath->Data);
+
+						if (path->extension() == ".prefab")
+						{
+							std::string str = static_cast<std::string>(path->string());
+							mSelectController->SetParameter(id, str);
+						}
+					}
+				}
+				else
+				{
+					std::string str = static_cast<std::string>(parameter.cast<std::string>());
+					mSelectController->SetParameter(id, str);
 				}
 			}
 			else assert(nullptr);
@@ -253,6 +284,11 @@ void fq::game_engine::AnimatorWindow::beginCombo_AddParameter()
 			mSelectController->AddParameter("new_trigger"
 				, fq::game_module::AnimatorController::OffTrigger);
 		}
+		if (ImGui::Selectable("string##button"))
+		{
+			mSelectController->AddParameter("new_string"
+				, std::string());
+		}
 		ImGui::EndCombo();
 	}
 
@@ -334,8 +370,9 @@ void fq::game_engine::AnimatorWindow::beginNode_AnimationStateNode(const std::st
 	}
 
 	// Node ¼±ÅÃ
-	if (ed::IsNodeSelected(nodeID))
+	if (ed::IsNodeSelected(nodeID) && mSelectNodeID != nodeID)
 	{
+		mSelectNodeID = nodeID;
 		mEventManager->FireEvent<editor_event::SelectAnimationState>(
 			{ mSelectController, name }
 		);
@@ -395,7 +432,7 @@ fq::game_engine::AnimatorWindow::PinID fq::game_engine::AnimatorWindow::getOutpu
 
 void fq::game_engine::AnimatorWindow::beginCreate()
 {
-	if (ed::BeginCreate())
+	if (ed::BeginCreate() && mbIsFocused)
 	{
 		ed::PinId inputID, outputID;
 		if (ed::QueryNewLink(&inputID, &outputID))
@@ -422,7 +459,7 @@ void fq::game_engine::AnimatorWindow::beginCreate()
 
 void fq::game_engine::AnimatorWindow::beginDelete()
 {
-	if (ed::BeginDelete())
+	if (ed::BeginDelete() && mbIsFocused)
 	{
 		ed::LinkId deleteLinkID;
 		while (ed::QueryDeletedLink(&deleteLinkID))
@@ -553,8 +590,12 @@ void fq::game_engine::AnimatorWindow::OnStartScene()
 		if (object)
 		{
 			auto animator = object->GetComponent<fq::game_module::Animator>();
-			mSelectController = animator->GetSharedController();
-			mSelectControllerPath = animator->GetControllerPath();
+
+			if (animator)
+			{
+				mSelectController = animator->GetSharedController();
+				mSelectControllerPath = animator->GetControllerPath();
+			}
 		}
 	}
 }
@@ -574,13 +615,15 @@ void fq::game_engine::AnimatorWindow::OnUnloadScene()
 
 void fq::game_engine::AnimatorWindow::SelectObject(fq::editor_event::SelectObject event)
 {
-	if (event.object == nullptr
-		|| !event.object->HasComponent<game_module::Animator>()) return;
+	if (event.object == nullptr) return;
 
-	auto animator = event.object->GetComponent<game_module::Animator>();
-	mSelectObjectName = event.object->GetName();
-	mSelectController = animator->GetSharedController();
-	mSelectControllerPath = animator->GetControllerPath();
-	createContext();
+	if (event.object->HasComponent<game_module::Animator>())
+	{
+		auto animator = event.object->GetComponent<game_module::Animator>();
+		mSelectObjectName = event.object->GetName();
+		mSelectController = animator->GetSharedController();
+		mSelectControllerPath = animator->GetControllerPath();
+		createContext();
+	}
 }
 

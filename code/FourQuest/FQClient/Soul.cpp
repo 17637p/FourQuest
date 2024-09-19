@@ -1,7 +1,13 @@
 #include "Soul.h"
 
+#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Particle.h"
 #include "DeadArmour.h"
 #include "CameraMoving.h"
+#include "ClientEvent.h"
+#include "PlayerSoulVariable.h"
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
@@ -34,12 +40,18 @@ void fq::client::Soul::OnStart()
 {
 	mController = GetComponent<game_module::CharacterController>();
 
+	// Player등록
+	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
+		{ GetGameObject(), EPlayerType::Soul });
 
 	// 카메라에 플레이어 등록 
 	GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
 		{
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
+
+	// 소울 색깔 지정 
+	SetSoulColor();
 }
 
 void fq::client::Soul::DestorySoul()
@@ -91,7 +103,7 @@ void fq::client::Soul::OnUpdate(float dt)
 
 		for (auto& armour : mSelectArmours)
 		{
-			if(armour->GetGameObject()->IsDestroyed())
+			if (armour->GetGameObject()->IsDestroyed())
 				continue;
 
 			auto pos = armour->GetComponent<game_module::Transform>()->GetWorldPosition();
@@ -104,11 +116,57 @@ void fq::client::Soul::OnUpdate(float dt)
 			}
 		}
 
-		// 가장 가까운 갑옷으로 영혼화
-		assert(closestArmour);
-		closestArmour->SummonLivingArmour(mController->GetControllerID());
+		if (closestArmour == nullptr)
+		{
+			return;
+		}
+
+		PlayerInfo info{ mController->GetControllerID(), mSoulType };
+
+		closestArmour->SummonLivingArmour(info);
 		DestorySoul();
 	}
 
+}
+
+void fq::client::Soul::SetSoulColor()
+{
+	if (GetGameObject() == nullptr)
+		return;
+
+	for (auto child : GetGameObject()->GetChildren())
+	{
+		if (child->HasComponent<game_module::Particle>())
+		{
+			auto particle = child->GetComponent<game_module::Particle>();
+			auto matInfo = particle->GetParticleMaterialInfo();
+
+			switch (mSoulType)
+			{
+				case fq::client::ESoulType::Sword:
+					matInfo.EmissiveColor = PlayerSoulVariable::SwordSoulColor;
+					break;
+				case fq::client::ESoulType::Staff:
+					matInfo.EmissiveColor = PlayerSoulVariable::StaffSoulColor;
+					break;
+				case fq::client::ESoulType::Axe:
+					matInfo.EmissiveColor = PlayerSoulVariable::AxeSoulColor;
+					break;
+				case fq::client::ESoulType::Bow:
+					matInfo.EmissiveColor = PlayerSoulVariable::BowSoulColor;
+					break;
+			}
+
+			particle->SetParticleMaterialInfo(matInfo);
+		}
+	}
+
+}
+
+void fq::client::Soul::SetSoulType(fq::client::ESoulType type)
+{
+	mSoulType = type;
+
+	SetSoulColor();
 }
 

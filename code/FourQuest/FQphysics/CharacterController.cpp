@@ -2,6 +2,7 @@
 
 #include "CharacterMovement.h"
 #include "CharacterQueryFilterCallback.h"
+#include "PhysicsCollisionDataManager.h"
 
 namespace fq::physics
 {
@@ -12,6 +13,11 @@ namespace fq::physics
 		, mCharacterMovement(nullptr)
 		, mMaterial(nullptr)
 		, mPxController(nullptr)
+		, mFilters(nullptr)
+		, mFilterData(nullptr)
+		, mCharacterQueryFilterCallback(nullptr)
+		, mbIsDynamic(false)
+		, mbMoveRestriction{}
 	{
 	}
 
@@ -55,31 +61,95 @@ namespace fq::physics
 		physx::PxVec3 dispVector;
 
 		// 캐릭터 무브먼트 업데이트로 속도 계산 후 
-		mCharacterMovement->Update(deltaTime, mInputMove);
+		mCharacterMovement->Update(deltaTime, mInputMove, mbIsDynamic);
 		mCharacterMovement->CopyDirectionToPxVec3(dispVector);
+
+		// 이동 제한
+		if (dispVector.x < 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::MinusX)])
+		{
+			dispVector.x = 0.f;
+		}
+		else if (dispVector.x > 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::PlusX)])
+		{
+			dispVector.x = 0.f;
+		}
+
+		if (dispVector.z < 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::MinusZ)])
+		{
+			dispVector.z = 0.f;
+		}
+		else if (dispVector.z > 0.f && mbMoveRestriction[static_cast<int>(ERestrictDirection::PlusZ)])
+		{
+			dispVector.z = 0.f;
+		}
+
 
 		// physx CCT 이동
 		physx::PxControllerCollisionFlags collisionFlags = mPxController->move(dispVector, 0.01f, deltaTime, *mFilters.get());
 
 		// 바닥과 충돌을 안한다면 떨어짐 상태로 체크
 		if (collisionFlags & physx::PxControllerCollisionFlag::eCOLLISION_DOWN)
+		{
 			mCharacterMovement->SetIsFall(false);
+		}
 		else
+		{
 			mCharacterMovement->SetIsFall(true);
+		}
 
 		// 입력받은 값 초기화
 		mInputMove = {};
+		mbIsDynamic = false;
+
+		return	true;
+	}
+
+	void CharacterController::AddMovementInput(const DirectX::SimpleMath::Vector3& input, bool isDynamic)
+	{
+		if (std::abs(input.x) > 0)
+		{
+			mInputMove.x = input.x;
+		}
+		if (std::abs(input.y) > 0)
+		{
+			mInputMove.y = input.y;
+		}
+		if (std::abs(input.z) > 0)
+		{
+			mInputMove.z = input.z;
+		}
+
+		mbIsDynamic = isDynamic;
+	}
+
+	bool CharacterController::ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager)
+	{
+		if (newLayerNumber == UINT_MAX)
+		{
+			return false;
+		}
+
+		mLayerNumber = newLayerNumber;
+
+		std::shared_ptr<physx::PxFilterData> newFilterData = std::make_shared<physx::PxFilterData>();
+		newFilterData->word0 = mLayerNumber;
+		newFilterData->word1 = collisionMatrix[mLayerNumber];
+		mCharacterQueryFilterCallback->SetFilterData(newFilterData);
+
+		physx::PxShape* shape;
+		mPxController->getActor()->getShapes(&shape, 1);
+		shape->setSimulationFilterData(*newFilterData.get());
+
+		CollisionData* data = (CollisionData*)mPxController->getActor()->userData;
+		data->myId = mID;
+		data->myLayerNumber = mLayerNumber;
 
 		return true;
 	}
 
-	void CharacterController::AddMovementInput(const DirectX::SimpleMath::Vector3& input)
+	void CharacterController::SetMoveRestriction(std::array<bool, 4> moveRestriction)
 	{
-		if (std::abs(input.x) > 0)
-			mInputMove.x = input.x;
-		if (std::abs(input.y) > 0)
-			mInputMove.y = input.y;
-		if (std::abs(input.z) > 0)
-			mInputMove.z = input.z;
+		mbMoveRestriction = moveRestriction;
 	}
+
 }

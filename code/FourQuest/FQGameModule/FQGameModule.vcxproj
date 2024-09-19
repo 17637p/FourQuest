@@ -17,6 +17,14 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Test|Win32">
+      <Configuration>Test</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Test|x64">
+      <Configuration>Test</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -32,6 +40,12 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -40,6 +54,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
@@ -60,10 +80,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -71,6 +97,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -114,6 +155,9 @@
       <PrecompiledHeaderFile>GameModulePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -125,6 +169,35 @@
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ITERATOR_DEBUG_LEVEL 0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>GameModulePCH.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>FQReflect.lib;fmodL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,22 +224,47 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraShakeTrack.h" />
+    <ClInclude Include="MaterialAnimator.h" />
     <ClInclude Include="AnimatorControllerLoader.h" />
     <ClInclude Include="AnimationStateNode.h" />
     <ClInclude Include="AnimationTransition.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="AnimatorController.h" />
+    <ClInclude Include="Articulation.h" />
+    <ClInclude Include="ArticulationData.h" />
+    <ClInclude Include="ArticulationLoader.h" />
+    <ClInclude Include="CameraChangeTrack.h" />
     <ClInclude Include="CharacterController.h" />
     <ClInclude Include="Decal.h" />
+    <ClInclude Include="EffectTrack.h" />
+    <ClInclude Include="GameModuleManagerh.h" />
     <ClInclude Include="ICollider.h" />
     <ClInclude Include="ImageUI.h" />
     <ClInclude Include="InstantiatePrefab.h" />
+    <ClInclude Include="ObjectAnimationTrack.h" />
+    <ClInclude Include="ObjectMoveTrack.h" />
+    <ClInclude Include="ObjectTeleportTrack.h" />
+    <ClInclude Include="Sequence.h" />
+    <ClInclude Include="SoundEnum.h" />
+    <ClInclude Include="SoundTrack.h" />
+    <ClInclude Include="StateEvent.h" />
+    <ClInclude Include="TextPrintTrack.h" />
+    <ClInclude Include="Track.h" />
     <ClInclude Include="IStateBehaviour.h" />
+    <ClInclude Include="LinkData.h" />
+    <ClInclude Include="NavigationAgent.h" />
+    <ClInclude Include="NavigationAgentImpl.h" />
+    <ClInclude Include="NavigationMeshLoader.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Pool.h" />
     <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="PrefabResource.h" />
     <ClInclude Include="PrefabTest.h" />
+    <ClInclude Include="ScreenManager.h" />
+    <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="Socket.h" />
     <ClInclude Include="SoundClip.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="Camera.h" />
@@ -201,25 +299,53 @@
     <ClInclude Include="StaticMeshRenderer.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="LogStateBehaviour.h" />
+    <ClInclude Include="TerrainCollider.h" />
+    <ClInclude Include="TextUI.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="Trail.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UVAnimator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraShakeTrack.cpp" />
+    <ClCompile Include="MaterialAnimator.cpp" />
     <ClCompile Include="AnimatorControllerLoader.cpp" />
     <ClCompile Include="AnimationStateNode.cpp" />
     <ClCompile Include="AnimationTransition.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="AnimatorController.cpp" />
+    <ClCompile Include="Articulation.cpp" />
+    <ClCompile Include="ArticulationData.cpp" />
+    <ClCompile Include="ArticulationLoader.cpp" />
+    <ClCompile Include="CameraChangeTrack.cpp" />
     <ClCompile Include="CharacterController.cpp" />
     <ClCompile Include="Decal.cpp" />
+    <ClCompile Include="EffectTrack.cpp" />
     <ClCompile Include="ICollider.cpp" />
     <ClCompile Include="ImageUI.cpp" />
     <ClCompile Include="InstantiatePrefab.cpp" />
+    <ClCompile Include="ObjectAnimationTrack.cpp" />
+    <ClCompile Include="ObjectMoveTrack.cpp" />
+    <ClCompile Include="ObjectTeleportTrack.cpp" />
+    <ClCompile Include="Sequence.cpp" />
+    <ClCompile Include="SoundTrack.cpp" />
+    <ClCompile Include="StateEvent.cpp" />
+    <ClCompile Include="TextPrintTrack.cpp" />
+    <ClCompile Include="Track.cpp" />
     <ClCompile Include="IStateBehaviour.cpp" />
+    <ClCompile Include="LinkData.cpp" />
+    <ClCompile Include="NavigationAgent.cpp" />
+    <ClCompile Include="NavigationAgentImpl.cpp" />
+    <ClCompile Include="NavigationMeshLoader.cpp" />
     <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="PrefabResource.cpp" />
     <ClCompile Include="PrefabTest.cpp" />
+    <ClCompile Include="ScreenManager.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SoundClip.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -250,8 +376,13 @@
     <ClCompile Include="StaticMeshRenderer.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="LogStateBehaviour.cpp" />
+    <ClCompile Include="TerrainCollider.cpp" />
+    <ClCompile Include="TextUI.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="Trail.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UVAnimator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FQReflect\FQReflect.vcxproj">

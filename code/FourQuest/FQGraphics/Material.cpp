@@ -10,39 +10,39 @@
 
 namespace fq::graphics
 {
-	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const fq::common::Material& materialData, std::filesystem::path textureBasePath)
+	Material::Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo, const std::string& name)
+		: mResourceManager(resourceManager)
+		, mInfo(materialInfo)
+		, mName(name)
 	{
-		mMaterialInfo.BaseColor = materialData.BaseColor;
-		mMaterialInfo.TextureBasePath = textureBasePath;
-		mMaterialInfo.BaseColor = materialData.BaseColor;
-		mMaterialInfo.Metalness = materialData.Metalness;
-		mMaterialInfo.Roughness = materialData.Roughness;
-		mMaterialInfo.Name = materialData.Name;
-		mMaterialInfo.BaseColorFileName = materialData.BaseColorFileName;
-		mMaterialInfo.MetalnessFileName = materialData.MetalnessFileName;
-		mMaterialInfo.RoughnessFileName = materialData.RoughnessFileName;
-		mMaterialInfo.NormalFileName = materialData.NormalFileName;
-		mMaterialInfo.EmissiveFileName = materialData.EmissiveFileName;
+		loadTexture();
 	}
-	Material::Material(const StandardMaterialInfo& materialData)
-		: mMaterialInfo(materialData)
-	{
-	}
-	void Material::loadTexture(std::shared_ptr<D3D11ResourceManager> resourceManager)
-	{
-		if (!mMaterialControllInfo.bTryLoadTexture)
-		{
-			return;
-		}
 
-		std::filesystem::path basePath = mMaterialInfo.TextureBasePath;
-		mMaterialControllInfo.bTryLoadTexture = false;
+	void Material::loadTexture()
+	{
+		auto createTextureOrNull = [](std::wstring& filePath, const std::shared_ptr<D3D11ResourceManager>& resourceManager) -> std::shared_ptr<D3D11Texture>
+			{
+				if (filePath.empty())
+				{
+					return nullptr;
+				}
+				if (!std::filesystem::exists(filePath))
+				{
+					spdlog::warn("[Material] \"{}\" not exist", std::filesystem::path(filePath).string());
+					filePath = L"";
+					return nullptr;
+				}
 
-		if (mMaterialInfo.BaseColorFileName != L"") mBaseColor = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.BaseColorFileName);
-		if (mMaterialInfo.MetalnessFileName != L"") mMetalness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.MetalnessFileName);
-		if (mMaterialInfo.RoughnessFileName != L"") mRoughness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.RoughnessFileName);
-		if (mMaterialInfo.NormalFileName != L"") mNormal = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.NormalFileName);
-		if (mMaterialInfo.EmissiveFileName != L"") mEmissive = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.EmissiveFileName);
+				return resourceManager->Create<D3D11Texture>(filePath);
+			};
+
+		mBaseColor = createTextureOrNull(mInfo.BaseColorFileName, mResourceManager);
+		mMetalness = createTextureOrNull(mInfo.MetalnessFileName, mResourceManager);
+		mRoughness = createTextureOrNull(mInfo.RoughnessFileName, mResourceManager);
+		mNormal = createTextureOrNull(mInfo.NormalFileName, mResourceManager);
+		mEmissive = createTextureOrNull(mInfo.EmissiveFileName, mResourceManager);
+		mMetalnessSmoothness = createTextureOrNull(mInfo.MetalnessSmoothnessFileName, mResourceManager);
+		mNoise = createTextureOrNull(mInfo.NoiseFileName, mResourceManager);
 	}
 
 	void Material::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
@@ -52,27 +52,13 @@ namespace fq::graphics
 		if (GetHasRoughness()) mRoughness->Bind(d3d11Device, 2, ED3D11ShaderType::PixelShader);
 		if (GetHasNormal()) mNormal->Bind(d3d11Device, 3, ED3D11ShaderType::PixelShader);
 		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 4, ED3D11ShaderType::PixelShader);
-	}
-
-	void DecalMaterial::loadTexture(std::shared_ptr<D3D11ResourceManager> resourceManager)
-	{
-		if (!mMaterialControllInfo.bTryLoadTexture)
-		{
-			return;
-		}
-
-		std::filesystem::path basePath = mMaterialInfo.TextureBasePath;
-		mMaterialControllInfo.bTryLoadTexture = false;
-
-		if (mMaterialInfo.BaseColorFileName != L"") mBaseColor = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.BaseColorFileName);
-		if (mMaterialInfo.MetalnessFileName != L"") mMetalness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.MetalnessFileName);
-		if (mMaterialInfo.RoughnessFileName != L"") mRoughness = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.RoughnessFileName);
-		if (mMaterialInfo.NormalFileName != L"") mNormal = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.NormalFileName);
-		if (mMaterialInfo.EmissiveFileName != L"") mEmissive = resourceManager->Create<D3D11Texture>(basePath / mMaterialInfo.EmissiveFileName);
+		if (GetHasMetalnessSmoothness()) mMetalnessSmoothness->Bind(d3d11Device, 5, ED3D11ShaderType::PixelShader);
+		if (GetHasNoise()) mNoise->Bind(d3d11Device, 10, ED3D11ShaderType::PixelShader);
 	}
 
 	TerrainMaterial::TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 		const TerrainMaterialInfo& materialData,
+		UINT width, UINT height,
 		std::filesystem::path basePath /*= ""*/)
 		:mBaseColors{},
 		mNormals{},
@@ -83,6 +69,8 @@ namespace fq::graphics
 		mMetalics{},
 		mRoughnesses{},
 		mAlpha{ nullptr },
+		mWidth{ width },
+		mHeight{ height },
 		mHeightscale(materialData.HeightScale)
 	{
 		mBasePath = basePath;
@@ -147,7 +135,10 @@ namespace fq::graphics
 			mMetalics.push_back(materialData.Layers[i].Metalic);
 			mRoughnesses.push_back(materialData.Layers[i].Roughness);
 
-			mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);
+			if (!materialData.AlPhaFileName.empty())
+			{
+				mAlpha = std::make_shared<D3D11Texture>(device, mBasePath / materialData.AlPhaFileName);
+			}
 			// 일단 BaseColor 만
 			//if (!materialData.MetalnessFileNames[i].empty()) mMetalness = std::make_shared<D3D11Texture>(device, basePath / materialData.MetalnessFileName);
 			//if (!materialData.RoughnessFileNames[i].empty()) mRoughness = std::make_shared<D3D11Texture>(device, basePath / materialData.RoughnessFileName);
@@ -157,11 +148,7 @@ namespace fq::graphics
 
 	void TerrainMaterial::LoadHeight(const std::string& heightMapFilePath)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
-		std::vector<unsigned char> in(width * height);
+		std::vector<unsigned char> in(mWidth * mHeight);
 
 		std::ifstream inFile;
 		inFile.open(heightMapFilePath.c_str(), std::ios_base::binary);
@@ -173,32 +160,39 @@ namespace fq::graphics
 			inFile.close();
 		}
 
-		mHeightMapData.resize(width * height, 0);
-		for (UINT i = 0; i < width * height; i++)
+		mHeightMapData.resize(mWidth * mHeight, 0);
+		mHeightMapRawData.resize(mWidth * mHeight, 0);
+		for (UINT i = 0; i < mWidth * mHeight; i++)
 		{
+			mHeightMapRawData[i] = in[i];
 			mHeightMapData[i] = (in[i] / 255.0f) * mHeightscale;
+		}
+
+		// 유니티에서 읽어온 하이트맵 텍스처의 y축이 대칭된 모습을 보여서 임시로 수정_홍지환
+		// flip y
+		for (UINT i = 0; i < mHeight / 2; ++i)
+		{
+			for (UINT j = 0; j < mWidth; ++j)
+			{
+				UINT front = i * mWidth + j;
+				UINT back = (mHeight - i - 1) * mWidth + j;
+				std::swap(mHeightMapRawData[front], mHeightMapRawData[back]);
+				std::swap(mHeightMapData[front], mHeightMapData[back]);
+			}
 		}
 	}
 
 	bool TerrainMaterial::InBounds(int i, int j)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
 		return
 			j >= 0 &&
-			i < (int)height &&
+			i < (int)mHeight &&
 			i >= 0 &&
-			j < (int)width;
+			j < (int)mWidth;
 	}
 
 	float TerrainMaterial::Average(int i, int j)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
 		float average = 0.0f;
 		float num = 0.0f;
 
@@ -208,7 +202,7 @@ namespace fq::graphics
 			{
 				if (InBounds(m, n))
 				{
-					average += mHeightMapData[m * width + n];
+					average += mHeightMapData[m * mWidth + n];
 					num += 1.0f;
 				}
 			}
@@ -223,17 +217,13 @@ namespace fq::graphics
 
 	void TerrainMaterial::SmoothHeightMap()
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
 		std::vector<float> dest(mHeightMapData.size());
 
-		for (UINT i = 0; i < height; i++)
+		for (UINT i = 0; i < mHeight; i++)
 		{
-			for (UINT j = 0; j < width; j++)
+			for (UINT j = 0; j < mWidth; j++)
 			{
-				dest[i * width + j] = Average(i, j);
+				dest[i * mWidth + j] = Average(i, j);
 			}
 		}
 
@@ -242,12 +232,45 @@ namespace fq::graphics
 
 	void TerrainMaterial::BuildHeightMapSRV(const std::shared_ptr<D3D11Device>& device)
 	{
-		// temp
-		const UINT width = 513;
-		const UINT height = 513;
-
-		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, width, height);
+		mHeightMap = std::make_shared<D3D11Texture>(device, mHeightMapData, mWidth, mHeight);
 	}
 
+	ParticleMaterial::ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo, const std::string& name)
+		: mResourceManager(resourceManager)
+		, mInfo(materialInfo)
+		, mName(name)
+	{
+		loadTexture();
+	}
+	void ParticleMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+	{
+		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::PixelShader);
+		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 1, ED3D11ShaderType::PixelShader);
+	}
+	void ParticleMaterial::loadTexture()
+	{
+		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
+		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
+	}
+
+	DecalMaterial::DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo, const std::string& name)
+		: mResourceManager(resourceManager)
+		, mInfo(materialInfo)
+		, mName(name)
+	{
+		loadTexture();
+	}
+	void DecalMaterial::Bind(const std::shared_ptr<D3D11Device>& d3d11Device)
+	{
+		if (GetHasBaseColor()) mBaseColor->Bind(d3d11Device, 0, ED3D11ShaderType::PixelShader);
+		if (GetHasNormal()) mNormal->Bind(d3d11Device, 1, ED3D11ShaderType::PixelShader);
+		if (GetHasEmissive()) mEmissive->Bind(d3d11Device, 2, ED3D11ShaderType::PixelShader);
+	}
+	void DecalMaterial::loadTexture()
+	{
+		if (!mInfo.BaseColorFileName.empty()) mBaseColor = mResourceManager->Create<D3D11Texture>(mInfo.BaseColorFileName);
+		if (!mInfo.NormalFileName.empty()) mNormal = mResourceManager->Create<D3D11Texture>(mInfo.NormalFileName);
+		if (!mInfo.EmissiveFileName.empty()) mEmissive = mResourceManager->Create<D3D11Texture>(mInfo.EmissiveFileName);
+	}
 }
 

@@ -1,7 +1,17 @@
 #pragma once
 
 #include "../FQCommon/FQCommonGraphics.h"
-#include "../FQGameModule/GameModule.h"
+
+namespace fq::game_module
+{
+	class Transform;
+	class BoxCollider;
+	class CapsuleCollider;
+	class SphereCollider;
+	class CharacterController;
+	class Scene;
+	class Light;
+}
 
 namespace fq::game_engine
 {
@@ -45,6 +55,9 @@ namespace fq::game_engine
 		bool& GetOnSphereCollider() { return mbOnSphereCollider; }
 		bool& GetOnConvexMeshCollider() { return mbOnConvexMeshCollider; }
 		bool& GetOnCharaterController() { return mbOnCharaterController; }
+		bool& GetOnNavigationMesh() { return mbOnNavigationMesh; }
+		bool& GetOnTerrainCollider() { return mbOnTerrainCollider; }
+		bool& GetOnUseRenderDebug() { return mbUseRenderDebug; }
 
 	private:
 		void renderGrid();
@@ -52,7 +65,10 @@ namespace fq::game_engine
 		void renderBoxCollider();
 		void renderCapsuleCollider();
 		void renderConvexMeshCollider();
+		void renderTerrainCollider();
 		void renderCharaterController();
+		void renderNavigationMesh();
+		void renderLightProbe();
 
 	private:
 		GameProcess* mGameProcess;
@@ -65,6 +81,9 @@ namespace fq::game_engine
 		bool mbOnSphereCollider;
 		bool mbOnConvexMeshCollider;
 		bool mbOnCharaterController;
+		bool mbOnTerrainCollider;
+		bool mbOnNavigationMesh;
+		bool mbUseRenderDebug;
 
 		fq::graphics::debug::GridInfo mGridInfo;
 	};

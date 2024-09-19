@@ -9,6 +9,9 @@
 namespace fq::physics
 {
 	PhysicsSimulationEventCallback::PhysicsSimulationEventCallback()
+		: mFunction()
+		, mCollisionDataManager()
+		, mTriggerContainer()
 	{
 	}
 
@@ -83,22 +86,22 @@ namespace fq::physics
 
 	void PhysicsSimulationEventCallback::OnTrigger()
 	{
-		for (auto trigger : mTriggerContainer)
+		for (auto trigger = mTriggerContainer.begin(); trigger != mTriggerContainer.end();)
 		{
-			std::shared_ptr<CollisionData> TriggerActorData = mCollisionDataManager->FindCollisionData(trigger.first);
+			std::shared_ptr<CollisionData> TriggerActorData = mCollisionDataManager->FindCollisionData(trigger->first);
 			if (TriggerActorData.get() == nullptr)
 			{
-				mTriggerContainer.erase(mTriggerContainer.find(trigger.first));
-				return;
+				trigger = mTriggerContainer.erase(mTriggerContainer.find(trigger->first));
+				continue;
 			}
 
-			for (auto other : trigger.second)
+			for (auto otherTrigger = trigger->second.begin(); otherTrigger != trigger->second.end();)
 			{
-				std::shared_ptr<CollisionData> OtherActordata = mCollisionDataManager->FindCollisionData(other);
+				std::shared_ptr<CollisionData> OtherActordata = mCollisionDataManager->FindCollisionData(*otherTrigger);
 				if (OtherActordata.get() == nullptr)
 				{
-					trigger.second.erase(trigger.second.find(other));
-					return;
+					otherTrigger = trigger->second.erase(trigger->second.find(*otherTrigger));
+					continue;
 				}
 
 				CollisionData Mydata;
@@ -115,7 +118,10 @@ namespace fq::physics
 				// 콜백 함수 실행
 				mFunction(Mydata, ECollisionEventType::ON_OVERLAP);
 				mFunction(Otherdata, ECollisionEventType::ON_OVERLAP);
+
+				++otherTrigger;
 			}
+			++trigger;
 		}
 	}
 
@@ -153,7 +159,7 @@ namespace fq::physics
 		ActorData1.otherId = otherData->myId;
 		ActorData1.myLayerNumber = myData->myLayerNumber;
 		ActorData1.otherLayerNumber = otherData->myLayerNumber;
-		
+
 		ActorData2.myId = otherData->myId;
 		ActorData2.otherId = myData->myId;
 		ActorData2.myLayerNumber = otherData->myLayerNumber;
@@ -163,7 +169,7 @@ namespace fq::physics
 		ActorData2.ContectPoints = points;
 
 		mFunction(ActorData1, eventType);
- 		mFunction(ActorData2, eventType);
+		mFunction(ActorData2, eventType);
 
 		if (eventType == ECollisionEventType::END_COLLISION && myData->isDead)
 		{

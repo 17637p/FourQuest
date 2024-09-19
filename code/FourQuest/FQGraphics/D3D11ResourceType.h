@@ -40,13 +40,16 @@ namespace fq::graphics
 
 		// Deferred
 		Albedo,
-		Metalness,
-		Roughness,
+		MetalnessRoughness,
 		Normal,
 		Emissive,
 		PositionWClipZ,
 		SourceNormal,
 		SourceTangent,
+		PreCalculatedLight,
+
+		LightProbeIrr,
+		DebugLightProbeIrr,
 	};
 
 	enum class ED3D11ShaderResourceViewType
@@ -76,7 +79,10 @@ namespace fq::graphics
 		AnisotropicClamp,
 		Shadow,
 		LinearWrap,
-		PointClamp
+		PointClamp,
+		PointWrap,
+		LinearClamp,
+		SSAONormalDepth,
 	};
 
 	enum class ED3D11RasterizerState

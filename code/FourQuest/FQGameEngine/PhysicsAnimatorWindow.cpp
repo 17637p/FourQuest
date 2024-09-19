@@ -10,6 +10,10 @@
 #include "../FQphysics/IFQPhysics.h"
 #include "../FQCommon/FQCommonLoader.h"
 #include "../FQGameModule/TimeManager.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/IFQRenderObject.h"
 
@@ -41,9 +45,7 @@ namespace fq::game_engine
 
 		// 이벤트 핸들 등록
 		mStartSceneHandle = mEventManager->RegisterHandle<fq::event::StartScene>
-			([this]() {
-			StartScene();
-				});
+			([this]() {	StartScene(); });
 	}
 
 	void PhysicsAnimatorWindow::Render()
@@ -185,9 +187,14 @@ namespace fq::game_engine
 			ImGui::InputText("Name", &mAnimationClipNames[number]);
 
 			if (!mbIsPlay)
+			{
 				beginButton_AnimationPlay(number);
+			}
 			else
+			{
 				beginButton_AnimationStop(number);
+			}
+
 			ImGui::SameLine(80.f);
 			beginButton_AnimationSave(number);
 			ImGui::TreePop();
@@ -235,7 +242,9 @@ namespace fq::game_engine
 		{
 			mCurrentAnimaitionNumber++;
 			if (mCurrentAnimaitionNumber >= mAnimationSize)
+			{
 				mCurrentAnimaitionNumber = 0;
+			}
 
 			mEventManager->FireEvent<fq::event::WriteAnimation>(
 				{ mAnimationName, mAnimationClipContainer[number], mRegisteredObject.get(), (unsigned int)mAnimationSize }
@@ -262,7 +271,6 @@ namespace fq::game_engine
 
 				std::vector<fq::game_module::GameObject*> gameObjects = mRegisteredObject->GetChildren();
 				mExtractObjectNames.reserve(gameObjects.size());
-				//mExtractObjectNames.push_back(mRegisteredObject->GetName());
 
 				// 애니메이션 이름
 				std::string animationName;

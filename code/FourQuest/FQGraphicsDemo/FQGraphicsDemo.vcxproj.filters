@@ -13,6 +13,12 @@
     <Filter Include="Control">
       <UniqueIdentifier>{e141f691-b399-4604-8990-2a4e9aab5b97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{62fd0d3f-f4a5-4920-8b98-53ea8704293f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Process\Source">
+      <UniqueIdentifier>{1d47667f-579f-4f14-a438-35fdc42d1964}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseWindow.h">
@@ -30,19 +36,73 @@
     <ClInclude Include="Singleton.h">
       <Filter>Control</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="UIDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObjectDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessingDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="LightMapDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
+    <ClInclude Include="AlphaVertexAnimationDemo.h">
+      <Filter>Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>EntryPoint</Filter>
-    </ClCompile>
-    <ClCompile Include="Process.cpp">
-      <Filter>Process</Filter>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>Control</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessingDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObjectDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LightMapDemo.cpp">
+      <Filter>Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AlphaVertexAnimationDemo.cpp">
+      <Filter>Process\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

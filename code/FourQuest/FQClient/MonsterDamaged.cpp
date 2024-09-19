@@ -1,15 +1,14 @@
 #include "MonsterDamaged.h"
 #include "Monster.h"
+#include "HpBar.h"
 
 fq::client::MonsterDamaged::MonsterDamaged()
 	:mDamagedDelay(100)
 {
-
 }
 
 fq::client::MonsterDamaged::~MonsterDamaged()
 {
-
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterDamaged::Clone()
@@ -23,7 +22,21 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 	if (mDamagedDelay > monster->GetDamagedDelay())
 	{
 		mDamagedDelay = 0;
+
 		monster->SetHP(monster->GetHP() - monster->GetDamaged());
+
+		// 6.19 기태 : HP UI 로직 추가
+		float maxHp = monster->GetMaxHP();
+		float decreaseHpRatio = monster->GetDamaged() / maxHp;
+
+		HpBar* hpBar = monster->GetComponent<HpBar>();
+
+		if (!hpBar->IsVisible())
+		{
+			hpBar->SetVisible(true);
+		}
+
+		hpBar->DecreaseHp(decreaseHpRatio);
 	}
 
 	if (monster->GetHP() <= 0)
@@ -36,7 +49,8 @@ void fq::client::MonsterDamaged::OnStateEnter(fq::game_module::Animator& animato
 		monster->SetIsDamaged(false);
 
 		animator.SetParameterTrigger("OnIdle");
-		monster->SetTarget(monster->GetLastAttacker());
+
+		monster->SetTarget(monster->GetLastAttacker().get());
 	}
 }
 
@@ -53,5 +67,4 @@ void fq::client::MonsterDamaged::OnStateUpdate(fq::game_module::Animator& animat
 
 void fq::client::MonsterDamaged::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }

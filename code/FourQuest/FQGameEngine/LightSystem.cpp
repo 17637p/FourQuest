@@ -2,6 +2,8 @@
 
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Light.h"
 #include "GameProcess.h"
 
 fq::game_engine::LightSystem::LightSystem()
@@ -135,7 +137,7 @@ void fq::game_engine::LightSystem::Update()
 	using namespace fq::game_module;
 
 	mScene->ViewComponents<Transform, Light>(
-		[this](GameObject& object, Transform transform, Light& light)
+		[this](GameObject& object, Transform& transform, Light& light)
 		{
 			updateLight(light, transform);
 			mGameProcess->mGraphics->UpdateLight(object.GetID(), light.GetLightInfomation());

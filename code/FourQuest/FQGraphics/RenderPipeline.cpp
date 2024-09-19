@@ -4,6 +4,7 @@
 #include "D3D11Common.h"
 #include "Pass.h"
 #include "Define.h"
+#include "FullScreenPass.h"
 
 namespace fq::graphics
 {
@@ -30,6 +31,10 @@ namespace fq::graphics
 			pass->Finalize();
 		}
 		mPasses.clear();
+		if (mFullScreenLastPass != nullptr)
+		{
+			mFullScreenLastPass->Finalize();
+		}
 
 		mDevice = nullptr;
 		mResourceManager = nullptr;
@@ -41,16 +46,16 @@ namespace fq::graphics
 		mNoneDSV = nullptr;
 	}
 
-	void RenderPipeline::OnResize(unsigned short width, unsigned short height)
+	void RenderPipeline::OnResize(unsigned short width, unsigned short height, unsigned short oriWidth, unsigned short oriHeight)
 	{
 		mSwapChainRTV->Release();
 		mBackBufferRTV->Release();
 		mDSV->Release();
 		mNoneDSV->Release();
 
-		mDevice->OnResize(width, height);
+		mDevice->OnResize(oriWidth, oriHeight);
 
-		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, width, height);
+		mSwapChainRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Default, oriWidth, oriHeight);
 		mBackBufferRTV->OnResize(mDevice, ED3D11RenderTargetViewType::Offscreen, width, height);
 		mDSV->OnResize(mDevice, ED3D11DepthStencilViewType::Default, width, height);
 		mNoneDSV->OnResize(mDevice, ED3D11DepthStencilViewType::None, width, height);
@@ -61,6 +66,7 @@ namespace fq::graphics
 		{
 			pass->OnResize(width, height);
 		}
+		mFullScreenLastPass->OnResize(width, height, oriWidth, oriHeight);
 	}
 
 	void RenderPipeline::BeginRender()
@@ -72,13 +78,6 @@ namespace fq::graphics
 	{
 		for (std::shared_ptr<Pass> pass : mPasses)
 		{
-			if (mDiffuseCubeMap != nullptr)
-			{
-				mDiffuseCubeMap->Bind(mDevice, 6, ED3D11ShaderType::PixelShader);
-				mSpecularCubeMap->Bind(mDevice, 7, ED3D11ShaderType::PixelShader);
-				mBRDFLUT->Bind(mDevice, 8, ED3D11ShaderType::PixelShader);
-			}
-
 			pass->Render();
 		}
 	}
@@ -86,18 +85,12 @@ namespace fq::graphics
 	void RenderPipeline::EndRender()
 	{
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain = mDevice->GetSwapChain();
+		auto result = mDevice->GetDevice()->GetDeviceRemovedReason();
 		HR(swapChain->Present(0, 0));
 	}
 
-	void RenderPipeline::SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT)
+	void RenderPipeline::RenderFullScreen()
 	{
-		if (diffuse == L"" || specular == L"" || brdfLUT == L"")
-		{
-			return;
-		}
-
-		mDiffuseCubeMap = mResourceManager->Create<D3D11Texture>(diffuse);
-		mSpecularCubeMap = mResourceManager->Create<D3D11Texture>(specular);
-		mBRDFLUT = mResourceManager->Create<D3D11Texture>(brdfLUT);
+		mFullScreenLastPass->Render();
 	}
 }

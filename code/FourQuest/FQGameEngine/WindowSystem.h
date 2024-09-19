@@ -23,12 +23,12 @@ namespace fq::game_engine
 		/// <summary>
 		/// 윈도우 창을 생성한다.
 		/// </summary>
-		void Initialize();
+		void Initialize(UINT screenWidth, UINT screenHeight);
 
 		/// <summary>
 		/// 에디터 전용 윈도우 창을 생성합니다
 		/// </summary>
-		void InitializeEditorType();
+		void InitializeEditorType(UINT screenWidth, UINT screenHeight);
 
 		/// <summary>
 		/// 윈도우 창 크기 변경 확인
@@ -83,10 +83,14 @@ namespace fq::game_engine
 		UINT GetScreenTop()const { return mScreenTop; }
 
 	private:
+		UINT mMonitorWidth;
+		UINT mMonitorHeight;
+
 		UINT mScreenWidth;
 		UINT mScreenHeight;
 		UINT mScreenLeft;
 		UINT mScreenTop;
+
 		HWND mHWND;
 		HINSTANCE mHInstance;
 	};

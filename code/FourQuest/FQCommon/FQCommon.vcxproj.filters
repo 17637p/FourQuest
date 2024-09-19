@@ -36,8 +36,8 @@
     <ClInclude Include="IFQRenderResource.h">
       <Filter>Grphiacs</Filter>
     </ClInclude>
-    <ClInclude Include="EObjectRenderType.h">
-      <Filter>Grphiacs</Filter>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

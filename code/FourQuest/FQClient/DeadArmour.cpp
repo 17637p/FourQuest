@@ -1,9 +1,19 @@
 #include "DeadArmour.h"
 
+#include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/CharacterController.h"
+
 #include "Soul.h"
+#include "Player.h"
+#include "ClientEvent.h"
 
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
+	, mbIsVisible(false)
 {}
 
 fq::client::DeadArmour::~DeadArmour()
@@ -28,22 +38,29 @@ std::shared_ptr<fq::game_module::Component> fq::client::DeadArmour::Clone(std::s
 	return cloneController;
 }
 
-void fq::client::DeadArmour::SummonLivingArmour(ControllerID id)
+void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 {
-	assert(id <= 3);
+	assert(info.ControllerID <= 3);
 
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(GetLivingArmour());
-
+	// 인스턴스 생성
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mLivingArmourPrefab);
 	auto& livingArmour = *(instance.begin());
 
 	// 컨트롤러 연결
-	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(id);
+	livingArmour->GetComponent<game_module::CharacterController>()->SetControllerID(info.ControllerID);
+
+	// 영혼 타입 설정
+	livingArmour->GetComponent<Player>()->SetSoulType(info.SoulType);
 
 	// 위치 설정
-	auto localMat = GetComponent<game_module::Transform>()->GetLocalMatrix();
-	livingArmour->GetComponent<game_module::Transform>()->SetLocalMatrix(localMat);
+	auto world = GetComponent<game_module::Transform>()->GetWorldMatrix();
+	livingArmour->GetComponent<game_module::Transform>()->SetWorldMatrix(world);
 
 	GetScene()->AddGameObject(livingArmour);
+
+	// 상호작용 이벤트 발생
+	GetScene()->GetEventManager()->FireEvent<client::event::ObjectInteractionEvent>(
+		{ GetGameObject()->GetTag() });
 
 	// DeadArmour 삭제 
 	GetScene()->DestroyGameObject(GetGameObject());
@@ -60,9 +77,14 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 	{
 		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 		{
-			child->GetComponent<game_module::SkinnedMeshRenderer>()
-				->SetOutlineColor({ 0.8f, 0.6f, 0.2f, 1.0f });
+			auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
+			auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
+			info.OutlineColor = { 0.8f, 0.6f, 0.2f, 1.0f };
+			skinnedMeshRenderer->SetMeshObjectInfomation(info);
 		}
+
+		// 상호작용 UI 
+		setUI(true);
 	}
 }
 
@@ -77,12 +99,71 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 	{
 		for (auto& child : GetGameObject()->GetChildren())
 		{
+			// OutLine
 			if (child->HasComponent<game_module::SkinnedMeshRenderer>())
 			{
-				child->GetComponent<game_module::SkinnedMeshRenderer>()
-					->SetOutlineColor({ 0.f, 0.f, 0.f, 1.0f });
+				auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
+				auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
+				info.OutlineColor = { 0.f, 0.f, 0.f, 1.0f };
+				skinnedMeshRenderer->SetMeshObjectInfomation(info);
 			}
+			// 상호작용 UI 
+			setUI(false);
 		}
 	}
+}
+
+void fq::client::DeadArmour::OnStart()
+{
+	assert(GetComponent<game_module::ImageUI>() != nullptr);
+
+	setUI(false);
+}
+
+void fq::client::DeadArmour::setUI(bool isVisible)
+{
+	using namespace DirectX::SimpleMath;
+
+	mbIsVisible = isVisible;
+	auto imageUI = GetComponent<game_module::ImageUI>();
+	auto& uiObject = imageUI->GetImageObjects();
+
+	for (auto& ui : uiObject)
+	{
+		ui->SetIsRender(isVisible);
+	}
+}
+
+void fq::client::DeadArmour::OnUpdate(float dt)
+{
+	using namespace DirectX::SimpleMath;
+
+	// UI 위치 갱신 
+	if (mbIsVisible)
+	{
+		fq::game_module::Camera* mainCamera = nullptr;
+
+		GetScene()->GetEventManager()->FireEvent < fq::event::GetMainCamera>(
+			{
+				&mainCamera
+			});
+		Vector3 pos = GetComponent<game_module::Transform>()->GetWorldPosition();
+
+		float height = static_cast<float>(GetScene()->GetScreenManager()->GetFixScreenHeight());
+		float width = static_cast<float>(GetScene()->GetScreenManager()->GetFixScreenWidth());
+
+		auto viewProj = mainCamera->GetViewProjection();
+		Vector3 screenPos = Vector3::Transform(pos, viewProj);
+		auto imageUI = GetComponent<game_module::ImageUI>();
+		assert(imageUI);
+
+		auto uiInfomations = imageUI->GetUIInfomations();
+
+		uiInfomations[0].StartX = width * 0.5f + (screenPos.x * width * 0.5f);
+		uiInfomations[0].StartY = height * 0.5f - (screenPos.y * height * 0.5f);
+
+		imageUI->SetUIInfomations(uiInfomations);
+	}
+
 }
 

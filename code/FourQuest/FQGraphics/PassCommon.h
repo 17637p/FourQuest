@@ -13,7 +13,10 @@
 #include "OutLinePass.h"
 #include "OutLineBlurPass.h"
 #include "OutLineAddPass.h"
-#include "DeferredDecalPass.h"
+#include "TrailRenderPass.h"
+#include "LightProbePass.h"
+#include "LightProbeAddPass.h"
+#include "DebugLightProbePass.h"
 
 // ForwardPipelinePass
 #include "FowardRenderPass.h"
@@ -21,3 +24,4 @@
 // DeferredPipelinePass
 #include "DeferredGeometryPass.h"
 #include "DeferredShadingPass.h"
+#include "DeferredDecalPass.h"

@@ -4,7 +4,6 @@
 
 namespace fq::client
 {
-
 	class PlayerInputState :public game_module::IStateBehaviour
 	{
 	public:
@@ -18,7 +17,6 @@ namespace fq::client
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
-
 	};
 
 }

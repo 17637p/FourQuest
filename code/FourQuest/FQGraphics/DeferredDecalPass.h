@@ -4,36 +4,11 @@
 #include <directxtk\SimpleMath.h>
 #include "Pass.h"
 #include "D3D11Common.h"
+#include "ConstantBufferStructure.h"
 
 namespace fq::graphics
 {
-	class D3D11DecalManager;
-
-	namespace decal
-	{
-		struct PerFrame
-		{
-			DirectX::SimpleMath::Matrix TexTransform;
-			DirectX::SimpleMath::Matrix World;
-			DirectX::SimpleMath::Matrix View;
-			DirectX::SimpleMath::Matrix Proj;
-			DirectX::SimpleMath::Matrix InvWV;
-
-			DirectX::SimpleMath::Vector2 Deproject;
-			float NormalThresholdInRadian;
-			float AlphaClipThreshold;
-			
-			int bUseMultiplyAlpha;
-			int bUseAlphaClip;
-			int bUseAlbedoMap;
-			int bUseMetalnessMap;
-
-			int bUseRoughnessMap;
-			int bUseNormalMap;
-			int bUseEmissiveMap;
-			float unused[1];
-		};
-	}
+	class D3D11ObjectManager;
 
 	class DeferredDecalPass : public Pass
 	{
@@ -41,7 +16,7 @@ namespace fq::graphics
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
-			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11ObjectManager> objectManager,
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			unsigned short width,
 			unsigned short height);
@@ -56,21 +31,18 @@ namespace fq::graphics
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
-		std::shared_ptr<D3D11DecalManager> mDecalManager;
+		std::shared_ptr<D3D11ObjectManager> mObjectManager;
 		std::shared_ptr<D3D11DebugDrawManager> mDebugDrawManager;
 
 		D3D11_VIEWPORT mViewport;
 
 		std::shared_ptr<D3D11RenderTargetView> mAlbedoRTV;
-		std::shared_ptr<D3D11RenderTargetView> mMetalnessRTV;
-		std::shared_ptr<D3D11RenderTargetView> mRoughnessRTV;
 		std::shared_ptr<D3D11RenderTargetView> mNormalRTV;
 		std::shared_ptr<D3D11RenderTargetView> mEmissiveRTV;
 
 		std::shared_ptr<class D3D11DepthStencilView> mDefualtDSV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mPositionWSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mSourceNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mSourceTangentSRV;
 
@@ -80,7 +52,8 @@ namespace fq::graphics
 		std::shared_ptr<D3D11SamplerState> mLinearClampSamplerState;
 		std::shared_ptr<D3D11SamplerState> mPointClampSamplerState;
 
-		std::shared_ptr<D3D11ConstantBuffer<decal::PerFrame>> mPerFrameCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBDecalObject>> mDecalObjectCB;
+		std::shared_ptr<D3D11ConstantBuffer<CBDecalMaterial>> mDecalMaterialCB;
 
 		std::shared_ptr<D3D11VertexBuffer> mBoxVB;
 		std::shared_ptr<D3D11IndexBuffer> mBoxIB;

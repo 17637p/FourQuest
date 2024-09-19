@@ -15,13 +15,10 @@ namespace fq::graphics
 	public:
 		D3D11JobManager();
 		~D3D11JobManager() = default;
-		
+
 		void CreateStaticMeshJob(IStaticMeshObject* iStaticMeshObject);
-		void CreateStaticMeshJobs(const std::set<IStaticMeshObject*>& staticMeshObjects);
 		void CreateSkinnedMeshJob(ISkinnedMeshObject* iSkinnedMeshObject);
-		void CreateSkinnedMeshJobs(const std::set<ISkinnedMeshObject*>& skinnedMeshObjects);
 		void CreateTerrainMeshJob(ITerrainMeshObject* iTerrainMeshObjct);
-		void CreateTerrainMeshJobs(const std::set<ITerrainMeshObject*>& terrainMeshObjects);
 
 		void ClearAll();
 		void ClearStaticMeshJobs();
@@ -31,6 +28,9 @@ namespace fq::graphics
 		inline const std::vector<StaticMeshJob>& GetStaticMeshJobs() const;
 		inline const std::vector<SkinnedMeshJob>& GetSkinnedMeshJobs() const;
 		inline const std::vector<TerrainMeshJob>& GetTerrainMeshJobs() const;
+
+		void SortStaticMeshJob();
+		void SortSkinnedMeshJob();
 
 	private:
 		enum { RESERVE_SIZE = 2048 };

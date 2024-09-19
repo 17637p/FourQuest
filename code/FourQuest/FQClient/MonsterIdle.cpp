@@ -1,6 +1,8 @@
 #include "MonsterIdle.h"
 #include "Monster.h"
 
+#include <spdlog/spdlog.h>
+
 fq::client::MonsterIdle::MonsterIdle()
 {
 }
@@ -11,27 +13,27 @@ fq::client::MonsterIdle::~MonsterIdle()
 
 void fq::client::MonsterIdle::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }
 
 void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state, float dt)
 {
 	Monster* monster = animator.GetComponent<Monster>();
 
-	if (monster->GetTarget() == nullptr)
+	if (monster->GetTarget() == nullptr
+		|| monster->GetTarget()->IsDestroyed())
 	{
+		monster->SetTarget(nullptr);
 		animator.SetParameterTrigger("OnFind");
 	}
 	else
 	{
-		// Todo: 데미지 받았을 때 변수 설정 
 		if (monster->GetIsDamaged())
 		{
 			animator.SetParameterTrigger("OnDamaged");
 		}
 		else
 		{
-			float targetDist = monster->CalculateDistance(*monster->GetTarget());
+			float targetDist = monster->CalculateDistanceTarget(monster->GetTarget().get());
 
 			if (targetDist < monster->GetTargetAttackRange())
 			{
@@ -48,7 +50,6 @@ void fq::client::MonsterIdle::OnStateUpdate(fq::game_module::Animator& animator,
 
 void fq::client::MonsterIdle::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::MonsterIdle::Clone()

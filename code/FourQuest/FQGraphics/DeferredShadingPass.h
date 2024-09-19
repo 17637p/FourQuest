@@ -12,7 +12,7 @@ namespace fq::graphics
 	public:
 		void Initialize(std::shared_ptr<D3D11Device> device,
 			std::shared_ptr<D3D11ResourceManager> resourceManager,
-			std::shared_ptr< D3D11LightManager> lightManager,
+			std::shared_ptr<D3D11LightManager> lightManager,
 			std::shared_ptr<D3D11CameraManager> cameraManager,
 			unsigned short width,
 			unsigned short height);
@@ -23,7 +23,7 @@ namespace fq::graphics
 	private:
 		std::shared_ptr<D3D11Device> mDevice;
 		std::shared_ptr<D3D11ResourceManager> mResourceManager;
-		std::shared_ptr< D3D11LightManager> mLightManager;
+		std::shared_ptr<D3D11LightManager> mLightManager;
 		std::shared_ptr<D3D11CameraManager> mCameraManager;
 
 		D3D11_VIEWPORT mViewport;
@@ -33,11 +33,11 @@ namespace fq::graphics
 		std::shared_ptr<D3D11RenderTargetView> mBackBufferRTV;
 
 		std::shared_ptr<D3D11ShaderResourceView> mAlbedoSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mMetalnessSRV;
-		std::shared_ptr<D3D11ShaderResourceView> mRoughnessSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mMetalnessRoughnessSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mNormalSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mEmissiveSRV;
 		std::shared_ptr<D3D11ShaderResourceView> mPositionSRV;
+		std::shared_ptr<D3D11ShaderResourceView> mPreCalculatedSRV;
 
 		std::unique_ptr<class ShaderProgram> mShaderProgram;
 
@@ -48,7 +48,5 @@ namespace fq::graphics
 
 		std::shared_ptr<D3D11VertexBuffer> mFullScreenVB;
 		std::shared_ptr<D3D11IndexBuffer> mFullScreenIB;
-
-		std::shared_ptr<D3D11ConstantBuffer<DirectionalShadowInfo>> mDirectioanlShadowInfoCB;
 	};
 }

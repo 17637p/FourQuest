@@ -18,98 +18,58 @@ namespace fq::graphics
 	class Material : public IMaterial
 	{
 	public:
-		Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const fq::common::Material& materialData, std::filesystem::path textureBasePath = "");
-		Material(const StandardMaterialInfo& materialData);
+		Material(std::shared_ptr<D3D11ResourceManager> resourceManager, const MaterialInfo& materialInfo, const std::string& name = "");
 		~Material() = default;
+
+		void SetInfo(const MaterialInfo& info) override { mInfo = info; loadTexture(); }
+		const MaterialInfo& GetInfo() const override { return mInfo; }
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
 
-		EMaterialType GetMaterialType() const override { return EMaterialType::Standard; }
-
-		void SetStandardMaterialInfo(const StandardMaterialInfo& materialInfo) override { mMaterialInfo = materialInfo; }
-		const StandardMaterialInfo& GetStandardMaterialInfo() const override { return mMaterialInfo; }
-		StandardMaterialInfo& GetStandardMaterialInfo() override { return mMaterialInfo; }
-
-		void SetMaterialControllInfo(const MaterialControllInfo& materialControllInfo) override { mMaterialControllInfo = materialControllInfo; }
-		const MaterialControllInfo& GetMaterialControllInfo() const override { return mMaterialControllInfo; }
-
 		inline bool GetHasBaseColor() const { return mBaseColor != nullptr; }
 		inline bool GetHasMetalness() const { return mMetalness != nullptr; }
 		inline bool GetHasRoughness() const { return mRoughness != nullptr; }
 		inline bool GetHasNormal() const { return mNormal != nullptr; }
 		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
+		inline bool GetHasOpacity() const { return mOpacity != nullptr; }
+		inline bool GetHasMetalnessSmoothness() const { return mMetalnessSmoothness != nullptr; }
+		inline bool GetHasNoise() const { return mNoise != nullptr; }
 
 		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
 		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
 		std::shared_ptr<D3D11Texture> GetRoughness() const { return mRoughness; }
 		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
 		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
+		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
+		std::shared_ptr<D3D11Texture> GetMetalnessSmoothness() const { return mMetalnessSmoothness; }
+		std::shared_ptr<D3D11Texture> GetNoise() const { return mNoise; }
+
+		const std::string& GetName() const override { return mName; }
 
 	private:
-		void loadTexture(std::shared_ptr<D3D11ResourceManager> resourceManager) override;
+		void loadTexture();
 
 	private:
-		StandardMaterialInfo mMaterialInfo;
-		MaterialControllInfo mMaterialControllInfo;
+		std::string mName;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		MaterialInfo mInfo;
 
 		std::shared_ptr<D3D11Texture> mBaseColor;
 		std::shared_ptr<D3D11Texture> mMetalness;
 		std::shared_ptr<D3D11Texture> mRoughness;
 		std::shared_ptr<D3D11Texture> mNormal;
 		std::shared_ptr<D3D11Texture> mEmissive;
+		std::shared_ptr<D3D11Texture> mOpacity;
+		std::shared_ptr<D3D11Texture> mMetalnessSmoothness;
+		std::shared_ptr<D3D11Texture> mNoise;
 	};
-
-	class DecalMaterial : public IMaterial
-	{
-	public:
-		DecalMaterial() = default;
-		DecalMaterial(const DecalMaterialInfo& decalMaterialInfo)
-			: mMaterialInfo(decalMaterialInfo)
-		{
-		}
-		~DecalMaterial() = default;
-
-		EMaterialType GetMaterialType() const override { return EMaterialType::Decal; }
-
-		void SetDecalMaterialInfo(const DecalMaterialInfo& materialInfo) override { mMaterialInfo = materialInfo; }
-		const DecalMaterialInfo& GetDecalMaterialInfo() const override { return mMaterialInfo; }
-		DecalMaterialInfo& GetDecalMaterialInfo() override { return mMaterialInfo; }
-
-		void SetMaterialControllInfo(const MaterialControllInfo& materialControllInfo) override { mMaterialControllInfo = materialControllInfo; }
-		const MaterialControllInfo& GetMaterialControllInfo() const override { return mMaterialControllInfo; }
-
-		inline bool GetHasBaseColor() const { return mBaseColor != nullptr; }
-		inline bool GetHasMetalness() const { return mMetalness != nullptr; }
-		inline bool GetHasRoughness() const { return mRoughness != nullptr; }
-		inline bool GetHasNormal() const { return mNormal != nullptr; }
-		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
-
-		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
-		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
-		std::shared_ptr<D3D11Texture> GetRoughness() const { return mRoughness; }
-		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
-		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
-
-	private:
-		void loadTexture(std::shared_ptr<D3D11ResourceManager> resourceManager) override;
-
-	private:
-		DecalMaterialInfo mMaterialInfo;
-		MaterialControllInfo mMaterialControllInfo;
-
-		std::shared_ptr<D3D11Texture> mBaseColor;
-		std::shared_ptr<D3D11Texture> mMetalness;
-		std::shared_ptr<D3D11Texture> mRoughness;
-		std::shared_ptr<D3D11Texture> mNormal;
-		std::shared_ptr<D3D11Texture> mEmissive;
-	};
-
 
 	class TerrainMaterial
 	{
 	public:
 		TerrainMaterial(const std::shared_ptr<D3D11Device>& device,
 			const TerrainMaterialInfo& materialData,
+			UINT width, UINT height,
 			std::filesystem::path basePath = "");
 		~TerrainMaterial() = default;
 
@@ -126,6 +86,7 @@ namespace fq::graphics
 		float GetRoughness(unsigned short index) const { return mRoughnesses[index]; }
 
 		std::vector<float> GetHeightMapData() const { return mHeightMapData; }
+		int* GetHeightMapRawData() { return mHeightMapRawData.data(); }
 
 	private:
 		void LoadHeight(const std::string& heightMapFilePath);
@@ -151,12 +112,90 @@ namespace fq::graphics
 		std::vector<float> mRoughnesses;
 
 		std::shared_ptr<D3D11Texture> mHeightMap;
+		std::vector<int> mHeightMapRawData;
 		std::vector<float> mHeightMapData;
 		// temp
+		UINT mWidth;
+		UINT mHeight;
 		float mHeightscale;
 
 		std::shared_ptr<D3D11Texture> mAlpha;
 	};
 
 	inline unsigned short TerrainMaterial::GetNumOfTexture() const { return numOfTexture; }
+
+
+	class ParticleMaterial : public IParticleMaterial
+	{
+	public:
+		ParticleMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const ParticleMaterialInfo& materialInfo, const std::string& name = "");
+		~ParticleMaterial() = default;
+
+		void SetInfo(const ParticleMaterialInfo& info) override { mInfo = info; loadTexture(); }
+		const ParticleMaterialInfo& GetInfo() const override { return mInfo; }
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+
+		inline bool GetHasBaseColor() const { return mBaseColor != nullptr; }
+		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
+
+		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
+		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
+
+		const std::string& GetName() const override { return mName; }
+
+	private:
+		void loadTexture();
+
+	private:
+		std::string mName;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		ParticleMaterialInfo mInfo;
+
+		std::shared_ptr<D3D11Texture> mBaseColor;
+		std::shared_ptr<D3D11Texture> mEmissive;
+	};
+
+	class DecalMaterial : public IDecalMaterial
+	{
+	public:
+		DecalMaterial(std::shared_ptr<D3D11ResourceManager> resourceManager, const DecalMaterialInfo& materialInfo, const std::string& name = "");
+		~DecalMaterial() = default;
+
+		void SetInfo(const DecalMaterialInfo& info) override { mInfo = info; loadTexture(); }
+		const DecalMaterialInfo& GetInfo() const override { return mInfo; }
+
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+
+		inline bool GetHasBaseColor() const { return mBaseColor != nullptr; }
+		inline bool GetHasMetalness() const { return mMetalness != nullptr; }
+		inline bool GetHasRoughness() const { return mRoughness != nullptr; }
+		inline bool GetHasNormal() const { return mNormal != nullptr; }
+		inline bool GetHasEmissive() const { return mEmissive != nullptr; }
+		inline bool GetHasOpacity() const { return mOpacity != nullptr; }
+
+		std::shared_ptr<D3D11Texture> GetBaseColor() const { return mBaseColor; }
+		std::shared_ptr<D3D11Texture> GetMetalness() const { return mMetalness; }
+		std::shared_ptr<D3D11Texture> GetRoughness() const { return mRoughness; }
+		std::shared_ptr<D3D11Texture> GetNormal() const { return mNormal; }
+		std::shared_ptr<D3D11Texture> GetEmissive() const { return mEmissive; }
+		std::shared_ptr<D3D11Texture> GetOpacity() const { return mOpacity; }
+
+		const std::string& GetName() const override { return mName; }
+
+	private:
+		void loadTexture();
+
+	private:
+		std::string mName;
+		std::shared_ptr<D3D11ResourceManager> mResourceManager;
+		DecalMaterialInfo mInfo;
+
+		std::shared_ptr<D3D11Texture> mBaseColor;
+		std::shared_ptr<D3D11Texture> mMetalness;
+		std::shared_ptr<D3D11Texture> mRoughness;
+		std::shared_ptr<D3D11Texture> mNormal;
+		std::shared_ptr<D3D11Texture> mEmissive;
+		std::shared_ptr<D3D11Texture> mOpacity;
+	};
 }

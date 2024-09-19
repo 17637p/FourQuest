@@ -14,13 +14,14 @@ namespace fq::game_module
 namespace fq::game_engine
 {
 	class GameProcess;
+	class ResourceSystem;
 
 	/// <summary>
 	/// 랜더링관련 바인딩 처리를 담당합니다
 	/// </summary>
 	class RenderingSystem
 	{
-		using ModelPath = std::string;
+		using Path = std::string;
 		using EventHandler = fq::game_module::EventHandler;
 	public:
 		RenderingSystem();
@@ -64,19 +65,12 @@ namespace fq::game_engine
 		void RemoveComponent(const fq::event::RemoveComponent& event);
 
 		/// <summary>
-		/// 모델이 로드된지 확인합니다
-		/// </summary>
-		bool IsLoadedModel(const ModelPath& path);
-
-		/// <summary>
-		/// 모델을 로드합니다 
-		/// </summary>
-		void LoadModel(const ModelPath& path);
-
-		/// <summary>
 		/// 애니메이션을 작동합니다.
 		/// </summary>
 		void WriteAnimation(const fq::event::WriteAnimation& event);
+
+		unsigned int GetModelKey(const Path& modelPath, const Path& texturePath = "")const;
+
 	private:
 		void loadStaticMeshRenderer(fq::game_module::GameObject* object);
 		void unloadStaticMeshRenderer(fq::game_module::GameObject* object);
@@ -88,11 +82,14 @@ namespace fq::game_engine
 		void unloadTerrain(fq::game_module::GameObject* object);
 
 		void loadAnimation(fq::game_module::GameObject * object);
+		void unloadAnimation(fq::game_module::GameObject* object);
 
-		void unloadAllModel();
+		void loadUVAnimation(fq::game_module::GameObject * object);
+		void loadSequenceAnimation(fq::game_module::GameObject* object);
 
 	private:
 		GameProcess* mGameProcess;
+		ResourceSystem* mResourceSystem;
 		EventHandler mOnLoadSceneHandler;
 		EventHandler mOnUnloadSceneHandler;
 		EventHandler mOnAddGameObjectHandler;
@@ -100,10 +97,11 @@ namespace fq::game_engine
 		EventHandler mAddComponentHandler;
 		EventHandler mRemoveComponentHandler;
 		EventHandler mWriteAnimationHandler;
+		EventHandler mSetViewportSizeHandler;
+		EventHandler mUpdateMaterialInfosHandler;
+		EventHandler mDebugDrawLayHanlder;
 
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;
-
-		std::set<ModelPath> mLoadModels;
 	};
 }

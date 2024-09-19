@@ -15,7 +15,7 @@ namespace fq::game_engine
 
 	/// <summary>
 	/// Animator를 편집하는 창
-	/// </summary>
+	/// </summary>S
 	class AnimatorWindow : public IEditorWindow
 	{
 		using NodeID = unsigned int;
@@ -79,8 +79,10 @@ namespace fq::game_engine
 		std::shared_ptr<fq::game_module::AnimatorController> mSelectController;
 		std::string mSettingFilePath;
 		ax::NodeEditor::EditorContext* mContext;
+		entt::id_type mSelectNodeID;
 
 		bool mbIsOpen;
+		bool mbIsFocused;
 		std::unordered_map<NodeID, std::string> mMatchNodeID;
 		std::unordered_map<PinID, std::string> mMatchPinID;
 		std::unordered_map<LinkID, LinkPair> mMatchLinkID;

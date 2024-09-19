@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "../FQCommon/IFQRenderResource.h"
 
 namespace fq::game_module
 {
@@ -24,6 +25,11 @@ namespace fq::game_module
 		void OnUpdate(float dt) override;
 
 		/// <summary>
+		/// 파괴되는 경우 ExitState 함수를 호출합니다.
+		/// </summary>
+		void OnDestroy() override;
+
+		/// <summary>
 		/// 복사본을 반환합니다 
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -36,12 +42,14 @@ namespace fq::game_module
 		/// <summary>
 		/// 컨트롤러를 반환합니다 
 		/// </summary>
-		AnimatorController& GetController()const { return *mController; }
+		AnimatorController& GetController() const { return *mController; }
 
 		/// <summary>
 		/// 컨트롤러를 반환합니다
 		/// </summary>
-		std::shared_ptr<AnimatorController> GetSharedController()const { return mController; }
+		std::shared_ptr<AnimatorController> GetSharedController() const { return mController; }
+
+		bool GetHasController() const { return mController != nullptr; }
 
 		/// <summary>
 		/// 애니메이션 상태를 업데이트 합니다 
@@ -57,7 +65,7 @@ namespace fq::game_module
 		/// 로드할 컨트롤러 경로를 반환합니다
 		/// </summary>
 		ControllerPath GetControllerPath() const { return mControllerPath; }
-		
+
 		/// <summary>
 		/// 로드할 컨트롤러 경로를 설정합니다 
 		/// </summary>
@@ -67,25 +75,71 @@ namespace fq::game_module
 		void SetParameterFloat(const std::string& id, float val);
 		void SetParameterBoolean(const std::string& id, bool val);
 		void SetParameterTrigger(const std::string& id);
+		void SetParameterOffTrigger(const std::string& id);
 
 		/// <summary>
-		/// 애니메이터가 애니메이션을 관리하는 스키닝 메쉬들을 반환합니다.
+		/// 노드 계층 구조 인스턴스 Getter/Setter
 		/// </summary>
-		std::vector<SkinnedMeshRenderer*>& GetSkinnedMeshs() { return mSkinnedMeshs; }
+		void SetNodeHierarchyInstance(std::shared_ptr<fq::graphics::INodeHierarchyInstance> nodeHierarchyInstance) { mNodeHierarchyInstance = nodeHierarchyInstance; }
+		std::shared_ptr<fq::graphics::INodeHierarchyInstance> GetSharedNodeHierarchyInstance() const { return mNodeHierarchyInstance; }
+		fq::graphics::INodeHierarchyInstance& GetNodeHierarchyInstance() { return *mNodeHierarchyInstance; }
+		bool GetHasNodeHierarchyInstance() { return mNodeHierarchyInstance != nullptr; }
+
+		/// <summary>
+		/// 노드 계층 구조 리소스  Getter/Setter
+		/// </summary>
+		void SetNodeHierarchy(std::shared_ptr<fq::graphics::INodeHierarchy> nodeHierarchy) { mNodeHierarchy = nodeHierarchy; }
+		std::shared_ptr<fq::graphics::INodeHierarchy> GetSharedNodeHierarchy() const { return mNodeHierarchy; }
+		fq::graphics::INodeHierarchy& GetNodeHierarchy() { return *mNodeHierarchy; }
+		bool GetHasNodeHierarchy() const { return mNodeHierarchy != nullptr; }
+
+		/// <summary>
+		/// 노드 계층 구조 리스소 경로 Getter/Setter
+		/// </summary>
+		std::string GetNodeHierarchyPath() const { return mNodeHierarchyPath; }
+		void SetNodeHierarchyPath(const std::string& path);
 
 		/// <summary>
 		/// 현재 애니메이션 전환중인지 반환합니다.
 		/// </summary>
 		bool IsInTransition()const;
 
+		/// <summary>
+		/// 애니메이션 기본 재생속도를 반환합니다
+		/// </summary>
+		float GetPlaySpeed() const { return mDefaultPlaySpeed; }
+
+		/// <summary>
+		/// 애니메이션 기본 재생속도를 설정합니다 
+		/// </summary>
+		void SetPlaySpeed(float speed) { mDefaultPlaySpeed = speed; }
+
+		/// <summary>
+		/// 애니메이션이 정지 상태인지 반환합니다 
+		/// </summary>
+		bool IsStopAnimation() const { return mbIsStopAnimation; }
+
+		/// <summary>
+		/// 애니메이션을 정지 여부를 설정합니다 
+		/// </summary>
+		void SetStopAnimation(bool isStop) { mbIsStopAnimation = isStop; }
+
+		void ProcessAnimationEvent(class GameObject* gameObject, class EventManager* eventManager);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
+		
 
 	private:
 		ControllerPath mControllerPath;
 		std::shared_ptr<AnimatorController> mController;
-		std::vector<SkinnedMeshRenderer*> mSkinnedMeshs;
+
+		std::string mNodeHierarchyPath;
+		std::shared_ptr<fq::graphics::INodeHierarchy> mNodeHierarchy;
+		std::shared_ptr<fq::graphics::INodeHierarchyInstance> mNodeHierarchyInstance;
+
+		float mDefaultPlaySpeed;
+		bool mbIsStopAnimation;
 	};
 
 }

@@ -1,0 +1,389 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="include\01.Engine">
+      <UniqueIdentifier>{0a8ac1d8-343d-4da7-b2c0-497bb8a5733b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\10.Editor">
+      <UniqueIdentifier>{1088e9a9-0f1b-4e8e-ac8b-749b548c0733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.GameProcess">
+      <UniqueIdentifier>{f1275986-6c46-47e7-aac0-6280e2545545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\00.Define">
+      <UniqueIdentifier>{cbf6fe28-fece-4c60-a53e-d7bd96c4b5ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\12.EditorSystem">
+      <UniqueIdentifier>{d7865560-f8c0-4707-a3a5-681ee934cd13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\03.GameSystem">
+      <UniqueIdentifier>{95738922-e3bd-472c-8d1f-1d88be375719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\12.EditorSystem\Define">
+      <UniqueIdentifier>{a8e49b76-a6b8-4b33-a16e-813e0f56706e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\02.GameProcess">
+      <UniqueIdentifier>{e1e09096-e8be-487c-8bd4-af27fc6a6de5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.Window">
+      <UniqueIdentifier>{3ca10ecb-1121-4a91-b4a7-6cac146d0d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\00.Define">
+      <UniqueIdentifier>{3764341c-45c0-4783-b734-1c8fb4e4e247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.EditorSystem">
+      <UniqueIdentifier>{2bb07cc4-2c23-4b49-be1d-ff7e7511cd89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\12.EditorSystem\Define">
+      <UniqueIdentifier>{a95851d0-cef2-4ebe-9eea-ecbd90cc727f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\10.Editor">
+      <UniqueIdentifier>{a702327d-174d-4aa6-a796-3534e08b8162}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Engine">
+      <UniqueIdentifier>{a6557af1-1b30-4c33-80f9-852f9030bd7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.EditorWindow">
+      <UniqueIdentifier>{50c11353-b6bf-4506-beb3-5e7c1b596108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem">
+      <UniqueIdentifier>{7677c2b5-0c68-49c1-b3bf-c8d2536ee3ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\11.Window\Define">
+      <UniqueIdentifier>{175fceb5-a0e0-4fa3-a5b3-99e4af8ea1ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\11.EditorWindow\Define">
+      <UniqueIdentifier>{d0631955-d9a8-444b-a5e5-d8f56c94c845}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\03.GameSystem\PathFindingSystem">
+      <UniqueIdentifier>{c1fc7586-087c-4ae0-8b6d-2955b931dc44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.GameSystem\PathFindingSystem">
+      <UniqueIdentifier>{3728426b-3c6b-40e6-bcfb-65d184a34d79}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EditorEngine.h">
+      <Filter>include\01.Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>include\01.Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngine.h">
+      <Filter>include\01.Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProcess.h">
+      <Filter>include\02.GameProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="IEditorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Inspector.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Hierarchy.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDialog.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="LogWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorProcess.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenuBar.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="GamePlayWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="FQGameEngine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="WndProc.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="FQGameEngineRegister.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorEvent.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorEnum.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>include\12.EditorSystem\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_stdlib.h">
+      <Filter>include\12.EditorSystem\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiColor.h">
+      <Filter>include\12.EditorSystem\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionMatrixWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugSystem.h">
+      <Filter>include\12.EditorSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeEditorStruct.h">
+      <Filter>include\11.EditorWindow\Define</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBoxWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsAnimatorWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Setting.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="UISystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMeshWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMesh.h">
+      <Filter>include\03.GameSystem\PathFindingSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="DecalSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorHelper.h">
+      <Filter>include\10.Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationHierarchy.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="ArticulationInspector.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbeSystem.h">
+      <Filter>include\03.GameSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbeWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFindingSystem.h">
+      <Filter>include\03.GameSystem\PathFindingSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportWindow.h">
+      <Filter>include\11.EditorWindow</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>src\01.Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorEngine.cpp">
+      <Filter>src\01.Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="IEngine.cpp">
+      <Filter>src\01.Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProcess.cpp">
+      <Filter>src\02.GameProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="dllExport.h">
+      <Filter>include\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="Inspector.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="IEditorWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Hierarchy.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDialog.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LogWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorProcess.cpp">
+      <Filter>src\10.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenuBar.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="GamePlayWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="WndProc.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="FQGameEngineRegister.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorEvent.cpp">
+      <Filter>src\10.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_stdlib.cpp">
+      <Filter>src\12.EditorSystem\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>src\12.EditorSystem\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionMatrixWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="LightSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugSystem.cpp">
+      <Filter>src\12.EditorSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsAnimatorWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatorWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeEditorStruct.cpp">
+      <Filter>src\11.Window\Define</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Setting.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="UISystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMeshWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFindingSystem.cpp">
+      <Filter>src\03.GameSystem\PathFindingSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMesh.cpp">
+      <Filter>src\03.GameSystem\PathFindingSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorHelper.cpp">
+      <Filter>src\10.Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationHierarchy.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ArticulationInspector.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbeSystem.cpp">
+      <Filter>src\03.GameSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="LightProbeWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportWindow.cpp">
+      <Filter>src\11.Window</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -17,6 +17,14 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Test|Win32">
+      <Configuration>Test</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Test|x64">
+      <Configuration>Test</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -32,6 +40,12 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -40,6 +54,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
@@ -60,10 +80,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -76,7 +102,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(Solutiondir)FQphysics\Libraries\Lib\deb;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
+    <LibraryPath>$(Solutiondir)FQphysics\Libraries\Lib\deb;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -121,6 +166,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,6 +175,33 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;FQClient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>$(SolutionDir)Symbol\Debug\$(ProjectName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;FQGAMEENGINE_EXPORTS;_WINDOWS;_USRDLL;FQ_GAME_ENGINE_DLL_EXPORTS;%(PreprocessorDefinitions);NOMINMAX;_ITERATOR_DEBUG_LEVEL 0</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>FQGameEnginePCH.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <Optimization>MaxSpeed</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;FQClient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,11 +224,14 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>FQGameModule.lib;FQReflect.lib;FQCommon.lib;FQGraphics.lib;FQphysics.lib;FQClient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ProgramDatabaseFile>$(SolutionDir)Symbol\Release\$(ProjectName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationSystem.h" />
     <ClInclude Include="AnimatorWindow.h" />
+    <ClInclude Include="ArticulationHierarchy.h" />
+    <ClInclude Include="ArticulationInspector.h" />
     <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="CollisionMatrixWindow.h" />
     <ClInclude Include="Command.h" />
@@ -162,11 +239,19 @@
     <ClInclude Include="DebugSystem.h" />
     <ClInclude Include="DecalSystem.h" />
     <ClInclude Include="EditorEnum.h" />
+    <ClInclude Include="EditorHelper.h" />
+    <ClInclude Include="ExportWindow.h" />
     <ClInclude Include="FQGameEngine.h" />
     <ClInclude Include="GamePlayWindow.h" />
+    <ClInclude Include="GameVariableWindow.h" />
     <ClInclude Include="ImGuiColor.h" />
     <ClInclude Include="ImGuiSystem.h" />
+    <ClInclude Include="ImportWindow.h" />
+    <ClInclude Include="LightmapWindow.h" />
+    <ClInclude Include="LightProbeSystem.h" />
+    <ClInclude Include="LightProbeWindow.h" />
     <ClInclude Include="LightSystem.h" />
+    <ClInclude Include="LoadingSystem.h" />
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="EditorEvent.h" />
     <ClInclude Include="EditorProcess.h" />
@@ -180,17 +265,26 @@
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="MainMenuBar.h" />
     <ClInclude Include="FQGameEngineRegister.h" />
+    <ClInclude Include="MaterialWindow.h" />
+    <ClInclude Include="NavigationMesh.h" />
+    <ClInclude Include="NavigationMeshWindow.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="PathFindingSystem.h" />
     <ClInclude Include="PhysicsAnimatorWindow.h" />
     <ClInclude Include="NodeEditorStruct.h" />
     <ClInclude Include="PhysicsSystem.h" />
-    <ClInclude Include="PrefabSystem.h" />
+    <ClInclude Include="ImageSystem.h" />
     <ClInclude Include="ModelSystem.h" />
+    <ClInclude Include="RenderingDebugWindow.h" />
     <ClInclude Include="RenderingSystem.h" />
     <ClInclude Include="EditorEngine.h" />
+    <ClInclude Include="ResourceSystem.h" />
+    <ClInclude Include="SceneResourceList.h" />
     <ClInclude Include="SkyBoxWindow.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="SoundSystem.h" />
+    <ClInclude Include="StateEventSystem.h" />
+    <ClInclude Include="TrailSystem.h" />
     <ClInclude Include="UISystem.h" />
     <ClInclude Include="WindowSystem.h" />
     <ClInclude Include="WndProc.h" />
@@ -198,15 +292,25 @@
   <ItemGroup>
     <ClCompile Include="AnimationSystem.cpp" />
     <ClCompile Include="AnimatorWindow.cpp" />
+    <ClCompile Include="ArticulationHierarchy.cpp" />
+    <ClCompile Include="ArticulationInspector.cpp" />
     <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="CollisionMatrixWindow.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="CommandSystem.cpp" />
     <ClCompile Include="DebugSystem.cpp" />
     <ClCompile Include="DecalSystem.cpp" />
+    <ClCompile Include="EditorHelper.cpp" />
+    <ClCompile Include="ExportWindow.cpp" />
     <ClCompile Include="GamePlayWindow.cpp" />
+    <ClCompile Include="GameVariableWindow.cpp" />
     <ClCompile Include="ImGuiSystem.cpp" />
+    <ClCompile Include="ImportWindow.cpp" />
+    <ClCompile Include="LightmapWindow.cpp" />
+    <ClCompile Include="LightProbeSystem.cpp" />
+    <ClCompile Include="LightProbeWindow.cpp" />
     <ClCompile Include="LightSystem.cpp" />
+    <ClCompile Include="LoadingSystem.cpp" />
     <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="dllExport.h" />
     <ClCompile Include="dllmain.cpp" />
@@ -222,17 +326,26 @@
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="MainMenuBar.cpp" />
     <ClCompile Include="FQGameEngineRegister.cpp" />
+    <ClCompile Include="MaterialWindow.cpp" />
+    <ClCompile Include="NavigationMesh.cpp" />
+    <ClCompile Include="NavigationMeshWindow.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="PathFindingSystem.cpp" />
     <ClCompile Include="PhysicsAnimatorWindow.cpp" />
     <ClCompile Include="NodeEditorStruct.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="PrefabSystem.cpp" />
+    <ClCompile Include="ImageSystem.cpp" />
     <ClCompile Include="ModelSystem.cpp" />
+    <ClCompile Include="RenderingDebugWindow.cpp" />
     <ClCompile Include="RenderingSystem.cpp" />
     <ClCompile Include="EditorEngine.cpp" />
+    <ClCompile Include="ResourceSystem.cpp" />
+    <ClCompile Include="SceneResourceList.cpp" />
     <ClCompile Include="SkyBoxWindow.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="SoundSystem.cpp" />
+    <ClCompile Include="StateEventSystem.cpp" />
+    <ClCompile Include="TrailSystem.cpp" />
     <ClCompile Include="UISystem.cpp" />
     <ClCompile Include="WindowSystem.cpp" />
     <ClCompile Include="WndProc.cpp" />

@@ -12,16 +12,7 @@ struct VertexOut
 
 cbuffer cbMaterial : register(b0)
 {
-    float4 cBaseColor;
-    float cMetalness;
-    float cRoughness;
-    
-    bool cUseAlbedoMap;
-    bool cUseMetalnessMap;
-    bool cUseRoughnessMap;
-    bool cUseNormalMap;
-    bool cUseEmissiveMap;
-    bool cUseOpacityMap;
+    ModelMaterial gModelMaterial;
 };
 
 cbuffer cbLight : register(b1)
@@ -39,9 +30,9 @@ cbuffer cbLight : register(b1)
     float pad2;
 };
 
-cbuffer cbShadowTransformCascaseEnd: register(b2)
+cbuffer cbShadowTransformCascaseEnd : register(b2)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 }
@@ -55,6 +46,7 @@ Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
+Texture2D gMetalnessSmoothness : register(t5);
 TextureCube gDiffuseCubMap : register(t6);
 TextureCube gSpecularCubeMap : register(t7);
 Texture2D gSpecularBRDF_LUT : register(t8);
@@ -62,42 +54,52 @@ Texture2DArray gDirectionalShadowMap : register(t9);
 
 float4 main(VertexOut pin) : SV_TARGET
 {
-    float3 albedo = cBaseColor.rgb;
+    float4 color = gModelMaterial.BaseColor;
     
-    if (cUseAlbedoMap)
+    if (gModelMaterial.UseAlbedoMap)
     {
-        albedo = gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        color *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
     }
     
-    float metalness = cMetalness;
+    clip(color.a - gModelMaterial.AlphaCutoff);
+    
+    float3 albedo = color.rgb;
+    float metalness = gModelMaterial.Metalness;
 
-    if (cUseMetalnessMap)
+    if (gModelMaterial.UseMetalnessMap)
     {
         metalness = gMetalnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
 
-    float roughness = cRoughness;
+    float roughness = gModelMaterial.Roughness;
 
-    if (cUseRoughnessMap)
+    if (gModelMaterial.UseRoughnessMap)
     {
         roughness = gRoughnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
     
     float3 normal = normalize(pin.NormalW);
     
-    if (cUseNormalMap)
+    if (gModelMaterial.UseNormalMap)
     {
         normal = gNormalMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
         normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
-    float3 emissive = float3(0.f, 0.f, 0.f);
+    float3 emissive = gModelMaterial.EmissiveColor.rgb;
     
-    if (cUseEmissiveMap)
+    if (gModelMaterial.UseEmissiveMap)
     {
-        emissive = gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
-
+    
+    if (gModelMaterial.UseMetalnessSmoothness)
+    {
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xw;
+        metalness = metalnessSmoothness.x;
+        roughness = 1 - metalnessSmoothness.y;
+    }
+    
     float3 directLighting = 0.0;
 
     Material material;
@@ -128,7 +130,9 @@ float4 main(VertexOut pin) : SV_TARGET
                 }
  
                 uint shadowIndex = i * CascadeCount + index;
-                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[shadowIndex]);
+                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[shadowIndex]);
+                shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+                shadowPos.y = shadowPos.y * -0.5f + 0.5f;
                 shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, shadowIndex, ShadowMapWidth);
                 
                 currentDirectLighting *= shadowRatio;
@@ -179,7 +183,7 @@ float4 main(VertexOut pin) : SV_TARGET
     // // 이게 뒤에 짤린 절두체에는 들어오고 그려질 때 처리하는 건데 이러면 어차피 벗어나는 건 어차피 생기진 않나...?!?!?! ㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹㅁㄴㅇㄹ
     // if (index < 2)
     // {
-    //     shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[index + 1]);
+    //     shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[index + 1]);
     //     float shadowRatio1 = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, index + 1, 2048.f);
     //     shadowRatio = min(shadowRatio, shadowRatio1);
     // }
@@ -198,4 +202,5 @@ float4 main(VertexOut pin) : SV_TARGET
      //}
    
     return float4(directLighting + ambientLighting + emissive, 1.f);
+    //return float4(albedo, 1.f);
 }

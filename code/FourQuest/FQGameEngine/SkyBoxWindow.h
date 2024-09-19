@@ -2,6 +2,10 @@
 
 #include "IEditorWindow.h"
 
+#include <filesystem>
+
+#include "../FQGameModule/GameModule.h"
+
 namespace fq::graphics
 {
 	class IFQGraphics;
@@ -21,13 +25,15 @@ namespace fq::game_engine
 		void Render() override;
 		bool& IsWindowOpen() { return mbIsOpen; }
 
-	private:
-		void dragDropTarget_SkyBox();
+		void SaveSkyBox(std::filesystem::path path);
 
 	private:
 		bool mbIsOpen;
+
+		fq::game_module::SkyBox mSkyBoxInfo;
 		fq::graphics::IFQGraphics* mGraphicsEngine;
+		fq::game_engine::GameProcess* mGameProcess;
+
+		fq::game_module::EventHandler mOnLoadSceneHandler;
 	};
-
-
 }

@@ -9,6 +9,7 @@
 #include "EventManager.h"
 #include "Event.h"
 #include "Transform.h"
+#include "ScreenManager.h"
 
 fq::game_module::Scene::Scene()
 	:mObjects{}
@@ -16,6 +17,7 @@ fq::game_module::Scene::Scene()
 	, mInputManager(nullptr)
 	, mEventManager(nullptr)
 	, mPrefabManager(nullptr)
+	, mScreenManager(nullptr)
 	, mIsStartScene(false)
 	, mPedingObjects{}
 {}
@@ -28,12 +30,16 @@ fq::game_module::Scene::~Scene()
 void fq::game_module::Scene::Initialize(std::string sceneName
 	, EventManager* eventMgr
 	, InputManager* inputMgr
-	, PrefabManager* prefabMgr)
+	, PrefabManager* prefabMgr
+	, ScreenManager* screenMgr
+	, TimeManager* timeMgr)
 {
 	mSceneName = std::move(sceneName);
 	mEventManager = eventMgr;
 	mInputManager = inputMgr;
 	mPrefabManager = prefabMgr;
+	mScreenManager = screenMgr;
+	mTimeManager = timeMgr;
 }
 
 
@@ -78,14 +84,19 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 	return nullptr;
 }
 
-void fq::game_module::Scene::CleanUp()
+void fq::game_module::Scene::CleanUp(bool isRemoveComponents)
 {
 	mEventManager->FireEvent<fq::event::OnCleanUp>({});
 
 	// 삭제 예정인 오브젝트 제거합니다
 	mObjects.erase(std::remove_if(mObjects.begin(), mObjects.end()
-		, [](const std::shared_ptr<GameObject>& object)
+		, [isRemoveComponents](const std::shared_ptr<GameObject>& object)
 		{
+			if (object->IsDestroyed() && isRemoveComponents)
+			{
+				//object->RemoveAllComponent();
+			}
+
 			return object->IsDestroyed();
 		}), mObjects.end());
 
@@ -112,7 +123,9 @@ void fq::game_module::Scene::AddGameObject(std::shared_ptr<GameObject> object)
 
 	if (mIsStartScene) // 씬이 시작된경우 프레임 마지막에 추가합니다
 	{
-		for (auto child : object->GetChildren())
+		auto children = object->GetChildren();
+
+		for (auto child : children)
 		{
 			AddGameObject(child->shared_from_this());
 		}
@@ -199,12 +212,13 @@ std::shared_ptr<fq::game_module::GameObject> fq::game_module::Scene::GetObjectBy
 
 void fq::game_module::Scene::processPedingObject()
 {
-	for (auto& object : mPedingObjects)
+	for (int i = 0; i < mPedingObjects.size(); ++i)	
 	{
+		auto object = mPedingObjects[i];
 		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
+		object->OnAwake();
 		object->OnStart();
-
-		mObjects.push_back(object);
+		mObjects.push_back(std::move(object));
 	}
 
 	mPedingObjects.clear();

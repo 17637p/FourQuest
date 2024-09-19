@@ -6,6 +6,12 @@
 
 namespace fq::game_module
 {
+	enum class EPadStickType
+	{
+		Left,
+		Right,
+	};
+
 	class Transform;
 	
 	class CharacterController :	public Component, public ICollider
@@ -15,13 +21,6 @@ namespace fq::game_module
 	public:
 		CharacterController();
 		~CharacterController();
-
-		void OnStart() override;
-
-		/// <summary>
-		/// 캐릭터 이동처리를 수행합니다 
-		/// </summary>
-		void OnUpdate(float dt) override;
 
 		/// <summary>
 		/// 복사본을 반환합니다 
@@ -116,8 +115,17 @@ namespace fq::game_module
 		/// <summary>
 		/// 컨트롤러 입력방향을 바라봅니다
 		/// </summary>
-		void SetPadInputRotation();
+		void SetPadInputRotation(EPadStickType padStickType = EPadStickType::Left);
+
+		void SetDashInput(bool val) { mbHasDashInput = val; }
+
+		std::array<bool, 4> GetMoveRestrction()const { return mbMoveRestriction; }
+
+		void SetMoveRestriction(std::array<bool, 4> restriction);
+
 	private:
+		void OnStart() override;
+		void OnFixedUpdate(float dt) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnCollisionEnter(const Collision& collision) override;
@@ -135,9 +143,12 @@ namespace fq::game_module
 		unsigned int mCollisionCount;
 
 		bool mbIsFalling;
-		bool mbCanMoveCharater;
 		bool mbOnMove;
+		bool mbCanMoveCharater;
 		bool mbOnRotation;
+		bool mbHasInput;
+		bool mbHasDashInput;
+		std::array<bool, 4> mbMoveRestriction; // 캐릭터 이동방향 제한 
 	};
 
 }

@@ -6,13 +6,15 @@
 #include "PhysicsCharacterPhysicsManager.h"
 #include "PhysicsResourceManager.h"
 #include "PhysicsCollisionDataManager.h"
+#include "PhysicsClothManager.h"
 #include "PhysicsSimulationEventCallback.h"
+#include "RaycastQueryFileter.h"
 
 #include "ConvexMeshResource.h"
 #include "EngineDataConverter.h"
 
 namespace fq::physics
-{ 
+{
 	/// <summary>
 	/// 충돌 콜백 함수
 	/// <summary>
@@ -65,9 +67,11 @@ namespace fq::physics
 		, mCCTManager(std::make_shared<PhysicsCharactorControllerManager>())
 		, mResourceManager(std::make_shared<PhysicsResourceManager>())
 		, mCharacterPhysicsManager(std::make_shared<PhysicsCharacterPhysicsManager>())
+		, mClothManager(std::make_shared<PhysicsClothManager>())
 		, mCollisionDataManager(std::make_shared<PhysicsCollisionDataManager>())
 		, mMyEventCallback(std::make_shared<PhysicsSimulationEventCallback>())
 		, mScene(nullptr)
+		, mGpuScene(nullptr)
 		, mCudaContextManager(nullptr)
 		, mCollisionMatrix{}
 	{
@@ -78,6 +82,7 @@ namespace fq::physics
 		mCCTManager = nullptr;
 		mRigidBodyManager = nullptr;
 		PX_RELEASE(mScene);
+		PX_RELEASE(mGpuScene);
 		PX_RELEASE(mCudaContextManager);
 	}
 
@@ -116,12 +121,13 @@ namespace fq::physics
 		sceneDesc.cpuDispatcher = mPhysics->GetDispatcher();
 		sceneDesc.filterShader = CustomSimulationFilterShader;
 		sceneDesc.simulationEventCallback = mMyEventCallback.get();
-		sceneDesc.cudaContextManager = mCudaContextManager;
+		//sceneDesc.cudaContextManager = mCudaContextManager;
 		sceneDesc.staticStructure = physx::PxPruningStructureType::eDYNAMIC_AABB_TREE;
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
-		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
-		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
-		sceneDesc.solverType = physx::PxSolverType::eTGS;
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
+		//sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::ePABP;
+		sceneDesc.solverType = physx::PxSolverType::ePGS;
 
 		// PhysX Phsics에서 PhysX의 Scene을 생성합니다.
 		mScene = physics->createScene(sceneDesc);
@@ -136,6 +142,8 @@ namespace fq::physics
 		if (!mResourceManager->Initialize(mPhysics->GetPhysics())) return false;
 		if (!mRigidBodyManager->Initialize(mPhysics->GetPhysics(), mResourceManager, mCollisionDataManager)) return false;
 		if (!mCCTManager->initialize(mScene, mPhysics->GetPhysics(), mCollisionDataManager)) return false;
+		if (!mCharacterPhysicsManager->initialize(mPhysics->GetPhysics(), mScene, mCollisionDataManager)) return false;
+		if (!mClothManager->Initialize(mPhysics->GetPhysics(), mScene, mCudaContextManager)) return false;
 		mMyEventCallback->Initialize(mCollisionDataManager);
 
 		return true;
@@ -151,6 +159,8 @@ namespace fq::physics
 			return false;
 		if (!mCollisionDataManager->Update())
 			return false;
+		if (!mCharacterPhysicsManager->Update())
+			return false;
 		if (!mScene->simulate(deltaTime))
 			return false;
 		if (!mScene->fetchResults(true))
@@ -165,6 +175,8 @@ namespace fq::physics
 		if (!mRigidBodyManager->FinalUpdate())
 			return false;
 		if (!mCCTManager->FinalUpdate())
+			return false;
+		if (!mClothManager->Update())
 			return false;
 
 		return true;
@@ -183,28 +195,59 @@ namespace fq::physics
 		mCCTManager->UpdateCollisionMatrix(mCollisionMatrix);
 	}
 
-	RayCastData FQPhysics::RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance)
+	RayCastOutput FQPhysics::RayCast(const RayCastInput& info)
 	{
-		RayCastData raycastData;
-		raycastData.myId = myID;
-		raycastData.myLayerNumber = layerNumber;
-
-		physx::PxRaycastBuffer hitBuffer;
-
+		// 기본 설정 
 		physx::PxVec3 pxOrigin;
 		physx::PxVec3 pxDirection;
-		CopyDxVec3ToPxVec3(origin, pxOrigin);
-		CopyDxVec3ToPxVec3(direction, pxDirection);
+		CopyDxVec3ToPxVec3(info.origin, pxOrigin);
+		CopyDxVec3ToPxVec3(info.direction, pxDirection);
 
-		bool isBlock = mScene->raycast(pxOrigin, pxDirection, distance, hitBuffer);
-		if (isBlock)
+		// 결과 저장 버퍼
+		const physx::PxU32 maxHits = 20;
+		physx::PxRaycastHit hitBuffer[maxHits];
+		physx::PxRaycastBuffer hitBufferStruct(hitBuffer, maxHits);
+
+		// 쿼리 정보 설정
+		physx::PxQueryFilterData qfd;
+		qfd.data.word0 = info.layerNumber;
+		qfd.data.word1 = mCollisionMatrix[info.layerNumber];
+		qfd.flags = physx::PxQueryFlag::eDYNAMIC //| physx::PxQueryFlag::eSTATIC
+			| physx::PxQueryFlag::ePREFILTER
+			| physx::PxQueryFlag::eNO_BLOCK
+			| physx::PxQueryFlag::eDISABLE_HARDCODED_FILTER; // Physx 핕터형식 적용 X
+
+		RaycastQueryFileter queryfilter;
+
+		bool isAnyHit = mScene->raycast(pxOrigin
+			, pxDirection
+			, info.distance
+			, hitBufferStruct
+			, physx::PxHitFlag::eDEFAULT
+			, qfd
+			, &queryfilter);
+
+		RayCastOutput output;
+
+		if (isAnyHit)
 		{
-			unsigned int hitSize = hitBuffer.getNbAnyHits();
-			raycastData.hitSize = hitSize;
+			// Block 정보 저장 
+			output.hasBlock = hitBufferStruct.hasBlock;
+			if (output.hasBlock)
+			{
+				output.blockID = static_cast<CollisionData*>(hitBufferStruct.block.shape->userData)->myId;
+				hitBufferStruct.block.position;
+				CopyPxVec3ToDxVec3(hitBufferStruct.block.position, output.blockPosition);
+			}
+
+			// Hit정보 저장
+			unsigned int hitSize = hitBufferStruct.nbTouches;
+			hitBufferStruct.block;
+			output.hitSize = hitSize;
 
 			for (unsigned int hitNumber = 0; hitNumber < hitSize; hitNumber++)
 			{
-				const physx::PxRaycastHit& hit = hitBuffer.getAnyHit(hitNumber);
+				const physx::PxRaycastHit& hit = hitBufferStruct.touches[hitNumber];
 				physx::PxShape* shape = hit.shape;
 
 				DirectX::SimpleMath::Vector3 position;
@@ -212,13 +255,13 @@ namespace fq::physics
 				unsigned int id = static_cast<CollisionData*>(shape->userData)->myId;
 				unsigned int layerNumber = static_cast<CollisionData*>(shape->userData)->myLayerNumber;
 
-				raycastData.contectPoints.push_back(position);
-				raycastData.id.push_back(id);
-				raycastData.layerNumber.push_back(layerNumber);
+				output.contectPoints.push_back(position);
+				output.id.push_back(id);
 			}
 		}
 
-		return raycastData;
+		return output;
+
 	}
 
 #pragma region RigidBodyManager
@@ -238,6 +281,14 @@ namespace fq::physics
 	{
 		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
 	}
+	bool FQPhysics::CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+	}
+	bool FQPhysics::CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType)
+	{
+		return mRigidBodyManager->CreateStaticBody(info, colliderType, mCollisionMatrix);
+	}
 	bool FQPhysics::CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
@@ -251,6 +302,14 @@ namespace fq::physics
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
 	bool FQPhysics::CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+	}
+	bool FQPhysics::CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
+	{
+		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
+	}
+	bool FQPhysics::CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic)
 	{
 		return mRigidBodyManager->CreateDynamicBody(info, colliderType, mCollisionMatrix, isKinematic);
 	}
@@ -275,12 +334,23 @@ namespace fq::physics
 	}
 	bool FQPhysics::ChangeScene()
 	{
-
 		return false;
 	}
 	const std::unordered_map<unsigned int, PolygonMesh>& FQPhysics::GetDebugPolygon()
 	{
 		return mRigidBodyManager->GetDebugPolygon();
+	}
+	const std::unordered_map<unsigned int, std::vector<unsigned int>>& FQPhysics::GetDebugTriangleIndiecs()
+	{
+		return mRigidBodyManager->GetDebugTriangleIndiecs();
+	}
+	const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& FQPhysics::GetDebugTriangleVertices()
+	{
+		return mRigidBodyManager->GetDebugTriangleVertices();
+	}
+	const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& FQPhysics::GetDebugHeightField()
+	{
+		return mRigidBodyManager->GetDebugHeightField();
 	}
 #pragma endregion
 
@@ -297,10 +367,11 @@ namespace fq::physics
 	{
 		return mCCTManager->RemoveAllController();
 	}
-	bool FQPhysics::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
+	bool FQPhysics::AddInputMove(const CharacterControllerInputInfo& info)
 	{
-		return mCCTManager->AddInputMove(id, input);
+		return mCCTManager->AddInputMove(info);
 	}
+
 	CharacterControllerGetSetData FQPhysics::GetCharacterControllerData(const unsigned int& id)
 	{
 		CharacterControllerGetSetData data;
@@ -315,7 +386,7 @@ namespace fq::physics
 	}
 	void FQPhysics::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
 	{
-		mCCTManager->SetCharacterControllerData(id, controllerData);
+		mCCTManager->SetCharacterControllerData(id, controllerData, mCollisionMatrix);
 	}
 	void FQPhysics::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
 	{
@@ -324,27 +395,60 @@ namespace fq::physics
 #pragma endregion
 
 #pragma region CharacterPhysicsManager
-	bool FQPhysics::CreateCharacterphysics(const CharacterPhysicsInfo& info)
+	bool FQPhysics::CreateCharacterphysics(const ArticulationInfo& info)
 	{
 		return mCharacterPhysicsManager->CreateCharacterphysics(info);
 	}
-
-	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
+	bool FQPhysics::RemoveArticulation(const unsigned int& id)
+	{
+		return mCharacterPhysicsManager->RemoveArticulation(id);
+	}
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, extent);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, radius);
 	}
-	bool FQPhysics::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info, const float& halfHeight, const float& radius)
 	{
 		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix, halfHeight, radius);
 	}
-
-	bool FQPhysics::SimulationCharacter(unsigned int id)
+	bool FQPhysics::AddArticulationLink(unsigned int id, LinkInfo& info)
 	{
-		return mCharacterPhysicsManager->SimulationCharacter(id);
+		return mCharacterPhysicsManager->AddArticulationLink(id, info, mCollisionMatrix);
+	}
+
+	ArticulationGetData FQPhysics::GetArticulationData(const unsigned int& id)
+	{
+		ArticulationGetData data;
+		mCharacterPhysicsManager->GetArticulationData(id, data);
+		return data;
+	}
+
+	void FQPhysics::SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData)
+	{
+		mCharacterPhysicsManager->SetArticulationData(id, articulationData, mCollisionMatrix);
+	}
+#pragma endregion
+
+#pragma region PhysicsClothManager
+	bool FQPhysics::CreateCloth(const PhysicsClothInfo& info)
+	{
+		return mClothManager->CreateCloth(info, mCollisionMatrix);
+	}
+	bool FQPhysics::GetClothData(unsigned int id, PhysicsClothGetData& data)
+	{
+		return mClothManager->GetClothData(id, data);
+	}
+	bool FQPhysics::SetClothData(unsigned int id, const PhysicsClothSetData& data)
+	{
+		return mClothManager->SetClothData(id, data);
+	}
+	bool FQPhysics::RemoveCloth(unsigned int id)
+	{
+		return mClothManager->RemoveCloth(id, mActorsToRemove);
 	}
 #pragma endregion
 

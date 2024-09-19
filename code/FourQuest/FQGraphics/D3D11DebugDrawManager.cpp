@@ -35,6 +35,39 @@ namespace fq::graphics
 	void D3D11DebugDrawManager::Excute(const std::shared_ptr<D3D11Device>& device,
 		const std::shared_ptr<D3D11CameraManager>& cameraManager)
 	{
+		if (!mbIsRenderDebug)
+		{
+			while (!mSphereInfos.empty()) { mSphereInfos.pop(); }
+			while (!mAABBInfos.empty()) { mAABBInfos.pop(); }
+			while (!mOBBInfos.empty()) { mOBBInfos.pop(); }
+			while (!mFrustumInfos.empty()) { mFrustumInfos.pop(); }
+			while (!mGridInfos.empty()) { mGridInfos.pop(); }
+			while (!mRingInfos.empty()) { mRingInfos.pop(); }
+			while (!mRayInfos.empty()) { mRayInfos.pop(); }
+			while (!mPolygonInfos.empty()) { mPolygonInfos.pop(); }
+			while (!mHemisphereInfos.empty()) { mHemisphereInfos.pop(); }
+			while (!mConeInfos.empty()) { mConeInfos.pop(); }
+			while (!mDountInfos.empty()) { mDountInfos.pop(); }
+			while (!mSphereInfoExInfos.empty()) { mSphereInfoExInfos.pop(); }
+			while (!mRingInfoExInfos.empty()) { mRingInfoExInfos.pop(); }
+
+			while (!mDepthOffSphereInfos.empty()) { mDepthOffSphereInfos.pop(); }
+			while (!mDepthOffAABBInfos.empty()) { mDepthOffAABBInfos.pop(); }
+			while (!mDepthOffOBBInfos.empty()) {  mDepthOffOBBInfos.pop(); }
+			while (!mDepthOffFrustumInfos.empty()) {  mDepthOffFrustumInfos.pop(); }
+			while (!mDepthOffGridInfos.empty()) {  mDepthOffGridInfos.pop(); }
+			while (!mDepthOffRingInfos.empty()) { mDepthOffRingInfos.pop(); }
+			while (!mDepthOffRayInfos.empty()) {  mDepthOffRayInfos.pop(); }
+			while (!mDepthOffPolygonInfos.empty()) { mDepthOffPolygonInfos.pop(); }
+			while (!mDepthOffHemisphereInfos.empty()) { mDepthOffHemisphereInfos.pop(); }
+			while (!mDepthOffConeInfos.empty()) { mDepthOffConeInfos.pop(); }
+			while (!mDepthOffDountInfos.empty()) { mDepthOffDountInfos.pop(); }
+			while (!mDepthOffSphereInfoExInfos.empty()) { mDepthOffSphereInfoExInfos.pop(); }
+			while (!mDepthOffRingInfoExInfos.empty()) { mDepthOffRingInfoExInfos.pop(); }
+
+			return;
+		}
+
 		device->GetDeviceContext()->OMSetBlendState(mStates->Opaque(), nullptr, 0xFFFFFFFF);
 		device->GetDeviceContext()->OMSetDepthStencilState(mStates->DepthDefault(), 0);
 		device->GetDeviceContext()->RSSetState(mStates->CullNone());
@@ -67,6 +100,29 @@ namespace fq::graphics
 
 		mBatch->End();
 
+		mBatch->Begin();
+
+		device->GetDeviceContext()->OMSetDepthStencilState(mStates->DepthNone(), 0);
+
+		{
+			while (!mDepthOffSphereInfos.empty()) { Draw(device, mDepthOffSphereInfos.front()); mDepthOffSphereInfos.pop(); }
+			while (!mDepthOffAABBInfos.empty()) { Draw(device, mDepthOffAABBInfos.front()); mDepthOffAABBInfos.pop(); }
+			while (!mDepthOffOBBInfos.empty()) { Draw(device, mDepthOffOBBInfos.front()); mDepthOffOBBInfos.pop(); }
+			while (!mDepthOffFrustumInfos.empty()) { Draw(device, mDepthOffFrustumInfos.front()); mDepthOffFrustumInfos.pop(); }
+			while (!mDepthOffGridInfos.empty()) { DrawGrid(device, mDepthOffGridInfos.front()); mDepthOffGridInfos.pop(); }
+			while (!mDepthOffRingInfos.empty()) { DrawRing(device, mDepthOffRingInfos.front()); mDepthOffRingInfos.pop(); }
+			while (!mDepthOffRayInfos.empty()) { DrawRay(device, mDepthOffRayInfos.front()); mDepthOffRayInfos.pop(); }
+			while (!mDepthOffPolygonInfos.empty()) { DrawLineStrip(device, mDepthOffPolygonInfos.front()); mDepthOffPolygonInfos.pop(); }
+			while (!mDepthOffHemisphereInfos.empty()) { Draw(device, mDepthOffHemisphereInfos.front()); mDepthOffHemisphereInfos.pop(); }
+			while (!mDepthOffConeInfos.empty()) { Draw(device, mDepthOffConeInfos.front()); mDepthOffConeInfos.pop(); }
+			while (!mDepthOffDountInfos.empty()) { Draw(device, mDepthOffDountInfos.front()); mDepthOffDountInfos.pop(); }
+			while (!mDepthOffSphereInfoExInfos.empty()) { Draw(device, mDepthOffSphereInfoExInfos.front()); mDepthOffSphereInfoExInfos.pop(); }
+			while (!mDepthOffRingInfoExInfos.empty()) { Draw(device, mDepthOffRingInfoExInfos.front()); mDepthOffRingInfoExInfos.pop(); }
+		}
+
+		mBatch->End();
+
+
 		device->GetDeviceContext()->OMSetBlendState(NULL, nullptr, 0xFFFFFFFF);
 		device->GetDeviceContext()->OMSetDepthStencilState(NULL, 0);
 		device->GetDeviceContext()->RSSetState(NULL);
@@ -74,55 +130,146 @@ namespace fq::graphics
 
 	void D3D11DebugDrawManager::Submit(const debug::SphereInfo& info)
 	{
-		mSphereInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mSphereInfos.push(info);
+		}
+		else
+		{
+			mDepthOffSphereInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::AABBInfo& info)
 	{
-		mAABBInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mAABBInfos.push(info);
+		}
+		else
+		{
+			mDepthOffAABBInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::OBBInfo& info)
 	{
-		mOBBInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mOBBInfos.push(info);
+		}
+		else
+		{
+			mDepthOffOBBInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::FrustumInfo& info)
 	{
-		mFrustumInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mFrustumInfos.push(info);
+		}
+		else
+		{
+			mDepthOffFrustumInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::GridInfo& info)
 	{
-		mGridInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mGridInfos.push(info);
+		}
+		else
+		{
+			mDepthOffGridInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::RingInfo& info)
 	{
-		mRingInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mRingInfos.push(info);
+		}
+		else
+		{
+			mDepthOffRingInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::RayInfo& info)
 	{
-		mRayInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mRayInfos.push(info);
+		}
+		else
+		{
+			mDepthOffRayInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::PolygonInfo& info)
 	{
-		mPolygonInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mPolygonInfos.push(info);
+		}
+		else
+		{
+			mDepthOffPolygonInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::HemisphereInfo& info)
 	{
-		mHemisphereInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mHemisphereInfos.push(info);
+		}
+		else
+		{
+			mDepthOffHemisphereInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::ConeInfo& info)
 	{
-		mConeInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mConeInfos.push(info);
+		}
+		else
+		{
+			mDepthOffConeInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::DountInfo& info)
 	{
-		mDountInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mDountInfos.push(info);
+		}
+		else
+		{
+			mDepthOffDountInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::SphereInfoEx& info)
 	{
-		mSphereInfoExInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mSphereInfoExInfos.push(info);
+		}
+		else
+		{
+			mDepthOffSphereInfoExInfos.push(info);
+		}
 	}
 	void D3D11DebugDrawManager::Submit(const debug::RingInfoEx& info)
 	{
-		mRingInfoExInfos.push(info);
+		if (info.bUseDepthTest)
+		{
+			mRingInfoExInfos.push(info);
+		}
+		else
+		{
+			mDepthOffRingInfoExInfos.push(info);
+		}
 	}
 
 	void D3D11DebugDrawManager::Draw(const std::shared_ptr<D3D11Device>& device, const debug::SphereInfo& info)
@@ -438,6 +585,7 @@ namespace fq::graphics
 
 		debug::PolygonInfo polygonInfo;
 		polygonInfo.Points.resize(2);
+		polygonInfo.Color = info.Color;
 
 		if (info.ArcInRadian < DirectX::XM_PI * 0.5f)
 		{
@@ -723,9 +871,11 @@ namespace fq::graphics
 
 		mBatchEffect->Apply(device->GetDeviceContext().Get());
 		device->GetDeviceContext()->IASetInputLayout(mBatchInputLayout.Get());
-		static const size_t c_ringSegments = 16;
+		const size_t c_ringSegments = 16;
+		const size_t RingVertexCount = 17;
+		const size_t TotalVertexCount = RingVertexCount + 2;
 
-		VertexPositionColor verts[c_ringSegments + 2];
+		VertexPositionColor verts[TotalVertexCount];
 
 		FLOAT fAngleDelta = info.ArcInRadian / float(c_ringSegments);
 		// Instead of calling cos/sin for each segment we calculate
@@ -739,21 +889,26 @@ namespace fq::graphics
 			1.f, 1.f, 1.f, 1.f
 		};
 		XMVECTOR incrementalCos = s_initialCos.v;
-		for (size_t i = 0; i < c_ringSegments + 1; i++)
+		for (size_t i = 0; i < RingVertexCount; i++)
 		{
 			XMVECTOR pos = XMVectorMultiplyAdd(info.MajorAxis, incrementalCos, info.Origin);
 			pos = XMVectorMultiplyAdd(info.MinorAxis, incrementalSin, pos);
+
 			XMStoreFloat3(&verts[i].position, pos);
 			XMStoreFloat4(&verts[i].color, info.Color);
 			// Standard formula to rotate a vector.
+
 			XMVECTOR newCos = incrementalCos * cosDelta - incrementalSin * sinDelta;
 			XMVECTOR newSin = incrementalCos * sinDelta + incrementalSin * cosDelta;
 			incrementalCos = newCos;
 			incrementalSin = newSin;
 		}
-		verts[c_ringSegments + 1] = verts[0];
 
-		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, verts, c_ringSegments + 1);
+		XMStoreFloat3(&verts[TotalVertexCount - 2].position, info.Origin);
+		XMStoreFloat4(&verts[TotalVertexCount - 2].color, info.Color);
+		verts[TotalVertexCount - 1] = verts[0];
+
+		mBatch->Draw(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP, verts, TotalVertexCount);
 	}
 
 	void D3D11DebugDrawManager::drawCube(const std::shared_ptr<D3D11Device>& device,

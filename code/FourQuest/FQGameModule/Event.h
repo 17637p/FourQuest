@@ -6,6 +6,8 @@
 #include <directxtk\SimpleMath.h>
 
 #include "../FQReflect/entt.hpp"
+#include "../FQCommon/IFQRenderResource.h"
+#include "GameModuleEnum.h"
 
 namespace fq::game_module
 {
@@ -14,6 +16,8 @@ namespace fq::game_module
 	class Camera;
 	class Light;
 	class Animator;
+	class ArticulationData;
+	class LinkData;
 }
 
 namespace fq::event
@@ -28,11 +32,16 @@ namespace fq::event
 		fq::game_module::GameObject* object;
 	};
 
-	/// <summary>
 	struct OnLoadScene
 	{
 		std::string sceneName;
 	};
+
+	struct PreOnLoadScene
+	{
+		std::string sceneName;
+	};
+
 
 	/// <summary>
 	/// Scene Start 할때 호출
@@ -41,7 +50,7 @@ namespace fq::event
 	{
 
 	};
-	
+
 	/// <summary>
 	/// Scene Unload할 때 호출
 	/// </summary>
@@ -57,25 +66,25 @@ namespace fq::event
 	};
 
 	/// <summary>
- 	/// 씬 변경 요청 이벤트
+	/// 씬 변경 요청 이벤트
 	/// </summary>
 	struct RequestChangeScene
 	{
 		std::string sceneName;
 		bool bIsInvokeStartScene; // 클라이언트에서는 true로 호출합니다
- 	};
+	};
 
 	/// <summary>
 	/// 게임 종료 요청 이벤트 
 	/// </summary>
-	struct RequestExitGame 
+	struct RequestExitGame
 	{
 	};
 
 	/// <summary>
 	/// 씬에 새로운 게임오브젝트를 추가시 호출
 	/// </summary>
-	struct AddGameObject 
+	struct AddGameObject
 	{
 		fq::game_module::GameObject* object;
 	};
@@ -86,6 +95,14 @@ namespace fq::event
 	struct SetMainCamera
 	{
 		fq::game_module::Camera* mainCamera;
+	};
+
+	/// <summary>
+	/// 메인카메라를 반환합니다
+	/// </summary>
+	struct GetMainCamera
+	{
+		fq::game_module::Camera** mainCamera;
 	};
 
 	/// <summary>
@@ -115,12 +132,28 @@ namespace fq::event
 	};
 
 	//////////////////////////////////////////////////////////////////////////
+	//							Screen Event								// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct SetScreenSize
+	{
+		unsigned short width;
+		unsigned short height;
+	};
+
+	struct SetViewportSize
+	{
+		unsigned short width;
+		unsigned short height;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
 	//							Sound Event									// 
 	//////////////////////////////////////////////////////////////////////////
 
 	struct OnPlaySound
 	{
-		std::string path;
+		std::string key;
 		bool bIsLoop;
 		unsigned int channelIndex;
 	};
@@ -131,10 +164,15 @@ namespace fq::event
 	};
 
 	//////////////////////////////////////////////////////////////////////////
-	//							UI Event									// 
+	//								UI Event									// 
 	//////////////////////////////////////////////////////////////////////////
 
 	struct SetUIInfomations
+	{
+		fq::game_module::GameObject* object;
+	};
+
+	struct SetTextInformation
 	{
 		fq::game_module::GameObject* object;
 	};
@@ -156,8 +194,8 @@ namespace fq::event
 	struct ChangeAnimationState
 	{
 		bool bIsBlend;
-		std::string currentState;
-		std::string nextState;
+		std::shared_ptr<fq::graphics::IAnimation> currentState;
+		std::shared_ptr<fq::graphics::IAnimation> nextState;
 		fq::game_module::Animator* animator;
 	};
 
@@ -177,7 +215,87 @@ namespace fq::event
 	{
 		unsigned int colliderID;
 		DirectX::SimpleMath::Vector3 input;
+		bool isDynamic;
 	};
 
+	/// <summary>
+	/// RayCast 이벤트를 보내면 
+	/// result에 결과값을 전달합니다 
+	/// </summary>
+	struct RayCast
+	{
+		struct ResultData
+		{
+			bool hasBlock = false;
+			game_module::GameObject* blockObject;
+			DirectX::SimpleMath::Vector3 blockPosition;
+
+			unsigned int hitCount = -1;
+			std::vector<game_module::GameObject*> hitObjects;
+			std::vector<DirectX::SimpleMath::Vector3> hitContactPoints;
+		};
+
+		DirectX::SimpleMath::Vector3 origin = DirectX::SimpleMath::Vector3::Zero;
+		DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::Zero;
+		float distance = 0.f;
+		game_module::ETag tag = game_module::ETag::Untagged;
+
+		ResultData* result = nullptr;
+		bool bUseDebugDraw = false;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
+	//							Articulation Event							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct SelectLinkData
+	{
+		std::shared_ptr<fq::game_module::ArticulationData> articulationData;
+		std::shared_ptr<fq::game_module::LinkData> linkData;
+	};
+
+	struct SetSimulationPhysics
+	{
+		unsigned int colliderID;
+		bool bIsRagdoll;
+	};
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//							Material Event							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	/// <summary>
+	/// 리소스 매니저에 머터리얼 생성을 요청합니다.
+	/// </summary>
+	struct LoadMaterial
+	{
+		std::string materialPath;
+		std::shared_ptr<fq::graphics::IMaterial>* materialPtr;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
+	//							Debug Draw Event							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct DrawDebugLay
+	{
+		fq::graphics::debug::RayInfo rayInfo;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
+	//							AnimationStateEvent							// 
+	//////////////////////////////////////////////////////////////////////////
+
+	struct AnimationStateEvent
+	{
+		std::string RegisterKeyName;
+		fq::game_module::GameObject* gameObject;
+	};
+
+	struct AnimationStateExitEvent
+	{
+		fq::game_module::GameObject* gameObject;
+	};
 }
 

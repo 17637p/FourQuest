@@ -29,51 +29,102 @@ namespace fq::graphics
 		virtual bool SetWindowSize(const unsigned short width, const unsigned short height) override; // 툴의 에디터를 포함한 전체 윈도우 영역
 		virtual bool SetViewportSize(const unsigned short width, const unsigned short height) override; // 툴에서 씬을 그리는 영역
 
-		// RenderObject & Animation
-		virtual void WriteModel(std::string path, const fq::common::Model& modelData) override;
-		virtual void ConvertModel(std::string fbxFile, std::string fileName) override;
-		virtual const fq::common::Model& CreateModel(std::string path, std::filesystem::path textureBasePath = "") override;
-		virtual const fq::common::Model& GetModel(std::string path) override;
-		virtual void DeleteModel(std::string path) override;
-		virtual std::vector<std::shared_ptr<IMaterial>> GetMaterials() const override;
+		// Model Data Helper
+		virtual fq::common::Model ConvertModel(const std::string& fbxFile) override;
+		virtual void WriteModel(const std::string& path, const fq::common::Model& modelData) override;
+		virtual fq::common::Model ReadModel(const std::string& path) override;
+		virtual void WriteAnimation(const std::string& path, const fq::common::AnimationClip& animationClip) override;
+		virtual fq::common::AnimationClip ReadAnimation(const std::string& path) override;
+		virtual void WriteUVAnimation(const std::string& path, const fq::common::UVAnimationClip& uvAnimationClip) override;
+		virtual fq::common::UVAnimationClip ReadUVAnimation(const std::string& path) override;
+		virtual void WriteNodeHierarchy(const std::string& path, const std::vector<fq::common::Node>& nodeHierarchy) override;
+		virtual void WriteNodeHierarchy(const std::string& path, const fq::common::Model& modelData) override;
+		virtual std::vector<fq::common::Node> ReadNodeHierarchy(const std::string& path) override;
+		virtual void WriteMaterialInfo(const std::string& path, const MaterialInfo& materialInfo) override;
+		virtual MaterialInfo ReadMaterialInfo(const std::string& path) override;
 
-		virtual IStaticMeshObject* CreateStaticMeshObject(MeshObjectInfo info) override;
-		virtual void AddAnimation(IStaticMeshObject* iStaticMeshObject, AnimationInfo info) override;
-		virtual void DeleteStaticMeshObject(IStaticMeshObject* iStaticMeshObject) override;
+		// Model Resource Control
+		virtual const fq::common::Model& CreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath = "") override;
+		virtual void CreateModelResource(unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath = "") override;
+		virtual bool TryCreateModelResource(unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull) override;
+		virtual const fq::common::Model& GetModel(unsigned int key) override;
+		virtual void DeleteModelResource(unsigned int key) override;
 
-		virtual ISkinnedMeshObject* CreateSkinnedMeshObject(MeshObjectInfo info) override;
-		virtual void AddAnimation(ISkinnedMeshObject* iSkinnedMeshObject, AnimationInfo info) override;
-		virtual void DeleteSkinnedMeshObject(ISkinnedMeshObject* iSkinnedMeshObject) override;
+		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyByModelPathOrNull(unsigned int key) override;
+		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName) override;
+		virtual std::shared_ptr<IStaticMesh> GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName) override;
+		virtual std::shared_ptr<IMaterial> GetMaterialByModelPathOrNull(unsigned int key, std::string materialName) override;
+		virtual std::shared_ptr<IAnimation> GetAnimationByModelPathOrNull(unsigned int key, std::string animationName) override;
 
-		virtual ITerrainMeshObject* CreateTerrainMeshObject(const MeshObjectInfo& info) override;
+		// Render Resource Control
+		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(const fq::common::Mesh& meshData) override;
+		virtual std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(const fq::common::Mesh& meshData) override;
+		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const fq::common::Model& model) override;
+		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(const std::vector<fq::common::Node> nodes) override;
+		virtual std::shared_ptr<IAnimation> CreateAnimation(const fq::common::AnimationClip& animationClip) override;
+		virtual std::shared_ptr<IUVAnimation> CreateUVAnimation(const fq::common::UVAnimationClip& animationClip) override;
+		virtual std::shared_ptr<IMaterial> CreateMaterial(const MaterialInfo& materialInfo) override;
+		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& materialInfo) override;
+		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo) override;
+
+		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(std::string key, const fq::common::Mesh& meshData) override;
+		virtual std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData) override;
+		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const fq::common::Model& model) override;
+		virtual std::shared_ptr<INodeHierarchy> CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes) override;
+		virtual std::shared_ptr<IAnimation> CreateAnimation(std::string key, const fq::common::AnimationClip& animationClip) override;
+		virtual std::shared_ptr<IUVAnimation> CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip) override;
+		virtual std::shared_ptr<IMaterial> CreateMaterial(const std::string& key, const MaterialInfo& materialInfo) override;
+		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& materialInfo) override;
+		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo) override;
+
+		virtual std::vector<std::shared_ptr<IStaticMesh>> GetStaticMeshes() override;
+		virtual std::vector<std::shared_ptr<ISkinnedMesh>> GetSkinnedMeshes() override;
+		virtual std::vector<std::shared_ptr<INodeHierarchy>> GetNodeHierarchies() override;
+		virtual std::vector<std::shared_ptr<IAnimation>> GetAnimations() override;
+		virtual std::vector<std::shared_ptr<IUVAnimation>> GetUVAnimations() override;
+		virtual std::vector<std::shared_ptr<IMaterial>> GetMaterials() override;
+		virtual std::vector<std::shared_ptr<IParticleMaterial>> GetParticleMaterials() override;
+		virtual std::vector<std::shared_ptr<IDecalMaterial>> GetDecalMaterials() override;
+
+		virtual std::shared_ptr<IStaticMesh> GetStaticMeshOrNull(std::string key) override;
+		virtual std::shared_ptr<ISkinnedMesh> GetSkinnedMeshOrNull(std::string key) override;
+		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchyOrNull(std::string key) override;
+		virtual std::shared_ptr<IAnimation> GetAnimationOrNull(std::string key) override;
+		virtual std::shared_ptr<IUVAnimation> GetUVAnimationOrNull(std::string key) override;
+		virtual std::shared_ptr<IMaterial> GetMaterialOrNull(const std::string& key) override;
+		virtual std::shared_ptr<IParticleMaterial> GetParticleMaterialOrNull(const std::string& key) override;
+		virtual std::shared_ptr<IDecalMaterial> GetDecalMaterialOrNull(const std::string& key) override;
+
+		virtual void DeleteStaticMesh(std::string key) override;
+		virtual void DeleteSkinnedMesh(std::string key) override;
+		virtual void DeleteNodeHierarchy(std::string key) override;
+		virtual void DeleteAnimation(std::string key) override;
+		virtual void DeleteUVAnimation(std::string key) override;
+		virtual void DeleteMaterial(const std::string& key) override;
+		virtual void DeleteParticleMaterial(const std::string& key) override;
+		virtual void DeleteDecalMaterial(const std::string& key) override;
+
+		// RenderObject
+		virtual IStaticMeshObject* CreateStaticMeshObject(std::shared_ptr<IStaticMesh> staticMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual ISkinnedMeshObject* CreateSkinnedMeshObject(std::shared_ptr<ISkinnedMesh> skinnedMesh, std::vector<std::shared_ptr<IMaterial>> materials, const MeshObjectInfo& meshObjectInfo, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual ITerrainMeshObject* CreateTerrainMeshObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual IParticleObject* CreateParticleObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const ParticleInfo& particleInfo, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual IDecalObject* CreateDecalObject(std::shared_ptr<IDecalMaterial> iDecalMaterial, const DecalInfo& decalInfo, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual ITrailObject* CreateTrailObject(std::shared_ptr<IParticleMaterial> iParticleMaterial, const TrailInfo& trailInfo, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual IProbeObject* CreateProbeObject(std::shared_ptr<IStaticMesh> staticMesh, const DirectX::SimpleMath::Matrix& transform, int index) override;
+
+		virtual void DeleteStaticMeshObject(IStaticMeshObject* staticMeshObject) override;
+		virtual void DeleteSkinnedMeshObject(ISkinnedMeshObject* skinnedMeshObject) override;
 		virtual void DeleteTerrainMeshObject(ITerrainMeshObject* meshObject) override;
+		virtual void DeleteParticleObject(IParticleObject* particleObject) override;
+		virtual void DeleteDecalObject(IDecalObject* decalObject) override;
+		virtual void DeleteTrailObject(ITrailObject* trailObject) override;
+		virtual void DeleteProbeObject(IProbeObject* probeObject) override;
+
 		virtual void SetTerrainMeshObject(ITerrainMeshObject* meshObject, const TerrainMaterialInfo& material) override;
 
-		// Render Object Resource Interface version
-
-		// render resource class, resource class들은 구체적인 맴버를 가져야 하므로 그래픽스에서만 생성 가능하게 해야함
-		virtual std::shared_ptr<IModel> CreateModel(ModelInfo); // 매쉬와 애니메이션 본 구조 메테리얼에 대한 컴포지션 클래스 인터페이스
-		virtual std::shared_ptr<IStaticMesh> CreateStaticMesh(StaticMeshInfo);
-		virtual std::shared_ptr<ISkinnedMesh> CreateSkinnedMesh(SkinnedMeshInfo);
-		virtual std::shared_ptr<IStaticAnimation> CreateStaticAnimation(StaticAnimationInfo);
-		virtual std::shared_ptr<ISkinnedAnimation> CreateSkinnedAnimation(SkinnedAnimationInfo);
-		virtual std::shared_ptr<IBoneHierarchy> CreateBoneHierarchy(BoneHierarchyInfo);
-		virtual std::shared_ptr<IStandardMaterial> CreateStandardMaterial(const StandardMaterialInfo& standardMaterialInfo) override;
-		virtual std::shared_ptr<IDecalMaterial> CreateDecalMaterial(const DecalMaterialInfo& standardMaterialInfo) override;
-		virtual std::shared_ptr<IParticleMaterial> CreateParticleMaterial(const ParticleMaterialInfo& standardMaterialInfo) override;
-
-		// draw resource class, 굳이 랜더 오브젝트를 구성하지 않고도 그리기 호출이 가능하도록 열어둔 인터페이스, 제한적인 기능과 최적화가 지원되지 않음
-		virtual void DrawModel(std::shared_ptr<IModel>, DirectX::SimpleMath::Matrix transform); // 단순 그리기 용도.?
-		virtual void DrawStaticMesh(std::shared_ptr<IStaticMesh>, std::vector<std::vector<IMaterial>>, DirectX::SimpleMath::Matrix transform);
-		virtual void DrawStaticMesh(std::shared_ptr<IStaticMesh>, std::vector<std::vector<IMaterial>>, std::shared_ptr<IStaticAnimation>, DirectX::SimpleMath::Matrix transform, float timePos);
-		virtual void DrawSkinnedMesh(std::shared_ptr<ISkinnedMesh>, std::vector<std::vector<IMaterial>>, DirectX::SimpleMath::Matrix transform);
-		virtual void DrawSkinnedMesh(std::shared_ptr<ISkinnedMesh>, std::vector<std::vector<IMaterial>>, std::shared_ptr<ISkinnedAnimation>, std::shared_ptr<IBoneHierarchy>, DirectX::SimpleMath::Matrix transform, float timePos);
-
-		// render object class, 랜더 오브젝트는 인터페이스 클래스로부터 생성될 예정이라 생성 삭제를 그래픽스 내부에서 할 필요가 없음
-		virtual void DrawStaticMeshObject(std::shared_ptr<IStaticMeshObject> staticMeshObject);
-		virtual void DrawSKinnedMeshObject(std::shared_ptr<ISkinnedMeshObject> staticMeshObject);
-		virtual void DrawParticleObject(std::shared_ptr<IParticleObject> decalObject);
-		virtual void DrawDecalObject(std::shared_ptr<IDecalObject> decalObject);
+		virtual std::set<IStaticMeshObject*> GetStaticMeshObjects() const override;
+		virtual DebugInfo GetDebugInfo() const override;
 
 		/// Primitive
 		// Debug Draw
@@ -85,31 +136,29 @@ namespace fq::graphics
 		virtual void DrawRing(const debug::RingInfo& ringInfo) override;
 		virtual void DrawRay(const debug::RayInfo& rayInfo) override;
 		virtual void DrawPolygon(const debug::PolygonInfo& polygonInfo) override;
-
-		// VFX
-		IParticleObject* CreateParticleObject(const ParticleInfo& particleInfo);
-		void DeleteParticleObject(IParticleObject* particleObject);
-
-		IDecalObject* CreateDecalObject(const DecalInfo& decalInfo);
-		void DeleteDecalObject(IDecalObject* decalObjectInterface);
-		void DrawDecalObject(IDecalObject* decalObject, std::shared_ptr<IMaterial> material, const DirectX::SimpleMath::Matrix& transform) override;
+		virtual void DrawSphereEx(const debug::SphereInfoEx& sphereInfoEx) override;
+		virtual void DrawRingEx(const debug::RingInfoEx& ringInfoEx) override;
 
 		/// Option (그래픽 옵션 On/Off, 불가능하면 선택 못하게 하는 등 이제 그런 게 필요하지 않을까)
 		virtual void SetPipelineType(EPipelineType pipelineType) override;
+		virtual void SetIsDrawDebugLightProbe(bool isDrawDebugLightProbe) override;
+		virtual void SetIsRenderDebug(bool bIsRenderDebug) override;
+		virtual void SetIsRenderObjects(bool isRenderObjects) override;
 
 		/// UI
 		virtual void SetDefaultFontSize(const unsigned short fontSize) override;
 		virtual void SetDefaultFontColor(const DirectX::SimpleMath::Color& color) override;
 		virtual void SetDefaultFont(const std::wstring& path) override;
 		virtual void AddFont(const std::wstring& path) override;
-		virtual void DrawText(const std::wstring& text, const DirectX::SimpleMath::Rectangle& drawRect, unsigned short fontSize /*= 50*/, const std::wstring& fontPath /*= L"Verdana"*/, const DirectX::SimpleMath::Color& color /*= { 1, 0, 0, 1 }*/) override;
+		virtual ITextObject* CreateText(TextInfo textInfo) override;
+		virtual void DeleteText(fq::graphics::ITextObject* textObject) override;
 		virtual void DeleteFont(const std::wstring& path) override;
 		// image
 		virtual IImageObject* CreateImageObject(const UIInfo& uiInfo) override;
 		virtual void DeleteImageObject(IImageObject* imageObject) override;
 
 		/// SkyBox
-		virtual void SetSkyBox(const std::wstring& path) override;
+		virtual void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) override;
 		virtual void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) override;
 
 		/// Light
@@ -118,7 +167,24 @@ namespace fq::graphics
 		virtual void UpdateLight(const unsigned int id, const LightInfo& lightInfo) override;
 		virtual void DeleteLight(const unsigned int id) override;
 
-		virtual void UseShadow(const unsigned int id, bool bUseShadow);
+		virtual void UseShadow(const unsigned int id, bool bUseShadow) override;
+		virtual void SetLightMapTexture(const std::vector<std::filesystem::path>& paths) override;
+		virtual void SetLightMapDirectionTexture(const std::vector<std::filesystem::path>& paths) override;
+
+		// Light Probe
+		virtual int AddLightProbe(const DirectX::SimpleMath::Vector3& position) override;
+		virtual void DeleteLightProbe(int index) override;
+		virtual void SetLightProbe(int index, const DirectX::SimpleMath::Vector3& position) override;
+
+		virtual void BakeLightProbe(bool isAll) override;
+		virtual void SaveLightProbes(const std::string& fileName) override;
+		virtual void LoadLightProbes(const std::string& fileName) override;
+
+		virtual unsigned short AddCubeProbe(const DirectX::SimpleMath::Vector3& position) override;
+		virtual void DeleteCubeProbe(unsigned short index) override;
+		virtual void SaveCubeProbeTexture(bool isAll, const unsigned short width, const unsigned short height) override;
+
+		virtual void SetLightProbeIntensity(float intensity) override;
 
 		/// Camera
 		virtual void SetCamera(const CameraInfo& cameraInfo) override;
@@ -127,6 +193,12 @@ namespace fq::graphics
 
 		/// Picking
 		virtual void* GetPickingObject(const short mouseX, const short mouseY) override;
+
+		// PostProcessing
+		virtual bool GetIsUsePostProcessing() const override;
+		virtual void SetIsUsePostProcessing(bool bUsePostProcessing) override;
+		virtual void  SetPostProcessingInfo(const PostProcessingInfo& info) override;
+		virtual const PostProcessingInfo& GetPostProcessingInfo() const override;
 
 		/// For IMGUI(D3D11)
 		ID3D11Device* GetDivice() override;
@@ -147,11 +219,19 @@ namespace fq::graphics
 		std::shared_ptr<class D3D11LightManager> mLightManager;
 		std::shared_ptr<class D3D11DebugDrawManager> mDebugDrawManager;
 		std::shared_ptr<class D3D11ParticleManager> mParticleManager;
-		std::shared_ptr<class D3D11DecalManager> mDecalManager;
+		std::shared_ptr<class D3D11LightProbeManager> mLightProbeManager;
+		std::shared_ptr<class RenderResourceManager> mRenderResourceManager;
 
 		std::shared_ptr<class D3D11PickingManager> mPickingManager;
 		std::shared_ptr<class D3D11CullingManager> mCullingManager;
 		std::shared_ptr<class UIManager> mUIManager;
+
+		std::shared_ptr<class D3D11PostProcessingManager> mPostProcessingManager;
+
+		bool mIsRenderObjects;
+
+		// temp
+		bool mIsOnPostProcessing;
 	};
 }
 

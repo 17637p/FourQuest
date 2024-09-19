@@ -72,20 +72,41 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		AnimationStateNode stateNode(controller.get());
 		std::string stateName = key;
 
-		std::string path = value.at("modelPath");
-		path = fq::path::GetAbsolutePath(path).string();
-		std::string name = value.at("animationName");
+		std::string path;
+		if (value.find("animationPath") != value.end())
+		{
+			path = value.at("animationPath");
+			path = fq::path::GetAbsolutePath(path).string();
+		}
+
 		float playbackSpeed = value.at("playbackSpeed").get<float>();
 		float duration = value.at("duration").get<float>();
+		float startTimepos = 0.f;
+		if (value.find("startTimePos") != value.end())
+		{
+			startTimepos = value.at("startTimePos").get<float>();
+		}
 		bool isLoof = value.at("isLoof").get<bool>();
+
+		std::vector<AnimationStateNode::Event> events;
+
+		for (const auto& eventJson : value["Events"])
+		{
+			AnimationStateNode::Event eventInfo;
+			eventInfo.FunctionName = eventJson["FunctionName"];
+			eventInfo.Time = eventJson["Time"].get<float>();
+
+			events.push_back(eventInfo);
+		}
 
 		stateNode.SetType(AnimationStateNode::Type::State);
 		stateNode.SetAnimationKey(stateName);
 		stateNode.SetPlayBackSpeed(playbackSpeed);
-		stateNode.SetModelPath(path);
-		stateNode.SetAnimationName(name);
+		stateNode.SetAnimationPath(path);
+		stateNode.SetStartTimePos(startTimepos);
 		stateNode.SetDuration(duration);
 		stateNode.SetLoof(isLoof);
+		stateNode.SetEvents(events);
 
 		// StateBehaviours
 		auto& stateMap = stateNode.GetStateBehaviourMap();
@@ -127,6 +148,12 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		float exitTime = value.at("exitTime");
 		float transitionDuration = value.at("transitionDuration");
 		int interruptionSource = value.at("InterruptionSource");
+		bool canTransitionToSelf = true;
+		if (value.find("canTransitionToSelf") != value.end())
+		{
+			canTransitionToSelf = value.at("canTransitionToSelf");
+		}
+
 		AnimationTransition transition{};
 
 		transition.SetExitState(exit);
@@ -134,6 +161,7 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 		transition.SetExitTime(exitTime);
 		transition.SetTransitionDuration(transitionDuration);
 		transition.SetInterruptionSource(static_cast<AnimationTransition::InterruptionSource>(interruptionSource));
+		transition.SetCanTrasitionToSelf(canTransitionToSelf);
 
 		json conditionsJson = value.at("conditions");
 		for (auto& conditionJson : conditionsJson)
@@ -164,7 +192,6 @@ std::shared_ptr<fq::game_module::AnimatorController> fq::game_module::AnimatorCo
 
 		controller->AddTransition(transition);
 	}
-
 
 	return controller;
 }
@@ -209,11 +236,18 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		if (stateNode.GetType() != AnimationStateNode::Type::State) continue;
 
 		ordered_json stateJson;
-		stateJson["modelPath"] = fq::path::GetRelativePath(stateNode.GetModelPath()).string();
-		stateJson["animationName"] = stateNode.GetAnimationName();
+		stateJson["animationPath"] = fq::path::GetRelativePath(stateNode.GetAnimationPath()).string();
 		stateJson["playbackSpeed"] = stateNode.GetPlayBackSpeed();
+		stateJson["startTimePos"] = stateNode.GetStartTimePos();
 		stateJson["duration"] = stateNode.GetDuration();
 		stateJson["isLoof"] = stateNode.IsLoof();
+
+		const auto events = stateNode.GetEvents();
+		for (size_t i = 0; i < events.size(); ++i)
+		{
+			stateJson["Events"][i]["FunctionName"] = events[i].FunctionName;
+			stateJson["Events"][i]["Time"] = events[i].Time;
+		}
 
 		// StateBehaviour
 		stateJson["stateBehaviours"] = serializeStateBehaviours(stateNode);
@@ -234,6 +268,7 @@ void fq::game_module::AnimatorControllerLoader::Save(const AnimatorController& c
 		transitionJson["exitTime"] = transition.GetExitTime();
 		transitionJson["transitionDuration"] = transition.GetTransitionDuration();
 		transitionJson["InterruptionSource"] = static_cast<int>(transition.GetInterruptionSource());
+		transitionJson["canTransitionToSelf"] = transition.CanTrasitionToSelf();
 
 		ordered_json conditionsJson;
 		// 조건 저장 

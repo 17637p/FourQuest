@@ -23,7 +23,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="deltaTime"> 경과 시간 </param>
 		/// <param name="input"> 입력 받은 키값 </param>
-		void Update(float deltaTime, const DirectX::SimpleMath::Vector3& input);
+		void Update(float deltaTime, const DirectX::SimpleMath::Vector3& input, bool isDynamic);
 
 		/// <summary>
 		/// 점프하는 함수
@@ -45,7 +45,6 @@ namespace fq::physics
 		/// 현재 속도가 최대 속도를 넘는 순간 속도를 제한하는 함수.
 		/// </summary>
 		void LimitVelocity();
-
 
 		inline const DirectX::SimpleMath::Vector3& GetVelocity();
 		inline const DirectX::SimpleMath::Vector3& GetDisplacementVector();
@@ -70,7 +69,6 @@ namespace fq::physics
 		inline void SetJumpXZDeceleration(const float& jumpXZDeceleration);
 		inline void SetGravityWeight(const float& gravityWeight);
 
-
 	private:
 		bool mIsFall;
 
@@ -87,6 +85,7 @@ namespace fq::physics
 		float mJumpXZDeceleration;
 		float mGravityWeight;
 		float mMinDistance;
+	
 	};
 
 

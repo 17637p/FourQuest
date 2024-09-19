@@ -8,10 +8,10 @@ std::set<fq::graphics::IStaticMeshObject*> fq::graphics::D3D11CullingManager::Ge
 
 	for (const auto& staticObject : staticObjects)
 	{
-		DirectX::BoundingSphere sphere = staticObject->GetRenderBoundingSphere();
-		sphere.Transform(sphere, staticObject->GetTransform());
+		DirectX::BoundingBox box = mOriBoxes[staticObject];
+		box.Transform(box, staticObject->GetTransform());
 
-		bool isIntersects = cameraFrustum.Intersects(sphere);
+		bool isIntersects = mCameraFrustum.Intersects(box);
 		if (isIntersects)
 		{
 			inFrustumObjects.insert(staticObject);
@@ -27,10 +27,10 @@ std::set<fq::graphics::ISkinnedMeshObject*> fq::graphics::D3D11CullingManager::G
 
 	for (const auto& skinnedObject : skinnedObjects)
 	{
-		DirectX::BoundingSphere sphere = skinnedObject->GetRenderBoundingSphere();
+		DirectX::BoundingSphere sphere = skinnedObject->GetSkinnedMesh()->GetMeshData().RenderBoundingSphere;
 		sphere.Transform(sphere, skinnedObject->GetTransform());
 
-		bool isIntersects = cameraFrustum.Intersects(sphere);
+		bool isIntersects = mCameraFrustum.Intersects(sphere);
 		if (isIntersects)
 		{
 			inFrustumObjects.insert(skinnedObject);
@@ -42,9 +42,20 @@ std::set<fq::graphics::ISkinnedMeshObject*> fq::graphics::D3D11CullingManager::G
 
 void fq::graphics::D3D11CullingManager::UpdateCameraFrustum(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Quaternion& rotation, const DirectX::SimpleMath::Matrix& projectionMatrix)
 {
-	cameraFrustum = DirectX::BoundingFrustum(projectionMatrix, false);
+	mCameraFrustum = DirectX::BoundingFrustum(projectionMatrix, false);
 
-	cameraFrustum.Origin = position;
-	cameraFrustum.Orientation = rotation;
+	mCameraFrustum.Origin = position;
+	mCameraFrustum.Orientation = rotation;
+}
+
+void fq::graphics::D3D11CullingManager::CreateBoundingBoxOfStaticObject(IStaticMeshObject* meshObject)
+{
+	DirectX::BoundingBox box = meshObject->GetStaticMesh()->GetMeshData().RenderBoundingBox;
+	mOriBoxes[meshObject] = box;
+}
+
+void fq::graphics::D3D11CullingManager::DeleteBoundingBoxOfStaticObject(IStaticMeshObject* meshObject)
+{
+	mOriBoxes.erase(meshObject);
 }
 

@@ -17,6 +17,7 @@ namespace fq::graphics
 	class D3D11DepthStencilView;
 	class D3D11DebugDrawManager;
 	class D3D11ParticleManager;
+	class D3D11LightProbeManager;
 
 	class ForwardPipeline : public RenderPipeline
 	{
@@ -31,11 +32,10 @@ namespace fq::graphics
 			std::shared_ptr<D3D11ResourceManager>& resourceManager,
 			std::shared_ptr<D3D11DebugDrawManager> debugDrawManager,
 			std::shared_ptr<D3D11ParticleManager> particleManager,
-			std::shared_ptr<D3D11DecalManager> decalManager,
+			std::shared_ptr<D3D11ObjectManager> objectManager,
+			std::shared_ptr<D3D11LightProbeManager> lightProbeManager,
 			unsigned short width,
 			unsigned short height);
-
-		void SetSkyBox(const std::wstring& path);
 
 	private:
 		std::shared_ptr<class ShadowPass> mShadowPass;
@@ -51,6 +51,10 @@ namespace fq::graphics
 		std::shared_ptr<class OutLineBlurPass> mOutLineBlurPass;
 		std::shared_ptr<class OutLineAddPass> mOutLineAddPass;
 		std::shared_ptr<class ParticlePass> mParticlePass;
+		std::shared_ptr<class TrailRenderPass> mTrailRenderPass;
+		std::shared_ptr<class LightProbePass> mLightProbePass;
+		std::shared_ptr<class LightProbeAddPass> mLightProbeAddPass;
+		std::shared_ptr<class DebugLightProbePass> mDebugLightProbePass;
 	};
 }
 

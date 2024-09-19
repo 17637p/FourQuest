@@ -52,13 +52,13 @@ namespace fq::physics
 		return true;
 	}
 
-	bool PhysicsCharactorControllerManager::AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input)
+	bool PhysicsCharactorControllerManager::AddInputMove(const CharacterControllerInputInfo& info)
 	{
-		if (mCCTmap.find(id) == mCCTmap.end())
+		if (mCCTmap.find(info.id) == mCCTmap.end())
 			return false;
 
-		std::shared_ptr<CharacterController>& characterController = mCCTmap.find(id)->second;
-		characterController->AddMovementInput(input);
+		std::shared_ptr<CharacterController>& characterController = mCCTmap.find(info.id)->second;
+		characterController->AddMovementInput(info.input, info.isDynamic);
 		return true;
 	}
 
@@ -121,12 +121,14 @@ namespace fq::physics
 
 		data.velocity = movement->GetDisplacementVector();
 		data.isFall = movement->GetIsFall();
+		data.maxSpeed = movement->GetMaxSpeed();
 	}
-	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData)
+	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData, int* collisionMatrix)
 	{
 		auto& controller = mCCTmap.find(id)->second;
 		physx::PxController* pxController = controller->GetPxController();
 
+		mCCTmap.find(id)->second->ChangeLayerNumber(controllerData.myLayerNumber, collisionMatrix, mCollisionDataManager);
 		controller->SetPosition(controllerData.position);
 	}
 	void PhysicsCharactorControllerManager::SetCharacterMovementData(const unsigned int& id, const CharacterMovementGetSetData& movementData)
@@ -134,8 +136,11 @@ namespace fq::physics
 		auto& controller = mCCTmap.find(id)->second;
 		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
 
+		controller->SetMoveRestriction(movementData.restriction);
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
+		movement->SetMaxSpeed(movementData.maxSpeed);
+		movement->SetAcceleration(movementData.acceleration);
 	}
 #pragma endregion
 }

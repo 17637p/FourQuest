@@ -4,8 +4,16 @@
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 #include <algorithm>
+#include <queue>
 
+#include "../FQGameModule/SkinnedMeshRenderer.h"
+#include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/InputManager.h"
+#include "../FQGameModule/Light.h"
+#include "../FQGameModule/Particle.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/Terrain.h"
 #include "../FQGraphics/IFQGraphics.h"
 
 #include "EditorProcess.h"
@@ -32,6 +40,9 @@ fq::game_engine::GamePlayWindow::GamePlayWindow()
 	, mSelectObject(nullptr)
 	, mbIsUsingGizumo(false)
 	, mViewportSize{ 1.f,1.f }
+	, mViewPortOffset{ 0.f,0.f }
+	, mbAlreadyDrawGizumo(false)
+	, mbIsFocused(false)
 {}
 
 fq::game_engine::GamePlayWindow::~GamePlayWindow()
@@ -41,6 +52,8 @@ void fq::game_engine::GamePlayWindow::Render()
 {
 	if (ImGui::Begin("GamePlay", 0, ImGuiWindowFlags_MenuBar))
 	{
+		mbIsFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+
 		if (mWindowSize.x != ImGui::GetWindowSize().x
 			|| mWindowSize.y != ImGui::GetWindowSize().y)
 		{
@@ -55,6 +68,9 @@ void fq::game_engine::GamePlayWindow::Render()
 		drawSelectObjectDebugInfomation();
 	}
 	ImGui::End();
+
+	// 기즈모 그리기 세팅을 초기화합니다
+	mbAlreadyDrawGizumo = false;
 }
 
 void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProcess* editor)
@@ -74,6 +90,13 @@ void fq::game_engine::GamePlayWindow::Initialize(GameProcess* game, EditorProces
 		[this](editor_event::SelectObject event)
 		{
 			this->mSelectObject = event.object;
+		});
+
+	mSetScreenSizeHandler = mGameProcess->mEventManager->RegisterHandle<event::SetScreenSize>(
+		[this](event::SetScreenSize event)
+		{
+			float aspectRatio = static_cast<float>(event.width) / event.height;
+			mCameraObject->GetComponent<game_module::Camera>()->SetAspectRatio(aspectRatio);
 		});
 }
 
@@ -167,6 +190,11 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, true });
+
+		mGameProcess->mEventManager
+			->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+		{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+				, static_cast<unsigned short>(mViewportSize.y - mViewPortOffset.y) });
 	}
 	// Play -> Edit
 	else if (mode == EditorMode::Edit)
@@ -174,6 +202,10 @@ void fq::game_engine::GamePlayWindow::SetMode(EditorMode mode)
 		mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 		mGameProcess->mEventManager
 			->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
+
+		mGameProcess->mEventManager
+			->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+		{ static_cast<unsigned short>(mViewportSize.x), static_cast<unsigned short>(mViewportSize.y) });
 	}
 
 	mGameProcess->mEventManager->FireEvent<editor_event::SelectObject>({ nullptr });
@@ -232,10 +264,18 @@ void fq::game_engine::GamePlayWindow::ExcutShortcut()
 		if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
 		{
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
+
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x), static_cast<unsigned short>(mViewportSize.y) });
 		}
 		if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
 		{
 			mGameProcess->mCameraSystem->SetBindCamera(CameraSystem::CameraType::Game);
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+					, static_cast<unsigned short>(mViewportSize.y - mViewPortOffset.y) });
 		}
 	}
 }
@@ -244,10 +284,22 @@ void fq::game_engine::GamePlayWindow::beginImage_GameScreen()
 {
 	auto windowPos = ImGui::GetWindowPos();
 	auto cursorPos = ImGui::GetCursorPos();
+	auto viewportSize = mViewportSize;
+
+	if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
+	{
+		cursorPos.x += mViewPortOffset.x * 0.5f;
+		cursorPos.y += mViewPortOffset.y * 0.5f;
+
+		ImGui::SetCursorPos(cursorPos);
+		viewportSize.x -= mViewPortOffset.x;
+		viewportSize.y -= mViewPortOffset.y;
+	}
+
 	mImagePos.x = windowPos.x + cursorPos.x;
 	mImagePos.y = windowPos.y + cursorPos.y;
 
-	ImGui::Image(mGameProcess->mGraphics->GetSRV(), mViewportSize);
+	ImGui::Image(mGameProcess->mGraphics->GetSRV(), viewportSize);
 }
 
 void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
@@ -323,24 +375,29 @@ void fq::game_engine::GamePlayWindow::UpdateCamera(float dt)
 
 void fq::game_engine::GamePlayWindow::beginGizumo()
 {
-	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
-		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
-	{
-		ImGuizmo::Enable(false);
-		return;
-	}
-
-	ImGuizmo::Enable(true);
-
 	using namespace DirectX::SimpleMath;
 
+	// 기즈모 창관련 설정 
 	auto x = ImGui::GetWindowPos().x;
 	auto y = ImGui::GetWindowPos().y;
 	auto width = ImGui::GetWindowSize().x;
 	auto height = ImGui::GetWindowSize().y;
-
-	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(x, y, width, height);
+
+	// 이미 다른곳에서 기즈모 그린경우 그리지 않습니다.
+	if (mbAlreadyDrawGizumo)
+	{
+		return;
+	}
+
+	if (mSelectObject == nullptr || mOperation == ImGuizmo::BOUNDS
+		|| mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Game)
+	{
+		//ImGuizmo::Enable(false);
+		return;
+	}
+
+	ImGuizmo::Enable(true);
 
 	auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
 	auto objectMatrix = objectT->GetWorldMatrix();
@@ -423,7 +480,23 @@ void fq::game_engine::GamePlayWindow::beginButton_SwapCamera()
 		{
 			cameraSystem->SetBindCamera(CameraSystem::CameraType::Editor);
 		}
+
+		if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Editor)
+		{
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x), static_cast<unsigned short>(mViewportSize.y) });
+		}
+		else
+		{
+			mGameProcess->mEventManager
+				->FireEvent<fq::event::SetViewportSize>(fq::event::SetViewportSize
+			{ static_cast<unsigned short>(mViewportSize.x - mViewPortOffset.x)
+					, static_cast<unsigned short>(mViewportSize.y - mViewportSize.y) });
+		}
 	}
+
+
 }
 
 void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
@@ -431,12 +504,41 @@ void fq::game_engine::GamePlayWindow::resizeWindow(ImVec2 size)
 	mWindowSize = size;
 
 	constexpr float offsetY = 70.f;
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
 
-	mViewportSize.x = size.x;
+	constexpr float FixedAspectRatio = 16.f / 9.f;
+
+	// 16 : 9 화면 비율 고정 
+	float cameraAspectRatio = FixedAspectRatio;
+	// Window 사이즈 비율 
+	//float cameraAspectRatio = camera->GetAspectRatio();
+
+	mViewportSize.x = size.x; 
 	mViewportSize.y = size.y - offsetY;
 
-	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
-	mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+	// 게임 카메라 화면 비율 조절 
+	float windowAspectRatio = mViewportSize.x / mViewportSize.y;
+
+	// 가로가 길이 조절
+	if (cameraAspectRatio < windowAspectRatio)
+	{
+		float resizeX = mViewportSize.y * cameraAspectRatio;
+		mViewPortOffset.x = mViewportSize.x - resizeX;
+		mViewPortOffset.y = 0.f;
+	}
+	// 세로 길이 조절
+	else
+	{
+		float resizeY = mViewportSize.x / cameraAspectRatio;
+		mViewPortOffset.y = mViewportSize.y - resizeY;
+		mViewPortOffset.x = 0.f;
+	}
+
+	if (mGameProcess->mCameraSystem->GetCameraType() == CameraSystem::CameraType::Editor)
+		mGameProcess->mGraphics->SetViewportSize(mViewportSize.x, mViewportSize.y);
+	else
+		mGameProcess->mGraphics->SetViewportSize(mViewportSize.x - mViewPortOffset.x, mViewportSize.y - mViewPortOffset.y);
+
 	mGameProcess->mGraphics->SetCamera(camera->GetCameraInfomation());
 }
 
@@ -503,7 +605,7 @@ void fq::game_engine::GamePlayWindow::LookAtTarget(DirectX::SimpleMath::Vector3 
 	cameraT->SetLocalPosition(cameraPosition);
 }
 
-
+#pragma optimize( "", off )
 void fq::game_engine::GamePlayWindow::pickObject()
 {
 	if (mEditorProcess->mInputManager->IsKeyState(EKey::LMouse, EKeyState::Tap) && mOperation == ImGuizmo::BOUNDS)
@@ -546,6 +648,9 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			return;
 		}
 
+		// 하이어라키 펼치기 전달
+		mGameProcess->mEventManager->FireEvent<fq::editor_event::FlipHierachy>({});
+
 		// 피킹한 오브젝트 탐색
 		auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 		scene->ViewComponents<fq::game_module::StaticMeshRenderer>(
@@ -553,9 +658,18 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			{
 				if (mesh.GetStaticMeshObject() == meshPtr)
 				{
-					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					if (mEditorProcess->mSettingWindow->UseRootPicking())
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.GetRootObject()->shared_from_this(), mSelectObject });
+					}
+					else
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					}
 				}
+
 			});
 
 		scene->ViewComponents<fq::game_module::SkinnedMeshRenderer>(
@@ -563,8 +677,16 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			{
 				if (mesh.GetSkinnedMeshObject() == meshPtr)
 				{
-					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					if (mEditorProcess->mSettingWindow->UseRootPicking())
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.GetRootObject()->shared_from_this(), mSelectObject });
+					}
+					else
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					}
 				}
 			});
 
@@ -572,12 +694,23 @@ void fq::game_engine::GamePlayWindow::pickObject()
 			{
 				if (terrain.GetTerrainMeshObject() == meshPtr)
 				{
-					mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
-					mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					if (mEditorProcess->mSettingWindow->UseRootPicking())
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.GetRootObject()->shared_from_this(), mSelectObject });
+					}
+					else
+					{
+						mEditorProcess->mCommandSystem->Push<SelectObjectCommand>(SelectObjectCommand{
+						mGameProcess->mEventManager.get(), object.shared_from_this(), mSelectObject });
+					}
 				}
 			});
+
+		mEditorProcess->mLightProbeWindow->PickObject(meshPtr);
 	}
 }
+#pragma optimize("", on)
 
 void fq::game_engine::GamePlayWindow::checkMouse()
 {
@@ -598,5 +731,69 @@ void fq::game_engine::GamePlayWindow::checkMouse()
 			mbIsMouseHoveredWindow = true;
 		else
 			mbIsMouseHoveredWindow = false;
+	}
+}
+
+void fq::game_engine::GamePlayWindow::UpdateParticle(float dt)
+{
+	if (!mSelectObject || mSelectObject->IsDestroyed())
+		return;
+
+	std::queue<game_module::GameObject*> q;
+	q.push(mSelectObject.get());
+
+	while (!q.empty())
+	{
+		auto tmp = q.front();
+
+		if (tmp && tmp->HasComponent<game_module::Particle>())
+		{
+			auto particle = tmp->GetComponent<game_module::Particle>();
+			auto particleObject = particle->GetParticleObject();
+
+			if (particleObject)
+			{
+				auto worldM = tmp->GetComponent<game_module::Transform>()->GetWorldMatrix();
+
+				particleObject->SetTransform(worldM);
+				particleObject->SetFrameTime(dt);
+			}
+		}
+
+		for (auto child : tmp->GetChildren())
+		{
+			q.push(child);
+		}
+		q.pop();
+	}
+}
+
+void fq::game_engine::GamePlayWindow::DrawGizumo(DirectX::SimpleMath::Matrix& transform)
+{
+	if (mbAlreadyDrawGizumo)
+	{
+		return;
+	}
+
+	mbAlreadyDrawGizumo = true;
+	ImGuizmo::Enable(true);
+
+	//auto objectT = mSelectObject->GetComponent<fq::game_module::Transform>();
+	auto objectMatrix = transform;
+
+	auto& input = mEditorProcess->mInputManager;
+
+	auto camera = mCameraObject->GetComponent<fq::game_module::Camera>();
+	auto view = camera->GetView();
+	auto proj = camera->GetProjection(mViewportSize.x / mViewportSize.y);
+
+	bool useSnap = mEditorProcess->mSettingWindow->UseSnap();
+	float* snap = mEditorProcess->mSettingWindow->GetSnap();
+	auto mode = mEditorProcess->mSettingWindow->GetMode();
+
+	if (ImGuizmo::Manipulate(&view._11, &proj._11
+		, mOperation, mode, &objectMatrix._11, nullptr, useSnap ? &snap[0] : nullptr))
+	{
+		transform = objectMatrix;
 	}
 }

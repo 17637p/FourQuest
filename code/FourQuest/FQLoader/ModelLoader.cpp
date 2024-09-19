@@ -1,9 +1,13 @@
 #include "pch.h"
 
 #include <DirectXCollision.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/stopwatch.h>
 
 #include "ModelLoader.h"
 #include "FileUtil.h"
+
+#include "../FQCommon/FQPath.h"
 
 namespace fq::loader
 {
@@ -14,8 +18,10 @@ namespace fq::loader
 
 		Model model;
 
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(std::filesystem::path{ fileName });
+
 		FileUtil fileUtil;
-		fileUtil.Open(fileName, EFileMode::Read);
+		fileUtil.Open(correctedPath.string(), EFileMode::Read);
 
 		model.Meshes = ReadMesh(fileUtil);
 		model.Materials = ReadMaterial(fileUtil);
@@ -61,6 +67,7 @@ namespace fq::loader
 			fileUtil.Read<unsigned int>(&node.Index);
 			fileUtil.Read<unsigned int>(&node.ParentIndex);
 			fileUtil.Read<DirectX::SimpleMath::Matrix>(&node.ToParentMatrix);
+			fileUtil.Read<DirectX::SimpleMath::Matrix>(&node.OffsetMatrix);
 
 			Mesh mesh;
 			fileUtil.Read<string>(&mesh.Name);
@@ -114,7 +121,36 @@ namespace fq::loader
 			}
 
 			fileUtil.Read<DirectX::BoundingBox>(&mesh.RenderBoundingBox);
-			fileUtil.Read<DirectX::BoundingSphere>(&mesh.GetRenderBoundingSphere);
+			fileUtil.Read<DirectX::BoundingSphere>(&mesh.RenderBoundingSphere);
+
+			unsigned int tex1Count;
+			fileUtil.Read<unsigned int>(&tex1Count);
+			mesh.Tex1.reserve(tex1Count);
+
+			for (unsigned int j = 0; j < tex1Count; ++j)
+			{
+				DirectX::SimpleMath::Vector2 tex1;
+
+				fileUtil.Read<DirectX::SimpleMath::Vector2>(&tex1);
+
+				mesh.Tex1.push_back(tex1);
+			}
+
+			unsigned int dynamicDataCount = 0;
+			fileUtil.Read<unsigned int>(&dynamicDataCount);
+
+			for (unsigned int j = 0; j < dynamicDataCount; ++j)
+			{
+				Mesh::DynamicData dynamicData;
+
+				fileUtil.Read<string>(&dynamicData.Name);
+				fileUtil.Read<unsigned int>(&dynamicData.Size);
+				fileUtil.Read<unsigned int>(&dynamicData.Count);
+				dynamicData.Data.resize(dynamicData.Size * dynamicData.Count);
+				fileUtil.Read(dynamicData.Data.data(), dynamicData.Size * dynamicData.Count);
+
+				mesh.DynamicInfos.insert({ dynamicData.Name, dynamicData });
+			}
 
 			modelData.push_back({ std::move(node), std::move(mesh) });
 		}
@@ -223,6 +259,7 @@ namespace fq::loader
 			fileUtil.Write<unsigned int>(node.Index);
 			fileUtil.Write<unsigned int>(node.ParentIndex);
 			fileUtil.Write<DirectX::SimpleMath::Matrix>(node.ToParentMatrix);
+			fileUtil.Write<DirectX::SimpleMath::Matrix>(node.OffsetMatrix);
 
 			fileUtil.Write<string>(mesh.Name);
 			fileUtil.Write<unsigned int>(mesh.Vertices.size());
@@ -255,7 +292,22 @@ namespace fq::loader
 			}
 
 			fileUtil.Write<DirectX::BoundingBox>(mesh.RenderBoundingBox);
-			fileUtil.Write<DirectX::BoundingSphere>(mesh.GetRenderBoundingSphere);
+			fileUtil.Write<DirectX::BoundingSphere>(mesh.RenderBoundingSphere);
+
+			fileUtil.Write<unsigned int>(mesh.Tex1.size());
+			for (const DirectX::SimpleMath::Vector2& tex1 : mesh.Tex1)
+			{
+				fileUtil.Write<DirectX::SimpleMath::Vector2>(tex1);
+			}
+
+			fileUtil.Write<unsigned int>(mesh.DynamicInfos.size());
+			for (const auto& [key, dynamicData] : mesh.DynamicInfos)
+			{
+				fileUtil.Write<string>(dynamicData.Name);
+				fileUtil.Write<unsigned int>(dynamicData.Size);
+				fileUtil.Write<unsigned int>(dynamicData.Count);
+				fileUtil.Write(dynamicData.Data.data(), dynamicData.Size * dynamicData.Count);
+			}
 		}
 	}
 	void ModelLoader::WriteMaterialByData(const std::vector<fq::common::Material>& materialData, FileUtil& fileUtil)
@@ -311,5 +363,569 @@ namespace fq::loader
 				}
 			}
 		}
+	}
+	fq::common::UVAnimationClip UVAnimationLoader::Read(const std::filesystem::path& filePath)
+	{
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
+
+		nlohmann::ordered_json controllerJson;
+
+		if (readData.is_open())
+		{
+			readData >> controllerJson;
+			readData.close();
+		}
+		else
+			assert(!"파일 열기 실패");
+
+		fq::common::UVAnimationClip result;
+
+		result.FrameCount = controllerJson.at("FrameCount").get<int>();
+		result.FramePerSecond = controllerJson.at("FramePerSecond").get<float>();
+		result.Duration = controllerJson.at("Duration").get<float>();
+
+		auto objects = controllerJson.find("objects");
+
+		for (const auto& [key, value] : objects.value().items())
+		{
+			fq::common::UVNodeClip uvNodeClip;
+			uvNodeClip.NodeName = value.at("object");
+			uvNodeClip.UVData.reserve(result.FrameCount);
+			auto keyFrameData = value.find("uv_animation_data");
+
+			for (const auto& [innerKey, innerValue] : keyFrameData.value().items())
+			{
+				fq::common::UVKeyframe uvKeyframe;
+
+				uvKeyframe.TimePos = innerValue.at("time").get<float>();
+
+				uvKeyframe.Translation.x = innerValue.at("translate")[0].get<float>();
+				uvKeyframe.Translation.y = innerValue.at("translate")[1].get<float>();
+
+				uvKeyframe.Rotation = innerValue.at("rotate")[0].get<float>();
+
+				uvKeyframe.Scale.x = innerValue.at("scale")[0].get<float>();
+				uvKeyframe.Scale.y = innerValue.at("scale")[1].get<float>();
+
+				uvNodeClip.UVData.push_back(uvKeyframe);
+			}
+
+			result.NodeClips.insert({ uvNodeClip.NodeName, uvNodeClip });
+		}
+
+		return result;
+	}
+	void UVAnimationLoader::Write(const fq::common::UVAnimationClip& uvAnimationClip, const std::string& filePath)
+	{
+		nlohmann::ordered_json controllerJson;
+
+		// UVAnimationClip 데이터 채우기
+		controllerJson["FrameCount"] = uvAnimationClip.FrameCount;
+		controllerJson["FramePerSecond"] = uvAnimationClip.FramePerSecond;
+		controllerJson["Duration"] = uvAnimationClip.Duration;
+
+		nlohmann::ordered_json objectsJson;
+
+		for (const auto& [nodeName, uvNodeClip] : uvAnimationClip.NodeClips)
+		{
+			nlohmann::ordered_json uvNodeClipJson;
+			uvNodeClipJson["object"] = uvNodeClip.NodeName;
+
+			nlohmann::ordered_json uvAnimationDataJson;
+
+			for (const auto& uvKeyframe : uvNodeClip.UVData)
+			{
+				nlohmann::ordered_json uvKeyframeJson;
+				uvKeyframeJson["time"] = uvKeyframe.TimePos;
+
+				uvKeyframeJson["translate"] = { uvKeyframe.Translation.x, uvKeyframe.Translation.y };
+				uvKeyframeJson["rotate"] = { uvKeyframe.Rotation };
+				uvKeyframeJson["scale"] = { uvKeyframe.Scale.x, uvKeyframe.Scale.y };
+
+				uvAnimationDataJson.push_back(uvKeyframeJson);
+			}
+
+			uvNodeClipJson["uv_animation_data"] = uvAnimationDataJson;
+			objectsJson[uvNodeClip.NodeName] = uvNodeClipJson;
+		}
+
+		controllerJson["objects"] = objectsJson;
+
+		// JSON 파일로 쓰기
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
+		if (writeData.is_open())
+		{
+			writeData << controllerJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	fq::common::AnimationClip AnimationLoader::Read(const std::filesystem::path& filePath)
+	{
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
+		nlohmann::ordered_json controllerJson;
+
+		if (readData.is_open())
+		{
+			std::stringstream buffer;
+			buffer << readData.rdbuf();
+			readData.close();
+			std::string data = buffer.str();
+			controllerJson = nlohmann::json::parse(data);
+		}
+		else
+			assert(!"파일 열기 실패");
+
+		fq::common::AnimationClip result;
+
+		result.FrameCount = controllerJson.at("FrameCount").get<int>();
+		result.FramePerSecond = controllerJson.at("FramePerSecond").get<float>();
+		result.Duration = controllerJson.at("Duration").get<float>();
+
+		auto objects = controllerJson.find("objects");
+
+		for (const auto& [key, value] : objects.value().items())
+		{
+			fq::common::NodeClip nodeClip;
+			nodeClip.NodeName = value.at("object");
+			nodeClip.Keyframes.reserve(result.FrameCount);
+			auto keyFrameData = value.find("transform_data");
+
+			for (const auto& [innerKey, innerValue] : keyFrameData.value().items())
+			{
+				fq::common::Keyframe keyframe;
+
+				keyframe.TimePos = innerValue.at("time").get<float>();
+
+				keyframe.Translation.x = innerValue.at("location")[0].get<float>();
+				keyframe.Translation.y = innerValue.at("location")[1].get<float>();
+				keyframe.Translation.z = innerValue.at("location")[2].get<float>();
+
+				keyframe.Rotation.x = innerValue.at("rotation")[0].get<float>();
+				keyframe.Rotation.y = innerValue.at("rotation")[1].get<float>();
+				keyframe.Rotation.z = innerValue.at("rotation")[2].get<float>();
+				keyframe.Rotation.w = innerValue.at("rotation")[3].get<float>();
+
+				keyframe.Scale.x = innerValue.at("scale")[0].get<float>();
+				keyframe.Scale.y = innerValue.at("scale")[1].get<float>();
+				keyframe.Scale.z = innerValue.at("scale")[2].get<float>();
+
+				nodeClip.Keyframes.push_back(keyframe);
+			}
+
+			result.NodeClips.push_back(nodeClip);
+		}
+
+		return result;
+	}
+
+	void AnimationLoader::Write(const fq::common::AnimationClip& animationClip, const std::string& filePath)
+	{
+		nlohmann::ordered_json controllerJson;
+
+		// AnimationClip 데이터 채우기
+		controllerJson["FrameCount"] = animationClip.FrameCount;
+		controllerJson["FramePerSecond"] = animationClip.FramePerSecond;
+		controllerJson["Duration"] = animationClip.Duration;
+
+		nlohmann::ordered_json objectsJson;
+
+		for (const auto& nodeClip : animationClip.NodeClips)
+		{
+			nlohmann::ordered_json nodeClipJson;
+			nodeClipJson["object"] = nodeClip.NodeName;
+
+			nlohmann::ordered_json transformDataJson;
+
+			for (const auto& keyframe : nodeClip.Keyframes)
+			{
+				nlohmann::ordered_json keyframeJson;
+				keyframeJson["time"] = keyframe.TimePos;
+
+				keyframeJson["location"] = { keyframe.Translation.x, keyframe.Translation.y, keyframe.Translation.z };
+				keyframeJson["rotation"] = { keyframe.Rotation.x, keyframe.Rotation.y, keyframe.Rotation.z, keyframe.Rotation.w };
+				keyframeJson["scale"] = { keyframe.Scale.x, keyframe.Scale.y, keyframe.Scale.z };
+
+				transformDataJson.push_back(keyframeJson);
+			}
+
+			nodeClipJson["transform_data"] = transformDataJson;
+			objectsJson[nodeClip.NodeName] = nodeClipJson;
+		}
+
+		controllerJson["objects"] = objectsJson;
+
+		// JSON 파일로 쓰기
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
+		if (writeData.is_open())
+		{
+			writeData << controllerJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	std::vector<fq::common::Node> NodeHierarchyLoader::Read(const std::filesystem::path& filePath)
+	{
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
+		nlohmann::ordered_json nodeHierarchyJson;
+
+		if (readData.is_open())
+		{
+			readData >> nodeHierarchyJson;
+			readData.close();
+		}
+		else
+			assert(!"파일 열기 실패");
+
+		auto ReadMatrix = [](const nlohmann::ordered_json& matrixJson) {
+			DirectX::SimpleMath::Matrix matrix;
+
+			for (int i = 0; i < 4; ++i) {
+				for (int j = 0; j < 4; ++j) {
+					matrix.m[i][j] = matrixJson[i * 4 + j].get<float>();
+				}
+			}
+			return matrix;
+			};
+
+		std::vector<fq::common::Node> nodeHierarchy;
+
+		for (const auto& nodeJson : nodeHierarchyJson["nodes"])
+		{
+			fq::common::Node node;
+			node.Name = nodeJson["Name"].get<std::string>();
+			node.Index = nodeJson["Index"].get<int>();
+			node.ParentIndex = nodeJson["ParentIndex"].get<int>();
+			node.ToParentMatrix = ReadMatrix(nodeJson["ToParentMatrix"]);
+			node.OffsetMatrix = ReadMatrix(nodeJson["OffsetMatrix"]);
+			nodeHierarchy.push_back(node);
+		}
+
+		return nodeHierarchy;
+	}
+
+	void NodeHierarchyLoader::Write(const  std::vector<fq::common::Node>& nodeHierarchy, const std::string& filePath)
+	{
+		nlohmann::ordered_json nodeHierarchyJson;
+		{
+			nlohmann::ordered_json nodesJson;
+
+			for (const auto& node : nodeHierarchy)
+			{
+				nlohmann::ordered_json nodeJson;
+
+				nodeJson["Name"] = node.Name;
+				nodeJson["Index"] = node.Index;
+				nodeJson["ParentIndex"] = node.ParentIndex;
+				nodeJson["ToParentMatrix"] = {
+					node.ToParentMatrix.m[0][0], node.ToParentMatrix.m[0][1],  node.ToParentMatrix.m[0][2], node.ToParentMatrix.m[0][3],
+					node.ToParentMatrix.m[1][0], node.ToParentMatrix.m[1][1],  node.ToParentMatrix.m[1][2], node.ToParentMatrix.m[1][3],
+					node.ToParentMatrix.m[2][0], node.ToParentMatrix.m[2][1],  node.ToParentMatrix.m[2][2], node.ToParentMatrix.m[2][3],
+					node.ToParentMatrix.m[3][0], node.ToParentMatrix.m[3][1],  node.ToParentMatrix.m[3][2], node.ToParentMatrix.m[3][3],
+				};
+				nodeJson["OffsetMatrix"] =
+				{
+					node.OffsetMatrix.m[0][0], node.OffsetMatrix.m[0][1],  node.OffsetMatrix.m[0][2], node.OffsetMatrix.m[0][3],
+					node.OffsetMatrix.m[1][0], node.OffsetMatrix.m[1][1],  node.OffsetMatrix.m[1][2], node.OffsetMatrix.m[1][3],
+					node.OffsetMatrix.m[2][0], node.OffsetMatrix.m[2][1],  node.OffsetMatrix.m[2][2], node.OffsetMatrix.m[2][3],
+					node.OffsetMatrix.m[3][0], node.OffsetMatrix.m[3][1],  node.OffsetMatrix.m[3][2], node.OffsetMatrix.m[3][3],
+				};
+
+				nodesJson.push_back(nodeJson);
+			}
+
+			nodeHierarchyJson["nodes"] = nodesJson;
+		}
+
+		// JSON 파일로 쓰기
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
+
+		if (writeData.is_open())
+		{
+			writeData << nodeHierarchyJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	void NodeHierarchyLoader::Write(const fq::common::Model& modeData, const std::string& filePath)
+	{
+		nlohmann::ordered_json nodeHierarchyJson;
+		{
+			nlohmann::ordered_json nodesJson;
+
+			for (const auto& [node, mesh] : modeData.Meshes)
+			{
+				nlohmann::ordered_json nodeJson;
+
+				nodeJson["Name"] = node.Name;
+				nodeJson["Index"] = node.Index;
+				nodeJson["ParentIndex"] = node.ParentIndex;
+				nodeJson["ToParentMatrix"] = {
+					node.ToParentMatrix.m[0][0], node.ToParentMatrix.m[0][1],  node.ToParentMatrix.m[0][2], node.ToParentMatrix.m[0][3],
+					node.ToParentMatrix.m[1][0], node.ToParentMatrix.m[1][1],  node.ToParentMatrix.m[1][2], node.ToParentMatrix.m[1][3],
+					node.ToParentMatrix.m[2][0], node.ToParentMatrix.m[2][1],  node.ToParentMatrix.m[2][2], node.ToParentMatrix.m[2][3],
+					node.ToParentMatrix.m[3][0], node.ToParentMatrix.m[3][1],  node.ToParentMatrix.m[3][2], node.ToParentMatrix.m[3][3],
+				};
+				nodeJson["OffsetMatrix"] =
+				{
+					node.OffsetMatrix.m[0][0], node.OffsetMatrix.m[0][1],  node.OffsetMatrix.m[0][2], node.OffsetMatrix.m[0][3],
+					node.OffsetMatrix.m[1][0], node.OffsetMatrix.m[1][1],  node.OffsetMatrix.m[1][2], node.OffsetMatrix.m[1][3],
+					node.OffsetMatrix.m[2][0], node.OffsetMatrix.m[2][1],  node.OffsetMatrix.m[2][2], node.OffsetMatrix.m[2][3],
+					node.OffsetMatrix.m[3][0], node.OffsetMatrix.m[3][1],  node.OffsetMatrix.m[3][2], node.OffsetMatrix.m[3][3],
+				};
+
+				nodesJson.push_back(nodeJson);
+			}
+
+			nodeHierarchyJson["nodes"] = nodesJson;
+		}
+
+		// JSON 파일로 쓰기
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
+		if (writeData.is_open())
+		{
+			writeData << nodeHierarchyJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	fq::graphics::MaterialInfo MaterialLoader::Read(const std::filesystem::path& filePath)
+	{
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ifstream readData(correctedPath);
+
+		nlohmann::ordered_json materialInfoJson;
+
+		if (readData.is_open())
+		{
+			readData >> materialInfoJson;
+			readData.close();
+		}
+		else
+			assert(!"파일 열기 실패");
+
+		using namespace fq::graphics;
+
+		fq::graphics::MaterialInfo materialInfo;
+
+		std::string renderModeStr, sampleTypeStr, rasterizeTypeStr;
+		materialInfoJson.at("RenderModeType").get_to(renderModeStr);
+		materialInfo.RenderModeType = (renderModeStr == "Opaque") ? MaterialInfo::ERenderMode::Opaque : MaterialInfo::ERenderMode::Transparent;
+
+		materialInfo.BaseColor.x = materialInfoJson.at("BaseColor")[0].get<float>();
+		materialInfo.BaseColor.y = materialInfoJson.at("BaseColor")[1].get<float>();
+		materialInfo.BaseColor.z = materialInfoJson.at("BaseColor")[2].get<float>();
+		materialInfo.BaseColor.w = materialInfoJson.at("BaseColor")[3].get<float>();
+		materialInfoJson.at("Metalness").get_to(materialInfo.Metalness);
+		materialInfoJson.at("Roughness").get_to(materialInfo.Roughness);
+		materialInfo.EmissiveColor.x = materialInfoJson.at("EmissiveColor")[0].get<float>();
+		materialInfo.EmissiveColor.y = materialInfoJson.at("EmissiveColor")[1].get<float>();
+		materialInfo.EmissiveColor.z = materialInfoJson.at("EmissiveColor")[2].get<float>();
+		materialInfo.EmissiveColor.w = materialInfoJson.at("EmissiveColor")[3].get<float>();
+
+		std::string temp;
+		materialInfoJson.at("BaseColorFileName").get_to(temp);
+		materialInfo.BaseColorFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.BaseColorFileName = fq::path::GetAbsolutePath(materialInfo.BaseColorFileName);
+
+		materialInfoJson.at("MetalnessFileName").get_to(temp);
+		materialInfo.MetalnessFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.MetalnessFileName = fq::path::GetAbsolutePath(materialInfo.MetalnessFileName);
+
+		materialInfoJson.at("RoughnessFileName").get_to(temp);
+		materialInfo.RoughnessFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.RoughnessFileName = fq::path::GetAbsolutePath(materialInfo.RoughnessFileName);
+
+		materialInfoJson.at("EmissiveFileName").get_to(temp);
+		materialInfo.EmissiveFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.EmissiveFileName = fq::path::GetAbsolutePath(materialInfo.EmissiveFileName);
+
+		materialInfoJson.at("NormalFileName").get_to(temp);
+		materialInfo.NormalFileName = std::wstring(temp.begin(), temp.end());
+		materialInfo.NormalFileName = fq::path::GetAbsolutePath(materialInfo.NormalFileName);
+
+		materialInfoJson.at("bUseBaseColor").get_to(materialInfo.bUseBaseColor);
+		materialInfoJson.at("bUseMetalness").get_to(materialInfo.bUseMetalness);
+		materialInfoJson.at("bUseRoughness").get_to(materialInfo.bUseRoughness);
+		materialInfoJson.at("bUseNormalness").get_to(materialInfo.bUseNormalness);
+		materialInfoJson.at("bIsUsedEmissive").get_to(materialInfo.bIsUsedEmissive);
+
+		materialInfo.Tiling.x = materialInfoJson.at("Tiling")[0].get<float>();
+		materialInfo.Tiling.y = materialInfoJson.at("Tiling")[1].get<float>();
+		materialInfo.Offset.x = materialInfoJson.at("Offset")[0].get<float>();
+		materialInfo.Offset.y = materialInfoJson.at("Offset")[1].get<float>();
+
+		materialInfoJson.at("AlphaCutoff").get_to(materialInfo.AlphaCutoff);
+
+		materialInfoJson.at("SampleType").get_to(sampleTypeStr);
+		materialInfo.SampleType = (sampleTypeStr == "Clamp") ? ESampleMode::Clamp : ESampleMode::Wrap;
+
+		materialInfoJson.at("RasterizeType").get_to(rasterizeTypeStr);
+		materialInfo.RasterizeType = (rasterizeTypeStr == "BackFaceClip") ? ERasterizeMode::BackFaceClip : ERasterizeMode::TwoSide;
+
+		auto find = materialInfoJson.find("bUseDissolve");
+		if (find != materialInfoJson.end())
+		{
+			find->get_to(materialInfo.bUseDissolve);
+		}
+
+		find = materialInfoJson.find("NoiseFileName");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("NoiseFileName").get_to(temp);
+			materialInfo.NoiseFileName = std::wstring(temp.begin(), temp.end());
+		}
+
+		find = materialInfoJson.find("OutlineThickness");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("OutlineThickness").get_to(materialInfo.OutlineThickness);
+		}
+
+		find = materialInfoJson.find("DissolveCutoff");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("DissolveCutoff").get_to(materialInfo.DissolveCutoff);
+		}
+
+		find = materialInfoJson.find("DissolveStartColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.DissolveStartColor.x = materialInfoJson.at("DissolveStartColor")[0].get<float>();
+			materialInfo.DissolveStartColor.y = materialInfoJson.at("DissolveStartColor")[1].get<float>();
+			materialInfo.DissolveStartColor.z = materialInfoJson.at("DissolveStartColor")[2].get<float>();
+			materialInfo.DissolveStartColor.w = materialInfoJson.at("DissolveStartColor")[3].get<float>();
+		}
+
+		find = materialInfoJson.find("DissolveEndColor");
+		if (find != materialInfoJson.end())
+		{
+			materialInfo.DissolveEndColor.x = materialInfoJson.at("DissolveEndColor")[0].get<float>();
+			materialInfo.DissolveEndColor.y = materialInfoJson.at("DissolveEndColor")[1].get<float>();
+			materialInfo.DissolveEndColor.z = materialInfoJson.at("DissolveEndColor")[2].get<float>();
+			materialInfo.DissolveEndColor.w = materialInfoJson.at("DissolveEndColor")[3].get<float>();
+		}
+
+		find = materialInfoJson.find("bIsUsedMetalnessSmoothness");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("bIsUsedMetalnessSmoothness").get_to(materialInfo.bIsUsedMetalnessSmoothness);
+		}
+
+		find = materialInfoJson.find("MetalnessSmoothnessFileName");
+		if (find != materialInfoJson.end())
+		{
+			materialInfoJson.at("MetalnessSmoothnessFileName").get_to(temp);
+			materialInfo.MetalnessSmoothnessFileName = std::wstring(temp.begin(), temp.end());
+			materialInfo.MetalnessSmoothnessFileName = fq::path::GetAbsolutePath(materialInfo.MetalnessSmoothnessFileName);
+		}
+
+		return materialInfo;
+	}
+	void MaterialLoader::Write(const std::filesystem::path& filePath, const fq::graphics::MaterialInfo& material)
+	{
+		using namespace fq::graphics;
+
+		nlohmann::ordered_json materialInfoJson;
+
+		materialInfoJson =
+		{
+			{"RenderModeType", material.RenderModeType == MaterialInfo::ERenderMode::Opaque ? "Opaque" : "Transparent"},
+			{"BaseColor", {material.BaseColor.x, material.BaseColor.y, material.BaseColor.z, material.BaseColor.w}},
+			{"Metalness", material.Metalness},
+			{"Roughness", material.Roughness},
+			{"EmissiveColor", {material.EmissiveColor.x, material.EmissiveColor.y, material.EmissiveColor.z, material.EmissiveColor.w}},
+			{"BaseColorFileName", fq::path::GetRelativePath(std::string(material.BaseColorFileName.begin(), material.BaseColorFileName.end())).string() },
+			{"MetalnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessFileName.begin(), material.MetalnessFileName.end())).string() },
+			{"RoughnessFileName", fq::path::GetRelativePath(std::string(material.RoughnessFileName.begin(), material.RoughnessFileName.end())).string() },
+			{"NormalFileName", fq::path::GetRelativePath(std::string(material.NormalFileName.begin(), material.NormalFileName.end())).string() },
+			{"EmissiveFileName", fq::path::GetRelativePath(std::string(material.EmissiveFileName.begin(), material.EmissiveFileName.end())).string() },
+			{"MetalnessSmoothnessFileName", fq::path::GetRelativePath(std::string(material.MetalnessSmoothnessFileName.begin(), material.MetalnessSmoothnessFileName.end())).string() },
+			{"bUseBaseColor", material.bUseBaseColor},
+			{"bUseMetalness", material.bUseMetalness},
+			{"bUseRoughness", material.bUseRoughness},
+			{"bUseNormalness", material.bUseNormalness},
+			{"bIsUsedEmissive", material.bIsUsedEmissive},
+			{"bIsUsedMetalnessSmoothness", material.bIsUsedMetalnessSmoothness},
+			{"Tiling", {material.Tiling.x, material.Tiling.y}},
+			{"Offset", {material.Offset.x, material.Offset.y}},
+			{"AlphaCutoff", material.AlphaCutoff},
+			{"SampleType", material.SampleType == ESampleMode::Clamp ? "Clamp" : "Wrap"},
+			{"RasterizeType", material.RasterizeType == ERasterizeMode::BackFaceClip ? "BackFaceClip" : "TwoSide"},
+			{"bUseDissolve", material.bUseDissolve },
+			{"NoiseFileName", std::string(material.NoiseFileName.begin(),material.NoiseFileName.end()) },
+			{"OutlineThickness", material.OutlineThickness },
+			{"DissolveCutoff", material.DissolveCutoff },
+			{"DissolveStartColor", {material.DissolveStartColor.x, material.DissolveStartColor.y, material.DissolveStartColor.z, material.DissolveStartColor.w}},
+			{"DissolveEndColor", {material.DissolveEndColor.x, material.DissolveEndColor.y, material.DissolveEndColor.z, material.DissolveEndColor.w}},
+		};
+
+		const std::filesystem::path parentPath = filePath.parent_path();
+		if (!std::filesystem::exists(parentPath))
+		{
+			std::filesystem::create_directories(parentPath);
+		}
+
+		// JSON 파일로 쓰기
+		std::filesystem::path correctedPath = LoaderHelpaer::CorrectPathCharacters(filePath);
+		std::ofstream writeData(correctedPath);
+
+		if (writeData.is_open())
+		{
+			writeData << materialInfoJson.dump(4); // 4는 JSON 파일의 들여쓰기(indentation) 레벨을 의미합니다.
+			writeData.close();
+		}
+		else
+		{
+			assert(!"파일 쓰기 실패");
+		}
+	}
+
+	std::filesystem::path LoaderHelpaer::CorrectPathCharacters(const std::filesystem::path& path)
+	{
+		std::string stringPath = path.string();
+
+		std::vector<char> checkedCharacters =
+		{
+			'|',
+		};
+
+		bool bIsBreak = false;
+		for (char& ch : stringPath)
+		{
+			for (const char& checkedCh : checkedCharacters)
+			{
+				if (ch == checkedCh)
+				{
+					ch = ' ';
+					break;
+				}
+			}
+		}
+
+		return stringPath;
 	}
 }

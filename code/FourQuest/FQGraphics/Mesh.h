@@ -18,9 +18,14 @@ namespace fq::graphics
 		virtual ~MeshBase() = 0 {};
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device);
+		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, std::shared_ptr<D3D11VertexBuffer> uvBuffer);
 		void Draw(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex);
+		void DrawInstanced(const std::shared_ptr<D3D11Device>& d3d11Device, size_t subsetIndex, size_t instanceCount);
 
 		inline const fq::common::Mesh& GetMeshData() const;
+
+		std::shared_ptr<D3D11VertexBuffer> GetSharedVertexBuffer() const { return mVertexBuffer; }
+		std::shared_ptr<D3D11IndexBuffer> GetSharedIndexBuffer() const { return mIndexBuffer; }
 
 	protected:
 		fq::common::Mesh mMeshData;
@@ -33,18 +38,37 @@ namespace fq::graphics
 		return mMeshData;
 	}
 
-	class StaticMesh : public MeshBase, public IStaticMesh
+	class StaticMesh : public IStaticMesh, public MeshBase
 	{
 	public:
-		StaticMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
+		StaticMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData);
 		virtual ~StaticMesh() = default;
+
+		virtual void* GetVertexBuffer() override;
+		virtual void* GetIndexBuffer() override;
+
+		virtual const fq::common::Mesh& GetMeshData() const override { return mMeshData; }
+
+		virtual EStaticMeshType GetStaticMeshType() const override { return mStaticMeshType; }
+
+	private:
+		std::shared_ptr<D3D11Device> mDevice;
+		EStaticMeshType mStaticMeshType;
 	};
 
-	class SkinnedMesh : public MeshBase, public ISkinnedMesh
+	class SkinnedMesh : public ISkinnedMesh, public MeshBase
 	{
 	public:
-		SkinnedMesh(const std::shared_ptr<D3D11Device>& device, const fq::common::Mesh& meshData);
+		SkinnedMesh(std::shared_ptr<D3D11Device> device, const fq::common::Mesh& meshData);
 		virtual ~SkinnedMesh() = default;
+
+		virtual void* GetVertexBuffer() override;
+		virtual void* GetIndexBuffer() override;
+
+		virtual const fq::common::Mesh& GetMeshData() const override { return mMeshData; }
+
+	private:
+		std::shared_ptr<D3D11Device> mDevice;
 	};
 
 	class TerrainMesh : public MeshBase

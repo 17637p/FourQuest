@@ -3,6 +3,8 @@
 #include "GameProcess.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/Decal.h"
+#include "../FQGameModule/Transform.h"
 
 fq::game_engine::DecalSystem::DecalSystem()
 	:mGameProcess(nullptr)
@@ -113,9 +115,11 @@ void fq::game_engine::DecalSystem::loadDecal(fq::game_module::GameObject* object
 
 	auto decal = object->GetComponent<fq::game_module::Decal>();
 	auto decalInfo = decal->GetDecalInfo();
-
-	auto decalObjectInterface = mGameProcess->mGraphics->CreateDecalObject(decalInfo);
+	fq::graphics::DecalMaterialInfo materialInfo = decal->GetDecalMaterialInfo();
+	auto material = mGameProcess->mGraphics->CreateDecalMaterial(materialInfo);
+	auto decalObjectInterface = mGameProcess->mGraphics->CreateDecalObject(material, decalInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	decal->SetDecalObjectInterface(decalObjectInterface);
+	decal->SetDecalMaterial(material);
 }
 
 void fq::game_engine::DecalSystem::unloadDecal(fq::game_module::GameObject* object)

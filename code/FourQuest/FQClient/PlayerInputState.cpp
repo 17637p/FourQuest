@@ -1,6 +1,8 @@
 #include "PlayerInputState.h"
 
 #include "../FQGameModule/GameModule.h"
+#include "../FQGameModule/CharacterController.h"
+#include "Player.h"
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::PlayerInputState::Clone()
 {
@@ -17,7 +19,6 @@ void fq::client::PlayerInputState::OnStateUpdate(game_module::Animator& animator
 {
 	auto controller = animator.GetComponent<game_module::CharacterController>();
 	auto controllerID = controller->GetControllerID();
-
 	auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 
 	if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::Tap))
@@ -27,16 +28,19 @@ void fq::client::PlayerInputState::OnStateUpdate(game_module::Animator& animator
 
 	if (input->IsPadKeyState(controllerID, EPadKey::Y, EKeyState::Tap))
 	{
-		animator.SetParameterTrigger("PushY");
+		auto player = animator.GetComponent<Player>();
+
+		if (player->CanUseSoulAttack())
+			animator.SetParameterTrigger("PushY");
 	}
 }
 
 void fq::client::PlayerInputState::OnStateEnter(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
+	animator.SetParameterOffTrigger("PushX");
+	animator.SetParameterOffTrigger("PushY");
 }
 
 void fq::client::PlayerInputState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
 {
-
 }

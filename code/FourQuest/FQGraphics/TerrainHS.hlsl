@@ -60,13 +60,27 @@ bool AabbOutsideFrustumTest(float3 center, float3 extents, float4 frustumPlanes[
     return false;
 }
 
+//float CalcTessFactor(float3 p)
+//{
+//    float d = distance(p, gEyePosW);
+//    
+//    float s = saturate((d - gMinDist) / (gMaxDist - gMinDist));
+//
+//    return pow(2, (lerp(gMaxTess, gMinTess, s)));
+//}
+
 float CalcTessFactor(float3 p)
 {
     float d = distance(p, gEyePosW);
     
     float s = saturate((d - gMinDist) / (gMaxDist - gMinDist));
 
-    return pow(2, (lerp(gMaxTess, gMinTess, s)));
+    float t = 2;
+    t = pow(2.0f, (lerp(gMaxTess, gMinTess, s)));
+    
+    //return pow(0.5f, (lerp(gMaxTess, gMinTess, s)));
+    // 이게 optimize가 되면서 t 가 아무 연산도 안하면 계산이 안되는 거 같다. 왜??? 반환해야되는데??
+    return t + 1;
 }
 
 PatchTess ConstantHS(InputPatch<VertexOut, 4> patch, uint patchID : SV_PrimitiveID)
@@ -107,8 +121,15 @@ PatchTess ConstantHS(InputPatch<VertexOut, 4> patch, uint patchID : SV_Primitive
         pt.EdgeTess[1] = CalcTessFactor(e1);
         pt.EdgeTess[2] = CalcTessFactor(e2);
         pt.EdgeTess[3] = CalcTessFactor(e3);
-
+        
         pt.InsideTess[0] = CalcTessFactor(c);
+
+        //pt.EdgeTess[0] = 50;
+        //pt.EdgeTess[1] = 50;
+        //pt.EdgeTess[2] = 50;
+        //pt.EdgeTess[3] = 50;
+        //
+        //pt.InsideTess[0] = 50;
         pt.InsideTess[1] = pt.InsideTess[0];
 
         return pt;

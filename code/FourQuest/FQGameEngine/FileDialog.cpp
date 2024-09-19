@@ -3,7 +3,10 @@
 #include <imgui.h>
 #include <string>
 #include <algorithm>
-#include <directxtk/WICTextureLoader.h>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <regex>
 
 #include "imgui_stdlib.h"
 #include "../FQReflect/FQReflect.h"
@@ -14,6 +17,7 @@
 #include "EditorProcess.h"
 #include "WindowSystem.h"
 #include "ModelSystem.h"
+#include "ImageSystem.h"
 
 namespace fs = std::filesystem;
 
@@ -22,13 +26,13 @@ fq::game_engine::FileDialog::FileDialog()
 	, mSelectPath{}
 	, mDragDropPath{}
 	, mbIsOpen{ true }
-	, mTextures{}
-	, mIconTexture{}
 	, mDevice(nullptr)
 	, mIconSize{ 100.f,100.f }
 	, mEditorProcess(nullptr)
 	, mGameProcess(nullptr)
-	,mbIsFindAllDirectory(false)
+	, mbIsFindAllDirectory(false)
+	, mImageSystem(nullptr)
+	, mFileSearch{}
 {}
 
 fq::game_engine::FileDialog::~FileDialog()
@@ -57,15 +61,13 @@ void fq::game_engine::FileDialog::Initialize(GameProcess* game, EditorProcess* e
 	mResourcePath = fq::path::GetResourcePath();
 	mSelectPath = mResourcePath;
 	mDevice = mGameProcess->mGraphics->GetDivice();
+	mImageSystem = mEditorProcess->mImageSystem.get();
 
-	loadIcon();
 	clearGarbage();
 }
 
 void fq::game_engine::FileDialog::Finalize()
 {
-	clearTexture();
-	clearIconTexture();
 }
 
 void fq::game_engine::FileDialog::beginWindow_FilePathWindow()
@@ -134,7 +136,7 @@ void fq::game_engine::FileDialog::beginDirectory(const Path& path)
 
 		if (ImGui::TreeNode(treeName.c_str()))
 		{
-			for (const auto& directory : directoryList )
+			for (const auto& directory : directoryList)
 			{
 				// ignore
 				if (directory.filename() == ".svn"
@@ -163,17 +165,17 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 		beginPopupContextWindow_FileList();
 
 		// 현재 폴더 경로 
-		ImGui::Text(mSelectPath.string().c_str());
+		ImGui::InputText("Search", &mFileSearch);
+
 		ImGui::Separator();
 
 		// ignore 파일 제거
-
 		std::vector<std::filesystem::path> directoryList;
 
 		if (mbIsFindAllDirectory)
 		{
 			directoryList = fq::path::GetFileListRecursive(mResourcePath);
-		
+
 			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
 				[](const std::filesystem::path& path)
 				{
@@ -199,6 +201,7 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 					}
 					return true;
 				}), directoryList.end());
+
 		}
 		else // 폴더 
 		{
@@ -226,6 +229,20 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 				});
 		}
 
+		// 파일 검색 쿼리 
+		if (!mFileSearch.empty())
+		{
+			directoryList.erase(std::remove_if(directoryList.begin(), directoryList.end(),
+				[this](const auto path)
+				{
+					if (path.string().find(mFileSearch) == std::string::npos)
+					{
+						return true;
+					}
+					return false;
+				}), directoryList.end());
+		}
+
 		float fileSpaceX = mIconSize.x * 1.25f;
 		float fileSpaceY = mIconSize.x * 1.25f + ImGui::GetFontSize();
 
@@ -251,29 +268,6 @@ void fq::game_engine::FileDialog::beginWindow_FileList()
 	beginDragDropTarget_FileList();
 }
 
-ID3D11ShaderResourceView* fq::game_engine::FileDialog::loadTexture(const Path& path)
-{
-	ID3D11ShaderResourceView* texture = nullptr;
-
-	DirectX::CreateWICTextureFromFile(mDevice, path.c_str(),
-		nullptr, &texture);
-
-	return texture;
-}
-
-void fq::game_engine::FileDialog::loadIcon()
-{
-	Path iconPath = mResourcePath;
-	iconPath += "\\internal\\icon";
-
-	auto iconList = fq::path::GetFileList(iconPath);
-
-	for (const Path& path : iconList)
-	{
-		auto* texture = loadTexture(path);
-		mIconTexture.insert({ path.filename() ,texture });
-	}
-}
 
 void fq::game_engine::FileDialog::drawFile(const Path& path)
 {
@@ -284,7 +278,7 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	{
 		ImVec2 min = ImGui::GetCursorScreenPos();
 		ImVec2 max = { min.x + mIconSize.x, min.y + mIconSize.y };
-		ImGui::Image(GetIcon(L"folder.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"folder.png"), mIconSize);
 
 		if (isMouseHoveringRect(min, max)
 			&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -294,39 +288,50 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 	}
 	else if (extension == ".fbx")
 	{
-		ImGui::Image(GetIcon(L"fbx.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"fbx.png"), mIconSize);
 	}
 	else if (extension == ".json")
 	{
-		ImGui::Image(GetIcon(L"json.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"json.png"), mIconSize);
 	}
 	else if (extension == ".mp3")
 	{
-		ImGui::Image(GetIcon(L"mp3.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"mp3.png"), mIconSize);
 	}
 	else if (extension == ".wav")
 	{
-		ImGui::Image(GetIcon(L"wav.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"wav.png"), mIconSize);
 	}
 	else if (extension == ".prefab")
 	{
-		ImGui::Image(GetIcon(L"prefab.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"prefab.png"), mIconSize);
 	}
 	else if (extension == ".png" || extension == ".jpg")
 	{
-		drawTextureImage(path);
+		mImageSystem->DrawTextureImage(path, mIconSize);
 	}
 	else if (extension == ".model")
 	{
-		ImGui::Image(GetIcon(L"model.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"model.png"), mIconSize);
 	}
 	else if (extension == ".controller")
 	{
-		ImGui::Image(GetIcon(L"controller.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"controller.png"), mIconSize);
+	}
+	else if (extension == ".animation")
+	{
+		if (path.string().find("5") == std::string::npos)
+			ImGui::Image(mImageSystem->GetIcon(L"animation.png"), mIconSize);
+		else
+			ImGui::Image(mImageSystem->GetIcon(L"animation2.jpg"), mIconSize);
+	}
+	else if (extension == ".nodeHierachy")
+	{
+		ImGui::Image(mImageSystem->GetIcon(L"nodeHierachy.png"), mIconSize);
 	}
 	else
 	{
-		ImGui::Image(GetIcon(L"error.png"), mIconSize);
+		ImGui::Image(mImageSystem->GetIcon(L"error.png"), mIconSize);
 	}
 
 	beginPopupContextItem_File(path);
@@ -344,24 +349,12 @@ void fq::game_engine::FileDialog::drawFile(const Path& path)
 		&& mEditorProcess->mInputManager->IsKeyState(EKey::Enter, EKeyState::Tap))
 	{
 		fs::path newFileName = path.parent_path();
-		newFileName += "//" + fileName;
+		newFileName /= fileName;
 
-		fs::rename(path, newFileName);
+		changeDirectoryPath(path, newFileName);
 	}
 
 	ImGui::PopItemWidth();
-}
-
-ID3D11ShaderResourceView* fq::game_engine::FileDialog::GetIcon(const std::wstring& name)
-{
-	auto iter = mIconTexture.find(name);
-
-	if (iter == mIconTexture.end())
-	{
-		return mIconTexture[L"error.png"];
-	}
-
-	return iter->second;
 }
 
 void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
@@ -394,60 +387,12 @@ void fq::game_engine::FileDialog::beginDragDrop_File(const Path& path)
 				// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
 				fs::path newPath = path / dropPath->filename();
 
-				if (!fs::exists(newPath))
-					fs::rename(*dropPath, newPath);
+				changeDirectoryPath(*dropPath, newPath);
 			}
 		}
 		ImGui::EndDragDropTarget();
 	}
 
-}
-
-void fq::game_engine::FileDialog::drawTextureImage(const Path& path)
-{
-	auto iter = mTextures.find(path);
-
-	ID3D11ShaderResourceView* texture = nullptr;
-
-	if (iter == mTextures.end())
-	{
-		texture = loadTexture(path);
-		mTextures.insert({ path, texture });
-	}
-	else
-	{
-		texture = iter->second;
-	}
-	ImGui::Image(texture, mIconSize);
-}
-
-void fq::game_engine::FileDialog::clearTexture()
-{
-	for (auto& [path, texture] : mTextures)
-	{
-		if (texture)
-		{
-			texture->Release();
-			texture = nullptr;
-		}
-	}
-
-	mTextures.clear();
-}
-
-
-void fq::game_engine::FileDialog::clearIconTexture()
-{
-	for (auto& [path, texture] : mIconTexture)
-	{
-		if (texture)
-		{
-			texture->Release();
-			texture = nullptr;
-		}
-	}
-
-	mIconTexture.clear();
 }
 
 bool fq::game_engine::FileDialog::isMouseHoveringRect(const ImVec2& min, const ImVec2& max)
@@ -492,6 +437,26 @@ void fq::game_engine::FileDialog::beginPopupContextWindow_FileList()
 			loader.Save(controller, controllerPath);
 		}
 
+		if (ImGui::MenuItem("Create Material"))
+		{
+			auto materialPath = mSelectPath;
+			materialPath /= "NewMaterial.material";
+
+			fq::game_module::AnimatorController controller;
+			fq::game_module::AnimatorControllerLoader loader;
+
+			int index = 0;
+			while (fs::exists(materialPath))
+			{
+				++index;
+				Path newFileName = "NewMaterial";
+				newFileName += std::to_string(index) + ".material";
+				materialPath.replace_filename(newFileName);
+			}
+
+			mGameProcess->mGraphics->WriteMaterialInfo(materialPath.string(), {});
+		}
+
 
 		ImGui::EndPopup();
 	}
@@ -519,7 +484,6 @@ void fq::game_engine::FileDialog::beginDragDropTarget_FileList()
 void fq::game_engine::FileDialog::selectPath(Path path)
 {
 	mSelectPath = path;
-	clearTexture();
 }
 
 void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryPath)
@@ -536,7 +500,8 @@ void fq::game_engine::FileDialog::beginDragDrop_Directory(const Path& directoryP
 			// dropPath 파일을 path 안으로 넣는다.
 			// 드랍된 파일의 경로를 새로운 경로로 이동시킵니다.
 			fs::path newPath = directoryPath / dropPath->filename();
-			fs::rename(*dropPath, newPath);
+
+			changeDirectoryPath(*dropPath, newPath);
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -563,13 +528,105 @@ void fq::game_engine::FileDialog::beginPopupContextItem_File(const Path& path)
 
 		if (path.extension() == ".fbx")
 		{
-			if (ImGui::MenuItem("Convert"))
-			{
-				std::wstring fileName = path.filename();
-				fileName = fileName.substr(0, fileName.size() - 4);
+			auto createDirectory = [&path]()
+				{
+					std::wstring fileName = path.filename();
+					fileName = fileName.substr(0, fileName.size() - 4);
+					fs::path directory = path.parent_path() / fileName;
 
-				fs::path directory = path.parent_path() / fileName;
-				mGameProcess->mGraphics->ConvertModel(path.string(), directory.string());
+					// model 폴더 생성 
+					if (!fs::exists(directory))
+					{
+						fs::create_directory(directory);
+					}
+
+					return std::tuple{ directory, fileName };
+				};
+
+			auto gameProcess = mGameProcess;
+
+			auto createModel = [&gameProcess, &path](auto directory, auto fileName, const auto& modelData)
+				{
+					gameProcess->mGraphics->WriteModel((directory / fileName).string(), modelData);
+				};
+
+			auto createAnimation = [&gameProcess, &path, this](auto directory, const auto& modelData)
+				{
+					for (const auto& animation : modelData.Animations)
+					{
+						auto path = directory / removeInvalidCharacters(animation.Name);
+						path += ".animation";
+						gameProcess->mGraphics->WriteAnimation(path.string(), animation);
+					}
+				};
+
+			auto createNodeHierarchy = [&gameProcess, &path, this](auto directory, auto fileName, const auto& modelData)
+				{
+					{
+						auto path = directory / fileName;
+						path += ".nodeHierachy";
+						mGameProcess->mGraphics->WriteNodeHierarchy(path.string(), modelData);
+					}
+				};
+
+			auto createMaterial = [&gameProcess](auto directory, const auto& modelData)
+				{
+					// material 생성
+					for (const auto& material : modelData.Materials)
+					{
+						using namespace fq::graphics;
+
+						MaterialInfo materialInfo;
+
+						materialInfo.BaseColor = material.BaseColor;
+						materialInfo.Metalness = material.Metalness;
+						materialInfo.Roughness = material.Roughness;
+
+						std::filesystem::path texturePath = fq::path::GetResourcePath() / "Texture";
+
+						if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = texturePath / material.BaseColorFileName;
+						if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = texturePath / material.MetalnessFileName;
+						if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = texturePath / material.RoughnessFileName;
+						if (material.NormalFileName != L"") materialInfo.NormalFileName = texturePath / material.NormalFileName;
+						if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = texturePath / material.EmissiveFileName;
+
+						auto materialPath = (directory / material.Name).string() + ".material";
+						gameProcess->mGraphics->WriteMaterialInfo(materialPath, materialInfo);
+					}
+				};
+
+			if (ImGui::MenuItem("ConvertAll"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createAnimation(directory, modelData);
+				createModel(directory, filename, modelData);
+				createNodeHierarchy(directory, filename, modelData);
+				createMaterial(directory, modelData);
+			}
+			if (ImGui::MenuItem("ConvertAnimation"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createAnimation(directory, modelData);
+			}
+			if (ImGui::MenuItem("ConvertMaterial"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createMaterial(directory, modelData);
+			}
+			if (ImGui::MenuItem("ConvertModel"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createModel(directory, filename, modelData);
+			}
+			if (ImGui::MenuItem("ConvertNodeHierarchy"))
+			{
+				auto [directory, filename] = createDirectory();
+				auto modelData = gameProcess->mGraphics->ConvertModel(path.string());
+				createNodeHierarchy(directory, filename, modelData);
 			}
 		}
 
@@ -615,7 +672,8 @@ void fq::game_engine::FileDialog::ProcessWindowDropFile()
 			fileName = fileName.substr(0, fileName.size() - 4);
 
 			fs::path directory = target.parent_path() / fileName;
-			mGameProcess->mGraphics->ConvertModel(target.string(), directory.string());
+			auto modelData = mGameProcess->mGraphics->ConvertModel(target.string());
+			mGameProcess->mGraphics->WriteModel(directory.string(), modelData);
 		}
 	}
 
@@ -685,5 +743,91 @@ void fq::game_engine::FileDialog::beginFavorite()
 		ImGui::TreePop();
 	}
 
+}
+
+void fq::game_engine::FileDialog::changeDirectoryPath(Path prev, Path current)
+{
+	fs::rename(prev, current);
+
+	//mEditorProcess->mMainMenuBar->SaveScene();
+
+	//// 리소스 경로의 prefab을 가져옵니다
+	//auto fileList = fq::path::GetFileListRecursive(fq::path::GetResourcePath());
+
+	//fileList.erase(std::remove_if(fileList.begin(), fileList.end(),
+	//	[](Path path)
+	//	{
+	//		if (path.extension() == ".prefab"
+	//			|| path.extension() == ".controller")
+	//		{
+	//			return false;
+	//		}
+	//		return true;
+
+	//	}), fileList.end());
+
+	//auto prevRelativePath = fq::path::GetRelativePath(prev).string();
+	//auto currntRelativePath = fq::path::GetRelativePath(current).string();
+
+	//// 문자열 변환
+	//size_t pos = 0;
+
+	//while ((pos = prevRelativePath.find("\\", pos)) != std::string::npos)
+	//{
+	//	prevRelativePath.replace(pos, std::string("\\").length(), "\\\\");
+	//	pos += std::string("\\\\").length();
+	//}
+	//pos = 0;
+
+	//while ((pos = currntRelativePath.find("\\", pos)) != std::string::npos)
+	//{
+	//	currntRelativePath.replace(pos, std::string("\\").length(), "\\\\");
+	//	pos += std::string("\\\\").length();
+	//}
+
+	//// 파일 쓰기
+	//for (auto& file : fileList)
+	//{
+	//	// 파일 읽기
+	//	std::ifstream inFille(file);
+
+	//	std::stringstream buffer;
+	//	buffer << inFille.rdbuf();
+	//	std::string fileContent = buffer.str();
+
+	//	inFille.close();
+
+	//	// 문자열 변환
+	//	size_t pos = 0;
+
+	//	while ((pos = fileContent.find(prevRelativePath, pos)) != std::string::npos)
+	//	{
+	//		fileContent.replace(pos, prevRelativePath.length(), currntRelativePath);
+	//		pos += currntRelativePath.length();
+	//	}
+
+	//	// 파일 쓰기
+	//	std::ofstream outFile(file);
+	//	outFile << fileContent;
+	//	outFile.close();
+	//}
+
+	//auto currentSceneName = mGameProcess->mSceneManager->GetCurrentScene()->GetSceneName();
+	//mGameProcess->mEventManager->FireEvent<fq::event::RequestChangeScene>({ currentSceneName, false });
+}
+
+std::string fq::game_engine::FileDialog::removeInvalidCharacters(const std::string& input)
+{
+	// 금지된 문자 리스트
+	const std::string invalidChars = "\\/:*?\"<>|";
+	std::string result = input;
+
+	// std::remove_if와 lambda를 사용하여 금지된 문자 제거
+	result.erase(std::remove_if(result.begin(), result.end(),
+		[&invalidChars](char c) {
+			return invalidChars.find(c) != std::string::npos;
+		}), result.end());
+
+	return result;
 }
 

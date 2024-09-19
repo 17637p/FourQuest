@@ -1,14 +1,46 @@
 #include "StaticMeshRenderer.h"
 
+#include "Scene.h"
+#include "EventManager.h"
+#include "Event.h"
 
 fq::game_module::StaticMeshRenderer::StaticMeshRenderer()
-	:mStaticMeshObject(nullptr)
+	: mIsNavigationMeshUsed(false)
+	, mStaticMeshObject(nullptr)
 	, mMeshInfomation{}
-	, mOutlineColor{0.f,0.f,0.f,0.f}
-{}
-
-fq::game_module::StaticMeshRenderer::~StaticMeshRenderer()
+	, mModelPath{}
+	, mMeshName{}
+	, mMaterialNames{}
+	, mMaterialInfos{}
+	, mMaterialInterfaces{}
+	, mMaterialPaths{}
+	, mLightmapScaleOffset{}
+	, mLightmapIndex(-1)
+	, mbIsStatic{ false }
+	, mPrevApplyTransform{}
+	, mbIsRender{ true }
+	, mMaterialInstanceInfo{}
 {
+}
+
+void fq::game_module::StaticMeshRenderer::SetIsRender(bool bIsRender)
+{
+	mbIsRender = bIsRender;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetIsRender(mbIsRender);
+	}
+}
+
+void fq::game_module::StaticMeshRenderer::SetMaterialInstanceInfo(const fq::graphics::MaterialInstanceInfo& info)
+{
+	mMaterialInstanceInfo = info;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMaterialInstanceInfo(mMaterialInstanceInfo);
+	}
 }
 
 entt::meta_handle fq::game_module::StaticMeshRenderer::GetHandle()
@@ -35,32 +67,71 @@ std::shared_ptr<fq::game_module::Component> fq::game_module::StaticMeshRenderer:
 	return cloneMesh;
 }
 
-void fq::game_module::StaticMeshRenderer::SetModelPath(std::string path)
+void fq::game_module::StaticMeshRenderer::SetMaterialInterfaces(std::vector<std::shared_ptr<fq::graphics::IMaterial>> materialInterfaces)
 {
-	mMeshInfomation.ModelPath = path;
+	mMaterialInterfaces = materialInterfaces;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMaterials(mMaterialInterfaces);
+	}
 }
 
-void fq::game_module::StaticMeshRenderer::SetMeshName(std::string name)
+void fq::game_module::StaticMeshRenderer::SetMeshObjectInfomation(const fq::graphics::MeshObjectInfo& info)
 {
-	mMeshInfomation.MeshName = name;
+	mMeshInfomation = info;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMeshObjectInfo(mMeshInfomation);
+	}
 }
 
-void fq::game_module::StaticMeshRenderer::SetMeshObjectInfomation(fq::graphics::MeshObjectInfo info)
-{
-	mMeshInfomation = std::move(info);
 
+void fq::game_module::StaticMeshRenderer::SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset)
+{
+	mLightmapScaleOffset = scaleOffset;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetLightmapUVScaleOffset(mLightmapScaleOffset);
+	}
 }
 
-void fq::game_module::StaticMeshRenderer::SetMaterials(std::vector<std::string> materials)
+const DirectX::SimpleMath::Vector4& fq::game_module::StaticMeshRenderer::GetLightmapUVScaleOffset() const
 {
-	mMeshInfomation.MaterialNames = std::move(materials);
+	return mLightmapScaleOffset;
 }
 
-void fq::game_module::StaticMeshRenderer::SetOutlineColor(DirectX::SimpleMath::Color color)
+void fq::game_module::StaticMeshRenderer::SetLightmapIndex(unsigned int lightmapIndex)
 {
-	mOutlineColor = color;
+	mLightmapIndex = lightmapIndex;
 
-	if (mStaticMeshObject)
-		mStaticMeshObject->SetOutlineColor(mOutlineColor);
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetLightmapIndex(mLightmapIndex);
+	}
 }
 
+int fq::game_module::StaticMeshRenderer::GetLightmapIndex() const
+{
+	return mLightmapIndex;
+}
+
+void fq::game_module::StaticMeshRenderer::SetIsStatic(bool bIsStatic)
+{
+	using namespace fq::graphics;
+
+	mbIsStatic = bIsStatic;
+	mMeshInfomation.ObjectType = mbIsStatic ? MeshObjectInfo::EObjectType::Static : MeshObjectInfo::EObjectType::Dynamic;
+
+	if (mStaticMeshObject != nullptr)
+	{
+		mStaticMeshObject->SetMeshObjectInfo(mMeshInfomation);
+	}
+}
+
+bool fq::game_module::StaticMeshRenderer::GetIsStatic() const
+{
+	return mbIsStatic;
+}

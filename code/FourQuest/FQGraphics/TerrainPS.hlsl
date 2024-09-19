@@ -49,19 +49,29 @@ cbuffer cbLight : register(b1)
 
 cbuffer cbDirectionalShadow : register(b2)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 }
+
+cbuffer cbLightmapInformation : register(b3)
+{
+    float4 cUVOffsetScale;
+    uint cUVIndex;
+    bool bUseLightmap;
+    bool bUseDirectMap;
+};
 
 float gTexelCellSpaceU;
 float gTexelCellSpaceV;
 
 float gWorldCellSpace;
 
-SamplerState gSamplerAnisotropic : register(s0); 
+SamplerState gSamplerAnisotropic : register(s0);
 SamplerComparisonState gShadowSampler : register(s1);
-SamplerState samHeightmap : register(s2); 
+SamplerState samHeightmap : register(s2);
+SamplerState gPointWrap : register(s3); //	D3D11_FILTER_POINT, D3D11_TEXTURE_ADDRESS_WRAP
+SamplerState gLinearWrap : register(s4); //	D3D11_FILTER_Linear, D3D11_TEXTURE_ADDRESS_WRAP
 
 Texture2D gAlbedoMap[4] : register(t0);
 //Texture2D gAlbedoMap2 : register(t1);
@@ -87,8 +97,36 @@ Texture2D gAlphaMap : register(t16);
 Texture2D gHeightMap : register(t17);
 Texture2DArray gDirectionalShadowMap : register(t18);
 
-float4 main(DomainOut pin) : SV_TARGET
+Texture2DArray gLightMapArray : register(t19);
+Texture2DArray gDirectionArray : register(t20);
+
+#ifdef DEFERRED
+
+struct PixelOut
 {
+    float4 Albedo : SV_Target0;
+    float2 MetalnessRoughness : SV_Target1;
+    float4 Normal : SV_Target2;
+    float4 Emissive : SV_Target3;
+    float4 PositionW : SV_Target4;
+    float4 SourceNormal : SV_Target5;
+    float4 SourceTangent : SV_Target6;
+    float4 Light : SV_Target7;
+};
+
+#else
+
+struct PixelOut
+{
+    float4 Color : SV_TARGET;
+};
+    
+#endif
+
+PixelOut main(DomainOut pin)
+{
+    PixelOut pout = (PixelOut) 0;
+    
     float2 leftTex = pin.UV + float2(-gTexelCellSpaceU, 0.0f);
     float2 rightTex = pin.UV + float2(gTexelCellSpaceU, 0.0f);
     float2 bottomTex = pin.UV + float2(0.0f, gTexelCellSpaceV);
@@ -102,6 +140,8 @@ float4 main(DomainOut pin) : SV_TARGET
     float3 tangent = normalize(float3(2.0f * gWorldCellSpace, rightY - leftY, 0.0f));
     float3 bitan = normalize(float3(0.0f, bottomY - topY, -2.0f * gWorldCellSpace));
     float3 normalW = cross(tangent, bitan);
+    
+    
     //float3 albedo = float3(1.f, 1.f, 1.f);
     //
     //if (cUseAlbedoMap)
@@ -131,18 +171,18 @@ float4 main(DomainOut pin) : SV_TARGET
     //    normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     //}   
     // 텍스처 블렌딩
-    float3 resultAlbedo = {0, 0, 0};
-    float3 resultNormal = {0, 0, 0};
+    float3 resultAlbedo = { 0, 0, 0 };
+    float3 resultNormal = { 0, 0, 0 };
     float3 resultMetalic = 0;
     float3 resultRoughness = 0;
     float4 alpha = pow(gAlphaMap.Sample(gSamplerAnisotropic, pin.UV), 1);
 
     float2 tileUV[4];
     
-    for(unsigned int i = 0; i < NumOfTexture; i++)
+    for (unsigned int i = 0; i < NumOfTexture; i++)
     {
         tileUV[i].x = (layers[i].TileOffsetX + pin.UV.x) * layers[i].TileSizeX;
-        tileUV[i].y = (layers[i].TileOffsetY + pin.UV.y) * layers[i].TileSizeY;   
+        tileUV[i].y = (layers[i].TileOffsetY + pin.UV.y) * layers[i].TileSizeY;
     }
 
     float3 albedo4 = pow(gAlbedoMap[3].Sample(gSamplerAnisotropic, tileUV[3]), 2.2);
@@ -159,28 +199,28 @@ float4 main(DomainOut pin) : SV_TARGET
     float3 normal1 = gNormalMap[0].Sample(gSamplerAnisotropic, tileUV[0]);
     normal1 = normalize(NormalSampleToWorldSpace(normal1, pin.NormalW, pin.TangentW));
 
-    if(NumOfTexture > 3)
+    if (NumOfTexture > 3)
     {
         resultAlbedo += albedo4 * alpha.a;
         resultNormal += normal4 * alpha.a;
         resultMetalic += layers[3].Metalic * alpha.a;
         resultRoughness += layers[3].Roughness * alpha.a;
     }
-    if(NumOfTexture > 2)
+    if (NumOfTexture > 2)
     {
         resultAlbedo += albedo3 * alpha.b;
         resultNormal += normal3 * alpha.b;
         resultMetalic += layers[2].Metalic * alpha.b;
         resultRoughness += layers[2].Roughness * alpha.b;
     }
-    if(NumOfTexture > 1)
+    if (NumOfTexture > 1)
     {
         resultAlbedo += albedo2 * alpha.g;
         resultNormal += normal2 * alpha.g;
         resultMetalic += layers[1].Metalic * alpha.g;
         resultRoughness += layers[1].Roughness * alpha.g;
     }
-    if(NumOfTexture > 0)
+    if (NumOfTexture > 0)
     {
         resultAlbedo += albedo1 * alpha.r;
         resultNormal += normal1 * alpha.r;
@@ -188,9 +228,46 @@ float4 main(DomainOut pin) : SV_TARGET
         resultRoughness += layers[0].Roughness * alpha.r;
     }
 
-    resultAlbedo = pow(resultAlbedo, 1/2.2);
     resultNormal = normalize(resultNormal);
+    
+#ifdef DEFERRED
+    pout.Normal.xyz = resultNormal;
+    pout.Albedo.xyz = resultAlbedo;
+    pout.Albedo.w = 1.f;
+    pout.MetalnessRoughness.x = resultMetalic;
+    pout.MetalnessRoughness.y = resultRoughness;
+    pout.Emissive = float4(0.f, 0.f, 0.f, 0.f);
+    pout.SourceNormal.xyz = pin.NormalW;
+    pout.SourceTangent.xyz = pin.TangentW;
+    pout.PositionW.xyz = pin.PositionW;
+    pout.PositionW.w = pin.ClipSpacePosZ;
+ 
+    if (bUseLightmap)
+    {
+        float2 lightmapUV = pin.UV;
+        
+        lightmapUV.y = 1 - lightmapUV.y;
+        lightmapUV = lightmapUV * cUVOffsetScale.xy + cUVOffsetScale.zw;
+        lightmapUV.y = 1 - lightmapUV.y;
+        
+        pout.Light = gLightMapArray.Sample(gLinearWrap, float3(lightmapUV, cUVIndex));
 
+        if (bUseDirectMap)
+        {
+            float4 direction = gDirectionArray.Sample(gPointWrap, float3(lightmapUV, cUVIndex));
+            direction.xyz = direction.xyz * 2 - 1;
+            direction.x = -direction.x;
+            direction.z = -direction.z;
+            float halfLambert = dot(resultNormal.xyz, direction.xyz) * 0.5 + 0.5;
+            pout.Light = pout.Light * halfLambert / max(1e-4, direction.w);
+        }
+    }
+    
+    return pout;
+#else
+    
+    resultAlbedo = pow(resultAlbedo, 1 / 2.2);
+    
     // 라이팅 
     float3 directLighting = 0.0;
     
@@ -225,7 +302,9 @@ float4 main(DomainOut pin) : SV_TARGET
                 }
  
                 uint shadowIndex = i * CascadeCount + index;
-                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[shadowIndex]);
+                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[shadowIndex]);
+                shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+                shadowPos.y = shadowPos.y * -0.5f + 0.5f;
                 shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, shadowIndex, ShadowMapWidth);
                 
                 currentDirectLighting *= shadowRatio;
@@ -274,7 +353,11 @@ float4 main(DomainOut pin) : SV_TARGET
     //}
    
     //result = pow(result, 1/2.2);
-    return float4(directLighting, 1.0f);
+    
+    pout.Color = float4(directLighting, 1.0f);
+    return pout;
     //return float4(resultAlbedo, 1.0f);
     //return float4(shadowRatio, 0, 0, 1.0f);
+#endif
 }
+

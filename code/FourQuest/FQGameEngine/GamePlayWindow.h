@@ -56,11 +56,26 @@ namespace fq::game_engine
 		void UpdateCamera(float dt);
 
 		/// <summary>
+		/// 현재 선택한 오브젝트의 파티클을 보여줍니다
+		/// </summary>
+		void UpdateParticle(float dt);
+
+		/// <summary>
 		/// 에디터 카메라가 타겟을 바라봅니다
 		/// </summary>
 		void LookAtTarget(DirectX::SimpleMath::Vector3 target);
 
 		void ExcutShortcut();
+
+		/// <summary>
+		/// 기즈모 그리기 함수 
+		/// SRT 행렬을 참조값을 받아서 기즈모가 움직이면 행렬값을 변환합니다
+		/// *** 그리지 않을 경우 호출하면 안됩니다 
+		/// </summary>
+		void DrawGizumo(DirectX::SimpleMath::Matrix& transform);
+
+		bool IsFocusedWindow()const { return mbIsFocused; }
+
 	private:
 		void resizeWindow(ImVec2 size);
 		void pickObject();
@@ -82,10 +97,12 @@ namespace fq::game_engine
 		bool mbIsOpen;
 		bool mbIsPauseGame;
 		bool mbIsMouseHoveredWindow;
+		bool mbIsFocused;
 
 		ImVec2 mWindowSize;
 		ImVec2 mViewportSize;
-		ImVec2 mImagePos;
+		ImVec2 mViewPortOffset;
+		ImVec2 mImagePos; 
 	
 		// 에디터 카메라
 		std::shared_ptr<fq::game_module::GameObject> mCameraObject;
@@ -95,12 +112,13 @@ namespace fq::game_engine
 		// 기즈모관련
 		DirectX::SimpleMath::Matrix mStart;
 		bool mbIsUsingGizumo;
+		bool mbAlreadyDrawGizumo;
 		ImGuizmo::OPERATION mOperation;
 		std::shared_ptr<fq::game_module::GameObject> mSelectObject;
 
-
 		// 이벤트 핸들
 		fq::game_module::EventHandler mSelectObjectHandler;
+		fq::game_module::EventHandler mSetScreenSizeHandler;
 	};
 
 

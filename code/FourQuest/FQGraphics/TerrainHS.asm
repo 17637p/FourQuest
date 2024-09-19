@@ -99,8 +99,10 @@ add r0.x, r0.x, -cb0[0].x
 add r0.yz, -cb0[0].xxwx, cb0[0].yyzy
 div_sat r0.x, r0.x, r0.y
 mad r0.x, r0.x, r0.z, cb0[0].w
-exp o[r0.y + 0].x, r0.x
+exp r0.x, r0.x
+add r0.x, r0.x, l(1.000000)
 mov r0.y, vForkInstanceID.x
+mov o[r0.y + 0].x, r0.x
 ret 
 hs_fork_phase 
 dcl_hs_fork_phase_instance_count 2
@@ -120,7 +122,9 @@ add r0.x, r0.x, -cb0[0].x
 add r0.yz, -cb0[0].xxwx, cb0[0].yyzy
 div_sat r0.x, r0.x, r0.y
 mad r0.x, r0.x, r0.z, cb0[0].w
-exp o[r0.y + 4].x, r0.x
+exp r0.x, r0.x
+add r0.x, r0.x, l(1.000000)
 mov r0.y, vForkInstanceID.x
+mov o[r0.y + 4].x, r0.x
 ret 
-// Approximately 29 instruction slots used
+// Approximately 33 instruction slots used

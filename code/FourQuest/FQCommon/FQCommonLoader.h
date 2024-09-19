@@ -4,6 +4,7 @@
 #include <string>
 #include <directxtk/SimpleMath.h>
 #include <DirectXCollision.h>
+#include <map>
 
 class aiMesh;
 
@@ -17,6 +18,7 @@ namespace fq::common
 		unsigned int Index = INVALID_INDEX;
 		unsigned int ParentIndex = INVALID_INDEX;
 		DirectX::SimpleMath::Matrix ToParentMatrix;
+		DirectX::SimpleMath::Matrix OffsetMatrix;
 	};
 
 	struct Bone
@@ -24,7 +26,7 @@ namespace fq::common
 		std::string Name;
 		unsigned int Index;
 		unsigned int ParentIndex;
-		DirectX::SimpleMath::Matrix BindposeMatrix;
+		DirectX::SimpleMath::Matrix ToParentMatrix;
 		DirectX::SimpleMath::Matrix OffsetMatrix;
 	};
 
@@ -81,6 +83,7 @@ namespace fq::common
 
 		std::string Name;
 		std::vector<Vertex> Vertices;
+		std::vector<DirectX::SimpleMath::Vector2> Tex1;
 		std::vector<BoneVertex> BoneVertices;
 		std::vector<BoundsYVertex> BoundsYVertices;
 		std::vector<unsigned int> Indices;
@@ -91,7 +94,16 @@ namespace fq::common
 		std::vector<Subset> Subsets;
 
 		DirectX::BoundingBox RenderBoundingBox;
-		DirectX::BoundingSphere GetRenderBoundingSphere;
+		DirectX::BoundingSphere RenderBoundingSphere;
+
+		struct DynamicData
+		{
+			std::string Name;
+			unsigned int Size;
+			unsigned int Count;
+			std::vector<char> Data;
+		};
+		std::map<std::string, DynamicData> DynamicInfos;
 	};
 
 	struct Material
@@ -140,5 +152,27 @@ namespace fq::common
 		std::vector<Material> Materials;
 		DirectX::BoundingBox RenderBoundingBox;
 		DirectX::BoundingSphere GetRenderBoundingSphere;
+	};
+
+	struct UVKeyframe
+	{
+		float TimePos;
+		DirectX::SimpleMath::Vector2 Translation = { 0.f, 0.f };
+		DirectX::SimpleMath::Vector2 Scale = { 1.f, 1.f };
+		float Rotation;
+	};
+
+	struct UVNodeClip
+	{
+		std::string NodeName;
+		std::vector<UVKeyframe> UVData;
+	};
+
+	struct UVAnimationClip
+	{
+		unsigned int FrameCount;
+		float FramePerSecond;
+		float Duration;
+		std::map<std::string, UVNodeClip> NodeClips;
 	};
 }

@@ -23,7 +23,7 @@ cbuffer cbModelTransform : register(b0)
 };
 
 Texture2D gHeightMap : register(t0);
-SamplerState samHeightmap : register(s0); 
+SamplerState samHeightmap : register(s0);
 
 VertexOut main(VertexIn vin)
 {
@@ -41,7 +41,7 @@ VertexOut main(VertexIn vin)
     vout.NormalW = normalize(mul(vin.NormalL, (float3x3) cWorldInvTranspose));
     vout.TangentW = normalize(mul(vin.TangentL, (float3x3) worldMat));
     vout.UV = vin.UV;
-    vout.BoundsY = vin.BoundsY;   
+    vout.BoundsY = vin.BoundsY;
 
     return vout;
 }

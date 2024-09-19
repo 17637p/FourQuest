@@ -26,13 +26,13 @@ namespace fq::physics
 		/// <param name="material"> PxController를 생성하기 위한 material </param>
 		/// <param name="collisionMatrix"> 충돌 매트릭스 </param>
 		/// <returns></returns>
-		virtual bool Initialize( const CharacterControllerInfo& info
+		virtual bool Initialize(const CharacterControllerInfo& info
 			, const CharacterMovementInfo& movementInfo
 			, physx::PxControllerManager* CCTManager
 			, physx::PxMaterial* material
 			, std::shared_ptr<CollisionData> collisionData
 			, int* collisionMatrix);
-		
+
 		/// <summary>
 		/// 입력 받은 입력 값을 가지고 이동하거나 점프하는 함수
 		/// </summary>
@@ -44,8 +44,9 @@ namespace fq::physics
 		/// 무브 키를 입력 받으면 mInputMove에 저장하는 함수
 		/// </summary>
 		/// <param name="input"> 이동하거나 점프를 하기 위해 입력 받는 키 값 (x,y,z) </param>
-		void AddMovementInput(const DirectX::SimpleMath::Vector3& input);
+		void AddMovementInput(const DirectX::SimpleMath::Vector3& input, bool isDynamic);
 
+		bool ChangeLayerNumber(const unsigned int& newLayerNumber, int* collisionMatrix, std::weak_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		inline physx::PxController* GetPxController();
 		inline const unsigned int& GetID();
@@ -53,12 +54,15 @@ namespace fq::physics
 		inline const std::shared_ptr<CharacterMovement> GetCharacterMovement();
 		inline void GetPosition(DirectX::SimpleMath::Vector3& position);
 		inline void SetPosition(const DirectX::SimpleMath::Vector3& position);
+		void SetMoveRestriction(std::array<bool,4> moveRestriction);
 
 	protected:
 		unsigned int mID;
 		unsigned int mLayerNumber;
 
 		DirectX::SimpleMath::Vector3 mInputMove;
+		bool mbIsDynamic;
+		std::array<bool,4> mbMoveRestriction;
 
 		std::shared_ptr<CharacterMovement> mCharacterMovement;
 
@@ -70,7 +74,6 @@ namespace fq::physics
 	};
 
 #pragma region GetSet
-
 	physx::PxController* CharacterController::GetPxController()
 	{
 		return mPxController;
@@ -91,7 +94,7 @@ namespace fq::physics
 	{
 		position.x = mPxController->getPosition().x;
 		position.y = mPxController->getPosition().y;
-		position.z = -mPxController->getPosition().z;
+		position.z = mPxController->getPosition().z;
 	}
 	void CharacterController::SetPosition(const DirectX::SimpleMath::Vector3& position)
 	{
@@ -99,10 +102,9 @@ namespace fq::physics
 
 		vector.x = position.x;
 		vector.y = position.y;
-		vector.z = -position.z;
+		vector.z = position.z;
 
 		mPxController->setPosition(vector);
 	}
-
 #pragma endregion
 }

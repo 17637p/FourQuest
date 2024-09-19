@@ -1,7 +1,8 @@
 #include "D3D11ModelManager.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "BoneHierarchy.h"
+#include "NodeHierarchy.h"
+#include "Animation.h"
 #include "../FQLoader/ModelLoader.h"
 #include "../FQLoader/ModelConverter.h"
 
@@ -13,55 +14,73 @@ namespace fq::graphics
 		mResourceManager = resourceManager;
 	}
 
-	void D3D11ModelManager::CheckUpdate()
-	{
-		for (auto& [key, materialInterface] : mMaterials)
-		{
-			if (!materialInterface->GetMaterialControllInfo().bTryLoadTexture)
-			{
-				continue;
-			}
-
-			materialInterface->loadTexture(mResourceManager);
-		}
-	}
-
 	void D3D11ModelManager::WriteModel(const std::string& fileName, const fq::common::Model& modelData)
 	{
 		fq::loader::ModelLoader::Write(modelData, fileName);
 	}
 
-	void D3D11ModelManager::ConvertModel(const std::string& fbxFile, const std::string& fileName)
+	fq::common::Model D3D11ModelManager::ReadModel(const std::string& path)
 	{
-		fq::loader::ModelConverter converter;
-		converter.ReadFBXFile(fbxFile);
-		fq::loader::ModelLoader::Write(converter.Convert(), fileName);
+		return fq::loader::ModelLoader::Read(path);
 	}
 
-	const fq::common::Model& D3D11ModelManager::CreateModel(const std::shared_ptr<D3D11Device>& device, std::string fileName, std::filesystem::path textureBasePath)
+	fq::common::Model D3D11ModelManager::ConvertModel(const std::string& fbxFilePath)
 	{
-		auto find = mModels.find(fileName);
+		fq::loader::ModelConverter converter;
+		converter.ReadFBXFile(fbxFilePath);
+
+		return converter.Convert();
+	}
+
+	const fq::common::Model& D3D11ModelManager::CreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath)
+	{
+		auto find = mModels.find(key);
 
 		if (find != mModels.end())
 		{
 			return find->second;
 		}
 
-		fq::common::Model model = fq::loader::ModelLoader::Read(fileName);
+		assert(std::filesystem::exists(path));
 
-		for (const auto& material : model.Materials)
+		fq::common::Model model = fq::loader::ModelLoader::Read(path);
+		CreateModelResource(device, key, model, textureBasePath);
+
+		return mModels[key];
+	}
+
+	void D3D11ModelManager::CreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const fq::common::Model& modelData, std::filesystem::path textureBasePath)
+	{
+		auto find = mModels.find(key);
+
+		if (find != mModels.end())
+		{
+			return;
+		}
+
+		for (const auto& material : modelData.Materials)
 		{
 			if (material.Name.empty())
 			{
 				continue;
 			}
 
-			CreateMaterial(device, GenerateMaterialKey(fileName, material.Name), material, textureBasePath);
+			MaterialInfo materialInfo;
+
+			materialInfo.BaseColor = material.BaseColor;
+			materialInfo.Metalness = material.Metalness;
+			materialInfo.Roughness = material.Roughness;
+
+			if (material.BaseColorFileName != L"") materialInfo.BaseColorFileName = textureBasePath / material.BaseColorFileName;
+			if (material.MetalnessFileName != L"") materialInfo.MetalnessFileName = textureBasePath / material.MetalnessFileName;
+			if (material.RoughnessFileName != L"") materialInfo.RoughnessFileName = textureBasePath / material.RoughnessFileName;
+			if (material.NormalFileName != L"") materialInfo.NormalFileName = textureBasePath / material.NormalFileName;
+			if (material.EmissiveFileName != L"") materialInfo.EmissiveFileName = textureBasePath / material.EmissiveFileName;
+
+			CreateMaterial(GenerateMaterialKey(std::to_string(key), material.Name), materialInfo);
 		}
 
-		bool bHasSkinnedMesh = false;
-
-		for (const auto& [node, mesh] : model.Meshes)
+		for (const auto& [node, mesh] : modelData.Meshes)
 		{
 			if (mesh.Vertices.empty())
 			{
@@ -70,33 +89,84 @@ namespace fq::graphics
 
 			if (mesh.BoneVertices.empty())
 			{
-				CreateStaticMesh(device, GenerateStaticMeshKey(fileName, mesh.Name), mesh);
+				auto staticMesh = CreateStaticMesh(GenerateStaticMeshKey(std::to_string(key), mesh.Name), mesh);
+				mStaticMeshes.insert({ GenerateStaticMeshKey(std::to_string(key), node.Name), staticMesh });
 			}
 			else
 			{
-				CreateSkinnedMesh(device, GenerateSkinnedMeshKey(fileName, mesh.Name), mesh);
-				bHasSkinnedMesh = true;
+				CreateSkinnedMesh(GenerateSkinnedMeshKey(std::to_string(key), mesh.Name), mesh);
 			}
 		}
 
-		if (bHasSkinnedMesh)
+		CreateNodeHierarchy(GenerateBoneHierarachyKey(std::to_string(key)), modelData);
+
+		for (const auto& animation : modelData.Animations)
 		{
-			CreateBoneHierarchy(GenerateBoneHierarachyKey(fileName), model);
+			CreateAnimation(GenerateAnimationKey(std::to_string(key), animation.Name), animation);
 		}
 
-		for (const auto& animation : model.Animations)
-		{
-			CreateAnimation(GenerateAnimationKey(fileName, animation.Name), animation);
-		}
-
-		mModels.insert({ fileName, std::move(model) });
-
-		return mModels[fileName];
+		mModels.insert({ key, modelData });
 	}
 
-	void D3D11ModelManager::DeleteModel(const std::string& path)
+	bool D3D11ModelManager::TryCreateModelResource(const std::shared_ptr<D3D11Device>& device, unsigned int key, const std::string& path, std::filesystem::path textureBasePath, fq::common::Model* outDataOrNull)
 	{
-		auto find = mModels.find(path);
+		auto find = mModels.find(key);
+
+		if (find != mModels.end())
+		{
+			if (outDataOrNull != nullptr)
+			{
+				*outDataOrNull = find->second;
+			}
+
+			return true;
+		}
+
+		std::filesystem::path fileSystemPath = path;
+
+		if (!std::filesystem::exists(fileSystemPath)
+			|| fileSystemPath.extension() != ".model")
+		{
+			return false;
+		}
+
+		fq::common::Model model = fq::loader::ModelLoader::Read(path);
+
+		CreateModelResource(device, key, model, textureBasePath);
+
+		if (outDataOrNull != nullptr)
+		{
+			*outDataOrNull = mModels[key];
+		}
+
+		return true;
+	}
+
+	const fq::common::Model& D3D11ModelManager::GetModel(unsigned int key)
+	{
+		auto find = mModels.find(key);
+		assert(find != mModels.end());
+
+		return find->second;
+	}
+
+	bool D3D11ModelManager::TryGetModel(unsigned int key, fq::common::Model* model)
+	{
+		auto find = mModels.find(key);
+
+		if (find != mModels.end())
+		{
+			return false;
+		}
+
+		*model = find->second;
+
+		return true;
+	}
+
+	void D3D11ModelManager::DeleteModelResource(unsigned int key)
+	{
+		auto find = mModels.find(key);
 
 		if (find == mModels.end())
 		{
@@ -107,76 +177,214 @@ namespace fq::graphics
 
 		for (const auto& material : model.Materials)
 		{
-			if (material.Name.empty())
+			if (!material.Name.empty())
 			{
-				continue;
+				DeleteMaterial(GenerateMaterialKey(std::to_string(key), material.Name));
 			}
-
-			DeleteMaterial(path + material.Name);
 		}
-
-		bool bHasSkinnedMesh = false;
 
 		for (const auto& nodeMeshPair : model.Meshes)
 		{
 			const auto& mesh = nodeMeshPair.second;
 
-			if (mesh.Name.empty())
+			if (!mesh.Name.empty())
 			{
-				continue;
-			}
-
-			if (mesh.BoneVertices.empty())
-			{
-				DeleteStaticMesh(path + mesh.Name);
-			}
-			else
-			{
-				DeleteSkinnedMesh(path + mesh.Name);
-				bHasSkinnedMesh = true;
+				if (mesh.BoneVertices.empty())
+				{
+					DeleteStaticMesh(GenerateStaticMeshKey(std::to_string(key), mesh.Name));
+				}
+				else
+				{
+					DeleteSkinnedMesh(GenerateSkinnedMeshKey(std::to_string(key), mesh.Name));
+				}
 			}
 		}
 
-		if (bHasSkinnedMesh)
-		{
-			DeleteBoneHierarchy(path);
-		}
+		DeleteNodeHierarchy(std::to_string(key));
 
 		for (const auto& animation : model.Animations)
 		{
-			DeleteAnimation(path + animation.Name);
+			DeleteAnimation(GenerateAnimationKey(std::to_string(key), animation.Name));
 		}
 
 		mModels.erase(find);
 	}
 
-	bool D3D11ModelManager::CreateStaticMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData)
+	std::shared_ptr<IStaticMesh> D3D11ModelManager::GetStaticMeshByModelPathOrNull(unsigned int key, std::string meshName)
 	{
-		return CreateResource<StaticMesh, StaticMesh>(mStaticMeshes, key, device, meshData);
+		return findOrNull(mStaticMeshes, GenerateStaticMeshKey(std::to_string(key), meshName));
 	}
-	bool D3D11ModelManager::CreateSkinnedMesh(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Mesh& meshData)
+	std::shared_ptr<ISkinnedMesh> D3D11ModelManager::GetSkinnedMeshByModelPathOrNull(unsigned int key, std::string meshName)
 	{
-		return CreateResource<SkinnedMesh, SkinnedMesh>(mSkinnedMeshes, key, device, meshData);
+		return findOrNull(mSkinnedMeshes, GenerateSkinnedMeshKey(std::to_string(key), meshName));
 	}
-	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, std::string key, const fq::common::Material& matrialData, std::filesystem::path basePath)
+	std::shared_ptr<INodeHierarchy> D3D11ModelManager::GetNodeHierarchyByModelPathOrNull(unsigned int key)
 	{
-		return CreateResource<IMaterial, Material>(mMaterials, key, mResourceManager, matrialData, basePath);
+		return findOrNull(mNodeHierarchies, std::to_string(key));
 	}
-	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, const StandardMaterialInfo& matrialData)
+	std::shared_ptr<IMaterial> D3D11ModelManager::GetMaterialByModelPathOrNull(unsigned int key, std::string materialName)
 	{
-		return CreateResource<IMaterial, Material>(mMaterials, matrialData.Name, matrialData);
+		return findOrNull(mMaterials, GenerateMaterialKey(std::to_string(key), materialName));
 	}
-	bool D3D11ModelManager::CreateMaterial(const std::shared_ptr<D3D11Device>& device, const DecalMaterialInfo& matrialData)
+	std::shared_ptr<IAnimation> D3D11ModelManager::GetAnimationByModelPathOrNull(unsigned int key, std::string animationName)
 	{
-		return CreateResource<IMaterial, DecalMaterial>(mMaterials, matrialData.Name, matrialData);
+		return findOrNull(mAnimations, GenerateAnimationKey(std::to_string(key), animationName));
 	}
-	bool D3D11ModelManager::CreateBoneHierarchy(std::string key, const fq::common::Model modelData)
+
+	std::shared_ptr<IStaticMesh> D3D11ModelManager::CreateStaticMesh(const fq::common::Mesh& meshData)
 	{
-		return CreateResource<BoneHierarchy, BoneHierarchy>(mBoneHierarchies, key, modelData);
+		std::shared_ptr<IStaticMesh> staticMesh = std::make_shared<StaticMesh>(mDevice, meshData);
+		return staticMesh;
 	}
-	bool D3D11ModelManager::CreateAnimation(std::string key, const fq::common::AnimationClip& animationData)
+	std::shared_ptr<ISkinnedMesh> D3D11ModelManager::CreateSkinnedMesh(const fq::common::Mesh& meshData)
 	{
-		return CreateResource<fq::common::AnimationClip, fq::common::AnimationClip>(mAnimationClips, key, animationData);
+		std::shared_ptr<ISkinnedMesh> skinnedMesh = std::make_shared<SkinnedMesh>(mDevice, meshData);
+		return skinnedMesh;
+	}
+	std::shared_ptr<INodeHierarchy> D3D11ModelManager::CreateNodeHierarchy(const fq::common::Model& model)
+	{
+		std::shared_ptr<INodeHierarchy> nodeHierarchy = std::make_shared<NodeHierarchy>(model);
+		return nodeHierarchy;
+	}
+	std::shared_ptr<INodeHierarchy> D3D11ModelManager::CreateNodeHierarchy(const std::vector<fq::common::Node> nodes)
+	{
+		std::shared_ptr<INodeHierarchy> nodeHierarchy = std::make_shared<NodeHierarchy>(nodes);
+		return nodeHierarchy;
+	}
+	std::shared_ptr<IAnimation> D3D11ModelManager::CreateAnimation(const fq::common::AnimationClip& animationClip)
+	{
+		std::shared_ptr<IAnimation> animation = std::make_shared<Animation>(animationClip);
+		return animation;
+	}
+	std::shared_ptr<IUVAnimation> D3D11ModelManager::CreateUVAnimation(const fq::common::UVAnimationClip& animationClip)
+	{
+		std::shared_ptr<IUVAnimation> animation = std::make_shared<UVAnimation>(animationClip);
+		return animation;
+	}
+	std::shared_ptr<IMaterial> D3D11ModelManager::CreateMaterial(const MaterialInfo& materialInfo)
+	{
+		std::shared_ptr<IMaterial> material = std::make_shared<Material>(mResourceManager, materialInfo);
+		return material;
+	}
+	std::shared_ptr<IParticleMaterial> D3D11ModelManager::CreateParticleMaterial(const ParticleMaterialInfo& particleMaterialInfo)
+	{
+		std::shared_ptr<IParticleMaterial> material = std::make_shared<ParticleMaterial>(mResourceManager, particleMaterialInfo);
+		return material;
+	}
+	std::shared_ptr<IDecalMaterial> D3D11ModelManager::CreateDecalMaterial(const DecalMaterialInfo& decalMaterialInfo)
+	{
+		std::shared_ptr<IDecalMaterial> material = std::make_shared<DecalMaterial>(mResourceManager, decalMaterialInfo);
+		return material;
+	}
+
+	std::shared_ptr<IStaticMesh> D3D11ModelManager::CreateStaticMesh(std::string key, const fq::common::Mesh& meshData)
+	{
+		return create<IStaticMesh, StaticMesh>(mStaticMeshes, key, mDevice, meshData);
+	}
+	std::shared_ptr<ISkinnedMesh> D3D11ModelManager::CreateSkinnedMesh(std::string key, const fq::common::Mesh& meshData)
+	{
+		return create<ISkinnedMesh, SkinnedMesh>(mSkinnedMeshes, key, mDevice, meshData);
+	}
+	std::shared_ptr<INodeHierarchy> D3D11ModelManager::CreateNodeHierarchy(std::string key, const fq::common::Model& model)
+	{
+		return create<INodeHierarchy, NodeHierarchy>(mNodeHierarchies, key, model);
+	}
+	std::shared_ptr<INodeHierarchy> D3D11ModelManager::CreateNodeHierarchy(std::string key, const std::vector<fq::common::Node> nodes)
+	{
+		return create<INodeHierarchy, NodeHierarchy>(mNodeHierarchies, key, nodes);
+	}
+	std::shared_ptr<IAnimation> D3D11ModelManager::CreateAnimation(std::string key, const fq::common::AnimationClip& animationData)
+	{
+		return create<IAnimation, Animation>(mAnimations, key, animationData);
+	}
+	std::shared_ptr<IUVAnimation> D3D11ModelManager::CreateUVAnimation(std::string key, const fq::common::UVAnimationClip& animationClip)
+	{
+		return create<IUVAnimation, UVAnimation>(mUVAnimations, key, animationClip);
+	}
+	std::shared_ptr<IMaterial> D3D11ModelManager::CreateMaterial(const std::string& key, const MaterialInfo& materialInfo)
+	{
+		return create<IMaterial, Material>(mMaterials, key, mResourceManager, materialInfo);
+	}
+	std::shared_ptr<IParticleMaterial> D3D11ModelManager::CreateParticleMaterial(const std::string& key, const ParticleMaterialInfo& particleMaterialInfo)
+	{
+		return create<IParticleMaterial, ParticleMaterial>(mParticleMaterials, key, mResourceManager, particleMaterialInfo);
+	}
+	std::shared_ptr<IDecalMaterial> D3D11ModelManager::CreateDecalMaterial(const std::string& key, const DecalMaterialInfo& decalMaterialInfo)
+	{
+		return create<IDecalMaterial, DecalMaterial>(mDecalMaterials, key, mResourceManager, decalMaterialInfo);
+	}
+
+	std::vector<std::shared_ptr<IStaticMesh>> D3D11ModelManager::GetStaticMeshes()
+	{
+		return getElementInVector(mStaticMeshes);
+	}
+	std::vector<std::shared_ptr<ISkinnedMesh>> D3D11ModelManager::GetSkinnedMeshes()
+	{
+		return getElementInVector(mSkinnedMeshes);
+	}
+	std::vector<std::shared_ptr<INodeHierarchy>> D3D11ModelManager::GetNodeHierarchies()
+	{
+		return getElementInVector(mNodeHierarchies);
+	}
+	std::vector<std::shared_ptr<IAnimation>> D3D11ModelManager::GetAnimations()
+	{
+		return getElementInVector(mAnimations);
+	}
+	std::vector<std::shared_ptr<IUVAnimation>> D3D11ModelManager::GetUVAnimations()
+	{
+		return getElementInVector(mUVAnimations);
+	}
+	std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials()
+	{
+		return getElementInVector(mMaterials);
+	}
+	std::vector<std::shared_ptr<IParticleMaterial>> D3D11ModelManager::GetParticleMaterials()
+	{
+		return getElementInVector(mParticleMaterials);
+	}
+	std::vector<std::shared_ptr<IDecalMaterial>> D3D11ModelManager::GetDecalMaterials()
+	{
+		return getElementInVector(mDecalMaterials);
+	}
+
+	std::shared_ptr<IStaticMesh> D3D11ModelManager::GetStaticMeshOrNull(std::string key)
+	{
+		return findOrNull(mStaticMeshes, key);
+	}
+
+	std::shared_ptr<ISkinnedMesh> D3D11ModelManager::GetSkinnedMeshOrNull(std::string key)
+	{
+		return findOrNull(mSkinnedMeshes, key);
+	}
+
+	std::shared_ptr<INodeHierarchy> D3D11ModelManager::GetNodeHierarchyOrNull(std::string key)
+	{
+		return findOrNull(mNodeHierarchies, key);
+	}
+
+	std::shared_ptr<IAnimation> D3D11ModelManager::GetAnimationOrNull(std::string key)
+	{
+		return findOrNull(mAnimations, key);
+	}
+
+	std::shared_ptr<IUVAnimation> D3D11ModelManager::GetUVAnimationOrNull(std::string key)
+	{
+		return findOrNull(mUVAnimations, key);
+	}
+
+	std::shared_ptr<IMaterial> D3D11ModelManager::GetMaterialOrNull(const std::string& key)
+	{
+		return findOrNull(mMaterials, key);
+	}
+
+	std::shared_ptr<IParticleMaterial> D3D11ModelManager::GetParticleMaterialOrNull(const std::string& key)
+	{
+		return findOrNull(mParticleMaterials, key);
+	}
+
+	std::shared_ptr<IDecalMaterial> D3D11ModelManager::GetDecalMaterialOrNull(const std::string& key)
+	{
+		return findOrNull(mDecalMaterials, key);
 	}
 
 	void D3D11ModelManager::DeleteStaticMesh(const std::string& key)
@@ -187,45 +395,29 @@ namespace fq::graphics
 	{
 		mSkinnedMeshes.erase(key);
 	}
+	void D3D11ModelManager::DeleteNodeHierarchy(const std::string& key)
+	{
+		mNodeHierarchies.erase(key);
+	}
+	void D3D11ModelManager::DeleteAnimation(const std::string& key)
+	{
+		mAnimations.erase(key);
+	}
+	void D3D11ModelManager::DeleteUVAnimation(const std::string& key)
+	{
+		mUVAnimations.erase(key);
+	}
 	void D3D11ModelManager::DeleteMaterial(const std::string& key)
 	{
 		mMaterials.erase(key);
 	}
-	void D3D11ModelManager::DeleteBoneHierarchy(const std::string& key)
+	void D3D11ModelManager::DeleteParticleMaterial(const std::string& key)
 	{
-		mBoneHierarchies.erase(key);
+		mParticleMaterials.erase(key);
 	}
-	void D3D11ModelManager::DeleteAnimation(const std::string& key)
+	void D3D11ModelManager::DeleteDecalMaterial(const std::string& key)
 	{
-		mAnimationClips.erase(key);
-	}
-
-	const fq::common::Model& D3D11ModelManager::FindModel(const std::string& path)
-	{
-		auto find = mModels.find(path);
-		assert(find != mModels.end());
-		return find->second;
-	}
-
-	std::shared_ptr<StaticMesh> D3D11ModelManager::FindStaticMeshOrNull(const std::string& key)
-	{
-		return FindResourceOrNull(mStaticMeshes, key);
-	}
-	std::shared_ptr<SkinnedMesh> D3D11ModelManager::FindSkinnedMeshOrNull(const std::string& key)
-	{
-		return FindResourceOrNull(mSkinnedMeshes, key);
-	}
-	std::shared_ptr<IMaterial> D3D11ModelManager::FindMaterialOrNull(const std::string& key)
-	{
-		return FindResourceOrNull(mMaterials, key);
-	}
-	std::shared_ptr<BoneHierarchy> D3D11ModelManager::FindBoneHierarchyOrNull(const std::string& key)
-	{
-		return FindResourceOrNull(mBoneHierarchies, key);
-	}
-	std::shared_ptr<fq::common::AnimationClip> D3D11ModelManager::FindAnimationOrNull(const std::string& key)
-	{
-		return FindResourceOrNull(mAnimationClips, key);
+		mDecalMaterials.erase(key);
 	}
 
 	std::string D3D11ModelManager::GenerateStaticMeshKey(const std::string& fileName, const std::string& meshName)
@@ -249,15 +441,4 @@ namespace fq::graphics
 		return fileName + animationName;
 	}
 
-	std::vector<std::shared_ptr<IMaterial>> D3D11ModelManager::GetMaterials() const
-	{
-		std::vector<std::shared_ptr<IMaterial>> materials;
-
-		for (auto& [key, material] : mMaterials)
-		{
-			materials.push_back(material);
-		}
-
-		return materials;
-	}
 }

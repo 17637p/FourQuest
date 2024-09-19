@@ -120,8 +120,9 @@ fq::game_module::AnimationTransition::AnimationTransition(std::string prev, std:
 	,mExitState(prev)
 	,mConditions{}
 	,mExitTime(NoExitTime)
-	,mTransitionDuration(1.f)
+	,mTransitionDuration(0.f)
 	, mInterruptionSource(InterruptionSource::None)
+	, mbCanTrasitionToSelf(false)
 {}
 
 fq::game_module::AnimationTransition::AnimationTransition()
@@ -129,8 +130,9 @@ fq::game_module::AnimationTransition::AnimationTransition()
 	,mExitState{}
 	,mConditions{}
 	, mExitTime(NoExitTime)
-	, mTransitionDuration(1.f)
+	, mTransitionDuration(0.f)
 	, mInterruptionSource(InterruptionSource::None)
+	, mbCanTrasitionToSelf(false)
 {
 }
 

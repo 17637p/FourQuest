@@ -3,9 +3,9 @@
 #include <set>
 #include <string>
 #include <directxtk/SimpleMath.h>
-#include "EObjectRenderType.h"
 #include "FQCommonGraphics.h"
 #include "FQCommonLoader.h"
+#include "IFQRenderResource.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -19,50 +19,52 @@ extern "C" {
 	namespace fq::graphics
 	{
 		class IMaterial;
+		class IDecalMaterial;
+		class IParticleMaterial;
 
 		class IStaticMeshObject
 		{
 		public:
-			// 지울 예정인 함수
-			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
 
-		public:
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
-			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
-			virtual FQ_GRAPHICS void SetAlpha(float alpha) = 0;
-			virtual FQ_GRAPHICS void SetUseShadow(bool bUseShadow) = 0;
-
-			// animation
-			virtual FQ_GRAPHICS void SetAnimationTime(float timePos) = 0;
-			virtual FQ_GRAPHICS bool SetAnimationKey(const std::string& animationKey) = 0;
-			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::array<std::string, 2> animKeys) = 0;
-			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::string& animKey, const std::string& blendAnimKey) = 0;
-			virtual FQ_GRAPHICS void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) = 0;
-			virtual FQ_GRAPHICS void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) = 0;
-			virtual FQ_GRAPHICS float GetAnimationTime() const = 0;
-			virtual FQ_GRAPHICS float GetBlendTime() const = 0;
-
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
-			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
-			virtual FQ_GRAPHICS float GetAlpha() const = 0;
-			virtual FQ_GRAPHICS bool GetUseShadow() const = 0;
-			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
-			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
-
-			// Outline
-			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
-			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
+			// Info
+			virtual FQ_GRAPHICS void SetMeshObjectInfo(const MeshObjectInfo& info) abstract;
+			virtual FQ_GRAPHICS const MeshObjectInfo& GetMeshObjectInfo() const abstract;
 
 			// Material
-			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const abstract;
-			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
+			virtual FQ_GRAPHICS void SetMaterials(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
+			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterials() const abstract;
 
 			// Mesh
-			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+			virtual FQ_GRAPHICS void SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMesh() const abstract;
 
-			// Decal 
-			virtual FQ_GRAPHICS void SetIsAppliedDecal(bool bIsAppiedDecal) abstract;
-			virtual FQ_GRAPHICS const bool GetIsAppliedDecal() const abstract;
+			// NodeHierarchy
+			virtual FQ_GRAPHICS void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const abstract;
+			virtual FQ_GRAPHICS void SetReferenceBoneIndex(size_t index) abstract;
+			virtual FQ_GRAPHICS size_t GetReferenceBoneIndex() const abstract;
+
+			// UVAnimInstance
+			virtual FQ_GRAPHICS void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
+
+			// LightmapUV
+			virtual FQ_GRAPHICS void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const abstract;
+
+			virtual FQ_GRAPHICS void SetLightmapIndex(unsigned int lightmapIndex) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLightmapIndex() const abstract;
+
+			// MaterialInstanceInfo
+			virtual FQ_GRAPHICS void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) abstract;
+			virtual FQ_GRAPHICS const MaterialInstanceInfo& GetMaterialInstanceInfo() const abstract;
+
+			// Render
+			virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) abstract;
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
 
 		protected:
 			virtual ~IStaticMeshObject() = default;
@@ -71,58 +73,33 @@ extern "C" {
 		class ISkinnedMeshObject
 		{
 		public:
-			// 지울 예정인 함수
-			virtual FQ_GRAPHICS void UpdateTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
-			virtual FQ_GRAPHICS void UpdateAnimationTime(float timePos) = 0;
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
 
-		public:
-			virtual FQ_GRAPHICS void SetBindPose() = 0;
-			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) = 0;
-			virtual FQ_GRAPHICS void SetAnimationTime(float timePos) = 0;
-			virtual FQ_GRAPHICS void SetObjectRenderType(EObjectRenderType renderType) = 0;
-			virtual FQ_GRAPHICS void SetAlpha(float alpha) = 0;
-			virtual FQ_GRAPHICS void SetUseShadow(bool bUseShadow) = 0;
+			// Info
+			virtual FQ_GRAPHICS void SetMeshObjectInfo(const MeshObjectInfo& info) abstract;
+			virtual FQ_GRAPHICS const MeshObjectInfo& GetMeshObjectInfo() const abstract;
 
-			// animation
-			virtual FQ_GRAPHICS bool SetAnimationKey(const std::string& animationKey) = 0;
-			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::array<std::string, 2> animKeys) = 0;
-			virtual FQ_GRAPHICS bool SetBlendAnimationKey(const std::string& animKey, const std::string& blendAnimKey) = 0;
-			virtual FQ_GRAPHICS void SetBlendAnimationTime(const std::array<float, 2>& timePos, float blendWeight) = 0;
-			virtual FQ_GRAPHICS void SetBlendAnimationTime(float timePos, float blendTimePos, float blendWeight) = 0;
-			virtual FQ_GRAPHICS std::set<std::string> GetAnimationKeys() const = 0;
-			virtual FQ_GRAPHICS float GetAnimationTime() const = 0;
-			virtual FQ_GRAPHICS float GetBlendTime() const = 0;
-
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const = 0;
-			virtual FQ_GRAPHICS EObjectRenderType GetObjectRenderType() const = 0;
-			virtual FQ_GRAPHICS float GetAlpha() const = 0;
-			virtual FQ_GRAPHICS bool GetUseShadow() const = 0;
-			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const = 0;
-			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const = 0;
-
-			// Outline
-			virtual FQ_GRAPHICS void SetOutlineColor(const DirectX::SimpleMath::Color& color) abstract;
-			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetOutlineColor() const abstract;
-
-			// material
-			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterialInterfaces() const abstract;
-			virtual FQ_GRAPHICS void SetMaterialInterfaces(const std::vector<std::shared_ptr<IMaterial>>& materialInterfaces) abstract;
-
-			// bone
-			virtual FQ_GRAPHICS const std::vector<fq::common::Bone>& GetBones() const abstract;
-			virtual FQ_GRAPHICS unsigned int GetBoneIndex(const std::string& boneName) const abstract;
-			virtual FQ_GRAPHICS bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex) abstract;
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;
-			virtual FQ_GRAPHICS bool TryGetRootTransform(const std::string& boneName, DirectX::SimpleMath::Matrix* outRootTransform) abstract;
-			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;
-			virtual FQ_GRAPHICS const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const abstract;
+			// Material
+			virtual FQ_GRAPHICS void SetMaterials(const std::vector<std::shared_ptr<IMaterial>>& materials) abstract;
+			virtual FQ_GRAPHICS const std::vector<std::shared_ptr<IMaterial>>& GetMaterials() const abstract;
 
 			// Mesh
-			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+			virtual FQ_GRAPHICS void SetSkinnedMesh(std::shared_ptr<ISkinnedMesh> skinnedMesh) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<ISkinnedMesh> GetSkinnedMesh() const abstract;
 
-			// Decal 
-			virtual FQ_GRAPHICS void SetIsAppliedDecal(bool bIsAppiedDecal) abstract;
-			virtual FQ_GRAPHICS const bool GetIsAppliedDecal() const abstract;
+			// NodeHierarchy
+			virtual FQ_GRAPHICS void SetNodeHierarchyInstance(std::shared_ptr<INodeHierarchyInstance> nodeHierarchyInstance) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> GetNodeHierarchyInstance() const abstract;
+
+			// MaterialInstanceInfo
+			virtual FQ_GRAPHICS void SetMaterialInstanceInfo(const MaterialInstanceInfo& materialInstanceInfo) abstract;
+			virtual FQ_GRAPHICS const MaterialInstanceInfo& GetMaterialInstanceInfo() const abstract;
+
+			// Render
+			virtual FQ_GRAPHICS void SetIsRender(bool bIsRender) abstract;
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
 
 		protected:
 			virtual ~ISkinnedMeshObject() = default;
@@ -136,6 +113,19 @@ extern "C" {
 			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingBox GetRenderBoundingBox() const abstract;
 			virtual FQ_GRAPHICS DirectX::BoundingSphere GetRenderBoundingSphere() const abstract;
+
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+			virtual FQ_GRAPHICS int* GetHeightData() const abstract;
+
+			// Lightmap
+			virtual FQ_GRAPHICS void SetLightmapUVScaleOffset(const DirectX::SimpleMath::Vector4& scaleOffset) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Vector4& GetLightmapUVScaleOffset() const abstract;
+
+			virtual FQ_GRAPHICS void SetLightmapIndex(unsigned int lightmapIndex) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLightmapIndex() const abstract;
+
+			virtual FQ_GRAPHICS void SetIsStatic(bool bIsStatic) abstract;
+			virtual FQ_GRAPHICS bool GetIsStatic() const abstract;
 
 		protected:
 			virtual ~ITerrainMeshObject() = default;
@@ -177,24 +167,45 @@ extern "C" {
 
 			virtual FQ_GRAPHICS void SetImagePath(const std::string& texturePath) abstract;
 			virtual FQ_GRAPHICS std::string GetImagePath() abstract;
+
+			virtual FQ_GRAPHICS std::string GetMaskPath() const abstract;
+			virtual FQ_GRAPHICS void SetMaskPath(const std::string& val) abstract;
+
+			virtual FQ_GRAPHICS void SetFillDegree(float Degree) abstract;
+			virtual FQ_GRAPHICS float GetFillDegree() const abstract;
+
+			virtual FQ_GRAPHICS bool GetIsRender() const abstract;
+			virtual FQ_GRAPHICS void SetIsRender(bool val) abstract;
+
+			virtual FQ_GRAPHICS bool GetRenderMode() const abstract;
+			virtual FQ_GRAPHICS void SetRenderMode(bool isCenter) abstract; // true 면 중앙부터 그리기 , false 면 좌상단 부터 그리기
+
+			virtual FQ_GRAPHICS bool GetIsOnText() const abstract;
+			virtual FQ_GRAPHICS void SetIsOnText(bool isOnText) abstract;
+
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetColor() const abstract;
+			virtual FQ_GRAPHICS void SetColor(DirectX::SimpleMath::Color val) abstract;
 		};
 
 		class IParticleObject
 		{
 		public:
-			virtual FQ_GRAPHICS void SetInfo(const ParticleInfo& info) abstract;
-			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
-			virtual FQ_GRAPHICS void SetIsReset(bool bIsReset) abstract;
+			// Transform
 			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
-			virtual FQ_GRAPHICS void SetIsEmit(bool bIsEmit) abstract;
-			virtual FQ_GRAPHICS void SetIsRenderDebug(bool bIsRenderDebug) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
 
+			// Info
+			virtual FQ_GRAPHICS void SetInfo(const ParticleInfo& info) abstract;
 			virtual FQ_GRAPHICS const ParticleInfo& GetInfo() const abstract;
-			virtual FQ_GRAPHICS bool GetIsReset() const abstract;
+			virtual FQ_GRAPHICS ParticleInfo& GetInfo() abstract;
+
+			// Material
+			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const abstract;
+
+			// FrameTime
+			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
 			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
-			virtual FQ_GRAPHICS DirectX::SimpleMath::Matrix GetTransform() const abstract;
-			virtual FQ_GRAPHICS bool GetIsEmit() const abstract;
-			virtual FQ_GRAPHICS bool GetIsRenderDebug() const abstract;
 
 		protected:
 			virtual ~IParticleObject() = default;
@@ -203,13 +214,78 @@ extern "C" {
 		class IDecalObject
 		{
 		public:
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Info
 			virtual FQ_GRAPHICS void SetDecalInfo(const DecalInfo& decalInfo) abstract;
 			virtual FQ_GRAPHICS const DecalInfo& GetDecalInfo() const abstract;
-			
+
+			// Material
+			virtual FQ_GRAPHICS void SetIDecalMaterial(std::shared_ptr<IDecalMaterial> iDecalMaterial) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IDecalMaterial> GetDecalMaterial() const abstract;
+
+			// UVAnimInstance
+			virtual FQ_GRAPHICS void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
+
 		protected:
 			virtual ~IDecalObject() = default;
 		};
-	}
+
+		class ITrailObject
+		{
+		public:
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Info
+			virtual FQ_GRAPHICS void SetTrailInfo(const TrailInfo& trailInfo) abstract;
+			virtual FQ_GRAPHICS const TrailInfo& GetTrailInfo() const abstract;
+			virtual FQ_GRAPHICS TrailInfo& GetTrailInfo() abstract;
+
+			// Material
+			virtual FQ_GRAPHICS void SetIParticleMaterial(std::shared_ptr<IParticleMaterial> iParticleMaterial) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IParticleMaterial> GetIParticleMaterial() const abstract;
+
+			// FrameTime
+			virtual FQ_GRAPHICS void SetFrameTime(float frameTime) abstract;
+			virtual FQ_GRAPHICS float GetFrameTIme() const abstract;
+
+		protected:
+			virtual ~ITrailObject() = default;
+		};
+
+		class IProbeObject
+		{
+		public:
+			// Transform
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
+
+			// Mesh
+			virtual FQ_GRAPHICS void SetStaticMesh(std::shared_ptr<IStaticMesh> staticMesh) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<IStaticMesh> GetStaticMesh() const abstract;
+
+			// LightProbe
+			virtual FQ_GRAPHICS void SetIndex(int index) abstract;
+			virtual FQ_GRAPHICS int GetIndex() abstract;
+		protected:
+			virtual ~IProbeObject() = default;
+		};
+
+		class ITextObject
+		{
+		public:
+			virtual ~ITextObject() = default;
+
+			virtual FQ_GRAPHICS void SetTextInformation(TextInfo textInfo) abstract;
+			virtual FQ_GRAPHICS TextInfo GetTextInformation() abstract;
+		};
+
 #ifdef __cplusplus
-}
+	}
 #endif
+}

@@ -49,6 +49,8 @@ namespace fq::game_engine
 		void ExcuteShortcut();
 
 		bool& IsWindowOpen() { return mbIsOpen; }
+
+		bool IsWindowFocused()const { return mbIsFocused; }
 	private:
 		/// <summary>
 		/// 마우스 우클릭 창
@@ -109,7 +111,9 @@ namespace fq::game_engine
 		EditorProcess* mEditorProcess;
 
 		bool mbIsOpen;
-
+		bool mbIsFocused;
+		bool mbFlipHierachy;
+		
 		fq::game_module::Scene* mScene;
 		fq::game_module::InputManager* mInputManager;
 		fq::game_module::EventManager* mEventManager;
@@ -121,6 +125,7 @@ namespace fq::game_engine
 		// 이벤트관련
 		fq::game_module::EventHandler mSelectObjectHandle;
 		fq::game_module::EventHandler mSelectAnimationState;
+		fq::game_module::EventHandler mFlipHierachy;
 	};
 
 

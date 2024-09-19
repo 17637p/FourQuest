@@ -8,9 +8,12 @@
 
 #include "../FQCommon/FQPath.h"
 #include "../FQGameModule/GameModule.h"
+#include "../FQClient/GameVaribleHelper.h"
 #include "GameProcess.h"
 #include "EditorProcess.h"
 #include "PhysicsSystem.h"
+#include "ResourceSystem.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
@@ -77,10 +80,18 @@ void fq::game_engine::MainMenuBar::beginMenuItem_LoadScene()
 
 			if (ImGui::MenuItem(sceneName.c_str()))
 			{
-				SaveScene();
-				// Scene 변경 요청 
+				// 게임플레이 중이라면 다음 씬에서도 플레이 하는 상태로 유지됩니다.
+				bool callStartScene = mEditorProcess->mGamePlayWindow->GetMode() != EditorMode::Edit;
+
+				// 게임 플레이 도중의 씬은 저장하지 않습니다
+				if (!callStartScene)
+				{
+					SaveScene();
+				}
+
+				// Scene 변경 요청
 				mGameProcess->mEventManager
-					->FireEvent<fq::event::RequestChangeScene>({ sceneName, false });
+					->FireEvent<fq::event::RequestChangeScene>({ sceneName, callStartScene });
 			}
 		}
 
@@ -168,6 +179,9 @@ void fq::game_engine::MainMenuBar::createScene(std::string sceneName)
 	// coliision_matrix 파일 생성
 	fq::physics::CollisionMatrix().Save(scenePath);
 
+	// skybox 파일 생성
+	fq::game_module::SkyBox().Save(scenePath);
+
 	// ... etc 
 
 	// Scene 변경 요청 
@@ -232,7 +246,22 @@ void fq::game_engine::MainMenuBar::SaveScene()
 	// 3. AnimatorController 저장
 	mEditorProcess->mAnimatorWindow->SaveAnimatorController();
 
-	// 3. ... etc 
+	// 3.SkyBox 저장
+	mEditorProcess->mSkyBoxWindow->SaveSkyBox(scenePath);
+
+	// 머터리얼 저장
+	mEditorProcess->mMaterialWindow->SaveMaterial();
+
+	// 라이트맵 저장
+	mEditorProcess->mLightmapWindow->SaveLightmap(scenePath);
+
+	// 리소스 리스트 저장 
+	mGameProcess->mResourceSystem->SaveSceneResourceList(scenePath);
+
+	// 게임 변수 저장
+	client::GameVaribleHelper::Save();
+
+	//  ... etc 
 	spdlog::trace("[MainMenuBar] Save \"{}\" Scene [{}s]", mCurrentSceneName, sw);
 }
 
@@ -282,6 +311,36 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 		bool& onSetting = mEditorProcess->mSettingWindow->IsWindowOpen();
 		ImGui::Checkbox("Setting", &onSetting);
 
+		bool& onNavMesh = mEditorProcess->mNavMeshWindow->IsWindowOpen();
+		ImGui::Checkbox("NavigationMesh", &onNavMesh);
+
+		bool& articulationHierarchy = mEditorProcess->mArticulationHierarchy->IsWindowOpen();
+		ImGui::Checkbox("ArticulationHierarchy", &articulationHierarchy);
+
+		bool& articulationInspector = mEditorProcess->mArticulationInspector->IsWindowOpen();
+		ImGui::Checkbox("ArticulationInspector", &articulationInspector);
+
+		bool& onLightProbe = mEditorProcess->mLightProbeWindow->IsWindowOpen();
+		ImGui::Checkbox("LightProbe", &onLightProbe);
+
+		bool& onExpotWindow = mEditorProcess->mExportWindow->IsWindowOpen();
+		ImGui::Checkbox("ExportWindow", &onExpotWindow);
+
+		bool& onImportWindow = mEditorProcess->mImportWindow->IsWindowOpen();
+		ImGui::Checkbox("ImportWindow", &onImportWindow);
+
+		bool& onMaterialWindow = mEditorProcess->mMaterialWindow->IsWindowOpen();
+		ImGui::Checkbox("MaterialWindow", &onMaterialWindow);
+
+		bool& onLightmapWindow = mEditorProcess->mLightmapWindow->IsWindowOpen();
+		ImGui::Checkbox("LightmapWindow", &onLightmapWindow);
+
+		bool& onGameVairableWindow = mEditorProcess->mGameVariableWindow->IsWindowOpen();
+		ImGui::Checkbox("GameVairable", &onGameVairableWindow);
+
+		bool& onRenderingDebugWindow = mEditorProcess->mRenderingDebugWindow->IsWindowOpen();
+		ImGui::Checkbox("RenderingDeubgWindow", &onRenderingDebugWindow);
+
 		ImGui::EndMenu();
 	}
 }
@@ -310,6 +369,11 @@ void fq::game_engine::MainMenuBar::beginMenu_DebugOption()
 		bool& onCharater = debug->GetOnCharaterController();
 		ImGui::Checkbox("CharaterController", &onCharater);
 
+		bool& onNavMesh = debug->GetOnNavigationMesh();
+		ImGui::Checkbox("NavigationMesh", &onNavMesh);
+
+		bool& onUseRenderDebug = debug->GetOnUseRenderDebug();
+		ImGui::Checkbox("UseDebugRender", &onUseRenderDebug);
 
 		ImGui::EndMenu();
 	}

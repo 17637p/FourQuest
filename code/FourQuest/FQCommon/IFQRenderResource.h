@@ -1,6 +1,12 @@
 #pragma once
 
+#include <filesystem>
+#include <string>
+#include <set>
+#include <map>
+#include "FQCommonLoader.h"
 #include "FQCommonGraphics.h"
+#include "IFQRenderResource.h"
 
 #ifdef FQ_GRAPHICS_EXPORT
 #define FQ_GRAPHICS __declspec(dllexport)
@@ -13,171 +19,158 @@ extern "C" {
 #endif
 	namespace fq::graphics
 	{
-		// 그래픽스 종송적인 맴버를 갖지 않고 있는 클래스들
-		class INode
+		enum class EStaticMeshType
+		{
+			Default,
+			Static,
+			VertexColor,
+		};
+
+		class IStaticMesh
 		{
 		public:
+			virtual FQ_GRAPHICS void* GetVertexBuffer() abstract;
+			virtual FQ_GRAPHICS void* GetIndexBuffer() abstract;
 
-		private:
-			unsigned int mIndex;
-			unsigned int mParentNodeIndex;
-			unsigned int mMeshIndex;
-			std::string mName;
-			std::shared_ptr<IMesh> mMesh;
-			DirectX::SimpleMath::Matrix mParentMatrix;
-			DirectX::SimpleMath::Matrix mRootMatrix;
-			DirectX::SimpleMath::Matrix mOffsetMatrix; // toRootinvert;
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+			virtual FQ_GRAPHICS EStaticMeshType GetStaticMeshType() const abstract;
+
+		protected:
+			virtual ~IStaticMesh() = default;
 		};
 
-		class IModel
+		class ISkinnedMesh
 		{
 		public:
+			virtual FQ_GRAPHICS void* GetVertexBuffer() abstract;
+			virtual FQ_GRAPHICS void* GetIndexBuffer() abstract;
 
-		private:
-			std::vector<std::shared_ptr<INode>> mNodes;
-			std::vector<std::shared_ptr<IMesh>> mMeshes;
-			std::vector<std::shared_ptr<IMaterial>> mMaterials;
-			std::vector<std::shared_ptr<IAnimation>> mAnimations;
+			virtual FQ_GRAPHICS const fq::common::Mesh& GetMeshData() const abstract;
+
+		protected:
+			virtual ~ISkinnedMesh() = default;
 		};
 
-		class IMesh
+		class IAnimation
 		{
 		public:
-			struct Subset
-			{
-				unsigned int VertexStart;
-				unsigned int VertexCount;
-				unsigned int IndexStart;
-				unsigned int IndexCount;
-				unsigned int MaterialIndex;
-			};
+			// virtual FQ_GRAPHICS void Create(const fq::common::AnimationClip& animationClip) abstract;
+			// virtual FQ_GRAPHICS void SetName(const std::string& name) abstract;
+			// virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
-			enum class EMeshType
-			{
-				Static,
-				Skinned
-			};
+			virtual FQ_GRAPHICS const fq::common::AnimationClip& GetAnimationClip() const abstract;
 
-		public:
-
-		private:
-			unsigned int mNodeIndex;
-			std::vector<Subset> mSubsets;
+		protected:
+			virtual ~IAnimation() = default;
 		};
 
-		class IStaticMesh : public IMesh
+		class IUVAnimationInstance
 		{
 		public:
-			struct Vertex
-			{
-				DirectX::SimpleMath::Vector3 Pos;
-				DirectX::SimpleMath::Vector3 Normal;
-				DirectX::SimpleMath::Vector3 Tangent;
-				DirectX::SimpleMath::Vector2 Tex;
-			};
+			virtual FQ_GRAPHICS void SetTimePos(float timePos) abstract;
+			virtual FQ_GRAPHICS float GetTimePos() const abstract;
 
-		public:
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTexTransform(const std::string& nodeName) const abstract;
 
-		private:
-			std::vector<Vertex> mVertices;
+		protected:
+			virtual ~IUVAnimationInstance() = default;
 		};
 
-		class ISkinnedMesh : public IMesh
+		class IUVAnimation
 		{
 		public:
-			struct Vertex
-			{
-				enum { MAX_BONE_COUNT = 4 };
+			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> CreateUVAnimationInstance() abstract;
+			virtual FQ_GRAPHICS const fq::common::UVAnimationClip& GetUVAnimationClip() const abstract;
+			virtual FQ_GRAPHICS void SetUVAnimationClip(const fq::common::UVAnimationClip& clip) abstract;
 
-				DirectX::SimpleMath::Vector3 Pos;
-				DirectX::SimpleMath::Vector3 Normal;
-				DirectX::SimpleMath::Vector3 Tangent;
-				DirectX::SimpleMath::Vector2 Tex;
-				int BoneIndices[MAX_BONE_COUNT];
-				float BoneWeights[MAX_BONE_COUNT];
-			};
-
-		public:
-
-		private:
-			std::vector<Vertex> mVertices;
+		protected:
+			virtual ~IUVAnimation() = default;
 		};
 
-		struct Keyframe
-		{
-			float TimePos = 0.f;
-			DirectX::SimpleMath::Vector3 Translation = { 0.f, 0.f, 0.f };
-			DirectX::SimpleMath::Vector3 Scale = { 1.f, 1.f, 1.f };
-			DirectX::SimpleMath::Quaternion Rotation;
-		};
 
-		struct NodeKeyframe
-		{
-			std::string NodeName;
+		class INodeHierarchyInstance;
 
-		};
-
-		class IStaticAnimation
+		/// <summary>
+		/// 모델 데이터와 대응되는 노드 계층 구조를 관리하는 클래스
+		/// </summary>
+		class INodeHierarchy
 		{
 		public:
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchyInstance> CreateNodeHierarchyInstance() abstract;
 
+			virtual FQ_GRAPHICS void RegisterAnimation(std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS void UnregisterAnimation(std::shared_ptr<IAnimation> animation) abstract;
+			virtual FQ_GRAPHICS void UnregisterAllAnimations() abstract;
+			virtual FQ_GRAPHICS const std::set<std::shared_ptr<IAnimation>>& GetRegisterAnimations() const abstract;
 
-		private:
-			std::vector<Keyframe> mKeyframes;
+			virtual FQ_GRAPHICS const std::vector<fq::common::Bone>& GetBones() const abstract;
+			virtual FQ_GRAPHICS unsigned int GetBoneIndex(const std::string& boneName) const abstract;
+			virtual FQ_GRAPHICS bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex) const abstract;
+
+		protected:
+			virtual ~INodeHierarchy() = default;
 		};
 
-		class ISkinnedAnimation
+		/// <summary>
+		/// 메쉬 오브젝트가 참조할 애니메이션 정보(변환 행렬 팔레트)를 관리하는 클래스
+		/// </summary>
+		class INodeHierarchyInstance
 		{
+		public:
+			virtual FQ_GRAPHICS void SetTransform(const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransform() const abstract;
 
+			virtual FQ_GRAPHICS void SetBindPose() abstract;
+			virtual FQ_GRAPHICS void Update(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
+			virtual FQ_GRAPHICS void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
+			virtual FQ_GRAPHICS void UpdateByLocalTransform() abstract;
+			virtual FQ_GRAPHICS void UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
+
+			virtual FQ_GRAPHICS void SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS bool TrySetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform) abstract;
+			virtual FQ_GRAPHICS std::shared_ptr<INodeHierarchy> GetNodeHierarchy() const abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const abstract;
+			virtual FQ_GRAPHICS const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const abstract;
+			virtual FQ_GRAPHICS const DirectX::SimpleMath::Matrix& GetTransposedFinalTransform(size_t index) const abstract;
+
+		protected:
+			virtual ~INodeHierarchyInstance() = default;
 		};
-
-		class IBoneHierarchy
-		{
-
-		};
-
-		class IBoneHierarchyCache
-		{
-
-		};
-
 		class IMaterial
 		{
-			friend class D3D11ModelManager;
-
 		public:
-			virtual FQ_GRAPHICS EMaterialType GetMaterialType() const abstract;
+			virtual FQ_GRAPHICS void SetInfo(const MaterialInfo& info) abstract;
+			virtual FQ_GRAPHICS const MaterialInfo& GetInfo() const abstract;
 
-			virtual FQ_GRAPHICS void SetStandardMaterialInfo(const StandardMaterialInfo& materialInfo) { assert(false); throw; }
-			virtual FQ_GRAPHICS const StandardMaterialInfo& GetStandardMaterialInfo() const { assert(false); throw; }
-			virtual FQ_GRAPHICS StandardMaterialInfo& GetStandardMaterialInfo() { assert(false); throw; }
-
-			virtual FQ_GRAPHICS void SetDecalMaterialInfo(const DecalMaterialInfo& materialInfo) { assert(false); throw; }
-			virtual FQ_GRAPHICS const DecalMaterialInfo& GetDecalMaterialInfo() const { assert(false); throw; }
-			virtual FQ_GRAPHICS DecalMaterialInfo& GetDecalMaterialInfo() { assert(false); throw; }
-
-			virtual FQ_GRAPHICS void SetMaterialControllInfo(const MaterialControllInfo& materialControllInfo) abstract;
-			virtual FQ_GRAPHICS const MaterialControllInfo& GetMaterialControllInfo() const abstract;
+			virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
 		protected:
 			virtual ~IMaterial() = default;
-
-		private:
-			virtual void loadTexture(std::shared_ptr<class D3D11ResourceManager> resourceManager) abstract;
 		};
 
-		class IStandardMaterial
+		class IParticleMaterial
 		{
 		public:
+			virtual FQ_GRAPHICS void SetInfo(const ParticleMaterialInfo& info) abstract;
+			virtual FQ_GRAPHICS const ParticleMaterialInfo& GetInfo() const abstract;
 
+			virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
+		protected:
+			virtual ~IParticleMaterial() = default;
 		};
 
 		class IDecalMaterial
 		{
 		public:
+			virtual FQ_GRAPHICS void SetInfo(const DecalMaterialInfo& info) abstract;
+			virtual FQ_GRAPHICS const DecalMaterialInfo& GetInfo() const abstract;
 
+			virtual FQ_GRAPHICS const std::string& GetName() const abstract;
 
+		protected:
+			virtual ~IDecalMaterial() = default;
 		};
 	}
 #ifdef __cplusplus

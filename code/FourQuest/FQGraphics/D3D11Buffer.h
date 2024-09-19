@@ -9,6 +9,9 @@
 #include <vector>
 #include <d3d11.h>
 #include <directxtk/BufferHelpers.h>
+#include <deque>
+#include <directxtk/SimpleMath.h>
+#include <directxtk\SimpleMath.h>
 
 #include "D3D11Device.h"
 #include "D3D11ResourceType.h"
@@ -25,27 +28,38 @@ namespace fq::graphics
 	{
 	public:
 		template<typename T>
-		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<T>& vertices);
+		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<T>& vertices, bool bUseCPUWrite = false);
+		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, unsigned int size, unsigned int count, void* ptr, bool bUseCPUWrite = false);
+		D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, UINT size, UINT stride, UINT offset);
 
 		static void Bind(const std::shared_ptr<D3D11Device>& device, const std::vector<std::shared_ptr<D3D11VertexBuffer>>& buffers, UINT startSlot = 0);
+		static D3D11VertexBuffer CreateFullScreenVertexBuffer(const std::shared_ptr<D3D11Device>& device);
 
 		void Bind(const std::shared_ptr<D3D11Device>& device, UINT startSlot = 0);
+		template <typename Vertex>
+		void Update(std::shared_ptr<D3D11Device> device, const std::deque<Vertex>& vertices);
+		template <typename Vertex>
+		void Update(std::shared_ptr<D3D11Device> device, const std::vector<Vertex>& vertices);
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetVertexBuffer() const { return mVertexBuffer; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mVertexBuffer;
 		UINT mStride;
 		UINT mOffset;
+		bool mbUseCPUWrite;
 	};
 
 	template<typename T>
-	D3D11VertexBuffer::D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<T>& vertices)
+	D3D11VertexBuffer::D3D11VertexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<T>& vertices, bool bUseCPUWrite)
 		: mStride(sizeof(T))
 		, mOffset(0)
+		, mbUseCPUWrite(bUseCPUWrite)
 	{
 		D3D11_BUFFER_DESC bd = {};
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bd.Usage = D3D11_USAGE_IMMUTABLE;
-		bd.CPUAccessFlags = 0u;
+		bd.Usage = bUseCPUWrite ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_IMMUTABLE;
+		bd.CPUAccessFlags = bUseCPUWrite ? D3D11_CPU_ACCESS_WRITE : 0u;
 		bd.MiscFlags = 0u;
 		bd.ByteWidth = (UINT)(sizeof(T) * vertices.size());
 		bd.StructureByteStride = 0;
@@ -56,6 +70,39 @@ namespace fq::graphics
 		device->GetDevice().Get()->CreateBuffer(&bd, &sd, mVertexBuffer.GetAddressOf());
 	}
 
+	template <typename Vertex>
+	void D3D11VertexBuffer::Update(std::shared_ptr<D3D11Device> device, const std::deque<Vertex>& vertices)
+	{
+		assert(mbUseCPUWrite);
+
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		device->GetDeviceContext()->Map(mVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+		Vertex* vertexPtr = reinterpret_cast<Vertex*>(mappedData.pData);
+
+		for (UINT i = 0; i < vertices.size(); ++i)
+		{
+			vertexPtr[i] = vertices[i];
+		}
+
+		device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
+	}
+
+	template<typename Vertex>
+	inline void D3D11VertexBuffer::Update(std::shared_ptr<D3D11Device> device, const std::vector<Vertex>& vertices)
+	{
+		assert(mbUseCPUWrite);
+
+		D3D11_MAPPED_SUBRESOURCE mappedData;
+		device->GetDeviceContext()->Map(mVertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+		Vertex* vertexPtr = reinterpret_cast<Vertex*>(mappedData.pData);
+
+		memcpy(vertexPtr, vertices.data(), sizeof(Vertex) * vertices.size());
+
+		device->GetDeviceContext()->Unmap(mVertexBuffer.Get(), 0);
+	}
+
 	/*=============================================================================
 		Index Buffer
 	=============================================================================*/
@@ -64,7 +111,20 @@ namespace fq::graphics
 	public:
 		D3D11IndexBuffer(const std::shared_ptr<D3D11Device>& device, const std::vector<unsigned int>& indices);
 
+		static D3D11IndexBuffer CreateFullScreenIndexBuffer(const std::shared_ptr<D3D11Device>& device)
+		{
+			std::vector<unsigned int> indices =
+			{
+				0,1,2,
+				1,3,2
+			};
+
+			return D3D11IndexBuffer(device, indices);
+		}
+
 		void Bind(const std::shared_ptr<D3D11Device>& device);
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> GetIndexBuffer() const { return mIndexBuffer; }
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mIndexBuffer;
@@ -91,7 +151,7 @@ namespace fq::graphics
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const ED3D11ShaderType eShaderType, const UINT startSlot = 0);
 
-		ID3D11Buffer* GetBuffer()  { return mConstantBuffer->GetBuffer(); }
+		ID3D11Buffer* GetBuffer() { return mConstantBuffer->GetBuffer(); }
 
 	private:
 		std::shared_ptr<DirectX::ConstantBuffer<ConstantType>> mConstantBuffer;
@@ -116,38 +176,38 @@ namespace fq::graphics
 
 		switch (eShaderType)
 		{
-			case ED3D11ShaderType::VertexShader:
-			{
-				d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::GeometryShader:
-			{
-				d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::PixelShader:
-			{
-				d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::ComputeShader:
-			{
-				d3d11Device->GetDeviceContext()->CSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::DomainShader:
-			{
-				d3d11Device->GetDeviceContext()->DSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			case ED3D11ShaderType::HullShader:
-			{
-				d3d11Device->GetDeviceContext()->HSSetConstantBuffers(startSlot, 1, &constantBuffer);
-				break;
-			}
-			default:
-				break;
+		case ED3D11ShaderType::VertexShader:
+		{
+			d3d11Device->GetDeviceContext()->VSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::GeometryShader:
+		{
+			d3d11Device->GetDeviceContext()->GSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::PixelShader:
+		{
+			d3d11Device->GetDeviceContext()->PSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::ComputeShader:
+		{
+			d3d11Device->GetDeviceContext()->CSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::DomainShader:
+		{
+			d3d11Device->GetDeviceContext()->DSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		case ED3D11ShaderType::HullShader:
+		{
+			d3d11Device->GetDeviceContext()->HSSetConstantBuffers(startSlot, 1, &constantBuffer);
+			break;
+		}
+		default:
+			break;
 		}
 	}
 

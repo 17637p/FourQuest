@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "IFQPhysics.h"
 #define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
@@ -16,6 +17,8 @@ namespace fq::physics
 	class PhysicsCharactorControllerManager;
 	class PhysicsCharacterPhysicsManager;
 	class PhysicsCollisionDataManager;
+	class PhysicsClothManager;
+
 
 	class FQPhysics : public IFQPhysics
 	{
@@ -55,7 +58,7 @@ namespace fq::physics
 		/// <summary>
 		/// 레이캐스트 : 원점, 방향, 거리값의 선을 쏴서 물리 공간의 오브젝트들을 충돌 검사
 		/// </summary>
-		virtual RayCastData RayCast(unsigned int myID, unsigned int layerNumber, const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& direction, const float& distance) override;
+		virtual RayCastOutput RayCast(const RayCastInput& info) override;
 
 #pragma region RigidBodyManager
 		/// <summary>
@@ -65,10 +68,14 @@ namespace fq::physics
 		virtual bool CreateStaticBody(const SphereColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const CapsuleColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateStaticBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType) override;
+		virtual bool CreateStaticBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType) override;
 		virtual bool CreateDynamicBody(const BoxColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const SphereColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const CapsuleColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 		virtual bool CreateDynamicBody(const ConvexMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const TriangleMeshColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
+		virtual bool CreateDynamicBody(const HeightFieldColliderInfo& info, const EColliderType& colliderType, bool isKinematic = false) override;
 
 		/// <summary>
 		/// 아이디를 받으면 해당 아이디의 리지드 바디를 반환
@@ -100,6 +107,19 @@ namespace fq::physics
 		/// 폴리곤의 디버그 데이터 
 		/// </summary>
 		const std::unordered_map<unsigned int, PolygonMesh>& GetDebugPolygon() override;
+
+		/// <summary>
+		/// Triangle Mesh의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<unsigned int>>& GetDebugTriangleIndiecs() override;
+		const std::unordered_map<unsigned int, std::vector<DirectX::SimpleMath::Vector3>>& GetDebugTriangleVertices() override;
+
+		/// <summary>
+		/// Height Field의 디버그용 데이터를 전달 받습니다.
+		/// </summary>
+		/// <returns></returns>
+		const std::unordered_map<unsigned int, std::vector<std::pair<DirectX::SimpleMath::Vector3, DirectX::SimpleMath::Vector3>>>& GetDebugHeightField() override;
 #pragma endregion
 
 #pragma region CharacterControllerManager
@@ -126,7 +146,7 @@ namespace fq::physics
 		/// </summary>
 		/// <param name="id"> 캐릭터 컨트롤러 아이디 </param>
 		/// <param name="input"> 입력한 이동 방향 (ex. {1.f, 0.f, 0.f}) </param>
-		virtual bool AddInputMove(const unsigned int& id, const DirectX::SimpleMath::Vector3& input) override;
+		virtual bool AddInputMove(const CharacterControllerInputInfo& info) override;
 
 		/// <summary>
 		/// 캐릭터 컨트롤러와 캐릭터 무브먼트의 데이터를 Get Set합니다.
@@ -141,19 +161,48 @@ namespace fq::physics
 		/// <summary>
 		/// 캐릭터 파직스 (관절) 추가
 		/// </summary>
-		virtual bool CreateCharacterphysics(const CharacterPhysicsInfo& info) override;
+		virtual bool CreateCharacterphysics(const ArticulationInfo& info) override;
+
+		/// <summary>
+		/// 캐릭터 파직스 삭제
+		/// </summary>
+		virtual bool RemoveArticulation(const unsigned int& id) override;
 
 		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
-		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
-		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& radius) override;
-		virtual bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, const float& halfHeight, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info, const DirectX::SimpleMath::Vector3& extent) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info, const float& halfHeight, const float& radius) override;
+		virtual bool AddArticulationLink(unsigned int id, LinkInfo& info) override;
 
 		/// <summary>
-		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
+		/// 관절 (Articulation) Get/Set 데이터 입니다.
 		/// </summary>
-		virtual bool SimulationCharacter(unsigned int id) override;
+		virtual ArticulationGetData GetArticulationData(const unsigned int& id) override;
+		virtual void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) override;
+#pragma endregion
+
+#pragma region PhysicsClothManager
+		/// <summary>
+		/// 천을 생성합니다.
+		/// </summary>
+		virtual bool CreateCloth(const PhysicsClothInfo& info) override;
+
+		/// <summary>
+		/// 천 데이터를 얻습니다.
+		/// </summary>
+		virtual bool GetClothData(unsigned int id, PhysicsClothGetData& data) override;
+
+		/// <summary>
+		/// 천 데이터를 세팅합니다.
+		/// </summary>
+		virtual bool SetClothData(unsigned int id, const PhysicsClothSetData& data) override;
+
+		/// <summary>
+		/// 천을 삭제합니다.
+		/// </summary>
+		virtual bool RemoveCloth(unsigned int id) override;
 #pragma endregion
 
 		virtual bool HasConvexMeshResource(const unsigned int& hash) override;
@@ -171,6 +220,7 @@ namespace fq::physics
 	private:
 		// 씬
 		physx::PxScene* mScene;
+		physx::PxScene* mGpuScene;
 		physx::PxCudaContextManager* mCudaContextManager;
 
 		std::shared_ptr<Physics> mPhysics;
@@ -178,6 +228,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsRigidBodyManager> mRigidBodyManager;
 		std::shared_ptr<PhysicsCharactorControllerManager> mCCTManager;
 		std::shared_ptr<PhysicsCharacterPhysicsManager> mCharacterPhysicsManager;
+		std::shared_ptr<PhysicsClothManager> mClothManager;
 		std::shared_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
 
 		// 충돌 이벤트 클래스

@@ -10,6 +10,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Scene.h"
+#include "ObjectPool.h"
 
 
 using json = nlohmann::json;
@@ -54,7 +55,6 @@ std::vector<std::shared_ptr<fq::game_module::GameObject>> fq::game_module::Prefa
 
 		// 이름 설정
 		const auto& object = instanceVector.back();
-
 		std::string key = element.key();
 
 		// Tag 설정
@@ -196,7 +196,7 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 		q.push(&object);
 	}
 
-	// 2. 프리팹 리소스로드 
+	// 2. 프	리팹 리소스로드 
 	while (!q.empty())
 	{
 		GameObject* object = q.front();
@@ -214,15 +214,9 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 					auto prefabresource = metaData.get(component->GetHandle()).cast<PrefabResource>();
 					auto prefabPath = prefabresource.GetPrefabPath();
 
-					if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()) continue;
-
-					if (!std::filesystem::exists(prefabPath))
-					{
-						spdlog::warn("[{}-{}-{}] not exist prefab resource", object->GetName()
-							, fq::reflect::GetName(entt::resolve(componentID))
-							, fq::reflect::GetName(metaData));
+					if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()
+						|| !std::filesystem::exists(prefabPath))
 						continue;
-					}
 
 					auto instance = LoadPrefab(prefabPath);
 
@@ -233,6 +227,64 @@ void fq::game_module::PrefabManager::LoadPrefabResource(Scene* scene)
 					}
 
 					mPrefabInstances.insert({ prefabPath, std::move(instance) });
+				}
+				else if (metaData.type() == entt::resolve<std::vector<PrefabResource>>()) // vector PrefabInstance도 탐색
+				{
+					auto prefabresourceVector = metaData.get(component->GetHandle()).cast<std::vector<PrefabResource>>();
+
+					for (auto& resource : prefabresourceVector)
+					{
+						auto prefabPath = resource.GetPrefabPath();
+
+						if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()
+							|| !std::filesystem::exists(prefabPath)) 
+							continue;
+
+						auto instance = LoadPrefab(prefabPath);
+
+						// 프리팹 리소스내부에 존재하는 프리팹 리소도 같이로드
+						for (auto& object : instance)
+						{
+							q.push(object.get());
+						}
+
+						mPrefabInstances.insert({ prefabPath, std::move(instance) });
+					}
+				}
+				else if (metaData.type().is_sequence_container()) // vector<POD> 타입
+				{
+					auto any = metaData.get(component->GetHandle());
+					auto view = any.as_sequence_container();
+
+					for (auto element : view)
+					{
+						entt::meta_any val = element.as_ref();
+
+						// member 변수
+						for (auto [id, metaData] : val.type().data())
+						{
+							if (metaData.type() == entt::resolve<PrefabResource>())
+							{
+								auto res = metaData.get(val).cast<PrefabResource>();
+								auto prefabPath = res.GetPrefabPath();
+							
+								if (mPrefabInstances.find(prefabPath) != mPrefabInstances.end()
+									|| !std::filesystem::exists(prefabPath)) 
+									continue;
+
+								auto instance = LoadPrefab(prefabPath);
+
+								// 프리팹 리소스내부에 존재하는 프리팹 리소도 같이로드
+								for (auto& object : instance)
+								{
+									q.push(object.get());
+								}
+
+								mPrefabInstances.insert({ prefabPath, std::move(instance) });
+							}
+						}
+					}
+
 				}
 			}
 		}
@@ -261,13 +313,15 @@ fq::game_module::PrefabManager::PrefabInstance fq::game_module::PrefabManager::I
 	{
 		auto orginObject = objectQueue.front();
 		objectQueue.pop();
-		auto clone = std::make_shared<fq::game_module::GameObject>(*orginObject);
+
+		auto clone = ObjectPool::GetInstance()->Assign<fq::game_module::GameObject>(*orginObject);
 		instance.push_back(clone);
 
 		auto parentT = orginObject->GetComponent<Transform>()->GetParentTransform();
 		if (parentT != nullptr)
 		{
 			auto iter = matchParent.find(parentT->GetGameObject()->GetName());
+			assert(iter != matchParent.end());
 			clone->GetComponent<Transform>()->SetParent(iter->second->GetComponent<Transform>());
 		}
 		matchParent.insert({ clone->GetName(), clone });

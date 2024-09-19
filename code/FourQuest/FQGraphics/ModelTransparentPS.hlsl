@@ -9,6 +9,12 @@ struct VertexOut
     float3 TangentW : TEXCOORD0;
     float2 UV : TEXCOORD1;
     float ClipSpacePosZ : TEXCOORD2;
+    float DepthView : TEXCOORD3;
+    float3 NormalV : TEXCOORD4;
+    float3 TangentV : TEXCOORD5;
+#ifdef VERTEX_COLOR
+    float4 Color : COLOR0;
+#endif
 };
 
 struct PixelOut
@@ -17,14 +23,9 @@ struct PixelOut
     float Reveal : SV_Target1;
 };
 
-cbuffer cbModelTexture : register(b0)
+cbuffer cbMaterial : register(b0)
 {
-    bool cUseAlbedoMap;
-    bool cUseMetalnessMap;
-    bool cUseRoughnessMap;
-    bool cUseNormalMap;
-    bool cUseEmissiveMap;
-    bool cUseOpacityMap;
+    ModelMaterial gModelMaterial;
 };
 
 cbuffer cbLight : register(b1)
@@ -42,15 +43,32 @@ cbuffer cbLight : register(b1)
     float pad2;
 };
 
-cbuffer cbAlpha : register(b2)
+cbuffer cbMaterialInstance : register(b2)
 {
     bool cUseAlpha;
     float cAlpha;
+    bool cUseDissolveCutoff;
+    float cDissolveCutoff;
+
+    int cUseRimLight;
+    float cRimPow;
+    int cUseInvRimLight;
+    float cInvRimPow;
+
+    float4 cRimColor;
+    float4 cInvRimColor;
+
+    float2 cUVScale;
+    float2 cUVOffset;
+
+    int cUseScaleOffset;
+    float cRimIntensity;
+    float cInvRimIntensity;
 };
 
 cbuffer cbDirectionalShadow : register(b3)
 {
-    matrix cLightViewProjTex[CascadeCount * MaxDirectionalShadowCount];
+    matrix cLightViewProj[CascadeCount * MaxDirectionalShadowCount];
     float4 cCascadeEnds[CascadeCount];
     int cShadowCount;
 }
@@ -60,66 +78,123 @@ Texture2D gMetalnessMap : register(t1);
 Texture2D gRoughnessMap : register(t2);
 Texture2D gNormalMap : register(t3);
 Texture2D gEmissiveMap : register(t4);
-Texture2D gOpacityMap : register(t5);
+Texture2D gMetalnessSmoothness : register(t5);
+
 TextureCube gDiffuseCubMap : register(t6);
 TextureCube gSpecularCubeMap : register(t7);
 Texture2D gSpecularBRDF_LUT : register(t8);
 Texture2DArray gDirectionalShadowMap : register(t9);
 
+Texture2D gNoiseMap : register(t10);
+
 SamplerState gSamplerAnisotropic : register(s0); 
 SamplerComparisonState gShadowSampler : register(s1);
 SamplerState gLinearClamp : register(s2); 
+SamplerState gLinearWrap : register(s3); 
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
-    float opacity = 1.f;
-    
-    if (cUseOpacityMap)
+
+    if (cUseScaleOffset)
     {
-        opacity = gOpacityMap.Sample(gSamplerAnisotropic, pin.UV).r;
-        clip(opacity - 0.1f);
+        pin.UV = pin.UV * cUVScale + cUVOffset;
     }
+
+#ifdef VERTEX_COLOR
+    float4 baseColor = gModelMaterial.BaseColor;
+    baseColor.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용
+#else
+    float4 baseColor = gModelMaterial.BaseColor;
+#endif
     
     if (cUseAlpha)
     {
-        opacity = cAlpha;
+        baseColor.a *= cAlpha;
     }
 
-    float3 albedo = float3(1.f, 1.f, 1.f);
-    
-    if (cUseAlbedoMap)
+    if (gModelMaterial.UseAlbedoMap)
     {
-        albedo = gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        baseColor *= gAlbedoMap.Sample(gSamplerAnisotropic, pin.UV);
     }
+
+    float3 albedo = baseColor.rgb;
+    float opacity = baseColor.a;
+    clip(opacity - gModelMaterial.AlphaCutoff);
     
     float metalness = 0.f;
 
-    if (cUseMetalnessMap)
+    if (gModelMaterial.UseMetalnessMap)
     {
         metalness = gMetalnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
+    }
+    else
+    {
+        metalness = gModelMaterial.Metalness;
     }
 
     float roughness = 0.f;
 
-    if (cUseRoughnessMap)
+    if (gModelMaterial.UseRoughnessMap)
     {
         roughness = gRoughnessMap.Sample(gSamplerAnisotropic, pin.UV).r;
     }
-    
+    else
+    {
+        roughness = gModelMaterial.Roughness;
+    }
+
     float3 normal = normalize(pin.NormalW);
     
-    if (cUseNormalMap)
+    if (gModelMaterial.UseNormalMap)
     {
         normal = gNormalMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
         normal = normalize(NormalSampleToWorldSpace(normal, pin.NormalW, pin.TangentW));
     }
     
-    float3 emissive = float3(0.f, 0.f, 0.f);
+    float3 emissive = gModelMaterial.EmissiveColor.rgb * gModelMaterial.EmissiveIntensity;
     
-    if (cUseEmissiveMap)
+    if (gModelMaterial.UseEmissiveMap)
     {
-        emissive = gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+        emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
+    }
+    
+    if (gModelMaterial.UseDissolve)
+    {
+        float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
+        float dissolveCutoff = gModelMaterial.DissolveCutoff;
+
+        if (cUseDissolveCutoff)
+        {
+            dissolveCutoff = cDissolveCutoff;
+        }
+
+        clip(noise.x - dissolveCutoff);
+
+        float outlineWeight = saturate(dissolveCutoff * gModelMaterial.OutlineThickness - noise.r);
+        float3 outlineColor = lerp(gModelMaterial.DissolveOutlineStartColor.rgb, gModelMaterial.DissolveOutlineEndColor.rgb ,outlineWeight);
+        float4 outlineEmissive = lerp(gModelMaterial.DissolveOutlineStartEmissive, gModelMaterial.DissolveOutlineEndEmissive ,outlineWeight);        
+
+        if(noise.r > dissolveCutoff * gModelMaterial.OutlineThickness)
+        {
+            outlineColor *= 0;
+            outlineEmissive *= 0;
+        }        
+        else
+        {
+            outlineColor *= 1;
+            outlineEmissive *= 1;
+        }
+
+        albedo += outlineColor;
+        emissive += outlineEmissive.rgb;
+    }
+
+    if (gModelMaterial.UseMetalnessSmoothness)
+    {
+        float2 metalnessSmoothness = gMetalnessSmoothness.Sample(gSamplerAnisotropic, pin.UV).xw;
+        metalness = metalnessSmoothness.x;
+        roughness = 1 - metalnessSmoothness.y;
     }
 
     float3 directLighting = 0.0;
@@ -151,7 +226,9 @@ PixelOut main(VertexOut pin) : SV_TARGET
                     }
                 }
  
-                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProjTex[index]);
+                float4 shadowPos = mul(float4(pin.PositionW, 1.f), cLightViewProj[index]);
+                shadowPos.x = shadowPos.x * 0.5f + 0.5f;
+                shadowPos.y = shadowPos.y * -0.5f + 0.5f;
                 shadowRatio = CalculateCascadeShadowRatio(gShadowSampler, gDirectionalShadowMap, shadowPos, i * CascadeCount + index, ShadowMapWidth);
                 
                 directLighting *= shadowRatio;
@@ -195,6 +272,21 @@ PixelOut main(VertexOut pin) : SV_TARGET
         float3 specularIBL = (F0 * specularBRDF.x + specularBRDF.y) * specularIrradiance;
 
         ambientLighting = diffuseIBL + specularIBL;
+    }
+
+    if (cUseRimLight)
+    {
+        float3 toEye = normalize(eyePosition - pin.PositionW.xyz);
+        float rim = saturate(dot(normal, toEye));
+        rim = pow(1 - rim, cRimPow);
+        emissive.rgb += rim * cRimColor.rgb * cRimIntensity;
+    }
+    if (cUseInvRimLight)
+    {
+        float3 toEye = normalize(eyePosition - pin.PositionW.xyz);
+        float rim = saturate(dot(normal, toEye));
+        rim = pow(rim, cInvRimPow);
+        emissive.rgb += rim * cInvRimColor.rgb * cInvRimIntensity;
     }
 
     float4 color = float4(directLighting + ambientLighting + emissive, opacity);

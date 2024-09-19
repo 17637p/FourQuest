@@ -12,7 +12,13 @@
 #include "AnimationSystem.h"
 #include "ParticleSystem.h"
 #include "DecalSystem.h"
+#include "TrailSystem.h"
 #include "UISystem.h"
+#include "PathFindingSystem.h"
+#include "LightProbeSystem.h"
+#include "LoadingSystem.h"
+#include "ResourceSystem.h"
+#include "StateEventSystem.h"
 
 fq::game_engine::GameProcess::GameProcess()
 	: mInputManager(std::make_unique<fq::game_module::InputManager>())
@@ -21,6 +27,7 @@ fq::game_engine::GameProcess::GameProcess()
 	, mEventManager(std::make_unique<fq::game_module::EventManager>())
 	, mPrefabManager(std::make_unique<fq::game_module::PrefabManager>())
 	, mSoundManager(std::make_unique<fq::game_module::SoundManager>())
+	, mScreenManager(std::make_unique<fq::game_module::ScreenManager>())
 	, mWindowSystem(std::make_unique<WindowSystem>())
 	, mRenderingSystem(std::make_unique<RenderingSystem>())
 	, mCameraSystem(std::make_unique<CameraSystem>())
@@ -30,7 +37,13 @@ fq::game_engine::GameProcess::GameProcess()
 	, mAnimationSystem(std::make_unique<AnimationSystem>())
 	, mParticleSystem(std::make_unique<ParticleSystem>())
 	, mDecalSystem(std::make_unique<DecalSystem>())
+	, mTrailSystem(std::make_unique<TrailSystem>())
 	, mUISystem(std::make_unique<UISystem>())
+	, mPathFindgingSystem(std::make_unique<PathFindingSystem>(this))
+	, mLightProbeSystem(std::make_unique<LightProbeSystem>(this))
+	, mLoadingSystem(std::make_unique<LoadingSystem>())
+	, mResourceSystem(std::make_unique<ResourceSystem>())
+	, mStateEventSystem(std::make_unique<StateEventSystem>())
 	, mGraphics(nullptr)
 	, mPhysics(nullptr)
 {}

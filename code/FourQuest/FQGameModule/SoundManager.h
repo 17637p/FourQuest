@@ -1,9 +1,11 @@
 #pragma once
+#pragma once
 
 #include <unordered_map>
 #include <string>
-
 #include "Fmod/fmod.hpp"
+#include "SoundEnum.h"
+
 
 namespace fq::game_module
 {
@@ -12,8 +14,9 @@ namespace fq::game_module
 	/// </summary>
 	class SoundManager
 	{
+		using SoundKey = std::string;
 		using SoundPath = std::string;
-		using SoundList = std::unordered_map<SoundPath, FMOD::Sound*>;
+		using SoundList = std::unordered_map<SoundKey, FMOD::Sound*>;
 		using SoundSystem = FMOD::System;
 		using SoundChannel = FMOD::Channel;
 		using ChannelIndex = unsigned int;
@@ -41,12 +44,12 @@ namespace fq::game_module
 		/// <summary>
 		/// 사운드를 로드합니다 
 		/// </summary>
-		void LoadSound(const SoundPath& path);
+		void LoadSound(const SoundKey& key , const SoundPath& path);
 
 		/// <summary>
 		/// 사운드를 언로드합니다 
 		/// </summary>
-		void UnloadSound(const SoundPath& path);
+		void UnloadSound( const SoundKey& key);
 
 		/// <summary>
 		/// 모든사운드를 언로드합니다 
@@ -61,7 +64,18 @@ namespace fq::game_module
 		/// <summary>
 		/// 사운드를 재생합니다 
 		/// </summary>
-		void Play(const SoundPath& path, bool bIsLoop, ChannelIndex index);
+		void Play(const SoundKey& key, bool bIsLoop, ChannelIndex index);
+
+		/// <summary>
+		/// 채널의 볼륨을 설정합니다
+		/// 범위는 0.f ~ 1.f
+		/// </summary>
+		void SetChannelVoulme(fq::sound::EChannel channel, float voulme);
+
+		/// <summary>
+		/// 채널의 볼륨을 반환합니다
+		/// </summary>
+		float GetChannelVoulme(fq::sound::EChannel channel)const;
 
 	private:
 		static constexpr ChannelIndex MaxChannel = 32;
@@ -69,6 +83,7 @@ namespace fq::game_module
 		FMOD_RESULT mFmodResult;
 		SoundSystem* mSoundSystem;
 		SoundChannel* mChannel[MaxChannel];
+		float mChannelVolume[MaxChannel];
 		SoundList mSoundList;
 		unsigned int mVersion;
 	};

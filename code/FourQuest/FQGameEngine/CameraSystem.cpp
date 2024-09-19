@@ -3,21 +3,25 @@
 #include <spdlog/spdlog.h>
 
 #include "../FQGraphics/IFQGraphics.h"
+#include "../FQGameModule/Camera.h"
+#include "../FQGameModule/Transform.h"
+#include "../FQGameModule/GameModule.h"
 #include "GameProcess.h"
 
 fq::game_engine::CameraSystem::CameraSystem()
 	:mGameProcess(nullptr)
 	, mSetMainCameraHandler{}
+	, mSetViewportSizeHandler{}
 	, mOnLoadedSceneHandler{}
 	, mGameMainCamera(nullptr)
 	, mEditorCamera(nullptr)
 	, mCameraType(CameraType::None)
+	, mAspectRatio(16.f/9.f)
+	, mGetMainCameraHandler{}
 {}
 
 fq::game_engine::CameraSystem::~CameraSystem()
-{
-
-}
+{}
 
 void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 {
@@ -34,7 +38,36 @@ void fq::game_engine::CameraSystem::Initialize(GameProcess* gameProcess)
 		[this](fq::event::OnLoadScene event)
 		{
 			SetMainGameCamera(FindMainCamera());
+		
 			if (!mGameMainCamera) SPDLOG_WARN("Can't Find MainCamera");
+
+			auto view = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::Camera>();
+
+			for (auto& object : view)
+			{
+				object.GetComponent<game_module::Camera>()->SetAspectRatio(mAspectRatio);
+			}
+		});
+
+	/// ½ºÅ©¸° 
+
+	/*mSetViewportSizeHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::SetScreenSize>(
+		[this](fq::event::SetScreenSize event)
+		{
+			float aspectRatio = static_cast<float>( event.width) / event.height;
+			mAspectRatio = aspectRatio;
+			auto view = mGameProcess->mSceneManager->GetCurrentScene()->GetComponentView<game_module::Camera>();
+
+			for (auto& object : view)
+			{
+				object.GetComponent<game_module::Camera>()->SetAspectRatio(aspectRatio);
+			}
+		});*/
+
+	mGetMainCameraHandler = mGameProcess->mEventManager->RegisterHandle<fq::event::GetMainCamera>(
+		[this](fq::event::GetMainCamera event)
+		{
+			*event.mainCamera = mGameMainCamera;
 		});
 }
 
@@ -42,7 +75,7 @@ void fq::game_engine::CameraSystem::SetMainGameCamera(fq::game_module::Camera* c
 {
 	mGameMainCamera = camera;
 }
-
+	
 void fq::game_engine::CameraSystem::SetEditorCamera(fq::game_module::Camera* camera)
 {
 	mEditorCamera = camera;
@@ -72,7 +105,7 @@ void fq::game_engine::CameraSystem::Update()
 		transform.worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(transform.worldScale)
 			* DirectX::SimpleMath::Matrix::CreateFromQuaternion(transform.worldRotation)
 			* DirectX::SimpleMath::Matrix::CreateTranslation(transform.worldPosition);
-		
+
 		mGameProcess->mGraphics->UpdateCamera(transform);
 	}
 	else if (mCameraType == CameraType::Editor)
@@ -91,9 +124,9 @@ fq::game_module::Camera* fq::game_engine::CameraSystem::FindMainCamera() const
 {
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
-	for ( auto& object : scene->GetComponentView<fq::game_module::Camera>())
+	for (auto& object : scene->GetComponentView<fq::game_module::Camera>())
 	{
-		auto camera =  object.GetComponent<fq::game_module::Camera>();
+		auto camera = object.GetComponent<fq::game_module::Camera>();
 
 		if (camera->IsMain())
 		{

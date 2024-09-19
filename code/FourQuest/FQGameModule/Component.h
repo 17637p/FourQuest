@@ -5,6 +5,7 @@
 namespace fq::game_module
 {
 	class Scene;
+	class Transform;
 
 	/// <summary>
 	/// GameOnject에 귀속되어 실질적인 
@@ -16,8 +17,8 @@ namespace fq::game_module
 	{
 	public:
 		Component();
-		Component(const Component& other) = default;
-		Component& operator =(const Component& other) = default;
+		Component(const Component& other);
+		Component& operator =(const Component& other);
 		Component(Component&& other) = default;
 
 		virtual ~Component();
@@ -31,6 +32,11 @@ namespace fq::game_module
 		/// 복사본을 반환합니다
 		/// </summary>
 		virtual std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone = nullptr)const abstract;
+
+		/// <summary>
+		/// Scene 시작시 OnStart 이전에 호출
+		/// </summary>
+		virtual void OnAwake() {}
 
 		/// <summary>
 		/// Scene 시작시 호출
@@ -99,6 +105,11 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>삭제예정이면 true, 그렇지않으면 false</returns>
 		bool IsTobeRemoved()const { return mbIsToBeRemoved; }
+
+		/// <summary>
+		/// 트랜스폼 컴포넌트를 반환합니다 
+		/// </summary>
+		Transform* GetTransform();
 
 	private:
 		GameObject* mGameObject;

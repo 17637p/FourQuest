@@ -25,30 +25,33 @@ namespace fq::physics
 		bool initialize(physx::PxPhysics* physics, physx::PxScene* scene, std::shared_ptr<PhysicsCollisionDataManager> collisionDataManager);
 
 		/// <summary>
+		/// 업데이트
+		/// </summary>
+		bool Update();
+
+		/// <summary>
 		/// 캐릭터 파직스 (관절) 추가
 		/// </summary>
-		bool CreateCharacterphysics(const CharacterPhysicsInfo& info);
+		bool CreateCharacterphysics(const ArticulationInfo& info);
+
+		/// <summary>
+		/// 캐릭터 파직스 삭제
+		/// </summary>
+		bool RemoveArticulation(const unsigned int& id);
 
 		/// <summary>
 		/// 가지고 있는 관절 중, 링크 및 조인트 추가
 		/// </summary>
 		template <typename ...Params>
-		bool AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, Params... params);
-
-		/// <summary>
-		/// 물리 공간에 추가하여 CharacterPhysics를 시뮬레이션할 캐릭터 파직스
-		/// </summary>
-		bool SimulationCharacter(unsigned int id);
-
-		/// <summary>
-		/// 씬을 변경할 때 호출하는 함수
-		/// </summary>
-		bool ChangeScene();
+		bool AddArticulationLink(unsigned int id, LinkInfo& info, int* collisionMatrix, Params... params);
 
 		/// <summary>
 		/// 캐릭터 파직스를 반환하는 함수
 		/// </summary>
 		inline std::shared_ptr<CharacterPhysics> GetCharacterPhysics(unsigned int id);
+
+		void GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData);
+		void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData, int* collisionMatrix);
 
 	private:
 		std::weak_ptr<PhysicsCollisionDataManager> mCollisionDataManager;
@@ -57,10 +60,11 @@ namespace fq::physics
 		physx::PxScene* mScene;
 
 		std::unordered_map<unsigned int, std::shared_ptr<CharacterPhysics>> mCharacterPhysicsContainer;
+		std::unordered_map<unsigned int, std::shared_ptr<CharacterPhysics>> mSimulationCharacterPhysicsContainer;
 	};
 
 	template<typename ...Params>
-	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, const CharacterLinkInfo& info, int* collisionMatrix, Params ...params)
+	bool PhysicsCharacterPhysicsManager::AddArticulationLink(unsigned int id, LinkInfo& info, int* collisionMatrix, Params ...params)
 	{
 		assert(mCharacterPhysicsContainer.find(id) != mCharacterPhysicsContainer.end());
 		std::shared_ptr<CharacterPhysics> characterPhysics = mCharacterPhysicsContainer.find(id)->second;
@@ -74,5 +78,6 @@ namespace fq::physics
 	{
 		return mCharacterPhysicsContainer.find(id)->second;
 	}
+
 #pragma endregion
 }

@@ -55,6 +55,16 @@ void fq::game_module::Light::SetSpot(float spot)
 	mInfomation.spot = spot;
 }
 
+void fq::game_module::Light::SetLightMode(fq::graphics::ELightMode mode)
+{
+	mInfomation.mode = mode;
+}
+
+fq::graphics::ELightMode fq::game_module::Light::GetLightMode() const
+{
+	return mInfomation.mode;
+}
+
 void fq::game_module::Light::fireSetLightType()
 {
 	if (GetGameObject() && GetScene())
@@ -92,7 +102,6 @@ void fq::game_module::Light::SetShadow(bool bUseShadow)
 		scene->GetEventManager()->FireEvent<event::SetLightShadow>(
 			{ mbOnShadow, GetGameObject()->GetID() });
 }
-
 bool fq::game_module::Light::OnShadow() const
 {
 	if (mInfomation.type != LightType::Directional) return false;

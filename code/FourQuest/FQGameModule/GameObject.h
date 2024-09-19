@@ -12,6 +12,7 @@ namespace fq::game_module
 {
 	class Scene;
 	class Component;
+	class Transform;
 
 	/// <summary>
 	/// Component들을 저장하고 관리하는 컨테이너
@@ -47,14 +48,21 @@ namespace fq::game_module
 
 		GameObject(const GameObject&& other) = delete;
 
+
 		//////////////////////////////////////////////////////////////////////////
 		//					      Call Back Event								//  
 		//////////////////////////////////////////////////////////////////////////
 
 		/// <summary>
+		/// Scene 시작시 OnStart 이전에 호출
+		/// </summary>
+		void OnAwake();
+
+		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
 		void OnStart();
+
 
 		/// <summary>
 		/// 고정된 프레임으로 호출
@@ -139,6 +147,12 @@ namespace fq::game_module
 		/// </summary>
 		/// <returns>없으면 nullptr, 그렇지 않으면 부모 포인터</returns>
 		GameObject* GetParent();
+
+		/// <summary>
+		/// 계층구조 최상단의 부모를 반환합니다
+		/// 자기자신이 최상단이면 자기 자신을 반환합니다
+		/// </summary>
+		GameObject* GetRootObject();
 
 		/// <summary>
 		/// 부모 계층이 있는지 확인합니다
@@ -238,6 +252,11 @@ namespace fq::game_module
 		/// </summary>
 		void CleanUpComponent();
 
+		/// <summary>
+		/// 트랜스폼 컴포넌트를 반환합니다 
+		/// </summary>
+		Transform* GetTransform();
+
 	private:
 		entt::meta_handle GetHandle()override;
 
@@ -303,7 +322,4 @@ namespace fq::game_module
 		T* component = static_cast<T*>(iter->second.get());
 		return component;
 	}
-
 }
-
-
