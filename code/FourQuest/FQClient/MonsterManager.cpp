@@ -90,3 +90,11 @@ void fq::client::MonsterManager::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mAddGameObjectHandler);
 	mMonsters.clear();
 }
+
+void fq::client::MonsterManager::OnUpdate(float dt)
+{
+	if (GetScene()->GetInputManager()->IsKeyState(EKey::Z, EKeyState::Tap))
+	{
+		spdlog::debug("FPS : {} Monster Count : {}", GetScene()->GetTimeManager()->GetFPS(), GetMonsterSize());
+	}
+}

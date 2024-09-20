@@ -4,11 +4,11 @@
 
 namespace fq::client
 {
-	class BossMonsterComboAttackState : public fq::game_module::IStateBehaviour
+	class BossMonsterEatState : public fq::game_module::IStateBehaviour
 	{
 	public:
-		BossMonsterComboAttackState();
-		~BossMonsterComboAttackState();	
+		BossMonsterEatState();
+		~BossMonsterEatState();
 
 	private:
 		void OnStateEnter(game_module::Animator& animator, game_module::AnimationStateNode& state) override;
@@ -18,9 +18,13 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
-		float mEmitAttackTime;
-		float mAttackElapsedTime;
-		float mXAxisOffset;
+		DirectX::SimpleMath::Color mRimLightColor;
+		float mEatTime;
+		float mEatElapsedTime;
+		float mRecoverHp;
+		bool mbIsDestroyArmour;
+
+		std::shared_ptr<game_module::GameObject> mArmour;
 
 		friend void RegisterMetaData();
 	};

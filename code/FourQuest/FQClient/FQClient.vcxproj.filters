@@ -416,9 +416,6 @@
     <ClInclude Include="IMonster.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="Spawner.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -481,6 +478,21 @@
     </ClInclude>
     <ClInclude Include="PlayerMovementSoundState.h">
       <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterEatState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterManager.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterRoarState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterContinousState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterPreContinousState.h">
+      <Filter>include\02.Monster\Boss</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -742,9 +754,6 @@
     <ClCompile Include="PlantMonsterHitState.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="Spawner.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -798,6 +807,21 @@
     </ClCompile>
     <ClCompile Include="PlayerMovementSoundState.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterManager.cpp">
+      <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterEatState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterRoarState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterPreContinousState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterContinousState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

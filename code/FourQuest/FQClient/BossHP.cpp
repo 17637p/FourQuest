@@ -26,7 +26,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::BossHP::Clone(std::share
 
 void fq::client::BossHP::OnStart()
 {
-	game_module::Transform* myTransform = GetGameObject()->GetComponent<game_module::Transform>();
+		game_module::Transform* myTransform = GetGameObject()->GetComponent<game_module::Transform>();
 	mHPBarGauge = myTransform->GetChildren()[0]->GetComponent<fq::game_module::ImageUI>();
 	mHPWidth = mHPBarGauge->GetUIInfomations()[0].Width;
 

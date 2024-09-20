@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <directxtk/SimpleMath.h>
 
 #include "MonsterDefine.h"
 
@@ -46,6 +47,14 @@ namespace fq::client
 		std::string ObjectOrPrefabName = ""; // 전체 오브젝트 중에 이 이름을 가진 오브젝트를 탐색
 
 		bool isClear = false;
+	};
+
+	// 보스몬스터 스폰 요청 이벤트 
+	struct RequestSpawnMonster
+	{
+		EMonsterType MonsterType = EMonsterType::Melee; // 스폰하는 몬스터 타입
+		unsigned int MonsterNumber = 1; // 스폰하는 몬스터 갯수 
+		DirectX::SimpleMath::Vector3 Position = DirectX::SimpleMath::Vector3::Zero; // 스폰하는 위치
 	};
 
 	struct SpawnCondition

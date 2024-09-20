@@ -169,7 +169,6 @@ void fq::game_engine::UISystem::UnloadImageUI(game_module::GameObject* object)
 	}
 
 	auto imageUI = object->GetComponent<game_module::ImageUI>();
-
 	auto& imageObjects = imageUI->GetImageObjects();
 
 	for (auto imageObject : imageObjects)
@@ -226,7 +225,6 @@ void fq::game_engine::UISystem::UnloadTextUI(game_module::GameObject* object)
 	}
 
 	game_module::TextUI* textUI = object->GetComponent<game_module::TextUI>();
-
 	graphics::ITextObject* textObject = textUI->GetTextObject();
 
 	if (textObject)
