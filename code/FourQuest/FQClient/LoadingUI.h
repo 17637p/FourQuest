@@ -12,7 +12,8 @@ namespace fq::client
 {
 	struct LoadingText
 	{
-		std::string Text = "";
+		std::string Title = "";
+		std::string Content = "";
 	};
 
 	class LoadingUI : public game_module::Component
@@ -42,7 +43,11 @@ namespace fq::client
 
 		int mCurGuideID;
 		std::vector<game_module::GameObject*> mImages;
-		game_module::TextUI* mText;
+		game_module::TextUI* mTitle;
+		game_module::TextUI* mContent;
+
+		game_module::TextUI* mBackgroundTitle;
+		game_module::TextUI* mBackgroundContent;
 
 		std::vector<LoadingText> mTexts;
 

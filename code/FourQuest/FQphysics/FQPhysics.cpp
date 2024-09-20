@@ -431,6 +431,10 @@ namespace fq::physics
 	{
 		mCharacterPhysicsManager->SetArticulationData(id, articulationData, mCollisionMatrix);
 	}
+	unsigned int FQPhysics::GetArticulationCount()
+	{
+		return mCharacterPhysicsManager->GetCharacterPhysicsCount();
+	}
 #pragma endregion
 
 #pragma region PhysicsClothManager

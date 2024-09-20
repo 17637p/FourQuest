@@ -27,6 +27,8 @@ void fq::game_engine::ResourceSystem::Initialize(GameProcess* game)
 	mGameProcess = game;
 	mPreOnLoadSceneHandler = mGameProcess->mEventManager->
 		RegisterHandle<fq::event::PreOnLoadScene>(this, &ResourceSystem::LoadSceneResource);
+	mPreOnLoadSceneHandler = mGameProcess->mEventManager->
+		RegisterHandle<fq::event::LoadMaterial>(this, &ResourceSystem::LoadMaterialResource);
 }
 
 void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScene event)
@@ -37,7 +39,7 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 	list.Load(listPath.string());
 
 	mLoadedResourceCount = 0;
-	mResourceCount = list.modelPaths.size() + list.animationPaths.size() +list.materialPaths.size();
+	mResourceCount = list.modelPaths.size() + list.animationPaths.size() + list.materialPaths.size();
 
 	// Model ·Îµå
 	for (const auto& modelPath : list.modelPaths)
@@ -59,6 +61,12 @@ void fq::game_engine::ResourceSystem::LoadSceneResource(fq::event::PreOnLoadScen
 		LoadMaterial(materialPath);
 		++mLoadedResourceCount;
 	}
+}
+
+void fq::game_engine::ResourceSystem::LoadMaterialResource(fq::event::LoadMaterial event)
+{
+	LoadMaterial(event.materialPath);
+	*event.materialPtr = GetMaterial(event.materialPath);
 }
 
 void fq::game_engine::ResourceSystem::Finalize()

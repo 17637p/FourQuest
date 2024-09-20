@@ -35,13 +35,7 @@ namespace fq::client
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;
-
 		ESoulType mSoulType;
-
-		DirectX::SimpleMath::Color mSwordColor;
-		DirectX::SimpleMath::Color mStaffColor;
-		DirectX::SimpleMath::Color mAxeColor;
-		DirectX::SimpleMath::Color mBowColor;
 
 		friend void RegisterMetaData();
 	};

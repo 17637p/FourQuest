@@ -72,9 +72,6 @@
     <Filter Include="src\02.Monster\Melee">
       <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\03.Attack">
-      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\07.Quest">
       <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
     </Filter>
@@ -104,6 +101,21 @@
     </Filter>
     <Filter Include="include\06.ETC">
       <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Bow">
+      <UniqueIdentifier>{49914565-c983-4fe8-92a4-f6316be2c96e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player\State\ArcherState">
+      <UniqueIdentifier>{66b11bb0-e02d-4c9c-9ceb-c651b9e7dc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player\State\Berserker">
+      <UniqueIdentifier>{868f5cc0-acaf-4ce3-92a4-c37e7109a4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Berserker">
+      <UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.Attack">
+      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -239,7 +251,7 @@
     <ClInclude Include="KnightArmour.h">
       <Filter>include\01.Player</Filter>
     </ClInclude>
-    <ClInclude Include="ShiedlDashState.h">
+    <ClInclude Include="ShieldDashState.h">
       <Filter>include\01.Player\State</Filter>
     </ClInclude>
     <ClInclude Include="KnockBack.h">
@@ -398,6 +410,87 @@
     <ClInclude Include="ResultUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="PlantMonsterHitState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonster.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawner.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnStruct.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfoVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSet.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSpawner.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrowAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ArcherArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BowDashState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowMultiShotAttackState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowStrongChargingState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerAttackState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushChargingState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="EBerserkerAttackType.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterGroggyState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovementSoundState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterAOEAttackState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantAOEAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="DebuffPoisonZone.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -517,7 +610,7 @@
     <ClCompile Include="KnightArmour.cpp">
       <Filter>src\01.Player</Filter>
     </ClCompile>
-    <ClCompile Include="ShiedlDashState.cpp">
+    <ClCompile Include="ShieldDashState.cpp">
       <Filter>src\01.Player\State</Filter>
     </ClCompile>
     <ClCompile Include="LinearAttack.cpp">
@@ -654,6 +747,75 @@
     </ClCompile>
     <ClCompile Include="ResultUI.cpp">
       <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerGroup.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnStruct.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSet.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSpawner.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrowAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ArcherArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BowDashState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowMultiShotAttackState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowStrongChargingState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerAttackState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushChargingState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterGroggyState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerVariable.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementSoundState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterAOEAttackState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantAOEAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterHitState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DebuffPoisonZone.cpp">
+      <Filter>src\03.Attack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

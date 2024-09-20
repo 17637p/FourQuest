@@ -5,6 +5,7 @@
 #include "../FQGameModule/Animator.h"
 #include "GameManager.h"
 #include "LinearAttack.h"
+#include "PlantAOEAttack.h"
 #include "Attack.h"
 #include "HpBar.h"
 
@@ -21,6 +22,7 @@ fq::client::PlantMonster::PlantMonster()
 	, mAttackCoolTime(0.f)
 	, mAttackElapsedTime(0.f)
 	, mRotationSpeed(0.1f)
+	, mbIsAOEAttacker(false)
 {
 }
 
@@ -91,7 +93,42 @@ void fq::client::PlantMonster::EmitAttack()
 	GetScene()->AddGameObject(attackObj);
 
 	// 원거리 공격사운드  
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , 3 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "MR_Posion", false , fq::sound::EChannel::SE });
+}
+
+void fq::client::PlantMonster::EmitAOEAttack()
+{
+	using namespace game_module;
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mAOEAttackPrefab);
+	auto& attackObj = *(instance.begin());
+
+	auto attackT = attackObj->GetComponent<Transform>();
+	auto transform = GetComponent<Transform>();
+
+	DirectX::SimpleMath::Vector3 offset = { 0.f,1.f,0.f };
+	attackT->SetLocalPosition(transform->GetWorldPosition() + offset);
+
+	// 포물선 공격 설정
+	auto arcAttack = attackObj->GetComponent<PlantAOEAttack>();
+	arcAttack->SetmaxRange(mAttackRange);
+	arcAttack->SetStartPosition(transform->GetWorldPosition() + offset);
+	arcAttack->SetTargetPosition(mTarget->GetComponent<fq::game_module::Transform>()->GetWorldPosition());
+
+	// 공격 설정
+	auto attackComponent = attackObj->GetComponent<client::Attack>();
+	AttackInfo info{};
+	info.attacker = attackObj.get();
+	info.damage = mAttackPower;
+	info.bIsInfinite = false;
+	info.remainingAttackCount = 0b11111111;
+	attackComponent->Set(info);
+
+	// 공격 쿨타임 관련처리
+	mAttackElapsedTime = mAttackCoolTime;
+
+	GetScene()->AddGameObject(attackObj);
+	arcAttack->DetermineArrivalTime();
 }
 
 void fq::client::PlantMonster::OnUpdate(float dt)
@@ -138,6 +175,12 @@ void fq::client::PlantMonster::OnTriggerEnter(const game_module::Collision& coll
 
 void fq::client::PlantMonster::SetTarget(fq::game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	// Target이 사라진 경우
 	if (target == nullptr)
 	{
@@ -161,25 +204,24 @@ void fq::client::PlantMonster::LookAtTarget()
 
 	auto targetPos = targetT->GetWorldPosition();
 	auto myPos = transform->GetWorldPosition();
-
+	auto currentRotation = transform->GetWorldRotation();
 	auto directV = targetPos - myPos;
 	directV.y = 0.f;
 	directV.Normalize();
 
-	auto currentRotation = transform->GetWorldRotation();
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
+
+	// UpVector가 뒤집히는 경우에 대한 예외 처리 
+	if (directV.z >= 1.f)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f, -1.f, 0.f });
+	else if (directV != DirectX::SimpleMath::Vector3::Zero)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
+
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
-	
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
 
-	// UpVector가 뒤집힌 경우
-	if (rotationMatrix._22 <= -0.9f)
-	{
-		rotationMatrix._22 = 1.f;
-	}
-	transform->SetLocalRotationToMatrix(rotationMatrix);
+	transform->SetWorldRotation(result);
 }
 
 void fq::client::PlantMonster::CheckTargetInAttackRange()
@@ -209,9 +251,13 @@ void fq::client::PlantMonster::CheckAttackAble()
 {
 	bool attackAble = mAttackElapsedTime == 0.f;
 
-	if (attackAble)
+	if (attackAble && !mbIsAOEAttacker)
 	{
 		mAnimator->SetParameterTrigger("OnAttack");
+	}
+	else if (attackAble && mbIsAOEAttacker)
+	{
+		mAnimator->SetParameterTrigger("OnAOEAttack");
 	}
 }
 
@@ -227,11 +273,16 @@ void fq::client::PlantMonster::FindTarget()
 	// 가장 가까운 플레이어를 쿼리
 	for (const auto& player : mGameManager->GetPlayers())
 	{
-		auto playerT = player->GetComponent<game_module::Transform>();
+		if (player->GetTag() == game_module::ETag::Soul)
+		{
+			continue;
+		}
 
+		auto playerT = player->GetComponent<game_module::Transform>();
 		auto playerPos = playerT->GetWorldPosition();
 
 		float distance = (playerPos - monsterPos).Length();
+
 
 		if (distance <= minDistance)
 		{

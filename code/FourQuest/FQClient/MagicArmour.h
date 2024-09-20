@@ -13,6 +13,7 @@ namespace fq::game_module
 namespace fq::client
 {
 	class Player;
+	class AimAssist;
 
 	/// <summary>
 	/// 마법 갑옷 
@@ -53,9 +54,16 @@ namespace fq::client
 		float GetAOEMoveRange() const { return mAOEMoveRange; }
 
 		/// <summary>
-		/// R 스틱의 입력방향으로 바라보는 방향을 설정합니다
+		/// R 스틱의 입력방향으로 바라보는 방0향을 설정합니다
 		/// </summary>
 		void SetLookAtRStickInput();
+
+		void CountLaserCoolTime();
+
+		/// <summary>
+		/// 가까운 몬스터에게 에임을 보정합니다.
+		/// </summary>
+		void AimToNearMonster();
 
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
@@ -70,6 +78,7 @@ namespace fq::client
 		game_module::Transform* mTransform;
 		game_module::Animator* mAnimator;
 		game_module::CharacterController* mController;
+		AimAssist* mAimAisst;
 		Player* mPlayer;
 
 		unsigned int mMagicBallPenetrationCount;
@@ -77,12 +86,12 @@ namespace fq::client
 		float mAOEMoveRange;
 		float mAOECoolTime;
 		float mAOEElapsedTime;
-		float mRazerCoolTime;
-		float mRazerElapsedTime;
+		float mLaserCoolTime;
+		float mLaserElapsedTime;
 		float mRStickNoInputTime;
-		float mRazerDistance;
-		float mRazerHiTick;
-		float mRazerHitElapsedTime;
+		float mLaserDistance;
+		float mLaserHiTick;
+		float mLaserHitElapsedTime;
 
 		std::shared_ptr<game_module::GameObject> mLaserLineEffect;
 		std::shared_ptr<game_module::GameObject> mLaserHeadEffect;

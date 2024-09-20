@@ -43,6 +43,7 @@ fq::game_engine::PhysicsSystem::PhysicsSystem()
 	, mRaycastHandler{}
 	, mArticulationTypeID(0)
 	, mAddInputMoveHandler{}
+	, mMaxRagdollNumber(15)
 {}
 
 fq::game_engine::PhysicsSystem::~PhysicsSystem()
@@ -129,6 +130,7 @@ void fq::game_engine::PhysicsSystem::OnLoadScene(const fq::event::OnLoadScene ev
 void fq::game_engine::PhysicsSystem::OnDestroyedGameObject(const fq::event::OnDestoryedGameObject& event)
 {
 	removeCollider(event.object);
+	removeArticulation(event.object);
 }
 
 void fq::game_engine::PhysicsSystem::OnAddGameObject(const fq::event::AddGameObject& event)
@@ -166,6 +168,11 @@ void fq::game_engine::PhysicsSystem::SetCollisionMatrix(fq::physics::CollisionMa
 {
 	mCollisionMatrix = matrix;
 	setPhysicsEngineinfo();
+}
+
+void fq::game_engine::PhysicsSystem::SetMaxRagdollNumber(int maxRagdollNumber)
+{
+	mMaxRagdollNumber = maxRagdollNumber;
 }
 
 void fq::game_engine::PhysicsSystem::AddTerrainCollider(fq::game_module::GameObject* object)
@@ -396,7 +403,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{
-				convexMeshInfo.vertices[i] = -mesh.Vertices[i].Pos;
+				convexMeshInfo.vertices[i] = mesh.Vertices[i].Pos;
 			}
 		}
 		else // skinned mesh 
@@ -416,7 +423,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 			for (int i = 0; i < mesh.Vertices.size(); ++i)
 			{	
-				convexMeshInfo.vertices[i] = -mesh.Vertices[i].Pos;
+				convexMeshInfo.vertices[i] = mesh.Vertices[i].Pos;
 			}
 		}
 		meshCollider->SetConvexMeshInfomation(convexMeshInfo);
@@ -452,6 +459,7 @@ void fq::game_engine::PhysicsSystem::addCollider(fq::game_module::GameObject* ob
 
 		auto articulation = object->GetComponent<Articulation>();
 		articulation->Load();
+		articulation->SetArticulationID(id);
 		auto articulationData = articulation->GetArticulationData();
 
 		ArticulationInfo articulationInfo;
@@ -621,7 +629,24 @@ void fq::game_engine::PhysicsSystem::removeCollider(fq::game_module::GameObject*
 
 		mColliderContainer.at(id).bIsDestroyed = true;
 	}
+}
 
+void fq::game_engine::PhysicsSystem::removeArticulation(fq::game_module::GameObject* object)
+{
+	using namespace fq::game_module;
+	if (!object->HasComponent<RigidBody>())
+	{
+		return;
+	}
+
+	if (object->HasComponent<Articulation>())
+	{
+		auto articulation = object->GetComponent<Articulation>();
+		auto id = articulation->GetID();
+		assert(id != physics::unregisterID);
+
+		mColliderContainer.at(id).bIsDestroyed = true;
+	}
 }
 
 void fq::game_engine::PhysicsSystem::callBackEvent(fq::physics::CollisionData data, fq::physics::ECollisionEventType type)
@@ -712,8 +737,11 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 			}
 			transform->SetWorldMatrix(matrix);
 		}
-		else if (colliderInfo.enttID == mArticulationTypeID)
+		else if (colliderInfo.enttID == mArticulationTypeID )
 		{
+			if (mGameProcess->mTimeManager->GetFPS() <= 60 && mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 			auto data = mPhysicsEngine->GetArticulationData(id);
 
@@ -780,8 +808,8 @@ void fq::game_engine::PhysicsSystem::SinkToGameScene()
 				DirectX::SimpleMath::Vector3 position;
 				dxTransform.Decompose(scale, rotation, position);
 
-				transform->SetLocalPosition(position);
-				transform->SetLocalRotation(rotation);
+				transform->SetWorldPosition(position);
+				transform->SetWorldRotation(rotation);
 
 				//nodeHierarchy.UpdateByLocalTransform();
 				//nodeHierarchy.Update(currentAnimationTime + durationTime, currentAnimation);
@@ -859,9 +887,15 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 
 			fq::physics::CharacterMovementGetSetData moveData;
 
+			auto movementInfo = controller->GetMovementInfo();
+			moveData.acceleration = movementInfo.acceleration;
+			moveData.maxSpeed = movementInfo.maxSpeed;
 			moveData.velocity = rigid->GetLinearVelocity();
 			moveData.isFall = controller->IsFalling();
+			moveData.restriction = controller->GetMoveRestrction();
+			moveData.maxSpeed = controller->GetMovementInfo().maxSpeed;
 			mPhysicsEngine->SetCharacterMovementData(id, moveData);
+
 		}
 		else if (colliderInfo.enttID == mCapsuleTypeID)
 		{
@@ -917,6 +951,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 		}
 		else if (colliderInfo.enttID == mArticulationTypeID)
 		{
+			if (mGameProcess->mTimeManager->GetFPS() <= 60)
+				continue;
+
 			auto articulation = colliderInfo.component->GetComponent<fq::game_module::Articulation>();
 
 			if (colliderInfo.component->GetComponent<fq::game_module::Animator>() == nullptr)
@@ -954,6 +991,9 @@ void fq::game_engine::PhysicsSystem::SinkToPhysicsScene()
 			//{
 			//	linkDataUpdate(link);
 			//}
+
+			if (mMaxRagdollNumber <= mPhysicsEngine->GetArticulationCount())
+				continue;
 
 			mPhysicsEngine->SetArticulationData(id, data);
 		}
@@ -1059,10 +1099,14 @@ void fq::game_engine::PhysicsSystem::ProcessCallBack()
 		auto lfs = mColliderContainer.find(data.myId);
 		auto rhs = mColliderContainer.find(data.otherId);
 
-		assert(data.myId != data.otherId);
-		assert(lfs != mColliderContainer.end());
-		assert(rhs != mColliderContainer.end());
-
+		if (data.myId == data.otherId
+			|| lfs == mColliderContainer.end()
+			|| rhs == mColliderContainer.end())
+		{
+			spdlog::warn("ColliderContainer CallBack Error");
+			continue; 
+		}
+		
 		auto lhsObject = lfs->second.component->GetGameObject();
 		auto rhsObject = rhs->second.component->GetGameObject();
 

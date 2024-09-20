@@ -10,6 +10,14 @@ namespace fq::game_module
 
 namespace fq::client
 {
+	enum class EDirection
+	{
+		Top,
+		Left,
+		Bottom,
+		Right
+	};
+
 	class CameraMoving : public fq::game_module::Component
 	{
 	public:
@@ -24,47 +32,38 @@ namespace fq::client
 		/// </summary>
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
-		float GetMoveSpeed() const { return mMoveSpeed; }
-		void SetMoveSpeed(float val) { mMoveSpeed = val; }
-
-		float GetZoomSpeed() const { return mZoomSpeed; }
-		void SetZoomSpeed(float val) { mZoomSpeed = val; }
-
-		float GetZoomMin() const { return mZoomMin; }
-		void SetZoomMin(float val) { mZoomMin = val; }
-		float GetZoomMax() const { return mZoomMax; }
-		void SetZoomMax(float val) { mZoomMax = val; }
-
-		DirectX::SimpleMath::Vector2 GetZoomOutPadX() const { return mZoomOutPadX; }
-		void SetZoomOutPadX(const DirectX::SimpleMath::Vector2& val) { mZoomOutPadX = val; }
-
-		DirectX::SimpleMath::Vector2 GetZoomOutPadY() const { return mZoomOutPadY; }
-		void SetZoomOutPadY(const DirectX::SimpleMath::Vector2& val) { mZoomOutPadY = val; }
-
-		DirectX::SimpleMath::Vector2 GetZoomInPadX() const { return mZoomInPadX; }
-		void SetZoomInPadX(const DirectX::SimpleMath::Vector2& val) { mZoomInPadX = val; }
-
-		DirectX::SimpleMath::Vector2 GetZoomInPadY() const { return mZoomInPadY; }
-		void SetZoomInPadY(const DirectX::SimpleMath::Vector2& val) { mZoomInPadY = val; }
+		void InitCameraPos();
+		DirectX::SimpleMath::Vector3 GetCenterCameraInWorld();
 
 		void AddPlayerTransform(fq::game_module::Transform* player);
 		void DeletePlayerTransform(fq::game_module::Transform* player);
 
+		bool IsValid(int playerID, EDirection eDirection);
+
+		void SetColliderRotation();
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
-		DirectX::SimpleMath::Vector3 getCenterPointInView(float dt);
+		DirectX::SimpleMath::Vector3 getViewPos(DirectX::SimpleMath::Vector3 worldPos);
+		DirectX::SimpleMath::Vector3 getProjPos(DirectX::SimpleMath::Vector3 worldPos);
+
+		DirectX::SimpleMath::Vector3 getCenterPosInView(float dt);
 		void chaseCenter(float dt);
+
+		void Zoom(float dt);
 		void zoomIn(float dt);
 		void zoomOut(float dt);
+		void restrcitPlayerMove();
 
 	private:
 		fq::game_module::Camera* mMainCamera;
 
 		std::vector<fq::game_module::Transform*> mPlayerTransforms;
 
+		DirectX::SimpleMath::Vector3 mPlayersCenterPoint;
+
 		bool mIsFixed;
-		//
 
 		float mCurZoom;
 		bool mIsZoomIn;
@@ -83,5 +82,10 @@ namespace fq::client
 
 		DirectX::SimpleMath::Vector2 mZoomInPadX; // x는 - 방향, y는 + 방향
 		DirectX::SimpleMath::Vector2 mZoomInPadY; // x는 - 방향, y는 + 방향
+
+		DirectX::SimpleMath::Vector2 mForbiddenAreaPaddingX; // Zoom 아웃 보다 큰 영역 
+		DirectX::SimpleMath::Vector2 mForbiddenAreaPaddingY;
+
+		friend void RegisterMetaData();
 	};
 }

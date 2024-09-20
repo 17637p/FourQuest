@@ -9,10 +9,11 @@
 #include "GameProcess.h"
 #include "ResourceSystem.h"
 #include "UISystem.h"
+#include "../FQClient/ClientHelper.h"
 
 fq::game_engine::LoadingSystem::LoadingSystem()
 	:mGameProcess(nullptr)
-	,mLoadingUIObject{}
+	, mLoadingUIObject{}
 {}
 
 fq::game_engine::LoadingSystem::~LoadingSystem()
@@ -32,6 +33,11 @@ void fq::game_engine::LoadingSystem::Finalize()
 	{
 		mGameProcess->mUISystem->UnloadImageUI(object.get());
 	}
+
+	for (auto& object : mLoadingUIObject)
+	{
+		mGameProcess->mUISystem->UnloadTextUI(object.get());
+	}
 }
 
 void fq::game_engine::LoadingSystem::loadUI()
@@ -39,13 +45,13 @@ void fq::game_engine::LoadingSystem::loadUI()
 	// Loading Progress Bar ·Îµù 
 	mLoadingUIObject = mGameProcess->mPrefabManager->LoadPrefab(fq::path::GetResourcePath() / "UI" / "Loading" / "LoadingUI.prefab");
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
 	for (auto& object : mLoadingUIObject)
 	{
 		object->SetScene(scene);
 		mGameProcess->mUISystem->LoadImageUI(object.get());
 		mGameProcess->mUISystem->LoadTextUI(object.get());
 	}
-	mLoadingUIObject[0]->OnStart();
 }
 
 void fq::game_engine::LoadingSystem::ProcessLoading()
@@ -76,7 +82,8 @@ void fq::game_engine::LoadingSystem::updateUI()
 {
 	float ratio = mGameProcess->mResourceSystem->GetLoadingRatio();
 	//spdlog::debug("loading ratio {}", ratio);
-	mLoadingUIObject[0]->GetComponent<client::LoadingUI>()->SetProgressBar(ratio);
+	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
+	loadingUI->SetProgressBar(ratio);
 
 	for (auto& object : mLoadingUIObject)
 	{
@@ -93,17 +100,43 @@ void fq::game_engine::LoadingSystem::setRenderUI(bool isRender)
 		if (object->HasComponent<game_module::ImageUI>())
 		{
 			auto imageUI = object->GetComponent<game_module::ImageUI>();
-			
-			for (auto imageObject : imageUI->GetImageObjects())
+
+			auto& imageObjects = imageUI->GetImageObjects();
+			auto uiInfomations = imageUI->GetUIInfomations();
+
+			for (int i = 0; i < imageObjects.size(); ++i)
 			{
-				imageObject->SetIsRender(isRender);
+				if (uiInfomations[i].isRender && isRender)
+				{
+					imageObjects[i]->SetIsRender(isRender);
+				}
+				else
+				{
+					imageObjects[i]->SetIsRender(false);
+				}
 			}
 		}
 
 		if (object->HasComponent<game_module::TextUI>())
 		{
 			auto textUI = object->GetComponent<game_module::TextUI>();
+
+			auto info = textUI->GetTextInfo();
+			info.IsRender = isRender;
+			textUI->SetTextInfo(info);
 		}
 	}
+
+	if (isRender)
+	{
+		for (auto& object : mLoadingUIObject)
+		{
+			object->OnStart();
+		}
+	}
+
+	auto loadingUI = mLoadingUIObject[0]->GetComponent<client::LoadingUI>();
+	auto id = client::helper::RandomGenerator::GetInstance().GetRandomNumber(0, loadingUI->GetGuideSize()-1);
+	loadingUI->SetGuideID(id);
 }
 

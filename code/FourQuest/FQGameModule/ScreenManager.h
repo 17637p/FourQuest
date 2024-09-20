@@ -21,6 +21,9 @@ namespace fq::game_module
 
 		UINT GetFixScreenWidth() const { return mFixScreenWidth; }
 		UINT GetFixScreenHeight() const { return mFixScreenHeight; }
+
+		void SetScreenSize();
+
 	private:
 		UINT mScreenWidth;
 		UINT mScreenHeight;

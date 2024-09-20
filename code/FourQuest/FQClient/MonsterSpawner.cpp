@@ -3,6 +3,7 @@
 
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/NavigationAgent.h"
 #include "Attack.h"
 #include "MonsterGroup.h"
 #include "MeleeMonster.h"
@@ -45,13 +46,19 @@ std::shared_ptr<fq::game_module::Component> fq::client::MonsterSpawner::Clone(st
 void fq::client::MonsterSpawner::OnUpdate(float dt)
 {
 	mSpawnElapsedTime = std::max(mSpawnElapsedTime - dt, 0.f);
-
+	 
 	// 몬스터 생성
 	if (mSpawnElapsedTime == 0.f)
 	{
 		mSpawnElapsedTime = mSpawnCoolTime;
 		mbIsSpawnState = true;
 		mAnimator->SetParameterTrigger("Spawn");
+	}
+
+	auto agent = GetComponent<game_module::NavigationAgent>();
+	if (agent)
+	{
+		agent->SetAgentState();
 	}
 }
 
@@ -63,6 +70,17 @@ void fq::client::MonsterSpawner::OnStart()
 
 	mMaxHp = mHp;
 	mSpawnElapsedTime = mSpawnCoolTime;
+
+	auto agent = GetComponent<game_module::NavigationAgent>();
+	if (agent)
+	{
+		agent->SetSpeed(0.f);
+		agent->SetAcceleration(0.f);
+		agent->SetRadius(3.f);
+		agent->SetSyncRotationWithMovementDirection(false);
+		//agent->SetAgentState();
+	}
+
 }
 
 void fq::client::MonsterSpawner::Spawn()
@@ -97,7 +115,7 @@ void fq::client::MonsterSpawner::Spawn()
 	GetScene()->AddGameObject(monster);
 	mbIsSpawnState = false;
 
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Spon", false , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Spon", false ,  fq::sound::EChannel::SE });
 }
 
 void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& collision)
@@ -118,6 +136,9 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 				mAnimator->SetParameterTrigger("OnHit");
 			}
 
+			// 몬스터 스포너의 타겟 설정
+			mMonsterGroup->SetTarget(playerAttack->GetAttacker());
+
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
 
@@ -125,7 +146,7 @@ void fq::client::MonsterSpawner::OnTriggerEnter(const game_module::Collision& co
 			if (mHp <= 0.f)
 			{
 				mAnimator->SetParameterBoolean("IsDead", true);
-				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Death", false , 0 });
+				GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "Spawner_Death", false , fq::sound::EChannel::SE });
 			}
 		}
 	}
@@ -144,3 +165,4 @@ void fq::client::MonsterSpawner::Destroy()
 
 	GetScene()->DestroyGameObject(GetGameObject());
 }
+

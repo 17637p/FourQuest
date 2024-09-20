@@ -112,7 +112,9 @@ namespace fq::graphics
 		float ScaleY = 1.f;
 
 		bool isCenter = false;
-		bool isOnText = false;
+		bool isRender = true;
+
+		DirectX::SimpleMath::Color Color;
 	};
 
 	enum class ETextAlign
@@ -143,12 +145,17 @@ namespace fq::graphics
 		int Width = 100;
 		int Height = 100;
 
+		float ScaleX = 1;
+		float ScaleY = 1;
+
 		std::string FontPath = "Verdana";
 		int FontSize = 10;
 		DirectX::SimpleMath::Color FontColor = { 0, 0, 0, 1 };
 
 		ETextAlign Align = ETextAlign::LeftTop;
 		ETextBoxAlign BoxAlign = ETextBoxAlign::CenterCenter;
+
+		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
 
 		bool IsRender = true;
 	};
@@ -694,5 +701,26 @@ namespace fq::graphics
 		bool bUseSSR = false;
 		float max_iteration = 160;
 		float max_thickness = 0.00001;
+	};
+
+	struct DebugInfo
+	{
+		size_t StaticMeshObjectCount;
+		size_t SkinnedMeshObjectCount;
+
+		size_t StaticMeshObjectVertexCount;
+		size_t SkinnedMeshObjectVertexCount;
+
+		size_t StaticMeshObjectPolygonCount;
+		size_t SkinnedMeshObjectPolygonCount;
+
+		size_t CullingStaticMeshObjectCount;
+		size_t CullingSkinnedMeshObjectCount;
+
+		size_t CullingStaticMeshObjectVertexCount;
+		size_t CullingSkinnedMeshObjectVertexCount;
+
+		size_t CullingStaticMeshObjectPolygonCount;
+		size_t CullingSkinnedMeshObjectPolygonCount;
 	};
 };

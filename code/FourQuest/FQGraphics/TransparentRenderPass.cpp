@@ -201,19 +201,20 @@ namespace fq::graphics
 					{
 						mStaticMeshVertexColorShaderProgram->Bind(mDevice);
 					}
-					else if (job.StaticMesh->GetStaticMeshType() == EStaticMeshType::Default)
+					else
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}
 
-					if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 0);
-					}
-					else
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 1);
-					}
+					// 반투명 오브젝트에 데칼 적용이 될 필요가 있나?
+					//if (job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					//}
+					//else
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					//}
 
 					if (job.NodeHierarchyInstnace != nullptr)
 					{
@@ -261,14 +262,15 @@ namespace fq::graphics
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
 					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
 
-					if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 0);
-					}
-					else
-					{
-						mLessEqualStencilReplaceState->Bind(mDevice, 1);
-					}
+					// 반투명 오브젝트에 데칼 적용이 필요한가?
+					//if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 0);
+					//}
+					//else
+					//{
+					//	mLessEqualStencilReplaceState->Bind(mDevice, 1);
+					//}
 
 					if (job.NodeHierarchyInstnace != nullptr)
 					{

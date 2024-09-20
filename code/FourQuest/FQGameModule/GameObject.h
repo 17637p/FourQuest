@@ -54,9 +54,15 @@ namespace fq::game_module
 		//////////////////////////////////////////////////////////////////////////
 
 		/// <summary>
+		/// Scene 시작시 OnStart 이전에 호출
+		/// </summary>
+		void OnAwake();
+
+		/// <summary>
 		/// Scene 시작시 호출
 		/// </summary>
 		void OnStart();
+
 
 		/// <summary>
 		/// 고정된 프레임으로 호출

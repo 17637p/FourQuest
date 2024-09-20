@@ -36,5 +36,5 @@ void fq::client::BGM::OnStart()
 
 void fq::client::BGM::PlayBGM()
 {
-	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSoundKey, true , 0 });
+	GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mSoundKey, true , fq::sound::EChannel::BGM });
 }

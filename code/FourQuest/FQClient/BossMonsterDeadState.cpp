@@ -8,6 +8,8 @@
 #include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Event.h"
 
+#include "ArmourSpawner.h"
+
 fq::client::BossMonsterDeadState::BossMonsterDeadState()
 {
 
@@ -33,6 +35,13 @@ void fq::client::BossMonsterDeadState::OnStateExit(game_module::Animator& animat
 	// 몬스터 처리 이벤트
 	scene->GetEventManager()->FireEvent<client::event::KillMonster>(
 		{ EMonsterType::Boss });
+
+	// 죽었는데 ArmourSpawner 컴포넌트가 있을 경우 갑옷 소환
+	auto armourSpawner = animator.GetComponent<ArmourSpawner>();
+	if (armourSpawner)
+	{
+		armourSpawner->SpawnArmour();
+	}
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterDeadState::Clone()

@@ -117,76 +117,6 @@ dcl_output o4.xy
 dcl_output o4.z
 dcl_output o5.xyz
 dcl_output o6.xyz
-<<<<<<< HEAD
-dcl_output o7.xyzw
-dcl_temps 3
-//
-// Initial variable locations:
-//   v0.x <- vin.Position.x; v0.y <- vin.Position.y; v0.z <- vin.Position.z; 
-//   v1.x <- vin.NormalL.x; v1.y <- vin.NormalL.y; v1.z <- vin.NormalL.z; 
-//   v2.x <- vin.TangentL.x; v2.y <- vin.TangentL.y; v2.z <- vin.TangentL.z; 
-//   v3.x <- vin.UV.x; v3.y <- vin.UV.y; 
-//   v4.x <- vin.Color.x; v4.y <- vin.Color.y; v4.z <- vin.Color.z; v4.w <- vin.Color.w; 
-//   o7.x <- <main return value>.Color.x; o7.y <- <main return value>.Color.y; o7.z <- <main return value>.Color.z; o7.w <- <main return value>.Color.w; 
-//   o6.x <- <main return value>.TangentV.x; o6.y <- <main return value>.TangentV.y; o6.z <- <main return value>.TangentV.z; 
-//   o5.x <- <main return value>.NormalV.x; o5.y <- <main return value>.NormalV.y; o5.z <- <main return value>.NormalV.z; 
-//   o4.x <- <main return value>.UV.x; o4.y <- <main return value>.UV.y; o4.z <- <main return value>.ClipSpacePosZ; 
-//   o3.x <- <main return value>.TangentW.x; o3.y <- <main return value>.TangentW.y; o3.z <- <main return value>.TangentW.z; 
-//   o2.x <- <main return value>.NormalW.x; o2.y <- <main return value>.NormalW.y; o2.z <- <main return value>.NormalW.z; 
-//   o1.x <- <main return value>.PositionW.x; o1.y <- <main return value>.PositionW.y; o1.z <- <main return value>.PositionW.z; o1.w <- <main return value>.DepthView; 
-//   o0.x <- <main return value>.PositionH.x; o0.y <- <main return value>.PositionH.y; o0.z <- <main return value>.PositionH.z; o0.w <- <main return value>.PositionH.w
-//
-#line 92 "C:\Users\user\Desktop\Project\code\FourQuest\FQGraphics\ModelVS.hlsl"
-mov r0.xyz, v0.xyzx
-mov r0.w, l(1.000000)
-dp4 r1.w, r0.xyzw, cb0[3].xyzw  // r1.w <- vout.PositionH.w
-dp4 r1.x, r0.xyzw, cb0[0].xyzw  // r1.x <- vout.PositionH.x
-dp4 r1.y, r0.xyzw, cb0[1].xyzw  // r1.y <- vout.PositionH.y
-dp4 r1.z, r0.xyzw, cb0[2].xyzw  // r1.z <- vout.PositionH.z
-
-#line 93
-dp4 r0.x, r1.xyzw, cb1[6].xyzw  // r0.x <- vout.PositionH.z
-
-#line 112
-mov o0.z, r0.x
-mov o4.z, r0.x
-
-#line 93
-dp4 o0.x, r1.xyzw, cb1[4].xyzw
-dp4 o0.y, r1.xyzw, cb1[5].xyzw
-dp4 o0.w, r1.xyzw, cb1[7].xyzw
-
-#line 96
-mov r1.w, l(1.000000)
-dp4 o1.w, r1.xyzw, cb1[2].xyzw
-
-#line 112
-mov o1.xyz, r1.xyzx
-
-#line 98
-dp3 r0.x, v1.xyzx, cb0[0].xyzx
-dp3 r0.y, v1.xyzx, cb0[1].xyzx
-dp3 r0.z, v1.xyzx, cb0[2].xyzx
-dp3 r0.w, r0.xyzx, r0.xyzx
-rsq r0.w, r0.w
-mul r0.xyz, r0.wwww, r0.xyzx  // r0.x <- vout.NormalW.x; r0.y <- vout.NormalW.y; r0.z <- vout.NormalW.z
-
-#line 112
-mov o2.xyz, r0.xyzx
-
-#line 101
-dp3 r1.x, v2.xyzx, cb0[0].xyzx
-dp3 r1.y, v2.xyzx, cb0[1].xyzx
-dp3 r1.z, v2.xyzx, cb0[2].xyzx
-dp3 r0.w, r1.xyzx, r1.xyzx
-rsq r0.w, r0.w
-mul r1.xyz, r0.wwww, r1.xyzx  // r1.x <- vout.TangentW.x; r1.y <- vout.TangentW.y; r1.z <- vout.TangentW.z
-
-#line 112
-mov o3.xyz, r1.xyzx
-
-#line 104
-=======
 dcl_temps 20
 ishl r0.xyzw, v4.xyzw, l(2, 2, 2, 2)
 mul r1.x, v5.x, cb2[r0.x + 0].w
@@ -318,38 +248,21 @@ dp3 r0.w, r2.xyzx, r2.xyzx
 rsq r0.w, r0.w
 mul r1.xyz, r0.wwww, r2.xyzx
 mov o3.xyz, r1.xyzx
->>>>>>> origin/main
 mov r2.xy, v3.xyxx
 mov r2.z, l(1.000000)
 dp3 o4.x, r2.xyzx, cb3[0].xywx
 dp3 o4.y, r2.xyzx, cb3[1].xywx
-<<<<<<< HEAD
-
-#line 99
-=======
->>>>>>> origin/main
 dp3 r2.x, r0.xyzx, cb1[0].xyzx
 dp3 r2.y, r0.xyzx, cb1[1].xyzx
 dp3 r2.z, r0.xyzx, cb1[2].xyzx
 dp3 r0.x, r2.xyzx, r2.xyzx
 rsq r0.x, r0.x
 mul o5.xyz, r0.xxxx, r2.xyzx
-<<<<<<< HEAD
-
-#line 102
-=======
->>>>>>> origin/main
 dp3 r0.x, r1.xyzx, cb1[0].xyzx
 dp3 r0.y, r1.xyzx, cb1[1].xyzx
 dp3 r0.z, r1.xyzx, cb1[2].xyzx
 dp3 r0.w, r0.xyzx, r0.xyzx
 rsq r0.w, r0.w
 mul o6.xyz, r0.wwww, r0.xyzx
-<<<<<<< HEAD
-
-#line 112
-mov o7.xyzw, v4.xyzw
-=======
->>>>>>> origin/main
 ret 
 // Approximately 147 instruction slots used

@@ -134,6 +134,6 @@ namespace fq::physics
 	{
 		direction.x = mDisplacementVector.x;
 		direction.y = mDisplacementVector.y;
-		direction.z = -mDisplacementVector.z;
+		direction.z = mDisplacementVector.z;
 	}
 }

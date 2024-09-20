@@ -19,8 +19,13 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 
 	private:
+		void checkAttackEmit(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt);
+
+	private:
 		float mAttackTiming; // 공격발동시간
-		float mElapsedTime;
+		float mAttackElapsedTime;
+		float mCheckInputElapsedTime;
+		float mCheckInputTime;
 
 		friend void RegisterMetaData();
 	};

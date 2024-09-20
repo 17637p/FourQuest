@@ -162,7 +162,7 @@ namespace fq::game_module
 		}
 	}
 
-	void Sequence::OnFixedUpdate(float dt)
+	void Sequence::OnUpdate(float dt)
 	{
 		if (mbIsPlay)
 		{

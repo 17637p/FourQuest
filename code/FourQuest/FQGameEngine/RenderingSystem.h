@@ -82,6 +82,8 @@ namespace fq::game_engine
 		void unloadTerrain(fq::game_module::GameObject* object);
 
 		void loadAnimation(fq::game_module::GameObject * object);
+		void unloadAnimation(fq::game_module::GameObject* object);
+
 		void loadUVAnimation(fq::game_module::GameObject * object);
 		void loadSequenceAnimation(fq::game_module::GameObject* object);
 
@@ -97,6 +99,7 @@ namespace fq::game_engine
 		EventHandler mWriteAnimationHandler;
 		EventHandler mSetViewportSizeHandler;
 		EventHandler mUpdateMaterialInfosHandler;
+		EventHandler mDebugDrawLayHanlder;
 
 		bool mbIsGameLoaded;
 		DirectX::SimpleMath::Matrix mPlaneMatrix;

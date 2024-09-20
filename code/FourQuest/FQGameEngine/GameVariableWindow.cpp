@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 #include <ImGuizmo.h>
+#include "imgui_stdlib.h"
+#include <directxtk/SimpleMath.h>
 
 #include "../FQClient/PlayerSoulVariable.h"
 #include "../FQClient/MonsterVariable.h"
@@ -54,6 +56,52 @@ void fq::game_engine::GameVariableWindow::beginVariable(entt::meta_type type)
 					if (ImGui::InputFloat(memberName.c_str(), &val))
 					{
 						metaData.set(variable, val);
+					}
+				}
+				else if (memberType == entt::resolve<int>())
+				{
+					int val = metaData.get(variable).cast<int>();
+					std::string memberName = fq::reflect::GetName(metaData);
+
+					if (ImGui::InputInt(memberName.c_str(), &val))
+					{
+						metaData.set(variable, val);
+					}
+				}
+				else if (memberType == entt::resolve<bool>())
+				{
+					bool val = metaData.get(variable).cast<bool>();
+					std::string memberName = fq::reflect::GetName(metaData);
+
+					if (ImGui::Checkbox(memberName.c_str(), &val))
+					{
+						metaData.set(variable, val);
+					}
+				}
+				else if (memberType == entt::resolve<std::string>())
+				{
+					std::string val = metaData.get(variable).cast<std::string>();
+					std::string memberName = fq::reflect::GetName(metaData);
+
+					if (ImGui::InputText(memberName.c_str(), &val))
+					{
+						metaData.set(variable, val);
+					}
+				}
+				else if (memberType == entt::resolve<DirectX::SimpleMath::Color>())
+				{
+					auto color = metaData.get(variable).cast<DirectX::SimpleMath::Color>();
+					std::string memberName = fq::reflect::GetName(metaData);
+					float f[4] = { color.x, color.y ,color.z, color.w };
+
+					if (ImGui::ColorEdit4(memberName.c_str(), f))
+					{
+						color.x = f[0];
+						color.y = f[1];
+						color.z = f[2];
+						color.w = f[3];
+
+						metaData.set(variable, color);
 					}
 				}
 			}

@@ -2,6 +2,7 @@
 #include "FQCommon.h"
 
 #include <string>
+#include <array>
 
 namespace fq::physics
 {
@@ -51,6 +52,19 @@ namespace fq::physics
 
 		END
 	};
+
+	/// <summary>
+	/// 캐릭터 이동제한 enum
+	/// </summary>
+	enum class  ERestrictDirection
+	{
+		PlusX,
+		MinusX,
+		PlusZ,
+		MinusZ,
+		End
+	};
+
 #pragma endregion
 
 	/// <summary>
@@ -111,7 +125,7 @@ namespace fq::physics
 	struct CharacterControllerGetSetData
 	{
 		DirectX::SimpleMath::Vector3 position = {};				// 캐릭터 컨트롤러의 위치
-		DirectX::SimpleMath::Vector3 scale = {1.f,1.f,1.f};		
+		DirectX::SimpleMath::Vector3 scale = { 1.f,1.f,1.f };
 		DirectX::SimpleMath::Quaternion rotation = {};
 		unsigned int myLayerNumber = UINT_MAX;
 	};
@@ -119,7 +133,10 @@ namespace fq::physics
 	struct CharacterMovementGetSetData
 	{
 		DirectX::SimpleMath::Vector3 velocity = {};				// 캐릭터 컨트롤러의 x,y,z축 속도
+		float maxSpeed;
+		float acceleration;
 		bool isFall = false;									// 캐릭터가 떨어지고 있는지 체크 변수
+		std::array<bool,4> restriction;							// 캐릭터 이동제한 설정
 	};
 
 	struct ArticulationLinkGetData
@@ -257,7 +274,7 @@ namespace fq::physics
 		float staticFriction = 0.4f;						// 정적 마찰 계수 : 캐릭터가 이동 중 멈췄을 때 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
 		float dynamicFriction = 0.1f;						// 동적 마찰 계수 : 이동 중에 캐릭터가 받는 마찰력 ( 0.0f ~ 1.f )
 		float jumpSpeed = 0.05f;							// 점프(y축) 속도
-		float jumpXZAcceleration = 10.f;					// 점프 중에 이동(XZ축) 가속도 값
+		float jumpXZAcceleration = 0.1f;					// 점프 중에 이동(XZ축) 가속도 값
 		float jumpXZDeceleration = 0.1f;					// 점프 중에 이동(XZ축) 감속 값 ( 0.0 ~ 1.0 )
 		float gravityWeight = 0.2f;							// 기본 중력 값을 줄 수 있지만 가중치를 더 주고 싶을 때 값을 다르게 세팅할 수 있습니다.
 	};
@@ -280,9 +297,9 @@ namespace fq::physics
 
 	struct CharacterControllerInputInfo
 	{
-		unsigned int id ;
+		unsigned int id;
 		DirectX::SimpleMath::Vector3 input;
-		bool isDynamic; 
+		bool isDynamic;
 	};
 #pragma endregion
 

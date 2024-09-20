@@ -13,6 +13,7 @@
 #include "EditorProcess.h"
 #include "PhysicsSystem.h"
 #include "ResourceSystem.h"
+#include "GamePlayWindow.h"
 
 fq::game_engine::MainMenuBar::MainMenuBar()
 	:mGameProcess(nullptr)
@@ -79,10 +80,18 @@ void fq::game_engine::MainMenuBar::beginMenuItem_LoadScene()
 
 			if (ImGui::MenuItem(sceneName.c_str()))
 			{
-				SaveScene();
-				// Scene 변경 요청 
+				// 게임플레이 중이라면 다음 씬에서도 플레이 하는 상태로 유지됩니다.
+				bool callStartScene = mEditorProcess->mGamePlayWindow->GetMode() != EditorMode::Edit;
+
+				// 게임 플레이 도중의 씬은 저장하지 않습니다
+				if (!callStartScene)
+				{
+					SaveScene();
+				}
+
+				// Scene 변경 요청
 				mGameProcess->mEventManager
-					->FireEvent<fq::event::RequestChangeScene>({ sceneName, false });
+					->FireEvent<fq::event::RequestChangeScene>({ sceneName, callStartScene });
 			}
 		}
 
@@ -331,6 +340,9 @@ void fq::game_engine::MainMenuBar::beginMenu_Window()
 
 		bool& onGameVairableWindow = mEditorProcess->mGameVariableWindow->IsWindowOpen();
 		ImGui::Checkbox("GameVairable", &onGameVairableWindow);
+
+		bool& onRenderingDebugWindow = mEditorProcess->mRenderingDebugWindow->IsWindowOpen();
+		ImGui::Checkbox("RenderingDeubgWindow", &onRenderingDebugWindow);
 
 		ImGui::EndMenu();
 	}

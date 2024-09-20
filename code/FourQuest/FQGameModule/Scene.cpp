@@ -216,6 +216,7 @@ void fq::game_module::Scene::processPedingObject()
 	{
 		auto object = mPedingObjects[i];
 		mEventManager->FireEvent<fq::event::AddGameObject>({ object.get() });
+		object->OnAwake();
 		object->OnStart();
 		mObjects.push_back(std::move(object));
 	}

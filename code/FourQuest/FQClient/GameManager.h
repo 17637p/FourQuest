@@ -22,17 +22,23 @@ namespace fq::client
 		/// </summary>
 		const std::vector<std::shared_ptr<game_module::GameObject>>& GetPlayers()const { return mPlayers; }
 
+		// temp alpha
+		void SavePlayerState();
 	private:
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		entt::meta_handle GetHandle() override { return *this; }
 
 		void OnUpdate(float dt) override;
 		void OnStart() override;
+		void OnAwake() override;
 		void OnDestroy() override;
 
 		void EventProcessOffPopupPause();
 		void EventProcessOffPopupSetting();
 		void testKey();
+
+		// temp alpha
+		std::shared_ptr<game_module::GameObject> SpawnPlayer(fq::game_module::PrefabResource prefab, int index);
 
 	private:
 		EventHandler mRegisterPlayerHandler;
@@ -45,7 +51,14 @@ namespace fq::client
 
 		// pause Ã³¸®
 		bool mIsStop;
+		bool mIsAutoSpawn;
 		fq::game_module::PrefabResource mPauseUI;
+
+		game_module::PrefabResource mSoul;
+		game_module::PrefabResource mKnight;
+		game_module::PrefabResource mMagic;
+		game_module::PrefabResource mArcher;
+		game_module::PrefabResource mWarrior;
 
 		friend void RegisterMetaData();
 	};

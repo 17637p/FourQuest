@@ -182,6 +182,9 @@ extern "C" {
 
 			virtual FQ_GRAPHICS bool GetIsOnText() const abstract;
 			virtual FQ_GRAPHICS void SetIsOnText(bool isOnText) abstract;
+
+			virtual FQ_GRAPHICS DirectX::SimpleMath::Color GetColor() const abstract;
+			virtual FQ_GRAPHICS void SetColor(DirectX::SimpleMath::Color val) abstract;
 		};
 
 		class IParticleObject

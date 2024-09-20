@@ -121,6 +121,7 @@ namespace fq::physics
 
 		data.velocity = movement->GetDisplacementVector();
 		data.isFall = movement->GetIsFall();
+		data.maxSpeed = movement->GetMaxSpeed();
 	}
 	void PhysicsCharactorControllerManager::SetCharacterControllerData(const unsigned int& id, const CharacterControllerGetSetData& controllerData, int* collisionMatrix)
 	{
@@ -135,8 +136,11 @@ namespace fq::physics
 		auto& controller = mCCTmap.find(id)->second;
 		std::shared_ptr<CharacterMovement> movement = controller->GetCharacterMovement();
 
+		controller->SetMoveRestriction(movementData.restriction);
 		movement->SetIsFall(movementData.isFall);
 		movement->SetVelocity(movementData.velocity);
+		movement->SetMaxSpeed(movementData.maxSpeed);
+		movement->SetAcceleration(movementData.acceleration);
 	}
 #pragma endregion
 }

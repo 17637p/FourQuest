@@ -20,7 +20,6 @@ fq::game_engine::UISystem::UISystem()
 
 fq::game_engine::UISystem::~UISystem()
 {
-
 }
 
 void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
@@ -67,6 +66,17 @@ void fq::game_engine::UISystem::Initialize(GameProcess* gameProcess)
 				mViewporWidth = event.width;
 				mViewportHeight = event.height;
 			});
+
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
+	mGameProcess->mGraphics->AddFont(L"resource/internal/font/´øÆÄ ¿¬´ÜµÈ Ä®³¯.ttf");
+}
+
+void fq::game_engine::UISystem::Finalize()
+{
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
+	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/´øÆÄ ¿¬´ÜµÈ Ä®³¯.ttf");
 }
 
 void fq::game_engine::UISystem::OnLoadScene()
@@ -80,17 +90,11 @@ void fq::game_engine::UISystem::OnLoadScene()
 	}
 
 	mbIsGameLoaded = true;
-
-	mGameProcess->mGraphics->AddFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
-	mGameProcess->mGraphics->AddFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnUnLoadScene()
 {
 	mbIsGameLoaded = false;
-
-	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/ÇÑÄÄ ¸»¶û¸»¶û.ttf");
-	mGameProcess->mGraphics->DeleteFont(L"resource/internal/font/DungGeunMo.ttf");
 }
 
 void fq::game_engine::UISystem::OnAddGameObject(const fq::event::AddGameObject& event)
@@ -146,7 +150,7 @@ void fq::game_engine::UISystem::LoadImageUI(game_module::GameObject* object)
 	{
 		if (!std::filesystem::exists(imageInfomation.ImagePath))
 		{
-			spdlog::warn("[UISystem] {} Load failed", imageInfomation.ImagePath );
+			spdlog::warn("[UISystem] {} Load failed", imageInfomation.ImagePath);
 			imageObjects.push_back(nullptr);
 		}
 		else
@@ -216,15 +220,20 @@ void fq::game_engine::UISystem::LoadTextUI(game_module::GameObject* object)
 
 void fq::game_engine::UISystem::UnloadTextUI(game_module::GameObject* object)
 {
-	if (!object->HasComponent<fq::game_module::TextUI>())
+	if (!object->HasComponent<fq::game_module::TextUI>())	
 	{
 		return;
 	}
 
 	game_module::TextUI* textUI = object->GetComponent<game_module::TextUI>();
+
 	graphics::ITextObject* textObject = textUI->GetTextObject();
 
-	mGameProcess->mGraphics->DeleteText(textObject);
+	if (textObject)
+	{
+		mGameProcess->mGraphics->DeleteText(textObject);
+		textUI->SetTextObject(nullptr);
+	}
 }
 
 void fq::game_engine::UISystem::SetTextInformation(const fq::event::SetTextInformation& event)
@@ -232,3 +241,4 @@ void fq::game_engine::UISystem::SetTextInformation(const fq::event::SetTextInfor
 	UnloadTextUI(event.object);
 	LoadTextUI(event.object);
 }
+

@@ -32,10 +32,11 @@ namespace fq::client
 
 		float GetAttackPower() const { return mAttackPower; }
 		float GetHPRatio() const { return mHp / mMaxHp; }
-		float GetSoultStackRatio() const { return mSoulStack / mMaxSoulStack; }
-		float GetPlayerID() const;
+		float GetSoultGaugeRatio() const { return mSoulGauge / mMaxSoulGauge; }
+		int GetPlayerID() const;
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
+		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
 
 		/// <summary>
 		/// 갑옷타입을 반환합니다
@@ -75,16 +76,29 @@ namespace fq::client
 		/// <summary>
 		/// 소울 스택을 더합니다 
 		/// </summary>
-		void AddSoulStack(float stack);
+		void AddSoulGauge(float soul);
 
 		void SetHp(float hp);
+
+		/// <summary>
+		/// 소울 공격이 가능한 상태인지 확인합니다.
+		/// </summary>
+		bool CanUseSoulAttack()const;
+
+		/// <summary>
+		/// 현재 피버타임인지 반환합니다
+		/// </summary>
+		bool IsFeverTime()const;
 
 	private:
 		void processInput();
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
+		void processDebuff(float dt);
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
+		void setFeverBuff(bool isFever);
+		void setDecalColor();
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -104,14 +118,15 @@ namespace fq::client
 
 		float mMaxHp; // 최대 체력
 		float mHp; // 현재 체력
-		float mMaxSoulStack; // 최대 소울 게이지
-		float mSoulStack; // 소울 게이지
+		float mMaxSoulGauge; // 최대 소울 게이지
+		float mSoulGauge; // 소울 게이지
 		float mAttackPower; // 공격력
-		float mAttackSpeed; // 공격속도
 
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 
 		float mFeverTime; // 갑옷 버프 시간
+		float mFeverElapsedTime; // 피버타임 경과 시간
+		bool mbIsFeverTime; // 현재 피버 타임인지 
 
 		game_module::PrefabResource mSoulPrefab; // 영혼화 프리팹 
 		game_module::PrefabResource mSwordSoulAttack;
@@ -120,6 +135,7 @@ namespace fq::client
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
 		
 		bool mbOnShieldBlock;
+		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
 
 		std::array<game_module::StaticMeshRenderer*, static_cast<int>(EWeaponeMesh::End)> mWeaponeMeshes;
 		friend void RegisterMetaData();

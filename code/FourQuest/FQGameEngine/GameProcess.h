@@ -40,6 +40,7 @@ namespace fq::game_engine
 	class LightProbeSystem;
 	class LoadingSystem;
 	class ResourceSystem;
+	class StateEventSystem;
 }
 
 namespace fq::game_engine
@@ -84,5 +85,6 @@ namespace fq::game_engine
 		std::unique_ptr<LightProbeSystem> mLightProbeSystem;
 		std::unique_ptr<LoadingSystem> mLoadingSystem;
 		std::unique_ptr<ResourceSystem> mResourceSystem;
+		std::unique_ptr<StateEventSystem> mStateEventSystem;
 	};
 }

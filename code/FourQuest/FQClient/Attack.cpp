@@ -29,6 +29,9 @@ fq::client::Attack::Attack()
 	, mAttackPosition{}
 	, mAttacker(nullptr)
 	, mHitSound{}
+	, mHitCallback{}
+	, mTargetPosRatio{}
+	, mDirectionRatio{}
 {}
 
 fq::client::Attack::~Attack()
@@ -65,6 +68,11 @@ bool fq::client::Attack::ProcessAttack()
 		}
 	}
 
+	if (mHitCallback)
+	{
+		mHitCallback();
+	}
+
 	return true;
 }
 
@@ -79,6 +87,9 @@ void fq::client::Attack::Set(const AttackInfo& info)
 	mAttackDirection = info.attackDirection;
 	mAttackPosition = info.attackPosition;
 	mHitSound = info.hitSound;
+	mHitCallback = info.mHitCallback;
+	mTargetPosRatio = info.targetPosRatio;
+	mDirectionRatio = info.directionRatio;
 }
 
 bool fq::client::Attack::HasKnockBack() const
@@ -90,6 +101,11 @@ void fq::client::Attack::PlayHitSound()
 {
 	if (!mHitSound.empty())
 	{
-		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , 3 });
+		GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ mHitSound, false , fq::sound::EChannel::SE });
 	}
+}
+
+void fq::client::Attack::SetDestroyTime(float destroyTime)
+{
+	mDestroyTime = destroyTime;
 }

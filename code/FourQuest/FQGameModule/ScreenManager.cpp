@@ -63,3 +63,10 @@ void fq::game_module::ScreenManager::Initialize(EventManager* eventMgr, UINT scr
 		mFixScreenHeight = mScreenWidth / renderAspect;
 	}
 }
+
+void fq::game_module::ScreenManager::SetScreenSize()
+{
+//	::SetWindowPos(
+
+
+}

@@ -29,9 +29,12 @@ fq::client::BossMonster::BossMonster()
 	, mTarget(nullptr)
 	, mKnockBack(nullptr)
 	, mTransform(nullptr)
-{
-
-}
+	, mGroggyGauge(0.f)
+	, mStartGroggyGauge(100.f)
+	, mGroggyIncreaseRatio(0.1f)
+	, mGroggyDecreasePerSecond(1.f)	
+	, mGroggyDecreaseElapsedTime(0.f)
+{}
 
 fq::client::BossMonster::~BossMonster()
 {
@@ -74,6 +77,15 @@ void fq::client::BossMonster::OnStart()
 
 void fq::client::BossMonster::OnUpdate(float dt)
 {
+	// 그로기 게이지 
+	mGroggyDecreaseElapsedTime += dt;
+
+	while (mGroggyDecreaseElapsedTime >= 1.f)
+	{
+		mGroggyDecreaseElapsedTime -= 1.f;
+		mGroggyGauge -= mGroggyDecreasePerSecond;
+	}
+
 }
 
 void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& collision)
@@ -92,6 +104,15 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 
 			// 피격 사운드 재생
 			playerAttack->PlayHitSound();
+
+			// 그로기 
+			mGroggyGauge += mGroggyIncreaseRatio * attackPower;
+
+			if (mGroggyGauge >= mStartGroggyGauge)
+			{
+				mGroggyGauge = 0.f;
+				mAnimator->SetParameterBoolean("OnGroggy", true);
+			}
 
 			// 사망처리
 			if (mHp <= 0.f)
@@ -123,7 +144,12 @@ void fq::client::BossMonster::DetectTarget()
 
 void fq::client::BossMonster::SetRandomTarget()
 {
-	const auto& players = mGameManager->GetPlayers();
+	auto players = mGameManager->GetPlayers();
+
+	players.erase(std::remove_if(players.begin(), players.end(), [](std::shared_ptr<game_module::GameObject>& player)
+		{
+			return player->GetTag() == game_module::ETag::Soul;
+		}), players.end());
 
 	if (!players.empty())
 	{
@@ -141,6 +167,12 @@ void fq::client::BossMonster::SetRandomTarget()
 
 void fq::client::BossMonster::SetTarget(game_module::GameObject* target)
 {
+	if (mAnimator == nullptr)
+	{
+		mAnimator = GetComponent<game_module::Animator>();
+		assert(mAnimator);
+	}
+
 	if (target == nullptr)
 	{
 		mTarget = nullptr;
@@ -200,7 +232,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 	auto look = mTransform->GetLookAtVector();
 	mKnockBack->Set(mRushPower, look);
 
-	// 러쉬 히트 박스 생성
+	// 러쉬 히트 박스 생성	
 	using namespace game_module;
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mRushAttack);
 	auto& attackObj = *(instance.begin());
@@ -273,25 +305,25 @@ void fq::client::BossMonster::HomingTarget()
 
 	auto targetPos = targetT->GetWorldPosition();
 	auto myPos = mTransform->GetWorldPosition();
+	auto currentRotation = mTransform->GetWorldRotation();
 
 	auto directV = targetPos - myPos;
 	directV.y = 0.f;
 	directV.Normalize();
 
-	auto currentRotation = mTransform->GetWorldRotation();
-	DirectX::SimpleMath::Quaternion directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0, 1, 0 });
+	DirectX::SimpleMath::Quaternion directionQuaternion = currentRotation;
+
+	// UpVector가 뒤집히는 경우에 대한 예외 처리 
+	if (directV.z >= 1.f)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({0.f,0.f,1.f}, {0.f, -1.f, 0.f});
+	else if (directV != DirectX::SimpleMath::Vector3::Zero)
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
+
 	DirectX::SimpleMath::Quaternion result =
 		DirectX::SimpleMath::Quaternion::Slerp(currentRotation, directionQuaternion, mRotationSpeed);
 
-	DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateFromQuaternion(result);
-
-	// UpVector가 뒤집힌 경우
-	if (rotationMatrix._22 <= -0.9f)
-	{
-		rotationMatrix._22 = 1.f;
-	}
-	mTransform->SetLocalRotationToMatrix(rotationMatrix);
+	mTransform->SetWorldRotation(result);
 }
 
 float fq::client::BossMonster::GetHPRatio() const

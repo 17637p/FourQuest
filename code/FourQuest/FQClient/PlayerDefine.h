@@ -9,10 +9,10 @@ namespace fq::client
 	/// </summary>
 	enum class ESoulType
 	{
-		Sword, // °Ë ¿µÈ¥   
-		Staff, // ¸¶¹ý ¿µÈ¥
-		Axe, // µµ³¢ ¿µÈ¥
-		Bow,  // È° ¿µÈ¥
+		Sword, // °Ë ¿µÈ¥ 0
+		Staff, // ¸¶¹ý ¿µÈ¥ 1
+		Axe, // µµ³¢ ¿µÈ¥ 2
+		Bow,  // È° ¿µÈ¥ 3
 		End
 	};
 

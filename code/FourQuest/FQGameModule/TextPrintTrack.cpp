@@ -58,31 +58,44 @@ namespace fq::game_module
 		mScene->AddGameObject(mNameObject);
 		mScene->AddGameObject(mTextObject);
 
-		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetScreenWidth() / 2.f, mScene->GetScreenManager()->GetScreenHeight() - mNameFontCenterY, 0.f));
-		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetScreenWidth() / 2.f, mScene->GetScreenManager()->GetScreenHeight() - mTextFontCenterY, 0.f));
+		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
+		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
 	}
 
 	void TextPrintTrack::PlayOn()
 	{
 		auto name = mNameObject->GetComponent<TextUI>();
 		auto text = mTextObject->GetComponent<TextUI>();
+		auto nameTransform = mNameObject->GetComponent<Transform>();
+		auto textTransform = mTextObject->GetComponent<Transform>();
+		nameTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mNameFontCenterY, 0.f));
+		textTransform->SetWorldPosition(DirectX::SimpleMath::Vector3(mScene->GetScreenManager()->GetFixScreenWidth() / 2.f, mScene->GetScreenManager()->GetFixScreenHeight() - mTextFontCenterY, 0.f));
+
+		// Scale 자동 조정 
+		UINT screenWidth = mScene->GetScreenManager()->GetFixScreenWidth();
+		UINT screenHeight = mScene->GetScreenManager()->GetFixScreenHeight();
+		{
+			nameTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
+			textTransform->SetLocalScale({ screenWidth / (float)1920, screenHeight / (float)1080, 1 });
+		}
 
 		fq::graphics::TextInfo textInfo;
 		textInfo.Align = fq::graphics::ETextAlign::CenterTop;
+		textInfo.BoxAlign = fq::graphics::ETextBoxAlign::CenterCenter;
 		textInfo.Text = mName;
 		textInfo.FontSize = mNameFontSize;
 		textInfo.FontColor = mNameFontColor;
-		textInfo.CenterX = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
-		textInfo.CenterY = mScene->GetScreenManager()->GetScreenHeight() - mNameFontCenterY;
-		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth() / 4.f;
+		textInfo.CenterX = 960.f;
+		textInfo.CenterY = 1080.f - mTextFontCenterY;
+		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		name->SetTextInfo(textInfo);
 
 		textInfo.Text = mText;
 		textInfo.FontSize = mTextFontSize;
 		textInfo.FontColor = mTextFontColor;
-		textInfo.CenterX = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
-		textInfo.CenterY = mScene->GetScreenManager()->GetScreenHeight() - mTextFontCenterY;
-		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth() / 2.f;
+		textInfo.CenterX = 960.f;
+		textInfo.CenterY = 1080.f - mTextFontCenterY;
+		textInfo.Width = mScene->GetScreenManager()->GetScreenWidth();
 		text->SetTextInfo(textInfo);
 	}
 

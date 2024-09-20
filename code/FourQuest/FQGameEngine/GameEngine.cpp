@@ -8,6 +8,7 @@
 #include "../FQGameModule/GameModuleRegister.h"
 #include "../FQGameModule/GameModule.h"
 #include "../FQphysics/IFQPhysics.h"
+#include "../FQClient/GameVaribleHelper.h"
 #include "FQGameEngineRegister.h"
 #include "EditorHelper.h"
 
@@ -28,6 +29,7 @@
 #include "LightProbeSystem.h"
 #include "ResourceSystem.h"
 #include "LoadingSystem.h"
+#include "StateEventSystem.h"
 
 #include "FQGameEngineRegister.h"
 #include "GamePlayWindow.h"
@@ -45,19 +47,24 @@ fq::game_engine::GameEngine::~GameEngine()
 
 void fq::game_engine::GameEngine::Initialize()
 {
-
 	// 메타데이터 정보를 등록합니다
 	fq::game_module::RegisterMetaData();
 	fq::game_engine::RegisterMetaData();
 	fq::client::RegisterMetaData();
 
+	// 게임 전역 변수 로드 
+	client::GameVaribleHelper::Load();
+
 	// Com객체 초기화 
 	HRESULT hr = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+
 	// 쓰레드 풀 생성
 	fq::game_module::ThreadPool::Initialize();
 
 	// 윈도우 창을 초기화
-	mGameProcess->mWindowSystem->Initialize();
+	UINT ScreenWidth = 1920;
+	UINT ScreenHeight = 1080;
+	mGameProcess->mWindowSystem->Initialize(ScreenWidth, ScreenHeight);
 
 	// GameProcess 초기화
 	mGameProcess->mInputManager->Initialize(mGameProcess->mWindowSystem->GetHWND());
@@ -104,6 +111,7 @@ void fq::game_engine::GameEngine::Initialize()
 	mGameProcess->mPathFindgingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mLoadingSystem->Initialize(mGameProcess.get());
 	mGameProcess->mResourceSystem->Initialize(mGameProcess.get());
+	mGameProcess->mStateEventSystem->Initialize(mGameProcess.get());
 
 	mLightMap->Initialize(mGameProcess.get());
 
@@ -144,7 +152,7 @@ void fq::game_engine::GameEngine::Process()
 
 			if (mGameProcess->mWindowSystem->IsResizedWindow())
 			{
-				mGameProcess->mWindowSystem->OnResize();
+					mGameProcess->mWindowSystem->OnResize();
 
 				unsigned short width = std::max(mGameProcess->mWindowSystem->GetScreenWidth(), 1u);
 				unsigned short hegiht = std::max(mGameProcess->mWindowSystem->GetScreenHeight(), 1u);
@@ -211,6 +219,7 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
 			mGameProcess->mUISystem->Update();
+			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Rendering Process							//
@@ -253,6 +262,7 @@ void fq::game_engine::GameEngine::Finalize()
 	mGameProcess->mLightProbeSystem->Finalize();
 
 	mGameProcess->mSceneManager->UnloadScene();
+	mGameProcess->mUISystem->Finalize();
 
 	mGameProcess->mGraphics->Finalize();
 	fq::graphics::EngineExporter().DeleteEngine(mGameProcess->mGraphics);

@@ -9,6 +9,7 @@
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Decal.h"
+#include "../FQGameModule/Terrain.h"
 #include "../FQGraphics/IFQGraphics.h"
 #include "../FQCommon/FQPath.h"
 
@@ -477,24 +478,24 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 				}
 			}
 
+			auto tryChangeDDSFormatW = [](std::wstring& filename)
+				{
+					if (filename.empty())
+					{
+						return;
+					}
+
+					std::filesystem::path ddsFilename = filename;
+					ddsFilename.replace_extension(".dds");
+
+					if (std::filesystem::exists(ddsFilename))
+					{
+						filename = ddsFilename;
+					}
+				};
+
 			if (ImGui::Button("rewrite material texture path(try change file format to dds)"))
 			{
-				auto tryChangeDDSFormat = [](std::wstring& filename)
-					{
-						if (filename.empty())
-						{
-							return;
-						}
-
-						std::filesystem::path ddsFilename = filename;
-						ddsFilename.replace_extension(".dds");
-
-						if (std::filesystem::exists(ddsFilename))
-						{
-							filename = ddsFilename;
-						}
-					};
-
 				if (std::filesystem::exists(mRewriteMaterialDir) && std::filesystem::is_directory(mRewriteMaterialDir))
 				{
 					for (auto path : std::filesystem::recursive_directory_iterator(mRewriteMaterialDir))
@@ -503,12 +504,12 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						{
 							auto data = mGameProcess->mGraphics->ReadMaterialInfo(path.path().string());
 
-							tryChangeDDSFormat(data.BaseColorFileName);
-							tryChangeDDSFormat(data.MetalnessFileName);
-							tryChangeDDSFormat(data.RoughnessFileName);
-							tryChangeDDSFormat(data.EmissiveFileName);
-							tryChangeDDSFormat(data.NormalFileName);
-							tryChangeDDSFormat(data.MetalnessSmoothnessFileName);
+							tryChangeDDSFormatW(data.BaseColorFileName);
+							tryChangeDDSFormatW(data.MetalnessFileName);
+							tryChangeDDSFormatW(data.RoughnessFileName);
+							tryChangeDDSFormatW(data.EmissiveFileName);
+							tryChangeDDSFormatW(data.NormalFileName);
+							tryChangeDDSFormatW(data.MetalnessSmoothnessFileName);
 
 							mGameProcess->mGraphics->WriteMaterialInfo(path.path().string(), data);
 						}
@@ -593,6 +594,134 @@ void fq::game_engine::Setting::beginChild_GraphicsSetting()
 						renderer.SetMeshObjectInfomation(meshObjectInfo);
 					}
 				);
+			}
+
+			if (ImGui::Button("convert terrain texture(jpg, png -> dds"))
+			{
+				auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+				scene->ViewComponents<game_module::Terrain>(
+					[](game_module::GameObject& object, game_module::Terrain& terrain)
+					{
+						auto tryChangeDDSFormat = [](std::string& filename)
+							{
+								if (filename.empty())
+								{
+									return;
+								}
+
+								std::filesystem::path ddsFilename = filename;
+								ddsFilename.replace_extension(".dds");
+
+								if (std::filesystem::exists(ddsFilename))
+								{
+									filename = ddsFilename.string();
+								}
+							};
+
+						auto terrainLayers = terrain.GetTerrainLayers();
+						for (auto& layer : terrainLayers)
+						{
+							tryChangeDDSFormat(layer.BaseColor);
+							tryChangeDDSFormat(layer.NormalMap);
+						}
+
+						terrain.SetTerrainLayers(terrainLayers);
+					}
+				);
+			}
+
+			std::string rewriteBasePathString = mRewriteUVAnimatorPath.string();
+			ImGui::InputText("Rewrite UVAnimation Path", &rewriteBasePathString);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* path
+						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+					if (std::filesystem::exists(*path) && path->extension() == ".uvAnimation")
+					{
+						mRewriteUVAnimatorPath = *path;
+					}
+				}
+			}
+
+			if (ImGui::Button("Reverse X-axis of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.x *= -1;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
+			if (ImGui::Button("Change X-axis minus 1 of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.x = 1 - keyframe.Translation.x;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
+
+			if (ImGui::Button("Reverse Y-axis of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.y *= -1;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
+			}
+			if (ImGui::Button("Change Y-axis minus 1 of the UVAnimation file"))
+			{
+				auto uvAnimation = mGameProcess->mGraphics->ReadUVAnimation(mRewriteUVAnimatorPath.string());
+				for (auto& [key, clip] : uvAnimation.NodeClips)
+				{
+					for (auto& keyframe : clip.UVData)
+					{
+						keyframe.Translation.y = 1 - keyframe.Translation.y;
+					}
+				}
+				mGameProcess->mGraphics->WriteUVAnimation(mRewriteUVAnimatorPath.string(), uvAnimation);
+
+				auto iUVAnimation = mGameProcess->mResourceSystem->GetUVAnimation(mRewriteUVAnimatorPath.string());
+				if (iUVAnimation != nullptr)
+				{
+					iUVAnimation->SetUVAnimationClip(uvAnimation);
+				}
 			}
 		}
 

@@ -653,10 +653,10 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 		std::string deleteText = "Delete##DelteButton" + std::to_string(mImguiID++);
 		if (ImGui::Button(deleteText.c_str()))
 		{
-			auto last = view.begin();
-
-			if (last != view.end())
+			if (view.size() != 0)
 			{
+				auto last = view.end();
+				last--;
 				view.erase(last);
 				mEditorProcess->mCommandSystem->Push<SetMetaData>(
 					data, mSelectObject, handle, any);
@@ -735,6 +735,43 @@ void fq::game_engine::Inspector::beginSequenceContainer(entt::meta_data data, fq
 			++index;
 		}
 	}
+	else if (valueType == entt::resolve<fq::game_module::PrefabResource>())
+	{
+		size_t index = 0;
+		for (auto element : view)
+		{
+			game_module::PrefabResource val = element.cast<fq::game_module::PrefabResource>();
+			std::string path = val.GetPrefabPath();
+
+			std::string sIndex = "  [" + std::to_string(index) + "]";
+
+			ImGui::Text(sIndex.c_str());
+			ImGui::SameLine();
+
+			std::string textName = "##" + sIndex + path;
+			ImGui::InputText(textName.c_str(), &path);
+
+			// DragDrop 받기
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+				if (pathPayLoad)
+				{
+					std::filesystem::path* dropPath
+						= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+					if (dropPath->extension() == L".prefab")
+					{
+						view[index].cast<game_module::PrefabResource&>().SetPrefabPath(dropPath->string());
+						mEditorProcess->mCommandSystem->Push<SetMetaData>(
+							data, mSelectObject, handle, any);
+					}
+				}
+			}
+			++index;
+		}
+	}
 }
 
 void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IHandle* handle)
@@ -751,7 +788,6 @@ void fq::game_engine::Inspector::beginPopupContextItem_Component(fq::reflect::IH
 			assert(mSelectObject->GetComponent(id));
 
 			auto component = mSelectObject->GetComponent(id)->shared_from_this();
-
 
 			auto remove = [selectObject = mSelectObject, id]()
 				{
@@ -1170,6 +1206,36 @@ void fq::game_engine::Inspector::beginAnimationStateNode(fq::game_module::Animat
 	{
 		stateNode.SetLoof(IsLoof);
 	}
+
+	auto& events = stateNode.GetEvents();
+
+	if (ImGui::Button("AddEvent", { 100, 30 }))
+	{
+		events.push_back({});
+	}
+	if (ImGui::Button("DeleteEvent", { 100, 30 }))
+	{
+		if (!events.empty())
+		{
+			events.pop_back();
+		}
+	}
+
+	for (size_t i = 0; i < events.size(); ++i)
+	{
+		auto& event = events[i];
+		std::string functionName = event.FunctionName;
+		float time = event.Time;
+		
+		std::string label = "FuntionName" + std::to_string(i);
+		ImGui::InputText(label.c_str(), &functionName);
+
+		label = "EmitTime" + std::to_string(i);
+		ImGui::InputFloat(label.c_str(), &time);
+
+		event.FunctionName = functionName;
+		event.Time = time;
+	}
 }
 
 bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int index)
@@ -1201,6 +1267,38 @@ bool fq::game_engine::Inspector::beginPOD(entt::meta_any& pod, unsigned int inde
 					{
 						changedData = true;
 					}
+				}
+				else if (data.type() == entt::resolve<game_module::PrefabResource>())
+				{
+					auto prefabRes = data.get(pod).cast<fq::game_module::PrefabResource>();
+
+					auto name = fq::reflect::GetName(data);
+					std::string prefabPath = prefabRes.GetPrefabPath();
+
+					ImGui::InputText(name.c_str(), &prefabPath);
+
+					// DragDrop 받기
+					if (ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* pathPayLoad = ImGui::AcceptDragDropPayload("Path");
+
+						if (pathPayLoad)
+						{
+							std::filesystem::path* dropPath
+								= static_cast<std::filesystem::path*>(pathPayLoad->Data);
+
+							if (dropPath->extension() == ".prefab")
+							{
+								prefabPath = dropPath->string();
+								prefabRes.SetPrefabPath(prefabPath);
+
+								data.set(pod, prefabRes);
+								changedData = true;
+							}
+						}
+					}
+
+					beginIsItemHovered_Comment(data);
 				}
 				else if (data.type() == entt::resolve<int>())
 				{

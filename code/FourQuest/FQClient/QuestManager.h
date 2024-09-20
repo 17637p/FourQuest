@@ -1,20 +1,25 @@
 #pragma once
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/GameModule.h"
-#include "../FQGameModule/TextUI.h"
+#include "../FQGameModule/PrefabResource.h"
 
 #include "Quest.h"
+
+namespace fq::game_module
+{
+	class TextUI;
+}
 
 namespace fq::client
 {
 	struct StartSubQuestIndex
 	{
-		int index;
+		int index = 0;
 	};
 
 	struct StartQuests
 	{
-		int startMainQuestIndex;
+		int startMainQuestIndex = 0;
 		std::vector<StartSubQuestIndex> startSubQuestIndex;
 	};
 
@@ -36,7 +41,8 @@ namespace fq::client
 		std::vector<Quest> GetSubQuests() const { return mSubQuests; }
 
 		void ViewQuestInformation(Quest quest, game_module::TextUI* textUI);
-		void RenderOffQuest();
+		void RenderOnSubQuest(int i, bool isOn);
+		void SpawnArmour(fq::game_module::PrefabResource armour);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -52,6 +58,21 @@ namespace fq::client
 		void EventProcessObjectInteraction();
 
 	private:
+		// 인스펙터 용
+		StartQuests mStartQuests;
+
+		std::vector<Quest> mMainQuests;
+		std::vector<Quest> mSubQuests;
+
+		float mDistance;
+
+		// 스크립트 용
+		Quest mCurMainQuest;
+		std::vector<Quest> mCurSubQuest;
+
+		fq::game_module::PrefabResource mPortalPrefab;
+
+		/// OnStart 시 채워주는 것들 (복사 안해도 되는 거)
 		// 각종 이벤트 처리
 		game_module::EventHandler mKillMonsterHandler;
 		game_module::EventHandler mPlayerCollideTriggerHandler;
@@ -60,16 +81,7 @@ namespace fq::client
 		game_module::EventHandler mAllCollideTriggerHandler;
 		game_module::EventHandler mObjectInteractionHandler;
 
-		// 인스펙터 용
-		StartQuests mStartQuests;
-
-		std::vector<Quest> mMainQuests;
-		std::vector<Quest> mSubQuests;
-
-		// 스크립트 용
-		Quest mCurMainQuest;
-		std::vector<Quest> mCurSubQuest;
-
+		// TextUI
 		game_module::TextUI* mMainQuestText;
 		std::vector<game_module::TextUI*> mSubQuestTexts;
 
@@ -77,6 +89,8 @@ namespace fq::client
 		int mGaugeMaxWidth;
 		int mFontSize;
 		game_module::ScreenManager* mScreenManager;
+
+		std::vector<std::shared_ptr<game_module::GameObject>> mAddedArmourObjects;
 
 		friend void RegisterMetaData();
 	};

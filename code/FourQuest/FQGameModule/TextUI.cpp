@@ -36,6 +36,8 @@ void fq::game_module::TextUI::SetTextInfo(fq::graphics::TextInfo val)
 }
 
 fq::game_module::TextUI::TextUI()
+	:mTextObject(nullptr)
+	,mTextInfo{}
 {
 }
 
@@ -56,4 +58,18 @@ void fq::game_module::TextUI::OnUpdate(float dt)
 	Transform* myTransform = GetComponent<Transform>();
 
 	SetTextPosition(myTransform->GetWorldPosition().x, myTransform->GetWorldPosition().y);
+	SetTextScale(myTransform->GetWorldScale().x, myTransform->GetWorldScale().y);
+}
+
+void fq::game_module::TextUI::SetText(std::string text)
+{
+	mTextInfo.Text = text;
+}
+
+void fq::game_module::TextUI::SetTextScale(float scaleX, float scaleY)
+{
+	mTextInfo.ScaleX = scaleX;
+	mTextInfo.ScaleY = scaleY;
+
+	mTextObject->SetTextInformation(mTextInfo);
 }
