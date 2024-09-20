@@ -193,6 +193,25 @@ void fq::client::SoulSelectUI::processInput()
 				// 영혼 선택창이라면
 				if (mIsSelects[i])
 				{
+					bool isSeletedOther = false;
+					for (int j = 0; j < 4; j++)
+					{
+						if (j == i)
+						{
+							continue;
+						}
+						// 다른 플레이어와 같은 걸 선택하면 아무일도 발생하지 않음
+						if (mSelectSouls[i] == mSelectSouls[j] && mIsReadys[j])
+						{
+							isSeletedOther = true;
+							break;
+						}
+					}
+					if (isSeletedOther)
+					{
+						break;
+					}
+
 					// 레디
 					mIsReadys[i] = true;
 					mIsSelects[i] = false;
@@ -227,7 +246,6 @@ void fq::client::SoulSelectUI::processInput()
 							break;
 					}
 
-					SaveSoulType();
 					GetScene()->AddGameObject(newSoul);
 				}
 				// 아니면 영혼 선택
@@ -331,19 +349,59 @@ void fq::client::SoulSelectUI::setReadyUI(int index, bool isSpawned)
 
 void fq::client::SoulSelectUI::SaveSoulType()
 {
-	PlayerInfoVariable::Player1SoulType = mSelectSouls[0];
-	PlayerInfoVariable::Player2SoulType = mSelectSouls[1];
-	PlayerInfoVariable::Player3SoulType = mSelectSouls[2];
-	PlayerInfoVariable::Player4SoulType = mSelectSouls[3];
+	if (mIsReadys[0])
+	{
+		PlayerInfoVariable::Player1SoulType = mSelectSouls[0];
+		PlayerInfoVariable::Player1State = 0;
+	}
+	else
+	{
+		PlayerInfoVariable::Player1SoulType = -1;
+		PlayerInfoVariable::Player1State = -1;
+	}
 
-	PlayerInfoVariable::Player1State = 0;
-	PlayerInfoVariable::Player2State = 0;
-	PlayerInfoVariable::Player3State = 0;
-	PlayerInfoVariable::Player4State = 0;
+	if (mIsReadys[1])
+	{
+		PlayerInfoVariable::Player2SoulType = mSelectSouls[1];
+		PlayerInfoVariable::Player2State = 0;
+	}
+	else
+	{
+		PlayerInfoVariable::Player2SoulType = -1;
+		PlayerInfoVariable::Player2State = -1;
+	}
+
+	if (mIsReadys[2])
+	{
+		PlayerInfoVariable::Player3SoulType = mSelectSouls[2];
+		PlayerInfoVariable::Player3State = 0;
+	}
+	else
+	{
+		PlayerInfoVariable::Player3SoulType = -1;
+		PlayerInfoVariable::Player3State = -1;
+	}
+
+	if (mIsReadys[3])
+	{
+		PlayerInfoVariable::Player4SoulType = mSelectSouls[3];
+		PlayerInfoVariable::Player4State = 0;
+	}
+	else
+	{
+		PlayerInfoVariable::Player4SoulType = -1;
+		PlayerInfoVariable::Player4State = -1;
+	}
 }
 
 void fq::client::SoulSelectUI::CheckAllReady(float dt)
 {
+	auto countUI = GetGameObject()->GetChildren()[5];
+
+	game_module::ImageUI* countBackground = countUI->GetComponent<game_module::ImageUI>();
+	game_module::TextUI* questStartText = countUI->GetChildren()[0]->GetComponent<game_module::TextUI>();
+	game_module::TextUI* countText = countUI->GetChildren()[1]->GetComponent<game_module::TextUI>();
+
 	bool isAllReady = true;
 	for (int i = 0; i < 4; i++)
 	{
@@ -351,12 +409,26 @@ void fq::client::SoulSelectUI::CheckAllReady(float dt)
 		{
 			isAllReady = false;
 			mCurTime = 0;
-			break;
+
+			countBackground->SetIsRender(0, false);
+			countText->SetIsRender(false);
+			questStartText->SetIsRender(false);
+
+			return;
 		}
 	}
 
+	// 모두 준비라면
 	if (isAllReady)
 	{
+		SaveSoulType();
+		countBackground->SetIsRender(0, true);
+		countText->SetIsRender(true);
+		questStartText->SetIsRender(true);
+
+		int count = mChangeSceneTime - mCurTime + 1;
+		countText->SetText(std::to_string(count));
+
 		mCurTime += dt;
 		if (mCurTime > mChangeSceneTime)
 		{

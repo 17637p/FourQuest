@@ -325,6 +325,28 @@ void fq::client::GameManager::testKey()
 		SavePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });	
 	}
+
+	// 캐릭터 설정
+	if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
+	{
+		PlayerInfoVariable::Player1State = 0;
+		PlayerInfoVariable::Player1SoulType = 0;
+	}
+	if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
+	{
+		PlayerInfoVariable::Player2State = 0;
+		PlayerInfoVariable::Player2SoulType = 1;
+	}
+	if (input->IsKeyState(EKey::Num3, EKeyState::Tap))
+	{
+		PlayerInfoVariable::Player3State = 0;
+		PlayerInfoVariable::Player3SoulType = 2;
+	}
+	if (input->IsKeyState(EKey::Num4, EKeyState::Tap))
+	{
+		PlayerInfoVariable::Player4State = 0;
+		PlayerInfoVariable::Player4SoulType = 3;
+	}
 }
 
 void fq::client::GameManager::SavePlayerState()

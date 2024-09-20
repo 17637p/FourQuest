@@ -154,7 +154,7 @@ void fq::graphics::UIManager::AddFont(const std::wstring& path)
 
 	// Create a DirectWrite text format object.
 	// 1~100개의 폰트를 미리 만들어 둔다.
-	for (unsigned short fontSize = 1; fontSize <= 100; fontSize++)
+	for (unsigned short fontSize = 1; fontSize <= 150; fontSize++)
 	{
 		hr = mDWriteFactory->CreateTextFormat(
 			path.c_str(),
