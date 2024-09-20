@@ -54,7 +54,7 @@ fq::graphics::D3D11Texture::D3D11Texture(const std::shared_ptr<D3D11Device>& d3d
 	if (fileExtension == L"dds")
 	{
 		HR(LoadFromDDSFile(texturePath.c_str(), DDS_FLAGS_NONE, &md, scratchImage));
-		
+
 		if (md.width % 4 != 0 || md.height % 4 != 0)
 		{
 			DXGI_FORMAT format = md.format;
@@ -722,7 +722,7 @@ fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11De
 
 		D3D11_TEXTURE2D_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-		desc.Width = AnimationKeyFrames::MAX_MODEL_TRANSFORMS * 3;
+		desc.Width = AnimationKeyFrames::MAX_MODEL_TRANSFORMS * 4;
 		desc.Height = AnimationKeyFrames::MAX_MODEL_KEYFRAMES;
 		desc.ArraySize = animationCount;
 		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; // 16¹ÙÀÌÆ®
@@ -731,7 +731,7 @@ fq::graphics::D3D11TextureArray::D3D11TextureArray(const std::shared_ptr<D3D11De
 		desc.MipLevels = 1;
 		desc.SampleDesc.Count = 1;
 
-		const size_t dataSize = AnimationKeyFrames::MAX_MODEL_TRANSFORMS * sizeof(AnimationKeyFrames::KeyFrame);
+		const size_t dataSize = AnimationKeyFrames::MAX_MODEL_TRANSFORMS * sizeof(DirectX::SimpleMath::Matrix);
 		const size_t pageSize = dataSize * AnimationKeyFrames::MAX_MODEL_KEYFRAMES;
 		void* mallocPtr = ::malloc(pageSize * animationCount);
 

@@ -62,72 +62,6 @@ cbuffer cbTweenBuffer : register(b4)
 
 Texture2DArray TransformMap : register(t0);
 
-float4 Slerp(float4 p0, float4 p1, float t)
-{
-    float dotp = dot(normalize(p0), normalize(p1));
-    if ((dotp > 0.9999) || (dotp < -0.9999))
-    {
-        if (t <= 0.5)
-            return p0;
-        return p1;
-    }
-    float theta = acos(dotp * 3.14159 / 180.0); // float theta = acos(dotp);
-    float4 P = ((p0 * sin((1 - t) * theta) + p1 * sin(t * theta)) / sin(theta));
-    P.w = 1;
-    return P;
-}
-
-// HLSL 함수: T * R * S (translation * rotation * scale)
-float4x4 CreateTRSMatrix(float3 translation, float4 quaternion, float3 scale)
-{
-    // Scale Matrix
-    float4x4 scaleMatrix = float4x4(
-        scale.x, 0.0f, 0.0f, 0.0f,
-        0.0f, scale.y, 0.0f, 0.0f,
-        0.0f, 0.0f, scale.z, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-
-    // Quaternion to Rotation Matrix
-    float xx = quaternion.x * quaternion.x;
-    float yy = quaternion.y * quaternion.y;
-    float zz = quaternion.z * quaternion.z;
-    float xy = quaternion.x * quaternion.y;
-    float xz = quaternion.x * quaternion.z;
-    float yz = quaternion.y * quaternion.z;
-    float wx = quaternion.w * quaternion.x;
-    float wy = quaternion.w * quaternion.y;
-    float wz = quaternion.w * quaternion.z;
-
-    float4x4 rotationMatrix = float4x4(
-        1.0f - 2.0f * (yy + zz), 2.0f * (xy - wz), 2.0f * (xz + wy), 0.0f,
-        2.0f * (xy + wz), 1.0f - 2.0f * (xx + zz), 2.0f * (yz - wx), 0.0f,
-        2.0f * (xz - wy), 2.0f * (yz + wx), 1.0f - 2.0f * (xx + yy), 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
-
-    // Translation Matrix
-    float4x4 translationMatrix = float4x4(
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        translation.x, translation.y, translation.z, 1.0f
-    );
-
-    // Combined TRS matrix: T * R * S
-    return mul(translationMatrix, mul(rotationMatrix, scaleMatrix));
-}
-
-float4x4 Transpose(float4x4 mat)
-{
-    return float4x4(
-        mat._m00, mat._m10, mat._m20, mat._m30, // 첫 번째 행 -> 첫 번째 열
-        mat._m01, mat._m11, mat._m21, mat._m31, // 두 번째 행 -> 두 번째 열
-        mat._m02, mat._m12, mat._m22, mat._m32, // 세 번째 행 -> 세 번째 열
-        mat._m03, mat._m13, mat._m23, mat._m33 // 네 번째 행 -> 네 번째 열
-    );
-}
-
 matrix GetAnimationMatrix(VertexIn input)
 {
     float indices[4] = { input.Indices.x, input.Indices.y, input.Indices.z, input.Indices.w };
@@ -147,52 +81,49 @@ matrix GetAnimationMatrix(VertexIn input)
     currFrame[1] = TweenFrames[input.InstanceID].next.currFrame;
     nextFrame[1] = TweenFrames[input.InstanceID].next.nextFrame;
     ratio[1] = TweenFrames[input.InstanceID].next.ratio;
-
-    float4 currTranslate, currRotation, currScale;
-    float4 nextTranslate, nextRotation, nextScale;
-    float4 resultTranslate, resultRotation, resultScale;
-    float4 nextResultTranslate, nextResultRotation, nextResultScale;
-    matrix result = 0;
+    
+    float4 c0, c1, c2, c3;
+    float4 n0, n1, n2, n3;
+    matrix curr = 0;
+    matrix next = 0;
     matrix transform = 0;
 
     for (int i = 0; i < 4; i++)
     {
-        // 현재 프레임 보간
-        currTranslate = TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
-        currRotation = TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
-        currScale = TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
+		c0 = TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
+		c1 = TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
+		c2 = TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
+		c3 = TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
+		curr = matrix(c0, c1, c2, c3);
 
-        nextTranslate = TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
-        nextRotation = TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
-        nextScale = TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
+		n0 = TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
+		n1 = TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
+		n2 = TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
+		n3 = TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
+		next = matrix(n0, n1, n2, n3);
 
-        resultTranslate = lerp(currTranslate, nextTranslate, ratio[0]);
-        resultRotation = Slerp(currRotation, nextRotation, ratio[0]);
-        resultScale = lerp(currScale, nextScale, ratio[0]);
+		matrix result = lerp(curr, next, ratio[0]);
 
-		// 다음 프레임 보간
+        // 다음 애니메이션
         if (animIndex[1] >= 0)
         {
-            currTranslate = TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
-            currRotation = TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
-            currScale = TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
-
-            nextTranslate = TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
-            nextRotation = TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
-            nextScale = TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
-            
-            nextResultTranslate = lerp(currTranslate, nextTranslate, ratio[0]);
-            nextResultRotation = Slerp(currRotation, nextRotation, ratio[0]);
-            nextResultScale = lerp(currScale, nextScale, ratio[0]);
-            
-            resultTranslate = lerp(resultTranslate, nextResultTranslate, TweenFrames[input.InstanceID].tweenRatio);
-            resultRotation = Slerp(resultRotation, nextResultRotation, TweenFrames[input.InstanceID].tweenRatio);
-            resultScale = lerp(resultScale, nextResultScale, TweenFrames[input.InstanceID].tweenRatio);
+            c0 = TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+            c1 = TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+            c2 = TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+            c3 = TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+            curr = matrix(c0, c1, c2, c3);
+        
+            n0 = TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+            n1 = TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+            n2 = TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+            n3 = TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+            next = matrix(n0, n1, n2, n3);
+        
+            matrix nextResult = lerp(curr, next, ratio[1]);
+            result = lerp(result, nextResult, TweenFrames[input.InstanceID].tweenRatio);
         }
         
-        result = (CreateTRSMatrix(currTranslate.xyz, currRotation, currScale.xyz));
-
-        transform += mul(weights[i], result);
+        transform += mul(weights[i], curr);
     }
 
     return transform;

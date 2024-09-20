@@ -1131,6 +1131,12 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::DragDrop, ".nodeHierachy")
 		.prop(fq::reflect::prop::Name, "NodeHierarchyModelPath")
 		.prop(fq::reflect::prop::RelativePath)
+		.data<&Animator::SetUpdateAnimationCPUData, &Animator::GetUpdateAnimationCPUData>("isUpdateAnimationCPUData"_hs)
+		.prop(fq::reflect::prop::Name, "isUpdateAnimationCPUData")
+		.prop(fq::reflect::prop::Comment, u8"CPU 애니메이션 데이터를 갱신할지 여부")
+		.data<&Animator::SetUpdateAnimationGPUData, &Animator::GetUpdateAnimationGPUData>("isUpdateAnimationGPUData"_hs)
+		.prop(fq::reflect::prop::Name, "isUpdateAnimationGPUData")
+		.prop(fq::reflect::prop::Comment, u8"GPU 애니메이션 데이터를 갱신할지 여부")
 		.base<Component>();
 
 	entt::meta<UVAnimator>()

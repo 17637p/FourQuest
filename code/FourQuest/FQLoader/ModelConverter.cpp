@@ -74,7 +74,7 @@ namespace fq::loader
 		using namespace fq::common;
 
 		Model model;
-		
+
 		model.Meshes = convertModel();
 		model.Materials = convertMaterial();
 		model.Animations = convertAnimation();
@@ -190,9 +190,21 @@ namespace fq::loader
 		{
 			aiAnimation* aiAnimationPtr = mAiScene->mAnimations[i];
 
+			unsigned int frameCount = 0;
+
+			for (unsigned int j = 0; j < aiAnimationPtr->mNumChannels; ++j)
+			{
+				aiNodeAnim* aiNodeAnimPtr = aiAnimationPtr->mChannels[j];
+
+				assert(aiNodeAnimPtr->mNumPositionKeys == aiNodeAnimPtr->mNumRotationKeys);
+				assert(aiNodeAnimPtr->mNumPositionKeys == aiNodeAnimPtr->mNumScalingKeys);
+
+				frameCount = std::max<unsigned int>(frameCount, aiNodeAnimPtr->mNumPositionKeys);
+			}
+
 			AnimationClip animationCilp;
 			animationCilp.Name = aiAnimationPtr->mName.C_Str();
-			animationCilp.FrameCount = (unsigned int)aiAnimationPtr->mDuration;
+			animationCilp.FrameCount = frameCount;
 			animationCilp.FramePerSecond = 1 / (aiAnimationPtr->mTicksPerSecond);
 			animationCilp.Duration = animationCilp.FrameCount * animationCilp.FramePerSecond;
 

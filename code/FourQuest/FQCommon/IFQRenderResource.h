@@ -123,6 +123,8 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetBindPose() abstract;
 			virtual FQ_GRAPHICS void Update(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
 			virtual FQ_GRAPHICS void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
+			virtual FQ_GRAPHICS void UpdateGPUData(float timePos, const std::shared_ptr<IAnimation>& animation) abstract;
+			virtual FQ_GRAPHICS void UpdateGPUData(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
 			virtual FQ_GRAPHICS void UpdateByLocalTransform() abstract;
 			virtual FQ_GRAPHICS void UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) abstract;
 

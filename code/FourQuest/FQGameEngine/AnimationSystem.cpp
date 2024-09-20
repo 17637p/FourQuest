@@ -89,11 +89,26 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 			{
 				float blendPos = controller.GetBlendTimePos();
 				float blendWeight = controller.GetBlendWeight();
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+
+				if (animator.GetUpdateAnimationCPUData())
+				{
+					nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+				}
+				if (animator.GetUpdateAnimationGPUData())
+				{
+					nodeHierarchyInstance.UpdateGPUData(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+				}
 			}
 			else if (controller.GetHasCurrentStateAnimation())
 			{
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+				if (animator.GetUpdateAnimationCPUData())
+				{
+					nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+				}
+				if (animator.GetUpdateAnimationGPUData())
+				{
+					nodeHierarchyInstance.UpdateGPUData(timePos, controller.GetSharedRefCurrentStateAnimation());
+				}
 			}
 		});
 

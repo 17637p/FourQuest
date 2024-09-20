@@ -459,7 +459,6 @@ namespace fq::graphics
 				{
 					materialCache = job.Material;
 					job.Material->Bind(mDevice);
-					bindingState(materialInfo);
 				}
 
 				if (nodeHierarchyCache != job.NodeHierarchy)
@@ -468,10 +467,11 @@ namespace fq::graphics
 				}
 
 				// 인스턴싱 처리
-				if (!job.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing
-					&& job.NodeHierarchyInstnace->GetUseInsatncing())
+				if (job.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing
+					&& job.NodeHierarchyInstnace != nullptr)
 				{
 					mSkinnedMeshInstancingShaderProgram->Bind(mDevice);
+					bindingState(materialInfo);
 					mDevice->GetDeviceContext()->IASetInputLayout(mSkinnedInstancedIL.Get());
 					mTweenBufferCB->Bind(mDevice, ED3D11ShaderType::VertexShader, 4);
 					nodeHierarchyCache->GetAnimationKeyframeTexture()->Bind(mDevice, 0, ED3D11ShaderType::VertexShader);
@@ -506,7 +506,6 @@ namespace fq::graphics
 						const SkinnedMeshJob& nextJob = skinnedMeshJobs[j];
 
 						if (!nextJob.SkinnedMeshObject->GetMaterialInstanceInfo().bUseInstanceing
-							|| !nextJob.NodeHierarchyInstnace->GetUseInsatncing()
 							|| job.SkinnedMesh != nextJob.SkinnedMesh
 							|| job.Material != nextJob.Material
 							|| job.SubsetIndex != nextJob.SubsetIndex)
@@ -515,8 +514,7 @@ namespace fq::graphics
 						}
 
 						instanceingInfos.push_back(nextJob.SkinnedMeshObject->GetTransform().Transpose());
-
-						tweenBufferInfo.TweenFrames[j] = nextJob.NodeHierarchyInstnace->GeTweenDesc();
+						tweenBufferInfo.TweenFrames[count] = nextJob.NodeHierarchyInstnace->GeTweenDesc();
 
 						++count;
 					}
@@ -530,6 +528,7 @@ namespace fq::graphics
 				else
 				{
 					mSkinnedMeshShaderProgram->Bind(mDevice);
+					bindingState(materialInfo);
 
 					if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
 					{

@@ -22,18 +22,10 @@ namespace fq::graphics
 {
 	struct AnimationKeyFrames
 	{
-		enum { MAX_MODEL_TRANSFORMS = 250 };
+		enum { MAX_MODEL_TRANSFORMS = 128 };
 		enum { MAX_MODEL_KEYFRAMES = 500 };
 
-		struct KeyFrame
-		{
-			DirectX::SimpleMath::Vector4 Translation{ 0, 0, 0, 0 };
-			DirectX::SimpleMath::Quaternion Rotation{};
-			DirectX::SimpleMath::Vector4 Scale{ 1, 1, 1, 0 };
-		};
-		// [ ][ ][ ][ ][ ][ ][ ] ... 250개
-		using KeyFrameArrayType = std::array<KeyFrame, MAX_MODEL_TRANSFORMS>;
-		// [ ][ ][ ][ ][ ][ ][ ] ... 500 개
+		using KeyFrameArrayType = std::array<DirectX::SimpleMath::Matrix, MAX_MODEL_TRANSFORMS>;
 		std::array<KeyFrameArrayType, MAX_MODEL_KEYFRAMES> KeyFrames;
 	};
 
@@ -93,6 +85,8 @@ namespace fq::graphics
 		virtual void SetBindPose() override;
 		virtual void Update(float timePos, const std::shared_ptr<IAnimation>& animation) override;
 		virtual void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
+		virtual void UpdateGPUData(float timePos, const std::shared_ptr<IAnimation>& animation) override;
+		virtual void UpdateGPUData(float lhsTimePos, const std::shared_ptr<IAnimation>&lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>&rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
 		virtual void UpdateByLocalTransform() override;
 		virtual void UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override;
 
@@ -108,7 +102,6 @@ namespace fq::graphics
 
 		// 인스턴싱 관련 함수
 		const TweenDesc& GeTweenDesc() const { return mTweenDesc; }
-		bool GetUseInsatncing() const { return mbUseInstanceing; }
 
 	private:
 		void clear();
@@ -122,8 +115,6 @@ namespace fq::graphics
 		std::vector<DirectX::SimpleMath::Matrix> mRootTransforms;
 		std::vector<DirectX::SimpleMath::Matrix> mTransposedFinalTransforms;
 
-		// 인스턴싱 관련 데이터
-		bool mbUseInstanceing;
 		TweenDesc mTweenDesc;
 	};
 }

@@ -67,14 +67,14 @@ namespace fq::graphics
 		if (prevIndex < keyframes.size())
 		{
 			*outLhsIndex = prevIndex;
-			*outRhsIndex = prevIndex == keyframes.size() - 1 ? prevIndex : prevIndex + 1;
+			*outRhsIndex = prevIndex == keyframes.size() - 1 ? keyframes.size() - 1 : prevIndex + 1;
 			*outWeight = fmod(timePos, animationClip.FramePerSecond) / animationClip.FramePerSecond;
 		}
 		else
 		{
 			*outLhsIndex = keyframes.size() - 1;
 			*outRhsIndex = keyframes.size() - 1;
-			*outWeight = 1.f;
+			*outWeight = 0.f;
 		}
 	}
 
