@@ -285,7 +285,6 @@ namespace fq::graphics
 				{
 					materialCache = job.Material;
 					job.Material->Bind(mDevice);
-					bindingState(materialInfo);
 				}
 
 				switch (meshObjectInfo.ObjectType)
@@ -293,6 +292,7 @@ namespace fq::graphics
 				case MeshObjectInfo::EObjectType::Static:
 				{
 					mLightmapStaticMeshShaderProgram->Bind(mDevice);
+					bindingState(materialInfo);
 					mDevice->GetDeviceContext()->IASetInputLayout(mInstancedIL.Get());
 
 					std::vector<std::shared_ptr<D3D11VertexBuffer>> buffers;
@@ -366,7 +366,8 @@ namespace fq::graphics
 					{
 						mStaticMeshShaderProgram->Bind(mDevice);
 					}
-
+					
+					bindingState(materialInfo);
 					mLessEqualStencilReplaceState->Bind(mDevice, job.StaticMeshObject->GetMeshObjectInfo().bIsAppliedDecal ? 0 : 1);
 
 					if (job.NodeHierarchyInstnace != nullptr)
