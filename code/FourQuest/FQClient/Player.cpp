@@ -20,6 +20,7 @@
 #include "SoulVariable.h"
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
+#include "SoulManager.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -185,6 +186,11 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 			if (mHp <= 0.f)
 			{
 				SummonSoul();
+				
+				for (auto& object : GetScene()->GetComponentView<SoulManager>())
+				{
+					object.GetComponent<SoulManager>()->AddPlayerArmourDeathCount(GetPlayerID());
+				}
 			}
 		}
 	}

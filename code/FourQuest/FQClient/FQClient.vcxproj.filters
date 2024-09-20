@@ -494,6 +494,9 @@
     <ClInclude Include="SoulVariable.h">
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
+    <ClInclude Include="SoulManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -821,6 +824,9 @@
       <Filter>src\03.Attack</Filter>
     </ClCompile>
     <ClCompile Include="SoulVariable.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

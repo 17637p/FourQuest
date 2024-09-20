@@ -23,6 +23,10 @@ namespace fq::client
 		void SetSoulType(fq::client::ESoulType type);
 	
 		void SetSoulColor();
+		void SetSoulManager();
+		void SetSoulHP();
+		void SetSoulDeath();
+		void UpdateSoulHP(float dt);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -37,11 +41,12 @@ namespace fq::client
 
 	private:
 		game_module::CharacterController* mController;
+		game_module::GameObject* mSoulManagerObject;
 		std::vector<DeadArmour*> mSelectArmours;
 		ESoulType mSoulType;
 
-		float mMaxHP;
 		float mHP;
+		int mDeathCount;
 		bool mbIsDistanceInPlayer;
 
 		friend void RegisterMetaData();

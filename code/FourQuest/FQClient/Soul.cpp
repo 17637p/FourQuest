@@ -4,18 +4,24 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Particle.h"
+
 #include "DeadArmour.h"
 #include "CameraMoving.h"
 #include "ClientEvent.h"
 #include "PlayerSoulVariable.h"
 #include "Player.h"
+#include "SoulManager.h"
 
 #include "SoulVariable.h"
+
+#include <algorithm>
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
 	, mSelectArmours{}
 	, mbIsDistanceInPlayer(false)
+	, mHP()
+	, mDeathCount()
 {}
 
 fq::client::Soul::~Soul()
@@ -56,6 +62,8 @@ void fq::client::Soul::OnStart()
 
 	// 소울 색깔 지정 
 	SetSoulColor();
+	SetSoulDeath();
+	SetSoulHP();
 }
 
 void fq::client::Soul::DestorySoul()
@@ -142,26 +150,22 @@ void fq::client::Soul::OnLateUpdate(float dt)
 
 void fq::client::Soul::checkOtherPlayer()
 {
-	for (auto& object : GetScene()->GetObjectView())
+	for (auto& object : GetScene()->GetComponentView<Player>())
 	{
-		if (object.HasComponent<Player>())
+		auto myTransform = GetComponent<fq::game_module::Transform>();
+		auto otherTransform = object.GetComponent<fq::game_module::Transform>();
+		auto otherPlayerComponent = object.GetComponent<Player>();
+
+		DirectX::SimpleMath::Vector3 distanceVector = myTransform->GetWorldPosition() - otherTransform->GetWorldPosition();
+
+		if (distanceVector.Length() <= SoulVariable::SoulDistance)
 		{
-			auto myTransform = GetComponent<fq::game_module::Transform>();
-			auto otherTransform = object.GetComponent<fq::game_module::Transform>();
-			auto otherPlayerComponent = object.GetComponent<Player>();
-
-			DirectX::SimpleMath::Vector3 distanceVector = myTransform->GetWorldPosition() - otherTransform->GetWorldPosition();
-
-			if (distanceVector.Length() <= SoulVariable::SoulDistance)
-			{
-				mbIsDistanceInPlayer = true;
-				int buffNumber = otherPlayerComponent->GetSoulBuffNumber();
-				buffNumber++;
-				otherPlayerComponent->SetSoulBuffNumber(buffNumber);
-			}
+			mbIsDistanceInPlayer = true;
+			int buffNumber = otherPlayerComponent->GetSoulBuffNumber();
+			buffNumber++;
+			otherPlayerComponent->SetSoulBuffNumber(buffNumber);
 		}
 	}
-
 }
 
 void fq::client::Soul::SetSoulColor()
@@ -196,6 +200,51 @@ void fq::client::Soul::SetSoulColor()
 		}
 	}
 
+}
+
+void fq::client::Soul::SetSoulManager()
+{
+	// 씬에서 소울 오브젝트 컴포넌트를 가진 오브젝트 가져오기
+	for (auto& object : GetScene()->GetComponentView<SoulManager>())
+	{
+		mSoulManagerObject = &object;
+	}
+}
+
+void fq::client::Soul::SetSoulHP()
+{
+	// 갑옷 죽음 카운터에 따라 영혼 최대 체력 세팅
+	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
+
+	int maxHP = SoulVariable::SoulMaxHp - SoulVariable::SoulLessHp * mDeathCount;
+	int minHP = SoulVariable::SoulMinHp;
+
+	mHP = std::max<int>(maxHP, minHP);
+}
+
+void fq::client::Soul::SetSoulDeath()
+{
+	// 갑옷 죽음 카운트 가져오기
+	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
+	auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
+
+	mDeathCount = soulManager->GetPlayerDeathCount(id);
+}
+
+void fq::client::Soul::UpdateSoulHP(float dt)
+{
+	mHP -= SoulVariable::SoulHpDecreas * dt;
+
+	// 영혼 죽으면 오브젝트 삭제하고 소울 매니저한테 죽었다고 알림
+	if (mHP <= 0.f)
+	{
+		GetScene()->DestroyGameObject(GetGameObject());
+		
+		int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
+		auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
+
+		soulManager->SetbIsPlayerSoulDeath(id, true);
+	}
 }
 
 void fq::client::Soul::SetSoulType(fq::client::ESoulType type)
