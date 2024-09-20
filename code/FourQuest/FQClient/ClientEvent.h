@@ -35,6 +35,24 @@ namespace fq::client::event
 	};
 
 	/// <summary>
+	/// 플레이어가 트리거에 부딪히는 중에 발생하는 이벤트
+	/// </summary>
+	struct PlayerCollideStayTrigger
+	{
+		int playerNumber;
+		std::string colliderName;
+	};
+
+	/// <summary>
+	/// 디펜스를 진행중일 때 발생하는 이벤트
+	/// </summary>
+	struct InProgressDefence
+	{
+		std::string colliderName;
+		int curCount;
+	};
+
+	/// <summary>
 	/// 디펜스를 완료했을 때 발생하는 이벤트
 	/// </summary>
 	struct CompleteDefence
@@ -65,6 +83,15 @@ namespace fq::client::event
 	struct ObjectInteractionEvent
 	{
 		game_module::ETag tag;
+	};
+
+	/// <summary>
+	/// 진행 중인 퀘스트를 알리는 이벤트
+	/// </summary>
+	struct CurrentQuest
+	{
+		bool isMain;
+		int questIndex;
 	};
 
 	/// <summary>

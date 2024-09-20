@@ -104,6 +104,7 @@ namespace fq::client
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
+		void OnTriggerStay(const game_module::Collision& collision) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
 

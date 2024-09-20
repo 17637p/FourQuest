@@ -1805,6 +1805,24 @@ void fq::client::RegisterMetaData()
 		.data<&ObjectLive::ObjectOrPrefabName>("ObjectOrPrefabName"_hs)
 		.prop(fq::reflect::prop::Name, "ObjectOrPrefabName");
 
+	entt::meta<InProgressQuest>()
+		.type("InProgressQuest"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressQuest")
+		.prop(fq::reflect::prop::POD)
+		.data<&InProgressQuest::isMain>("isMain"_hs)
+		.prop(fq::reflect::prop::Name, "isMain")
+		.data<&InProgressQuest::QuestIndex>("QuestIndex"_hs)
+		.prop(fq::reflect::prop::Name, "QuestIndex");
+
+	entt::meta<InProgressDefence>()
+		.type("InProgressDefence"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressDefence")
+		.prop(fq::reflect::prop::POD)
+		.data<&InProgressDefence::ColliderName>("ColliderName"_hs)
+		.prop(fq::reflect::prop::Name, "ColliderName")
+		.data<&InProgressDefence::Count>("Count"_hs)
+		.prop(fq::reflect::prop::Name, "Count");
+
 	entt::meta<SpawnCondition>()
 		.type("SpawnCondition"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnCondition")
@@ -1816,20 +1834,31 @@ void fq::client::RegisterMetaData()
 		.data<&SpawnCondition::TimerList>("TimerList"_hs)
 		.prop(fq::reflect::prop::Name, "TimerList")
 		.data<&SpawnCondition::ObjectLiveList>("ObjectLiveList"_hs)
-		.prop(fq::reflect::prop::Name, "ObjectLiveList");
+		.prop(fq::reflect::prop::Name, "ObjectLiveList")
+		.data<&SpawnCondition::InProgressQuestList>("InProgressQuestList"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressQuestList")
+		.data<&SpawnCondition::InProgressDefenceList>("InProgressDefenceList"_hs)
+		.prop(fq::reflect::prop::Name, "InProgressDefenceList");
+
+	entt::meta<SpawnData>()
+		.type("SpawnData"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnData")
+		.prop(fq::reflect::prop::POD)
+		.data<&SpawnData::MonsterType>("MonsterType"_hs)
+		.prop(fq::reflect::prop::Name, "MonsterType")
+		.data<&SpawnData::Name>("Name"_hs)
+		.prop(fq::reflect::prop::Name, "Name")
+		.data<&SpawnData::SpawnerNum>("SpawnerNum"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnerNum")
+		.data<&SpawnData::SpawnMonsterNum>("SpawnMonsterNum"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnMonsterNum");
 
 	entt::meta<SpawnRule>()
 		.type("SpawnRule"_hs)
 		.prop(fq::reflect::prop::Name, "SpawnRule")
 		.prop(fq::reflect::prop::POD)
-		.data<&SpawnRule::MonsterType>("MonsterType"_hs)
-		.prop(fq::reflect::prop::Name, "MonsterType")
-		.data<&SpawnRule::Name>("Name"_hs)
-		.prop(fq::reflect::prop::Name, "Name")
-		.data<&SpawnRule::SpawnerNum>("SpawnerNum"_hs)
-		.prop(fq::reflect::prop::Name, "SpawnerNum")
-		.data<&SpawnRule::SpawnMonsterNum>("SpawnMonsterNum"_hs)
-		.prop(fq::reflect::prop::Name, "SpawnMonsterNum");
+		.data<&SpawnRule::spawnData>("SpawnData"_hs)
+		.prop(fq::reflect::prop::Name, "SpawnData");
 
 	entt::meta<SpawnRules>()
 		.type("SpawnRules"_hs)

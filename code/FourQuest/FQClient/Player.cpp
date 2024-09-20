@@ -558,3 +558,13 @@ bool fq::client::Player::IsFeverTime() const
 {
 	return mbIsFeverTime;
 }
+
+void fq::client::Player::OnTriggerStay(const game_module::Collision& collision)
+{
+	// Quest Event 
+	if (mController != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideStayTrigger>(
+			{ (int)GetPlayerID(), collision.other->GetName() });
+	}
+}
