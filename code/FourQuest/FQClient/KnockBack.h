@@ -16,7 +16,8 @@ namespace fq::client
 		KnockBack();
 		~KnockBack();
 
-		void Set(float power, DirectX::SimpleMath::Vector3 direction);
+		void AddKnockBack(float power, DirectX::SimpleMath::Vector3 direction);
+		void SetKnockBack(float power, DirectX::SimpleMath::Vector3 direction);
 
 	private:
 		void OnStart() override;

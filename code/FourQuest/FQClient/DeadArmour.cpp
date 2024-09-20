@@ -14,6 +14,7 @@
 fq::client::DeadArmour::DeadArmour()
 	:mPlayerCount(0)
 	, mbIsVisible(false)
+	, mbIsSummonAble(true)
 {}
 
 fq::client::DeadArmour::~DeadArmour()
@@ -68,48 +69,32 @@ void fq::client::DeadArmour::SummonLivingArmour(PlayerInfo info)
 
 void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collision)
 {
-	if (collision.object->HasComponent<Soul>())
+	if (collision.other->HasComponent<Soul>())
 	{
 		++mPlayerCount;
 	}
 
-	for (auto& child : GetGameObject()->GetChildren())
+	if (mPlayerCount != 0 && mbIsSummonAble)
 	{
-		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
-		{
-			auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
-			auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
-			info.OutlineColor = { 0.8f, 0.6f, 0.2f, 1.0f };
-			skinnedMeshRenderer->SetMeshObjectInfomation(info);
-		}
-
-		// 상호작용 UI 
+		constexpr DirectX::SimpleMath::Color Yellow{ 0.8f,0.6f,0.2f,1.f };
+		setOutlineColor(Yellow);
 		setUI(true);
 	}
 }
 
 void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collision)
 {
-	if (collision.object->HasComponent<Soul>())
+	if (collision.other->HasComponent<Soul>())
 	{
 		--mPlayerCount;
 	}
 
-	if (mPlayerCount == 0)
+	if (mPlayerCount == 0 && mbIsSummonAble)
 	{
-		for (auto& child : GetGameObject()->GetChildren())
-		{
-			// OutLine
-			if (child->HasComponent<game_module::SkinnedMeshRenderer>())
-			{
-				auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
-				auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
-				info.OutlineColor = { 0.f, 0.f, 0.f, 1.0f };
-				skinnedMeshRenderer->SetMeshObjectInfomation(info);
-			}
-			// 상호작용 UI 
-			setUI(false);
-		}
+		constexpr DirectX::SimpleMath::Color NoOutLine{ 0.f,0.f,0.f,1.f };
+
+		setOutlineColor(NoOutLine);
+		setUI(false);
 	}
 }
 
@@ -118,6 +103,7 @@ void fq::client::DeadArmour::OnStart()
 	assert(GetComponent<game_module::ImageUI>() != nullptr);
 
 	setUI(false);
+	mbIsSummonAble = true;
 }
 
 void fq::client::DeadArmour::setUI(bool isVisible)
@@ -143,7 +129,7 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 	{
 		fq::game_module::Camera* mainCamera = nullptr;
 
-		GetScene()->GetEventManager()->FireEvent < fq::event::GetMainCamera>(
+		GetScene()->GetEventManager()->FireEvent <fq::event::GetMainCamera>(
 			{
 				&mainCamera
 			});
@@ -165,5 +151,42 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 		imageUI->SetUIInfomations(uiInfomations);
 	}
 
+}
+
+void fq::client::DeadArmour::SetSummonAble(bool isSummonAble)
+{
+	mbIsSummonAble = isSummonAble;
+
+	if (!mbIsSummonAble)
+	{
+		constexpr DirectX::SimpleMath::Color Red = { 1.f,0.f,0.f,1.f };
+		setOutlineColor(Red);
+		setUI(false);
+	}
+	else
+	{
+		constexpr DirectX::SimpleMath::Color NoOutLine{ 0.f,0.f,0.f,1.f };
+		setOutlineColor(NoOutLine);
+	}
+}
+
+bool fq::client::DeadArmour::IsSummonAble() const
+{
+	return !GetGameObject()->IsDestroyed() && mbIsSummonAble;
+}
+
+void fq::client::DeadArmour::setOutlineColor(DirectX::SimpleMath::Color color)
+{
+	for (auto& child : GetGameObject()->GetChildren())
+	{
+		// OutLine
+		if (child->HasComponent<game_module::SkinnedMeshRenderer>())
+		{
+			auto skinnedMeshRenderer = child->GetComponent<game_module::SkinnedMeshRenderer>();
+			auto info = skinnedMeshRenderer->GetMeshObjectInfomation();
+			info.OutlineColor = color;
+			skinnedMeshRenderer->SetMeshObjectInfomation(info);
+		}
+	}
 }
 

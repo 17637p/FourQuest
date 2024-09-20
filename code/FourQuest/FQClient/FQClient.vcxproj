@@ -55,9 +55,13 @@
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterContinousState.h" />
+    <ClInclude Include="BossMonsterEatState.h" />
     <ClInclude Include="BossMonsterGroggyState.h" />
     <ClInclude Include="BossMonsterHomingRushState.h" />
+    <ClInclude Include="BossMonsterPreContinousState.h" />
     <ClInclude Include="BossMonsterPrepareAttackState.h" />
+    <ClInclude Include="BossMonsterRoarState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
     <ClInclude Include="BossMonsterChaseState.h" />
     <ClInclude Include="BossMonsterDeadState.h" />
@@ -180,9 +184,13 @@
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterContinousState.cpp" />
+    <ClCompile Include="BossMonsterEatState.cpp" />
     <ClCompile Include="BossMonsterGroggyState.cpp" />
     <ClCompile Include="BossMonsterHomingRushState.cpp" />
+    <ClCompile Include="BossMonsterPreContinousState.cpp" />
     <ClCompile Include="BossMonsterPrepareAttackState.cpp" />
+    <ClCompile Include="BossMonsterRoarState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />
     <ClCompile Include="BossMonsterChaseState.cpp" />
     <ClCompile Include="BossMonsterDeadState.cpp" />

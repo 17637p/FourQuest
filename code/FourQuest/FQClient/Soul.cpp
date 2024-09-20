@@ -103,7 +103,7 @@ void fq::client::Soul::OnUpdate(float dt)
 
 		for (auto& armour : mSelectArmours)
 		{
-			if (armour->GetGameObject()->IsDestroyed())
+			if (!armour->IsSummonAble())
 				continue;
 
 			auto pos = armour->GetComponent<game_module::Transform>()->GetWorldPosition();
@@ -126,7 +126,6 @@ void fq::client::Soul::OnUpdate(float dt)
 		closestArmour->SummonLivingArmour(info);
 		DestorySoul();
 	}
-
 }
 
 void fq::client::Soul::SetSoulColor()

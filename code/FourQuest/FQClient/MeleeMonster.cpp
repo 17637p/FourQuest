@@ -204,7 +204,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 				if (type == EKnockBackType::Fixed)
 				{
 					DirectX::SimpleMath::Vector3 direction = playerAttack->GetAttackDirection();
-					mKnockBack->Set(power, direction);
+					mKnockBack->AddKnockBack(power, direction);
 				}
 				else if (type == EKnockBackType::TargetPosition)
 				{
@@ -216,7 +216,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					auto knockBackDir = monsterPos - attackPos;
 					knockBackDir.Normalize();
 
-					mKnockBack->Set(power, knockBackDir);
+					mKnockBack->AddKnockBack(power, knockBackDir);
 				}
 				else if (type == EKnockBackType::TargetPositionAndDirectionByAngle)
 				{
@@ -237,7 +237,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					auto knockBackDir = pushedDir * (1 - directionRatio) * playerAttack->GetTargetPosRatio() + playerAttack->GetAttackDirection() * directionRatio * playerAttack->GetDirectionRatio();
 					//knockBackDir.Normalize();
 
-					mKnockBack->Set(power, knockBackDir);
+					mKnockBack->AddKnockBack(power, knockBackDir);
 				}
 				else if (type == EKnockBackType::TargetPositionAndKnockDown)
 				{
@@ -249,7 +249,7 @@ void fq::client::MeleeMonster::OnTriggerEnter(const game_module::Collision& coll
 					auto knockBackDir = monsterPos - attackPos;
 					knockBackDir.Normalize();
 
-					mKnockBack->Set(power, knockBackDir);
+					mKnockBack->AddKnockBack(power, knockBackDir);
 
 					// 몬스터를 넘어트리는 상태 변화 호출
 					// mAnimator->SetParameterBoolean("IsKockDown", true);

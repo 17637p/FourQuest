@@ -33,4 +33,5 @@ std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterWaitAtt
 void fq::client::BossMonsterWaitAttackState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
 	animator.GetComponent<BossMonster>()->HomingTarget();
+	animator.GetComponent<BossMonster>()->CheckTargetInAttackRange();
 }

@@ -2,13 +2,14 @@
 
 #include "../FQGameModule/Component.h"
 #include "../FQGameModule/PrefabResource.h"
-
+#include "MonsterDefine.h"
 #include "IMonster.h"
 
 namespace fq::game_module
 {
 	class Transform;
 	class Animator;
+	class SkinnedMeshRenderer;
 }
 
 namespace fq::client
@@ -18,7 +19,6 @@ namespace fq::client
 
 	/// <summary>
 	/// 웅장한 근접 보스몬스터 클래스
-	/// 
 	/// </summary>
 	class BossMonster : public game_module::Component, public IMonster
 	{
@@ -32,14 +32,9 @@ namespace fq::client
 		void DetectTarget();
 
 		/// <summary>
-		/// 무작위로 타겟을 설정합니다 
+		/// 보스 몬스터 패턴을 종료한 후에 호출합니다.
 		/// </summary>
-		void SetRandomTarget();
-
-		/// <summary>
-		/// 다음 보스의 공격을 설정합니다 
-		/// </summary>
-		void SetNextAttack();
+		void EndPattern();
 
 		/// <summary>
 		/// 타겟을 설정합니다 
@@ -70,12 +65,17 @@ namespace fq::client
 		/// <summary>
 		/// 콤보 공격 
 		/// </summary>
-		void EmitComboAttack();
+		void EmitComboAttack(float xAxisOffset);
 
 		/// <summary>
-		/// 콤보 공격 앞으로 밀려나는 반동
+		/// 콤보, 연속공격 시 앞으로 밀려나는 반동
 		/// </summary>
 		void ReboundComboAttack();
+
+		/// <summary>
+		/// 연속 공격 시전 이전에 뒤로 살짝 물러나기 
+		/// </summary>
+		void StepBack();
 
 		/// <summary>
 		/// 내려찍기 공격 이펙트를 방출합니다 
@@ -91,17 +91,43 @@ namespace fq::client
 
 		float GetHPRatio()const;
 
+		void AddHp(float hp);
+	
 		/// <summary>
 		/// HPBar를 생성합니다
 		/// </summary>
 		void CreateHpBar();
 
 		/// <summary>
+		/// 먹을 수 있는 가장 가까운 값옷을 탐색하고 타겟으로 지정합니다
+		/// </summary>
+		bool FindAndSetTargetDeadArmour();
+
+		/// <summary>
 		/// HpBar를 제거합니다
 		/// </summary>
 		void DestroryHpBar();
 
+		/// <summary>
+		/// 타겟을 랜덤으로 설정합니다 
+		/// </summary>
+		void SetRandomTarget();
+
+		/// <summary>
+		/// 보스의 림라이트 컬러를 설정합니다 
+		/// </summary>
+		void SetRimLightColor(bool bUseRimLight ,DirectX::SimpleMath::Color color)const;
+
+		/// <summary>
+		/// 보스의 외각선 색깔을 설정합니다
+		/// </summary>
+		void SetOutLineColor(DirectX::SimpleMath::Color color);
+
 	private:
+		void waitAttack();
+		EBossMonsterAttackType getNextPattern(bool bIsInludeEat)const;
+		void setNextPattern();
+
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void OnStart()override;
@@ -113,6 +139,7 @@ namespace fq::client
 		KnockBack* mKnockBack;
 		fq::game_module::Transform* mTransform;
 		fq::game_module::Animator* mAnimator;
+		fq::game_module::SkinnedMeshRenderer* mSkinnedMesh;
 		std::shared_ptr<game_module::GameObject> mTarget;
 
 		float mMaxHp;
@@ -129,13 +156,23 @@ namespace fq::client
 		float mComboAttackReboundPower;
 		float mDetectRange;
 		float mRotationSpeed;
-		
+		float mSecondComboAttackRatio;
+		float mMinWaitAttackTime;
+		float mMaxWaitAttackTime;
+
 		// 그로기 관련 
 		float mStartGroggyGauge;
 		float mGroggyGauge;
 		float mGroggyIncreaseRatio;
 		float mGroggyDecreasePerSecond;
 		float mGroggyDecreaseElapsedTime;
+
+		// 패턴 확률 관련 
+		float mRushProbability;
+		float mSmashProbability;
+		float mRoarProbability;
+		float mContinousProbability;
+		float mEatProbability;
 
 		fq::game_module::PrefabResource mSmashDownAttack;
 		fq::game_module::PrefabResource mSmashDownEffect;

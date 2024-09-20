@@ -63,7 +63,7 @@ namespace fq::physics
 		/// <summary>
 		/// 콜백 함수를 등록합니다.
 		/// </summary>
-		/// <param name="func"> 등록할 콜백 함수 </param>
+		/// <param name="func"> 등록as할 콜백 함수 </param>
 		inline void SetCallbackFunction(std::function<void(fq::physics::CollisionData, fq::physics::ECollisionEventType)> func);
 
 	private:

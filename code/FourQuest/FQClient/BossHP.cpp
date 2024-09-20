@@ -57,7 +57,7 @@ void fq::client::BossHP::OnUpdate(float dt)
 	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
 	// Position 자동 조정
 	{
-		myTransform->SetLocalPosition({ (screenWidth / 2) - ((myImage->GetUIInfomation(0).Width / 2) * scaleX), 
+		myTransform->SetLocalPosition({ (screenWidth / 2) - ((myImage->GetUIInfomation(0).Width / 2) * scaleX),
 			screenHeight / (float)1080, 1 });
 	}
 

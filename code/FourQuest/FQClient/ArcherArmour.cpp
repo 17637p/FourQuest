@@ -155,7 +155,6 @@ namespace fq::client
 		attackComponent->Set(attackInfo);
 
 		// MagicBall Attack »ç¿îµå  
-
 		GetScene()->AddGameObject(attackObj);
 	}
 

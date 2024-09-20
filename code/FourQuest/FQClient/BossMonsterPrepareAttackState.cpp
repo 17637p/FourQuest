@@ -28,7 +28,7 @@ void fq::client::BossMonsterPrepareAttackState::OnStateUpdate(game_module::Anima
 {
 	mHomingElapsedTime += dt;
 
-	if (mHomingElapsedTime < mHomingTime)
+	if (mHomingElapsedTime < mHomingTime)	
 	{
 		animator.GetComponent<BossMonster>()->HomingTarget();
 	}

@@ -19,6 +19,13 @@ namespace fq::client
 		/// </summary>
 		void SummonLivingArmour(PlayerInfo info);
 
+		/// <summary>
+		/// 갑옷이 빙의 가능한 상태인지 설정합니다 
+		/// </summary>
+		void SetSummonAble(bool isSummonAble);
+
+		bool IsSummonAble()const;
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 		void OnStart() override;
@@ -26,12 +33,14 @@ namespace fq::client
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 		void OnTriggerExit(const game_module::Collision& collision) override;
 
+		void setOutlineColor(DirectX::SimpleMath::Color color);
 		void setUI(bool isVisible);
 	private:
 		game_module::PrefabResource mLivingArmourPrefab;
 
 		unsigned short mPlayerCount;
 		bool mbIsVisible;
+		bool mbIsSummonAble;
 
 		friend void RegisterMetaData();
 	};

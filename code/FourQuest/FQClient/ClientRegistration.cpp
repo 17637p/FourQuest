@@ -73,6 +73,10 @@
 #include "BossMonsterComboAttackState.h"
 #include "BossMonsterPrepareAttackState.h"
 #include "BossMonsterGroggyState.h"
+#include "BossMonsterEatState.h"
+#include "BossMonsterRoarState.h"
+#include "BossMonsterContinousState.h"
+#include "BossMonsterPreContinousState.h"
 
 // PlantMoster
 #include "PlantMonster.h"
@@ -863,12 +867,37 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Comment, u8"플레이어 감지 범위")
 		.data<&BossMonster::mRotationSpeed>("RotationSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "RotationSpeed")
+		.data<&BossMonster::mSecondComboAttackRatio>("SecondComboAttackRatio"_hs)
+		.prop(fq::reflect::prop::Name, "SecondComboAttackRatio")
+		.prop(fq::reflect::prop::Comment, u8"콤보 공격에서 2타만 사용하는 확률 0 ~ 1")
+		.data<&BossMonster::mMinWaitAttackTime>("MinWaitAttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "minWaitAttackTime")
+		.prop(fq::reflect::prop::Comment, u8"공격하고 대기하는 최소 시간")
+		.data<&BossMonster::mMaxWaitAttackTime>("MaxWaitAttackTime"_hs)
+		.prop(fq::reflect::prop::Name, "MaxWaitAttackTime")
+		.prop(fq::reflect::prop::Comment, u8"공격하고 대기하는 최대 시간")
 		.data<&BossMonster::mGroggyIncreaseRatio>("GroggyIncreaseRatio"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyIncreaseRatio")
 		.prop(fq::reflect::prop::Comment, u8"피격시 대미지 비례 그로기 게이지 증가량")
 		.data<&BossMonster::mGroggyDecreasePerSecond>("GroggyDecreasePerSecond"_hs)
 		.prop(fq::reflect::prop::Name, "GroggyDecreasePerSecond")
 		.prop(fq::reflect::prop::Comment, u8"초당 그로기 게이지 감소량")
+
+		.data<&BossMonster::mRushProbability>("RushProbability"_hs)
+		.prop(fq::reflect::prop::Name, "RushProbability")
+		.prop(fq::reflect::prop::Comment, u8"러쉬 패턴 확률\n확률합계는 1.f 이하이고 남은 확률은 콤보 공격 확률이 됩니다")
+		.data<&BossMonster::mSmashProbability>("SmashProbability"_hs)
+		.prop(fq::reflect::prop::Name, "SmashProbability")
+		.prop(fq::reflect::prop::Comment, u8"내려찍기 패턴 확률 ")
+		.data<&BossMonster::mRoarProbability>("RoarProbability"_hs)
+		.prop(fq::reflect::prop::Name, "RoarProbability")
+		.prop(fq::reflect::prop::Comment, u8"로어 패턴 확률")
+		.data<&BossMonster::mContinousProbability>("ContinousProbability"_hs)
+		.prop(fq::reflect::prop::Name, "ContinousProbability")
+		.prop(fq::reflect::prop::Comment, u8"연속 공격 패턴 확률")
+		.data<&BossMonster::mEatProbability>("EatProbability"_hs)
+		.prop(fq::reflect::prop::Name, "EatProbability")
+		.prop(fq::reflect::prop::Comment, u8"먹기 패턴 확률")
 		.data<&BossMonster::mSmashDownAttack>("SmashDownAttack"_hs)
 		.prop(fq::reflect::prop::Name, "SmashDownAttack")
 		.data<&BossMonster::mSmashDownEffect>("SmashDownEffect"_hs)
@@ -941,6 +970,8 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "BossMonsterComboAttackState")
 		.data<&BossMonsterComboAttackState::mEmitAttackTime>("EmitAttackTime"_hs)
 		.prop(fq::reflect::prop::Name, "EmitAttackTime")
+		.data<&BossMonsterComboAttackState::mXAxisOffset>("XAxisOffset"_hs)
+		.prop(fq::reflect::prop::Name, "XAxisOffset")
 		.base<fq::game_module::IStateBehaviour>();
 
 	entt::meta<BossMonsterPrepareAttackState>()
@@ -957,6 +988,36 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "GroggyTime")
 		.base<fq::game_module::IStateBehaviour>();
 
+	entt::meta<BossMonsterEatState>()
+		.type("BossMonsterEatState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterEatState")
+		.data<&BossMonsterEatState::mEatTime>("EatTime"_hs)
+		.prop(fq::reflect::prop::Name, "EatTime")
+		.data<&BossMonsterEatState::mRecoverHp>("RecoverHp"_hs)
+		.prop(fq::reflect::prop::Name, "RecoverHp")
+		.prop(fq::reflect::prop::Comment, u8"초당 HP 회복량")
+		.data<&BossMonsterEatState::mRimLightColor>("RimLightColor"_hs)
+		.prop(fq::reflect::prop::Name, "RimLightColor")
+		.prop(fq::reflect::prop::Comment, u8"체력회복시 림라이트 색깔")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterRoarState>()
+		.type("BossMonsterRoarState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterRoarState")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterContinousState>()
+		.type("BossMonsterContinousState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterContinousState")
+		.data<&BossMonsterContinousState::mAttackDuration>("AttackDuration"_hs)
+		.prop(fq::reflect::prop::Name, "AttackDuration")
+		.prop(fq::reflect::prop::Comment, u8"공격 지속시간")
+		.base<fq::game_module::IStateBehaviour>();
+
+	entt::meta<BossMonsterPreContinousState>()
+		.type("BossMonsterPreContinousState"_hs)
+		.prop(fq::reflect::prop::Name, "BossMonsterPreContinousState")
+		.base<fq::game_module::IStateBehaviour>();
 
 	//////////////////////////////////////////////////////////////////////////
 	//                             원거리 몬스터 	 							//
