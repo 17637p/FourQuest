@@ -189,6 +189,10 @@ extern "C" {
 			virtual FQ_GRAPHICS IImageObject* CreateImageObject(const UIInfo& uiInfo) abstract;
 			virtual FQ_GRAPHICS void DeleteImageObject(IImageObject* imageObject) abstract;
 
+			// SpriteAnimation
+			virtual FQ_GRAPHICS ISpriteAnimationObject* CreateSpriteAnimation(SpriteInfo spriteInfo) abstract;
+			virtual FQ_GRAPHICS void DeleteSpriteAnimation(fq::graphics::ISpriteAnimationObject* spriteAniamtionObject) abstract;
+
 			/// SkyBox
 			virtual FQ_GRAPHICS void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) abstract;
 			virtual FQ_GRAPHICS void SetIBLTexture(const std::wstring& diffuse, const std::wstring& specular, const std::wstring& brdfLUT) abstract;

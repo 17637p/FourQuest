@@ -285,6 +285,15 @@ extern "C" {
 			virtual FQ_GRAPHICS TextInfo GetTextInformation() abstract;
 		};
 
+		class ISpriteAnimationObject
+		{
+		public:
+			virtual ~ISpriteAnimationObject() = default;
+
+			virtual FQ_GRAPHICS void SetSpriteInfo(SpriteInfo spriteInfo) abstract;
+			virtual FQ_GRAPHICS SpriteInfo GetSpriteInfo() abstract;
+		};
+
 #ifdef __cplusplus
 	}
 #endif

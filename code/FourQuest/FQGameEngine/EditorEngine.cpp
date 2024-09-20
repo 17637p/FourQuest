@@ -213,6 +213,7 @@ void fq::game_engine::EditorEngine::Process()
 				//////////////////////////////////////////////////////////////////////////
 				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
 				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
+				mGameProcess->mUISystem->Update(deltaTime);
 			}
 
 			//////////////////////////////////////////////////////////////////////////
@@ -224,7 +225,6 @@ void fq::game_engine::EditorEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mUISystem->Update();
 			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////

@@ -320,152 +320,6 @@ void fq::graphics::UIManager::DeleteImage(IImageObject* imageObject)
 	delete imageObject;
 }
 
-void fq::graphics::UIManager::drawAllText()
-{
-	if (mRenderTarget)
-	{
-		mRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
-		ID2D1SolidColorBrush* tempBrush = nullptr;
-		for (const auto& textObject : mTexts)
-		{
-			if (!textObject->GetTextInformation().IsRender)
-			{
-				continue;
-			}
-
-			TextInfo drawTextInformation = textObject->GetTextInformation();
-			if (drawTextInformation.Text == "")
-			{
-				continue;
-			}
-
-			if (!drawTextInformation.IsRender)
-			{
-				continue;
-			}
-
-			auto brush = mBrushes.find(drawTextInformation.FontColor);
-			if (brush == mBrushes.end())
-			{
-				// 브러시 제작 
-				// Create a black brush.
-				mRenderTarget->CreateSolidColorBrush(
-					D2D1::ColorF(drawTextInformation.FontColor.R(),
-						drawTextInformation.FontColor.G(),
-						drawTextInformation.FontColor.B(),
-						drawTextInformation.FontColor.A()),
-					&tempBrush);
-
-				mBrushes[drawTextInformation.FontColor] = tempBrush;
-			}
-
-			std::wstring text = stringToWstring(drawTextInformation.Text);
-
-			// \\n 찾아서 \n으로 바꾸기
-			std::wstring toReplace = L"\\n";
-			std::wstring replaceWith = L"\n";
-
-			size_t pos = text.find(toReplace);
-
-			while (pos != std::wstring::npos) 
-			{
-				text.replace(pos, toReplace.length(), replaceWith);
-				pos = text.find(toReplace, pos + replaceWith.length());
-			}
-
-			std::wstring fontPath = stringToWstring(drawTextInformation.FontPath) + std::to_wstring(drawTextInformation.FontSize);
-
-			switch (textObject->GetTextInformation().Align)
-			{
-				case ETextAlign::LeftTop:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-					break;
-				}
-				case ETextAlign::LeftCenter:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-					break;
-				}
-				case ETextAlign::LeftBottom:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
-					break;
-				}
-				case ETextAlign::CenterTop:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-					break;
-				}
-				case ETextAlign::CenterCenter:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-					break;
-				}
-				case ETextAlign::CenterBottom:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
-					break;
-				}
-				case ETextAlign::RightTop:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-					break;
-				}
-				case ETextAlign::RightCenter:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-					break;
-				}
-				case ETextAlign::RightBottom:
-				{
-					mFonts[fontPath]->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-					mFonts[fontPath]->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
-					break;
-				}
-				default:
-					break;
-			}
-
-			if (textObject->GetTextInformation().BoxAlign == ETextBoxAlign::CenterCenter)
-			{
-				mRenderTarget->DrawText(
-					text.c_str(),
-					text.length(),
-					mFonts[fontPath],
-					D2D1::RectF(
-						drawTextInformation.CenterX - drawTextInformation.Width / 2,
-						drawTextInformation.CenterY - drawTextInformation.Height / 2,
-						drawTextInformation.CenterX + drawTextInformation.Width / 2,
-						drawTextInformation.CenterY + drawTextInformation.Height / 2),
-					mBrushes[drawTextInformation.FontColor]);
-			}
-			else
-			{
-				mRenderTarget->DrawText(
-					text.c_str(),
-					text.length(),
-					mFonts[fontPath],
-					D2D1::RectF(
-						drawTextInformation.CenterX,
-						drawTextInformation.CenterY,
-						drawTextInformation.CenterX + drawTextInformation.Width,
-						drawTextInformation.CenterY + drawTextInformation.Height),
-					mBrushes[drawTextInformation.FontColor]);
-			}
-		}
-	}
-}
-
 bool IImageObjectCmpLayer(fq::graphics::IImageObject* a, fq::graphics::IImageObject* b)
 {
 	return a->GetLayer() > b->GetLayer();
@@ -476,209 +330,9 @@ bool ITextObjectCmpLayer(fq::graphics::ITextObject* a, fq::graphics::ITextObject
 	return a->GetTextInformation().Layer > b->GetTextInformation().Layer;
 }
 
-void fq::graphics::UIManager::drawAllImage(bool isOnText)
+bool ISpriteAnimationObjectCmpLayer(fq::graphics::ISpriteAnimationObject* a, fq::graphics::ISpriteAnimationObject* b)
 {
-	if (!mIsSortedImage)
-	{
-		// 레이어 단위로 정렬하기
-		std::sort(mImages.begin(), mImages.end(), IImageObjectCmpLayer);
-		//mImages
-		mIsSortedImage = true;
-	}
-
-	for (const auto& image : mImages)
-	{
-		if (!image->GetIsRender())
-		{
-			continue;
-		}
-
-		if (image->GetIsOnText() != isOnText)
-		{
-			continue;
-		}
-
-		// 그리기
-		std::filesystem::path stringToWstringPath = image->GetImagePath();
-		std::wstring imagePath = stringToWstringPath.wstring();
-
-		D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
- 		D2D1_RECT_F imageRect = { 0, 0, imageSize.width * image->GetXRatio(), imageSize.height * image->GetYRatio() }; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
-		D2D1_RECT_F screenRect{};
-		if (image->GetRenderMode()) // true가 isCenter
-		{
-			screenRect = { image->GetStartX() - image->GetWidth() / 2, image->GetStartY() - image->GetHeight() / 2,
-			image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2 }; // 그릴 크기 (화면 좌표)
-		}
-		else
-		{
-			screenRect = { image->GetStartX(), image->GetStartY(),
-			image->GetStartX() + image->GetWidth(), image->GetStartY() + image->GetHeight() }; // 그릴 크기 (화면 좌표)
-		}
-
-		if (image->GetColor() != DirectX::SimpleMath::Color(0, 0, 0, 1))
-		{
-			ID2D1SolidColorBrush* brush;
-			D2D1_COLOR_F d2dColor;
-			DirectX::SimpleMath::Color color = image->GetColor();
-			d2dColor.r = color.R();
-			d2dColor.g = color.G();
-			d2dColor.b = color.B();
-			d2dColor.a = color.A();
-			mRenderTarget->CreateSolidColorBrush(d2dColor, &brush);
-			mRenderTarget->FillRectangle(screenRect, brush);
-
-			continue;
-		}
-
-		//  마스크 있을 때
-		if (image->GetMaskPath() != "")
-		{
-			stringToWstringPath = image->GetMaskPath();
-			std::wstring maskPath = stringToWstringPath.wstring();
-
-			D2D1_BITMAP_BRUSH_PROPERTIES propertiesXClampYClamp =
-				D2D1::BitmapBrushProperties(
-					D2D1_EXTEND_MODE_CLAMP,
-					D2D1_EXTEND_MODE_CLAMP,
-					D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR
-				);
-
-			ID2D1BitmapBrush* bitmapBrush;
-
-			mRenderTarget->CreateBitmapBrush(
-				mBitmaps[imagePath]->bitmap,
-				propertiesXClampYClamp,
-				&bitmapBrush
-			);
-
-			D2D_SIZE_U bitmapSize = mBitmaps[imagePath]->bitmap->GetPixelSize();
-			float scaleX = image->GetWidth() / bitmapSize.width;
-			float scaleY = image->GetHeight() / bitmapSize.height;
-
-			D2D1_MATRIX_3X2_F scaleT = D2D1::Matrix3x2F::Scale(scaleX, scaleY);
-			D2D1_MATRIX_3X2_F translateT = D2D1::Matrix3x2F::Translation(image->GetStartX(), image->GetStartY());
-
-			D2D1_MATRIX_3X2_F totalT = D2D1::Matrix3x2F::Translation(image->GetStartX(), image->GetStartY());
-
-			bitmapBrush->SetTransform(scaleT * translateT);
-
-			mRenderTarget->SetTransform
-			(
-				D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-				* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
-			);
-
-			// D2D1_ANTIALIAS_MODE_ALIASED must be set for FillOpacityMask to function properly
-			mRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-			mRenderTarget->FillOpacityMask(
-				mBitmaps[maskPath]->bitmap,
-				bitmapBrush,
-				D2D1_OPACITY_MASK_CONTENT_GRAPHICS,
-				&screenRect,
-				&imageRect
-			);
-			mRenderTarget->SetAntialiasMode(D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-
-			bitmapBrush->Release();
-		}
-		else
-		{
-			float degree = image->GetFillDegree();
-			if (degree >= 0)
-			{
-				float radian = DirectX::XMConvertToRadians(degree - 270);
-
-				float radiusX = (image->GetWidth() / 2);
-				float radiusY = (image->GetHeight() / 2);
-
-				//float radiusX = (image->GetWidth() / 2);// *image->GetScaleX();
-				//float radiusY = (image->GetHeight() / 2);// *image->GetScaleY();
-
-				float startX = image->GetStartX() - radiusX;
-				float startY = image->GetStartY() - radiusY;
-
-				//float maxLength = (radiusX > radiusY) ? radiusX : radiusY;
-				//float halfDiagonal = (maxLength) * std::sqrt(2);
-
-				// 경로 기하학을 생성하여 반원 모양을 정의합니다.
-				ID2D1PathGeometry* pPathGeometry = nullptr;
-
-				mDirect2DFactory->CreatePathGeometry(&pPathGeometry);
-				ID2D1GeometrySink* pSink = nullptr;
-				pPathGeometry->Open(&pSink);
-
-				//float halfDiagonal = radiusX;
-				//
-				//startX = startX + radiusX - halfDiagonal;
-				//startY = startY + radiusY - halfDiagonal;
-				//
-				//radiusX = halfDiagonal;
-				//radiusY = halfDiagonal;
-
-				float cos = std::cosf(radian) * radiusX;
-				float sin = std::sinf(radian) * radiusY;
-
-				D2D1_POINT_2F BeginPoint = D2D1::Point2F(startX + radiusX, startY + radiusY + radiusY);
-				pSink->BeginFigure(BeginPoint, D2D1_FIGURE_BEGIN_FILLED);
-
-				D2D1_ARC_SIZE arcSize = D2D1_ARC_SIZE_SMALL;
-				if (degree >= 180)
-				{
-					arcSize = D2D1_ARC_SIZE_LARGE;
-				}
-
-				pSink->AddArc(D2D1::ArcSegment(
-					D2D1::Point2F(startX + radiusX + cos, startY + radiusY + sin),
-					D2D1::SizeF(radiusX, radiusY),
-					0.f,
-					D2D1_SWEEP_DIRECTION_CLOCKWISE,
-					arcSize
-				));
-
-				pSink->AddLine(D2D1::Point2F(startX + radiusX, startY + radiusY)); // 원의 끝 점에서 수직 하단으로 선을 추가
-				pSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-
-				pSink->Close();
-				pSink->Release();
-
-				mRenderTarget->SetTransform
-				(
-					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
-				);
-
-				// 클리핑 영역을 설정합니다.
-				mRenderTarget->PushLayer(
-					D2D1::LayerParameters(
-						D2D1::InfiniteRect(),
-						pPathGeometry
-					),
-					nullptr
-				);
-
-				// 이미지를 그립니다.
-				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
-
-				// 클리핑 영역을 해제합니다.
-				mRenderTarget->PopLayer();
-
-				// 리소스를 해제합니다.
-				pPathGeometry->Release();
-			}
-			else
-			{
-				// 왜 스케일 위치가 중앙점이 아니라 시작점이지...?
-				mRenderTarget->SetTransform
-				(
-					D2D1::Matrix3x2F::Rotation(image->GetRotation(), D2D1::Point2F(image->GetStartX() + image->GetWidth() / 2, image->GetStartY() + image->GetHeight() / 2))
-					* D2D1::Matrix3x2F::Scale(image->GetScaleX(), image->GetScaleY(), D2D1::Point2F(image->GetStartX(), image->GetStartY()))
-				);
-
-				mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, image->GetAlpha(), D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
-			}
-		}
-	}
+	return a->GetSpriteInfo().Layer > b->GetSpriteInfo().Layer;
 }
 
 fq::graphics::IImageObject* fq::graphics::UIManager::CreateImageObject(const UIInfo& uiInfo)
@@ -779,9 +433,16 @@ void fq::graphics::UIManager::draw()
 		std::sort(mTexts.begin(), mTexts.end(), ITextObjectCmpLayer);
 		mIsSortedText = true;
 	}
+	// 애니메이션 정렬
+	if (!mIsSortedSpriteAnimation)
+	{
+		std::sort(mSpriteAnimations.begin(), mSpriteAnimations.end(), ISpriteAnimationObjectCmpLayer);
+		mIsSortedSpriteAnimation = true;
+	}
 
 	int imageIndex = 0;
 	int textIndex = 0;
+	int spriteAnimationIndex = 0;
 	while (true)
 	{
 		if (imageIndex >= mImages.size())
@@ -792,32 +453,110 @@ void fq::graphics::UIManager::draw()
 		{
 			textIndex = -1;
 		}
+		if (spriteAnimationIndex >= mSpriteAnimations.size())
+		{
+			spriteAnimationIndex = -1;
+		}
 
-		if (imageIndex == -1 && textIndex == -1)
+		if (imageIndex == -1 && textIndex == -1 && spriteAnimationIndex == -1)
 		{
 			break;
 		}
 
 		if (imageIndex == -1)
 		{
-			drawText(mTexts[textIndex]);
-			textIndex++;
+			if (textIndex == -1)
+			{
+				drawSpriteAnimation(mSpriteAnimations[spriteAnimationIndex]);
+				spriteAnimationIndex++;
+			}
+			else if (spriteAnimationIndex == -1)
+			{
+				drawText(mTexts[textIndex]);
+				textIndex++;
+			}
+			else
+			{
+				if (mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer > mTexts[textIndex]->GetTextInformation().Layer)
+				{
+					drawSpriteAnimation(mSpriteAnimations[spriteAnimationIndex]);
+					spriteAnimationIndex++;
+				}
+				else
+				{
+					drawText(mTexts[textIndex]);
+					textIndex++;
+				}
+			}
 		}
 		else if (textIndex == -1)
 		{
-			drawImage(mImages[imageIndex]);
-			imageIndex++;
+			if (spriteAnimationIndex == -1)
+			{
+				drawImage(mImages[imageIndex]);
+				imageIndex++;
+			}
+			else if (imageIndex == -1)
+			{
+				drawSpriteAnimation(mSpriteAnimations[spriteAnimationIndex]);
+				spriteAnimationIndex++;
+			}
+			else
+			{
+				if (mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer > mImages[imageIndex]->GetLayer())
+				{
+					drawSpriteAnimation(mSpriteAnimations[spriteAnimationIndex]);
+					spriteAnimationIndex++;
+				}
+				else
+				{
+					drawImage(mImages[imageIndex]);
+					imageIndex++;
+				}
+			}
+		}
+		else if (spriteAnimationIndex == -1)
+		{
+			if (textIndex == -1)
+			{
+				drawImage(mImages[imageIndex]);
+				imageIndex++;
+			}
+			else if (imageIndex == -1)
+			{
+				drawText(mTexts[textIndex]);
+				textIndex++;
+			}
+			else
+			{
+				if (mTexts[textIndex]->GetTextInformation().Layer > mImages[imageIndex]->GetLayer())
+				{
+					drawText(mTexts[textIndex]);
+					textIndex++;
+				}
+				else
+				{
+					drawImage(mImages[imageIndex]);
+					imageIndex++;
+				}
+			}
 		}
 
-		else if (mImages[imageIndex]->GetLayer() > mTexts[textIndex]->GetTextInformation().Layer)
+		else if (mImages[imageIndex]->GetLayer() > mTexts[textIndex]->GetTextInformation().Layer 
+			&& mImages[imageIndex]->GetLayer() > mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer)
 		{
 			drawImage(mImages[imageIndex]);
 			imageIndex++;
 		}
-		else
+		else if(mTexts[textIndex]->GetTextInformation().Layer > mSpriteAnimations[spriteAnimationIndex]->GetSpriteInfo().Layer)
 		{
 			drawText(mTexts[textIndex]);
 			textIndex++;
+		}
+		else
+		{
+			drawSpriteAnimation(mSpriteAnimations[spriteAnimationIndex]);
+			spriteAnimationIndex++;
 		}
 	}
 }
@@ -1162,5 +901,83 @@ void fq::graphics::UIManager::drawImage(IImageObject* image)
 		}
 	}
 	
+}
+
+fq::graphics::ISpriteAnimationObject* fq::graphics::UIManager::CreateSpriteAniamtion(SpriteInfo spriteInfo)
+{
+	mIsSortedSpriteAnimation = false;
+
+	std::filesystem::path stringToWstringPath = spriteInfo.ImagePath;
+	std::wstring imagePath = stringToWstringPath.wstring();
+
+	auto bitmap = mBitmaps.find(imagePath);
+	if (bitmap == mBitmaps.end())
+	{
+		loadBitmap(imagePath);
+	}
+	else
+	{
+		mBitmaps[imagePath]->refCount++;
+	}
+
+	SpriteAnimationObject* newSpriteAnimationObject = new SpriteAnimationObject;
+	newSpriteAnimationObject->SetSpriteInfo(spriteInfo);
+
+	mSpriteAnimations.emplace_back(newSpriteAnimationObject);
+
+	return newSpriteAnimationObject;
+}
+
+void fq::graphics::UIManager::DeleteSpriteAniamtion(ISpriteAnimationObject* spriteAniamtionObject)
+{
+	std::filesystem::path stringToWstringPath = spriteAniamtionObject->GetSpriteInfo().ImagePath;
+	std::wstring imagePath = stringToWstringPath.wstring();
+
+	mBitmaps[imagePath]->refCount--;
+	if (mBitmaps[imagePath]->refCount == 0)
+	{
+		mBitmaps[imagePath]->bitmap->Release();
+		delete mBitmaps[imagePath];
+		mBitmaps.erase(imagePath);
+	}
+
+	mSpriteAnimations.erase(std::remove(mSpriteAnimations.begin(), mSpriteAnimations.end(), spriteAniamtionObject), mSpriteAnimations.end());
+	delete spriteAniamtionObject;
+}
+
+void fq::graphics::UIManager::drawSpriteAnimation(ISpriteAnimationObject* spriteAnimationObject)
+{
+	SpriteInfo spriteInfo = spriteAnimationObject->GetSpriteInfo();
+	if (!spriteInfo.isRender)
+	{
+		return;
+	}
+
+	// 그리기
+	std::filesystem::path stringToWstringPath = spriteInfo.ImagePath;
+	std::wstring imagePath = stringToWstringPath.wstring();
+
+	D2D1_SIZE_F imageSize = mBitmaps[imagePath]->bitmap->GetSize();
+	float animWidth = imageSize.width / (float)spriteInfo.ImageNum;
+	D2D1_RECT_F imageRect = { animWidth * spriteInfo.CurImage, 0, animWidth * spriteInfo.CurImage + animWidth, imageSize.height}; // 그릴 이미지(이미지 좌표) 따라서 비율은 여기서 결정 id2dbitmap 에 이미지의 사이즈를 가져올 수 있는 함수가 있음
+	D2D1_RECT_F screenRect{};
+	if (spriteInfo.isCenter) // true가 isCenter
+	{
+		screenRect = { spriteInfo.StartX - animWidth / 2, spriteInfo.StartY - spriteInfo.Height / 2,
+		spriteInfo.StartX + animWidth / 2, spriteInfo.StartY + spriteInfo.Height / 2 }; // 그릴 크기 (화면 좌표)
+	}
+	else
+	{
+		screenRect = { spriteInfo.StartX, spriteInfo.StartY,
+		spriteInfo.StartX + animWidth, spriteInfo.StartY + spriteInfo.Height }; // 그릴 크기 (화면 좌표)
+	}
+
+	// 왜 스케일 위치가 중앙점이 아니라 시작점이지...?
+	mRenderTarget->SetTransform
+	(
+		D2D1::Matrix3x2F::Scale(spriteInfo.ScaleX, spriteInfo.ScaleY, D2D1::Point2F(spriteInfo.StartX, spriteInfo.StartY))
+	);
+
+	mRenderTarget->DrawBitmap(mBitmaps[imagePath]->bitmap, &screenRect, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, &imageRect);
 }
 

@@ -12,12 +12,15 @@
 #include "Particle.h"
 #include "Decal.h"
 #include "Trail.h"
-#include "ImageUI.h"
-#include "TextUI.h"
 #include "Socket.h"
 #include "PostProcessing.h"
 #include "Sequence.h"
 #include "StateEvent.h"
+
+// UI
+#include "ImageUI.h"
+#include "TextUI.h"
+#include "SpriteAnimationUI.h"
 
 // Physics
 #include "Terrain.h"
@@ -375,6 +378,37 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&TextUI::SetTextInfo, &TextUI::GetTextInfo>("TextInformation"_hs)
 		.prop(fq::reflect::prop::Name, "TextInformation")
+		.base<Component>();
+
+	entt::meta<graphics::SpriteInfo>()
+		.type("SpriteInfo"_hs)
+		.prop(fq::reflect::prop::Name, "SpriteInfo")
+		.prop(fq::reflect::prop::POD)
+		.data<&graphics::SpriteInfo::Width>("Width"_hs)
+		.prop(fq::reflect::prop::Name, "Width")
+		.data<&graphics::SpriteInfo::Height>("Height"_hs)
+		.prop(fq::reflect::prop::Name, "Height")
+		.data<&graphics::SpriteInfo::ImagePath>("ImagePath"_hs)
+		.prop(fq::reflect::prop::Name, "ImagePath")
+		.prop(fq::reflect::prop::RelativePath)
+		.prop(fq::reflect::prop::DragDrop, ".png/.jpg/.dds")
+		.data<&graphics::SpriteInfo::Layer>("Layer"_hs)
+		.prop(fq::reflect::prop::Name, "Layer")
+		.data<&graphics::SpriteInfo::ImageNum>("ImageNum"_hs)
+		.prop(fq::reflect::prop::Name, "ImageNum")
+		.data<&graphics::SpriteInfo::Speed>("Speed"_hs)
+		.prop(fq::reflect::prop::Name, "Speed")
+		.data<&graphics::SpriteInfo::isCenter>("isCenter"_hs)
+		.prop(fq::reflect::prop::Name, "isCenter")
+		.data<&graphics::SpriteInfo::isRender>("isRender"_hs)
+		.prop(fq::reflect::prop::Name, "isRender");
+
+	entt::meta<SpriteAnimationUI>()
+		.type("SpriteAnimationUI"_hs)
+		.prop(fq::reflect::prop::Name, "SpriteAnimationUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SpriteAnimationUI::SetSpriteInfo, &SpriteAnimationUI::GetSpriteInfo>("SpriteAnimationInfo"_hs)
+		.prop(fq::reflect::prop::Name, "SpriteAnimationInfo")
 		.base<Component>();
 
 	//////////////////////////////////////////////////////////////////////////
