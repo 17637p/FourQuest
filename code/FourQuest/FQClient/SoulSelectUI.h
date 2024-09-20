@@ -6,6 +6,7 @@ namespace fq::game_module
 {
 	class ScreenManager;
 	class TextUI;
+	class SpriteAnimationUI;
 }
 
 namespace fq::client
@@ -42,6 +43,8 @@ namespace fq::client
 		std::vector<game_module::TextUI*> mSoulNameTexts;
 		std::vector<game_module::TextUI*> mWeaponNameTexts;
 		std::vector<game_module::TextUI*> mContentTexts;
+
+		std::vector<game_module::SpriteAnimationUI*> mPlayerSoulIcons;
 
 		std::vector<std::string> mSoulNames;
 		std::vector<std::string> mWeapons;

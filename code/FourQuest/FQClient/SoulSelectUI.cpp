@@ -10,6 +10,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/ImageUI.h"
 #include "../FQGameModule/TextUI.h"
+#include "../FQGameModule/SpriteAnimationUI.h"
 
 #include "Soul.h"
 #include "PlayerInfoVariable.h"
@@ -39,17 +40,6 @@ void fq::client::SoulSelectUI::OnStart()
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
 
-	// ±âº» ¼³Á¤
-	setSpawnButton(0, false);
-	setSoulBox(0, true);
-	setReadyUI(0, false);
-	for (int i = 1; i < 4; i++)
-	{
-		setSpawnButton(i, true);
-		setSoulBox(i, false);
-		setReadyUI(i, false);
-	}
-
 	// ¿µÈ¥ ÀÌ¸§ & ¼÷·Ã ¹«±â & ¼³¸í TextUI µî·Ï
 	auto mPlayers = GetGameObject()->GetChildren();
 	for (int i = 0; i < 4; i++)
@@ -60,10 +50,10 @@ void fq::client::SoulSelectUI::OnStart()
 		mContentTexts.push_back(curPlayerSoulBox->GetChildren()[3]->GetComponent<game_module::TextUI>());
 	}
 
-	mSoulNames.push_back(wstringToString(L"ÇÏ¾á ¿µÈ¥"));
-	mSoulNames.push_back(wstringToString(L"º¸¶ó ¿µÈ¥"));
-	mSoulNames.push_back(wstringToString(L"ºÓÀº ¿µÈ¥"));
 	mSoulNames.push_back(wstringToString(L"³ë¶õ ¿µÈ¥"));
+	mSoulNames.push_back(wstringToString(L"ÆÄ¶õ ¿µÈ¥"));
+	mSoulNames.push_back(wstringToString(L"»¡°£ ¿µÈ¥"));
+	mSoulNames.push_back(wstringToString(L"ÃÊ·Ï ¿µÈ¥"));
 
 	mWeapons.push_back(wstringToString(L"¼÷·Ã ¹«±â : °Ë"));
 	mWeapons.push_back(wstringToString(L"¼÷·Ã ¹«±â : ¿Ïµå"));
@@ -101,6 +91,26 @@ void fq::client::SoulSelectUI::OnStart()
 	}
 
 	mCurTime = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		auto soulIcons = GetGameObject()->GetChildren()[i]->GetChildren()[1]->GetChildren();
+		for (int j = 0; j < 4; j++)
+		{
+			mPlayerSoulIcons.push_back(soulIcons[j]->GetComponent<game_module::SpriteAnimationUI>());
+		}
+	}
+
+	// ±âº» ¼³Á¤
+	setSpawnButton(0, false);
+	setSoulBox(0, true);
+	setReadyUI(0, false);
+	for (int i = 1; i < 4; i++)
+	{
+		setSpawnButton(i, true);
+		setSoulBox(i, false);
+		setReadyUI(i, false);
+	}
 }
 
 void fq::client::SoulSelectUI::OnUpdate(float dt)
@@ -148,7 +158,16 @@ void fq::client::SoulSelectUI::setSoulBox(int index, bool isSpawned)
 	auto soulBox = children[2];
 
 	// SoulBox
-	children[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+	for (int i = 0; i < 4; i++)
+	{
+		mPlayerSoulIcons[index * 4 + i]->SetIsRender(false);
+	}
+
+	if (isSpawned)
+	{
+		mPlayerSoulIcons[index * 4 + mSelectSouls[index]]->SetIsRender(true);
+	}
+
 	soulBox->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
 	auto soulBoxChildren = soulBox->GetChildren();
 	for (int i = 0; i < 4; i++)
@@ -296,6 +315,11 @@ void fq::client::SoulSelectUI::processInput()
 		if (input->GetPadKeyState(i, EPadKey::LeftShoulder) == EKeyState::Tap
 			|| input->GetKeyState(EKey::Left) == EKeyState::Tap)
 		{
+			for (int j = 0; j < 4; j++)
+			{
+				mPlayerSoulIcons[i * 4 + j]->SetIsRender(false);
+			}
+
 			// ¿µÈ¥ ¼±ÅÃÃ¢ÀÌ¶ó¸é
 			if (mIsSelects[i])
 			{
@@ -311,12 +335,19 @@ void fq::client::SoulSelectUI::processInput()
 				mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
 				mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
+
+				mPlayerSoulIcons[i * 4 + mSelectSouls[i]]->SetIsRender(true);
 			}
 		}
 
 		if (input->GetPadKeyState(i, EPadKey::RightShoulder) == EKeyState::Tap
 			|| input->GetKeyState(EKey::Right) == EKeyState::Tap)
 		{
+			for (int j = 0; j < 4; j++)
+			{
+				mPlayerSoulIcons[i * 4 + j]->SetIsRender(false);
+			}
+
 			// ¿µÈ¥ ¼±ÅÃÃ¢ÀÌ¶ó¸é
 			if (mIsSelects[i])
 			{
@@ -332,6 +363,8 @@ void fq::client::SoulSelectUI::processInput()
 				mSoulNameTexts[i]->SetText(mSoulNames[mSelectSouls[i]]);
 				mWeaponNameTexts[i]->SetText(mWeapons[mSelectSouls[i]]);
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
+
+				mPlayerSoulIcons[i * 4 + mSelectSouls[i]]->SetIsRender(true);
 			}
 		}
 	}

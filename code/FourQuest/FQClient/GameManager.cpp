@@ -329,23 +329,55 @@ void fq::client::GameManager::testKey()
 	// 캐릭터 설정
 	if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
 	{
-		PlayerInfoVariable::Player1State = 0;
-		PlayerInfoVariable::Player1SoulType = 0;
+		if (PlayerInfoVariable::Player1State == -1)
+		{
+			PlayerInfoVariable::Player1State = 0;
+			PlayerInfoVariable::Player1SoulType = 0;
+		}
+		else
+		{
+			PlayerInfoVariable::Player1State = -1;
+			PlayerInfoVariable::Player1SoulType = -1;
+		}
 	}
 	if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
 	{
-		PlayerInfoVariable::Player2State = 0;
-		PlayerInfoVariable::Player2SoulType = 1;
+		if (PlayerInfoVariable::Player2State == -1)
+		{
+			PlayerInfoVariable::Player2State = 0;
+			PlayerInfoVariable::Player2SoulType = 1;
+		}
+		else
+		{
+			PlayerInfoVariable::Player2State = -1;
+			PlayerInfoVariable::Player2SoulType = -1;
+		}
 	}
 	if (input->IsKeyState(EKey::Num3, EKeyState::Tap))
 	{
-		PlayerInfoVariable::Player3State = 0;
-		PlayerInfoVariable::Player3SoulType = 2;
+		if (PlayerInfoVariable::Player3State == -1)
+		{
+			PlayerInfoVariable::Player3State = 0;
+			PlayerInfoVariable::Player3SoulType = 2;
+		}
+		else
+		{
+			PlayerInfoVariable::Player3State = -1;
+			PlayerInfoVariable::Player3SoulType = -1;
+		}
 	}
 	if (input->IsKeyState(EKey::Num4, EKeyState::Tap))
 	{
-		PlayerInfoVariable::Player4State = 0;
-		PlayerInfoVariable::Player4SoulType = 3;
+		if (PlayerInfoVariable::Player4State == -1)
+		{
+			PlayerInfoVariable::Player4State = 0;
+			PlayerInfoVariable::Player4SoulType = 3;
+		}
+		else
+		{
+			PlayerInfoVariable::Player4State = -1;
+			PlayerInfoVariable::Player4SoulType = -1;
+		}
 	}
 }
 
