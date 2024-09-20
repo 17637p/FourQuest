@@ -37,6 +37,8 @@ namespace fq::client
 
 		void SetOnShieldBlock(bool val) { mbOnShieldBlock = val; }
 		void SetIsActiveOnHit(bool bIsActiveOnHit) { mbIsActiveOnHit = bIsActiveOnHit;  }
+		int GetSoulBuffNumber() { return mSoulBuffNumber; }
+		void SetSoulBuffNumber(int buffNumber) { mSoulBuffNumber = buffNumber; }
 
 		/// <summary>
 		/// 갑옷타입을 반환합니다
@@ -90,11 +92,13 @@ namespace fq::client
 		/// </summary>
 		bool IsFeverTime()const;
 
+
 	private:
 		void processInput();
 		void processCoolTime(float dt);
 		void processFeverTime(float dt);
 		void processDebuff(float dt);
+		void processBuff();
 		void equipWeapone(ESoulType equipType, bool isEquip);
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);
@@ -103,6 +107,7 @@ namespace fq::client
 		void OnStart() override;
 		void OnDestroy() override;
 		void OnUpdate(float dt) override;
+		void OnLateUpdate(float dt) override;
 		void OnTriggerEnter(const game_module::Collision& collision) override;
 
 		entt::meta_handle GetHandle() override { return *this; }
@@ -121,6 +126,11 @@ namespace fq::client
 		float mMaxSoulGauge; // 최대 소울 게이지
 		float mSoulGauge; // 소울 게이지
 		float mAttackPower; // 공격력
+
+		float mBaseAcceleration;	// 기본 가속력
+		float mBaseSpeed;	// 기본 스피드
+		float mBaseAttackPower; // 기본 공격력
+		int mSoulBuffNumber; // 영혼 강화 갯수
 
 		float mInvincibleElapsedTime; // 무적 경과 시간
 		float mInvincibleTime; // 무적시간 

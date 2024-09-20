@@ -31,11 +31,18 @@ namespace fq::client
 		void OnTriggerEnter(const fq::game_module::Collision& collision) override;
 		void OnTriggerExit(const fq::game_module::Collision& collision) override;
 		void OnUpdate(float dt) override;
+		void OnLateUpdate(float dt) override;
+
+		void checkOtherPlayer();
 
 	private:
 		game_module::CharacterController* mController;
 		std::vector<DeadArmour*> mSelectArmours;
 		ESoulType mSoulType;
+
+		float mMaxHP;
+		float mHP;
+		bool mbIsDistanceInPlayer;
 
 		friend void RegisterMetaData();
 	};

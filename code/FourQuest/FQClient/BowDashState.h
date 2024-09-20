@@ -21,10 +21,9 @@ namespace fq::client
 	private:
 		std::shared_ptr<fq::game_module::GameObject> mDashEffect;
 
-		float mOriginSpeed;
-		float mMaxSpeed;
-		float mMinSpeed;
-		float mCurrentSpeed;
+		float mMaxSpeedMultiplier;
+		float mMinSpeedMultiplier;
+		float mCurrentSpeedMultiplier;
 		float mRotationSpeed;
 		float mPeakSpeedTime;
 		float mDurationTime;

@@ -8,10 +8,14 @@
 #include "CameraMoving.h"
 #include "ClientEvent.h"
 #include "PlayerSoulVariable.h"
+#include "Player.h"
+
+#include "SoulVariable.h"
 
 fq::client::Soul::Soul()
 	:mController(nullptr)
 	, mSelectArmours{}
+	, mbIsDistanceInPlayer(false)
 {}
 
 fq::client::Soul::~Soul()
@@ -125,6 +129,37 @@ void fq::client::Soul::OnUpdate(float dt)
 
 		closestArmour->SummonLivingArmour(info);
 		DestorySoul();
+	}
+
+	checkOtherPlayer();
+
+}
+
+void fq::client::Soul::OnLateUpdate(float dt)
+{
+	mbIsDistanceInPlayer = false;
+}
+
+void fq::client::Soul::checkOtherPlayer()
+{
+	for (auto& object : GetScene()->GetObjectView())
+	{
+		if (object.HasComponent<Player>())
+		{
+			auto myTransform = GetComponent<fq::game_module::Transform>();
+			auto otherTransform = object.GetComponent<fq::game_module::Transform>();
+			auto otherPlayerComponent = object.GetComponent<Player>();
+
+			DirectX::SimpleMath::Vector3 distanceVector = myTransform->GetWorldPosition() - otherTransform->GetWorldPosition();
+
+			if (distanceVector.Length() <= SoulVariable::SoulDistance)
+			{
+				mbIsDistanceInPlayer = true;
+				int buffNumber = otherPlayerComponent->GetSoulBuffNumber();
+				buffNumber++;
+				otherPlayerComponent->SetSoulBuffNumber(buffNumber);
+			}
+		}
 	}
 
 }

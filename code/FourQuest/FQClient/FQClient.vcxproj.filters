@@ -491,6 +491,9 @@
     <ClInclude Include="DebuffPoisonZone.h">
       <Filter>include\03.Attack</Filter>
     </ClInclude>
+    <ClInclude Include="SoulVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -816,6 +819,9 @@
     </ClCompile>
     <ClCompile Include="DebuffPoisonZone.cpp">
       <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulVariable.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
 #include "../FQGameModule/Decal.h"
+#include "../FQGameModule/CharacterController.h"
 #include "Attack.h"
 #include "CameraMoving.h"
 #include "HpBar.h"
@@ -16,6 +17,7 @@
 #include "LinearAttack.h"
 #include "ClientHelper.h"
 #include "PlayerSoulVariable.h"
+#include "SoulVariable.h"
 #include "PlayerVariable.h"
 #include "DebuffPoisonZone.h"
 
@@ -39,6 +41,7 @@ fq::client::Player::Player()
 	, mFeverElapsedTime(0.f)
 	, mbIsActiveOnHit(true)
 	, mbIsFeverTime(false)
+	, mSoulBuffNumber()
 {}
 
 fq::client::Player::~Player()
@@ -71,6 +74,14 @@ void fq::client::Player::OnUpdate(float dt)
 	processDebuff(dt);
 }
 
+void fq::client::Player::OnLateUpdate(float dt)
+{
+	mAttackPower = mBaseAttackPower;
+
+	processBuff();
+	mSoulBuffNumber = 0;
+}
+
 void fq::client::Player::OnStart()
 {
 	mMaxHp = mHp;
@@ -78,6 +89,9 @@ void fq::client::Player::OnStart()
 	mAnimator = GetComponent<fq::game_module::Animator>();
 	mController = GetComponent<fq::game_module::CharacterController>();
 	mTransform = GetComponent<fq::game_module::Transform>();
+	mBaseSpeed = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().maxSpeed;
+	mBaseAcceleration = GetComponent<fq::game_module::CharacterController>()->GetMovementInfo().acceleration;
+	mBaseAttackPower = mAttackPower;
 
 	// Player등록
 	GetScene()->GetEventManager()->FireEvent<client::event::RegisterPlayer>(
@@ -501,24 +515,22 @@ void fq::client::Player::setFeverBuff(bool isFever)
 	mFeverElapsedTime = 0.f;
 
 	mbIsFeverTime = isFever;
+}
 
-	if (isFever)
+void fq::client::Player::processBuff()
+{
+	// 피버 버프 + 영혼 버프 합산된 최종 버프 계산 함수
+	if (mbIsFeverTime)
 	{
-		mAttackPower *= PlayerVariable::FeverAttackIncreaseRatio;
-		auto movementInfo = mController->GetMovementInfo();
-		movementInfo.maxSpeed *= PlayerVariable::FeverSpeedIncreaseRatio;
-		movementInfo.acceleration *= PlayerVariable::FeverSpeedIncreaseRatio;
-		mController->SetMovementInfo(movementInfo);
-	}
-	else
-	{
-		mAttackPower /= PlayerVariable::FeverAttackIncreaseRatio;
-		auto movementInfo = mController->GetMovementInfo();
-		movementInfo.maxSpeed /= PlayerVariable::FeverSpeedIncreaseRatio;
-		movementInfo.acceleration /= PlayerVariable::FeverSpeedIncreaseRatio;
-		mController->SetMovementInfo(movementInfo);
+		mAttackPower *= mBaseAttackPower * PlayerVariable::FeverAttackIncreaseRatio;
+		mController->AddFinalSpeedMultiplier(PlayerVariable::FeverSpeedIncreaseRatio - 1.f);
 	}
 
+	if (mSoulBuffNumber != 0)
+	{
+		mAttackPower += (mBaseAttackPower * ((SoulVariable::DamageUp - 1.f) * mSoulBuffNumber));
+		mController->AddFinalSpeedMultiplier((SoulVariable::SpeedUp - 1.f) * mSoulBuffNumber);
+	}
 }
 
 void fq::client::Player::setDecalColor()
