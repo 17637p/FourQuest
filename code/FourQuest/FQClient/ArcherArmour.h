@@ -22,7 +22,7 @@ namespace fq::client
 		~ArcherArmour();
 
 		void EmitmWeakAttack();
-		void EmitStrongAttack();
+		void EmitStrongAttack(int chargeLevel);
 		std::shared_ptr<game_module::GameObject> EmitChargingEffect();
 		std::shared_ptr<game_module::GameObject> EmitStrongAttackEffect();
 		std::shared_ptr<game_module::GameObject> EmitDash();

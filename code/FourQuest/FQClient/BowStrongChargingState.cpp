@@ -37,6 +37,7 @@ namespace fq::client
 		auto controllerID = controller->GetControllerID();
 		auto input = animator.GetGameObject()->GetScene()->GetInputManager();
 
+		// 무조건 0.5초 당기고 차징한 시간에 따라 공격이 달라지도록
 		if (input->IsPadKeyState(controllerID, EPadKey::X, EKeyState::None) && mChargingElapsedTime >= 0.5f)
 		{
 			animator.SetParameterBoolean("OnCharging", false);
@@ -59,14 +60,26 @@ namespace fq::client
 			mChargingEffect = nullptr;
 		}
 
-		if (changeChargingTime <= mChargingElapsedTime)
+		// 차징 단계에 따라 발사되는 화살 세기가 달라집니다.
+		if (changeChargingTime * 3 <= mChargingElapsedTime)
 		{
-			archer->EmitStrongAttack();
+			archer->EmitStrongAttack(4);
+			archer->EmitStrongAttackEffect();
+		}
+		else if (changeChargingTime * 2 <= mChargingElapsedTime)
+		{
+			archer->EmitStrongAttack(3);
+			archer->EmitStrongAttackEffect();
+		}
+		else if (changeChargingTime * 1 <= mChargingElapsedTime)
+		{
+			archer->EmitStrongAttack(2);
 			archer->EmitStrongAttackEffect();
 		}
 		else
 		{
-			archer->EmitmWeakAttack();
+			archer->EmitStrongAttack(1);
+			archer->EmitStrongAttackEffect();
 		}
 	}
 

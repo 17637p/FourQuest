@@ -218,7 +218,7 @@ void fq::game_engine::GameEngine::Process()
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mUISystem->Update();
+			mGameProcess->mUISystem->Update(deltaTime);
 			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////

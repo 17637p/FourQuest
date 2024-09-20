@@ -26,9 +26,15 @@ std::shared_ptr<fq::game_module::Component> fq::client::BossHP::Clone(std::share
 
 void fq::client::BossHP::OnStart()
 {
-		game_module::Transform* myTransform = GetGameObject()->GetComponent<game_module::Transform>();
+	game_module::Transform* myTransform = GetGameObject()->GetComponent<game_module::Transform>();
+
+	// HP Bar
 	mHPBarGauge = myTransform->GetChildren()[0]->GetComponent<fq::game_module::ImageUI>();
 	mHPWidth = mHPBarGauge->GetUIInfomations()[0].Width;
+
+	// Shield Bar
+	mShieldGauge = GetGameObject()->GetChildren()[1]->GetChildren()[0]->GetComponent <game_module::ImageUI>();
+	mShieldWidth = mShieldGauge->GetUIInfomations()[0].Width;
 
 	// screenManager 등록
 	fq::game_module::Scene* scene = GetScene();
@@ -51,23 +57,31 @@ void fq::client::BossHP::OnUpdate(float dt)
 	game_module::ImageUI* myImage = GetComponent<game_module::ImageUI>();
 	// Position 자동 조정
 	{
-		myTransform->SetLocalPosition({ (screenWidth / 2) - ((myImage->GetUIInfomation(0).Width / 2) * scaleX), 
+		myTransform->SetLocalPosition({ (screenWidth / 2) - ((myImage->GetUIInfomation(0).Width / 2) * scaleX),
 			screenHeight / (float)1080, 1 });
 	}
 
 	// HP 바 조정
-	float hpRatio = mBoss->GetHPRatio();
+	float gaugeRatio = mBoss->GetHPRatio();
 	std::vector<fq::graphics::UIInfo> uiInfos = mHPBarGauge->GetUIInfomations();
-	uiInfos[0].XRatio = hpRatio;
-	uiInfos[0].Width = mHPWidth * hpRatio;
+	uiInfos[0].XRatio = gaugeRatio;
+	uiInfos[0].Width = mHPWidth * gaugeRatio;
 	mHPBarGauge->SetUIInfomations(uiInfos);
+
+	gaugeRatio = mBoss->GetHPRatio();
+	uiInfos = mShieldGauge->GetUIInfomations();
+	uiInfos[0].XRatio = gaugeRatio;
+	uiInfos[0].Width = mShieldWidth * gaugeRatio;
+	mShieldGauge->SetUIInfomations(uiInfos);
 }
 
 fq::client::BossHP::BossHP()
 	:mHPWidth(0),
 	mHPBarGauge(nullptr),
 	mBoss(nullptr),
-	mScreenManager(nullptr)
+	mScreenManager(nullptr),
+	mShieldWidth(0),
+	mShieldGauge(nullptr)
 {
 
 }

@@ -15,8 +15,6 @@ fq::game_engine::StateEventSystem::StateEventSystem()
 	, mStateEvent(nullptr)
 	, mInstantiatePrefabLifeTimeInfos{}
 	, mPlaySoundLifeTimeInfos{}
-	, mInstantiatePrefabMap{}
-	, mPlaySoundInfoMap{}
 	, mRandomDevice()
 	, mGenerarator(mRandomDevice())
 {
@@ -30,9 +28,6 @@ fq::game_engine::StateEventSystem::~StateEventSystem()
 
 void fq::game_engine::StateEventSystem::OnLoadScene()
 {
-	mInstantiatePrefabMap.clear();
-	mPlaySoundInfoMap.clear();
-
 	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
 
 	auto stateEventGameObject = scene->GetObjectByName("StateEvent");
@@ -42,19 +37,134 @@ void fq::game_engine::StateEventSystem::OnLoadScene()
 		mStateEvent = stateEventGameObject->GetComponent<fq::game_module::StateEvent>();
 	}
 
-	if (mStateEvent != nullptr)
-	{
-		for (const auto& instantiatePrefab : mStateEvent->GetInstantiatePrefabs())
+	scene->ViewComponents<fq::game_module::StateEvent>(
+		[this](fq::game_module::GameObject& object, fq::game_module::StateEvent& stateEvent)
 		{
-			mInstantiatePrefabMap.insert({ instantiatePrefab.FunctionName, instantiatePrefab });
-		}
+			stateEvent.UpdateMapData();
 
-		for (const auto& playSoundInfo : mStateEvent->GetPlaySoundInfos())
-		{
-			mPlaySoundInfoMap.insert({ playSoundInfo.FunctionName, playSoundInfo });
-			mGameProcess->mSoundManager->LoadSound(playSoundInfo.FunctionName, playSoundInfo.SoundPath);
+			for (const auto& [key, data] : stateEvent.GetPlaySoundInfoMap())
+			{
+				mGameProcess->mSoundManager->LoadSound(key, data.SoundPath);
+			}
 		}
-	}
+	);
+}
+
+void fq::game_engine::StateEventSystem::OnAnimationStateEvent(const fq::event::AnimationStateEvent& data)
+{
+	auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+
+	scene->ViewComponents<fq::game_module::StateEvent>(
+		[this, &data](fq::game_module::GameObject& object, fq::game_module::StateEvent& stateEvent)
+		{
+			// 프리팹 생성 이벤트 처리
+			{
+				const auto& instantiatePrefabMap = stateEvent.GetInstantiatePrefabMap();
+
+				auto find = instantiatePrefabMap.find(data.RegisterKeyName);
+
+				if (find != instantiatePrefabMap.end())
+				{
+					const auto& instantiatePrefab = find->second;
+
+					auto instance = mGameProcess->mPrefabManager->InstantiatePrefabResoure({ instantiatePrefab.PrefabResourceData });
+					auto effectObject = *(instance.begin());
+					auto effectObjectTransform = effectObject->GetTransform();
+
+					auto firedEventObjectTransform = data.gameObject->GetTransform();
+
+					const auto addtiveTransform = DirectX::SimpleMath::Matrix::CreateScale(instantiatePrefab.Scale) * DirectX::SimpleMath::Matrix::CreateTranslation(instantiatePrefab.Translate + genarateRenderVector(instantiatePrefab.RandomRange));
+
+					if (instantiatePrefab.bIsFollowingParentPosition)
+					{
+						effectObjectTransform->SetParent(firedEventObjectTransform);
+						effectObjectTransform->SetLocalMatrix(addtiveTransform);
+					}
+					else
+					{
+						effectObjectTransform->SetWorldMatrix(addtiveTransform * firedEventObjectTransform->GetWorldMatrix());
+					}
+
+					auto scene = mGameProcess->mSceneManager->GetCurrentScene();
+					scene->AddGameObject(effectObject);
+
+					InstantiatePrefabLifeTimeInfo InstantiatePrefabLifeTimeInfo;
+					InstantiatePrefabLifeTimeInfo.OnwerGameObject = data.gameObject;
+					InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject = effectObject;
+					InstantiatePrefabLifeTimeInfo.LifeTime = instantiatePrefab.DeleteTime;
+					InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd = instantiatePrefab.bUseDeleteByStateEnd;
+					InstantiatePrefabLifeTimeInfo.PlaybackSpeed = instantiatePrefab.PlayBackSpeed;
+
+					// 아마 자식 계층까지 파고 들어가야 할거 같음
+					if (!instantiatePrefab.bIsPlaybackSppedHandleChildHierarchy)
+					{
+						auto uvAnimator = effectObject->GetComponent<fq::game_module::UVAnimator>();
+						if (uvAnimator != nullptr)
+						{
+							uvAnimator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
+						}
+
+						auto animator = effectObject->GetComponent<fq::game_module::Animator>();
+						if (animator != nullptr)
+						{
+							animator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
+						}
+					}
+					else
+					{
+						std::function<void(fq::game_module::GameObject*, float)> setPlayBackSpeedRecursive = [&setPlayBackSpeedRecursive](fq::game_module::GameObject* gameObject, float playBackSpeed)
+							{
+								auto uvAnimator = gameObject->GetComponent<fq::game_module::UVAnimator>();
+								if (uvAnimator != nullptr)
+								{
+									uvAnimator->SetPlaySpeed(playBackSpeed);
+								}
+
+								auto animator = gameObject->GetComponent<fq::game_module::Animator>();
+								if (animator != nullptr)
+								{
+									animator->SetPlaySpeed(playBackSpeed);
+								}
+
+								for (auto child : gameObject->GetChildren())
+								{
+									setPlayBackSpeedRecursive(child, playBackSpeed);
+								}
+							};
+
+						setPlayBackSpeedRecursive(effectObject.get(), instantiatePrefab.PlayBackSpeed);
+					}
+
+					mInstantiatePrefabLifeTimeInfos.push_back(InstantiatePrefabLifeTimeInfo);
+				}
+			}
+
+			// 사운드 이벤트 처리
+			{
+				const auto playerSoundInfoMap = stateEvent.GetPlaySoundInfoMap();
+
+				auto find = playerSoundInfoMap.find(data.RegisterKeyName);
+
+				if (find != playerSoundInfoMap.end())
+				{
+					const auto& playerSoundInfo = find->second;
+
+					if (playerSoundInfo.bUseAutoDelete)
+					{
+						PlaySoundLifeTimeInfo playSoundLifeTimeInfo;
+						playSoundLifeTimeInfo.OnwerGameObject = data.gameObject;
+						playSoundLifeTimeInfo.Channel = playerSoundInfo.Channel;
+						playSoundLifeTimeInfo.LifeTime = playerSoundInfo.DeleteTime;
+						playSoundLifeTimeInfo.bUseDeleteStateEnd = playerSoundInfo.bUseDeleteByStateEnd;
+
+						mPlaySoundLifeTimeInfos.push_back(playSoundLifeTimeInfo);
+					}
+
+					mGameProcess->mSoundManager->Play(playerSoundInfo.FunctionName, playerSoundInfo.bIsLoop, playerSoundInfo.Channel);
+				}
+			}
+		}
+	);
 }
 
 void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
@@ -68,117 +178,7 @@ void fq::game_engine::StateEventSystem::Initialize(GameProcess* gameProcess)
 		RegisterHandle<fq::event::OnLoadScene>(this, &StateEventSystem::OnLoadScene);
 
 	mOnProcessStateEvent = eventMgr->
-		RegisterHandle<fq::event::AnimationStateEvent>(
-			[this](const fq::event::AnimationStateEvent& data)
-			{
-				if (mStateEvent == nullptr)
-				{
-					return;
-				}
-
-				// 인스턴스 프리팹 처리
-				{
-					auto find = mInstantiatePrefabMap.find(data.RegisterKeyName);
-
-					if (find != mInstantiatePrefabMap.end())
-					{
-						const auto& instantiatePrefab = find->second;
-
-						auto instance = mGameProcess->mPrefabManager->InstantiatePrefabResoure({ instantiatePrefab.PrefabResourceData });
-						auto effectObject = *(instance.begin());
-						auto effectObjectTransform = effectObject->GetTransform();
-
-						auto firedEventObjectTransform = data.gameObject->GetTransform();
-
-						const auto addtiveTransform = DirectX::SimpleMath::Matrix::CreateScale(instantiatePrefab.Scale) * DirectX::SimpleMath::Matrix::CreateTranslation(instantiatePrefab.Translate + genarateRenderVector(instantiatePrefab.RandomRange));
-
-						if (instantiatePrefab.bIsFollowingParentPosition)
-						{
-							effectObjectTransform->SetParent(firedEventObjectTransform);
-							effectObjectTransform->SetLocalMatrix(addtiveTransform);
-						}
-						else
-						{
-							effectObjectTransform->SetWorldMatrix(addtiveTransform * firedEventObjectTransform->GetWorldMatrix());
-						}
-
-						auto scene = mGameProcess->mSceneManager->GetCurrentScene();
-						scene->AddGameObject(effectObject);
-
-						InstantiatePrefabLifeTimeInfo InstantiatePrefabLifeTimeInfo;
-						InstantiatePrefabLifeTimeInfo.OnwerGameObject = data.gameObject;
-						InstantiatePrefabLifeTimeInfo.InstantiatePrefabObject = effectObject;
-						InstantiatePrefabLifeTimeInfo.LifeTime = instantiatePrefab.DeleteTime;
-						InstantiatePrefabLifeTimeInfo.bUseDeleteStateEnd = instantiatePrefab.bUseDeleteByStateEnd;
-						InstantiatePrefabLifeTimeInfo.PlaybackSpeed = instantiatePrefab.PlayBackSpeed;
-
-						// 아마 자식 계층까지 파고 들어가야 할거 같음
-						if (!instantiatePrefab.bIsPlaybackSppedHandleChildHierarchy)
-						{
-							auto uvAnimator = effectObject->GetComponent<fq::game_module::UVAnimator>();
-							if (uvAnimator != nullptr)
-							{
-								uvAnimator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
-							}
-
-							auto animator = effectObject->GetComponent<fq::game_module::Animator>();
-							if (animator != nullptr)
-							{
-								animator->SetPlaySpeed(instantiatePrefab.PlayBackSpeed);
-							}
-						}
-						else
-						{
-							std::function<void(fq::game_module::GameObject*, float)> setPlayBackSpeedRecursive = [&setPlayBackSpeedRecursive](fq::game_module::GameObject* gameObject, float playBackSpeed)
-								{
-									auto uvAnimator = gameObject->GetComponent<fq::game_module::UVAnimator>();
-									if (uvAnimator != nullptr)
-									{
-										uvAnimator->SetPlaySpeed(playBackSpeed);
-									}
-
-									auto animator = gameObject->GetComponent<fq::game_module::Animator>();
-									if (animator != nullptr)
-									{
-										animator->SetPlaySpeed(playBackSpeed);
-									}
-
-									for (auto child : gameObject->GetChildren())
-									{
-										setPlayBackSpeedRecursive(child, playBackSpeed);
-									}
-								};
-
-							setPlayBackSpeedRecursive(effectObject.get(), instantiatePrefab.PlayBackSpeed);
-						}
-
-						mInstantiatePrefabLifeTimeInfos.push_back(InstantiatePrefabLifeTimeInfo);
-					}
-				}
-
-				// 사운드 이벤트 처리
-				{
-					auto find = mPlaySoundInfoMap.find(data.RegisterKeyName);
-
-					if (find != mPlaySoundInfoMap.end())
-					{
-						const auto& playerSoundInfo = find->second;
-
-						if (playerSoundInfo.bUseAutoDelete)
-						{
-							PlaySoundLifeTimeInfo playSoundLifeTimeInfo;
-							playSoundLifeTimeInfo.OnwerGameObject = data.gameObject;
-							playSoundLifeTimeInfo.Channel = playerSoundInfo.Channel;
-							playSoundLifeTimeInfo.LifeTime = playerSoundInfo.DeleteTime;
-							playSoundLifeTimeInfo.bUseDeleteStateEnd = playerSoundInfo.bUseDeleteByStateEnd;
-
-							mPlaySoundLifeTimeInfos.push_back(playSoundLifeTimeInfo);
-						}
-
-						mGameProcess->mSoundManager->Play(playerSoundInfo.FunctionName, playerSoundInfo.bIsLoop, playerSoundInfo.Channel);
-					}
-				}
-			});
+		RegisterHandle<fq::event::AnimationStateEvent>(this, &StateEventSystem::OnAnimationStateEvent);
 
 	mOnProcessStateExitEvent = eventMgr->
 		RegisterHandle<fq::event::AnimationStateExitEvent>(
@@ -260,7 +260,6 @@ void fq::game_engine::StateEventSystem::Update(float dt)
 			++iter;
 		}
 	}
-
 }
 
 DirectX::SimpleMath::Vector3 fq::game_engine::StateEventSystem::genarateRenderVector(const DirectX::SimpleMath::Vector3& random)

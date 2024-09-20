@@ -99,14 +99,17 @@ void fq::client::TitleUI::OnStart()
 
 void fq::client::TitleUI::OnUpdate(float dt)
 {
-	SetScaleScreen();
-	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
+	setScaleScreen();
+	setSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
 
-	ProcessInput();
-	mCurStickDelay += dt;
+	if (mIsActive)
+	{
+		processInput();
+		mCurStickDelay += dt;
+	}
 }
 
-void fq::client::TitleUI::SetSelectBoxPosition(float dt)
+void fq::client::TitleUI::setSelectBoxPosition(float dt)
 {
 	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
@@ -131,7 +134,7 @@ void fq::client::TitleUI::SetSelectBoxPosition(float dt)
 	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
 
-void fq::client::TitleUI::SetScaleScreen()
+void fq::client::TitleUI::setScaleScreen()
 {
 	// 화면 크기에 따른 Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
@@ -145,7 +148,7 @@ void fq::client::TitleUI::SetScaleScreen()
 	}
 }
 
-void fq::client::TitleUI::ClickButton()
+void fq::client::TitleUI::clickButton()
 {
 	switch (mSelectButtonID)
 	{
@@ -156,7 +159,7 @@ void fq::client::TitleUI::ClickButton()
 		case 1:
 			// 설정
 			mIsActive = false;
-			SpawnUIObject(mSettingUIPrefab);
+			spawnUIObject(mSettingUIPrefab);
 			break;
 		case 2:
 			// 제작진
@@ -170,7 +173,7 @@ void fq::client::TitleUI::ClickButton()
 	}
 }
 
-void fq::client::TitleUI::EventProcessOffPopupSetting()
+void fq::client::TitleUI::eventProcessOffPopupSetting()
 {
 	mOffPopupSettingHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupSetting>
 		(
@@ -181,7 +184,7 @@ void fq::client::TitleUI::EventProcessOffPopupSetting()
 		);
 }
 
-void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
+void fq::client::TitleUI::spawnUIObject(fq::game_module::PrefabResource prefab)
 {
 	std::shared_ptr<game_module::GameObject> newObject;
 
@@ -191,66 +194,63 @@ void fq::client::TitleUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 	GetScene()->AddGameObject(newObject);
 }
 
-void fq::client::TitleUI::ProcessInput()
+void fq::client::TitleUI::processInput()
 {
 	// Setting Popup이 위에 없을 경우
-	if (mIsActive)
+	auto input = GetScene()->GetInputManager();
+	for (int i = 0; i < 4; i++)
 	{
-		auto input = GetScene()->GetInputManager();
-		for (int i = 0; i < 4; i++)
+		// Stick Y 값
+		float isLeftStickY = input->GetStickInfomation(i, EPadStick::leftY);
+
+		// 아래로
+		bool isDpadDownTap = input->GetPadKeyState(i, EPadKey::DpadDown) == EKeyState::Tap;
+		// Stick 처리
+		bool isLeftStickDownTap = false;
+		if (isLeftStickY < -0.9f)
 		{
-			// Stick Y 값
-			float isLeftStickY = input->GetStickInfomation(i, EPadStick::leftY);
-
-			// 아래로
-			bool isDpadDownTap = input->GetPadKeyState(i, EPadKey::DpadDown) == EKeyState::Tap;
-			// Stick 처리
-			bool isLeftStickDownTap = false;
-			if (isLeftStickY < -0.9f)
+			if (mCurStickDelay > mStickDelay)
 			{
-				if (mCurStickDelay > mStickDelay)
-				{
-					mCurStickDelay = 0;
-					isLeftStickDownTap = true;
-				}
-			}
-
-			if (isDpadDownTap || isLeftStickDownTap)
-			{
-				if (mSelectButtonID < 3)
-				{
-					mSelectButtonID++;
-				}
-			}
-
-			// 위로
-			bool isDpadUpTap = input->GetPadKeyState(i, EPadKey::DpadUp) == EKeyState::Tap;
-			// Stick 처리
-			bool isLeftStickUpTap = false;
-			if (isLeftStickY > 0.9f)
-			{
-				if (mCurStickDelay > mStickDelay)
-				{
-					mCurStickDelay = 0;
-					isLeftStickUpTap = true;
-				}
-			}
-
-			if (isDpadUpTap || isLeftStickUpTap)
-			{
-				if (mSelectButtonID > 0)
-				{
-					mSelectButtonID--;
-				}
+				mCurStickDelay = 0;
+				isLeftStickDownTap = true;
 			}
 		}
 
-		for (int i = 0; i < 4; i++)
+		if (isDpadDownTap || isLeftStickDownTap)
 		{
-			if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
+			if (mSelectButtonID < 3)
 			{
-				ClickButton();
+				mSelectButtonID++;
 			}
+		}
+
+		// 위로
+		bool isDpadUpTap = input->GetPadKeyState(i, EPadKey::DpadUp) == EKeyState::Tap;
+		// Stick 처리
+		bool isLeftStickUpTap = false;
+		if (isLeftStickY > 0.9f)
+		{
+			if (mCurStickDelay > mStickDelay)
+			{
+				mCurStickDelay = 0;
+				isLeftStickUpTap = true;
+			}
+		}
+
+		if (isDpadUpTap || isLeftStickUpTap)
+		{
+			if (mSelectButtonID > 0)
+			{
+				mSelectButtonID--;
+			}
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
+		{
+			clickButton();
 		}
 	}
 }

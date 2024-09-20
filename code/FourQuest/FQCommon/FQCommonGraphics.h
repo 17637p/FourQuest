@@ -114,7 +114,29 @@ namespace fq::graphics
 		bool isCenter = false;
 		bool isRender = true;
 
-		DirectX::SimpleMath::Color Color;
+		DirectX::SimpleMath::Color Color; // Color가 있으면 네모 상자 그리기
+	};
+
+	struct SpriteInfo
+	{
+		float StartX = 0.f; // 좌상단 점 위치 
+		float StartY = 0.f;
+		float Width = 100.f;
+		float Height = 100.f;
+
+		float ScaleX = 1.f;
+		float ScaleY = 1.f;
+
+		std::string ImagePath = "";
+		unsigned int Layer = 0; // 작을 수록 위에 클 수록 아래에 출력
+
+		float ImageNum = 5;
+		float Speed = 0.5f;
+		float CurImage = 0;
+		float CurTime = 0;
+
+		bool isCenter = false;
+		bool isRender = true;
 	};
 
 	enum class ETextAlign
@@ -144,6 +166,9 @@ namespace fq::graphics
 		int CenterY = 50;
 		int Width = 100;
 		int Height = 100;
+
+		float ScaleX = 1;
+		float ScaleY = 1;
 
 		std::string FontPath = "Verdana";
 		int FontSize = 10;

@@ -367,9 +367,12 @@
     </ClInclude>
     <ClInclude Include="StateEvent.h">
       <Filter>include\04.Event</Filter>
-	</ClInclude>
-	<ClInclude Include="SoundEnum.h">
+    </ClInclude>
+    <ClInclude Include="SoundEnum.h">
       <Filter>include\05.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteAnimationUI.h">
+      <Filter>include\01.EntityComponent\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -597,6 +600,9 @@
     </ClCompile>
     <ClCompile Include="StateEvent.cpp">
       <Filter>src\04.Event</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteAnimationUI.cpp">
+      <Filter>src\01.EntityComponent\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
