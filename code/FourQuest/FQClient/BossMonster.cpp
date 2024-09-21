@@ -37,7 +37,6 @@ fq::client::BossMonster::BossMonster()
 	, mStartGroggyGauge(100.f)
 	, mGroggyIncreaseRatio(0.1f)
 	, mGroggyDecreasePerSecond(1.f)
-	, mGroggyDecreaseElapsedTime(0.f)
 	, mSecondComboAttackRatio(0.5f)
 	, mComboAttackOffset{}
 	, mSmashDownOffset{}
@@ -95,13 +94,7 @@ void fq::client::BossMonster::OnStart()
 void fq::client::BossMonster::OnUpdate(float dt)
 {
 	// 그로기 게이지 
-	mGroggyDecreaseElapsedTime += dt;
-
-	while (mGroggyDecreaseElapsedTime >= 1.f)
-	{
-		mGroggyDecreaseElapsedTime -= 1.f;
-		mGroggyGauge -= mGroggyDecreasePerSecond;
-	}
+	mGroggyGauge -= mGroggyDecreasePerSecond *dt;
 
 	// 공격 쿨타임 계산 
 	mAttackElapsedTime = std::min(mAttackCoolTime, mAttackElapsedTime + dt);
@@ -137,9 +130,9 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			playerAttack->PlayHitSound();
 
 			// 그로기 
-			mGroggyGauge += mGroggyIncreaseRatio * attackPower;
+			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
 
-			if (mGroggyGauge >= mStartGroggyGauge)
+			if (mGroggyGauge == mStartGroggyGauge)
 			{
 				mGroggyGauge = 0.f;
 				mAnimator->SetParameterBoolean("OnGroggy", true);
@@ -569,5 +562,10 @@ void fq::client::BossMonster::StepBack()
 {
 	auto back = -mTransform->GetLookAtVector();
 	mKnockBack->SetKnockBack(mComboAttackReboundPower * 0.5f, back);
+}
+
+float fq::client::BossMonster::GetGroggyGaugeRatio() const
+{
+	return mGroggyGauge / mStartGroggyGauge;
 }
 

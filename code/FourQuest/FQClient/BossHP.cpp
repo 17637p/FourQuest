@@ -68,7 +68,7 @@ void fq::client::BossHP::OnUpdate(float dt)
 	uiInfos[0].Width = mHPWidth * gaugeRatio;
 	mHPBarGauge->SetUIInfomations(uiInfos);
 
-	gaugeRatio = mBoss->GetHPRatio();
+	gaugeRatio = mBoss->GetGroggyGaugeRatio();
 	uiInfos = mShieldGauge->GetUIInfomations();
 	uiInfos[0].XRatio = gaugeRatio;
 	uiInfos[0].Width = mShieldWidth * gaugeRatio;

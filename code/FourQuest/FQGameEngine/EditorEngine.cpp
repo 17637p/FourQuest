@@ -213,13 +213,13 @@ void fq::game_engine::EditorEngine::Process()
 				//////////////////////////////////////////////////////////////////////////
 				mGameProcess->mSceneManager->GetCurrentScene()->CleanUp(false);
 				EditorHelper::UpdateEditorMode(mGameProcess.get(), deltaTime);
-				mGameProcess->mUISystem->Update(deltaTime);
 			}
 
 			//////////////////////////////////////////////////////////////////////////
 			//							Bind Process								//
 			//////////////////////////////////////////////////////////////////////////
 
+			mGameProcess->mUISystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);

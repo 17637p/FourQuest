@@ -91,6 +91,8 @@ namespace fq::client
 
 		float GetHPRatio()const;
 
+		float GetGroggyGaugeRatio()const;
+
 		void AddHp(float hp);
 	
 		/// <summary>
@@ -165,7 +167,6 @@ namespace fq::client
 		float mGroggyGauge;
 		float mGroggyIncreaseRatio;
 		float mGroggyDecreasePerSecond;
-		float mGroggyDecreaseElapsedTime;
 
 		// 패턴 확률 관련 
 		float mRushProbability;
