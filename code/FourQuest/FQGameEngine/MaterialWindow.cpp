@@ -215,7 +215,7 @@ void fq::game_engine::MaterialWindow::Render()
 		ImGui::ColorEdit4("InvRim Color", reinterpret_cast<float*>(&materialInfo.InvRimLightColor));
 
 		// mul emissive Alpha
-		ImGui::ColorEdit4("Use Mul Emissive Alpha", reinterpret_cast<float*>(&materialInfo.bUseMulEmissiveAlpha));
+		ImGui::Checkbox("Use Mul Emissive Alpha", &materialInfo.bUseMulEmissiveAlpha);
 	}
 
 	if (mMaterialInterface != nullptr)

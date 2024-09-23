@@ -612,7 +612,7 @@ namespace fq::graphics
 		float InvRimPow = 2.f;
 		float InvRimIntensity = 1.f;
 
-		int bUseMulEmissiveAlpha = false; // 이미시브 알파값 곱하기 여부
+		bool bUseMulEmissiveAlpha = false; // 이미시브 알파값 곱하기 여부
 	};
 
 	struct ParticleMaterialInfo

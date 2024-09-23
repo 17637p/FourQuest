@@ -132,7 +132,7 @@ namespace fq::graphics
 
 		CBMaterialData.bUseNormalMap = material->GetHasNormal() && info.bUseNormalness;
 		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && info.bUseRoughness;
-		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive();
+		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive() && info.bIsUsedEmissive;
 		CBMaterialData.AlphaCutoff = info.AlphaCutoff;
 
 		CBMaterialData.EmissiveIntensity = info.EmissiveIntensity;
