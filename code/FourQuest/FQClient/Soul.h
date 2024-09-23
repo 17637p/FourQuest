@@ -26,7 +26,6 @@ namespace fq::client
 		void SetSoulManager();
 		void SetSoulHP();
 		void SetSoulDeath();
-		void UpdateSoulHP(float dt);
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -37,7 +36,12 @@ namespace fq::client
 		void OnUpdate(float dt) override;
 		void OnLateUpdate(float dt) override;
 
+		// 영혼 주변 갑옷 플레이어 검색 및 사정거리 안에 있으면 버프
 		void checkOtherPlayer();
+		// 영혼 인근 갑옷 상호작용
+		void selectArmour();
+		// 영혼 HP 업데이트
+		void updateSoulHP(float dt);
 
 	private:
 		game_module::CharacterController* mController;

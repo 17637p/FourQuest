@@ -22,8 +22,10 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 	private:
-		int mPlayerArmourDeathCount[4];
-		bool mbIsPlayerSoulDeath[4];
+		std::vector<int> mPlayerArmourDeathCount;
+		std::vector<bool> mbIsPlayerSoulDeath;
+
+		friend void RegisterMetaData();
 	};
 }
 

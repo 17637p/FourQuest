@@ -8,9 +8,9 @@
 namespace fq::client
 {
 	SoulManager::SoulManager()
-		: mPlayerArmourDeathCount{}
-		, mbIsPlayerSoulDeath{}
 	{
+		mbIsPlayerSoulDeath.resize(4, true);
+		mPlayerArmourDeathCount.resize(4, 0);
 	}
 	SoulManager::~SoulManager()
 	{

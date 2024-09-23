@@ -10,6 +10,7 @@
 #include "PlayerDefine.h"
 #include "Player.h"
 #include "Soul.h"
+#include "SoulManager.h"
 #include "PlayerInputState.h"
 #include "PlayerMovementState.h"
 #include "PlayerMovementSoundState.h"
@@ -132,6 +133,7 @@
 #include "SettingVariable.h"
 #include "PlayerInfoVariable.h"
 #include "PlayerVariable.h"
+#include "SoulVariable.h"
 
 // Box
 #include "Box.h"
@@ -441,6 +443,15 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Label, "Player")
 		.data<&Soul::SetSoulType, &Soul::GetSoulType>("SoulType"_hs)
 		.prop(reflect::prop::Name, "SoulType")
+		.base<game_module::Component>();
+
+	entt::meta<SoulManager>()
+		.type("SoulManager"_hs)
+		.prop(reflect::prop::Name, "SoulManager")
+		.data<&SoulManager::mbIsPlayerSoulDeath>("bIsPlayerSoulDeath"_hs)
+		.prop(reflect::prop::Name, "bIsPlayerSoulDeath")
+		.data<&SoulManager::mPlayerArmourDeathCount>("PlayerArmourDeathCount"_hs)
+		.prop(reflect::prop::Name, "PlayerArmourDeathCount")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()
@@ -1731,6 +1742,48 @@ void fq::client::RegisterMetaData()
 		.data<&PlayerInfoVariable::Player4Monster>("Player4Monster"_hs)
 		.prop(fq::reflect::prop::Name, "Player4Monster")
 		.base<IGameVariable>();
+
+	entt::meta<SoulVariable>()
+		.type("SoulVariable"_hs)
+		.prop(fq::reflect::prop::Name, "SoulVariable")
+		.data<&SoulVariable::ButtonTime>("ButtonTime"_hs)
+		.prop(fq::reflect::prop::Name, "ButtonTime")
+		.prop(reflect::prop::Comment, u8"영혼 이탈 시간")
+		.data<&SoulVariable::OutTime>("OutTime"_hs)
+		.prop(fq::reflect::prop::Name, "OutTime")
+		.prop(reflect::prop::Comment, u8"갑옷 파괴 시, 게임 아웃 시간")
+		.data<&SoulVariable::HpPercent>("HpPercent"_hs)
+		.prop(fq::reflect::prop::Name, "HpPercent")
+		.prop(reflect::prop::Comment, u8"갑옷 입고 있는 상태에서 이탈할 시에 갑옷 생성할 수 있는 최소 HP")
+
+		.data<&SoulVariable::SoulMaxHp>("SoulMaxHp"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMaxHp")
+		.prop(reflect::prop::Comment, u8"소울의 HP 최대치")
+		.data<&SoulVariable::SoulMinHp>("SoulMinHp"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMinHp")
+		.prop(reflect::prop::Comment, u8"사망 시 영혼 최대 체력이 줄어드는데, 일정 사망 횟수 이상에서도 최소 HP값에 도달하면 최대 HP값이 줄어들지 않는 변수")
+		.data<&SoulVariable::SoulHpDown>("SoulHpDown"_hs)
+		.prop(fq::reflect::prop::Name, "SoulHpDown")
+		.prop(reflect::prop::Comment, u8"영혼 파괴 시, 최대 체력 감소량")
+		.data<&SoulVariable::SoulHpDecreas>("SoulHpDecreas"_hs)
+		.prop(fq::reflect::prop::Name, "SoulHpDecreas")
+		.prop(reflect::prop::Comment, u8"초당 HP가 감소하는 양")
+		.data<&SoulVariable::SoulDistance>("SoulDistance"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDistance")
+		.prop(reflect::prop::Comment, u8"영혼 HP 피해 감소 및 영혼의 갑옷 버프 사정거리")
+		.data<&SoulVariable::SoulDecreasPercentage>("SoulDecreasPercentage"_hs)
+		.prop(fq::reflect::prop::Name, "SoulDecreasPercentage")
+		.prop(reflect::prop::Comment, u8"사정거리 안에 갑옷 플레이어가 있을 때, HP 피해 감소량")
+
+		.data<&SoulVariable::SpeedUp>("SpeedUp"_hs)
+		.prop(fq::reflect::prop::Name, "SpeedUp")
+		.prop(reflect::prop::Comment, u8"플레이어 이동속도 증가량")
+		.data<&SoulVariable::DamageUp>("DamageUp"_hs)
+		.prop(fq::reflect::prop::Name, "DamageUp")
+		.prop(reflect::prop::Comment, u8"플레이어 공격력 증가량")
+		.base<IGameVariable>();
+
+
 	//////////////////////////////////////////////////////////////////////////
 	//								  Box									//
 	//////////////////////////////////////////////////////////////////////////

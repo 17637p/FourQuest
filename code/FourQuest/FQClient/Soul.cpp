@@ -4,6 +4,7 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Particle.h"
+#include "../FQGameModule/GameObject.h"
 
 #include "DeadArmour.h"
 #include "CameraMoving.h"
@@ -11,6 +12,7 @@
 #include "PlayerSoulVariable.h"
 #include "Player.h"
 #include "SoulManager.h"
+#include "HpBar.h"
 
 #include "SoulVariable.h"
 
@@ -60,10 +62,11 @@ void fq::client::Soul::OnStart()
 			camera.AddPlayerTransform(GetComponent<game_module::Transform>());
 		});
 
-	// 소울 색깔 지정 
-	SetSoulColor();
-	SetSoulDeath();
-	SetSoulHP();
+	
+	SetSoulManager();	// 소울 매니저 등록
+	SetSoulColor();		// 소울 색깔 지정 
+	SetSoulDeath();		// 소울 죽음 카운트 계산
+	SetSoulHP();		// 소울 HP
 }
 
 void fq::client::Soul::DestorySoul()
@@ -102,6 +105,18 @@ void fq::client::Soul::OnTriggerExit(const fq::game_module::Collision& collision
 
 void fq::client::Soul::OnUpdate(float dt)
 {
+	selectArmour();
+	checkOtherPlayer();
+	updateSoulHP(dt);
+}
+
+void fq::client::Soul::OnLateUpdate(float dt)
+{
+	mbIsDistanceInPlayer = false;
+}
+
+void fq::client::Soul::selectArmour()
+{
 	auto input = GetScene()->GetInputManager();
 
 	// 갑옷과 상호작용합니다.
@@ -138,14 +153,6 @@ void fq::client::Soul::OnUpdate(float dt)
 		closestArmour->SummonLivingArmour(info);
 		DestorySoul();
 	}
-
-	checkOtherPlayer();
-
-}
-
-void fq::client::Soul::OnLateUpdate(float dt)
-{
-	mbIsDistanceInPlayer = false;
 }
 
 void fq::client::Soul::checkOtherPlayer()
@@ -204,10 +211,33 @@ void fq::client::Soul::SetSoulColor()
 
 void fq::client::Soul::SetSoulManager()
 {
-	// 씬에서 소울 오브젝트 컴포넌트를 가진 오브젝트 가져오기
-	for (auto& object : GetScene()->GetComponentView<SoulManager>())
+	bool bisSoulManager = false;
+
+	// 씬에 소울 매니저 오브젝트가 있는지 확인
+	for (auto& object : GetScene()->GetObjectView())
 	{
-		mSoulManagerObject = &object;
+		if (object.HasComponent<SoulManager>())
+		{
+			bisSoulManager = true;
+			continue;
+		}
+	}
+
+	// 씬에서 소울 오브젝트 컴포넌트를 가진 오브젝트 주소 가져오기
+	if (bisSoulManager)
+	{
+		for (auto& object : GetScene()->GetComponentView<SoulManager>())
+		{
+			mSoulManagerObject = &object;
+		}
+	}
+	else
+	{
+		std::shared_ptr<fq::game_module::GameObject> gameObject = std::make_shared<fq::game_module::GameObject>();
+		gameObject->AddComponent<SoulManager>();
+
+		GetScene()->AddGameObject(gameObject);
+		mSoulManagerObject = gameObject.get();
 	}
 }
 
@@ -216,7 +246,7 @@ void fq::client::Soul::SetSoulHP()
 	// 갑옷 죽음 카운터에 따라 영혼 최대 체력 세팅
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
 
-	int maxHP = SoulVariable::SoulMaxHp - SoulVariable::SoulLessHp * mDeathCount;
+	int maxHP = SoulVariable::SoulMaxHp - SoulVariable::SoulHpDown * mDeathCount;
 	int minHP = SoulVariable::SoulMinHp;
 
 	mHP = std::max<int>(maxHP, minHP);
@@ -226,14 +256,23 @@ void fq::client::Soul::SetSoulDeath()
 {
 	// 갑옷 죽음 카운트 가져오기
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-	auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
 
-	mDeathCount = soulManager->GetPlayerDeathCount(id);
+	if (mSoulManagerObject != nullptr)
+	{
+		auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
+		mDeathCount = soulManager->GetPlayerDeathCount(id);
+	}
+	else
+	{
+		spdlog::error("Scene Have not SoulManager!!");
+	}
 }
 
-void fq::client::Soul::UpdateSoulHP(float dt)
+void fq::client::Soul::updateSoulHP(float dt)
 {
 	mHP -= SoulVariable::SoulHpDecreas * dt;
+
+	GetComponent<HpBar>()->DecreaseHp((SoulVariable::SoulHpDecreas * dt) / (float)SoulVariable::SoulMaxHp);
 
 	// 영혼 죽으면 오브젝트 삭제하고 소울 매니저한테 죽었다고 알림
 	if (mHP <= 0.f)
