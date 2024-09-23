@@ -592,6 +592,16 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color DissolveEndColor = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveStartEmissive = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveEndEmissive = { 0, 0, 0, 0 };
+
+		bool bUseRimLight = false;
+		DirectX::SimpleMath::Color RimLightColor;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		bool bUseInvRimLight = false;
+		DirectX::SimpleMath::Color InvRimLightColor;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
 	};
 
 	struct ParticleMaterialInfo

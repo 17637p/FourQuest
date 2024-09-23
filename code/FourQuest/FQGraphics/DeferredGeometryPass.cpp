@@ -337,8 +337,7 @@ namespace fq::graphics
 
 					// static 타입은 언제나 데칼 적용
 					mLessEqualStencilReplaceState->Bind(mDevice, 0);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					std::vector<InstancingInfo> infos;
 					infos.reserve(128);
@@ -411,14 +410,12 @@ namespace fq::graphics
 					{
 						const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
 						const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
-						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo(), texTransform);
 					}
 					else
 					{
-						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
 					}
-
-					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 
@@ -486,8 +483,7 @@ namespace fq::graphics
 
 					// 데칼 언제나 적용하지 않음
 					mLessEqualStencilReplaceState->Bind(mDevice, 1);
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
-					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					std::vector<DirectX::SimpleMath::Matrix> instanceingInfos;
 					instanceingInfos.reserve(128);
@@ -540,7 +536,7 @@ namespace fq::graphics
 					}
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					if (nodeHierarchyInstanceCache != job.NodeHierarchyInstnace)
 					{
@@ -555,8 +551,6 @@ namespace fq::graphics
 							ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransform);
 						}
 					}
-
-					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

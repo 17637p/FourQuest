@@ -96,22 +96,12 @@ PixelOut main(VertexOut pin) : SV_TARGET
 {
     PixelOut pout;
 
-    if (cUseScaleOffset)
-    {
-        pin.UV = pin.UV * cUVScale + cUVOffset;
-    }
-
 #ifdef VERTEX_COLOR
     float4 baseColor = gModelMaterial.BaseColor;
     baseColor.a *= pin.Color.x; // 알파값으로만 사용할 것이라 임의로 x로 적용
 #else
     float4 baseColor = gModelMaterial.BaseColor;
 #endif
-    
-    if (cUseAlpha)
-    {
-        baseColor.a *= cAlpha;
-    }
 
     if (gModelMaterial.UseAlbedoMap)
     {
@@ -163,11 +153,6 @@ PixelOut main(VertexOut pin) : SV_TARGET
     {
         float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
         float dissolveCutoff = gModelMaterial.DissolveCutoff;
-
-        if (cUseDissolveCutoff)
-        {
-            dissolveCutoff = cDissolveCutoff;
-        }
 
         clip(noise.x - dissolveCutoff);
 
@@ -274,19 +259,19 @@ PixelOut main(VertexOut pin) : SV_TARGET
         ambientLighting = diffuseIBL + specularIBL;
     }
 
-    if (cUseRimLight)
+    if (gModelMaterial.bUseRimLight)
     {
         float3 toEye = normalize(eyePosition - pin.PositionW.xyz);
         float rim = saturate(dot(normal, toEye));
-        rim = pow(1 - rim, cRimPow);
-        emissive.rgb += rim * cRimColor.rgb * cRimIntensity;
+        rim = pow(1 - rim, gModelMaterial.RimPow);
+        emissive.rgb += rim * gModelMaterial.RimColor.rgb * gModelMaterial.RimIntensity;
     }
-    if (cUseInvRimLight)
+    if (gModelMaterial.bUseInvRimLight)
     {
         float3 toEye = normalize(eyePosition - pin.PositionW.xyz);
         float rim = saturate(dot(normal, toEye));
-        rim = pow(rim, cInvRimPow);
-        emissive.rgb += rim * cInvRimColor.rgb * cInvRimIntensity;
+        rim = pow(rim, gModelMaterial.InvRimPow);
+        emissive.rgb += rim * gModelMaterial.InvRimColor.rgb * gModelMaterial.InvRimIntensity;
     }
 
     float4 color = float4(directLighting + ambientLighting + emissive, opacity);

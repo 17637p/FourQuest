@@ -49,29 +49,6 @@ cbuffer cbLightmapInformation : register(b1)
 };
 #endif
 
-cbuffer cbMaterialInstance : register(b2)
-{
-    bool cUseAlpha;
-    float cAlpha;
-    bool cUseDissolveCutoff;
-    float cDissolveCutoff;
-
-    int cUseRimLight;
-    float cRimPow;
-    int cUseInvRimLight;
-    float cInvRimPow;
-
-    float4 cRimColor;
-    float4 cInvRimColor;
-
-    float2 cUVScale;
-    float2 cUVOffset;
-
-    int cUseScaleOffset;
-    float cRimIntensity;
-    float cInvRimIntensity;
-};
-
 cbuffer cbLight : register(b3)
 {
     DirectionalLight directionalLights[3];
@@ -105,11 +82,6 @@ SamplerState gLinearWrap : register(s2); //	D3D11_FILTER_Linear, D3D11_TEXTURE_A
 
 PixelOut main(VertexOut pin) : SV_TARGET
 {
-    if (cUseScaleOffset)
-    {
-        pin.UV = pin.UV * cUVScale + cUVOffset;
-    }
-
     PixelOut pout = (PixelOut)0;
 
 #ifdef VERTEX_COLOR
@@ -118,11 +90,6 @@ PixelOut main(VertexOut pin) : SV_TARGET
 #else
     pout.Albedo = gModelMaterial.BaseColor;
 #endif
-
-    if (cUseAlpha)
-    {
-        pout.Albedo.a *= cAlpha;
-    }
 
     if (gModelMaterial.UseAlbedoMap)
     {
@@ -142,11 +109,6 @@ PixelOut main(VertexOut pin) : SV_TARGET
     {
         float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);
         float dissolveCutoff = gModelMaterial.DissolveCutoff;
-
-        if (cUseDissolveCutoff)
-        {
-            dissolveCutoff = cDissolveCutoff;
-        }
 
         clip(noise.x - dissolveCutoff);
 
@@ -235,19 +197,19 @@ PixelOut main(VertexOut pin) : SV_TARGET
     pout.Light = float4(0, 0, 0, -1000);
 #endif 
 
-    if (cUseRimLight)
+    if (gModelMaterial.bUseRimLight)
     {
         float3 toEye = normalize(eyePosition - pout.PositionW.xyz);
         float rim = saturate(dot(pout.Normal, toEye));
-        rim = pow(1 - rim, cRimPow);
-        pout.Emissive.rgb += rim * cRimColor.rgb * cRimIntensity;
+        rim = pow(1 - rim, gModelMaterial.RimPow);
+        pout.Emissive.rgb += rim * gModelMaterial.RimColor.rgb * gModelMaterial.RimIntensity;
     }
-    if (cUseInvRimLight)
+    if (gModelMaterial.bUseInvRimLight)
     {
         float3 toEye = normalize(eyePosition - pout.PositionW.xyz);
         float rim = saturate(dot(pout.Normal, toEye));
-        rim = pow(rim, cInvRimPow);
-        pout.Emissive.rgb += rim * cInvRimColor.rgb * cInvRimIntensity;
+        rim = pow(rim, gModelMaterial.InvRimPow);
+        pout.Emissive.rgb += rim * gModelMaterial.InvRimColor.rgb * gModelMaterial.InvRimIntensity;
     }
 
     return pout;

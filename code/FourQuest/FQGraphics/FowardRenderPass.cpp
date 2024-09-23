@@ -160,7 +160,7 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.StaticMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -181,7 +181,7 @@ namespace fq::graphics
 					job.Material->Bind(mDevice);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					if (job.NodeHierarchyInstnace != nullptr)
 					{

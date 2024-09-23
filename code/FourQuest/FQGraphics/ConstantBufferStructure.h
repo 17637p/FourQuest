@@ -210,6 +210,8 @@ namespace fq::graphics
 		DirectX::SimpleMath::Vector4 DissolveEndColor;
 		DirectX::SimpleMath::Vector4 DissolveStartEmissive;
 		DirectX::SimpleMath::Vector4 DissolveEndEmissive;
+		DirectX::SimpleMath::Vector4 RimLightColor;
+		DirectX::SimpleMath::Vector4 InvRimLightColor;
 
 		float Metalness;
 		float Roughness;
@@ -227,7 +229,14 @@ namespace fq::graphics
 		float OutlineThickness;
 
 		float DissolveCutoff;
-		float unused[3];
+		int bUseRimLight = false;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		int bUseInvRimLight = false;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
+		float unused[1];
 	};
 
 	struct CBDecalObject
@@ -406,10 +415,6 @@ namespace fq::graphics
 		static void UpdateModelTransformCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<ModelTransform>>& cbuffer,
 			const DirectX::SimpleMath::Matrix& transform);
-		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
-			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
-			const std::shared_ptr<Material>& material,
-			const DirectX::SimpleMath::Matrix& texTransform = DirectX::SimpleMath::Matrix::Identity);
 		static void UpdateTerrainTextureCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<TerrainTexture>>& cbuffer,
 			const std::shared_ptr<TerrainMaterial>& material,
@@ -420,8 +425,10 @@ namespace fq::graphics
 		static void UpdateLightProbeCB(const std::shared_ptr<D3D11Device>& device,
 			std::shared_ptr<D3D11ConstantBuffer<LightProbeCB>>& cbuffer,
 			float* r, float* g, float* b, float intensity);
-		static void UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device,
-			const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB,
-			const MaterialInstanceInfo& materialInstanceInfo);
+		static void UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
+			std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
+			const std::shared_ptr<Material>& material,
+			const MaterialInstanceInfo& materialInstanceInfo,
+			const DirectX::SimpleMath::Matrix& texTransform = DirectX::SimpleMath::Matrix::Identity);
 	};
 }
