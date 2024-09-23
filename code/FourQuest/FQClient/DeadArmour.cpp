@@ -124,7 +124,9 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 	if (!uiObject.empty())
 	{
 		uiObject[0]->SetIsRender(true);
-		uiObject[1]->SetIsRender(isVisible);
+
+		if (uiObject.size() > 1)
+			uiObject[1]->SetIsRender(isVisible);
 	}
 }
 
