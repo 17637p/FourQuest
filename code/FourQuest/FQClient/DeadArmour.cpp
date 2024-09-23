@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "DeadArmour.h"
 
 #include "../FQGameModule/GameModule.h"
@@ -71,10 +72,11 @@ void fq::client::DeadArmour::OnTriggerEnter(const game_module::Collision& collis
 {
 	if (collision.other->HasComponent<Soul>())
 	{
-		++mPlayerCount;
+		mPlayerCount++;
+		spdlog::debug("{} count {}", collision.other->GetName(), mPlayerCount);
 	}
 
-	if (mPlayerCount != 0 && mbIsSummonAble)
+	if (mPlayerCount > 0 && mbIsSummonAble)
 	{
 		constexpr DirectX::SimpleMath::Color Yellow{ 0.8f,0.6f,0.2f,1.f };
 		setOutlineColor(Yellow);
@@ -86,7 +88,12 @@ void fq::client::DeadArmour::OnTriggerExit(const game_module::Collision& collisi
 {
 	if (collision.other->HasComponent<Soul>())
 	{
-		--mPlayerCount;
+		if (mPlayerCount > 0)
+		{
+			--mPlayerCount;
+		}
+
+		spdlog::debug("{} count {}", collision.other->GetName(), mPlayerCount);
 	}
 
 	if (mPlayerCount == 0 && mbIsSummonAble)
@@ -114,9 +121,10 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 	auto imageUI = GetComponent<game_module::ImageUI>();
 	auto& uiObject = imageUI->GetImageObjects();
 
-	for (auto& ui : uiObject)
+	if (!uiObject.empty())
 	{
-		ui->SetIsRender(isVisible);
+		uiObject[0]->SetIsRender(true);
+		uiObject[1]->SetIsRender(isVisible);
 	}
 }
 
@@ -125,7 +133,6 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 	using namespace DirectX::SimpleMath;
 
 	// UI 위치 갱신 
-	if (mbIsVisible)
 	{
 		fq::game_module::Camera* mainCamera = nullptr;
 
@@ -145,8 +152,14 @@ void fq::client::DeadArmour::OnUpdate(float dt)
 
 		auto uiInfomations = imageUI->GetUIInfomations();
 
-		uiInfomations[0].StartX = width * 0.5f + (screenPos.x * width * 0.5f);
+		uiInfomations[0].StartX = width * 0.5f + (screenPos.x * width * 0.5f) - 25.f;
 		uiInfomations[0].StartY = height * 0.5f - (screenPos.y * height * 0.5f);
+
+		if (uiInfomations.size() > 1)
+		{
+			uiInfomations[1].StartX = uiInfomations[0].StartX + 60.f;
+			uiInfomations[1].StartY = uiInfomations[0].StartY;
+		}
 
 		imageUI->SetUIInfomations(uiInfomations);
 	}
