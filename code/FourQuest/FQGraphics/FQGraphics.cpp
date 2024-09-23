@@ -961,6 +961,16 @@ void fq::graphics::FQGraphics::DrawRingEx(const debug::RingInfoEx& ringInfoEx)
 	mDebugDrawManager->Submit(ringInfoEx);
 }
 
+void FQGraphics::DeleteSpriteAnimation(fq::graphics::ISpriteAnimationObject* spriteAniamtionObject)
+{
+	mUIManager->DeleteSpriteAniamtion(spriteAniamtionObject);
+}
+
+fq::graphics::ISpriteAnimationObject* FQGraphics::CreateSpriteAnimation(SpriteInfo spriteInfo)
+{
+	return mUIManager->CreateSpriteAniamtion(spriteInfo);
+}
+
 void FQGraphics::SetIsRenderObjects(bool isRenderObjects)
 {
 	mUIManager->SetIsRenderObjects(isRenderObjects);

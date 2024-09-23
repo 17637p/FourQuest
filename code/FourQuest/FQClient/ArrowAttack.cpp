@@ -41,8 +41,9 @@ namespace fq::client
 				GetScene()->DestroyGameObject(GetGameObject());
 			}
 		}
-
-		if (mbIsStrongAttack)
+		
+		// 강공격 일 경우 일직선으로 날아가도록
+		if (mbIsStrongAttack && mMaxBlockCount > 0)
 		{
 			auto transform = GetComponent<game_module::Transform>();
 			DirectX::SimpleMath::Vector3 deltaPosition = mAttackDirection * dt * mStrongProjectileVelocity;
@@ -59,13 +60,17 @@ namespace fq::client
 		}
 
 		if (collision.other->GetTag() == fq::game_module::ETag::Monster
-			|| collision.other->GetTag() == fq::game_module::ETag::Floor
-			|| collision.other->GetTag() == fq::game_module::ETag::Wall
 			|| collision.other->GetTag() == fq::game_module::ETag::Spawner
 			|| collision.other->GetTag() == fq::game_module::ETag::Box)
 		{
 			mMaxBlockCount--;
 
+		}
+
+		if (collision.other->GetTag() == fq::game_module::ETag::Floor
+			|| collision.other->GetTag() == fq::game_module::ETag::Wall)
+		{
+			mMaxBlockCount = 0;
 		}
 
 		if (mMaxBlockCount > 0)
@@ -90,8 +95,6 @@ namespace fq::client
 	{
 		mAttacker = info.attacker;
 		mbIsStrongAttack = info.bIsStrongAttack;
-		mWeakAttackPower = info.weakDamage;
-		mStrongAttackPower = info.strongDamage;
 		mWeakAttackPower = info.weakDamage;
 		mStrongAttackPower = info.strongDamage;
 		mMaxBlockCount = info.remainingAttackCount;
@@ -121,7 +124,7 @@ namespace fq::client
 
 			if (mbIsStrongAttack)
 			{
-				info.remainingAttackCount = 1000;
+				info.remainingAttackCount = mMaxBlockCount;
 				info.damage = mStrongAttackPower;
 			}
 			else

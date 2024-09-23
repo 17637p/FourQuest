@@ -27,20 +27,20 @@ namespace fq::client
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 
 		// 스크린 비율 맞춰서 Scale Set
-		void SetScaleScreen();
+		void setScaleScreen();
 		// 선택한 버튼에 따라 Select Box Pos Set
-		void SetSelectBoxPosition(float dt);
+		void setSelectBoxPosition(float dt);
 		// 버튼 선택 시 로직
-		void ClickButton();
+		void clickButton();
 
 		// Prefab 소환
-		void SpawnUIObject(fq::game_module::PrefabResource prefab);
+		void spawnUIObject(fq::game_module::PrefabResource prefab);
 
 		// Setting Popup Off 시 처리할 것
-		void EventProcessOffPopupSetting();
+		void eventProcessOffPopupSetting();
 
 		// 입력 처리 
-		void ProcessInput();
+		void processInput();
 
 	private:
 		game_module::ScreenManager* mScreenManager;
@@ -56,6 +56,7 @@ namespace fq::client
 		fq::game_module::PrefabResource mSettingUIPrefab;
 		game_module::EventHandler mOffPopupSettingHandler;
 
+		// Button Animation
 		float mStickDelay;
 		float mCurStickDelay;
 

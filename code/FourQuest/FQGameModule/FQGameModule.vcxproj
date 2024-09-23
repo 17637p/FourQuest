@@ -248,6 +248,7 @@
     <ClInclude Include="Sequence.h" />
     <ClInclude Include="SoundEnum.h" />
     <ClInclude Include="SoundTrack.h" />
+    <ClInclude Include="SpriteAnimationUI.h" />
     <ClInclude Include="StateEvent.h" />
     <ClInclude Include="TextPrintTrack.h" />
     <ClInclude Include="Track.h" />
@@ -330,6 +331,7 @@
     <ClCompile Include="ObjectTeleportTrack.cpp" />
     <ClCompile Include="Sequence.cpp" />
     <ClCompile Include="SoundTrack.cpp" />
+    <ClCompile Include="SpriteAnimationUI.cpp" />
     <ClCompile Include="StateEvent.cpp" />
     <ClCompile Include="TextPrintTrack.cpp" />
     <ClCompile Include="Track.cpp" />

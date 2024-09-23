@@ -63,7 +63,6 @@ namespace fq::client
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
 		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
 		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
@@ -80,7 +79,7 @@ namespace fq::client
 		GetScene()->AddGameObject(attackObj);
 	}
 
-	void ArcherArmour::EmitStrongAttack()
+	void ArcherArmour::EmitStrongAttack(int chargeLevel)
 	{
 		auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mStrongAttack);
 		auto& attackObj = *(instance.begin());
@@ -111,21 +110,51 @@ namespace fq::client
 		// 공격 설정
 		ArrowAttackInfo attackInfo{};
 		attackInfo.weakDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower());
-		attackInfo.strongDamage = dc::GetArcherSADamage(mPlayer->GetAttackPower());
 		attackInfo.weakProjectileVelocity = mWeakProjectileVelocity;
-		attackInfo.strongProjectileVelocity = mStrongProjectileVelocity;
 		attackInfo.attacker = GetGameObject();
 		attackInfo.attackDirection = foward;
 		attackInfo.attackTransform = attackT->GetWorldMatrix();
 		attackInfo.bIsStrongAttack = true;
-		attackInfo.remainingAttackCount = 0b11111111;
 		attackInfo.hitSound = "A_StrongAttack_Hit";
 		//GetScene()->GetEventManager()->FireEvent<fq::event::OnPlaySound>({ "A_StrongAttack", false , 0 });
+
+		switch (chargeLevel)
+		{
+		case 1:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 1.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 1.5f;
+			attackInfo.remainingAttackCount = 1;
+		}
+		break;
+		case 2:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 2.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 2.f;
+			attackInfo.remainingAttackCount = 3;
+		}
+		break;
+		case 3:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 3.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 3.f;
+			attackInfo.remainingAttackCount = 5;
+		}
+		break;
+		case 4:
+		{
+			attackInfo.strongProjectileVelocity = mWeakProjectileVelocity * 5.f;
+			attackInfo.strongDamage = dc::GetArcherWADamage(mPlayer->GetAttackPower()) * 5.f;
+			attackInfo.remainingAttackCount = 0b11111111;
+		}
+		break;
+		default:
+			break;
+		}
 
 		attackComponent->Set(attackInfo);
 
 		// MagicBall Attack 사운드  
-
 		GetScene()->AddGameObject(attackObj);
 	}
 

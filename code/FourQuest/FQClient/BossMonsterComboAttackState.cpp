@@ -1,10 +1,12 @@
 #include "BossMonsterComboAttackState.h"
 
+#include "../FQGameModule/GameModule.h"
 #include "BossMonster.h"
 
 fq::client::BossMonsterComboAttackState::BossMonsterComboAttackState()
 	:mAttackElapsedTime(0.f)
-	,mEmitAttackTime(0.f)
+	, mEmitAttackTime(0.f)
+	, mXAxisOffset(1.f)
 {}
 
 fq::client::BossMonsterComboAttackState::~BossMonsterComboAttackState()
@@ -24,7 +26,7 @@ void fq::client::BossMonsterComboAttackState::OnStateUpdate(game_module::Animato
 
 		if (mAttackElapsedTime >= mEmitAttackTime)
 		{
-			animator.GetComponent<BossMonster>()->EmitComboAttack();
+			animator.GetComponent<BossMonster>()->EmitComboAttack(mXAxisOffset);
 			mAttackElapsedTime = mEmitAttackTime;
 		}
 	}
@@ -32,8 +34,17 @@ void fq::client::BossMonsterComboAttackState::OnStateUpdate(game_module::Animato
 
 void fq::client::BossMonsterComboAttackState::OnStateExit(game_module::Animator& animator, game_module::AnimationStateNode& state)
 {
-	animator.GetComponent<BossMonster>()->SetNextAttack();
-	animator.GetComponent<BossMonster>()->SetRandomTarget();
+
+	bool isOnCombo3 = animator.GetController().GetParameter("OnCombo3").cast<bool>();
+
+	if (state.GetAnimationKey() == "ComboAttack3" && isOnCombo3)
+	{
+		animator.GetComponent<BossMonster>()->EndPattern();
+	}
+	else if (state.GetAnimationKey() == "ComboAttack2" && !isOnCombo3)
+	{
+		animator.GetComponent<BossMonster>()->EndPattern();
+	}
 }
 
 std::shared_ptr<fq::game_module::IStateBehaviour> fq::client::BossMonsterComboAttackState::Clone()

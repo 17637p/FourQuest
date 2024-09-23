@@ -40,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
+    <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
     <ClInclude Include="ArmourSpawner.h" />
@@ -54,9 +55,13 @@
     <ClInclude Include="BossHP.h" />
     <ClInclude Include="BossMonster.h" />
     <ClInclude Include="BossMonsterComboAttackState.h" />
+    <ClInclude Include="BossMonsterContinousState.h" />
+    <ClInclude Include="BossMonsterEatState.h" />
     <ClInclude Include="BossMonsterGroggyState.h" />
     <ClInclude Include="BossMonsterHomingRushState.h" />
+    <ClInclude Include="BossMonsterPreContinousState.h" />
     <ClInclude Include="BossMonsterPrepareAttackState.h" />
+    <ClInclude Include="BossMonsterRoarState.h" />
     <ClInclude Include="BossMonsterSmashDownState.h" />
     <ClInclude Include="BossMonsterChaseState.h" />
     <ClInclude Include="BossMonsterDeadState.h" />
@@ -77,6 +82,7 @@
     <ClInclude Include="DeadArmour.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="CameraMoving.h" />
+    <ClInclude Include="DebuffPoisonZone.h" />
     <ClInclude Include="DefenceCounter.h" />
     <ClInclude Include="EBerserkerAttackType.h" />
     <ClInclude Include="GameManager.h" />
@@ -118,6 +124,7 @@
     <ClInclude Include="MonsterVariable.h" />
     <ClInclude Include="PauseUI.h" />
     <ClInclude Include="PlantMonster.h" />
+    <ClInclude Include="PlantMonsterAOEAttackState.h" />
     <ClInclude Include="PlantMonsterAttckState.h" />
     <ClInclude Include="PlantMonsterDeadState.h" />
     <ClInclude Include="PlantMonsterHitState.h" />
@@ -163,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
+    <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
     <ClCompile Include="ArmourSpawner.cpp" />
@@ -176,9 +184,13 @@
     <ClCompile Include="BossHP.cpp" />
     <ClCompile Include="BossMonster.cpp" />
     <ClCompile Include="BossMonsterComboAttackState.cpp" />
+    <ClCompile Include="BossMonsterContinousState.cpp" />
+    <ClCompile Include="BossMonsterEatState.cpp" />
     <ClCompile Include="BossMonsterGroggyState.cpp" />
     <ClCompile Include="BossMonsterHomingRushState.cpp" />
+    <ClCompile Include="BossMonsterPreContinousState.cpp" />
     <ClCompile Include="BossMonsterPrepareAttackState.cpp" />
+    <ClCompile Include="BossMonsterRoarState.cpp" />
     <ClCompile Include="BossMonsterSmashDownState.cpp" />
     <ClCompile Include="BossMonsterChaseState.cpp" />
     <ClCompile Include="BossMonsterDeadState.cpp" />
@@ -196,6 +208,7 @@
     <ClCompile Include="DeadArmour.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="CameraMoving.cpp" />
+    <ClCompile Include="DebuffPoisonZone.cpp" />
     <ClCompile Include="DefenceCounter.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameVaribleHelper.cpp" />
@@ -231,6 +244,7 @@
     <ClCompile Include="LinearAttack.cpp" />
     <ClCompile Include="PauseUI.cpp" />
     <ClCompile Include="PlantMonster.cpp" />
+    <ClCompile Include="PlantMonsterAOEAttackState.cpp" />
     <ClCompile Include="PlantMonsterAttckState.cpp" />
     <ClCompile Include="PlantMonsterDeadState.cpp" />
     <ClCompile Include="PlantMonsterHitState.cpp" />

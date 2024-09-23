@@ -50,6 +50,8 @@ namespace fq::physics
 		/// </summary>
 		inline std::shared_ptr<CharacterPhysics> GetCharacterPhysics(unsigned int id);
 
+		inline unsigned int GetCharacterPhysicsCount();
+
 		void GetArticulationData(const unsigned int& id, ArticulationGetData& articulationData);
 		void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData, int* collisionMatrix);
 
@@ -77,6 +79,10 @@ namespace fq::physics
 	std::shared_ptr<CharacterPhysics> PhysicsCharacterPhysicsManager::GetCharacterPhysics(unsigned int id)
 	{
 		return mCharacterPhysicsContainer.find(id)->second;
+	}
+	unsigned int PhysicsCharacterPhysicsManager::GetCharacterPhysicsCount()
+	{
+		return mScene->getNbArticulations();
 	}
 
 #pragma endregion

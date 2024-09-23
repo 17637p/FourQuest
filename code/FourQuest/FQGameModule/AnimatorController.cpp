@@ -218,6 +218,7 @@ void fq::game_module::AnimatorController::UpdateState(float dt)
 	{
 		using  Source = AnimationTransition::InterruptionSource;
 
+
 		// 애니메이션 전환중 다른 전환 처리 
 		auto source = mCurrentTransition->second.GetInterruptionSource();
 

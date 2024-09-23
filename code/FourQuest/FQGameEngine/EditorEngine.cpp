@@ -219,12 +219,12 @@ void fq::game_engine::EditorEngine::Process()
 			//							Bind Process								//
 			//////////////////////////////////////////////////////////////////////////
 
+			mGameProcess->mUISystem->Update(deltaTime);
 			mGameProcess->mDecalSystem->Update(deltaTime);
 			mGameProcess->mTrailSystem->Update(deltaTime);
 			mGameProcess->mRenderingSystem->Update(deltaTime);
 			mGameProcess->mLightSystem->Update();
 			mGameProcess->mCameraSystem->Update();
-			mGameProcess->mUISystem->Update();
 			mGameProcess->mStateEventSystem->Update(deltaTime);
 
 			//////////////////////////////////////////////////////////////////////////

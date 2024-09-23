@@ -54,6 +54,8 @@ void fq::client::SpawnerGroup::OnStart()
 {
 	mMonsterManager = GetScene()->GetObjectByName("MonsterManager")->GetComponent<MonsterManager>();
 	EventProcessPlayerSpawnCollideTrigger();
+	EventProcessInProgressQuest();
+	EventProcessInProgressDefence();
 }
 
 void fq::client::SpawnerGroup::OnUpdate(float dt)
@@ -129,6 +131,20 @@ bool fq::client::SpawnerGroup::IsPassSpawnCondition()
 			return false;
 		}
 	}
+	for (int i = 0; i < mSpawnConditions.InProgressQuestList.size(); i++)
+	{
+		if (!mSpawnConditions.InProgressQuestList[i].isClear)
+		{
+			return false;
+		}
+	}
+	for (int i = 0; i < mSpawnConditions.InProgressDefenceList.size(); i++)
+	{
+		if (!mSpawnConditions.InProgressDefenceList[i].isClear)
+		{
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -138,51 +154,54 @@ void fq::client::SpawnerGroup::Spawn(SpawnRule rule)
 	auto children = GetGameObject()->GetChildren();
 	for (int i = 0; i < children.size(); i++)
 	{
-		// 스폰하려는 스포너의 ID가 맞다면
-		if (children[i]->GetComponent<Spawner>()->GetID() == rule.SpawnerNum)
+		for (int k = 0; k < rule.spawnData.size(); k++)
 		{
-			// 몬스터 타입 결정
-			game_module::PrefabResource mSelectPrefab;
-			switch (rule.MonsterType)
+			// 스폰하려는 스포너의 ID가 맞다면
+			if (children[i]->GetComponent<Spawner>()->GetID() == rule.spawnData[k].SpawnerNum)
 			{
-				case EMonsterType::Melee:
-					mSelectPrefab = mMeleeMonsterPrefab;
-					break;
-				case EMonsterType::Plant:
-					mSelectPrefab = mPlantMonsterPrefab;
-					break;
-				case EMonsterType::Explosion:
-					mSelectPrefab = mExplosionMonsterPrefab;
-					break;
-				case EMonsterType::Boss:
-					mSelectPrefab = mBossMonsterPrefab;
-					break;
-				case EMonsterType::Spawner:
-					mSelectPrefab = mSpawnerMonsterPrefab;
-					break;
-				default:
-					break;
+				// 몬스터 타입 결정
+				game_module::PrefabResource mSelectPrefab;
+				switch (rule.spawnData[k].MonsterType)
+				{
+					case EMonsterType::Melee:
+						mSelectPrefab = mMeleeMonsterPrefab;
+						break;
+					case EMonsterType::Plant:
+						mSelectPrefab = mPlantMonsterPrefab;
+						break;
+					case EMonsterType::Explosion:
+						mSelectPrefab = mExplosionMonsterPrefab;
+						break;
+					case EMonsterType::Boss:
+						mSelectPrefab = mBossMonsterPrefab;
+						break;
+					case EMonsterType::Spawner:
+						mSelectPrefab = mSpawnerMonsterPrefab;
+						break;
+					default:
+						break;
+				}
+
+				// Prefab으로 소환
+				std::shared_ptr<game_module::GameObject> monster;
+				for (int j = 0; j < rule.spawnData[k].SpawnMonsterNum; j++)
+				{
+					auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSelectPrefab);
+					monster = *(instance.begin());
+
+					// monster 이름 변경
+					monster->SetName(rule.spawnData[k].Name + std::to_string(mCurSpawnMonsterNum));
+					// Monster Spawner 위치로 이동
+					DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetLocalPosition();
+					monster->GetTransform()->SetLocalPosition(spawnPos);
+					mAddedMonsterList.push_back(monster);
+
+					GetScene()->AddGameObject(monster);
+					mCurSpawnMonsterNum++;
+				}
+
+				break;
 			}
-
-			// Prefab으로 소환
-			std::shared_ptr<game_module::GameObject> monster;
-			for (int j = 0; j < rule.SpawnMonsterNum; j++)
-			{
-				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSelectPrefab);
-				monster = *(instance.begin());
-				
-				// monster 이름 변경
-				monster->SetName(rule.Name + std::to_string(mCurSpawnMonsterNum));
-				// Monster Spawner 위치로 이동
-				DirectX::SimpleMath::Vector3 spawnPos = children[i]->GetTransform()->GetLocalPosition();
-				monster->GetTransform()->SetLocalPosition(spawnPos);
-				mAddedMonsterList.push_back(monster);
-
-				GetScene()->AddGameObject(monster);
-				mCurSpawnMonsterNum++;
-			}
-
-			break;
 		}
 	}
 
@@ -375,12 +394,23 @@ void fq::client::SpawnerGroup::InitCondition()
 	{
 		objectLiveList[i].isClear = false;
 	}
+	auto& inProgressQuestList = mSpawnConditions.InProgressQuestList;
+	for (int i = 0; i < inProgressQuestList.size(); i++)
+	{
+		inProgressQuestList[i].isClear = false;
+	}
+	auto& inProgressDefenceList = mSpawnConditions.InProgressDefenceList;
+	for (int i = 0; i < inProgressDefenceList.size(); i++)
+	{
+		inProgressDefenceList[i].isClear = false;
+	}
 }
 
+// 09.20 Enter -> Stay 이벤트로 변경
 void fq::client::SpawnerGroup::EventProcessPlayerSpawnCollideTrigger()
 {
-	mPlayerSpawnCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideTrigger>(
-		[this](const client::event::PlayerCollideTrigger& event)
+	mPlayerSpawnCollideTriggerHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::PlayerCollideStayTrigger>(
+		[this](const client::event::PlayerCollideStayTrigger& event)
 		{
 			for (int i = 0; i < mSpawnConditions.SpawnColliderTriggerList.size(); i++)
 			{
@@ -456,4 +486,36 @@ void fq::client::SpawnerGroup::OnFixedUpdate(float dt)
 	}
 
 	mAddedMonsterList.clear();
+}
+
+void fq::client::SpawnerGroup::EventProcessInProgressQuest()
+{
+	mInProgressQuestHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::CurrentQuest>(
+		[this](const client::event::CurrentQuest& event)
+		{
+			for (int i = 0; i < mSpawnConditions.InProgressQuestList.size(); i++)
+			{
+				auto& inProgressQuestList = mSpawnConditions.InProgressQuestList[i];
+				if (event.isMain == inProgressQuestList.isMain && event.questIndex == inProgressQuestList.QuestIndex)
+				{
+					inProgressQuestList.isClear = true;
+				}
+			}
+		});
+}
+
+void fq::client::SpawnerGroup::EventProcessInProgressDefence()
+{
+	mInProgressDefenceHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::InProgressDefence>(
+		[this](const client::event::InProgressDefence& event)
+		{
+			for (int i = 0; i < mSpawnConditions.InProgressDefenceList.size(); i++)
+			{
+				auto& inProgressDefenceList = mSpawnConditions.InProgressDefenceList[i];
+				if (event.colliderName == inProgressDefenceList.ColliderName && event.curCount >= inProgressDefenceList.Count)
+				{
+					inProgressDefenceList.isClear = true;
+				}
+			}
+		});
 }

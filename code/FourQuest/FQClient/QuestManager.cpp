@@ -150,6 +150,12 @@ void fq::client::QuestManager::OnUpdate(float dt)
 		mSubQuestTexts[i]->SetTextInfo(textInfo);
 		ViewQuestInformation(mCurSubQuest[i], mSubQuestTexts[i]);
 	}
+
+	GetScene()->GetEventManager()->FireEvent<client::event::CurrentQuest>({ true, mCurMainQuest.mIndex });
+	for (int i = 0; i < mCurSubQuest.size(); i++)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::CurrentQuest>({ false, mCurSubQuest[i].mIndex});
+	}
 }
 
 void fq::client::QuestManager::OnDestroy()

@@ -1,8 +1,11 @@
+#define NOMINMAX
+
 #include "BossMonster.h"
 
 #include "../FQGameModule/NavigationAgent.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Animator.h"
+#include "../FQGameModule/SkinnedMeshRenderer.h"
 #include "Attack.h"
 #include "GameManager.h"
 #include "DamageCalculation.h"
@@ -10,6 +13,7 @@
 #include "BossHP.h"
 #include "ClientHelper.h"
 #include "MonsterDefine.h"
+#include "DeadArmour.h"
 
 fq::client::BossMonster::BossMonster()
 	:mMaxHp(0.f)
@@ -32,8 +36,17 @@ fq::client::BossMonster::BossMonster()
 	, mGroggyGauge(0.f)
 	, mStartGroggyGauge(100.f)
 	, mGroggyIncreaseRatio(0.1f)
-	, mGroggyDecreasePerSecond(1.f)	
-	, mGroggyDecreaseElapsedTime(0.f)
+	, mGroggyDecreasePerSecond(1.f)
+	, mSecondComboAttackRatio(0.5f)
+	, mComboAttackOffset{}
+	, mSmashDownOffset{}
+	, mMinWaitAttackTime(0.5f)
+	, mMaxWaitAttackTime(2.f)
+	, mContinousProbability(0.1f)
+	, mRoarProbability(0.1f)
+	, mEatProbability(0.1f)
+	, mRushProbability(0.1f)
+	, mSmashProbability(0.2f)
 {}
 
 fq::client::BossMonster::~BossMonster()
@@ -73,20 +86,31 @@ void fq::client::BossMonster::OnStart()
 
 	// GameManager 연결
 	mGameManager = GetScene()->GetObjectByName("GameManager")->GetComponent<GameManager>();
+
+	// SkinnedMesh 연결
+	mSkinnedMesh = mTransform->GetChildren()[0]->GetComponent<game_module::SkinnedMeshRenderer>();
 }
 
 void fq::client::BossMonster::OnUpdate(float dt)
 {
 	// 그로기 게이지 
-	mGroggyDecreaseElapsedTime += dt;
+	mGroggyGauge -= mGroggyDecreasePerSecond *dt;
 
-	while (mGroggyDecreaseElapsedTime >= 1.f)
-	{
-		mGroggyDecreaseElapsedTime -= 1.f;
-		mGroggyGauge -= mGroggyDecreasePerSecond;
-	}
+	// 공격 쿨타임 계산 
+	mAttackElapsedTime = std::min(mAttackCoolTime, mAttackElapsedTime + dt);
 
+	bool canAttack = mAttackElapsedTime >= mAttackCoolTime;
+	mAnimator->SetParameterBoolean("CanAttack", canAttack);
 }
+
+void fq::client::BossMonster::waitAttack()
+{
+	mAttackCoolTime = helper::RandomGenerator::GetInstance().GetRandomNumber(mMinWaitAttackTime, mMaxWaitAttackTime);
+	mAttackElapsedTime = 0.f;
+	mAnimator->SetParameterBoolean("CanAttack", false);
+}
+
+
 
 void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& collision)
 {
@@ -106,9 +130,9 @@ void fq::client::BossMonster::OnTriggerEnter(const game_module::Collision& colli
 			playerAttack->PlayHitSound();
 
 			// 그로기 
-			mGroggyGauge += mGroggyIncreaseRatio * attackPower;
+			mGroggyGauge = std::min(mGroggyGauge + mGroggyIncreaseRatio * attackPower, mStartGroggyGauge);
 
-			if (mGroggyGauge >= mStartGroggyGauge)
+			if (mGroggyGauge == mStartGroggyGauge)
 			{
 				mGroggyGauge = 0.f;
 				mAnimator->SetParameterBoolean("OnGroggy", true);
@@ -230,7 +254,7 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::Rush()
 
 	// 바라보는 방향으로 돌진합니다 
 	auto look = mTransform->GetLookAtVector();
-	mKnockBack->Set(mRushPower, look);
+	mKnockBack->AddKnockBack(mRushPower, look);
 
 	// 러쉬 히트 박스 생성	
 	using namespace game_module;
@@ -286,7 +310,16 @@ std::shared_ptr<fq::game_module::GameObject> fq::client::BossMonster::EmitSmashD
 	auto& effectObj = *(instance.begin());
 
 	auto effectT = effectObj->GetComponent<game_module::Transform>();
-	effectT->SetParent(mTransform);
+
+	// 공격 트랜스폼 설정
+	auto attackPos = mTransform->GetWorldPosition();
+	auto scale = effectT->GetWorldScale();
+	auto rotation = mTransform->GetWorldRotation();
+
+	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
+	auto foward = rotationMat.Forward();
+	attackPos += foward * mSmashDownOffset;
+	effectT->GenerateWorld(attackPos, rotation, scale);
 
 	GetScene()->AddGameObject(effectObj);
 
@@ -315,7 +348,7 @@ void fq::client::BossMonster::HomingTarget()
 
 	// UpVector가 뒤집히는 경우에 대한 예외 처리 
 	if (directV.z >= 1.f)
-		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({0.f,0.f,1.f}, {0.f, -1.f, 0.f});
+		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation({ 0.f,0.f,1.f }, { 0.f, -1.f, 0.f });
 	else if (directV != DirectX::SimpleMath::Vector3::Zero)
 		directionQuaternion = DirectX::SimpleMath::Quaternion::LookRotation(directV, { 0.f,1.f,0.f });
 	directionQuaternion.Normalize();
@@ -348,7 +381,7 @@ void fq::client::BossMonster::DestroryHpBar()
 	}
 }
 
-void fq::client::BossMonster::EmitComboAttack()
+void fq::client::BossMonster::EmitComboAttack(float xAxisOffset)
 {
 	using namespace game_module;
 	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mComboAttack);
@@ -362,8 +395,11 @@ void fq::client::BossMonster::EmitComboAttack()
 
 	auto rotationMat = DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation);
 	auto foward = rotationMat.Forward();
+	auto right = rotationMat.Right();
 	attackPos += foward * mComboAttackOffset;
+	attackPos += right * xAxisOffset;
 	attackT->GenerateWorld(attackPos, rotation, scale);
+
 
 	// 공격 정보 설정
 	AttackInfo attackInfo{};
@@ -380,14 +416,156 @@ void fq::client::BossMonster::EmitComboAttack()
 void fq::client::BossMonster::ReboundComboAttack()
 {
 	auto look = mTransform->GetLookAtVector();
-	mKnockBack->Set(mComboAttackReboundPower, look);
+	mKnockBack->SetKnockBack(mComboAttackReboundPower, look);
 }
 
-void fq::client::BossMonster::SetNextAttack()
+void fq::client::BossMonster::setNextPattern()
 {
-	int index = helper::RandomGenerator::GetInstance()
-		.GetRandomNumber(0, static_cast<int>(EBossMonsterAttackType::Combo));
+	EBossMonsterAttackType parttern = getNextPattern(true);
 
-	mAnimator->SetParameterInt("AttackType", index);
+	// 갑옷 먹기 패턴의 경우에는 먹을 수 있는 갑옷이 있으면 설정합니다
+	if (parttern == EBossMonsterAttackType::Eat)
+	{
+		bool isFind = FindAndSetTargetDeadArmour();
+		if (!isFind)
+		{
+			parttern = getNextPattern(false);
+		}
+	}
+
+	// 콤보 공격의 2, 3타를 결정합니다. 
+	if (parttern == EBossMonsterAttackType::Combo)
+	{
+		float ratio = helper::RandomGenerator::GetInstance().GetRandomNumber(0.f, 1.f);
+		mAnimator->SetParameterBoolean("OnCombo3", ratio > mSecondComboAttackRatio);
+	}
+
+	mAnimator->SetParameterInt("AttackType", static_cast<int>(parttern));
+}
+
+void fq::client::BossMonster::AddHp(float hp)
+{
+	mHp = std::min(mMaxHp, mHp + hp);
+}
+
+bool fq::client::BossMonster::FindAndSetTargetDeadArmour()
+{
+	auto view = GetScene()->GetComponentView<DeadArmour>();
+
+	if (view.begin() == view.end())
+	{
+		return false;
+	}
+
+	// 가장 가까운 갑옷 찾기
+	auto bossPosition = mTransform->GetWorldPosition();
+	float minDistance = FLT_MAX;
+	game_module::GameObject* armour = nullptr;
+
+	for (auto& iter : view)
+	{
+		if (iter.IsDestroyed())
+		{
+			continue;
+		}
+
+		auto deadArmour = iter.GetComponent<DeadArmour>();
+		auto armourT = iter.GetComponent<game_module::Transform>();
+		auto armourPos = armourT->GetWorldPosition();
+
+		float distance = (armourPos - bossPosition).Length();
+
+		if (minDistance > distance)
+		{
+			armour = &iter;
+			minDistance = distance;
+		}
+	}
+
+	// 갑옷을 타겟으로 설정
+	SetTarget(armour);
+
+	return true;
+}
+
+void fq::client::BossMonster::EndPattern()
+{
+	SetRandomTarget();
+	setNextPattern();
+	waitAttack();
+}
+
+
+void fq::client::BossMonster::SetRimLightColor(bool bUseRimLight, DirectX::SimpleMath::Color color) const
+{
+	auto info = mSkinnedMesh->GetMaterialInstanceInfo();
+
+	info.bUseRimLight = bUseRimLight;
+	info.RimLightColor = color;
+
+	mSkinnedMesh->SetMaterialInstanceInfo(info);
+}
+
+fq::client::EBossMonsterAttackType fq::client::BossMonster::getNextPattern(bool bIsInludeEat) const
+{
+	float val = helper::RandomGenerator::GetInstance().GetRandomNumber(0.f, 1.f);
+	float sum = 0.f;
+
+	// 러쉬 패턴
+	sum += mRushProbability;
+	if (val <= sum)
+	{
+		return EBossMonsterAttackType::Rush;
+	}
+
+	sum += mSmashProbability;
+	// 내려찍기 
+	if (val <= sum)
+	{
+		return EBossMonsterAttackType::SmashDown;
+	}
+
+	sum += mRoarProbability;
+	// 로어 
+	if (val <= sum)
+	{
+		return EBossMonsterAttackType::Roar;
+	}
+
+	// 연속공격 패턴 
+	sum += mContinousProbability;
+	if (val <= sum)
+	{
+		return EBossMonsterAttackType::Continous;
+	}
+
+	// 먹기 패턴
+	sum += mEatProbability;
+	if (val <= sum && bIsInludeEat)
+	{
+		return EBossMonsterAttackType::Eat;
+	}
+
+	return EBossMonsterAttackType::Combo;
+}
+
+void fq::client::BossMonster::SetOutLineColor(DirectX::SimpleMath::Color color)
+{
+	auto info = mSkinnedMesh->GetMaterialInstanceInfo();
+
+	info.RimLightColor = color;
+
+	mSkinnedMesh->SetMaterialInstanceInfo(info);
+}
+
+void fq::client::BossMonster::StepBack()
+{
+	auto back = -mTransform->GetLookAtVector();
+	mKnockBack->SetKnockBack(mComboAttackReboundPower * 0.5f, back);
+}
+
+float fq::client::BossMonster::GetGroggyGaugeRatio() const
+{
+	return mGroggyGauge / mStartGroggyGauge;
 }
 

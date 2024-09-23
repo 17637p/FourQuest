@@ -30,6 +30,9 @@ namespace fq::client
 		float mHPWidth;
 		game_module::ImageUI* mHPBarGauge; // HP 비율 조정 
 
+		float mShieldWidth;
+		game_module::ImageUI* mShieldGauge; // HP 비율 조정 
+
 		BossMonster* mBoss;
 
 		game_module::ScreenManager* mScreenManager;

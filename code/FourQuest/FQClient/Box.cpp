@@ -7,6 +7,8 @@
 #include "../FQGameModule/Animator.h"
 #include "../FQGameModule/AnimatorController.h"
 #include "../FQGameModule/StaticMeshRenderer.h"
+#include "../FQGameModule/RigidBody.h"
+#include "../FQGameModule/BoxCollider.h"
 
 #include "ArmourSpawner.h"
 
@@ -42,7 +44,7 @@ namespace fq::client
 				auto objectTransform = object->GetComponent<fq::game_module::Transform>();
 
 				objectTransform->SetWorldMatrix(transform->GetWorldMatrix());
-				objectTransform->SetWorldScale(transform->GetWorldScale() * 100.f);
+				objectTransform->SetWorldScale(transform->GetWorldScale());
 
 				GetScene()->AddGameObject(object);
 			}
@@ -59,13 +61,18 @@ namespace fq::client
 
 	void Box::OnTriggerEnter(const fq::game_module::Collision& collision)
 	{
+		if (collision.other->GetTag() != fq::game_module::ETag::PlayerAttack)
+			return;
+
 		if (!bIsBlock)
 		{
 			bIsBlock = true;
 			mRotation = collision.other->GetRootObject()->GetTransform()->GetWorldRotation().ToEuler();
 
-			// 기존 오브젝트의 스태틱 메시는 그리지 않는다. 
+			// 기존 오브젝트의 스태틱 메시는 그리지 않고 콜리전 삭제
 			auto staticMesh = GetComponent<fq::game_module::StaticMeshRenderer>();
+			GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
+			GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
 
 			if (staticMesh != nullptr)
 			{
@@ -140,6 +147,7 @@ namespace fq::client
 			if (mDurationTime >= mDeadTime)
 			{
 				GetScene()->DestroyGameObject(mObject.get());
+				GetScene()->DestroyGameObject(GetGameObject());
 				mObject = nullptr;
 
 				// 깨지고 갑옷 스포너 컴포넌트가 있다면 갑옷 스폰

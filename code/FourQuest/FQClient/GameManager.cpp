@@ -76,24 +76,23 @@ void fq::client::GameManager::OnUpdate(float dt)
 		}), mPlayers.end());
 
 	// Pause Ã³¸®
-	// P, O ´Â ÀÓ½Ã b 
 	auto input = GetScene()->GetInputManager();
 	if (!mIsStop)
 	{
-		if (input->IsPadKeyState(0, EPadKey::Start, EKeyState::Tap)
-			|| input->IsPadKeyState(1, EPadKey::Start, EKeyState::Tap)
-			|| input->IsPadKeyState(2, EPadKey::Start, EKeyState::Tap)
-			|| input->IsPadKeyState(3, EPadKey::Start, EKeyState::Tap)
-			|| input->IsKeyState(EKey::P, EKeyState::Tap))
+		for (int i = 0; i < 4; i++)
 		{
-			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
-			auto pauseUIObject = *(instance.begin());
+			if (input->IsPadKeyState(i, EPadKey::Start, EKeyState::Tap) || 
+				input->IsKeyState(EKey::ESC, EKeyState::Tap))
+			{
+				auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mPauseUI);
+				auto pauseUIObject = *(instance.begin());
 
-			GetScene()->AddGameObject(pauseUIObject);
+				GetScene()->AddGameObject(pauseUIObject);
 
-			// ¸ØÃã Ã³¸®
-			GetScene()->GetTimeManager()->SetTimeScale(0);
-			mIsStop = true;
+				// ¸ØÃã Ã³¸®
+				GetScene()->GetTimeManager()->SetTimeScale(0);
+				mIsStop = true;
+			}
 		}
 	}
 
@@ -325,6 +324,60 @@ void fq::client::GameManager::testKey()
 	{
 		SavePlayerState();
 		GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "Scene4", true });	
+	}
+
+	// Ä³¸¯ÅÍ ¼³Á¤
+	if (input->IsKeyState(EKey::Num1, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player1State == -1)
+		{
+			PlayerInfoVariable::Player1State = 0;
+			PlayerInfoVariable::Player1SoulType = 0;
+		}
+		else
+		{
+			PlayerInfoVariable::Player1State = -1;
+			PlayerInfoVariable::Player1SoulType = -1;
+		}
+	}
+	if (input->IsKeyState(EKey::Num2, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player2State == -1)
+		{
+			PlayerInfoVariable::Player2State = 0;
+			PlayerInfoVariable::Player2SoulType = 1;
+		}
+		else
+		{
+			PlayerInfoVariable::Player2State = -1;
+			PlayerInfoVariable::Player2SoulType = -1;
+		}
+	}
+	if (input->IsKeyState(EKey::Num3, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player3State == -1)
+		{
+			PlayerInfoVariable::Player3State = 0;
+			PlayerInfoVariable::Player3SoulType = 2;
+		}
+		else
+		{
+			PlayerInfoVariable::Player3State = -1;
+			PlayerInfoVariable::Player3SoulType = -1;
+		}
+	}
+	if (input->IsKeyState(EKey::Num4, EKeyState::Tap))
+	{
+		if (PlayerInfoVariable::Player4State == -1)
+		{
+			PlayerInfoVariable::Player4State = 0;
+			PlayerInfoVariable::Player4SoulType = 3;
+		}
+		else
+		{
+			PlayerInfoVariable::Player4State = -1;
+			PlayerInfoVariable::Player4SoulType = -1;
+		}
 	}
 }
 

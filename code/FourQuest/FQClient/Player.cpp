@@ -1,4 +1,4 @@
-#define NOMINMAX
+#define NOMINMAX 
 #include "Player.h"
 
 #include "../FQGameModule/CharacterController.h"
@@ -17,6 +17,7 @@
 #include "ClientHelper.h"
 #include "PlayerSoulVariable.h"
 #include "PlayerVariable.h"
+#include "DebuffPoisonZone.h"
 
 fq::client::Player::Player()
 	:mAttackPower(1.f)
@@ -38,6 +39,10 @@ fq::client::Player::Player()
 	, mFeverElapsedTime(0.f)
 	, mbIsActiveOnHit(true)
 	, mbIsFeverTime(false)
+	, mSwordHaed{}
+	, mStaffHaed{}
+	, mAxeHaed{}
+	, mBowHaed{}
 {}
 
 fq::client::Player::~Player()
@@ -67,6 +72,7 @@ void fq::client::Player::OnUpdate(float dt)
 	processInput();
 	processFeverTime(dt);
 	processCoolTime(dt);
+	processDebuff(dt);
 }
 
 void fq::client::Player::OnStart()
@@ -88,7 +94,7 @@ void fq::client::Player::OnStart()
 		});
 
 	// 영혼 타입 적용
- 	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
+	mAnimator->SetParameterInt("SoulType", static_cast<int>(mSoulType));
 
 	// 무기 연결
 	linkWeaponeMeshes();
@@ -101,6 +107,9 @@ void fq::client::Player::OnStart()
 
 	// Decal 색상 적용
 	setDecalColor();
+
+	// 머리 설정
+	linkSoulTypeHead();
 }
 
 void fq::client::Player::processInput()
@@ -221,6 +230,40 @@ void fq::client::Player::processFeverTime(float dt)
 	}
 }
 
+void fq::client::Player::processDebuff(float dt)
+{
+	auto poisonZone = GetComponent<DebuffPoisonZone>();
+
+	// 포이즌 존에 밟았을 경우에 생긴 포이즌 존 컴포넌트에 의해 HP 깎이는 코드
+	if (poisonZone != nullptr)
+	{
+		float durationTime = poisonZone->GetDurationTime();
+		float poisonTurm = poisonZone->GetPoisonTurm();
+		float poisonDamage = poisonZone->GetPosionDamage();
+
+		durationTime += dt;
+
+		if (durationTime >= poisonTurm)
+		{
+			durationTime -= poisonTurm;
+
+			mHp -= poisonDamage;
+
+			// UI 설정
+			GetComponent<HpBar>()->DecreaseHp(poisonDamage / mMaxHp);
+
+			// 플레이어 사망처리 
+			if (mHp <= 0.f)
+			{
+				SummonSoul();
+			}
+		}
+
+		poisonZone->SetDurationTime(durationTime);
+	}
+
+}
+
 int fq::client::Player::GetPlayerID() const
 {
 	return mController->GetControllerID();
@@ -327,27 +370,27 @@ void fq::client::Player::equipWeapone(ESoulType equipType, bool isEquip)
 {
 	switch (equipType)
 	{
-	case fq::client::ESoulType::Sword:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Staff:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Axe:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
-	}
-	break;
-	case fq::client::ESoulType::Bow:
-	{
-		mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
-	}
-	break;
+		case fq::client::ESoulType::Sword:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Shield)]->SetIsRender(isEquip);
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Sword)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Staff:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Staff)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Axe:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Axe)]->SetIsRender(isEquip);
+		}
+		break;
+		case fq::client::ESoulType::Bow:
+		{
+			mWeaponeMeshes[static_cast<int>(EWeaponeMesh::Bow)]->SetIsRender(isEquip);
+		}
+		break;
 	}
 }
 
@@ -441,18 +484,18 @@ bool fq::client::Player::CanUseSoulAttack() const
 
 	switch (mSoulType)
 	{
-	case fq::client::ESoulType::Sword:
-		cost = PlayerSoulVariable::SoulSwordAttackCost;
-		break;
-	case fq::client::ESoulType::Staff:
-		cost = PlayerSoulVariable::SoulStaffAttackCost;
-		break;
-	case fq::client::ESoulType::Axe:
-		cost = PlayerSoulVariable::SoulAxeAttackCost;
-		break;
-	case fq::client::ESoulType::Bow:
-		cost = PlayerSoulVariable::SoulBowAttackCost;
-		break;
+		case fq::client::ESoulType::Sword:
+			cost = PlayerSoulVariable::SoulSwordAttackCost;
+			break;
+		case fq::client::ESoulType::Staff:
+			cost = PlayerSoulVariable::SoulStaffAttackCost;
+			break;
+		case fq::client::ESoulType::Axe:
+			cost = PlayerSoulVariable::SoulAxeAttackCost;
+			break;
+		case fq::client::ESoulType::Bow:
+			cost = PlayerSoulVariable::SoulBowAttackCost;
+			break;
 	}
 
 	return mSoulGauge >= cost;
@@ -518,7 +561,53 @@ void fq::client::Player::setDecalColor()
 
 }
 
+void fq::client::Player::linkSoulTypeHead()
+{
+	// 머리 소켓 
+	for (const auto& child : mTransform->GetChildren())
+	{
+		auto name = child->GetGameObject()->GetName();
+		if (name.find("HeadSocket") != std::string::npos)
+		{
+			game_module::PrefabResource res{};
+
+			switch (mSoulType)
+			{
+				case fq::client::ESoulType::Sword:
+					res = mSwordHaed;
+					break;
+				case fq::client::ESoulType::Staff:
+					res = mStaffHaed;
+					break;
+				case fq::client::ESoulType::Axe:
+					res = mAxeHaed;
+					break;
+				case fq::client::ESoulType::Bow:
+					res = mBowHaed;
+					break;
+			}
+
+			auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(res);
+			auto& head = *(instance.begin());
+
+			child->AddChild(head->GetComponent<game_module::Transform>());
+			GetScene()->AddGameObject(head);
+		}
+	}
+
+}
+
 bool fq::client::Player::IsFeverTime() const
 {
 	return mbIsFeverTime;
+}
+
+void fq::client::Player::OnTriggerStay(const game_module::Collision& collision)
+{
+	// Quest Event 
+	if (mController != nullptr)
+	{
+		GetScene()->GetEventManager()->FireEvent<client::event::PlayerCollideStayTrigger>(
+			{ (int)GetPlayerID(), collision.other->GetName() });
+	}
 }

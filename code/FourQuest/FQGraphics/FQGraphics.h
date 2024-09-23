@@ -156,6 +156,9 @@ namespace fq::graphics
 		// image
 		virtual IImageObject* CreateImageObject(const UIInfo& uiInfo) override;
 		virtual void DeleteImageObject(IImageObject* imageObject) override;
+		// SpriteAnimation
+		virtual ISpriteAnimationObject* CreateSpriteAnimation(SpriteInfo spriteInfo) override;
+		virtual void DeleteSpriteAnimation(fq::graphics::ISpriteAnimationObject* spriteAniamtionObject) override;
 
 		/// SkyBox
 		virtual void SetSkyBox(const std::wstring& path, bool bUseIBL = false, float envScale = 1.f) override;

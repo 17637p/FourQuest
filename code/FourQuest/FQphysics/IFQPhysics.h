@@ -198,6 +198,8 @@ extern "C" {
 
 			virtual FQ_PHYSICS ArticulationGetData GetArticulationData(const unsigned int& id) abstract;
 			virtual FQ_PHYSICS void SetArticulationData(const unsigned int& id, const ArticulationSetData& articulationData) abstract;
+
+			virtual FQ_PHYSICS unsigned int GetArticulationCount() abstract;
 #pragma endregion
 
 #pragma region PhysicsClothManager
