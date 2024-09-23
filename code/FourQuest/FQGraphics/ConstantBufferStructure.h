@@ -380,6 +380,18 @@ namespace fq::graphics
 		} RotationOverLifetimeData;
 
 		CBParticleMaterial ParticleMaterialData;
+
+		struct Sprite
+		{
+			unsigned int WidthCount;
+			unsigned int HeightCount;
+			unsigned int FrameCount;
+			float FrameSecond;
+			
+			int bIsLooping;
+			int bIsUsed;
+			float unused[2];
+		} SpriteData;
 	};
 
 	struct LightProbeCB

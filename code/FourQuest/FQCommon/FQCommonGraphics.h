@@ -349,17 +349,15 @@ namespace fq::graphics
 			bool bIsRenderDebug{ true };
 		} InstanceData;
 
-		// struct Sprtie
-		// {
-		// 	unsigned int WidthCount;
-		// 	unsigned int HeightCount;
-		// 	unsigned int TextureWidth;
-		// 	unsigned int TextureHeight;
-		// 	unsigned int CellWidth;
-		// 	unsigned int CellHeight;
-		// 	float FramePerSecond;
-		// 	bool bIsUsed{ false };
-		// } SpriteData;
+		struct Sprite
+		{
+			unsigned int WidthCount{ 1 };
+			unsigned int HeightCount{ 1 };
+			unsigned int FrameCount{ 1 };
+			float FramePerSecond{ 0.1 };
+			bool bIsLooping{ false };
+			bool bIsUsed{ false };
+		} SpriteData;
 	};
 
 	struct DecalInfo

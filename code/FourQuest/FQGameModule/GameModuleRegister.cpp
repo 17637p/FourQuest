@@ -1523,6 +1523,29 @@ void fq::game_module::RegisterMetaData()
 			.data<&ParticleInfo::Instance::bIsRenderDebug>("IsRenderDebug"_hs)
 			.prop(fq::reflect::prop::Name, "IsRenderDebug");
 
+		entt::meta<ParticleInfo::Sprite>()
+			.type("ParticleSpriteData"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleSpriteData")
+			.prop(fq::reflect::prop::POD)
+			.data<&ParticleInfo::Sprite::WidthCount>("WidthCount"_hs)
+			.prop(fq::reflect::prop::Name, "WidthCount")
+			.prop(fq::reflect::prop::Comment, u8"가로 개수")
+			.data<&ParticleInfo::Sprite::HeightCount>("HeightCount"_hs)
+			.prop(fq::reflect::prop::Name, "HeightCount")
+			.prop(fq::reflect::prop::Comment, u8"세로 개수")
+			.data<&ParticleInfo::Sprite::FrameCount>("FrameCount"_hs)
+			.prop(fq::reflect::prop::Name, "FrameCount")
+			.prop(fq::reflect::prop::Comment, u8"셀(하나의 스프라이트) 개수")
+			.data<&ParticleInfo::Sprite::FramePerSecond>("FramePerSecond"_hs)
+			.prop(fq::reflect::prop::Name, "FramePerSecond")
+			.prop(fq::reflect::prop::Comment, u8"한 셀마다 보여줄 프레임 시간")
+			.data<&ParticleInfo::Sprite::bIsLooping>("IsLooping"_hs)
+			.prop(fq::reflect::prop::Name, "IsLooping")
+			.prop(fq::reflect::prop::Comment, u8"애니메이션 반복 여부")
+			.data<&ParticleInfo::Sprite::bIsUsed>("IsUsed"_hs)
+			.prop(fq::reflect::prop::Name, "IsUsed")
+			.prop(fq::reflect::prop::Comment, u8"스프라이트 모듈 사용 여부");
+
 		entt::meta<Particle>()
 			.type("Particle"_hs)
 			.prop(fq::reflect::prop::Name, "Particle")
@@ -1561,6 +1584,8 @@ void fq::game_module::RegisterMetaData()
 			.prop(fq::reflect::prop::Name, "ParticleInstanceData")
 			.data<&Particle::SetParticleMaterialInfo, &Particle::GetParticleMaterialInfo>("ParticleMaterialInfo"_hs)
 			.prop(fq::reflect::prop::Name, "ParticleMaterialInfo")
+			.data<&Particle::SetSpriteData, &Particle::GetSpriteData>("ParticleSpriteInfo"_hs)
+			.prop(fq::reflect::prop::Name, "ParticleSpriteInfo")
 			.base<Component>();
 
 		entt::meta<fq::common::Material>()
@@ -1644,7 +1669,7 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DecalMaterialInfo")
 		.data<&Decal::SetLayer, &Decal::GetLayer>("Layer"_hs)
 		.prop(fq::reflect::prop::Name, "Layer")
-		.prop(fq::reflect::prop::Comment, u8"그려지는 순서 숫자가 높을수록 나중에 그려짐, 0 ~ 4까지 지원")
+		.prop(fq::reflect::prop::Comment, u8"그려지는 순서, 숫자가 높을수록 나중에 그려짐, 0 ~ 4까지 지원")
 		.base<Component>();
 	//////////////////////////////////////////////////////////////////////////
 	//                             트레일									//
