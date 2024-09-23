@@ -206,7 +206,6 @@ void fq::client::Soul::SetSoulColor()
 			particle->SetParticleMaterialInfo(matInfo);
 		}
 	}
-
 }
 
 void fq::client::Soul::SetSoulManager()
@@ -250,11 +249,16 @@ void fq::client::Soul::SetSoulHP()
 	int minHP = SoulVariable::SoulMinHp;
 
 	mHP = std::max<int>(maxHP, minHP);
+
+	if (GetGameObject()->HasComponent<HpBar>())
+		GetComponent<HpBar>()->DecreaseHp(((SoulVariable::SoulMaxHp - mHP) / (float)SoulVariable::SoulMaxHp));
+	else
+		spdlog::error("ERROR : GameObject(this) have not \"HpBar\" Component!");
 }
 
 void fq::client::Soul::SetSoulDeath()
 {
-	// 갑옷 죽음 카운트 가져오기
+	// 영혼 매니저에서 저장된 갑옷 죽음 카운트 데이터 가져오기
 	int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
 
 	if (mSoulManagerObject != nullptr)
@@ -270,11 +274,28 @@ void fq::client::Soul::SetSoulDeath()
 
 void fq::client::Soul::updateSoulHP(float dt)
 {
-	mHP -= SoulVariable::SoulHpDecreas * dt;
+	if (!GetGameObject()->HasComponent<HpBar>())
+	{
+		spdlog::error("ERROR : GameObject(this) have not \"HpBar\" Component!");
+		return;
+	}
 
-	GetComponent<HpBar>()->DecreaseHp((SoulVariable::SoulHpDecreas * dt) / (float)SoulVariable::SoulMaxHp);
+	// 영혼 주변에 갑옷 플레이어가 있는지 체크 여부에 따라 HP 감소량 감소
+	if (mbIsDistanceInPlayer)
+	{
+		float decreasPercentage = ((100.f - SoulVariable::SoulDecreasPercentage) / 100.f);
+		float decreasDamage = SoulVariable::SoulHpDecreas * dt * decreasPercentage;
 
-	// 영혼 죽으면 오브젝트 삭제하고 소울 매니저한테 죽었다고 알림
+		mHP -= decreasDamage;
+		GetComponent<HpBar>()->DecreaseHp((decreasDamage / (float)SoulVariable::SoulMaxHp));
+	}
+	else
+	{
+		mHP -= SoulVariable::SoulHpDecreas * dt;
+		GetComponent<HpBar>()->DecreaseHp((SoulVariable::SoulHpDecreas * dt) / (float)SoulVariable::SoulMaxHp);
+	}
+
+	// 영혼 죽으면 오브젝트 삭제하고 소울 매니저한테 영혼 파괴되었다고 알림
 	if (mHP <= 0.f)
 	{
 		GetScene()->DestroyGameObject(GetGameObject());
@@ -283,6 +304,12 @@ void fq::client::Soul::updateSoulHP(float dt)
 		auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
 
 		soulManager->SetbIsPlayerSoulDeath(id, true);
+
+		// 카메라에 플레이어 해제 
+		GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)
+			{
+				camera.DeletePlayerTransform(GetComponent<game_module::Transform>());
+			});
 	}
 }
 

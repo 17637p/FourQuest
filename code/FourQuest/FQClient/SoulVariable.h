@@ -18,7 +18,7 @@ namespace fq::client
 		//								영혼 체력									//
 		//////////////////////////////////////////////////////////////////////////
 		static inline int SoulMaxHp = 100;				// 소울의 HP 최대치
-		static inline int SoulMinHp = 20;				// 사망 시 영혼 최대 체력이 줄어드는데, 일정 사망 횟수 이상에서도 최소 HP값에 도달하면 최대 HP값이 줄어들지 않는 변수
+		static inline int SoulMinHp = 40;				// 사망 시 영혼 최대 체력이 줄어드는데, 일정 사망 횟수 이상에서도 최소 HP값에 도달하면 최대 HP값이 줄어들지 않는 변수
 		static inline int SoulHpDown = 20;				// 영혼 파괴 시, 최대 체력 감소량
 		static inline float SoulHpDecreas = 5.f;		// 초당 HP가 감소하는 양
 		static inline float SoulDistance = 5.f;			// 이 사정거리 안에 갑옷을 입은 플레이어가 있을 경우 피해량 감소
