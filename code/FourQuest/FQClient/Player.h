@@ -99,6 +99,7 @@ namespace fq::client
 		void linkWeaponeMeshes();
 		void setFeverBuff(bool isFever);
 		void setDecalColor();
+		void linkSoulTypeHead();
 
 		void OnStart() override;
 		void OnDestroy() override;
@@ -135,6 +136,12 @@ namespace fq::client
 		game_module::PrefabResource mBowSoulAttack; // 활 영혼 공격 	
 		game_module::PrefabResource mStaffSoulAttack; // 마법 영혼 공격
 		
+		// 영혼 머리 
+		game_module::PrefabResource mSwordHaed;
+		game_module::PrefabResource mBowHaed;
+		game_module::PrefabResource mAxeHaed;
+		game_module::PrefabResource mStaffHaed;
+
 		bool mbOnShieldBlock;
 		bool mbIsActiveOnHit; // 워리어 갑옷 차징과 돌진 시 OnHit로 전이가 불가능하여 추가
 
