@@ -30,6 +30,9 @@ namespace fq::game_module
 		void SetDecalMaterial(std::shared_ptr<graphics::IDecalMaterial> decalMaterial) { mDecalMaterial = decalMaterial; }
 		std::shared_ptr<graphics::IDecalMaterial> GetDecalMaterial() const { return mDecalMaterial; }
 
+		void SetLayer(unsigned int layer) { mLayer = layer; if (mDecalObjectInterface != nullptr) { mDecalObjectInterface->SetLayer(mLayer); } }
+		unsigned int GetLayer() const { return mLayer; }
+
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
 
@@ -38,5 +41,6 @@ namespace fq::game_module
 		std::shared_ptr<graphics::IDecalMaterial> mDecalMaterial;
 		DecalInfo mDecalInfo;
 		DecalMaterialInfo mDacalMaterialInfo;
+		unsigned int mLayer;
 	};
 }

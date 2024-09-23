@@ -149,6 +149,11 @@ PixelOut main(VertexOut pin) : SV_TARGET
         emissive *= gEmissiveMap.Sample(gSamplerAnisotropic, pin.UV).rgb;
     }
     
+    if (gModelMaterial.UseMulEmissiveAlpha)
+    {    
+        emissive *= opacity;
+    }
+
     if (gModelMaterial.UseDissolve)
     {
         float4 noise = gNoiseMap.Sample(gLinearWrap, pin.UV);

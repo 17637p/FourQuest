@@ -213,6 +213,9 @@ void fq::game_engine::MaterialWindow::Render()
 		ImGui::InputFloat("InvRimPow", reinterpret_cast<float*>(&materialInfo.InvRimPow));
 		ImGui::InputFloat("InvRimIntensity", reinterpret_cast<float*>(&materialInfo.InvRimIntensity));
 		ImGui::ColorEdit4("InvRim Color", reinterpret_cast<float*>(&materialInfo.InvRimLightColor));
+
+		// mul emissive Alpha
+		ImGui::ColorEdit4("Use Mul Emissive Alpha", reinterpret_cast<float*>(&materialInfo.bUseMulEmissiveAlpha));
 	}
 
 	if (mMaterialInterface != nullptr)

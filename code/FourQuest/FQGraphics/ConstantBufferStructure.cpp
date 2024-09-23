@@ -148,6 +148,7 @@ namespace fq::graphics
 		CBMaterialData.bUseInvRimLight = info.bUseInvRimLight;
 		CBMaterialData.InvRimPow = info.InvRimPow;
 		CBMaterialData.InvRimIntensity = info.InvRimIntensity;
+		CBMaterialData.bUseMulEmissiveAlpha = info.bUseMulEmissiveAlpha;
 
 		if (!materialInstanceInfo.bUseInstanceing)
 		{

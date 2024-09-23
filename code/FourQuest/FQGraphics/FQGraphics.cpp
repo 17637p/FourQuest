@@ -407,6 +407,7 @@ bool FQGraphics::Render()
 	{
 		// 랜더링 오브젝트의 수정된 데이터를 기반으로 리소스 갱신
 		mObjectManager->UpdateModifiedResources(mDevice);
+		mObjectManager->CheckDecalLayer();
 
 		// 컬링 추가해야 됨 
 		std::set<IStaticMeshObject*> staticMeshesToRender = mObjectManager->GetStaticMeshObjects();

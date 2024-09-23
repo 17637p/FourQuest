@@ -1642,6 +1642,9 @@ void fq::game_module::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "DecalInfo")
 		.data<&Decal::SetDecalMaterialInfo, &Decal::GetDecalMaterialInfo>("DecalMaterialInfo"_hs)
 		.prop(fq::reflect::prop::Name, "DecalMaterialInfo")
+		.data<&Decal::SetLayer, &Decal::GetLayer>("Layer"_hs)
+		.prop(fq::reflect::prop::Name, "Layer")
+		.prop(fq::reflect::prop::Comment, u8"그려지는 순서 숫자가 높을수록 나중에 그려짐, 0 ~ 4까지 지원")
 		.base<Component>();
 	//////////////////////////////////////////////////////////////////////////
 	//                             트레일									//

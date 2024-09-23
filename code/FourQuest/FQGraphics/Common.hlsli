@@ -593,6 +593,7 @@ struct ModelMaterial
     bool bUseInvRimLight;
     float InvRimPow;
     float InvRimIntensity;
+    bool UseMulEmissiveAlpha;
 };
 
 #define DISSOLVE_ADDITIVE 0

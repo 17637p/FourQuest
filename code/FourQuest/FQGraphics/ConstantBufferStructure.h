@@ -236,7 +236,7 @@ namespace fq::graphics
 		int bUseInvRimLight = false;
 		float InvRimPow = 2.f;
 		float InvRimIntensity = 1.f;
-		float unused[1];
+		int bUseMulEmissiveAlpha = false;
 	};
 
 	struct CBDecalObject

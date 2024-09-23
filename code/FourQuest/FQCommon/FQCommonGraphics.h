@@ -348,6 +348,18 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
 			bool bIsRenderDebug{ true };
 		} InstanceData;
+
+		// struct Sprtie
+		// {
+		// 	unsigned int WidthCount;
+		// 	unsigned int HeightCount;
+		// 	unsigned int TextureWidth;
+		// 	unsigned int TextureHeight;
+		// 	unsigned int CellWidth;
+		// 	unsigned int CellHeight;
+		// 	float FramePerSecond;
+		// 	bool bIsUsed{ false };
+		// } SpriteData;
 	};
 
 	struct DecalInfo
@@ -357,7 +369,6 @@ namespace fq::graphics
 		float Depth = 1.f;
 		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
 
-		// unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
 		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
@@ -602,6 +613,8 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color InvRimLightColor;
 		float InvRimPow = 2.f;
 		float InvRimIntensity = 1.f;
+
+		int bUseMulEmissiveAlpha = false; // 이미시브 알파값 곱하기 여부
 	};
 
 	struct ParticleMaterialInfo
