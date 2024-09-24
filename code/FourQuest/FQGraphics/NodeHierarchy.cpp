@@ -5,32 +5,29 @@ namespace fq::graphics
 {
 	NodeHierarchy::NodeHierarchy(const fq::common::Model& model)
 	{
-		Create(model);
+		std::vector<fq::common::Node> nodes;
+		nodes.reserve(model.Meshes.size());
+
+		for (const auto& nodeMeshPair : model.Meshes)
+		{
+			const auto& node = nodeMeshPair.first;
+			nodes.push_back(node);
+		}
+
+		Create(nodes);
 	}
 
-	NodeHierarchy::NodeHierarchy(const std::vector<fq::common::Node> nodes)
+	NodeHierarchy::NodeHierarchy(const std::vector<fq::common::Node>& nodes)
 	{
 		Create(nodes);
 	}
 
-	void NodeHierarchy::Create(const fq::common::Model& model)
+	void NodeHierarchy::Create(const std::vector<fq::common::Node>& nodes)
 	{
-		for (const auto& nodeMeshPair : model.Meshes)
-		{
-			const auto& node = nodeMeshPair.first;
+		// spine을 포함한 이름이 없을 경우 1번인덱스를 스파인이라 가정함
+		mSpineIndex = 1;
+		bool bIsFind = false;
 
-			fq::common::Bone bone;
-			bone.Name = node.Name;
-			bone.Index = node.Index;
-			bone.ParentIndex = node.ParentIndex;
-			bone.ToParentMatrix = node.ToParentMatrix;
-			bone.OffsetMatrix = node.OffsetMatrix;
-
-			mBones.push_back(std::move(bone));
-		}
-	}
-	void NodeHierarchy::Create(const std::vector<fq::common::Node> nodes)
-	{
 		for (const auto& node : nodes)
 		{
 			fq::common::Bone bone;
@@ -40,7 +37,34 @@ namespace fq::graphics
 			bone.ToParentMatrix = node.ToParentMatrix;
 			bone.OffsetMatrix = node.OffsetMatrix;
 
+			if (bone.ParentIndex != fq::common::Node::INVALID_INDEX)
+			{
+				mBones[bone.ParentIndex].ChildIndices.push_back(bone.Index);
+			}
+
+			if (!bIsFind)
+			{
+				std::string lowerBoneName;
+				lowerBoneName.resize(bone.Name.size());
+
+				for (size_t i = 0; i < bone.Name.size(); ++i)
+				{
+					lowerBoneName[i] = std::tolower(bone.Name[i]);
+				}
+
+				if (lowerBoneName.find("spine") != lowerBoneName.npos)
+				{
+					mSpineIndex = bone.Index;
+					bIsFind = true;
+				}
+			}
+
 			mBones.push_back(std::move(bone));
+		}
+
+		if (mBones.size() > mSpineIndex)
+		{
+			SetSpineBoneIndex(mSpineIndex);
 		}
 	}
 
@@ -192,6 +216,21 @@ namespace fq::graphics
 
 		return false;
 	}
+	void NodeHierarchy::SetSpineBoneName(const std::string& boneName)
+	{
+		unsigned int boneIndex = GetBoneIndex(boneName);
+		SetSpineBoneIndex(boneIndex);
+	}
+	void NodeHierarchy::SetSpineBoneIndex(unsigned int boneIndex)
+	{
+		if (mBones[boneIndex].ChildIndices.size() == 2)
+		{
+			mUpperBodyEndIndex = mBones[boneIndex].ChildIndices[1] - 1;
+			mLowerBodyStartIndex = mBones[boneIndex].ChildIndices[1];
+		}
+
+		// 만약 스파인에 들어간 넘이 2개가 아니라면 어떻게 할 거임?
+	}
 
 	NodeHierarchyInstance::NodeHierarchyInstance(std::shared_ptr<INodeHierarchy> nodeHierarchy)
 		: mNodeHierarchy(nodeHierarchy)
@@ -209,6 +248,11 @@ namespace fq::graphics
 		calculateRootTransform();
 	}
 
+	void NodeHierarchyInstance::SetBindPoseLocalTransform()
+	{
+		setBindPoseLocal();
+	}
+
 	void NodeHierarchyInstance::Update(float timePos, const std::shared_ptr<IAnimation>& animation)
 	{
 		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
@@ -216,11 +260,11 @@ namespace fq::graphics
 		const auto& find = animationCache.find(animation);
 		const auto& animClip = animation->GetAnimationClip();
 
+		setBindPoseLocal();
+
 		if (find != animationCache.end())
 		{
 			const auto& boneNodeClipCache = find->second;
-
-			setBindPoseLocal();
 
 			for (const auto& [bone, nodeClip] : boneNodeClipCache)
 			{
@@ -237,13 +281,9 @@ namespace fq::graphics
 				fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
 				mLocalTransforms[bone->Index] = AnimationHelper::CreateMatrix(keyframe);
 			}
-
-			calculateRootTransform();
 		}
 		else
 		{
-			setBindPoseLocal();
-
 			const auto& bones = mNodeHierarchy->GetBones();
 			std::map<std::string, const struct fq::common::Bone&> boneMap;
 
@@ -270,8 +310,9 @@ namespace fq::graphics
 				mLocalTransforms[findedBone->second.Index] = AnimationHelper::CreateMatrix(keyframe);
 			}
 
-			calculateRootTransform();
 		}
+
+		calculateRootTransform();
 	}
 	void NodeHierarchyInstance::Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight)
 	{
@@ -474,6 +515,131 @@ namespace fq::graphics
 		calculateRootTransform();
 	}
 
+	void NodeHierarchyInstance::UpdateLocalTransformRange(float timePos, const std::shared_ptr<IAnimation>& animation, unsigned int startIndex, unsigned int endIndex)
+	{
+		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
+		const auto& animationCache = nodeHierarchy->GetAnimationCaches();
+		const auto& find = animationCache.find(animation);
+		const auto& animClip = animation->GetAnimationClip();
+
+		if (find != animationCache.end())
+		{
+			const auto& boneNodeClipCache = find->second;
+
+			for (const auto& [bone, nodeClip] : boneNodeClipCache)
+			{
+				unsigned int boneIndex = bone->Index;
+
+				if (boneIndex < startIndex || boneIndex > endIndex)
+				{
+					continue;
+				}
+				if (nodeClip == nullptr)
+				{
+					continue;
+				}
+
+				fq::common::Keyframe lhs;
+				fq::common::Keyframe rhs;
+				float weight;
+
+				AnimationHelper::FindKeyframe(nodeClip->Keyframes, animClip, timePos, &lhs, &rhs, &weight);
+				fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+				mLocalTransforms[boneIndex] = AnimationHelper::CreateMatrix(keyframe);
+			}
+		}
+		else
+		{
+			const auto& bones = mNodeHierarchy->GetBones();
+			std::map<std::string, const struct fq::common::Bone&> boneMap;
+
+			for (const fq::common::Bone& bone : bones)
+			{
+				unsigned int boneIndex = bone.Index;
+
+				if (boneIndex < startIndex || boneIndex > endIndex)
+				{
+					continue;
+				}
+
+				boneMap.insert({ bone.Name, bone });
+			}
+
+			for (const auto& nodeClip : animClip.NodeClips)
+			{
+				auto findedBone = boneMap.find(nodeClip.NodeName);
+
+				if (findedBone == boneMap.end())
+				{
+					continue;
+				}
+
+				fq::common::Keyframe lhs;
+				fq::common::Keyframe rhs;
+				float weight;
+
+				AnimationHelper::FindKeyframe(nodeClip.Keyframes, animClip, timePos, &lhs, &rhs, &weight);
+				fq::common::Keyframe keyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+				mLocalTransforms[findedBone->second.Index] = AnimationHelper::CreateMatrix(keyframe);
+			}
+		}
+	}
+	void NodeHierarchyInstance::UpdateLocalTransformRange(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight, unsigned int startIndex, unsigned int endIndex)
+	{
+		std::shared_ptr<NodeHierarchy> nodeHierarchy = std::static_pointer_cast<NodeHierarchy>(mNodeHierarchy);
+		const auto& animationCache = nodeHierarchy->GetAnimationCaches();
+		const auto& lhsFind = animationCache.find(lhsAnimation);
+		const auto& rhsFind = animationCache.find(rhsAnimation);
+
+		if (lhsFind == animationCache.end() || rhsFind == animationCache.end())
+		{
+			return;
+		}
+
+		const size_t BONE_COUNT = mNodeHierarchy->GetBones().size();
+
+		const auto& lhsBoneNodeClipCache = lhsFind->second;
+		const auto& rhsBoneNodeClipCache = rhsFind->second;
+		const auto& lhsAnimationClip = lhsAnimation->GetAnimationClip();
+		const auto& rhsAnimationClip = rhsAnimation->GetAnimationClip();
+
+		for (size_t i = 0; i < BONE_COUNT; ++i)
+		{
+			const auto& [lhsBone, lhsNodeClip] = lhsBoneNodeClipCache[i];
+			const auto& [rhsBone, rhsNodeClip] = rhsBoneNodeClipCache[i];
+
+			unsigned int boneIndex = lhsBone->Index;
+
+			if (boneIndex < startIndex || boneIndex > endIndex)
+			{
+				continue;
+			}
+
+			fq::common::Keyframe lhsKeyframe;
+			fq::common::Keyframe rhsKeyframe;
+
+			if (lhsNodeClip != nullptr)
+			{
+				fq::common::Keyframe lhs;
+				fq::common::Keyframe rhs;
+				float weight;
+				AnimationHelper::FindKeyframe(lhsNodeClip->Keyframes, lhsAnimationClip, lhsTimePos, &lhs, &rhs, &weight);
+				lhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+			}
+
+			if (rhsNodeClip != nullptr)
+			{
+				fq::common::Keyframe lhs;
+				fq::common::Keyframe rhs;
+				float weight;
+				AnimationHelper::FindKeyframe(rhsNodeClip->Keyframes, rhsAnimationClip, rhsTimePos, &lhs, &rhs, &weight);
+				rhsKeyframe = AnimationHelper::Interpolate(lhs, rhs, weight);
+			}
+
+			fq::common::Keyframe nodeKeyframe = AnimationHelper::Interpolate(lhsKeyframe, rhsKeyframe, weight);
+			mLocalTransforms[lhsBone->Index] = AnimationHelper::CreateMatrix(nodeKeyframe);
+		}
+	}
 	void NodeHierarchyInstance::SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform)
 	{
 		assert(index < mLocalTransforms.size());
