@@ -512,6 +512,12 @@
     <ClInclude Include="AudioSettingUI.h">
       <Filter>include\05.UI</Filter>
     </ClInclude>
+    <ClInclude Include="ResetPopupUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SavePopupUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientRegistration.cpp">
@@ -866,7 +872,13 @@
       <Filter>src\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="AudioSettingUI.cpp">
-      <Filter>src</Filter>
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ResetPopupUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SavePopupUI.cpp">
+      <Filter>src\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

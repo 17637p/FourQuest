@@ -112,6 +112,8 @@
 #include "SoulSelectUI.h"
 #include "SettingUI.h"
 #include "RepauseUI.h"
+#include "ResetPopupUI.h"
+#include "SavePopupUI.h"
 #include "ResultUI.h"
 #include "GameSettingUI.h"
 #include "AudioSettingUI.h"
@@ -1372,8 +1374,12 @@ void fq::client::RegisterMetaData()
 		.data<&SettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
 		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
-		//.data<&PauseUI::mRepauseUIPrefab>("RepauseUIPrefab"_hs)
-		//.prop(fq::reflect::prop::Name, "RepauseUIPrefab")
+		.data<&SettingUI::mGameSettingPrefab>("GameSettingPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "GameSettingPrefab")
+		.data<&SettingUI::mVideoSettingPrefab>("VideoSettingPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "VideoSettingPrefab")
+		.data<&SettingUI::mAudioSettingPrefab>("AudioSettingPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "AudioSettingPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<RepauseUI>()
@@ -1388,6 +1394,18 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.base<fq::game_module::Component>();
 
+	entt::meta<ResetPopupUI>()
+		.type("ResetPopupUI"_hs)
+		.prop(fq::reflect::prop::Name, "ResetPopupUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<SavePopupUI>()
+		.type("SavePopupUI"_hs)
+		.prop(fq::reflect::prop::Name, "SavePopupUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
 	entt::meta<AudioSettingUI>()
 		.type("AudioSettingUI"_hs)
 		.prop(fq::reflect::prop::Name, "AudioSettingUI")
@@ -1395,6 +1413,27 @@ void fq::client::RegisterMetaData()
 		.data<&AudioSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
 		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
 		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&AudioSettingUI::mResetMessagePrefab>("ResetMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResetMessagePrefab")
+		.data<&AudioSettingUI::mSaveMessagePrefab>("SaveMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
+		.data<&AudioSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
+	entt::meta<GameSettingUI>()
+		.type("GameSettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "GameSettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&GameSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&GameSettingUI::mResetMessagePrefab>("ResetMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResetMessagePrefab")
+		.data<&GameSettingUI::mSaveMessagePrefab>("SaveMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
+		.data<&GameSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1726,10 +1765,22 @@ void fq::client::RegisterMetaData()
 		.data<&SettingVariable::SFXVolume>("SFXVolume"_hs)
 		.prop(fq::reflect::prop::Name, "SFXVolume")
 
+		.data<&SettingVariable::MuteMasterVolume>("MuteMasterVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteMasterVolume")
+		.data<&SettingVariable::MuteBGMVolume>("MuteBGMVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteBGMVolume")
+		.data<&SettingVariable::MuteSFXVolume>("MuteSFXVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteSFXVolume")
+		.data<&SettingVariable::MuteVoiceVolume>("MuteVoiceVolume"_hs)
+		.prop(fq::reflect::prop::Name, "MuteVoiceVolume")
+
 		.data<&SettingVariable::IsVibe>("IsVibe"_hs)
 		.prop(fq::reflect::prop::Name, "IsVibe")
 		.data<&SettingVariable::IsUsedAimAssist>("IsUsedAimAssist"_hs)
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
+		.data<&SettingVariable::IsUsedAimAssist>("IsAllowOtherPlayerAttack"_hs)
+		.prop(fq::reflect::prop::Name, "IsAllowOtherPlayerAttack")
+
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)
 		.prop(fq::reflect::prop::Name, "ArmourSpawnDistance")
 		.data<&SettingVariable::IsUseCameraInit>("IsUseCameraInit"_hs)

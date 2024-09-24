@@ -1,51 +1,51 @@
-#include "RepauseUI.h"
+#include "ResetPopupUI.h"
 
-#include "../FQGameModule/Transform.h"
-#include "../FQGameModule/Scene.h"
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/InputManager.h"
 #include "../FQGameModule/EventManager.h"
+#include "../FQGameModule/Scene.h"
+#include "../FQGameModule/Transform.h"
 
 #include "ClientEvent.h"
 
-fq::client::RepauseUI::RepauseUI()
+fq::client::ResetPopupUI::ResetPopupUI()
 	:mScreenManager(nullptr)
 {
 }
 
-fq::client::RepauseUI::~RepauseUI()
-{
-}
-
-void fq::client::RepauseUI::OnStart()
+void fq::client::ResetPopupUI::OnStart()
 {
 	// screenManager 등록
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = GetScene()->GetScreenManager();
 }
 
-void fq::client::RepauseUI::OnUpdate(float dt)
+void fq::client::ResetPopupUI::OnUpdate(float dt)
 {
 	SetScaleScreen();
 
-	// UI 조작 (계속하기, 선택 옮기기 등)
 	auto input = GetScene()->GetInputManager();
 	for (int i = 0; i < 4; i++)
 	{
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
-			GetScene()->GetEventManager()->FireEvent<event::OffPopupRepause>({});
+			GetScene()->GetEventManager()->FireEvent<event::OffPopupReset>({false});
 			GetScene()->DestroyGameObject(GetGameObject());
 		}
 
 		if (input->IsPadKeyState(i, EPadKey::A, EKeyState::Tap))
 		{
-			GetScene()->GetEventManager()->FireEvent<fq::event::RequestChangeScene>({ "TitleUI", true });
+			GetScene()->GetEventManager()->FireEvent<event::OffPopupReset>({ true });
+			GetScene()->DestroyGameObject(GetGameObject());
 		}
 	}
 }
 
-void fq::client::RepauseUI::SetScaleScreen()
+fq::client::ResetPopupUI::~ResetPopupUI()
+{
+}
+
+void fq::client::ResetPopupUI::SetScaleScreen()
 {
 	// Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
@@ -59,19 +59,19 @@ void fq::client::RepauseUI::SetScaleScreen()
 	}
 }
 
-std::shared_ptr<fq::game_module::Component> fq::client::RepauseUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
+std::shared_ptr<fq::game_module::Component> fq::client::ResetPopupUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
-	auto cloneRepauseUI = std::dynamic_pointer_cast<RepauseUI>(clone);
+	auto cloneResetUI = std::dynamic_pointer_cast<ResetPopupUI>(clone);
 
-	if (cloneRepauseUI == nullptr) // 새로 생성해서 복사본을 준다
+	if (cloneResetUI == nullptr) // 새로 생성해서 복사본을 준다
 	{
-		cloneRepauseUI = game_module::ObjectPool::GetInstance()->Assign<RepauseUI>(*this);
+		cloneResetUI = game_module::ObjectPool::GetInstance()->Assign<ResetPopupUI>(*this);
 	}
 	else // clone에 데이터를 복사한다.
 	{
 		// 기본 대입 연산자 호출한다.
-		*cloneRepauseUI = *this;
+		*cloneResetUI = *this;
 	}
 
-	return cloneRepauseUI;
+	return cloneResetUI;
 }

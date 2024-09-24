@@ -73,7 +73,8 @@ void fq::game_engine::EditorEngine::Initialize()
 		, mGameProcess->mInputManager.get()
 		, mGameProcess->mPrefabManager.get()
 		, mGameProcess->mScreenManager.get()
-		, mGameProcess->mTimeManager.get());
+		, mGameProcess->mTimeManager.get()
+		, mGameProcess->mSoundManager.get());
 
 	mGameProcess->mSoundManager->Initialize();
 

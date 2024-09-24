@@ -28,12 +28,21 @@ namespace fq::client
 		void setScaleScreen();
 		void setSelectBoxPosition(float dt);
 		void clickButton();
+		void spawnUIObject(fq::game_module::PrefabResource prefab);
 
 		void processInput();
 
 		std::string wstringToString(std::wstring wStr);
 
 	private:
+		// 맨 위에 있는지 (입력을 받을지)
+		bool mIsActive;
+		bool mHaveToDestroyed;
+
+		fq::game_module::PrefabResource mGameSettingPrefab;
+		fq::game_module::PrefabResource mVideoSettingPrefab;
+		fq::game_module::PrefabResource mAudioSettingPrefab;
+
 		game_module::ScreenManager* mScreenManager;
 		game_module::TimeManager* mTimeManager;
 

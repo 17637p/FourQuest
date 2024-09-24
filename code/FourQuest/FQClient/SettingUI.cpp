@@ -206,26 +206,37 @@ void fq::client::SettingUI::clickButton()
 	{
 		case 0:
 			// 게임
-			//GetScene()->GetEventManager()->FireEvent<event::OffPopupPause>({});
-			//GetScene()->DestroyGameObject(GetGameObject());
+			spawnUIObject(mGameSettingPrefab);
+			GetScene()->DestroyGameObject(GetGameObject());
 			break;
 		case 1:
 			// 비디오
-			//spawnUIObject(mSettingUIPrefab);
-			//GetScene()->DestroyGameObject(GetGameObject());
+			spawnUIObject(mVideoSettingPrefab);
+			GetScene()->DestroyGameObject(GetGameObject());
 			break;
 		case 2:
 			// 오디오
-			//mIsActive = false;
-			//spawnUIObject(mRepauseUIPrefab);
+			spawnUIObject(mAudioSettingPrefab);
+			GetScene()->DestroyGameObject(GetGameObject());
 			break;
 		case 3:
 			// 돌아가기
-			//GetScene()->DestroyGameObject(GetGameObject());
+			GetScene()->GetEventManager()->FireEvent<event::OffPopupSetting>({});
+			GetScene()->DestroyGameObject(GetGameObject());
 			break;
 		default:
 			break;
 	}
+}
+
+void fq::client::SettingUI::spawnUIObject(fq::game_module::PrefabResource prefab)
+{
+	std::shared_ptr<game_module::GameObject> newObject;
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(prefab);
+	newObject = *(instance.begin());
+
+	GetScene()->AddGameObject(newObject);
 }
 
 //GetScene()->GetEventManager()->FireEvent<event::OffPopupPause>({});
