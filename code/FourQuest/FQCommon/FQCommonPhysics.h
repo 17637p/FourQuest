@@ -65,6 +65,8 @@ namespace fq::physics
 		End
 	};
 
+	enum { COLLISION_MATRIX_SIZE = 32 };
+
 #pragma endregion
 
 	/// <summary>
@@ -73,7 +75,7 @@ namespace fq::physics
 	struct PhysicsEngineInfo
 	{
 		DirectX::SimpleMath::Vector3 gravity = {};
-		int collisionMatrix[16] = {};
+		int collisionMatrix[COLLISION_MATRIX_SIZE] = {};
 	};
 
 	/// <summary>

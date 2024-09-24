@@ -116,15 +116,16 @@ void fq::client::DeadArmour::setUI(bool isVisible)
 
 	mbIsVisible = isVisible;
 	auto imageUI = GetComponent<game_module::ImageUI>();
-	auto& uiObject = imageUI->GetImageObjects();
+	auto uiInfo = imageUI->GetUIInfomations();
 
-	if (!uiObject.empty())
+	if (!uiInfo.empty())
 	{
-		uiObject[0]->SetIsRender(true);
+		uiInfo[0].isRender = true;
 
-		if (uiObject.size() > 1)
-			uiObject[1]->SetIsRender(isVisible);
+		if (uiInfo.size() > 1)
+			uiInfo[1].isRender = isVisible;
 	}
+	imageUI->SetUIInfomations(uiInfo);
 }
 
 void fq::client::DeadArmour::OnUpdate(float dt)
