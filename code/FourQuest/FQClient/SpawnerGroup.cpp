@@ -426,6 +426,8 @@ void fq::client::SpawnerGroup::EventProcessPlayerSpawnCollideTrigger()
 void fq::client::SpawnerGroup::OnDestroy()
 {
 	GetScene()->GetEventManager()->RemoveHandle(mPlayerSpawnCollideTriggerHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mInProgressQuestHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mInProgressDefenceHandler);
 }
 
 fq::client::SpawnerGroup& fq::client::SpawnerGroup::operator=(const SpawnerGroup& other)

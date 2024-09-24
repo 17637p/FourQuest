@@ -7,6 +7,7 @@ namespace fq::game_module
 	class ScreenManager;
 	class TextUI;
 	class SpriteAnimationUI;
+	class Transform;
 }
 
 namespace fq::client
@@ -31,6 +32,8 @@ namespace fq::client
 		entt::meta_handle GetHandle() override { return *this; }
 		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
 		void SaveSoulType();
+		void SetSelectPoints(int playerID, int selectNum);
+		void MoveSoulDown(float dt);
 
 		// 涝仿 贸府 
 		void processInput();
@@ -57,10 +60,14 @@ namespace fq::client
 		game_module::PrefabResource mSoulPrefab;
 		std::vector<std::shared_ptr<game_module::GameObject>> mSouls;
 		std::vector<int> mSelectSouls;
+		std::vector<game_module::Transform*> mSelectPoints;
 
 		// 矫累 贸府
 		float mCurTime;
 		float mChangeSceneTime;
+
+		// Soul Move
+		float mSoulMoveSpeed;
 
 	private:
 		friend void RegisterMetaData();

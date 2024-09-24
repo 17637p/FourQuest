@@ -67,7 +67,6 @@ void fq::client::PauseUI::OnStart()
 {
 	// 자식 버튼 가져오기
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
-
 	auto children = myTransform->GetChildren();
 
 	mButtons.push_back(children[0]->GetGameObject());
@@ -80,11 +79,12 @@ void fq::client::PauseUI::OnStart()
 	mSelectBackground = children[4]->GetGameObject();
 
 	// Manager 등록
-	mScreenManager = GetScene()->GetScreenManager();
-	mTimeManager = GetScene()->GetTimeManager();
+	fq::game_module::Scene* scene = GetScene();
+	mScreenManager = scene->GetScreenManager();
+	mTimeManager = scene->GetTimeManager();
 
 	// EventHandler 등록
-	EventProcessOffPopupRepause();
+	eventProcessOffPopupRepause();
 
 	// Text 넣기
 	mExplanationTextUI = GetGameObject()->GetChildren()[6]->GetChildren()[0]->GetComponent<game_module::TextUI>();
@@ -96,12 +96,12 @@ void fq::client::PauseUI::OnStart()
 
 void fq::client::PauseUI::OnUpdate(float dt)
 {
-	SetScaleScreen();
-	SetSelectBoxPosition(GetScene()->GetTimeManager()->GetDeltaTime());
+	setScaleScreen();
+	setSelectBoxPosition(mTimeManager->GetDeltaTime());
 
 	if (mIsActive)
 	{
-		ProcessInput();
+		processInput();
 		mCurStickDelay += mTimeManager->GetDeltaTime();
 	}
 }
@@ -123,7 +123,7 @@ std::shared_ptr<fq::game_module::Component> fq::client::PauseUI::Clone(std::shar
 	return clonePauseUI;
 }
 
-void fq::client::PauseUI::SetScaleScreen()
+void fq::client::PauseUI::setScaleScreen()
 {
 	// Scale 자동 조정 
 	game_module::Transform* myTransform = GetComponent<game_module::Transform>();
@@ -137,7 +137,7 @@ void fq::client::PauseUI::SetScaleScreen()
 	}
 }
 
-void fq::client::PauseUI::SetSelectBoxPosition(float dt)
+void fq::client::PauseUI::setSelectBoxPosition(float dt)
 {
 	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
@@ -162,7 +162,7 @@ void fq::client::PauseUI::SetSelectBoxPosition(float dt)
 	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
 
-void fq::client::PauseUI::ClickButton()
+void fq::client::PauseUI::clickButton()
 {
 	switch (mSelectButtonID)
 	{
@@ -173,13 +173,13 @@ void fq::client::PauseUI::ClickButton()
 			break;
 		case 1:
 			// 설정
-			SpawnUIObject(mSettingUIPrefab);
+			spawnUIObject(mSettingUIPrefab);
 			GetScene()->DestroyGameObject(GetGameObject());
 			break;
 		case 2:
 			// 미션 중단 - repause 소환, 이벤트 받으면 isActive on
 			mIsActive = false;
-			SpawnUIObject(mRepauseUIPrefab);
+			spawnUIObject(mRepauseUIPrefab);
 			break;
 		case 3:
 			// 게임 종료
@@ -190,7 +190,7 @@ void fq::client::PauseUI::ClickButton()
 	}
 }
 
-void fq::client::PauseUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
+void fq::client::PauseUI::spawnUIObject(fq::game_module::PrefabResource prefab)
 {
 	std::shared_ptr<game_module::GameObject> newObject;
 
@@ -200,7 +200,7 @@ void fq::client::PauseUI::SpawnUIObject(fq::game_module::PrefabResource prefab)
 	GetScene()->AddGameObject(newObject);
 }
 
-void fq::client::PauseUI::EventProcessOffPopupRepause()
+void fq::client::PauseUI::eventProcessOffPopupRepause()
 {
 	mOffPopupRepauseHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupRepause>
 		(
@@ -216,7 +216,7 @@ void fq::client::PauseUI::OnDestroy()
 	GetScene()->GetEventManager()->RemoveHandle(mOffPopupRepauseHandler);
 }
 
-void fq::client::PauseUI::ProcessInput()
+void fq::client::PauseUI::processInput()
 {
 	// UI 조작 (계속하기, 선택 옮기기 등)
 	auto input = GetScene()->GetInputManager();
@@ -284,7 +284,7 @@ void fq::client::PauseUI::ProcessInput()
 	{
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
-			ClickButton();
+			clickButton();
 		}
 	}
 }

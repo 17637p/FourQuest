@@ -41,6 +41,8 @@
     <ClInclude Include="AimAssist.h" />
     <ClInclude Include="AOEAttackState.h" />
     <ClInclude Include="GaugeBar.h" />
+    <ClInclude Include="AudioSettingUI.h" />
+    <ClInclude Include="GameSettingUI.h" />
     <ClInclude Include="PlantAOEAttack.h" />
     <ClInclude Include="ArcherArmour.h" />
     <ClInclude Include="ArmourSet.h" />
@@ -167,11 +169,14 @@
     <ClInclude Include="SwordAttackState.h" />
     <ClInclude Include="TitleUI.h" />
     <ClInclude Include="UILayerDefine.h" />
+    <ClInclude Include="VideoSettingUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AimAssist.cpp" />
     <ClCompile Include="AOEAttackState.cpp" />
     <ClCompile Include="GaugeBar.cpp" />
+    <ClCompile Include="AudioSettingUI.cpp" />
+    <ClCompile Include="GameSettingUI.cpp" />
     <ClCompile Include="PlantAOEAttack.cpp" />
     <ClCompile Include="ArcherArmour.cpp" />
     <ClCompile Include="ArmourSet.cpp" />
@@ -282,6 +287,7 @@
     <ClCompile Include="StaffSoulAttackState.cpp" />
     <ClCompile Include="SwordAttackState.cpp" />
     <ClCompile Include="TitleUI.cpp" />
+    <ClCompile Include="VideoSettingUI.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
