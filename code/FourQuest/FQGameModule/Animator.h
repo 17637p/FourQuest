@@ -137,6 +137,9 @@ namespace fq::game_module
 		/// </summary>
 		void SetUpdateAnimationGPUData(bool bUpdateAnimationGPUData) { mbUpdateAnimationGPUData = bUpdateAnimationGPUData; }
 		bool GetUpdateAnimationGPUData() const { return mbUpdateAnimationGPUData; }
+		
+		void SetCreateAnimationTexture(bool bCreateAnimationTexture) {	mbCreateAnimationTexture = bCreateAnimationTexture;	}
+		bool GetCreateAnimationTexture() const { return mbCreateAnimationTexture; }
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -155,5 +158,6 @@ namespace fq::game_module
 		// 동적 인스턴싱 사용 유무 체크
 		bool mbUpdateAnimationCPUData;
 		bool mbUpdateAnimationGPUData;
+		bool mbCreateAnimationTexture;
 	};
 }

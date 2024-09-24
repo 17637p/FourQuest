@@ -133,7 +133,7 @@ namespace fq::graphics
 			// gen data
 			const auto& animationClip = animationInterface->GetAnimationClip();
 
-			for (size_t i = 0; i < animationClip.FrameCount; ++i)
+			for (size_t i = 0; i < std::min<size_t>(animationClip.FrameCount, AnimationKeyFrames::MAX_MODEL_KEYFRAMES); ++i)
 			{
 				std::vector<DirectX::SimpleMath::Matrix> localTransform(AnimationKeyFrames::MAX_MODEL_TRANSFORMS, DirectX::SimpleMath::Matrix::Identity);
 				std::vector<DirectX::SimpleMath::Matrix> rootTransform(AnimationKeyFrames::MAX_MODEL_TRANSFORMS);
