@@ -54,13 +54,13 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 			fbxPaths.push_back(path + ".fbx");
 		};
 
-	addPath("./resource/Graphics/RenderObjectDemo/gun");
-	addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
-	addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
-	addPath("./resource/Graphics/RenderObjectDemo/player01");
-	addPath("./resource/Graphics/RenderObjectDemo/playerani7");
-	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
-	addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	//addPath("./resource/Graphics/RenderObjectDemo/gun");
+	//addPath("./resource/Graphics/RenderObjectDemo/SkinningTest");
+	//addPath("./resource/Graphics/RenderObjectDemo/Meleemob_002");
+	//addPath("./resource/Graphics/RenderObjectDemo/player01");
+	addPath("./resource/Graphics/RenderObjectDemo/Player(1)");
+	//addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
+	//addPath("./resource/Graphics/RenderObjectDemo/RangeMonster(Union_100)");
 
 	for (size_t i = 0; i < modelPaths.size(); ++i)
 	{
@@ -71,7 +71,7 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 	{
 		for (int j = 0; j < 10; ++j)
 		{
-			createModel(modelPaths[i], textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(1.f) * DirectX::SimpleMath::Matrix::CreateTranslation(j * 10, i * 10, 0));
+			createModel(modelPaths[i], textureBasePath, DirectX::SimpleMath::Matrix::CreateScale(1) * DirectX::SimpleMath::Matrix::CreateTranslation(j * 10, i * 10, 0));
 		}
 	}
 
@@ -86,10 +86,11 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 		const auto& nodeHierarchy = renderer.NodeHierarchyInstance->GetNodeHierarchy();
 		const std::set<std::shared_ptr<fq::graphics::IAnimation>>& animations = nodeHierarchy->GetRegisterAnimations();
 
+		size_t j = 0;
 		for (auto animation : animations)
 		{
 			{
-				renderer.Animations.insert({ "Anim" + i, animation });
+				renderer.Animations.insert({ "Anim" + std::to_string(j++), animation });
 			}
 		}
 
@@ -125,7 +126,7 @@ bool RenderObjectDemo::Init(HINSTANCE hInstance)
 	AddDefaultCamera(mTestGraphics);
 
 	// Camera Transform 설정
-	mCameraTransform.worldPosition = { 0, 0, 0 };
+	mCameraTransform.worldPosition = { 0, 0, -5 };
 	mCameraTransform.worldRotation = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f), DirectX::XMConvertToRadians(0.0f));
 	mCameraTransform.worldScale = { 1, 1, 1 };
 
@@ -181,7 +182,14 @@ void RenderObjectDemo::Loop()
 
 void RenderObjectDemo::Finalize()
 {
-
+	for (auto* object : mSkinnedMeshObjects)
+	{
+		mTestGraphics->DeleteSkinnedMeshObject(object);
+	}
+	for (auto* object : mStaticMeshObjects)
+	{
+		mTestGraphics->DeleteStaticMeshObject(object);
+	}
 }
 
 LRESULT RenderObjectDemo::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -240,18 +248,51 @@ void RenderObjectDemo::Update()
 	// animation
 
 	static float s_animTime = 0.f;
+	static float s_change_time = 0.f;
+	static int index = 0;
+	static int nextIndex = 0;
 
-	if (GetAsyncKeyState('O') & 0x8000)
+	s_animTime += mTimeManager.GetDeltaTime();
+
+	// 상체 애니메이션 증가
+	if (GetAsyncKeyState('I') & 0x8000 && s_change_time > 1.f)
 	{
-		s_animTime += mTimeManager.GetDeltaTime();
+		++index;
+		s_change_time = 0.f;
+	}
+
+	// 하체 애니메이션 인덱스 증가
+	if (GetAsyncKeyState('P') & 0x8000 && s_change_time > 1.f)
+	{
+		++nextIndex;
+		s_change_time = 0.f;
+	}
+	else
+	{
+		s_change_time += mTimeManager.GetDeltaTime();
 	}
 
 	for (SkinnedMeshRender& skinnedMeshRenderer : mSkinnedMeshRenderers)
 	{
 		if (!skinnedMeshRenderer.Animations.empty())
 		{
-			auto anim = skinnedMeshRenderer.Animations.begin()->second;
-			skinnedMeshRenderer.NodeHierarchyInstance->Update(fmod(s_animTime, anim->GetAnimationClip().Duration), anim);
+			auto anim0 = std::next(skinnedMeshRenderer.Animations.begin(), index)->second;
+			auto anim1 = std::next(skinnedMeshRenderer.Animations.begin(), nextIndex)->second;
+
+			unsigned int spineIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetSpineIndex();
+			unsigned int upperEndIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetUpperBodyEndIndex();
+			unsigned int lowerStartIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetLowerBodyStartIndex();
+			unsigned int endIndex = skinnedMeshRenderer.NodeHierarchyInstance->GetNodeHierarchy()->GetEndIndex();
+
+			// 애니메이션 행렬을 로컬 애니메이션을 초기상태로 만들어둡니다.
+			skinnedMeshRenderer.NodeHierarchyInstance->SetBindPoseLocalTransform();
+			// 스파인부터 상체의 끝까지 로컬 애니메이션 행렬을 해당 애니메이션으로 갱신합니다.
+			// 루트에 이동이 들어간 애니메이션의 경우 0번부터 애니메이션 갱신을 수행해야 함
+			skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(fmod(s_animTime, anim0->GetAnimationClip().Duration), anim0, spineIndex, upperEndIndex);
+			// 하체의 시작부터 끝까지 로컬 애니메이션 행렬을 해당 애니메이션으로 갱신합니다.
+			skinnedMeshRenderer.NodeHierarchyInstance->UpdateLocalTransformRange(fmod(s_animTime, anim1->GetAnimationClip().Duration), anim1, lowerStartIndex, endIndex);
+			// 갱신 해둔 로컬 애니메이션 행렬로 애니메이션에 사용할 toRoot 트랜스폼을 갱신합니다.
+			skinnedMeshRenderer.NodeHierarchyInstance->UpdateByLocalTransform();
 		}
 	}
 

@@ -36,11 +36,10 @@ namespace fq::graphics
 	public:
 		NodeHierarchy() = default;
 		NodeHierarchy(const fq::common::Model& model);
-		NodeHierarchy(const std::vector<fq::common::Node> nodes);
+		NodeHierarchy(const std::vector<fq::common::Node>& nodes);
 		~NodeHierarchy() = default;
 
-		void Create(const fq::common::Model& model);
-		void Create(const std::vector<fq::common::Node> nodes);
+		void Create(const std::vector<fq::common::Node>& nodes);
 
 		virtual std::shared_ptr<INodeHierarchyInstance> CreateNodeHierarchyInstance() override;
 
@@ -52,6 +51,14 @@ namespace fq::graphics
 		virtual const std::vector<fq::common::Bone>& GetBones() const override { return mBones; }
 		virtual unsigned int GetBoneIndex(const std::string& boneName) const override;
 		virtual bool TryGetBoneIndex(const std::string& boneName, unsigned int* outBoneIndex) const override;
+
+		virtual void SetSpineBoneName(const std::string& boneName) override;
+		virtual void SetSpineBoneIndex(unsigned int boneIndex) override;
+		virtual unsigned int GetSpineIndex() const override { return mSpineIndex; }
+		virtual unsigned int GetUpperBodyEndIndex() const override { return mUpperBodyEndIndex; }
+		virtual unsigned int GetLowerBodyStartIndex() const override { return mLowerBodyStartIndex; }
+		virtual unsigned int GetEndIndex() const override { return mBones.size() - 1; }
+
 		const std::map<std::shared_ptr<IAnimation>, std::vector<BoneNodeClipCache>>& GetAnimationCaches() const { return mAnimationCaches; }
 
 		// 인스턴싱 관련 함수
@@ -71,6 +78,10 @@ namespace fq::graphics
 		std::map<std::shared_ptr<IAnimation>, size_t> mRegisterAnimationIndexMap;
 		std::vector<AnimationKeyFrames> mAnimationKeyframes;
 		std::shared_ptr<D3D11TextureArray> mAnimationKeyframeTexture;
+
+		unsigned int mSpineIndex;
+		unsigned int mUpperBodyEndIndex;
+		unsigned int mLowerBodyStartIndex;
 	};
 
 	class NodeHierarchyInstance : public INodeHierarchyInstance
@@ -83,21 +94,24 @@ namespace fq::graphics
 		virtual const DirectX::SimpleMath::Matrix& GetTransform() const override { return mTransform; }
 
 		virtual void SetBindPose() override;
+		virtual void SetBindPoseLocalTransform() override;
 		virtual void Update(float timePos, const std::shared_ptr<IAnimation>& animation) override;
 		virtual void Update(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
 		virtual void UpdateGPUData(float timePos, const std::shared_ptr<IAnimation>& animation) override;
-		virtual void UpdateGPUData(float lhsTimePos, const std::shared_ptr<IAnimation>&lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>&rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
+		virtual void UpdateGPUData(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override; // 블렌딩 처리는 애니메이션이 cache로 등록된 경우만 사용 가능
 		virtual void UpdateByLocalTransform() override;
 		virtual void UpdateByLocalTransform(float timePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight) override;
+		virtual void UpdateLocalTransformRange(float timePos, const std::shared_ptr<IAnimation>& animation, unsigned int startIndex, unsigned int endIndex) override;
+		virtual void UpdateLocalTransformRange(float lhsTimePos, const std::shared_ptr<IAnimation>& lhsAnimation, float rhsTimePos, const std::shared_ptr<IAnimation>& rhsAnimation, float weight, unsigned int startIndex, unsigned int endIndex) override;
 
 		virtual void SetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform);
 		virtual bool TrySetLocalTransform(size_t index, const DirectX::SimpleMath::Matrix& transform);
+
 		virtual std::shared_ptr<INodeHierarchy> GetNodeHierarchy() const override { return mNodeHierarchy; }
 		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(const std::string& boneName) const override { size_t index = mNodeHierarchy->GetBoneIndex(boneName); return mRootTransforms[index]; }
 		virtual const DirectX::SimpleMath::Matrix& GetRootTransform(size_t index) const override { return mRootTransforms[index]; }
 		virtual const std::vector<DirectX::SimpleMath::Matrix>& GetRootTransforms() const override { return mRootTransforms; }
 		virtual const DirectX::SimpleMath::Matrix& GetTransposedFinalTransform(size_t index) const override { return mTransposedFinalTransforms[index]; }
-
 		const std::vector<DirectX::SimpleMath::Matrix> GetTransposedFinalTransforms() const { return mTransposedFinalTransforms; }
 
 		// 인스턴싱 관련 함수
