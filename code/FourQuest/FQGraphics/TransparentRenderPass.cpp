@@ -149,7 +149,7 @@ namespace fq::graphics
 			mAnisotropicWrapSamplerState->Bind(mDevice, 0, ED3D11ShaderType::PixelShader);
 			mShadowSampler->Bind(mDevice, 1, ED3D11ShaderType::PixelShader);
 			mDefualtSampler->Bind(mDevice, 2, ED3D11ShaderType::PixelShader);
-			mLinearWrap->Bind(mDevice,3, ED3D11ShaderType::PixelShader);
+			mLinearWrap->Bind(mDevice, 3, ED3D11ShaderType::PixelShader);
 			mShadowSRV->Bind(mDevice, 9, ED3D11ShaderType::PixelShader);
 			mMaterialCB->Bind(mDevice, ED3D11ShaderType::PixelShader);
 			mLightManager->GetLightConstnatBuffer()->Bind(mDevice, ED3D11ShaderType::PixelShader, 1);
@@ -231,14 +231,12 @@ namespace fq::graphics
 					{
 						const auto& nodeName = job.StaticMesh->GetMeshData().NodeName;
 						const auto& texTransform = uvAnimInstnace->GetTexTransform(nodeName);
-						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, texTransform);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo(), texTransform);
 					}
 					else
 					{
-						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+						ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.StaticMeshObject->GetMaterialInstanceInfo());
 					}
-
-					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.StaticMeshObject->GetMaterialInstanceInfo());
 
 					job.StaticMesh->Draw(mDevice, job.SubsetIndex);
 				}
@@ -260,7 +258,7 @@ namespace fq::graphics
 					bindingState(materialInfo);
 
 					ConstantBufferHelper::UpdateModelTransformCB(mDevice, mModelTransformCB, job.SkinnedMeshObject->GetTransform());
-					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material);
+					ConstantBufferHelper::UpdateModelTextureCB(mDevice, mMaterialCB, job.Material, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					// 반투명 오브젝트에 데칼 적용이 필요한가?
 					//if (job.SkinnedMeshObject->GetMeshObjectInfo().bIsAppliedDecal)
@@ -280,8 +278,6 @@ namespace fq::graphics
 					{
 						ConstantBufferHelper::UpdateBoneTransformCB(mDevice, mBoneTransformCB, identityTransforms);
 					}
-
-					ConstantBufferHelper::UpdateMaterialInstance(mDevice, mMaterialInstanceCB, job.SkinnedMeshObject->GetMaterialInstanceInfo());
 
 					job.SkinnedMesh->Draw(mDevice, job.SubsetIndex);
 				}

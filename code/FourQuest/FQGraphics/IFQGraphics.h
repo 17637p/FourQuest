@@ -242,6 +242,10 @@ extern "C" {
 
 			/// Log
 			virtual FQ_GRAPHICS std::shared_ptr<spdlog::logger> SetUpLogger(std::vector<spdlog::sink_ptr> sinks) abstract;
+
+			// InstancingData
+			virtual FQ_GRAPHICS void CreateAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) abstract;
+			virtual FQ_GRAPHICS void ReleaseAnimationTexture(std::shared_ptr<INodeHierarchy> nodeHierarchyInterface) abstract;
 		};
 
 		class EngineExporter

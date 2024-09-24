@@ -20,6 +20,12 @@ namespace fq::graphics
 			fq::common::Keyframe* outLhs,
 			fq::common::Keyframe* outRhs,
 			float* outWeight);
+		static void FindKeyframeIndex(const std::vector<fq::common::Keyframe>& keyframes,
+			const fq::common::AnimationClip& animationClip,
+			float timePos,
+			unsigned int* outLhsIndex,
+			unsigned int* outRhsIndex,
+			float* outWeight);
 		static DirectX::SimpleMath::Matrix CreateMatrix(const fq::common::Keyframe& keyframe);
 		static DirectX::SimpleMath::Matrix CreateMatrix(const fq::common::UVKeyframe& keyframe);
 		static fq::common::Keyframe Interpolate(const fq::common::Keyframe& lhs, const fq::common::Keyframe& rhs, float weight);

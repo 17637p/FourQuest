@@ -158,68 +158,71 @@ namespace fq::graphics
 		}
 
 		// cb update
-		const std::set<IDecalObject*>& decalObjects = mObjectManager->GetDecalObjects();
+		const std::vector<std::set<IDecalObject*>>& decalObjectLayerRef = mObjectManager->GetDecalLayerRef();
 
-		for (IDecalObject* decalObjectInterface : decalObjects)
+		for (std::set<IDecalObject*> decalObjects : decalObjectLayerRef)
 		{
-			DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
-			std::shared_ptr<DecalMaterial> material = std::static_pointer_cast<DecalMaterial>(decalObjectInterface->GetDecalMaterial());
-			auto transform = decalObject->GetTransform();
-			const auto& decalInfo = decalObject->GetDecalInfo();
-
-			DirectX::SimpleMath::Vector3 translation;
-			DirectX::SimpleMath::Vector3 scale;
-			DirectX::SimpleMath::Quaternion rotation;
-			transform.Decompose(scale, rotation, translation);
-
-			auto calcTransform =
-				DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Width, decalInfo.Depth, decalInfo.Height)
-				* DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Pivot.x, decalInfo.Pivot.z, decalInfo.Pivot.y)
-				* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
-				* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
-
-			material->Bind(mDevice);
-
-			CBDecalObject decalObjectCB;
-			decalObjectCB.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
-			decalObjectCB.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
-			decalObjectCB.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0)).Transpose();
-			decalObjectCB.World = calcTransform.Transpose();
-			decalObjectCB.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
-			decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
-			decalObjectCB.InvWV = (calcTransform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
-			decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
-			mDecalObjectCB->Update(mDevice, decalObjectCB);
-
-			const auto& materialInfo = material->GetInfo();
-			CBDecalMaterial decalMaterialCB;
-			decalMaterialCB.BaseColor = materialInfo.BaseColor;
-			decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor;
-			decalMaterialCB.bUseBaseColor = materialInfo.bUseBaseColor && material->GetHasBaseColor();
-			decalMaterialCB.bUseNormalness = materialInfo.bUseNormalness && material->GetHasNormal();
-			decalMaterialCB.bIsUsedEmissive = materialInfo.bIsUsedEmissive && material->GetHasEmissive();
-			decalMaterialCB.NormalBlend = materialInfo.NormalBlend;
-			decalMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
-			mDecalMaterialCB->Update(mDevice, decalMaterialCB);
-
-			int index = decalMaterialCB.bIsUsedEmissive << 2 | decalMaterialCB.bUseNormalness << 1 | decalMaterialCB.bUseBaseColor << 0;
-			mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
-
-			mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
-
-			if (decalInfo.bIsRenderDebug)
+			for (IDecalObject* decalObjectInterface : decalObjects)
 			{
-				debug::OBBInfo obbInfo;
-				obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
-				obbInfo.OBB.Transform(obbInfo.OBB, calcTransform);
-				obbInfo.Color = decalInfo.DebugRenderColor;
-				mDebugDrawManager->Submit(obbInfo);
-				obbInfo = {};
-				obbInfo.OBB.Center = { 0.f, -0.25f, 0.f };
-				obbInfo.OBB.Extents = { 0.1f, 0.25f, 0.1f };
-				obbInfo.OBB.Transform(obbInfo.OBB, calcTransform);
-				obbInfo.Color = decalInfo.DebugRenderColor;
-				mDebugDrawManager->Submit(obbInfo);
+				DecalObject* decalObject = static_cast<DecalObject*>(decalObjectInterface);
+				std::shared_ptr<DecalMaterial> material = std::static_pointer_cast<DecalMaterial>(decalObjectInterface->GetDecalMaterial());
+				auto transform = decalObject->GetTransform();
+				const auto& decalInfo = decalObject->GetDecalInfo();
+
+				DirectX::SimpleMath::Vector3 translation;
+				DirectX::SimpleMath::Vector3 scale;
+				DirectX::SimpleMath::Quaternion rotation;
+				transform.Decompose(scale, rotation, translation);
+
+				auto calcTransform =
+					DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Width, decalInfo.Depth, decalInfo.Height)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Pivot.x, decalInfo.Pivot.z, decalInfo.Pivot.y)
+					* DirectX::SimpleMath::Matrix::CreateFromQuaternion(rotation)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(translation);
+
+				material->Bind(mDevice);
+
+				CBDecalObject decalObjectCB;
+				decalObjectCB.Deproject.x = mCameraManager->GetProjectionMatrix(ECameraType::Player)._11;
+				decalObjectCB.Deproject.y = mCameraManager->GetProjectionMatrix(ECameraType::Player)._22;
+				decalObjectCB.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(decalInfo.Tiling.x, decalInfo.Tiling.y, 1) * DirectX::SimpleMath::Matrix::CreateTranslation(decalInfo.Offset.x, decalInfo.Offset.y, 0)).Transpose();
+				decalObjectCB.World = calcTransform.Transpose();
+				decalObjectCB.View = mCameraManager->GetViewMatrix(ECameraType::Player).Transpose();
+				decalObjectCB.Proj = mCameraManager->GetProjectionMatrix(ECameraType::Player).Transpose();
+				decalObjectCB.InvWV = (calcTransform * mCameraManager->GetViewMatrix(ECameraType::Player)).Invert().Transpose();
+				decalObjectCB.NormalThresholdInRadian = decalInfo.NormalThresholdInDegree * 3.14f / 180.f;
+				mDecalObjectCB->Update(mDevice, decalObjectCB);
+
+				const auto& materialInfo = material->GetInfo();
+				CBDecalMaterial decalMaterialCB;
+				decalMaterialCB.BaseColor = materialInfo.BaseColor;
+				decalMaterialCB.EmissiveColor = materialInfo.EmissiveColor;
+				decalMaterialCB.bUseBaseColor = materialInfo.bUseBaseColor && material->GetHasBaseColor();
+				decalMaterialCB.bUseNormalness = materialInfo.bUseNormalness && material->GetHasNormal();
+				decalMaterialCB.bIsUsedEmissive = materialInfo.bIsUsedEmissive && material->GetHasEmissive();
+				decalMaterialCB.NormalBlend = materialInfo.NormalBlend;
+				decalMaterialCB.AlphaCutoff = materialInfo.AlphaCutoff;
+				mDecalMaterialCB->Update(mDevice, decalMaterialCB);
+
+				int index = decalMaterialCB.bIsUsedEmissive << 2 | decalMaterialCB.bUseNormalness << 1 | decalMaterialCB.bUseBaseColor << 0;
+				mDevice->GetDeviceContext()->OMSetBlendState(mBlendStates[index].Get(), nullptr, 0xFFFFFFFF);
+
+				mDevice->GetDeviceContext()->DrawIndexed(36, 0, 0);
+
+				if (decalInfo.bIsRenderDebug)
+				{
+					debug::OBBInfo obbInfo;
+					obbInfo.OBB.Extents = { 0.5f, 0.5f, 0.5f };
+					obbInfo.OBB.Transform(obbInfo.OBB, calcTransform);
+					obbInfo.Color = decalInfo.DebugRenderColor;
+					mDebugDrawManager->Submit(obbInfo);
+					obbInfo = {};
+					obbInfo.OBB.Center = { 0.f, -0.25f, 0.f };
+					obbInfo.OBB.Extents = { 0.1f, 0.25f, 0.1f };
+					obbInfo.OBB.Transform(obbInfo.OBB, calcTransform);
+					obbInfo.Color = decalInfo.DebugRenderColor;
+					mDebugDrawManager->Submit(obbInfo);
+				}
 			}
 		}
 	}

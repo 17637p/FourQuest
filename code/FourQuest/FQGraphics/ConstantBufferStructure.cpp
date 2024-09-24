@@ -18,41 +18,6 @@ namespace fq::graphics
 		modelTransform.WorldInvTransposeMat = D3D11Util::InverseTranspose(transform).Transpose();
 		cbuffer->Update(device, modelTransform);
 	}
-	void ConstantBufferHelper::UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
-		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
-		const std::shared_ptr<Material>& material,
-		const DirectX::SimpleMath::Matrix& texTransform)
-	{
-		const auto& info = material->GetInfo();
-
-		CBMaterial CBMaterialData;
-		CBMaterialData.BaseColor = info.BaseColor;
-		CBMaterialData.EmissiveColor = info.EmissiveColor;
-		CBMaterialData.DissolveStartColor = info.DissolveStartColor;
-		CBMaterialData.DissolveEndColor = info.DissolveEndColor;
-		CBMaterialData.DissolveStartEmissive = info.DissolveStartEmissive;
-		CBMaterialData.DissolveEndEmissive = info.DissolveEndEmissive;
-		CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0) * texTransform).Transpose();
-
-		CBMaterialData.Metalness = info.Metalness;
-		CBMaterialData.Roughness = info.Roughness;
-		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && info.bUseBaseColor;
-		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && info.bUseMetalness;
-
-		CBMaterialData.bUseNormalMap = material->GetHasNormal() && info.bUseNormalness;
-		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && info.bUseRoughness;
-		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive();
-		CBMaterialData.AlphaCutoff = info.AlphaCutoff;
-
-		CBMaterialData.EmissiveIntensity = info.EmissiveIntensity;
-		CBMaterialData.bUseMetalnessSmoothnessMap = info.bIsUsedMetalnessSmoothness;
-		CBMaterialData.bUseDissolve = info.bUseDissolve;
-		CBMaterialData.OutlineThickness = info.OutlineThickness;
-
-		CBMaterialData.DissolveCutoff = info.DissolveCutoff;
-
-		cbuffer->Update(device, CBMaterialData);
-	}
 	void ConstantBufferHelper::UpdateBoneTransformCB(const std::shared_ptr<D3D11Device>& device,
 		std::shared_ptr<D3D11ConstantBuffer<BoneTransform>>& cbuffer,
 		const std::vector<DirectX::SimpleMath::Matrix>& finalTransforms)
@@ -141,30 +106,87 @@ namespace fq::graphics
 		cbuffer->Update(device, probe);
 	}
 
-	void ConstantBufferHelper::UpdateMaterialInstance(const std::shared_ptr<D3D11Device>& device, const std::shared_ptr<D3D11ConstantBuffer<CBMaterialInstance>>& materialInstanceCB, const MaterialInstanceInfo& materialInstanceInfo)
+	void ConstantBufferHelper::UpdateModelTextureCB(const std::shared_ptr<D3D11Device>& device,
+		std::shared_ptr<D3D11ConstantBuffer<CBMaterial>>& cbuffer,
+		const std::shared_ptr<Material>& material,
+		const MaterialInstanceInfo& materialInstanceInfo,
+		const DirectX::SimpleMath::Matrix& texTransform)
 	{
-		CBMaterialInstance materialInstance;
-		materialInstance.bUseInstanceAlpha = materialInstanceInfo.bUseInstanceAlpha;
-		materialInstance.Alpha = materialInstanceInfo.Alpha;
-		materialInstance.bUseDissolveCutoff = materialInstanceInfo.bUseDissolveCutoff;
-		materialInstance.DissolveCutoff = materialInstanceInfo.DissolveCutoff;
-		
-		materialInstance.bUseRimLight = materialInstanceInfo.bUseRimLight;
-		materialInstance.RimPow = materialInstanceInfo.RimPow;
-		materialInstance.bUseInvRimLight = materialInstanceInfo.bUseInvRimLight;
-		materialInstance.InvRimPow = materialInstanceInfo.InvRimPow;
-		
-		materialInstance.RimLightColor = materialInstanceInfo.RimLightColor;
+		const auto& info = material->GetInfo();
 
-		materialInstance.InvRimLightColor = materialInstanceInfo.InvRimLightColor;
-		
-		materialInstance.UVScale = materialInstanceInfo.UVScale;
-		materialInstance.UVOffset = materialInstanceInfo.UVOffset;
-		
-		materialInstance.bUseUVScaleOffset = materialInstanceInfo.bUseUVScaleOffset;
-		materialInstance.RimIntensity = materialInstanceInfo.RimIntensity;
-		materialInstance.InvRimIntensity = materialInstanceInfo.InvRimIntensity;
+		CBMaterial CBMaterialData;
+		CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(info.Tiling.x, info.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(info.Offset.x, info.Offset.y, 0) * texTransform).Transpose();
+		CBMaterialData.BaseColor = info.BaseColor;
+		CBMaterialData.EmissiveColor = info.EmissiveColor;
+		CBMaterialData.DissolveStartColor = info.DissolveStartColor;
+		CBMaterialData.DissolveEndColor = info.DissolveEndColor;
+		CBMaterialData.DissolveStartEmissive = info.DissolveStartEmissive;
+		CBMaterialData.DissolveEndEmissive = info.DissolveEndEmissive;
+		CBMaterialData.RimLightColor = info.RimLightColor;
+		CBMaterialData.InvRimLightColor = info.InvRimLightColor;
 
-		materialInstanceCB->Update(device, materialInstance);
+		CBMaterialData.Metalness = info.Metalness;
+		CBMaterialData.Roughness = info.Roughness;
+		CBMaterialData.bUseAlbedoMap = material->GetHasBaseColor() && info.bUseBaseColor;
+		CBMaterialData.bUseMetalnessMap = material->GetHasMetalness() && info.bUseMetalness;
+
+		CBMaterialData.bUseNormalMap = material->GetHasNormal() && info.bUseNormalness;
+		CBMaterialData.bUseRoughnessMap = material->GetHasRoughness() && info.bUseRoughness;
+		CBMaterialData.bUseEmissiveMap = material->GetHasEmissive() && info.bIsUsedEmissive;
+		CBMaterialData.AlphaCutoff = info.AlphaCutoff;
+
+		CBMaterialData.EmissiveIntensity = info.EmissiveIntensity;
+		CBMaterialData.bUseMetalnessSmoothnessMap = info.bIsUsedMetalnessSmoothness;
+		CBMaterialData.bUseDissolve = info.bUseDissolve;
+		CBMaterialData.OutlineThickness = info.OutlineThickness;
+
+		CBMaterialData.DissolveCutoff = info.DissolveCutoff;
+		CBMaterialData.bUseRimLight = info.bUseRimLight;
+		CBMaterialData.RimPow = info.RimPow;
+		CBMaterialData.RimIntensity = info.RimIntensity;
+
+		CBMaterialData.bUseInvRimLight = info.bUseInvRimLight;
+		CBMaterialData.InvRimPow = info.InvRimPow;
+		CBMaterialData.InvRimIntensity = info.InvRimIntensity;
+		CBMaterialData.bUseMulEmissiveAlpha = info.bUseMulEmissiveAlpha;
+
+		if (!materialInstanceInfo.bUseInstanceing)
+		{
+			if (materialInstanceInfo.bUseInstanceAlpha)
+			{
+				CBMaterialData.BaseColor.w = materialInstanceInfo.Alpha;
+			}
+
+			if (materialInstanceInfo.bUseDissolveCutoff)
+			{
+				CBMaterialData.bUseDissolve = true;
+				CBMaterialData.DissolveCutoff = materialInstanceInfo.DissolveCutoff;
+			}
+
+			if (materialInstanceInfo.bUseRimLight)
+			{
+				CBMaterialData.bUseRimLight = true;
+				CBMaterialData.RimLightColor = materialInstanceInfo.RimLightColor;
+				CBMaterialData.RimPow = materialInstanceInfo.RimPow;
+				CBMaterialData.RimIntensity = materialInstanceInfo.RimIntensity;
+			}
+
+			if (materialInstanceInfo.bUseInvRimLight)
+			{
+				CBMaterialData.bUseInvRimLight = true;
+				CBMaterialData.InvRimLightColor = materialInstanceInfo.InvRimLightColor;
+				CBMaterialData.InvRimPow = materialInstanceInfo.InvRimPow;
+				CBMaterialData.InvRimIntensity = materialInstanceInfo.InvRimIntensity;
+			}
+
+			if (materialInstanceInfo.bUseUVScaleOffset)
+			{
+				CBMaterialData.TexTransform = (DirectX::SimpleMath::Matrix::CreateScale(materialInstanceInfo.UVScale.x, materialInstanceInfo.UVScale.y, 0)
+					* DirectX::SimpleMath::Matrix::CreateTranslation(materialInstanceInfo.UVOffset.x, materialInstanceInfo.UVOffset.y, 0)
+					* texTransform).Transpose();
+			}
+		}
+
+		cbuffer->Update(device, CBMaterialData);
 	}
 }

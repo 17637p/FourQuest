@@ -118,6 +118,7 @@ void fq::game_engine::DecalSystem::loadDecal(fq::game_module::GameObject* object
 	auto decalObjectInterface = mGameProcess->mGraphics->CreateDecalObject(material, decalInfo, object->GetComponent<fq::game_module::Transform>()->GetWorldMatrix());
 	decal->SetDecalObjectInterface(decalObjectInterface);
 	decal->SetDecalMaterial(material);
+	decal->SetLayer(decal->GetLayer());
 }
 
 void fq::game_engine::DecalSystem::unloadDecal(fq::game_module::GameObject* object)

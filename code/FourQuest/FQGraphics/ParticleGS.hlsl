@@ -36,12 +36,44 @@ void main(point VS_OUTPUT input[1], inout TriangleStream<PS_INPUT> SpriteStream)
 		float2(1, -1),
     };
     
+    float2 UVs[4] =
+    {
+        float2(0, 0),
+		float2(1, 0),
+		float2(0, 1),
+		float2(1, 1),
+    };
+    
+    if (gParticleSprite.bIsUsed)
+    {
+        float age = input[0].Age_LifeTime_Rotation_Size.x;
+        uint currIndex = age / gParticleSprite.FrameSecond;
+        
+        if (gParticleSprite.bIsLooping)
+        {
+            currIndex %= gParticleSprite.MaxFrameCount;
+        }
+        else
+        {
+            currIndex = min(currIndex, gParticleSprite.MaxFrameCount);
+        }
+        
+        uint widthIndex = currIndex % gParticleSprite.WidthCount;
+        uint heightindex = (currIndex / gParticleSprite.WidthCount) % gParticleSprite.HeightCount;
+        float2 textureUVSize = float2(1 / (float) gParticleSprite.WidthCount, 1 / (float) gParticleSprite.HeightCount);
+        
+        UVs[0] = textureUVSize * float2(widthIndex, heightindex);
+        UVs[1] = textureUVSize * float2(widthIndex + 1, heightindex);
+        UVs[2] = textureUVSize * float2(widthIndex, heightindex + 1);
+        UVs[3] = textureUVSize * float2(widthIndex + 1, heightindex + 1);
+    }
+    
 	[unroll]
     for (int i = 0; i < 4; i++)
     {
         float2 offset = offsets[i];
-        float2 uv = (offset + float2(1, 1)) * float2(0.5, 0.5);
-		
+        float2 uv = UVs[i];
+        
         float radius = input[0].Age_LifeTime_Rotation_Size.w;
         
         float s, c;

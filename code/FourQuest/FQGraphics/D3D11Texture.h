@@ -2,6 +2,7 @@
 
 #include "ResourceBase.h"
 #include "D3D11ResourceType.h"
+#include "NodeHierarchy.h"
 
 #include <memory>
 #include <wrl.h>
@@ -64,6 +65,7 @@ namespace fq::graphics
 	{
 	public:
 		D3D11TextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<std::filesystem::path>& texturePaths);
+		D3D11TextureArray(const std::shared_ptr<D3D11Device>& d3d11Device, const std::vector<AnimationKeyFrames>& animationKeyframes);
 
 		void Bind(const std::shared_ptr<D3D11Device>& d3d11Device, const UINT startSlot, const ED3D11ShaderType eShaderType);
 

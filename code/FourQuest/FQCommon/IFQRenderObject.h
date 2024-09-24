@@ -230,6 +230,9 @@ extern "C" {
 			virtual FQ_GRAPHICS void SetUVAnimationInstance(std::shared_ptr<IUVAnimationInstance> uvAnimationInstance) abstract;
 			virtual FQ_GRAPHICS std::shared_ptr<IUVAnimationInstance> GetUVAnimationInstanceOrNull() const abstract;
 
+			virtual FQ_GRAPHICS void SetLayer(unsigned int layer) abstract;
+			virtual FQ_GRAPHICS unsigned int GetLayer() const abstract;
+
 		protected:
 			virtual ~IDecalObject() = default;
 		};

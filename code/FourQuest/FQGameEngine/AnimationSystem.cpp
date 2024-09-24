@@ -89,11 +89,26 @@ void fq::game_engine::AnimationSystem::processAnimation(float dt)
 			{
 				float blendPos = controller.GetBlendTimePos();
 				float blendWeight = controller.GetBlendWeight();
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+
+				if (animator.GetUpdateAnimationCPUData())
+				{
+					nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+				}
+				if (animator.GetUpdateAnimationGPUData())
+				{
+					nodeHierarchyInstance.UpdateGPUData(timePos, controller.GetSharedRefCurrentStateAnimation(), blendPos, controller.GetSharedRefNextStateAnimation(), blendWeight);
+				}
 			}
 			else if (controller.GetHasCurrentStateAnimation())
 			{
-				nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+				if (animator.GetUpdateAnimationCPUData())
+				{
+					nodeHierarchyInstance.Update(timePos, controller.GetSharedRefCurrentStateAnimation());
+				}
+				if (animator.GetUpdateAnimationGPUData())
+				{
+					nodeHierarchyInstance.UpdateGPUData(timePos, controller.GetSharedRefCurrentStateAnimation());
+				}
 			}
 		});
 
@@ -170,6 +185,10 @@ bool fq::game_engine::AnimationSystem::LoadAnimatorController(fq::game_module::G
 
 	controller->SetAnimator(animator);
 	animator->SetController(controller);
+
+	// 스키닝 인스턴싱을 위한 사전 데이터 구성.. 요거 분기 처리할 수 있도록 만들어야댐
+	assert(nodeHierarchyOrNull != nullptr);
+	mGraphics->CreateAnimationTexture(nodeHierarchyOrNull);
 
 	return true;
 }

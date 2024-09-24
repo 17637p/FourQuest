@@ -66,6 +66,8 @@ namespace fq::graphics
 
 	struct MaterialInstanceInfo
 	{
+		bool bUseInstanceing = false;
+
 		bool bUseInstanceAlpha = false;
 		float Alpha = 1.f;
 		bool bUseDissolveCutoff = false;
@@ -371,6 +373,16 @@ namespace fq::graphics
 			DirectX::SimpleMath::Color DebugRenderColor = { 1, 0, 0, 1 };;
 			bool bIsRenderDebug{ true };
 		} InstanceData;
+
+		struct Sprite
+		{
+			unsigned int WidthCount{ 1 };
+			unsigned int HeightCount{ 1 };
+			unsigned int FrameCount{ 1 };
+			float FramePerSecond{ 0.1 };
+			bool bIsLooping{ false };
+			bool bIsUsed{ false };
+		} SpriteData;
 	};
 
 	struct DecalInfo
@@ -380,7 +392,6 @@ namespace fq::graphics
 		float Depth = 1.f;
 		DirectX::SimpleMath::Vector3 Pivot = { 0, 0, 0 };
 
-		// unsigned int Layer = 0u; // 데칼 박스가 그려지는 순서, 낮을수록 나중에 그려짐
 		float NormalThresholdInDegree = 180.f; // 데칼 박스의 방향과 물체의 노말 사이의 랜더링 최대 각도
 
 		DirectX::SimpleMath::Vector2 Tiling = { 1, 1 };
@@ -615,6 +626,18 @@ namespace fq::graphics
 		DirectX::SimpleMath::Color DissolveEndColor = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveStartEmissive = { 0, 0, 0, 0 };
 		DirectX::SimpleMath::Color DissolveEndEmissive = { 0, 0, 0, 0 };
+
+		bool bUseRimLight = false;
+		DirectX::SimpleMath::Color RimLightColor;
+		float RimPow = 2.f;
+		float RimIntensity = 1.f;
+
+		bool bUseInvRimLight = false;
+		DirectX::SimpleMath::Color InvRimLightColor;
+		float InvRimPow = 2.f;
+		float InvRimIntensity = 1.f;
+
+		bool bUseMulEmissiveAlpha = false; // 이미시브 알파값 곱하기 여부
 	};
 
 	struct ParticleMaterialInfo

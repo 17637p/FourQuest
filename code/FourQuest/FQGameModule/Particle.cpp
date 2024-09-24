@@ -159,6 +159,14 @@ void fq::game_module::Particle::SetParticleMaterialInfo(graphics::ParticleMateri
 	}
 }
 
+void fq::game_module::Particle::SetSpriteData(const ParticleInfo::Sprite& spriteData)
+{
+	mParticleInfo.SpriteData = spriteData;
+
+	if (mParticleObject)
+		mParticleObject->SetInfo(mParticleInfo);
+}
+
 void fq::game_module::Particle::OnUpdate(float dt)
 {
 	if (mParticleObject)

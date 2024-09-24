@@ -714,5 +714,8 @@
     <CustomBuild Include="TestSSRVS.hlsl">
       <Filter>Shader\VS</Filter>
     </CustomBuild>
+    <CustomBuild Include="SkinnedModelInstancingVS.hlsl">
+      <Filter>Shader\VS</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

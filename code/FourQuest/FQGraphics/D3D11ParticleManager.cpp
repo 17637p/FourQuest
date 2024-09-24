@@ -211,12 +211,20 @@ namespace fq::graphics
 		particleObjectData.ParticleMaterialData.BaseColor = materialInfo.BaseColor;
 		particleObjectData.ParticleMaterialData.EmissiveColor = materialInfo.EmissiveColor;
 		particleObjectData.ParticleMaterialData.TexTransform = DirectX::SimpleMath::Matrix::CreateScale(materialInfo.Tiling.x, materialInfo.Tiling.y, 0) * DirectX::SimpleMath::Matrix::CreateTranslation(materialInfo.Offset.x, materialInfo.Offset.y, 0);
+		particleObjectData.ParticleMaterialData.TexTransform = particleObjectData.ParticleMaterialData.TexTransform.Transpose();
 		particleObjectData.ParticleMaterialData.RenderMode = (int)materialInfo.RenderModeType;
 		particleObjectData.ParticleMaterialData.ColorMode = (int)materialInfo.ColorModeType;
 		particleObjectData.ParticleMaterialData.bUseAlbedoMap = particleMaterial->GetHasBaseColor() && materialInfo.bIsUsedBaseColor;;
 		particleObjectData.ParticleMaterialData.bUseEmissiveMap = particleMaterial->GetHasEmissive() && materialInfo.bIsUsedEmissive;
 		particleObjectData.ParticleMaterialData.AlphaCutoff = materialInfo.AlphaCutoff;
 		particleObjectData.ParticleMaterialData.bUseMultiplyAlpha = materialInfo.bUseMultiplyAlpha;
+
+		particleObjectData.SpriteData.WidthCount = particleInfo.SpriteData.WidthCount;
+		particleObjectData.SpriteData.HeightCount = particleInfo.SpriteData.HeightCount;
+		particleObjectData.SpriteData.FrameCount = particleInfo.SpriteData.FrameCount;
+		particleObjectData.SpriteData.FrameSecond = particleInfo.SpriteData.FramePerSecond;
+		particleObjectData.SpriteData.bIsLooping = particleInfo.SpriteData.bIsLooping;
+		particleObjectData.SpriteData.bIsUsed = particleInfo.SpriteData.bIsUsed;
 
 		mParticleObjectCB->Update(mDevice, particleObjectData);
 	}
