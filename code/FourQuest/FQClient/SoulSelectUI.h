@@ -58,7 +58,9 @@ namespace fq::client
 		std::vector<bool> mIsSelects;
 
 		game_module::PrefabResource mSoulPrefab;
+		game_module::PrefabResource mMagicSymbolPrefab;
 		std::vector<std::shared_ptr<game_module::GameObject>> mSouls;
+		std::vector<std::shared_ptr<game_module::GameObject>> mMagicSymbols;
 		std::vector<int> mSelectSouls;
 		std::vector<game_module::Transform*> mSelectPoints;
 

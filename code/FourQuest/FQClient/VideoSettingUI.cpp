@@ -259,3 +259,9 @@ std::string fq::client::VideoSettingUI::wstringToString(std::wstring wStr)
 	return boost::locale::conv::from_utf(wStr, "UTF-8");
 }
 
+void fq::client::VideoSettingUI::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupResetHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupSaveHandler);
+}
+
