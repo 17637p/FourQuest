@@ -3,13 +3,19 @@
 #include "../FQGameModule/ScreenManager.h"
 #include "../FQGameModule/TimeManager.h"
 #include "../FQGameModule/InputManager.h"
+#include "../FQGameModule/SoundManager.h"
+#include "../FQGameModule/PrefabManager.h"
+#include "../FQGameModule/EventManager.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Scene.h"
 #include "../FQGameModule/TextUI.h"
 #include "../FQGameModule/ImageUI.h"
+#include "../FQGameModule/SpriteAnimationUI.h"
+
+#include "ClientEvent.h"
+#include "SettingVariable.h"
 
 #include <boost/locale.hpp>
-#include <spdlog/spdlog.h>
 
 std::shared_ptr<fq::game_module::Component> fq::client::AudioSettingUI::Clone(std::shared_ptr<Component> clone /* = nullptr */) const
 {
@@ -45,8 +51,53 @@ fq::client::AudioSettingUI::AudioSettingUI()
 	mSoundBarIcons(),
 	mSoundLeftInputTimes(),
 	mSoundRightInputTimes(),
-	mSoundPercentTexts()
+	mSoundPercentTexts(),
+	mIsActive(true),
+	mResetMessagePrefab(),
+	mSaveMessagePrefab(),
+	mSettingUIPrefab(),
+	mHaveToDestroyed(false)
 {
+}
+
+fq::client::AudioSettingUI::AudioSettingUI(const AudioSettingUI& other)
+	:mScreenManager(nullptr),
+	mTimeManager(nullptr),
+	mSelectButtonID(0),
+	mSelectBackground(nullptr),
+	mButtons(),
+	mStickDelay(0.2f),
+	mCurStickDelay(0),
+	mUIAnimSpeed(other.mUIAnimSpeed),
+	mExplanationTexts(),
+	mExplanationTextUI(nullptr),
+	mSoundBarWidth(0),
+	mSoundBars(),
+	mSoundRatio(),
+	mSoundBarIcons(),
+	mSoundLeftInputTimes(),
+	mSoundRightInputTimes(),
+	mSoundPercentTexts(),
+	mIsActive(true),
+	mResetMessagePrefab(other.mResetMessagePrefab),
+	mSaveMessagePrefab(other.mSaveMessagePrefab),
+	mSettingUIPrefab(other.mSettingUIPrefab),
+	mHaveToDestroyed(false)
+{
+}
+
+fq::client::AudioSettingUI& fq::client::AudioSettingUI::operator=(const AudioSettingUI& other)
+{
+	mSelectButtonID = other.mSelectButtonID;
+	mStickDelay = other.mStickDelay;
+	mUIAnimSpeed = other.mUIAnimSpeed;
+	mIsActive = other.mIsActive;
+	mResetMessagePrefab = other.mResetMessagePrefab;
+	mSaveMessagePrefab = other.mSaveMessagePrefab;
+	mSettingUIPrefab = other.mSettingUIPrefab;
+	mHaveToDestroyed = false;
+
+	return *this;
 }
 
 fq::client::AudioSettingUI::~AudioSettingUI()
@@ -55,34 +106,70 @@ fq::client::AudioSettingUI::~AudioSettingUI()
 
 void fq::client::AudioSettingUI::OnStart()
 {
-	// screenManager 등록
+	mButtons.clear();
+	mExplanationTexts.clear();
+	mIsMutes.clear();
+	mSoundRatio.clear();
+	mSoundLeftInputTimes.clear();
+	mSoundRightInputTimes.clear();
+	mSoundBars.clear();
+	mSoundBarIcons.clear();
+	mMuteCheckImages.clear();
+	mSoundPercentTexts.clear();
+	mSaveISMutes.clear();
+	mSaveSoundRatio.clear();
+
+	mIsActive = true;
+	mHaveToDestroyed = false;
+
+	// Event 등록
+	eventProcessOffPopupReset();
+	eventProcessOffPopupSave();
+
+	// Manager 등록
 	fq::game_module::Scene* scene = GetScene();
 	mScreenManager = scene->GetScreenManager();
 	mTimeManager = scene->GetTimeManager();
+	mSoundManager = scene->GetSoundManager();
 
 	// Button Set
 	auto buttons = GetGameObject()->GetChildren()[5]->GetChildren();
 	for (int i = 0; i < 4; i++)
 	{
 		mButtons.push_back(buttons[i]);
-		mIsMute.push_back(false);
 		mMuteCheckImages.push_back(mButtons[i]->GetChildren()[1]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
 		mSoundBars.push_back(mButtons[i]->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::ImageUI>());
 		mSoundBarIcons.push_back(mButtons[i]->GetChildren()[2]->GetChildren()[1]->GetComponent<game_module::Transform>());
 		mSoundPercentTexts.push_back(mButtons[i]->GetChildren()[3]->GetComponent<game_module::TextUI>());
 		mSoundLeftInputTimes.push_back(0);
 		mSoundRightInputTimes.push_back(0);
-		mSoundRatio.push_back(0.7f);
 	}
+
+	mSoundRatio.push_back(SettingVariable::MasterVolume);
+	mSoundRatio.push_back(SettingVariable::BGMVolume);
+	mSoundRatio.push_back(SettingVariable::SFXVolume);
+	mSoundRatio.push_back(SettingVariable::VoiceVolume);
+
+	mIsMutes.push_back(SettingVariable::MuteMasterVolume);
+	mIsMutes.push_back(SettingVariable::MuteBGMVolume);
+	mIsMutes.push_back(SettingVariable::MuteSFXVolume);
+	mIsMutes.push_back(SettingVariable::MuteVoiceVolume);
+
+	mSaveISMutes = mIsMutes;
+	mSaveSoundRatio = mSoundRatio;
 
 	mSoundBarWidth = mSoundBars[0]->GetUIInfomation(0).Width;
 	for (int i = 0; i < 4; i++)
 	{
 		setSoundBar(i);
+		setMute(i);
 	}
 
 	mSelectButtonID = 0;
 	mSelectBackground = GetGameObject()->GetChildren()[0];
+
+	mSelectButtonBackground = GetGameObject()->GetChildren()[3]->GetChildren()[0]->GetComponent<game_module::ImageUI>();
+	mSelectButtonSoulIcon = GetGameObject()->GetChildren()[3]->GetChildren()[1]->GetComponent<game_module::SpriteAnimationUI>();
 
 	// Text 넣기
 	mExplanationTextUI = GetGameObject()->GetChildren()[2]->GetChildren()[0]->GetComponent<game_module::TextUI>();
@@ -94,12 +181,20 @@ void fq::client::AudioSettingUI::OnStart()
 
 void fq::client::AudioSettingUI::OnUpdate(float dt)
 {
+	if (mHaveToDestroyed)
+	{
+		GetScene()->DestroyGameObject(GetGameObject());
+		return;
+	}
+
 	float deltaTime = mTimeManager->GetDeltaTime();
 	setScaleScreen();
 	setSelectBoxPosition(deltaTime);
 
-	mCurStickDelay += deltaTime;
-	processInput(deltaTime);
+	if (mIsActive)
+	{
+		processInput(deltaTime);
+	}
 }
 
 void fq::client::AudioSettingUI::setScaleScreen()
@@ -123,6 +218,8 @@ std::string fq::client::AudioSettingUI::wstringToString(std::wstring wStr)
 
 void fq::client::AudioSettingUI::processInput(float dt)
 {
+	mCurStickDelay += dt;
+
 	// UI 조작 (계속하기, 선택 옮기기 등)
 	auto input = GetScene()->GetInputManager();
 	for (int i = 0; i < 4; i++)
@@ -145,6 +242,10 @@ void fq::client::AudioSettingUI::processInput(float dt)
 
 		if (isDpadDownTap || isLeftStickDownTap)
 		{
+			if (mSelectButtonID == 3)
+			{
+				mSelectButtonID++;
+			}
 			if (mSelectButtonID < 3)
 			{
 				mSelectButtonID++;
@@ -249,25 +350,59 @@ void fq::client::AudioSettingUI::processInput(float dt)
 		// A Button
 		if (input->GetPadKeyState(i, EPadKey::A) == EKeyState::Tap)
 		{
-			mIsMute[mSelectButtonID] = !mIsMute[mSelectButtonID];
-			setMute(mSelectButtonID, mIsMute[mSelectButtonID]);
+			if (mSelectButtonID == 4)
+			{
+				saveSettingData();
+			}
+			else
+			{
+				mIsMutes[mSelectButtonID] = !mIsMutes[mSelectButtonID];
+				setMute(mSelectButtonID);
+			}
 		}
 		// B Button
 		if (input->IsPadKeyState(i, EPadKey::B, EKeyState::Tap))
 		{
-			//GetScene()->GetEventManager()->FireEvent<event::OffPopupSetting>({});
-			//GetScene()->DestroyGameObject(GetGameObject());
+			if (isChangeSettingData())
+			{
+				mIsActive = false;
+				spawnUIObject(mSaveMessagePrefab);
+			}
+			else
+			{
+				spawnUIObject(mSettingUIPrefab);
+				GetScene()->DestroyGameObject(GetGameObject());
+			}
 		}
 		// Y Button
 		if (input->IsPadKeyState(i, EPadKey::Y, EKeyState::Tap))
 		{
-			initAudioSetting();
+			mIsActive = false;
+			spawnUIObject(mResetMessagePrefab);
 		}
 	}
 }
 
 void fq::client::AudioSettingUI::setSelectBoxPosition(float dt)
 {
+	bool isSelectAcceptButton = false;
+	if (mSelectButtonID == 4)
+	{
+		isSelectAcceptButton = true;
+	}
+
+	mSelectButtonBackground->SetIsRender(0, isSelectAcceptButton);
+	mSelectButtonSoulIcon->SetIsRender(isSelectAcceptButton);
+
+	mExplanationTextUI->SetIsRender(!isSelectAcceptButton);
+	mSelectBackground->GetComponent<game_module::ImageUI>()->SetIsRender(0, !isSelectAcceptButton);
+	mSelectBackground->GetChildren()[0]->GetComponent<game_module::SpriteAnimationUI>()->SetIsRender(!isSelectAcceptButton);
+
+	if (mSelectButtonID == 4)
+	{
+		return;
+	}
+
 	// 선택UI 위치로 SelectBox 옮기기 
 	game_module::Transform* selectTransform = mButtons[mSelectButtonID]->GetComponent<game_module::Transform>();
 	DirectX::SimpleMath::Vector3 selectPosition = selectTransform->GetLocalPosition();
@@ -292,9 +427,9 @@ void fq::client::AudioSettingUI::setSelectBoxPosition(float dt)
 	mSelectBackground->GetComponent<game_module::Transform>()->SetLocalPosition(curPosition);
 }
 
-void fq::client::AudioSettingUI::setMute(int index, bool isMute)
+void fq::client::AudioSettingUI::setMute(int index)
 {
-	mMuteCheckImages[index]->SetIsRender(0, isMute);
+	mMuteCheckImages[index]->SetIsRender(0, mIsMutes[index]);
 }
 
 void fq::client::AudioSettingUI::setSoundBar(int index)
@@ -334,6 +469,110 @@ void fq::client::AudioSettingUI::initAudioSetting()
 	{
 		mSoundRatio[i] = 0.7f;
 		setSoundBar(i);
-		setMute(i, false);
+		mIsMutes[i] = false;
+		setMute(i);
 	}
+}
+
+void fq::client::AudioSettingUI::spawnUIObject(fq::game_module::PrefabResource prefab)
+{
+	std::shared_ptr<game_module::GameObject> newObject;
+
+	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(prefab);
+	newObject = *(instance.begin());
+
+	GetScene()->AddGameObject(newObject);
+}
+
+void fq::client::AudioSettingUI::eventProcessOffPopupReset()
+{
+	mOffPopupResetHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupReset>
+		(
+			[this](const client::event::OffPopupReset& event)
+			{
+				mIsActive = true;
+				if (event.isReset)
+				{
+					initAudioSetting();
+				}
+			}
+		);
+}
+
+void fq::client::AudioSettingUI::OnDestroy()
+{
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupResetHandler);
+	GetScene()->GetEventManager()->RemoveHandle(mOffPopupSaveHandler);
+}
+
+bool fq::client::AudioSettingUI::isChangeSettingData()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (mSaveISMutes[i] != mIsMutes[i])
+		{
+			return true;
+		}
+		if (mSaveSoundRatio[i] != mSoundRatio[i])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void fq::client::AudioSettingUI::eventProcessOffPopupSave()
+{
+	mOffPopupSaveHandler = GetScene()->GetEventManager()->RegisterHandle<client::event::OffPopupSave>
+		(
+			[this](const client::event::OffPopupSave& event)
+			{
+				mIsActive = true;
+				if (event.isSave)
+				{
+					saveSettingData();
+
+					spawnUIObject(mSettingUIPrefab);
+					mHaveToDestroyed = true;
+				}
+			}
+		);
+}
+
+void fq::client::AudioSettingUI::saveSettingData()
+{
+	mSoundManager->SetChannelVoulme(sound::BGM, mSoundRatio[1]);
+	mSoundManager->SetChannelVoulme(sound::SE, mSoundRatio[2]);
+	//mSoundManager->SetChannelVoulme(sound::BGM, mSoundRatio[3]);
+	
+	SettingVariable::MasterVolume = mSoundRatio[0];
+	SettingVariable::BGMVolume = mSoundRatio[1];
+	SettingVariable::SFXVolume = mSoundRatio[2];
+	SettingVariable::VoiceVolume = mSoundRatio[3];
+
+	SettingVariable::MuteMasterVolume = mIsMutes[0];
+	SettingVariable::MuteBGMVolume = mIsMutes[1];
+	SettingVariable::MuteSFXVolume = mIsMutes[2];
+	SettingVariable::MuteVoiceVolume = mIsMutes[3];
+
+	if (mIsMutes[0])
+	{
+		mSoundManager->SetChannelVoulme(sound::BGM, 0);
+		mSoundManager->SetChannelVoulme(sound::SE, 0);
+	}
+	if (mIsMutes[1])
+	{
+		mSoundManager->SetChannelVoulme(sound::BGM, 0);
+	}
+	if (mIsMutes[2])
+	{
+		mSoundManager->SetChannelVoulme(sound::SE, 0);
+	}
+	if (mIsMutes[3])
+	{
+		//mSoundManager->SetChannelVoulme(sound::voice, 0);
+	}
+
+	mSaveSoundRatio = mSoundRatio;
+	mSaveISMutes = mIsMutes;
 }

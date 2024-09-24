@@ -240,7 +240,7 @@ namespace fq::physics
 		std::shared_ptr<PhysicsSimulationEventCallback> mMyEventCallback;
 
 		// 충돌 매트릭스
-		int mCollisionMatrix[16];
+		int mCollisionMatrix[COLLISION_MATRIX_SIZE];
 
 		std::vector<physx::PxActor*> mActorsToRemove;
 	};

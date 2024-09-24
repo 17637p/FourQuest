@@ -1,878 +1,890 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup>
-		<Filter Include="include">
-			<UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-			<Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-		</Filter>
-		<Filter Include="include\00.Define">
-			<UniqueIdentifier>{d6c026bc-c71c-4917-8125-9c3638abc9f1}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.Player">
-			<UniqueIdentifier>{4cc17fe5-6a77-4aa1-a035-17dfceb38aed}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\02.Monster">
-			<UniqueIdentifier>{5284a2c4-bff7-4230-9291-e8f1c7792924}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\03.Attack">
-			<UniqueIdentifier>{7cef8521-d7f1-4691-a728-888cad1df5cc}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.Player\State">
-			<UniqueIdentifier>{e2c13996-e04b-41bd-9d23-c980f6326ec4}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\05.UI">
-			<UniqueIdentifier>{63b46a7a-3b24-41bb-b7e2-836cac641d28}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\04.Camera">
-			<UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\02.Monster\Melee">
-			<UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\02.Monster\Plant">
-			<UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\02.Monster\Prototype">
-			<UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src">
-			<UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-			<Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-		</Filter>
-		<Filter Include="src\00.Define">
-			<UniqueIdentifier>{94971c36-b1fc-45eb-9373-91e219af22de}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.Player">
-			<UniqueIdentifier>{a9fd8395-d790-4773-b758-9d33d213ff26}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.Player\State">
-			<UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\02.Monster">
-			<UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\02.Monster\Prototype">
-			<UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\02.Monster\Plant">
-			<UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\04.Camera">
-			<UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\05.UI">
-			<UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\02.Monster\Spawner">
-			<UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\02.Monster\Spawner">
-			<UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\02.Monster\Melee">
-			<UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\07.Quest">
-			<UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\02.Monster\Boss">
-			<UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\02.Monster\Boss">
-			<UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\07.Quest">
-			<UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\08.GameVariable">
-			<UniqueIdentifier>{9829b4ba-12d2-4d87-a7b0-bd011d69722e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\08.GameVariable">
-			<UniqueIdentifier>{3147849c-1693-431a-b546-ec48aa861240}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\09.Box">
-			<UniqueIdentifier>{575d109a-df30-4144-b864-65d16eb63d6a}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\09.Box">
-			<UniqueIdentifier>{b04ae50d-ad2a-44e5-89c5-605299ea3043}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\06.ETC">
-			<UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\06.ETC">
-			<UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.Player\State\Bow">
-			<UniqueIdentifier>{49914565-c983-4fe8-92a4-f6316be2c96e}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.Player\State\ArcherState">
-			<UniqueIdentifier>{66b11bb0-e02d-4c9c-9ceb-c651b9e7dc9f}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="include\01.Player\State\Berserker">
-			<UniqueIdentifier>{868f5cc0-acaf-4ce3-92a4-c37e7109a4bb}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\01.Player\State\Berserker">
-			<UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
-		</Filter>
-		<Filter Include="src\03.Attack">
-			<UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
-		</Filter>
-	</ItemGroup>
-	<ItemGroup>
-		<ClInclude Include="ClientRegistration.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="Client.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="Attack.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerInputState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="CameraMoving.h">
-			<Filter>include\04.Camera</Filter>
-		</ClInclude>
-		<ClInclude Include="Player.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="Soul.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="HpBar.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="UILayerDefine.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerDefine.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonsterAttckState.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonsterDeadState.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonsterStareState.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonsterIdleState.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="GameManager.h">
-			<Filter>include\06.ETC</Filter>
-		</ClInclude>
-		<ClInclude Include="ClientEvent.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterAttack.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterChase.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterDamaged.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterDie.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterFind.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterIdle.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="Monster.h">
-			<Filter>include\02.Monster\Prototype</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonster.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterIdleState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterPatrolState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterChaseState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterAttackState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonster.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterDeadState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="ClientHelper.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterWaitAttackState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterFindTargetState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="DeadArmour.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="MagicArmour.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="LinearAttack.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="MagicBallAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerMovementState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterHitState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="AOEAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="DamageCalculation.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="LaserAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="KnightArmour.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="ShieldDashState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="KnockBack.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="ShieldAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="SwordAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="AttackDefine.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="ShieldBlockState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterSpawner.h">
-			<Filter>include\02.Monster\Spawner</Filter>
-		</ClInclude>
-		<ClInclude Include="SpawnerDeadState.h">
-			<Filter>include\02.Monster\Spawner</Filter>
-		</ClInclude>
-		<ClInclude Include="SpawnerOpenState.h">
-			<Filter>include\02.Monster\Spawner</Filter>
-		</ClInclude>
-		<ClInclude Include="SoundDefine.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterExplosion.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="MeleeMonsterExplosionState.h">
-			<Filter>include\02.Monster\Melee</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerUIManager.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="PauseUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="Quest.h">
-			<Filter>include\07.Quest</Filter>
-		</ClInclude>
-		<ClInclude Include="QuestManager.h">
-			<Filter>include\07.Quest</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonster.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="AimAssist.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterIdleState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterChaseState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterRushState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterSmashDownState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterDefine.h">
-			<Filter>include\00.Define</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterFindTargetState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterGroup.h">
-			<Filter>include\02.Monster</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterWaitAttackState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterDeadState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossHP.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterHomingRushState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterWaitTargetState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterComboAttackState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterPrepareAttackState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="DefenceCounter.h">
-			<Filter>include\07.Quest</Filter>
-		</ClInclude>
-		<ClInclude Include="QuestColliderTriggerChecker.h">
-			<Filter>include\07.Quest</Filter>
-		</ClInclude>
-		<ClInclude Include="StaffSoulAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="StaffSoulAttack.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="SwordSoulAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="BowSoulAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="AxeSoulAttackState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerSoulVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="GameVaribleHelper.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="IGameVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="DamageVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="Box.h">
-			<Filter>include\09.Box</Filter>
-		</ClInclude>
-		<ClInclude Include="Portal.h">
-			<Filter>include\06.ETC</Filter>
-		</ClInclude>
-		<ClInclude Include="BGM.h">
-			<Filter>include\06.ETC</Filter>
-		</ClInclude>
-		<ClInclude Include="LoadingUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="TitleUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="SoulSelectUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="SettingUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="RepauseUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="ResultUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonsterHitState.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="IMonster.h">
-			<Filter>include</Filter>
-		</ClInclude>
-		<ClInclude Include="Spawner.h">
-			<Filter>include</Filter>
-		</ClInclude>
-		<ClInclude Include="SpawnerGroup.h">
-			<Filter>include</Filter>
-		</ClInclude>
-		<ClInclude Include="SpawnStruct.h">
-			<Filter>include</Filter>
-		</ClInclude>
-		<ClInclude Include="MaterialManager.h">
-			<Filter>include\06.ETC</Filter>
-		</ClInclude>
-		<ClInclude Include="SettingVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerInfoVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="ArmourSet.h">
-			<Filter>include\07.Quest</Filter>
-		</ClInclude>
-		<ClInclude Include="ArmourSpawner.h">
-			<Filter>include\07.Quest</Filter>
-		</ClInclude>
-		<ClInclude Include="ArrowAttack.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="ArcherArmour.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="BowDashState.h">
-			<Filter>include\01.Player\State\ArcherState</Filter>
-		</ClInclude>
-		<ClInclude Include="BowMultiShotAttackState.h">
-			<Filter>include\01.Player\State\ArcherState</Filter>
-		</ClInclude>
-		<ClInclude Include="BowStrongChargingState.h">
-			<Filter>include\01.Player\State\ArcherState</Filter>
-		</ClInclude>
-		<ClInclude Include="BerserkerArmour.h">
-			<Filter>include\01.Player</Filter>
-		</ClInclude>
-		<ClInclude Include="BerserkerAttackState.h">
-			<Filter>include\01.Player\State\Berserker</Filter>
-		</ClInclude>
-		<ClInclude Include="BerserkerRushChargingState.h">
-			<Filter>include\01.Player\State\Berserker</Filter>
-		</ClInclude>
-		<ClInclude Include="EBerserkerAttackType.h">
-			<Filter>include</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterGroggyState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BerserkerRushState.h">
-			<Filter>include\01.Player\State\Berserker</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerVariable.h">
-			<Filter>include\08.GameVariable</Filter>
-		</ClInclude>
-		<ClInclude Include="PlayerMovementSoundState.h">
-			<Filter>include\01.Player\State</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterEatState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="MonsterManager.h">
-			<Filter>include\02.Monster</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterRoarState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterContinousState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="BossMonsterPreContinousState.h">
-			<Filter>include\02.Monster\Boss</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantMonsterAOEAttackState.h">
-			<Filter>include\02.Monster\Plant</Filter>
-		</ClInclude>
-		<ClInclude Include="PlantAOEAttack.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="DebuffPoisonZone.h">
-			<Filter>include\03.Attack</Filter>
-		</ClInclude>
-		<ClInclude Include="GaugeBar.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="GameSettingUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="VideoSettingUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-		<ClInclude Include="AudioSettingUI.h">
-			<Filter>include\05.UI</Filter>
-		</ClInclude>
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="ClientRegistration.cpp">
-			<Filter>src\00.Define</Filter>
-		</ClCompile>
-		<ClCompile Include="Attack.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="PlayerInputState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="PlayerMovementState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="Player.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="CameraMoving.cpp">
-			<Filter>src\04.Camera</Filter>
-		</ClCompile>
-		<ClCompile Include="Soul.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="DeadArmour.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="HpBar.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="PlayerUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterAttckState.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterDeadState.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterStareState.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterIdleState.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="GameManager.cpp">
-			<Filter>src\06.ETC</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterAttack.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterChase.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterDamaged.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterDie.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterFind.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterIdle.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="Monster.cpp">
-			<Filter>src\02.Monster\Prototype</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonster.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterIdleState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterPatrolState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterChaseState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterAttackState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonster.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterDeadState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="ClientHelper.cpp">
-			<Filter>src\00.Define</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterWaitAttackState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterFindTargetState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterGroup.cpp">
-			<Filter>src\02.Monster</Filter>
-		</ClCompile>
-		<ClCompile Include="MagicArmour.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="MagicBallAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterHitState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="AOEAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="LaserAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="KnightArmour.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="ShieldDashState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="LinearAttack.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="KnockBack.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="ShieldAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="SwordAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="ShieldBlockState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterSpawner.cpp">
-			<Filter>src\02.Monster\Spawner</Filter>
-		</ClCompile>
-		<ClCompile Include="SpawnerDeadState.cpp">
-			<Filter>src\02.Monster\Spawner</Filter>
-		</ClCompile>
-		<ClCompile Include="SpawnerOpenState.cpp">
-			<Filter>src\02.Monster\Spawner</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterExplosion.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="MeleeMonsterExplosionState.cpp">
-			<Filter>src\02.Monster\Melee</Filter>
-		</ClCompile>
-		<ClCompile Include="PlayerUIManager.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="PauseUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="QuestManager.cpp">
-			<Filter>src\07.Quest</Filter>
-		</ClCompile>
-		<ClCompile Include="Quest.cpp">
-			<Filter>src\07.Quest</Filter>
-		</ClCompile>
-		<ClCompile Include="BossHP.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="AimAssist.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonster.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterIdleState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterChaseState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterRushState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterSmashDownState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterFindTargetState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterWaitAttackState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterDeadState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterWaitTargetState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterHomingRushState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterComboAttackState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterPrepareAttackState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="DefenceCounter.cpp">
-			<Filter>src\07.Quest</Filter>
-		</ClCompile>
-		<ClCompile Include="QuestColliderTriggerChecker.cpp">
-			<Filter>src\07.Quest</Filter>
-		</ClCompile>
-		<ClCompile Include="StaffSoulAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="StaffSoulAttack.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="SwordSoulAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="BowSoulAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="AxeSoulAttackState.cpp">
-			<Filter>src\01.Player\State</Filter>
-		</ClCompile>
-		<ClCompile Include="GameVaribleHelper.cpp">
-			<Filter>src\08.GameVariable</Filter>
-		</ClCompile>
-		<ClCompile Include="Box.cpp">
-			<Filter>src\09.Box</Filter>
-		</ClCompile>
-		<ClCompile Include="Portal.cpp">
-			<Filter>src\06.ETC</Filter>
-		</ClCompile>
-		<ClCompile Include="BGM.cpp">
-			<Filter>src\06.ETC</Filter>
-		</ClCompile>
-		<ClCompile Include="LoadingUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="TitleUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="SoulSelectUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="SettingUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="RepauseUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="ResultUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterHitState.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="Spawner.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterManager.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="SpawnerGroup.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="SpawnStruct.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="MaterialManager.cpp">
-			<Filter>src\06.ETC</Filter>
-		</ClCompile>
-		<ClCompile Include="ArmourSet.cpp">
-			<Filter>src\07.Quest</Filter>
-		</ClCompile>
-		<ClCompile Include="ArmourSpawner.cpp">
-			<Filter>src\06.ETC</Filter>
-		</ClCompile>
-		<ClCompile Include="ArrowAttack.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="ArcherArmour.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="BowDashState.cpp">
-			<Filter>src\01.Player\State\Bow</Filter>
-		</ClCompile>
-		<ClCompile Include="BowMultiShotAttackState.cpp">
-			<Filter>src\01.Player\State\Bow</Filter>
-		</ClCompile>
-		<ClCompile Include="BowStrongChargingState.cpp">
-			<Filter>src\01.Player\State\Bow</Filter>
-		</ClCompile>
-		<ClCompile Include="BerserkerArmour.cpp">
-			<Filter>src\01.Player</Filter>
-		</ClCompile>
-		<ClCompile Include="BerserkerAttackState.cpp">
-			<Filter>src\01.Player\State\Berserker</Filter>
-		</ClCompile>
-		<ClCompile Include="BerserkerRushChargingState.cpp">
-			<Filter>src\01.Player\State\Berserker</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterGroggyState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BerserkerRushState.cpp">
-			<Filter>src\01.Player\State\Berserker</Filter>
-		</ClCompile>
-		<ClCompile Include="PlayerVariable.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="PlayerMovementSoundState.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="MonsterManager.cpp">
-			<Filter>src\02.Monster</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterEatState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterRoarState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterPreContinousState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="BossMonsterContinousState.cpp">
-			<Filter>src\02.Monster\Boss</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterAOEAttackState.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantAOEAttack.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="PlantMonsterHitState.cpp">
-			<Filter>src\02.Monster\Plant</Filter>
-		</ClCompile>
-		<ClCompile Include="Spawner.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-		<ClCompile Include="DebuffPoisonZone.cpp">
-			<Filter>src\03.Attack</Filter>
-		</ClCompile>
-		<ClCompile Include="GaugeBar.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="GameSettingUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="VideoSettingUI.cpp">
-			<Filter>src\05.UI</Filter>
-		</ClCompile>
-		<ClCompile Include="AudioSettingUI.cpp">
-			<Filter>src</Filter>
-		</ClCompile>
-	</ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="include\00.Define">
+      <UniqueIdentifier>{d6c026bc-c71c-4917-8125-9c3638abc9f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player">
+      <UniqueIdentifier>{4cc17fe5-6a77-4aa1-a035-17dfceb38aed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster">
+      <UniqueIdentifier>{5284a2c4-bff7-4230-9291-e8f1c7792924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\03.Attack">
+      <UniqueIdentifier>{7cef8521-d7f1-4691-a728-888cad1df5cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player\State">
+      <UniqueIdentifier>{e2c13996-e04b-41bd-9d23-c980f6326ec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\05.UI">
+      <UniqueIdentifier>{63b46a7a-3b24-41bb-b7e2-836cac641d28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\04.Camera">
+      <UniqueIdentifier>{f7fdf64c-1b85-4403-9253-d1e52a174f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Melee">
+      <UniqueIdentifier>{fadcf5a9-afd7-4b02-970b-db5bf7428199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Plant">
+      <UniqueIdentifier>{058bba83-56c9-464a-abb2-b349f132e80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Prototype">
+      <UniqueIdentifier>{0e165353-bacb-40cb-ada4-67b85e75ece7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\00.Define">
+      <UniqueIdentifier>{94971c36-b1fc-45eb-9373-91e219af22de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player">
+      <UniqueIdentifier>{a9fd8395-d790-4773-b758-9d33d213ff26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State">
+      <UniqueIdentifier>{ffcf7094-5e1a-4dbb-a9b2-f6cf98e6b6e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster">
+      <UniqueIdentifier>{1a4f3299-65c9-4a79-90bd-4fc069360fb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Prototype">
+      <UniqueIdentifier>{68d6be59-a038-47b8-ae65-148c79fa3045}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Plant">
+      <UniqueIdentifier>{57b2ca74-b962-4792-bb67-a7230ddff8eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\04.Camera">
+      <UniqueIdentifier>{f3c74ea8-7df2-4df3-b0c8-fda7485eb6ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\05.UI">
+      <UniqueIdentifier>{4fa15c41-a03a-4f46-8abf-d804d10c2baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Spawner">
+      <UniqueIdentifier>{6cf66e9b-8b4f-486d-b3ff-fc8305dd321f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Spawner">
+      <UniqueIdentifier>{ee89627b-99fe-4721-9914-846712ccb4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Melee">
+      <UniqueIdentifier>{5ccbf097-0ae6-421f-9b2c-7b83ad2e33d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\07.Quest">
+      <UniqueIdentifier>{22aa2c87-7a98-41b4-9204-02a7b94f5ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\02.Monster\Boss">
+      <UniqueIdentifier>{afe637d8-9f87-4eb7-b528-eb8f4f612b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\02.Monster\Boss">
+      <UniqueIdentifier>{d25e1181-1cf8-49fb-b39a-eab8babd5170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\07.Quest">
+      <UniqueIdentifier>{8ee47df5-5492-4aa9-8202-e59cc9b4bd2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\08.GameVariable">
+      <UniqueIdentifier>{9829b4ba-12d2-4d87-a7b0-bd011d69722e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\08.GameVariable">
+      <UniqueIdentifier>{3147849c-1693-431a-b546-ec48aa861240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\09.Box">
+      <UniqueIdentifier>{575d109a-df30-4144-b864-65d16eb63d6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\09.Box">
+      <UniqueIdentifier>{b04ae50d-ad2a-44e5-89c5-605299ea3043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\06.ETC">
+      <UniqueIdentifier>{065cbf1e-5a1d-4869-a05d-09f66043d0ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\06.ETC">
+      <UniqueIdentifier>{619c8849-6d1e-484d-be85-f83c2f43acc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Bow">
+      <UniqueIdentifier>{49914565-c983-4fe8-92a4-f6316be2c96e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player\State\ArcherState">
+      <UniqueIdentifier>{66b11bb0-e02d-4c9c-9ceb-c651b9e7dc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\01.Player\State\Berserker">
+      <UniqueIdentifier>{868f5cc0-acaf-4ce3-92a4-c37e7109a4bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\01.Player\State\Berserker">
+      <UniqueIdentifier>{3d8d9c84-d048-4890-8310-2948b2ee73ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\03.Attack">
+      <UniqueIdentifier>{0f260edb-ec04-4e9f-a2bc-c4ce6d16758c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClientRegistration.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Attack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInputState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraMoving.h">
+      <Filter>include\04.Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Soul.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="HpBar.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UILayerDefine.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterAttckState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterDeadState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterStareState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterIdleState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientEvent.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterAttack.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterChase.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterDamaged.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterDie.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterFind.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterIdle.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>include\02.Monster\Prototype</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonster.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterIdleState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterPatrolState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterChaseState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterAttackState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonster.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterDeadState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientHelper.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterWaitAttackState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterFindTargetState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="DeadArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicBallAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovementState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterHitState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="AOEAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageCalculation.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="LaserAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="KnightArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ShieldDashState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="KnockBack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ShieldAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="SwordAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="ShieldBlockState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterSpawner.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerDeadState.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerOpenState.h">
+      <Filter>include\02.Monster\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterExplosion.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="MeleeMonsterExplosionState.h">
+      <Filter>include\02.Monster\Melee</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerUIManager.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Quest.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestManager.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonster.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="AimAssist.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterIdleState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterChaseState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterRushState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterSmashDownState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterDefine.h">
+      <Filter>include\00.Define</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterFindTargetState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGroup.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterWaitAttackState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterDeadState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossHP.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterHomingRushState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterWaitTargetState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterComboAttackState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterPrepareAttackState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="DefenceCounter.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestColliderTriggerChecker.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="StaffSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="StaffSoulAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="SwordSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="BowSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="AxeSoulAttackState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSoulVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="GameVaribleHelper.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>include\09.Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="BGM.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SoulSelectUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="RepauseUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterHitState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="IMonster.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawner.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnerGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnStruct.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>include\06.ETC</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfoVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSet.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="ArmourSpawner.h">
+      <Filter>include\07.Quest</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrowAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="ArcherArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BowDashState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowMultiShotAttackState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BowStrongChargingState.h">
+      <Filter>include\01.Player\State\ArcherState</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerArmour.h">
+      <Filter>include\01.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerAttackState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushChargingState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="EBerserkerAttackType.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterGroggyState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BerserkerRushState.h">
+      <Filter>include\01.Player\State\Berserker</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerVariable.h">
+      <Filter>include\08.GameVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMovementSoundState.h">
+      <Filter>include\01.Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterEatState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterManager.h">
+      <Filter>include\02.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterRoarState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterContinousState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="BossMonsterPreContinousState.h">
+      <Filter>include\02.Monster\Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantMonsterAOEAttackState.h">
+      <Filter>include\02.Monster\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="PlantAOEAttack.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="DebuffPoisonZone.h">
+      <Filter>include\03.Attack</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoSettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioSettingUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ResetPopupUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SavePopupUI.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="GaugeBar.h">
+      <Filter>include\05.UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ClientRegistration.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="Attack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInputState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraMoving.cpp">
+      <Filter>src\04.Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Soul.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="DeadArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="HpBar.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterAttckState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterDeadState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterStareState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterIdleState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterAttack.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterChase.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDamaged.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDie.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterFind.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterIdle.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>src\02.Monster\Prototype</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonster.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterIdleState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterPatrolState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterChaseState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterAttackState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonster.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterDeadState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientHelper.cpp">
+      <Filter>src\00.Define</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterWaitAttackState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterFindTargetState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterGroup.cpp">
+      <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicBallAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterHitState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="AOEAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="LaserAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldDashState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="LinearAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="KnockBack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="SwordAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="ShieldBlockState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterSpawner.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerDeadState.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerOpenState.cpp">
+      <Filter>src\02.Monster\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterExplosion.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="MeleeMonsterExplosionState.cpp">
+      <Filter>src\02.Monster\Melee</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerUIManager.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PauseUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestManager.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="Quest.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHP.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AimAssist.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonster.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterIdleState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterChaseState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterRushState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterSmashDownState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterFindTargetState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterWaitAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterDeadState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterWaitTargetState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterHomingRushState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterComboAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterPrepareAttackState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="DefenceCounter.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="QuestColliderTriggerChecker.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="StaffSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="StaffSoulAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="SwordSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="BowSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="AxeSoulAttackState.cpp">
+      <Filter>src\01.Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GameVaribleHelper.cpp">
+      <Filter>src\08.GameVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>src\09.Box</Filter>
+    </ClCompile>
+    <ClCompile Include="Portal.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="BGM.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SoulSelectUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="RepauseUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ResultUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterHitState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnerGroup.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnStruct.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSet.cpp">
+      <Filter>src\07.Quest</Filter>
+    </ClCompile>
+    <ClCompile Include="ArmourSpawner.cpp">
+      <Filter>src\06.ETC</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrowAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="ArcherArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BowDashState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowMultiShotAttackState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowStrongChargingState.cpp">
+      <Filter>src\01.Player\State\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerArmour.cpp">
+      <Filter>src\01.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerAttackState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushChargingState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterGroggyState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BerserkerRushState.cpp">
+      <Filter>src\01.Player\State\Berserker</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerVariable.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMovementSoundState.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterManager.cpp">
+      <Filter>src\02.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterEatState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterRoarState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterPreContinousState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="BossMonsterContinousState.cpp">
+      <Filter>src\02.Monster\Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterAOEAttackState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantAOEAttack.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlantMonsterHitState.cpp">
+      <Filter>src\02.Monster\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DebuffPoisonZone.cpp">
+      <Filter>src\03.Attack</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoSettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSettingUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ResetPopupUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="SavePopupUI.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="GaugeBar.cpp">
+      <Filter>src\05.UI</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

@@ -15,6 +15,7 @@ namespace fq::game_module
 	class EventManager;
 	class ScreenManager;
 	class TimeManager;
+	class SoundManager;
 
 	/// <summary>
 	/// 씬을 관리하는 클래스 
@@ -36,6 +37,7 @@ namespace fq::game_module
 			, PrefabManager* prefabMgr
 			, ScreenManager* screenMgr
 			, TimeManager* timeMgr
+			, SoundManager* soundMgr
 			, bool isInvokeStartScene = false);
 
 		/// <summary>
