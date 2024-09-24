@@ -12,40 +12,33 @@ namespace fq::game_module
 namespace fq::client
 {
 	/// <summary>
-	/// HpBar UI는 ImageUI에 0,1,2 이미지를 사용합니다.
+	/// 게이지 UI 3,4 이미지를 사용합니다 
 	/// </summary>
-	class HpBar : public game_module::Component
+	class GaugeBar : public game_module::Component
 	{
 	public:
-		HpBar();
-		~HpBar();
+		GaugeBar();
+		~GaugeBar();
 
-		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
-
-		void OnStart() override;
-
-		void DecreaseHp(float ratio);
-		void SetHp(float ratio);
 		void SetVisible(bool isVisible);
 		bool IsVisible()const { return mbIsVisible; }
+		void SetRatio(float ratio);
 
 	private:
-		entt::meta_handle GetHandle() override { return *this; }
+		void OnStart() override;
 		void OnUpdate(float dt) override;
+		std::shared_ptr<Component> Clone(std::shared_ptr<Component> clone /* = nullptr */)const override;
+		entt::meta_handle GetHandle() override { return *this; }
 		void setUIInfo();
 
 	private:
 		bool mbIsVisible;
-		float mDecreaseRatio;
-		float mDeceraseTime;
-		float mHpRatio;
 
 		DirectX::SimpleMath::Vector2 mBarSize;
-		float mDecreaseSpeed;
-		float mDecreaseOffset;
 		float mWorldOffset;
 		float mScreenOffset;
 		float mInnerOffset;
+		float mGaugeRatio;
 
 		game_module::Transform* mTransform;
 		game_module::ImageUI* mImageUI;
@@ -53,6 +46,5 @@ namespace fq::client
 
 		friend void RegisterMetaData();
 	};
-
 
 }

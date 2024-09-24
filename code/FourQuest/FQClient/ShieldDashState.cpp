@@ -45,7 +45,6 @@ void fq::client::ShieldDashState::OnStateEnter(fq::game_module::Animator& animat
 
 void fq::client::ShieldDashState::OnStateUpdate(game_module::Animator& animator, game_module::AnimationStateNode& state, float dt)
 {
-
 }
 
 void fq::client::ShieldDashState::OnStateExit(fq::game_module::Animator& animator, fq::game_module::AnimationStateNode& state)
