@@ -113,6 +113,9 @@
 #include "SettingUI.h"
 #include "RepauseUI.h"
 #include "ResultUI.h"
+#include "GameSettingUI.h"
+#include "AudioSettingUI.h"
+#include "VideoSettingUI.h"
 
 #include "CameraMoving.h"
 
@@ -1349,12 +1352,20 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Label, "UI")
 		.data<&SoulSelectUI::mSoulPrefab>("SoulPrefab"_hs)
 		.prop(fq::reflect::prop::Name, "SoulPrefab")
+		.data<&SoulSelectUI::mSoulMoveSpeed>("SoulMoveSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "SoulMoveSpeed")
+		.prop(fq::reflect::prop::Comment, u8"레디 때 소환된 영혼 이동 속도")
 		.base<fq::game_module::Component>();
 
 	entt::meta<SettingUI>()
 		.type("SettingUI"_hs)
 		.prop(fq::reflect::prop::Name, "SettingUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.data<&SettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		//.data<&PauseUI::mRepauseUIPrefab>("RepauseUIPrefab"_hs)
+		//.prop(fq::reflect::prop::Name, "RepauseUIPrefab")
 		.base<fq::game_module::Component>();
 
 	entt::meta<RepauseUI>()
@@ -1367,6 +1378,15 @@ void fq::client::RegisterMetaData()
 		.type("ResultUI"_hs)
 		.prop(fq::reflect::prop::Name, "ResultUI")
 		.prop(fq::reflect::prop::Label, "UI")
+		.base<fq::game_module::Component>();
+
+	entt::meta<AudioSettingUI>()
+		.type("AudioSettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "AudioSettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&AudioSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
 		.base<fq::game_module::Component>();
 
 	//////////////////////////////////////////////////////////////////////////

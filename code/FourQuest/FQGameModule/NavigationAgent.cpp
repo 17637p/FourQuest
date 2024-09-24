@@ -84,7 +84,6 @@ void fq::game_module::NavigationAgent::SetAgentState()
 		dtCrowdAgent* agent = mImpl->crowd->getEditableAgent(mImpl->agentIdx);
 		//agent->state = DT_CROWDAGENT_STATE_INVALID;
 		agent->state = DT_CROWDAGENT_STATE_OFFMESH;
-
 	}
 }
 

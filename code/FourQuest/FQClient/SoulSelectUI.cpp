@@ -101,6 +101,16 @@ void fq::client::SoulSelectUI::OnStart()
 		}
 	}
 
+	// SelectPoints 설정
+	for (int i = 0; i < 4; i++)
+	{
+		auto selectPoints = GetGameObject()->GetChildren()[i]->GetChildren()[5]->GetChildren();
+		for (int j = 0; j < 5; j++)
+		{
+			mSelectPoints.push_back(selectPoints[j]->GetComponent<game_module::Transform>());
+		}
+	}
+
 	// 기본 설정
 	setSpawnButton(0, false);
 	setSoulBox(0, true);
@@ -120,6 +130,8 @@ void fq::client::SoulSelectUI::OnUpdate(float dt)
 	// 입력 처리
 	processInput();
 	CheckAllReady(dt);
+
+	MoveSoulDown(dt);
 }
 
 fq::client::SoulSelectUI::SoulSelectUI()
@@ -135,7 +147,8 @@ fq::client::SoulSelectUI::SoulSelectUI()
 	mSouls(),
 	mSelectSouls(),
 	mCurTime(0),
-	mChangeSceneTime(3)
+	mChangeSceneTime(3),
+	mSoulMoveSpeed(100)
 {
 }
 
@@ -178,6 +191,11 @@ void fq::client::SoulSelectUI::setSoulBox(int index, bool isSpawned)
 		textUI->SetTextInfo(textInfo);
 	}
 	soulBoxChildren[4]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+
+	for (int i = 0; i < 5; i++)
+	{
+		mSelectPoints[index * 5 + i]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+	}
 }
 
 void fq::client::SoulSelectUI::setScaleScreen()
@@ -243,7 +261,7 @@ void fq::client::SoulSelectUI::processInput()
 					newSoul = *(instance.begin());
 
 					float xPos = -3.75f + (2.5f * i);
-					newSoul->GetComponent<game_module::Transform>()->SetLocalPosition({ xPos, 0, 0 });
+					newSoul->GetComponent<game_module::Transform>()->SetLocalPosition({ xPos, 0.5f, 0 });
 					newSoul->GetComponent<game_module::CharacterController>()->SetControllerID(i);
 					mSouls.push_back(newSoul);
 
@@ -337,6 +355,7 @@ void fq::client::SoulSelectUI::processInput()
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 
 				mPlayerSoulIcons[i * 4 + mSelectSouls[i]]->SetIsRender(true);
+				SetSelectPoints(i, mSelectSouls[i]);
 			}
 		}
 
@@ -365,6 +384,7 @@ void fq::client::SoulSelectUI::processInput()
 				mContentTexts[i]->SetText(mContents[mSelectSouls[i]]);
 
 				mPlayerSoulIcons[i * 4 + mSelectSouls[i]]->SetIsRender(true);
+				SetSelectPoints(i, mSelectSouls[i]);
 			}
 		}
 	}
@@ -377,7 +397,12 @@ void fq::client::SoulSelectUI::setReadyUI(int index, bool isSpawned)
 
 	// SoulBox
 	readyUI[0]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
-	readyUI[1]->GetComponent<game_module::ImageUI>()->SetIsRender(0, isSpawned);
+	auto cancelButton = readyUI[1]->GetComponent<game_module::ImageUI>();
+	cancelButton->SetIsRender(0, isSpawned);
+	cancelButton->GetGameObject()->GetChildren()[0]->GetComponent<game_module::TextUI>()->SetIsRender(isSpawned);
+
+	auto magicSymbol = readyUI[2]->GetComponent<game_module::ImageUI>();
+	magicSymbol->SetIsRender(0, isSpawned);
 }
 
 void fq::client::SoulSelectUI::SaveSoulType()
@@ -466,6 +491,30 @@ void fq::client::SoulSelectUI::CheckAllReady(float dt)
 		if (mCurTime > mChangeSceneTime)
 		{
 			GetScene()->GetEventManager()->FireEvent < fq::event::RequestChangeScene>({ "Scene1", true });
+		}
+	}
+}
+
+void fq::client::SoulSelectUI::SetSelectPoints(int playerID, int selectNum)
+{
+	auto selectPos = mSelectPoints[playerID * 5 + selectNum]->GetLocalPosition();
+	mSelectPoints[playerID * 5 + 4]->SetLocalPosition(selectPos);
+}
+
+void fq::client::SoulSelectUI::MoveSoulDown(float dt)
+{
+	for (int i = 0; i < mSouls.size(); i++)
+	{
+		if (!mSouls[i]->IsDestroyed())
+		{
+			game_module::Transform* soulT = mSouls[i]->GetTransform();
+			DirectX::SimpleMath::Vector3 soulV = soulT->GetLocalPosition();
+			float soulY = soulV.y;
+			if (soulY > -0.5f)
+			{
+				soulY -= dt * mSoulMoveSpeed;
+			}
+			soulT->SetLocalPosition({ soulV.x, soulY, soulV.z });
 		}
 	}
 }

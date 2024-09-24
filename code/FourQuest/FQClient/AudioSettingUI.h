@@ -1,22 +1,21 @@
 #pragma once
 #include "../FQGameModule/Component.h"
-#include "../FQGameModule/PrefabResource.h"
-#include "../FQGameModule/EventHandler.h"
 
 namespace fq::game_module
 {
 	class ScreenManager;
 	class TimeManager;
 	class TextUI;
+	class ImageUI;
 }
 
 namespace fq::client
 {
-	class SettingUI : public game_module::Component
+	class AudioSettingUI : public game_module::Component
 	{
 	public:
-		SettingUI();
-		~SettingUI();
+		AudioSettingUI();
+		~AudioSettingUI();
 
 		virtual void OnStart() override;
 		virtual void OnUpdate(float dt) override;
@@ -27,9 +26,13 @@ namespace fq::client
 
 		void setScaleScreen();
 		void setSelectBoxPosition(float dt);
-		void clickButton();
+		void setMute(int index, bool isMute);
+		void setSoundBar(int index);
+		void initAudioSetting();
 
-		void processInput();
+		void processInput(float dt);
+
+		void setSound(int index, bool isUp);
 
 		std::string wstringToString(std::wstring wStr);
 
@@ -38,7 +41,7 @@ namespace fq::client
 		game_module::TimeManager* mTimeManager;
 
 		// 선택한 버튼 위치 이동
-		int mSelectButtonID; // 0: 게임, 1: 비디오, 2: 오디오, 3: 돌아가기
+		int mSelectButtonID; // 0: 전체 음량, 1: 배경음, 2: 효과음, 3: 음성
 		game_module::GameObject* mSelectBackground;
 		std::vector<game_module::GameObject*> mButtons;
 
@@ -50,6 +53,17 @@ namespace fq::client
 		// 설명 Text
 		std::vector<std::string> mExplanationTexts;
 		game_module::TextUI* mExplanationTextUI;
+
+		// Mute
+		std::vector<bool> mIsMute;
+		std::vector<float> mSoundRatio;
+		float mSoundBarWidth;
+		std::vector<float> mSoundLeftInputTimes; // i
+		std::vector<float> mSoundRightInputTimes;
+		std::vector<game_module::ImageUI*> mSoundBars;
+		std::vector<game_module::Transform*> mSoundBarIcons;
+		std::vector<game_module::ImageUI*> mMuteCheckImages;
+		std::vector<game_module::TextUI*> mSoundPercentTexts;
 
 	private:
 		friend void RegisterMetaData();
