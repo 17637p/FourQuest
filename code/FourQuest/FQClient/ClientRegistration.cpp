@@ -37,6 +37,7 @@
 #include "BerserkerAttackState.h"
 #include "BerserkerRushState.h"
 #include "BerserkerRushChargingState.h"
+#include "AttackInvalidation.h"
 
 // Monster
 #include "Monster.h"
@@ -137,7 +138,6 @@
 #include "Spawner.h"
 
 // GameVariable
-
 #include "PlayerSoulVariable.h"
 #include "DamageVariable.h"
 #include "SettingVariable.h"
@@ -370,6 +370,9 @@ void fq::client::RegisterMetaData()
 		.data<&KnightArmour::mShieldDuration>("ShieldDuration"_hs)
 		.prop(reflect::prop::Name, "ShieldDuration")
 		.prop(reflect::prop::Comment, u8"½¯µå Áö¼Ó½Ã°£")
+		.data<&KnightArmour::mShieldKnockBackPower>("ShieldKnockBackPower"_hs)
+		.prop(reflect::prop::Name, "ShieldKnockBackPower")
+		.prop(reflect::prop::Comment, u8"½¯µå ³Ë¹é")
 		.data<&KnightArmour::mSwordAttack>("SwordAttack"_hs)
 		.prop(reflect::prop::Name, "SwordAttack")
 		.data<&KnightArmour::mSwordAttackEffect1>("SwordAttackEffect1"_hs)
@@ -380,6 +383,8 @@ void fq::client::RegisterMetaData()
 		.prop(reflect::prop::Name, "ShieldAttack")
 		.data<&KnightArmour::mDashAttack>("DashAttack"_hs)
 		.prop(reflect::prop::Name, "DashAttack")
+		.data<&KnightArmour::mShieldCollider>("ShieldCollider"_hs)
+		.prop(reflect::prop::Name, "ShieldCollider")
 		.base<game_module::Component>();
 
 	entt::meta<ArcherArmour>()
@@ -1279,6 +1284,11 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "AttackDuration")
 		.data<&StaffSoulAttack::mAttack>("Attack"_hs)
 		.prop(fq::reflect::prop::Name, "Attack")
+		.base<fq::game_module::Component>();
+
+	entt::meta<AttackInvalidation>()
+		.type("AttackInvalidation"_hs)
+		.prop(fq::reflect::prop::Name, "AttackInvalidation")
 		.base<fq::game_module::Component>();
 
 

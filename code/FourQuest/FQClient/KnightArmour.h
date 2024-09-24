@@ -33,7 +33,7 @@ namespace fq::client
 		/// <summary>
 		/// 방어 상태에 대한 처리를합니다.
 		/// </summary>
-		void CheckBlockState(float dt);
+		void UpdateBlockState(float dt);
 
 		float GetShieldDashPower() const { return mShieldDashPower; }
 		float GetXAttackDashPower() const { return mXAttackDashPower; }
@@ -44,6 +44,7 @@ namespace fq::client
 		void SetShieldMovementSpeed(bool isShieldSpeed);
 
 		void ExitShieldState();
+		void EnterShieldState();
 
 	private:
 		entt::meta_handle GetHandle() override { return *this; }
@@ -60,6 +61,7 @@ namespace fq::client
 		game_module::Transform* mTransform;
 		client::Player* mPlayer;
 		client::GaugeBar* mGaugeBar;
+		std::shared_ptr<game_module::GameObject> mShieldObject;
 
 		float mDashCoolTime;
 		float mDashElapsedTime;
@@ -72,6 +74,7 @@ namespace fq::client
 		float mXAttackDashPower;
 		float mSwordKnockBackPower;
 		float mDashKnockBackPower;
+		float mShieldKnockBackPower;
 
 		float mAttackOffset;
 
@@ -80,6 +83,7 @@ namespace fq::client
 		game_module::PrefabResource mSwordAttackEffect2;
 		game_module::PrefabResource mShieldAttack;
 		game_module::PrefabResource mDashAttack;
+		game_module::PrefabResource mShieldCollider;
 
 		friend void RegisterMetaData();
 	};

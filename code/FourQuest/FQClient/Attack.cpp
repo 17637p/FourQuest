@@ -109,3 +109,8 @@ void fq::client::Attack::SetDestroyTime(float destroyTime)
 {
 	mDestroyTime = destroyTime;
 }
+
+void fq::client::Attack::SetAttackDirection(DirectX::SimpleMath::Vector3 direction)
+{
+	mAttackDirection = direction;
+}
