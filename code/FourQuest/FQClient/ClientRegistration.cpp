@@ -1477,6 +1477,21 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
 		.base<fq::game_module::Component>();
 
+	entt::meta<VideoSettingUI>()
+		.type("VideoSettingUI"_hs)
+		.prop(fq::reflect::prop::Name, "VideoSettingUI")
+		.prop(fq::reflect::prop::Label, "UI")
+		.data<&VideoSettingUI::mUIAnimSpeed>("UIAnimSpeed"_hs)
+		.prop(fq::reflect::prop::Name, "UIAnimSpeed")
+		.prop(fq::reflect::prop::Comment, u8"선택 버튼 이동 속도")
+		.data<&VideoSettingUI::mResetMessagePrefab>("ResetMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "ResetMessagePrefab")
+		.data<&VideoSettingUI::mSaveMessagePrefab>("SaveMessagePrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SaveMessagePrefab")
+		.data<&VideoSettingUI::mSettingUIPrefab>("SettingUIPrefab"_hs)
+		.prop(fq::reflect::prop::Name, "SettingUIPrefab")
+		.base<fq::game_module::Component>();
+
 	//////////////////////////////////////////////////////////////////////////
 	//                             Monster Type								//
 	//////////////////////////////////////////////////////////////////////////
@@ -1819,7 +1834,7 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "IsVibe")
 		.data<&SettingVariable::IsUsedAimAssist>("IsUsedAimAssist"_hs)
 		.prop(fq::reflect::prop::Name, "IsUsedAimAssist")
-		.data<&SettingVariable::IsUsedAimAssist>("IsAllowOtherPlayerAttack"_hs)
+		.data<&SettingVariable::IsAllowOtherPlayerAttack>("IsAllowOtherPlayerAttack"_hs)
 		.prop(fq::reflect::prop::Name, "IsAllowOtherPlayerAttack")
 
 		.data<&SettingVariable::ArmourSpawnDistance>("ArmourSpawnDistance"_hs)

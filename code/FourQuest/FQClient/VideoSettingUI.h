@@ -34,7 +34,7 @@ namespace fq::client
 		void setScaleScreen();
 		void setSelectBoxPosition(float dt);
 		void setRadio();
-		void setResolutionTextUI(int width, int height);
+		void setResolutionTextUI();
 
 		void processInput(float dt);
 
@@ -83,6 +83,7 @@ namespace fq::client
 		std::vector<game_module::ImageUI*> mRadioOnImage;
 		bool mIsWindow;
 		game_module::TextUI* mResolutionTextUI;
+		int mResolutionIndex;
 		std::vector<DirectX::SimpleMath::Vector2> mResolutions;
 
 		// 비교를 위한 저장용
