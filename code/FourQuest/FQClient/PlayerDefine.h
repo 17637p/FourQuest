@@ -27,8 +27,11 @@ namespace fq::client
 
 	enum class EPlayerType
 	{
+		NONE,
 		Soul,
-		LivingArmour
+		SoulDestoryed,
+		LivingArmour,
+		ArmourDestroyed,
 	};
 
 	/// <summary>

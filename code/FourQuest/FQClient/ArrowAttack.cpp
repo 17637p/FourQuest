@@ -9,6 +9,8 @@
 #include "../FQGameModule/Event.h"
 
 #include "Attack.h"
+#include "Player.h"
+#include "PlayerSoulVariable.h"
 
 namespace fq::client
 {
@@ -124,6 +126,14 @@ namespace fq::client
 			info.hitSound = mHitSound;
 			info.attackDirection = mAttackDirection;
 			info.attackPosition = mAttackTransform.Translation();
+			info.mHitCallback = [this, isIncrease = false]() mutable
+				{
+					if (!isIncrease)
+					{
+						mAttacker->GetComponent<Player>()->AddSoulGauge(PlayerSoulVariable::SoulGaugeCharging);
+						isIncrease = true;
+					}
+				};
 
 			if (mbIsStrongAttack)
 			{

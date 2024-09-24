@@ -4,7 +4,8 @@
 #include "../FQGameModule/CharacterController.h"
 #include "../FQGameModule/Transform.h"
 #include "../FQGameModule/Particle.h"
-#include "../FQGameModule/GameObject.h"
+#include "..\FQGameModule\RigidBody.h"
+#include "..\FQGameModule\BoxCollider.h"
 
 #include "DeadArmour.h"
 #include "CameraMoving.h"
@@ -211,6 +212,7 @@ void fq::client::Soul::SetSoulColor()
 void fq::client::Soul::SetSoulManager()
 {
 	bool bisSoulManager = false;
+	unsigned int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
 
 	// 씬에 소울 매니저 오브젝트가 있는지 확인
 	for (auto& object : GetScene()->GetObjectView())
@@ -228,6 +230,7 @@ void fq::client::Soul::SetSoulManager()
 		for (auto& object : GetScene()->GetComponentView<SoulManager>())
 		{
 			mSoulManagerObject = &object;
+			mSoulManagerObject->GetComponent<SoulManager>()->SetPlayerType(id, EPlayerType::Soul);
 		}
 	}
 	else
@@ -237,6 +240,7 @@ void fq::client::Soul::SetSoulManager()
 
 		GetScene()->AddGameObject(gameObject);
 		mSoulManagerObject = gameObject.get();
+		mSoulManagerObject->GetComponent<SoulManager>()->SetPlayerType(id, EPlayerType::Soul);
 	}
 }
 
@@ -296,14 +300,23 @@ void fq::client::Soul::updateSoulHP(float dt)
 	}
 
 	// 영혼 죽으면 오브젝트 삭제하고 소울 매니저한테 영혼 파괴되었다고 알림
+	// 파티클을 없애고 리지드 바디 삭제 ( 다음 씬에 보내기 위해 해당 오브젝트를 삭제하면 안됨 ( Soul, CharacterController 데이터 저장 ))
 	if (mHP <= 0.f)
 	{
-		GetScene()->DestroyGameObject(GetGameObject());
-		
-		int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
-		auto soulManager = mSoulManagerObject->GetComponent<SoulManager>();
+		for (auto& object : GetGameObject()->GetChildren())
+		{
+			if (object->HasComponent<fq::game_module::Particle>())
+			{
+				GetScene()->DestroyGameObject(object);
+			}
+		}
 
-		soulManager->SetbIsPlayerSoulDeath(id, true);
+		int id = GetComponent<fq::game_module::CharacterController>()->GetControllerID();
+		mSoulManagerObject->GetComponent<SoulManager>()->SetbIsPlayerSoulDeath(id, EPlayerType::SoulDestoryed);
+
+		// 콜라이더와 리지드 바디 삭제
+		GetGameObject()->RemoveComponent<fq::game_module::RigidBody>();
+		GetGameObject()->RemoveComponent<fq::game_module::BoxCollider>();
 
 		// 카메라에 플레이어 해제 
 		GetScene()->ViewComponents<CameraMoving>([this](game_module::GameObject& object, CameraMoving& camera)

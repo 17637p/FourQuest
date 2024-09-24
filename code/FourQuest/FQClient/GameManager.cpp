@@ -3,6 +3,7 @@
 #include "ClientEvent.h"
 #include "Player.h"
 #include "Soul.h"
+#include "SoulManager.h"
 
 #include "../FQGameModule/GameModule.h"
 #include "../FQGameModule/CharacterController.h"
@@ -442,6 +443,23 @@ void fq::client::GameManager::SavePlayerState()
 				if (playerComponent->GetArmourType() == EArmourType::Warrior)
 				{
 					PlayerInfoVariable::Player4State = 4;
+				}
+			}
+		}
+	}
+
+	for (auto& soulmanager : GetGameObject()->GetScene()->GetComponentView<SoulManager>())
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			EPlayerType type = soulmanager.GetComponent<SoulManager>()->GetPlayerType(i);
+
+			if (type == EPlayerType::ArmourDestroyed)
+			{
+				if (i == 0)
+				{
+					PlayerInfoVariable::Player1State = 0;
+					PlayerInfoVariable::Player1SoulType = static_cast<int>(soulmanager.GetComponent<SoulManager>()->GetDestroyArmourSoulType(i));
 				}
 			}
 		}

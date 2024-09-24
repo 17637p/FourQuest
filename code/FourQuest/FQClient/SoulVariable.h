@@ -27,7 +27,7 @@ namespace fq::client
 		//////////////////////////////////////////////////////////////////////////
 		//								플레이어 강화								//
 		//////////////////////////////////////////////////////////////////////////
-		static inline float SpeedUp = 1.2f;				// 플레이어 이동속도 증가량
-		static inline float DamageUp = 1.2f;			// 플레이어 공격력 증가량
+		static inline float SpeedUpRatio = 1.2f;				// 플레이어 이동속도 증가량
+		static inline float DamageUpRatio = 1.2f;			// 플레이어 공격력 증가량
 	};
 }

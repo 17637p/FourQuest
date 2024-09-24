@@ -448,10 +448,6 @@ void fq::client::RegisterMetaData()
 	entt::meta<SoulManager>()
 		.type("SoulManager"_hs)
 		.prop(reflect::prop::Name, "SoulManager")
-		.data<&SoulManager::mbIsPlayerSoulDeath>("bIsPlayerSoulDeath"_hs)
-		.prop(reflect::prop::Name, "bIsPlayerSoulDeath")
-		.data<&SoulManager::mPlayerArmourDeathCount>("PlayerArmourDeathCount"_hs)
-		.prop(reflect::prop::Name, "PlayerArmourDeathCount")
 		.base<game_module::Component>();
 
 	entt::meta<AimAssist>()
@@ -1775,10 +1771,10 @@ void fq::client::RegisterMetaData()
 		.prop(fq::reflect::prop::Name, "SoulDecreasPercentage")
 		.prop(reflect::prop::Comment, u8"사정거리 안에 갑옷 플레이어가 있을 때, HP 피해 감소량")
 
-		.data<&SoulVariable::SpeedUp>("SpeedUp"_hs)
+		.data<&SoulVariable::SpeedUpRatio>("SpeedUp"_hs)
 		.prop(fq::reflect::prop::Name, "SpeedUp")
 		.prop(reflect::prop::Comment, u8"플레이어 이동속도 증가량")
-		.data<&SoulVariable::DamageUp>("DamageUp"_hs)
+		.data<&SoulVariable::DamageUpRatio>("DamageUp"_hs)
 		.prop(fq::reflect::prop::Name, "DamageUp")
 		.prop(reflect::prop::Comment, u8"플레이어 공격력 증가량")
 		.base<IGameVariable>();

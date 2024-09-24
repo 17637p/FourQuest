@@ -205,22 +205,17 @@ void fq::client::Player::OnTriggerEnter(const game_module::Collision& collision)
 
 void fq::client::Player::SummonSoul()
 {
-	auto instance = GetScene()->GetPrefabManager()->InstantiatePrefabResoure(mSoulPrefab);
-	auto& soul = *(instance.begin());
-
-	// 컨트롤러 연결
-	soul->GetComponent<game_module::CharacterController>()
-		->SetControllerID(mController->GetControllerID());
-
-	// 소울 타입 설정
-	soul->GetComponent<Soul>()->SetSoulType(mSoulType);
-
 	// 위치 설정
 	auto worldMat = GetComponent<game_module::Transform>()->GetWorldMatrix();
 	worldMat._42 += 1.f;
-	soul->GetComponent<game_module::Transform>()->SetWorldMatrix(worldMat);
 
-	GetScene()->AddGameObject(soul);
+	// 씬에서 영혼 매니저를 찾아서 등록
+	for (auto& soulManager : GetScene()->GetComponentView<SoulManager>())
+	{
+		soulManager.GetComponent<SoulManager>()->SummonSoul(GetPlayerID(), mSoulType, worldMat, mSoulPrefab);
+		soulManager.GetComponent<SoulManager>()->SetPlayerType(GetPlayerID(), EPlayerType::ArmourDestroyed);
+	}
+
 	GetScene()->DestroyGameObject(GetGameObject());
 }
 
@@ -534,8 +529,8 @@ void fq::client::Player::processBuff()
 
 	if (mSoulBuffNumber != 0)
 	{
-		mAttackPower += (mBaseAttackPower * ((SoulVariable::DamageUp - 1.f) * mSoulBuffNumber));
-		mController->AddFinalSpeedMultiplier((SoulVariable::SpeedUp - 1.f) * mSoulBuffNumber);
+		mAttackPower += (mBaseAttackPower * ((SoulVariable::DamageUpRatio - 1.f) * mSoulBuffNumber));
+		mController->AddFinalSpeedMultiplier((SoulVariable::SpeedUpRatio - 1.f) * mSoulBuffNumber);
 	}
 }
 

@@ -495,7 +495,7 @@
       <Filter>include\08.GameVariable</Filter>
     </ClInclude>
     <ClInclude Include="SoulManager.h">
-      <Filter>include</Filter>
+      <Filter>include\06.ETC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
